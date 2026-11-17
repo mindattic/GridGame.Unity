@@ -848,6 +848,8 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = new Color(0.35f, 0.35f, 0.45f);
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
+            // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
+            clip.style.bottom = Space.S48 + Size.Target + Space.S24;
             text = Ui.El("col", clip);
             text.style.position = Position.Absolute;
             text.style.left = Space.S96; text.style.right = Space.S96;
@@ -915,6 +917,8 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = new Color(0.25f, 0.25f, 0.32f);
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
+            // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
+            clip.style.bottom = Space.S48 + Size.Target + Space.S24;
             roll = Ui.El("col", clip);
             roll.name = "credits-roll";
             roll.style.position = Position.Absolute;
@@ -932,7 +936,7 @@ namespace GridGame.App
             var body = Ui.Text(text, "h2 shadow", roll);
             body.style.whiteSpace = WhiteSpace.Normal;
             body.style.unityTextAlign = TextAnchor.UpperCenter;
-            var coda = Ui.Text("Morrow hangs as low as ever. You are still here.\n\nThank you for playing.", "h2 shadow dim", roll);
+            var coda = Ui.Text("Thank you for playing.", "h2 shadow dim", roll);
             coda.style.whiteSpace = WhiteSpace.Normal;
             coda.style.unityTextAlign = TextAnchor.MiddleCenter;
             coda.style.marginTop = Fit.H(8.7f);
