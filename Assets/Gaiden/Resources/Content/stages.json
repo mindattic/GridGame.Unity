@@ -1966,12 +1966,6 @@
             "Level": 1,
             "X": -1,
             "Y": -1
-          },
-          {
-            "Class": "mockingecho",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
           }
         ]
       },
@@ -2209,6 +2203,12 @@
           },
           {
             "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mockingecho",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -2505,12 +2505,6 @@
           },
           {
             "Class": "cyberzombie01",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
-          },
-          {
-            "Class": "mockingecho",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -4272,6 +4266,12 @@
           },
           {
             "Class": "pitlurker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mockingecho",
             "Level": 1,
             "X": -1,
             "Y": -1
