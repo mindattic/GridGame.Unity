@@ -718,8 +718,8 @@ namespace GridGame.App
         private void Launch(StageDef st, int index) => StageLauncher.Launch(st.Id, false);
     }
 
-    /// <summary>The one way into a battle: plays the theme's story crawl on first entry (§27), then any pending story-beat
-    /// dialogue (§27.1), then the stage.</summary>
+    /// <summary>The one way into a battle: plays a chapter crawl that is still due (§27, GG-T386: one after every fifth
+    /// stage, normally on the way back from its results), then any pending story-beat dialogue (§27.1), then the stage.</summary>
     public static class StageLauncher
     {
         public static void Launch(string stageId, bool replaceCurrent)
@@ -743,12 +743,11 @@ namespace GridGame.App
                 return beat == null ? new BattleScreen(stageId) : StoryBeats.Play(beat, BeatsThenBattle, theme?.Id);
             }
             GameScreen next = BeatsThenBattle();
-            if (theme != null && !string.IsNullOrEmpty(theme.Crawl) && app.Save != null && !app.Save.SeenCrawls.Contains(theme.Id))
-            {
-                app.Save.SeenCrawls.Add(theme.Id);
-                app.Persist();
-                next = new StoryCrawlScreen(theme, next);
-            }
+            // GG-T386: a chapter crawl the results screen didn't get to play ("Next stage ›", or a save from before
+            // chapters) plays now, unless a beat opening with its own crawl is up next: it waits for the next stop, so
+            // two scrolls never play back to back.
+            var beatFirst = app.Save == null ? null : DialogueRunner.PendingBeat(app.Content, app.Save, stageId);
+            if (string.IsNullOrEmpty(beatFirst?.Crawl)) next = StoryBeats.WithChapter(next);
             if (replaceCurrent) app.Router.Replace(next); else app.Router.Push(next);
         }
     }
@@ -776,7 +775,8 @@ namespace GridGame.App
         private VisualElement text;
         private float y;
         private bool done;
-        public StoryCrawlScreen(ThemeDef theme, GameScreen next) : this(theme.Name, theme.Crawl, theme.Id, next) { }
+        /// <summary>A campaign crawl (GG-T386: the prologue, a chapter, the ending) over its backdrop.</summary>
+        public StoryCrawlScreen(CrawlDef crawl, GameScreen next) : this(crawl.Title, crawl.Crawl, crawl.Backdrop, next) { }
         /// <summary>Any crawl (GG-T231): the prologue, a story beat's interlude, the ending.</summary>
         public StoryCrawlScreen(string title, string crawl, string backdrop, GameScreen next)
         {
@@ -934,7 +934,21 @@ namespace GridGame.App
             return beat == null ? new HubScreen() : Play(beat, Camp, null);
         }
 
-        /// <summary>The results screen's Continue: the ending if this victory earned it, else Camp (via any interlude).</summary>
+        /// <summary>GG-T386: <paramref name="next"/>, preceded by the chapter crawl that is due (if any), which is marked
+        /// played (with every chapter before it) and saved as it starts.</summary>
+        public static GameScreen WithChapter(GameScreen next)
+        {
+            var app = GameApp.I;
+            var ch = Story.ChapterDue(app.Content, app.Save);
+            if (ch == null) return next;
+            Story.MarkChapterSeen(app.Content, app.Save, ch);
+            app.Persist();
+            return new StoryCrawlScreen(ch, next);
+        }
+
+        /// <summary>The results screen's Continue: the ending if this victory earned it; else the chapter crawl this
+        /// victory earned (GG-T386), then Camp; else Camp via any interlude. A level interlude due with a chapter waits for
+        /// the next launch or results screen, so two scrolls never play back to back.</summary>
         public static void AfterResults(bool victory, string stageId)
         {
             var app = GameApp.I;
@@ -947,7 +961,9 @@ namespace GridGame.App
                     new CreditsScreen(() => new TitleScreen())));
                 return;
             }
-            app.Router.ResetTo(Camp());
+            var hub = new HubScreen();
+            var withChapter = WithChapter(hub);
+            app.Router.ResetTo(withChapter != hub ? withChapter : Camp());
         }
 
         /// <summary>A new campaign's first screen: the prologue crawl (if any), then Camp.</summary>
