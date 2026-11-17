@@ -36,6 +36,7 @@
         { "On": "mire", "Kind": "Clear" },
         { "On": "quicksand", "Kind": "Clear" },
         { "On": "fire", "Kind": "Clear" },
+        { "On": "floodwater", "Kind": "Becomes", "Into": "ice" },
         { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
