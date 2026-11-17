@@ -526,13 +526,14 @@ namespace GridGame.App
             }
             Item("Adventure", () => new StageSelectScreen(), $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
             // The Crucible (§22.10): endless waves for XP and loot. Closed mid-expedition — the row says why.
-            if (CampUnlocks.CrucibleOpen(s))
+            // Hidden while Features.Crucible is off (GG-T392, docs/RELEASE_SCOPE.md): hunts on Adventure are the grind.
+            if (Features.Crucible && CampUnlocks.CrucibleOpen(s))
             {
                 bool crucibleOpen = Crucible.CanLaunch(c, s, out var crucibleWhy);
                 var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : crucibleWhy, () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
                 crucible.name = "camp-crucible";
             }
-            else Station("Crucible", false, CampUnlocks.MilestoneHint(c, CampUnlocks.CrucibleAfter), null);
+            else if (Features.Crucible) Station("Crucible", false, CampUnlocks.MilestoneHint(c, CampUnlocks.CrucibleAfter), null);
             Item("Items", () => new ItemsScreen());
             Item("Status", () => new StatusScreen(s.Party.FirstOrDefault()));
             Item("Equip", () => new EquipScreen(s.Party.FirstOrDefault()));
@@ -553,14 +554,16 @@ namespace GridGame.App
                 if (Expeditions.InnOpen(s)) Ui.MenuRow(s.Expedition != null ? "Inn (Medic Wagon)" : "Inn", Inn.Cost(c, s) > 0 ? Ui.Gold(Inn.Cost(c, s)) : "Rested", Rest, list.contentContainer);
                 else Ui.MenuRow("Inn", "On the road", null, list.contentContainer, null, false);
                 // GG-T53 (§25.6.3): the Innkeeper also sells a Respec that refunds every talent point.
-                if (Expeditions.InnOpen(s)) Item("Inn: Respec", () => new RespecScreen());
+                // GG-T392: off by default — the Talents screen's per-hero Respec button does the same job.
+                if (Features.InnRespecRow && Expeditions.InnOpen(s)) Item("Inn: Respec", () => new RespecScreen());
             }
             else Station("Inn", false, CampUnlocks.JoinHint(c, CampNpcs.Innkeeper), null);
             Station("Blacksmith", CampUnlocks.NpcOpen(s, CampNpcs.Blacksmith), CampUnlocks.JoinHint(c, CampNpcs.Blacksmith), () => new BlacksmithScreen());
             Station("Alchemist", CampUnlocks.NpcOpen(s, CampNpcs.Alchemist), CampUnlocks.JoinHint(c, CampNpcs.Alchemist), () => new AlchemistScreen());
             Station("Enchantress", CampUnlocks.NpcOpen(s, CampNpcs.Enchantress), CampUnlocks.JoinHint(c, CampNpcs.Enchantress), () => new EnchantressScreen());
-            Station("Bounties", CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new BountyScreen(),
-                Bounties.Active(c, s) != null ? $"{s.Bounty.Progress}/{Bounties.Active(c, s).Kills}" : "");
+            if (Features.Bounties)
+                Station("Bounties", CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new BountyScreen(),
+                    Bounties.Active(c, s) != null ? $"{s.Bounty.Progress}/{Bounties.Active(c, s).Kills}" : "");
             // Optional side quests (§22.11, GG-T237): the journal, with a "!" when one is ready to hand in.
             int questsReady = Quests.ReadyCount(c, s);
             if (c.QuestOrder.Any(q => Quests.State(c, s, q) != QuestState.Locked))
@@ -569,7 +572,7 @@ namespace GridGame.App
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));
-            Station("Caravan", CampUnlocks.CaravanOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.CaravanAfter), () => new CaravanScreen(), caravanLevels > 0 ? $"{caravanLevels} upgrades" : "");
+            if (Features.Caravan) Station("Caravan", CampUnlocks.CaravanOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.CaravanAfter), () => new CaravanScreen(), caravanLevels > 0 ? $"{caravanLevels} upgrades" : "");
             Item("Bestiary", () => new BestiaryScreen());
             Item("Settings", () => new SettingsScreen());
             if (Progression.CanStartNewGamePlus(c, s))
@@ -604,7 +607,7 @@ namespace GridGame.App
             Ui.Text("Cleared", "small dim", goldW).style.marginTop = Space.S16;
             Ui.Text($"{s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", "h2 num", goldW);
             // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark — flavor, not dialogue.
-            if (CampUnlocks.CaravanOpen(s))
+            if (Features.Caravan && CampUnlocks.CaravanOpen(s))
             {
                 var gossip = Ui.Window(null, side);
                 gossip.name = "camp-gossip";
@@ -648,7 +651,7 @@ namespace GridGame.App
 
         protected override void BuildBody(VisualElement body)
         {
-            var active = Bounties.Active(C, S);
+            var active = Features.Bounties ? Bounties.Active(C, S) : null;
             if (active != null)
             {
                 var b = Ui.Window(null, body);

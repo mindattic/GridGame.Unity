@@ -66,7 +66,7 @@ namespace GridGame.App
                     Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).name = "results-milestone";
                 if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).Q<Label>("value").AddToClassList("gold");
                 if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).Q<Label>("label").AddToClassList("good");
-                if (report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
+                if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
                 foreach (var note in report.QuestProgress) Ui.MenuRow("Quest", note, null, list);
                 if (report.AutoSold > 0) Ui.MenuRow("Bag full — sold extras", $"{report.AutoSold} items", null, list);
                 foreach (var g in report.GuestsJoined)
@@ -174,7 +174,7 @@ namespace GridGame.App
             Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).name = "crucible-xp";
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);
-            if (report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
+            if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
             if (report.AutoSold > 0) Ui.MenuRow("Bag full: sold extras", $"{report.AutoSold} items", null, list);
 
             var row = Ui.El("row", col);

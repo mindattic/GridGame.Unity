@@ -348,7 +348,7 @@ def smoke(run="smoke"):
 
 
 def sweep(run="sweep", theme=None):
-    launch(run)
+    launch(run, extra=("-allfeatures",) if theme else ())  # a theme sweep needs the look presets on (GG-T392)
     call("newgame", slot=0, gold=5000, npcs=1)  # npcs: every Camp station on the hub shot (GG-T119)
     if theme:  # GG-T185: sweep a menu theme (Art.Themes name, e.g. Slate)
         print(call("setting", key="menutheme", value=theme))
@@ -552,9 +552,10 @@ def fullloop(run="fullloop", battles=4, speed=3):
     (real UI) -> accept a bounty -> story beats + several battles on autoplay -> back to camp -> sell a drop ->
     forge / brew / enchant whatever the drops now allow -> claim the bounty if done. Fails on a battle that
     stalls, a hand-off whose numbers don't move (fights pay no gold, a sale pays nothing, a craft makes nothing),
-    or any logged error. Skill points (GG-T53) are parked with the build epic and not exercised yet."""
+    or any logged error. Skill points (GG-T53) are parked with the build epic and not exercised yet.
+    Launched with -allfeatures: the bounty board is hidden in the release scope (GG-T392) but still exercised here."""
     fails, notes = [], []
-    launch(run, fresh=True)
+    launch(run, extra=("-allfeatures",), fresh=True)
     _wait_screen("title"); time.sleep(0.6)
     _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
@@ -1778,8 +1779,9 @@ def crucible(run="crucible", leave_after=3, speed=4, timeout=600):
     """GG-T95: the Crucible end to end through the real UI. Camp -> the Crucible row -> Enter -> the battle on
     Auto until `leave_after` waves are cleared (or the party wipes first) -> pause menu "Leave the Crucible" ->
     level-ups -> results -> Continue -> camp, checking the haul really landed in the save (gold, items, XP),
-    the party recovered to full and the camp row now shows the best record. Screenshots in artifacts/<run>/."""
-    launch(run, fresh=True)
+    the party recovered to full and the camp row now shows the best record. Screenshots in artifacts/<run>/.
+    Launched with -allfeatures: the Crucible is hidden in the release scope (GG-T392) but still exercised here."""
+    launch(run, extra=("-allfeatures",), fresh=True)
     call("newgame", slot=0)
     time.sleep(1.5)
     call("cues", clear=1)

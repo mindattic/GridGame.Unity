@@ -116,7 +116,7 @@ def main():
         party = (h.call("state").get("save") or {}).get("party") or []
         check("new game starts with the small party (GG-T118)", len(party) == len(h.STARTING_PARTY), str(party))
         check("camp music", h.call("music")["track"] == "MinstrelGuild")
-        for item in ["Adventure", "Items", "Status", "Equip", "Abilities", "Party", "Talk", "Caravan", "Summon Circle", "Bounties", "Bestiary", "Settings"]:
+        for item in ["Adventure", "Items", "Status", "Equip", "Abilities", "Party", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
             if not has_text(item):
                 check(f"camp menu has {item}", False)
                 break

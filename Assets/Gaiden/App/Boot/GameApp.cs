@@ -89,6 +89,7 @@ namespace GridGame.App
             OpenProfiles();
             Audio = Audio.Create(transform);
 
+            if (CommandLine.Has("-allfeatures")) GridGame.Meta.Features.EnableAll(); // GG-T392: every hidden system back on
             BuildPanel();
             Router = new ScreenRouter(Stage.Q("screens"), Stage.Q("fade"));
             TextFit.Install(Document.rootVisualElement); // GG-T305: every wrapped line and every overflowing one-liner
@@ -318,10 +319,12 @@ namespace GridGame.App
             var st = Settings;
             Audio?.Apply(st);
             Tween.Speed = Mathf.Clamp(st.BattleSpeed, 0.5f, 3f);
-            Art.ApplyTheme(st.MenuTheme);
+            // GG-T392: with the look presets hidden (Features.LookPresets off) every profile draws with the defaults.
+            bool presets = GridGame.Meta.Features.LookPresets;
+            Art.ApplyTheme(presets ? st.MenuTheme : GridGame.Meta.SettingsSave.DefaultMenuTheme);
             Ui.ApplyMenuTheme(Document?.rootVisualElement);
-            Fonts.ApplyFont(st.FontName);
-            TextFit.Configure(st.Hyphenate);
+            Fonts.ApplyFont(presets ? st.FontName : GridGame.Meta.SettingsSave.DefaultFontName);
+            TextFit.Configure(presets && st.Hyphenate);
         }
 
         /// <summary>Writes the active profile's settings to its settings.json (a settings change, bible §15.2).</summary>

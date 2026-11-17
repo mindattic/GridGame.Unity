@@ -1787,7 +1787,6 @@ namespace GridGame.App
                 st.MenuTheme = names[(i + 1) % names.Length];
                 App.ApplySettings(); App.SaveSettings(); Refresh();
             }
-            Ui.MenuRow("Menu theme", st.MenuTheme, CycleTheme, w);
             void CycleFont()
             {
                 var names = Fonts.Presets.Select(p => p.Name).ToArray();
@@ -1795,10 +1794,16 @@ namespace GridGame.App
                 st.FontName = names[(i + 1) % names.Length];
                 App.ApplySettings(); App.SaveSettings(); Refresh();
             }
-            Ui.MenuRow("Font", st.FontName, CycleFont, w);
-            // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-            Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
-                () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-wrap";
+            // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
+            // then draws with the default theme, font and word wrap).
+            if (Features.LookPresets)
+            {
+                Ui.MenuRow("Menu theme", st.MenuTheme, CycleTheme, w);
+                Ui.MenuRow("Font", st.FontName, CycleFont, w);
+                // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
+                Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
+                    () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-wrap";
+            }
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
             Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:P0}", v => st.MusicVolume = v);
             Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:P0}", v => st.SfxVolume = v);
