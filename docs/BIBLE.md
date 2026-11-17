@@ -248,6 +248,10 @@ Definition of done for a feature (also the per-story DoD in [`USER_STORIES.md`](
 
 A story is ✅ only when 1–7 hold; otherwise 🟡/⬜ ([GG-LAW-12](#GG-LAW-12)).
 
+### 8.1 Release scope (GG-T392, owner 2026-11-16)
+
+Owner: *"we are aiming for a polished, releasable game once the story has been established; enough development of more and more systems, need to refine and balance everything that exists, cut or at least disable that which doesn't."* Release polish refines and balances what serves the core loop (profile → 5-wave stages → gold for repair/weapons/skills/items → a story scroll every 5 stages → wanderers by Trust and wits → Diamond and gold summons → stage select hunts → Camp) and hides what doesn't; no new systems. `Meta/Features.cs` is the one switch table: a switch that is off hides only the App entry points (Camp rows, panels, Settings rows, strips, result rows); rules, content, saves, bots, Test Mode and automation are unchanged, and `-allfeatures` turns every switch on. Hidden at release: the Crucible (§22.10), the bounty board (§22.4), caravan upgrades and barks (§25.12), the menu theme, font and text-wrapping presets, and Camp's separate Inn: Respec row (Talents keeps its per-hero Respec). The verdict table, a balance watch-list and the open cut questions are in [RELEASE_SCOPE.md](RELEASE_SCOPE.md).
+
 ## 9. Glossary {#GG-§9}
 
 - **Slide / displacement** — dragging a hero onto an occupied tile moves the displaced actor (ally or foe) into the tile the hero just left. ([§1.1](#11-sliding-and-displacement))
@@ -2948,6 +2952,8 @@ The owner's postgame landscapes give the postgame chapters regions of their own 
 
 ### 22.4 Bounty board
 
+**Hidden at release (GG-T392):** `Features.Bounties`; see §8.1.
+
 **Amended 2026-10-09:** a Camp screen (`BountyScreen`, "Bounties"), not a StageSelect strip. Posted = every `bounties.json` contract not yet claimed (claimed ones never repost). One active slot (`Bounties.Accept` refuses while one is active); kills of the target class count **on victory only** (in the Crucible, on any ending — [§22.10](#2210-the-crucible)), capped at the goal; **Claim** pays gold + item, plus an optional skill-point payout (`BountyDef.RewardSkillPoints`, *added 2026-11-02, GG-T134*) that every hero in the active party gains; **Abandon** resets. The camp routine prefers a skill-point contract when two finish equally soon, and the balance table reports the SP bounties paid. *(Test: `Full_loop_battle_commit_then_every_vendor`.)*
 
 | Bounty | Target | Kills | Reward |
@@ -3093,6 +3099,8 @@ built-in preset, none of them consumed by the battle; telemetry was tagged with 
 direction — higher difficulty, better rewards — is what the dial above delivers.
 
 ### 22.10 The Crucible (added 2026-10-19, owner direction, GG-T95)
+
+**Hidden at release (GG-T392):** `Features.Crucible`; see §8.1.
 
 Owner: "a way to gain xp and loot for the saved campaign … a waiting for the bus kind of mode."
 
@@ -3758,6 +3766,8 @@ Owner: a Monster Tamer can tame an enemy monster so it fights for the party for 
 - *(Tests: `TamingTests`.)*
 
 ### 25.12 Caravan upgrades (added 2026-10-10, owner direction: "upgrades … a sense of progression")
+
+**Hidden at release (GG-T392):** `Features.Caravan`; see §8.1.
 
 The caravan is the party's moving base — a Concord supply caravan the crew stole on tithe day ([STORY.md](STORY.md) §4), and the shops between battles (US-348 framing; story text §27.1). `caravan.json` defines upgrades bought with gold at **Camp → Caravan** (`CaravanUpgrades.Buy`, levels in `SaveData.Caravan`):
 
