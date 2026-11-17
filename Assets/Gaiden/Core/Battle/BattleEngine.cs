@@ -202,6 +202,10 @@ namespace GridGame.Core.Battle
             var a = s.Content.TryAbility(sl.AbilityId);
             if (a == null) return SlotStatus.Empty;
             if (a.Kind == AbilityKind.Skill && h.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) return SlotStatus.Cooldown;
+            // GG-T413: a move that needs something on the board says so up front, so the bar greys it instead of offering a
+            // tap the engine then refuses: a revive with nobody fallen, an Encore with no ally move it could copy.
+            if (a.Revives && !s.Units.Exists(u => u.IsHero && !u.Alive && u.Hp <= 0 && !u.IsWildTamed)) return SlotStatus.NoTargets;
+            if (a.Echoes && !s.Units.Exists(u => u.IsHero && u.Alive && u != h && Echo.For(s, h, u) != null)) return SlotStatus.NoTargets;
             if (a.Kind == AbilityKind.Spell)
             {
                 if (h.IsSilenced) return SlotStatus.Silenced;

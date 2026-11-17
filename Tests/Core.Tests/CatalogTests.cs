@@ -31,6 +31,9 @@ namespace GridGame.Tests
             var h = s.Units.First(u => u.IsHero);
             h.Hp = h.MaxHp / 2; // so heals have something to do
             var status = BattleEngine.GetSlotStatus(s, h.Id, 0);
+            // A revive needs a fallen ally and an Encore an ally's last move: on this fresh board their slot rightly greys out
+            // as NoTargets instead of offering a tap that gets refused (GG-T413).
+            if ((a.Revives || a.Echoes) && status == SlotStatus.NoTargets) { Assert.Pass($"{a.Id}: greyed (NoTargets) with nothing to act on"); return; }
             Assert.That(status, Is.EqualTo(SlotStatus.Ready));
             Coord target = h.Pos;
             if (a.Mode != TargetMode.Auto)
