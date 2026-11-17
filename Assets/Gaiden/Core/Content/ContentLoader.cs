@@ -181,6 +181,13 @@ namespace GridGame.Core.Content
                 if (a.SwapsTurns && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.EnemyOnly
                                      || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Countermarch (SwapsTurns) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
+                // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
+                if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
+                                 || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
+                    p.Add($"ability {a.Id}: an Echo is a Skill or Spell that picks one unit (SingleActor, PickActor)");
+                if (a.Echoes && (a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.GrantsOrbs > 0 || a.Revives || a.IsTeleport || a.SwapsTurns
+                                 || a.Knockback > 0 || a.Pull > 0 || a.SwapsPlaces || a.Pushback > 0f || a.HastenU > 0f || a.Cost > 0))
+                    p.Add($"ability {a.Id}: an Echo carries no effect or cost of its own (the move it repeats does)");
                 // GG-T302: the generated "When [attacked directly]: ..." sentence only uses glossary terms.
                 if (a.Trigger != null && db.GlossaryIndex.Count > 0)
                     foreach (var t in Glossary.Terms(Rules.TriggerText.Describe(db, a)))

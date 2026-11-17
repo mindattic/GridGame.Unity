@@ -215,6 +215,9 @@ namespace GridGame.Meta
         {
             var learnable = Abilities.Learnable(c, h);
             var classList = c.TryClass(h.ClassId)?.Abilities ?? new List<string>();
+            // GG-T388: a hero starts with two moves; the rest of its own default kit comes back first, at the kit price.
+            var kit = learnable.Where(a => Abilities.IsKitMove(c, h, a) && Abilities.KitPrice <= gold).ToList();
+            if (kit.Count > 0) return kit.OrderBy(a => Progression.KitAbilities(c.TryClass(h.ClassId)).IndexOf(a.Id)).First();
             var own = learnable.Where(a => classList.Contains(a.Id)).ToList();
             var pool = own.Count > 0 ? own : learnable;
             return pool.Where(a => Abilities.Price(a) <= gold)
@@ -308,8 +311,9 @@ namespace GridGame.Meta
                         var learn = BestLearnable(c, h, s.Gold);
                         if (learn != null)
                         {
+                            int paid = Abilities.Price(c, s, h, learn);
                             var r = Abilities.Learn(c, s, h, learn.Id);
-                            if (r.Ok) { log.Add($"{heroName}{LearnedMarker}{learn.Name} ({Abilities.Price(learn)}g)"); entry = learn.Id; }
+                            if (r.Ok) { log.Add($"{heroName}{LearnedMarker}{learn.Name} ({paid}g)"); entry = learn.Id; }
                         }
                     }
                     if (entry == null && dead && s.Count(StopgapPotion) > 0 && !h.Bar.Contains(stopgap)) entry = stopgap;

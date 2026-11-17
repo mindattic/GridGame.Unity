@@ -1271,6 +1271,22 @@
         "long": "You see it once: when it dies, and its eyes are still burning."
       }
     },
+    "class:echo": {
+      "key": "class:echo",
+      "id": "description-class-echo",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e5a5cb34b7dfe33fc9b4aaa507219464a7263e2fdf387ddf8de14c237b891a92",
+      "about": [
+        "class-echo"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A wandering performer who repeats an ally's last move, from her own side of the field.",
+        "long": "On the Lantern Road she learned every act by watching it once."
+      }
+    },
     "class:engineer": {
       "key": "class:engineer",
       "id": "description-class-engineer",
@@ -2405,6 +2421,22 @@
       "payload": {
         "short": "A bull on chrome-braced legs, goggles down, who hits hardest once it's bleeding.",
         "long": "The Herd: Street kids spliced with horns and bull-mass in the underspire's back-room clinics, so the Stills can't sing the aether out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
+      }
+    },
+    "class:mockingecho": {
+      "key": "class:mockingecho",
+      "id": "description-class-mockingecho",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8f5aba3dee53fa0d7010fe77cabfdefeaef510680c29a9cda8f17f63601b71ec",
+      "about": [
+        "class-mockingecho"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A hollow mimic that charges, then turns a hero's own last move back on the party.",
+        "long": "It has no voice of its own, only the last thing you did."
       }
     },
     "class:monk": {

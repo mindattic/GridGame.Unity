@@ -641,6 +641,11 @@ namespace GridGame.App
         protected override string Title => "Adventure";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
+        /// <summary>GG-T388 (owner 2026-11-16: "a simple stage select which allows you to travel to and from previous battles
+        /// so you can 'hunt' existing grounds"): two steps, region then stage. Null = the region list.</summary>
+        private string region;
+        private bool opened;
+
         protected override void BuildBody(VisualElement body)
         {
             var active = Bounties.Active(C, S);
@@ -653,59 +658,102 @@ namespace GridGame.App
             w.style.flexGrow = 1;
             var list = Ui.List(w);
             var stages = C.CampaignStages();
+            // Unlocked regions, newest first; every locked one collapses into the teaser row at the bottom.
+            var regions = new List<ThemeDef>();
             int locked = 0;
-            // Expeditions (§22.5): each theme is a run of battles fought in order with the caravan.
             for (int ti = C.Campaign.Themes.Count - 1; ti >= 0; ti--)
             {
                 var theme = C.Campaign.Themes[ti];
                 int first = stages.FindIndex(x => theme.Stages.Count > 0 && x.Id == theme.Stages[0]);
                 if (first < 0) continue;
                 if (!Progression.IsStageUnlocked(S, first)) { locked += theme.Stages.Count; continue; }
-                bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
-                bool done = theme.Stages.All(id => S.ClearedStages.Contains(id));
-                string status = onIt ? $"Battle {S.Expedition.Next + 1}/{theme.Stages.Count} · {S.Expedition.CarriedOrbs} orbs carried" : done ? "★ Completed" : $"{theme.Stages.Count} battles";
-                var head = Ui.MenuRow((onIt ? "▶ " : "") + theme.Name + " Expedition", status, null, list.contentContainer, null, true);
-                head.Q<Label>("label").AddToClassList("gold");
-                head.name = "expedition-" + theme.Id;
-                // GG-T374: the region's description (Prose "place:<theme>"), under its expedition header.
-                var region = ContentDb.Blurb(C.PlaceBlurbs, theme.Id);
-                if (!string.IsNullOrEmpty(region))
-                {
-                    var rd = Ui.Text(region, "tiny dim", list.contentContainer);
-                    rd.name = "region-" + theme.Id;
-                    rd.style.whiteSpace = WhiteSpace.Normal;
-                    rd.style.marginLeft = Space.S48; rd.style.marginBottom = Space.S8;
-                }
-                for (int k = 0; k < theme.Stages.Count; k++)
-                {
-                    var st = C.TryStage(theme.Stages[k]);
-                    if (st == null) continue;
-                    int index = stages.FindIndex(x => x.Id == st.Id);
-                    bool cleared = S.ClearedStages.Contains(st.Id);
-                    bool can = Expeditions.CanLaunch(C, S, st.Id, out var why) && Progression.IsStageUnlocked(S, index);
-                    string label = (cleared ? "★ " : can ? "☆ " : "◇ ") + st.Name;
-                    // Same level BattleFactory.Build actually fights it at: the postgame bonus stages carry a
-                    // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
-                    int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
-                    var row = Ui.MenuRow(label, can ? $"Lv {recommended} · {st.Waves.Count} waves · {RestedPool.LaunchCost} Rested" : (why ?? "Locked"), () => Launch(st, index), list.contentContainer, null, can);
-                    row.style.marginLeft = Space.S48;
-                    if (CaravanUpgrades.Level(S, "scouts") > 0)
-                    {
-                        var foes = st.Waves.SelectMany(wv => wv.Enemies).Select(e => C.TryClass(e.Class)?.Name).Where(n => n != null).Distinct().Take(5);
-                        var sc = Ui.Text("scouts: " + string.Join(", ", foes), "tiny warn", list.contentContainer);
-                        sc.style.marginLeft = Space.S96 + Space.S16;
-                    }
-                    var drops = DropsHint(st);
-                    if (can && drops.Length > 0)
-                    {
-                        var d = Ui.Text($"drops: {drops}", "tiny dim", list.contentContainer);
-                        d.style.marginLeft = Space.S96 + Space.S16; d.style.marginBottom = Space.S8;
-                    }
-                }
-                if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list.contentContainer).style.marginLeft = Space.S48;
+                regions.Add(theme);
             }
-            if (locked > 0) Ui.MenuRow($"◇ {locked} more stage{(locked == 1 ? "" : "s")} ahead…", "", null, list.contentContainer, null, false);
+            // Opens on the region under way: the active expedition's, else the only one there is.
+            if (!opened)
+            {
+                opened = true;
+                region = S.Expedition?.ThemeId ?? (regions.Count == 1 ? regions[0].Id : null);
+            }
+            var open = region == null ? null : regions.Find(t => t.Id == region);
+            if (open == null) Regions(regions, locked, list.contentContainer);
+            else Stages(open, stages, regions.Count > 1, list.contentContainer);
             Ui.SelectFirst(list.contentContainer);
+        }
+
+        /// <summary>Step one: every unlocked region with its state — the expedition under way, a stage not yet won (New), or
+        /// every stage cleared (huntable).</summary>
+        private void Regions(List<ThemeDef> regions, int locked, VisualElement list)
+        {
+            Ui.Text("Pick a region. Cleared stages stay open: hunt them for XP, loot and wanderers.", "tiny dim", list).style.whiteSpace = WhiteSpace.Normal;
+            foreach (var theme in regions)
+            {
+                var t = theme;
+                bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
+                int cleared = theme.Stages.Count(id => S.ClearedStages.Contains(id));
+                string status = onIt ? $"▶ Battle {S.Expedition.Next + 1}/{theme.Stages.Count}"
+                    : cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
+                var row = Ui.MenuRow((cleared == theme.Stages.Count ? "★ " : "☆ ") + theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
+                row.name = "expedition-" + theme.Id;
+                if (onIt || cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
+            }
+            if (locked > 0) Ui.MenuRow($"◇ {locked} more stage{(locked == 1 ? "" : "s")} ahead…", "", null, list, null, false);
+        }
+
+        /// <summary>Step two: one region's stages, each Cleared or New. A new region is fought in order as an expedition;
+        /// a cleared stage can be fought alone as a hunt (<see cref="Expeditions.IsHunt"/>) whenever no expedition is under way.</summary>
+        private void Stages(ThemeDef theme, List<StageDef> stages, bool canGoBack, VisualElement list)
+        {
+            if (canGoBack)
+            {
+                var back = Ui.MenuRow("‹ All regions", "", () => { region = null; Refresh(); }, list);
+                back.name = "regions-back";
+            }
+            bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
+            bool done = theme.Stages.All(id => S.ClearedStages.Contains(id));
+            string status = onIt ? $"Battle {S.Expedition.Next + 1}/{theme.Stages.Count} · {S.Expedition.CarriedOrbs} orbs carried" : done ? "★ Completed" : $"{theme.Stages.Count} battles";
+            var head = Ui.MenuRow((onIt ? "▶ " : "") + theme.Name + " Expedition", status, null, list, null, true);
+            head.Q<Label>("label").AddToClassList("gold");
+            head.name = "region-head-" + theme.Id;
+            // GG-T374: the region's description (Prose "place:<theme>"), under its header.
+            var blurb = ContentDb.Blurb(C.PlaceBlurbs, theme.Id);
+            if (!string.IsNullOrEmpty(blurb))
+            {
+                var rd = Ui.Text(blurb, "tiny dim", list);
+                rd.name = "region-" + theme.Id;
+                rd.style.whiteSpace = WhiteSpace.Normal;
+                rd.style.marginLeft = Space.S48; rd.style.marginBottom = Space.S8;
+            }
+            for (int k = 0; k < theme.Stages.Count; k++)
+            {
+                var st = C.TryStage(theme.Stages[k]);
+                if (st == null) continue;
+                int index = stages.FindIndex(x => x.Id == st.Id);
+                bool cleared = S.ClearedStages.Contains(st.Id);
+                bool can = Expeditions.CanLaunch(C, S, st.Id, out var why) && Progression.IsStageUnlocked(S, index);
+                string label = (cleared ? "★ " : can ? "☆ " : "◇ ") + st.Name;
+                // Same level BattleFactory.Build actually fights it at: the postgame bonus stages carry a
+                // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
+                int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
+                string state = cleared ? (k > 0 && Expeditions.IsHunt(S, st.Id) ? "Cleared · hunt" : "Cleared") : "New";
+                var row = Ui.MenuRow(label, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
+                row.name = "stage-" + st.Id;
+                row.style.marginLeft = Space.S48;
+                if (!cleared && can) row.Q<Label>("value")?.AddToClassList("gold");
+                if (CaravanUpgrades.Level(S, "scouts") > 0)
+                {
+                    var foes = st.Waves.SelectMany(wv => wv.Enemies).Select(e => C.TryClass(e.Class)?.Name).Where(n => n != null).Distinct().Take(5);
+                    var sc = Ui.Text("scouts: " + string.Join(", ", foes), "tiny warn", list);
+                    sc.style.marginLeft = Space.S96 + Space.S16;
+                }
+                var drops = DropsHint(st);
+                if (can && drops.Length > 0)
+                {
+                    var d = Ui.Text($"drops: {drops}", "tiny dim", list);
+                    d.style.marginLeft = Space.S96 + Space.S16; d.style.marginBottom = Space.S8;
+                }
+            }
+            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list).style.marginLeft = Space.S48;
         }
 
         private string DropsHint(StageDef st)

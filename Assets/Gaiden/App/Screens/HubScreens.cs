@@ -566,11 +566,12 @@ namespace GridGame.App
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
-            Ui.Tabs(new[] { "Known", "Items", "Learn", "Passives" }, tab, i => { tab = i; Refresh(); }, body);
+            Ui.Tabs(new[] { "Known", "Items", "Learn", "Passives", "Locked" }, tab, i => { tab = i; Refresh(); }, body);
             var w = Ui.Window(null, body);
             w.style.flexGrow = 1; w.style.marginTop = Space.S0;
             var list = Ui.List(w).contentContainer;
             if (tab == PassivesTab) { Passives(h, list); return; }
+            if (tab == LockedTab) { Locked(h, list); return; }
             if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list);
             if (tab == 0)
             {
@@ -601,7 +602,7 @@ namespace GridGame.App
                 foreach (var a in Abilities.Learnable(C, h))
                 {
                     var ab = a;
-                    int price = Abilities.Price(S, a);
+                    int price = Abilities.Price(C, S, h, a);
                     var row = Ui.MenuRow(a.Name, price == 0 ? "Free" : Ui.Gold(price), () => Confirm.Show($"Teach {C.Class(h.ClassId).Name} {ab.Name} for {(price == 0 ? "free" : Ui.Gold(price))}?", "Learn", () => LearnDone(Abilities.Learn(C, S, h, ab.Id), h, ab.Id)), list, Art.AbilityIcon(a), S.Gold >= price);
                     row.name = Training.LearnRowPrefix + a.Id;
                     InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
@@ -611,6 +612,32 @@ namespace GridGame.App
         }
 
         private const int PassivesTab = 3;
+        private const int LockedTab = 4;
+
+        /// <summary>The Locked tab (GG-T388): every skill this hero doesn't know yet that belongs to it — its own kit moves,
+        /// the rest of its class list, its home tree and the passives a Tome could teach — each with where it comes from
+        /// (the trainer's price, the tree node and its points, the Tome and where that Tome is found).</summary>
+        private void Locked(HeroSave h, VisualElement list)
+        {
+            var locked = SkillSources.For(C, S, h);
+            var head = Ui.Text("A hero starts with two moves. The rest are bought from the trainer (Learn) or the skill tree (Talents), or discovered as Tomes.", "tiny dim", list);
+            head.style.whiteSpace = WhiteSpace.Normal;
+            if (locked.Count == 0) Ui.Text("Nothing left to learn.", "small dim", list);
+            foreach (var l in locked)
+            {
+                var ab = l.Ability;
+                var row = Ui.MenuRow(ab.Name, l.Kit ? "Own kit" : Abilities.IsHeroUsable(ab) ? KindLabel(ab) : "Passive", null, list, Art.AbilityIcon(ab));
+                row.name = "locked-" + ab.Id;
+                if (l.Kit) row.Q<Label>("value")?.AddToClassList("gold");
+                InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
+                foreach (var src in l.Sources)
+                {
+                    var line = Ui.Text("· " + src, "tiny", list);
+                    line.style.whiteSpace = WhiteSpace.Normal; line.style.marginLeft = Space.S64;
+                }
+                Describe(ab, list);
+            }
+        }
 
         /// <summary>The Passives tab (GG-T301, §25.6.4): learned passives (Tomes, skill-tree grants) with an On/Off switch,
         /// at most <see cref="PassiveLoadout.Slots"/> on; the class kit's innate ones, always on; and any Tome in the bag

@@ -396,6 +396,14 @@ namespace GridGame.Core.Rules
                 }
                 return new ChargePlan { Target = pick, Ability = ability, Shape = ChargeShape.Single };
             }
+            // GG-T388: a mocking echo only spends its charge on a hero with a move to turn back on the party.
+            if (ability.Echoes)
+            {
+                var echoable = new List<Unit>();
+                foreach (var h in heroes) if (Echo.For(s, enemy, h) != null) echoable.Add(h);
+                if (echoable.Count == 0) return null;
+                return new ChargePlan { Target = PickFrom(s, enemy, echoable), Ability = ability, Shape = ChargeShape.Single };
+            }
             // Tempo drains (Temporal Drag, GG-T275) are timed against the party's tempo: wasted while the party is
             // already behind, so the caster moves or shoots instead and saves the charge for when the party hastes.
             var drain = s.Content.TryBuff(ability.ApplyBuff);

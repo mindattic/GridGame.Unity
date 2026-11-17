@@ -84,8 +84,16 @@ namespace GridGame.Core.Battle
             if (a.Revives && ReviveSpot(hero) == null) return Refuse(hero, "No room!");
             if (!a.IsTeleport && !a.Revives && !a.Escape && a.GrantsOrbs <= 0 && TargetResolver.Collect(S, a, hero, anchor).Count == 0 && a.Mode == TargetMode.Auto)
                 return Refuse(hero, "No target");
+            if (a.Echoes)
+            {
+                // GG-T388: an Echo with nothing to repeat, or a copied spell the bank can't pay for, costs nothing.
+                var plan = Echo.For(S, hero, S.UnitAt(anchor));
+                if (plan == null) return Refuse(hero, "Nothing to echo");
+                if (plan.Value.Ability.Kind == AbilityKind.Spell && !S.Bank.CanAfford(plan.Value.Ability.Cost)) return Refuse(hero, "Not enough mana");
+            }
 
             Emit(new ActionBeganEvent { ActorId = hero.Id, Label = a.Name });
+            if (!slot.IsItem && !slot.IsWeapon && !a.Echoes) Remember(hero, a, anchor); // what an Echo would copy (GG-T388)
 
             if (slot.IsWeapon)
             {
@@ -170,6 +178,7 @@ namespace GridGame.Core.Battle
         private void ResolveAbilityEffects(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
         {
             NoteRecover(caster, a);
+            if (a.Echoes) { ResolveEcho(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; }
             if (a.IsTeleport)
             {
                 // The whole footprint must land on open tiles — never onto a unit, a movable, a block or off the board.
@@ -298,6 +307,37 @@ namespace GridGame.Core.Battle
             // GG-T337: the Aetherist pours aether in — an orb grant riding a heal lands once it has reached someone.
             if (a.PoursOrbs && !S.IsOver) for (int i = 0; i < a.GrantsOrbs; i++) MintOrb(caster.Id, "aether");
             if (a.StepBack > 0 && caster.Alive && !S.IsOver) StepAway(caster, a.StepBack);
+        }
+
+        /// <summary>GG-T388: note the Active ability a unit just used and where it aimed it, for an Echo to repeat.</summary>
+        private void Remember(Unit u, AbilityDef a, Coord anchor)
+        {
+            if (u == null || a == null) return;
+            u.LastAbilityId = a.Id;
+            u.LastAnchor = anchor;
+            var t = a.Mode == TargetMode.PickActor ? S.UnitAt(anchor) : null;
+            u.LastTargetUnitId = t?.Id ?? -1;
+        }
+
+        /// <summary>GG-T388: an Echo resolves. It repeats the last Active ability <paramref name="source"/> used, cast by the
+        /// echoer from where it stands at the target <see cref="Echo.For"/> chose; a copied spell takes its orbs from a hero
+        /// echoer's bank (a foe's charge copies for free). Nothing to repeat is a miss.</summary>
+        private void ResolveEcho(Unit caster, AbilityDef a, Unit source)
+        {
+            var plan = Echo.For(S, caster, source);
+            Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = source?.Pos ?? caster.Pos, Targets = { source?.Id ?? caster.Id } });
+            if (plan == null) { Announce("Nothing to echo", caster.Id); return; }
+            var copy = plan.Value.Ability;
+            if (caster.IsHero && copy.Kind == AbilityKind.Spell && copy.Cost > 0)
+            {
+                if (!S.Bank.CanAfford(copy.Cost)) { Announce("Not enough mana", caster.Id); return; }
+                S.Bank.Spend(copy.Cost);
+                Emit(new OrbsSpentEvent { Count = copy.Cost, CountAfter = S.Bank.Count });
+            }
+            Announce($"Echo: {copy.Name}!", caster.Id);
+            Remember(caster, copy, plan.Value.Anchor);
+            var anchor = plan.Value.Anchor;
+            ResolveAbility(caster, copy, anchor, copy.Mode == TargetMode.PickActor ? S.UnitAt(anchor) : null);
         }
 
         /// <summary>GG-T336 (§25.11.2.1): Countermarch. The foe's turn icon and the furthest-off foe's trade their times to
@@ -513,6 +553,13 @@ namespace GridGame.Core.Battle
         /// <summary>Enemy charge resolution (§13.4, §14.2): a magic hit on the target, or every hero still on the locked line.</summary>
         private void ResolveCharge(Unit caster, AbilityDef a, TimelineEntry cast)
         {
+            // GG-T388: the Mocking Echo's charge turns the targeted hero's own last move on the party.
+            if (a.Echoes)
+            {
+                var src = S.UnitById(cast.TargetUnitId);
+                ResolveEcho(caster, a, src != null && src.Alive ? src : null);
+                return;
+            }
             // Support and area charges (howl, rally, mend, poison cloud) resolve through the shared dispatcher.
             if (a.Filter == TargetFilter.AllyOnly || (cast.ChargeShape != ChargeShape.Line && a.Shape != TargetShape.SingleActor))
             {

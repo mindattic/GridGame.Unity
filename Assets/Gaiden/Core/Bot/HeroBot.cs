@@ -400,6 +400,16 @@ namespace GridGame.Core.Bot
 
         private float ScoreAbility(BattleState s, Unit caster, AbilityDef a, Coord anchor)
         {
+            if (a.Echoes)
+            {
+                // GG-T388: an Echo is worth what the move it repeats is worth from here, a touch less (it spends the turn
+                // and the cooldown); nothing to repeat, or a copied spell the bank can't pay, is worth nothing.
+                var plan = Echo.For(s, caster, s.UnitAt(anchor));
+                if (plan == null) return 0f;
+                var copy = plan.Value.Ability;
+                if (copy.Kind == AbilityKind.Spell && !s.Bank.CanAfford(copy.Cost)) return 0f;
+                return ScoreAbility(s, caster, copy, plan.Value.Anchor) - 1f;
+            }
             if (a.IsTeleport)
             {
                 var copy = s.Clone();

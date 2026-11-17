@@ -30007,5 +30007,263 @@
     "Brain": "Ambusher",
     "Remains": "corpse",
     "ArmorPlate": 18
+  },
+  {
+    "Id": "echo",
+    "Name": "Echo",
+    "Team": "Hero",
+    "Tags": [
+      "Humanoid"
+    ],
+    "Card": "Encore: repeats an ally's last move from her own side.",
+    "Portrait": "echo",
+    "Thumbnail": {
+      "Zoom": 2.3786,
+      "X": 0.493,
+      "Y": 0.2102
+    },
+    "Figure": {
+      "X": 0,
+      "Y": 0,
+      "W": 1,
+      "H": 1
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "BaseStats": {
+      "Strength": 10,
+      "Vitality": 10,
+      "Agility": 13,
+      "Speed": 13,
+      "Stamina": 12,
+      "Intelligence": 14,
+      "Wisdom": 14,
+      "Luck": 13
+    },
+    "Growth": {
+      "Strength": 0.55,
+      "Vitality": 0.6,
+      "Agility": 0.6,
+      "Speed": 0.65,
+      "Stamina": 0.65,
+      "Intelligence": 0.95,
+      "Wisdom": 0.9,
+      "Luck": 0.6
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.19,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.23,
+          "Stamina": 0.23,
+          "Intelligence": 0.33,
+          "Wisdom": 0.32,
+          "Luck": 0.21
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.25,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.29,
+          "Stamina": 0.29,
+          "Intelligence": 0.43,
+          "Wisdom": 0.41,
+          "Luck": 0.27
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.33,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.39,
+          "Stamina": 0.39,
+          "Intelligence": 0.57,
+          "Wisdom": 0.54,
+          "Luck": 0.36
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.44,
+          "Vitality": 0.48,
+          "Agility": 0.48,
+          "Speed": 0.52,
+          "Stamina": 0.52,
+          "Intelligence": 0.76,
+          "Wisdom": 0.72,
+          "Luck": 0.48
+        }
+      }
+    ],
+    "Resistances": {},
+    "Abilities": [
+      "quicken",
+      "slow",
+      "regen",
+      "rejuvenate",
+      "antidote",
+      "echo_encore",
+      "tempoweave_shortcut",
+      "tempoweave_stumble",
+      "tempoweave_swap",
+      "echo_mirrorskin"
+    ],
+    "DefaultLoadout": [
+      "quicken",
+      "tempoweave_shortcut",
+      "item:x_potion",
+      "echo_encore",
+      "tempoweave_swap"
+    ],
+    "DropTable": null,
+    "MoveRange": 1,
+    "XpReward": 10,
+    "BossPhases": [],
+    "ChargeAbility": null,
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Role": "Support",
+    "Support": {
+      "Effect": "Crit",
+      "Magnitude": 0.25,
+      "Target": "Attacker",
+      "Range": 2,
+      "Label": "Refrain"
+    },
+    "HomeTree": "alchemist"
+  },
+  {
+    "Id": "mockingecho",
+    "Name": "Mocking Echo",
+    "Team": "Enemy",
+    "Tags": [
+      "Humanoid"
+    ],
+    "Card": "Mocking [controller]. Turns a hero's own last move back on the party.",
+    "Portrait": "mockingecho",
+    "Thumbnail": {
+      "Zoom": 2.3786,
+      "X": 0.493,
+      "Y": 0.2102
+    },
+    "Figure": {
+      "X": 0,
+      "Y": 0,
+      "W": 1,
+      "H": 1
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "Support": {
+      "Effect": "Haste",
+      "Magnitude": 0.75,
+      "Target": "Attacker",
+      "Range": 1,
+      "Label": "Mimicry"
+    },
+    "BaseStats": {
+      "Strength": 11,
+      "Vitality": 12,
+      "Agility": 14,
+      "Speed": 12,
+      "Stamina": 12,
+      "Intelligence": 15,
+      "Wisdom": 13,
+      "Luck": 11
+    },
+    "Growth": {
+      "Strength": 0.7,
+      "Vitality": 0.7,
+      "Agility": 0.7,
+      "Speed": 0.7,
+      "Stamina": 0.7,
+      "Intelligence": 0.7,
+      "Wisdom": 0.7,
+      "Luck": 0.7
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.24,
+          "Vitality": 0.24,
+          "Agility": 0.24,
+          "Speed": 0.24,
+          "Stamina": 0.24,
+          "Intelligence": 0.24,
+          "Wisdom": 0.24,
+          "Luck": 0.24
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.32,
+          "Vitality": 0.32,
+          "Agility": 0.32,
+          "Speed": 0.32,
+          "Stamina": 0.32,
+          "Intelligence": 0.32,
+          "Wisdom": 0.32,
+          "Luck": 0.32
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.42,
+          "Vitality": 0.42,
+          "Agility": 0.42,
+          "Speed": 0.42,
+          "Stamina": 0.42,
+          "Intelligence": 0.42,
+          "Wisdom": 0.42,
+          "Luck": 0.42
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.56,
+          "Vitality": 0.56,
+          "Agility": 0.56,
+          "Speed": 0.56,
+          "Stamina": 0.56,
+          "Intelligence": 0.56,
+          "Wisdom": 0.56,
+          "Luck": 0.56
+        }
+      }
+    ],
+    "Resistances": {},
+    "Abilities": [
+      "echo_mirrorskin"
+    ],
+    "DefaultLoadout": [],
+    "DropTable": "mannequin",
+    "MoveRange": 1,
+    "Targeting": "Threat",
+    "XpReward": 12,
+    "BossPhases": [],
+    "ChargeAbility": "charge_mockingecho_mock",
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Brain": "Kiter",
+    "Remains": "corpse"
   }
 ]

@@ -187,6 +187,13 @@ namespace GridGame.Core.Battle
         public bool IsVisitor => IsWildTamed || Wanderer;
         public bool IsRanged => Def.AttackRange > 1;
 
+        // ── Echo (GG-T388): what an Echo copies ──
+        /// <summary>The last Active ability (skill or spell, not an item) this unit used this battle, and the unit and tile it
+        /// aimed at (-1 = no unit). An Echo (<see cref="Content.AbilityDef.Echoes"/>) picking this unit repeats it.</summary>
+        public string LastAbilityId;
+        public int LastTargetUnitId = -1;
+        public Coord LastAnchor;
+
         public Stats Effective
         {
             get

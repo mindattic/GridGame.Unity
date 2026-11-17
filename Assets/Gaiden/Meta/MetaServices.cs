@@ -67,18 +67,64 @@ namespace GridGame.Meta
             return s;
         }
 
+        /// <summary>
+        /// A new hero (GG-T388, owner 2026-11-16: "start with basic characters … skills start as few but they are purchased
+        /// or discovered over time"): it knows only its <see cref="StarterKit"/> — the role's baseline move and the class's
+        /// own signature — and its bar is those two, then the default loadout's items, then empty slots. The rest of the
+        /// default loadout (the archetype's two moves) is bought from the trainer at the kit price
+        /// (<see cref="Abilities.KitPrice"/>) or with skill points in the home tree; <see cref="SkillSources"/> says where.
+        /// </summary>
         public static HeroSave NewHero(ContentDb c, string classId)
         {
             var def = c.Class(classId);
             var h = new HeroSave { ClassId = def.Id };
             int i = 0;
-            foreach (var entry in def.DefaultLoadout)
+            foreach (var id in StarterKit(def))
             {
-                // Abilities past the bar are still known (they can be slotted later); items may repeat (two stacks).
-                if (!entry.StartsWith("item:") && !h.Known.Contains(entry)) h.Known.Add(entry);
-                if (i < MaxBarSlots) h.Bar[i++] = entry;
+                h.Known.Add(id);
+                if (i < MaxBarSlots) h.Bar[i++] = id;
             }
+            foreach (var entry in def.DefaultLoadout)
+                if (entry.StartsWith("item:") && i < MaxBarSlots) h.Bar[i++] = entry; // items may repeat (two stacks)
             return h;
+        }
+
+        /// <summary>The abilities of a class's default loadout, in bar order (items left out).</summary>
+        public static List<string> KitAbilities(ClassDef def) =>
+            def == null ? new List<string>() : def.DefaultLoadout.Where(e => e != null && !e.StartsWith("item:")).Distinct().ToList();
+
+        /// <summary>What a new hero knows (GG-T388): the kit's first ability (the role's baseline: Cleave, Taunt, Heal …) and
+        /// its third, the class's own signature (§23.2.2's slot 3: Reckless Swing, Bulwark, Lifegift …). A kit of two or
+        /// fewer is all starter.</summary>
+        public static List<string> StarterKit(ClassDef def)
+        {
+            var kit = KitAbilities(def);
+            if (kit.Count <= 2) return kit;
+            return new List<string> { kit[0], kit[2] };
+        }
+
+        /// <summary>Hero level at which a hero who joins already trained (a story recruit, a wanderer, a summon) knows each
+        /// further kit move past its <see cref="StarterKit"/>, in kit order: the archetype opener at 3, its capstone at 6.</summary>
+        public static readonly int[] VeteranKitLevels = { 3, 6 };
+
+        /// <summary>A hero who joins mid-campaign arrives trained to its level (GG-T388): every kit move a hero of that level
+        /// would have had time to learn (<see cref="VeteranKitLevels"/>) is known and slotted into an empty bar slot. The
+        /// starting party learns these itself, from the trainer or the tree.</summary>
+        public static void TrainTo(ContentDb c, HeroSave h)
+        {
+            var def = c.TryClass(h?.ClassId);
+            if (def == null || h.Domesticated) return;
+            var starter = StarterKit(def);
+            var rest = KitAbilities(def).Where(id => !starter.Contains(id)).ToList();
+            int level = Level(h);
+            while (h.Bar.Count < MaxBarSlots) h.Bar.Add(null);
+            for (int k = 0; k < rest.Count && k < VeteranKitLevels.Length; k++)
+            {
+                if (level < VeteranKitLevels[k] || h.Known.Contains(rest[k])) continue;
+                h.Known.Add(rest[k]);
+                int free = h.Bar.IndexOf(null);
+                if (free >= 0 && free < MaxBarSlots) h.Bar[free] = rest[k];
+            }
         }
 
         public static int Level(HeroSave h) => Formulas.LevelFromTotalXp(h.TotalXp).level;
@@ -334,7 +380,9 @@ namespace GridGame.Meta
         /// <summary>The inn is open between expeditions — or on the road once the caravan has a Medic Wagon.</summary>
         public static bool InnOpen(SaveData s) => s.Expedition == null || CaravanUpgrades.Level(s, "medic_wagon") > 0;
 
-        /// <summary>A battle can start if it is the next one of the active expedition, or the first battle of a theme when none is active.</summary>
+        /// <summary>A battle can start if it is the next one of the active expedition, the first battle of a theme when none
+        /// is active, or — with no expedition under way — any stage already cleared, fought alone as a hunt (GG-T388, owner
+        /// 2026-11-16: "travel to and from previous battles so you can 'hunt' existing grounds for XP or characters").</summary>
         public static bool CanLaunch(ContentDb c, SaveData s, string stageId, out string why)
         {
             why = null;
@@ -347,9 +395,15 @@ namespace GridGame.Meta
                 if (idx != s.Expedition.Next) { why = $"Next up: battle {s.Expedition.Next + 1} of {theme.Stages.Count}"; return false; }
                 return true;
             }
-            if (idx != 0) { why = "Expeditions start at battle 1"; return false; }
+            if (idx != 0 && !IsHunt(s, stageId)) { why = "Expeditions start at battle 1"; return false; }
             return true;
         }
+
+        /// <summary>A hunt (GG-T388): a cleared stage past its theme's first, launched with no expedition under way. It is one
+        /// battle on its own — no expedition starts, so no orbs carry and no completion bonus — but it pays its XP, coins and
+        /// drops and can bring a wanderer like any battle.</summary>
+        public static bool IsHunt(SaveData s, string stageId) =>
+            s != null && s.Expedition == null && stageId != null && s.ClearedStages.Contains(stageId);
 
         /// <summary>Called when a battle is launched: starts an expedition on its theme's first battle.</summary>
         public static void Begin(ContentDb c, SaveData s, string stageId)
@@ -672,6 +726,7 @@ namespace GridGame.Meta
             var h = Progression.NewHero(c, classId);
             h.TotalXp = Formulas.TotalXpForLevel(level);
             h.SkillPoints += Formulas.SkillPointsForLevelUp(1, level);
+            Progression.TrainTo(c, h); // a hero met on the road arrives trained to their level (GG-T388)
             h.Hp = hp >= maxHp ? 0 : hp;
             s.Roster.Add(h);
             bool party = s.Party.Count < Progression.MaxPartySize;
@@ -1974,7 +2029,9 @@ namespace GridGame.Meta
                 if (IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a) &&
                     (a.Kind == AbilityKind.Spell || a.Universal))
                     set.Add(a);
-            return set.OrderBy(a => Price(a)).ThenBy(a => a.Name).ToList();
+            // GG-T388: the hero's own kit moves first (the cheapest, and what it was built to do), then by price.
+            var kit = Progression.KitAbilities(def);
+            return set.OrderBy(a => kit.Contains(a.Id) ? 0 : 1).ThenBy(a => Price(a)).ThenBy(a => a.Name).ToList();
         }
 
         /// <summary>Boss-phase abilities only an enemy fires (an <c>OnEnterAbility</c>): free, so never learnable.</summary>
@@ -1984,6 +2041,19 @@ namespace GridGame.Meta
             (a.Kind == AbilityKind.Spell || a.Kind == AbilityKind.Skill) && !a.Id.StartsWith("charge_") && !EnemyOnly.Contains(a.Id);
 
         public static int Price(AbilityDef a) => a.Kind == AbilityKind.Skill ? 300 : 120 + 80 * a.Cost;
+
+        /// <summary>GG-T388: what the trainer asks for a move of the hero's own default kit (<see cref="Progression.KitAbilities"/>)
+        /// it doesn't know yet — a third of a stranger's skill, so a fresh party can fill its bars from early battle gold.</summary>
+        public const int KitPrice = 100;
+
+        /// <summary>Is <paramref name="a"/> one of this hero's own kit moves (its class's default loadout)?</summary>
+        public static bool IsKitMove(ContentDb c, HeroSave h, AbilityDef a) =>
+            a != null && h != null && Progression.KitAbilities(c.TryClass(h.ClassId)).Contains(a.Id);
+
+        /// <summary>The trainer's price for this hero: <see cref="KitPrice"/> for its own kit moves, else <see cref="Price(AbilityDef)"/>,
+        /// and nothing for the guided first skill (GG-T180).</summary>
+        public static int Price(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
+            a == null ? 0 : Training.Guides(s, a) ? 0 : IsKitMove(c, h, a) ? Math.Min(KitPrice, Price(a)) : Price(a);
 
         /// <summary>Every hero-usable ability some hero can buy at the Learn screen: any spell, any universal skill, and
         /// every skill on a hero class's list (the union of <see cref="Learnable"/> over the hero classes).</summary>
@@ -2041,6 +2111,7 @@ namespace GridGame.Meta
             if (a.HastenU > 0f) k.Add("hasten");
             if (a.Pushback > 0f) k.Add("pushback");
             if (a.SwapsTurns) k.Add("countermarch"); // GG-T336
+            if (a.Echoes) k.Add("echo"); // GG-T388
             return string.Join("|", k);
         }
 
@@ -2048,13 +2119,13 @@ namespace GridGame.Meta
         public static bool HasEffect(AbilityDef a) =>
             a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.RemovesDebuffs || a.RemovesBuff != null || a.StealsMana || a.DrainsOrbs > 0 ||
             a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.SwapsPlaces ||
-            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns; // GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
+            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes; // GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
 
         public static Result Learn(ContentDb c, SaveData s, HeroSave h, string abilityId)
         {
             var a = c.TryAbility(abilityId);
             if (a == null || !Learnable(c, h).Contains(a)) return Result.Fail("Can't learn that");
-            int price = Price(s, a);
+            int price = Price(c, s, h, a);
             if (s.Gold < price) return Result.Fail("Not enough gold");
             bool guided = Training.Guides(s, a);
             s.Gold -= price;
@@ -2269,6 +2340,7 @@ namespace GridGame.Meta
             int avg = s.Roster.Count == 0 ? 0 : (int)s.Roster.Average(x => x.TotalXp);
             h.TotalXp = avg; // recruits arrive at the roster's average experience
             h.SkillPoints += Formulas.SkillPointsForLevelUp(1, Progression.Level(h));
+            Progression.TrainTo(c, h); // trained to the level they arrive at (GG-T388)
             s.Roster.Add(h);
             if (s.Party.Count < Progression.MaxPartySize) s.Party.Add(h.ClassId);
             return h;
