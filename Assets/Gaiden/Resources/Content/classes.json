@@ -28718,7 +28718,7 @@
       "Aquatic",
       "Beast"
     ],
-    "Card": "Quick [flanker]. The flood never slows it.",
+    "Card": "Quick [flanker]. The flood never slows it, and its strikes leave you wet for lightning.",
     "Portrait": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
@@ -28831,6 +28831,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "Brain": "Skirmisher",
+    "OnHitBuff": "wet",
     "Remains": "corpse",
     "ArmorPlate": 18,
     "RuleImmune": [
