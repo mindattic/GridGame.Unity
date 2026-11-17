@@ -3870,6 +3870,14 @@ The starting trio is a full triangle: Paladin (Tank), Barbarian (Striker), Cleri
 
 ### 26.3 Adaptive stage (GG-T169)
 
+**Amended 2026-11-16 (GG-T398; owner 2026-11-05: "every screen must scale to fit the supported aspect ratios (9:23 to 3:4) and resolutions, using the extra space instead of leaving dead margins"):** `GameApp.StageSizeFor(aspect)` grows the stage from the 1170×2532 minimum up to 1899 wide (3:4, `MaxStageWidth`) or 2990 tall (9:23, `MaxStageHeight`), so every shape from 9:23 to 3:4 fills the screen edge to edge; only shapes outside that range clamp to the nearest supported stage inside the `stage-frame` outline. Scaling is always uniform.
+
+- **Content column:** `Fit.Column` is the stage width capped at `Fit.ColumnMax` (1424, the 9:16 width), centred by `Fit.Inset`; menus, windows, results, profiles, character select, credits, crawls, dialogue and merc renewal sit in it, so a tablet's extra width goes to the backdrop. `Fit.C(pct)` sizes within it.
+- **Camp hub:** three party cards abreast when `Fit.Roomy` (stage ≥ 1600 wide), two otherwise.
+- **Battle:** the board centres, top bar and timeline span the stage, the ability bar, orbs and Party · Lore · Log tabs keep to the content column; the tabs take any extra height.
+- **Resize:** the router rebuilds the current screen on `StageResized` (battle re-lays itself out; dialogue, crawl and credits opt out via `RebuildOnResize`).
+- **Verification:** `harness.py aspects` runs 9:23 … 3:4 (must fill) plus 9:25 and 1:1 (must be framed).
+
 **Amended 2026-10-21 (owner: "on-device experience is king — fill every phone, frame tablets, never warp"):** `GameApp.StageSizeFor(aspect)` picks the stage: on a screen wider than 19.5:9 the height stays 2532 and the width grows to match, up to 1424 (9:16); on a taller one the width stays 1170 and the height grows, up to 2730 (9:21). Inside 9:21…9:16 — every mainstream phone — the stage fills the screen edge to edge with no bars. Outside it (tablets 3:4/2:3/10:16, ultra-tall shapes) the stage clamps to the nearest supported shape, is centred, and a `stage-frame` outline (the same white rounded frame every window uses) sits 10 px outside it over a near-black bezel, so the bars read as deliberate. Scaling is always uniform.
 
 - **Battle:** the board is centred on the stage width (`BoardLeft = (StageWidth − 1080)/2`, 45 at the minimum), the timeline stretches (`StageWidth − 230`), cut-in anchors mirror against `StageWidth`; the bottom info panel is pinned top and bottom, so it absorbs extra height. `BattleScreen.ApplyStageLayout` re-applies these on `StageResized`.
