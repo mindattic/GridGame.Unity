@@ -67,18 +67,19 @@ namespace GridGame.Tests
         /// hero's starting bar (<see cref="ClassDef.DefaultLoadout"/>) is Known from level 1 regardless of
         /// what's still locked in its home tree (<see cref="MetaServices.Progression.NewHero"/>).</summary>
         [Test]
-        public void A_new_hero_already_knows_its_default_loadout_in_its_home_tree_archetype()
+        public void A_new_hero_knows_only_its_starter_kit_and_has_a_home_tree()
         {
+            // GG-T388 (owner: "skills start as few but they are purchased or discovered over time"): a new hero knows its
+            // StarterKit (the role move and the signature); the rest of its kit comes from the trainer, the tree or a Tome.
             var c = Real;
             foreach (var cls in c.Classes.Values.Where(x => x.Team == Team.Hero))
             {
                 Assert.That(string.IsNullOrEmpty(cls.HomeTree), Is.False, $"{cls.Id}: no home tree");
                 var h = Progression.NewHero(c, cls.Id);
-                foreach (var entry in cls.DefaultLoadout)
-                {
-                    if (entry.StartsWith("item:")) continue;
-                    Assert.That(h.Known, Does.Contain(entry));
-                }
+                var starter = Progression.StarterKit(cls);
+                foreach (var id in starter) Assert.That(h.Known, Does.Contain(id), $"{cls.Id}: starter {id}");
+                foreach (var id in Progression.KitAbilities(cls).Except(starter))
+                    Assert.That(h.Known, Does.Not.Contain(id), $"{cls.Id}: {id} should be learned, not known at the start");
             }
         }
 
