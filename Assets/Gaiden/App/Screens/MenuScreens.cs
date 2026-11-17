@@ -488,8 +488,12 @@ namespace GridGame.App
                     var name = Ui.Text(c.Class(id).Name, "small", top);
                     Fonts.UseHeavy(name);
                     Ui.Marquee(name);
-                    Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), top, TypeScale.Caption).style.marginLeft = Space.S4;
-                    Ui.Text($"Lv {u.Level}", "small gold", top);
+                    // The name has its row to itself, so a long one is never cut by the badge (GG-T395).
+                    name.style.flexGrow = 1; name.style.flexShrink = 1; name.style.minWidth = 0;
+                    var meta = Ui.El("row", info);
+                    meta.style.alignItems = Align.Center;
+                    Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), meta, TypeScale.Caption).style.marginLeft = Space.S0;
+                    Ui.Text($"Lv {u.Level}", "small gold", meta).style.marginLeft = Space.S8;
                     int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
                     Ui.Gauge(hp / (float)u.MaxHp, info, 300).style.marginTop = Space.S8;
                     Ui.Text($"{hp}/{u.MaxHp}", "small dim", info);

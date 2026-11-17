@@ -186,12 +186,16 @@ namespace GridGame.App
             }
             var l = Text(label, "menu-label", row);
             l.name = "label";
+            // A one-word label ("Blacksmith", "Enchantress") never breaks mid-word: it keeps its width and the value
+            // beside it gives way and scrolls instead (GG-T395).
+            bool oneWord = !string.IsNullOrEmpty(label) && label.IndexOf(' ') < 0;
+            if (oneWord) { l.style.whiteSpace = WhiteSpace.NoWrap; l.style.flexShrink = 0f; }
             var v = Text(value ?? "", "menu-value", row);
             v.name = "value";
             // A value (price, count, "Lv 1 · 5 waves") stays on one line: never squeezed below its text, never wider
             // than 55% of the row; longer ones scroll (GG-T271). The label wraps instead.
             Marquee(v, false);
-            v.style.flexShrink = 0f;
+            v.style.flexShrink = oneWord ? 1f : 0f;
             // In px from the row's width: a percent max-width on a text node resolves against the wrong base (GG-T305).
             row.RegisterCallback<GeometryChangedEvent>(_ =>
             {
