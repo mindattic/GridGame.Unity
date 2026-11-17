@@ -79,7 +79,18 @@ namespace GridGame.App
         }
 
         public static void UseBody(VisualElement e) { if (Body != null) e.style.unityFontDefinition = FontDefinition.FromSDFFont(Body); }
-        public static void UseDisplay(VisualElement e) { if (Display != null) e.style.unityFontDefinition = FontDefinition.FromSDFFont(Display); }
+        /// <summary>The Display face (Cinzel). Its serif hairlines vanish under the heading's 3 px block outline (an SDF
+        /// outline straddles the glyph edge, so half of it eats the face), so Display text takes a 1 px edge and keeps
+        /// the heading's hard drop shadow for depth (GG-T385).</summary>
+        public static void UseDisplay(VisualElement e)
+        {
+            if (Display == null) return;
+            e.style.unityFontDefinition = FontDefinition.FromSDFFont(Display);
+            e.style.unityTextOutlineWidth = DisplayOutline;
+        }
+
+        /// <summary>The Display face's outline width in px (USS heading step is 3 px).</summary>
+        public const float DisplayOutline = 1f;
         public static void UseHeavy(VisualElement e)
         {
             if (Heavy == null) return;
