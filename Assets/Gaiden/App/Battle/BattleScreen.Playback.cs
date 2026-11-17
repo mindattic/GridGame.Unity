@@ -1147,7 +1147,10 @@ namespace GridGame.App
         {
             if (billboard == null) return;
             Rect r = bannerViewport != null ? bannerViewport.worldBound : new Rect(float.NaN, 0, 0, 0);
-            billboard.style.top = float.IsNaN(r.y) ? BannerTop : r.y - App.Stage.worldBound.y;
+            // Before the first layout pass the band's worldBound is all zeros: a billboard shown at battle start (a wanderer or
+            // recruit callout) then landed at y = 0 over the title bar. Fall back to the band's own row until it is laid out (GG-T409).
+            bool laid = !float.IsNaN(r.y) && r.height > 0f;
+            billboard.style.top = laid ? r.y - App.Stage.worldBound.y : BannerTop;
             billboard.style.left = billboard.style.right = Fit.Inset + Fit.Edge;
             billboard.style.height = BannerViewportHeight;
         }
@@ -1170,6 +1173,7 @@ namespace GridGame.App
             }
             billboard.style.display = DisplayStyle.Flex;
             PlaceBillboard();
+            billboard.schedule.Execute(PlaceBillboard); // again once the band has its real layout (GG-T409)
             if (bannerViewport != null) bannerViewport.style.opacity = 0f;
             billboard.BringToFront();
             var row = Ui.El("row", billboard);
@@ -1185,11 +1189,13 @@ namespace GridGame.App
             }
             var l = Ui.Text(text, "h2 shadow", row);
             l.style.color = color;
-            l.style.fontSize = TypeScale.Body;
+            // Long lines start a step (or two) down so two lines fit the band on their first frame; the layout check below
+            // still catches anything that wraps anyway (GG-T409).
+            l.style.fontSize = text.Length > 44 ? TypeScale.Caption : TypeScale.Body; // the Rounded face's tall lines: two fit the band only at Caption
             l.style.whiteSpace = WhiteSpace.Normal; // a wider font should wrap here, never overflow the window
             l.style.flexShrink = 1;
             // A line that wraps steps down so its two lines fit the band (GG-T405).
-            l.RegisterCallback<GeometryChangedEvent>(_ => { if (l.resolvedStyle.height > TypeScale.Body * 1.7f) l.style.fontSize = TypeScale.Small; });
+            l.RegisterCallback<GeometryChangedEvent>(_ => { if (l.resolvedStyle.height > BannerViewportHeight - Space.S8 && l.resolvedStyle.fontSize > TypeScale.Caption) l.style.fontSize = TypeScale.Caption; });
             while (billboard.childCount > 1) billboard[0].RemoveFromHierarchy();
             App.StartCoroutine(Tween.Pop(row, 1.12f, 0.12f));
             App.StartCoroutine(RetireBillboardRow(billboard, row));
