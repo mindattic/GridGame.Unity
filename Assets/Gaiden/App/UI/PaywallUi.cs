@@ -117,7 +117,9 @@ namespace GridGame.App
             if (RestedPool.Exempt(s) || pts >= RestedPool.Max) return;
             var next = RestedPool.NextIn(s, now);
             Ui.Text($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", "tiny dim", w);
-            var b = Ui.Button($"Refill · {Paywall.Tag(PaywallKind.RestedRefill, s)}", () => Refill(refresh), "btn--small", w);
+            // The price has its own line: the side window is too narrow for "Refill · price" on one button (GG-T400).
+            Ui.Text(Paywall.Tag(PaywallKind.RestedRefill, s), "tiny dim", w).style.marginTop = Space.S8;
+            var b = Ui.Button("Refill", () => Refill(refresh), "btn--small", w);
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
