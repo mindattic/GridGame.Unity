@@ -279,7 +279,7 @@ namespace GridGame.Tests
             Assert.That(topic?.Id, Is.EqualTo("camp_party_chat"));
             var r = new DialogueRunner(Real, s, topic, hero);
             Assert.That(r.Current.Portrait, Is.EqualTo(hero), "$with is the hero being talked to");
-            Assert.That(r.Choices.Select(c => c.Label), Has.Some.Contains("merchant"), "NpcJoined condition opens a topic");
+            Assert.That(r.Choices.Any(c => c.Conditions.Any(k => k.Type == DialogueConditionType.NpcJoined && k.Id == "merchant")), Is.True, "NpcJoined condition opens a topic"); // by structure: labels are lorem (GG-T387, GG-T411)
         }
 
         [Test]
@@ -288,13 +288,14 @@ namespace GridGame.Tests
             var s = NewSave(gold: 400);
             s.Flags.Add("npc:merchant");
             var r = new DialogueRunner(Real, s, DialogueRunner.TalkTopic(Real, s, "npc:merchant"));
-            int hire = r.Choices.FindIndex(c => c.Label.Contains("guard"));
+            bool Hires(DialogueChoice c) => c.Effects.Any(e => e.Type == DialogueEffectType.RecruitHero && e.Id == "sellsword"); // labels are lorem (GG-T411)
+            int hire = r.Choices.FindIndex(Hires);
             Assert.That(hire, Is.GreaterThanOrEqualTo(0));
             r.Choose(hire);
             Assert.That(s.Hero("sellsword"), Is.Not.Null);
             Assert.That(s.Gold, Is.EqualTo(100));
             var again = new DialogueRunner(Real, s, DialogueRunner.TalkTopic(Real, s, "npc:merchant"));
-            Assert.That(again.Choices.Select(c => c.Label), Has.None.Contains("guard"), "RosterLacks hides it once hired");
+            Assert.That(again.Choices.Any(Hires), Is.False, "RosterLacks hides it once hired");
         }
 
         [Test]
