@@ -283,17 +283,17 @@ namespace GridGame.App
             {
                 string why = mc.Participants > 2 ? $" · {mc.Participants} heroes ÷{1f + BattleConfig.ChargeParticipantPenalty * (mc.Participants - 2):0.#}" : " · clean pincer";
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
-                Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana);
+                Billboard($"Mana charge +{mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb{why}", null, Palette.Mana); // GG-T408: charge is in hundredths of an orb
             }
             else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the bubble
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
-                Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana);
+                Billboard($"Guard: {secs:0.#}s → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb", null, Palette.Mana); // GG-T408
                 // GG-T405: Guard trades time for mana. The time slice leaves the GUARD button gold and pours into the
                 // globe blue, the charge ring advancing as it lands, with a tag and a Log line saying so.
                 App.StartCoroutine(MoteFlight(MintFrom("guard", -1), Timing.Emphasis, false, Palette.Gold, 0.8f));
                 MintTag($"{secs:0.#}s → mana", 0, Palette.Gold);
-                Feed($"Guard: {secs:0.#}s of turn time → +{mc.Amount} mana charge ({to}/{BattleConfig.ManaChargePerOrb} to the next orb)", Palette.Mana);
+                Feed($"Guard: {secs:0.#}s of turn time → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb ({to * 100 / BattleConfig.ManaChargePerOrb}% toward the next)", Palette.Mana);
             }
             // GG-T405: every charge shows where it came from: a small mote from its source into the globe's charge ring.
             if (mc.Reason != "guard" && !ReduceMotion) App.StartCoroutine(MoteFlight(MintFrom(mc.Reason, mc.SourceId), Timing.Standard, true, null, 0.55f));

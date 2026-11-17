@@ -685,6 +685,8 @@ namespace GridGame.App
                 v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
                 v.style.borderTopColor = v.style.borderBottomColor = v.style.borderLeftColor = v.style.borderRightColor = border;
                 v.style.opacity = alpha;
+                // A one-word name ("Taunt") never hyphen-breaks across lines; two-word names still wrap (GG-T408).
+                name.style.whiteSpace = (name.text ?? "").IndexOf(' ') < 0 ? WhiteSpace.NoWrap : WhiteSpace.Normal;
             }
             SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
