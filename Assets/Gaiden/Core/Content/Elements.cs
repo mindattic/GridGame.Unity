@@ -224,7 +224,12 @@ namespace GridGame.Core.Content
             isTileState = isTileState ?? (id => db.TryTileState(id) != null);
             hazardStates = hazardStates ?? db.TileStates.Values.Where(s => s.Hazard).Select(s => s.Id).ToList();
             var t = db.Elements;
-            if (t == null || t.Elements.Count == 0) { p.Add("elements.json: no element table (GG-T371)"); return; }
+            if (t == null || t.Elements.Count == 0)
+            {
+                // GG-T416: loaded content without elements.json is an error; a hand-built ContentDb (tests, tools) just has none.
+                if (db.ElementsFileMissing) p.Add("elements.json: no element table (GG-T371)");
+                return;
+            }
             const string Tag = " (always a way, GG-T371)";
             bool TileKnown(string id) => id != null && (db.Traps.ContainsKey(id) || (isTileState != null && isTileState(id)));
 

@@ -30,6 +30,9 @@ namespace GridGame.Core.Content
         public VfxCatalog VfxPrefabs = new VfxCatalog();
         /// <summary>elements.json (GG-T371): the elemental interaction table (counters, statuses, tile reactions).</summary>
         public ElementTableDef Elements = new ElementTableDef();
+        /// <summary>True when <see cref="ContentLoader.Load"/> found no elements.json (GG-T416): only then is a missing element
+        /// table a content error; a hand-built ContentDb (tests, tools) has none and simply skips the GG-T371 checks.</summary>
+        public bool ElementsFileMissing;
         /// <summary>mercenaries.json (GG-T233), in file order.</summary>
         public readonly List<MercenaryDef> Mercenaries = new List<MercenaryDef>();
         public MercenaryDef TryMercenary(string classId) => Mercenaries.Find(m => string.Equals(m.Class, classId, StringComparison.OrdinalIgnoreCase));

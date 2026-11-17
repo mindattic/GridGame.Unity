@@ -51,7 +51,9 @@ namespace GridGame.Core.Content
             db.Summon = ReadOne<SummonDef>(readText, "summon") ?? new SummonDef();
             db.Vfx = ReadOne<VfxStyleSheet>(readText, "vfxstyle") ?? new VfxStyleSheet();
             db.VfxPrefabs = ReadOne<VfxCatalog>(readText, "vfx") ?? new VfxCatalog();
-            db.Elements = ReadOne<ElementTableDef>(readText, "elements") ?? new ElementTableDef(); // GG-T371
+            var elements = ReadOne<ElementTableDef>(readText, "elements"); // GG-T371
+            db.ElementsFileMissing = elements == null; // GG-T416: only a missing file is reported, not a hand-built ContentDb
+            db.Elements = elements ?? new ElementTableDef();
             db.Mercenaries.AddRange(ReadList<MercenaryDef>(readText, "mercenaries"));
             db.Factions.AddRange(ReadList<FactionDef>(readText, "factions"));
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
