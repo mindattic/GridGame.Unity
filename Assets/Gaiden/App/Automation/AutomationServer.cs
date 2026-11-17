@@ -982,7 +982,9 @@ namespace GridGame.App.Automation
             {
                 if (Hidden(l) || string.IsNullOrEmpty(l.text) || l.resolvedStyle.opacity <= 0.01f) continue;
                 labels++;
-                var wb = l.worldBound;
+                // A marquee's scrolling copy is as wide as its whole line; only its clipping box is ever drawn (GG-T398).
+                bool scrolling = l.parent != null && l.parent.ClassListContains(Marquee.BoxClass);
+                var wb = scrolling ? l.parent.worldBound : l.worldBound;
                 if (wb.width < 1 || wb.height < 1) { problems.Add($"zero-size label '{Trim(l.text)}'"); continue; }
                 if (wb.xMin < sb.xMin - 2 || wb.xMax > sb.xMax + 2) problems.Add($"label off-stage horizontally '{Trim(l.text)}' x={DesignPoint(wb.position).x:0}..{DesignPoint(wb.max).x:0}");
                 var size = l.MeasureTextSize(l.text, 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined);

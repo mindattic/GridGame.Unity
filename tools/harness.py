@@ -3,7 +3,7 @@ Self-play harness: launches the development player with the automation endpoint 
 
     python tools/harness.py smoke            # title → new game → hub → battle (autoplay) → results
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
-    python tools/harness.py aspects          # GG-T169: title/hub/battle at 9:23..3:4; phones fill, tablets framed
+    python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
@@ -367,15 +367,17 @@ def sweep(run="sweep", theme=None):
     print("errors:", [l for l in logs if l.startswith(("Error", "Exception"))])
 
 
-# GG-T169 device fit: (label, aspect w/h). Phones 9:21..9:16 must fill the window; tablets and ultra-tall are framed.
+# GG-T169/GG-T398 device fit: (label, aspect w/h). Every shape from 9:23 to 3:4 must fill the window edge to edge;
+# shapes outside that range (ultra-tall 9:25, square 1:1) are framed.
+ASPECT_MIN, ASPECT_MAX = 9 / 23, 3 / 4
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
-           ("9x16", 9 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4)]
+           ("9x16", 9 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
 
 def aspects(run="aspects", height=1200):
     """GG-T169: launches the player at every supported phone ratio plus tablet/ultra-tall shapes; shoots the
-    title, hub and a live battle; checks the stage size never drops below 1170x2532, fills the window on phones
-    (no frame) and is framed outside 9:21..9:16; runs the layout audit on each screen. Exit 1 on any failure."""
+    title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x2990, fills the
+    window (no frame) from 9:23 to 3:4 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
     failures, report = [], {}
     for label, a in ASPECTS:
         w = int(round(height * a))
@@ -383,10 +385,12 @@ def aspects(run="aspects", height=1200):
         _wait_screen("title"); time.sleep(0.8)
         sb = call("stagebounds")
         dw, dh = sb["design"]
-        expect_framed = not (9 / 21 - 0.002 <= w / height <= 9 / 16 + 0.002)
+        expect_framed = not (ASPECT_MIN - 0.002 <= w / height <= ASPECT_MAX + 0.002)
         entry = {"window": [w, height], "stage": [dw, dh], "framed": sb["framed"], "screens": {}}
         if dw < 1170 or dh < 2532:
             failures.append(f"{label}: stage {dw}x{dh} below the 1170x2532 minimum")
+        if dw > 1899 or dh > 2990:
+            failures.append(f"{label}: stage {dw}x{dh} above the 1899x2990 maximum")
         if sb["framed"] != expect_framed:
             failures.append(f"{label}: framed={sb['framed']}, expected {expect_framed}")
         shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")

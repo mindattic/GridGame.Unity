@@ -127,17 +127,46 @@ namespace GridGame.App
     }
 
     /// <summary>Aspect-agnostic layout units (GG-T272): fractions of the safe-area stage, which grows from 1170×2532 up to
-    /// 9:16 or 9:21 (§26.3). Read them when a screen builds; every screen rebuilds on <see cref="GameApp.StageResized"/>.</summary>
+    /// 3:4 (1899 wide) or 9:23 (2990 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
+    /// current screen on <see cref="GameApp.StageResized"/> (the battle re-lays itself out).</summary>
     public static class Fit
     {
         /// <summary>The one screen-edge gutter: every full-width panel sits this far from the stage's left and right edges.</summary>
         public const float Edge = Space.S24;
+        /// <summary>The widest a column of menus, rows, text or HUD controls grows (the 9:16 stage width). On a wider stage
+        /// (2:3, 3:4 tablets) it stays this wide and centres, so lines never stretch absurdly; the backdrop, the board's
+        /// surroundings and the timeline take the rest (GG-T398).</summary>
+        public const float ColumnMax = 1424;
         public static float Width => GameApp.StageWidth;
         public static float Height => GameApp.StageHeight - GameApp.SafeTop - GameApp.SafeBottom;
+        /// <summary>The content column's width: the stage width, capped at <see cref="ColumnMax"/>.</summary>
+        public static float Column => Mathf.Min(Width, ColumnMax);
+        /// <summary>The side inset that centres the content column on the stage (0 up to 9:16).</summary>
+        public static float Inset => Mathf.Floor((Width - Column) / 2f);
         /// <summary><paramref name="pct"/> percent of the usable stage width.</summary>
         public static float W(float pct) => Width * pct / 100f;
+        /// <summary><paramref name="pct"/> percent of the content column's width.</summary>
+        public static float C(float pct) => Column * pct / 100f;
         /// <summary><paramref name="pct"/> percent of the usable stage height.</summary>
         public static float H(float pct) => Height * pct / 100f;
+        /// <summary>Wide enough for three party cards abreast (2:3 and wider) instead of two.</summary>
+        public static bool Roomy => Width >= 1600f;
+
+        /// <summary>Pads a full-stage container so its children sit in the centred content column, plus <paramref name="pad"/>
+        /// on each side (GG-T398).</summary>
+        public static void Columnize(UnityEngine.UIElements.VisualElement el, float pad)
+        {
+            el.style.paddingLeft = Inset + pad;
+            el.style.paddingRight = Inset + pad;
+        }
+
+        /// <summary>Centres an element of a full-stage column (a window under a header) in the content column, keeping
+        /// <paramref name="margin"/> (a window's own S8 by default) on each side (GG-T398).</summary>
+        public static void Center(UnityEngine.UIElements.VisualElement el, float margin = Space.S8)
+        {
+            el.style.marginLeft = Inset + margin;
+            el.style.marginRight = Inset + margin;
+        }
     }
 
     /// <summary>Duration tokens in seconds (POL-E1). Anything longer than Cinematic is a hold, also in the cinematic band.</summary>

@@ -23,11 +23,12 @@ namespace GridGame.App
             var col = Ui.El("fill col", root);
             Ui.Header("Profiles", () => App.Router.Back(), col, out _);
             var hint = Ui.Text("Each profile keeps its own settings and its own three save slots.", "small dim", col);
-            hint.style.marginLeft = Space.S24; hint.style.marginBottom = Space.S8;
+            hint.style.marginLeft = Fit.Inset + Space.S24; hint.style.marginBottom = Space.S8;
             hint.style.whiteSpace = WhiteSpace.Normal;
 
             var w = Ui.Window("Choose a profile", col);
             w.style.flexGrow = 1;
+            Fit.Center(w);
             var list = Ui.List(w).contentContainer;
             string current = App.Profile.Name;
             foreach (var name in App.Profile.List())
@@ -92,6 +93,7 @@ namespace GridGame.App
             var col = Ui.El("fill col", root);
             Ui.Header(renaming == null ? "New Profile" : "Rename Profile", () => App.Router.Back(), col, out _);
             var w = Ui.Window(renaming == null ? "Name your profile" : $"New name for \"{renaming}\"", col);
+            Fit.Center(w);
 
             field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = renaming ?? "" };
             field.style.fontSize = TypeScale.H3;

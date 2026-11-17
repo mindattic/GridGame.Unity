@@ -163,7 +163,7 @@ namespace GridGame.App
             var portrait = Ui.El(null, root);
             portrait.name = "merc-portrait";
             portrait.style.position = Position.Absolute;
-            portrait.style.left = Fit.Edge; portrait.style.right = Fit.Edge; portrait.style.top = Fit.H(6.3f); portrait.style.bottom = Fit.H(38.7f);
+            portrait.style.left = portrait.style.right = Fit.Inset + Fit.Edge; portrait.style.top = Fit.H(6.3f); portrait.style.bottom = Fit.H(38.7f);
             portrait.style.backgroundImage = new StyleBackground(Art.PortraitFigure(classId));
             portrait.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
             portrait.style.opacity = 0f;
@@ -171,7 +171,7 @@ namespace GridGame.App
             var box = Ui.Window(null, root);
             box.name = "merc-renewal-box";
             box.style.position = Position.Absolute;
-            box.style.left = Fit.Edge; box.style.right = Fit.Edge; box.style.bottom = Space.S64;
+            box.style.left = box.style.right = Fit.Inset + Fit.Edge; box.style.bottom = Space.S64;
             var plate = Ui.El("row", box);
             Ui.Text(def.Name, "h2 gold", plate);
             MercenaryCamp.Tag(S, classId, plate);

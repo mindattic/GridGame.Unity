@@ -41,7 +41,8 @@ namespace GridGame.App
             bg.style.backgroundImage = new StyleBackground(Art.Background(ThemeOf(c, report, stageId), 3));
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
             var col = Ui.El("fill col", root);
-            col.style.paddingTop = Fit.H(5.5f); col.style.paddingLeft = col.style.paddingRight = Space.S32; col.style.paddingBottom = Space.S48;
+            col.style.paddingTop = Fit.H(5.5f); col.style.paddingBottom = Space.S48;
+            Fit.Columnize(col, Space.S32); // the results sit in the centred content column (GG-T398)
 
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
             var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "title shadow", col);

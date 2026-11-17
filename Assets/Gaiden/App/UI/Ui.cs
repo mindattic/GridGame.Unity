@@ -165,6 +165,8 @@ namespace GridGame.App
         public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold)
         {
             var h = El("header", parent);
+            // The bar spans the stage; its back button, title and gold line up with the content column (GG-T398).
+            h.style.paddingLeft = h.style.paddingRight = Fit.Inset + Space.S24;
             if (onBack != null) Button("‹", onBack, "btn--small btn--icon", h).name = "back";
             Text(title, "header-title shadow", h);
             gold = Text("", "header-gold shadow", h);

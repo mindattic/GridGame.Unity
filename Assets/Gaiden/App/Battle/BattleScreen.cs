@@ -26,6 +26,7 @@ namespace GridGame.App
     {
         public override string Id => "battle";
         public override string Music => "Crusade";
+        public override bool RebuildOnResize => false; // ApplyStageLayout re-lays the HUD out in place
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
@@ -270,6 +271,12 @@ namespace GridGame.App
             if (boardHost == null) return;
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
+            // The rows under the board (ability bar, mana orbs, info tabs) keep to the centred content column, so on a
+            // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
+            float inset = Fit.Inset;
+            if (Root?.Q("abilitybar") is VisualElement bar) bar.style.left = bar.style.right = inset + Space.S16;
+            if (Root?.Q("orbs") is VisualElement orbs) orbs.style.left = orbs.style.right = inset + Fit.Edge;
+            if (Root?.Q("info-tabs") is VisualElement tabs) tabs.style.left = tabs.style.right = inset + Fit.Edge;
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
             LayoutTimelineFrame();
         }
@@ -288,7 +295,7 @@ namespace GridGame.App
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
             // Even gutters on the space scale; the slots, not the gaps, take a wider stage (POL-C1/C8).
-            bar.style.left = Space.S16; bar.style.right = Space.S16; bar.style.top = BarTop; bar.style.height = Size.Slot;
+            bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
             for (int i = 0; i < 5; i++)
             {
@@ -316,7 +323,7 @@ namespace GridGame.App
             var row = Ui.El("row", root);
             row.name = "orbs";
             row.style.position = Position.Absolute;
-            row.style.left = Fit.Edge; row.style.right = Fit.Edge; row.style.top = OrbsTop; row.style.height = Size.IconL;
+            row.style.top = OrbsTop; row.style.height = Size.IconL; // left/right: ApplyStageLayout (the HUD column)
             row.style.justifyContent = Justify.SpaceBetween;
             int cap = Mathf.Clamp(State.Bank.Capacity, ManaBank.DefaultCapacity, 16);
             float size = cap <= 12 ? 74 : Mathf.Floor(1080f / cap) - 6;
@@ -760,7 +767,7 @@ namespace GridGame.App
             var host = Ui.El("col info-tabs", root);
             host.name = "info-tabs";
             host.style.position = Position.Absolute;
-            host.style.left = Fit.Edge; host.style.right = Fit.Edge; host.style.top = InfoTabsTop; host.style.bottom = Space.S24;
+            host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right: ApplyStageLayout (the HUD column)
             infoTabStrip = Ui.Tabs(InfoTabNames, infoTab, ShowInfoTab, host);
             var win = Ui.Window(null, host, "window--compact info-tabs__window");
             win.name = "info-panel";

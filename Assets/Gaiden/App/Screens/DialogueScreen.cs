@@ -88,6 +88,7 @@ namespace GridGame.App
         public override string Id => "dialogue";
         /// <summary>Keeps whatever was playing (the crawl's theme before a beat, camp music for a chat).</summary>
         public override string Music => null;
+        public override bool RebuildOnResize => false; // a rebuild would replay the scene from its first line
 
         /// <summary>Without this, a screen change away from a still-playing dialogue (demo-mode AutoPlay is the
         /// only thing that keeps running on its own) left AutoPlay ticking on a popped screen: it kept tapping
@@ -110,11 +111,12 @@ namespace GridGame.App
             var stage = Ui.El(null, root);
             stage.name = "dlg-stage";
             stage.style.position = Position.Absolute;
-            stage.style.left = Space.S0; stage.style.right = Space.S0; stage.style.top = Fit.H(5.9f); stage.style.bottom = Fit.H(25.3f);
+            // The figures stand at the content column's edges, over the text box's name plates (GG-T398).
+            stage.style.left = stage.style.right = Fit.Inset; stage.style.top = Fit.H(5.9f); stage.style.bottom = Fit.H(25.3f);
             stage.RegisterCallback<ClickEvent>(_ => TapLine());
 
             var title = Ui.Text(def.Title ?? "", "small dim shadow", root);
-            title.style.position = Position.Absolute; title.style.left = Space.S32; title.style.top = Space.S48;
+            title.style.position = Position.Absolute; title.style.left = Fit.Inset + Space.S32; title.style.top = Space.S48;
 
             var skip = Ui.Button("Skip ›", SkipAhead, "btn--small", root);
             skip.name = "dlg-skip";
@@ -126,7 +128,7 @@ namespace GridGame.App
             var box = Ui.Window(null, root, "window--plain");
             box.name = "dlg-box";
             box.style.position = Position.Absolute;
-            box.style.left = Fit.Edge; box.style.right = Fit.Edge; box.style.bottom = Space.S48;
+            box.style.left = box.style.right = Fit.Inset + Fit.Edge; box.style.bottom = Space.S48;
             box.style.minHeight = 560;
             box.style.paddingTop = Space.S64;
             box.style.overflow = Overflow.Visible;
@@ -444,7 +446,7 @@ namespace GridGame.App
             panel.name = "dlg-wits";
             panel.pickingMode = PickingMode.Ignore;
             panel.style.position = Position.Absolute;
-            panel.style.left = Fit.Edge; panel.style.right = Fit.Edge; panel.style.top = Fit.H(5.9f);
+            panel.style.left = panel.style.right = Fit.Inset + Fit.Edge; panel.style.top = Fit.H(5.9f);
             panel.style.alignItems = Align.Center;
             var row = Ui.El(null, panel);
             row.pickingMode = PickingMode.Ignore;

@@ -41,11 +41,13 @@ namespace GridGame.App
             if (Subtitle != null)
             {
                 var sub = Ui.Text(Subtitle, "small gold", col);
-                sub.style.marginLeft = Space.S16;
+                sub.style.marginLeft = Fit.Inset + Space.S16;
                 sub.style.marginTop = -Space.S8;
             }
             Body = Ui.El("col grow", col);
-            Body.style.paddingLeft = Body.style.paddingRight = Space.S8;
+            // Lists, rows and windows sit in the centred content column: a tablet's extra width goes to the backdrop
+            // either side rather than stretching every row (GG-T398).
+            Fit.Columnize(Body, Space.S8);
             Body.style.paddingBottom = Space.S32;
             BuildBody(Body);
             Typography.Watch(Body);
@@ -100,7 +102,7 @@ namespace GridGame.App
             tag.style.marginBottom = Fit.H(6.3f);
 
             var menu = Ui.Window(null, col);
-            menu.style.width = Length.Percent(66);
+            menu.style.width = Fit.C(66f);
             int recent = App.Saves.MostRecent();
             Debug.Log($"[Title] most recent save slot: {recent}");
             if (recent >= 0) Ui.MenuRow("Continue", "", () => Continue(recent), menu);
@@ -144,6 +146,7 @@ namespace GridGame.App
             var col = Ui.El("fill col", root);
             Ui.Header(newGame ? "New Game" : "Load Game", () => App.Router.Back(), col, out _);
             var w = Ui.Window(newGame ? "Choose a slot" : "Choose a save", col);
+            Fit.Center(w);
             for (int i = 0; i < SaveStore.Slots; i++)
             {
                 int slot = i;
@@ -244,6 +247,7 @@ namespace GridGame.App
 
             revealPanel = Ui.Window(null, col);
             revealPanel.style.minHeight = 420;
+            Fit.Center(revealPanel);
 
             lockBtn = Ui.Button("Lock In", LockInHighlighted, "btn--primary", col);
             lockBtn.style.alignSelf = Align.Center;
@@ -252,6 +256,7 @@ namespace GridGame.App
 
             var gridWindow = Ui.Window("Every hero — tap to preview, tap again to lock in", col);
             gridWindow.style.flexGrow = 1;
+            Fit.Center(gridWindow);
             grid = Ui.List(gridWindow).contentContainer;
             grid.style.flexDirection = FlexDirection.Row;
             grid.style.flexWrap = Wrap.Wrap;
@@ -465,10 +470,12 @@ namespace GridGame.App
             // 24 px between the tappable cards (POL-C3).
             party.style.paddingLeft = party.style.paddingRight = Space.TargetHalfGap;
             var ids = s.Party;
-            for (int i = 0; i < ids.Count; i += 2)
+            // Two cards abreast on a phone; three on a 2:3 / 3:4 tablet, which has the width for them (GG-T398).
+            int perRow = Fit.Roomy ? 3 : 2;
+            for (int i = 0; i < ids.Count; i += perRow)
             {
                 var row = Ui.El("row", party);
-                for (int j = i; j < Math.Min(i + 2, ids.Count); j++)
+                for (int j = i; j < Math.Min(i + perRow, ids.Count); j++)
                 {
                     var id = ids[j];
                     var h = s.Hero(id);
@@ -498,10 +505,10 @@ namespace GridGame.App
                     Ui.Gauge(hp / (float)u.MaxHp, info, 300).style.marginTop = Space.S8;
                     Ui.Text($"{hp}/{u.MaxHp}", "small dim", info);
                     MercenaryCamp.Tag(s, id, info);
-                    if (j == ids.Count - 1 && ids.Count % 2 == 1)
+                    // A short last row's cards keep their column width: invisible twins hold the empty columns, so the
+                    // window stays an even grid with even gutters (POL-C8) at every party size.
+                    for (int gap = j == ids.Count - 1 ? (perRow - ids.Count % perRow) % perRow : 0; gap > 0; gap--)
                     {
-                        // An odd party's last card keeps its half of the row: an invisible twin holds the other half, so
-                        // the window stays a 2-column grid with even gutters (POL-C8) at every party size.
                         var spacer = Ui.El("card", row);
                         spacer.style.flexGrow = 1; spacer.style.flexShrink = 1; spacer.style.flexBasis = Length.Percent(0);
                         spacer.style.marginTop = spacer.style.marginBottom = spacer.style.marginLeft = spacer.style.marginRight = Space.TargetHalfGap;
@@ -840,6 +847,7 @@ namespace GridGame.App
         }
         public override string Id => "crawl";
         public override string Music => "TellerOfTheTales";
+        public override bool RebuildOnResize => false; // a rebuild would restart the crawl
 
         protected override void Build(VisualElement root)
         {
@@ -852,7 +860,7 @@ namespace GridGame.App
             clip.style.bottom = Space.S48 + Size.Target + Space.S24;
             text = Ui.El("col", clip);
             text.style.position = Position.Absolute;
-            text.style.left = Space.S96; text.style.right = Space.S96;
+            text.style.left = text.style.right = Fit.Inset + Space.S96;
             var h = Ui.Text(title, "h1 shadow gold", text);
             Fonts.UseDisplay(h);
             h.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -896,6 +904,7 @@ namespace GridGame.App
         public CreditsScreen(Func<GameScreen> then) { rollThen = then; }
         public override string Id => rollThen != null ? "credits-roll" : "credits";
         public override string Music => rollThen != null ? "HeroicAge" : null;
+        public override bool RebuildOnResize => rollThen == null; // a rebuild would restart the roll
 
         protected override void Build(VisualElement root)
         {
@@ -904,6 +913,7 @@ namespace GridGame.App
             Ui.Header("Credits", () => App.Router.Back(), col, out _);
             var w = Ui.Window(null, col);
             w.style.flexGrow = 1;
+            Fit.Center(w);
             var list = Ui.List(w);
             var text = Resources.Load<TextAsset>("Credits")?.text ?? "GridGame Gaiden — MindAttic";
             var l = Ui.Text(text, "small", list.contentContainer);
@@ -922,7 +932,7 @@ namespace GridGame.App
             roll = Ui.El("col", clip);
             roll.name = "credits-roll";
             roll.style.position = Position.Absolute;
-            roll.style.left = Space.S96; roll.style.right = Space.S96;
+            roll.style.left = roll.style.right = Fit.Inset + Space.S96;
             var title = Ui.Text("GridGame Gaiden", "h1 shadow gold", roll);
             Fonts.UseDisplay(title);
             title.style.whiteSpace = WhiteSpace.Normal;

@@ -30,6 +30,9 @@ namespace GridGame.App
         public virtual void Tick(float dt) { }
         /// <summary>Return false to swallow the back action (e.g. cancel targeting first).</summary>
         public virtual bool OnBack() => true;
+        /// <summary>Rebuilt in place when the stage changes size (GG-T398), so its Fit.* widths follow the new shape. A screen
+        /// that re-lays itself out (the battle) or whose rebuild would restart it (a crawl, the credits) opts out.</summary>
+        public virtual bool RebuildOnResize => true;
 
         /// <summary>Rebuilds in place (after a purchase etc.).</summary>
         public void Refresh()
@@ -63,6 +66,7 @@ namespace GridGame.App
         {
             this.host = host;
             this.fade = fade;
+            GameApp.StageResized += () => { var c = Current; if (c != null && !busy && c.RebuildOnResize) c.Refresh(); };
         }
 
         public void Push(GameScreen s) => Go(() => stack.Push(s));

@@ -20,9 +20,10 @@ namespace GridGame.App
         /// <summary>The minimum stage: every screen is laid out to fit at least this (19.5:9 portrait).</summary>
         public const int DesignWidth = 1170;
         public const int DesignHeight = 2532;
-        /// <summary>The widest (9:16) and tallest (9:21) phone the stage grows to fill; beyond them it is framed.</summary>
-        public const int MaxStageWidth = 1424;
-        public const int MaxStageHeight = 2730;
+        /// <summary>The widest (3:4, 2532*3/4) and tallest (9:23, 1170*23/9) shape the stage grows to fill edge to edge
+        /// (owner 2026-11-05, GG-T398); beyond them it is framed.</summary>
+        public const int MaxStageWidth = 1899;
+        public const int MaxStageHeight = 2990;
         /// <summary>Design-pixel margin around a framed stage, so its outline is fully on screen.</summary>
         private const float FramePad = 36f;
 
@@ -201,7 +202,7 @@ namespace GridGame.App
         }
 
         /// <summary>Size of the stage for a screen aspect (width/height): never below the design size, grows the
-        /// spare axis up to the widest/tallest supported phone, never scales non-uniformly (bible §26.3).</summary>
+        /// spare axis up to the widest (3:4) / tallest (9:23) supported shape, never scales non-uniformly (bible §26.3).</summary>
         public static Vector2 StageSizeFor(float screenAspect)
         {
             const float designAspect = DesignWidth / (float)DesignHeight;
@@ -210,8 +211,8 @@ namespace GridGame.App
             return new Vector2(DesignWidth, Mathf.Clamp(Mathf.Round(DesignWidth / screenAspect), DesignHeight, MaxStageHeight));
         }
 
-        /// <summary>Fit the stage inside the screen: phones fill it edge to edge; tablets and other out-of-range
-        /// shapes get the nearest supported stage, centered and framed. Never stretched.</summary>
+        /// <summary>Fit the stage inside the screen: every shape from 9:23 to 3:4 fills it edge to edge; shapes outside
+        /// that range get the nearest supported stage, centered and framed. Never stretched.</summary>
         private void FitStage()
         {
             var screen = new Vector2(Screen.width, Screen.height);

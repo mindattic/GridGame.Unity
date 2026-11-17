@@ -73,7 +73,7 @@ namespace GridGame.App
             frame.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
 
             var info = Ui.El("col", portraitRow);
-            info.style.marginLeft = Space.S24; info.style.width = Fit.W(27f);
+            info.style.marginLeft = Space.S24; info.style.width = Fit.C(27f);
             var nm = Ui.Text(def.Name, "h1 shadow", info);
             Fonts.UseDisplay(nm);
             Ui.RoleBadge(def.Role, info).style.marginBottom = Space.S8;
