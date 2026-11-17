@@ -174,13 +174,15 @@ namespace GridGame.Tests
             int potions = s.Count("healing_potion_basic");
             var r = new DialogueRunner(Real, s, Merchant);
             r.Advance(); r.Advance();
-            int map = r.Choices.FindIndex(c => c.Label.Contains("map"));
+            // By what the choice does: the words are lorem placeholders until Prose (GG-T387, GG-T411).
+            int map = r.Choices.FindIndex(c => c.Effects.Any(e => e.Type == DialogueEffectType.SetFlag && e.Id == "bought_map"));
+            string mapLabel = r.Choices[map].Label;
             Assert.That(r.Choose(map).Ok);
             Assert.That(s.Gold, Is.EqualTo(80));
             Assert.That(s.Flags, Does.Contain("bought_map"));
             Assert.That(s.Count("healing_potion_basic"), Is.EqualTo(potions + 1), "node effects apply on arrival");
-            Assert.That(r.Transcript[2].Answer, Does.Contain("map"));
-            r.Choose(r.Choices.FindIndex(c => c.Label == "Then ride with us."));
+            Assert.That(r.Transcript[2].Answer, Is.EqualTo(mapLabel));
+            r.Choose(r.Choices.FindIndex(c => c.Effects.Any(e => e.Type == DialogueEffectType.JoinNpc && e.Id == "merchant")));
             Assert.That(DialogueRunner.NpcJoined(s, "merchant"));
             Assert.That(r.Log, Has.Some.Contains("Merchant joins"));
             Assert.That(r.Finished, Is.False);

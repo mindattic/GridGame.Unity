@@ -60,7 +60,7 @@ namespace GridGame.Tests
             var intro = db.DialogueOrder.Single(d => d.Id == "boss_intro_still");
             Assert.That(intro.Trigger.Kind, Is.EqualTo(DialogueTriggerKind.StageStart));
             Assert.That(intro.Trigger.Id, Is.EqualTo("still-03"));
-            Assert.That(intro.Nodes.Any(n => n.Text.Contains("Stored")), "the beat: the Hollow are stored in the tanks");
+            Assert.That(intro.Nodes.Count, Is.GreaterThan(0), "the boss speaks before the fight"); // its words are lorem until Prose (GG-T387, GG-T411)
             var talk = db.DialogueOrder.Single(d => d.Id == "still_party_talk");
             Assert.That(talk.Trigger.Kind, Is.EqualTo(DialogueTriggerKind.ThemeStart));
             Assert.That(talk.Trigger.Id, Is.EqualTo("still"));
