@@ -146,10 +146,10 @@ def main():
     with section('Adventure ordering'):
         h.call("clicktext", text="Adventure"); time.sleep(0.8)
         t = texts()
-        check("adventure lists the first stage", any("Green Valley I" in x for x in t))
+        check("adventure lists the first stage", any("The Tithe Moors I" in x for x in t))
         check("adventure groups battles into expeditions", any("The Tithe Moors Expedition" in x for x in t), str(t[:8]))
         check("locked stages collapse into one teaser", any("more stages ahead" in x for x in t))
-        h.call("clicktext", text="Green Valley I"); time.sleep(1.5)
+        h.call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
         if h.call("state")["screen"] == "crawl":
             check("story crawl plays on first entry", True)
             h.call("clicktext", text="Skip"); time.sleep(1.5)
@@ -384,7 +384,7 @@ def main():
     with section("Settings toggles don't break the battle"):
         for key in ("colorblind", "reducemotion"):
             h.call("setting", key=key, value=1)
-        # The first battle is a 20-wave gauntlet now; finish a short one (Green Valley II) to reach the results screen.
+        # The first battle is a 20-wave gauntlet now; finish a short one (The Tithe Moors II) to reach the results screen.
         h.call("back"); time.sleep(0.6)
         if h.call("state")["screen"] == "battle":
             h.call("clicktext", text="Resume"); time.sleep(0.3)
@@ -437,7 +437,7 @@ def main():
             check("2×2 boss gets the purple boss keyline", kl.get("border", "").upper().startswith("#DB66FF"), str(kl))
             h.shot("boss")
         else:
-            check("2×2 boss appears in Frostmaw Caverns II", False)
+            check("2×2 boss appears in The Anchor Wastes II", False)
 
     with section('Title flow on profiles (GG-T116): create, switch, new, continue, load'):
         h.call("autoplay", on=0)

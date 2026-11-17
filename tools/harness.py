@@ -329,7 +329,7 @@ def smoke(run="smoke"):
     files.append(shot("02-hub"))
     call("clicktext", text="Adventure"); time.sleep(0.8)
     files.append(shot("03-stages"))
-    call("clicktext", text="Green Valley I"); time.sleep(1.5)
+    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
     through_story(files)
     files.append(shot("05-battle"))
     call("autoplay", on=1)
@@ -393,7 +393,7 @@ def aspects(run="aspects", height=1200):
         call("newgame", slot=0); time.sleep(1.2)
         shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
         call("clicktext", text="Adventure"); time.sleep(0.8)
-        call("clicktext", text="Green Valley I"); time.sleep(1.5)
+        call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
         through_story(wait=1.2)
         if _wait_screen("battle", 8):
             time.sleep(2.0)
@@ -462,7 +462,7 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
     time.sleep(1)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="Green Valley I"); time.sleep(1.2)
+    call("clicktext", text="The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     results = []
     for n in range(stages):
@@ -570,7 +570,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
 
     # Fights: Adventure -> first stage, story beats, then `battles` battles in a row.
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="Green Valley I"); time.sleep(1.2)
+    call("clicktext", text="The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     for n in range(battles):
         outcome, st = _play_battle(f"02-battle{n}-mid")
@@ -1039,7 +1039,7 @@ def firstskill(run="firstskill"):
 
 def story_recruits(run="recruits", speed=3):
     """GG-T118: a new game starts small and grows at story beats. Picks the starting three through the real
-    party select, clears Green Valley I on autoplay, then launches the next battle and checks that the
+    party select, clears The Tithe Moors I on autoplay, then launches the next battle and checks that the
     story-recruit dialogue plays first — the joining hero speaking with their own portrait — and that the
     party is four once it ends. Screenshots: charselect, hub, the recruit dialogue, the next battle."""
     launch(run, fresh=True)
@@ -1055,7 +1055,7 @@ def story_recruits(run="recruits", speed=3):
     ok["starts_with_three"] = party0 == list(STARTING_PARTY)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="Green Valley I"); time.sleep(1.5)
+    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
     through_story()
     outcome, st = _play_battle("03-gv1-mid")
     time.sleep(1.2)
@@ -1180,10 +1180,10 @@ def _watch_banners(seconds=8.0, until_battle_ends=False):
 
 def storyarc(run="storyarc", capture=True):
     """GG-T241: the title-to-credits experience (GG-T231..T237), recorded. Part 1 is a real new campaign: Title -> New
-    Game -> pick three -> the prologue crawl -> Camp (Rested meter) -> Green Valley I with a forced wanderer, a hero
+    Game -> pick three -> the prologue crawl -> Camp (Rested meter) -> The Tithe Moors I with a forced wanderer, a hero
     pushed to Lv 10 and a forced win -> the wanderer talk on the results -> the Lv 10 interlude -> Camp; then Rested at 0
     refuses a launch and the 1g/1s refill relaunches it. Part 2, on a stocked save: hire a mercenary, the Quests
-    journal, a 1s Summon, a Diamond bought and spent on a lucky craft, Green Valley III's boss intro and rule-break
+    journal, a 1s Summon, a Diamond bought and spent on a lucky craft, The Tithe Moors III's boss intro and rule-break
     banner, then cathedral-03's intro (the finale since GG-T350), a forced win, the ending crawl, the rolling credits and the Title."""
     ok, notes, seen = {}, {}, []
     st = lambda: call("state")
@@ -1204,7 +1204,7 @@ def storyarc(run="storyarc", capture=True):
     call("devrested", limit=1, points=5)
     call("devwanderer")
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="Green Valley I"); time.sleep(1.5)
+    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
     _drain_story(seen, "04-gv1")
     ok["gv1_in_battle"] = _wait_screen("battle", 8)
     ok["rested_spent_on_launch"] = save().get("rested") == 4
@@ -1275,7 +1275,7 @@ def storyarc(run="storyarc", capture=True):
     shot("20-after-lucky")
     call("back"); time.sleep(0.6)
 
-    # Boss intros and a rule-break: Green Valley III.
+    # Boss intros and a rule-break: The Tithe Moors III.
     call("devstage", stage="greenvalley-03")
     call("devxp", hero="all", level=20)
     call("launch", stage="greenvalley-03"); time.sleep(1.5)
@@ -1650,7 +1650,7 @@ def durability(run="durability"):
 
 
 def bestiary_drops(run="bestiary"):
-    """Plays Green Valley I at high speed (its wave 3 is an all-frog family per the house wave
+    """Plays The Tithe Moors I at high speed (its wave 3 is an all-frog family per the house wave
     convention), then opens the Bestiary and taps the now-Seen Frog entry to screenshot its Drops
     line (GG-T43: every enemy family's signature material, listed once Seen — not just Scanned)."""
     launch(run)
