@@ -33,7 +33,6 @@ namespace GridGame.Tests
             Assert.That(ids.IndexOf("bloom"), Is.EqualTo(ids.IndexOf("cathedral") + 1), "the postgame starts after it (GG-T347: with The Bloom)");
             var cathedral = db.Campaign.Themes.Single(t => t.Id == "cathedral");
             Assert.That(cathedral.Name, Is.EqualTo("The Choir's Cathedral"));
-            Assert.That(cathedral.Crawl, Is.Not.Null.And.Not.Empty);
             Assert.That(cathedral.MilestoneReward, Is.Not.Null);
             Assert.That(cathedral.Stages, Is.EqualTo(new[] { "cathedral-01", "cathedral-02", "cathedral-03" }));
 

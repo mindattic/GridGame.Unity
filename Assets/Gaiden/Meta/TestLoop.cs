@@ -32,7 +32,7 @@ namespace GridGame.Meta
             var s = Progression.NewGame(c, SaveName);
             s.TestMode = true;
             s.TutorialDone = true;
-            foreach (var t in c.Campaign.Themes) s.SeenCrawls.Add(t.Id);
+            Story.MarkAllChaptersSeen(c, s); // GG-T386 (theme crawls are retired)
             // Every Camp NPC joins up front (GG-T119): Test Mode shows no story, and although TestCycle.Begin's headless
             // beats would bring them along the way, the loop should exercise repair, rest, buying and brewing from cycle 1.
             CampNpcs.JoinAll(s);

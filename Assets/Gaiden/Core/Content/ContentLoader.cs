@@ -241,6 +241,7 @@ namespace GridGame.Core.Content
                 }
             ValidateCrawl(db, db.Campaign.Prologue, "campaign Prologue", false, p);
             ValidateCrawl(db, db.Campaign.Ending, "campaign Ending", true, p);
+            ValidateChapters(db, p);
             foreach (var t in db.Traps.Values) NeedBuff(t.ApplyBuff, $"trap {t.Id}");
             ElementCounters.Validate(db, p); // GG-T371: there is always a way (campaign foes, rule-breakers, traps, GG-T359 hazard tiles)
             RegionRuleCatalog.Validate(db, p); // GG-T359
@@ -526,6 +527,44 @@ namespace GridGame.Core.Content
             if (crawl.Backdrop != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, crawl.Backdrop, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: unknown backdrop theme '{crawl.Backdrop}'");
             if (needsStage && (crawl.Stage == null || db.ThemeOf(crawl.Stage) == null)) p.Add($"{w}: needs a campaign Stage, has '{crawl.Stage}'");
             if (!needsStage && crawl.Stage != null) p.Add($"{w}: only the Ending names a Stage");
+        }
+
+        /// <summary>Campaign stages per chapter crawl (GG-T386): a chapter scroll plays after every fifth stage.</summary>
+        public const int StagesPerChapter = 5;
+
+        /// <summary>GG-T386: the chapter crawls. Each has an id, a title, text and a known backdrop, and follows a campaign
+        /// stage; in campaign order, every fifth campaign stage (5, 10, 15, ...) has exactly one, and no other stage has
+        /// one. None may follow the Ending's stage (that one scrolls the ending), so two crawls never play back to back.</summary>
+        private static void ValidateChapters(ContentDb db, List<string> p)
+        {
+            var stages = db.CampaignStages();
+            var index = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < stages.Count; i++) index[stages[i].Id] = i;
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var byStage = new Dictionary<int, string>();
+            int last = -1;
+            foreach (var ch in db.Campaign.Chapters)
+            {
+                string w = $"campaign chapter '{ch?.Id}'";
+                if (ch == null) { p.Add("campaign Chapters: null entry"); continue; }
+                if (string.IsNullOrWhiteSpace(ch.Id) || !System.Text.RegularExpressions.Regex.IsMatch(ch.Id, "^[a-z0-9]+(-[a-z0-9]+)*$"))
+                    p.Add($"{w}: needs an Id of lowercase letters, digits and dashes");
+                else if (!ids.Add(ch.Id)) p.Add($"{w}: duplicate id");
+                if (string.IsNullOrWhiteSpace(ch.Title)) p.Add($"{w}: needs a Title");
+                if (string.IsNullOrWhiteSpace(ch.Crawl)) p.Add($"{w}: needs Crawl text");
+                if (ch.Backdrop != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, ch.Backdrop, StringComparison.OrdinalIgnoreCase)))
+                    p.Add($"{w}: unknown backdrop theme '{ch.Backdrop}'");
+                if (ch.Stage == null || !index.TryGetValue(ch.Stage, out int i)) { p.Add($"{w}: needs a campaign Stage, has '{ch.Stage}'"); continue; }
+                if ((i + 1) % StagesPerChapter != 0) p.Add($"{w}: follows '{ch.Stage}', campaign stage {i + 1}, which is not a multiple of {StagesPerChapter}");
+                if (byStage.TryGetValue(i, out var other)) p.Add($"{w}: '{ch.Stage}' already has chapter '{other}'");
+                else byStage[i] = ch.Id;
+                if (i <= last) p.Add($"{w}: out of campaign order");
+                last = Math.Max(last, i);
+                if (db.Campaign.Ending?.Stage != null && string.Equals(db.Campaign.Ending.Stage, ch.Stage, StringComparison.OrdinalIgnoreCase))
+                    p.Add($"{w}: follows the Ending's stage, which already scrolls the ending");
+            }
+            for (int i = StagesPerChapter - 1; i < stages.Count; i += StagesPerChapter)
+                if (!byStage.ContainsKey(i)) p.Add($"campaign Chapters: campaign stage {i + 1} ('{stages[i].Id}') has no chapter crawl");
         }
 
         public const string NpcFlagPrefix = "npc:";

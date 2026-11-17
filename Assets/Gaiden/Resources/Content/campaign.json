@@ -8,6 +8,56 @@
     "Backdrop": "cathedral",
     "Stage": "cathedral-03"
   },
+  "Chapters": [
+    {
+      "Id": "ch01",
+      "Title": "Over the Pass",
+      "Stage": "lanternroad-02",
+      "Backdrop": "lanternroad"
+    },
+    {
+      "Id": "ch02",
+      "Title": "The Grounded Arks",
+      "Stage": "swamp-01",
+      "Backdrop": "swamp"
+    },
+    {
+      "Id": "ch03",
+      "Title": "Where the Beams Go",
+      "Stage": "cave-03",
+      "Backdrop": "cave"
+    },
+    {
+      "Id": "ch04",
+      "Title": "The Spire Stair",
+      "Stage": "cityruins-02",
+      "Backdrop": "cityruins"
+    },
+    {
+      "Id": "ch05",
+      "Title": "What Came Down",
+      "Stage": "bloom-01",
+      "Backdrop": "bloom"
+    },
+    {
+      "Id": "ch06",
+      "Title": "Claimants to the Spire",
+      "Stage": "cityruins-04",
+      "Backdrop": "cityruins2"
+    },
+    {
+      "Id": "ch07",
+      "Title": "The March on the Anchors",
+      "Stage": "desert-05",
+      "Backdrop": "desert"
+    },
+    {
+      "Id": "ch08",
+      "Title": "Morrow Holds",
+      "Stage": "morrowsshadow-03",
+      "Backdrop": "morrowsshadow"
+    }
+  ],
   "Themes": [
     {
       "Id": "greenvalley",
@@ -111,7 +161,7 @@
     {
       "Id": "greenvalley2",
       "MilestoneReward": "chest_gilded",
-      "Name": "The Moors Beyond the Stills",
+      "Name": "The Free Holds",
       "Backgrounds": "freeholds",
       "Stages": [
         "greenvalley-04",

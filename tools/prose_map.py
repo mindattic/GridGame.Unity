@@ -143,7 +143,7 @@ def build(content: dict) -> dict:
             details["art"] = "Backgrounds/" + t["Backgrounds"]
         entities.append({
             "id": K.place_entity(t["Id"]), "type": "place", "name": t.get("Name") or t["Id"],
-            "summary": first_paragraph(t.get("Crawl")), "details": details,
+            "summary": t.get("Blurb") or first_paragraph(t.get("Crawl")), "details": details,
             "tags": ["region", "main" if main else "postgame"],
         })
         for sid in t.get("Stages") or []:

@@ -30,7 +30,6 @@ namespace GridGame.Tests
             Assert.That(ids.IndexOf("cityruins"), Is.EqualTo(ids.IndexOf("still") + 1));
             var still = db.Campaign.Themes.Single(t => t.Id == "still");
             Assert.That(still.Name, Is.EqualTo("The Still"));
-            Assert.That(still.Crawl, Is.Not.Null.And.Not.Empty);
             Assert.That(still.Stages, Is.EqualTo(new[] { "still-01", "still-02", "still-03" }), "as many stages as the other main themes");
 
             var problems = ContentLoader.Validate(db, PortraitOnDisk).Where(p => p.Contains("still") || p.Contains("hymn_stops")).ToList();

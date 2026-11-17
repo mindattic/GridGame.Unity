@@ -34,7 +34,7 @@ namespace GridGame.Core.Content
         {
             ["classes"] = new[] { "*/Description", "*/Lore", "*/BossPhases/*/Announce" },
             ["dialogues"] = new[] { "*/Crawl", "*/Nodes/*/Text", "*/Nodes/*/Choices/*/Label" },
-            ["campaign"] = new[] { "Prologue/Crawl", "Ending/Crawl", "Themes/*/Crawl" },
+            ["campaign"] = new[] { "Prologue/Crawl", "Ending/Crawl", "Themes/*/Crawl", "Chapters/*/Crawl" },
             ["quests"] = new[] { "*/Summary", "*/TurnIn" },
             ["glossary"] = new[] { "*/Text" },
             ["items"] = new[] { "*/Description" },
@@ -46,8 +46,8 @@ namespace GridGame.Core.Content
             ["regionrules"] = new[] { "*/Name", "*/Description" },
         };
 
-        /// <summary>The choice tag a conversation puts on the answer the game's logic rewards: a wanderer's "heard" reply
-        /// (<c>Wanderers.RightAnswer</c>) or the Advice-quiz answer that grants a skill point.</summary>
+        /// <summary>The choice tag a conversation puts on the answer the game's logic rewards: a wanderer reply that wins the
+        /// point in the game of wits (<see cref="DialogueChoice.Wit"/> +1, <c>Wanderers.RightAnswers</c>, GG-T387) or the Advice-quiz answer that grants a skill point.</summary>
         public const string RightAnswerTag = "right-answer";
 
         /// <summary>What a key with no text shows: visible on screen, never a crash (the problem is reported too).</summary>
@@ -91,7 +91,7 @@ namespace GridGame.Core.Content
             }
             if (db.Campaign.Prologue != null) k["crawl:prologue"] = "crawl";
             if (db.Campaign.Ending != null) k["crawl:ending"] = "crawl";
-            foreach (var t in db.Campaign.Themes) k["crawl:" + t.Id] = "crawl";
+            foreach (var ch in db.Campaign.Chapters) if (ch?.Id != null) k[CrawlDef.ChapterKey(ch.Id)] = "crawl"; // GG-T386
             foreach (var c in db.Classes.Values)
             {
                 k["class:" + c.Id] = "description";
@@ -261,11 +261,9 @@ namespace GridGame.Core.Content
             }
             JoinCrawl(db.Campaign.Prologue, "crawl:prologue", "campaign.json Prologue Crawl");
             JoinCrawl(db.Campaign.Ending, "crawl:ending", "campaign.json Ending Crawl");
-            foreach (var t in db.Campaign.Themes)
-            {
-                Leftover(t.Crawl, $"campaign.json theme {t.Id} Crawl");
-                t.Crawl = Crawl(Get("crawl:" + t.Id, "crawl"), "crawl:" + t.Id);
-            }
+            // GG-T386: a chapter crawl after every fifth stage replaced the per-theme crawls (crawl:<themeId>, retired).
+            foreach (var ch in db.Campaign.Chapters)
+                if (ch?.Id != null) JoinCrawl(ch, CrawlDef.ChapterKey(ch.Id), $"campaign.json chapter {ch.Id} Crawl");
             foreach (var q in db.QuestOrder)
             {
                 string key = "quest:" + q.Id;
@@ -403,10 +401,11 @@ namespace GridGame.Core.Content
         }
 
         /// <summary>Whether the game's logic rewards this answer (what the <see cref="RightAnswerTag"/> must mark): the
-        /// wanderer reply that leads to <see cref="DialogueDef.HeardNode"/>, or an answer that grants a skill point.</summary>
+        /// wanderer reply that wins its exchange (<see cref="DialogueChoice.Wit"/> &gt; 0, GG-T387), or an answer that grants a
+        /// skill point.</summary>
         public static bool RewardsRightAnswer(DialogueChoice ch)
         {
-            if (string.Equals(ch.Next, DialogueDef.HeardNode, StringComparison.OrdinalIgnoreCase)) return true;
+            if (ch.Wit > 0) return true;
             foreach (var e in ch.Effects) if (e?.Type == DialogueEffectType.GrantSkillPoint) return true;
             return false;
         }

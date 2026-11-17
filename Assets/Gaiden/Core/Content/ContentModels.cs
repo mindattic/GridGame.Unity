@@ -878,7 +878,6 @@ namespace GridGame.Core.Content
     {
         public string Id;
         public string Name;
-        public string Crawl;
         public List<string> Stages = new List<string>();
         /// <summary>Campaign milestone (GG-T301): an item granted once, the first time the theme's last stage is won
         /// (a Tome, so a story beat can teach a passive). Null = none.</summary>
@@ -896,6 +895,9 @@ namespace GridGame.Core.Content
         /// <summary>GG-T231: the crawl after New Campaign's party pick, and the one after the final boss.</summary>
         public CrawlDef Prologue;
         public CrawlDef Ending;
+        /// <summary>GG-T386: the chapter crawls, in campaign order, one after every fifth campaign stage (each names the
+        /// stage it follows). They replace the per-theme crawls, so the player never sees two scrolls back to back.</summary>
+        public List<CrawlDef> Chapters = new List<CrawlDef>();
     }
 
     /// <summary>
@@ -1067,9 +1069,10 @@ namespace GridGame.Core.Content
     /// Wanderer (GG-T342; replaces the GG-T236 Rescue scene) is the talk with a wanderer standing at a victory, played from
     /// the results screen: "$hero" is the wanderer, "$with" the party member the player chose to talk, and
     /// <see cref="DialogueTrigger.Id"/> is the wanderer's hero class, a factions.json faction id, or null (the generic one).
-    /// It has one question with three answers — exactly one goes to <see cref="DialogueDef.HeardNode"/> (what they want to
-    /// hear), the others to <see cref="DialogueDef.UnheardNode"/> — both of which go on to <see cref="DialogueDef.OutcomeNext"/>,
-    /// where the meta layer's rule picks <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
+    /// GG-T387 (the owner's "game of wits"): it is a contest of <see cref="DialogueDef.WitsExchanges"/> exchanges, each a
+    /// question from the wanderer with three replies for the companion, one per <see cref="DialogueChoice.Wit"/> (+1 wins
+    /// the point, 0 is neutral, -1 loses it); a later node goes on to <see cref="DialogueDef.OutcomeNext"/>, where the meta
+    /// layer's rule (the standing) picks <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
     public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, GearWorn, CanBrew, FirstArmor, Recruit, LevelReached, StageStart,
         Wanderer }
 
@@ -1134,6 +1137,9 @@ namespace GridGame.Core.Content
     public sealed class DialogueChoice
     {
         public string Label;
+        /// <summary>Wanderer talks only (GG-T387, the game of wits): what this reply does to the standing: +1 wins the
+        /// point, 0 is neutral, -1 loses it. Every exchange offers one of each. 0 everywhere else.</summary>
+        public int Wit;
         /// <summary>Node id to go to; null ends the dialogue.</summary>
         public string Next;
         /// <summary>All must hold for the choice to be offered.</summary>
@@ -1159,9 +1165,11 @@ namespace GridGame.Core.Content
         /// <summary>Camp NPC ids a JoinNpc effect / NpcJoined condition / "npc:" Talk may name (GG-T119 gates services on them).</summary>
         public static readonly string[] Npcs = { "blacksmith", "alchemist", "enchantress", "merchant", "innkeeper" };
 
-        /// <summary>Wanderer talks (GG-T342): the reply that speaks to them, the ones that don't, and the two endings the
-        /// <see cref="OutcomeNext"/> marker resolves to.</summary>
-        public const string HeardNode = "heard", UnheardNode = "unheard", JoinNode = "join", PartNode = "part", OutcomeNext = "$outcome";
+        /// <summary>Wanderer talks (GG-T342): the two endings the <see cref="OutcomeNext"/> marker resolves to.</summary>
+        public const string JoinNode = "join", PartNode = "part", OutcomeNext = "$outcome";
+        /// <summary>Wanderer talks (GG-T387): the exchanges in the game of wits (questions, each with a win, a neutral and
+        /// a losing reply).</summary>
+        public const int WitsExchanges = 3;
 
         public string Id;
         /// <summary>Talk row label (Talk dialogues); also a debugging name.</summary>

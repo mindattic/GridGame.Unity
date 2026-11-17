@@ -1,7 +1,7 @@
 [
   {
     "Id": "greenvalley-01",
-    "Name": "Green Valley I",
+    "Name": "The Tithe Moors I",
     "Theme": "greenvalley",
     "Background": null,
     "Music": "Battle",
@@ -130,7 +130,7 @@
   {
     "Id": "greenvalley-02",
     "Rules": [ "slimetrail" ],
-    "Name": "Green Valley II",
+    "Name": "The Tithe Moors II",
     "Theme": "greenvalley",
     "Background": null,
     "Music": "Battle",
@@ -237,7 +237,7 @@
   },
   {
     "Id": "greenvalley-03",
-    "Name": "Green Valley III",
+    "Name": "The Tithe Moors III",
     "Theme": "greenvalley",
     "Background": null,
     "Music": "Battle",
@@ -704,7 +704,7 @@
   },
   {
     "Id": "desert-01",
-    "Name": "Sandsea Reaches I",
+    "Name": "The Shardfall I",
     "Theme": "desert",
     "Background": null,
     "Music": "Battle",
@@ -806,7 +806,7 @@
   },
   {
     "Id": "desert-02",
-    "Name": "Sandsea Reaches II",
+    "Name": "The Shardfall II",
     "Theme": "desert",
     "Background": null,
     "Music": "Battle",
@@ -935,7 +935,7 @@
   {
     "Id": "desert-03",
     "Rules": [ "firetrail" ],
-    "Name": "Sandsea Reaches III",
+    "Name": "The Shardfall III",
     "Theme": "desert",
     "Background": null,
     "Music": "Battle",
@@ -1068,7 +1068,7 @@
   },
   {
     "Id": "swamp-01",
-    "Name": "Mireholt Fens I",
+    "Name": "The Arkgrave I",
     "Theme": "swamp",
     "Background": null,
     "Music": "Battle",
@@ -1164,7 +1164,7 @@
   },
   {
     "Id": "swamp-02",
-    "Name": "Mireholt Fens II",
+    "Name": "The Arkgrave II",
     "Theme": "swamp",
     "Background": null,
     "Music": "Battle",
@@ -1256,7 +1256,7 @@
   },
   {
     "Id": "swamp-03",
-    "Name": "Mireholt Fens III",
+    "Name": "The Arkgrave III",
     "Theme": "swamp",
     "Background": null,
     "Music": "Battle",
@@ -1381,7 +1381,7 @@
   },
   {
     "Id": "cave-01",
-    "Name": "Frostmaw Caverns I",
+    "Name": "The Anchor Wastes I",
     "Theme": "cave",
     "Background": null,
     "Music": "Battle",
@@ -1470,13 +1470,13 @@
       {
         "Enemies": [
           {
-            "Class": "oni00",
+            "Class": "wraithknight01",
             "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
-            "Class": "oni01",
+            "Class": "mountaintroll",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -1500,7 +1500,7 @@
   {
     "Id": "cave-02",
     "Rules": [ "icetrail" ],
-    "Name": "Frostmaw Caverns II",
+    "Name": "The Anchor Wastes II",
     "Theme": "cave",
     "Background": null,
     "Music": "Battle",
@@ -1633,7 +1633,7 @@
   {
     "Id": "cave-03",
     "Rules": [ "crackingfloor" ],
-    "Name": "Frostmaw Caverns III",
+    "Name": "The Anchor Wastes III",
     "Theme": "cave",
     "Background": null,
     "Music": "Battle",
@@ -1694,19 +1694,19 @@
       {
         "Enemies": [
           {
-            "Class": "oni00",
+            "Class": "wraithknight02",
             "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
-            "Class": "oni01",
+            "Class": "wraithknight03",
             "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
-            "Class": "oni02",
+            "Class": "goblinthug00",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -2114,7 +2114,7 @@
   },
   {
     "Id": "cityruins-01",
-    "Name": "Veshker Ruins I",
+    "Name": "Halcyon I",
     "Theme": "cityruins",
     "Background": null,
     "Music": "Battle",
@@ -2234,7 +2234,7 @@
   },
   {
     "Id": "cityruins-02",
-    "Name": "Veshker Ruins II",
+    "Name": "Halcyon II",
     "Theme": "cityruins",
     "Background": null,
     "Music": "Battle",
@@ -2307,7 +2307,7 @@
       {
         "Enemies": [
           {
-            "Class": "demonlord",
+            "Class": "mechaarmor02",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -2340,7 +2340,7 @@
   },
   {
     "Id": "cityruins-03",
-    "Name": "Veshker Ruins III",
+    "Name": "Halcyon III",
     "Theme": "cityruins",
     "Background": null,
     "Music": "Battle",
@@ -3645,7 +3645,7 @@
   },
   {
     "Id": "desert-04",
-    "Name": "Sandsea Reaches IV",
+    "Name": "Deep Shardfall I",
     "Theme": "desert",
     "Background": null,
     "Music": "Battle",
@@ -3736,7 +3736,7 @@
   },
   {
     "Id": "desert-05",
-    "Name": "Sandsea Reaches V",
+    "Name": "Deep Shardfall II",
     "Theme": "desert",
     "Background": null,
     "Music": "Battle",
@@ -3833,7 +3833,7 @@
   },
   {
     "Id": "swamp-04",
-    "Name": "Mireholt Fens IV",
+    "Name": "The Drowned Arks I",
     "Theme": "swamp",
     "Background": null,
     "Music": "Battle",
@@ -3924,7 +3924,7 @@
   },
   {
     "Id": "swamp-05",
-    "Name": "Mireholt Fens V",
+    "Name": "The Drowned Arks II",
     "Theme": "swamp",
     "Background": null,
     "Music": "Battle",
@@ -4021,7 +4021,7 @@
   },
   {
     "Id": "cave-04",
-    "Name": "Frostmaw Caverns IV",
+    "Name": "Under the Anchors I",
     "Theme": "cave",
     "Background": null,
     "Music": "Battle",
@@ -4062,7 +4062,7 @@
       {
         "Enemies": [
           {
-            "Class": "oni00",
+            "Class": "wraithknight02",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -4100,7 +4100,7 @@
             "Y": -1
           },
           {
-            "Class": "oni02",
+            "Class": "wraithknight01",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -4112,7 +4112,7 @@
   },
   {
     "Id": "cave-05",
-    "Name": "Frostmaw Caverns V",
+    "Name": "Under the Anchors II",
     "Theme": "cave",
     "Background": null,
     "Music": "Battle",

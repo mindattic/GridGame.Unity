@@ -31,7 +31,7 @@ namespace GridGame.Tests
             Assert.That(ids.IndexOf("desert"), Is.EqualTo(ids.IndexOf("lanternroad") + 1));
             var road = db.Campaign.Themes.Single(t => t.Id == "lanternroad");
             Assert.That(road.Name, Is.EqualTo("The Lantern Road"));
-            Assert.That(road.Crawl, Is.Not.Null.And.Not.Empty);
+            Assert.That(db.Campaign.Chapters.Any(c => c.Stage == "lanternroad-02"), "GG-T386: per-theme crawls are retired; a chapter crawl follows every fifth stage");
             Assert.That(road.MilestoneReward, Is.Not.Null);
             Assert.That(road.Stages, Is.EqualTo(new[] { "lanternroad-01", "lanternroad-02", "lanternroad-03" }), "as many stages as the other main themes");
 

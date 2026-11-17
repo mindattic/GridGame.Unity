@@ -25,7 +25,7 @@ namespace GridGame.Tests
         {
             var db = Real;
             var t = db.Campaign.Themes.Single(x => x.Id == "greenvalley2");
-            Assert.That(t.Name, Is.EqualTo("The Moors Beyond the Stills"));
+            Assert.That(t.Name, Is.EqualTo("The Free Holds")); // GG-T386: the region its art shows
             Assert.That(t.Backgrounds, Is.EqualTo("freeholds"));
             Assert.That(t.Stages, Is.EqualTo(new[] { "greenvalley-04", "greenvalley-05" }), "the existing stages, re-skinned");
 

@@ -38,6 +38,19 @@ def text(kind: str, key: str, payload: dict, about=None, speakers=None) -> dict:
     return doc
 
 
+# GG-T386: what a chapter crawl with no words yet is seeded with (the owner, 2026-11-16: "for now set up all the lorem
+# ipsum for story crawls"). The chapter's beats are in docs/STORY_OUTLINE.md; Prose's author writes the words.
+LOREM = [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore "
+    "magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo "
+    "consequat.",
+    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur "
+    "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, "
+    "eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.",
+]
+
+
 def paragraphs(s: str) -> list:
     return [p.strip() for p in (s or "").replace("\r\n", "\n").split("\n\n") if p.strip()]
 
@@ -111,7 +124,7 @@ def entity_descriptions(content: dict, known: set) -> list:
         out.append(text("description", key, {"short": short}, [eid] if eid in known else []))
 
     for tid, t in themes.items():
-        add("place:" + tid, prose_map.first_paragraph(t.get("Crawl")) or t.get("Name") or tid, K.place_entity(tid))
+        add("place:" + tid, t.get("Blurb") or prose_map.first_paragraph(t.get("Crawl")) or t.get("Name") or tid, K.place_entity(tid))
     seen = set()
     for tid, sid in K.campaign_stage_ids(content):
         if sid not in seen:
@@ -143,11 +156,12 @@ def build(content: dict, known: set) -> list:
         if isinstance(p, dict) and p.get("Crawl"):
             about = [K.place_entity(p[k]) for k in ("Backdrop", "Stage") if p.get(k) and K.place_entity(p[k]) in known]
             out.append(text("crawl", key, {"title": p.get("Title") or part, "paragraphs": paragraphs(p["Crawl"])}, about))
-    for t in camp.get("Themes") or []:
-        if t.get("Id") and t.get("Crawl"):
-            pid = K.place_entity(t["Id"])
-            out.append(text("crawl", "crawl:" + t["Id"], {"title": t.get("Name") or t["Id"], "paragraphs": paragraphs(t["Crawl"])},
-                            [pid] if pid in known else []))
+    for ch in camp.get("Chapters") or []:  # GG-T386: a chapter crawl after every fifth stage
+        if isinstance(ch, dict) and ch.get("Id"):  # no words yet: the lorem placeholder (GG-T386)
+            about = [K.place_entity(ch[k]) for k in ("Backdrop", "Stage") if ch.get(k) and K.place_entity(ch[k]) in known]
+            out.append(text("crawl", "crawl:chapter/" + ch["Id"], {"title": ch.get("Title") or ch["Id"],
+                                                                  "paragraphs": paragraphs(ch.get("Crawl")) or list(LOREM)},
+                            about))
     for c in content["classes"]:
         if c.get("Id") and (c.get("Description") or c.get("Lore")):
             p = {}

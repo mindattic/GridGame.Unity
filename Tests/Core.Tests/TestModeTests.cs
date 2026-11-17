@@ -74,7 +74,7 @@ namespace GridGame.Tests
         {
             var s = TestLoop.NewSave(Real);
             Assert.That(s.TestMode && s.TutorialDone, Is.True);
-            Assert.That(Real.Campaign.Themes.All(t => s.SeenCrawls.Contains(t.Id)), Is.True);
+            Assert.That(Real.Campaign.Chapters.All(c => s.SeenCrawls.Contains(c.SeenMark)), Is.True); // GG-T386
             Assert.That(s.Party, Is.EquivalentTo(Progression.StartingRoster));
         }
 

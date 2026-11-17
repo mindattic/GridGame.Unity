@@ -56,7 +56,7 @@ namespace GridGame.Tests
                 if (d.HasCrawl) Need(d.Crawl, $"dialogue {d.Id} crawl");
             }
             Need(db.Campaign.Prologue?.Crawl, "prologue"); Need(db.Campaign.Ending?.Crawl, "ending");
-            foreach (var t in db.Campaign.Themes) Need(t.Crawl, $"theme {t.Id}");
+            foreach (var ch in db.Campaign.Chapters) Need(ch.Crawl, $"chapter {ch.Id}"); // GG-T386
             foreach (var q in db.QuestOrder) { Need(q.Summary, $"quest {q.Id} brief"); Need(q.TurnIn, $"quest {q.Id} turn-in"); }
             foreach (var g in db.GlossaryOrder) Need(g.Text, $"glossary {g.Id}");
             foreach (var u in db.Caravan.Values) foreach (var b in u.Barks) Need(b, $"caravan {u.Id}");

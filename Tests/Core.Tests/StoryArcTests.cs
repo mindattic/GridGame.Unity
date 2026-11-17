@@ -139,6 +139,39 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void A_chapter_crawl_follows_every_fifth_campaign_stage()
+        {
+            var stages = Real.CampaignStages();
+            var chapters = Real.Campaign.Chapters;
+            Assert.That(chapters.Count, Is.EqualTo(stages.Count / ContentLoader.StagesPerChapter), "GG-T386: one per five stages");
+            for (int i = 0; i < chapters.Count; i++)
+            {
+                Assert.That(chapters[i].Stage, Is.EqualTo(stages[(i + 1) * ContentLoader.StagesPerChapter - 1].Id));
+                Assert.That(chapters[i].Crawl, Is.Not.Null.And.Not.Empty);
+                Assert.That(chapters[i].Stage, Is.Not.EqualTo(Real.Campaign.Ending.Stage), "never back to back with the ending");
+            }
+        }
+
+        [Test]
+        public void A_chapter_crawl_plays_once_and_skips_earlier_unseen_ones()
+        {
+            var chapters = Real.Campaign.Chapters;
+            var s = new SaveData();
+            Assert.That(Story.ChapterDue(Real, s), Is.Null);
+            s.ClearedStages.Add(chapters[0].Stage);
+            Assert.That(Story.ChapterDue(Real, s), Is.SameAs(chapters[0]));
+            s.ClearedStages.Add(chapters[1].Stage);
+            s.ClearedStages.Add(chapters[2].Stage);
+            var due = Story.ChapterDue(Real, s);
+            Assert.That(due, Is.SameAs(chapters[2]), "a save that skipped ahead sees only the latest");
+            Story.MarkChapterSeen(Real, s, due);
+            Assert.That(Story.ChapterDue(Real, s), Is.Null, "earlier chapters are marked seen with it");
+            var bot = new SaveData { TestMode = true };
+            bot.ClearedStages.Add(chapters[0].Stage);
+            Assert.That(Story.ChapterDue(Real, bot), Is.Null, "Test Mode never sees story");
+        }
+
+        [Test]
         public void Validation_checks_the_prologue_and_ending()
         {
             var db = Fixture(Beat(new DialogueTrigger { Kind = DialogueTriggerKind.StageStart, Id = "s1" }));

@@ -10,7 +10,9 @@
     conversation  dialogue:<dialogueId>            conversation-<dialogueId>            dialogues.json (every dialogue)
     crawl         crawl:prologue                   crawl-prologue                       campaign.json Prologue.Crawl
     crawl         crawl:ending                     crawl-ending                         campaign.json Ending.Crawl
-    crawl         crawl:<themeId>                  crawl-<themeId>                      campaign.json Themes[].Crawl
+    crawl         crawl:chapter/<chapterId>        crawl-chapter-<chapterId>            campaign.json Chapters[] (GG-T386: one after
+                                                                                        every fifth stage; the per-theme crawls
+                                                                                        crawl:<themeId> are retired)
     crawl         crawl:dialogue/<dialogueId>      crawl-dialogue-<dialogueId>          dialogues.json Crawl (interludes)
     description   class:<classId>                  description-class-<classId>          classes.json Description (short) / Lore (long)
                                                                                         (hero blurbs, enemy and Bestiary entries)
@@ -151,9 +153,9 @@ def game_keys(content: dict) -> dict:
             keys["crawl:prologue"] = "crawl"
         if isinstance(camp.get("Ending"), dict):
             keys["crawl:ending"] = "crawl"
-        for t in camp.get("Themes") or []:
-            if t.get("Id"):
-                keys["crawl:" + t["Id"]] = "crawl"
+        for ch in camp.get("Chapters") or []:  # GG-T386 (replaces the retired crawl:<themeId>)
+            if isinstance(ch, dict) and ch.get("Id"):
+                keys["crawl:chapter/" + ch["Id"]] = "crawl"
     for c in content.get("classes") or []:
         if c.get("Id"):
             keys["class:" + c["Id"]] = "description"

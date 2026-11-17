@@ -11,6 +11,9 @@ the owner approves a text, by the one-time SEED this tool made from the text the
                                                       the fields; refuses once there is nothing left to strip
     python tools/prose_text.py seed-missing [--drafts DIR]   seed ONLY the keys with no text yet (GG-T374), never
                                                       touching an existing one; DIR gets the drafts for Prose
+    python tools/prose_text.py drop-orphans           remove the SEED texts no gameplay record uses any more (a retired
+                                                      key, e.g. GG-T386's crawl:<themeId>); a Prose-applied orphan is only
+                                                      listed (retire it in Prose; the applier removes it)
 
 Library (the mapper, the seed and the content generators import it):
 
@@ -54,7 +57,7 @@ SEED = "seed"
 NARRATIVE = {
     "classes": [("*", "Description"), ("*", "Lore"), ("*", "BossPhases", "*", "Announce")],
     "dialogues": [("*", "Crawl"), ("*", "Nodes", "*", "Text"), ("*", "Nodes", "*", "Choices", "*", "Label")],
-    "campaign": [("Prologue", "Crawl"), ("Ending", "Crawl"), ("Themes", "*", "Crawl")],
+    "campaign": [("Prologue", "Crawl"), ("Ending", "Crawl"), ("Themes", "*", "Crawl"), ("Chapters", "*", "Crawl")],
     "quests": [("*", "Summary"), ("*", "TurnIn")],
     "glossary": [("*", "Text")],
     "items": [("*", "Description")],
@@ -171,10 +174,14 @@ def hydrate(content: dict, texts: dict) -> dict:
         p = pay(key)
         if p is not None and isinstance(camp.get(part), dict):
             camp[part]["Crawl"] = _crawl(p)
-    for t in camp.get("Themes") or []:
-        p = pay("crawl:" + t.get("Id", ""))
+    for ch in camp.get("Chapters") or []:  # GG-T386: chapter crawls replaced the per-theme crawls
+        p = pay("crawl:chapter/" + ch.get("Id", "")) if isinstance(ch, dict) else None
         if p is not None:
-            t["Crawl"] = _crawl(p)
+            ch["Crawl"] = _crawl(p)
+    for t in camp.get("Themes") or []:  # a region's blurb (place:<theme>) for the mapper's summary
+        p = pay("place:" + t.get("Id", ""))
+        if p is not None:
+            t["Blurb"] = p.get("short") or ""
     for q in content.get("quests") or []:
         p = pay("quest:" + q.get("Id", ""))
         if p is not None:
@@ -542,10 +549,37 @@ def cmd_seed_missing(args) -> int:
     return 0
 
 
+def cmd_drop_orphans(args) -> int:
+    """GG-T386: removes seed texts whose key no gameplay record defines any more. Prose-applied texts are left alone
+    and listed: retiring them is Prose's (a retired text pulled by the kit is removed by the applier)."""
+    keys = K.game_keys(K.load_content(args.content))
+    by_kind = {kind: A.read_file(args.out, kind) for kind in A.FILES}
+    dropped, kept = [], []
+    for kind, texts in by_kind.items():
+        for key in sorted(texts):
+            if key in keys:
+                continue
+            if texts[key].get("source") == SEED:
+                dropped.append(key)
+                if not args.dry_run:
+                    del texts[key]
+            else:
+                kept.append(key)
+    if not args.dry_run and dropped:
+        write_texts(args.out, by_kind)
+    for k in dropped:
+        print(f"  {'would drop' if args.dry_run else 'dropped'} orphan seed: {k}")
+    for k in kept:
+        print(f"  orphan from Prose (retire it there): {k}")
+    print(f"prose_text drop-orphans: {len(dropped)} seed orphans {'to drop' if args.dry_run else 'dropped'}, "
+          f"{len(kept)} Prose-applied orphans left")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="GridGame's Content/Text (Prose) snapshot and checks (docs/PROSE.md).")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("snapshot", "check", "seed-missing"):
+    for name in ("snapshot", "check", "seed-missing", "drop-orphans"):
         p = sub.add_parser(name)
         p.add_argument("--content", default=K.CONTENT_DIR)
         p.add_argument("--out", default=TEXT_DIR)
@@ -556,6 +590,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     if args.cmd == "seed-missing":
         return cmd_seed_missing(args)
+    if args.cmd == "drop-orphans":
+        return cmd_drop_orphans(args)
     return cmd_snapshot(args) if args.cmd == "snapshot" else cmd_check(args)
 
 
