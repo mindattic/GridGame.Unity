@@ -129,7 +129,9 @@
   },
   {
     "Id": "greenvalley-02",
-    "Rules": [ "slimetrail" ],
+    "Rules": [
+      "slimetrail"
+    ],
     "Name": "The Tithe Moors II",
     "Theme": "greenvalley",
     "Background": null,
@@ -266,8 +268,12 @@
             "Y": 4,
             "Dialogue": "recruit_ronin_greenvalley",
             "Conditions": [
-              { "Type": "HealedBy" },
-              { "Type": "ParticipatedInPincerWith" }
+              {
+                "Type": "HealedBy"
+              },
+              {
+                "Type": "ParticipatedInPincerWith"
+              }
             ]
           }
         ]
@@ -911,19 +917,19 @@
       {
         "Enemies": [
           {
-            "Class": "soldier02",
+            "Class": "sandmaw",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
             "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "soldier03",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
-          },
-          {
-            "Class": "captain",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -934,7 +940,9 @@
   },
   {
     "Id": "desert-03",
-    "Rules": [ "firetrail" ],
+    "Rules": [
+      "firetrail"
+    ],
     "Name": "The Shardfall III",
     "Theme": "desert",
     "Background": null,
@@ -970,7 +978,10 @@
             "Y": 4,
             "Dialogue": "recruit_sellsword_desert",
             "Conditions": [
-              { "Type": "PayGold", "Amount": 150 }
+              {
+                "Type": "PayGold",
+                "Amount": 150
+              }
             ]
           }
         ]
@@ -1275,19 +1286,19 @@
       {
         "Enemies": [
           {
-            "Class": "frog00",
+            "Class": "frog03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead00",
             "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "frog01",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
-          },
-          {
-            "Class": "frog02",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -1499,7 +1510,9 @@
   },
   {
     "Id": "cave-02",
-    "Rules": [ "icetrail" ],
+    "Rules": [
+      "icetrail"
+    ],
     "Name": "The Anchor Wastes II",
     "Theme": "cave",
     "Background": null,
@@ -1632,7 +1645,9 @@
   },
   {
     "Id": "cave-03",
-    "Rules": [ "crackingfloor" ],
+    "Rules": [
+      "crackingfloor"
+    ],
     "Name": "The Anchor Wastes III",
     "Theme": "cave",
     "Background": null,
@@ -1951,6 +1966,12 @@
             "Level": 1,
             "X": -1,
             "Y": -1
+          },
+          {
+            "Class": "mockingecho",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
           }
         ]
       },
@@ -1996,7 +2017,9 @@
   },
   {
     "Id": "still-03",
-    "Rules": [ "landmines" ],
+    "Rules": [
+      "landmines"
+    ],
     "Name": "The Still III",
     "Theme": "still",
     "Background": null,
@@ -2313,7 +2336,7 @@
             "Y": -1
           },
           {
-            "Class": "mannequin",
+            "Class": "mockingecho",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -2485,6 +2508,12 @@
             "Level": 1,
             "X": -1,
             "Y": -1
+          },
+          {
+            "Class": "mockingecho",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
           }
         ]
       },
@@ -2540,7 +2569,9 @@
   },
   {
     "Id": "cathedral-02",
-    "Rules": [ "crackingfloor" ],
+    "Rules": [
+      "crackingfloor"
+    ],
     "Name": "The Choir's Cathedral II",
     "Theme": "cathedral",
     "Background": null,
