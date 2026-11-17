@@ -386,6 +386,68 @@ def jaggy_metrics(im):
             "halo": round(halo, 3), "score": round(score, 1)}
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Staircase (GG-T389). Owner 2026-11-16: "I know all the portraits need to be reprocessed to get rid of jaggies". After
+# GG-T369 many silhouettes still had hard 0/255 steps along diagonal and curved edges: matte()'s colour bound
+# (alpha >= colour-to-alpha u) re-imposes a full-alpha step wherever the art's own line work was drawn aliased, so its
+# contour coverage only reached edges with no outline. staircase() measures what is left and antialias_edge() is the
+# method's last step for it: coverage of the smoothed contour, applied only where the edge carries no mixing of its own.
+
+def staircase(a8):
+    """Jaggedness of a cut-out's silhouette, 0..1: the share of off-axis contour that is a hard step. Contour pixels are
+    the solid (alpha >= 0.5) pixels and their transparent 4-neighbours; each is weighted by how far the local edge
+    direction (gradient of the alpha blurred by 2 px) is off the pixel axes (0 at <= 3 degrees, 1 from 10 degrees on: a
+    horizontal or vertical edge is crisp, not jagged); a pixel is hard when it is >= 0.96 and touches one <= 0.04.
+    Components under 400 px (specks) don't count. Returns (score, hard off-axis pixel mask)."""
+    a = a8.astype(np.float32) / 255.0
+    solid = a >= 0.5
+    ring = (solid ^ ndimage.binary_erosion(solid, border_value=1)) | (ndimage.binary_dilation(solid) & ~solid)
+    clear_n = ndimage.binary_dilation(a <= 0.04)  # 4-neighbourhood
+    hard = ring & (a >= 0.96) & clear_n
+    g = ndimage.gaussian_filter(a, 2.0)
+    gy, gx = ndimage.sobel(g, 0), ndimage.sobel(g, 1)
+    th = np.degrees(np.arctan2(gy, gx)) % 90.0
+    off = np.minimum(th, 90.0 - th)
+    w = np.clip((off - 3.0) / 7.0, 0, 1) * (np.hypot(gx, gy) > 0.05)
+    lab, n = ndimage.label(solid)
+    if n:
+        sz = ndimage.sum(solid, lab, index=np.arange(1, n + 1))
+        w = w * np.isin(lab, np.where(sz >= 400)[0] + 1)
+    wr = w * ring
+    tot = wr.sum()
+    return (float((wr * hard).sum() / tot) if tot else 0.0), hard & (w > 0.5)
+
+
+def antialias_edge(im, sigma=1.0):
+    """The staircase step (GG-T389), matte()'s step 8: where the silhouette edge carries no mixing of its own (under 30%
+    of the contour pixels in its 5x5 window are partial, 0.1..0.9), alpha becomes the coverage of the silhouette's
+    contour smoothed by sigma px (contour_coverage: x4 supersample, Gaussian, threshold 0.5, box-average), within 1 px
+    of the contour. A step on a diagonal or curve becomes its sub-pixel ramp; a straight axis edge stays crisp. Thin
+    strands and thin gaps (under 42% in their 5x5 window, and 1 px around them) keep their alpha, which the smoothing
+    would break or close. Pixels that gain alpha outside take the nearest figure colour (the outline's, so no halo);
+    figure pixels keep their colour. Nothing else changes: canvas, placement and interior stay pixel for pixel."""
+    arr = np.asarray(im.convert("RGBA")).astype(np.float32)
+    rgb, a = arr[..., :3], arr[..., 3] / 255.0
+    solid = a >= 0.5
+    edge = solid ^ ndimage.binary_erosion(solid, border_value=1)
+    outer = ndimage.binary_dilation(solid) & ~solid
+    E = (edge | outer).astype(np.float32)
+    partial = ((a > 0.1) & (a < 0.9)).astype(np.float32)
+    share = ndimage.uniform_filter(partial * E, 5) / np.maximum(ndimage.uniform_filter(E, 5), 1e-6)
+    R = ndimage.binary_dilation(edge | outer, structure=np.ones((3, 3))) & (share < 0.3)
+    thin = solid & (ndimage.uniform_filter(solid.astype(np.float32), 5) < 0.42)
+    gap = ~solid & (ndimage.uniform_filter((~solid).astype(np.float32), 5) < 0.42)
+    R &= ~ndimage.binary_dilation(thin | gap)
+    cov = contour_coverage(solid, up=4, sigma=sigma)
+    na = a.copy()
+    na[R] = np.where(cov[R] < 0.02, 0.0, cov[R])
+    _, idx = ndimage.distance_transform_edt(~solid, return_indices=True)
+    out = rgb.copy()
+    grow = R & ~solid & (na > 0)
+    out[grow] = rgb[idx[0], idx[1]][grow]
+    return rgba(out, na)
+
+
 RUN = {"tolerance": method_tolerance, "unmix": method_unmix, "ai": method_ai, "hybrid": method_hybrid,
        "smoke": method_smoke, "matte": method_matte}
 
@@ -475,6 +537,39 @@ def _load(args):
     return Image.open(args.image).convert("RGBA"), os.path.splitext(os.path.basename(args.image))[0]
 
 
+def dejag(ids, threshold=0.01, min_gain=0.005):
+    """The GG-T389 pass: antialias_edge on every portrait at or above threshold (or the ids given), written in place
+    (1024 canvas, .meta kept) when its staircase drops by min_gain; every class drawing a changed portrait gets its
+    Figure box re-set to the new alpha bounds (Thumbnail boxes are never touched)."""
+    import glob, json
+    from import_art import RES, figure_box, set_class_blocks
+    pdir = os.path.join(RES, "Portraits")
+    files = [os.path.join(pdir, i + ".png") for i in ids] if ids else sorted(glob.glob(os.path.join(pdir, "*.png")))
+    classes = json.load(open(os.path.join(RES, "Content", "classes.json"), encoding="utf-8-sig"))
+    users = {}
+    for c in classes:
+        users.setdefault((c.get("Portrait") or c["Id"]).lower(), []).append(c["Id"])
+    figures = {}
+    for f in files:
+        name = os.path.splitext(os.path.basename(f))[0]
+        im = Image.open(f).convert("RGBA")
+        j0, _ = staircase(np.asarray(im)[..., 3])
+        if not ids and j0 < threshold:
+            continue
+        out = antialias_edge(im)
+        j1, _ = staircase(np.asarray(out)[..., 3])
+        keep = j0 - j1 >= min_gain
+        print(f"{name:20s} staircase {j0:.3f} -> {j1:.3f} {'kept' if keep else 'skipped'}")
+        if not keep:
+            continue
+        out.save(f, optimize=True)
+        for cid in users.get(name.lower(), []):  # an unchanged box rewrites to the same bytes
+            figures[cid] = {"Figure": figure_box(out)}
+    if figures:
+        set_class_blocks(figures)
+        print(f"Figure boxes set from the alpha bounds: {len(figures)}")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("image", nargs="?")
@@ -483,7 +578,12 @@ def main():
     ap.add_argument("--pick", choices=list(RUN), help="run only this method")
     ap.add_argument("--import", dest="class_id", help="save the --pick'd result as Portraits/<classId>.png")
     ap.add_argument("--score", nargs="*", metavar="PATH", help="print jaggy metrics (default: every portrait)")
+    ap.add_argument("--dejag", nargs="*", metavar="ID", help="staircase step in place on these portraits (default: every "
+                    "one whose staircase is >= 0.01), kept where it lowers the staircase; Figure boxes follow the alpha")
     args = ap.parse_args()
+    if args.dejag is not None:
+        dejag(args.dejag)
+        return
     if args.score is not None:
         import glob
         paths = args.score or [os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Portraits")]
