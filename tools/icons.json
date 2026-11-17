@@ -1551,6 +1551,18 @@
   "charge_snuff_lights": [
    "lorc/candle-light",
    "shadow"
+  ],
+  "echo_encore": [
+   "lorc/mirror-mirror",
+   "teal"
+  ],
+  "echo_mirrorskin": [
+   "lorc/shield-reflect",
+   "silver"
+  ],
+  "charge_mockingecho_mock": [
+   "lorc/mirror-mirror",
+   "shadow"
   ]
  },
  "item": {
