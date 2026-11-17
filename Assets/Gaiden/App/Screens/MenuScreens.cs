@@ -237,9 +237,10 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Choose Your Party", () => App.Router.Back(), col, out _);
-            var hint = Ui.Text($"Pick {PartySize} to set out with — more heroes join along the road.", "small dim", col);
+            var hint = Ui.Text($"Pick {PartySize} to set out with: tap a hero to preview, tap again to lock in. More join along the road.", "small dim", col);
             hint.name = "charselect-hint";
             hint.style.unityTextAlign = TextAnchor.MiddleCenter;
+            hint.style.whiteSpace = WhiteSpace.Normal; // the how-to lives here, not in the grid title (GG-T403)
 
             partyStrip = Ui.El("row", col);
             partyStrip.style.justifyContent = Justify.Center;
@@ -254,7 +255,7 @@ namespace GridGame.App
             lockBtn.style.width = Size.Card;
             lockBtn.style.marginBottom = Space.S8;
 
-            var gridWindow = Ui.Window("Every hero — tap to preview, tap again to lock in", col);
+            var gridWindow = Ui.Window("Every hero", col);
             gridWindow.style.flexGrow = 1;
             Fit.Center(gridWindow);
             grid = Ui.List(gridWindow).contentContainer;
