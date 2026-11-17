@@ -326,9 +326,12 @@ namespace GridGame.Meta
         public bool PincerCutIns = true;
         /// <summary>Pick a target, then confirm (owner direction 2026-10-11). Off = commit on the pick, for veterans.</summary>
         public bool ConfirmActions = true;
-        /// <summary>Menu theme by name (App.Art.Themes: Chrono, Classic, Cyberpunk, Ember, Verdant, Slate, Dark); unknown/missing
-        /// names fall back to Chrono, the default since GG-T385 (a profile still on Classic moves to it once, GaidenSettings.Read).</summary>
+        /// <summary>Menu window theme by name: a preset from Resources/UI/themes.json or one of <see cref="CustomThemes"/>
+        /// (GG-T407); unknown/missing names fall back to Granite, the default since GG-T404.</summary>
         public string MenuTheme = DefaultMenuTheme;
+        /// <summary>The player's own window themes from Settings → Windows (GG-T407), at most
+        /// <see cref="WindowThemeCatalog.MaxCustom"/>, each named apart from every preset.</summary>
+        public List<WindowThemeDef> CustomThemes = new List<WindowThemeDef>();
         /// <summary>Body font by name (App.Fonts.Presets); unknown/missing names fall back to Rounded (GG-T385).</summary>
         public string FontName = DefaultFontName;
         public const string DefaultMenuTheme = "Granite", DefaultFontName = "Rounded";

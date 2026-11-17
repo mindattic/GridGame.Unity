@@ -9,7 +9,7 @@ namespace GridGame.App.Automation
         public static readonly string[] All =
         {
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
-            "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "credits", "newgame", "load",
+            "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
             "profiles", "newprofile",
         };
 
@@ -29,6 +29,7 @@ namespace GridGame.App.Automation
             {
                 case "title": screen = new TitleScreen(); break;
                 case "hub": screen = new HubScreen(); break;
+                case "windows": screen = new WindowEditorScreen(); break; // GG-T407
                 case "stages": screen = new StageSelectScreen(); break;
                 case "items": screen = new ItemsScreen(); break;
                 case "status": screen = new StatusScreen(hero); break;

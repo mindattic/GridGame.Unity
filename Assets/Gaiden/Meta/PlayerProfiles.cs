@@ -29,6 +29,8 @@ namespace GridGame.Meta
             public const string PincerCutIns = "pincerCutIns";
             public const string ConfirmActions = "confirmActions";
             public const string MenuTheme = "menuTheme";
+            /// <summary>The player's own window themes (GG-T407): an array of <see cref="WindowThemeDef"/> objects.</summary>
+            public const string CustomThemes = "customThemes";
             public const string FontName = "fontName";
             /// <summary>Which one-time look migration the file has had (GG-T385): missing/0 = from before the Chrono default.</summary>
             public const string LookVersion = "lookVersion";
@@ -70,6 +72,7 @@ namespace GridGame.Meta
             if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 2 && d.MenuTheme == "Chrono")
                 d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
+            d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -102,11 +105,34 @@ namespace GridGame.Meta
             g.Set(Keys.FontName, s.FontName ?? SettingsSave.DefaultFontName);
             g.Set(Keys.LookVersion, CurrentLookVersion);
             g.Set(Keys.Hyphenate, s.Hyphenate);
+            var themes = new JsonArray();
+            foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
+                if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));
+            g.Set(Keys.CustomThemes, themes);
             var x = s.Difficulty ?? new DifficultySettings();
             var diff = g.GetOrAddObject(Keys.Difficulty);
             diff.Set(DifficultyLevelKey, DifficultyTable.Clamp(x.Level));
             foreach (var legacy in new[] { "preset", "enemyHp", "enemyDamage", "enemySpeed", "rewardGold", "rewardXp", "itemDropRate" })
                 diff.Remove(legacy); // the §22.9 scaffold's keys, retired by the dial (GG-T309)
+        }
+
+        /// <summary>The custom window themes in a settings.json (GG-T407). One that no longer validates (a hand edit, a
+        /// renamed field) is dropped rather than failing the whole file, and so is a second one with the same name.</summary>
+        private static List<WindowThemeDef> ReadCustomThemes(JsonArray arr)
+        {
+            var list = new List<WindowThemeDef>();
+            if (arr == null) return list;
+            foreach (var o in arr)
+            {
+                if (!(o is JsonObject jo)) continue;
+                WindowThemeDef t;
+                try { t = WindowThemeDef.FromJson(jo.ToJson()); }
+                catch (Exception) { continue; }
+                if (WindowThemeCatalog.Validate(t).Count > 0 || list.Any(x => string.Equals(x.Name, t.Name, StringComparison.OrdinalIgnoreCase))) continue;
+                list.Add(t);
+                if (list.Count >= WindowThemeCatalog.MaxCustom) break;
+            }
+            return list;
         }
 
         /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>

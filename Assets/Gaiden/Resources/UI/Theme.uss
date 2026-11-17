@@ -352,7 +352,10 @@
    (Art.Window); these rules restyle the frame, tabs, buttons and the few fixed-color surfaces. Rules here must
    come after the base rules (equal specificity: the later one wins), and a theme that recolors .btn re-declares
    .btn--primary/.btn--danger and the :hover/.is-pressed states, which its .btn rule would otherwise outrank.
-   A new theme = one row in Art.Themes + one block like this. */
+   GG-T407: themes are data (Resources/UI/themes.json + the player's own from Settings → Windows); a theme's frame.style
+   picks one of these blocks (classic = none), its optional frame colours recolour the window border inline, and its
+   texture is a .window-tex layer inside each window. A new frame style = one block like this + its name in
+   WindowThemeCatalog.FrameStyles. */
 
 /* ── Chrono (default, GG-T385): owner 2026-11-16, "use a Chrono Trigger gray instead of FF blue gradient". A neutral
    medium-to-dark gray window (Art "Chrono", no blue cast) in a light bevelled frame: lit top/left edge, shaded
@@ -419,62 +422,64 @@
 .theme-chrono .btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
 
 /* ── Granite (default, GG-T404): owner 2026-11-17, "split the difference and get a gray/blue Final Fantasy/Chrono
-   Trigger hybrid theme ... its own identity but also harken back". The Chrono frame and ramp cooled to blue-gray, over
-   Art "Granite": a bright blue-gray gradient with a soft granite mottle. Primary (orange) and danger (red) unchanged. ── */
-.theme-granite .stage { background-color: rgb(13, 13, 26); }
-.theme-granite .letterbox { background-color: rgb(6, 6, 17); }
-.theme-granite .stage-frame { border-color: rgb(173, 185, 227); }
+   Trigger hybrid theme ... its own identity but also harken back". The Chrono frame and ramp cooled to a steel slate (GG-T407,
+   owner: the first blue-gray "made purple"; every neutral here has red lowest and green near blue, hue 205, low
+   saturation), over the themes.json "Granite" gradient with its soft granite mottle. Primary (orange) and danger (red)
+   unchanged. ── */
+.theme-granite .stage { background-color: rgb(22, 24, 26); }
+.theme-granite .letterbox { background-color: rgb(15, 16, 17); }
+.theme-granite .stage-frame { border-color: rgb(195, 214, 227); }
 .theme-granite .window {
     border-width: 6px;
     border-radius: 10px;
-    border-top-color: rgb(209, 223, 255);
-    border-left-color: rgb(192, 205, 251);
-    border-right-color: rgb(115, 123, 155);
-    border-bottom-color: rgb(89, 96, 122);
+    border-top-color: rgb(219, 240, 255);
+    border-left-color: rgb(216, 236, 251);
+    border-right-color: rgb(133, 146, 155);
+    border-bottom-color: rgb(105, 115, 122);
 }
-.theme-granite .window--plain { background-color: rgba(51, 55, 74, 0.95); }
-.theme-granite .menu-row:hover { background-color: rgba(219, 235, 255, 0.07); }
-.theme-granite .menu-row--selected { background-color: rgba(219, 235, 255, 0.16); }
-.theme-granite .menu-row.is-pressed { background-color: rgba(219, 235, 255, 0.26); }
-.theme-granite .card { background-color: rgba(219, 235, 255, 0.06); }
-.theme-granite .card--selected { background-color: rgba(219, 235, 255, 0.16); }
-.theme-granite .thumb { background-color: rgb(46, 49, 68); }
-.theme-granite .role-badge { background-color: rgba(11, 12, 24, 0.8); }
+.theme-granite .window--plain { background-color: rgba(64, 70, 74, 0.95); }
+.theme-granite .menu-row:hover { background-color: rgba(219, 240, 255, 0.07); }
+.theme-granite .menu-row--selected { background-color: rgba(219, 240, 255, 0.16); }
+.theme-granite .menu-row.is-pressed { background-color: rgba(219, 240, 255, 0.26); }
+.theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
+.theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
+.theme-granite .thumb { background-color: rgb(58, 64, 68); }
+.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.8); }
 
 .theme-granite .header {
-    background-color: rgba(36, 38, 55, 0.94);
-    border-color: rgb(192, 205, 251);
+    background-color: rgba(47, 52, 55, 0.94);
+    border-color: rgb(216, 236, 251);
 }
 .theme-granite .toast {
-    background-color: rgba(54, 58, 78, 0.97);
-    border-top-color: rgb(209, 223, 255);
-    border-left-color: rgb(192, 205, 251);
-    border-right-color: rgb(115, 123, 155);
-    border-bottom-color: rgb(89, 96, 122);
+    background-color: rgba(67, 73, 78, 0.97);
+    border-top-color: rgb(219, 240, 255);
+    border-left-color: rgb(216, 236, 251);
+    border-right-color: rgb(133, 146, 155);
+    border-bottom-color: rgb(105, 115, 122);
 }
 
 .theme-granite .tab {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    border-top-color: rgb(209, 223, 255);
-    border-left-color: rgb(192, 205, 251);
-    border-right-color: rgb(115, 123, 155);
-    background-color: rgb(53, 56, 76);
-    color: rgb(170, 182, 224);
+    border-top-color: rgb(219, 240, 255);
+    border-left-color: rgb(216, 236, 251);
+    border-right-color: rgb(133, 146, 155);
+    background-color: rgb(65, 72, 76);
+    color: rgb(193, 211, 224);
 }
-.theme-granite .tab--active { background-color: rgb(101, 108, 137); color: rgb(219, 235, 255); }
+.theme-granite .tab--active { background-color: rgb(118, 129, 137); color: rgb(219, 240, 255); }
 
 .theme-granite .btn {
     border-radius: 10px;
-    border-top-color: rgb(209, 223, 255);
-    border-left-color: rgb(192, 205, 251);
-    border-right-color: rgb(115, 123, 155);
-    border-bottom-color: rgb(46, 49, 68);
-    background-color: rgb(85, 91, 117);
-    color: rgb(219, 235, 255);
+    border-top-color: rgb(219, 240, 255);
+    border-left-color: rgb(216, 236, 251);
+    border-right-color: rgb(133, 146, 155);
+    border-bottom-color: rgb(58, 64, 68);
+    background-color: rgb(101, 110, 117);
+    color: rgb(219, 240, 255);
 }
-.theme-granite .btn:hover { background-color: rgb(101, 108, 137); }
-.theme-granite .btn.is-pressed { background-color: rgb(65, 69, 91); }
+.theme-granite .btn:hover { background-color: rgb(118, 129, 137); }
+.theme-granite .btn.is-pressed { background-color: rgb(78, 86, 91); }
 .theme-granite .btn--primary { background-color: rgb(196, 120, 24); border-top-color: rgb(255, 232, 170); border-left-color: rgb(255, 232, 170); border-right-color: rgb(255, 232, 170); border-bottom-color: rgb(150, 92, 30); }
 .theme-granite .btn--primary:hover { background-color: rgb(226, 146, 40); }
 .theme-granite .btn--primary.is-pressed { background-color: rgb(150, 88, 14); }

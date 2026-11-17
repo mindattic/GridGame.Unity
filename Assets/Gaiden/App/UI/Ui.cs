@@ -68,30 +68,46 @@ namespace GridGame.App
             var w = El("window " + (classes ?? ""), parent);
             w.style.backgroundImage = new StyleBackground(Art.Window);
             TintWindow(w);
+            // GG-T407: the theme's texture layer (absolute, picking-ignored, first child). A screen that clears and refills
+            // a window drops it; the next geometry change (or theme apply) puts it back.
+            WindowThemes.Dress(w);
+            w.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                bool want = WindowThemes.Overlay(WindowThemes.Current).tex != null;
+                bool has = w.hierarchy.childCount > 0 && w.hierarchy[0].ClassListContains(WindowThemes.OverlayClass);
+                if (want != has) WindowThemes.Dress(w);
+            });
             if (title != null) Text(title, "window-title", w);
             return w;
         }
 
-        /// <summary>A gradient-only theme tints the window frame inline with its derived accent; a theme with a USS
-        /// class (Art.ThemeUssClass) owns the frame in Theme.uss, so the inline colors are cleared for it.</summary>
+        /// <summary>The window frame's inline colours (GG-T407, <see cref="WindowThemes.FrameSides"/>): a theme's own 1-3
+        /// frame colours, or Classic's derived accent; cleared when the theme's Theme.uss block owns the frame.</summary>
         private static void TintWindow(VisualElement w)
         {
-            StyleColor c = Art.ThemeUssClass == null ? new StyleColor(Art.ThemeAccent) : new StyleColor(StyleKeyword.Null);
-            w.style.borderTopColor = w.style.borderBottomColor = w.style.borderLeftColor = w.style.borderRightColor = c;
+            var sides = WindowThemes.FrameSides(WindowThemes.Current, Art.ThemeAccent);
+            StyleColor C(int i) => sides == null ? new StyleColor(StyleKeyword.Null) : new StyleColor(sides[i]);
+            w.style.borderTopColor = C(0);
+            w.style.borderLeftColor = C(1);
+            w.style.borderRightColor = C(2);
+            w.style.borderBottomColor = C(3);
         }
 
         /// <summary>
-        /// Applies the active menu theme (Art.ApplyTheme) live to everything already on screen (GG-T185): puts the
-        /// theme's root class on <paramref name="root"/> (removing every other theme's) so Theme.uss's scoped
-        /// <c>.theme-* .window/.tab/.btn</c> rules take over, and re-tints every open window's frame. The window
-        /// gradient texture is repainted in place by Art.ApplyTheme itself.
+        /// Applies the active menu theme (Art.ApplyTheme) live to everything already on screen (GG-T185, GG-T407): puts the
+        /// frame style's root class on <paramref name="root"/> (removing every other one) so Theme.uss's scoped
+        /// <c>.theme-* .window/.tab/.btn</c> rules take over, re-tints every open window's frame, lays the theme's texture
+        /// layer into every window and sets the default text colour. The gradient is repainted in place by Art.ApplyTheme.
         /// </summary>
         public static void ApplyMenuTheme(VisualElement root)
         {
             if (root == null) return;
-            foreach (var t in Art.Themes)
-                if (t.UssClass != null) root.EnableInClassList(t.UssClass, t.UssClass == Art.ThemeUssClass);
-            root.Query(className: "window").ForEach(TintWindow);
+            string mine = Art.ThemeUssClass;
+            foreach (var c in WindowThemes.AllUssClasses) root.EnableInClassList(c, c == mine);
+            var text = WindowThemes.TextColor;
+            var stage = root.Q(className: "stage");
+            if (stage != null) stage.style.color = text.HasValue ? new StyleColor(text.Value) : new StyleColor(StyleKeyword.Null);
+            root.Query(className: "window").ForEach(w => { TintWindow(w); WindowThemes.Dress(w); });
         }
 
         public static Button Button(string text, Action onClick, string classes = null, VisualElement parent = null)

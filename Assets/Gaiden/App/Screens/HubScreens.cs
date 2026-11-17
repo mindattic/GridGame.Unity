@@ -1780,13 +1780,6 @@ namespace GridGame.App
                 int i = Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f);
                 Ui.MenuRow(label, string.Format(fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
             }
-            void CycleTheme()
-            {
-                var names = Art.Themes.Select(t => t.Name).ToArray();
-                int i = Array.IndexOf(names, st.MenuTheme);
-                st.MenuTheme = names[(i + 1) % names.Length];
-                App.ApplySettings(); App.SaveSettings(); Refresh();
-            }
             void CycleFont()
             {
                 var names = Fonts.Presets.Select(p => p.Name).ToArray();
@@ -1798,7 +1791,8 @@ namespace GridGame.App
             // then draws with the default theme, font and word wrap).
             if (Features.LookPresets)
             {
-                Ui.MenuRow("Menu theme", st.MenuTheme, CycleTheme, w);
+                // GG-T407: every window theme (presets, the player's own, and the editor for gradient, texture and frame).
+                Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w).name = "settings-windows";
                 Ui.MenuRow("Font", st.FontName, CycleFont, w);
                 // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
                 Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",

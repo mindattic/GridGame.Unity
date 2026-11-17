@@ -193,115 +193,43 @@ namespace GridGame.App
 
         public static Texture2D Placeholder => placeholder ??= Solid(new Color(0.35f, 0.2f, 0.45f), "placeholder");
 
-        /// <summary>The window body: a vertical gradient from the active menu theme (Chrono gray by default) (border
-        /// tint also follows the theme — see <see cref="ThemeAccent"/>, applied in <c>Ui.Window</c>).</summary>
-        public static Texture2D Window => window ??= Gradient(CurrentTheme.ColorA, CurrentTheme.ColorB, "window", CurrentTheme.Grain);
-        public static Texture2D WindowDark => windowDark ??= Gradient(Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), "window-dark", CurrentTheme.Grain);
+        /// <summary>The window body: the active theme's gradient (GG-T407, <see cref="WindowThemes"/>), baked at
+        /// <see cref="WindowThemes.TexSize"/>² and stretched by each window; its texture overlay, frame and accent are
+        /// applied by <c>Ui.Window</c> / <c>Ui.ApplyMenuTheme</c>.</summary>
+        public static Texture2D Window => window ??= BakeWindow("window", 0f, 0f);
+        /// <summary>The same gradient darkened (30 % at the top to 55 % at the bottom).</summary>
+        public static Texture2D WindowDark => windowDark ??= BakeWindow("window-dark", 0.3f, 0.55f);
 
-        // ── Menu themes (owner request 2026-10-11: "the gradient on all the menus is generated... make
-        // multiple Themes... updated in Settings and remembers it") ──────────────────────────────────
-
-        /// <summary>A theme is two chosen base colors; the accent (window border, highlights) is derived from
-        /// them by color theory, never hand-picked, so every theme — including future ones — looks coherent
-        /// with zero extra tuning: hue-average the two bases (shortest arc around the wheel), then take its
-        /// complement (+180°) for a third hue guaranteed to stand apart from both, pushed toward full
-        /// saturation/brightness since it's used for thin borders and highlights, not large fills.
-        /// A theme may also name a <see cref="UssClass"/> (GG-T185): <c>Ui.ApplyMenuTheme</c> puts it on the UI root, and
-        /// Theme.uss scopes that theme's window frame, tabs and buttons under it (<c>.theme-slate .tab { … }</c>), so the
-        /// whole look switches live with no screen rebuild. A theme with a class owns its window frame in USS (no inline
-        /// accent border). Adding a theme = one row in <see cref="Themes"/> plus, if it restyles more than the gradient,
-        /// one <c>.theme-&lt;name&gt;</c> block at the end of Theme.uss.</summary>
-        public readonly struct MenuTheme
+        private static Texture2D BakeWindow(string name, float darkTop, float darkBottom)
         {
-            public readonly string Name;
-            public readonly Color32 ColorA, ColorB;
-            public readonly Color32 Accent;
-            /// <summary>Root USS class that scopes this theme's stylesheet overrides; null for gradient-only themes.</summary>
-            public readonly string UssClass;
-            /// <summary>Mottle strength (0 = a clean gradient): soft two-octave noise over the gradient, the granite of
-            /// Chrono Trigger's windows (GG-T404).</summary>
-            public readonly float Grain;
-
-            public MenuTheme(string name, Color32 a, Color32 b, string ussClass = null, float grain = 0f)
-            {
-                Name = name; ColorA = a; ColorB = b; UssClass = ussClass; Grain = grain;
-                Color.RGBToHSV(a, out var ha, out var sa, out var va);
-                Color.RGBToHSV(b, out var hb, out var sb, out var vb);
-                float arc = Mathf.DeltaAngle(ha * 360f, hb * 360f) / 360f; // shortest signed hue distance a→b
-                float mid = Mathf.Repeat(ha + arc * 0.5f, 1f);             // circular midpoint hue
-                float accentHue = Mathf.Repeat(mid + 0.5f, 1f);            // its complement
-                float sat = Mathf.Clamp(Mathf.Max(sa, sb), 0.6f, 0.95f);
-                float val = Mathf.Clamp(Mathf.Max(va, vb) * 1.05f, 0.8f, 1f);
-                Accent = Color.HSVToRGB(accentHue, sat, val);
-            }
+            var t = WindowThemes.NewTexture(WindowThemes.TexSize, WindowThemes.TexSize, name);
+            WindowThemes.Paint(t, WindowThemes.Current, darkTop, darkBottom);
+            return t;
         }
 
-        public static readonly MenuTheme[] Themes =
+        // ── Menu themes (owner 2026-10-11: "make multiple Themes ... updated in Settings and remembers it"; GG-T407:
+        // "make the gradient totally editable ... many different themes to choose from") ─────────────────────────────
+        // A theme is data now: Resources/UI/themes.json presets plus the profile's own (SettingsSave.CustomThemes), baked
+        // by App/UI/WindowThemes.cs. These are the few things the rest of the game reads.
+
+        /// <summary>The window border / highlight colour: the theme's own accent, else derived from its gradient by colour
+        /// theory (the complement of the ends' hue midpoint, GG-T185).</summary>
+        public static Color ThemeAccent => WindowThemes.Accent;
+        /// <summary>The active theme's root USS class (its frame style's Theme.uss block), or null for Classic.</summary>
+        public static string ThemeUssClass => WindowThemes.UssClass;
+        public static string ThemeName => WindowThemes.Current.Name;
+
+        /// <summary>Switches the active theme by name (a preset or a custom theme; an unknown name falls back to Granite),
+        /// regenerating any already-created window textures in place (same Texture2D instance, so every
+        /// <c>VisualElement</c> already pointing at it updates with no rebuild). Call <c>Ui.ApplyMenuTheme</c> after.</summary>
+        public static void ApplyTheme(string name) => ApplyTheme(WindowThemes.Resolve(name));
+
+        /// <summary>Switches to <paramref name="theme"/> itself (the Window Editor's live draft).</summary>
+        public static void ApplyTheme(GridGame.Meta.WindowThemeDef theme)
         {
-            // The default since GG-T385 (owner 2026-11-16: "use a Chrono Trigger gray instead of FF blue gradient"): a neutral
-            // medium-to-dark gray, no blue cast, in the light bevelled frame of Theme.uss's .theme-chrono block. First in the
-            // list, so it is also the fallback for an unknown name.
-            // The default since GG-T404 (owner 2026-11-17: the Chrono gray "looks more brown and poopy than the bright and
-            // alluring granite background of Chrono Trigger ... split the difference ... a gray/blue Final Fantasy/Chrono
-            // Trigger hybrid"): a bright, mottled blue-gray granite between Slate and Classic, in .theme-granite's frame.
-            new MenuTheme("Granite", new Color32(124, 142, 190, 255), new Color32(30, 38, 80, 255), "theme-granite", 0.07f),
-            new MenuTheme("Chrono", new Color32(112, 112, 112, 255), new Color32(40, 40, 40, 255), "theme-chrono"),
-            new MenuTheme("Classic", new Color32(44, 70, 170, 255), new Color32(10, 18, 70, 255)),
-            new MenuTheme("Cyberpunk", new Color32(255, 0, 200, 255), new Color32(0, 220, 255, 255)),
-            new MenuTheme("Ember", new Color32(239, 83, 80, 255), new Color32(38, 166, 154, 255)),
-            new MenuTheme("Verdant", new Color32(46, 125, 50, 255), new Color32(7, 20, 8, 255)),
-            // Chrono Trigger's default window (GG-T185): a gray-blue slate gradient in a light bevelled frame, white text.
-            new MenuTheme("Slate", new Color32(118, 128, 158, 255), new Color32(46, 52, 78, 255), "theme-slate"),
-            // GG-T186: the DocFX modern dark docs / mindattic.com look on MindAttic.Components' web/themes/Dark/dark.css
-            // tokens: flat near-black windows (both stops --bg2 #13161b); the hairline --border #2a2f3a frame and the one
-            // --accent #6ba3e8 live in Theme.uss's .theme-dark block.
-            new MenuTheme("Dark", new Color32(0x13, 0x16, 0x1b, 255), new Color32(0x13, 0x16, 0x1b, 255), "theme-dark"),
-        };
-
-        private static MenuTheme CurrentTheme = Themes[0];
-        public static Color ThemeAccent => CurrentTheme.Accent;
-        /// <summary>The active theme's root USS class, or null when it only recolors the window gradient.</summary>
-        public static string ThemeUssClass => CurrentTheme.UssClass;
-        public static string ThemeName => CurrentTheme.Name;
-
-        /// <summary>Switches the active theme, regenerating any already-created textures in place (same
-        /// Texture2D instance, so every <c>VisualElement</c> already pointing at it updates with no rebuild).
-        /// Unknown names fall back to the first theme (Chrono). Call once at save load and again whenever Settings changes it.</summary>
-        public static void ApplyTheme(string name)
-        {
-            var found = Themes.FirstOrDefault(t => t.Name == name);
-            CurrentTheme = found.Name != null ? found : Themes[0];
-            if (window != null) Repaint(window, CurrentTheme.ColorA, CurrentTheme.ColorB, CurrentTheme.Grain);
-            if (windowDark != null) Repaint(windowDark, Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), CurrentTheme.Grain);
-        }
-
-        private static Color32 Darken(Color32 c, float amount) => Color32.Lerp(c, new Color32(0, 0, 0, c.a), amount);
-
-        /// <summary>Repaints an existing gradient texture's pixels in place (see <see cref="Gradient"/>).</summary>
-        private static void Repaint(Texture2D tex, Color32 top, Color32 bottom, float grain = 0f)
-        {
-            Paint(tex, top, bottom, grain);
-            tex.Apply();
-        }
-
-        /// <summary>The window body's pixels: a vertical gradient, mottled by <paramref name="grain"/> (GG-T404). Every
-        /// window texture is <see cref="WindowTexW"/> wide, so a theme switch repaints it in place with or without grain.</summary>
-        private static void Paint(Texture2D tex, Color32 top, Color32 bottom, float grain)
-        {
-            int w = tex.width, h = tex.height;
-            for (int y = 0; y < h; y++)
-            {
-                Color c = Color32.Lerp(bottom, top, y / (float)(h - 1));
-                for (int x = 0; x < w; x++)
-                {
-                    if (grain <= 0f) { tex.SetPixel(x, y, c); continue; }
-                    // Two octaves of smooth noise (a window stretches the texture): a broad mottle and a finer fleck.
-                    float n = (Mathf.PerlinNoise(x * 0.09f + 3.1f, y * 0.09f + 7.7f) - 0.5f) * 0.7f
-                            + (Mathf.PerlinNoise(x * 0.37f + 11.3f, y * 0.37f + 1.9f) - 0.5f) * 0.3f;
-                    float k = 1f + n * grain * 2f;
-                    tex.SetPixel(x, y, new Color(Mathf.Clamp01(c.r * k), Mathf.Clamp01(c.g * k), Mathf.Clamp01(c.b * k), c.a));
-                }
-            }
+            WindowThemes.SetCurrent(theme);
+            if (window != null) WindowThemes.Paint(window, WindowThemes.Current);
+            if (windowDark != null) WindowThemes.Paint(windowDark, WindowThemes.Current, 0.3f, 0.55f);
         }
 
         /// <summary>The pointing-glove cursor (tools/make_icons.py, UI/cursor); the generated one if it's missing.</summary>
@@ -320,16 +248,6 @@ namespace GridGame.App
             var px = new Color[16];
             for (int i = 0; i < px.Length; i++) px[i] = c;
             t.SetPixels(px);
-            t.Apply();
-            return t;
-        }
-
-        private const int WindowTexW = 96;
-
-        private static Texture2D Gradient(Color32 top, Color32 bottom, string name, float grain = 0f)
-        {
-            var t = NewTex(WindowTexW, 128, name);
-            Paint(t, top, bottom, grain);
             t.Apply();
             return t;
         }
