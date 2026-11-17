@@ -181,7 +181,10 @@ namespace GridGame.EditorTools
             ti.filterMode = FilterMode.Bilinear;
             ti.sRGBTexture = true;
             ti.textureCompression = TextureImporterCompression.CompressedHQ;
-            if (assetPath.Contains("/Portraits/")) ti.maxTextureSize = 1024;
+            // GG-T387: portraits are 1024 canvases (§12.1.2) and dialogue draws a person ~1.2x their pixels, so the cap must
+            // never shrink one: 2048 imports every 1024 file pixel for pixel and leaves room for higher-resolution art.
+            // No platform overrides (the .meta files carry none), so Android, iOS, WebGL and Standalone all use this.
+            if (assetPath.Contains("/Portraits/")) ti.maxTextureSize = 2048;
             // GG-T353: backdrops keep the art's resolution (1536x3072 originals): 4096 so Unity never halves them.
             // Still CompressedHQ (BC7 / ASTC 4x4, ~1 byte per pixel, no mips): ~4.5 MB of texture memory each.
             else if (assetPath.Contains("/Backgrounds/")) ti.maxTextureSize = 4096;
