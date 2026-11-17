@@ -1257,6 +1257,7 @@ def storyarc(run="storyarc", capture=True):
     _goto("mercenaries"); time.sleep(0.8); shot("12-mercenaries")
     hire = sorted(call("names", prefix="merc-hire-"))
     if hire:
+        call("scrollto", name=hire[0]); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
         call("click", name=hire[0]); time.sleep(0.5); call("click", name="confirm-yes"); time.sleep(1.0)
     ok["mercenary_hired"] = len(save().get("mercs") or []) == 1
     shot("13-merc-hired")
