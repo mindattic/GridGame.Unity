@@ -1,14 +1,22 @@
-/* GridGame Gaiden — UI theme. Final Fantasy-style menus: blue gradient windows, white rounded frames,
-   pointing-hand cursor rows, gold numbers. Every screen is built in C# from these classes. */
+/* GridGame Gaiden — UI theme. A nod to the 16-bit Square menus, not a copy: Chrono Trigger gray gradient windows
+   (the default "Chrono" theme, GG-T385) in light bevelled frames, pointing-hand cursor rows, gold numbers, and
+   block-outlined text with a hard drop shadow. Every screen is built in C# from these classes. */
 
 /* -- Design tokens (GG-T250, docs/POLISH.md): the one source for color, type and spacing; App/UI/Tokens.cs
    mirrors the same values for code. Use var(--...) in rules, never a fresh literal. -- */
 :root {
-    --color-text: rgb(240, 242, 255);
-    --color-dim: rgb(150, 160, 205);
+    /* Neutrals are gray, not blue (GG-T385), so they sit on the Chrono window; gameplay hues below are unchanged. */
+    --color-text: rgb(244, 244, 246);
+    --color-dim: rgb(176, 176, 184);
+    --color-sub: rgb(208, 208, 214);
     --color-white: rgb(255, 255, 255);
-    --color-ink: rgb(15, 18, 43);
-    --color-frame: rgb(236, 238, 255);
+    --color-ink: rgb(14, 14, 18);
+    --color-frame: rgb(238, 238, 240);
+    --color-panel: rgba(44, 44, 48, 0.94);
+    /* Text depth (GG-T385): a dark block outline plus a hard, unblurred drop shadow, mobile-RPG style. Three steps
+       by size so captions stay legible; applied once by class below, never per screen. */
+    --color-text-edge: rgb(8, 8, 12);
+    --color-text-drop: rgba(0, 0, 0, 0.85);
     --color-gold: rgb(255, 217, 89);
     --color-good: rgb(115, 242, 148);
     --color-bad: rgb(255, 97, 87);
@@ -74,12 +82,12 @@
     width: 1170px;
     height: 2532px;
     overflow: hidden;
-    background-color: rgb(8, 10, 22);
+    background-color: rgb(12, 12, 14);
     color: var(--color-text);
     font-size: var(--type-body);
 }
 
-.letterbox { background-color: rgb(4, 5, 12); }
+.letterbox { background-color: rgb(6, 6, 8); }
 /* Outline around the stage when the device is wider/taller than any supported phone (tablets): the bars read
    as a deliberate bezel around one big game window, in the same white rounded frame every window uses. */
 .stage-frame {
@@ -110,13 +118,13 @@
 /* A window holding a scrolling list (Ui.List): fills the space left over and scrolls instead of squashing the
    tabs and footers around it when its content runs long. */
 .window--scroller { flex-shrink: 1; flex-basis: 0; min-height: 160px; }
-.window--plain { background-color: rgba(10, 16, 52, 0.94); }
+.window--plain { background-color: var(--color-panel); }
 .window-title {
     font-size: var(--type-h3);
     color: var(--color-white);
     margin-bottom: var(--space-16);
 }
-.window-sub { font-size: var(--type-small); color: rgb(170, 184, 255); }
+.window-sub { font-size: var(--type-small); color: var(--color-sub); }
 
 /* ── Text ────────────────────────────────────────────────────────────────── */
 .title { font-size: var(--type-title); color: rgb(255, 244, 214); -unity-text-align: middle-center; }
@@ -129,8 +137,31 @@
 .good { color: var(--color-good); }
 .bad { color: var(--color-bad); }
 .warn { color: var(--color-warn); }
-.shadow { text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.75); }
+.shadow { text-shadow: 3px 3px 0 var(--color-text-drop); }
 .num { -unity-text-align: middle-right; }
+
+/* ── Text depth (GG-T385) ────────────────────────────────────────────────────
+   Outline and text-shadow are inherited, so the body step on .stage reaches every label; headings step up, small
+   text steps down (a thick outline closes the counters of a 24-30 px glyph). Dark text on a light chip (.text-ink,
+   .pip) has none. A label sized inline in code takes .depth-lg / .depth-sm / .depth-none instead of inline values. */
+.stage, .depth-md {
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: var(--color-text-edge);
+    text-shadow: 3px 3px 0 var(--color-text-drop);
+}
+.title, .h1, .h2, .window-title, .header-title, .header-gold, .t-h3, .t-h2, .t-h1, .t-display, .depth-lg {
+    -unity-text-outline-width: 3px;
+    -unity-text-outline-color: var(--color-text-edge);
+    text-shadow: 4px 4px 0 var(--color-text-drop);
+}
+.title, .t-display { text-shadow: 6px 6px 0 var(--color-text-drop); }
+.small, .tiny, .t-caption, .role-badge, .depth-sm {
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: var(--color-text-edge);
+    text-shadow: 2px 2px 0 var(--color-text-drop);
+}
+.pip, .text-ink, .depth-none { -unity-text-outline-width: 0; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+.text-ink { color: var(--color-ink); }
 
 /* ── Menu rows (cursor hand) ─────────────────────────────────────────────── */
 .menu-row {
@@ -323,6 +354,70 @@
    .btn--primary/.btn--danger and the :hover/.is-pressed states, which its .btn rule would otherwise outrank.
    A new theme = one row in Art.Themes + one block like this. */
 
+/* ── Chrono (default, GG-T385): owner 2026-11-16, "use a Chrono Trigger gray instead of FF blue gradient". A neutral
+   medium-to-dark gray window (Art "Chrono", no blue cast) in a light bevelled frame: lit top/left edge, shaded
+   bottom/right. Every fixed-color surface (header, tabs, buttons, toast, cards) is a gray from the same ramp. ── */
+.theme-chrono .stage { background-color: rgb(14, 14, 16); }
+.theme-chrono .letterbox { background-color: rgb(6, 6, 8); }
+.theme-chrono .stage-frame { border-color: rgb(200, 200, 204); }
+.theme-chrono .window {
+    border-width: 6px;
+    border-radius: 10px;
+    border-top-color: rgb(242, 242, 244);
+    border-left-color: rgb(222, 222, 226);
+    border-right-color: rgb(132, 132, 138);
+    border-bottom-color: rgb(102, 102, 108);
+}
+.theme-chrono .window--plain { background-color: rgba(58, 58, 62, 0.95); }
+.theme-chrono .menu-row:hover { background-color: rgba(255, 255, 255, 0.07); }
+.theme-chrono .menu-row--selected { background-color: rgba(255, 255, 255, 0.16); }
+.theme-chrono .menu-row.is-pressed { background-color: rgba(255, 255, 255, 0.26); }
+.theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
+.theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
+.theme-chrono .thumb { background-color: rgb(52, 52, 56); }
+.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.8); }
+
+.theme-chrono .header {
+    background-color: rgba(40, 40, 44, 0.94);
+    border-color: rgb(222, 222, 226);
+}
+.theme-chrono .toast {
+    background-color: rgba(62, 62, 66, 0.97);
+    border-top-color: rgb(242, 242, 244);
+    border-left-color: rgb(222, 222, 226);
+    border-right-color: rgb(132, 132, 138);
+    border-bottom-color: rgb(102, 102, 108);
+}
+
+.theme-chrono .tab {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top-color: rgb(242, 242, 244);
+    border-left-color: rgb(222, 222, 226);
+    border-right-color: rgb(132, 132, 138);
+    background-color: rgb(60, 60, 64);
+    color: rgb(196, 196, 202);
+}
+.theme-chrono .tab--active { background-color: rgb(116, 116, 120); color: rgb(255, 255, 255); }
+
+.theme-chrono .btn {
+    border-radius: 10px;
+    border-top-color: rgb(242, 242, 244);
+    border-left-color: rgb(222, 222, 226);
+    border-right-color: rgb(132, 132, 138);
+    border-bottom-color: rgb(52, 52, 56);
+    background-color: rgb(98, 98, 102);
+    color: rgb(255, 255, 255);
+}
+.theme-chrono .btn:hover { background-color: rgb(116, 116, 120); }
+.theme-chrono .btn.is-pressed { background-color: rgb(74, 74, 78); }
+.theme-chrono .btn--primary { background-color: rgb(196, 120, 24); border-top-color: rgb(255, 232, 170); border-left-color: rgb(255, 232, 170); border-right-color: rgb(255, 232, 170); border-bottom-color: rgb(150, 92, 30); }
+.theme-chrono .btn--primary:hover { background-color: rgb(226, 146, 40); }
+.theme-chrono .btn--primary.is-pressed { background-color: rgb(150, 88, 14); }
+.theme-chrono .btn--danger { background-color: rgb(150, 30, 40); border-bottom-color: rgb(96, 18, 26); }
+.theme-chrono .btn--danger:hover { background-color: rgb(178, 40, 52); }
+.theme-chrono .btn--danger.is-pressed { background-color: rgb(110, 20, 28); }
+
 /* ── Slate: Chrono Trigger's default window — gray-blue gradient, light bevel frame, white text ── */
 .theme-slate .window {
     border-width: 6px;
@@ -400,6 +495,11 @@
 .theme-dark .h1, .theme-dark .h2 { color: rgb(232, 234, 240); }
 .theme-dark .dim { color: rgb(154, 160, 176); }
 .theme-dark .shadow { text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+/* Flat docs look: a hairline outline only, no drop shadow, at every depth step (GG-T385). */
+.theme-dark .stage, .theme-dark .depth-md, .theme-dark .title, .theme-dark .h1, .theme-dark .h2, .theme-dark .window-title,
+.theme-dark .header-title, .theme-dark .header-gold, .theme-dark .t-h3, .theme-dark .t-h2, .theme-dark .t-h1,
+.theme-dark .t-display, .theme-dark .depth-lg, .theme-dark .small, .theme-dark .tiny, .theme-dark .t-caption,
+.theme-dark .role-badge, .theme-dark .depth-sm { -unity-text-outline-width: 1px; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
 
 .theme-dark .menu-row { border-radius: 6px; }
 .theme-dark .menu-row:hover { background-color: rgba(255, 255, 255, 0.04); }

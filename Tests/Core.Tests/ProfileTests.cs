@@ -157,7 +157,7 @@ namespace GridGame.Tests
             session.Create("Bob");
             session.Switch("Bob");
             Assert.That(session.Settings.MusicVolume, Is.EqualTo(new SettingsSave().MusicVolume), "Bob starts on defaults, not Alice's");
-            Assert.That(session.Settings.MenuTheme, Is.EqualTo("Classic"));
+            Assert.That(session.Settings.MenuTheme, Is.EqualTo(SettingsSave.DefaultMenuTheme));
             session.Settings.BattleSpeed = 2f;
             session.SaveSettings();
 
