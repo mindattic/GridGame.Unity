@@ -195,8 +195,8 @@ namespace GridGame.App
 
         /// <summary>The window body: a vertical gradient from the active menu theme (Chrono gray by default) (border
         /// tint also follows the theme — see <see cref="ThemeAccent"/>, applied in <c>Ui.Window</c>).</summary>
-        public static Texture2D Window => window ??= Gradient(CurrentTheme.ColorA, CurrentTheme.ColorB, "window");
-        public static Texture2D WindowDark => windowDark ??= Gradient(Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), "window-dark");
+        public static Texture2D Window => window ??= Gradient(CurrentTheme.ColorA, CurrentTheme.ColorB, "window", CurrentTheme.Grain);
+        public static Texture2D WindowDark => windowDark ??= Gradient(Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), "window-dark", CurrentTheme.Grain);
 
         // ── Menu themes (owner request 2026-10-11: "the gradient on all the menus is generated... make
         // multiple Themes... updated in Settings and remembers it") ──────────────────────────────────
@@ -218,10 +218,13 @@ namespace GridGame.App
             public readonly Color32 Accent;
             /// <summary>Root USS class that scopes this theme's stylesheet overrides; null for gradient-only themes.</summary>
             public readonly string UssClass;
+            /// <summary>Mottle strength (0 = a clean gradient): soft two-octave noise over the gradient, the granite of
+            /// Chrono Trigger's windows (GG-T404).</summary>
+            public readonly float Grain;
 
-            public MenuTheme(string name, Color32 a, Color32 b, string ussClass = null)
+            public MenuTheme(string name, Color32 a, Color32 b, string ussClass = null, float grain = 0f)
             {
-                Name = name; ColorA = a; ColorB = b; UssClass = ussClass;
+                Name = name; ColorA = a; ColorB = b; UssClass = ussClass; Grain = grain;
                 Color.RGBToHSV(a, out var ha, out var sa, out var va);
                 Color.RGBToHSV(b, out var hb, out var sb, out var vb);
                 float arc = Mathf.DeltaAngle(ha * 360f, hb * 360f) / 360f; // shortest signed hue distance a→b
@@ -238,6 +241,10 @@ namespace GridGame.App
             // The default since GG-T385 (owner 2026-11-16: "use a Chrono Trigger gray instead of FF blue gradient"): a neutral
             // medium-to-dark gray, no blue cast, in the light bevelled frame of Theme.uss's .theme-chrono block. First in the
             // list, so it is also the fallback for an unknown name.
+            // The default since GG-T404 (owner 2026-11-17: the Chrono gray "looks more brown and poopy than the bright and
+            // alluring granite background of Chrono Trigger ... split the difference ... a gray/blue Final Fantasy/Chrono
+            // Trigger hybrid"): a bright, mottled blue-gray granite between Slate and Classic, in .theme-granite's frame.
+            new MenuTheme("Granite", new Color32(124, 142, 190, 255), new Color32(30, 38, 80, 255), "theme-granite", 0.07f),
             new MenuTheme("Chrono", new Color32(112, 112, 112, 255), new Color32(40, 40, 40, 255), "theme-chrono"),
             new MenuTheme("Classic", new Color32(44, 70, 170, 255), new Color32(10, 18, 70, 255)),
             new MenuTheme("Cyberpunk", new Color32(255, 0, 200, 255), new Color32(0, 220, 255, 255)),
@@ -264,23 +271,37 @@ namespace GridGame.App
         {
             var found = Themes.FirstOrDefault(t => t.Name == name);
             CurrentTheme = found.Name != null ? found : Themes[0];
-            if (window != null) Repaint(window, CurrentTheme.ColorA, CurrentTheme.ColorB);
-            if (windowDark != null) Repaint(windowDark, Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f));
+            if (window != null) Repaint(window, CurrentTheme.ColorA, CurrentTheme.ColorB, CurrentTheme.Grain);
+            if (windowDark != null) Repaint(windowDark, Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), CurrentTheme.Grain);
         }
 
         private static Color32 Darken(Color32 c, float amount) => Color32.Lerp(c, new Color32(0, 0, 0, c.a), amount);
 
         /// <summary>Repaints an existing gradient texture's pixels in place (see <see cref="Gradient"/>).</summary>
-        private static void Repaint(Texture2D tex, Color32 top, Color32 bottom)
+        private static void Repaint(Texture2D tex, Color32 top, Color32 bottom, float grain = 0f)
         {
-            int h = tex.height;
+            Paint(tex, top, bottom, grain);
+            tex.Apply();
+        }
+
+        /// <summary>The window body's pixels: a vertical gradient, mottled by <paramref name="grain"/> (GG-T404). Every
+        /// window texture is <see cref="WindowTexW"/> wide, so a theme switch repaints it in place with or without grain.</summary>
+        private static void Paint(Texture2D tex, Color32 top, Color32 bottom, float grain)
+        {
+            int w = tex.width, h = tex.height;
             for (int y = 0; y < h; y++)
             {
-                var c = Color32.Lerp(bottom, top, y / (float)(h - 1));
-                tex.SetPixel(0, y, c);
-                tex.SetPixel(1, y, c);
+                Color c = Color32.Lerp(bottom, top, y / (float)(h - 1));
+                for (int x = 0; x < w; x++)
+                {
+                    if (grain <= 0f) { tex.SetPixel(x, y, c); continue; }
+                    // Two octaves of smooth noise (a window stretches the texture): a broad mottle and a finer fleck.
+                    float n = (Mathf.PerlinNoise(x * 0.09f + 3.1f, y * 0.09f + 7.7f) - 0.5f) * 0.7f
+                            + (Mathf.PerlinNoise(x * 0.37f + 11.3f, y * 0.37f + 1.9f) - 0.5f) * 0.3f;
+                    float k = 1f + n * grain * 2f;
+                    tex.SetPixel(x, y, new Color(Mathf.Clamp01(c.r * k), Mathf.Clamp01(c.g * k), Mathf.Clamp01(c.b * k), c.a));
+                }
             }
-            tex.Apply();
         }
 
         /// <summary>The pointing-glove cursor (tools/make_icons.py, UI/cursor); the generated one if it's missing.</summary>
@@ -303,16 +324,12 @@ namespace GridGame.App
             return t;
         }
 
-        private static Texture2D Gradient(Color32 top, Color32 bottom, string name)
+        private const int WindowTexW = 96;
+
+        private static Texture2D Gradient(Color32 top, Color32 bottom, string name, float grain = 0f)
         {
-            const int h = 128;
-            var t = NewTex(2, h, name);
-            for (int y = 0; y < h; y++)
-            {
-                var c = Color32.Lerp(bottom, top, y / (float)(h - 1));
-                t.SetPixel(0, y, c);
-                t.SetPixel(1, y, c);
-            }
+            var t = NewTex(WindowTexW, 128, name);
+            Paint(t, top, bottom, grain);
             t.Apply();
             return t;
         }

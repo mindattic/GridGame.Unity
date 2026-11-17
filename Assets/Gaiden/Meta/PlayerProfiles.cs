@@ -65,6 +65,10 @@ namespace GridGame.Meta
                 if (d.MenuTheme == "Classic") d.MenuTheme = SettingsSave.DefaultMenuTheme;
                 if (d.FontName == "Classic") d.FontName = SettingsSave.DefaultFontName;
             }
+            // GG-T404: the Granite gray-blue became the default (owner 2026-11-17: the Chrono gray "looks more brown"); a
+            // profile still on the Chrono default moves to it once; a later pick of Chrono sticks.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 2 && d.MenuTheme == "Chrono")
+                d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
@@ -106,7 +110,7 @@ namespace GridGame.Meta
         }
 
         /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
-        public const int CurrentLookVersion = 1;
+        public const int CurrentLookVersion = 2;
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>
         public const string DifficultyLevelKey = "level";

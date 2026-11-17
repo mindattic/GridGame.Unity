@@ -25,7 +25,9 @@ namespace GridGame.Meta
 
         /// <summary>Settings → Menu theme, Font and Text wrapping (GG-T185, GG-T305): developer look presets. Off: the
         /// rows are hidden and the game draws with the default theme, font and word wrap.</summary>
-        public static bool LookPresets = false;
+        // Back on 2026-11-17 (owner, GG-T404): the themes and fonts are options to try and compare until the interface
+        // is the best it can be, so Settings offers them again.
+        public static bool LookPresets = true;
 
         /// <summary>Camp's separate "Inn: Respec" row (§25.6.3). Off: the Talents screen's per-hero Respec button is
         /// the one way to respec, so Camp loses a duplicate row.</summary>
