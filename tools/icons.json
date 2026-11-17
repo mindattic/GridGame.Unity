@@ -261,6 +261,10 @@
   "empowered": [
    "delapouite/biceps",
    "gold"
+  ],
+  "blurred": [
+   "lorc/sprint",
+   "silver"
   ]
  },
  "ability": {
@@ -1167,6 +1171,386 @@
   "tactician_countermarch": [
    "delapouite/backward-time",
    "steel"
+  ],
+  "evasive_riposte": [
+   "lorc/divert",
+   "steel"
+  ],
+  "catch_breath": [
+   "lorc/meditation",
+   "teal"
+  ],
+  "blur": [
+   "lorc/sprint",
+   "silver"
+  ],
+  "vampires_kiss": [
+   "delapouite/vampire-dracula",
+   "crimson"
+  ],
+  "blood_feast": [
+   "lorc/bleeding-wound",
+   "crimson"
+  ],
+  "guard_counter": [
+   "lorc/sword-clash",
+   "steel"
+  ],
+  "shield_wall": [
+   "lorc/checked-shield",
+   "iron"
+  ],
+  "unbowed": [
+   "lorc/rally-the-troops",
+   "bronze"
+  ],
+  "grudge": [
+   "lorc/screaming",
+   "crimson"
+  ],
+  "battle_hardened": [
+   "lorc/breastplate",
+   "iron"
+  ],
+  "dark_retribution": [
+   "lorc/death-zone",
+   "shadow"
+  ],
+  "grim_resolve": [
+   "lorc/skull-crack",
+   "bone"
+  ],
+  "blood_rage": [
+   "lorc/shouting",
+   "crimson"
+  ],
+  "venom_edge": [
+   "lorc/dripping-blade",
+   "poison"
+  ],
+  "ember_edge": [
+   "lorc/dripping-blade",
+   "fire"
+  ],
+  "static_edge": [
+   "lorc/dripping-blade",
+   "spark"
+  ],
+  "rime_edge": [
+   "lorc/dripping-blade",
+   "ice"
+  ],
+  "shadow_edge": [
+   "lorc/dripping-blade",
+   "shadow"
+  ],
+  "dirty_fighting": [
+   "lorc/powder",
+   "sand"
+  ],
+  "vanish": [
+   "darkzaitzev/smoke-bomb",
+   "shadow"
+  ],
+  "bloodlust": [
+   "skoll/fangs",
+   "crimson"
+  ],
+  "counterpunch": [
+   "lorc/punch",
+   "bronze"
+  ],
+  "set_spear": [
+   "lorc/thrown-spear",
+   "steel"
+  ],
+  "rattle": [
+   "lorc/crossed-bones",
+   "bone"
+  ],
+  "mending_touch": [
+   "delapouite/healing",
+   "heal"
+  ],
+  "inner_calm": [
+   "lorc/meditation",
+   "holy"
+  ],
+  "vigil": [
+   "lorc/lantern-flame",
+   "holy"
+  ],
+  "arcane_harvest": [
+   "lorc/crystal-growth",
+   "arcane"
+  ],
+  "blood_price": [
+   "lorc/chained-heart",
+   "crimson"
+  ],
+  "arcane_insight": [
+   "lorc/crystal-ball",
+   "arcane"
+  ],
+  "pure_spirit": [
+   "lorc/ghost-ally",
+   "holy"
+  ],
+  "chill_aura": [
+   "lorc/aura",
+   "ice"
+  ],
+  "shock_plating": [
+   "lorc/lightning-shield",
+   "spark"
+  ],
+  "keep_away": [
+   "lorc/spiked-shell",
+   "earth"
+  ],
+  "self_repair": [
+   "lorc/cog",
+   "steel"
+  ],
+  "vengeance": [
+   "lorc/broken-shield",
+   "crimson"
+  ],
+  "toxic_skin": [
+   "delapouite/slime",
+   "poison"
+  ],
+  "infernal_hide": [
+   "delapouite/animal-hide",
+   "fire"
+  ],
+  "frostborn": [
+   "lorc/snowflake-2",
+   "ice"
+  ],
+  "ethereal": [
+   "lorc/ghost",
+   "void"
+  ],
+  "mirror_plating": [
+   "lorc/mirror-mirror",
+   "silver"
+  ],
+  "serpents_retort": [
+   "lorc/whip",
+   "jade"
+  ],
+  "gelatinous": [
+   "delapouite/slime",
+   "green"
+  ],
+  "carrion_feast": [
+   "lorc/crossed-bones",
+   "moss"
+  ],
+  "rotting_bite": [
+   "skoll/fangs",
+   "moss"
+  ],
+  "spiteful_hex": [
+   "delapouite/totem",
+   "shadow"
+  ],
+  "time_slip": [
+   "delapouite/backward-time",
+   "teal"
+  ],
+  "charge_tithe_draught": [
+   "lorc/round-bottom-flask",
+   "holy"
+  ],
+  "hierarch_open_reservoir": [
+   "lorc/vortex",
+   "water"
+  ],
+  "talon_rake": [
+   "lorc/harpy",
+   "coral"
+  ],
+  "charge_gale_shriek": [
+   "lorc/tornado",
+   "silver"
+  ],
+  "jammer_darts": [
+   "delapouite/dart",
+   "spark"
+  ],
+  "charge_void_beam": [
+   "lorc/beams-aura",
+   "void"
+  ],
+  "void_core": [
+   "lorc/vortex",
+   "void"
+  ],
+  "charge_soulfire": [
+   "lorc/fire-ring",
+   "teal"
+  ],
+  "lich_soul_harvest": [
+   "lorc/scythe",
+   "void"
+  ],
+  "cinder_claws": [
+   "lorc/bat-wing",
+   "fire"
+  ],
+  "charge_hellfire": [
+   "carl-olsen/flame",
+   "crimson"
+  ],
+  "charge_blood_rite": [
+   "lorc/split-cross",
+   "crimson"
+  ],
+  "executioners_verdict": [
+   "lorc/battle-axe",
+   "crimson"
+  ],
+  "suppressing_fire": [
+   "lorc/heavy-arrow",
+   "steel"
+  ],
+  "charge_aegis_field": [
+   "lorc/magic-shield",
+   "holy"
+  ],
+  "charge_aether_siphon": [
+   "lorc/crystal-wand",
+   "teal"
+  ],
+  "charge_siege_shot": [
+   "lorc/charged-arrow",
+   "iron"
+  ],
+  "rime_riposte": [
+   "lorc/divert",
+   "ice"
+  ],
+  "oathbound": [
+   "lorc/linked-rings",
+   "gold"
+  ],
+  "charge_ember_vigil": [
+   "lorc/candle-light",
+   "fire"
+  ],
+  "charge_tithe_hymn": [
+   "lorc/winged-emblem",
+   "holy"
+  ],
+  "charge_psalm_of_certainty": [
+   "lorc/scroll-unfurled",
+   "holy"
+  ],
+  "charge_absolution": [
+   "lorc/sun",
+   "holy"
+  ],
+  "herd_stampede": [
+   "lorc/bull-horns",
+   "earth"
+  ],
+  "stampede_rush": [
+   "lorc/bull-horns",
+   "rust"
+  ],
+  "charge_feed_the_herd": [
+   "lorc/bull-horns",
+   "heal"
+  ],
+  "charge_bull_rush": [
+   "lorc/bull-horns",
+   "crimson"
+  ],
+  "brass_knuckles": [
+   "delapouite/brass-knuckles",
+   "bronze"
+  ],
+  "bloodscent": [
+   "lorc/wolf-head",
+   "crimson"
+  ],
+  "charge_red_tide": [
+   "lorc/droplets",
+   "crimson"
+  ],
+  "searing_scales": [
+   "lorc/spiked-shell",
+   "fire"
+  ],
+  "flask_fire_burst": [
+   "lorc/round-bottom-flask",
+   "fire"
+  ],
+  "flask_frost_burst": [
+   "lorc/round-bottom-flask",
+   "ice"
+  ],
+  "flask_storm_burst": [
+   "lorc/round-bottom-flask",
+   "spark"
+  ],
+  "flask_venom_burst": [
+   "lorc/round-bottom-flask",
+   "poison"
+  ],
+  "flask_holy_burst": [
+   "lorc/round-bottom-flask",
+   "holy"
+  ],
+  "flask_shadow_burst": [
+   "lorc/round-bottom-flask",
+   "shadow"
+  ],
+  "flask_arcane_burst": [
+   "lorc/round-bottom-flask",
+   "arcane"
+  ],
+  "purifying_salts_use": [
+   "lorc/powder",
+   "silver"
+  ],
+  "disarm_kit_use": [
+   "lorc/cog",
+   "bronze"
+  ],
+  "charge_raise_barricade": [
+   "delapouite/barricade",
+   "wood"
+  ],
+  "charge_ram_smash": [
+   "lorc/hammer-drop",
+   "iron"
+  ],
+  "charge_call_shards": [
+   "lorc/shatter",
+   "arcane"
+  ],
+  "charge_drag_anchor": [
+   "lorc/anchor",
+   "iron"
+  ],
+  "charge_hook_line": [
+   "lorc/fishing-hook",
+   "steel"
+  ],
+  "charge_conduct": [
+   "delapouite/winged-scepter",
+   "holy"
+  ],
+  "charge_floor_shove": [
+   "lorc/quake-stomp",
+   "earth"
+  ],
+  "charge_snuff_lights": [
+   "lorc/candle-light",
+   "shadow"
   ]
  },
  "item": {
@@ -2081,6 +2465,94 @@
   "dog_whistle": [
    "lorc/wolf-howl",
    "silver"
+  ],
+  "tome_counter_attack": [
+   "lorc/book-cover",
+   "steel"
+  ],
+  "tome_thorns": [
+   "lorc/book-cover",
+   "moss"
+  ],
+  "tome_tough_hide": [
+   "lorc/book-cover",
+   "leather"
+  ],
+  "tome_regenerate": [
+   "lorc/book-cover",
+   "heal"
+  ],
+  "tome_poison_ward": [
+   "lorc/book-cover",
+   "poison"
+  ],
+  "tome_steadfast": [
+   "lorc/book-cover",
+   "iron"
+  ],
+  "tome_berserk": [
+   "lorc/book-cover",
+   "crimson"
+  ],
+  "tome_mana_siphon": [
+   "lorc/book-cover",
+   "water"
+  ],
+  "tome_lifesteal": [
+   "lorc/book-cover",
+   "shadow"
+  ],
+  "tome_double_attack": [
+   "lorc/book-cover",
+   "gold"
+  ],
+  "chest_wooden": [
+   "lorc/locked-chest",
+   "wood"
+  ],
+  "chest_iron": [
+   "lorc/locked-chest",
+   "iron"
+  ],
+  "chest_gilded": [
+   "lorc/locked-chest",
+   "gold"
+  ],
+  "flask_fire": [
+   "lorc/round-bottom-flask",
+   "fire"
+  ],
+  "flask_frost": [
+   "lorc/round-bottom-flask",
+   "ice"
+  ],
+  "flask_storm": [
+   "lorc/round-bottom-flask",
+   "spark"
+  ],
+  "flask_venom": [
+   "lorc/round-bottom-flask",
+   "poison"
+  ],
+  "flask_holy": [
+   "lorc/round-bottom-flask",
+   "holy"
+  ],
+  "flask_shadow": [
+   "lorc/round-bottom-flask",
+   "shadow"
+  ],
+  "flask_arcane": [
+   "lorc/round-bottom-flask",
+   "arcane"
+  ],
+  "cons_purifying_salts": [
+   "lorc/powder",
+   "silver"
+  ],
+  "cons_disarm_kit": [
+   "lorc/cog",
+   "bronze"
   ]
  },
  "ui": {
