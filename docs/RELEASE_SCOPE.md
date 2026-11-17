@@ -89,6 +89,38 @@ None of these were run (balance tools are test-gated). Each is a number to look 
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
+## Measured: the postgame level wall (nightly 2026-11-17)
+
+The first nightly bot soak (`BalanceReport.Campaign_pacing_table`, greedy and casual bots, campaign played straight
+through) measured what the watch-list above only guessed. The main campaign is at or near 100% bot wins on every
+stage, but **no bot run finished the campaign (0/4)**: wins fall off as soon as the postgame's one-level-a-stage ramp
+outruns the party's XP.
+
+| Stages | Enemy level | Bot win % |
+|---|---|---|
+| Main campaign (Tithe Moors to Cathedral) | 1-24 | 80-100 |
+| The Bloom I-III | 25-27 | 80-100 |
+| The Free Holds I / II | 28 / 29 | 50-57 / 20-44 |
+| The Underspire I / II | 30 / 31 | 66 / 40-57 |
+| The Drowned Arks I / II | 32 / 33 | 37-50 / **0-12** |
+| Deep Shardfall I | 34 | **0** |
+
+Cause: `XpToNext(L) = 50 + 10*L^2` is quadratic while kill XP is linear, and the postgame adds a level per stage. Both
+are pinned deliberately (ParityTests keep the GridGame2026 curve; GG-T357 set one level a stage, Morrow's Shadow III
+at 40), so the fix is a design call:
+
+1. **Late kill XP scales up** (for example the level term of kill XP grows with the square of the enemy level past 24):
+   keeps both pinned curves, makes the postgame pay for itself.
+2. **Postgame levels step per region, not per stage** (two stages share a level; Morrow's Shadow III still ends high):
+   breaks GG-T357's "one level a stage".
+3. **The XP curve bends past mid levels**: breaks parity with GridGame2026.
+4. **Keep it**: the postgame is a grind you hunt your way through (bots don't hunt; players will), and only the 0%
+   stages get a closer look in case a region rule is unwinnable rather than hard.
+
+The bots don't replay stages to hunt, so real players will sit higher than these numbers; the 0% stages (Deep Shardfall
+I, Drowned Arks II) are the ones to look at first either way. Floodwater had no counter until GG-T410, which may account
+for part of the Drowned Arks number.
+
 ## Questions for the owner: cut outright?
 
 These are recommendations only. Nothing was deleted.
