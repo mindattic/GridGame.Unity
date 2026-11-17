@@ -72,6 +72,8 @@ namespace GridGame.Tests
             var s = BattleEngine.Create(c, setup, new List<BattleEvent>());
             // A healing charge only goes out when an ally needs it: wound the caster.
             if (c.Abilities[abilityId].BaseHeal > 0) { var me = s.Units.First(u => !u.IsHero); me.Hp = me.MaxHp / 3; }
+            // A mirror (Mockery, GG-T388) turns a hero's last move back on them: give the heroes one to mirror (GG-T414).
+            if (ab.Echoes) foreach (var hu in s.Units.Where(u => u.IsHero)) { hu.LastAbilityId = "fireball"; hu.LastAnchor = hu.Pos; }
             var all = new List<BattleEvent>();
             for (int i = 0; i < 12 && !s.IsOver; i++) all.AddRange(BattleEngine.Apply(s, new ShieldCommand()));
             Assert.That(all.Any(e => e is CastQueuedEvent q && q.IsCharge), Is.True);
