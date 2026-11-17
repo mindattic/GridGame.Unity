@@ -1103,6 +1103,8 @@ A skill locks for `AbilityDef.CooldownTurns` after use: **Steal 3, Mug 2, Telepo
 
 #### 4.1.2 Signature passives (GG-T302, added 2026-11-06)
 
+**Amended 2026-11-16 (GG-T388):** nine kits made distinct so no two heroes play alike: Myrmidon hooks a foe from anywhere and pulls it 2 tiles; Panda Girl's slam taunts (feeding her surrounded bonus); Slasher's Flurry hits every adjacent foe; the Ronin steps back 2 tiles after the cut; the Fighter's Combo Strike delays the foe 1 s; Night Hunter's Night Stalk makes her Blurred; the Alchemist's Transmute cleanses and grants Protection (no heal); Knight's Oath swaps places with the ally, then wards them; the Shieldmaiden's Valkyrie's Call revives a fallen ally at 30 HP (cooldown 6, the game's only revive skill).
+
 Owner: "You could design a character that benefits from being hit, or from dodging hits, or from being surrounded by enemies." Every hero class carries **one or two** Passive/Reactive rows in its `classes.json` `Abilities` (they never reach the bar, `MetaServices.IsHeroUsable`), and most enemy families carry 0–2 so fights read differently. All are `abilities.json` rows on the §4.1 engine; numbers stay modest.
 
 | Archetype | Classes | Signature (id) | Rule |
@@ -1129,6 +1131,8 @@ Owner: "You could design a character that benefits from being hit, or from dodgi
 - *(Tests: `SignaturePassiveTests`.)*
 
 ### 4.2 Per-hero loadouts
+
+**Amended 2026-11-16 (GG-T388, owner: "skills start as few but they are purchased or discovered over time"):** a new hero knows only its `StarterKit` (loadout abilities 1 and 3: its role move and its signature); the rest come from the trainer at 100 G, the skill tree, or Tomes. A hero who joins later arrives knowing kit moves for its level (`TrainTo`: 3rd at Lv 3, 4th at Lv 6).
 
 The bar follows the selected hero. Its slots come from the hero's saved bar, `HeroSave.Bar` (5 entries: ability id, `"item:<id>"`, or null), edited on the Abilities screen ([§25.6](#256-abilities)). A new hero's bar is its class `DefaultLoadout` (`Progression.NewHero`), whose abilities become **Known** ([§25.6](#256-abilities)). **Amended 2026-10-09:** there is no separate `HeroLoadouts` preset layer or `CombatLoadouts` cache — the saved bar is the bar.
 
@@ -1672,6 +1676,8 @@ Final victory (first time, §27.0): PostBattle → Continue → StoryCrawl (Endi
 
 ### 11.5 The visual language
 
+**Amended 2026-11-16 (GG-T385, owner: "use a Chrono Trigger gray instead of FF blue gradient … more 'block outline' around fonts"):** the default menu theme is **Chrono**, a neutral gray gradient (112→40) in a light bevelled frame (`.theme-chrono`); Classic FF blue stays selectable, and a profile still on Classic/Classic moves to Chrono/Rounded once (`lookVersion`). Fonts: **M PLUS Rounded 1c** Bold for body (preset "Rounded", default) and ExtraBold for Heavy, the free cousin of the New Rodin family Japanese mobile RPGs license; **Cinzel** for display. Text depth: a dark block outline plus a hard unblurred drop shadow in three steps (small 1px/2px, body 2px/3px, heading 3px/4px, display 6px), set once in `Theme.uss` (`.depth-lg/md/sm/none`, `.text-ink`); Cinzel takes a 1px outline (`Fonts.UseDisplay`). Neutral tokens are gray; gameplay colours (hero, mana, elements, rarity) are unchanged.
+
 **Polish rules (GG-T249):** type scale, color tokens/contrast, spacing, touch targets and motion tokens are defined and measured in [`POLISH.md`](POLISH.md) §A–§C, §E ([GG-LAW-14](#GG-LAW-14)).
 
 **Design tokens (GG-T250):** the visual language lives in tokens, not literals. `Theme.uss` declares them as `:root` custom properties (`--color-*` semantic palette incl. teams, elements, rarity and gauges; `--type-*` on the 24…120 scale; `--space-*` on the 8-px scale) plus `.t-caption … .t-display`, and its base rules use `var()`. `App/UI/Tokens.cs` mirrors them for code: `Palette` (semantic colors, `Palette.Element(DamageType)` — the one element table, every element its own hue; Physical no longer shares Arcane's, Haste and "Pushback!" no longer borrow Ice blue), `TypeScale`, `Space`, `Timing` (instant 0.08 · quick 0.15 · standard 0.25 · emphasis 0.4 · dramatic 0.7 · cinematic 1.2+) and `Ease` (Out, InOut, Back, Snap). Battle and menu presentation take their colors and sub-second durations from them; no duration is random. **Weight is a font, not a style:** USS has no `-unity-font-style: bold`; the formerly bold classes (`title h1 h2 window-title header-title btn tab--active role-badge pip`, plus `t-heavy`) get the real Outfit Bold cut (`Fonts.UseHeavy`) from `Ui.AddClasses`/`Ui.Button` and a sweep after every screen build (`Ui.ApplyHeavy`), skipping text already set to Display.
@@ -1730,6 +1736,8 @@ Owner: "these new coordinates and zoom are kept in memory in the character's Thu
 - **Amended 2026-11-07 (GG-T352):** the numbers now frame the whole 1024×1024 canvas ([§12.1.2](#1212-portraits-are-1024-canvases-added-2026-11-07-owner-rule-gg-t352)). Every class's old framing, made on the trimmed image, was converted so it shows exactly what it showed before.
 
 #### 12.1.2 Portraits are 1024 canvases (added 2026-11-07, owner rule, GG-T352)
+
+**Amended 2026-11-16:** the import cap is 2048 (`GaidenImport` and every portrait `.meta`, GG-T387) so a 1024 canvas imports pixel for pixel on every platform and higher-resolution art would never be halved; dialogue figures sit flush with the screen edge. Portrait edges carry no staircase (GG-T389): `portrait_cut.py --dejag` measures each portrait's staircase (share of off-axis silhouette contour that is a hard 0/255 step) and replaces un-antialiased edges with the coverage of the 1 px-smoothed contour (thin strands exempt, interior and placement untouched); a portrait whose alpha bounds move gets its class's Figure box re-set, and Thumbnail boxes are never changed by tools (the owner frames thumbnails).
 
 Owner: "all characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the assets are."
 
@@ -2834,6 +2842,8 @@ PostBattle — gold, items, unlocks, bounty ════════════
 
 ### 22.3 Adventure — the stage list
 
+**Amended 2026-11-16:** stage names are the region name plus a numeral (the Green Valley/Sandsea/Mireholt/Frostmaw/Veshker leftovers are retired; greenvalley2 is The Free Holds, GG-T386). Adventure is region, then stage, each row Cleared/New; a cleared stage is a **hunt** when no expedition is under way (`Expeditions.IsHunt`), rolling drops and wanderers afresh (GG-T388).
+
 **Amended 2026-10-09 (owner decision):**
 - **Unlocked stages only, newest first.** The list shows every unlocked campaign stage in reverse play order, so the frontier is on top; **all locked stages collapse into one teaser row** ("◇ N more stages ahead…", disabled).
 - **Stage names are "<Theme> I / II / III"** (e.g. "Tithe Moors I", "Shardfall III").
@@ -3473,6 +3483,8 @@ The first time the player opens a Camp station, a one-time **camp tip** points a
 
 ### 25.6 Abilities
 
+**Amended 2026-11-16 (GG-T388):** a **Locked** tab lists every kit or tree ability a hero doesn't know yet and where it comes from: its trainer price, its skill-tree node and points, or the Tome that teaches it and where that drops.
+
 `AbilitiesScreen` / `Meta.Abilities`: hero switcher, the 5-cell battle bar (locked cells shown), and three tabs:
 - **Known** — the hero's learned abilities (name, kind/cast time, cost pips, description); tap to put it in the selected slot.
 - **Items** — owned consumables; tap to put `"item:<id>"` in the slot.
@@ -3693,6 +3705,8 @@ Fire Emblem's talk on the real grid: some heroes aren't handed over — they hav
 
 #### 25.11.2 Random rescues (added 2026-11-05, owner: "the random character recruitment for saving them", GG-T236)
 
+**Amended 2026-11-16 (GG-T387, owner: "winning a game of wits conversation").** Supersedes the one-question talk and the understanding rule below. *The talk* is a **game of wits**: `DialogueDef.WitsExchanges` = 3 exchanges, each a question from the wanderer and three replies for the companion, one per `DialogueChoice.Wit` (+1 wins the point, 0 neutral, -1 loses it); `DialogueScreen` shows the standing as a pip meter (the joining mark ringed in gold) that steps after each reply with a cue. *The understanding* is deterministic, no dice: the start is low trust 0, half 2, full 3, plus 1 with a companion of their own faction; each reply adds its Wit; they join when the final standing is at least `Wanderers.Threshold` = 4. *Validation:* 3 exchanges of three unconditional replies, one each of +1/0/-1, all going to the same node; a node going on to `$outcome`; `join`/`part` end the talk; faction `Regions` must be campaign themes, each claimed once. *Who:* `factions.json` `Regions` — `Wanderers.Local` prefers heroes whose faction roams the stage's region while any are left, else anyone from the pool.
+
 ~~A battle the player launches may hold a **captive**: a random hero the player doesn't own, freed as a guest ally (§25.11 from there on).~~
 
 **Amended 2026-11-07 (owner, GG-T342): the captive is now a wanderer.** Owner: *"so you will sometimes meet a hero while fighting a monster and they will fight the monsters separately but you are able to complete pincer moves with them so you fill a trust gauge by pincering, or healing them at the end of the stage and the loot you and the team member you choose has a conversation with them, if they can come to an understanding they join, if not they go back into the pool of possible recruits"* — clarified the same day: *"the point is to gain their trust, tell them what they want to hear, and then you have a follower — another party member."*
@@ -3714,6 +3728,8 @@ Fire Emblem's talk on the real grid: some heroes aren't handed over — they hav
 ~~**Freed:** … "X is freed and joins the caravan!" … the rescue conversation (`Trigger.Kind = Rescue`) …~~ ~~**Down at the end:** … "May be found again" …~~ (both superseded above).
 
 #### 25.11.2.1 Wanderer heroes from the owner's art (added 2026-11-07, owner, GG-T333)
+
+**Amended 2026-11-16 (GG-T388):** **Echo** (Support, a Lantern Road wanderer) fills the one gap no hero covered, copying: *Encore* repeats an ally's last skill or spell from her own position (a copied spell still costs its orbs). Her foe twin, the **Mocking Echo**, charges an attack that turns a hero's last move back on the party (The Still II, Halcyon II, The Choir's Cathedral I; GG-T393). Both wear copies of the mannequin art until the owner's art arrives.
 
 Owner 2026-11-07: the new heroes from the art are **recruited as wanderers** — "met mid-battle, earn their trust, say what they want to hear, and they join". Each is in no other pool (not the Summon Circle, no authored guest or recruitable, no story `JoinHero`, not a mercenary), so `Wanderers.Pool` holds them and so does the Diamond draw (§25.10.2). Each has a `factions.json` faction for the half-trust bridge, an Advice quiz (`talk_quiz_<id>`) and the faction's generic wanderer talk (no hero-specific scene: story text is placeholder until it is authored in Prose, GG-T355). Portraits are 1024 canvases with `Figure` and `Thumbnail` (§12.1.2).
 
@@ -3868,6 +3884,8 @@ Owner: "measure things in agnostic units" and "all overflow should be avoided wh
 ---
 
 ## 27. Story crawl (no dialog)
+
+**Amended 2026-11-16 (GG-T386, owner: "after every 5 stages have a story scroll"):** the per-theme crawls are retired. `campaign.json` `Chapters` holds one crawl after every fifth campaign stage (validated: exactly one, in order), played once after that stage's first victory on the way back to Camp, or at the next launch. A save that skipped ahead sees only the latest; a level interlude or a beat crawl due at the same stop waits, so two scrolls never play back to back. Keys `crawl:chapter/<id>`; the beats are outlined in [STORY_OUTLINE.md](STORY_OUTLINE.md). Until the story is written in Prose, the Prologue, the eight chapters, the Ending and every conversation show lorem ipsum (Prose draft batches `chapters-386`, `lorem-387`).
 
 `StoryCrawlScreen`: the theme name (Cinzel) and its `campaign.json` `Crawl` text scroll upward at 95 design-px/s over a dimmed theme backdrop; **Skip ›** or a tap anywhere ends it and replaces it with the battle. It plays on the **first** launch of any stage in a theme — from Adventure or from the results screen's "Next stage ›" (both go through `StageLauncher.Launch`); the theme is recorded in `SaveData.SeenCrawls` (and saved) when the crawl starts. **Amended 2026-10-09** (timing by scroll speed instead of a 26 s duration). **Amended 2026-11-07 (GG-T355):** the crawl's words come from Prose (`crawl:<themeId>`, [§27.2](#272-narrative-sourcing-prose-gg-t355)); `campaign.json` holds no text.
 
