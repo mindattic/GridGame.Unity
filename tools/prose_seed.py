@@ -91,7 +91,7 @@ def conversation(d: dict, known: set):
         for c in n.get("Choices") or []:
             tags = []
             effects = [e.get("Type") for e in c.get("Effects") or []]
-            if c.get("Next") == "heard" or "GrantSkillPoint" in effects:
+            if (c.get("Wit") or 0) > 0 or "GrantSkillPoint" in effects:  # GG-T387: a wits reply that wins the point
                 tags.append("right-answer")
             if c.get("Conditions"):
                 tags.append("conditional")

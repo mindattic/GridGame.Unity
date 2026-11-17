@@ -209,17 +209,70 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_understanding_rule_is_trust_plus_the_right_answer_with_faction_bridging_half_trust()
+        public void The_game_of_wits_starts_from_trust_and_a_faction_mate_starts_a_point_ahead()
         {
             var T = Wanderers.TrustTier.Full; var H = Wanderers.TrustTier.Half; var L = Wanderers.TrustTier.Low;
-            Assert.That(Wanderers.Joins(T, false, true), Is.True);
-            Assert.That(Wanderers.Joins(T, true, false), Is.False, "the wrong answer never wins them");
-            Assert.That(Wanderers.Joins(H, true, true), Is.True, "half trust with one of their own");
-            Assert.That(Wanderers.Joins(H, false, true), Is.False);
-            Assert.That(Wanderers.Joins(L, true, true), Is.False, "too little trust: nothing said will do");
+            Assert.That(Wanderers.StartStanding(T, false), Is.EqualTo(3));
+            Assert.That(Wanderers.StartStanding(T, true), Is.EqualTo(4));
+            Assert.That(Wanderers.StartStanding(H, false), Is.EqualTo(2));
+            Assert.That(Wanderers.StartStanding(H, true), Is.EqualTo(3));
+            Assert.That(Wanderers.StartStanding(L, false), Is.EqualTo(0));
+            Assert.That(Wanderers.StartStanding(L, true), Is.EqualTo(1));
+            Assert.That(Wanderers.Joins(Wanderers.Threshold), Is.True);
+            Assert.That(Wanderers.Joins(Wanderers.Threshold - 1), Is.False);
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(T, false) + 1), Is.True, "full trust: one point ahead");
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(T, false)), Is.False, "full trust: even isn't enough");
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(T, true)), Is.True, "full trust with one of their own: just don't fall behind");
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(H, false) + 2), Is.True);
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(H, false) + 1), Is.False, "half trust: two points ahead");
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(H, true) + 1), Is.True);
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(L, false) + DialogueDef.WitsExchanges), Is.False, "too little trust: no talk will do");
+            Assert.That(Wanderers.Joins(Wanderers.StartStanding(L, true) + DialogueDef.WitsExchanges), Is.True, "unless one of their own wins every point");
+            Assert.That(Wanderers.MaxStanding, Is.EqualTo(Wanderers.StartStanding(T, true) + DialogueDef.WitsExchanges));
             Assert.That(Wanderers.Tier(6, 6), Is.EqualTo(T));
             Assert.That(Wanderers.Tier(3, 6), Is.EqualTo(H));
             Assert.That(Wanderers.Tier(2, 6), Is.EqualTo(L));
+        }
+
+        [Test]
+        public void Each_reply_moves_the_standing_by_its_wit()
+        {
+            var c = Real; var s = Progression.NewGame(c, "W5w");
+            var (cls, _, other) = Cast(c, s);
+            var offer = new Wanderers.Offer { ClassId = cls, Level = 5, Hp = 30, MaxHp = 30, Trust = 3, TrustNeeded = 6 };
+            var run = Wanderers.Begin(c, s, offer, other);
+            Assert.That(run.Wits.Standing, Is.EqualTo(Wanderers.StartStanding(Wanderers.TrustTier.Half, false)));
+            var moves = new[] { 1, -1, 0 };
+            int exchange = 0;
+            for (int guard = 0; !run.Finished && guard < 50; guard++)
+            {
+                if (run.Advance()) continue;
+                int before = run.Wits.Standing, want = moves[exchange++];
+                Assert.That(run.Choose(run.Choices.FindIndex(ch => ch.Wit == want)).Ok, Is.True);
+                Assert.That(run.Wits.Standing - before, Is.EqualTo(want));
+            }
+            Assert.That(exchange, Is.EqualTo(DialogueDef.WitsExchanges));
+            Assert.That(run.Wits.Moves, Is.EqualTo(moves));
+            Assert.That(run.Transcript.Last().NodeId, Is.EqualTo(DialogueDef.PartNode), "2 + 0 net is short of the mark: they part");
+            Assert.That(s.Hero(cls), Is.Null);
+        }
+
+        [Test]
+        public void A_wanderer_met_in_a_region_is_one_of_its_own_people_while_any_are_left()
+        {
+            var c = Real; var s = Progression.NewGame(c, "W5r");
+            foreach (var f in c.Factions)
+                foreach (var region in f.Regions)
+                {
+                    var stage = c.Campaign.Themes.First(t => t.Id == region).Stages.FirstOrDefault();
+                    if (stage == null) continue;
+                    var pool = Wanderers.Pool(c, s);
+                    var local = Wanderers.Local(c, pool, stage);
+                    if (pool.Any(id => c.FactionOf(id) == f))
+                        Assert.That(local, Is.Not.Empty.And.All.Matches<string>(id => c.FactionOf(id) == f), $"{region}: {f.Id}'s people");
+                    else Assert.That(local, Is.EqualTo(pool), $"{region}: none left, so anyone from the road");
+                }
+            Assert.That(c.Factions.SelectMany(f => f.Regions), Is.Not.Empty, "factions roam regions");
         }
 
         /// <summary>A pool hero with a faction, a companion from that faction, and one from another.</summary>
@@ -243,10 +296,9 @@ namespace GridGame.Tests
             var c = Real; var s = Progression.NewGame(c, "W6");
             var (cls, _, other) = Cast(c, s);
             var offer = new Wanderers.Offer { ClassId = cls, Level = 7, Hp = 10, MaxHp = 40, Trust = 6, TrustNeeded = 6 };
-            int right = Wanderers.RightAnswer(Wanderers.Scene(c, cls));
-            Assert.That(right, Is.InRange(0, 2));
+            Assert.That(Wanderers.RightAnswers(Wanderers.Scene(c, cls)), Has.Count.EqualTo(DialogueDef.WitsExchanges).And.All.InRange(0, 2));
             int partyBefore = s.Party.Count;
-            Assert.That(Wanderers.Converse(c, s, offer, other, right), Is.True);
+            Assert.That(Wanderers.Converse(c, s, offer, other, new[] { 1, 0, 0 }), Is.True, "full trust, one point ahead");
             var h = s.Hero(cls);
             Assert.That(h, Is.Not.Null);
             Assert.That(h.Domesticated, Is.False, "a normal hero, not a limited follower");
@@ -257,24 +309,24 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_wrong_answer_or_too_little_trust_sends_them_back_to_the_pool()
+        public void Losing_the_game_of_wits_or_too_little_trust_sends_them_back_to_the_pool()
         {
             var c = Real;
             var s = Progression.NewGame(c, "W7");
             var (cls, kin, other) = Cast(c, s);
-            int right = Wanderers.RightAnswer(Wanderers.Scene(c, cls));
-            int wrong = (right + 1) % 3;
             var full = new Wanderers.Offer { ClassId = cls, Level = 5, Hp = 30, MaxHp = 30, Trust = 6, TrustNeeded = 6 };
-            Assert.That(Wanderers.Converse(c, s, full, kin, wrong), Is.False);
+            Assert.That(Wanderers.Converse(c, s, full, kin, -1), Is.False, "losing every point loses even full trust");
             Assert.That(s.Hero(cls), Is.Null);
             Assert.That(Wanderers.Pool(c, s), Does.Contain(cls), "parting ways records nothing");
+            Assert.That(Wanderers.Converse(c, s, full, other, new[] { 1, 0, -1 }), Is.False, "full trust: even isn't enough");
 
             var half = new Wanderers.Offer { ClassId = cls, Level = 5, Hp = 30, MaxHp = 30, Trust = 3, TrustNeeded = 6 };
-            Assert.That(Wanderers.Converse(c, s, half, other, right), Is.False, "half trust needs one of their own");
+            Assert.That(Wanderers.Converse(c, s, half, other, new[] { 1, 0, 0 }), Is.False, "half trust must come out two ahead");
             var low = new Wanderers.Offer { ClassId = cls, Level = 5, Hp = 30, MaxHp = 30, Trust = 2, TrustNeeded = 6 };
-            Assert.That(Wanderers.Converse(c, s, low, kin, right), Is.False);
+            Assert.That(Wanderers.Converse(c, s, low, other, 1), Is.False, "too little trust: no talk will do");
+            Assert.That(Wanderers.Converse(c, s, low, kin, new[] { 1, 1, 0 }), Is.False);
             Assert.That(s.Hero(cls), Is.Null);
-            Assert.That(Wanderers.Converse(c, s, half, kin, right), Is.True, "half trust plus a faction-mate plus the right answer");
+            Assert.That(Wanderers.Converse(c, s, half, kin, new[] { 1, 0, 0 }), Is.True, "half trust and one of their own: one point ahead");
         }
 
         [Test]
@@ -284,10 +336,10 @@ namespace GridGame.Tests
             var a = Progression.NewGame(c, "W8"); var b = Progression.NewGame(c, "W8");
             var (cls, kin, _) = Cast(c, a);
             var offer = new Wanderers.Offer { ClassId = cls, Level = 5, Hp = 30, MaxHp = 30, Trust = 4, TrustNeeded = 6 };
-            for (int answer = 0; answer < 3; answer++)
+            for (int wit = -1; wit <= 1; wit++)
             {
-                var sa = Progression.NewGame(c, "W8" + answer); var sb = Progression.NewGame(c, "W8" + answer);
-                Assert.That(Wanderers.Converse(c, sa, offer, kin, answer), Is.EqualTo(Wanderers.Converse(c, sb, offer, kin, answer)));
+                var sa = Progression.NewGame(c, "W8" + wit); var sb = Progression.NewGame(c, "W8" + wit);
+                Assert.That(Wanderers.Converse(c, sa, offer, kin, wit), Is.EqualTo(Wanderers.Converse(c, sb, offer, kin, wit)));
             }
         }
 
@@ -302,7 +354,7 @@ namespace GridGame.Tests
                 Assert.That(c.FactionOf(id), Is.Not.Null, id);
                 var scene = Wanderers.Scene(c, id);
                 Assert.That(scene, Is.Not.Null, id);
-                Assert.That(Wanderers.RightAnswer(scene), Is.InRange(0, 2), scene.Id);
+                Assert.That(Wanderers.RightAnswers(scene), Has.Count.EqualTo(DialogueDef.WitsExchanges).And.All.InRange(0, 2), scene.Id);
             }
             foreach (var f in c.Factions)
                 Assert.That(c.DialogueOrder.Any(d => d.Trigger.Kind == DialogueTriggerKind.Wanderer && d.Trigger.Id == f.Id), Is.True, f.Id);
@@ -322,18 +374,23 @@ namespace GridGame.Tests
             return db;
         }
 
+        private static DialogueNode Exchange(string id, string next, params int[] wits)
+        {
+            var n = new DialogueNode { Id = id, Speaker = "h", Text = "Why?" };
+            foreach (var w in wits) n.Choices.Add(new DialogueChoice { Label = "r" + w, Next = next, Wit = w });
+            return n;
+        }
+
         private static DialogueDef GoodTalk(string id = "holds") => new DialogueDef
         {
             Id = "wanderer_x", Trigger = new DialogueTrigger { Kind = DialogueTriggerKind.Wanderer, Id = id },
             Speakers = { new DialogueSpeaker { Id = "h", Class = "$hero" }, new DialogueSpeaker { Id = "w", Class = "$with" } },
             Nodes =
             {
-                new DialogueNode { Id = "ask", Speaker = "h", Text = "Why?", Choices =
-                {
-                    new DialogueChoice { Label = "a", Next = "heard" }, new DialogueChoice { Label = "b", Next = "unheard" }, new DialogueChoice { Label = "c", Next = "unheard" },
-                } },
-                new DialogueNode { Id = "heard", Speaker = "h", Text = "Yes.", Next = "$outcome" },
-                new DialogueNode { Id = "unheard", Speaker = "h", Text = "No.", Next = "$outcome" },
+                Exchange("ask1", "ask2", 1, 0, -1),
+                Exchange("ask2", "ask3", 0, -1, 1),
+                Exchange("ask3", "weigh", -1, 1, 0),
+                new DialogueNode { Id = "weigh", Speaker = "h", Text = "Well.", Next = "$outcome" },
                 new DialogueNode { Id = "join", Speaker = "h", Text = "I'm in." },
                 new DialogueNode { Id = "part", Speaker = "w", Text = "Farewell." },
             },
@@ -347,14 +404,18 @@ namespace GridGame.Tests
             Assert.That(ContentLoader.Validate(TalkDb(GoodTalk(null)), null).Where(p => p.Contains("wanderer_x")), Is.Empty);
             Assert.That(ContentLoader.Validate(TalkDb(GoodTalk("goblin")), null), Has.Some.Contains("Wanderer needs a hero class, a faction or no Id"));
 
-            var two = GoodTalk(); two.Nodes[0].Choices[1].Next = "heard";
-            Assert.That(ContentLoader.Validate(TalkDb(two), null), Has.Some.Contains("exactly one answer"));
-            var noJoin = GoodTalk(); noJoin.Nodes.RemoveAt(3);
+            var two = GoodTalk(); two.Nodes[0].Choices[1].Wit = 1;
+            Assert.That(ContentLoader.Validate(TalkDb(two), null), Has.Some.Contains("exactly one reply with Wit +1"));
+            var short2 = GoodTalk(); short2.Nodes.RemoveAt(2); short2.Nodes[1].Choices.ForEach(ch => ch.Next = "weigh");
+            Assert.That(ContentLoader.Validate(TalkDb(short2), null), Has.Some.Contains("needs 3 exchanges"));
+            var split = GoodTalk(); split.Nodes[0].Choices[2].Next = "ask3";
+            Assert.That(ContentLoader.Validate(TalkDb(split), null), Has.Some.Contains("every reply must go on to the same node"));
+            var noJoin = GoodTalk(); noJoin.Nodes.RemoveAt(4);
             Assert.That(ContentLoader.Validate(TalkDb(noJoin), null), Has.Some.Contains("needs a 'join' node"));
             var effect = GoodTalk(); effect.Nodes[0].Choices[0].Effects.Add(new DialogueEffect { Type = DialogueEffectType.SetFlag, Id = "x" });
             Assert.That(ContentLoader.Validate(TalkDb(effect), null), Has.Some.Contains("can't have effects"));
-            var four = GoodTalk(); four.Nodes[0].Choices.Add(new DialogueChoice { Label = "d", Next = "unheard" });
-            Assert.That(ContentLoader.Validate(TalkDb(four), null), Has.Some.Contains("three answers"));
+            var four = GoodTalk(); four.Nodes[0].Choices.Add(new DialogueChoice { Label = "d", Next = "ask2" });
+            Assert.That(ContentLoader.Validate(TalkDb(four), null), Has.Some.Contains("three replies"));
 
             // "$hero" belongs to a wanderer talk only; "$outcome" too.
             var talk = GoodTalk(); talk.Trigger = new DialogueTrigger { Kind = DialogueTriggerKind.Talk, Id = "knight" };
@@ -364,7 +425,9 @@ namespace GridGame.Tests
 
             var db = TalkDb(GoodTalk());
             db.Factions.Add(new FactionDef { Id = "again", Name = "Again", Heroes = { "knight", "goblin" } });
+            db.Factions[0].Regions.Add("nowhere");
             var fp = ContentLoader.Validate(db, null);
+            Assert.That(fp, Has.Some.Contains("region 'nowhere' is not a campaign theme"));
             Assert.That(fp, Has.Some.Contains("'knight' is already in faction holds"));
             Assert.That(fp, Has.Some.Contains("'goblin' is not a hero class"));
         }

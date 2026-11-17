@@ -52,7 +52,7 @@ namespace GridGame.Tests
             Assert.That(c.FactionOf(id)?.Id, Is.EqualTo(faction), "its faction-mates bridge half trust");
             var scene = Wanderers.Scene(c, id);
             Assert.That(scene, Is.Not.Null);
-            Assert.That(Wanderers.RightAnswer(scene), Is.InRange(0, 2));
+            Assert.That(Wanderers.RightAnswers(scene), Has.Count.EqualTo(DialogueDef.WitsExchanges).And.All.InRange(0, 2));
         }
 
         private static void AssertQuiz(string id)

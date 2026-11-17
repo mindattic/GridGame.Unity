@@ -36,6 +36,9 @@ namespace GridGame.App
         private float typed;
         private int shownLines, shownLog;
         private bool done;
+        /// <summary>A wanderer talk's game-of-wits meter (GG-T387): one pip per point of standing, the joining mark ringed.</summary>
+        private VisualElement[] witsPips;
+        private Label witsCaption;
 
         /// <summary>One side of the conversation: who stands there, their whole portrait and their name plate.
         /// <see cref="Lit"/> (talking 1 / listening 0) and <see cref="Present"/> (on stage 1 / off 0) ease toward
@@ -117,6 +120,8 @@ namespace GridGame.App
             skip.name = "dlg-skip";
             skip.style.position = Position.Absolute; skip.style.right = Space.S24; skip.style.top = Space.S24;
 
+            BuildWits(root);
+
             // The one shared text box: each line replaces the last in it; the choices sit in it too.
             var box = Ui.Window(null, root, "window--plain");
             box.name = "dlg-box";
@@ -171,7 +176,9 @@ namespace GridGame.App
             p.pickingMode = PickingMode.Ignore;
             p.style.position = Position.Absolute;
             p.style.bottom = Space.S0; p.style.height = FigureHeight; p.style.width = FigureHeight;
-            if (s.Index == 0) p.style.left = -Space.S64; else p.style.right = -Space.S64;
+            // GG-T387: flush with the screen edge, not 64 px past it: the frame is the figure's own box (Art.PortraitFigure),
+            // so any overhang cut the figure's outer edge off.
+            if (s.Index == 0) p.style.left = Space.S0; else p.style.right = Space.S0;
             p.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
             p.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Bottom);
             p.style.opacity = 0f;
@@ -415,11 +422,89 @@ namespace GridGame.App
         private void Choose(int index)
         {
             if (done) return;
+            int before = run.Wits?.Standing ?? 0;
             var r = run.Choose(index);
             if (!r.Ok) { App.Audio.Sfx("ui.error"); return; }
-            App.Audio.Sfx("ui.confirm");
+            if (run.Wits != null) MoveWits(before);
+            else App.Audio.Sfx("ui.confirm");
             App.Persist();
             ShowNew();
+        }
+
+        // ── the game of wits (GG-T387) ──────────────────────────────────────────────
+
+        /// <summary>The standing meter over a wanderer talk: a pip per point up to <see cref="WitsMeter.Max"/>, filled up to
+        /// the standing, the joining mark (<see cref="WitsMeter.Threshold"/>) ringed in gold. Nothing for other dialogues.</summary>
+        private void BuildWits(VisualElement root)
+        {
+            witsPips = null; witsCaption = null;
+            var w = run.Wits;
+            if (w == null) return;
+            var panel = Ui.El(null, root);
+            panel.name = "dlg-wits";
+            panel.pickingMode = PickingMode.Ignore;
+            panel.style.position = Position.Absolute;
+            panel.style.left = Fit.Edge; panel.style.right = Fit.Edge; panel.style.top = Fit.H(5.9f);
+            panel.style.alignItems = Align.Center;
+            var row = Ui.El(null, panel);
+            row.pickingMode = PickingMode.Ignore;
+            row.style.flexDirection = FlexDirection.Row;
+            row.style.alignItems = Align.Center;
+            row.style.paddingLeft = row.style.paddingRight = Space.S24;
+            row.style.paddingTop = row.style.paddingBottom = Space.S16;
+            row.style.backgroundColor = Palette.Ink.WithA(0.72f);
+            SetRadius(row, 28);
+            var name = Ui.Text("Standing", "small", row);
+            name.style.marginRight = Space.S16;
+            witsPips = new VisualElement[w.Max];
+            for (int i = 0; i < w.Max; i++)
+            {
+                var pip = new VisualElement { pickingMode = PickingMode.Ignore, name = "dlg-wits-pip-" + (i + 1) };
+                pip.style.width = pip.style.height = 40;
+                pip.style.marginLeft = pip.style.marginRight = Space.S4;
+                SetRadius(pip, 20);
+                SetBorder(pip, i + 1 == w.Threshold ? 5 : 3);
+                var edge = i + 1 == w.Threshold ? Palette.Gold : Palette.TextDim;
+                pip.style.borderTopColor = pip.style.borderBottomColor = pip.style.borderLeftColor = pip.style.borderRightColor = edge;
+                pip.style.backgroundColor = PipColor(w, i, w.Standing);
+                row.Add(pip);
+                witsPips[i] = pip;
+            }
+            witsCaption = Ui.Text(WitsCaption(w, 0, false), "small", panel);
+            witsCaption.name = "dlg-wits-caption";
+            witsCaption.style.marginTop = Space.S8;
+        }
+
+        /// <summary>Pip <paramref name="i"/> (0-based) at <paramref name="standing"/>: lit in the wanderer's rose below the
+        /// joining mark, in gold from it on; dark when not reached.</summary>
+        private static Color PipColor(WitsMeter w, int i, int standing) =>
+            i + 1 > standing ? Palette.Ink.WithA(0.85f) : i + 1 >= w.Threshold ? Palette.Gold : Palette.Wanderer;
+
+        private static string WitsCaption(WitsMeter w, int move, bool after)
+        {
+            string head = !after ? "" : move > 0 ? "Point won! " : move < 0 ? "Point lost. " : "Even. ";
+            int need = w.Threshold - w.Standing;
+            return head + (need <= 0 ? "They'd join you now." : $"{need} more to win them over.");
+        }
+
+        /// <summary>A reply has landed: the meter steps to the new standing over a beat (the pip that changes swells and
+        /// recolours), with a cue for a point won, an even reply or a point lost (Law 5).</summary>
+        private void MoveWits(int before)
+        {
+            var w = run.Wits;
+            int after = w.Standing, move = after - before;
+            App.Audio.Sfx(move > 0 ? "battle.powerup" : move < 0 ? "status.debuff" : "ui.click");
+            if (witsPips == null) return;
+            if (witsCaption != null) witsCaption.text = WitsCaption(w, move, true);
+            int at = Mathf.Clamp((move >= 0 ? after : before) - 1, 0, witsPips.Length - 1);
+            var pip = witsPips[at];
+            var from = PipColor(w, at, before);
+            var to = PipColor(w, at, after);
+            App.StartCoroutine(Tween.Run(Timing.Quick * 2f, k =>
+            {
+                pip.style.scale = new Scale(Vector2.one * (1f + 0.4f * Mathf.Sin(k * Mathf.PI)));
+                pip.style.backgroundColor = Color.Lerp(from, to, k);
+            }, Tween.EaseOut));
         }
 
         /// <summary>Skip ›: rushes through lines up to the next choice (choices are never skipped — they can change the

@@ -18,6 +18,35 @@ namespace GridGame.Meta
         public string Answer;
     }
 
+    /// <summary>The standing in a wanderer's game of wits (GG-T387): where the talk started (set by trust and the companion),
+    /// where it is now, and the mark it must reach. Each reply moves it by its <see cref="DialogueChoice.Wit"/>; the screen
+    /// draws it as a meter.</summary>
+    public sealed class WitsMeter
+    {
+        public int Start { get; }
+        public int Threshold { get; }
+        /// <summary>The meter's top (the best start plus every point won).</summary>
+        public int Max { get; }
+        public int Standing { get; private set; }
+        /// <summary>Every reply's move so far (+1, 0, -1), in order.</summary>
+        public List<int> Moves { get; } = new List<int>();
+        public bool Clears => Standing >= Threshold;
+
+        public WitsMeter(int start, int threshold, int max)
+        {
+            Start = Standing = start; Threshold = threshold; Max = Math.Max(max, threshold);
+        }
+
+        /// <summary>Scores a reply; returns the move (clamped to -1..+1).</summary>
+        public int Score(int wit)
+        {
+            int move = Math.Max(-1, Math.Min(1, wit));
+            Standing += move;
+            Moves.Add(move);
+            return move;
+        }
+    }
+
     /// <summary>
     /// Plays one <see cref="DialogueDef"/> against a save (§27.1, GG-T117). A data interpreter, not a VM: it walks
     /// nodes, offers the choices whose conditions hold, and applies effects in the save's own vocabulary.
@@ -37,6 +66,9 @@ namespace GridGame.Meta
         /// <summary>Resolves <see cref="DialogueDef.OutcomeNext"/> to the node to go to (GG-T342: the wanderer's
         /// understanding rule, set by <c>Wanderers.Begin</c>); without one the marker ends the dialogue.</summary>
         public Func<DialogueRunner, string> Outcome;
+        /// <summary>A wanderer talk's game of wits (GG-T387, set by <c>Wanderers.Begin</c>): each chosen reply scores its
+        /// <see cref="DialogueChoice.Wit"/> here before the talk moves on. Null for every other dialogue.</summary>
+        public WitsMeter Wits;
         public DialogueNode Node { get; private set; }
         public bool Finished => Node == null;
         /// <summary>Every line reached so far, in order (the current one last).</summary>
@@ -85,6 +117,7 @@ namespace GridGame.Meta
             if (!AwaitingChoice || index < 0 || index >= offered.Count) return Result.Fail("No such choice");
             var ch = offered[index];
             Current.Answer = ch.Label;
+            Wits?.Score(ch.Wit);
             foreach (var e in ch.Effects) Apply(e);
             Enter(ch.Next);
             return Result.Success();

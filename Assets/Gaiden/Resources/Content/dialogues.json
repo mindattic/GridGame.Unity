@@ -36,17 +36,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "heard" },
-          { "Next": "unheard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": 0 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -61,17 +76,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "heard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -86,17 +116,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "heard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": -1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -111,17 +156,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "heard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -136,17 +196,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "unheard" },
-          { "Next": "heard" }
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 0 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -161,17 +236,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "heard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -186,17 +276,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "heard" },
-          { "Next": "unheard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]
@@ -211,17 +316,32 @@
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "hero", "Next": "reply" },
-      { "Id": "reply", "Speaker": "with", "Next": "ask" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
       {
-        "Id": "ask", "Speaker": "hero",
+        "Id": "ask1", "Speaker": "hero",
         "Choices": [
-          { "Next": "unheard" },
-          { "Next": "heard" },
-          { "Next": "unheard" }
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 }
         ]
       },
-      { "Id": "heard", "Speaker": "hero", "Next": "$outcome" },
-      { "Id": "unheard", "Speaker": "hero", "Next": "$outcome" },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
       { "Id": "join", "Speaker": "hero" },
       { "Id": "part", "Speaker": "hero" }
     ]

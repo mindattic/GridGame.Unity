@@ -49,6 +49,7 @@ $kit = 'D:\Projects\MindAttic\Prose\consumer-kit\kit.ps1'
 python tools/prose_seed.py <dir>          # draft the game's current words (Content/Text joined on) for Prose
 python tools/prose_text.py check         # no story text in gameplay JSON, every key has a text, no orphans
 python tools/prose_text.py seed-missing --drafts <dir>   # seed only keys with no text yet; drafts for Prose
+python tools/prose_lorem.py --drafts <dir>              # GG-T387: every conversation's lines and labels as lorem ipsum
 prose --texts-draft gridgame <dir>        # drafts; identical content changes nothing
 python -m unittest tools/test_prose_apply.py   # the applier's tests (run only when the owner asks)
 ```
@@ -60,6 +61,19 @@ prose --texts-approve-all gridgame --kind crawl --by <name> --dry-run
 prose --texts-approve-all gridgame --kind crawl --by <name> --publish
 # likewise --kind conversation | description | quest | glossary | bark; narrow with --prefix item: or --about class-lich
 ```
+
+## Placeholder conversations (GG-T387, 2026-11-16)
+
+Owner: "set up all the lorem ipsum for story crawls and conversations". Every `dialogue:<id>` text (story beats, Camp
+talks, Advice quizzes, wanderer talks) is lorem ipsum, written by `tools/prose_lorem.py`: the game's own records give
+the node ids, speakers, `next`, choice order and tags (via `prose_seed.conversation`), so the game plays the same flow;
+each line keeps roughly its old word count, and each choice label is a short phrase behind a marker (`A ·`, `B ·`, `C ·`).
+It writes seeds through `prose_text.upsert_seed` (never over a Prose-applied text) and drafts that went to Prose as
+batch `lorem-387` (`prose --texts-draft gridgame <dir> --by claude --batch lorem-387`): v2 of every conversation (v3 for
+one). **Why the build's pull can't bring the retired words back:** `prose-sync` pulls only published texts, nothing is
+approved or published yet, and approval in Prose only ever takes a text's newest draft, which is now the lorem one. The
+retired words survive only as older versions in Prose's history. Dialogue crawls (`crawl:dialogue/*`) are crawls and are
+not touched by it.
 
 ## Keys
 
@@ -99,7 +113,8 @@ back onto its own records. Triggers, conditions, effects, speaker classes and po
 Speakers are `$placeholders` (`$hero`, `$with`, `$lead`, `$recruit`) or entity ids (`class-<id>`, `character-<npc>`).
 Choice **tags** carry the meaning the game's logic keys on:
 
-- `right-answer`: a wanderer's `heard` branch (`Wanderers.RightAnswer`), or the Advice-quiz answer that grants a skill
+- `right-answer`: a wanderer reply that wins its exchange in the game of wits (`Wit` +1, `Wanderers.RightAnswers`,
+  GG-T387), or the Advice-quiz answer that grants a skill
   point.
 - `conditional`: a choice the game shows only when its Conditions hold.
 
@@ -211,7 +226,7 @@ Every build ships the latest **published** Prose text.
 4. **Validation** (`ContentLoader.Validate`, via the join): every key resolves; no orphan text; no story text in gameplay
    JSON (a field put back is reported and Prose's text wins); conversation shape agrees (nodes, choice count, each
    choice's `next`); the `right-answer` tag sits exactly on the answers the game rewards (`ProseText.RewardsRightAnswer`:
-   a wanderer's `heard` reply, which is `Wanderers.RightAnswer`, or a choice that grants a skill point).
+   a wanderer reply with `Wit` +1, which is `Wanderers.RightAnswers`, or a choice that grants a skill point).
    *(Tests: `TextSourcingTests` (C#) and `TextSourcingTests` in `tools/test_prose_apply.py`; written, run when the owner
    asks.)*
 5. **New content gets a key, its words go to Prose.** A new record's key exists as soon as the record does; until its

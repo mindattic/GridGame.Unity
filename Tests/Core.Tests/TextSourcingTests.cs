@@ -146,8 +146,8 @@ namespace GridGame.Tests
                 if (d.Trigger.Kind == DialogueTriggerKind.Wanderer)
                 {
                     wanderers++;
-                    var ask = d.Nodes.First(n => n.Choices.Count > 0);
-                    Assert.That(Tagged(ask), Is.EqualTo(new List<int> { Wanderers.RightAnswer(d) }), $"{d.Id}: the tag marks Wanderers.RightAnswer");
+                    var asks = d.Nodes.Where(n => n.Choices.Count > 0).ToList();
+                    Assert.That(asks.SelectMany(Tagged).ToList(), Is.EqualTo(Wanderers.RightAnswers(d)), $"{d.Id}: the tags mark Wanderers.RightAnswers (GG-T387)");
                 }
                 if (d.AllEffects().Any(e => e.Type == DialogueEffectType.GrantSkillPoint)
                     && d.Nodes.Any(n => n.Choices.Any(c => c.Effects.Any(e => e.Type == DialogueEffectType.GrantSkillPoint))))

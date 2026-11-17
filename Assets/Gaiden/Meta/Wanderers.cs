@@ -19,9 +19,11 @@ namespace GridGame.Meta
     /// player's own launches roll (BattleScreen calls <see cref="Apply"/>); the bots' balance runs, the dotnet soaks, Test
     /// Mode and the Crucible never do.</para>
     ///
-    /// <para>The understanding (<see cref="Judge"/>), deterministic and shown before the talk: they join only if the
-    /// companion <b>says what they want to hear</b> AND they trust the party — <b>full trust</b>, or <b>at least half</b>
-    /// with a companion of <b>their own faction</b> (STORY.md, factions.json). Under half trust, nothing said will do.</para>
+    /// <para>The understanding (GG-T387, the owner's "game of wits"), deterministic, no dice: the talk is
+    /// <see cref="DialogueDef.WitsExchanges"/> exchanges, each a question from the wanderer and three replies from the
+    /// companion that win the point (+1), stay neutral (0) or lose it (-1). The trust earned in battle sets the starting
+    /// standing (<see cref="StartStanding"/>: more trust, more slack; a companion of <b>their own faction</b> adds one), and
+    /// they join when the final standing reaches <see cref="Threshold"/> (<see cref="Joins"/>).</para>
     /// </summary>
     public static class Wanderers
     {
@@ -40,10 +42,12 @@ namespace GridGame.Meta
         {
             if (c == null || s == null || stage == null || s.TestMode || stage.IsTest || Crucible.IsStage(stage.Id)) return null;
             if (!c.CampaignStages().Any(x => x.Id == stage.Id) || stage.Waves.Count == 0) return null;
-            if (stage.Waves.Any(w => (w.Guests?.Count ?? 0) > 0 || (w.Recruitables?.Count ?? 0) > 0)) return null;
+            // A stage still holding an authored guest or recruitable the player hasn't won keeps that meeting to itself; once
+            // they've joined, a hunt there (GG-T388) can meet a wanderer like anywhere else.
+            if (stage.Waves.Any(w => (w.Guests?.Any(g => s.Hero(g.Class) == null) ?? false) || (w.Recruitables?.Any(r => s.Hero(r.Class) == null) ?? false))) return null;
             var rng = new Random(SeedFor(s, stage.Id, battleSeed));
             if (rng.NextDouble() >= Chance) return null;
-            var pool = Pool(c, s);
+            var pool = Local(c, Pool(c, s), stage.Id);
             if (pool.Count == 0) return null;
             // Early in the stage, so there's a real fight to earn their trust in.
             return new WandererSpec { Class = pool[rng.Next(pool.Count)], Wave = rng.Next(Math.Min(2, stage.Waves.Count)) };
@@ -70,6 +74,17 @@ namespace GridGame.Meta
             return c.Classes.Values
                 .Where(d => d.Team == Team.Hero && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && !taken.Contains(d.Id))
                 .Select(d => d.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
+        }
+
+        /// <summary>GG-T387 (owner: "random Hero NPCs from that area"): the heroes of <paramref name="pool"/> whose faction
+        /// roams the stage's region (<see cref="FactionDef.Regions"/>), while any are left to meet; else the whole pool, so a
+        /// region whose own people have all joined still meets strangers from the road.</summary>
+        public static List<string> Local(ContentDb c, List<string> pool, string stageId)
+        {
+            var theme = c.ThemeOf(stageId)?.Id;
+            if (theme == null) return pool;
+            var local = pool.Where(id => c.FactionOf(id)?.Regions?.Exists(r => string.Equals(r, theme, StringComparison.OrdinalIgnoreCase)) ?? false).ToList();
+            return local.Count > 0 ? local : pool;
         }
 
         public static int SeedFor(SaveData s, string stageId, int battleSeed)
@@ -113,21 +128,43 @@ namespace GridGame.Meta
             return f != null && companion != null && c.FactionOf(companion) == f;
         }
 
-        /// <summary>The whole understanding rule: say what they want to hear, and they trust you fully — or half, with a
-        /// companion of their own faction.</summary>
-        public static bool Joins(TrustTier tier, bool fits, bool heard) => heard && (tier == TrustTier.Full || (tier == TrustTier.Half && fits));
+        // ── the game of wits (GG-T387) ──────────────────────────────────────────────
 
-        public static bool Judge(ContentDb c, Offer o, string companion, bool heard) => o != null && Joins(Tier(o.Trust, o.TrustNeeded), Fits(c, o.ClassId, companion), heard);
+        /// <summary>The standing the wanderer must be at, once the last exchange is done, to join.</summary>
+        public const int Threshold = 4;
+        /// <summary>A companion of their own faction starts one higher.</summary>
+        public const int KinBonus = 1;
+        /// <summary>The meter's top: the best start plus a point won in every exchange.</summary>
+        public const int MaxStanding = 3 + KinBonus + DialogueDef.WitsExchanges;
 
-        /// <summary>What a talk with <paramref name="companion"/> can reach, before anything is said (the results screen's hint).</summary>
+        /// <summary>The standing trust alone gives (Low 0, Half 2, Full 3): more trust, more slack.</summary>
+        public static int TrustStanding(TrustTier tier) => tier == TrustTier.Full ? 3 : tier == TrustTier.Half ? 2 : 0;
+
+        /// <summary>Where the talk starts. Against <see cref="Threshold"/>: full trust must come out one point ahead (a kin
+        /// companion: just not behind), half trust two (kin: one), too little trust can't get there (kin: every point).</summary>
+        public static int StartStanding(TrustTier tier, bool fits) => TrustStanding(tier) + (fits ? KinBonus : 0);
+
+        public static int StartStanding(ContentDb c, Offer o, string companion) =>
+            o == null ? 0 : StartStanding(Tier(o.Trust, o.TrustNeeded), Fits(c, o.ClassId, companion));
+
+        /// <summary>The whole understanding rule: the final standing reaches <see cref="Threshold"/>.</summary>
+        public static bool Joins(int standing) => standing >= Threshold;
+
+        /// <summary>Whether a talk with <paramref name="companion"/> that nets <paramref name="net"/> points over its exchanges
+        /// (wins minus losses) wins them over.</summary>
+        public static bool Judge(ContentDb c, Offer o, string companion, int net) => o != null && Joins(StartStanding(c, o, companion) + net);
+
+        /// <summary>What a talk with <paramref name="companion"/> (null: anyone) needs, before anything is said (the results
+        /// screen's hint).</summary>
         public static string Outlook(ContentDb c, Offer o, string companion)
         {
-            var tier = Tier(o.Trust, o.TrustNeeded);
-            if (tier == TrustTier.Low) return "Too little trust: nothing said will win them over this time.";
-            if (tier == TrustTier.Full) return "Full trust: say what they want to hear and they join.";
+            int need = Threshold - StartStanding(c, o, companion);
             var f = c.FactionOf(o.ClassId);
-            if (Fits(c, o.ClassId, companion)) return $"Half trust, and one of their own ({f.Name}): say what they want to hear and they join.";
-            return f != null ? $"Half trust: only a companion from {f.Name} can win them over." : "Half trust: not enough on its own.";
+            string kin = f == null ? "" : Fits(c, o.ClassId, companion) ? $" One of their own ({f.Name}) starts a point ahead." : $" One of {f.Name} would start a point ahead.";
+            if (need > DialogueDef.WitsExchanges) return "Too little trust: no talk will win them over this time." + kin;
+            if (need <= 0) return "They trust you: just don't lose more points than you win." + kin;
+            if (need == DialogueDef.WitsExchanges) return "A game of wits: win every exchange to win them over." + kin;
+            return $"A game of wits: come out {need} point{(need == 1 ? "" : "s")} ahead to win them over." + kin;
         }
 
         /// <summary>The conversation for <paramref name="classId"/>: one written for that hero, else their faction's, else the generic one.</summary>
@@ -140,41 +177,52 @@ namespace GridGame.Meta
                 ?? all.FirstOrDefault(d => d.Trigger.Id == null);
         }
 
-        /// <summary>A runner for the talk: "$hero" is the wanderer, "$with" the chosen companion. When the reply lands
-        /// (<see cref="DialogueDef.OutcomeNext"/>) the rule is judged, a joiner joins, and the scene goes to its
-        /// <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
+        /// <summary>A runner for the talk: "$hero" is the wanderer, "$with" the chosen companion. Its
+        /// <see cref="DialogueRunner.Wits"/> meter starts where trust and the companion put it and moves with each reply;
+        /// when the talk reaches <see cref="DialogueDef.OutcomeNext"/> the standing is judged, a joiner joins, and the scene
+        /// goes to its <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
         public static DialogueRunner Begin(ContentDb c, SaveData s, Offer o, string companion)
         {
             var def = Scene(c, o.ClassId);
             if (def == null) return null;
-            var run = new DialogueRunner(c, s, def, companion, o.ClassId);
+            var run = new DialogueRunner(c, s, def, companion, o.ClassId)
+            {
+                Wits = new WitsMeter(StartStanding(c, o, companion), Threshold, MaxStanding),
+            };
             run.Outcome = r =>
             {
-                bool heard = r.Transcript.Any(l => string.Equals(l.NodeId, DialogueDef.HeardNode, StringComparison.OrdinalIgnoreCase));
-                bool joins = Judge(c, o, companion, heard) && s.Hero(o.ClassId) == null;
+                bool joins = Joins(r.Wits.Standing) && s.Hero(o.ClassId) == null;
                 if (joins) r.Log.Add(Join(c, s, o));
                 return joins ? DialogueDef.JoinNode : DialogueDef.PartNode;
             };
             return run;
         }
 
-        /// <summary>Headless talk (tests; a bot never meets a wanderer): picks <paramref name="answer"/> at the question.
-        /// Returns whether they joined.</summary>
-        public static bool Converse(ContentDb c, SaveData s, Offer o, string companion, int answer)
+        /// <summary>Headless talk (tests; a bot never meets a wanderer): at every exchange picks the reply whose
+        /// <see cref="DialogueChoice.Wit"/> is <paramref name="wit"/> (+1 win, 0 neutral, -1 lose). Returns whether they joined.</summary>
+        public static bool Converse(ContentDb c, SaveData s, Offer o, string companion, int wit) =>
+            Converse(c, s, o, companion, Enumerable.Repeat(wit, DialogueDef.WitsExchanges).ToArray());
+
+        /// <summary>Headless talk with one <see cref="DialogueChoice.Wit"/> per exchange, in order (a missing one is neutral).</summary>
+        public static bool Converse(ContentDb c, SaveData s, Offer o, string companion, IReadOnlyList<int> wits)
         {
             var run = Begin(c, s, o, companion);
             if (run == null) return false;
+            int exchange = 0;
             for (int guard = 0; !run.Finished && guard < 200; guard++)
-                if (!run.Advance()) run.Choose(Math.Min(answer, Math.Max(0, run.Choices.Count - 1)));
+            {
+                if (run.Advance()) continue;
+                int want = exchange < wits.Count ? wits[exchange] : 0;
+                exchange++;
+                int pick = run.Choices.FindIndex(ch => ch.Wit == want);
+                run.Choose(pick < 0 ? 0 : pick);
+            }
             return s.Hero(o.ClassId) != null;
         }
 
-        /// <summary>The index of the answer that speaks to them in <paramref name="def"/>'s question (-1 if none).</summary>
-        public static int RightAnswer(DialogueDef def)
-        {
-            var ask = def?.Nodes.FirstOrDefault(n => n != null && n.Choices.Count > 0);
-            return ask == null ? -1 : ask.Choices.FindIndex(ch => string.Equals(ch?.Next, DialogueDef.HeardNode, StringComparison.OrdinalIgnoreCase));
-        }
+        /// <summary>The index of the reply that wins the point in each of <paramref name="def"/>'s exchanges, in order.</summary>
+        public static List<int> RightAnswers(DialogueDef def) =>
+            def == null ? new List<int>() : def.Nodes.Where(n => n != null && n.Choices.Count > 0).Select(n => n.Choices.FindIndex(ch => ch != null && ch.Wit > 0)).ToList();
 
         /// <summary>They join exactly like a freed guest: the roster, the party if there's room, at their battle level.</summary>
         public static string Join(ContentDb c, SaveData s, Offer o)

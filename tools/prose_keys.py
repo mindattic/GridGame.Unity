@@ -66,8 +66,8 @@ NPCS = {
 NPC_BY_NAME = {v: k for k, v in NPCS.items()}
 
 # Choice tags the game's dialogue logic keys on (prose.config.json "tags"):
-#   right-answer  the answer that speaks to them: a wanderer's "heard" branch (Wanderers.RightAnswer) or the
-#                 Advice-quiz answer that earns a skill point (GrantSkillPoint).
+#   right-answer  the answer the game rewards: a wanderer reply that wins its exchange in the game of wits (Wit +1,
+#                 Wanderers.RightAnswers, GG-T387) or the Advice-quiz answer that earns a skill point (GrantSkillPoint).
 #   conditional   a choice shown only when its gameplay Conditions hold (gold, a flag, the roster).
 TAGS = ("right-answer", "conditional")
 
