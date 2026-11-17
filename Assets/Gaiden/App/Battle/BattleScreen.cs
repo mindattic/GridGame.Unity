@@ -19,7 +19,7 @@ namespace GridGame.App
 {
     /// <summary>
     /// The battle. Layout follows the bible HUD rows (§9): top bar · timeline + shield · action banner ·
-    /// 6×8 board · ability bar · mana orbs · actor panel. The simulation (BattleState) is the only truth;
+    /// 6×8 board · ability bar with the mana pool at its right end (GG-T405) · Party · Lore · Log tabs. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -55,30 +55,33 @@ namespace GridGame.App
         private readonly BattleSetup setupOverride;
         private BoardView board;
         private readonly List<VisualElement> slotViews = new List<VisualElement>();
-        private readonly List<VisualElement> orbViews = new List<VisualElement>();
-        /// <summary>How many orbs the bar currently draws full (GG-T366). Orbs fill left to right and are spent right to
-        /// left, so slots [0, shownOrbs) are full and the charge bubble always sits in slot shownOrbs, never past an
-        /// empty slot, even mid-playback when State.Bank already holds the action's final count.</summary>
+        /// <summary>The mana pool (GG-T405): one widget at the ability row's right end instead of a row of 12 orbs: an
+        /// orb with the spendable count large, the cap small beneath it, the next orb's charge as a thin gauge, and a
+        /// "-N" ghost while a spell is aimed. Named "orbs" (the old row's name) so automation still finds it.</summary>
+        private VisualElement pool;
+        private ManaGlobe poolOrb;
+        private Label poolCount, poolCap, poolGhost;
+        /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
+        /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
+        /// pool never shows an orb before its fly-in or after it was spent.</summary>
         private int shownOrbs;
         /// <summary>The Party page of the info tabs (GG-T391): the selected unit, its skills, the ability/confirm card and
         /// the tutorial lesson all draw here (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
         private VisualElement bannerViewport;
         private Coroutine bannerScrollRoutine;
-        /// <summary>Tall enough for two lines of the stepped-down banner font, so a tip that wraps beside the timer reserve
-        /// reads whole instead of scrolling; it still ends above the board (GG-T391).</summary>
-        private const float BannerViewportHeight = 110f;
-        /// <summary>The banner row sits a gutter under the timeline frame, clear of it, and above the board.</summary>
+        /// <summary>The banner band (GG-T391, GG-T405): a gutter under the timeline frame to a gutter above the board, so
+        /// nothing in it (banner, billboard, drag timer) can touch either. Two lines of the stepped-down banner font fit.</summary>
         private const float BannerTop = TimelineY + TimelineFrameHeight / 2f + Space.S8, TopBarHeight = 110f;
+        private const float BannerViewportHeight = BoardTop - Space.S8 - BannerTop;
         /// <summary>Room the drag-timer seconds take at the banner row's right end; the banner keeps the same inset on both
         /// sides so it stays centred and never runs under the timer (GG-T391).</summary>
         private const float TimerReserve = Size.Label + Space.S24;
-        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391): ability bar, mana orbs, then the info
-        // tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
+        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots and
+        // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S16;
-        private static float OrbsTop => BarTop + Size.Slot + Space.S16;
-        private static float InfoTabsTop => OrbsTop + Size.IconL + Space.S16;
+        private static float InfoTabsTop => BarTop + Size.Slot + Space.S16;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -137,6 +140,9 @@ namespace GridGame.App
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
             billboard?.RemoveFromHierarchy();
             billboard = null;
+            mintTagHost?.RemoveFromHierarchy(); // GG-T405: the globe's source tags live on the Overlay too
+            mintTagHost = null;
+            mintTags.Clear();
             // Build() rebuilds `banner` fresh when the player backs out of "How to play" onto this same
             // instance (see the Build() comment); an in-flight scroll left running would keep animating
             // whatever `banner` now points to using timing measured against the old one (GG-T70).
@@ -158,7 +164,7 @@ namespace GridGame.App
             // event) must not run a second time (GG-T70).
             bool firstBuild = State == null;
             slotViews.Clear();
-            orbViews.Clear();
+            pool = null;
             timelineIconViews.Clear();
             shownCoins = -1;
             if (firstBuild)
@@ -224,7 +230,6 @@ namespace GridGame.App
             board.Root.RegisterCallback<PointerCaptureOutEvent>(_ => { if (dragging) CommitDrag(); pressing = false; });
 
             BuildAbilityBar(shake);
-            BuildOrbs(shake);
             BuildInfoTabs(shake);
 
             ApplyStageLayout();
@@ -262,7 +267,9 @@ namespace GridGame.App
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
             timerLabel = Ui.Text("", "h1 shadow warn", root);
             timerLabel.style.position = Position.Absolute;
-            timerLabel.style.right = Space.S48; timerLabel.style.top = BannerTop;
+            // The drag timer keeps to the banner band (GG-T405): its own height, centred in it, never over the timeline or board.
+            timerLabel.style.right = Space.S48; timerLabel.style.top = BannerTop; timerLabel.style.height = BannerViewportHeight;
+            timerLabel.style.unityTextAlign = TextAnchor.MiddleRight;
         }
 
         /// <summary>Re-applies the positions that depend on the stage width (build time and on resize).</summary>
@@ -271,11 +278,10 @@ namespace GridGame.App
             if (boardHost == null) return;
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
-            // The rows under the board (ability bar, mana orbs, info tabs) keep to the centred content column, so on a
+            // The rows under the board (ability bar + mana pool, info tabs) keep to the centred content column, so on a
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             if (Root?.Q("abilitybar") is VisualElement bar) bar.style.left = bar.style.right = inset + Space.S16;
-            if (Root?.Q("orbs") is VisualElement orbs) orbs.style.left = orbs.style.right = inset + Fit.Edge;
             if (Root?.Q("info-tabs") is VisualElement tabs) tabs.style.left = tabs.style.right = inset + Fit.Edge;
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
             LayoutTimelineFrame();
@@ -294,19 +300,15 @@ namespace GridGame.App
             var bar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
-            // Even gutters on the space scale; the slots, not the gaps, take a wider stage (POL-C1/C8).
+            // Five slots and the mana pool share the row evenly (GG-T405); even gutters on the space scale, and the
+            // cells, not the gaps, take a wider stage (POL-C1/C8).
             bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
             for (int i = 0; i < 5; i++)
             {
                 int idx = i;
-                var slot = Ui.El("col center", bar);
+                var slot = HudCell(bar);
                 slot.name = "slot" + i;
-                slot.style.flexGrow = 1; slot.style.flexBasis = 0; slot.style.height = Size.Slot;
-                slot.style.marginLeft = slot.style.marginRight = Space.S8;
-                slot.style.borderTopLeftRadius = slot.style.borderTopRightRadius = slot.style.borderBottomLeftRadius = slot.style.borderBottomRightRadius = 18;
-                slot.style.borderTopWidth = slot.style.borderBottomWidth = slot.style.borderLeftWidth = slot.style.borderRightWidth = 4;
-                slot.style.backgroundImage = new StyleBackground(Art.Window);
                 slot.AddToClassList("slot");
                 Ui.Pressable(slot);
                 AttachSlotInspect(slot, idx);
@@ -316,28 +318,66 @@ namespace GridGame.App
                 var cost = Ui.El("row", slot); cost.name = "cost"; cost.style.height = Size.Pip;
                 slotViews.Add(slot);
             }
+            BuildManaPool(bar);
         }
 
-        private void BuildOrbs(VisualElement root)
+        /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>
+        private static VisualElement HudCell(VisualElement bar)
         {
-            var row = Ui.El("row", root);
-            row.name = "orbs";
-            row.style.position = Position.Absolute;
-            row.style.top = OrbsTop; row.style.height = Size.IconL; // left/right: ApplyStageLayout (the HUD column)
-            row.style.justifyContent = Justify.SpaceBetween;
-            int cap = Mathf.Clamp(State.Bank.Capacity, ManaBank.DefaultCapacity, 16);
-            float size = cap <= 12 ? 74 : Mathf.Floor(1080f / cap) - 6;
-            for (int i = 0; i < cap; i++)
-            {
-                var o = Ui.Text("", "", row);
-                o.name = "orb" + i;
-                o.style.width = o.style.height = size;
-                o.style.backgroundImage = new StyleBackground(Art.Orb);
-                o.style.unityTextAlign = TextAnchor.MiddleCenter;
-                o.style.fontSize = TypeScale.Caption; Fonts.UseHeavy(o);
-                o.AddToClassList("text-ink"); // dark numeral on the light orb: ink color, no outline or drop (GG-T385)
-                orbViews.Add(o);
-            }
+            var cell = Ui.El("col center", bar);
+            cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.height = Size.Slot;
+            cell.style.marginLeft = cell.style.marginRight = Space.S8;
+            cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 18;
+            cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 4;
+            cell.style.backgroundImage = new StyleBackground(Art.Window);
+            return cell;
+        }
+
+        /// <summary>The mana pool (owner 2026-11-17, GG-T405: "a single 'mana pool' on the far right ... instead of keeping
+        /// an entire row of 12 orbs, that way the manapool can grow but always represent a growing number"; then "a glass
+        /// sphere filled with blue liquid", "like Diablo or PoE2"): the ability row's sixth cell. A <see cref="ManaGlobe"/>
+        /// fills to count / cap with the count in outlined white and "MANA" on it, the cap small beneath, gold when full;
+        /// the ring round its bezel is the next orb forming (the mana charge, §3.1.9); an aimed spell lightens the band it
+        /// will drain and shows a "-N" ghost. Mints fly into it from their source, spends fly out (BattleScreen.Playback).
+        /// Holding it explains it (ManaPoolCard).</summary>
+        private void BuildManaPool(VisualElement bar)
+        {
+            pool = HudCell(bar);
+            pool.name = "orbs";
+            pool.AddToClassList("mana-pool");
+            pool.style.borderTopColor = pool.style.borderBottomColor = pool.style.borderLeftColor = pool.style.borderRightColor = Palette.Mana;
+            pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
+            InspectCard.Attach(pool, ManaPoolCard);
+            poolOrb = new ManaGlobe { name = "orb0", ReduceMotion = ReduceMotion }; // the globe (the old row's first slot name)
+            pool.Add(poolOrb);
+            poolOrb.style.width = poolOrb.style.height = Size.Thumb;
+            poolOrb.style.alignItems = Align.Center; poolOrb.style.justifyContent = Justify.Center;
+            // The count in outlined white over the liquid, "MANA" small beneath it, so it says what it is.
+            poolCount = Ui.Text("0", "mana-pool__count", poolOrb);
+            poolCount.name = "orbs-count";
+            poolCount.pickingMode = PickingMode.Ignore;
+            poolCount.style.fontSize = TypeScale.H2; Fonts.UseHeavy(poolCount);
+            poolCount.style.unityTextAlign = TextAnchor.MiddleCenter;
+            poolCount.style.unityTextOutlineWidth = Size.Hairline; poolCount.style.unityTextOutlineColor = Palette.Ink;
+            var word = Ui.Text("MANA", "", poolOrb);
+            word.name = "orbs-label";
+            word.pickingMode = PickingMode.Ignore;
+            word.style.fontSize = TypeScale.Badge; Fonts.UseHeavy(word);
+            word.style.color = Palette.Info;
+            word.style.unityTextOutlineWidth = Size.Hairline; word.style.unityTextOutlineColor = Palette.Ink;
+            word.style.marginTop = -Space.S8;
+            poolCap = Ui.Text("", "shadow", pool);
+            poolCap.name = "orbs-cap";
+            poolCap.pickingMode = PickingMode.Ignore;
+            poolCap.style.fontSize = TypeScale.Small;
+            poolCap.style.unityTextAlign = TextAnchor.MiddleCenter;
+            poolGhost = Ui.Text("", "h3 shadow mana-pool__ghost", pool);
+            poolGhost.name = "orbs-cost";
+            poolGhost.pickingMode = PickingMode.Ignore;
+            poolGhost.style.position = Position.Absolute;
+            poolGhost.style.top = Space.S4; poolGhost.style.right = Space.S4;
+            poolGhost.style.fontSize = TypeScale.Body; Fonts.UseHeavy(poolGhost);
+            poolGhost.style.opacity = 0f;
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -508,33 +548,75 @@ namespace GridGame.App
             e.style.borderTopColor = e.style.borderBottomColor = e.style.borderLeftColor = e.style.borderRightColor = c;
         }
 
-        /// <param name="upTo">Mid-playback (GG-T112): fill only this many slots, so orbs minted in one action light
-        /// their own slots one by one instead of all at once; -1 shows the bank as it is. Also used by
-        /// <see cref="OrbsSpentEvent"/> playback (GG-T130) to redraw to the count right after that spend, not the
-        /// command's end-of-action <see cref="BattleState.Bank"/> count, which may already include orbs the same
-        /// action mints later.</param>
+        /// <param name="upTo">Mid-playback (GG-T112): show only this many orbs, so orbs minted in one action tick the pool
+        /// up one by one as each lands instead of all at once; -1 shows the bank as it is. Also used by
+        /// <see cref="OrbsSpentEvent"/> playback (GG-T130) to show the count right after that spend, not the command's
+        /// end-of-action <see cref="BattleState.Bank"/> count, which may already include orbs the same action mints later.</param>
         private void SyncOrbs(int upTo = -1)
         {
             int filled = upTo >= 0 ? Mathf.Min(upTo, State.Bank.Count) : State.Bank.Count;
-            shownOrbs = filled; // GG-T366: the charge bubble sits right after the orbs the bar shows, not the final count
+            shownOrbs = filled; // GG-T366: the pool shows what has landed so far, not the final count
             shownCharge = State.ManaCharge;
-            if (orbViews.Count > 0 && !playing) SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
-            for (int i = 0; i < orbViews.Count; i++)
+            if (pool == null) return;
+            if (!playing) SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
+            ShowPoolCount(filled);
+            SyncPoolPreview();
+        }
+
+        /// <summary>Holding the mana globe (GG-T405, owner: "it should be obvious what it is and what is filling it up"):
+        /// what the pool is, and every way it fills, as the rules have them (BattleRunner.MintOrb and AddCharge callers).</summary>
+        private bool ManaPoolCard(VisualElement body)
+        {
+            int cap = State.Bank.Capacity;
+            return InspectCard.Explain(body, Art.Orb, "Mana pool", $"{State.Bank.Count}/{cap} orbs", Palette.Mana,
+                "The party's shared mana. Every spell is paid in orbs from here; skills and items cost none. It holds " + cap + " orbs; an orb earned while it is full is lost.",
+                new[]
+                {
+                    "Pincers fill the ring round the globe by the HP they take (fewer heroes and longer chains fill it faster); a full ring becomes an orb.",
+                    "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to the ring too.",
+                    "Guard trades the turn time you give up for charge (10 per second, up to 40).",
+                    "A quick move banks the drag timer's spare seconds as orbs at the next foe's turn.",
+                    "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Aether Pour give whole orbs.",
+                    "Some gear starts the battle with orbs, an expedition carries orbs over, and some regions' rules grant them.",
+                },
+                "Kills alone earn nothing: it is the pincer's damage that fills the ring. The Log tab lists every orb and where it came from.");
+        }
+
+        /// <summary>The pool's numbers: the globe's level and the count on it, and the cap beneath, gold when full.</summary>
+        private void ShowPoolCount(int count)
+        {
+            if (pool == null) return;
+            int cap = State.Bank.Capacity;
+            poolCount.text = count.ToString();
+            poolCap.text = "/" + cap;
+            bool full = count >= cap;
+            poolOrb.Target = cap > 0 ? Mathf.Clamp01(count / (float)cap) : 0f;
+            poolCount.style.color = count > 0 ? Palette.White : Palette.TextDim;
+            poolCap.style.color = full ? Palette.Gold : Palette.TextSub;
+            pool.EnableInClassList("mana-pool--full", full);
+        }
+
+        /// <summary>The pending-cost preview (GG-T405): while a spell is aimed the count dims and a "-N" ghost fades in over
+        /// the pool's corner (red if the bank can't pay it); both fade back when the aim ends.</summary>
+        private void SyncPoolPreview()
+        {
+            if (pool == null) return;
+            int cost = 0;
+            var hero = State.UnitById(SelectedHeroId);
+            if (TargetingSlot >= 0 && hero != null && TargetingSlot < hero.Bar.Count)
             {
-                var o = (Label)orbViews[i];
-                if (i < filled)
-                {
-                    o.style.unityBackgroundImageTintColor = Art.Mana;
-                    o.text = "";
-                    o.style.opacity = 1f;
-                }
-                else
-                {
-                    o.style.unityBackgroundImageTintColor = new Color(0.22f, 0.25f, 0.38f, 0.85f);
-                    o.text = "";
-                    o.style.opacity = 1f;
-                }
+                var sl = hero.Bar[TargetingSlot];
+                var a = BattleEngine.SlotAbility(State, hero, TargetingSlot);
+                if (a != null && a.Kind == AbilityKind.Spell && !sl.IsItem && !sl.IsWeapon) cost = a.Cost;
             }
+            if (cost > 0)
+            {
+                poolGhost.text = "-" + cost;
+                poolGhost.style.color = cost <= shownOrbs ? Palette.Gold : Palette.Bad;
+            }
+            poolGhost.style.opacity = cost > 0 ? 1f : 0f;
+            poolOrb.Preview = cost > 0 && State.Bank.Capacity > 0 ? Mathf.Min(cost, shownOrbs) / (float)State.Bank.Capacity : 0f;
+            poolCount.style.opacity = cost > 0 ? 0.55f : 1f;
         }
 
         private void SyncBar()
@@ -604,6 +686,7 @@ namespace GridGame.App
                 v.style.borderTopColor = v.style.borderBottomColor = v.style.borderLeftColor = v.style.borderRightColor = border;
                 v.style.opacity = alpha;
             }
+            SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
 
         private int panelUnitId = -1;
@@ -768,7 +851,9 @@ namespace GridGame.App
             host.name = "info-tabs";
             host.style.position = Position.Absolute;
             host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right: ApplyStageLayout (the HUD column)
+            // A thin strip (GG-T405: under half the old 132-px tab height); each tab's whole width is its tap target.
             infoTabStrip = Ui.Tabs(InfoTabNames, infoTab, ShowInfoTab, host);
+            infoTabStrip.AddToClassList("tabs--thin");
             var win = Ui.Window(null, host, "window--compact info-tabs__window");
             win.name = "info-panel";
             panel = infoPages[InfoTabParty] = InfoPage(win, "party");
@@ -1108,6 +1193,7 @@ namespace GridGame.App
             PendingTarget = null;
             board.ClearMarks();
             ClearTargetGlows();
+            SyncPoolPreview();
             ShowBanner("");
         }
 
@@ -1543,8 +1629,10 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// Action/status banner above the board; long text steps the font down, then wraps, and if it still doesn't
-        /// fit its viewport it's shown, paused, then slowly scrolled so the whole message gets read.
+        /// Action/status banner in the band between the timeline frame and the board (GG-T405: it never touches either).
+        /// Text that runs long steps its font down (H3 → Body → Small) while it still fits one line, then wraps at the
+        /// smallest size, and if two lines still don't fit the band it's shown, paused, then slowly scrolled so the whole
+        /// message gets read. It eases in over Timing.Quick.
         /// </summary>
         private void ShowBanner(string text)
         {
@@ -1552,16 +1640,26 @@ namespace GridGame.App
             text ??= "";
             banner.text = text;
             NoteShown(text);
-            banner.style.fontSize = text.Length > 44 ? 32 : text.Length > 32 ? 38 : 48;
+            banner.style.fontSize = BannerSizes[0];
             banner.style.top = Space.S0;
             if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
-            if (text.Length > 0) bannerScrollRoutine = App.StartCoroutine(ScrollBannerIfNeeded());
+            if (text.Length > 0) bannerScrollRoutine = App.StartCoroutine(FitBanner());
         }
 
-        private IEnumerator ScrollBannerIfNeeded()
+        private static readonly float[] BannerSizes = { TypeScale.H3, TypeScale.Body, TypeScale.Small };
+
+        private IEnumerator FitBanner()
         {
-            yield return null; // one frame so the wrapped text has been laid out and resolvedStyle.height is current
+            banner.style.opacity = 0f;
+            // Step down while the text wraps past one line; a frame per size so resolvedStyle.height is current.
+            for (int i = 0; i < BannerSizes.Length; i++)
+            {
+                banner.style.fontSize = BannerSizes[i];
+                yield return null;
+                if (banner.resolvedStyle.height < BannerSizes[i] * 1.7f) break; // one line at this size
+            }
             float content = banner.resolvedStyle.height;
+            App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (banner != null) banner.style.opacity = k; }));
             if (content <= BannerViewportHeight)
             {
                 banner.style.top = (BannerViewportHeight - content) / 2f;

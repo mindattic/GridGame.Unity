@@ -95,6 +95,13 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
         except Exception:
             pass
         time.sleep(1.5)
+        # GG-T405: on a loaded PC the previous player can still be answering here; launching now would bind-fail the
+        # new one's automation port, or the alive() below would see the old one and then lose it.
+        for _ in range(40):
+            if not alive():
+                break
+            time.sleep(0.5)
+        time.sleep(1.0)
     art = os.path.join(ROOT, "artifacts", run)
     saves = os.path.join(ROOT, "artifacts", run, "saves")
     if fresh and os.path.isdir(saves):

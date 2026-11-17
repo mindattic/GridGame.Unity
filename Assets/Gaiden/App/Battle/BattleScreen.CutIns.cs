@@ -286,7 +286,17 @@ namespace GridGame.App
                 Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana);
             }
             else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the bubble
-                Billboard($"Guard · Mana +{mc.Amount} · {mc.Amount / BattleConfig.GuardChargePerSecond:0.#}s banked", null, Palette.Mana);
+            {
+                float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
+                Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana);
+                // GG-T405: Guard trades time for mana. The time slice leaves the GUARD button gold and pours into the
+                // globe blue, the charge ring advancing as it lands, with a tag and a Log line saying so.
+                App.StartCoroutine(MoteFlight(MintFrom("guard", -1), Timing.Emphasis, false, Palette.Gold, 0.8f));
+                MintTag($"{secs:0.#}s → mana", 0, Palette.Gold);
+                Feed($"Guard: {secs:0.#}s of turn time → +{mc.Amount} mana charge ({to}/{BattleConfig.ManaChargePerOrb} to the next orb)", Palette.Mana);
+            }
+            // GG-T405: every charge shows where it came from: a small mote from its source into the globe's charge ring.
+            if (mc.Reason != "guard" && !ReduceMotion) App.StartCoroutine(MoteFlight(MintFrom(mc.Reason, mc.SourceId), Timing.Standard, true, null, 0.55f));
             App.Audio.Sfx("battle.orb", 0.35f, 0.7f + 0.5f * (to / (float)BattleConfig.ManaChargePerOrb));
             yield return Tween.Run(Timing.Standard, k =>
             {
@@ -298,20 +308,11 @@ namespace GridGame.App
             else SetChargeBubble(to / (float)BattleConfig.ManaChargePerOrb);
         }
 
-        /// <summary>The next empty orb fills from the centre like a bubble forming (0..1).</summary>
+        /// <summary>The next orb forming (0..1): an arc round the mana globe's bezel (GG-T405; it was a bubble filling the
+        /// next empty orb of the old 12-orb row). It closes the ring as the orb that rolls into the count forms.</summary>
         private void SetChargeBubble(float frac)
         {
-            foreach (var o in orbViews) o.Q("charge")?.RemoveFromHierarchy();
-            int next = shownOrbs; // GG-T366: the slot right after the orbs drawn full, not State's end-of-action count
-            if (next >= orbViews.Count || frac <= 0.001f) return;
-            var orb = orbViews[next];
-            var fill = new VisualElement { name = "charge", pickingMode = PickingMode.Ignore };
-            fill.style.position = Position.Absolute;
-            float inset = (1f - Mathf.Sqrt(Mathf.Clamp01(frac))) * 50f;
-            fill.style.left = fill.style.top = fill.style.right = fill.style.bottom = Length.Percent(inset);
-            fill.style.backgroundImage = new StyleBackground(Art.Orb);
-            fill.style.unityBackgroundImageTintColor = new Color(Art.Mana.r, Art.Mana.g, Art.Mana.b, 0.55f + 0.45f * frac);
-            orb.Add(fill);
+            if (poolOrb != null) poolOrb.Charge = Mathf.Clamp01(frac);
         }
     }
 }

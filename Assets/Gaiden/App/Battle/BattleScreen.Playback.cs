@@ -130,6 +130,7 @@ namespace GridGame.App
 
         private IEnumerator Animate(BattleEvent e)
         {
+            if (e is ActionBeganEvent began) { lastActorId = began.ActorId; lastActionLabel = began.Label; } // whose cast the spent orbs fly to, and what granted an orb (GG-T405)
             switch (e)
             {
                 case ActionBeganEvent a when a.ActorId >= 0 && a.Label != "Move":
@@ -170,7 +171,7 @@ namespace GridGame.App
                 case AmplifierUsedEvent au: return AmpUsedAnim(au);
                 case ManaChargedEvent mc: return ChargeAnim(mc);
                 case OrbMintedEvent o: if (o.Reason == "pincer") FlushTallies(); return OrbAnim(o);
-                case OrbsSpentEvent os: SyncOrbs(os.CountAfter); App.Audio.Sfx("battle.cast", 0.6f); return Tween.Wait(Timing.Quick);
+                case OrbsSpentEvent os: return SpendAnim(os);
 
                 case TimelineAdvancedEvent ta: FlushTallies(); return TimelineAnim(ta);
                 case PushedBackEvent pb: return PushAnim(pb);
@@ -1135,15 +1136,21 @@ namespace GridGame.App
                     yield return new Coord(f.At.X + x, f.At.Y + y);
         }
 
-        private void DodgeBillboard(IEnumerable<Coord> tiles)
-        {
-            billboardLow = tiles != null && tiles.Any(t => t.Y <= 1);
-            if (billboard != null) billboard.style.top = BillboardTop;
-        }
+        /// <summary>The billboard no longer sits over the board (GG-T405), so there is nothing on the board to dodge.</summary>
+        private void DodgeBillboard(IEnumerable<Coord> tiles) => PlaceBillboard();
 
-        private bool billboardLow;
-        // Dodging moves it up over the banner line (which says the same thing), never down onto the heroes.
-        private float BillboardTop => billboardLow ? BoardTop - 120 : BoardTop - 30;
+        /// <summary>The billboard takes the banner band (GG-T405: announcements never overlap the timeline or the board):
+        /// the banner viewport's height in Overlay coordinates, across the content column (no drag timer runs during
+        /// playback), with the banner hidden under it while it shows. The band holds one line (two when it wraps), so
+        /// each new line replaces the last; the Log tab keeps them all.</summary>
+        private void PlaceBillboard()
+        {
+            if (billboard == null) return;
+            Rect r = bannerViewport != null ? bannerViewport.worldBound : new Rect(float.NaN, 0, 0, 0);
+            billboard.style.top = float.IsNaN(r.y) ? BannerTop : r.y - App.Stage.worldBound.y;
+            billboard.style.left = billboard.style.right = Fit.Inset + Fit.Edge;
+            billboard.style.height = BannerViewportHeight;
+        }
 
         private void Billboard(string text, Texture2D icon, Color color)
         {
@@ -1155,15 +1162,20 @@ namespace GridGame.App
                 billboard.name = "billboard";
                 billboard.pickingMode = PickingMode.Ignore;
                 billboard.style.position = Position.Absolute;
-                billboard.style.left = billboard.style.right = BoardLeft + Space.S64; billboard.style.top = BoardTop - 30;
-                billboard.style.paddingTop = billboard.style.paddingBottom = Space.S8;
+                billboard.style.paddingTop = billboard.style.paddingBottom = Space.S0;
+                billboard.style.marginTop = billboard.style.marginBottom = billboard.style.marginLeft = billboard.style.marginRight = Space.S0;
                 billboard.style.alignItems = Align.Center;
+                billboard.style.justifyContent = Justify.FlexEnd;
+                billboard.style.overflow = Overflow.Hidden;
             }
             billboard.style.display = DisplayStyle.Flex;
-            billboard.style.top = BillboardTop;
+            PlaceBillboard();
+            if (bannerViewport != null) bannerViewport.style.opacity = 0f;
             billboard.BringToFront();
             var row = Ui.El("row", billboard);
             row.pickingMode = PickingMode.Ignore;
+            // The line spans the band and centres, so it wraps only against the band's full width (GG-T405).
+            row.style.alignSelf = Align.Stretch; row.style.justifyContent = Justify.Center; row.style.alignItems = Align.Center;
             if (icon != null)
             {
                 var ic = Ui.El("", row);
@@ -1173,9 +1185,12 @@ namespace GridGame.App
             }
             var l = Ui.Text(text, "h2 shadow", row);
             l.style.color = color;
-            l.style.fontSize = text.Length > 30 ? 36 : 44;
+            l.style.fontSize = TypeScale.Body;
             l.style.whiteSpace = WhiteSpace.Normal; // a wider font should wrap here, never overflow the window
-            while (billboard.childCount > 3) billboard[0].RemoveFromHierarchy();
+            l.style.flexShrink = 1;
+            // A line that wraps steps down so its two lines fit the band (GG-T405).
+            l.RegisterCallback<GeometryChangedEvent>(_ => { if (l.resolvedStyle.height > TypeScale.Body * 1.7f) l.style.fontSize = TypeScale.Small; });
+            while (billboard.childCount > 1) billboard[0].RemoveFromHierarchy();
             App.StartCoroutine(Tween.Pop(row, 1.12f, 0.12f));
             App.StartCoroutine(RetireBillboardRow(billboard, row));
         }
@@ -1186,7 +1201,11 @@ namespace GridGame.App
         {
             yield return Tween.Wait(Timing.Cinematic + Timing.Emphasis);
             row.RemoveFromHierarchy();
-            if (bb.childCount == 0) bb.style.display = DisplayStyle.None;
+            if (bb.childCount == 0)
+            {
+                bb.style.display = DisplayStyle.None;
+                if (bb == billboard && bannerViewport != null) App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (bannerViewport != null) bannerViewport.style.opacity = k; }));
+            }
         }
 
         /// <summary>Gold shown on the HUD: the party's purse plus what this battle has dropped so far.</summary>
@@ -1263,37 +1282,223 @@ namespace GridGame.App
             arrive();
         }
 
-        private IEnumerator OrbAnim(OrbMintedEvent o)
+        /// <summary>The actor of the action now playing (its ActionBeganEvent): the spent orbs fly to its cast.</summary>
+        private int lastActorId = -1;
+        private string lastActionLabel;
+
+        /// <summary>The mana pool's orb centre in Overlay (stage) coordinates.</summary>
+        private Vector2 PoolCenter()
         {
-            App.Audio.Sfx("battle.orb", 0.7f, 1f + Random.Range(-0.05f, 0.1f));
-            var src = State.UnitById(o.SourceUnitId);
-            // GG-T112: the slot it landed in when it was minted, not the bank's final count — State is already the
-            // end of the action, so several orbs minted together used to all fly to the last slot.
-            int index = o.Landed ? (o.Slot >= 0 ? o.Slot : State.Bank.Count - 1) : orbViews.Count - 1;
-            if (o.Landed) { OrbSlotsFlown.Add(index); if (OrbSlotsFlown.Count > 24) OrbSlotsFlown.RemoveAt(0); }
-            // Fly a small orb from the source to its slot in the line.
+            if (poolOrb != null && !float.IsNaN(poolOrb.worldBound.x)) return poolOrb.worldBound.center - App.Stage.worldBound.position;
+            return new Vector2(GameApp.StageWidth - Fit.Edge - Size.Slot / 2f, BarTop + Size.Slot / 2f);
+        }
+
+        private VisualElement FlyingOrb()
+        {
             var orb = new VisualElement { pickingMode = PickingMode.Ignore };
             orb.style.position = Position.Absolute;
             orb.style.width = orb.style.height = Size.Orb;
-            orb.style.backgroundImage = new StyleBackground(Art.Orb);
-            orb.style.unityBackgroundImageTintColor = Art.Mana;
+            // A glowing blue mote: a soft halo behind a bright orb.
+            var halo = new VisualElement { pickingMode = PickingMode.Ignore };
+            halo.style.position = Position.Absolute;
+            halo.style.left = halo.style.top = halo.style.right = halo.style.bottom = -Space.S24;
+            halo.style.backgroundImage = new StyleBackground(Art.Glow);
+            halo.style.unityBackgroundImageTintColor = Art.Mana.WithA(0.7f);
+            orb.Add(halo);
+            var core = new VisualElement { pickingMode = PickingMode.Ignore };
+            core.style.position = Position.Absolute;
+            core.style.left = core.style.top = core.style.right = core.style.bottom = Space.S8;
+            core.style.backgroundImage = new StyleBackground(Art.Orb);
+            core.style.unityBackgroundImageTintColor = Art.Mana;
+            orb.Add(core);
             App.Overlay.Add(orb);
-            Vector2 from = src != null && board.Units.TryGetValue(src.Id, out var v)
-                ? new Vector2(BoardLeft, BoardTop) + BoardView.CenterOf(v.Tile) : new Vector2(GameApp.StageWidth / 2f, 1200);
-            var slot = orbViews[Mathf.Clamp(index, 0, orbViews.Count - 1)];
-            Vector2 to = slot.worldBound.center - App.Stage.worldBound.position;
-            if (float.IsNaN(to.x)) to = new Vector2(GameApp.StageWidth / 2f, 2210);
-            yield return Tween.Run(Timing.Standard, k =>
+            return orb;
+        }
+
+        private static void PlaceOrb(VisualElement orb, Vector2 p)
+        {
+            orb.style.left = p.x - Size.Orb / 2f; orb.style.top = p.y - Size.Orb / 2f;
+        }
+
+        /// <summary>Where a mint or a charge came from, in Overlay (stage) coordinates, from the real event (GG-T405): Guard
+        /// from the GUARD button, a time-banked orb from the drag timer, battle-start gear and carried orbs from the top
+        /// bar, and everything else from its source unit's tile (the pincer's attacker, the robbed foe, the hero on the
+        /// pickup, the rule's unit, the caster).</summary>
+        private Vector2 MintFrom(string reason, int sourceId)
+        {
+            VisualElement anchor = reason == "guard" ? guardButton : reason == "time bank" ? timerLabel
+                : reason == "battle start" || reason == "carried" ? waveLabel : null;
+            if (anchor != null && !float.IsNaN(anchor.worldBound.x) && anchor.worldBound.width > 0f)
+                return anchor.worldBound.center - App.Stage.worldBound.position;
+            if (sourceId >= 0 && board.Units.TryGetValue(sourceId, out var v))
+                return new Vector2(BoardLeft, BoardTop) + BoardView.CenterOf(v.Tile, v.W, v.H);
+            return new Vector2(GameApp.StageWidth / 2f, BoardTop + BoardView.Tile * BattleConfig.Rows / 2f);
+        }
+
+        /// <summary>The player-facing name of a mint or charge source (OrbMintedEvent / ManaChargedEvent.Reason).</summary>
+        private static string MintLabel(string reason)
+        {
+            switch (reason)
             {
-                var p = Vector2.Lerp(from, to, Tween.EaseInOut(k)) + Vector2.up * (-140f * Ease.Arc(k));
-                orb.style.left = p.x - 30; orb.style.top = p.y - 30;
-                if (!o.Landed) orb.style.opacity = 1f - k;
+                case "pincer": return "Pincer";
+                case "critical": return "Critical";
+                case "interrupt": return "Interrupt";
+                case "amplifier": return "Amplifier";
+                case "guard": return "Guard";
+                case "support": return "Support";
+                case "passive": return "Passive";
+                case "armor": return "Armor";
+                case "steal": return "Steal";
+                case "item": return "Item";
+                case "aether": return "Aether Pour";
+                case "battle start": return "Gear";
+                case "carried": return "Carried";
+                case "time bank": return "Quick move";
+                case "pickup": return "Pickup";
+            }
+            if (reason != null && reason.StartsWith("rule:"))
+            {
+                string id = reason.Substring(5).Replace('_', ' ').Replace('-', ' ');
+                return id.Length > 0 ? char.ToUpperInvariant(id[0]) + id.Substring(1) : "Rule";
+            }
+            return string.IsNullOrEmpty(reason) ? "Mana" : char.ToUpperInvariant(reason[0]) + reason.Substring(1);
+        }
+
+        /// <summary>Flies one glowing mote on a curved path from <paramref name="from"/> into the globe. A time slice (Guard)
+        /// starts gold and turns mana-blue on the way, so it reads as turn time poured into mana.</summary>
+        private IEnumerator MoteFlight(Vector2 from, float seconds, bool fades, Color? startTint = null, float scale = 1f)
+        {
+            var orb = FlyingOrb();
+            orb.style.scale = new Scale(Vector2.one * scale);
+            Vector2 to = PoolCenter();
+            PlaceOrb(orb, from);
+            var core = orb[1];
+            yield return Tween.Run(seconds, k =>
+            {
+                float side = from.x < to.x ? 1f : -1f;
+                PlaceOrb(orb, Vector2.Lerp(from, to, Tween.EaseInOut(k)) + new Vector2(side * -60f, -140f) * Ease.Arc(k));
+                if (startTint.HasValue) core.style.unityBackgroundImageTintColor = Color.Lerp(startTint.Value, Art.Mana, k);
+                if (fades) orb.style.opacity = 1f - k;
             });
             orb.RemoveFromHierarchy();
-            if (o.Landed && o.Slot >= 0) SyncOrbs(o.Slot + 1); // light up to this orb's slot; later orbs fill theirs
-            else SyncOrbs();
-            if (o.Landed && index >= 0 && index < orbViews.Count) App.StartCoroutine(Tween.Pop(orbViews[index], 1.3f, 0.15f));
         }
+
+        /// <summary>An orb mints (§3.1.2): a glowing mote flies from its real source (MintFrom) into the mana globe; on
+        /// landing the liquid rises with a ripple and a pulse, the count ticks up with a pop and a soft tick whose pitch
+        /// climbs with the count, a source tag ("+1 Guard", "+2 Pincer") pops beside the globe, and the Log records it
+        /// (GG-T405). An overflowing orb (§3.1.4) fades in flight and the full pool answers "Full".</summary>
+        private IEnumerator OrbAnim(OrbMintedEvent o)
+        {
+            App.Audio.Sfx("battle.orb", 0.7f, 1f + Random.Range(-0.05f, 0.1f));
+            // GG-T112: the slot it landed in when it was minted, not the bank's final count — State is already the
+            // end of the action, so several orbs minted together tick the pool up one each, in order.
+            int index = o.Landed ? (o.Slot >= 0 ? o.Slot : State.Bank.Count - 1) : State.Bank.Capacity - 1;
+            if (o.Landed) { OrbSlotsFlown.Add(index); if (OrbSlotsFlown.Count > 24) OrbSlotsFlown.RemoveAt(0); }
+            // An item or ability that grants orbs (a Mana Potion, Meditate, Aether Pour) is named by the action that used it.
+            string label = (o.Reason == "item" || o.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(o.Reason);
+            yield return MoteFlight(MintFrom(o.Reason, o.SourceUnitId), Timing.Standard + Timing.Quick, !o.Landed);
+            if (o.Landed)
+            {
+                SyncOrbs(o.Slot >= 0 ? o.Slot + 1 : -1); // count up to this orb; later orbs add theirs
+                poolOrb?.Fill();
+                App.Audio.Sfx("battle.pickup", 0.35f, 1.1f + 0.03f * Mathf.Min(shownOrbs, 16));
+                if (poolOrb != null) App.StartCoroutine(Tween.Pop(poolOrb, 1.15f, Timing.Quick));
+                MintTag(label, 1, Palette.Mana);
+                Feed($"{label}: +1 mana ({shownOrbs}/{State.Bank.Capacity})", Palette.Mana);
+            }
+            else
+            {
+                SyncOrbs();
+                App.Audio.Sfx("battle.miss", 0.4f, 1.3f);
+                MintTag("Full", 0, Palette.Gold);
+                Feed($"{label}: an orb was lost, the mana pool is full ({State.Bank.Capacity}/{State.Bank.Capacity})", Palette.Gold);
+            }
+        }
+
+        private sealed class MintTagView { public string Key; public Label Label; public int Count; public float Life; }
+        private readonly List<MintTagView> mintTags = new List<MintTagView>();
+        private VisualElement mintTagHost;
+
+        /// <summary>A short source tag beside the globe ("+1 Guard"); tags stack upward, and one of the same source still
+        /// showing merges ("+2 Pincer") and restarts its clock. <paramref name="n"/> 0 shows the key alone ("Full").</summary>
+        private void MintTag(string key, int n, Color color)
+        {
+            if (pool == null || App.Overlay == null) return;
+            var pb = pool.worldBound;
+            if (float.IsNaN(pb.x)) return;
+            if (mintTagHost == null || mintTagHost.panel == null)
+            {
+                mintTagHost = new VisualElement { name = "mint-tags", pickingMode = PickingMode.Ignore };
+                mintTagHost.style.position = Position.Absolute;
+                mintTagHost.style.flexDirection = FlexDirection.ColumnReverse;
+                mintTagHost.style.alignItems = Align.FlexEnd;
+                App.Overlay.Add(mintTagHost);
+            }
+            var st = App.Stage.worldBound.position;
+            mintTagHost.style.right = GameApp.StageWidth - (pb.xMax - st.x);
+            mintTagHost.style.bottom = GameApp.StageHeight - (pb.yMin - st.y) + Space.S8;
+            mintTagHost.BringToFront();
+            var tag = mintTags.Find(t => t.Key == key);
+            if (tag != null && n > 0)
+            {
+                tag.Count += n; tag.Life = 0f;
+                tag.Label.text = $"+{tag.Count} {key}";
+                App.StartCoroutine(Tween.Pop(tag.Label, 1.2f, Timing.Quick));
+                return;
+            }
+            var l = Ui.Text(n > 0 ? $"+{n} {key}" : key, "h3 shadow", mintTagHost);
+            l.pickingMode = PickingMode.Ignore;
+            l.style.color = color;
+            l.style.fontSize = TypeScale.Body; Fonts.UseHeavy(l);
+            l.style.unityTextOutlineWidth = Size.Hairline; l.style.unityTextOutlineColor = Palette.Ink;
+            tag = new MintTagView { Key = key, Label = l, Count = n };
+            mintTags.Add(tag);
+            App.StartCoroutine(RunMintTag(tag));
+        }
+
+        private IEnumerator RunMintTag(MintTagView tag)
+        {
+            const float Hold = 1.3f;
+            var l = tag.Label;
+            yield return Tween.Run(Timing.Quick, k => { l.style.opacity = k; l.style.translate = new Translate(0, Space.S16 * (1f - k)); });
+            while (tag.Life < Hold) { tag.Life += Tween.Dt; yield return null; }
+            mintTags.Remove(tag);
+            yield return Tween.Run(Timing.Standard, k => { l.style.opacity = 1f - k; l.style.translate = new Translate(0, -Space.S16 * k); });
+            l.RemoveFromHierarchy();
+        }
+
+        /// <summary>Orbs leave the pool (§3.1.3): up to five fly from it to the caster (or to the siphoning foe, GG-T332)
+        /// while the count ticks down to the bank right after this spend (GG-T130), with the cast cue (GG-T405).</summary>
+        private IEnumerator SpendAnim(OrbsSpentEvent os)
+        {
+            App.Audio.Sfx("battle.cast", 0.6f);
+            int from = os.CountAfter + os.Count, to = os.CountAfter;
+            if (pool == null || ReduceMotion) { SyncOrbs(to); yield return Tween.Wait(Timing.Quick); yield break; }
+            var target = State.UnitById(os.Drained ? os.DrainedById : lastActorId);
+            Vector2 start = PoolCenter();
+            Vector2 end = target != null && board.Units.TryGetValue(target.Id, out var v)
+                ? new Vector2(BoardLeft, BoardTop) + BoardView.CenterOf(v.Tile) : new Vector2(GameApp.StageWidth / 2f, BoardTop + BoardView.Tile * 4);
+            int n = Mathf.Clamp(os.Count, 1, 5);
+            var orbs = new List<VisualElement>();
+            for (int i = 0; i < n; i++) { var o = FlyingOrb(); o.style.opacity = 0f; orbs.Add(o); }
+            poolOrb.Drain();
+            App.StartCoroutine(Tween.Pop(poolOrb, 0.92f, Timing.Quick));
+            const float Stagger = 0.4f; // the share of the flight the launches are spread over
+            yield return Tween.Run(Timing.Emphasis, k =>
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    float t = Mathf.Clamp01((k - Stagger * i / n) / (1f - Stagger));
+                    PlaceOrb(orbs[i], Vector2.Lerp(start, end, Tween.EaseInOut(t)) + Vector2.up * (-120f * Ease.Arc(t)));
+                    orbs[i].style.opacity = t <= 0f ? 0f : 1f - t * t;
+                    orbs[i].style.scale = new Scale(Vector2.one * (1f - 0.4f * t));
+                }
+                ShowPoolCount(Mathf.RoundToInt(Mathf.Lerp(from, to, Mathf.Clamp01(k / (1f - Stagger)))));
+            });
+            foreach (var o in orbs) o.RemoveFromHierarchy();
+            SyncOrbs(to);
+        }
+
 
         private IEnumerator TimelineAnim(TimelineAdvancedEvent ta)
         {

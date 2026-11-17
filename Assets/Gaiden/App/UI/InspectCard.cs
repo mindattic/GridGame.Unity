@@ -278,6 +278,17 @@ namespace GridGame.App
         }
 
         /// <summary>A region rule's queued event (GG-T359): the rule's name and description and when/where it lands.</summary>
+        /// <summary>A HUD widget explained (GG-T405, the mana pool): a header, a paragraph, then a bulleted list.</summary>
+        public static bool Explain(VisualElement body, Texture2D icon, string name, string sub, Color color, string description, IEnumerable<string> bullets, string note = null)
+        {
+            var head = Header(body, icon, name, sub, color);
+            head.parent.style.marginBottom = Space.S8;
+            if (!string.IsNullOrEmpty(description)) Line(body, description, "t-body");
+            foreach (var b in bullets) { var l = Line(body, "• " + b, "t-caption"); l.style.marginTop = Space.S4; }
+            if (!string.IsNullOrEmpty(note)) { var n = Line(body, note, "t-caption", Palette.TextDim); n.style.marginTop = Space.S8; }
+            return true;
+        }
+
         public static bool Hazard(VisualElement body, string name, string description, string note, Color color)
         {
             var head = Header(body, null, name, "Hazard", color);

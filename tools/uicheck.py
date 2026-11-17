@@ -300,13 +300,13 @@ def main():
         check("Confirm acts, with a confirmation chime", battle_state()["results"]["ActionsTaken"] == acted + 1 and "ui.confirm" in cues, str(battle_state()["results"]["ActionsTaken"]))
         check("every press is voiced (press tick)", "ui.press" in cues)
 
-    with section('Generic mana orbs: filled vs empty slots read at a glance'):
-        h.call("givemana", n=0)  # forces an orb resync
+    with section('Mana pool: the bank count reads at a glance (GG-T405)'):
+        h.call("givemana", n=0)  # forces a pool resync
         bank = battle_state()["bank"]
-        have = int(bank.split("/")[0])
-        filled = h.call("style", name="orb0")["tint"]
-        empty = h.call("style", name=f"orb{min(have, 11)}")["tint"] if have < 12 else filled
-        check("orb line shows the bank count in one orb color", have >= 1 and (have >= 12 or filled != empty), f"{bank} {filled} vs {empty}")
+        have, cap = (int(x) for x in bank.split("/"))
+        count = h.call("style", name="orbs-count").get("text")
+        capt = h.call("style", name="orbs-cap").get("text")
+        check("mana pool shows the bank count large and the cap beneath", count == str(have) and capt == f"/{cap}", f"{bank} vs {count} {capt}")
 
     with section('Buff pips with timer ring (US-155/156)'):
         b = battle_state()
