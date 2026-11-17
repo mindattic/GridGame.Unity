@@ -16,10 +16,16 @@
       "color": "#242E3C"
      }
     ],
-    "grain": 0.07
+    "grain": 0.03
    },
    "frame": {
     "style": "granite"
+   },
+   "texture": {
+    "id": "granite",
+    "opacity": 0.4,
+    "blend": "overlay",
+    "scale": 1.0
    }
   },
   {
@@ -37,10 +43,16 @@
       "color": "#262E32"
      }
     ],
-    "grain": 0.06
+    "grain": 0.03
    },
    "frame": {
     "style": "granite"
+   },
+   "texture": {
+    "id": "granite",
+    "opacity": 0.3,
+    "blend": "overlay",
+    "scale": 1.0
    }
   },
   {
@@ -58,10 +70,16 @@
       "color": "#14242A"
      }
     ],
-    "grain": 0.06
+    "grain": 0.03
    },
    "frame": {
     "style": "granite"
+   },
+   "texture": {
+    "id": "granite",
+    "opacity": 0.3,
+    "blend": "overlay",
+    "scale": 1.0
    }
   },
   {
@@ -477,7 +495,7 @@
     "id": "granite",
     "opacity": 0.45,
     "blend": "overlay",
-    "scale": 1.5
+    "scale": 2.0
    }
   },
   {

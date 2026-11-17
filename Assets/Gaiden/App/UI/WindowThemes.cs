@@ -285,7 +285,7 @@ namespace GridGame.App
             switch (id)
             {
                 case "marble": case "parchment": return 4f;
-                case "granite": case "brushed": case "stars": return 2f;
+                case "brushed": case "stars": return 2f;
                 case "linen": case "carbon": return 1.5f;
                 default: return 1f;
             }
@@ -395,10 +395,12 @@ namespace GridGame.App
                     {
                         case "granite":
                         {
-                            float f = Fbm(u, v, 8, 5, 3);
-                            t = 0.5f + (f - 0.5f) * 1.5f;
+                            // Fine-grained stone (GG-T407 review: the first cut read as stretched camo blotches): a small
+                            // crystal mottle, per-texel grain, and sparse light/dark flecks, drawn one texel per design px.
+                            float f = Fbm(u, v, 32, 3, 3);
+                            t = 0.5f + (f - 0.5f) * 0.7f + (Hash(x, y, 13) - 0.5f) * 0.3f;
                             float h = Hash(x, y, 11);
-                            if (h > 0.985f) t += 0.3f; else if (h < 0.02f) t -= 0.3f;
+                            if (h > 0.97f) t += 0.25f; else if (h < 0.035f) t -= 0.25f;
                             break;
                         }
                         case "marble":
