@@ -152,11 +152,16 @@ namespace GridGame.Tests
         {
             var db = Fresh();
             var p = new List<string>();
-            ElementCounters.Validate(db, p, id => id == "ice_sheet", new[] { "ice_sheet" });
+            // The override must stay inclusive of every real tile id (Validate's CheckTiles walks the whole elements.json
+            // table on every call, not just the hazard list being isolated here): otherwise it blinds that walk to real
+            // ids like 'mine' or 'fire' and they report as unknown too (GG-T418, found by the 2026-11-17 nightly).
+            bool KnowsIceSheet(string id) => id == "ice_sheet" || db.TryTileState(id) != null;
+            var hazards = db.TileStates.Values.Where(s => s.Hazard).Select(s => s.Id).Append("ice_sheet").ToList();
+            ElementCounters.Validate(db, p, KnowsIceSheet, hazards);
             Assert.That(p.Any(x => x.Contains("tile state ice_sheet")), Is.True, "GG-T370's hazards need a counter too");
             db.Elements.Of(DamageType.Fire).Tiles.Add(new TileReactionDef { On = "ice_sheet" });
             p.Clear();
-            ElementCounters.Validate(db, p, id => id == "ice_sheet", new[] { "ice_sheet" });
+            ElementCounters.Validate(db, p, KnowsIceSheet, hazards);
             Assert.That(p, Is.Empty, string.Join("\n", p));
             p.Clear();
             ElementCounters.Validate(db, p); // no GG-T359 tile states known: the id is unknown
