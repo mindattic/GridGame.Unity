@@ -980,7 +980,7 @@ namespace GridGame.App.Automation
             int labels = 0;
             foreach (var l in stage.Query<Label>().ToList())
             {
-                if (l.resolvedStyle.display == DisplayStyle.None || string.IsNullOrEmpty(l.text) || l.resolvedStyle.opacity <= 0.01f) continue;
+                if (Hidden(l) || string.IsNullOrEmpty(l.text) || l.resolvedStyle.opacity <= 0.01f) continue;
                 labels++;
                 var wb = l.worldBound;
                 if (wb.width < 1 || wb.height < 1) { problems.Add($"zero-size label '{Trim(l.text)}'"); continue; }
@@ -995,13 +995,22 @@ namespace GridGame.App.Automation
             // of room and flex shrank it (the Merchant's tabs and footer, found by GG-T136's full loop).
             foreach (var el in stage.Query<VisualElement>().Where(e => e.ClassListContains("tab") || e.ClassListContains("btn")).ToList())
             {
-                if (el.resolvedStyle.display == DisplayStyle.None || el.worldBound.height < 1) continue;
+                if (Hidden(el) || el.worldBound.height < 1) continue;
                 float want = el.ClassListContains("tab") ? 96f : el.resolvedStyle.minHeight.value;
                 float got = el.worldBound.height * (GameApp.StageWidth / sb.width);
                 if (want > 0 && got < want * 0.8f)
                     problems.Add($"squashed {(el.ClassListContains("tab") ? "tab" : "button")} '{Trim((el as TextElement)?.text ?? el.name ?? "")}' {got:0}px of {want:0}");
             }
             return new { screen = GameApp.I.Router.Current?.Id, labels, problems, polish = PolishAudit() };
+        }
+
+        /// <summary>True when the element or any ancestor is display:none: a page of a tab panel that isn't shown
+        /// (the battle's Lore and Log pages, GG-T391) keeps its labels but lays them out at zero size.</summary>
+        private static bool Hidden(VisualElement e)
+        {
+            for (; e != null; e = e.parent)
+                if (e.resolvedStyle.display == DisplayStyle.None) return true;
+            return false;
         }
 
         private static string Trim(string s) => s.Length > 40 ? s.Substring(0, 40) + "…" : s;

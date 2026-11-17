@@ -556,3 +556,11 @@
 /* ── Quest journal hand-in card (GG-T237): slides in rather than popping ── */
 .quest-turnin { transition-property: opacity, translate; transition-duration: 0.35s; transition-timing-function: ease-out-back; }
 .quest-turnin.is-hidden { opacity: 0; translate: 0 -40px; }
+
+/* ── Battle info tabs (GG-T391): Party · Lore · Log under the mana orbs. The strip sits flush on its window and the
+   window takes the rest of the band to the safe bottom; each page scrolls inside it. Buttons in a page drop their
+   vertical margin (the page is about one tap target tall on the shortest stage) and keep the 24-px side gap. ── */
+.info-tabs .tabs { margin: 0; }
+.info-tabs .info-tabs__window { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 0; margin: 0; padding: var(--space-8) var(--space-24); }
+.info-tabs .info-tabs__page { flex-grow: 1; flex-shrink: 1; }
+.info-tabs .info-tabs__page .btn { margin-top: 0; margin-bottom: 0; }

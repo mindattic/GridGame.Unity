@@ -1605,23 +1605,29 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
 │ ◆NOW◆◀━◆━·━◇━·━·━◆━·━·━◇━·━◆ [GUARD]│  "NOW"/seconds · one 10 s track,
 │  ◆◆   ◀ diamonds flow left (acts)   │  ◆ every 1 s (big every 5 s);
 │                                     │  turns + casts on the same bar
-├─────────────────────────────────────┤ y=368
-│        Action banner          3.2   │  banner · drag-timer seconds
+├─────────────────────────────────────┤ y=333
+│        Action banner          3.2   │  banner (2 lines) · drag-timer secs
 ├─────────────────────────────────────┤ y=450
 │     6 × 8 board (180-px tiles)      │  units: art, HP bar, ≤3 buff pips,
 │        heroes, enemies, traps       │  countdown badge, glow
-├─────────────────────────────────────┤ y=1910
-│ [slot][slot][slot][slot][slot]      │  AbilityBar 5 × 216×196
+├─────────────────────────────────────┤ y=1906
+│ [slot][slot][slot][slot][slot]      │  AbilityBar 5 × 196 tall
 ├─────────────────────────────────────┤ y=2118
 │ ● ● ● ● ● ● ● ● ○ ○ ○ ○             │  12 mana orbs with letters
-├─────────────────────────────────────┤ y=2250
-│ Actor panel: portrait · name · Lv · │  selected hero, or tapped enemy
-│ HP/stats (??? until known) ·        │
-│ "Acts in N moves" · buffs           │
-└─────────────────────────────────────┘
+├─────────────────────────────────────┤ y=2210
+│ [ Party ][  Lore  ][  Log  ]        │  info tabs (GG-T391)
+│ Party: portrait · name · Lv · HP/   │  one window to the safe bottom;
+│ stats · buffs · Skills readout      │  the shown page scrolls inside it
+│ Lore: description · lore · Bestiary │
+│ Log: every combat line, newest last │
+└─────────────────────────────────────┘ safe bottom − 24
 ```
 
-- **Banner** (`ShowBanner`) carries announcements, refusal reasons, "PINCER!", "X's turn", "Wave n/m", "VICTORY!". **Amended 2026-10-09:** it replaces the old AnnouncementWindow + combat feed. ⬜ Not yet built: the 7-line combat feed with inline icons.
+- **Banner** (`ShowBanner`) carries announcements, refusal reasons, "PINCER!", "X's turn", "Wave n/m", "VICTORY!". **Amended 2026-10-09:** it replaces the old AnnouncementWindow + combat feed. ⬜ Not yet built: the 7-line combat feed with inline icons. **Amended 2026-11-16 (owner, GG-T391):** the banner row sits a gutter under the timeline frame (y = 333, 110 px tall — two lines of the stepped-down font) and is inset by the drag-timer's width on both sides, so it stays centred and never runs under the timer; text taller than that still scrolls.
+- **Info tabs** (*added 2026-11-16, owner, GG-T391: the battle screen's bottom becomes one tab panel — selected hero and skills, lore, combat log — with nothing overlapping at any aspect 9:23–3:4*): everything under the mana orbs is one tabbed window — **Party · Lore · Log** (`BattleScreen.BuildInfoTabs`). The rows under the board are stacked a 16-px gutter apart (ability bar, orbs, tabs) and the tab window stretches from y = 2210 to the safe bottom, so it alone absorbs a taller stage ([§26.3](#263-adaptive-stage-gg-t169)); each page is a ScrollView that scrolls inside it, and on the shortest stage the window is about one tap target tall. The picked tab lasts the whole battle.
+  - **Party** — the actor panel (below) for the selected hero or the tapped unit, and under a hero its **Skills** readout: each unlocked bar slot's icon, name, cost pips, kind and recharge / charges, and its description (holding a row opens its InspectCard like the slot). While an ability is aimed this page shows the ability/confirm card with **Cast / Cancel side by side** at its top whatever tab was picked, and the pick comes back when the aim ends; a new tutorial lesson brings the Party page forward once and puts **Next / Skip** side by side at its top.
+  - **Lore** — the unit's name, role, Prose description and lore (`ClassDef.Description` / `Lore`); for a foe, what the Bestiary knows (defeats, knowledge tier, weaknesses once known, defeats to the next tier), or "Not yet in the Bestiary" before it has been met.
+  - **Log** — the combat log: every `Feed` line this battle, newest at the bottom (the last 200 kept, and kept across a rebuild), pinned to its end while shown. It replaces the fading three-line feed that drew over the board's corner; nothing draws over the board from the HUD any more. The page keeps the old feed's element name, `feed`.
 - **Pincer group outline (amended 2026-10-10, owner):** instead of a line across the character art, a rounded outline *draws itself* around the whole group — Hero, foe…, Hero (e.g. a 4-tile-long box) — in 0.24 s, in gold (red for enemy pincers); each supporter is joined to its partner by a short blue link that bridges the gap between their frames, edge to edge. The drag preview shows the same outline. **Amended 2026-10-11** (owner: the shape needs a beat of realization before the cut-in, not to appear alongside it): the outline draw is now *awaited* in full (it used to fire detached and overlap the cut-in) and is followed by a short 0.18 s pause — "caught" reads before the portraits slam in — before any cut-in or pop-up card starts (`BattleScreen.PincerAnim`). **Fixed 2026-10-19 (GG-T98):** the outline is drawn from the formation-time footprints `PincerFormedEvent` now carries (`Attacker1At`/`Attacker2At`/`OpponentsAt`/`SupportersAt`), never from end-of-command state — a member that moved later in the same command (the foe's own turn, knockback, a later chain link) used to stretch it into a multi-tile box. It is always one tile thick across its axis (a 2×2 foe may widen it to its own size); `PincerGeometry.Error` guards that in tests and logs an error in dev builds. Every other playback beat reads a unit's position from its board view (`UnitView.Tile`, advanced event by event), not from `State`. **Fixed 2026-10-19 (GG-T128):** the outline layer (`board.Lines`) lives inside the board again, so it rides every camera twist, zoom, drift and screen shake and always hugs its tiles (GG-T65 had moved it onto the global Overlay). Cut-in cards (`ActionCard`: caster slides, chain pop-ups, supporter pops) and their dimming veil now sit in a stage-sized card layer inside the board just below the outline (board order: tiles, units, marks, fx, cards, outline), so a card still never covers the outline, and the cards move with the board camera; a second veil sheet dims the HUD below the board. Nothing of the battle is on the Overlay under Pause any more except the full-screen pincer cut-in, billboard and coin/orb flights, which the pause veil stays above (GG-T126).
 - **Combat presentation (amended 2026-10-10, owner: "keep the frenzy and chaos of multiple attackers … each attack layered up like an accumulating math problem before exploding into the final damage number, and a clear announcement billboard … like Final Fantasy VI"):**
   - **Billboard:** an FF VI–style blue window at the top of the board names everything as it happens — "Paladin & Barbarian — Pincer", "Chain ×2", "Support: Cleric", "Power Amplifier ×1.75", each spell/skill/item with its pixel icon ("Fireball → Slime"), enemy charges ("Witch: Poison Cloud on Paladin"). Up to 3 lines; each fades after 1.6 s (÷ battle speed).

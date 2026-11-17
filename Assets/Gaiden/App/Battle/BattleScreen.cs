@@ -59,14 +59,25 @@ namespace GridGame.App
         /// left, so slots [0, shownOrbs) are full and the charge bubble always sits in slot shownOrbs, never past an
         /// empty slot, even mid-playback when State.Bank already holds the action's final count.</summary>
         private int shownOrbs;
+        /// <summary>The Party page of the info tabs (GG-T391): the selected unit, its skills, the ability/confirm card and
+        /// the tutorial lesson all draw here (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
-        private VisualElement feed;
         private VisualElement bannerViewport;
         private Coroutine bannerScrollRoutine;
-        private const float BannerViewportHeight = 90f;
-        /// <summary>The banner row sits between the timeline and the board; the info panel starts under the mana row and
-        /// stretches to the bottom, so it alone absorbs a taller stage (§26.3).</summary>
-        private const float BannerTop = 318f, InfoPanelTop = 2250f, TopBarHeight = 110f;
+        /// <summary>Tall enough for two lines of the stepped-down banner font, so a tip that wraps beside the timer reserve
+        /// reads whole instead of scrolling; it still ends above the board (GG-T391).</summary>
+        private const float BannerViewportHeight = 110f;
+        /// <summary>The banner row sits a gutter under the timeline frame, clear of it, and above the board.</summary>
+        private const float BannerTop = TimelineY + TimelineFrameHeight / 2f + Space.S8, TopBarHeight = 110f;
+        /// <summary>Room the drag-timer seconds take at the banner row's right end; the banner keeps the same inset on both
+        /// sides so it stays centred and never runs under the timer (GG-T391).</summary>
+        private const float TimerReserve = Size.Label + Space.S24;
+        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391): ability bar, mana orbs, then the info
+        // tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
+        private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
+        private static float BarTop => BoardBottom + Space.S16;
+        private static float OrbsTop => BarTop + Size.Slot + Space.S16;
+        private static float InfoTabsTop => OrbsTop + Size.IconL + Space.S16;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -181,7 +192,7 @@ namespace GridGame.App
             bannerViewport = Ui.El("", shake);
             bannerViewport.name = "banner-viewport";
             bannerViewport.style.position = Position.Absolute;
-            bannerViewport.style.left = Space.S0; bannerViewport.style.right = Space.S0; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
+            bannerViewport.style.left = TimerReserve; bannerViewport.style.right = TimerReserve; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
             bannerViewport.style.overflow = Overflow.Hidden;
             banner = Ui.Text("", "h2 shadow", bannerViewport);
             banner.style.position = Position.Absolute;
@@ -211,23 +222,9 @@ namespace GridGame.App
             board.Root.RegisterCallback<PointerUpEvent>(OnPointerUp);
             board.Root.RegisterCallback<PointerCaptureOutEvent>(_ => { if (dragging) CommitDrag(); pressing = false; });
 
-            feed = Ui.El("col", shake);
-            feed.name = "feed";
-            feed.pickingMode = PickingMode.Ignore;
-            feed.style.position = Position.Absolute;
-            feed.style.top = BoardTop + BoardView.Tile * BattleConfig.Rows - 140;
-            feed.style.width = Length.Percent(55);
-            feed.style.backgroundColor = new Color(0f, 0f, 0.05f, 0.35f);
-            feed.style.borderTopRightRadius = 12;
-            feed.style.justifyContent = Justify.FlexEnd;
-
             BuildAbilityBar(shake);
             BuildOrbs(shake);
-            panel = Ui.Window(null, shake, "window--compact");
-            panel.style.position = Position.Absolute;
-            panel.style.left = Fit.Edge; panel.style.right = Fit.Edge; panel.style.top = InfoPanelTop; panel.style.bottom = Space.S24;
-            panel.style.marginTop = panel.style.marginBottom = Space.S0;
-            panel.style.paddingTop = panel.style.paddingBottom = Space.S16;
+            BuildInfoTabs(shake);
 
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
@@ -274,7 +271,6 @@ namespace GridGame.App
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
-            feed.style.left = BoardLeft + 14;
             LayoutTimelineFrame();
         }
 
@@ -292,7 +288,7 @@ namespace GridGame.App
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
             // Even gutters on the space scale; the slots, not the gaps, take a wider stage (POL-C1/C8).
-            bar.style.left = Space.S16; bar.style.right = Space.S16; bar.style.top = BoardTop + BoardView.Tile * BattleConfig.Rows + 20; bar.style.height = Size.Slot;
+            bar.style.left = Space.S16; bar.style.right = Space.S16; bar.style.top = BarTop; bar.style.height = Size.Slot;
             bar.style.justifyContent = Justify.FlexStart;
             for (int i = 0; i < 5; i++)
             {
@@ -320,7 +316,7 @@ namespace GridGame.App
             var row = Ui.El("row", root);
             row.name = "orbs";
             row.style.position = Position.Absolute;
-            row.style.left = Fit.Edge; row.style.right = Fit.Edge; row.style.top = BoardTop + BoardView.Tile * BattleConfig.Rows + 228; row.style.height = Size.IconL;
+            row.style.left = Fit.Edge; row.style.right = Fit.Edge; row.style.top = OrbsTop; row.style.height = Size.IconL;
             row.style.justifyContent = Justify.SpaceBetween;
             int cap = Mathf.Clamp(State.Bank.Capacity, ManaBank.DefaultCapacity, 16);
             float size = cap <= 12 ? 74 : Mathf.Floor(1080f / cap) - 6;
@@ -608,20 +604,35 @@ namespace GridGame.App
         private void SyncPanel()
         {
             panel.Clear();
-            if (TutorialActive && TargetingSlot < 0 && panelUnitId < 0) { TutorialCard(); return; }
+            ApplyInfoTab();
+            var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
+            if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
+            SyncLore(u);
+            if (TutorialActive && TargetingSlot < 0 && panelUnitId < 0)
+            {
+                // A new lesson brings the Party page forward once; the player may still flip to Lore or Log after.
+                if (shownLesson != TutorialStep) { shownLesson = TutorialStep; if (infoTab != InfoTabParty) ShowInfoTab(InfoTabParty); }
+                TutorialCard();
+                // Its Next/Skip sit side by side at the top, so the lesson's buttons never scroll out of the short page.
+                var tb = panel.Q("tutorial-skip")?.parent;
+                if (tb != null) { tb.style.flexDirection = FlexDirection.Row; tb.style.alignSelf = Align.FlexStart; }
+                return;
+            }
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
                 if (ab != null) { AbilityInfo(ab); return; }
             }
-            var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
-            if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             if (u == null) return;
             var row = Ui.El("row", panel);
-            Ui.Thumb(u.Def.Id, row, 200);
+            row.style.alignItems = Align.FlexStart;
+            Ui.Thumb(u.Def.Id, row, Size.Thumb).style.marginRight = Space.S16;
             var col = Ui.El("col grow", row);
+            col.style.flexShrink = 1;
             var top = Ui.El("row", col);
-            Ui.Text(u.Name, "h2 grow", top);
+            top.style.alignItems = Align.Center;
+            var nm = Ui.Text(u.Name, "h2 grow", top);
+            nm.style.flexShrink = 1;
             if (u.IsIndependent && !u.Wanderer) Ui.RoleBadge(Ui.TamedRole, top, 26); // GG-T303
             else if (u.Wanderer && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top, 26); // a wanderer is a hero class (GG-T342)
             else if (u.IsHero && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top, 26);
@@ -660,6 +671,7 @@ namespace GridGame.App
                     b.Def.Name, $"{Ui.BuffEffect(b.Def)} ({b.Remaining} {(b.Def.Unit == GridGame.Core.Content.DurationUnit.Turns ? "turns" : "s")} left)");
                 AttachStatusInspect(pip, b.Def, b.Remaining);
             }
+            if (u.IsHero && u.IsCommandable) SkillReadout(u);
         }
 
         private static string SideName(Coord f) => f.Y > 0 ? "front (facing down)" : f.Y < 0 ? "front (facing up)" : f.X > 0 ? "front (facing right)" : "front (facing left)";
@@ -713,16 +725,193 @@ namespace GridGame.App
             summary.name = "confirm-summary";
             summary.style.whiteSpace = WhiteSpace.Normal;
             OutcomeLines(col, a);
-            var btns = Ui.El("col", row);
-            btns.style.width = Length.Percent(28); btns.style.minWidth = 264; btns.style.flexShrink = 0;
+            // Cast / Cancel side by side at the top of the card (GG-T391): the Party page is one tap target tall at the
+            // shortest stage, so the two never stack out of view.
+            row.style.alignItems = Align.FlexStart;
+            var btns = Ui.El("row", row);
+            btns.style.flexShrink = 0;
             btns.style.marginLeft = Space.S16;
             string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
             var ok = Ui.Button(verb, ConfirmPending, "btn--primary", btns);
             ok.name = "confirm-action";
-            ok.style.marginTop = ok.style.marginBottom = Space.S4;
             var cancel = Ui.Button("Cancel", CancelByPlayer, "btn--small", btns);
             cancel.name = "confirm-cancel";
-            cancel.style.marginTop = cancel.style.marginBottom = Space.S4;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // Info tabs (GG-T391): one tabbed panel under the orbs — Party · Lore · Log
+        // ─────────────────────────────────────────────────────────────────────────
+
+        private const int InfoTabParty = 0, InfoTabLore = 1, InfoTabLog = 2;
+        private static readonly string[] InfoTabNames = { "Party", "Lore", "Log" };
+        /// <summary>The tab the player picked; it lasts the whole battle (the instance outlives a rebuild).</summary>
+        private int infoTab = InfoTabParty;
+        private VisualElement infoTabStrip;
+        private readonly VisualElement[] infoPages = new VisualElement[3];
+        private ScrollView lorePage, logPage;
+        /// <summary>The tutorial lesson last shown, so a new one brings the Party page forward exactly once.</summary>
+        private int shownLesson = -1;
+        /// <summary>Every combat line this battle (newest last, capped), so the Log survives a rebuild.</summary>
+        private const int LogCap = 200;
+        private readonly List<(string text, Color color)> logLines = new List<(string, Color)>();
+
+        private void BuildInfoTabs(VisualElement root)
+        {
+            var host = Ui.El("col info-tabs", root);
+            host.name = "info-tabs";
+            host.style.position = Position.Absolute;
+            host.style.left = Fit.Edge; host.style.right = Fit.Edge; host.style.top = InfoTabsTop; host.style.bottom = Space.S24;
+            infoTabStrip = Ui.Tabs(InfoTabNames, infoTab, ShowInfoTab, host);
+            var win = Ui.Window(null, host, "window--compact info-tabs__window");
+            win.name = "info-panel";
+            panel = infoPages[InfoTabParty] = InfoPage(win, "party");
+            lorePage = InfoPage(win, "lore");
+            infoPages[InfoTabLore] = lorePage;
+            // The combat log keeps the old feed's name, so automation that looks for "feed" still finds it.
+            logPage = InfoPage(win, "feed");
+            infoPages[InfoTabLog] = logPage;
+            foreach (var (text, color) in logLines) AddLogLine(text, color);
+            ApplyInfoTab();
+        }
+
+        private static ScrollView InfoPage(VisualElement win, string name)
+        {
+            var sv = new ScrollView(ScrollViewMode.Vertical) { name = name };
+            sv.AddToClassList("list");
+            sv.AddToClassList("info-tabs__page");
+            sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            sv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            win.Add(sv);
+            return sv;
+        }
+
+        private void ShowInfoTab(int i)
+        {
+            infoTab = Mathf.Clamp(i, InfoTabParty, InfoTabLog);
+            ApplyInfoTab();
+        }
+
+        /// <summary>Shows the picked page. While an ability is aimed the Party page (its card and Cast / Cancel) shows
+        /// whatever tab was picked, and the pick comes back when the aim ends.</summary>
+        private void ApplyInfoTab()
+        {
+            if (infoTabStrip == null) return;
+            int shown = TargetingSlot >= 0 ? InfoTabParty : infoTab;
+            for (int i = 0; i < infoPages.Length; i++)
+                if (infoPages[i] != null) infoPages[i].style.display = i == shown ? DisplayStyle.Flex : DisplayStyle.None;
+            int k = 0;
+            foreach (var t in infoTabStrip.Children())
+            {
+                bool on = k++ == shown;
+                t.EnableInClassList("tab--active", on);
+                if (on) Fonts.UseHeavy(t); else Fonts.UseBody(t);
+            }
+            if (shown == InfoTabLog) ScrollLogToEnd();
+        }
+
+        /// <summary>The Lore page: the unit's Prose description and lore (ClassDef.Description / Lore, filled from
+        /// Content/Text by ProseText) and, for a foe, what the Bestiary knows of it.</summary>
+        private void SyncLore(Unit u)
+        {
+            if (lorePage == null) return;
+            lorePage.Clear();
+            if (u == null) return;
+            var top = Ui.El("row", lorePage);
+            top.style.alignItems = Align.Center;
+            var nm = Ui.Text(u.Name, "h2 grow", top);
+            nm.style.flexShrink = 1;
+            if (!string.IsNullOrEmpty(u.Def.Role)) Ui.Text(u.Def.Role, "small gold", top);
+            bool foe = !u.IsHero && !u.IsIndependent;
+            var entry = foe && App.Save?.Bestiary != null && App.Save.Bestiary.TryGetValue(u.Def.Id, out var be) ? be : null;
+            int know = Knowledge(u);
+            bool seen = !foe || know >= BestiaryKnowledge.Description || (entry != null && entry.Seen);
+            if (!seen) LoreText("Not yet in the Bestiary. Its story is learned by meeting it.", "small dim");
+            else
+            {
+                if (!string.IsNullOrEmpty(u.Def.Description)) LoreText(u.Def.Description, "small");
+                if (!string.IsNullOrEmpty(u.Def.Lore) && u.Def.Lore != u.Def.Description) LoreText(u.Def.Lore, "small dim");
+            }
+            if (!foe) return;
+            var head = Ui.Text("Bestiary", "small gold", lorePage);
+            head.style.marginTop = Space.S8;
+            int defeated = entry?.Defeated ?? 0;
+            string knows = know >= BestiaryKnowledge.Abilities ? "everything" : know >= BestiaryKnowledge.Elements ? "its weaknesses"
+                : know >= BestiaryKnowledge.Stats ? "its HP and stats" : know >= BestiaryKnowledge.Speed ? "its speed" : "its name";
+            LoreText($"Defeated {defeated} · known: {knows}", "small");
+            if (know >= BestiaryKnowledge.Elements) LoreText(BestiaryKnowledge.ElementLine(u.Def), "small dim");
+            int more = BestiaryKnowledge.DefeatsToNext(entry);
+            int next = BestiaryKnowledge.NextTier(entry);
+            if (next >= 0 && more > 0) LoreText($"Defeat {more} more to learn {BestiaryKnowledge.Label(next)}.", "small dim");
+        }
+
+        private void LoreText(string text, string classes)
+        {
+            var t = GlossaryText.Create(text, classes, lorePage);
+            t.style.whiteSpace = WhiteSpace.Normal;
+            t.style.marginBottom = Space.S8;
+        }
+
+        /// <summary>The Party page's skill readout under a hero's card: each bar slot's icon, name, cost or recharge,
+        /// and its description. Holding a row reads it in full, like holding the slot.</summary>
+        private void SkillReadout(Unit hero)
+        {
+            if (hero == null || !hero.IsHero) return;
+            var head = Ui.Text("Skills", "small gold", panel);
+            head.style.marginTop = Space.S8;
+            for (int i = 0; i < hero.Bar.Count && i < slotViews.Count; i++)
+            {
+                if (i >= hero.UnlockedSlots || hero.Bar[i].IsEmpty) continue;
+                var sl = hero.Bar[i];
+                var a = BattleEngine.SlotAbility(State, hero, i);
+                if (a == null) continue;
+                var row = Ui.El("row", panel);
+                row.name = "skill" + i;
+                row.style.alignItems = Align.FlexStart;
+                row.style.marginBottom = Space.S8;
+                var icon = Ui.El("menu-icon", row);
+                icon.style.width = icon.style.height = Size.IconM;
+                icon.style.marginRight = Space.S16;
+                var tex = sl.IsItem ? Art.ItemIcon(sl.ItemId) : sl.IsWeapon ? Art.ItemIcon(sl.WeaponId) : null;
+                icon.style.backgroundImage = new StyleBackground(tex ?? Art.AbilityIcon(a) ?? Art.Orb);
+                var col = Ui.El("col grow", row);
+                col.style.flexShrink = 1;
+                var line = Ui.El("row", col);
+                line.style.alignItems = Align.Center;
+                var nm = Ui.Text(sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name, "small", line);
+                nm.style.flexShrink = 1;
+                if (a.Kind != AbilityKind.Skill && a.Cost > 0) Ui.CostPips(a.Cost, line, Size.Pip).style.marginLeft = Space.S8;
+                int cd = hero.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
+                string when = sl.IsItem ? $"Item · {sl.Charges}/{sl.MaxCharges} left"
+                    : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"Skill · ready in {cd} turns" : a.CooldownTurns > 0 ? $"Skill · recharge {a.CooldownTurns} turns" : "Skill")
+                    : a.CastTime > 0 ? $"Spell · charges {a.CastTime:0.#}s" : "Instant";
+                var w = Ui.Text(when, "small gold", line);
+                w.style.marginLeft = Space.S16;
+                w.style.flexShrink = 0;
+                if (!string.IsNullOrEmpty(a.Description))
+                {
+                    var d = GlossaryText.Create(a.Description, "small dim", col);
+                    d.style.whiteSpace = WhiteSpace.Normal;
+                }
+                var ab = a;
+                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotNote(hero, ab)));
+            }
+        }
+
+        private void AddLogLine(string text, Color color)
+        {
+            if (logPage == null) return;
+            var l = Ui.Text(text, "small", logPage);
+            l.style.color = color;
+            l.style.whiteSpace = WhiteSpace.Normal;
+            l.style.marginBottom = Space.S4;
+            while (logPage.contentContainer.childCount > LogCap) logPage.contentContainer.RemoveAt(0);
+        }
+
+        /// <summary>Newest at the bottom: pin the log to its end once the new line has been laid out.</summary>
+        private void ScrollLogToEnd()
+        {
+            if (logPage == null) return;
+            logPage.schedule.Execute(() => logPage.scrollOffset = new Vector2(0f, Mathf.Max(0f, logPage.contentContainer.layout.height - logPage.contentViewport.layout.height)));
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -1335,25 +1524,15 @@ namespace GridGame.App
             SyncPanel();
         }
 
-        /// <summary>Combat feed (bible §9 row 4): the last few events as fading lines over the board's corner.</summary>
+        /// <summary>Combat log (bible §9, GG-T391): every event line this battle goes to the info panel's Log page,
+        /// newest at the bottom, the last <see cref="LogCap"/> kept. Nothing draws over the board any more.</summary>
         public void Feed(string text, Color color)
         {
-            if (feed == null || string.IsNullOrEmpty(text)) return;
-            var l = Ui.Text(text, "tiny shadow", feed);
-            l.style.color = color;
-            l.style.fontSize = TypeScale.Caption;
-            l.style.whiteSpace = WhiteSpace.Normal; // a long line wraps inside the 640px feed instead of spilling over the board (GG-T110)
-            while (feed.childCount > 3) feed.RemoveAt(0);
-            App.StartCoroutine(FeedFade(l));
-        }
-
-        private IEnumerator FeedFade(Label l)
-        {
-            float hold = 0f;
-            while (hold < 4f && l.parent != null) { hold += Tween.Dt; yield return null; } // game time: holds while paused
-            float t = 0;
-            while (t < 0.6f && l.parent != null) { t += Tween.Dt; l.style.opacity = 1f - t / 0.6f; yield return null; }
-            l.RemoveFromHierarchy();
+            if (string.IsNullOrEmpty(text)) return;
+            logLines.Add((text, color));
+            if (logLines.Count > LogCap) logLines.RemoveAt(0);
+            AddLogLine(text, color);
+            if (logPage != null && logPage.resolvedStyle.display != DisplayStyle.None) ScrollLogToEnd();
         }
 
         /// <summary>
