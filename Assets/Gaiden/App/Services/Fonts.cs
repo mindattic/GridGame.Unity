@@ -21,9 +21,13 @@ namespace GridGame.App
         /// <summary>Body font choices (owner direction 2026-10-11: "allow a selection of different Fonts
         /// to change look and feel"). Calibri/Aptos are Microsoft-proprietary (not bundleable); Inter
         /// fills that "clean modern UI sans" niche instead. "Attic" isn't a real distributable family;
-        /// Montserrat fills that slot. The Display font (Cinzel) stays fixed across every preset.</summary>
+        /// Montserrat fills that slot. The Display font (Cinzel) stays fixed across every preset.
+        /// GG-T385 (owner 2026-11-16, "the most popular fonts used in iPhone and android RPG interfaces"): Japanese mobile
+        /// RPGs (Granblue Fantasy, FFXV) license Fontworks New Rodin, a heavy rounded gothic; M PLUS Rounded 1c Bold is its
+        /// closest OFL cousin and is the default ("Rounded"). The older faces stay selectable.</summary>
         public static readonly FontPreset[] Presets =
         {
+            new FontPreset("Rounded", "Fonts/MPlusRounded"),
             new FontPreset("Classic", "Fonts/Outfit"),
             new FontPreset("Lato", "Fonts/Lato"),
             new FontPreset("Roboto", "Fonts/Roboto"),
@@ -37,8 +41,9 @@ namespace GridGame.App
 
         public static FontAsset Body => body ??= Make(currentBodyPath, true);
         public static FontAsset Display => display ??= Make("Fonts/Cinzel", true);
-        /// <summary>A real Outfit Bold cut (GG-T245): SDF faux-bold on a Regular file dilates and rounds every glyph, which read as "bubbly".</summary>
-        public static FontAsset Heavy => heavy ??= Make("Fonts/OutfitBold", true);
+        /// <summary>A real heavy cut, never SDF faux-bold (GG-T245: faux-bold dilates every glyph). M PLUS Rounded 1c
+        /// ExtraBold (GG-T385), the same rounded gothic as the default body one weight up, whatever body preset is picked.</summary>
+        public static FontAsset Heavy => heavy ??= Make("Fonts/MPlusRoundedHeavy", true);
 
         private static FontAsset Fallback(ref FontAsset slot, string path)
         {
@@ -86,7 +91,7 @@ namespace GridGame.App
         /// Switches the body font and re-applies it to the UI root in place. unityFontDefinition is an
         /// inherited style property, so every element that doesn't explicitly override it (everything
         /// except the handful of Display-tagged headlines) updates immediately — no screen rebuild
-        /// needed. Unknown names fall back to Classic. Call once at save load and again whenever
+        /// needed. Unknown names fall back to the first preset (Rounded). Call once at save load and again whenever
         /// Settings changes it (mirrors Art.ApplyTheme).
         /// </summary>
         public static void ApplyFont(string name)

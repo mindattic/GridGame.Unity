@@ -1066,7 +1066,6 @@ namespace GridGame.App
                 tl = new Tally { At = at, UnitId = t.Id };
                 tl.El = board.Float("", at + new Vector2(0, -BoardView.Tile * 0.62f), Palette.White, 50);
                 tl.El.name = "tally-" + t.Id;
-                tl.El.style.unityTextOutlineColor = Color.black; tl.El.style.unityTextOutlineWidth = 2f;
                 tallies[t.Id] = tl;
             }
             tl.Terms.Add(crit ? amount + "!" : amount.ToString());

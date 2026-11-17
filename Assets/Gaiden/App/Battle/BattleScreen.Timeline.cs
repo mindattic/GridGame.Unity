@@ -141,7 +141,7 @@ namespace GridGame.App
             guardButton = shield;
             shield.style.position = Position.Absolute;
             shield.style.right = Fit.Edge; shield.style.top = TimelineY - Size.Target / 2f; shield.style.width = shield.style.height = Size.Target;
-            shield.style.fontSize = 30;
+            shield.style.fontSize = TypeScale.Caption;
             LayoutTimelineFrame();
         }
 

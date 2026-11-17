@@ -331,8 +331,8 @@ namespace GridGame.App
                 o.style.width = o.style.height = size;
                 o.style.backgroundImage = new StyleBackground(Art.Orb);
                 o.style.unityTextAlign = TextAnchor.MiddleCenter;
-                o.style.fontSize = 30; Fonts.UseHeavy(o);
-                o.style.color = Palette.Ink;
+                o.style.fontSize = TypeScale.Caption; Fonts.UseHeavy(o);
+                o.AddToClassList("text-ink"); // dark numeral on the light orb: ink color, no outline or drop (GG-T385)
                 orbViews.Add(o);
             }
         }
@@ -1341,7 +1341,7 @@ namespace GridGame.App
             if (feed == null || string.IsNullOrEmpty(text)) return;
             var l = Ui.Text(text, "tiny shadow", feed);
             l.style.color = color;
-            l.style.fontSize = 30;
+            l.style.fontSize = TypeScale.Caption;
             l.style.whiteSpace = WhiteSpace.Normal; // a long line wraps inside the 640px feed instead of spilling over the board (GG-T110)
             while (feed.childCount > 3) feed.RemoveAt(0);
             App.StartCoroutine(FeedFade(l));

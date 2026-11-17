@@ -30,6 +30,8 @@ namespace GridGame.Meta
             public const string ConfirmActions = "confirmActions";
             public const string MenuTheme = "menuTheme";
             public const string FontName = "fontName";
+            /// <summary>Which one-time look migration the file has had (GG-T385): missing/0 = from before the Chrono default.</summary>
+            public const string LookVersion = "lookVersion";
             public const string Hyphenate = "hyphenate";
             public const string Difficulty = "difficulty";
         }
@@ -56,6 +58,13 @@ namespace GridGame.Meta
             d.ConfirmActions = g.GetBool(Keys.ConfirmActions, d.ConfirmActions);
             d.MenuTheme = g.GetString(Keys.MenuTheme, d.MenuTheme);
             d.FontName = g.GetString(Keys.FontName, d.FontName);
+            // GG-T385: the default look became the Chrono gray window and the M PLUS Rounded face. A profile written before
+            // that and still on the old defaults (Classic / Classic) moves to the new ones once; a later pick of Classic sticks.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < CurrentLookVersion)
+            {
+                if (d.MenuTheme == "Classic") d.MenuTheme = SettingsSave.DefaultMenuTheme;
+                if (d.FontName == "Classic") d.FontName = SettingsSave.DefaultFontName;
+            }
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
@@ -85,8 +94,9 @@ namespace GridGame.Meta
             g.Set(Keys.ColorblindMode, s.ColorblindMode);
             g.Set(Keys.PincerCutIns, s.PincerCutIns);
             g.Set(Keys.ConfirmActions, s.ConfirmActions);
-            g.Set(Keys.MenuTheme, s.MenuTheme ?? "Classic");
-            g.Set(Keys.FontName, s.FontName ?? "Classic");
+            g.Set(Keys.MenuTheme, s.MenuTheme ?? SettingsSave.DefaultMenuTheme);
+            g.Set(Keys.FontName, s.FontName ?? SettingsSave.DefaultFontName);
+            g.Set(Keys.LookVersion, CurrentLookVersion);
             g.Set(Keys.Hyphenate, s.Hyphenate);
             var x = s.Difficulty ?? new DifficultySettings();
             var diff = g.GetOrAddObject(Keys.Difficulty);
@@ -94,6 +104,9 @@ namespace GridGame.Meta
             foreach (var legacy in new[] { "preset", "enemyHp", "enemyDamage", "enemySpeed", "rewardGold", "rewardXp", "itemDropRate" })
                 diff.Remove(legacy); // the §22.9 scaffold's keys, retired by the dial (GG-T309)
         }
+
+        /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
+        public const int CurrentLookVersion = 1;
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>
         public const string DifficultyLevelKey = "level";

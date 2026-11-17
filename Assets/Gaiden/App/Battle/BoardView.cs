@@ -118,7 +118,7 @@ namespace GridGame.App
             CastChip.style.display = DisplayStyle.None;
             CastChip.Add(new Label { name = "castchip-letter", pickingMode = PickingMode.Ignore });
             CastChip[0].AddToClassList("shadow");
-            CastChip[0].style.fontSize = 30; Fonts.UseHeavy(CastChip[0]);
+            CastChip[0].style.fontSize = TypeScale.Caption; Fonts.UseHeavy(CastChip[0]);
             CastChip[0].style.unityTextAlign = TextAnchor.MiddleCenter; CastChip[0].style.flexGrow = 1;
             Root.Add(CastChip);
 
@@ -808,7 +808,7 @@ namespace GridGame.App
                     var n = new Label($"{kv.Value.Counter}/{def.Threshold}") { pickingMode = PickingMode.Ignore };
                     n.style.position = Position.Absolute;
                     n.style.right = Space.S8; n.style.bottom = Space.S4;
-                    n.style.fontSize = 36;
+                    n.style.fontSize = TypeScale.Small;
                     n.style.color = Palette.Text;
                     e.Add(n);
                 }

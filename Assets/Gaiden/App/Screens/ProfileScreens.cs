@@ -19,7 +19,7 @@ namespace GridGame.App
         {
             var bg = Ui.El("fill", root);
             bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
-            bg.style.unityBackgroundImageTintColor = new Color(0.4f, 0.4f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Profiles", () => App.Router.Back(), col, out _);
             var hint = Ui.Text("Each profile keeps its own settings and its own three save slots.", "small dim", col);
@@ -88,13 +88,13 @@ namespace GridGame.App
         {
             var bg = Ui.El("fill", root);
             bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
-            bg.style.unityBackgroundImageTintColor = new Color(0.4f, 0.4f, 0.55f);
+            bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(renaming == null ? "New Profile" : "Rename Profile", () => App.Router.Back(), col, out _);
             var w = Ui.Window(renaming == null ? "Name your profile" : $"New name for \"{renaming}\"", col);
 
             field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = renaming ?? "" };
-            field.style.fontSize = 48;
+            field.style.fontSize = TypeScale.H3;
             field.style.marginTop = Space.S8; field.style.marginBottom = Space.S8;
             field.style.minHeight = 96;
             var input = field.Q(className: "unity-text-field__input") ?? field.Q(className: "unity-base-text-field__input");

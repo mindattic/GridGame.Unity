@@ -326,10 +326,12 @@ namespace GridGame.Meta
         public bool PincerCutIns = true;
         /// <summary>Pick a target, then confirm (owner direction 2026-10-11). Off = commit on the pick, for veterans.</summary>
         public bool ConfirmActions = true;
-        /// <summary>Menu theme by name (App.Art.Themes: Classic, Cyberpunk, Ember, Verdant, Slate, Dark); unknown/missing names fall back to Classic.</summary>
-        public string MenuTheme = "Classic";
-        /// <summary>Body font by name (App.Fonts.Presets); unknown/missing names fall back to Classic.</summary>
-        public string FontName = "Classic";
+        /// <summary>Menu theme by name (App.Art.Themes: Chrono, Classic, Cyberpunk, Ember, Verdant, Slate, Dark); unknown/missing
+        /// names fall back to Chrono, the default since GG-T385 (a profile still on Classic moves to it once, GaidenSettings.Read).</summary>
+        public string MenuTheme = DefaultMenuTheme;
+        /// <summary>Body font by name (App.Fonts.Presets); unknown/missing names fall back to Rounded (GG-T385).</summary>
+        public string FontName = DefaultFontName;
+        public const string DefaultMenuTheme = "Chrono", DefaultFontName = "Rounded";
         /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
         /// overlong words break at <see cref="Hyphenation"/> points).</summary>
         public bool Hyphenate;

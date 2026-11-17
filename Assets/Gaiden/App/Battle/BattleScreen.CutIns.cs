@@ -104,9 +104,7 @@ namespace GridGame.App
                 t.style.fontSize = Mathf.Clamp(h * 0.13f, 34f, 76f);
                 Fonts.UseHeavy(t);
                 t.style.color = tagColor;
-                t.style.unityTextOutlineWidth = 3f;
-                t.style.unityTextOutlineColor = new Color(0.03f, 0.03f, 0.1f, 1f);
-                t.style.textShadow = new TextShadow { offset = new Vector2(4, 4), blurRadius = 2, color = new Color(0, 0, 0, 0.7f) };
+                t.AddToClassList("depth-lg"); // the shared heading outline + hard drop (Theme.uss, GG-T385)
                 t.style.rotate = new Rotate(tilt * 0.7f);
                 root.Add(t);
             }
@@ -285,10 +283,10 @@ namespace GridGame.App
             {
                 string why = mc.Participants > 2 ? $" · {mc.Participants} heroes ÷{1f + BattleConfig.ChargeParticipantPenalty * (mc.Participants - 2):0.#}" : " · clean pincer";
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
-                Billboard($"Mana +{mc.Amount}{why}", null, new Color(0.55f, 0.85f, 1f));
+                Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana);
             }
             else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into the bubble
-                Billboard($"Guard · Mana +{mc.Amount} · {mc.Amount / BattleConfig.GuardChargePerSecond:0.#}s banked", null, new Color(0.55f, 0.85f, 1f));
+                Billboard($"Guard · Mana +{mc.Amount} · {mc.Amount / BattleConfig.GuardChargePerSecond:0.#}s banked", null, Palette.Mana);
             App.Audio.Sfx("battle.orb", 0.35f, 0.7f + 0.5f * (to / (float)BattleConfig.ManaChargePerOrb));
             yield return Tween.Run(Timing.Standard, k =>
             {

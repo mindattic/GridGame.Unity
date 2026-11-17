@@ -205,6 +205,11 @@ namespace GridGame.App
                 if (e.ClassListContains("shadow")) st.Inner.AddToClassList("shadow");
                 if (st.Shadow.color.a > 0f) s.textShadow = st.Shadow;
                 e.style.textShadow = new TextShadow { color = Color.clear };
+                // Likewise the block outline (Theme.uss text depth, GG-T385): the overlay draws the element's own step
+                // (a .small label's thin one, not its parent's), and the invisible glyphs draw none.
+                s.unityTextOutlineWidth = r.unityTextOutlineWidth;
+                s.unityTextOutlineColor = r.unityTextOutlineColor;
+                e.style.unityTextOutlineColor = Color.clear;
             }
         }
 
@@ -233,7 +238,7 @@ namespace GridGame.App
             st.Inner = null;
             if (st.Source != null && (restoreText || (st.Hidden != null && e.text == st.Hidden))) SetQuietly(e, st.Source);
             st.Hidden = null;
-            if (st.ShadowMoved) { e.style.textShadow = st.Shadow.color.a > 0f ? new StyleTextShadow(st.Shadow) : StyleKeyword.Null; st.ShadowMoved = false; }
+            if (st.ShadowMoved) { e.style.textShadow = st.Shadow.color.a > 0f ? new StyleTextShadow(st.Shadow) : StyleKeyword.Null; e.style.unityTextOutlineColor = StyleKeyword.Null; st.ShadowMoved = false; }
         }
 
         private static void Drop(TextElement e, State st, bool restoreText)

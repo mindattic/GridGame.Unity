@@ -193,7 +193,7 @@ namespace GridGame.App
 
         public static Texture2D Placeholder => placeholder ??= Solid(new Color(0.35f, 0.2f, 0.45f), "placeholder");
 
-        /// <summary>The Final Fantasy window body: a deep vertical gradient from the active menu theme (border
+        /// <summary>The window body: a vertical gradient from the active menu theme (Chrono gray by default) (border
         /// tint also follows the theme — see <see cref="ThemeAccent"/>, applied in <c>Ui.Window</c>).</summary>
         public static Texture2D Window => window ??= Gradient(CurrentTheme.ColorA, CurrentTheme.ColorB, "window");
         public static Texture2D WindowDark => windowDark ??= Gradient(Darken(CurrentTheme.ColorA, 0.3f), Darken(CurrentTheme.ColorB, 0.55f), "window-dark");
@@ -235,6 +235,10 @@ namespace GridGame.App
 
         public static readonly MenuTheme[] Themes =
         {
+            // The default since GG-T385 (owner 2026-11-16: "use a Chrono Trigger gray instead of FF blue gradient"): a neutral
+            // medium-to-dark gray, no blue cast, in the light bevelled frame of Theme.uss's .theme-chrono block. First in the
+            // list, so it is also the fallback for an unknown name.
+            new MenuTheme("Chrono", new Color32(112, 112, 112, 255), new Color32(40, 40, 40, 255), "theme-chrono"),
             new MenuTheme("Classic", new Color32(44, 70, 170, 255), new Color32(10, 18, 70, 255)),
             new MenuTheme("Cyberpunk", new Color32(255, 0, 200, 255), new Color32(0, 220, 255, 255)),
             new MenuTheme("Ember", new Color32(239, 83, 80, 255), new Color32(38, 166, 154, 255)),
@@ -255,7 +259,7 @@ namespace GridGame.App
 
         /// <summary>Switches the active theme, regenerating any already-created textures in place (same
         /// Texture2D instance, so every <c>VisualElement</c> already pointing at it updates with no rebuild).
-        /// Unknown names fall back to Classic. Call once at save load and again whenever Settings changes it.</summary>
+        /// Unknown names fall back to the first theme (Chrono). Call once at save load and again whenever Settings changes it.</summary>
         public static void ApplyTheme(string name)
         {
             var found = Themes.FirstOrDefault(t => t.Name == name);

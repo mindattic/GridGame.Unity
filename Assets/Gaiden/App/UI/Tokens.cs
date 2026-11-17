@@ -10,14 +10,20 @@ namespace GridGame.App
     /// </summary>
     public static class Palette
     {
-        // Surfaces and text
-        public static readonly Color Text = new Color(0.94f, 0.95f, 1f);
-        public static readonly Color TextDim = new Color(0.59f, 0.63f, 0.8f);
+        // Surfaces and text: neutral grays (GG-T385), so they sit on the Chrono gray window (USS --color-*)
+        public static readonly Color Text = new Color(0.957f, 0.957f, 0.965f);
+        public static readonly Color TextDim = new Color(0.69f, 0.69f, 0.72f);
+        /// <summary>A window's subtitle line (USS <c>--color-sub</c>, <c>.window-sub</c>).</summary>
+        public static readonly Color TextSub = new Color(0.816f, 0.816f, 0.84f);
         public static readonly Color White = Color.white;
-        public static readonly Color Ink = new Color(0.06f, 0.07f, 0.17f);
-        public static readonly Color Panel = new Color(0.04f, 0.06f, 0.2f, 0.94f);
+        public static readonly Color Ink = new Color(0.055f, 0.055f, 0.07f);
+        public static readonly Color Panel = new Color(0.17f, 0.17f, 0.19f, 0.94f);
         public static readonly Color Shade = new Color(0f, 0f, 0f, 0.6f);
-        public static readonly Color Frame = new Color(0.93f, 0.93f, 1f);
+        /// <summary>The tint that dims a full-screen backdrop behind a menu or dialogue (neutral, GG-T385).</summary>
+        public static readonly Color BackdropDim = new Color(0.42f, 0.42f, 0.44f);
+        public static readonly Color Frame = new Color(0.93f, 0.93f, 0.94f);
+        /// <summary>The dark block outline behind text (USS <c>--color-text-edge</c>, GG-T385).</summary>
+        public static readonly Color TextEdge = new Color(0.03f, 0.03f, 0.047f);
 
         // Semantic feedback: one meaning per hue family (POL-B4)
         public static readonly Color Gold = new Color(1f, 0.85f, 0.35f);

@@ -14,6 +14,7 @@ SOUND EFFECTS
 Original sounds synthesized for this game by MindAttic (tools/make_sfx.py).
 
 FONTS
+M PLUS Rounded 1c — SIL Open Font License 1.1
 Outfit — SIL Open Font License 1.1
 Cinzel — SIL Open Font License 1.1
 Noto Sans, Noto Sans Symbols 2 — SIL Open Font License 1.1

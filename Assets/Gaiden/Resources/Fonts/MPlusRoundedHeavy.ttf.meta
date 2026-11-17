@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: df142756bc632ab419e7fd8716381cc1
+guid: f225b21b6bd2482db86487cd32f67112
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Outfit
+  - M PLUS Rounded 1c
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0
