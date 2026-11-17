@@ -24,6 +24,8 @@ The four methods (research summary in the GG-T327 ticket):
 
     python tools/portrait_cut.py --score [dir|file.png ...]          # jaggy metrics, worst first (jaggy_metrics)
     python tools/portrait_cut.py Portraits/x.png --pick matte --import x   # re-cut a committed portrait in place
+    python tools/portrait_cut.py --fringe [dir|file.png ...]         # white-fringe share and speck count (GG-T399)
+    python tools/portrait_cut.py --defringe [id ...]                 # remove fringe and specks in place (GG-T399)
 The comparison sheet shows tolerance, ai, hybrid and smoke; unmix (the weakest on the samples) runs only via --pick.
 
 Each variation is written as <name>.<method>.png beside --out, plus <name>.compare.png showing all four over dark and
@@ -448,6 +450,173 @@ def antialias_edge(im, sigma=1.0):
     return rgba(out, na)
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# Fringe and specks (GG-T399). After GG-T389 some portraits still carried a light halo around the silhouette (the white
+# background the art was cut from, left in the outermost pixels' colour) and small detached alpha islands. fringe()
+# measures both; defringe_portrait() removes them. White figures (the mannequin, the undead's white cloaks) and fog are
+# the trap: an edge pixel is fringe only when it is lighter than the figure colour directly behind it, and soft fields
+# (fog, smoke, wisps: partial alpha with no solid pixel within 2 px) are never judged or touched.
+
+FRINGE_EDGE = 2      # px: edge pixels are visible pixels within this distance of transparency
+FRINGE_DEPTH = 3     # px: interior reference pixels are solid and at least this deep
+FRINGE_REACH = 6     # px: an edge pixel with no interior reference this close (strands, fog) is not judged
+FRINGE_STEP = 45     # levels: fringe is at least this much lighter (min channel) than the interior behind it
+SPECK_PX = 64        # px: detached islands smaller than this are specks
+SPECK_GHOST_PX = 1000  # px: ...or a faint island smaller than this
+SPECK_GHOST_A = 0.07   # whose alpha never exceeds this
+FRINGE_KEEP = 0.6   # a fringe pixel keeps at least this share of its alpha (the shrink is sub-pixel)
+FRINGE_BG = np.array((255.0, 255.0, 255.0), np.float32)  # the white the art was cut from
+
+
+def _fringe_fields(arr):
+    """Shared geometry for fringe() and defringe_portrait(): alpha, the visible edge band, the interior reference colour
+    behind each pixel, its distance, the soft-field mask and the figure / island labels."""
+    rgb = arr[..., :3].astype(np.float32)
+    a = arr[..., 3].astype(np.float32) / 255.0
+    clear = a <= 0.02
+    dclear = ndimage.distance_transform_edt(~clear)
+    hard = a >= 0.96
+    soft = (a > 0.02) & ~hard & ~ndimage.binary_dilation(hard, iterations=2)
+    interior = hard & (dclear > FRINGE_DEPTH)
+    dint, idx = ndimage.distance_transform_edt(~interior, return_indices=True)
+    ref = rgb[idx[0], idx[1]]
+    lab, n = ndimage.label(a > 0.02, structure=np.ones((3, 3)))
+    sizes = ndimage.sum(np.ones_like(a), lab, index=np.arange(1, n + 1)) if n else np.zeros(0)
+    return rgb, a, dclear, soft, ref, dint, lab, sizes
+
+
+def _fringe_mask(rgb, a, dclear, soft, ref, dint, lab, sizes):
+    big = np.isin(lab, np.where(sizes >= 400)[0] + 1)
+    edge = (a > 0.02) & (dclear <= FRINGE_EDGE) & big & ~soft
+    judged = edge & (dint <= FRINGE_REACH)
+    mn, mx = rgb.min(axis=2), rgb.max(axis=2)
+    light = (mn >= 190) & (mx - mn <= 40)                       # near-white, unsaturated
+    fr = judged & light & (ref.min(axis=2) <= mn - FRINGE_STEP)  # and clearly lighter than the figure behind it
+    return edge, fr
+
+
+def _fog_rim(rgb, a, dclear):
+    """The cut-from panel's border left along a fog's outer edge (undead02's bottom line): near-white pixels within 2 px
+    of transparency whose alpha is a spike, >= 0.12 and >= 2x the fog 4-8 px further in (the mean alpha of that depth
+    band in an 11x11 window). Solid figure edges have full alpha behind them and never qualify. Returns (mask, the fog
+    level behind each pixel)."""
+    band = ((dclear >= 4) & (dclear <= 8)).astype(np.float32)
+    lvl = ndimage.uniform_filter(a * band, 11) / np.maximum(ndimage.uniform_filter(band, 11), 1e-6)
+    has = ndimage.uniform_filter(band, 11) > 0.05
+    rim = ((a > 0.02) & (dclear <= 2) & (a >= 0.12) & (a < 0.96) & has & (a >= 2 * lvl) & (lvl < 0.5)
+           & (rgb.min(axis=2) >= 170))
+    return rim, lvl
+
+
+def _specks(a, lab, sizes, soft):
+    """Detached islands under SPECK_PX, or under SPECK_GHOST_PX and never more than SPECK_GHOST_A opaque (a ghost of
+    the cut-from background: undead00's faint ring), that are not part of a soft field (fog breaking up at its thin end
+    is wisp, not speck: an island with a pixel within 6 px of a larger soft field is kept). Larger opaque islands are
+    art (rocks, debris, sparks) and stay."""
+    n = len(sizes)
+    peak = ndimage.maximum(a, lab, index=np.arange(1, n + 1)) if n else np.zeros(0)
+    small = np.where((sizes < SPECK_PX) | ((sizes < SPECK_GHOST_PX) & (peak <= SPECK_GHOST_A)))[0] + 1
+    if not small.size:
+        return np.zeros(a.shape, bool), 0
+    fog = ndimage.binary_dilation(soft & ~np.isin(lab, small), iterations=6)
+    cand = np.isin(lab, small)
+    ids = np.unique(lab[cand & fog])
+    sp = cand & ~np.isin(lab, ids)
+    return sp, int(len(np.setdiff1d(small, ids)))
+
+
+def fringe(im):
+    """Fringe and speck measures for an RGBA portrait (GG-T399).
+    fringe  share of edge pixels (visible, within 2 px of transparency, on a figure component >= 400 px, outside soft
+            fields) that are near-white (min channel >= 190, chroma <= 40) while the nearest solid interior pixel (>= 3 px
+            deep, within 6 px) is >= 45 levels darker: the cut-from background left in the outline. Edge pixels with no
+            interior that close (strands, fog) are not judged, and a white figure is not fringe of itself. A fog's
+            leftover panel border (_fog_rim: an alpha spike on its outer edge) counts as fringe too.
+    specks  detached alpha islands under 64 px (or faint ones, alpha <= 0.07, under 1000 px) that are not part of a
+            soft field (fog wisps); see _specks.
+    Returns ({fringe, fringe_px, edge_px, specks}, fringe mask, speck mask)."""
+    f = _fringe_fields(np.asarray(im.convert("RGBA")))
+    edge, fr = _fringe_mask(*f)
+    rim, _ = _fog_rim(f[0], f[1], f[2])
+    edge, fr = edge | rim, fr | rim
+    sp, ns = _specks(f[1], f[6], f[7], f[3])
+    return ({"fringe": round(float(fr.sum() / max(edge.sum(), 1)), 4), "fringe_px": int(fr.sum()),
+             "edge_px": int(edge.sum()), "specks": ns}, fr, sp)
+
+
+def defringe_portrait(im):
+    """Removes white fringe and specks (GG-T399). For each fringe pixel and its 1-px neighbours on the edge band, with
+    I its colour over the white it was cut from and F the figure colour behind it, alpha is shrunk to the two-colour
+    unmixing a = (I-B).(F-B)/|F-B|^2 (never raised), and its colour is the un-premultiplied (I-(1-a)B)/a, pulled toward
+    F where a is too small to trust. Pure white rim pixels thus go clear, a mixed rim keeps its figure share at figure
+    colour. Alpha never drops below FRINGE_KEEP of its old value (a sub-pixel shrink: the anti-aliased ring stays).
+    A fog's panel-border rim drops to the fog level behind it. Specks are dropped. Soft fields, strands, white figures
+    and everything off the edge band are untouched."""
+    arr = np.asarray(im.convert("RGBA"))
+    rgb, a, dclear, soft, ref, dint, lab, sizes = f = _fringe_fields(arr)
+    edge, fr = _fringe_mask(*f)
+    # The fringe's own edge neighbours (a lighter-than-interior rim pixel just under the colour cut) are solved too.
+    mn = rgb.min(axis=2)
+    zone = (ndimage.binary_dilation(fr, structure=np.ones((3, 3))) & edge & (dint <= FRINGE_REACH)
+            & (ref.min(axis=2) <= mn - 20))
+    B = FRINGE_BG
+    I = rgb * a[..., None] + B * (1 - a[..., None])
+    fb = ref - B
+    fb2 = np.maximum((fb * fb).sum(axis=2), 1.0)
+    ap = np.clip(((I - B) * fb).sum(axis=2) / fb2, 0, 1)
+    # Alpha shrinks by a sub-pixel only: never below FRINGE_KEEP of what it was, so the anti-aliased ring GG-T389 laid
+    # down keeps its shape (the unmixed alpha of a light AA pixel is near 0 and would strip it back to a staircase).
+    na = a.copy()
+    na[zone] = np.minimum(a[zone], np.maximum(ap[zone], a[zone] * FRINGE_KEEP))
+    na = np.where(zone & (na < 0.03), 0.0, na)
+    # Colour: the un-premultiplied colour where the unmixing says the pixel is mostly figure, else the figure colour.
+    aa = np.maximum(ap, 1e-3)[..., None]
+    unm = np.clip((I - (1 - aa) * B) / aa, 0, 255)
+    wgt = np.clip((ap - 0.15) / 0.5, 0, 1)[..., None]
+    col = unm * wgt + ref * (1 - wgt)
+    out = rgb.copy()
+    out[zone] = col[zone]
+    # A fog's leftover panel border: its alpha drops to the fog level behind it (colour is fog-coloured already).
+    rim, lvl = _fog_rim(rgb, a, dclear)
+    na[rim] = np.minimum(na[rim], lvl[rim])
+    zone |= rim
+    sp, _ = _specks(a, lab, sizes, soft)
+    na[sp] = 0.0
+    return rgba(out, na), int(zone.sum()), int(sp.sum())
+
+
+def defringe_pass(ids, threshold=0.01):
+    """The GG-T399 pass: defringe_portrait on every portrait whose fringe share is >= threshold or that has specks (or
+    the ids given), written in place (1024 canvas, .meta kept); classes drawing a changed portrait get their Figure box
+    re-set to the new alpha bounds (Thumbnail boxes are never touched)."""
+    import glob, json
+    from import_art import RES, figure_box, set_class_blocks
+    pdir = os.path.join(RES, "Portraits")
+    files = [os.path.join(pdir, i + ".png") for i in ids] if ids else sorted(glob.glob(os.path.join(pdir, "*.png")))
+    classes = json.load(open(os.path.join(RES, "Content", "classes.json"), encoding="utf-8-sig"))
+    users = {}
+    for c in classes:
+        users.setdefault((c.get("Portrait") or c["Id"]).lower(), []).append(c["Id"])
+    figures = {}
+    for f in files:
+        name = os.path.splitext(os.path.basename(f))[0]
+        im = Image.open(f).convert("RGBA")
+        m0, _, _ = fringe(im)
+        if not ids and m0["fringe"] < threshold and not m0["specks"]:
+            continue
+        out, nz, ns = defringe_portrait(im)
+        m1, _, _ = fringe(out)
+        print(f"{name:20s} fringe {m0['fringe']:.4f} -> {m1['fringe']:.4f}  specks {m0['specks']} -> {m1['specks']}"
+              f"  ({nz} edge px solved, {ns} speck px dropped)")
+        out.save(f, optimize=True)
+        if figure_box(out) != figure_box(im):
+            for cid in users.get(name.lower(), []):
+                figures[cid] = {"Figure": figure_box(out)}
+    if figures:
+        set_class_blocks(figures)
+        print(f"Figure boxes set from the alpha bounds: {', '.join(sorted(figures))}")
+
+
 RUN = {"tolerance": method_tolerance, "unmix": method_unmix, "ai": method_ai, "hybrid": method_hybrid,
        "smoke": method_smoke, "matte": method_matte}
 
@@ -580,7 +749,22 @@ def main():
     ap.add_argument("--score", nargs="*", metavar="PATH", help="print jaggy metrics (default: every portrait)")
     ap.add_argument("--dejag", nargs="*", metavar="ID", help="staircase step in place on these portraits (default: every "
                     "one whose staircase is >= 0.01), kept where it lowers the staircase; Figure boxes follow the alpha")
+    ap.add_argument("--fringe", nargs="*", metavar="PATH", help="print white-fringe share and speck count, worst first "
+                    "(default: every portrait)")
+    ap.add_argument("--defringe", nargs="*", metavar="ID", help="fringe/speck step in place on these portraits (default: "
+                    "every one with fringe >= 0.01 or any speck); Figure boxes follow the alpha")
     args = ap.parse_args()
+    if args.defringe is not None:
+        defringe_pass(args.defringe)
+        return
+    if args.fringe is not None:
+        import glob
+        paths = args.fringe or [os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Portraits")]
+        files = [f for p in paths for f in (sorted(glob.glob(os.path.join(p, "*.png"))) if os.path.isdir(p) else [p])]
+        rows = [(os.path.splitext(os.path.basename(f))[0], fringe(Image.open(f))[0]) for f in files]
+        for name, m in sorted(rows, key=lambda r: (-r[1]["fringe"], -r[1]["specks"])):
+            print(f"{name:20s} " + " ".join(f"{k} {v}" for k, v in m.items()))
+        return
     if args.dejag is not None:
         dejag(args.dejag)
         return
