@@ -183,7 +183,8 @@ def main():
         check("turn icons frame the unit's portrait", "tl-art" in names and "thumb-art" in names, "no 'tl-art'/'thumb-art' under the timeline icons")
         b = battle_state()
         enemies = [u for u in b["units"] if u["team"] == "Enemy"]
-        check("no turn-number badges on the board (the timeline shows turn order)", not any(x.strip().isdigit() for x in texts()), str([x for x in texts() if x.strip().isdigit()]))
+        # "0" is the empty mana-pool count (BattleScreen.cs poolCount), not a turn badge; a real one would read 1+.
+        check("no turn-number badges on the board (the timeline shows turn order)", not any(x.strip().isdigit() and x.strip() != "0" for x in texts()), str([x for x in texts() if x.strip().isdigit()]))
         track = h.call("element", name="timeline-track")
         icon = next((h.call("element", name=n) for n in names if n.startswith("tl-")), {})
         tcy = track.get("y", 0) + track.get("h", 0) / 2
@@ -410,8 +411,8 @@ def main():
         sb = h.call("stagebounds")
         aspect = sb["w"] / sb["h"]
         centered = abs((sb["x"] + sb["w"] / 2) - sb["screen"][0] / 2) < 4
-        # §26.3 (GG-T169): a window wider than 9:16 clamps the stage to 9:16 (1424×2532), framed and centred.
-        check("wide window letterboxes (stage clamps to 9:16, framed, centered)", abs(aspect - 1424 / 2532) < 0.01 and centered and sb.get("framed"), json.dumps(sb))
+        # §26.3 (GG-T398): a window wider than 3:4 clamps the stage to 3:4 (1899×2532), framed and centred.
+        check("wide window letterboxes (stage clamps to 3:4, framed, centered)", abs(aspect - 1899 / 2532) < 0.01 and centered and sb.get("framed"), json.dumps(sb))
         h.shot("letterbox-wide")
         h.call("resize", w=585, h=1266); time.sleep(1.0)
 
