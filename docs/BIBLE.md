@@ -2143,6 +2143,14 @@ re-entering ≈3 s out), frail, `Sentient` flyers (`Flying`), one family (`harpy
 - **Placement.** Tithe Moors II (`greenvalley-02`), wave 4: the three harpies replace two goblin thugs and a Redline
   ganger. Casual bot, 24 seeds, campaign parties: 11/24 with them and 11/24 without; smart bot 23/24 vs 24/24.
 - *(Tests: `HarpyTests`.)*
+- **Fixed 2026-11-17 (GG-T276):** Tithe Moors II's own wave 1 (unrelated to the harpies) placed two slimes at `Y: 5`
+  and Tithe Moors III's wave 1 placed one at `Y: 5` — the only hand-placed enemies in the entire campaign inside the
+  hero deployment band (`BattleRunner.Setup`'s default hero spawn is rows 4–7; every other authored enemy position in
+  `stages.json` sits at `Y` 0–4). That put a slime on top of the party before it could set up on the very first wave
+  of the stage, which the `polish.py --balance` records showed as abnormally short, losing wave 1s (3–5 player
+  actions against POL-G6's 6–20 band). Moved to `Y: 1`, alongside the other wave-1 slime's `Y: 2`. `GAIDEN_ABILITY_STAGE`-scoped soak, 8 casual battles/stage before → after: greenvalley-03 2/8 (25%) → 6/8 (75%, now inside
+  the POL-G1 55–85% band); greenvalley-02 stayed low (2/8 → 1/8, inside this pass's noise) — its wave 4 harpies above
+  and its slime-trail hazard (§14.22) are the likelier remaining cause there, left to the next pass.
 
 ### 14.12 The Void Sentinel (added 2026-11-07, owner art, GG-T330)
 
@@ -2267,6 +2275,16 @@ leaves a gravestone that raises it again unless smashed (§14.5), and each role 
   7/24 (already below the band before them: most losses are still at the Chronomancer's wave 2); smart bot 24/24 on
   both. In the casual runs the Reaver's oath held 29 times and the graves stirred 134 times.
 - *(Tests: `AnchorWatchTests`.)*
+- **Amended 2026-11-17 (GG-T276):** the balance loop's `polish.py --no-player --balance` pass found Anchor Wastes II
+  (`cave-02`) wave 3 and Anchor Wastes III (`cave-03`) wave 3 were the only early-mid-campaign waves stacking *two*
+  Anchor Watch units together (Sentry + Vigilant on `cave-02`, Reaver + Vigilant on `cave-03`) — a sustain-on-sustain
+  combo (Vigilant's party-wide Regen keeping the Sentry's counterstrike or the Reaver's self-heal topped up) that the
+  GG-T334 placement note above already flagged as the cause of cave-02's 18/24 → 6/24 drop. Each wave's Vigilant
+  (`wraithknight03`) swapped back for a plain `skelepede` (matching what it originally stood in for), leaving one
+  Anchor Watch elite per wave instead of two. `GAIDEN_ABILITY_STAGE`-scoped soak, 8 casual battles/stage before →
+  after: cave-02 4/8 (50%) → 6/8 (75%, now inside the POL-G1 55–85% band); cave-03 2/8 (25%) → 3/8 (38%, still below
+  band — wave 4's cyclops pair + mountain troll is the harder remaining slog there, left to the next pass). cave-01's
+  single-elite wave 2 was already in band and is untouched.
 
 ### 14.17 The Choir — cultists (added 2026-11-07, owner art, GG-T335)
 
