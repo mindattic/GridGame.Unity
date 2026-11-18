@@ -896,6 +896,40 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
     (`GAIDEN_ABILITY_PER_STAGE=4`, so n=4/stage). That looks like genuinely under-tuned early-campaign content
     now that the measurement is accurate, not sampling noise alone — flagged for the next GG-T276 balance-loop
     cycle rather than fixed here.
+  - **Amended 2026-11-17 (GG-T276): the 8 corrected-measurement 0% stages above, triaged.** Each was content, not a
+    repeat of the GG-T423 party-scale mismatch (`cave-01`/`02`/`03` all field the same campaign party size and
+    `PartyScale`; `cave-02` is in-band, so the scaling itself isn't the driver). Root cause and fix per stage
+    (commits `0202aedb`, `6583bc8f`, `fd602646`, `d1c09b5b`):
+    - **`greenvalley-01`** (highest priority — the game's very first stage): the only one of the 44 campaign
+      stages whose authored enemy `Level` exceeds `MetaServices.RecommendedLevel` (`campaignIndex + 1`) — every
+      other stage authors flat `Level: 1` and lets `BattleRunner.Setup`'s `Math.Max(sp.Level, RecommendedLevel)`
+      floor do the leveling. Wave 5's `captain`/`soldier02`/`soldier03` were hand-authored at `Level: 4` against a
+      level-1, 3-hero starting roster (waves 3–4 were similarly over-authored at `Level: 2`). Reset every enemy in
+      the stage to `Level: 1`.
+    - **`cave-01`, `cave-03`, `desert-01`, `desert-02`, `lanternroad-03`:** the same bug class as this session's
+      earlier Sentry+Vigilant/Reaver+Vigilant fix (two commits up) — a wave stacking two copies of the same
+      self-buffing or `Boss`-tagged unit where no sibling stage in the theme repeats the pattern. `cave-01` wave 5
+      fielded four named elites with no filler (dropped `voidsentinel`); `cave-03` wave 4 was the only wave in the
+      campaign pairing two `Boss`-tagged units (`cyclops00`+`cyclops01`, swapped the latter for `goblinthug00`);
+      `desert-01` wave 4 and `desert-02` wave 3 each doubled up `purpleprototype` (ability `berserk`), a pattern
+      `desert-03`/`desert-04`/`desert-05` never repeat (swapped the duplicate for `scorpion`/`soldier00`);
+      `lanternroad-03` wave 5 paired its `Undying` rule-break finale boss (`oni02`, GG-T234) with a second
+      full-strength `oni00` instead of filler, unlike every other theme's rule-break finale (swapped for
+      `steppinrazor00`).
+    - **`greenvalley-02`:** no single-bug root cause found; a content-density call instead. Wave 3's four identical
+      `toxic_skin` enemies trimmed to three (dropped `frog03`); wave 4's `harpy03` (`jammer_darts`, which targets
+      the `Caster` role) removed, since this is the exact stage the campaign's first mage joiner
+      (`greenvalley_recruit_mage`) is newly in the roster for, at her lowest level.
+    - **`swamp-02`:** `naga00` (this stage's solo finale, and the only `LaysEgg` enemy in the real campaign —
+      Brain `Ambusher`, GG-T262's `AmbushPatienceTurns`, plus a never-reused `nagaegg` reinforcement every
+      `EggInterval` turns) is a one-off combo of mechanics with nothing to dilute it; POL-G6's own per-wave action
+      counts for this stage swing from 4 to 67, consistent with runs stalling on an egg-sustain spiral rather than
+      a clean win or loss. Doubled `EggInterval` 4 → 8 (content-only; `naga00` isn't used in any other real stage).
+    - Build (`tools/build.ps1 -SkipProse`) is green after every commit: errors=0, warnings=1 (unchanged baseline
+      warning). **Balance-soak re-verification is still outstanding**: the harness's background-task
+      memory-pressure safeguard killed the post-fix `python tools/polish.py --no-player --balance` run on this
+      shared machine before it produced results. Before numbers (n=4/stage, all eight at 0/4) are GG-T423's
+      measurement above; after numbers are pending the next run and will be appended here once captured.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
