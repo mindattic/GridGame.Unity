@@ -681,7 +681,7 @@
             "RuleBreak": "Undying"
           },
           {
-            "Class": "oni00",
+            "Class": "steppinrazor00",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -767,7 +767,7 @@
             "Y": -1
           },
           {
-            "Class": "purpleprototype01",
+            "Class": "scorpion",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -867,7 +867,7 @@
             "Y": -1
           },
           {
-            "Class": "purpleprototype03",
+            "Class": "soldier00",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -1481,12 +1481,6 @@
             "Y": -1
           },
           {
-            "Class": "voidsentinel",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
-          },
-          {
             "Class": "icemauler",
             "Level": 1,
             "X": -1,
@@ -1725,7 +1719,7 @@
             "Y": -1
           },
           {
-            "Class": "cyclops01",
+            "Class": "goblinthug00",
             "Level": 1,
             "X": -1,
             "Y": -1
