@@ -148,7 +148,13 @@ def main():
         t = texts()
         check("adventure lists the first stage", any("The Tithe Moors I" in x for x in t))
         check("adventure groups battles into expeditions", any("The Tithe Moors Expedition" in x for x in t), str(t[:8]))
-        check("locked stages collapse into one teaser", any("more stages ahead" in x for x in t))
+        # GG-T388 ("Adventure is region then stage"): a fresh save has exactly one unlocked region, so Adventure opens
+        # straight into that region's stage list (Stages(), MenuScreens.cs) and never the region picker (Regions())
+        # where locked REGIONS collapse into "N more stages ahead" -- that teaser can't appear here by design until a
+        # second region unlocks. What Stages() actually does with a locked future stage is list it on its own row
+        # with its gate reason (MetaServices.CanLaunch), so check that instead of the no-longer-reachable teaser.
+        check("locked stages in the open region are listed individually with their gate reason",
+              any("Expeditions start at battle 1" in x for x in t), str(t))
         h.call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
         if h.call("state")["screen"] == "crawl":
             check("story crawl plays on first entry", True)
@@ -177,8 +183,16 @@ def main():
 
     with section('HUD'):
         names = h.call("names", prefix="")
-        for el in ["board", "abilitybar", "orbs", "shield", "menu", "feed"]:
+        for el in ["board", "abilitybar", "orbs", "shield", "menu"]:
             check(f"HUD element {el}", el in names)
+        # GG-T384/GG-T391's tabbed bottom panel (Party | Lore | Log) shows one page at a time; the other two are
+        # display:none, which collapses their worldBound to nothing, so "names" (filtered on worldBound.width > 0,
+        # AutomationServer.cs) only sees "feed" (the Log page, BattleScreen.cs) once that tab is picked -- it was
+        # never meant to be simultaneously visible with the always-on board/abilitybar/orbs/shield/menu. Pick the
+        # Log tab to check it, then put Party back (the tutorial expects it).
+        h.call("click", name="tab-log"); time.sleep(0.3)
+        check("HUD element feed (on the Log tab)", "feed" in h.call("names", prefix=""))
+        h.call("click", name="tab-party"); time.sleep(0.3)
         check("timeline icons present", any(n.startswith("tl-") for n in names))
         check("turn icons frame the unit's portrait", "tl-art" in names and "thumb-art" in names, "no 'tl-art'/'thumb-art' under the timeline icons")
         b = battle_state()
