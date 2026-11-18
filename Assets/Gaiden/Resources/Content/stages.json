@@ -76,12 +76,6 @@
             "Y": -1
           },
           {
-            "Class": "goblinthug00",
-            "Level": 1,
-            "X": -1,
-            "Y": -1
-          },
-          {
             "Class": "ganger00",
             "Level": 1,
             "X": -1,
@@ -151,12 +145,6 @@
             "Level": 1,
             "X": 3,
             "Y": 1
-          },
-          {
-            "Class": "slime02",
-            "Level": 1,
-            "X": 4,
-            "Y": 2
           }
         ]
       },
@@ -751,7 +739,7 @@
             "Y": -1
           },
           {
-            "Class": "infernalist03",
+            "Class": "infernalist01",
             "Level": 1,
             "X": -1,
             "Y": -1

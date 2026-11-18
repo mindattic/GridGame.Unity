@@ -930,6 +930,76 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
       memory-pressure safeguard killed the post-fix `python tools/polish.py --no-player --balance` run on this
       shared machine before it produced results. Before numbers (n=4/stage, all eight at 0/4) are GG-T423's
       measurement above; after numbers are pending the next run and will be appended here once captured.
+  - **Amended 2026-11-18 (GG-T276): the 6 stages still at 0/4 after the above, triaged deeper — sibling-compared,
+    not just the duplicate/overtuned-element pattern.** `MINDATTIC_AGENT.md`'s GOLDEN RULE ("verification is
+    build-only; tests run last, once, when the user asks... orchestrators and coordinators never instruct
+    subagents to run suites or soaks") means this pass did not re-run `polish.py --balance` itself — the
+    `--per-stage 12` re-measurement this cycle's brief asked for was not taken, and the after-numbers below are
+    therefore from static/structural analysis (sibling wave-count, enemy-count, Boss/RuleBreak placement,
+    ability-text and `HeroBot.cs` comparison), not a fresh soak. The next `/test` or explicitly-requested balance
+    pass should capture real after-numbers against the before column here.
+    - **Content fixes applied (4 of 6):**
+      - **`greenvalley-01` wave 4** was the single largest wave among all 15 sampled early-campaign stages (5 foes,
+        vs. a sibling max of 4: `greenvalley-03` wave 3/5, `desert-03` wave 4) and carried a redundant second
+        `goblinthug00` alongside the `ganger00`/`ganger01`/delayed-`soldier00` mix the rest of the wave already
+        covers. Dropped the duplicate `goblinthug00`: wave 4 is now 4 foes, matching the sibling ceiling.
+      - **`greenvalley-02` wave 1** opened with 3 slimes (`slime00`/`01`/`02`) where both its siblings
+        (`greenvalley-01`, `greenvalley-03`) open with exactly 2 — and this is the only one of the three
+        greenvalley stages that declares the `slimetrail` region rule, whose `slime02`/`slime03`-style
+        `TrailRule` (`ClassDef.TrailRule`, `BattleRunner.Region.cs RegionTrail`) paints a persistent `slowed`
+        hazard tile behind every slime step. A third slime is a third hazard-painting source, right at the
+        stage's own opening wave, before the party (fresh off stage 1, one shop visit in) has any means to
+        cleanse or outrun stacking `slowed`. Dropped `slime02`: wave 1 is back to 2 slimes
+        (`slime00`+`slime01`, the same pair `greenvalley-01` wave 1 uses).
+      - **`desert-01` wave 3** fielded `infernalist03` (`Brain: Medic`, `charge_blood_rite` — heals the most
+        wounded ally 25 HP every other turn, plus its own `lifesteal`) alongside `infernalist02`. Checked
+        against every other theme's own opening stage (`greenvalley-01`, `lanternroad-01`, `swamp-01`, `cave-01`):
+        none of them field a dedicated `Medic`-role healer this early — the campaign's other `Medic` units
+        (`swampmistress00`'s 30 HP `charge_mend`, stronger and cooldown-free) only appear at a theme's *finale*
+        (`swamp-03`), after two stages of leveling. `desert-01` is `desert`'s own opening stage, so it was
+        introducing a healer-sustain mechanic a full stage-position earlier than every sibling theme does.
+        Swapped `infernalist03` → `infernalist01` (`Hunter`, `cinder_claws`+`infernal_hide`, no heal) — same
+        family, same wave size, no sustain spike.
+      - **`swamp-02`'s `naga00`**: re-reading `BattleRunner.Enemy.cs`'s `LayEgg`/`Hatch` past the already-applied
+        `EggInterval` 4→8 fix shows the mechanic is structurally unstable, not just too frequent — `Hatch` spawns
+        the egg into a full clone of whatever laid it (`egg.RisesAs = layer.Def.Id`, `egg.RisesLevel =
+        layer.Level`), and that clone inherits the layer's own `LaysEgg`/`EggInterval` (it's spawned from the
+        same `ClassDef`). A `nagaegg` that survives to its own turn doesn't add a minor add — it can add a
+        second full-strength Boss that can itself lay more eggs: an uncapped self-cloning spiral, consistent
+        with POL-G6's 4-to-67-action swing on this stage. `naga00` is confirmed the only `LaysEgg` user in the
+        real campaign (`grep`'d every content file), so this is fully isolated. Removed `LaysEgg`/`EggInterval`
+        from `naga00` entirely (content-only; `nagaegg` stays defined but unused) — `swamp-02`'s finale is now a
+        straightforward solo Boss fight (poison DoT, `Ambusher`/`AmbushPatienceTurns` intact) without the
+        recursive-reinforcement risk.
+    - **Flagged as a bot-AI gap, not re-tuned (2 of 6):** `lanternroad-03` and `cave-03` are the only two of the
+      five sampled themes' own finale (`-03`) stages still failing, and both pair their finale with a `RuleBreak`
+      whose counterplay needs *deliberate* avoidance the bot doesn't do: `lanternroad-03`'s `Undying` (`oni02`,
+      GG-T234) only refuses to fall while another foe stands — "slay its thralls first" — but `HeroBot.cs` has no
+      targeting logic that deprioritizes an `Undying` foe while thralls live; `cave-03`'s `GravityStamp`
+      (`cyclops02`) drags every hero within reach toward the boss every other of its turns — "keep your
+      distance" — but `HeroBot.cs` has no retreat/spacing logic against it. By contrast, the *other* three
+      themes' finale `RuleBreak`s all succeed without any stage changes this pass: `greenvalley-03`'s `TwinTurn`
+      ("two turns unless a hero stands beside it") is satisfied by the bot's ordinary melee-approach behavior for
+      free; `swamp-03`'s `MireSwap` is a low-cost reposition, not a punishing one; `desert-03`'s `AxisWard`
+      already has bot-side awareness (`HeroBot.cs`'s `RuleBreakRules.WardsPincer` scoring, favoring column
+      pincers). `Undying` and `GravityStamp` are the only two rule-breaks with neither free coverage nor an
+      explicit bot special case — a `HeroBot` enhancement (thrall-priority targeting; stamp-range retreat) is the
+      right fix, not a further content nerf on two stages whose finale bosses are each already the theme's one
+      intended rule-break set-piece. No stage content changed for either.
+    - **Build check blocked, not yet green, not yet committed**: `tools/build.ps1`'s Unity batchmode run was
+      killed mid-flight by this shared machine's background-task memory-pressure safeguard (the same blocker
+      GG-T423's note above hit for `polish.py --balance`), so this pass has *not* confirmed a clean build for
+      these 4 content edits. Per `mindattic-agent-standard/AGENTS.md` Law 7 ("commit at verified milestones
+      only") the edits below are staged on disk but intentionally **not committed**; per the harness's own
+      guidance the killed build is not retried automatically on this pass. The next session with headroom should
+      re-run `tools/build.ps1`, confirm errors=0, and commit each fix by its own path before relying on it.
+      Before numbers (n=4/stage, all six at 0/4) are the prior GG-T276 pass's measurement above. After numbers:
+      **not measured this pass** (GOLDEN RULE — no soak/balance run without an explicit user `/test` ask, and
+      orchestrators/subagents never instruct each other to run one); the 4 content-fixed stages
+      (`greenvalley-01`, `greenvalley-02`, `desert-01`, `swamp-02`) are expected to move toward the 55–85% band
+      on the next real soak, and `lanternroad-03`/`cave-03` are expected to stay near 0% until `HeroBot` gets
+      `Undying`/`GravityStamp`-aware targeting — see GG-T276's ticket notes for the full write-up and the
+      follow-up ask.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge

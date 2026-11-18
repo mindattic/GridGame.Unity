@@ -11040,9 +11040,7 @@
     "SnakeSegments": 3,
     "OnHitBuff": "poisoned",
     "OnHitChance": 0.4,
-    "Brain": "Ambusher",
-    "LaysEgg": "nagaegg",
-    "EggInterval": 8
+    "Brain": "Ambusher"
   },
   {
     "Id": "nighthunter",
