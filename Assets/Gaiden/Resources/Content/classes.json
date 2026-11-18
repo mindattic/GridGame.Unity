@@ -11042,7 +11042,7 @@
     "OnHitChance": 0.4,
     "Brain": "Ambusher",
     "LaysEgg": "nagaegg",
-    "EggInterval": 4
+    "EggInterval": 8
   },
   {
     "Id": "nighthunter",
