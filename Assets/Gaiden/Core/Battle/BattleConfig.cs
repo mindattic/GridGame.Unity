@@ -253,5 +253,18 @@ namespace GridGame.Core.Battle
         public const int KnockbackCrashDamage = 8;
         /// <summary>Knockback into stone or the board edge: the target takes this (+ the full blow).</summary>
         public const int KnockbackSlamDamage = 18;
+
+        // ── Training prices (GG-T215, §25.6, MetaServices.Abilities.Price) ──────────
+        /// <summary>A spell's trainer price is this plus <see cref="SpellTrainPricePerOrb"/> × its orb cost, so a
+        /// cheap spell and a bank-emptying one are priced apart (Fireball 240G, Meteor 920G at cost 10).</summary>
+        public const int SpellTrainBasePrice = 120;
+        public const int SpellTrainPricePerOrb = 80;
+        /// <summary>GG-T215: a skill used to be a flat 300G regardless of what it did. Skills don't carry an orb
+        /// cost to price by, but <c>CooldownTurns</c> is the next best power proxy (the owner's note on the
+        /// RELEASE_SCOPE watch-list: "a skill is a flat 300 G whatever it does") — a 1-turn jab (CooldownTurns 1)
+        /// trains for 200G, a 6-turn revive or ultimate for 450G. The base+slope is picked so the weighted average
+        /// across the current 146 skills (mode CooldownTurns=3) lands within a few gold of the old flat 300.</summary>
+        public const int SkillTrainBasePrice = 150;
+        public const int SkillTrainPricePerCooldown = 50;
     }
 }

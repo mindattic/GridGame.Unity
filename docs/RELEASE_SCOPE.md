@@ -65,18 +65,25 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   and Tithe Moors I's ~20 kills pay several hundred. Late on it falls behind: Lv 39→40 needs 16,050 XP against
   roughly 1.5–2k from a two-foe-a-wave stage at Lv 40, so it takes ~8 replays per level. The crossover looks like it sits
   around Lv 12–15. Hunts are meant to fill the gap, but check that the grind they ask for late is not punishing.
-- **Spells near the 12-orb bank.** Meteor costs 10 orbs for 22 damage (2.2 a orb, and it empties the bank). Frost costs 7
-  for 10 (1.4 a orb, the worst in the game). Both are hero spells. Fireball pays 6 a orb, and `fieldeng_overdrive` pays
-  12 a orb for 1 orb (the best single-target rate, twice Fireball's). Spellblade Overchannel pays 9 a orb.
-- **Training prices.** A skill is a flat 300 G whatever it does. A spell is 120 + 80 × its cost, so Meteor is 920 G and
-  Frost 680 G for the two worst damage-per-orb spells. The kit trainer charges 100 G.
+- ~~**Spells near the 12-orb bank.**~~ **Fixed 2026-11-17 (GG-T276).** Frost was 10 dmg for 7 orbs (1.4/orb, the worst
+  in the game) and `fieldeng_overdrive` was 12 dmg for 1 orb (12/orb, the best single-target rate, twice Fireball's 6).
+  Frost's `BaseDamage` 10 → 16 (2.3/orb, in line with Meteor's 2.2/orb); `fieldeng_overdrive`'s `Cost` 1 → 2 (6/orb,
+  matching Fireball). See BIBLE §25.6.
+- ~~**Training prices.**~~ **Partly fixed 2026-11-17 (GG-T215).** A skill was a flat 300 G whatever it did; skills now
+  price at `BattleConfig.SkillTrainBasePrice` (150) + `SkillTrainPricePerCooldown` (50) × `CooldownTurns`, so a 1-turn
+  jab is 200 G and a 6-turn revive/ultimate is 450 G (weighted average over the 146 skills is unchanged, ~300 G, so
+  this is a spread not a net economy shift). Spells are unchanged at 120 + 80 × cost (Meteor still 920 G, but Frost's
+  cost-efficiency fix above is the real lever there — its price stays 680 G). The kit trainer still charges 100 G.
 - **Rewards are ×1.5 at the default difficulty 10.** "Intended" also pays the most, so every gold and XP number in the
   game is effectively 1.5× its content value. Make sure prices were tuned with that in mind.
 - **Drop rates.** A Wooden Chest is 1.5% on almost every drop table, about one every 4–5 stages. Signature jewelry
   (Titan, Runelord, Wyrmheart, Dragon earring) is 0.6% and Dragon Scale 0.5–1%. If any of these is a recipe input, that
   recipe is effectively unreachable. 98 drop entries sit under 2%.
-- **Enchant recipes.** 600 weapon-enchant recipes, every one at tier 3 and a flat 150 G. That is a very long list for one
-  tab, and with no price spread it gives no sense of progression.
+- ~~**Enchant recipes.**~~ **Fixed 2026-11-17 (GG-T215).** All 600 weapon-enchant recipes (100 base weapons × 6
+  elements) were tier 3 and a flat 150 G regardless of the base weapon, gating every one behind a maxed Alchemist
+  station and giving no sense of progression. Re-tiered/re-priced by the base weapon's own `Rarity`: Common/Uncommon
+  → Tier 1 (60/90 G), Rare → Tier 2 (130 G), Epic/Legendary → Tier 3 (180/250 G). A starter sword now enchants at
+  Apprentice; only the best 25 weapons still need Master. Still a long list for one tab — not addressed here.
 - **Armor enchants** are 40 G (tier 1) and 150 G (tier 3), cheap next to a mid weapon (~200–335 G).
 - **Mercenaries** charge 45–70 G per battle up front for 3/5/10 battles, about a third of an early stage's pay per battle.
   The 10-battle term at 10% cheaper per step is fine, but check it against stage pay at Lv 10–20.

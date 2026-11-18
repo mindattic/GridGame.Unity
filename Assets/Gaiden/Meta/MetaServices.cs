@@ -2040,7 +2040,12 @@ namespace GridGame.Meta
         public static bool IsHeroUsable(AbilityDef a) => a.Kind != AbilityKind.Passive &&
             (a.Kind == AbilityKind.Spell || a.Kind == AbilityKind.Skill) && !a.Id.StartsWith("charge_") && !EnemyOnly.Contains(a.Id);
 
-        public static int Price(AbilityDef a) => a.Kind == AbilityKind.Skill ? 300 : 120 + 80 * a.Cost;
+        /// <summary>GG-T215: priced off <see cref="BattleConfig"/>'s training constants — a spell by its orb cost,
+        /// a skill by its CooldownTurns (skills carry no orb cost, so cooldown is the power proxy), replacing the
+        /// old flat 300G-for-every-skill price the RELEASE_SCOPE watch-list flagged.</summary>
+        public static int Price(AbilityDef a) => a.Kind == AbilityKind.Skill
+            ? BattleConfig.SkillTrainBasePrice + BattleConfig.SkillTrainPricePerCooldown * a.CooldownTurns
+            : BattleConfig.SpellTrainBasePrice + BattleConfig.SpellTrainPricePerOrb * a.Cost;
 
         /// <summary>GG-T388: what the trainer asks for a move of the hero's own default kit (<see cref="Progression.KitAbilities"/>)
         /// it doesn't know yet — a third of a stranger's skill, so a fresh party can fill its bars from early battle gold.</summary>
