@@ -881,6 +881,21 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
 
     Tithe Moors I is unchanged. The skilled column is `HeroBot.Skilled`: SkillLevel 80, 0.8 s think. A global
     strength raise was rejected because it walled the first battle; see `docs/research/TimelineTuning.md`.
+  - **Amended 2026-11-17 (GG-T423): the balance soak itself was fielding the wrong party.** `tools/polish.py`'s
+    `run_soak` drove `AbilityUsageSoak`'s per-stage path (the one POL-G1/G2/G6/G7 measure) with a flat five-hero
+    rotating party on every stage, never setting `GAIDEN_ABILITY_PARTY=campaign` — so every soak battle fought
+    the enemy scaled for 5 heroes (the +2-over-baseline, 1.6× HP/strike `PartyScale` above) even on early stages
+    the campaign only fields 3 heroes at. `run_soak` now sets `GAIDEN_ABILITY_PARTY=campaign` for both the casual
+    and greedy soaks, so these rules measure each stage against the roster size
+    `AbilityUsageSoak.CampaignPartySize` says it's actually designed for. `docs/polish/baseline.json`'s
+    G-dimension rules (POL-G1..G7) are re-baselined to this corrected measurement (POL-G1 17.4 → 32.5, dimension
+    G 66.3 → 69.1, both still owner `ryand`'s decision on GG-T423, not a design change) — every POL-G number
+    recorded before 2026-11-17 was measured under the flat-5 bug and is not a valid comparison point going
+    forward. The fix didn't move every stage toward the 55–85% band: `greenvalley-01`/`02`, `cave-01`/`03`,
+    `desert-01`/`02`, `lanternroad-03` and `swamp-02` still show a 0% casual win rate at the corrected party size
+    (`GAIDEN_ABILITY_PER_STAGE=4`, so n=4/stage). That looks like genuinely under-tuned early-campaign content
+    now that the measurement is accurate, not sampling noise alone — flagged for the next GG-T276 balance-loop
+    cycle rather than fixed here.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge

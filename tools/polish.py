@@ -344,11 +344,16 @@ def run_soak(out, per_stage=4, difficulty=None):
     bot fighting each campaign stage `per_stage` times with rotating parties (POL-G1, G2, G7)."""
     proj = os.path.join(ROOT, "Tests", "Core.Tests", "Core.Tests.csproj")
     dirs = []
+    # GG-T423: GAIDEN_ABILITY_PARTY=campaign makes the soak field the roster size each stage is actually designed
+    # against (AbilityUsageSoak.CampaignPartySize) instead of a flat five, which BattleConfig.PartyScale (GG-T321)
+    # otherwise punishes with up to +60% enemy HP/strike on early stages. Set for both soaks: it only changes
+    # behavior on the per-stage path (casual, perStage>0) today, but is included for greedy too so neither soak
+    # silently reverts to flat-5 if its own per-stage mode is ever turned on.
     for label, extra in (("greedy", {}), ("casual", {"GAIDEN_ABILITY_BOT": "casual", "GAIDEN_ABILITY_PER_STAGE": str(per_stage)})):
         d = os.path.join(out, "records", label)
         os.makedirs(d, exist_ok=True)
         subprocess.run(["dotnet", "test", proj, "--filter", "FullyQualifiedName~AbilityUsageSoak"], cwd=ROOT,
-                       env={**os.environ, "GAIDEN_ABILITY_RECORDS": d, **extra,
+                       env={**os.environ, "GAIDEN_ABILITY_RECORDS": d, "GAIDEN_ABILITY_PARTY": "campaign", **extra,
                             **({"GAIDEN_DIFFICULTY": str(difficulty)} if difficulty else {})})
         dirs.append(d)
     return dirs
