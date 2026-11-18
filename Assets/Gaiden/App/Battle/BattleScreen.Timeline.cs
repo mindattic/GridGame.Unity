@@ -328,7 +328,7 @@ namespace GridGame.App
                     q.style.position = Position.Absolute;
                     q.style.left = q.style.top = q.style.right = q.style.bottom = 0;
                     q.style.unityTextAlign = TextAnchor.MiddleCenter;
-                    q.style.fontSize = 72;
+                    q.style.fontSize = TypeScale.H1;
                     q.style.color = Palette.TextDim;
                     art.Add(q);
                     return;

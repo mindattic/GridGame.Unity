@@ -233,7 +233,7 @@
 .slot--targeting { scale: 1.06 1.06; }
 .slot.is-pressed { scale: 0.92 0.92; translate: 0 10px; }
 .btn--disabled { opacity: 0.4; }
-.btn--small { min-height: var(--size-target); font-size: var(--type-small); padding: 0 24px; border-bottom-width: 9px; }
+.btn--small { min-height: var(--size-target); font-size: var(--type-small); padding: 0 var(--space-24); border-bottom-width: 9px; }
 .btn--small.is-pressed { border-bottom-width: 3px; translate: 0 6px; }
 .btn--icon { width: var(--size-target); padding: 0; }
 

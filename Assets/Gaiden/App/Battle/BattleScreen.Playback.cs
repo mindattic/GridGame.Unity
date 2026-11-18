@@ -392,7 +392,7 @@ namespace GridGame.App
             if (supporters.Count > 0) Billboard("Support: " + string.Join(", ", supporters.Select(x => x.Name)), null, new Color(0.6f, 0.85f, 1f));
             ShowBanner(label);
             var mid = (BoardView.CenterOf(aAt.At) + BoardView.CenterOf(bAt.At)) / 2f;
-            var f = board.Float(label, mid, color, 96);
+            var f = board.Float(label, mid, color, TypeScale.Display);
             App.StartCoroutine(FloatAway(f, 0.7f));
             if (board.Units.TryGetValue(a.Id, out var av)) App.StartCoroutine(Tween.Pop(av.Root, 1.15f, 0.2f));
             if (board.Units.TryGetValue(b.Id, out var bv)) App.StartCoroutine(Tween.Pop(bv.Root, 1.15f, 0.2f));
@@ -628,7 +628,7 @@ namespace GridGame.App
             App.Audio.Sfx(SupportSfx(sa.Effect), 0.7f, 1.2f);
             App.StartCoroutine(Tween.Pop(sv.Root, 1.12f, 0.18f));
             var at = BoardView.CenterOf(sv.Tile, sv.W, sv.H);
-            App.StartCoroutine(FloatAway(board.Float(what == null ? label + "!" : $"{label}! {what}", at, color, 60), 0.6f));
+            App.StartCoroutine(FloatAway(board.Float(what == null ? label + "!" : $"{label}! {what}", at, color, TypeScale.H2), 0.6f));
             yield return Tween.Wait(ReduceMotion ? 0.08f : 0.2f);
         }
 
@@ -692,7 +692,7 @@ namespace GridGame.App
             if (d.Hit == HitKind.Miss)
             {
                 App.Audio.Sfx("battle.miss");
-                App.StartCoroutine(FloatAway(board.Float("MISS", at, Palette.Info, 56), 0.6f));
+                App.StartCoroutine(FloatAway(board.Float("MISS", at, Palette.Info, TypeScale.H2), 0.6f));
                 yield return Tween.Wait(Timing.Quick);
                 yield break;
             }
@@ -713,7 +713,7 @@ namespace GridGame.App
             string text = d.Note == "Armored!" ? "ARMORED" : (crit ? $"{d.Amount}!" : d.Amount.ToString());
             var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
             if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note);
-            else App.StartCoroutine(FloatAway(board.Float(text, at, color, crit ? 100 : 72), 0.75f));
+            else App.StartCoroutine(FloatAway(board.Float(text, at, color, crit ? TypeScale.Display : TypeScale.H1), 0.75f));
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
             v.Art.style.unityBackgroundImageTintColor = new Color(1f, 0.55f, 0.55f);
@@ -736,7 +736,7 @@ namespace GridGame.App
             if (!ReduceMotion) App.StartCoroutine(HealBurst(BoardView.CenterOf(v.Tile, v.W, v.H)));
             v.SetHp(h.HpAfter, t.MaxHp);
             v.SetGlow(new Color(0.4f, 1f, 0.5f), 0.8f);
-            App.StartCoroutine(FloatAway(board.Float("+" + h.Amount, BoardView.CenterOf(v.Tile), Palette.Good, 72), 0.8f));
+            App.StartCoroutine(FloatAway(board.Float("+" + h.Amount, BoardView.CenterOf(v.Tile), Palette.Good, TypeScale.H1), 0.8f));
             yield return Tween.Wait(Timing.Standard);
             v.SetGlow(Palette.White, 0f);
         }
@@ -804,13 +804,13 @@ namespace GridGame.App
             var at = BoardView.CenterOf(board.Units.TryGetValue(l.FromUnitId, out var v) ? v.Tile : new Coord(2, 2));
             if (l.Coins > 0)
             {
-                App.StartCoroutine(FloatAway(board.Float($"+{l.Coins} G", at + new Vector2(0, -20), Palette.Gold, 52), 0.9f));
+                App.StartCoroutine(FloatAway(board.Float($"+{l.Coins} G", at + new Vector2(0, -20), Palette.Gold, TypeScale.H3), 0.9f));
                 App.StartCoroutine(CoinBurst(at, l.Coins));
             }
             foreach (var it in l.Items)
             {
                 var name = App.Content.TryItem(it.Item)?.Name ?? it.Item;
-                App.StartCoroutine(FloatAway(board.Float($"{name} ×{it.Count}", at + new Vector2(0, 40), new Color(0.7f, 1f, 0.8f), 40), 1.1f));
+                App.StartCoroutine(FloatAway(board.Float($"{name} ×{it.Count}", at + new Vector2(0, 40), new Color(0.7f, 1f, 0.8f), TypeScale.Body), 1.1f));
             }
             App.Audio.Sfx("ui.buy", 0.6f);
             yield return Tween.Wait(Timing.Instant);
@@ -1065,7 +1065,7 @@ namespace GridGame.App
             if (!tallies.TryGetValue(t.Id, out var tl))
             {
                 tl = new Tally { At = at, UnitId = t.Id };
-                tl.El = board.Float("", at + new Vector2(0, -BoardView.Tile * 0.62f), Palette.White, 50);
+                tl.El = board.Float("", at + new Vector2(0, -BoardView.Tile * 0.62f), Palette.White, TypeScale.H3);
                 tl.El.name = "tally-" + t.Id;
                 tallies[t.Id] = tl;
             }
@@ -1099,7 +1099,7 @@ namespace GridGame.App
             TalliesBurst++;
             yield return Tween.Run(Timing.Quick, k => { tl.El.style.scale = new Scale(Vector2.one * (1f - 0.5f * k)); tl.El.style.opacity = 1f - 0.6f * k; });
             tl.El.RemoveFromHierarchy();
-            var total = board.Float(tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.At, tl.Crit ? new Color(1f, 0.85f, 0.2f) : new Color(1f, 0.95f, 0.8f), 120);
+            var total = board.Float(tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.At, tl.Crit ? new Color(1f, 0.85f, 0.2f) : new Color(1f, 0.95f, 0.8f), TypeScale.Title);
             total.name = "tally-total";
             App.Audio.Sfx("battle.crit", 0.7f, 0.9f);
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Quick));
@@ -1895,14 +1895,14 @@ namespace GridGame.App
                 // The Crucible's waves never run out (§22.10): no "N/total", and a rising sting marks each one.
                 ShowBanner(wv.Wave == 0 ? "The Crucible: wave 1" : $"Crucible wave {wv.Wave + 1} · Lv {Crucible.WaveLevel(State.Stage.LevelOverride ?? 1, wv.Wave)}");
                 App.Audio.Sfx("battle.crucible_wave", 1f, 1f + Mathf.Min(0.5f, wv.Wave * 0.04f));
-                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), new Color(1f, 0.55f, 0.3f), 120);
+                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), new Color(1f, 0.55f, 0.3f), TypeScale.Title);
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
             }
             else if (wv.Wave > 0 || wv.TotalWaves > 1)
             {
                 ShowBanner($"Wave {wv.Wave + 1}/{wv.TotalWaves}");
-                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.GoldLight, 120);
+                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.GoldLight, TypeScale.Title);
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
             }

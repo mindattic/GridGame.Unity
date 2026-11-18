@@ -153,7 +153,7 @@ namespace GridGame.App
             l.style.position = Position.Absolute;
             l.style.left = l.style.top = l.style.right = l.style.bottom = 0;
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
-            l.style.fontSize = 64;
+            l.style.fontSize = TypeScale.H2;
             l.style.color = Palette.Text;
             art.Add(l);
         }
