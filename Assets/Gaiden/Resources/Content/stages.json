@@ -49,19 +49,19 @@
         "Enemies": [
           {
             "Class": "frog00",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "frog01",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "frog02",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           }
@@ -71,31 +71,31 @@
         "Enemies": [
           {
             "Class": "goblinthug00",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "goblinthug00",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "ganger00",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "ganger01",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "soldier00",
-            "Level": 2,
+            "Level": 1,
             "X": -1,
             "Y": -1,
             "DelayTicks": 240
@@ -107,19 +107,19 @@
         "Enemies": [
           {
             "Class": "captain",
-            "Level": 4,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "soldier02",
-            "Level": 4,
+            "Level": 1,
             "X": -1,
             "Y": -1
           },
           {
             "Class": "soldier03",
-            "Level": 4,
+            "Level": 1,
             "X": -1,
             "Y": -1
           }
