@@ -137,11 +137,13 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
         args.append("-muted")
     if HEADLESS:
         args += ["-batchmode", "-nographics"]
-    subprocess.Popen(args, cwd=ROOT)
+    proc = subprocess.Popen(args, cwd=ROOT)
     for _ in range(60):
         if alive():
             return art
         time.sleep(0.5)
+    # GG-T424: a player that started but never answered (a busy PC) was left running when this raised.
+    proc.kill()
     raise RuntimeError("player did not start")
 
 
