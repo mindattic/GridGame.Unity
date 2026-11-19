@@ -42,12 +42,15 @@ namespace GridGame.Core.Content
         public VfxPrefabDef Find(string id)
         {
             if (id == null) return null;
-            if (byId == null)
+            var map = byId;
+            if (map == null)
             {
-                byId = new Dictionary<string, VfxPrefabDef>(StringComparer.OrdinalIgnoreCase);
-                foreach (var e in Effects) if (e?.Id != null) byId[e.Id] = e;
+                // Built whole, then published (GG-T447): a caller on another thread never sees a half-filled cache.
+                map = new Dictionary<string, VfxPrefabDef>(StringComparer.OrdinalIgnoreCase);
+                foreach (var e in Effects) if (e?.Id != null) map[e.Id] = e;
+                byId = map;
             }
-            return byId.TryGetValue(id, out var d) ? d : null;
+            return map.TryGetValue(id, out var d) ? d : null;
         }
 
         /// <summary>The prefab for an element/family/status look at a tier: the style's own tier prefab when it lists
