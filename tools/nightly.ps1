@@ -46,6 +46,7 @@ function Invoke-Step([string]$name, [string]$file, [string[]]$arguments, [string
     Write-Log "step $name : $file $($arguments -join ' ')"
     $p = Start-Process -FilePath $file -ArgumentList $arguments -WorkingDirectory $dir -NoNewWindow -PassThru `
         -RedirectStandardOutput $stepLog -RedirectStandardError "$stepLog.err"
+    $null = $p.Handle # without touching the handle before exit, ExitCode reads back blank (every step logged "exit  in")
     if (-not $p.WaitForExit($minutes * 60 * 1000)) {
         try { Stop-Process -Id $p.Id -Force -ErrorAction Stop } catch {}
         $code = 124
@@ -59,13 +60,26 @@ function Invoke-Step([string]$name, [string]$file, [string[]]$arguments, [string
 Write-Log "nightly start ($repo)"
 
 # ── 1. suite on a clean origin/main ─────────────────────────────────────────────────────────────────────────
-$wt = Join-Path $env:LOCALAPPDATA "MindAttic\GridGameNightly\main"
+$root = Join-Path $env:LOCALAPPDATA "MindAttic\GridGameNightly"
 git -C $repo fetch -q origin main 2>&1 | Out-Null
-if (Test-Path $wt) { git -C $repo worktree remove --force $wt 2>&1 | Out-Null; Remove-Item -Recurse -Force $wt -ErrorAction SilentlyContinue }
+# A test host or the build server can still hold Tests\...\bin DLLs; a half-deleted copy then blocked every later
+# night's worktree add, silently (GG-T428: 2026-11-18/19 tested nothing). Release the locks, clear old copies best
+# effort, and always add into a fresh per-run folder so a stuck leftover can never block the run.
+dotnet build-server shutdown 2>&1 | Out-Null
+Get-ChildItem $root -Directory -Filter "main*" -ErrorAction SilentlyContinue | ForEach-Object {
+    git -C $repo worktree remove --force $_.FullName 2>&1 | Out-Null
+    Remove-Item -Recurse -Force $_.FullName -ErrorAction SilentlyContinue
+}
 git -C $repo worktree prune 2>&1 | Out-Null
-git -C $repo worktree add --detach -q $wt origin/main 2>&1 | Out-Null
-$head = (git -C $wt rev-parse --short HEAD).Trim()
-Write-Log "suite copy at $wt ($head)"
+$wt = Join-Path $root ("main-" + (Get-Date -Format "yyyyMMdd-HHmmss"))
+$addOut = (git -C $repo worktree add --detach -q $wt origin/main 2>&1) -join " "
+$head = if (Test-Path (Join-Path $wt "Tests\Core.Tests\Core.Tests.csproj")) { (git -C $wt rev-parse --short HEAD).Trim() } else { "" }
+if (-not $head) {
+    Write-Log "suite copy FAILED at $wt : $addOut"
+    $summary["copy"] = @{ exit = "FAILED"; seconds = 0; log = "git worktree add: $addOut" }
+} else {
+    Write-Log "suite copy at $wt ($head)"
+}
 # The suite links the sibling Unity.Shared source (Tests/GridGame.Core.csproj); a worktree sits elsewhere, so point
 # that one relative path at the real sibling with a junction.
 $shared = Join-Path (Split-Path -Parent $repo) "Unity.Shared"
@@ -128,7 +142,10 @@ if (-not $NoTickets -and $failing.Count -gt 0) {
 }
 
 # ── 5. summary ──────────────────────────────────────────────────────────────────────────────────────────────
-$md = @("# GridGame nightly $stamp", "", "main at ``$head``. Suite: **$passed passed, $failed failed**.", "",
+$verdict = if (-not $head) { "**NOT RUN: the clean copy of main could not be made (see the copy row)**" }
+           elseif (-not (Test-Path $trx)) { "**NOT RUN: dotnet test wrote no results (see suite.log)**" }
+           else { "**$passed passed, $failed failed**" }
+$md = @("# GridGame nightly $stamp", "", "main at ``$head``. Suite: $verdict.", "",
         "| Step | Exit | Seconds | Log |", "|---|---|---|---|")
 foreach ($k in $summary.Keys) { $s = $summary[$k]; $md += "| $k | $($s.exit) | $($s.seconds) | $($s.log) |" }
 if ($failing.Count) { $md += ""; $md += "## Failing tests"; $md += ""; foreach ($f in $failing) { $md += "- ``$($f.Name)``: $($f.Message)" } }
