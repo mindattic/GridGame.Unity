@@ -88,7 +88,25 @@ def alive():
         return False
 
 
+_launched = False
+
+
+def _quit_launched():
+    """GG-T424: a command that launched a player quits it when the run ends, finished or crashed. Most commands never
+    called quit, so every run's last player stayed open (13 at once, 0.9 GB each, on 2026-11-17). Commands that only
+    talk to an already running player (shot, call) never launch, so they leave it alone."""
+    if not _launched:
+        return
+    try:
+        if alive():
+            call("quit", timeout=3)
+    except Exception:
+        pass
+
+
 def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
+    global _launched
+    _launched = True
     if alive():
         try:
             call("quit", timeout=3)
@@ -2307,6 +2325,8 @@ def _row_texts():
 
 
 if __name__ == "__main__":
+    import atexit
+    atexit.register(_quit_launched)
     if "--headless" in sys.argv:
         HEADLESS = True
         sys.argv = [a for a in sys.argv if a != "--headless"]
