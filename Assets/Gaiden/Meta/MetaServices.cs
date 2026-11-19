@@ -529,6 +529,102 @@ namespace GridGame.Meta
             d == null || string.IsNullOrEmpty(d.Crew) ? "" : string.IsNullOrEmpty(d.CrewRole) ? d.Crew : $"{d.Crew}, {d.CrewRole}";
     }
 
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Facility upgrades (§25.12.2, GG-T432): gold-bought station levels that gate material tiers
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Owner 2026-11-19: "you have to unlock the shops abilities to increase the value of things that can be built
+    /// there … copper, iron, steel". Each crafting station (Forge, Alchemy; not Enchant) has a facility — a caravan
+    /// upgrade in caravan.json (<see cref="CaravanUpgradeDef.IsFacility"/>), its levels kept in
+    /// <see cref="SaveData.Caravan"/> like any other. A recipe needs the facility level whose material tier covers its
+    /// result's rarity: the Copper Forge makes up to Uncommon, the Iron Forge Rare, the Steel Forge Epic, the Mythril
+    /// Forge Legendary. A separate axis from the station's XP tier (§24.6.1, skill), which still gates
+    /// <see cref="RecipeDef.Tier"/>; a recipe needs both.
+    /// </summary>
+    public static class Facilities
+    {
+        public static CaravanUpgradeDef Def(ContentDb c, CraftStation station)
+        {
+            var id = CaravanUpgradeDef.FacilityId(station);
+            return c != null && id != null && c.Caravan.TryGetValue(id, out var d) && d.IsFacility ? d : null;
+        }
+
+        /// <summary>Whether a caravan upgrade id is a facility (by id alone, so a save can be checked without content).</summary>
+        public static bool IsFacilityId(string id) => id == CaravanUpgradeDef.ForgeFacilityId || id == CaravanUpgradeDef.AlchemyFacilityId;
+
+        /// <summary>The station's bought facility level: 0 is the base facility (Copper Forge, Clay Still).</summary>
+        public static int Level(ContentDb c, SaveData s, CraftStation station)
+        {
+            var d = Def(c, station);
+            return d == null || s == null ? 0 : Math.Min(CaravanUpgrades.Level(s, d.Id), d.Levels.Count);
+        }
+
+        /// <summary>The facility level a recipe needs: the first whose rarity covers its result's (0 = the base facility).</summary>
+        public static int Required(ContentDb c, RecipeDef r)
+        {
+            var d = r == null ? null : Def(c, r.Station);
+            var item = d == null ? null : c.TryItem(r.Result);
+            if (item == null || item.Rarity <= d.BaseRarity.Value) return 0;
+            for (int i = 0; i < d.Levels.Count; i++)
+                if (d.Levels[i].Rarity is ItemRarity cap && item.Rarity <= cap) return i + 1;
+            return d.Levels.Count;
+        }
+
+        public static bool Allows(ContentDb c, SaveData s, RecipeDef r) => Level(c, s, r.Station) >= Required(c, r);
+
+        /// <summary>"Copper Forge" at level 0, "Iron Forge" at 1, …</summary>
+        public static string Name(ContentDb c, CraftStation station, int level)
+        {
+            var d = Def(c, station);
+            if (d == null) return "";
+            return level <= 0 ? d.BaseName : d.Levels[Math.Min(level, d.Levels.Count) - 1].Name;
+        }
+
+        public static string Current(ContentDb c, SaveData s, CraftStation station) => Name(c, station, Level(c, s, station));
+
+        /// <summary>The facility a recipe needs, by name: "Iron Forge".</summary>
+        public static string NeededName(ContentDb c, RecipeDef r) => Name(c, r.Station, Required(c, r));
+
+        /// <summary>The next facility level to buy, or null when it is fully built (or the station has none).</summary>
+        public static CaravanLevel Next(ContentDb c, SaveData s, CraftStation station)
+        {
+            var d = Def(c, station);
+            return d == null ? null : CaravanUpgrades.NextLevel(c, s, d.Id);
+        }
+
+        /// <summary>Buys the next facility level (the same purchase as its card on the Caravan screen).</summary>
+        public static Result Build(ContentDb c, SaveData s, CraftStation station)
+        {
+            var d = Def(c, station);
+            return d == null ? Result.Fail("No facility to build") : CaravanUpgrades.Buy(c, s, d.Id);
+        }
+
+        /// <summary>The station header's facility part: "Iron Forge — next: Steel Forge, 1,500 G" or "Mythril Forge".</summary>
+        public static string HeaderText(ContentDb c, SaveData s, CraftStation station)
+        {
+            if (Def(c, station) == null) return "";
+            var next = Next(c, s, station);
+            string now = Current(c, s, station);
+            return next == null ? now : $"{now} — next: {next.Name}, {next.Cost:N0} G";
+        }
+
+        /// <summary>Save v10 (GG-T432): a save from before facilities keeps roughly what its station skill had reached —
+        /// a Journeyman station gets the first facility level, a Master the second (the Alchemist's whole ladder) —
+        /// so a returning player's usual recipes don't vanish behind a paywall. Never lowers a level already bought.</summary>
+        public static void Grandfather(SaveData s)
+        {
+            if (s == null) return;
+            void Grant(string id, StationKind k)
+            {
+                int lv = StationProgress.Level(s, k) - 1;
+                if (lv > CaravanUpgrades.Level(s, id)) s.Caravan[id] = lv;
+            }
+            Grant(CaravanUpgradeDef.ForgeFacilityId, StationKind.Blacksmith);
+            Grant(CaravanUpgradeDef.AlchemyFacilityId, StationKind.Alchemist);
+        }
+    }
+
     public static class BattleFactory
     {
         public static HeroSpec SpecFor(ContentDb c, HeroSave h)
@@ -983,8 +1079,8 @@ namespace GridGame.Meta
     // ─────────────────────────────────────────────────────────────────────────────
     // Station progression (§24.6.1, GG-T35): craft/brew/repair/salvage levels up the
     // station that did the work, unlocking the next tier of its own recipe ladder.
-    // Deliberately independent of §25.12 caravan upgrades (gold-bought stat bonuses,
-    // not recipe gates) so the two never double-gate the same thing.
+    // Recipe tiers only: the gold-bought facility levels of §25.12.2 (GG-T432) are a second, separate gate on
+    // material tier (result rarity), checked by Crafting.CanMake; caravan stat upgrades never move station XP.
     // ─────────────────────────────────────────────────────────────────────────────
 
     public enum StationKind { Blacksmith, Alchemist }
@@ -1076,6 +1172,10 @@ namespace GridGame.Meta
 
         public static bool IsUnlocked(SaveData s, RecipeDef r) => StationProgress.IsUnlocked(s, StationFor(r.Station), r.Tier);
 
+        /// <summary>The recipe is open to craft: the station's skill tier (§24.6.1) and its facility's material tier
+        /// (§25.12.2, GG-T432) both reach it. Inputs and gold are separate checks.</summary>
+        public static bool CanMake(ContentDb c, SaveData s, RecipeDef r) => IsUnlocked(s, r) && Facilities.Allows(c, s, r);
+
         private static float PartyLuck(ContentDb c, SaveData s)
         {
             float luck = 0f;
@@ -1111,6 +1211,7 @@ namespace GridGame.Meta
         public static Result Craft(ContentDb c, SaveData s, RecipeDef r, bool potency = false, Rng rng = null, bool lucky = false)
         {
             if (!IsUnlocked(s, r)) return Result.Fail($"Requires {StationProgress.TierName(r.Tier)}");
+            if (!Facilities.Allows(c, s, r)) return Result.Fail($"Needs {Facilities.NeededName(c, r)}");
             if (!Forging.ArmorOpen(c, s, r)) return Result.Fail(Forging.ArmorLockedHint);
             if (potency && r.PotencyResult == null) return Result.Fail("No greater version");
             if (lucky && (potency || !CanLucky(c, s, r))) return Result.Fail("No Diamond for a lucky craft");
@@ -1337,14 +1438,14 @@ namespace GridGame.Meta
 
         /// <summary>The CanBrew story trigger (the Alchemist's join beat): the player has looted enough for an
         /// Apprentice-tier bottle recipe — their first brew.</summary>
-        public static bool LootedForFirstBrew(ContentDb c, SaveData s) => BottleRecipes(c).Any(r => r.Tier <= 1 && HasLoot(s, r));
+        public static bool LootedForFirstBrew(ContentDb c, SaveData s) => BottleRecipes(c).Any(r => r.Tier <= 1 && Facilities.Allows(c, s, r) && HasLoot(s, r));
 
         /// <summary>The bottle recipe the Alchemist's camp tip walks through: one this save can brew right now, else
         /// one whose loot is already in the bag (only the bottle missing), else null.</summary>
         public static RecipeDef FirstBrew(ContentDb c, SaveData s)
         {
             if (s == null) return null;
-            var open = BottleRecipes(c).Where(r => Crafting.IsUnlocked(s, r)).ToList();
+            var open = BottleRecipes(c).Where(r => Crafting.CanMake(c, s, r)).ToList();
             return open.FirstOrDefault(r => Crafting.HasInputs(s, r) && s.Gold >= r.Gold) ?? open.FirstOrDefault(r => HasLoot(s, r));
         }
 
@@ -1420,7 +1521,7 @@ namespace GridGame.Meta
         {
             if (c == null || Done(s)) return null;
             return StarterRecipes(c)
-                .Where(r => Crafting.IsUnlocked(s, r) && c.TryItem(r.Result) is ItemDef w && s.Count(w.Id) + r.ResultCount <= w.MaxStack)
+                .Where(r => Crafting.CanMake(c, s, r) && c.TryItem(r.Result) is ItemDef w && s.Count(w.Id) + r.ResultCount <= w.MaxStack)
                 .Select(r => { var w = c.Item(r.Result); return new Plan { Recipe = r, Weapon = w, Hero = SuitedHero(c, s, w), Ready = Crafting.HasInputs(s, r) && s.Gold >= r.Gold }; })
                 .Where(p => p.Hero != null)
                 .OrderByDescending(p => p.Ready).ThenByDescending(p => Affinity(c, p.Hero, p.Weapon))
@@ -1495,7 +1596,7 @@ namespace GridGame.Meta
         {
             if (c == null || !ArmorStep(s)) return null;
             return SetArmorRecipes(c)
-                .Where(r => r.Tier <= 1 && Crafting.IsUnlocked(s, r) && c.TryItem(r.Result) is ItemDef a && s.Count(a.Id) + r.ResultCount <= a.MaxStack)
+                .Where(r => r.Tier <= 1 && Crafting.CanMake(c, s, r) && c.TryItem(r.Result) is ItemDef a && s.Count(a.Id) + r.ResultCount <= a.MaxStack)
                 .Select(r => { var a = c.Item(r.Result); return new Plan { Recipe = r, Weapon = a, Hero = SuitedWearer(c, s, a), Ready = Crafting.HasInputs(s, r) && s.Gold >= r.Gold }; })
                 .Where(p => p.Hero != null)
                 .OrderByDescending(p => p.Ready).ThenByDescending(p => Affinity(c, p.Hero, p.Weapon))

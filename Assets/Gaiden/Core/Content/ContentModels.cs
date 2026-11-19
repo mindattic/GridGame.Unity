@@ -872,6 +872,26 @@ namespace GridGame.Core.Content
         public string CrewRole;
         /// <summary>One-line flavor barks shown on Camp and the Caravan screen — never dialogue: no branching, no choices (§27).</summary>
         public List<string> Barks = new List<string>();
+
+        // ── Facility upgrades (§25.12.2, GG-T432) ──────────────────────────────────────────────
+        // A crafting station's facility is a caravan upgrade whose levels gate material tiers: each level lets the
+        // station make a rarer result. Only the ids below may be facilities (ContentLoader.Validate).
+
+        /// <summary>The Blacksmith's forge (Copper → Iron → Steel → Mythril).</summary>
+        public const string ForgeFacilityId = "forge";
+        /// <summary>The Alchemist's still (Clay Still → Glass Alembic → Silver Alembic).</summary>
+        public const string AlchemyFacilityId = "alembic";
+
+        /// <summary>The facility id of a crafting station, or null when the station has none (the Enchant station).</summary>
+        public static string FacilityId(CraftStation station) =>
+            station == CraftStation.Forge ? ForgeFacilityId : station == CraftStation.Alchemy ? AlchemyFacilityId : null;
+
+        /// <summary>A facility's name before any level is bought ("Copper Forge").</summary>
+        public string BaseName;
+        /// <summary>The rarest result the unbought facility can make; set only on a facility.</summary>
+        public ItemRarity? BaseRarity;
+
+        public bool IsFacility => BaseRarity.HasValue;
     }
 
     public sealed class CaravanLevel
@@ -879,6 +899,10 @@ namespace GridGame.Core.Content
         public int Cost;
         public float Value;
         public string Text;
+        /// <summary>A facility level's name ("Iron Forge", GG-T432); null on an ordinary upgrade.</summary>
+        public string Name;
+        /// <summary>The rarest result a facility at this level can make (GG-T432); null on an ordinary upgrade.</summary>
+        public ItemRarity? Rarity;
     }
 
     public sealed class ThemeDef

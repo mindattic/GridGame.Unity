@@ -226,6 +226,23 @@ namespace GridGame.Core.Content
                                   || (db.Items.TryGetValue(r.Result ?? "", out var made) && made.Slot != EquipmentSlot.Weapon)))
                     p.Add($"recipe {r.Id}: a Starter recipe is an Apprentice Forge recipe for one weapon that costs no gold");
             }
+            // GG-T432 (§25.12.2): a facility is a caravan upgrade whose levels name and gate a rising material tier.
+            foreach (var u in db.Caravan.Values)
+            {
+                bool facilityId = u.Id == CaravanUpgradeDef.ForgeFacilityId || u.Id == CaravanUpgradeDef.AlchemyFacilityId;
+                if (u.IsFacility != facilityId) { p.Add($"caravan {u.Id}: only '{CaravanUpgradeDef.ForgeFacilityId}' and '{CaravanUpgradeDef.AlchemyFacilityId}' are facilities, and each needs a BaseRarity"); continue; }
+                if (!u.IsFacility) continue;
+                if (string.IsNullOrEmpty(u.BaseName)) p.Add($"caravan {u.Id}: a facility needs a BaseName");
+                var prev = u.BaseRarity.Value;
+                for (int i = 0; i < u.Levels.Count; i++)
+                {
+                    var lv = u.Levels[i];
+                    if (string.IsNullOrEmpty(lv.Name)) p.Add($"caravan {u.Id} level {i + 1}: a facility level needs a Name");
+                    if (lv.Cost <= 0) p.Add($"caravan {u.Id} level {i + 1}: a facility level costs gold");
+                    if (!lv.Rarity.HasValue || lv.Rarity.Value <= prev) p.Add($"caravan {u.Id} level {i + 1}: Rarity must rise above the level before it");
+                    else prev = lv.Rarity.Value;
+                }
+            }
             foreach (var d in db.DropTables.Values)
                 foreach (var e in d.Entries) NeedItem(e.Item, $"droptable {d.Id}");
             foreach (var s in db.Stages.Values)

@@ -644,7 +644,7 @@ namespace GridGame.App.Automation
                         : CampUnlocks.NpcOpen(s, st == CraftStation.Alchemy ? CampNpcs.Alchemist : CampNpcs.Enchantress);
                     object Craftable(CraftStation st) => Crafting.Recipes(c, st)
                         .Where(r => StationOpen(st))
-                        .Where(r => RecipeDiscovery.IsDiscovered(s, r) && Forging.ArmorOpen(c, s, r) && Crafting.IsUnlocked(s, r) && Crafting.HasInputs(s, r) && s.Gold >= r.Gold)
+                        .Where(r => RecipeDiscovery.IsDiscovered(s, r) && Forging.ArmorOpen(c, s, r) && Crafting.CanMake(c, s, r) && Crafting.HasInputs(s, r) && s.Gold >= r.Gold)
                         .Select(r => new { r.Id, r.Result, upgrade = r.BaseItem != null }).ToList();
                     var active = Bounties.Active(c, s);
                     return new

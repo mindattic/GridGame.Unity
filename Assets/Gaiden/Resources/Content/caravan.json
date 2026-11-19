@@ -143,5 +143,60 @@
         "Text": "Salvage yields +50% materials"
       }
     ]
+  },
+  {
+    "Id": "forge",
+    "Name": "Blacksmith's Forge",
+    "Icon": "mat_iron_ore",
+    "Description": "A hotter forge works better metal: each level lets the Blacksmith make rarer gear.",
+    "BaseName": "Copper Forge",
+    "BaseRarity": "Uncommon",
+    "Levels": [
+      {
+        "Cost": 400,
+        "Value": 1,
+        "Name": "Iron Forge",
+        "Rarity": "Rare",
+        "Text": "Iron Forge: forge Rare gear"
+      },
+      {
+        "Cost": 1500,
+        "Value": 2,
+        "Name": "Steel Forge",
+        "Rarity": "Epic",
+        "Text": "Steel Forge: forge Epic gear"
+      },
+      {
+        "Cost": 3000,
+        "Value": 3,
+        "Name": "Mythril Forge",
+        "Rarity": "Legendary",
+        "Text": "Mythril Forge: forge Legendary gear"
+      }
+    ]
+  },
+  {
+    "Id": "alembic",
+    "Name": "Alchemist's Still",
+    "Icon": "empty_bottle",
+    "Description": "Finer glassware distils purer reagents: each level lets the Alchemist brew rarer remedies.",
+    "BaseName": "Clay Still",
+    "BaseRarity": "Common",
+    "Levels": [
+      {
+        "Cost": 300,
+        "Value": 1,
+        "Name": "Glass Alembic",
+        "Rarity": "Uncommon",
+        "Text": "Glass Alembic: brew Uncommon remedies"
+      },
+      {
+        "Cost": 1200,
+        "Value": 2,
+        "Name": "Silver Alembic",
+        "Rarity": "Legendary",
+        "Text": "Silver Alembic: brew Rare and finer remedies"
+      }
+    ]
   }
 ]

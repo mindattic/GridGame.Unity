@@ -911,7 +911,7 @@ namespace GridGame.App
         public override string Id => "blacksmith";
         protected override string Title => "Blacksmith";
         protected override string Backdrop => "cave";
-        protected override string Subtitle => StationProgress.HeaderText(S, StationKind.Blacksmith);
+        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.HeaderText(S, StationKind.Blacksmith)}";
         protected override string Npc => CampNpcs.Blacksmith;
         /// <summary>The Forge tab has its own tip, the first forge (GG-T177), then the first armor once the weapon is made
         /// (GG-T178); Repair keeps the Blacksmith's.</summary>
@@ -954,6 +954,12 @@ namespace GridGame.App
             // for ones the player is exactly one input away from.
             // Armor-set recipes open after the first forge (GG-T178, §25.0.7).
             var visible = recipes.Where(r => Forging.ArmorOpen(c, s, r) && (RecipeDiscovery.IsDiscovered(s, r) || RecipeDiscovery.OneAwayMissing(s, r) != null)).ToList();
+            // GG-T432 (§25.12.2): the station's next facility level, bought right here (also a card on the Caravan screen).
+            if (Facilities.Next(c, s, station) is CaravanLevel nextFacility)
+            {
+                var build = Ui.MenuRow($"Build {nextFacility.Name}", Ui.Gold(nextFacility.Cost), () => ConfirmFacility(c, s, station, page), list);
+                build.name = "facility-build";
+            }
             if (visible.Count == 0) Ui.Text("No recipes.", "small dim", list);
             RecipeDef sel = selected;
             // GG-T198: two discovered recipes can share a Result (the old Slime Gel brew and the new Empty Bottle
@@ -968,10 +974,12 @@ namespace GridGame.App
                 if (RecipeDiscovery.IsDiscovered(s, r))
                 {
                     var result = c.Item(r.Result);
-                    bool locked = !Crafting.IsUnlocked(s, r);
+                    bool tierLocked = !Crafting.IsUnlocked(s, r), facilityLocked = !Facilities.Allows(c, s, r);
+                    bool locked = tierLocked || facilityLocked;
                     bool can = !locked && Crafting.HasInputs(s, r) && s.Gold >= r.Gold;
                     string nameOverride = resultCounts[r.Result] > 1 ? $"{result.Name} — {InputSummary(c, r)}" : null;
-                    row = ItemUi.Row(result, locked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"{r.Gold} G", () => ShowRecipe(detail, c, s, rec, page), list, true, false, nameOverride);
+                    string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
+                    row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => ShowRecipe(detail, c, s, rec, page), list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
                     if (!can) row.style.opacity = 0.55f;
                 }
@@ -992,6 +1000,27 @@ namespace GridGame.App
         /// used to tell apart two recipes that share a Result (GG-T198).</summary>
         private static string InputSummary(ContentDb c, RecipeDef r) =>
             string.Join(" + ", r.Inputs.Select(ic => c.TryItem(ic.Item)?.Name ?? ic.Item));
+
+        /// <summary>Asks, then builds the station's next facility level (GG-T432): a coin cue, then the forge's clang or
+        /// the still's glug as the new equipment goes in.</summary>
+        private static void ConfirmFacility(ContentDb c, SaveData s, CraftStation station, HubPage page)
+        {
+            var next = Facilities.Next(c, s, station);
+            if (next == null) return;
+            if (s.Gold < next.Cost) { GameApp.I.Toast($"{next.Name} costs {Ui.Gold(next.Cost)}"); GameApp.I.Audio.Sfx("ui.error"); return; }
+            Confirm.Show($"Build the {next.Name} for {Ui.Gold(next.Cost)}? {next.Text}.", "Build", () =>
+            {
+                var res = Facilities.Build(c, s, station);
+                GameApp.I.Toast(res.Message);
+                GameApp.I.Audio.Sfx(res.Ok ? "ui.buy" : "ui.error");
+                if (res.Ok)
+                {
+                    GameApp.I.Audio.Sfx(station == CraftStation.Forge ? "battle.clang" : "battle.glug");
+                    GameApp.I.Persist();
+                }
+                page.Refresh();
+            });
+        }
 
         internal static void ShowRecipe(VisualElement w, ContentDb c, SaveData s, RecipeDef r, HubPage page)
         {
@@ -1018,11 +1047,22 @@ namespace GridGame.App
             }
             var result = c.Item(r.Result);
             ItemUi.Detail(w, result, c);
-            bool locked = !Crafting.IsUnlocked(s, r);
-            if (locked)
+            bool locked = !Crafting.CanMake(c, s, r);
+            if (!Crafting.IsUnlocked(s, r))
             {
                 var kind = Crafting.StationFor(r.Station);
                 Ui.Text($"🔒 Requires {StationProgress.TierName(r.Tier)} ({StationProgress.Id(kind)} is {StationProgress.LevelName(s, kind)})", "small bad", w).style.whiteSpace = WhiteSpace.Normal;
+            }
+            if (!Facilities.Allows(c, s, r))
+            {
+                // GG-T432: shown locked, never hidden — the facility that works this material is named, with its price.
+                Ui.Text($"🔒 Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", "small bad", w).style.whiteSpace = WhiteSpace.Normal;
+                if (Facilities.Next(c, s, r.Station) is CaravanLevel next)
+                {
+                    var b = Ui.Button($"Build {next.Name} · {Ui.Gold(next.Cost)}", () => ConfirmFacility(c, s, r.Station, page), "btn--small", w);
+                    b.name = "facility-build-detail";
+                    Ui.SetEnabled(b, s.Gold >= next.Cost);
+                }
             }
             var need = Ui.El("col", w); need.style.marginTop = Space.S16;
             if (r.BaseItem != null)
@@ -1170,7 +1210,7 @@ namespace GridGame.App
         public override string Id => "alchemist";
         protected override string Title => "Alchemist";
         protected override string Backdrop => "swamp";
-        protected override string Subtitle => StationProgress.HeaderText(S, StationKind.Alchemist);
+        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Alchemy)} · {StationProgress.HeaderText(S, StationKind.Alchemist)}";
         protected override string Npc => CampNpcs.Alchemist;
 
         protected override void BuildBody(VisualElement body)

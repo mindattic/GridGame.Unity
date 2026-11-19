@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 9;
+        public const int CurrentVersion = 10;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -527,6 +527,15 @@ namespace GridGame.Meta
                 // still cleared, and any chapter that moved behind it opens there, replayable like any earlier stage.
                 s.HighestClearedStage = ReorderedPostgameFrontier(s.HighestClearedStage);
                 s.Version = 9;
+            }
+            if (s.Version < 10)
+            {
+                // GG-T432: crafting stations gained gold-bought facility levels that gate material tiers (§25.12.2). A save
+                // from before keeps roughly what its station skill had reached: Journeyman -> the first level, Master -> the second.
+                s.Caravan ??= new Dictionary<string, int>();
+                s.StationXp ??= new Dictionary<string, int>();
+                Facilities.Grandfather(s);
+                s.Version = 10;
             }
             foreach (var h in s.Roster)
             {

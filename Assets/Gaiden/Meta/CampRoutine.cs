@@ -23,6 +23,16 @@ namespace GridGame.Meta
         /// rolls of the range.</summary>
         public const float MinSafeBargainDurabilityFraction = 0.25f;
 
+        /// <summary>The bot builds a facility level only when it costs at most this share of its gold (GG-T432), the same
+        /// half-the-purse margin its forging uses, so repairs and rest are never starved.</summary>
+        public const float FacilityPurseShare = 0.5f;
+
+        private static void BuildFacility(ContentDb c, SaveData s, CraftStation station, System.Action<Result> note)
+        {
+            var next = Facilities.Next(c, s, station);
+            if (next != null && next.Cost <= s.Gold * FacilityPurseShare) note(Facilities.Build(c, s, station));
+        }
+
         public static List<string> Run(ContentDb c, SaveData s)
         {
             var log = new List<string>();
@@ -103,7 +113,7 @@ namespace GridGame.Meta
                     if (workshop && (owned == null || MetaHeuristics.Score(owned) <= current))
                     {
                         var recipe = Crafting.Recipes(c, CraftStation.Forge)
-                            .Where(r => r.BaseItem == null && Forging.ArmorOpen(c, s, r) && Equipment.Fits(c, h, c.Item(r.Result), slot) && Crafting.HasInputs(s, r) && r.Gold <= s.Gold / 2)
+                            .Where(r => r.BaseItem == null && Crafting.CanMake(c, s, r) && Forging.ArmorOpen(c, s, r) && Equipment.Fits(c, h, c.Item(r.Result), slot) && Crafting.HasInputs(s, r) && r.Gold <= s.Gold / 2)
                             .OrderByDescending(r => MetaHeuristics.Score(c.Item(r.Result))).FirstOrDefault();
                         if (recipe != null && MetaHeuristics.Score(c.Item(recipe.Result)) > current) Note(Crafting.Craft(c, s, recipe));
                         owned = MetaHeuristics.BestFirst(Equipment.Candidates(c, s, slot, h)).FirstOrDefault();
@@ -139,7 +149,7 @@ namespace GridGame.Meta
                 bool ok = false;
                 // GG-T54: a recipe whose inputs are all in the bag beats one still short its bottle — use up the
                 // reagents already held before spending gold on a bottle.
-                var brew = alchemist ? brews.Where(r => Crafting.IsUnlocked(s, r) && Brewing.HasLoot(s, r) && s.Gold >= r.Gold)
+                var brew = alchemist ? brews.Where(r => Crafting.CanMake(c, s, r) && Brewing.HasLoot(s, r) && s.Gold >= r.Gold)
                     .OrderByDescending(r => Crafting.HasInputs(s, r)).FirstOrDefault() : null;
                 if (brew != null && !Crafting.HasInputs(s, brew) && merchant && bottle != null && Brewing.IsBottleRecipe(brew) && s.Gold >= bottle.BaseCost + brew.Gold)
                     Note(Shop.Buy(c, s, new Dictionary<string, int> { [bottle.Id] = 1 }));
@@ -157,6 +167,11 @@ namespace GridGame.Meta
             // GG-T371 (§3.3.1): there is always a way. Carry the Merchant's counter for the next stage: a flask of an
             // element its walls don't resist, the Disarm Kit or Purifying Salts for what its foes lay.
             if (merchant) StockCounters(c, s, log, Note);
+
+            // GG-T432 (§25.12.2): with what's left, build the next facility level of a joined station (forge first) when it
+            // costs half the purse or less, so the bot climbs the material tiers instead of stalling below them.
+            if (workshop) BuildFacility(c, s, CraftStation.Forge, Note);
+            if (alchemist) BuildFacility(c, s, CraftStation.Alchemy, Note);
             return log;
         }
 

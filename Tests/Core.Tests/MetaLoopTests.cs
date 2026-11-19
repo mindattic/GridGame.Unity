@@ -508,6 +508,7 @@ namespace GridGame.Tests
         {
             var c = Real; var s = Progression.NewGame(c, "Station1");
             s.Flags.Add(Forging.FirstForgeFlag); // past the onboarding gate on armor-set recipes (GG-T178)
+            s.Caravan[CaravanUpgradeDef.ForgeFacilityId] = 99; // GG-T432: only the skill axis here; facilities are FacilityTests
             Assert.That(StationProgress.LevelName(s, StationKind.Blacksmith), Is.EqualTo("Apprentice"));
             Assert.That(StationProgress.HeaderText(s, StationKind.Blacksmith), Is.EqualTo("Apprentice — 0/150 XP to Journeyman"));
 
@@ -578,8 +579,8 @@ namespace GridGame.Tests
         [Test]
         public void Caravan_upgrades_and_station_tiers_never_double_gate_each_other()
         {
-            // §25.12 caravan upgrades are gold-bought stat bonuses, not recipe gates — GG-T35 must not
-            // make either system move the other.
+            // §25.12 caravan stat upgrades never move station XP and never open a recipe tier — GG-T35 must not make
+            // either system move the other. (The facility levels of §25.12.2, GG-T432, are a separate material-tier gate.)
             var c = Real; var s = Progression.NewGame(c, "Station3");
             s.Gold = 10000;
             Assert.That(CaravanUpgrades.Buy(c, s, "armory").Ok, Is.True);

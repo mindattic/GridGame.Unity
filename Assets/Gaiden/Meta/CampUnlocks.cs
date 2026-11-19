@@ -26,7 +26,8 @@ namespace GridGame.Meta
         public static bool BountiesOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= BountiesAfter || s.Bounty?.ActiveId != null);
         public static bool SummonOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= SummonAfter || s.Recruits > 0);
         public static bool CrucibleOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= CrucibleAfter || (s.Crucible?.Runs ?? 0) > 0);
-        public static bool CaravanOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= CaravanAfter || (s.Caravan?.Values.Sum() ?? 0) > 0);
+        // GG-T432: a facility level is bought at its own station, so building one doesn't open the Caravan row early.
+        public static bool CaravanOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= CaravanAfter || (s.Caravan?.Where(kv => !Facilities.IsFacilityId(kv.Key)).Sum(kv => kv.Value) ?? 0) > 0);
 
         /// <summary>The Blacksmith's Forge, Upgrade and Salvage tabs (GG-T175, §25.0.4). He joins to mend worn gear, so
         /// Repair is his only tab at first; the workshop opens a step later in the onboarding chain — once the Alchemist

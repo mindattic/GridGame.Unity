@@ -52,7 +52,7 @@ cover the hidden systems.
 | Taming / domestication (Monster Tamer, Dog Whistle) | DISABLE (owner 2026-11-19, GG-T433) | A fourth way to grow the roster with half-heroes. The Summon Circle doesn't list the Monster Tamer and the Merchant doesn't stock the Dog Whistle (`Features.Offers`), the only ways in | `Features.Taming = true` |
 | **The Crucible** | KEEP (owner 2026-11-19, GG-T430) | The game's "toilet play" horde mode: pick one team, endless generated waves that ramp in level, size and elites (`BattleConfig.Crucible*`), gold banked every wave and kept when the team falls, best wave and best haul recorded. Not a replay of cleared stages, so it no longer duplicates the hunt. Ready for the switch | `Features.Crucible = true` |
 | **Bounty board** | DISABLE | Its kill-N contracts duplicate the side quests' Defeat objectives, and it adds a Camp row, an Adventure strip and a results row. Kills still count in the rules | `Features.Bounties = true` |
-| **Caravan upgrades + crew barks** | DISABLE | A gold sink outside the loop, plus a flavor panel on Camp. Upgrades already bought keep working (Mana Casks, Armory discount, Scouts line, …) | `Features.Caravan = true` |
+| **Caravan upgrades + crew barks** | DISABLE → ready to KEEP (GG-T432) | A gold sink outside the loop, plus a flavor panel on Camp. Upgrades already bought keep working (Mana Casks, Armory discount, Scouts line, …). **2026-11-19, owner:** the caravan comes back as the loop's gold sink — the Forge and Alchemist **facilities** (Copper → Iron 400 → Steel 1,500 → Mythril 3,000 G; Clay → Glass 300 → Silver 1,200 G) gate material tiers (result rarity). The facility gate is rules, live whatever the switch says, and each facility is also built at its own station (the Blacksmith and Alchemist are KEEP), so the switch only adds the Caravan row | `Features.Caravan = true` |
 | Gambits (GG-T299, on hold) | not built | Nothing reaches the player | — |
 | Monster meat (GG-T304) | not built | Nothing reaches the player | — |
 | Endless mode (`-demo -endless`), Test Mode (`-testmode`), automation server, `-start` screens, test stages | dev only | Command-line flags or development builds only; test stages are in no campaign region | — |
@@ -97,6 +97,10 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   refill (1 Diamond, instant, no job) alongside the gold one, so Diamonds can pay for either a hero pull or skipping the
   wait, per the owner's request. Checked against measured stage pay (2026-11-17 polish records, winning runs): ≈210–270 g a stage at Lv 1–6,
   400–600 g from Lv 9, ≈9,900 g for one pass of the main campaign. Not yet felt in real play: the owner's call.
+- **Facility prices (GG-T432, first pass, not measured).** Iron Forge 400 G, Steel 1,500 G, Mythril 3,000 G; Glass
+  Alembic 300 G, Silver 1,200 G: 6,400 G for the whole ladder against ≈9,900 G of main-campaign pay, competing with
+  summons (800 G) and training (~300 G a skill). Watch whether Rare gear (Iron Forge) arrives too late for the bots;
+  `CampRoutine` builds a level once it costs half its gold.
 - **Consumables** run from 20 G (Antidote) to 500 G (X-Potion); the Tent is 300 G, the Revival Charm 450 G. The Healing
   Potion (25 G, 50 HP) vs Hi-Potion (75 G, 150 HP) step is linear, so there is no reason to buy small ones late.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the

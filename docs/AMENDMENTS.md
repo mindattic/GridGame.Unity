@@ -1283,3 +1283,22 @@ die; you choose one team and go as far as you can; it dynamically generates hard
   it lands and kept on a wipe); the save also records the **best haul** (`CrucibleSave.BestGold`). Still 1 Rested to
   enter. RELEASE_SCOPE: KEEP, ready for `Features.Crucible = true`. [BIBLE §22.10](BIBLE.md#2210-the-crucible).
 - *Why:* the owner's spec — a short, money-earning, go-until-you-die mode — rather than a second hunt.
+
+## 2026-11-19 — Facility upgrades gate material tiers (owner, GG-T432)
+
+Owner: "caravan upgrades meaning you have to unlock the shops abilities to increase the value of things that can be built
+there, ya thats a necessary gold sink so copper, iron, steel, increasing quality of materials means you need better
+facilities for Blacksmith, Alchemist, etc".
+
+- **Was:** a recipe was gated only by its station's XP tier (Apprentice/Journeyman/Master, §24.6.1), and §24.6.1 said
+  caravan upgrades were deliberately never recipe gates.
+- **Now:** the Forge and the Alchemist each have a **facility**, bought with gold, whose level caps the rarity of what
+  the station can make: Copper Forge (up to Uncommon) → Iron Forge 400 G (Rare) → Steel Forge 1,500 G (Epic) → Mythril
+  Forge 3,000 G (Legendary); Clay Still (Common) → Glass Alembic 300 G (Uncommon) → Silver Alembic 1,200 G (Rare and up).
+  A recipe above the facility shows locked as "🔒 Iron Forge" with a Build button, never hidden. The ladder maps the
+  recipes' existing result rarity onto material tiers; no new items. Station XP stays as the separate skill axis (a
+  recipe needs both). Facilities are caravan upgrades in `caravan.json` (the Caravan screen lists them) and are also
+  built at their own station. The Enchantress has none. Save v10 grandfathers a level per station tier above Apprentice.
+  [BIBLE §25.12.2](BIBLE.md#25122-facility-upgrades-gate-material-tiers-gg-t432).
+- *Why:* the owner's gold sink — better materials need better facilities — reusing the rarity data instead of
+  inventing an ingot ladder for 500 recipes.

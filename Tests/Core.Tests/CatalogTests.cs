@@ -152,15 +152,21 @@ namespace GridGame.Tests
             foreach (var x in save.Roster) Assert.That(x.Hp, Is.EqualTo(0));
         }
 
+        /// <summary>Every facility fully built (GG-T432); levels past the top clamp, so 99 is "maxed".</summary>
+        private static System.Collections.Generic.Dictionary<string, int> MaxFacilities() => new System.Collections.Generic.Dictionary<string, int>
+        {
+            [CaravanUpgradeDef.ForgeFacilityId] = 99, [CaravanUpgradeDef.AlchemyFacilityId] = 99,
+        };
+
         [Test]
         public void Every_recipe_is_craftable_with_its_inputs()
         {
             var c = Real;
             foreach (var r in c.Recipes.Values)
             {
-                // Station tier-gating (§24.6.1, GG-T35) is exercised separately; max both stations here
-                // so this test keeps checking only that a recipe's own inputs are sufficient.
-                var s = new SaveData { Gold = r.Gold, StationXp = { ["blacksmith"] = 9999, ["alchemist"] = 9999 } };
+                // Station tier-gating (§24.6.1, GG-T35) and facility gating (§25.12.2, GG-T432) are exercised separately;
+                // max both stations and both facilities here so this test keeps checking only that a recipe's own inputs are sufficient.
+                var s = new SaveData { Gold = r.Gold, StationXp = { ["blacksmith"] = 9999, ["alchemist"] = 9999 }, Caravan = MaxFacilities() };
                 s.Flags.Add(Forging.FirstForgeFlag); // the onboarding gate on armor-set recipes (GG-T178) is tested in EconomyLoopTests
                 foreach (var ic in r.Inputs) s.AddItem(ic.Item, ic.Count);
                 if (r.BaseItem != null) s.AddItem(r.BaseItem, 1);
@@ -227,7 +233,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var r = c.Recipes[recipeId];
-            var s = new SaveData { Gold = r.Gold, StationXp = { ["blacksmith"] = 9999, ["alchemist"] = 9999 } };
+            var s = new SaveData { Gold = r.Gold, StationXp = { ["blacksmith"] = 9999, ["alchemist"] = 9999 }, Caravan = MaxFacilities() };
             foreach (var ic in r.PotencyInputs) s.AddItem(ic.Item, ic.Count);
             Assert.That(Crafting.HasInputs(s, r), Is.False, $"{recipeId}: potency reagents shouldn't also satisfy the base recipe");
             Assert.That(Crafting.HasPotencyInputs(s, r), Is.True);
