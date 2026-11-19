@@ -1263,14 +1263,14 @@ def storyarc(run="storyarc", capture=True):
     ok["lv10_interlude_seen"] = "interlude_level10_motives" in save().get("seen", [])
     ok["back_at_camp"] = _wait_screen("hub", 6)
     shot("08-camp-after")
-    # Rested at 0 refuses the next launch and offers the 1g / 1s refill, which relaunches.
+    # Rested at 0 refuses the next launch and offers the gold refill (Paywall: 100 g + 15 g a stage cleared), which relaunches.
     call("devrested", points=0)
     call("launch", stage="greenvalley-02"); time.sleep(1.0); shot("09-rested-empty")
     ok["rested_refusal_offers_refill"] = any("Refill" in str(t) for t in call("texts"))
     gold0 = save().get("Gold", 0)
     call("click", name="confirm-yes"); time.sleep(0.4); shot("10-rested-refilling"); time.sleep(2.0)
     _drain_story(seen, "11-gv2")
-    ok["refill_relaunches"] = _wait_screen("battle", 8) and save().get("Gold", 0) == gold0 - 1
+    ok["refill_relaunches"] = _wait_screen("battle", 8) and save().get("Gold", 0) < gold0  # paid, at whatever the tuned price is
     time.sleep(3.0)
     call("devwin"); time.sleep(1.5); _skip_levelups(st())
 
@@ -1295,7 +1295,7 @@ def storyarc(run="storyarc", capture=True):
     gold0 = save().get("Gold", 0)
     call("clicktext", text="Recruit"); time.sleep(0.5); call("click", name="confirm-yes"); time.sleep(0.4)
     shot("16-summoning"); time.sleep(2.0)
-    ok["summon_timed_1g"] = len(save().get("roster") or []) == roster0 + 1 and save().get("Gold", 0) == gold0 - 1
+    ok["summon_timed_paid"] = len(save().get("roster") or []) == roster0 + 1 and save().get("Gold", 0) < gold0  # the tuned 800 g
     call("back"); time.sleep(0.6)
     _goto("blacksmith"); time.sleep(1.0); shot("17-forge")
     ok["lucky_craft_section"] = bool(call("names", prefix="lucky-craft"))
@@ -1305,6 +1305,15 @@ def storyarc(run="storyarc", capture=True):
     ok["diamond_spent_on_lucky_craft"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 0
     shot("20-after-lucky")
     call("back"); time.sleep(0.6)
+    # Rested's Diamond refill (GG-T427): instant, no gold and no timed job, from Camp's Rested window.
+    call("devgive", item="mat_diamond", count=1)
+    call("devrested", points=3)
+    _goto("hub")
+    g0 = save().get("Gold", 0)
+    call("click", name="rested-refill-diamond"); time.sleep(0.8); shot("20b-diamond-refill")
+    sv = save()
+    ok["diamond_refills_rested"] = (sv.get("rested") == 10 and (sv.get("inventory") or {}).get("mat_diamond", 0) == 0
+                                    and sv.get("Gold", 0) == g0)
 
     # Boss intros and a rule-break: The Tithe Moors III.
     call("devstage", stage="greenvalley-03")

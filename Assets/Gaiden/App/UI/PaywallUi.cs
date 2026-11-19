@@ -136,7 +136,8 @@ namespace GridGame.App
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
             int price = RestedPool.DiamondRefillPrice;
-            var db = Ui.Button($"Refill · {price} Diamond{(price == 1 ? "" : "s")}", () => DiamondRefill(refresh), "btn--small", w);
+            // The side window only fits a short label (GG-T400): the gold button says "Refill" under its price line, this one its price.
+            var db = Ui.Button($"{price} Diamond{(price == 1 ? "" : "s")}", () => DiamondRefill(refresh), "btn--small", w);
             db.name = "rested-refill-diamond";
             db.style.marginTop = Space.S8;
             Ui.SetEnabled(db, s.Count(Crafting.DiamondId) >= price);
