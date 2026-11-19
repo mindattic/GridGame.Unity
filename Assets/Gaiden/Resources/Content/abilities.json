@@ -33,7 +33,7 @@
   "Name": "Frost",
   "Description": "16 Ice dmg + frozen",
   "Kind": "Spell",
-  "Cost": 7,
+  "Cost": 10,
   "CastTime": 1.5,
   "CooldownTurns": 0,
   "Shape": "Square",

@@ -325,7 +325,9 @@ namespace GridGame.Tests
             {
                 string fam = System.Text.RegularExpressions.Regex.Replace(d.Id, @"\d+$", "");
                 string key = string.Join("|", d.Brain, EnemyPlanner.TargetingOf(new Unit { Def = d, Team = Team.Enemy, LevelStats = d.BaseStats.Clone() }), d.MoveRange, d.AttackRange,
-                    d.ChargeAbility, d.Trap, d.Trail, d.OnHitBuff, d.DeathBurst, string.Join(",", d.Abilities.OrderBy(x => x)));
+                    d.ChargeAbility, d.Trap, d.Trail, d.OnHitBuff, d.DeathBurst, string.Join(",", d.Abilities.OrderBy(x => x)),
+                    // A death rule (the Bloated Drowner floods its tiles and hurries the tide, GG-T444) is a mechanic too.
+                    string.Join(",", d.OnDeathRule.Select(r => $"{r.Kind}:{r.State}")));
                 if (sig.TryGetValue(key, out var other) && other != fam) Assert.Fail($"{fam} plays exactly like {other}: {key}");
                 sig[key] = fam;
             }

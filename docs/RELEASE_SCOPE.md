@@ -69,7 +69,7 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   around Lv 12–15. Hunts are meant to fill the gap, but check that the grind they ask for late is not punishing.
 - ~~**Spells near the 12-orb bank.**~~ **Fixed 2026-11-17 (GG-T276).** Frost was 10 dmg for 7 orbs (1.4/orb, the worst
   in the game) and `fieldeng_overdrive` was 12 dmg for 1 orb (12/orb, the best single-target rate, twice Fireball's 6).
-  Frost's `BaseDamage` 10 → 16 (2.3/orb, in line with Meteor's 2.2/orb); `fieldeng_overdrive`'s `Cost` 1 → 2 (6/orb,
+  Frost's `BaseDamage` 10 → 16 (2.3/orb, in line with Meteor's 2.2/orb), then its `Cost` 7 → 10 (GG-T444, /test 2026-11-19: the §3.1.1 mana curve prices a 3×3 freeze at 16 damage at 10 orbs; 1.6/orb plus the area freeze); `fieldeng_overdrive`'s `Cost` 1 → 2 (6/orb,
   matching Fireball). See BIBLE §25.6.
 - ~~**Training prices.**~~ **Partly fixed 2026-11-17 (GG-T215).** A skill was a flat 300 G whatever it did; skills now
   price at `BattleConfig.SkillTrainBasePrice` (150) + `SkillTrainPricePerCooldown` (50) × `CooldownTurns`, so a 1-turn

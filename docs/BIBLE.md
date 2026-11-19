@@ -1040,7 +1040,7 @@ A spell's cost is a whole number of orbs (`AbilityDef.Cost`, an int in `abilitie
   - **Adjustments:** × 1.25 for an instant cast, × 0.8 for AdjacentOnly, × 0.85 for a 3+ turn cooldown.
   - **Priced convexly:** `cost = clamp(round(0.9 × raw^1.5), 1, 12)`.
   - *Why convex:* a burst that hits a whole wave ends it before the foes act, and saving orbs risks losing them to overflow and to a siphon (`DrainsOrbs`). So power in one cast costs more than its parts: single-target damage runs about 7–13 per orb, Meteor about 11 per orb only when it catches 2–3 foes, and Bolt or Ward Grid about 6 per orb.
-- **Early kits.** The two slots open from the start (§4.7) hold spells of at most 3 orbs. The starting Cleric's and the tutorial's Heal and Pre-emptive Ward cost 1. The Drifter now opens with Frost Nova (3) and keeps Frost (7) in slot 4.
+- **Early kits.** The two slots open from the start (§4.7) hold spells of at most 3 orbs. The starting Cleric's and the tutorial's Heal and Pre-emptive Ward cost 1. The Drifter now opens with Frost Nova (3) and keeps Frost (10 since GG-T444: its 16-damage freeze on a 3×3 sits on the §3.1.1 curve at 10, not 7) in slot 4.
 - **What reads the cost.** The spellbook price (`Abilities.Price` = 120 + 80 × cost, so Meteor costs 920 g). The VFX tier (`VfxStyleSheet.TierOf`: 6+ orbs is Ultimate, 3–5 Major). The bots (§4.3): `HeroBot.SavingFor`, and `CampRoutine.BestLearnable`, which buys a spell above 6 orbs only after every cheaper affordable choice.
 - *(Tests: `ManaCostCurveTests`, `Every_hero_spell_costs_between_one_orb_and_a_full_bank`.)*
 

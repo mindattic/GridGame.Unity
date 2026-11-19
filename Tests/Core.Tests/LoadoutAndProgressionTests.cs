@@ -444,7 +444,7 @@ namespace GridGame.Tests
         }
 
         // ── Price formula ──
-        [TestCase("shield_bash", 300)]   // Skill: flat 300
+        [TestCase("shield_bash", 250)]   // Skill (GG-T215): SkillTrainBasePrice 150 + 50 x CooldownTurns 2
         [TestCase("heal", 200)]          // Spell, Cost 1: 120 + 80*1
         [TestCase("fireball", 360)]      // Spell, Cost 3 (GG-T373): 120 + 80*3
         public void Price_follows_the_skill_flat_and_spell_cost_formula(string abilityId, int expected)
