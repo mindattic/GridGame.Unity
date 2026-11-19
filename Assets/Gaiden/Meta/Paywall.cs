@@ -31,9 +31,11 @@ namespace GridGame.Meta
         /// path to the premium currency today (GG-T427). About a mid consumable's worth, so it's a real choice against
         /// spending the same gold on gear, not free.</summary>
         public const int DiamondGoldPrice = 250;
-        /// <summary>Gold to skip the Rested wait outright (GG-T427) — cheap and frequent, the forgiving, F2P-friendly
-        /// side of the hook; see <see cref="RestedPool.DiamondRefillPrice"/> for the Diamond side of the same button.</summary>
-        public const int RestedRefillGoldPrice = 60;
+        /// <summary>Gold to skip the Rested wait on a fresh save (GG-T427); it grows by <see cref="RestedRefillGoldPerStage"/>
+        /// per campaign stage cleared, so it stays about half to one stage's pay (measured ~210 g early, 400-600 g late)
+        /// instead of shrinking to nothing. See <see cref="RestedPool.DiamondRefillPrice"/> for the Diamond side.</summary>
+        public const int RestedRefillGoldPrice = 100;
+        public const int RestedRefillGoldPerStage = 15;
 
         // One table, every hook's gold price and job length in one tunable spot (GG-T427 retired the 1 g / 1 s placeholders).
         private static readonly Dictionary<PaywallKind, (int gold, double seconds)> Table = new Dictionary<PaywallKind, (int, double)>
@@ -43,7 +45,8 @@ namespace GridGame.Meta
             [PaywallKind.RestedRefill] = (RestedRefillGoldPrice, 1.0),
         };
 
-        public static int Cost(PaywallKind kind, SaveData s) => Table[kind].gold;
+        public static int Cost(PaywallKind kind, SaveData s) =>
+            Table[kind].gold + (kind == PaywallKind.RestedRefill && s != null ? RestedRefillGoldPerStage * Math.Max(0, s.HighestClearedStage + 1) : 0);
 
         public static double Duration(PaywallKind kind, SaveData s) => Table[kind].seconds;
 

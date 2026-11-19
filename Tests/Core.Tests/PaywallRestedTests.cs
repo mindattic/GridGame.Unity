@@ -33,6 +33,17 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void The_gold_refill_grows_with_campaign_progress_and_the_others_stay_flat()
+        {
+            var s = Fresh();
+            Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice), "fresh save");
+            s.HighestClearedStage = 9; // ten stages cleared
+            Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice + 10 * Paywall.RestedRefillGoldPerStage));
+            Assert.That(Paywall.Cost(PaywallKind.Summon, s), Is.EqualTo(Paywall.SummonGoldPrice));
+            Assert.That(Paywall.Cost(PaywallKind.LuckyDiamond, s), Is.EqualTo(Paywall.DiamondGoldPrice));
+        }
+
+        [Test]
         public void A_launch_spends_rested_and_it_regenerates_one_point_per_interval()
         {
             var s = Fresh();

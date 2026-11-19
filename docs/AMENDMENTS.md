@@ -1255,7 +1255,7 @@ buyable with a tunable amount of gold, and all of it should stay easy to retune 
   Diamonds had exactly two sinks (the lucky craft, the GG-T343 random draw).
 - **Now:** the same one-table design (`Paywall.Table`), first-pass real numbers instead of placeholders:
   `Paywall.SummonGoldPrice` **800** (a chosen hero, permanent, priced above a blind draw), `Paywall.DiamondGoldPrice`
-  **250** (the only non-real-money route to a Diamond today), `Paywall.RestedRefillGoldPrice` **60** (cheap and
+  **250** (the only non-real-money route to a Diamond today), `Paywall.RestedRefillGoldPrice` **100**, +15 per stage cleared (cheap and
   frequent, the forgiving side of the hook). Every job's length is unchanged (1 s). Rested gained a second button
   (`RestedPool.DiamondRefillPrice` = **1** Diamond, `RestedPool.DiamondRefill`): instant, no gold, no timed job — a
   player short on gold but holding Diamonds skips the wait outright, alongside the existing gold refill, not instead
