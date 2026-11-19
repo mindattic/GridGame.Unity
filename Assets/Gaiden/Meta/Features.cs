@@ -19,9 +19,9 @@ namespace GridGame.Meta
         /// Mercenaries board still opens at the same milestone (<see cref="Mercenaries.Open"/>).</summary>
         public static bool Bounties = false;
 
-        /// <summary>Caravan upgrades and the crew barks (§25.12). Off: a gold sink outside the core loop and a flavor
-        /// panel on Camp. Upgrades a save already bought keep working.</summary>
-        public static bool Caravan = false;
+        /// <summary>Caravan upgrades and the crew barks (§25.12), with the station facilities (§25.12.2): the necessary gold
+        /// sink, where Forge and Still levels unlock better material tiers. On since 2026-11-19 (owner, GG-T432).</summary>
+        public static bool Caravan = true;
 
         /// <summary>Settings → Menu theme, Font and Text wrapping (GG-T185, GG-T305): developer look presets. Off: the
         /// rows are hidden and the game draws with the default theme, font and word wrap.</summary>
