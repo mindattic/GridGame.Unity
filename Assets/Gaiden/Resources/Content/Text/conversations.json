@@ -1686,6 +1686,92 @@
         ]
       }
     },
+    "dialogue:quest_offer_bulwark_breaks": {
+      "key": "dialogue:quest_offer_bulwark_breaks",
+      "id": "conversation-quest-offer-bulwark-breaks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:dcfb8782d0d21931c4e6f0a7b524bc57f650a5cf89bd547ffb0f01e48e89d5ca",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "The bulwark breaks",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.",
+            "choices": [
+              {
+                "text": "A · Omnis iste natus error sit",
+                "next": "yes"
+              },
+              {
+                "text": "B · Unde omnis iste natus error",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Aspernatur aut odit aut fugit lorem ipsum dolor sit amet consectetur adipiscing."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Veritatis et quasi architecto beatae vitae. Dicta sunt explicabo nemo enim ipsam."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_choir_level": {
+      "key": "dialogue:quest_offer_choir_level",
+      "id": "conversation-quest-offer-choir-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bebdf88ded6269f47ccb5539e7209e9bc8fc3edc6b2b8fd3891326f2c65563f9",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "Strong enough",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Sunt in culpa qui officia deserunt mollit anim id est laborum sed.",
+            "choices": [
+              {
+                "text": "A · Quae ab illo inventore",
+                "next": "yes"
+              },
+              {
+                "text": "B · Lorem ipsum dolor sit",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium doloremque laudantium."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Enim ad minim veniam quis nostrud exercitation. Ullamco laboris nisi ut aliquip."
+          }
+        ]
+      }
+    },
     "dialogue:quest_offer_city_that_stopped": {
       "key": "dialogue:quest_offer_city_that_stopped",
       "id": "conversation-quest-offer-city-that-stopped",
@@ -1770,6 +1856,184 @@
             "id": "no",
             "speaker": "character-blacksmith",
             "line": "In voluptate velit esse cillum dolore eu fugiat. Nulla."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_forge_frost": {
+      "key": "dialogue:quest_offer_forge_frost",
+      "id": "conversation-quest-offer-forge-frost",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0bb9e42dc15d15968d20b201c79df78d2a12ea90f343382ccd96c1b8be1ecd62",
+      "about": [
+        "character-blacksmith"
+      ],
+      "speakers": [
+        "character-blacksmith"
+      ],
+      "payload": {
+        "title": "Quenched in frost",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-blacksmith",
+            "line": "Id est laborum sed ut perspiciatis unde omnis iste natus error sit.",
+            "choices": [
+              {
+                "text": "A · Occaecat cupidatat non proident",
+                "next": "yes"
+              },
+              {
+                "text": "B · Enim ipsam voluptatem quia",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-blacksmith",
+            "line": "Fugit lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod."
+          },
+          {
+            "id": "no",
+            "speaker": "character-blacksmith",
+            "line": "Sunt explicabo nemo enim ipsam voluptatem. Quia voluptas sit aspernatur aut odit."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_forge_iron": {
+      "key": "dialogue:quest_offer_forge_iron",
+      "id": "conversation-quest-offer-forge-iron",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:db9d51bb43c870ad9189b67ebe90095edc6385d1e819686276c9f0125f58be1a",
+      "about": [
+        "character-blacksmith"
+      ],
+      "speakers": [
+        "character-blacksmith"
+      ],
+      "payload": {
+        "title": "A cold forge",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-blacksmith",
+            "line": "Esse cillum dolore eu fugiat nulla. Pariatur excepteur sint occaecat cupidatat non.",
+            "choices": [
+              {
+                "text": "A · Ea commodo consequat duis aute",
+                "next": "yes"
+              },
+              {
+                "text": "B · Sit voluptatem accusantium",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-blacksmith",
+            "line": "Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat."
+          },
+          {
+            "id": "no",
+            "speaker": "character-blacksmith",
+            "line": "Explicabo nemo enim ipsam voluptatem quia. Voluptas sit aspernatur aut odit aut."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_forge_plating": {
+      "key": "dialogue:quest_offer_forge_plating",
+      "id": "conversation-quest-offer-forge-plating",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:43029c506060dc619d01b5659aeed7b454f7948e4a9f439e1db3e7bf361825b7",
+      "about": [
+        "character-blacksmith"
+      ],
+      "speakers": [
+        "character-blacksmith"
+      ],
+      "payload": {
+        "title": "Plate from the wrecks",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-blacksmith",
+            "line": "Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis.",
+            "choices": [
+              {
+                "text": "A · Aspernatur aut odit aut fugit",
+                "next": "yes"
+              },
+              {
+                "text": "B · Ea commodo consequat",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-blacksmith",
+            "line": "Fugiat nulla pariatur excepteur sint occaecat. Cupidatat non proident sunt in culpa."
+          },
+          {
+            "id": "no",
+            "speaker": "character-blacksmith",
+            "line": "Sunt in culpa qui officia deserunt mollit anim. Id est laborum sed."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_free_holds": {
+      "key": "dialogue:quest_offer_free_holds",
+      "id": "conversation-quest-offer-free-holds",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d71f7476d8c1fcd471526c2e7494097652cf8e3c0018293cea7b65a82029e0d4",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "Holds without masters",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip.",
+            "choices": [
+              {
+                "text": "A · Dolore eu fugiat nulla pariatur",
+                "next": "yes"
+              },
+              {
+                "text": "B · Ut perspiciatis unde",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore."
           }
         ]
       }
@@ -1909,6 +2173,51 @@
         ]
       }
     },
+    "dialogue:quest_offer_heartwood": {
+      "key": "dialogue:quest_offer_heartwood",
+      "id": "conversation-quest-offer-heartwood",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9aea24b1e27276816c7b53c322c9e443ec0ee576727a198752cd31b25322b3ff",
+      "about": [
+        "character-innkeeper"
+      ],
+      "speakers": [
+        "character-innkeeper"
+      ],
+      "payload": {
+        "title": "Heartwood",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-innkeeper",
+            "line": "Eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad.",
+            "choices": [
+              {
+                "text": "A · Cupidatat non proident sunt",
+                "next": "yes"
+              },
+              {
+                "text": "B · Irure dolor in reprehenderit in",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-innkeeper",
+            "line": "Adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna."
+          },
+          {
+            "id": "no",
+            "speaker": "character-innkeeper",
+            "line": "Est laborum sed ut perspiciatis unde omnis iste natus error sit voluptatem."
+          }
+        ]
+      }
+    },
     "dialogue:quest_offer_hold_the_ward": {
       "key": "dialogue:quest_offer_hold_the_ward",
       "id": "conversation-quest-offer-hold-the-ward",
@@ -1950,6 +2259,51 @@
             "id": "no",
             "speaker": "character-enchantress",
             "line": "Nisi ut aliquip ex ea commodo consequat. Duis aute."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_holy_essence": {
+      "key": "dialogue:quest_offer_holy_essence",
+      "id": "conversation-quest-offer-holy-essence",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0277a70e2331ee30630bd17e2dfde00dc783b842ed98cdbf737a2c58651aa049",
+      "about": [
+        "character-alchemist"
+      ],
+      "speakers": [
+        "character-alchemist"
+      ],
+      "payload": {
+        "title": "Holy essence",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-alchemist",
+            "line": "Sit amet consectetur adipiscing elit sed. Do eiusmod tempor incididunt ut labore.",
+            "choices": [
+              {
+                "text": "A · Lorem ipsum dolor sit",
+                "next": "yes"
+              },
+              {
+                "text": "B · Elit sed do eiusmod tempor",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-alchemist",
+            "line": "Irure dolor in reprehenderit in voluptate velit esse. Cillum dolore eu fugiat."
+          },
+          {
+            "id": "no",
+            "speaker": "character-alchemist",
+            "line": "Doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis."
           }
         ]
       }
@@ -1999,6 +2353,49 @@
         ]
       }
     },
+    "dialogue:quest_offer_last_rite": {
+      "key": "dialogue:quest_offer_last_rite",
+      "id": "conversation-quest-offer-last-rite",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ee63e249d39a3b93899853f4b84943ee2c3543b138d354219e5ec8f6eeadde89",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "The last rite",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore.",
+            "choices": [
+              {
+                "text": "A · Velit esse cillum",
+                "next": "yes"
+              },
+              {
+                "text": "B · Dolor in reprehenderit",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Est laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Adipiscing elit sed do eiusmod tempor incididunt ut. Labore et dolore magna."
+          }
+        ]
+      }
+    },
     "dialogue:quest_offer_long_cold": {
       "key": "dialogue:quest_offer_long_cold",
       "id": "conversation-quest-offer-long-cold",
@@ -2040,6 +2437,51 @@
             "id": "no",
             "speaker": "character-innkeeper",
             "line": "In reprehenderit in voluptate velit esse."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_lurker_ichor": {
+      "key": "dialogue:quest_offer_lurker_ichor",
+      "id": "conversation-quest-offer-lurker-ichor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f11242066ae467ee679495087172e7968fb52ec3216626bb6a7eda49e56adf6c",
+      "about": [
+        "character-alchemist"
+      ],
+      "speakers": [
+        "character-alchemist"
+      ],
+      "payload": {
+        "title": "Ichor of the lurkers",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-alchemist",
+            "line": "Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "choices": [
+              {
+                "text": "A · Voluptatem accusantium doloremque",
+                "next": "yes"
+              },
+              {
+                "text": "B · Labore et dolore magna",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-alchemist",
+            "line": "In reprehenderit in voluptate velit esse cillum dolore. Eu fugiat nulla pariatur."
+          },
+          {
+            "id": "no",
+            "speaker": "character-alchemist",
+            "line": "Sit aspernatur aut odit aut fugit lorem. Ipsum dolor sit amet consectetur."
           }
         ]
       }
@@ -2089,6 +2531,186 @@
         ]
       }
     },
+    "dialogue:quest_offer_meteor": {
+      "key": "dialogue:quest_offer_meteor",
+      "id": "conversation-quest-offer-meteor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5af86d500759a458d4b02c008a7c35f838b026fc4d2e5c1b4d9d81f8fbcec91a",
+      "about": [
+        "character-enchantress"
+      ],
+      "speakers": [
+        "character-enchantress"
+      ],
+      "payload": {
+        "title": "A star to call down",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-enchantress",
+            "line": "Sit voluptatem accusantium doloremque laudantium totam rem. Aperiam eaque ipsa quae ab.",
+            "choices": [
+              {
+                "text": "A · Inventore veritatis et quasi architecto",
+                "next": "yes"
+              },
+              {
+                "text": "B · Et quasi architecto",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-enchantress",
+            "line": "Laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et."
+          },
+          {
+            "id": "no",
+            "speaker": "character-enchantress",
+            "line": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_moor_harpies": {
+      "key": "dialogue:quest_offer_moor_harpies",
+      "id": "conversation-quest-offer-moor-harpies",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e692163fbe674693f748a6e8b8eb02d150f844729d13efa205b8d57c68e900d8",
+      "about": [
+        "character-innkeeper"
+      ],
+      "speakers": [
+        "character-innkeeper"
+      ],
+      "payload": {
+        "title": "Shadows over the wells",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-innkeeper",
+            "line": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
+            "choices": [
+              {
+                "text": "A · Enim ad minim",
+                "next": "yes"
+              },
+              {
+                "text": "B · Voluptate velit esse cillum",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-innkeeper",
+            "line": "Eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim ad."
+          },
+          {
+            "id": "no",
+            "speaker": "character-innkeeper",
+            "line": "Ipsa quae ab illo inventore veritatis et quasi. Architecto beatae vitae dicta."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_moor_slimes": {
+      "key": "dialogue:quest_offer_moor_slimes",
+      "id": "conversation-quest-offer-moor-slimes",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:81cb98e3c12971d1fcf5e278119e702fdb8a9fa23343d4904cf89921876e5466",
+      "about": [
+        "character-innkeeper"
+      ],
+      "speakers": [
+        "character-innkeeper"
+      ],
+      "payload": {
+        "title": "Something in the cellar",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-innkeeper",
+            "line": "Odit aut fugit lorem ipsum dolor sit amet consectetur adipiscing elit sed.",
+            "choices": [
+              {
+                "text": "A · Fugit lorem ipsum dolor sit",
+                "next": "yes"
+              },
+              {
+                "text": "B · Ab illo inventore veritatis et",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-innkeeper",
+            "line": "Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus."
+          },
+          {
+            "id": "no",
+            "speaker": "character-innkeeper",
+            "line": "Sed do eiusmod tempor incididunt ut labore et. Dolore magna aliqua ut."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_moor_werewolf": {
+      "key": "dialogue:quest_offer_moor_werewolf",
+      "id": "conversation-quest-offer-moor-werewolf",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ab5a0cb6571c88f65960e6fcdba1ac769b0d1c57dbefef8212677b06ec191e58",
+      "about": [
+        "character-innkeeper"
+      ],
+      "speakers": [
+        "character-innkeeper"
+      ],
+      "payload": {
+        "title": "The howl at night",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-innkeeper",
+            "line": "Aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in.",
+            "choices": [
+              {
+                "text": "A · Incididunt ut labore et dolore",
+                "next": "yes"
+              },
+              {
+                "text": "B · Reprehenderit in voluptate velit esse",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-innkeeper",
+            "line": "Do eiusmod tempor incididunt ut labore et dolore. Magna aliqua ut enim."
+          },
+          {
+            "id": "no",
+            "speaker": "character-innkeeper",
+            "line": "Dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation ullamco."
+          }
+        ]
+      }
+    },
     "dialogue:quest_offer_organ_quiet": {
       "key": "dialogue:quest_offer_organ_quiet",
       "id": "conversation-quest-offer-organ-quiet",
@@ -2130,6 +2752,266 @@
             "id": "no",
             "speaker": "character-enchantress",
             "line": "Anim id est laborum sed ut perspiciatis unde."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_reaper_shroud": {
+      "key": "dialogue:quest_offer_reaper_shroud",
+      "id": "conversation-quest-offer-reaper-shroud",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:df01537ba3bf0be54e4480e8848b18be8994b591a39b7d40044b8c689d882d1d",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "The reaper's shroud",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Rem aperiam eaque ipsa quae ab. Illo inventore veritatis et quasi architecto.",
+            "choices": [
+              {
+                "text": "A · Veniam quis nostrud exercitation",
+                "next": "yes"
+              },
+              {
+                "text": "B · Ab illo inventore veritatis",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "In culpa qui officia deserunt mollit anim id est laborum sed ut."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_ronin_guard": {
+      "key": "dialogue:quest_offer_ronin_guard",
+      "id": "conversation-quest-offer-ronin-guard",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:628f52f3a1f1088eff96e47b7f8aec9c394979461c769c96fe723d6a313003b6",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "A stance worth learning",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Lorem ipsum dolor sit amet consectetur adipiscing. Elit sed do eiusmod tempor.",
+            "choices": [
+              {
+                "text": "A · Ad minim veniam quis nostrud",
+                "next": "yes"
+              },
+              {
+                "text": "B · Ea commodo consequat",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Sit amet consectetur adipiscing elit sed do. Eiusmod tempor incididunt ut labore."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Mollit anim id est laborum sed ut perspiciatis unde omnis iste natus."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_ronin_level": {
+      "key": "dialogue:quest_offer_ronin_level",
+      "id": "conversation-quest-offer-ronin-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3a1afd8abbb1782e59d0649fcf9881cbd0a92d2f52147a2fe15ad5e2d90e7f7a",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "The ronin's measure",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Amet consectetur adipiscing elit sed do. Eiusmod tempor incididunt ut labore et.",
+            "choices": [
+              {
+                "text": "A · Sunt in culpa",
+                "next": "yes"
+              },
+              {
+                "text": "B · Odit aut fugit",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Esse cillum dolore eu fugiat nulla. Pariatur excepteur sint occaecat cupidatat non."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_ronin_recruit": {
+      "key": "dialogue:quest_offer_ronin_recruit",
+      "id": "conversation-quest-offer-ronin-recruit",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e8d25783269e87d2cef59dc063d1110827163918aa50a06711cf111ec484e8d1",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "A blade without a lord",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non.",
+            "choices": [
+              {
+                "text": "A · Ab illo inventore veritatis et",
+                "next": "yes"
+              },
+              {
+                "text": "B · Dolor sit amet consectetur adipiscing",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Deserunt mollit anim id est laborum sed ut. Perspiciatis unde omnis iste."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_seasoned": {
+      "key": "dialogue:quest_offer_seasoned",
+      "id": "conversation-quest-offer-seasoned",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f48d0ae4790515b549e34a84754c4f284afdf3f653c95e21d0504485844099a8",
+      "about": [],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "How far we've come",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+            "choices": [
+              {
+                "text": "A · Nostrud exercitation ullamco laboris nisi",
+                "next": "yes"
+              },
+              {
+                "text": "B · Reprehenderit in voluptate velit",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "$with",
+            "line": "Proident sunt in culpa qui officia deserunt mollit anim id est laborum."
+          },
+          {
+            "id": "no",
+            "speaker": "$with",
+            "line": "Labore et dolore magna aliqua ut enim ad minim veniam quis nostrud."
+          }
+        ]
+      }
+    },
+    "dialogue:quest_offer_sellsword": {
+      "key": "dialogue:quest_offer_sellsword",
+      "id": "conversation-quest-offer-sellsword",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:364def691c33bb37f07ce6a879ef3969a4999668944a59b4b9d011676ddabd93",
+      "about": [
+        "character-merchant"
+      ],
+      "speakers": [
+        "character-merchant"
+      ],
+      "payload": {
+        "title": "A contract worth signing",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "character-merchant",
+            "line": "Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat.",
+            "choices": [
+              {
+                "text": "A · Labore et dolore",
+                "next": "yes"
+              },
+              {
+                "text": "B · Sit aspernatur aut odit aut",
+                "next": "no"
+              }
+            ]
+          },
+          {
+            "id": "yes",
+            "speaker": "character-merchant",
+            "line": "Proident sunt in culpa qui officia deserunt mollit anim id est laborum."
+          },
+          {
+            "id": "no",
+            "speaker": "character-merchant",
+            "line": "Laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem accusantium."
           }
         ]
       }

@@ -43,7 +43,7 @@ cover the hidden systems.
 | Summon Circle (gold summon + Diamond draw) | KEEP | Loop step + paywall hook | — |
 | Mercenaries | KEEP | Paywall hook. It still opens at the bounty milestone (`Mercenaries.Open` reads `CampUnlocks.BountiesOpen`, which is unchanged) | — |
 | Talk (Camp conversations) | KEEP | Delivers story recruits and the side-quest offers | — |
-| Side quests (Quests journal) | KEEP, flagged | Finished and optional. Its offers are Talk scenes whose text is lorem ipsum until the new story lands (GG-T387) | — |
+| Side quests (Quests journal) | KEEP, shipped | Finished and optional: 33 quests in five chains and singles, from the first stage to the postgame (fetch, kill a class or family, recruit, reach a level, learn a skill; GG-T434). Offers and journal text are lorem ipsum until the new story lands (GG-T387) | — |
 | Bestiary | KEEP | Cheap, finished, and the same knowledge tier drives the battle inspect card | — |
 | Camp tips / onboarding chain (GG-T173–T180) | KEEP | New-player guidance. The bounty tip can no longer fire (its screen is hidden) | — |
 | Difficulty dial 1–10 | KEEP | One Settings row; 10 is the designed game | — |
@@ -164,8 +164,8 @@ These are recommendations only. Nothing was deleted.
 2. **Taming / domestication.** It overlaps with wanderers and summons as a fourth way to grow the roster, and
    domesticated monsters are half-heroes (no gear, no skills, Lv cap 30). Keep it, hide it (pull the Monster Tamer from
    the summon pool and the Dog Whistle from the shop), or cut it?
-3. **Side quests vs the new story.** Every quest giver line is placeholder until the Prose story lands. Keep the journal
-   and rewrite the ten quests into the new story, or hide it until then?
+3. **Side quests vs the new story.** Every quest giver line is placeholder until the Prose story lands. Kept and shipped
+   (GG-T434): the quests are written to be rewritten; their descriptive names and objectives give the story its shape.
 4. **Weapon enchants.** Cut the 600-recipe weapon tab down to a handful, or drop it and keep armor enchants only?
 5. **Talents + Abilities + Tomes.** That is three ways to learn things. Fold Talents into the Abilities screen, or keep
    it as its own row?

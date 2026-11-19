@@ -30,7 +30,7 @@
     "RewardGold": 300, "RewardItem": "hi_potion", "RewardItemCount": 2
   },
   {
-    "Id": "q_hags_hand", "Name": "The Hag's Hand", "Giver": "Alchemist", "Theme": "swamp", "Unlock": "swamp-01",
+    "Id": "q_hags_hand", "Name": "The Hag's Hand", "Giver": "Alchemist", "Theme": "swamp", "Unlock": "swamp-01", "Requires": "q_antivenom",
     "Objective": { "Kind": "Bring", "Id": "mat_hag_claw", "Count": 3 },
     "RewardGold": 400, "RewardItem": "revival_charm"
   },
@@ -63,5 +63,105 @@
     "Id": "q_organ_quiet", "Name": "Quiet the Organ", "Giver": "Enchantress", "Theme": "cathedral", "Unlock": "cathedral-01",
     "Objective": { "Kind": "Defeat", "Id": "cultist03", "Count": 3 },
     "RewardGold": 800, "RewardItem": "x_potion", "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_moor_slimes", "Name": "Slime in the Cellar", "Giver": "Innkeeper", "Theme": "greenvalley", "Unlock": "greenvalley-01",
+    "Objective": { "Kind": "DefeatFamily", "Id": "slime", "Count": 6 },
+    "RewardGold": 220, "RewardItem": "healing_potion_basic", "RewardItemCount": 3
+  },
+  {
+    "Id": "q_moor_harpies", "Name": "Harpies over the Wells", "Giver": "Innkeeper", "Theme": "greenvalley", "Unlock": "greenvalley-02", "Requires": "q_moor_slimes",
+    "Objective": { "Kind": "DefeatFamily", "Id": "harpy", "Count": 4 },
+    "RewardGold": 260, "RewardItem": "antidote", "RewardItemCount": 2
+  },
+  {
+    "Id": "q_moor_werewolf", "Name": "The Beast of the Moors", "Giver": "Innkeeper", "Theme": "greenvalley", "Unlock": "greenvalley-02", "Requires": "q_moor_harpies",
+    "Objective": { "Kind": "Defeat", "Id": "werewolf00", "Count": 1 },
+    "RewardGold": 320, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_ronin_recruit", "Name": "A Blade Without a Lord", "Giver": "Party", "Theme": "greenvalley", "Unlock": "greenvalley-02",
+    "Objective": { "Kind": "Recruit", "Id": "ronin" },
+    "RewardGold": 250, "RewardItem": "hi_potion"
+  },
+  {
+    "Id": "q_ronin_level", "Name": "The Ronin's Measure", "Giver": "Party", "Theme": "lanternroad", "Unlock": "lanternroad-01", "Requires": "q_ronin_recruit",
+    "Objective": { "Kind": "ReachLevel", "Hero": "ronin", "Count": 6 },
+    "RewardGold": 300, "RewardItem": "hi_potion", "RewardItemCount": 2
+  },
+  {
+    "Id": "q_ronin_guard", "Name": "The Guard Stance", "Giver": "Party", "Theme": "lanternroad", "Unlock": "lanternroad-02", "Requires": "q_ronin_level",
+    "Objective": { "Kind": "LearnSkill", "Id": "duelist_guardstance", "Hero": "ronin" },
+    "RewardGold": 350, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_seasoned", "Name": "Seasoned", "Giver": "Party", "Theme": "lanternroad", "Unlock": "lanternroad-03",
+    "Objective": { "Kind": "ReachLevel", "Count": 10 },
+    "RewardGold": 400, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_forge_iron", "Name": "Iron for the Forge", "Giver": "Blacksmith", "Theme": "desert", "Unlock": "desert-01",
+    "Objective": { "Kind": "Bring", "Id": "mat_iron_ore", "Count": 6 },
+    "RewardGold": 380
+  },
+  {
+    "Id": "q_forge_plating", "Name": "Plate from the Wrecks", "Giver": "Blacksmith", "Theme": "desert", "Unlock": "desert-02", "Requires": "q_forge_iron",
+    "Objective": { "Kind": "Bring", "Id": "mat_mecha_plating", "Count": 3 },
+    "RewardGold": 420, "RewardItem": "greater_healing_potion", "RewardItemCount": 2
+  },
+  {
+    "Id": "q_forge_frost", "Name": "Quenched in Frost", "Giver": "Blacksmith", "Theme": "cave", "Unlock": "cave-01", "Requires": "q_forge_plating",
+    "Objective": { "Kind": "Bring", "Id": "mat_frost_core", "Count": 2 },
+    "RewardGold": 650, "RewardItem": "tome_regenerate", "RewardHero": "lancer"
+  },
+  {
+    "Id": "q_sellsword", "Name": "A Contract Worth Signing", "Giver": "Lantern Merchant", "Theme": "desert", "Unlock": "desert-02",
+    "Objective": { "Kind": "Recruit", "Id": "sellsword" },
+    "RewardGold": 400, "RewardItem": "flask_storm", "RewardItemCount": 2
+  },
+  {
+    "Id": "q_lurker_ichor", "Name": "Ichor of the Lurkers", "Giver": "Alchemist", "Theme": "swamp", "Unlock": "swamp-02", "Requires": "q_hags_hand",
+    "Objective": { "Kind": "Bring", "Id": "mat_swamp_ichor", "Count": 4 },
+    "RewardGold": 500, "RewardItem": "revival_charm"
+  },
+  {
+    "Id": "q_meteor", "Name": "A Star to Call Down", "Giver": "Enchantress", "Theme": "swamp", "Unlock": "swamp-03",
+    "Objective": { "Kind": "LearnSkill", "Id": "meteor" },
+    "RewardGold": 550, "RewardItem": "hi_ether"
+  },
+  {
+    "Id": "q_holy_essence", "Name": "Holy Essence for the Still", "Giver": "Alchemist", "Theme": "still", "Unlock": "still-01", "Requires": "q_lurker_ichor",
+    "Objective": { "Kind": "Bring", "Id": "mat_essence_holy", "Count": 3 },
+    "RewardGold": 700, "RewardItem": "x_potion", "RewardItemCount": 2, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_bulwark_breaks", "Name": "The Bulwark Breaks", "Giver": "Party", "Theme": "cityruins", "Unlock": "cityruins-01",
+    "Objective": { "Kind": "DefeatFamily", "Id": "bulwark", "Count": 6 },
+    "RewardGold": 750
+  },
+  {
+    "Id": "q_reaper_shroud", "Name": "The Reaper's Shroud", "Giver": "Party", "Theme": "cityruins", "Unlock": "cityruins-02", "Requires": "q_bulwark_breaks",
+    "Objective": { "Kind": "Bring", "Id": "mat_reaper_shroud", "Count": 2 },
+    "RewardGold": 800, "RewardItem": "hi_ether", "RewardItemCount": 2
+  },
+  {
+    "Id": "q_choir_level", "Name": "Strong Enough for the Choir", "Giver": "Party", "Theme": "cathedral", "Unlock": "cathedral-01", "Requires": "q_reaper_shroud",
+    "Objective": { "Kind": "ReachLevel", "Count": 24 },
+    "RewardGold": 850, "RewardItem": "tome_lifesteal", "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_last_rite", "Name": "The Last Rite", "Giver": "Party", "Theme": "cathedral", "Unlock": "cathedral-02", "Requires": "q_choir_level",
+    "Objective": { "Kind": "LearnSkill", "Id": "mass_heal" },
+    "RewardGold": 900, "RewardItem": "x_potion", "RewardItemCount": 2, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_heartwood", "Name": "Heartwood of the Bloom", "Giver": "Innkeeper", "Theme": "bloom", "Unlock": "bloom-01",
+    "Objective": { "Kind": "Bring", "Id": "mat_heartwood", "Count": 3 },
+    "RewardGold": 900, "RewardItem": "tent", "RewardItemCount": 2, "RewardSkillPoints": 1
+  },
+  {
+    "Id": "q_free_holds", "Name": "Holds Without Masters", "Giver": "Party", "Theme": "greenvalley2", "Unlock": "greenvalley-04",
+    "Objective": { "Kind": "DefeatFamily", "Id": "soldier", "Count": 10 },
+    "RewardGold": 1000, "RewardItem": "tome_berserk"
   }
 ]

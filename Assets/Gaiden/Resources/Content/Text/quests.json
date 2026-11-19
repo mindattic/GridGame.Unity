@@ -22,6 +22,42 @@
         "complete": "Fresh enough. The new strain clots the old cure -- so I'll make a new cure. Take these, they're the last of the old ones that still work."
       }
     },
+    "quest:q_bulwark_breaks": {
+      "key": "quest:q_bulwark_breaks",
+      "id": "quest-q-bulwark-breaks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8e6661f4bd05189388622fea5c52696bb206e54822ae346f71736d8ab385cf97",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Bulwark Breaks",
+        "brief": "Laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem accusantium doloremque. Laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta.",
+        "giver": "$party",
+        "complete": "Nisi ut aliquip ex ea commodo consequat duis aute irure dolor. In reprehenderit in voluptate velit esse cillum."
+      }
+    },
+    "quest:q_choir_level": {
+      "key": "quest:q_choir_level",
+      "id": "quest-q-choir-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:23bdfd2e77bbb00e189c515a149f3e65d20e31943f3454e8377bf51a78a08862",
+      "about": [
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Strong Enough for the Choir",
+        "brief": "Laudantium totam rem aperiam eaque ipsa quae ab illo. Inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas. Sit aspernatur aut odit aut.",
+        "giver": "$party",
+        "complete": "Et dolore magna aliqua ut enim ad. Minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex."
+      }
+    },
     "quest:q_city_that_stopped": {
       "key": "quest:q_city_that_stopped",
       "id": "quest-q-city-that-stopped",
@@ -59,6 +95,81 @@
         "brief": "The ice maulers drink what leaks from the arches, and their cores never warm, whatever the forge does. Break three of them and bring the smith something worth hammering.",
         "giver": "character-blacksmith",
         "complete": "Three down, and the cores still cold in my hand. Whatever the Anchors leak, it isn't just light."
+      }
+    },
+    "quest:q_forge_frost": {
+      "key": "quest:q_forge_frost",
+      "id": "quest-q-forge-frost",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a55ef2d720e7d2193de2af14a958765031f896110c5e82643b768f31ffb9dc6b",
+      "about": [
+        "character-blacksmith",
+        "place-cave"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Quenched in Frost",
+        "brief": "Exercitation ullamco laboris nisi ut aliquip. Ex ea commodo consequat duis aute irure dolor in reprehenderit. In voluptate velit esse cillum dolore eu fugiat nulla. Pariatur excepteur sint occaecat cupidatat.",
+        "giver": "character-blacksmith",
+        "complete": "Amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut. Labore et dolore magna aliqua ut enim ad."
+      }
+    },
+    "quest:q_forge_iron": {
+      "key": "quest:q_forge_iron",
+      "id": "quest-q-forge-iron",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7540dac926a8c0697e5a2f54a70d16cfc934388c626b9afceaf7c3a24873eec8",
+      "about": [
+        "character-blacksmith",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Iron for the Forge",
+        "brief": "Quia voluptas sit aspernatur aut odit aut fugit lorem ipsum dolor. Sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna aliqua ut enim ad.",
+        "giver": "character-blacksmith",
+        "complete": "Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta. Sunt explicabo nemo enim ipsam voluptatem quia."
+      }
+    },
+    "quest:q_forge_plating": {
+      "key": "quest:q_forge_plating",
+      "id": "quest-q-forge-plating",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e0753ea271d4bfc18bed538e9c43f5f937e4dae10c8e2fed7faa80a188dc273c",
+      "about": [
+        "character-blacksmith",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Plate from the Wrecks",
+        "brief": "Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit. Aspernatur aut odit aut fugit lorem ipsum dolor sit amet.",
+        "giver": "character-blacksmith",
+        "complete": "Veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut."
+      }
+    },
+    "quest:q_free_holds": {
+      "key": "quest:q_free_holds",
+      "id": "quest-q-free-holds",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7e1585e40228ade0cc0d9ae8ea58e8e63db589b88048150a0e3a206b82e99cbf",
+      "about": [
+        "place-greenvalley2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Holds Without Masters",
+        "brief": "Fugiat nulla pariatur excepteur sint occaecat cupidatat. Non proident sunt in culpa qui officia deserunt. Mollit anim id est laborum sed. Ut perspiciatis unde omnis iste natus error sit voluptatem.",
+        "giver": "$party",
+        "complete": "Veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut."
       }
     },
     "quest:q_frog_glands": {
@@ -118,6 +229,25 @@
         "complete": "Bound in the bone itself. Ugly, but it holds. Here -- the first thing I've made that'll survive the worst the fen can sing."
       }
     },
+    "quest:q_heartwood": {
+      "key": "quest:q_heartwood",
+      "id": "quest-q-heartwood",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:18ed895533e30a9603bb1ed4ac7abfdcaaf152b5af0738241cbcd06d17168f5a",
+      "about": [
+        "character-innkeeper",
+        "place-bloom"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Heartwood of the Bloom",
+        "brief": "Deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium doloremque laudantium. Totam rem aperiam eaque ipsa quae ab illo inventore veritatis et.",
+        "giver": "character-innkeeper",
+        "complete": "Eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in. Culpa qui officia deserunt mollit anim."
+      }
+    },
     "quest:q_hold_the_ward": {
       "key": "quest:q_hold_the_ward",
       "id": "quest-q-hold-the-ward",
@@ -135,6 +265,25 @@
         "brief": "The Choir taught that a hymn needs every voice or it falls apart. The Enchantress wants proof that can mean something kinder: clear the heart of the Arkgrave without anyone falling.",
         "giver": "character-enchantress",
         "complete": "Not one voice dropped. That is what a hymn sounds like when people sing it for each other. Keep this -- you've earned the harder lessons."
+      }
+    },
+    "quest:q_holy_essence": {
+      "key": "quest:q_holy_essence",
+      "id": "quest-q-holy-essence",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2f934a1c7cfc23cf1c10d610132ae3c5cb53fe9cf5edf9102a908e110cfb67ea",
+      "about": [
+        "character-alchemist",
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Holy Essence for the Still",
+        "brief": "Quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem quia. Voluptas sit aspernatur aut odit aut fugit lorem ipsum. Dolor sit amet consectetur adipiscing elit sed do eiusmod.",
+        "giver": "character-alchemist",
+        "complete": "Deserunt mollit anim id est laborum sed ut perspiciatis unde omnis. Iste natus error sit voluptatem accusantium doloremque."
       }
     },
     "quest:q_hymn_stops": {
@@ -157,6 +306,24 @@
         "complete": "Three voices out of the hymn, and the tanks did not fill any faster. It can stop. It can actually stop."
       }
     },
+    "quest:q_last_rite": {
+      "key": "quest:q_last_rite",
+      "id": "quest-q-last-rite",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:066c1c30ea78be4cb7d1437ee10468654495f9c2ef3bb189f4b157bc0ef619d9",
+      "about": [
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Last Rite",
+        "brief": "Sed do eiusmod tempor incididunt ut labore. Et dolore magna aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.",
+        "giver": "$party",
+        "complete": "Quis nostrud exercitation ullamco laboris nisi. Ut aliquip ex ea commodo consequat duis aute. Irure dolor in reprehenderit."
+      }
+    },
     "quest:q_long_cold": {
       "key": "quest:q_long_cold",
       "id": "quest-q-long-cold",
@@ -174,6 +341,25 @@
         "brief": "The cold off the Anchors gets into the beds. Three yeti furs would line the bunks before somebody wakes up blue.",
         "giver": "character-innkeeper",
         "complete": "Warm bunks, warm crew. The arches can hum all night if they like -- we'll sleep through it."
+      }
+    },
+    "quest:q_lurker_ichor": {
+      "key": "quest:q_lurker_ichor",
+      "id": "quest-q-lurker-ichor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:226a49528721ac34200eb8c5b8969908b48091dd16fad4e26d3cfac6dc89e236",
+      "about": [
+        "character-alchemist",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Ichor of the Lurkers",
+        "brief": "Excepteur sint occaecat cupidatat non proident sunt. In culpa qui officia deserunt mollit anim id. Est laborum sed ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium doloremque laudantium.",
+        "giver": "character-alchemist",
+        "complete": "Dolor in reprehenderit in voluptate velit esse cillum dolore eu. Fugiat nulla pariatur excepteur sint occaecat cupidatat non."
       }
     },
     "quest:q_masks_off": {
@@ -196,6 +382,83 @@
         "complete": "Three masks fewer on the stairs. The pilgrims are moving again, and so is trade."
       }
     },
+    "quest:q_meteor": {
+      "key": "quest:q_meteor",
+      "id": "quest-q-meteor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9db7892d0cef513a47258e7cb51d3cc717025028c88eaec7e3c1a871c4fd3beb",
+      "about": [
+        "character-enchantress",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Star to Call Down",
+        "brief": "Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur. Aut odit aut fugit lorem ipsum dolor sit amet. Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore.",
+        "giver": "character-enchantress",
+        "complete": "Laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem accusantium doloremque laudantium. Totam rem aperiam eaque."
+      }
+    },
+    "quest:q_moor_harpies": {
+      "key": "quest:q_moor_harpies",
+      "id": "quest-q-moor-harpies",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a7662e8b5a9a03fe120fb2fb1ab5cff258b2bc33808b00c007458b0e1ad0ca1e",
+      "about": [
+        "character-innkeeper",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Harpies over the Wells",
+        "brief": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo. Inventore veritatis et quasi architecto beatae. Vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.",
+        "giver": "character-innkeeper",
+        "complete": "Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur. Sint occaecat cupidatat non proident sunt in culpa."
+      }
+    },
+    "quest:q_moor_slimes": {
+      "key": "quest:q_moor_slimes",
+      "id": "quest-q-moor-slimes",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bc62891eddac8b6fc854dbfeea450f9b388dba00e8ab5ddf2d27af4d66f528c1",
+      "about": [
+        "character-innkeeper",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Slime in the Cellar",
+        "brief": "Totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta sunt explicabo nemo enim. Ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
+        "giver": "character-innkeeper",
+        "complete": "Eu fugiat nulla pariatur excepteur sint occaecat cupidatat. Non proident sunt in culpa qui. Officia deserunt mollit anim."
+      }
+    },
+    "quest:q_moor_werewolf": {
+      "key": "quest:q_moor_werewolf",
+      "id": "quest-q-moor-werewolf",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:6196a0e7912a2f19fd8fa3382cfdfbe8a986082bb64ab76d4e37c6f2d5ed86a9",
+      "about": [
+        "character-innkeeper",
+        "class-werewolf00",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Beast of the Moors",
+        "brief": "Veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit. Aspernatur aut odit aut fugit lorem ipsum dolor. Sit amet consectetur adipiscing elit sed.",
+        "giver": "character-innkeeper",
+        "complete": "Minim veniam quis nostrud exercitation ullamco laboris nisi. Ut aliquip ex ea commodo consequat. Duis aute irure dolor."
+      }
+    },
     "quest:q_organ_quiet": {
       "key": "quest:q_organ_quiet",
       "id": "quest-q-organ-quiet",
@@ -214,6 +477,119 @@
         "brief": "The Choir's Confessors keep the hymn going under the cathedral's organ. Silence three of them, and the pipes the Hierarch drinks from begin to falter.",
         "giver": "character-enchantress",
         "complete": "Three voices gone, and the organ sounds thinner already."
+      }
+    },
+    "quest:q_reaper_shroud": {
+      "key": "quest:q_reaper_shroud",
+      "id": "quest-q-reaper-shroud",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ce649ebd2689bc08dc8ee7bb3b3c31473c273d7212262fff266c54084572b631",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Reaper's Shroud",
+        "brief": "Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. Dolore eu fugiat nulla pariatur excepteur sint occaecat.",
+        "giver": "$party",
+        "complete": "Aut fugit lorem ipsum dolor sit amet consectetur adipiscing elit sed. Do eiusmod tempor incididunt ut labore et."
+      }
+    },
+    "quest:q_ronin_guard": {
+      "key": "quest:q_ronin_guard",
+      "id": "quest-q-ronin-guard",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0de340ffd6adadcac07820781ffd7eab16749c4e541614209ee17a9892646e05",
+      "about": [
+        "class-ronin",
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Guard Stance",
+        "brief": "Quia voluptas sit aspernatur aut odit aut fugit lorem ipsum. Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna aliqua ut enim ad.",
+        "giver": "$party",
+        "complete": "Aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris. Nisi ut aliquip ex ea commodo consequat."
+      }
+    },
+    "quest:q_ronin_level": {
+      "key": "quest:q_ronin_level",
+      "id": "quest-q-ronin-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7075073c0fcd4b39eb0cb07999be1872b689aa76f0ae9ef47ea66b4c587c392a",
+      "about": [
+        "class-ronin",
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Ronin's Measure",
+        "brief": "Odit aut fugit lorem ipsum dolor sit amet consectetur. Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore. Magna aliqua ut enim ad minim veniam quis nostrud exercitation.",
+        "giver": "$party",
+        "complete": "Aut fugit lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et."
+      }
+    },
+    "quest:q_ronin_recruit": {
+      "key": "quest:q_ronin_recruit",
+      "id": "quest-q-ronin-recruit",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a0527ffe0186abd1a71c801fc4f8e27fc41d40d3344242074d8be6361ec29cb7",
+      "about": [
+        "class-ronin",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Blade Without a Lord",
+        "brief": "Ipsa quae ab illo inventore veritatis et quasi. Architecto beatae vitae dicta sunt explicabo nemo. Enim ipsam voluptatem quia voluptas sit aspernatur aut odit. Aut fugit lorem ipsum dolor sit.",
+        "giver": "$party",
+        "complete": "Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident. Sunt in culpa qui officia deserunt mollit anim id."
+      }
+    },
+    "quest:q_seasoned": {
+      "key": "quest:q_seasoned",
+      "id": "quest-q-seasoned",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:50394ce01673b7c47ac6be2d692308eedf84142eb4d13b68f1b82d7c64706912",
+      "about": [
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Seasoned",
+        "brief": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa. Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.",
+        "giver": "$party",
+        "complete": "Enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut. Aliquip ex ea commodo consequat duis aute."
+      }
+    },
+    "quest:q_sellsword": {
+      "key": "quest:q_sellsword",
+      "id": "quest-q-sellsword",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:70d1217c8761080db8a40a7c1296bdaec52a64744a23a4b61a5b2f529470f63d",
+      "about": [
+        "character-merchant",
+        "class-sellsword",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Contract Worth Signing",
+        "brief": "Error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque. Ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas.",
+        "giver": "character-merchant",
+        "complete": "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et. Dolore magna aliqua ut enim ad minim."
       }
     },
     "quest:q_travel_light": {

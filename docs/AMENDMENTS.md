@@ -1315,3 +1315,21 @@ has fewer rows.
   screen's id follows its tab, and the old screen classes open it on their tab, so the camp tips, the Crucible's Change
   team and every automation route still land. [BIBLE §25.0](BIBLE.md#250-camp-navigation).
 - *Why:* fewer rows for one hero's business, and the hero picked once stays picked across tabs.
+
+## 2026-11-19 — More side quests, new objective kinds and quest chains (owner, GG-T434)
+
+Owner (2026-11-19): "ship them and make more side quests, and quest chains about fetching materials or killing monsters
+or recruiting certain people or reaching a certain level or unlocking a specific skill; eventually all the lorem ipsum
+will be rewritten by examining the shape of things".
+
+- **Was:** 13 standalone quests (one loose pair via a `QuestDone` dialogue condition); objectives ClearStage, Defeat (one
+  class), Bring, Flag. RELEASE_SCOPE had side quests KEEP, flagged.
+- **Now ([BIBLE §22.11](BIBLE.md)):** objective kinds **DefeatFamily**, **Recruit**, **ReachLevel** and **LearnSkill**
+  (Bring already was the fetch quest); `QuestDef.Requires` makes chains (a step stays locked until the one before is
+  done; the journal shows the chain); `RewardHero` brings a hero on turn-in. 20 new quests (33 total), five chains of
+  three or four steps, spread from the Tithe Moors to the Free Holds. RELEASE_SCOPE: KEEP, shipped.
+- **Text:** placeholder by design. New journal and offer text is lorem ipsum (`tools/prose_lorem.py --only-new`),
+  drafted to Prose as batch `quests-434`, never approved here.
+- **Balance:** rewards are reasoned from measured stage pay, not soak-measured; bots never take quests, so the sim is
+  unaffected.
+- *(Tests: `QuestTests`, written, not run.)*

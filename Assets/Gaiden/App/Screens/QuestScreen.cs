@@ -54,11 +54,14 @@ namespace GridGame.App
             var st = Quests.State(C, S, q);
             var card = Ui.El("card", parent);
             card.name = "quest-" + q.Id;
-            if (q.Objective.Kind == QuestObjectiveKind.Defeat && C.TryClass(q.Objective.Id) != null) Ui.Thumb(q.Objective.Id, card, 110);
+            string thumb = ThumbFor(q);
+            if (thumb != null) Ui.Thumb(thumb, card, 110);
             var col = Ui.El("col grow", card);
             Ui.Text(q.Name, "h2", col);
             string theme = C.Campaign.Themes.FirstOrDefault(t => t.Id == q.Theme)?.Name;
             Ui.Text($"{q.Giver}{(theme != null ? " · " + theme : "")}", "tiny dim", col);
+            var chain = Quests.ChainLine(C, S, q); // GG-T434: the chain's steps
+            if (chain != null) Ui.Text(chain, "tiny gold", col).style.whiteSpace = WhiteSpace.Normal;
             if (st == QuestState.Available && !Quests.Heard(C, S).Contains(q))
             {
                 Ui.Text(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party." : $"The {q.Giver} has something on their mind. Talk to them.", "small", col).style.whiteSpace = WhiteSpace.Normal;
@@ -70,6 +73,25 @@ namespace GridGame.App
             goal.style.whiteSpace = WhiteSpace.Normal;
             Ui.Text("Reward: " + Quests.RewardText(C, q), "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
             extra?.Invoke(q, card);
+        }
+
+        /// <summary>The portrait a quest card leads with: the foe to defeat (a family's first member), or the hero to
+        /// recruit, level or teach (GG-T434); null for none.</summary>
+        private string ThumbFor(QuestDef q)
+        {
+            var o = q.Objective;
+            switch (o.Kind)
+            {
+                case QuestObjectiveKind.Defeat:
+                case QuestObjectiveKind.Recruit:
+                    return C.TryClass(o.Id) != null ? o.Id : null;
+                case QuestObjectiveKind.DefeatFamily:
+                    return QuestCatalog.FamilyClasses(C, o.Id).FirstOrDefault()?.Id;
+                case QuestObjectiveKind.ReachLevel:
+                case QuestObjectiveKind.LearnSkill:
+                    return o.Hero != null && C.TryClass(o.Hero) != null ? o.Hero : null;
+                default: return null;
+            }
         }
 
         private void Accept(QuestDef q)

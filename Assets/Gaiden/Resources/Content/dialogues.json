@@ -2760,5 +2760,365 @@
       { "Id": "yes", "Speaker": "enchantress" },
       { "Id": "no", "Speaker": "enchantress" }
     ]
+  },
+  {
+    "Id": "quest_offer_moor_slimes",
+    "Title": "Something in the cellar",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_slimes" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_slimes" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_moor_harpies",
+    "Title": "Shadows over the wells",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_harpies" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_harpies" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_moor_werewolf",
+    "Title": "The howl at night",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_werewolf" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_werewolf" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_recruit",
+    "Title": "A blade without a lord",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_recruit" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_recruit" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_level",
+    "Title": "The ronin's measure",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_level" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_level" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_guard",
+    "Title": "A stance worth learning",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_guard" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_guard" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_seasoned",
+    "Title": "How far we've come",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_seasoned" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_seasoned" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_iron",
+    "Title": "A cold forge",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_iron" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_iron" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_plating",
+    "Title": "Plate from the wrecks",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_plating" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_plating" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_frost",
+    "Title": "Quenched in frost",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_frost" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_frost" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_sellsword",
+    "Title": "A contract worth signing",
+    "Trigger": { "Kind": "Talk", "Id": "npc:merchant" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_sellsword" } ],
+    "Speakers": [ { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_sellsword" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "merchant" },
+      { "Id": "no", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "quest_offer_lurker_ichor",
+    "Title": "Ichor of the lurkers",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_lurker_ichor" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_lurker_ichor" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_meteor",
+    "Title": "A star to call down",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_meteor" } ],
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_meteor" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "enchantress" },
+      { "Id": "no", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "quest_offer_holy_essence",
+    "Title": "Holy essence",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_holy_essence" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_holy_essence" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_bulwark_breaks",
+    "Title": "The bulwark breaks",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_bulwark_breaks" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_bulwark_breaks" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_reaper_shroud",
+    "Title": "The reaper's shroud",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_reaper_shroud" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_reaper_shroud" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_choir_level",
+    "Title": "Strong enough",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_choir_level" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_choir_level" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_last_rite",
+    "Title": "The last rite",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_last_rite" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_last_rite" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_heartwood",
+    "Title": "Heartwood",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_heartwood" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_heartwood" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_free_holds",
+    "Title": "Holds without masters",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_free_holds" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_free_holds" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
   }
 ]
