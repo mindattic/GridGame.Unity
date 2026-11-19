@@ -44,7 +44,8 @@ def art_findings():
         out.append(("POL-H1", f"Portraits/{n}.png", not (hard or soft), "; ".join(hard + soft), bool(hard)))
         if bb:
             bw, bh = bb[2] - bb[0], bb[3] - bb[1]
-            drawn = bh * min(1.0, FIGURE_BOX / max(bw, bh)) * DIALOGUE_FIGURE_PX / FIGURE_BOX
+            # DialogueScreen caps a figure at its native height (GG-T437), so it is never drawn above its own pixels.
+            drawn = min(bh, bh * min(1.0, FIGURE_BOX / max(bw, bh)) * DIALOGUE_FIGURE_PX / FIGURE_BOX)
             scale = drawn / bh
             out.append(("POL-H4", f"Portraits/{n}.png", scale <= 1.0,
                         f"drawn at {scale:.2f}x its native size in dialogue (a {bh} px figure at {drawn:.0f} px)", False))

@@ -296,6 +296,11 @@ namespace GridGame.App
             {
                 float k = FigureHeight / PersonCanvas;
                 var size = Art.FigureSize(s.Portrait);
+                float h = Mathf.Min(size.y, PersonCanvas) * k;
+                // Never drawn above its own pixels (POL-H4, GG-T437): a ~1000-px figure at 1200 blurred on the largest
+                // stage, so a figure stops at its native height and keeps its aspect.
+                float cap = Art.FigureNativeHeight(s.Portrait);
+                if (h > cap) k *= cap / h;
                 s.Art.style.height = Mathf.Min(size.y, PersonCanvas) * k;
                 s.Art.style.width = size.x * k;
             }

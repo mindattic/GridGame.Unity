@@ -120,6 +120,13 @@ namespace GridGame.App
             float k = Mathf.Min(1f, FigureBox / Mathf.Max(w, h));
             return new Vector2(w * k, h * k);
         }
+        /// <summary>The figure's real height in texture pixels: the most it can be drawn without upscaling (POL-H4).</summary>
+        public static float FigureNativeHeight(string classId)
+        {
+            var tex = Portrait(classId);
+            return tex == null ? float.MaxValue : FigureRect(tex).height;
+        }
+
         /// <summary>The board tile for a campaign theme (tools/make_tiles.py); the original slate tile when a theme has none.</summary>
         private static Texture2D Pixelled(string folder, string id)
         {
