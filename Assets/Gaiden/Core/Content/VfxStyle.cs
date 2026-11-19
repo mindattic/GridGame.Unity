@@ -81,20 +81,23 @@ namespace GridGame.Core.Content
 
         private VfxStyleDef Find(string key)
         {
-            if (resolved == null) Resolve();
-            return resolved.TryGetValue(key, out var s) ? s : null;
+            var map = resolved ?? Resolve();
+            return map.TryGetValue(key, out var s) ? s : null;
         }
 
-        private void Resolve()
+        /// <summary>Built whole, then published (GG-T447): a caller on another thread never sees a half-filled table.</summary>
+        private Dictionary<string, VfxStyleDef> Resolve()
         {
-            resolved = new Dictionary<string, VfxStyleDef>(StringComparer.OrdinalIgnoreCase);
-            foreach (var e in Elements) if (e?.Id != null) resolved[e.Id] = e;
+            var map = new Dictionary<string, VfxStyleDef>(StringComparer.OrdinalIgnoreCase);
+            foreach (var e in Elements) if (e?.Id != null) map[e.Id] = e;
             foreach (var s in Statuses)
             {
                 if (s?.Id == null) continue;
-                resolved.TryGetValue(s.Element ?? "", out var b);
-                resolved["status:" + s.Id] = Merge(s, b);
+                map.TryGetValue(s.Element ?? "", out var b);
+                map["status:" + s.Id] = Merge(s, b);
             }
+            resolved = map;
+            return map;
         }
 
         private static VfxStyleDef Merge(VfxStyleDef s, VfxStyleDef b)
