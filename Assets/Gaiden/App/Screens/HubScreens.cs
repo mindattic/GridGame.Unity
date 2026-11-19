@@ -1542,13 +1542,8 @@ namespace GridGame.App
             teamRow.style.marginTop = Space.S8;
             Ui.Button("Change team", () => App.Router.Push(new PartyScreen()), "btn--small", teamRow).name = "crucible-team-change";
 
-            var rec = Ui.Window("Record", body);
-            rec.name = "crucible-record";
-            Ui.MenuRow("Best", S.Crucible.Runs > 0 ? $"{S.Crucible.Best} waves" : "None yet", null, rec).Q<Label>("value").AddToClassList("gold");
-            Ui.MenuRow("Best haul", S.Crucible.Runs > 0 ? Ui.Gold(S.Crucible.BestGold) : "None yet", null, rec).Q<Label>("value").AddToClassList("gold");
-            Ui.MenuRow("Runs", S.Crucible.Runs.ToString(), null, rec);
-            Ui.MenuRow("Waves cleared", S.Crucible.TotalWaves.ToString(), null, rec);
-
+            // The primary action sits right under the team: the body doesn't scroll, and with the team window the old
+            // order pushed Enter off a phone screen (GG-T439). The record follows in two rows.
             bool can = Crucible.CanLaunch(C, S, out var why);
             if (!can) Ui.Text(why, "small bad", body).style.marginTop = Space.S8;
             var row = Ui.El("row", body);
@@ -1560,6 +1555,13 @@ namespace GridGame.App
             var cost = Ui.Text($"Costs {RestedPool.LaunchCost} Rested", "small dim", body);
             cost.style.unityTextAlign = TextAnchor.MiddleCenter;
             cost.style.marginTop = Space.S8;
+
+            var rec = Ui.Window("Record", body);
+            rec.name = "crucible-record";
+            rec.style.marginTop = Space.S16;
+            bool ran = S.Crucible.Runs > 0;
+            Ui.MenuRow("Best", ran ? $"{S.Crucible.Best} waves · {Ui.Gold(S.Crucible.BestGold)}" : "None yet", null, rec).Q<Label>("value").AddToClassList("gold");
+            Ui.MenuRow("Runs", ran ? $"{S.Crucible.Runs} · {S.Crucible.TotalWaves} waves" : "0", null, rec);
         }
     }
 
