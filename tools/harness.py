@@ -310,7 +310,16 @@ def pick_party(ids=STARTING_PARTY, timeout=10.0):
         if call("state")["screen"] == "charselect" and call("style", name=name).get("opacity", 1) >= 0.5:
             print(f"pick_party: {cid} wasn't locked in after preview + lock-in taps")
             return False
-    return _wait_screen("hub", timeout)
+    # A new game plays the prologue crawl (and any opening dialogue) before Camp (GG-T386); skip through to the hub.
+    deadline = time.time() + timeout + 30
+    while time.time() < deadline:
+        screen = call("state")["screen"]
+        if screen == "hub":
+            return True
+        if screen in ("crawl", "dialogue"):
+            through_story(wait=1.0)
+        time.sleep(0.5)
+    return False
 
 
 def finish_dialogue(timeout=40.0):
