@@ -1000,6 +1000,12 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
       on the next real soak, and `lanternroad-03`/`cave-03` are expected to stay near 0% until `HeroBot` gets
       `Undying`/`GravityStamp`-aware targeting — see GG-T276's ticket notes for the full write-up and the
       follow-up ask.
+  - **Amended 2026-11-19 (GG-T441): the GG-T276 trims kept, the invariants they broke restored.**
+    - **`greenvalley-02` wave 3:** `6583bc8f`'s trim (`frog00`/`frog01`/`frog03`/`toad00` → dropped `frog03`) left
+      `frog00`/`frog01`/`toad00`, the exact foes, levels and tiles of `swamp-01` wave 1, which `ContentLoader.Validate`
+      refuses (no two campaign waves are the same encounter). Kept the 3-foe trim but dropped `toad00` instead of
+      `frog03`: now `frog00`/`frog01`/`frog03`. All four are the same 12 VIT / 15 STR `toxic_skin` statline, so the
+      wave's weight is unchanged; `toad00` still fights in `greenvalley-03` wave 5.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
