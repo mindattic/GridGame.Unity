@@ -1448,7 +1448,7 @@ namespace GridGame.App
             b.name = "summon-draw";
             Ui.SetEnabled(b, !busy && DiamondSummon.CanDraw(C, S).Ok);
             if (diamonds < DiamondSummon.Price)
-                Ui.Text("Diamonds are bought for the lucky craft at the Blacksmith's forge.", "tiny dim", w).style.whiteSpace = WhiteSpace.Normal;
+                Ui.Text("Diamonds are bought at the Blacksmith's forge, and also pay for a lucky craft or an instant Rested refill.", "tiny dim", w).style.whiteSpace = WhiteSpace.Normal;
         }
     }
 
@@ -1513,7 +1513,7 @@ namespace GridGame.App
             int start = Crucible.PartyLevel(S);
             Ui.MenuRow("First wave", $"Lv {start}, +{Crucible.LevelStep} each wave", null, w);
             Ui.MenuRow("Horde", $"{Crucible.FirstWaveEnemies}→{Crucible.MaxWaveEnemies} foes, elites from wave {BattleConfig.CrucibleFirstEliteWave + 1}", null, w);
-            Ui.MenuRow("Pay", $"{Ui.Gold(Crucible.WaveGold(0))} for wave 1, +{BattleConfig.CrucibleWaveGoldPerWave} G each wave after", null, w).Q<Label>("value").AddToClassList("gold");
+            Ui.MenuRow("Pay", $"{Ui.Gold(Crucible.WaveGold(0))}, +{BattleConfig.CrucibleWaveGoldPerWave} G a wave", null, w).Q<Label>("value").AddToClassList("gold");
             var fams = Crucible.Families(C, S);
             Ui.MenuRow("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met", null, w);
             var names = Ui.Text(string.Join(", ", fams.Select(f => f[0].Name)), "tiny dim", w);
