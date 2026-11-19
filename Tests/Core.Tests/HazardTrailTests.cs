@@ -199,7 +199,8 @@ namespace GridGame.Tests
         {
             var s = WithBar(Db(Paint("mine", (3, 2))), Ruled(("tank", 5, 0)), "ember_toss", out var knight);
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = new Coord(3, 2) });
-            Assert.That(s.Region.At(new Coord(3, 2))?.State, Is.EqualTo("armedmine"), "any hit of any element sets it off");
+            // The blast is 1 s out and the action's own clock can run past it (GG-T443), so check the arming itself, not the board after.
+            Assert.That(ev.OfType<RegionTilesEvent>().Any(m => m.State == "armedmine" && m.Tiles.Contains(new Coord(3, 2))), Is.True, "any hit of any element sets it off");
             Assert.That(ev.OfType<HazardQueuedEvent>().Any(h => h.EventId == "blast"), Is.True);
             Assert.That(ev.OfType<AnnounceEvent>().Any(a => a.Text == "Missed!"), Is.False, "a tile pick on the mine is a fair pick");
 

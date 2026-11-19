@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GridGame.Core.Content;
 
 namespace GridGame.Core.Battle
@@ -95,7 +96,9 @@ namespace GridGame.Core.Battle
             var def = s.Content?.TryTileState(m?.State);
             if (def == null || def.Threshold <= 0 || def.Becomes == null || m.Counter + 1 < def.Threshold) return false;
             var next = s.Content.TryTileState(def.Becomes);
-            return next != null && (next.Hazard || next.Pit);
+            // "Crumbling" is neither a hazard nor a pit: it schedules the cave-in that opens the hole (GG-T443), so a
+            // state that queues an event when marked is danger too; without it no real crack ever read as about to give.
+            return next != null && (next.Hazard || next.Pit || next.OnMark.Any(e => e.Kind == RuleEffectKind.Schedule));
         }
 
         /// <summary>Is <paramref name="c"/> an open hole <paramref name="u"/> would fall into (GG-T368)?</summary>

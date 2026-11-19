@@ -111,9 +111,9 @@ namespace GridGame.Tests
             Assert.That(knight.Pos.Manhattan(new Coord(2, 6)), Is.EqualTo(1), "it climbs out on a tile next to the hole");
             Assert.That(knight.Pos, Is.EqualTo(fell.To));
             Assert.That(knight.Hp, Is.LessThanOrEqualTo(hp - FallCost(knight, 0.2f)), "the fall takes a share of its life");
-            Assert.That(s.Region.At(new Coord(2, 6))?.State, Is.EqualTo("hole"));
-            Assert.That(s.Walkable(new Coord(2, 6)), Is.False, "an open hole is a block");
-            Assert.That(s.FreeForSpawn(new Coord(2, 6)), Is.False, "nothing spawns or is placed in it");
+            // Waiting out every hazard runs past this rule's 2 s hole lifetime (GG-T443), so check the hole opened by its event;
+            // a hole blocking and closing is Holes_block_a_walk_and_close_after_their_lifetime's to check.
+            Assert.That(ev.OfType<RegionTilesEvent>().Any(m => m.State == "hole" && m.Tiles.Contains(new Coord(2, 6))), Is.True, "the hole opened");
             AssertInvariants(s);
         }
 
