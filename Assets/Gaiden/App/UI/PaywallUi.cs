@@ -101,7 +101,19 @@ namespace GridGame.App
         public static void Refill(Action then = null) =>
             TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party…", r => { if (r.Ok) then?.Invoke(); });
 
-        /// <summary>Camp's Rested window: points, a meter, the next-point timer, and the refill button.</summary>
+        /// <summary>The Diamond side of the same refill (GG-T427): instant, no timed job — a player short on gold but
+        /// holding Diamonds skips the wait outright instead of grinding for <see cref="Paywall.RestedRefillGoldPrice"/>.</summary>
+        public static void DiamondRefill(Action then = null)
+        {
+            var app = GameApp.I;
+            var r = RestedPool.DiamondRefill(app.Save, DateTime.UtcNow);
+            app.Audio.Sfx(r.Ok ? "ui.confirm" : "ui.error");
+            app.Persist();
+            if (!string.IsNullOrEmpty(r.Message)) app.Toast(r.Message);
+            if (r.Ok) then?.Invoke();
+        }
+
+        /// <summary>Camp's Rested window: points, a meter, the next-point timer, and the two refill buttons (gold, Diamond).</summary>
         public static void Panel(VisualElement parent, Action refresh)
         {
             Init();
@@ -123,6 +135,11 @@ namespace GridGame.App
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
+            int price = RestedPool.DiamondRefillPrice;
+            var db = Ui.Button($"Refill · {price} Diamond{(price == 1 ? "" : "s")}", () => DiamondRefill(refresh), "btn--small", w);
+            db.name = "rested-refill-diamond";
+            db.style.marginTop = Space.S8;
+            Ui.SetEnabled(db, s.Count(Crafting.DiamondId) >= price);
         }
     }
 }

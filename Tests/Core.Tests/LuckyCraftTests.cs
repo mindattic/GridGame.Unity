@@ -36,12 +36,12 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Buying_a_diamond_is_a_one_gold_one_second_paywall_job()
+        public void Buying_a_diamond_is_a_timed_paywall_job()
         {
             var c = Real; var s = Rich(c);
             int gold = s.Gold;
             Assert.That(Paywall.Start(s, PaywallKind.LuckyDiamond, Crafting.DiamondId, T0, out var job).Ok, Is.True);
-            Assert.That(s.Gold, Is.EqualTo(gold - 1));
+            Assert.That(s.Gold, Is.EqualTo(gold - Paywall.DiamondGoldPrice));
             Assert.That(Paywall.Finish(c, s, job, T0.AddSeconds(0.5)).Ok, Is.False, "not before the second is up");
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
             Assert.That(Paywall.Finish(c, s, job, T0.AddSeconds(1)).Ok, Is.True);

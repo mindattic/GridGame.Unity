@@ -24,12 +24,23 @@ namespace GridGame.Meta
     /// <summary>The paywall hooks (§25.18, GG-T232): every premium action prices and times itself here.</summary>
     public static class Paywall
     {
-        // Future monetization paywalls: one table, every hook 1 g / 1 s until the owner says otherwise.
+        /// <summary>Gold for a deliberate, chosen-hero Summon Circle recruit — the one hero a player fully controls,
+        /// priced above the Diamond draw's blind convenience (GG-T427). A few stages' worth of grinding, not a whim.</summary>
+        public const int SummonGoldPrice = 800;
+        /// <summary>Gold for one Diamond at the forge's "Buy Diamond" button (`LuckyCraftUi`) — the only non-real-money
+        /// path to the premium currency today (GG-T427). About a mid consumable's worth, so it's a real choice against
+        /// spending the same gold on gear, not free.</summary>
+        public const int DiamondGoldPrice = 250;
+        /// <summary>Gold to skip the Rested wait outright (GG-T427) — cheap and frequent, the forgiving, F2P-friendly
+        /// side of the hook; see <see cref="RestedPool.DiamondRefillPrice"/> for the Diamond side of the same button.</summary>
+        public const int RestedRefillGoldPrice = 60;
+
+        // One table, every hook's gold price and job length in one tunable spot (GG-T427 retired the 1 g / 1 s placeholders).
         private static readonly Dictionary<PaywallKind, (int gold, double seconds)> Table = new Dictionary<PaywallKind, (int, double)>
         {
-            [PaywallKind.Summon] = (1, 1.0),
-            [PaywallKind.LuckyDiamond] = (1, 1.0),
-            [PaywallKind.RestedRefill] = (1, 1.0),
+            [PaywallKind.Summon] = (SummonGoldPrice, 1.0),
+            [PaywallKind.LuckyDiamond] = (DiamondGoldPrice, 1.0),
+            [PaywallKind.RestedRefill] = (RestedRefillGoldPrice, 1.0),
         };
 
         public static int Cost(PaywallKind kind, SaveData s) => Table[kind].gold;

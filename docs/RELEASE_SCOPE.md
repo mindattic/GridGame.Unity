@@ -89,8 +89,13 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   The 10-battle term at 10% cheaper per step is fine, but check it against stage pay at Lv 10–20.
 - **Rested:** 10 max, 1 per launch, so a refill covers 10 stages. Hunts also cost 1, so a hunting player refills often.
   That is the hook working, but it also taxes the grind the XP curve above demands.
-- **Paywall placeholders:** summon, lucky craft and Rested refill are all still 1 g / 1 s, and the Diamond draw is 1 Diamond.
-  These are placeholder prices, not tuned ones.
+- ~~**Paywall placeholders.**~~ **Tuned 2026-11-19 (owner /goal, GG-T427).** Summon, lucky craft and Rested refill were all
+  still 1 g / 1 s. First-pass real prices now: deliberate gold Summon 800 g, one Diamond (LuckyDiamond) 250 g, Rested's
+  gold refill 60 g. The Diamond draw stays 1 Diamond (unchanged, deliberately cheaper per attempt than the 800 g
+  guaranteed pick) — still a measurement-pending number, not re-derived here. Rested also gained a second, Diamond-priced
+  refill (1 Diamond, instant, no job) alongside the gold one, so Diamonds can pay for either a hero pull or skipping the
+  wait, per the owner's request. None of this is soak-measured yet — first-pass numbers reasoned from the existing
+  shop/stage-pay figures elsewhere on this list, for the next balance pass to confirm or correct.
 - **Consumables** run from 20 G (Antidote) to 500 G (X-Potion); the Tent is 300 G, the Revival Charm 450 G. The Healing
   Potion (25 G, 50 HP) vs Hi-Potion (75 G, 150 HP) step is linear, so there is no reason to buy small ones late.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the

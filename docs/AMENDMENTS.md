@@ -1244,3 +1244,28 @@ Owner: *"some enemies drop slime trails when they move, some fire, some ice, som
 - **Counters** come from the GG-T371 table (`elements.json` `Tiles` rows and tool sets, no second table): a state's `Element` reacts with the mark it is painted onto (fire melts ice, ice douses fire, fire burns slime, fire sets a mine off), and a hero's element or tool covering a painted tile runs the same reaction; any element's hit arms a mine from range, a shoved foe sets one off, the Disarm Kit pulls it, Purifying Salts wash slime, fire and ice. `ElementCounters.Validate` passes: every hazard state has a Merchant clearer.
 - Balance unmeasured (no soak run), pending the owner's `/test`.
 - *(Tests: `HazardTrailTests`, written, not run.)*
+
+## 2026-11-19 — Paywall placeholders retired for real prices, Rested gets a Diamond refill too (owner /goal, GG-T427)
+
+Owner (/goal, 2026-11-19): diamonds should buy hero unlocks or cut the Rested wait, diamonds themselves should be
+buyable with a tunable amount of gold, and all of it should stay easy to retune — "forgiving monetization."
+
+- **Was:** every paywall hook (`Meta/Paywall.cs`) priced at the GG-T232 placeholder, 1 gold and 1 second, whatever it
+  was for: the deliberate gold Summon, one Diamond at the forge, and a full Rested refill. Rested's refill was gold-only;
+  Diamonds had exactly two sinks (the lucky craft, the GG-T343 random draw).
+- **Now:** the same one-table design (`Paywall.Table`), first-pass real numbers instead of placeholders:
+  `Paywall.SummonGoldPrice` **800** (a chosen hero, permanent, priced above a blind draw), `Paywall.DiamondGoldPrice`
+  **250** (the only non-real-money route to a Diamond today), `Paywall.RestedRefillGoldPrice` **60** (cheap and
+  frequent, the forgiving side of the hook). Every job's length is unchanged (1 s). Rested gained a second button
+  (`RestedPool.DiamondRefillPrice` = **1** Diamond, `RestedPool.DiamondRefill`): instant, no gold, no timed job — a
+  player short on gold but holding Diamonds skips the wait outright, alongside the existing gold refill, not instead
+  of it.
+- **Hero locking, checked, not changed:** `Progression.NewGame` only grants the heroes passed to it — whichever three
+  the character-select screen's player chose — so every other class starts owned by nobody; this already matched "all
+  characters locked except the starting party" before this ticket.
+- **Still not measured:** these are reasoned first-pass numbers (stage pay, shop prices and mercenary rates elsewhere
+  in `docs/RELEASE_SCOPE.md`), not a soak-confirmed balance. `DiamondSummon.Price` (still 1 Diamond) was deliberately
+  left alone this pass rather than hand-tuned without a measurement; flagged in RELEASE_SCOPE for the next balance pass.
+- *(Tests: `PaywallRestedTests`, `LuckyCraftTests`, `SummonTests` — updated to the new prices via the named constants
+  instead of literals where it mattered; three new tests for the Diamond refill: instant with no gold or job, refused
+  under price, refused when already rested.)*

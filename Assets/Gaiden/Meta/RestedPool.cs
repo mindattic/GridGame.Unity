@@ -69,6 +69,27 @@ namespace GridGame.Meta
             return Paywall.Start(s, PaywallKind.RestedRefill, null, now, out job);
         }
 
+        /// <summary>Diamonds for an instant refill — no timed job, no gold (GG-T427). The owner's other lever alongside
+        /// <see cref="BeginRefill"/>'s gold price (<see cref="Paywall.RestedRefillGoldPrice"/>): a player short on gold but
+        /// holding Diamonds (bought with gold via the LuckyDiamond hook, or later with real money) skips the wait outright.</summary>
+        public const int DiamondRefillPrice = 1;
+
+        public static Result CanDiamondRefill(SaveData s, DateTime now)
+        {
+            if (Points(s, now) >= Max) return Result.Fail("The party is already rested");
+            if (s.Count(Crafting.DiamondId) < DiamondRefillPrice) return Result.Fail("Not enough Diamonds");
+            return Result.Success();
+        }
+
+        public static Result DiamondRefill(SaveData s, DateTime now)
+        {
+            var ok = CanDiamondRefill(s, now);
+            if (!ok.Ok) return ok;
+            s.AddItem(Crafting.DiamondId, -DiamondRefillPrice);
+            Fill(s, now);
+            return Result.Success("The party is rested.");
+        }
+
         public static void Fill(SaveData s, DateTime now)
         {
             s.Rested.Points = Max;

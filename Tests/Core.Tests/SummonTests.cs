@@ -79,7 +79,7 @@ namespace GridGame.Tests
             Assert.That(DiamondSummon.Begin(Real, s, T0, out _).Ok, Is.False, "a summoning is under way");
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(2));
             var gold = Summon.Pool(Real, s).First(d => s.Hero(d.Id) == null);
-            s.Gold = 10;
+            s.Gold = Paywall.SummonGoldPrice + 200;
             Assert.That(Summon.BeginRecruit(Real, s, gold.Id, T0, out _).Ok, Is.False, "the gold summon shares the circle");
         }
 
@@ -121,9 +121,9 @@ namespace GridGame.Tests
         {
             var s = WithDiamonds("D10", 1);
             var pick = Summon.Pool(Real, s).First(d => s.Hero(d.Id) == null);
-            s.Gold = 5;
+            s.Gold = Paywall.SummonGoldPrice + 5;
             Assert.That(Summon.Recruit(Real, s, pick.Id).Ok, Is.True);
-            Assert.That(s.Gold, Is.EqualTo(5 - Paywall.Cost(PaywallKind.Summon, s)));
+            Assert.That(s.Gold, Is.EqualTo(5));
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
         }
     }

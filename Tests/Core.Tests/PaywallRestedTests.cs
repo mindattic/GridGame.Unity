@@ -21,15 +21,15 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Every_paywall_hook_costs_one_gold_and_one_second_for_now()
+        public void Every_paywall_hook_prices_itself_from_one_tunable_table()
         {
             var s = Fresh();
+            Assert.That(Paywall.Cost(PaywallKind.Summon, s), Is.EqualTo(Paywall.SummonGoldPrice));
+            Assert.That(Paywall.Cost(PaywallKind.LuckyDiamond, s), Is.EqualTo(Paywall.DiamondGoldPrice));
+            Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice));
             foreach (PaywallKind k in Enum.GetValues(typeof(PaywallKind)))
-            {
-                Assert.That(Paywall.Cost(k, s), Is.EqualTo(1), k.ToString());
                 Assert.That(Paywall.Duration(k, s), Is.EqualTo(1.0), k.ToString());
-            }
-            Assert.That(Paywall.Tag(PaywallKind.RestedRefill, s), Is.EqualTo("1g · 1s"));
+            Assert.That(Paywall.Tag(PaywallKind.RestedRefill, s), Is.EqualTo($"{Paywall.RestedRefillGoldPrice}g · 1s"));
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace GridGame.Tests
         {
             var s = Fresh();
             for (int i = 0; i < RestedPool.Max; i++) RestedPool.Spend(s, T0);
-            s.Gold = 5;
+            s.Gold = Paywall.RestedRefillGoldPrice + 4;
             Assert.That(RestedPool.BeginRefill(s, T0, out var job).Ok, Is.True);
             Assert.That(s.Gold, Is.EqualTo(4));
             Assert.That(RestedPool.BeginRefill(s, T0, out _).Ok, Is.False, "one job of a kind at a time");
@@ -93,11 +93,43 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void A_diamond_refill_is_instant_no_gold_no_job()
+        {
+            var s = Fresh();
+            for (int i = 0; i < 3; i++) RestedPool.Spend(s, T0);
+            s.AddItem(Crafting.DiamondId, RestedPool.DiamondRefillPrice);
+            int gold = s.Gold;
+            Assert.That(RestedPool.DiamondRefill(s, T0).Ok, Is.True);
+            Assert.That(s.Rested.Points, Is.EqualTo(RestedPool.Max));
+            Assert.That(s.Gold, Is.EqualTo(gold), "Diamonds, not gold");
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
+            Assert.That(s.Jobs, Is.Empty, "lands at once, no timed job");
+        }
+
+        [Test]
+        public void A_diamond_refill_with_too_few_diamonds_is_refused()
+        {
+            var s = Fresh();
+            RestedPool.Spend(s, T0);
+            Assert.That(RestedPool.DiamondRefill(s, T0).Message, Does.Contain("Diamonds"));
+            Assert.That(s.Rested.Points, Is.EqualTo(RestedPool.Max - 1));
+        }
+
+        [Test]
+        public void A_diamond_refill_when_already_rested_is_refused()
+        {
+            var s = Fresh();
+            s.AddItem(Crafting.DiamondId, RestedPool.DiamondRefillPrice);
+            Assert.That(RestedPool.DiamondRefill(s, T0).Ok, Is.False);
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(RestedPool.DiamondRefillPrice), "nothing spent");
+        }
+
+        [Test]
         public void A_job_left_running_survives_a_save_round_trip_and_finishes_later()
         {
             var s = Fresh();
             for (int i = 0; i < 3; i++) RestedPool.Spend(s, T0);
-            s.Gold = 1;
+            s.Gold = Paywall.RestedRefillGoldPrice;
             Assert.That(RestedPool.BeginRefill(s, T0, out _).Ok, Is.True);
             var json = JsonConvert.SerializeObject(s, ContentLoader.Settings);
             var back = SaveMigrations.Migrate(JsonConvert.DeserializeObject<SaveData>(json, ContentLoader.Settings));
@@ -114,7 +146,7 @@ namespace GridGame.Tests
             var s = Fresh();
             s.Flags.Clear();
             var pick = Summon.Pool(Real, s).First(d => s.Hero(d.Id) == null);
-            s.Gold = 10;
+            s.Gold = Paywall.SummonGoldPrice + 9;
             Assert.That(Summon.Price(Real, s), Is.EqualTo(Paywall.Cost(PaywallKind.Summon, s)));
             Assert.That(Summon.BeginRecruit(Real, s, pick.Id, T0, out var job).Ok, Is.True);
             Assert.That(s.Gold, Is.EqualTo(9));
@@ -122,7 +154,7 @@ namespace GridGame.Tests
             Assert.That(Paywall.Finish(Real, s, job, T0.AddSeconds(1)).Ok, Is.True);
             Assert.That(s.Hero(pick.Id), Is.Not.Null);
             Assert.That(s.Recruits, Is.EqualTo(1));
-            Assert.That(Summon.Price(Real, s), Is.EqualTo(1), "flat — no longer rising per recruit");
+            Assert.That(Summon.Price(Real, s), Is.EqualTo(Paywall.SummonGoldPrice), "flat — no longer rising per recruit");
             Assert.That(Summon.BeginRecruit(Real, s, pick.Id, T0, out _).Ok, Is.False, "already owned");
         }
     }
