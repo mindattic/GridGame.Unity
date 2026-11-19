@@ -10,9 +10,9 @@ namespace GridGame.Meta
     /// </summary>
     public static class Features
     {
-        /// <summary>The Crucible (§22.10): endless waves from Camp. Off: replaying cleared stages ("hunts" on the
-        /// Adventure screen) is the one XP/loot grind, so a second grind mode is a duplicate Camp row.</summary>
-        public static bool Crucible = false;
+        /// <summary>The Crucible (§22.10): the "toilet play" horde mode, one team against endlessly harder waves, gold
+        /// banked every wave, until the team falls. On since 2026-11-19 (owner, GG-T430).</summary>
+        public static bool Crucible = true;
 
         /// <summary>The bounty board (§22.4). Off: its kill-N contracts duplicate the side quests' Defeat objectives
         /// (§22.11) and add a Camp row, an Adventure strip and a results row. Kills still count in the rules, and the
