@@ -547,15 +547,14 @@ namespace GridGame.App
             }
             else if (Features.Crucible) Station("Crucible", false, CampUnlocks.MilestoneHint(c, CampUnlocks.CrucibleAfter), null);
             Item("Items", () => new ItemsScreen());
-            Item("Status", () => new StatusScreen(s.Party.FirstOrDefault()));
-            Item("Equip", () => new EquipScreen(s.Party.FirstOrDefault()));
-            // GG-T180 (§25.0.9): onboarding step 7 introduces training here once the first armor enchant is bound.
-            Item("Abilities", () => new AbilitiesScreen(s.Party.FirstOrDefault()), Training.Step(s) ? "Train a skill!" : "");
-            // GG-T53 (§25.6.3): skill trees; opens on the first party hero with points to spend.
-            var talentHero = s.Party.Select(s.Hero).FirstOrDefault(h => h != null && h.SkillPoints > 0);
+            // GG-T435 (§25.0): one Heroes row for Status / Equip / Abilities (+ Talents) / Party, the tabs of one screen.
+            // GG-T180 (§25.0.9): while onboarding step 7 is ahead it reads "Train a skill!" and opens on Abilities (Learn);
+            // otherwise it shows the party's unspent skill points (GG-T53) and opens on Status.
             int partyPoints = s.Party.Select(s.Hero).Where(h => h != null).Sum(h => h.SkillPoints);
-            Item("Talents", () => new SkillTreeScreen(talentHero?.ClassId ?? s.Party.FirstOrDefault()), partyPoints > 0 ? $"{partyPoints} pts" : "");
-            Item("Party", () => new PartyScreen());
+            bool training = Training.Step(s);
+            var heroes = Ui.MenuRow("Heroes", training ? "Train a skill!" : partyPoints > 0 ? $"{partyPoints} pts" : "",
+                () => App.Router.Push(training ? new AbilitiesScreen(s.Party.FirstOrDefault()) : (GameScreen)new StatusScreen(s.Party.FirstOrDefault())), list.contentContainer);
+            heroes.name = "camp-heroes";
             // Talk (§27.1, GG-T117): chat with party members and joined Camp NPCs.
             int newTalks = DialogueRunner.TalkPartners(s).Count(p => { var t = DialogueRunner.TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); });
             Item("Talk", () => new TalkScreen(), newTalks > 0 ? $"{newTalks} new" : "");

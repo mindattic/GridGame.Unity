@@ -239,38 +239,13 @@ namespace GridGame.App
 
     // ── Status ────────────────────────────────────────────────────────────────────
 
-    public abstract class HeroPage : HubPage
+    /// <summary>The Hero screen's Status tab (§25.0, GG-T435): the per-hero character sheet that was the Status screen.</summary>
+    internal sealed class StatusTab : HeroTab
     {
-        protected string HeroId;
-        protected HeroPage(string heroId) { HeroId = heroId; }
-        protected HeroSave Hero => S.Hero(HeroId) ?? S.Roster.FirstOrDefault();
-
-        /// <summary>‹ portrait name › hero switcher across the roster.</summary>
-        protected void HeroSwitcher(VisualElement parent)
-        {
-            var roster = S.Roster.Select(h => h.ClassId).ToList();
-            int idx = Math.Max(0, roster.IndexOf(Hero.ClassId));
-            var bar = Ui.Window(null, parent);
-            var row = Ui.El("row", bar);
-            Ui.Button("‹", () => { HeroId = roster[(idx - 1 + roster.Count) % roster.Count]; Refresh(); }, "btn--small btn--icon", row);
-            Ui.Thumb(Hero.ClassId, row, 120).style.marginLeft = Space.S16;
-            var col = Ui.El("col grow", row);
-            var u = Progression.Preview(C, Hero);
-            Ui.Text(C.Class(Hero.ClassId).Name, "h2", col);
-            Ui.Text($"Lv {u.Level}{(S.Party.Contains(Hero.ClassId) ? "" : "  (reserve)")}", "small gold", col);
-            Ui.Button("›", () => { HeroId = roster[(idx + 1) % roster.Count]; Refresh(); }, "btn--small btn--icon", row);
-        }
-    }
-
-    public sealed class StatusScreen : HeroPage
-    {
-        public StatusScreen(string heroId) : base(heroId) { }
         public override string Id => "status";
-        protected override string Title => "Status";
 
-        protected override void BuildBody(VisualElement body)
+        public override void BuildBody(VisualElement body)
         {
-            HeroSwitcher(body);
             var h = Hero;
             var def = C.Class(h.ClassId);
             var u = Progression.Preview(C, h);
@@ -406,16 +381,15 @@ namespace GridGame.App
 
     // ── Equip ─────────────────────────────────────────────────────────────────────
 
-    public sealed class EquipScreen : HeroPage
+    /// <summary>The Hero screen's Equip tab (§25.4, GG-T435).</summary>
+    internal sealed class EquipTab : HeroTab
     {
         private EquipmentSlot slot = EquipmentSlot.Weapon;
         private string previewId;
-        public EquipScreen(string heroId) : base(heroId) { }
         public override string Id => "equip";
-        protected override string Title => "Equip";
-        protected override void BuildBody(VisualElement body)
+        public override void OnHeroChanged() => previewId = null;
+        public override void BuildBody(VisualElement body)
         {
-            HeroSwitcher(body);
             var h = Hero;
             bool MasteryFor(EquipmentSlot sl) => sl == EquipmentSlot.Weapon ? h.WeaponMastery > 1f : h.Armor.TryGetValue(sl, out var piece) && piece.Mastery > 1f;
             void SlotGroup(string title, IEnumerable<EquipmentSlot> slots)
@@ -504,26 +478,45 @@ namespace GridGame.App
 
     // ── Abilities: learn + slot the bar ───────────────────────────────────────────
 
-    public sealed class AbilitiesScreen : HeroPage
+    /// <summary>The Hero screen's Abilities tab (§25.6, GG-T435): the battle bar over the Known / Items / Learn / Passives /
+    /// Locked sub-tabs, plus Talents — the skill trees and their Respec, folded in from the old Talents screen.</summary>
+    internal sealed class AbilitiesTab : HeroTab
     {
         private int slot;
         private int tab = -1;
-        public AbilitiesScreen(string heroId) : base(heroId) { }
-        public override string Id => "abilities";
-        protected override string Title => "Abilities";
-        /// <summary>GG-T180: while onboarding step 7 is ahead, the screen introduces the Learn tab with its own tip.</summary>
-        protected override string TipStation => Training.Step(S) ? Training.TipStation : Id;
+        private readonly TalentsTab talents = new TalentsTab();
+        /// <summary>The Talents sub-tab's index (after Known, Items, Learn, Passives, Locked).</summary>
+        public const int TalentsSub = 5;
+        private static readonly string[] SubTabs = { "Known", "Items", "Learn", "Passives", "Locked", "Talents" };
 
-        protected override void BuildBody(VisualElement body)
+        public AbilitiesTab(int subTab = -1) { tab = subTab; }
+        public override void OnHeroChanged() => talents.OnHeroChanged();
+        /// <summary>"talents" while the Talents sub-tab is up, so `-start talents` and the harness's goto check still match.</summary>
+        public override string Id => tab == TalentsSub ? talents.Id : "abilities";
+        /// <summary>GG-T180: while onboarding step 7 is ahead, the tab introduces Learn with its own tip.</summary>
+        public override string TipStation => tab == TalentsSub ? null : Training.Step(S) ? Training.TipStation : "abilities";
+
+        /// <summary>GG-T180 (§25.0.9): during step 7 the tab opens on Learn, on the hero the guided first skill is for —
+        /// decided before the hero picker draws, so the picker marks that hero.</summary>
+        public override void Prepare()
         {
-            // GG-T180 (§25.0.9): during step 7 the screen opens on Learn, on the hero the guided first skill is for.
+            if (tab >= 0) return;
             var plan = Training.First(C, S);
-            if (tab < 0)
+            tab = plan != null ? Training.LearnTab : 0;
+            if (plan != null) HeroId = plan.Hero.ClassId;
+        }
+
+        public override void BuildBody(VisualElement body)
+        {
+            Prepare();
+            var plan = Training.First(C, S);
+            if (tab == TalentsSub)
             {
-                tab = plan != null ? Training.LearnTab : 0;
-                if (plan != null) HeroId = plan.Hero.ClassId;
+                Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
+                talents.Host = Host;
+                talents.BuildBody(body);
+                return;
             }
-            HeroSwitcher(body);
             var h = Hero;
             int unlocked = Progression.UnlockedSlots(S);
             var barW = Ui.Window("Battle bar", body);
@@ -566,7 +559,7 @@ namespace GridGame.App
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
-            Ui.Tabs(new[] { "Known", "Items", "Learn", "Passives", "Locked" }, tab, i => { tab = i; Refresh(); }, body);
+            Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
             var w = Ui.Window(null, body);
             w.style.flexGrow = 1; w.style.marginTop = Space.S0;
             var list = Ui.List(w).contentContainer;
@@ -764,12 +757,13 @@ namespace GridGame.App
 
     // ── Party ─────────────────────────────────────────────────────────────────────
 
-    public sealed class PartyScreen : HubPage
+    /// <summary>The Hero screen's Party tab (§25.5, GG-T435): every roster hero as a card; tap to swap in or out.</summary>
+    internal sealed class PartyTab : HeroTab
     {
         public override string Id => "party";
-        protected override string Title => "Party";
+        public override bool ShowsPicker => false;
 
-        protected override void BuildBody(VisualElement body)
+        public override void BuildBody(VisualElement body)
         {
             var w = Ui.Window($"Active party {S.Party.Count}/{Progression.MaxPartySize} — tap to swap", body);
             w.style.flexGrow = 1;

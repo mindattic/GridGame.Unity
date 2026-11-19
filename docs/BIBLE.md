@@ -3480,6 +3480,12 @@ ENEMIES ─▶ drop tables ─▶ Inventory ─┬▶ Blacksmith (forge / upgrad
 
 `HubScreen`: a party window (portrait, name, level, HP gauge per active hero; tap → Status), a menu, and a side window (Gold, play time, campaign stages cleared). Menu rows, in order: **Adventure** ("Stage N"), **Items**, **Status**, **Equip**, **Abilities**, **Party**, **Merchant**, **Blacksmith**, **Alchemist**, **Inn** (cost or "Rested"), **Summon Circle**, **Bounties** (progress), **Bestiary**, **Settings**, **Save & Quit**. Each sub-screen is a `HubPage` with a header (back, title, gold) over a themed backdrop; Back returns to Camp. Every successful action toasts, plays a cue, persists and refreshes (`HubPage.Done`).
 
+**Amended 2026-11-19 (owner, GG-T435): one Heroes row.** Status, Equip, Abilities, Talents and Party were four or five Camp rows for one hero; they are now the tabs of one **Hero screen** (`HeroScreen`, `App/Screens/HeroScreen.cs`, title "Heroes") behind a single **Heroes** row where Status used to sit (`camp-heroes`; it reads "Train a skill!" while onboarding step 7 is ahead and opens on Abilities then, §25.0.9, otherwise the party's unspent skill points, opening on Status).
+- **Layout:** the header, then the tabs **Status | Equip | Abilities | Party** (`hero-tabs`; `tab-status` …), then a **roster strip** (`hero-picker`): one card per hero (`hero-pick-<classId>`: portrait, name, level, **Party** or **Reserve**), the party first, the picked hero framed in gold; it scrolls sideways when the roster is wider than the column and its cards share the row when not. The Party tab leaves the strip out (it lists every hero itself). Then the tab's own body, unchanged from the screen it was.
+- **One hero across tabs:** the picked hero carries from tab to tab; picking another forgets a previewed Equip piece and a selected talent node.
+- **Abilities** keeps its sub-tabs (Known, Items, Learn, Passives, Locked) and gains **Talents**: the skill trees and the per-hero Respec (§25.6.3), with no battle bar above them.
+- **Ids and old routes:** the screen's id is its tab's (`status`, `equip`, `abilities`, `talents` on the Talents sub-tab, `party`), so the camp tips (`abilities`, `abilities-learn`) fire when the Abilities tab opens and the automation `goto`/`-start` names still match. `StatusScreen`, `EquipScreen`, `AbilitiesScreen`, `SkillTreeScreen` and `PartyScreen` are thin wrappers that open the Hero screen on their tab: Camp's party cards (Status, on that hero), the Crucible's **Change team** (Party) and `-start status|equip|abilities|talents|party` all land there. Every element name the tips and harness flows use (`guided-lesson`, `craft`, `learn-*`, `passive-*`, `locked-*`, `talent-*`, `bar-move-*`, `status-*`) is kept.
+
 **Amended 2026-10-19 (owner, GG-T119):** the service rows — **Merchant**, **Blacksmith**, **Alchemist**, **Enchantress** (new, §25.3.4) and **Inn** — appear only once that Camp NPC has joined the caravan (§25.0.1); **Talk** (§27.1) sits after Party. A new save's Camp has none of them.
 
 ### 25.0.1 Camp NPCs join along the way (GG-T119)
@@ -3574,7 +3580,7 @@ Alongside the six weapon-only elemental enchants (`enchants.json`, which turn a 
 
 The last step of the onboarding chain. Once the first armor enchant is bound (`onboard:first-enchant`, §25.0.8), the **Learn** tab of the Abilities screen (gold-bought abilities, §25.6, US-231) is introduced, and a guided prompt trains one new skill and slots it on the battle bar.
 
-- **When:** `Training.Step` — the first enchant is done and `onboard:first-skill` isn't. Camp's **Abilities** row reads "Train a skill!" while it's ahead. Test Mode and New Game+ saves skip it (`Training.FirstDone`). The Learn tab itself was never locked and stays open throughout; this step is the introduction, not a gate.
+- **When:** `Training.Step` — the first enchant is done and `onboard:first-skill` isn't. Camp's **Abilities** row reads "Train a skill!" while it's ahead (**Amended 2026-11-19, GG-T435:** the **Heroes** row now, which then opens the Hero screen on its Abilities tab). Test Mode and New Game+ saves skip it (`Training.FirstDone`). The Learn tab itself was never locked and stays open throughout; this step is the introduction, not a gate.
 - **Guided skill:** `Training.First` picks the party lead first (then the rest of the party, then the reserve) and, for that hero, the first not-yet-known skill on its own class list (else the first universal skill by name). The Abilities screen opens on **Learn**, on that hero, with a guided card at the top (`guided-lesson`: the skill, what it does, "First lesson free", the bar slot it lands in) and a **Learn** button (`craft`). Learn rows are named `learn-<abilityId>`.
 - **Free and slotted:** while the step is ahead, any skill (not spell) learned is the guided one: `Abilities.Price(s, a)` is 0 for it, and `Abilities.Learn` puts it in the first empty unlocked bar slot (else the last unlocked slot, `Training.SlotFor`) and sets `onboard:first-skill`, which ends the chain. Later skills cost their usual price (§25.6: 150G + 50G per `CooldownTurns`) and are slotted by hand.
 - **Camp tip:** the Abilities screen shows the `abilities-learn` tip (its own, separate from the plain `abilities` tip, so a player who opened Abilities early still gets it): it names the hero and the skill, says the first lesson is free and which slot it goes in, and rings **Learn**.
@@ -3636,13 +3642,19 @@ The first time the player opens a Camp station, a one-time **camp tip** points a
 
 ### 25.4 Equip
 
+**Amended 2026-11-19 (GG-T435):** now the **Equip** tab of the Hero screen (§25.0); the roster strip replaces the ‹ portrait › switcher. `EquipScreen` opens the Hero screen on it.
+
 `EquipScreen`: hero switcher (‹ portrait ›), the five slots, a stat-delta grid (STR VIT AGI SPD INT WIS LCK, current → preview), and the bag's candidates for the selected slot (tap to preview, tap again to equip; "Remove" unequips). For an armor slot the compare panel also shows armor set progress for the current and previewed piece (GG-T182, [§24.2.3](#2423-armor-sets-gg-t182)).
 
 ### 25.5 Party
 
+**Amended 2026-11-19 (GG-T435):** now the **Party** tab of the Hero screen (§25.0), drawn without the roster strip. `PartyScreen` opens the Hero screen on it (the Crucible's **Change team**).
+
 `PartyScreen`: every roster hero as a card (thumb, name, level, MaxHP, Active/Reserve, class card text); tap toggles ([§23.4](#234-roster--party-composition)).
 
 ### 25.6 Abilities
+
+**Amended 2026-11-19 (GG-T435):** now the **Abilities** tab of the Hero screen (§25.0), with a sixth sub-tab, **Talents** (§25.6.3). The Status sheet below (GG-T48) is likewise the Hero screen's **Status** tab; `AbilitiesScreen` and `StatusScreen` open the Hero screen on their tab.
 
 **Amended 2026-11-16 (GG-T388):** a **Locked** tab lists every kit or tree ability a hero doesn't know yet and where it comes from: its trainer price, its skill-tree node and points, or the Tome that teaches it and where that drops.
 
@@ -3746,6 +3758,8 @@ Built on §25.6.2's rules, not beside them: the slot thresholds, the scaled gate
 *(Tests: `TalentTests` — `Every_skill_tree_sits_once_on_the_adjacency_ring`, `Ring_distance_routes_a_warrior_to_mage_through_guardian`, `A_distant_tree_must_be_routed_to_and_costs_more_per_step`. The GG-T51 tests pick the home tree's neighbours first, so they keep testing the flat premium.)*
 
 ### 25.6.3 Talents screen and Inn Respec (GG-T53)
+
+**Amended 2026-11-19 (GG-T435):** the Talents screen is folded into Abilities: it is the **Talents** sub-tab of the Hero screen's Abilities tab (§25.0), the same point counter, Respec button, tree tabs, node graph and detail, with the hero picked on the roster strip. Camp's **Talents** row is gone; the **Heroes** row shows the party's unspent points instead. `SkillTreeScreen` opens the Hero screen there (id `talents`).
 
 Skill points (§15.1) are now spent on §25.6.1's tree nodes. `Meta.Talents` (`Assets/Gaiden/Meta/Talents.cs`) owns the rules; `HeroSave.TreeNodes` records each node bought with points as `"treeId/nodeId"` (an older save has none, so no migration step is needed).
 - **Node states** — **Known** (green): the grant is already in `Known` (starting kit or gold-Learned). It counts toward the tree's points with no point spent, which is how GG-T50's "starts in its home tree with its default abilities pre-unlocked" works. **Learned** (gold): bought with points. **Available** (blue): every prerequisite node is unlocked and the tree's unlocked-node cost total (`Talents.PointsIn`, the same sum as the Build screen's `Progression.TreeInvestment`) has reached `RequiredPointsInTree`. **Locked** (dim): otherwise, and the detail panel says what is missing.

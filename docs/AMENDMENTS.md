@@ -1302,3 +1302,16 @@ facilities for Blacksmith, Alchemist, etc".
   [BIBLE §25.12.2](BIBLE.md#25122-facility-upgrades-gate-material-tiers-gg-t432).
 - *Why:* the owner's gold sink — better materials need better facilities — reusing the rarity data instead of
   inventing an ingot ladder for 500 recipes.
+
+## 2026-11-19 — One tabbed Hero screen: Status, Equip, Abilities (+ Talents), Party (owner, GG-T435)
+
+Owner: merge Status / Equip / Abilities / Party into one tabbed hero screen, with Talents folded into Abilities, so Camp
+has fewer rows.
+
+- **Was:** five Camp rows (Status, Equip, Abilities, Talents, Party), each its own screen with a ‹ portrait › hero
+  switcher.
+- **Now:** one **Heroes** row opening the Hero screen: tabs Status | Equip | Abilities | Party over a roster strip (party
+  first and marked, picked hero framed); Abilities gains a **Talents** sub-tab (skill trees + per-hero Respec). The
+  screen's id follows its tab, and the old screen classes open it on their tab, so the camp tips, the Crucible's Change
+  team and every automation route still land. [BIBLE §25.0](BIBLE.md#250-camp-navigation).
+- *Why:* fewer rows for one hero's business, and the hero picked once stays picked across tabs.

@@ -27,10 +27,11 @@ cover the hidden systems.
 | Battle, level-up fanfare, results, retry / next battle | KEEP | The game | — |
 | Story crawls (one every 5 stages), story beats, credits | KEEP | Loop step; text is Prose-sourced | — |
 | Wanderers (Trust + game of wits), guests, talk-recruitables | KEEP | Loop step | — |
-| Items, Status, Equip, Party | KEEP | Basic roster management | — |
-| Abilities (Learn, kit trainer, Locked tab, Passives, Tomes and Chests) | KEEP | "Learn skills" | — |
-| Talents (skill trees) with its per-hero Respec button | KEEP | Spends the skill points level-ups give; removing it would strand them | — |
-| Camp row **Inn: Respec** | SIMPLIFY (hidden) | The Talents screen's Respec button already does the same job with the same price and the same Inn rule | `Features.InnRespecRow = true` |
+| Items | KEEP | Basic roster management | — |
+| Heroes: Status, Equip, Abilities, Party as the tabs of one Hero screen (GG-T435) | KEEP (merged) | Basic roster management; one Camp row instead of four | — |
+| Abilities tab (Learn, kit trainer, Locked tab, Passives, Tomes and Chests) | KEEP | "Learn skills" | — |
+| Talents (skill trees) with its per-hero Respec button, now the Abilities tab's Talents sub-tab (GG-T435) | KEEP (merged) | Spends the skill points level-ups give; removing it would strand them | — |
+| Camp row **Inn: Respec** | SIMPLIFY (hidden) | The Talents sub-tab's Respec button already does the same job with the same price and the same Inn rule | `Features.InnRespecRow = true` |
 | Merchant (Buy, Sell, Bargain shelf) | KEEP | "Buy items / weapons"; the bargain shelf is the early cheap-weapon gamble | — |
 | Blacksmith (Repair, Forge, Upgrade, Salvage, masterwork, recipe discovery) | KEEP | "Repair and buy weapons" | — |
 | Lucky craft (Diamond) | KEEP | Paywall hook | — |

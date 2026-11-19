@@ -13,18 +13,17 @@ namespace GridGame.App
     // ─────────────────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// The Talents screen: the hero's home tree (and any off-tree it already has a node in) drawn as a node graph — one
+    /// The Talents sub-tab of the Hero screen's Abilities tab (GG-T435; the Talents screen before it): the hero's home tree (and any off-tree it already has a node in) drawn as a node graph — one
     /// row per points-in-tree tier, prerequisite links drawn between cards — with Innate/Purchased/Available/Locked states,
     /// the skill-point counter, a detail panel for the tapped node (its tooltip) and confirm-to-spend.
     /// </summary>
-    public sealed class SkillTreeScreen : HeroPage
+    internal sealed class TalentsTab : HeroTab
     {
         private int tab;
         private string selected;
         private string popNode;
-        public SkillTreeScreen(string heroId) : base(heroId) { }
         public override string Id => "talents";
-        protected override string Title => "Talents";
+        public override void OnHeroChanged() => selected = null;
 
         private static readonly Color PurchasedColor = Palette.Gold;
         private static readonly Color InnateColor = Palette.Good;
@@ -37,9 +36,8 @@ namespace GridGame.App
         public static string StateLabel(TalentState s) => s == TalentState.Purchased ? "Learned"
             : s == TalentState.Innate ? "Known" : s == TalentState.Available ? "Available" : "Locked";
 
-        protected override void BuildBody(VisualElement body)
+        public override void BuildBody(VisualElement body)
         {
-            HeroSwitcher(body);
             var h = Hero;
             var trees = Talents.Trees(C, h);
 
