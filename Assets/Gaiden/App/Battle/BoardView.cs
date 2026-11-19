@@ -208,12 +208,13 @@ namespace GridGame.App
             // marked, tougher variant from anywhere on the board.
             if (u.IsBountyTarget)
             {
-                var skull = BountySkull.Make(Size.Pip + Space.S8);
+                // Larger than the status badges and pulsing harder (seen in play: at badge size it read as one more pip).
+                var skull = BountySkull.Make(Size.IconM);
                 skull.name = "bounty-skull-" + u.Id;
                 skull.style.position = Position.Absolute;
                 skull.style.right = Space.S4; skull.style.top = Space.S4;
                 Root.Add(skull);
-                skull.schedule.Execute(() => skull.style.scale = new Scale(Vector3.one * (1f + 0.08f * Mathf.Sin(Tween.Clock * 3f)))).Every(33);
+                skull.schedule.Execute(() => skull.style.scale = new Scale(Vector3.one * (1f + 0.14f * Mathf.Sin(Tween.Clock * 3f)))).Every(33);
             }
 
             // One scheduled beat drives both the amber pulse and the red glow; cheap no-op when neither is active.
