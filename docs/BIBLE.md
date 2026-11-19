@@ -1006,6 +1006,36 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
       refuses (no two campaign waves are the same encounter). Kept the 3-foe trim but dropped `toad00` instead of
       `frog03`: now `frog00`/`frog01`/`frog03`. All four are the same 12 VIT / 15 STR `toxic_skin` statline, so the
       wave's weight is unchanged; `toad00` still fights in `greenvalley-03` wave 5.
+  - **Amended 2026-11-19 (GG-T442): placement and shape invariants the GG-T276 edits broke, restored without
+    re-densifying a wave or re-stacking an elite.**
+    - **`greenvalley-01`** (§14 "five waves of rising difficulty"): with every foe at `Level: 1` (`0202aedb`) the
+      captain's finale (77) weighed less than wave 4 (101) and the frogs (81) less than wave 2 (91). Moved `wolf01`
+      from wave 2 to the finale: wave 2 is `wolf00`+`bat00` (59), the finale `captain`/`soldier02`/`soldier03`/
+      `wolf01` (109) — weights 54 < 59 < 81 < 101 < 109, no foe added, no level raised, the finale at the 4-foe
+      sibling ceiling `cf707043` set, and the tutorial's wave-5 "pincer the wolf while it howls" has its wolf back.
+      (`wolf00`+`wolf01` would have repeated `lanternroad-01` wave 1.)
+    - **`greenvalley-02`/`greenvalley-03` wave 1** (GG-T190 shove lesson): the opening wave must hold one foe at
+      `(2,5)`, above the gap between the lead hero `(1,6)` and the third `(2,7)`. `d83e1d9a` moved every slime out
+      of the hero band; this puts back *one* — the lesson foe, a speed-8 slime the party reaches first — and keeps
+      the rest out (`greenvalley-02`: `slime02@(2,5)` + `slime01@(3,1)`, was two slimes on row 5 before `d83e1d9a`;
+      `greenvalley-03`: `slime02` back to `(2,5)`, `slime03` stays at `(4,3)`). `greenvalley-02` keeps
+      `cf707043`'s two-slime opener, and its slime is now `slime02`, the `slimetrail` carrier the stage's region
+      rule is pinned to. Watch `greenvalley-03`'s win rate on the next real soak: its 25% → 75% came from this move.
+    - **`cave-03` wave 3:** `wraithknight02` (Reaver) → `wraithknight03` (Vigilant), so the Vigilant still guards the
+      Anchor Wastes, as the only Watch elite in a wave of plain filler (`skelepede00`, `goblinthug00`) — the
+      un-stacking `d83e1d9a` did is kept; the Reaver still fights in `cave-01` wave 2.
+    - **`cave-01` wave 3:** `ceramicknight00` → `voidsentinel`: the same plated 18-VIT construct tier, in a 2-foe
+      wave with filler, not back in the four-elite finale `fd602646` thinned.
+    - **`desert-03` wave 2:** `techgremlin00` → `infernalist03`: the Shardfall's Medic now first appears in the
+      theme's last stage (as `cf707043` says sibling themes do), not in `desert-01`, and not beside `desert-03`'s
+      `AxisWard` finale boss; `techgremlin00` still fights in wave 4 and `desert-01`.
+    - **`cityruins-04` wave 2:** dropped `mockingecho` (GG-T417 had added it; the Underspire fields only Street/Hollow/
+      Choir foes, and a postgame non-finale wave holds at most 2): now `cyberzombie00`+`pitlurker`. The Echo still
+      haunts Halcyon I and II.
+    - **Speed tiers (8/11/15/18):** the postgame region monsters were authored off-tier; each snapped to the nearest
+      tier its card reads as — 8: `holdwright`, `chainwarden` (9), `holdram` (6), `spireshover` (7), `crystalbrute`,
+      `anchorhulk`, `bloatdrowner` (5); 11: `holdmarksman`, `shardcaller`, `stormcaller`, `gloommender` (10),
+      `pitlurker`, `mockingecho` (12); 15: `duskmimic` (13, a flanker).
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
