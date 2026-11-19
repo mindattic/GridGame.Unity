@@ -815,7 +815,7 @@ namespace GridGame.App
             w.style.flexGrow = 1; w.style.marginTop = Space.S0;
             var list = Ui.List(w).contentContainer;
             var cart = selling ? sellCart : buyCart;
-            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C);
+            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C).Where(i => Features.Offers(i.Id)).ToList();
             if (items.Count == 0) Ui.Text(selling ? "Nothing to sell." : "Sold out.", "small dim", list);
             var detail = Ui.Window(null, body);
             detail.style.minHeight = 220;
@@ -1366,7 +1366,7 @@ namespace GridGame.App
             var w = Ui.Window(null, body);
             w.style.flexGrow = 1;
             var list = Ui.List(w).contentContainer;
-            foreach (var d in Summon.Pool(C, S))
+            foreach (var d in Summon.Pool(C, S).Where(d => Features.Offers(d.Id)))
             {
                 var def = d;
                 bool owned = S.Hero(d.Id) != null;

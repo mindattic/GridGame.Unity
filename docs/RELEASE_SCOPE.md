@@ -48,7 +48,7 @@ cover the hidden systems.
 | Settings: audio, battle speed, drag timer, colorblind, cut-ins, confirm, reduce motion | KEEP | Player options and accessibility | — |
 | Settings: **Menu theme, Font, Text wrapping** | DISABLE | Developer look presets (GG-T185, GG-T305). Off, every profile draws with the default theme (Chrono), font (Rounded) and word wrap | `Features.LookPresets = true` |
 | New Game+ | KEEP | Finished endgame; one row that shows only after the credits | — |
-| Taming / domestication (Monster Tamer, Dog Whistle) | KEEP, flagged | Finished and reachable only by choice (one summon, one shop item). See the cut questions | — |
+| Taming / domestication (Monster Tamer, Dog Whistle) | DISABLE (owner 2026-11-19, GG-T433) | A fourth way to grow the roster with half-heroes. The Summon Circle doesn't list the Monster Tamer and the Merchant doesn't stock the Dog Whistle (`Features.Offers`), the only ways in | `Features.Taming = true` |
 | **The Crucible** | DISABLE | Duplicates the loop's hunt (replaying cleared stages for XP and loot). A second grind mode is another Camp row to parse | `Features.Crucible = true` |
 | **Bounty board** | DISABLE | Its kill-N contracts duplicate the side quests' Defeat objectives, and it adds a Camp row, an Adventure strip and a results row. Kills still count in the rules | `Features.Bounties = true` |
 | **Caravan upgrades + crew barks** | DISABLE | A gold sink outside the loop, plus a flavor panel on Camp. Upgrades already bought keep working (Mana Casks, Armory discount, Scouts line, …) | `Features.Caravan = true` |

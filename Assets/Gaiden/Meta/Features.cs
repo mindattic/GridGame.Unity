@@ -33,10 +33,20 @@ namespace GridGame.Meta
         /// the one way to respec, so Camp loses a duplicate row.</summary>
         public static bool InnRespecRow = false;
 
+        /// <summary>Taming and domestication (GG-T303). Off for release (owner 2026-11-19, GG-T433): the Summon Circle
+        /// doesn't list the Monster Tamer and the Merchant doesn't stock the Dog Whistle, the only two ways in, so no tame
+        /// offer can come up. A save that already tamed something keeps it.</summary>
+        public static bool Taming = false;
+        public const string TamerClass = "monstertamer", TamingItem = "dog_whistle";
+
+        /// <summary>Whether the player may be offered this summon or shop entry: everything, unless it is a hidden
+        /// system's way in.</summary>
+        public static bool Offers(string id) => Taming || (id != TamerClass && id != TamingItem);
+
         /// <summary>Turns every switch on (the `-allfeatures` launch flag, for sweeps and the owner's review).</summary>
         public static void EnableAll()
         {
-            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = true;
+            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = Taming = true;
         }
     }
 }
