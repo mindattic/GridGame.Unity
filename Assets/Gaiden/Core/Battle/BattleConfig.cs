@@ -266,5 +266,27 @@ namespace GridGame.Core.Battle
         /// across the current 146 skills (mode CooldownTurns=3) lands within a few gold of the old flat 300.</summary>
         public const int SkillTrainBasePrice = 150;
         public const int SkillTrainPricePerCooldown = 50;
+
+        // ── The Crucible horde ramp (§22.10, GG-T430): every wave number in one place ─────────
+        /// <summary>Waves generated per run. Effectively endless: levels, counts and elites climb every wave, so a
+        /// party falls long before the last one (clearing them all would be a victory, committed the same way).</summary>
+        public const int CrucibleMaxWaves = 99;
+        /// <summary>Enemy levels gained per wave cleared (wave 1 is at the party's own level).</summary>
+        public const int CrucibleLevelStep = 1;
+        /// <summary>Foes in wave 1, and the cap.</summary>
+        public const int CrucibleFirstWaveEnemies = 2;
+        public const int CrucibleMaxWaveEnemies = 5;
+        /// <summary>Every this many waves, one more foe joins each wave (up to <see cref="CrucibleMaxWaveEnemies"/>).</summary>
+        public const int CrucibleWavesPerExtraEnemy = 3;
+        /// <summary>The first wave (0-based) with an elite: a foe <see cref="CrucibleEliteLevelBonus"/> levels above its wave.</summary>
+        public const int CrucibleFirstEliteWave = 4;
+        /// <summary>After the first elite, one more elite every this many waves (up to <see cref="CrucibleMaxElites"/>).</summary>
+        public const int CrucibleWavesPerElite = 5;
+        public const int CrucibleMaxElites = 3;
+        public const int CrucibleEliteLevelBonus = 3;
+        /// <summary>Gold banked for clearing a wave: base + per-wave × wave number (1-based) — wave 1 pays 15, wave 10 pays 60.
+        /// Kept however the run ends, on top of every coin the foes drop.</summary>
+        public const int CrucibleWaveGoldBase = 10;
+        public const int CrucibleWaveGoldPerWave = 5;
     }
 }

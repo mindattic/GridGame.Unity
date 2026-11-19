@@ -221,7 +221,7 @@ namespace GridGame.App
                 case ReinforcementsArrivedEvent ra: return ReinforcementsAnim(ra);
                 case EggLaidEvent el: return EggLaidAnim(el);
                 case EggHatchedEvent eh: return HatchAnim(eh);
-                case WaveClearedEvent wc: FlushTallies(); ShowBanner("Wave cleared!"); return Tween.Wait(Timing.Emphasis);
+                case WaveClearedEvent wc: FlushTallies(); return WaveClearedAnim(wc);
                 case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
                 case RevivedEvent rv: return ReviveAnim(rv);
                 case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); WindowContinues(pc.NewWindow); return null;
@@ -796,6 +796,19 @@ namespace GridGame.App
                     : new Translate(Random.Range(-jitter, jitter), Random.Range(-jitter, jitter));
             });
             el.RemoveFromHierarchy();
+        }
+
+        /// <summary>A wave falls. In the Crucible (§22.10, GG-T430) its pay is banked on the spot: the banner says how
+        /// much, and the coins burst from the board's centre into the gold counter with the coin chime.</summary>
+        private IEnumerator WaveClearedAnim(WaveClearedEvent wc)
+        {
+            if (wc.Coins <= 0) { ShowBanner("Wave cleared!"); yield return Tween.Wait(Timing.Emphasis); yield break; }
+            ShowBanner(InCrucible ? $"Wave {wc.Wave + 1} cleared · +{wc.Coins} G banked" : $"Wave cleared! +{wc.Coins} G");
+            var at = new Vector2(BoardView.Tile * 3, BoardView.Tile * 4);
+            App.StartCoroutine(FloatAway(board.Float($"+{wc.Coins} G", at + new Vector2(0, -20), Palette.Gold, TypeScale.H2), 1.1f));
+            App.StartCoroutine(CoinBurst(at, wc.Coins));
+            App.Audio.Sfx("ui.buy", 0.8f, 1.05f);
+            yield return Tween.Wait(Timing.Emphasis);
         }
 
         private IEnumerator LootAnim(LootEvent l)
@@ -1893,7 +1906,9 @@ namespace GridGame.App
             if (InCrucible)
             {
                 // The Crucible's waves never run out (§22.10): no "N/total", and a rising sting marks each one.
-                ShowBanner(wv.Wave == 0 ? "The Crucible: wave 1" : $"Crucible wave {wv.Wave + 1} · Lv {Crucible.WaveLevel(State.Stage.LevelOverride ?? 1, wv.Wave)}");
+                int elites = Crucible.WaveElites(wv.Wave);
+                ShowBanner((wv.Wave == 0 ? "The Crucible: wave 1" : $"Crucible wave {wv.Wave + 1} · Lv {Crucible.WaveLevel(State.Stage.LevelOverride ?? 1, wv.Wave)}")
+                           + (elites > 0 ? $" · {elites} elite{(elites == 1 ? "" : "s")}" : ""));
                 App.Audio.Sfx("battle.crucible_wave", 1f, 1f + Mathf.Min(0.5f, wv.Wave * 0.04f));
                 var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), new Color(1f, 0.55f, 0.3f), TypeScale.Title);
                 App.StartCoroutine(FloatAway(f, 1.0f));

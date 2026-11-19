@@ -215,6 +215,8 @@ namespace GridGame.Meta
         public int Best;
         public int Runs;
         public int TotalWaves;
+        /// <summary>The most gold one run has banked (wave pay plus drops, GG-T430); a worse run never lowers it.</summary>
+        public int BestGold;
     }
 
     /// <summary>What the save knows about one enemy class (§25.11). How much the Bestiary and the battle inspect

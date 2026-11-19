@@ -1269,3 +1269,17 @@ buyable with a tunable amount of gold, and all of it should stay easy to retune 
 - *(Tests: `PaywallRestedTests`, `LuckyCraftTests`, `SummonTests` — updated to the new prices via the named constants
   instead of literals where it mattered; three new tests for the Diamond refill: instant with no gold or job, refused
   under price, refused when already rested.)*
+
+## 2026-11-19 — The Crucible as a horde mode (owner direction, GG-T430)
+
+Owner: "implement the Crucible for 'toilet play' its just a horde mode that can earn you money and goes on until you
+die; you choose one team and go as far as you can; it dynamically generates harder and harder waves."
+
+- **Was:** 50 waves rising one level each, 2-5 foes; gold only from drops; the run used whatever party was active, with
+  no team shown on the Crucible screen; the record kept best waves only. Hidden at release as a duplicate grind (GG-T392).
+- **Now:** a horde mode. The Crucible screen shows **Your team** (the active party, up to the cap) with **Change team**;
+  99 generated waves; the ramp's numbers live in `BattleConfig.Crucible*` and add **elites** (a foe +3 levels from wave 5,
+  one more every 5 waves, up to 3); every cleared wave **banks gold** (10 + 5 × wave, via `WaveDef.ClearCoins`, shown as
+  it lands and kept on a wipe); the save also records the **best haul** (`CrucibleSave.BestGold`). Still 1 Rested to
+  enter. RELEASE_SCOPE: KEEP, ready for `Features.Crucible = true`. [BIBLE §22.10](BIBLE.md#2210-the-crucible).
+- *Why:* the owner's spec — a short, money-earning, go-until-you-die mode — rather than a second hunt.

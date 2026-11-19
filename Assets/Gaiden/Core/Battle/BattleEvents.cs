@@ -406,7 +406,9 @@ namespace GridGame.Core.Battle
     public sealed class WaveClearedEvent : BattleEvent
     {
         public int Wave;
-        public override string ToString() => $"WaveCleared {Wave + 1}";
+        /// <summary>Gold banked for clearing it (<see cref="GridGame.Core.Content.WaveDef.ClearCoins"/>, the Crucible's per-wave pay).</summary>
+        public int Coins;
+        public override string ToString() => $"WaveCleared {Wave + 1}" + (Coins > 0 ? $" +{Coins}G" : "");
     }
 
     public sealed class BattleEndedEvent : BattleEvent

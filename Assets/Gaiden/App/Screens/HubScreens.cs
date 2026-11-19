@@ -1473,20 +1473,45 @@ namespace GridGame.App
         {
             var w = Ui.Window("The Crucible", body);
             w.name = "crucible-intro";
-            var intro = Ui.Text("Wave after wave, back to back, until the party falls or you leave. Wounds, mana and items carry from wave to wave, with no camp between. " +
-                                "Every coin, drop and point of experience earned is <b>kept</b>, even in defeat, and the party recovers afterward. The campaign doesn't move.", "small", w);
+            var intro = Ui.Text("A horde that never ends: wave after wave, each one harder, until your team falls or you leave. Wounds, mana and items carry from wave to wave, with no camp between. " +
+                                "Every wave you clear banks gold, and every coin, drop and point of experience earned is <b>kept</b>, even in defeat. The campaign doesn't move.", "small", w);
             intro.style.whiteSpace = WhiteSpace.Normal;
             int start = Crucible.PartyLevel(S);
             Ui.MenuRow("First wave", $"Lv {start}, +{Crucible.LevelStep} each wave", null, w);
+            Ui.MenuRow("Horde", $"{Crucible.FirstWaveEnemies}→{Crucible.MaxWaveEnemies} foes, elites from wave {BattleConfig.CrucibleFirstEliteWave + 1}", null, w);
+            Ui.MenuRow("Pay", $"{Ui.Gold(Crucible.WaveGold(0))} for wave 1, +{BattleConfig.CrucibleWaveGoldPerWave} G each wave after", null, w).Q<Label>("value").AddToClassList("gold");
             var fams = Crucible.Families(C, S);
             Ui.MenuRow("Foes", $"{fams.Count} famil{(fams.Count == 1 ? "y" : "ies")} met", null, w);
             var names = Ui.Text(string.Join(", ", fams.Select(f => f[0].Name)), "tiny dim", w);
             names.style.whiteSpace = WhiteSpace.Normal;
             names.style.marginLeft = Space.S48;
 
+            // GG-T430: you pick one team before the run (the active party, up to the party-size cap) and it fights
+            // every wave; "Change team" swaps it on the Party page and comes straight back here.
+            var team = Ui.Window($"Your team {S.Party.Count}/{Progression.MaxPartySize}", body);
+            team.name = "crucible-team";
+            var faces = Ui.El("row", team);
+            faces.style.flexWrap = Wrap.Wrap;
+            faces.style.justifyContent = Justify.Center;
+            foreach (var id in S.Party)
+            {
+                var h = S.Hero(id);
+                if (h == null) continue;
+                var cell = Ui.El("col", faces);
+                cell.style.alignItems = Align.Center;
+                cell.style.marginLeft = cell.style.marginRight = Space.S8;
+                Ui.Thumb(id, cell, 96);
+                Ui.Text($"Lv {Progression.Level(h)}", "tiny", cell);
+            }
+            var teamRow = Ui.El("row", team);
+            teamRow.style.justifyContent = Justify.Center;
+            teamRow.style.marginTop = Space.S8;
+            Ui.Button("Change team", () => App.Router.Push(new PartyScreen()), "btn--small", teamRow).name = "crucible-team-change";
+
             var rec = Ui.Window("Record", body);
             rec.name = "crucible-record";
             Ui.MenuRow("Best", S.Crucible.Runs > 0 ? $"{S.Crucible.Best} waves" : "None yet", null, rec).Q<Label>("value").AddToClassList("gold");
+            Ui.MenuRow("Best haul", S.Crucible.Runs > 0 ? Ui.Gold(S.Crucible.BestGold) : "None yet", null, rec).Q<Label>("value").AddToClassList("gold");
             Ui.MenuRow("Runs", S.Crucible.Runs.ToString(), null, rec);
             Ui.MenuRow("Waves cleared", S.Crucible.TotalWaves.ToString(), null, rec);
 

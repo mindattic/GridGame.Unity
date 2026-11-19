@@ -37,7 +37,10 @@ namespace GridGame.Tests
             for (int i = 0; i < st.Waves.Count; i++)
             {
                 var w = st.Waves[i];
-                Assert.That(w.Enemies.Select(e => e.Level).Distinct(), Is.EqualTo(new[] { start + i * Crucible.LevelStep }), $"wave {i} level");
+                int lv = start + i * Crucible.LevelStep, elites = Crucible.WaveElites(i);
+                Assert.That(w.Enemies.Count(e => e.Level == lv), Is.EqualTo(w.Enemies.Count - elites), $"wave {i} level");
+                Assert.That(w.Enemies.Count(e => e.Level == lv + BattleConfig.CrucibleEliteLevelBonus), Is.EqualTo(elites), $"wave {i} elites");
+                Assert.That(w.ClearCoins, Is.EqualTo(Crucible.WaveGold(i)), $"wave {i} pay");
                 Assert.That(w.Enemies.Select(e => c.Class(e.Class).DropTable).Distinct().Count(), Is.EqualTo(1), $"wave {i} mixes families");
                 Assert.That(w.Enemies.Count, Is.EqualTo(Crucible.WaveEnemies(i)));
                 Assert.That(w.Guests, Is.Empty);
@@ -48,6 +51,25 @@ namespace GridGame.Tests
                 }
             }
             Assert.That(st.Waves.Last().Enemies.Count, Is.EqualTo(Crucible.MaxWaveEnemies));
+        }
+
+        /// <summary>GG-T430: the horde ramps on every axis — more foes, more elites, more pay — and never eases off.</summary>
+        [Test]
+        public void Crucible_horde_ramps_foes_elites_and_wave_pay_and_never_eases()
+        {
+            Assert.That(Crucible.WaveElites(0), Is.EqualTo(0), "the opening waves are plain");
+            Assert.That(Crucible.WaveElites(BattleConfig.CrucibleFirstEliteWave - 1), Is.EqualTo(0));
+            Assert.That(Crucible.WaveElites(BattleConfig.CrucibleFirstEliteWave), Is.EqualTo(1), "the first elite");
+            Assert.That(Crucible.WaveElites(Crucible.MaxWaves - 1), Is.EqualTo(BattleConfig.CrucibleMaxElites), "elites cap");
+            Assert.That(Crucible.WaveGold(0), Is.EqualTo(BattleConfig.CrucibleWaveGoldBase + BattleConfig.CrucibleWaveGoldPerWave));
+            for (int i = 1; i < Crucible.MaxWaves; i++)
+            {
+                Assert.That(Crucible.WaveEnemies(i), Is.GreaterThanOrEqualTo(Crucible.WaveEnemies(i - 1)), $"wave {i} foes");
+                Assert.That(Crucible.WaveElites(i), Is.GreaterThanOrEqualTo(Crucible.WaveElites(i - 1)), $"wave {i} elites");
+                Assert.That(Crucible.WaveElites(i), Is.LessThanOrEqualTo(Crucible.WaveEnemies(i)), $"wave {i} elites fit");
+                Assert.That(Crucible.WaveGold(i), Is.GreaterThan(Crucible.WaveGold(i - 1)), $"wave {i} pay");
+                Assert.That(Crucible.WaveLevel(1, i), Is.GreaterThan(Crucible.WaveLevel(1, i - 1)), $"wave {i} level");
+            }
         }
 
         [Test]
@@ -197,6 +219,18 @@ namespace GridGame.Tests
             Assert.That(s.Crucible.Best, Is.EqualTo(7));
             Assert.That(s.Crucible.Runs, Is.EqualTo(2));
             Assert.That(s.Crucible.TotalWaves, Is.EqualTo(9));
+        }
+
+        /// <summary>GG-T430: the save remembers the richest run's gold, and a poorer run never lowers it.</summary>
+        [Test]
+        public void The_best_haul_is_recorded_and_never_lowered()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "Cru");
+            BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Defeat, 5, 400, 10, "healing_potion"));
+            Assert.That(s.Crucible.BestGold, Is.EqualTo(400));
+            BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Retreated, 2, 90, 10, "healing_potion"));
+            Assert.That(s.Crucible.BestGold, Is.EqualTo(400));
         }
 
         [TestCase(BattlePhase.Defeat)]

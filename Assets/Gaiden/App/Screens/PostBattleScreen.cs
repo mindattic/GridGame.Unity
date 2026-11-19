@@ -171,7 +171,8 @@ namespace GridGame.App
                 report.Retreated || report.Escaped ? "The party steps out of the Crucible with everything it earned, and recovers." :
                 "The party falls in the Crucible, but every coin, drop and point of experience earned is kept. Everyone recovers.", "small", list);
             t.style.whiteSpace = WhiteSpace.Normal;
-            Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).Q<Label>("value").AddToClassList("gold");
+            Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list).Q<Label>("value").AddToClassList("gold");
+            if (App.Save?.Crucible != null) Ui.MenuRow("Best haul", Ui.Gold(App.Save.Crucible.BestGold), null, list).name = "crucible-best-gold";
             Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).name = "crucible-xp";
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);

@@ -21,14 +21,15 @@ namespace GridGame.Meta
     public static class Crucible
     {
         public const string IdPrefix = "crucible-";
-        /// <summary>Waves in one run. Effectively endless: enemy level climbs every wave, so a party falls long before.</summary>
-        public const int MaxWaves = 50;
+        // The horde ramp's numbers live in BattleConfig (GG-T430); these names are kept for callers and tests.
+        /// <summary>Waves in one run. Effectively endless: levels, foe counts and elites climb every wave.</summary>
+        public const int MaxWaves = BattleConfig.CrucibleMaxWaves;
         /// <summary>Enemy levels gained per wave cleared.</summary>
-        public const int LevelStep = 1;
-        public const int FirstWaveEnemies = 2;
-        public const int MaxWaveEnemies = 5;
+        public const int LevelStep = BattleConfig.CrucibleLevelStep;
+        public const int FirstWaveEnemies = BattleConfig.CrucibleFirstWaveEnemies;
+        public const int MaxWaveEnemies = BattleConfig.CrucibleMaxWaveEnemies;
         /// <summary>Every this many waves, one more enemy joins each wave (up to <see cref="MaxWaveEnemies"/>).</summary>
-        public const int WavesPerExtraEnemy = 3;
+        public const int WavesPerExtraEnemy = BattleConfig.CrucibleWavesPerExtraEnemy;
 
         public static bool IsStage(string stageId) => stageId != null && stageId.StartsWith(IdPrefix, StringComparison.OrdinalIgnoreCase);
 
@@ -38,6 +39,15 @@ namespace GridGame.Meta
         public static int WaveLevel(int startLevel, int wave) => startLevel + wave * LevelStep;
 
         public static int WaveEnemies(int wave) => Math.Min(MaxWaveEnemies, FirstWaveEnemies + wave / WavesPerExtraEnemy);
+
+        /// <summary>Elites in wave <paramref name="wave"/> (0-based): none before <see cref="BattleConfig.CrucibleFirstEliteWave"/>,
+        /// then one more every <see cref="BattleConfig.CrucibleWavesPerElite"/> waves, capped (and never more than the wave's foes).</summary>
+        public static int WaveElites(int wave) =>
+            wave < BattleConfig.CrucibleFirstEliteWave ? 0
+            : Math.Min(Math.Min(BattleConfig.CrucibleMaxElites, WaveEnemies(wave)), 1 + (wave - BattleConfig.CrucibleFirstEliteWave) / BattleConfig.CrucibleWavesPerElite);
+
+        /// <summary>Gold banked for clearing wave <paramref name="wave"/> (0-based), kept however the run ends.</summary>
+        public static int WaveGold(int wave) => BattleConfig.CrucibleWaveGoldBase + BattleConfig.CrucibleWaveGoldPerWave * (wave + 1);
 
         /// <summary>Not mid-expedition: the Crucible is fought from a settled camp, and its full-HP reset would
         /// otherwise heal the party between an expedition's battles for free (§22.5).</summary>
@@ -131,6 +141,10 @@ namespace GridGame.Meta
                 var group = EncounterCatalog.Pick(c, rng, pool[0].DropTable, count, level, used);
                 if (group != null) { wave.Group = group.Id; wave.Enemies.AddRange(EncounterCatalog.Spawns(group, level)); }
                 while (wave.Enemies.Count < count) wave.Enemies.Add(new SpawnDef { Class = rng.Pick(pool).Id, Level = level });
+                // GG-T430: the horde ramps — the last few foes of a later wave are elites, a few levels above it.
+                int elites = WaveElites(i);
+                for (int k = 0; k < elites; k++) wave.Enemies[wave.Enemies.Count - 1 - k].Level = level + BattleConfig.CrucibleEliteLevelBonus;
+                wave.ClearCoins = WaveGold(i);
                 stage.Waves.Add(wave);
             }
             return stage;
@@ -205,6 +219,7 @@ namespace GridGame.Meta
             s.Crucible.TotalWaves += rep.CrucibleWaves;
             if (rep.CrucibleWaves > s.Crucible.Best) { s.Crucible.Best = rep.CrucibleWaves; rep.CrucibleNewBest = true; }
             rep.CrucibleBest = s.Crucible.Best;
+            if (rep.Gold > s.Crucible.BestGold) s.Crucible.BestGold = rep.Gold;
 
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             s.UpdatedUtc = DateTime.UtcNow;

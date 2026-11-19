@@ -818,6 +818,8 @@ namespace GridGame.Core.Content
         public string SurpriseSpeaker;
         /// <summary>The line that speaker says. Null/empty = no dialogue beat, just the spawn (silent reinforcement).</summary>
         public string SurpriseLine;
+        /// <summary>Gold banked into the battle's haul when this wave is cleared (the Crucible's per-wave pay, §22.10, GG-T430). 0 = none.</summary>
+        public int ClearCoins;
     }
 
     /// <summary>One authored enemy group (GG-T184, encounters.json): a single-family mix of 1-5 foes, each on its

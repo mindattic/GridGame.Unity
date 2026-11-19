@@ -471,7 +471,9 @@ namespace GridGame.Core.Battle
             if (!enemiesAlive) foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave) enemiesAlive = true;
             if (!enemiesAlive)
             {
-                Emit(new WaveClearedEvent { Wave = S.Wave });
+                int clearCoins = Math.Max(0, S.Stage.Waves[S.Wave].ClearCoins);
+                S.Results.Coins += clearCoins;
+                Emit(new WaveClearedEvent { Wave = S.Wave, Coins = clearCoins });
                 if (S.Wave + 1 < S.Stage.Waves.Count)
                 {
                     S.Wave++;
