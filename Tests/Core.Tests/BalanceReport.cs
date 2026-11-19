@@ -34,7 +34,11 @@ namespace GridGame.Tests
             if (!story) CampNpcs.JoinAll(s);
             var rows = new Dictionary<string, Row>();
             var stages = c.CampaignStages();
-            finished = true;
+            // "Finished" is the main campaign, through campaign.json's Ending stage (GG-T446): the owner decided
+            // 2026-11-17 that the postgame after it is an intended grind a non-hunting bot isn't expected to finish.
+            // The bot still plays on into the postgame so its rows stay measured.
+            string endingStage = c.Campaign.Ending?.Stage;
+            finished = endingStage == null;
             int battleSeed = seed * 1000;
             foreach (var stage in stages)
             {
@@ -54,7 +58,8 @@ namespace GridGame.Tests
                     if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
                     BattleFactory.Commit(c, s, st);
                 }
-                if (!cleared) { finished = false; break; }
+                if (cleared && string.Equals(stage.Id, endingStage, System.StringComparison.OrdinalIgnoreCase)) finished = true;
+                if (!cleared) break;
             }
             // GG-T119: every Camp NPC is met on the road, early enough that a finished run has them all.
             if (finished)
