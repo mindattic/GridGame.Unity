@@ -14,10 +14,9 @@ namespace GridGame.Meta
         /// banked every wave, until the team falls. On since 2026-11-19 (owner, GG-T430).</summary>
         public static bool Crucible = true;
 
-        /// <summary>The bounty board (§22.4). Off: its kill-N contracts duplicate the side quests' Defeat objectives
-        /// (§22.11) and add a Camp row, an Adventure strip and a results row. Kills still count in the rules, and the
-        /// Mercenaries board still opens at the same milestone (<see cref="Mercenaries.Open"/>).</summary>
-        public static bool Bounties = false;
+        /// <summary>The bounty board (§22.4): hunts for titled, tougher variants of known foes, with a stage clue, a skull
+        /// marker in battle and the reward claimed at the board. On since 2026-11-19 (owner, GG-T431).</summary>
+        public static bool Bounties = true;
 
         /// <summary>Caravan upgrades and the crew barks (§25.12), with the station facilities (§25.12.2): the necessary gold
         /// sink, where Forge and Still levels unlock better material tiers. On since 2026-11-19 (owner, GG-T432).</summary>
