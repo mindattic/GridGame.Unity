@@ -37,6 +37,12 @@ namespace GridGame.Meta
         /// doesn't list the Monster Tamer and the Merchant doesn't stock the Dog Whistle, the only two ways in, so no tame
         /// offer can come up. A save that already tamed something keeps it.</summary>
         public static bool Taming = false;
+
+        /// <summary>The Enchantress's station: armor and weapon enchants (§24.6, GG-T119). Off for release (owner 2026-11-19,
+        /// GG-T436: "enough things going on without introducing slotting gems and enchantments on day one"). Her Camp row is
+        /// hidden and the onboarding chain skips its enchant step (step 7, Training, follows the first armor instead).
+        /// Recipes, content and enchants a save already bound stay. Plans: docs/plans/enchanting-and-gems.md.</summary>
+        public static bool Enchanter = false;
         public const string TamerClass = "monstertamer", TamingItem = "dog_whistle";
 
         /// <summary>Whether the player may be offered this summon or shop entry: everything, unless it is a hidden
@@ -46,7 +52,7 @@ namespace GridGame.Meta
         /// <summary>Turns every switch on (the `-allfeatures` launch flag, for sweeps and the owner's review).</summary>
         public static void EnableAll()
         {
-            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = Taming = true;
+            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = Taming = Enchanter = true;
         }
     }
 }

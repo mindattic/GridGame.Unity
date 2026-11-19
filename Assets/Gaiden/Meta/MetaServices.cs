@@ -2212,8 +2212,11 @@ namespace GridGame.Meta
         /// <summary>The first skill is behind this save: trained, or a bot's or New Game+ save.</summary>
         public static bool FirstDone(SaveData s) => s == null || s.TestMode || s.NewGamePlus > 0 || s.Flags.Contains(FirstSkillFlag);
 
-        /// <summary>Step 7 is the current onboarding step: the first armor enchant is done (§25.0.8) and the first skill isn't.</summary>
-        public static bool Step(SaveData s) => !FirstDone(s) && s.Flags.Contains(ArmorEnchanting.FirstEnchantFlag);
+        /// <summary>Step 7 is the current onboarding step: the first armor enchant is done (§25.0.8) and the first skill isn't.
+        /// With the Enchanter hidden (<see cref="Features.Enchanter"/>, GG-T436) the enchant step is skipped and step 7
+        /// follows the first armor (step 5) instead, so the chain never stalls on a station the player can't open.</summary>
+        public static bool Step(SaveData s) => !FirstDone(s) &&
+            (Features.Enchanter ? s.Flags.Contains(ArmorEnchanting.FirstEnchantFlag) : Forging.ArmorDone(s));
 
         /// <summary>Is learning <paramref name="a"/> right now the guided first skill (free, auto-slotted)?</summary>
         public static bool Guides(SaveData s, AbilityDef a) => a != null && a.Kind == AbilityKind.Skill && Step(s);

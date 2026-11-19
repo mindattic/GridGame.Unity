@@ -151,20 +151,25 @@ namespace GridGame.Tests
         [Test]
         public void The_training_tip_walks_the_first_skill_after_the_first_enchant()
         {
-            var c = TestKit.Real;
-            var s = Progression.NewGame(c, "T");
-            var tip = CampTips.For(Training.TipStation);
-            Assert.That(Training.Step(s), Is.False, "no enchant yet: training isn't introduced");
-            Assert.That(CampTips.Resolve(c, s, tip), Is.SameAs(tip));
-            s.Flags.Add(ArmorEnchanting.FirstEnchantFlag);
-            var plan = Training.First(c, s);
-            Assert.That(plan, Is.Not.Null);
-            var ready = CampTips.Resolve(c, s, tip);
-            Assert.That(ready.Target, Is.EqualTo(CampTips.CraftButton));
-            string hero = c.Class(plan.Hero.ClassId).Name;
-            Assert.That(ready.Text, Does.Contain(plan.Skill.Name).And.Contain(hero).And.Contain("free").And.Contain("Tap Learn"));
-            Assert.That(Abilities.Learn(c, s, plan.Hero, plan.Skill.Id).Ok, Is.True);
-            Assert.That(CampTips.Resolve(c, s, tip), Is.SameAs(tip), "after the first skill the tip reads as written");
+            Features.Enchanter = true; // this walks the chain with the Enchanter on (GG-T436 hides it for release)
+            try
+            {
+                var c = TestKit.Real;
+                var s = Progression.NewGame(c, "T");
+                var tip = CampTips.For(Training.TipStation);
+                Assert.That(Training.Step(s), Is.False, "no enchant yet: training isn't introduced");
+                Assert.That(CampTips.Resolve(c, s, tip), Is.SameAs(tip));
+                s.Flags.Add(ArmorEnchanting.FirstEnchantFlag);
+                var plan = Training.First(c, s);
+                Assert.That(plan, Is.Not.Null);
+                var ready = CampTips.Resolve(c, s, tip);
+                Assert.That(ready.Target, Is.EqualTo(CampTips.CraftButton));
+                string hero = c.Class(plan.Hero.ClassId).Name;
+                Assert.That(ready.Text, Does.Contain(plan.Skill.Name).And.Contain(hero).And.Contain("free").And.Contain("Tap Learn"));
+                Assert.That(Abilities.Learn(c, s, plan.Hero, plan.Skill.Id).Ok, Is.True);
+                Assert.That(CampTips.Resolve(c, s, tip), Is.SameAs(tip), "after the first skill the tip reads as written");
+            }
+            finally { Features.Enchanter = false; }
         }
 
         [Test]

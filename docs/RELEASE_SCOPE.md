@@ -35,7 +35,8 @@ cover the hidden systems.
 | Blacksmith (Repair, Forge, Upgrade, Salvage, masterwork, recipe discovery) | KEEP | "Repair and buy weapons" | — |
 | Lucky craft (Diamond) | KEEP | Paywall hook | — |
 | Alchemist | KEEP | Cheap potions from drops; onboarding step 3 | — |
-| Enchantress (armor enchants, weapon enchants), armor sets | KEEP | Onboarding step 6 opens Training (step 7), so hiding her would stall the tutorial chain. See the cut questions | — |
+| Enchantress (armor enchants, weapon enchants) | DISABLE (owner 2026-11-19, GG-T436) | "Enough things going on without slotting gems and enchantments on day one." Her Camp row is hidden; the onboarding chain skips the enchant step (Training, step 7, follows the first armor). The 600 recipes stay. Plan: docs/plans/enchanting-and-gems.md | `Features.Enchanter = true` |
+| Armor sets | KEEP | Forged at the Blacksmith | — |
 | Inn rest | KEEP | Healing between expeditions | — |
 | Rested pool (party energy) and its refill | KEEP | Paywall hook | — |
 | Summon Circle (gold summon + Diamond draw) | KEEP | Loop step + paywall hook | — |
@@ -133,7 +134,23 @@ The bots don't replay stages to hunt, so real players will sit higher than these
 I, Drowned Arks II) are the ones to look at first either way. Floodwater had no counter until GG-T410, which may account
 for part of the Drowned Arks number.
 
-## Questions for the owner: cut outright?
+## Owner answers (2026-11-19)
+
+1. **Crucible, bounty board, caravan upgrades:** keep, and build them out. The Crucible is the "toilet play" horde
+   mode (one team, endlessly harder generated waves, gold until the party falls; GG-T430). The bounty board hunts
+   especially dangerous named variants, with a clue ("Seen wandering the Ashlands II"), a skull marker in battle and
+   the reward claimed at the board (GG-T431). The caravan upgrades become the necessary gold sink: facility levels that
+   unlock better material tiers (copper, iron, steel) at the Blacksmith, Alchemist and other stations (GG-T432).
+2. **Taming:** hidden (GG-T433).
+3. **Side quests:** ship them, plus more quests and quest chains (fetch materials, kill monsters, recruit people, reach a
+   level, unlock a skill; GG-T434). The text stays lorem until the story is written "by examining the shape of things".
+4. **Weapon enchants:** the Enchanter is left out of release; the 600 recipes stay; enchants and gems are a plan
+   (docs/plans/enchanting-and-gems.md; GG-T436).
+5–6. **Hero screens:** merge Status / Equip / Abilities / Party into one tabbed hero screen, Talents folded into
+   Abilities (GG-T435).
+7. **Gambits (GG-T299) and monster meat (GG-T304):** closed as out of scope.
+
+## The original questions (answered above)
 
 These are recommendations only. Nothing was deleted.
 
