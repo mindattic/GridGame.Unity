@@ -624,6 +624,7 @@ namespace GridGame.Core.Battle
             if (u.IsGuest) Announce(permadeath ? $"{u.Name} has fallen for good" : $"{u.Name} has fallen!", u.Id);
             else if (u.Wanderer && u.Team == Team.Hero) Announce($"{u.Name} has fallen!", u.Id); // down, never lost (GG-T342)
             if (u.Team == Team.Enemy && !u.NoLoot) AwardLoot(u);
+            if (u.IsBountyTarget) CreditBounty(u); // GG-T431
             if (u.Team == Team.Enemy) LeaveRemains(u, at);
             if (u.Team == Team.Enemy && !u.NoLoot && !u.IsRemains && !u.IsSnakeSegment) MaybeDropPickup(u, at, killer);
             // GG-T359: the class's OnDeathRule effects and the region rules' UnitDeath hooks, where it fell.

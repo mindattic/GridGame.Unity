@@ -326,6 +326,16 @@ namespace GridGame.App
             if (u == null) return false;
             var head = Header(body, null, $"{u.Name}  Lv {u.Level}", u.Wanderer && u.IsHero ? $"Wanderer · {u.Def.Role}" : u.IsIndependent ? (u.Domesticated ? "Tamed ally" : "Tamed") : u.IsHero ? u.Def.Role : u.IsNeutral ? "Neutral" : "Enemy",
                 u.Wanderer && u.IsHero ? Palette.Wanderer : u.IsIndependent ? Palette.Tamed : u.IsHero ? Palette.Hero : u.IsNeutral ? Palette.Neutral : Palette.Enemy);
+            if (u.IsBountyTarget)
+            {
+                // §22.4, GG-T431: the marked target says so, and where its reward waits.
+                var row = Ui.El("row", head);
+                row.name = "inspect-bounty";
+                row.style.alignItems = Align.Center;
+                var skull = BountySkull.Make(Size.Pip, row);
+                skull.style.marginRight = Space.S8;
+                Line(row, $"Bounty target · tougher than its kind ({u.Def.Name}). Kill it, then collect at the bounty board", "t-caption", Palette.Bad).style.flexShrink = 1;
+            }
             Line(head, reveal ? $"HP {u.Hp}/{u.MaxHp}" : "HP ??? — defeat more to learn it", "t-caption");
             if (reveal) Line(head, $"{Ui.StatLine(u.Effective)} · EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "t-caption", Palette.TextDim); // GG-T297
             else if (knowledge >= BestiaryKnowledge.Speed) Line(head, $"SPD {u.Effective.Speed:0}", "t-caption", Palette.TextDim);

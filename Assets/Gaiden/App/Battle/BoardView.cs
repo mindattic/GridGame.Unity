@@ -204,6 +204,18 @@ namespace GridGame.App
             WeaponCrack.Add(shardB);
             Root.Add(WeaponCrack);
 
+            // A bounty target (§22.4, GG-T431) wears the skull at its top-right corner, pulsing, so it reads as the
+            // marked, tougher variant from anywhere on the board.
+            if (u.IsBountyTarget)
+            {
+                var skull = BountySkull.Make(Size.Pip + Space.S8);
+                skull.name = "bounty-skull-" + u.Id;
+                skull.style.position = Position.Absolute;
+                skull.style.right = Space.S4; skull.style.top = Space.S4;
+                Root.Add(skull);
+                skull.schedule.Execute(() => skull.style.scale = new Scale(Vector3.one * (1f + 0.08f * Mathf.Sin(Tween.Clock * 3f)))).Every(33);
+            }
+
             // One scheduled beat drives both the amber pulse and the red glow; cheap no-op when neither is active.
             Root.schedule.Execute(() =>
             {

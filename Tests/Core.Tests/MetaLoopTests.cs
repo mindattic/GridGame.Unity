@@ -153,13 +153,17 @@ namespace GridGame.Tests
             Assert.That(Progression.MaxPartySize, Is.EqualTo(6)); // GG-T291: two attackers, two supporters each
 
             // Bounty
-            var bounty = Bounties.Posted(c, s).First();
-            Assert.That(Bounties.Accept(c, s, bounty.Id).Ok, Is.True);
-            Bounties.RecordKills(c, s, new Dictionary<string, int> { [bounty.TargetClass] = bounty.Kills });
+            // GG-T431: a hunt for a marked target. The kill is set on the battle's mark (BountyHuntTests covers the spawn).
+            s.HighestClearedStage = System.Math.Max(s.HighestClearedStage, c.CampaignStages().Count - 1);
+            var bounty = Bounties.Offers(c, s).First();
+            Assert.That(Bounties.Take(c, s, bounty.Id).Ok, Is.True);
+            var hunt = BattleEngine.Create(c, BattleFactory.Build(c, s, bounty.Stage, 9), new List<BattleEvent>());
+            hunt.Bounties.Single().Slain = true;
+            Bounties.RecordBattle(c, s, hunt);
             int g = s.Gold;
             var sp = s.Party.ToDictionary(id => id, id => s.Hero(id).SkillPoints);
-            Assert.That(Bounties.Claim(c, s).Ok, Is.True);
-            Assert.That(s.Gold, Is.EqualTo(g + bounty.RewardGold));
+            Assert.That(Bounties.Claim(c, s, bounty.Id).Ok, Is.True);
+            Assert.That(s.Gold, Is.EqualTo(g + Bounties.RewardGold(c, bounty)));
             // GG-T134: an optional skill-point payout goes to every active-party hero.
             foreach (var id in s.Party) Assert.That(s.Hero(id).SkillPoints, Is.EqualTo(sp[id] + Bounties.SkillPointsPaid(bounty)));
         }

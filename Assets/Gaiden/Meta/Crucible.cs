@@ -211,7 +211,6 @@ namespace GridGame.Meta
             }
             BattleFactory.KeepBrokenFragments(s, r);
             foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; } // everyone staggers out and recovers
-            rep.BountyProgress = Bounties.RecordKills(c, s, r.Kills);
 
             rep.CrucibleWaves = WavesSurvived(battle);
             s.Crucible ??= new CrucibleSave();

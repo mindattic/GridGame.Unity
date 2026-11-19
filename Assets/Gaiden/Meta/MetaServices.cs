@@ -675,6 +675,7 @@ namespace GridGame.Meta
             foreach (var g in s.LostGuests) if (Permadeath.IsLost(s, g)) setup.ExcludedGuests.Add(g);
             setup.Permadeath = Permadeath.Enabled(s);
             setup.Purse = s.Gold; // a recruitable's PayGold comes out of the banked coins (GG-T132)
+            if (!crucible) setup.Bounties = Bounties.MarksFor(c, s, stage); // GG-T431: a hunted target roams this stage
             // One shared pool: every hero's item slots draw from the same owned counts, in party order, so five heroes
             // can't each carry a full stack of the same five potions (GG-T285: 5 owned X-Potions became 25 heals).
             var owned = new Dictionary<string, int>(s.Inventory);
@@ -750,7 +751,6 @@ namespace GridGame.Meta
                     var list = c.CampaignStages();
                     if (index + 1 < list.Count) rep.UnlockedStage = list[index + 1].Name;
                 }
-                rep.BountyProgress = Bounties.RecordKills(c, s, r.Kills);
                 rep.QuestProgress = Quests.RecordBattle(c, s, battle);
                 Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
                 rep.TameOffers.AddRange(Domestication.Offers(c, s, battle)); // a fully bonded tamed monster asks to join (GG-T303)
@@ -807,6 +807,7 @@ namespace GridGame.Meta
             // down at the end it's simply gone back to the road — nothing recorded, still in the pool.
             rep.Wanderer = battle.Wanderer;
             rep.WandererOffer = Wanderers.OfferFrom(s, battle);
+            rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
             Expeditions.AfterBattle(c, s, rep, battle);
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             s.LastStage = battle.Stage.Id;
@@ -2477,75 +2478,5 @@ namespace GridGame.Meta
 
         /// <summary>The order a JoinHero with no usable class or role fills gaps in the roster.</summary>
         public static readonly string[] StoryRoleOrder = { "Healer", "Tank", "Mage", "Support", "Striker", "Ranged" };
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Bounty board (§22.4)
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    public static class Bounties
-    {
-        public static List<BountyDef> Posted(ContentDb c, SaveData s) =>
-            c.Bounties.Values.Where(b => !s.Bounty.Claimed.Contains(b.Id)).OrderBy(b => b.RewardGold).ToList();
-
-        public static BountyDef Active(ContentDb c, SaveData s) => s.Bounty.ActiveId != null && c.Bounties.TryGetValue(s.Bounty.ActiveId, out var b) ? b : null;
-
-        public static bool IsComplete(ContentDb c, SaveData s) { var b = Active(c, s); return b != null && s.Bounty.Progress >= b.Kills; }
-
-        public static Result Accept(ContentDb c, SaveData s, string id)
-        {
-            if (!c.Bounties.ContainsKey(id) || s.Bounty.Claimed.Contains(id)) return Result.Fail("Not available");
-            if (s.Bounty.ActiveId != null) return Result.Fail("Finish or abandon your current bounty first");
-            s.Bounty.ActiveId = id;
-            s.Bounty.Progress = 0;
-            return Result.Success("Bounty accepted");
-        }
-
-        public static Result Abandon(SaveData s)
-        {
-            if (s.Bounty.ActiveId == null) return Result.Fail("No active bounty");
-            s.Bounty.ActiveId = null;
-            s.Bounty.Progress = 0;
-            return Result.Success("Bounty abandoned");
-        }
-
-        public static string RecordKills(ContentDb c, SaveData s, Dictionary<string, int> kills)
-        {
-            var b = Active(c, s);
-            if (b == null) return null;
-            if (kills.TryGetValue(b.TargetClass, out var n) && n > 0)
-            {
-                s.Bounty.Progress = Math.Min(b.Kills, s.Bounty.Progress + n);
-                return $"{b.Name}: {s.Bounty.Progress}/{b.Kills}";
-            }
-            return null;
-        }
-
-        public static Result Claim(ContentDb c, SaveData s)
-        {
-            var b = Active(c, s);
-            if (b == null) return Result.Fail("No active bounty");
-            if (s.Bounty.Progress < b.Kills) return Result.Fail("Not finished yet");
-            s.Gold += b.RewardGold;
-            if (b.RewardItem != null) s.AddItem(b.RewardItem, 1);
-            int sp = SkillPointsPaid(b);
-            if (sp > 0)
-                foreach (var id in s.Party)
-                {
-                    var h = s.Hero(id);
-                    if (h != null) h.SkillPoints += sp;
-                }
-            s.Bounty.Claimed.Add(b.Id);
-            s.Bounty.ActiveId = null;
-            s.Bounty.Progress = 0;
-            return Result.Success(sp > 0 ? $"Claimed {b.RewardGold}g + {sp} SP each" : $"Claimed {b.RewardGold}g");
-        }
-
-        /// <summary>Skill points each active-party hero gains when this contract is claimed (GG-T134); never negative.</summary>
-        public static int SkillPointsPaid(BountyDef b) => b == null ? 0 : Math.Max(0, b.RewardSkillPoints);
-
-        /// <summary>Skill points the claimed contracts have paid each party hero over this save (GG-T134).</summary>
-        public static int SkillPointsClaimed(ContentDb c, SaveData s) =>
-            s.Bounty.Claimed.Sum(id => c.Bounties.TryGetValue(id, out var b) ? SkillPointsPaid(b) : 0);
     }
 }

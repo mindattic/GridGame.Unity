@@ -529,21 +529,7 @@ namespace GridGame.Tests
             Assert.That(s.Recruits, Is.EqualTo(0));
         }
 
-        /// <summary>GG-T87: a finished bounty is claimed, and the next accepted contract is one the stages
-        /// still ahead can actually complete — never Slime Culling, whose 5 kills outnumber every slime00 the
-        /// campaign spawns.</summary>
-        [Test]
-        public void CampRoutine_claims_a_finished_bounty_and_accepts_only_an_achievable_one()
-        {
-            var c = Real; var s = Progression.NewGame(c, "CRBounty"); CampNpcs.JoinAll(s); // every Camp service open (GG-T119)
-            CampRoutine.Run(c, s);
-            Assert.That(s.Bounty.ActiveId, Is.Not.Null.And.Not.EqualTo("bounty_slime_culling"));
-            var first = Bounties.Active(c, s);
-            s.Bounty.Progress = first.Kills;
-            CampRoutine.Run(c, s);
-            Assert.That(s.Bounty.Claimed, Does.Contain(first.Id));
-            Assert.That(s.Bounty.ActiveId, Is.Not.Null.And.Not.EqualTo(first.Id));
-        }
+        // GG-T431: the camp routine no longer works the Bounty Board (BountyHuntTests.The_camp_routine_never_works_the_board).
 
         /// <summary>GG-T54: banked skill points go into the hero's home tree, deepening one branch, and nothing
         /// leaks off-tree while the home tree still has a node to buy.</summary>

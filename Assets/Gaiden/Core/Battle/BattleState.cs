@@ -74,6 +74,8 @@ namespace GridGame.Core.Battle
         public int Purse;
         /// <summary>A rolled wanderer who fights beside the party on its own (§25.11.2, GG-T342; was the GG-T236 captive); null = none.</summary>
         public WandererSpec Wanderer;
+        /// <summary>Bounty targets the player has taken for this stage (§22.4, GG-T431); empty = none.</summary>
+        public List<BountyMark> Bounties = new List<BountyMark>();
     }
 
     /// <summary>Totals the meta layer commits after the battle (XP, coins, drops, kills, bestiary).</summary>
@@ -240,6 +242,8 @@ namespace GridGame.Core.Battle
         public int Wave;
         /// <summary>Delayed mid-wave spawns (§14.8) queued by <c>SpawnWave</c>, resolved as the clock reaches their trigger tick.</summary>
         public List<PendingSpawn> PendingSpawns = new List<PendingSpawn>();
+        /// <summary>This battle's bounty targets (§22.4, GG-T431): which have spawned and which have fallen.</summary>
+        public List<BountyMark> Bounties = new List<BountyMark>();
         public BattlePhase Phase = BattlePhase.PlayerInput;
         public int NextUnitId = 1;
         public int NextEntryId = 1;
@@ -347,6 +351,7 @@ namespace GridGame.Core.Battle
             foreach (var p in Pickups) s.Pickups.Add(p.Clone());
             s.PendingSpawns = new List<PendingSpawn>(PendingSpawns.Count);
             foreach (var p in PendingSpawns) s.PendingSpawns.Add(p.Clone());
+            s.Bounties = Bounties.ConvertAll(b => b.Clone());
             s.Bank = Bank.Clone();
             s.Results = Results.Clone();
             s.Tempo = new List<TempoEffect>(Tempo.Count);

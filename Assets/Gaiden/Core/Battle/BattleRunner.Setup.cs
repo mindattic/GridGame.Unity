@@ -25,6 +25,7 @@ namespace GridGame.Core.Battle
             carriedOrbs = Math.Max(0, setup.StartOrbs);
             S.Purse = Math.Max(0, setup.Purse);
             wanderer = setup.Wanderer;
+            S.Bounties = setup.Bounties == null ? new List<BountyMark>() : setup.Bounties.ConvertAll(b => b.Clone()); // GG-T431
             int i = 0;
             foreach (var spec in setup.Party)
             {
@@ -276,10 +277,12 @@ namespace GridGame.Core.Battle
                 started.Spawned.Add(u.Id);
                 if (def.SnakeSegments > 0) GrowSnake(u, def.SnakeSegments, started.Spawned);
             }
+            var bounties = SpawnBounties(index, started); // GG-T431: a taken bounty's target joins its wave
             foreach (var id in started.Spawned) if (S.UnitById(id) is Unit su) started.SpawnedAt.Add(UnitFootprint.Of(su));
             OpenPartyWindow();
             Emit(started);
             AnnounceRuleBreaks(started.Spawned);
+            AnnounceBounties(bounties);
             RegionHooks(RuleHook.WaveSpawn, null); // GG-T359
         }
 

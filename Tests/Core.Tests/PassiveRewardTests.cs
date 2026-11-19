@@ -186,11 +186,10 @@ namespace GridGame.Tests
             Assert.That(Quests.TurnIn(Real, s, q.Id).Ok, Is.True);
             Assert.That(s.Count(q.RewardItem), Is.EqualTo(1));
 
-            var b = Real.Bounties["bounty_cave_dweller"];
+            var b = Real.Bounties["bounty_hollowe"];
             Assert.That(Real.TryItem(b.RewardItem).Type, Is.EqualTo(ItemType.Tome));
-            s.Bounty.ActiveId = b.Id;
-            s.Bounty.Progress = b.Kills;
-            Assert.That(Bounties.Claim(Real, s).Ok, Is.True);
+            s.Bounty.Slain.Add(b.Id); // GG-T431: its marked target fell
+            Assert.That(Bounties.Claim(Real, s, b.Id).Ok, Is.True);
             Assert.That(s.Count(b.RewardItem), Is.EqualTo(1));
         }
 

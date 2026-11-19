@@ -575,7 +575,7 @@ namespace GridGame.App
                 Station("Enchantress", CampUnlocks.NpcOpen(s, CampNpcs.Enchantress), CampUnlocks.JoinHint(c, CampNpcs.Enchantress), () => new EnchantressScreen());
             if (Features.Bounties)
                 Station("Bounties", CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new BountyScreen(),
-                    Bounties.Active(c, s) != null ? $"{s.Bounty.Progress}/{Bounties.Active(c, s).Kills}" : "");
+                    s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : ""); // GG-T431
             // Optional side quests (§22.11, GG-T237): the journal, with a "!" when one is ready to hand in.
             int questsReady = Quests.ReadyCount(c, s);
             if (c.QuestOrder.Any(q => Quests.State(c, s, q) != QuestState.Locked))
@@ -663,11 +663,13 @@ namespace GridGame.App
 
         protected override void BuildBody(VisualElement body)
         {
-            var active = Features.Bounties ? Bounties.Active(C, S) : null;
-            if (active != null)
+            // GG-T431: each hunted bounty's clue, so the player knows which stage to play.
+            var hunting = Features.Bounties ? Bounties.Hunting(C, S) : new List<BountyDef>();
+            if (hunting.Count > 0)
             {
                 var b = Ui.Window(null, body);
-                Ui.Text($"Bounty: {active.Name} — {S.Bounty.Progress}/{active.Kills}", "small gold", b);
+                b.name = "bounty-strip";
+                foreach (var h in hunting) Ui.Text($"☠ {h.Name}: {Bounties.Clue(C, h)}", "small gold", b).style.whiteSpace = WhiteSpace.Normal;
             }
             var w = Ui.Window(null, body);
             w.style.flexGrow = 1;
@@ -708,6 +710,7 @@ namespace GridGame.App
                 int cleared = theme.Stages.Count(id => S.ClearedStages.Contains(id));
                 string status = onIt ? $"▶ Battle {S.Expedition.Next + 1}/{theme.Stages.Count}"
                     : cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
+                if (Features.Bounties && theme.Stages.Any(id => Bounties.OnStage(C, S, id).Count > 0)) status = "☠ " + status; // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow((cleared == theme.Stages.Count ? "★ " : "☆ ") + theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
                 row.name = "expedition-" + theme.Id;
                 if (onIt || cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
@@ -751,6 +754,7 @@ namespace GridGame.App
                 // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
                 int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
                 string state = cleared ? (k > 0 && Expeditions.IsHunt(S, st.Id) ? "Cleared · hunt" : "Cleared") : "New";
+                if (Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0) state = "☠ " + state; // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow(label, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
                 row.name = "stage-" + st.Id;
                 row.style.marginLeft = Space.S48;

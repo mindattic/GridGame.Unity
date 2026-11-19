@@ -646,7 +646,6 @@ namespace GridGame.App.Automation
                         .Where(r => StationOpen(st))
                         .Where(r => RecipeDiscovery.IsDiscovered(s, r) && Forging.ArmorOpen(c, s, r) && Crafting.CanMake(c, s, r) && Crafting.HasInputs(s, r) && s.Gold >= r.Gold)
                         .Select(r => new { r.Id, r.Result, upgrade = r.BaseItem != null }).ToList();
-                    var active = Bounties.Active(c, s);
                     return new
                     {
                         s.Gold,
@@ -667,7 +666,7 @@ namespace GridGame.App.Automation
                         firstSkill = Training.First(c, s) is var fk && fk != null ? new { skill = fk.Skill.Id, hero = fk.Hero.ClassId, slot = fk.Slot } : null,
                         onboarded = s.Flags.Contains(Training.FirstSkillFlag),
                         bars = s.Party.Select(s.Hero).Where(h => h != null).ToDictionary(h => h.ClassId, h => h.Bar.ToList()),
-                        bounty = new { active = active?.Id, progress = s.Bounty.Progress, complete = active != null && Bounties.IsComplete(c, s), posted = Bounties.Posted(c, s).Select(b => b.Id).ToList() },
+                        bounty = new { hunting = s.Bounty.Taken.ToList(), slain = s.Bounty.Slain.ToList(), claimed = s.Bounty.Claimed.Count, offers = Bounties.Offers(c, s).Select(b => b.Id).ToList() }, // GG-T431
                     };
                 }
                 case "stagebounds":

@@ -9,7 +9,7 @@ namespace GridGame.Meta
     /// <summary>
     /// "What a sensible player does at camp": scrap worn-out gear, rest, repair, forge and equip better
     /// gear (owned bag, then Forge, then the Merchant's Bargain shelf), spend skill points on tree nodes
-    /// (home tree first, GG-T54), learn abilities into dead bar slots (GG-T100), keep potions stocked, work the Bounty Board and recruit at the Summon Circle into an open
+    /// (home tree first, GG-T54), learn abilities into dead bar slots (GG-T100), keep potions stocked, recruit at the Summon Circle into an open
     /// party slot (GG-T87). Used by the balance simulation and the in-game auto-manage helper;
     /// every step goes through the same services the screens call, and only the services whose Camp NPC has
     /// joined (GG-T119): no Blacksmith means no repair/salvage/forge, no Innkeeper no rest, no Merchant no
@@ -86,9 +86,7 @@ namespace GridGame.Meta
             }
             if (inn && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Note(Inn.Rest(c, s));
 
-            // Bounty Board (GG-T87): cash in a finished contract, drop one whose target no longer appears
-            // anywhere ahead, then take the one whose target shows up soonest on the road ahead.
-            ManageBounty(c, s, Note);
+            // The Bounty Board is the player's own hunt (GG-T431): the routine never takes, hunts or claims a bounty.
             // GG-T301: open chests from the road, then read every Tome to a party hero with a free passive slot.
             foreach (var r in Chests.OpenAll(c, s)) Note(r);
             foreach (var r in Tomes.AutoTeach(c, s)) Note(r);
@@ -341,36 +339,5 @@ namespace GridGame.Meta
             }
         }
 
-        /// <summary>Claim a completed bounty; abandon an active one the stages still ahead can no longer finish;
-        /// with none active, accept the posted contract the road ahead completes soonest (a skill-point payout
-        /// breaks ties first, GG-T134 — points feed the Learn step that follows — then the cheapest gold reward).
-        /// The claim runs before FillBars, so a payout is spent on the same visit. A playthrough meets each stage once, so a contract is only "achievable" if the
-        /// uncleared campaign stages spawn enough of its target — e.g. Slime Culling wants 5 slime00 kills
-        /// but the whole campaign spawns 3, so this player (who doesn't grind replays) never takes it.</summary>
-        private static void ManageBounty(ContentDb c, SaveData s, System.Action<Result> note)
-        {
-            if (Bounties.IsComplete(c, s)) note(Bounties.Claim(c, s));
-            var ahead = c.CampaignStages().Skip(s.HighestClearedStage + 1).ToList();
-            // Index (into `ahead`) of the stage that would bring the count to `needed`, or -1 if it never gets there.
-            int CompletesAt(string classId, int needed)
-            {
-                int seen = 0;
-                for (int i = 0; i < ahead.Count; i++)
-                {
-                    seen += ahead[i].Waves.Sum(w => w.Enemies.Count(e => e.Class == classId));
-                    if (seen >= needed) return i;
-                }
-                return -1;
-            }
-            var active = Bounties.Active(c, s);
-            if (active != null && CompletesAt(active.TargetClass, active.Kills - s.Bounty.Progress) < 0) note(Bounties.Abandon(s));
-            if (Bounties.Active(c, s) != null) return;
-            var pick = Bounties.Posted(c, s)
-                .Select(b => (b, at: CompletesAt(b.TargetClass, b.Kills)))
-                .Where(x => x.at >= 0)
-                .OrderBy(x => x.at).ThenByDescending(x => Bounties.SkillPointsPaid(x.b)).ThenBy(x => x.b.RewardGold)
-                .Select(x => x.b).FirstOrDefault();
-            if (pick != null) note(Bounties.Accept(c, s, pick.Id));
-        }
     }
 }

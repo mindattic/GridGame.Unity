@@ -1563,13 +1563,16 @@ namespace GridGame.App
         }
     }
 
-    // ── Bounty board (§22.4) ─────────────────────────────────────────────────────
+    // ── Bounty board (§22.4, GG-T431) ──────────────────────────────────────────────
 
+    /// <summary>Hunts for marked targets: collect what was slain (with a claim cue), track what is hunted, and take a fresh
+    /// poster. Each poster shows the target's portrait under the bounty skull, its title, its kind, the clue naming its
+    /// stage, and the reward.</summary>
     public sealed class BountyScreen : HubPage
     {
         public override string Id => "bounties";
         protected override string Title => "Bounties";
-        /// <summary>The Tome a just-claimed contract paid (GG-T301), offered for teaching at the top of the board.</summary>
+        /// <summary>The Tome a just-claimed bounty paid (GG-T301), offered for teaching at the top of the board.</summary>
         private string claimedTome;
 
         protected override void BuildBody(VisualElement body)
@@ -1580,39 +1583,56 @@ namespace GridGame.App
                 tw.name = "bounty-tome";
                 TomeUi.Offer(tw, paid, r => { if (r.Ok) claimedTome = null; });
             }
-            var act = Bounties.Active(C, S);
-            if (act != null)
-            {
-                var a = Ui.Window("Active contract", body);
-                Ui.Text($"{act.Name}: defeat {act.Kills} {C.TryClass(act.TargetClass)?.Name}", "small", a);
-                Ui.Text($"Progress {S.Bounty.Progress}/{act.Kills}", "h2 gold", a);
-                var row = Ui.El("row", a);
-                var claim = Ui.Button("Claim", () =>
-                {
-                    claimedTome = C.TryItem(act.RewardItem)?.Type == ItemType.Tome ? act.RewardItem : null;
-                    Done(Bounties.Claim(C, S));
-                }, "btn--primary", row);
-                claim.name = "bounty-claim";
-                Ui.SetEnabled(claim, Bounties.IsComplete(C, S));
-                Ui.Button("Abandon", () => Confirm.Show("Abandon this bounty?", "Abandon", () => Done(Bounties.Abandon(S))), "btn--danger", row);
-            }
-            var w = Ui.Window("Posted", body);
+            var w = Ui.Window("Wanted", body);
             w.style.flexGrow = 1;
             var list = Ui.List(w).contentContainer;
-            foreach (var b in Bounties.Posted(C, S))
+            Ui.Text("Hunt a marked foe: play the stage its clue names, kill the one wearing the skull, then collect here.", "tiny dim", list).style.whiteSpace = WhiteSpace.Normal;
+            var board = Bounties.Board(C, S);
+            if (board.Count == 0) Ui.Text("No one is posted yet. Clear more stages.", "small dim", list);
+            foreach (var b in board) Poster(b, list);
+        }
+
+        private void Poster(BountyDef b, VisualElement list)
+        {
+            var bounty = b;
+            var target = C.TryClass(b.TargetClass);
+            var reward = C.TryItem(b.RewardItem);
+            bool slain = Bounties.IsSlain(S, b.Id), hunting = Bounties.IsTaken(S, b.Id);
+            var card = Ui.El("card", list);
+            card.name = "poster-" + b.Id;
+            var face = Ui.El(null, card);
+            face.style.position = Position.Relative;
+            if (target != null) Ui.Thumb(target.Id, face, 120);
+            var skull = BountySkull.Make(Size.IconS, face);
+            skull.style.position = Position.Absolute;
+            skull.style.right = -Space.S4; skull.style.top = -Space.S4;
+            var col = Ui.El("col grow", card);
+            Ui.Text(b.Name, "h2", col);
+            Ui.Text($"{target?.Name ?? b.TargetClass} · tougher variant", "tiny dim", col);
+            Ui.Text(Bounties.Clue(C, b), "small gold", col).style.whiteSpace = WhiteSpace.Normal;
+            int sp = Bounties.SkillPointsPaid(b);
+            Ui.Text($"Reward {Ui.Gold(Bounties.RewardGold(C, b))}{(reward != null ? " + " + reward.Name : "")}{(sp > 0 ? $" + {sp} SP each" : "")}", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
+            TomeUi.Preview(col, reward); // GG-T301: what a Tome reward teaches
+            if (slain)
             {
-                var bounty = b;
-                var target = C.TryClass(b.TargetClass);
-                var reward = C.TryItem(b.RewardItem);
-                var card = Ui.El("card", list);
-                if (target != null) Ui.Thumb(target.Id, card, 120);
-                var col = Ui.El("col grow", card);
-                Ui.Text(b.Name, "h2", col);
-                Ui.Text($"Defeat {b.Kills}× {target?.Name}.  Reward {Ui.Gold(b.RewardGold)}{(reward != null ? " + " + reward.Name : "")}{(Bounties.SkillPointsPaid(b) > 0 ? $" + {Bounties.SkillPointsPaid(b)} SP each" : "")}", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
-                TomeUi.Preview(col, reward); // GG-T301: what a Tome reward teaches
-                var btn = Ui.Button(S.Bounty.ActiveId == b.Id ? "Active" : "Accept", () => Done(Bounties.Accept(C, S, bounty.Id)), "btn--small", card);
-                btn.name = "bounty-" + b.Id;
-                Ui.SetEnabled(btn, S.Bounty.ActiveId == null);
+                var claim = Ui.Button("Claim", () =>
+                {
+                    claimedTome = reward?.Type == ItemType.Tome ? reward.Id : null;
+                    var r = Bounties.Claim(C, S, bounty.Id);
+                    Done(r);
+                    if (r.Ok) App.Audio.Sfx("battle.pickup"); // the claim cue: the purse fills
+                }, "btn--primary btn--small", card);
+                claim.name = "bounty-claim-" + b.Id;
+            }
+            else if (hunting)
+            {
+                var stop = Ui.Button("Hunting", () => Confirm.Show($"Stop hunting {bounty.Name}?", "Stop", () => Done(Bounties.Abandon(C, S, bounty.Id))), "btn--small", card);
+                stop.name = "bounty-abandon-" + b.Id;
+            }
+            else
+            {
+                var take = Ui.Button("Take", () => Done(Bounties.Take(C, S, bounty.Id)), "btn--small", card);
+                take.name = "bounty-" + b.Id;
             }
         }
     }

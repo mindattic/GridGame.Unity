@@ -89,7 +89,6 @@ namespace GridGame.Tests
             Assert.That(GridGame.Meta.Abilities.IsHeroUsable(pour), Is.False, "a free boss-phase spell is never learnable");
             Assert.That(GridGame.Meta.Abilities.IsHeroUsable(charge), Is.False);
             Assert.That(h.Abilities, Does.Contain("vampires_kiss"));
-            Assert.That(db.Bounties["bounty_vampire_lord"].TargetClass, Is.EqualTo("hierarch"), "the Hierarch bounty hunts the Hierarch");
         }
 
         [Test]

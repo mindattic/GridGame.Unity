@@ -217,6 +217,7 @@ namespace GridGame.App
                 case WeaponSwappedEvent sw: App.Audio.Sfx("battle.dash"); SyncBar(); return FloatText(sw.UnitId, "⭾ " + (App.Content.TryItem(sw.ToWeapon)?.Name ?? "Swap"), Palette.Info, 0.3f, 54);
                 case BossPhaseEvent bp: return BossAnim(bp);
                 case RuleBrokenEvent rb: return RuleBreakAnim(rb);
+                case BountyTargetEvent bte: return BountyAnim(bte); // GG-T431
                 case WaveStartedEvent wv: TutorialWaveStarted(); return WaveAnim(wv);
                 case ReinforcementsArrivedEvent ra: return ReinforcementsAnim(ra);
                 case EggLaidEvent el: return EggLaidAnim(el);

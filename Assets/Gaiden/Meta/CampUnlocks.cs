@@ -23,7 +23,7 @@ namespace GridGame.Meta
 
         public static bool NpcOpen(SaveData s, string npc) => s != null && (CampNpcs.Joined(s, npc) || s.TestMode);
 
-        public static bool BountiesOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= BountiesAfter || s.Bounty?.ActiveId != null);
+        public static bool BountiesOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= BountiesAfter || (s.Bounty != null && (s.Bounty.Used || s.Bounty.Taken.Count > 0 || s.Bounty.Claimed.Count > 0)));
         public static bool SummonOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= SummonAfter || s.Recruits > 0);
         public static bool CrucibleOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= CrucibleAfter || (s.Crucible?.Runs ?? 0) > 0);
         // GG-T432: a facility level is bought at its own station, so building one doesn't open the Caravan row early.

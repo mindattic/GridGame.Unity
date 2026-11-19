@@ -154,7 +154,12 @@ namespace GridGame.Core.Battle
         public bool NoLoot;
         public bool IsSnakeSegment => SnakeHeadId >= 0 && SnakeIndex > 0;
         public bool IsSnakeMember => SnakeHeadId >= 0;
-        public string Name => Def.Name;
+        /// <summary>The bounty this unit is the marked target of (§22.4, GG-T431), or null.</summary>
+        public string BountyId;
+        /// <summary>A bounty target's own title ("Grimjaw the Mauler"); null = the class name.</summary>
+        public string Title;
+        public bool IsBountyTarget => BountyId != null;
+        public string Name => Title ?? Def.Name;
         /// <summary>Pincer eligibility (bible §1.2, GG-LAW-2): heroes always; enemies only with a society (tag Sentient, GG-T289);
         /// anything carrying the Pincer keyword (a tamed or domesticated monster, or a class tagged Pincer — GG-T303).</summary>
         public bool CanPincer => Team == Team.Hero || Def.HasTag("Sentient") || HasPincerKeyword;

@@ -108,10 +108,9 @@ namespace GridGame.Tests
             // GG-T311: at the designed difficulty a party that never spends its gear, gold or skill points no longer
             // finishes (gaps too short to act in cost it turns); a managed camp still must.
             if (randomness == 0f && manageCamp) Assert.That(finishedRuns >= 1, Is.True, "a greedy bot that manages its camp should be able to finish the campaign");
-            // GG-T87: the camp routine must actually drive the Bounty Board and (given an open slot) the
-            // Summon Circle as part of organic progression, not just leave them untouched.
-            // (Only a run that finishes is guaranteed to pass a contract's last target — a bot that stalls early may not.)
-            if (manageCamp && finishedRuns > 0) Assert.That(bountiesClaimed > 0, Is.True, "the camp routine never claimed a bounty over a played-out campaign");
+            // GG-T87: the camp routine must actually drive the Summon Circle (given an open slot) as part of organic
+            // progression. GG-T431: bots skip the Bounty Board (hunts are the player's own), so no bounty is claimed.
+            Assert.That(bountiesClaimed, Is.Zero, "the camp routine never works the bounty board");
             if (manageCamp && !story && startingHeroes < Progression.MaxPartySize) Assert.That(recruits > 0, Is.True, "the camp routine never recruited into an open party slot");
             // GG-T54: a managed campaign actually spends the skill points it earns.
             if (manageCamp && finishedRuns > 0) Assert.That(spSpent > 0, Is.True, "the camp routine never spent a skill point over a played-out campaign");

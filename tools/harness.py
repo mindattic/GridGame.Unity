@@ -615,15 +615,15 @@ def fullloop(run="fullloop", battles=4, speed=3):
         fails.append("fights dropped nothing into the inventory")
     shot("04-hub-after-fights")
 
-    # Bounty board: opened by now (GG-T174 milestone); take the first contract.
+    # Bounty board: opened by now (GG-T174 milestone); take the first hunt (GG-T431).
     if call("names", prefix="locked-bounties"):
         fails.append(f"Bounties still locked after {battles} battles")
     elif _goto("bounties"):
-        posted = call("camp")["bounty"]["posted"]
-        if posted:
-            call("click", name=f"bounty-{posted[0]}"); time.sleep(0.6)
-            if not call("camp")["bounty"]["active"]:
-                fails.append(f"accepting bounty {posted[0]} didn't make it active")
+        offers = call("camp")["bounty"]["offers"]
+        if offers:
+            call("click", name=f"bounty-{offers[0]}"); time.sleep(0.6)
+            if offers[0] not in call("camp")["bounty"]["hunting"]:
+                fails.append(f"taking bounty {offers[0]} didn't start the hunt")
         else:
             notes.append("no bounties posted")
         call("back"); time.sleep(0.6)
@@ -665,16 +665,16 @@ def fullloop(run="fullloop", battles=4, speed=3):
     if crafted == 0:
         notes.append("no station could craft anything from these drops (check drop tables vs. tier-1 recipes)")
 
-    # Bounty: claim if the fights finished it.
+    # Bounty: collect if the fights slew a marked target (GG-T431).
     b = call("camp")["bounty"]
-    if b["active"] and b["complete"] and _goto("bounties"):
+    if b["slain"] and _goto("bounties"):
         g = call("camp")["Gold"]
-        call("click", name="bounty-claim"); time.sleep(0.8)
+        call("click", name=f"bounty-claim-{b['slain'][0]}"); time.sleep(0.8)
         if call("camp")["Gold"] <= g:
-            fails.append("claiming a finished bounty paid nothing")
+            fails.append("claiming a slain bounty paid nothing")
         call("back"); time.sleep(0.6)
-    elif b["active"]:
-        notes.append(f"bounty {b['active']} at {b['progress']} after {battles} battles (not complete)")
+    elif b["hunting"]:
+        notes.append(f"still hunting {', '.join(b['hunting'])} after {battles} battles")
 
     errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:

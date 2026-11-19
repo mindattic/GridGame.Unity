@@ -297,7 +297,20 @@ namespace GridGame.Core.Content
                     ValidateSupport(db, c, p); // GG-T298: Crit / Cast / Status / Pushback, Haste in seconds
                 }
             }
-            foreach (var b in db.Bounties.Values) { NeedClass(b.TargetClass, $"bounty {b.Id}"); NeedItem(b.RewardItem, $"bounty {b.Id}"); }
+            foreach (var b in db.Bounties.Values)
+            {
+                // GG-T431: a marked target is a real enemy class on a real campaign stage, in a wave that exists.
+                NeedClass(b.TargetClass, $"bounty {b.Id}"); NeedItem(b.RewardItem, $"bounty {b.Id}");
+                if (string.IsNullOrWhiteSpace(b.Name)) p.Add($"bounty {b.Id}: needs a title (Name)");
+                if (db.Classes.TryGetValue(b.TargetClass ?? "", out var bc))
+                {
+                    if (bc.Team != Team.Enemy) p.Add($"bounty {b.Id}: target '{b.TargetClass}' is not an enemy class");
+                    if (bc.SnakeSegments > 0) p.Add($"bounty {b.Id}: target '{b.TargetClass}' is a snake (segments can't carry the mark)");
+                }
+                if (b.Stage == null || !db.Stages.TryGetValue(b.Stage, out var bs) || bs.IsTest) p.Add($"bounty {b.Id}: unknown campaign stage '{b.Stage}'");
+                else if (b.Wave < 0 || b.Wave >= bs.Waves.Count) p.Add($"bounty {b.Id}: wave {b.Wave} is not a wave of {b.Stage}");
+                if (b.RewardSkillPoints < 0) p.Add($"bounty {b.Id}: skill points can't be negative");
+            }
             foreach (var c in db.Summon.Pool) NeedClass(c, "summon pool");
             foreach (var e in db.Enchants.Values) NeedItem(e.Essence, $"enchant {e.Id}");
             // GG-T179: an armor enchant grants a real Passive ability and costs real materials.

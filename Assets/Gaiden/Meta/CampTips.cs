@@ -51,7 +51,7 @@ namespace GridGame.Meta
                 Text = "Training is open: learn a new skill with gold, then set it on a hero's battle bar. Pick a skill, then Learn.",
                 Target = Training.LearnRowPrefix },
             new CampTip { Station = "bounties", Title = "Bounties",
-                Text = "Take one contract at a time. Defeat the target enemy as you fight, then come back to Claim the reward.",
+                Text = "Take a hunt, then play the stage its clue names. Kill the marked target (the skull) and come back here to Claim.",
                 Target = "bounty-" },
         };
 

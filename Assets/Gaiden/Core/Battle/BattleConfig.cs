@@ -130,6 +130,14 @@ namespace GridGame.Core.Battle
         public const int NgPlusLevelStep = 10;
         public const float NgPlusCoinBonus = 0.5f;
 
+        // ── Bounty targets (§22.4, GG-T431): the marked, tougher variant of a stage's foe ────
+        /// <summary>A bounty target fights this many levels above the wave it joins.</summary>
+        public const int BountyLevelBonus = 2;
+        /// <summary>Its HP is this multiple of an ordinary foe of its class and level.</summary>
+        public const float BountyHpScale = 2.5f;
+        /// <summary>Every stat but Speed is scaled by this (Speed is left alone so the timeline reads the same).</summary>
+        public const float BountyStatScale = 1.3f;
+
         // ── Time bank (§3.1.8, act-advanced amendment: drag-timer remainder) ────────
         public const float DragTimerSeconds = 4f;
         public const float SecondsPerTimeBankOrb = 1.25f;

@@ -37,7 +37,7 @@ namespace GridGame.Tests
         public void A_station_already_used_never_locks_again()
         {
             var s = Fresh();
-            s.Bounty.ActiveId = "bounty_slime_culling";
+            s.Bounty.Taken.Add("bounty_grimjaw");
             s.Recruits = 1;
             s.Crucible.Runs = 1;
             s.Caravan["wagon"] = 1;

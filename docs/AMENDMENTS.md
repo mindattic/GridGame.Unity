@@ -1303,6 +1303,27 @@ facilities for Blacksmith, Alchemist, etc".
 - *Why:* the owner's gold sink — better materials need better facilities — reusing the rarity data instead of
   inventing an ingot ladder for 500 recipes.
 
+## 2026-11-19 — Bounty hunts: marked targets replace kill contracts (owner, GG-T431)
+
+Owner: "bounty board is definetly something you want from the hub so you can hunt down especially dangerous monsters, it
+will have clues like 'Seen wandering the Ashlands II' and it needs some sort of bounty indicator (a skull?) so that you
+know its a tougher variant and that you can collect rewards at the bounty board after you kill it".
+
+- **Was:** five kill-N contracts (defeat 5 slimes, 3 wolves…), one active at a time, counted on victory (any Crucible
+  ending), claimed at the board; the camp routine worked it. Hidden at release because it duplicated the side quests'
+  Defeat objectives (GG-T392).
+- **Now:** 12 hunts for **marked targets**, each a titled, tougher variant of an existing enemy class (+2 levels, ×2.5 HP,
+  ×1.3 stats but Speed, optionally a rule-break trait) roaming one campaign stage, with a clue "Seen wandering *stage*".
+  The board shows 3 (slain to collect, hunted, then seeded offers that turn over every 3 stage battles). A taken bounty's
+  target joins its wave on that stage wearing a skull (☠) and named by its title; the inspect card says it is a bounty
+  target. Its fall counts however the battle ends; the reward (150 G + 50 G per campaign stage index, plus the old
+  contracts' items and skill points) is collected at the board with a claim cue. Bots skip the board; the Crucible never
+  carries a mark; an old save's active contract is dropped on load and the board stays open for it. Numbers:
+  `BattleConfig.Bounty*`, `Bounties.BoardSize/RefreshBattles/RewardGold*`. RELEASE_SCOPE: ready for
+  `Features.Bounties = true`. [BIBLE §22.4](BIBLE.md#224-bounty-board).
+- *Why:* the owner's spec — a hub board for hunting especially dangerous monsters — and it no longer overlaps the side
+  quests, which keep "defeat N".
+
 ## 2026-11-19 — One tabbed Hero screen: Status, Equip, Abilities (+ Talents), Party (owner, GG-T435)
 
 Owner: merge Status / Equip / Abilities / Party into one tabbed hero screen, with Talents folded into Abilities, so Camp

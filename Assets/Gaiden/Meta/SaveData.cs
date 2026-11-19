@@ -194,11 +194,24 @@ namespace GridGame.Meta
         public string Enchant;
     }
 
+    /// <summary>The bounty board (§22.4, GG-T431): marked targets taken, slain and awaiting their reward, and paid.</summary>
     public sealed class BountySave
     {
+        /// <summary>Bounties taken and still roaming their stage.</summary>
+        public List<string> Taken = new List<string>();
+        /// <summary>Targets killed whose reward waits at the board.</summary>
+        public List<string> Slain = new List<string>();
+        /// <summary>Bounties paid out; they never post again.</summary>
+        public HashSet<string> Claimed = new HashSet<string>();
+        /// <summary>How many times the board's open offers have turned over (seeds them).</summary>
+        public int Refresh;
+        /// <summary>Stage battles fought since the last turnover.</summary>
+        public int Battles;
+        /// <summary>The board has been used (a bounty taken, or an old kill contract held), so its Camp row never locks again.</summary>
+        public bool Used;
+        /// <summary>Retired pre-GG-T431 kill contract fields: read from old saves, then cleared by the migration.</summary>
         public string ActiveId;
         public int Progress;
-        public HashSet<string> Claimed = new HashSet<string>();
     }
 
     public sealed class QuestSave
@@ -435,6 +448,17 @@ namespace GridGame.Meta
                 s.Version = 2;
             }
             s.Bounty ??= new BountySave();
+            s.Bounty.Taken ??= new List<string>();
+            s.Bounty.Slain ??= new List<string>();
+            s.Bounty.Claimed ??= new HashSet<string>();
+            if (s.Bounty.ActiveId != null)
+            {
+                // GG-T431: the kill-N contracts are retired. An old save's active contract is dropped (its kills meant
+                // nothing in the new board); the board stays open for it.
+                s.Bounty.ActiveId = null;
+                s.Bounty.Progress = 0;
+                s.Bounty.Used = true;
+            }
             s.Quests ??= new QuestSave();
             s.Quests.Active ??= new Dictionary<string, int>();
             s.Quests.Done ??= new HashSet<string>();

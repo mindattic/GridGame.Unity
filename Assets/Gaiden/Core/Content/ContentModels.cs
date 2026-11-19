@@ -965,13 +965,22 @@ namespace GridGame.Core.Content
         public DamageType DamageType = DamageType.Poison;
     }
 
+    /// <summary>A bounty (§22.4, GG-T431): a marked, tougher variant of an existing enemy class, with its own title, that
+    /// roams one campaign stage. Taken at the board, it joins <see cref="Wave"/> of <see cref="Stage"/>; slain, its reward
+    /// is collected back at the board. Gold scales with the stage (<c>Bounties.RewardGold</c>).</summary>
     public sealed class BountyDef
     {
         public string Id;
+        /// <summary>The target's title, its name in battle: "Grimjaw the Mauler".</summary>
         public string Name;
+        /// <summary>The enemy class it is a variant of (no new art).</summary>
         public string TargetClass;
-        public int Kills;
-        public int RewardGold;
+        /// <summary>The campaign stage it roams; the clue names it ("Seen wandering …").</summary>
+        public string Stage;
+        /// <summary>0-based wave it joins (the next wave with room if that one is full).</summary>
+        public int Wave;
+        /// <summary>An optional extra trait: a rule-breaking boss's rule (§14.9). None = only the stat buff.</summary>
+        public RuleBreak RuleBreak;
         public string RewardItem;
         /// <summary>Optional skill-point payout (GG-T134): on Claim every hero in the active party gains this
         /// many skill points. 0 (the default) pays none.</summary>

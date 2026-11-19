@@ -730,13 +730,14 @@ namespace GridGame.Tests
         {
             var c = Real;
             var save = Progression.NewGame(c, "B");
-            var b = Bounties.Posted(c, save).First();
-            Assert.That(Bounties.Accept(c, save, b.Id).Ok, Is.True);
-            Assert.That(Bounties.Abandon(save).Ok, Is.True);
-            Assert.That(Bounties.Accept(c, save, b.Id).Ok, Is.True);
-            Bounties.RecordKills(c, save, new Dictionary<string, int> { [b.TargetClass] = b.Kills });
-            Assert.That(Bounties.Claim(c, save).Ok, Is.True);
-            Assert.That(Bounties.Posted(c, save).Any(x => x.Id == b.Id), Is.False);
+            save.HighestClearedStage = c.CampaignStages().Count - 1;
+            var b = Bounties.Offers(c, save).First();
+            Assert.That(Bounties.Take(c, save, b.Id).Ok, Is.True);
+            Assert.That(Bounties.Abandon(c, save, b.Id).Ok, Is.True);
+            Assert.That(Bounties.Take(c, save, b.Id).Ok, Is.True);
+            save.Bounty.Taken.Remove(b.Id); save.Bounty.Slain.Add(b.Id); // GG-T431: what RecordBattle does when the mark falls
+            Assert.That(Bounties.Claim(c, save, b.Id).Ok, Is.True);
+            Assert.That(Bounties.Board(c, save).Any(x => x.Id == b.Id), Is.False);
         }
 
         [Test] // US-238
