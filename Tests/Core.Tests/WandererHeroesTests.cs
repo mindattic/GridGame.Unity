@@ -146,7 +146,7 @@ namespace GridGame.Tests
 
         [Test]
         public void Aetherist_has_her_figure_and_thumbnail() =>
-            AssertArt("aetherist", (0.0264f, 0.0332f, 0.8877f, 0.9434f), (2.816f, 0.4880f, 0.1087f));
+            AssertArt("aetherist", (0.0254f, 0.0322f, 0.8887f, 0.9443f), (2.816f, 0.4880f, 0.1087f));
 
         [Test]
         public void Aether_pour_heals_an_ally_and_pours_an_orb_into_the_bank()
@@ -192,7 +192,7 @@ namespace GridGame.Tests
 
         [Test]
         public void Tactician_has_her_figure_and_thumbnail() =>
-            AssertArt("tactician", (0.2314f, 0.0078f, 0.5205f, 0.9854f), (2.690f, 0.4917f, 0.1162f));
+            AssertArt("tactician", (0.2314f, 0.0068f, 0.5215f, 0.9873f), (2.690f, 0.4917f, 0.1162f));
 
         /// <summary>Goblin at (3,0) acting next (3 s), goblin at (5,0) far off (5.5 s); both on the bar.</summary>
         private static (BattleState s, Unit soon, Unit late) Line()
