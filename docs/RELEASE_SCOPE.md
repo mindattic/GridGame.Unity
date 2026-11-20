@@ -7,7 +7,9 @@ which doesn't."*
 **The core loop:** make a profile and start with basic heroes → fight 5-wave stages (pincers + the timeline) → earn gold
 to repair and buy weapons, learn skills, buy items → a story scroll every 5 stages → wanderers joined by Trust and a game
 of wits → Diamond and gold summons → a simple stage select to replay stages and hunt XP and heroes → Camp.
-**Paywall hooks that stay:** summon, Diamond lucky craft, Rested refill (party energy), mercenary contracts.
+**Paywall hooks that stay:** summon, Diamond lucky craft, Rested refill (party energy), mercenary contracts. **Diamonds
+(GG-T455):** 6 G each, 100 for $1.00; every Diamond price is payable in gold; the Diamond Store's real-money packs are not
+connected to billing yet (release builds say "Store not connected yet").
 
 ## The switch
 
@@ -102,6 +104,14 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   with nothing to spend it on (starting heroes carry no gear that wears, so repair never came up), and bought the
   Alchemist's whole still ladder by stage 6. Re-priced: Summon 800 → 1,500 g, Diamond 250 → 600 g, Forge
   400/1,500/3,000 → 600/2,500/6,000, Alembic 300/1,200 → 500/3,000. Rested refill unchanged (forgiving by design).
+  **GG-T455 (owner 2026-11-20): the Diamond exchange.** Diamonds re-denominated at `DiamondExchange.GoldPerDiamond` 6 G
+  and `DiamondsPerDollar` 100, so 100 Diamonds = $1.00 = 600 G (the old one-Diamond price; gold buys exactly what it did).
+  Diamond draw 100 ($1.00 / 600 G), instant Rested refill 25 ($0.25 / 150 G), lucky craft 50 ($0.50 / 300 G). Every Diamond
+  price is paid through `DiamondExchange.Pay` (Diamonds first, the shortfall in gold), and gold buys Diamonds instantly at
+  the Diamond Store; the 600 g LuckyDiamond job is retired (an old pending one is refunded). Real-money packs at a flat
+  rate (100/$1, 500/$5, 1,000/$10, 2,500/$25, no bonus tiers) sit behind `IDiamondStore`: a free test stub in editor and
+  dev builds, "Store not connected yet" in release until a billing integration (Unity IAP / Google Play / Apple) is wired.
+  Not yet felt in real play: the owner's call.
 - **Facility prices (GG-T432, first pass, not measured).** Iron Forge 400 G, Steel 1,500 G, Mythril 3,000 G; Glass
   Alembic 300 G, Silver 1,200 G: 6,400 G for the whole ladder against ≈9,900 G of main-campaign pay, competing with
   summons (800 G) and training (~300 G a skill). Watch whether Rare gear (Iron Forge) arrives too late for the bots;

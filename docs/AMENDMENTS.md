@@ -1369,3 +1369,17 @@ efficiently as possible".
   (60/48/40/30) with one rule (wraps = body 40, one line of meta = caption 30), 24-px gutters, 16-px window gaps, 132-px
   rows 24 apart. Lists and detail panes fill the column and scroll inside themselves.
 - *Why:* every menu now reads as the same product, and no screen wastes a band on an empty box.
+
+## 2026-11-20 — The Diamond exchange: gold or real money for every Diamond price (owner, GG-T455)
+
+Owner: "Like guildwars gold and diamonds need an exchange rate so if something costs diamonds, it can be purchased with
+gold or with real money, right now lets make it 100 diamonds for $1.00 just to keep it low and honest".
+
+- **Was:** one Diamond for 600 g through the LuckyDiamond paywall job (1 s), each Diamond sink priced at 1 Diamond and
+  payable only in Diamonds, no store and no IAP UI.
+- **Now ([BIBLE §25.18.1](BIBLE.md#25181-the-diamond-exchange-gg-t455-owner-2026-11-20)):** 6 G a Diamond, 100 Diamonds
+  = $1.00; the draw is 100 Diamonds, the instant Rested refill 25, a lucky craft 50; every price is paid Diamonds first,
+  the shortfall in gold; gold buys Diamonds instantly at a Diamond Store that also lists flat-rate real-money packs
+  (a free test stub in dev builds, "Store not connected yet" in release). The LuckyDiamond job is retired; an old save's
+  pending one is refunded.
+- *Why:* the owner wants every Diamond price reachable by gold or money at one honest rate, Guild Wars style.
