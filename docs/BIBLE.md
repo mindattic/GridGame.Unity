@@ -4163,6 +4163,28 @@ Owner: "measure things in agnostic units" and "all overflow should be avoided wh
   - **Hyphenation** (`Meta/TextBreaking.cs` `Hyphenation.Points/Hyphenate`, `Typography.Hyphenate` for text that lays itself out): deterministic English, words of 6+ letters, at least 2 letters before and 3 after a break, a vowel on both sides. Breaks only where it is sure: before known suffixes (-tion/-sion/-cian/-tial/-cial/-tious/-cious, -ment(s), -ness, -less, -ful, -able/-ible, -ing(s), -thing; a doubled consonant before -ing/-able/-ible splits between the doubles: run-ning, ter-rible, but fall-ing), after un-/dis-/inter- (before a consonant) and over-/under-/counter-/super-, and inside a consonant cluster between vowels at the first split whose right part is a legal onset, never inside ch/ck/gh/ph/sh/th/wh (con-trol, mon-ster, black-smith, lit-tle, sim-ple); a lone consonant between vowels is never split (le-mon vs lem-on is ambiguous). Never a capitalised word (proper nouns), a number, or anything inside a `[keyword]` or a rich-text colour/link/bold span. *(Tests: `TextBreakingTests`.)*
   - The layout audits treat a marquee host and its overlay as handled; automation (`clicktext`, `texts`) reads `TextFit.SourceOf`, the words as given; `textinfo?text=` reports how a text element is laid out and fitted; `setting key=hyphenate value=1` flips the mode.
 
+### 26.7 The menu kit (GG-T454; owner 2026-11-20)
+
+**Amended 2026-11-20 (owner, GG-T454: "the alignment and padding and fontsize and whitespace is horrible nothing looks like it fits together every single menu needs to have one standardized look and feel that can be repeated over and over and over and utilizes space as efficiently as possible").** Every menu screen is built from one kit of roles (`Ui.cs`, values in `Tokens.cs` `Kit`, classes `.kit-*` in `Theme.uss`); a screen picks roles, never its own font size, padding or margin.
+
+| Role | Builder | Look |
+|---|---|---|
+| Page title | `Ui.Header(title, back, …, subtitle)` | 60 heavy title; an optional subtitle (station level, profile) rides under it in the bar at 30 gold instead of a cramped line below |
+| Page body | `Ui.PageBody` (HubPage does it) | centred content column; windows sit **24 px** from the stage edge and **16 px** from the header, each other and the bottom |
+| Window | `Ui.Panel(title, fill)` | padding **16 / 24**; title 48 heavy; `fill` takes the leftover height |
+| Tab strip | `Ui.Tabs` | the window under it sits flush on it automatically |
+| List | `Ui.ListPanel` | a window that fills the column and scrolls inside itself; two of them split the height evenly (Equip's slots and bag, GG-T452) |
+| List row | `Ui.MenuRow` | label + right-aligned value, body 40, one **132-px** target tall, 24 px apart |
+| Row note | `Ui.Note` | a sentence under a row, body 40 dim, indented to the row label (**72 px**) |
+| Section header | `Ui.Section` | caption 30 heavy gold, flush left |
+| Card | `Ui.Card` | portrait **120** (compact cards: 96), name body 40 heavy, lines below, its buttons in a row under its text (`Ui.Actions`), same 24-px pitch as rows |
+| Fact | `Ui.Field` | a read-only label/value line: caption 30 dim label in a 220-px column, body value |
+| Detail pane | `Ui.DetailPanel` | as tall as its content up to **45%** of the column, then it scrolls; heading 48 + caption meta + body sentences |
+| Footer / action bar | `Ui.Footer` | the total on the left, the commit button on the right, at the bottom of the screen (POL-C4) |
+| Empty state | `Ui.Empty` | body 40 dim, centred |
+
+**Type has four sizes and one rule:** title 60, heading 48, body 40, caption 30. Anything that wraps is body (`Ui.Para`, POL-A2, the same rule `Typography.Paragraphs` already enforced for long text, now for every sentence); a single line of meta is caption (`Ui.Caption`). The 24-px badge size is gone from menus except the title's version tag. Screens that stay bespoke: the Title, story crawls and credits roll, dialogue, the Level Up and results celebrations and the character select (art-led), the talent graph's node cards and the battle bar's slots (fixed-size cells), the Bestiary grid (`EvenGrid`), and the window editor's live preview (it shows the theme's sample styles).
+
 ---
 
 ## 27. Story crawl (no dialog)

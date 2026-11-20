@@ -1354,3 +1354,18 @@ will be rewritten by examining the shape of things".
 - **Balance:** rewards are reasoned from measured stage pay, not soak-measured; bots never take quests, so the sim is
   unaffected.
 - *(Tests: `QuestTests`, written, not run.)*
+
+## 2026-11-20 — One menu kit for every menu screen (owner, GG-T454)
+
+Owner: "the alignment and padding and fontsize and whitespace is horrible nothing looks like it fits together every single
+menu needs to have one standardized look and feel that can be repeated over and over and over and utilizes space as
+efficiently as possible".
+
+- **Was:** each screen sized its own text (24/30/40/48 px for the same role on different screens), indented its own notes
+  (48, 64 or 112 px), set its own detail-pane minimum heights (200-330 px of mostly empty box), and put subtitles in a
+  cramped line under the header; windows sat 16 px from the edge on some screens and 8 on others.
+- **Now ([BIBLE §26.7](BIBLE.md#267-the-menu-kit-gg-t454-owner-2026-11-20)):** one kit of roles in `Ui.cs` (Header,
+  PageBody, Panel, ListPanel, DetailPanel, Tabs, MenuRow, Note, Section, Card, Field, Footer, Empty), four type sizes
+  (60/48/40/30) with one rule (wraps = body 40, one line of meta = caption 30), 24-px gutters, 16-px window gaps, 132-px
+  rows 24 apart. Lists and detail panes fill the column and scroll inside themselves.
+- *Why:* every menu now reads as the same product, and no screen wastes a band on an empty box.

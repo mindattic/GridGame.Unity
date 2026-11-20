@@ -168,8 +168,8 @@ namespace GridGame.App
         {
             string c = " " + (classes ?? "") + " ";
             if (c.Contains(" tiny ")) return TypeScale.Badge;
-            if (c.Contains(" small ") || c.Contains(" t-caption ")) return TypeScale.Caption;
-            if (c.Contains(" t-h3 ")) return TypeScale.H3;
+            if (c.Contains(" small ") || c.Contains(" t-caption ") || c.Contains(" kit-caption ")) return TypeScale.Caption;
+            if (c.Contains(" t-h3 ") || c.Contains(" kit-heading ")) return TypeScale.H3;
             if (c.Contains(" h2 ") || c.Contains(" t-h2 ")) return TypeScale.H2;
             return TypeScale.Body;
         }

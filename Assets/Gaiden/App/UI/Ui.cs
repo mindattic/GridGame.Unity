@@ -38,7 +38,7 @@ namespace GridGame.App
         /// <summary>Classes that used to be faux-bold in Theme.uss; they take the real Heavy cut instead (POL-A3).
         /// Fonts are runtime SDF assets, so USS can't reference them; the weight is applied here.</summary>
         private static readonly HashSet<string> HeavyClasses = new HashSet<string>
-            { "t-heavy", "title", "h1", "h2", "window-title", "header-title", "btn", "tab--active", "role-badge", "pip" };
+            { "t-heavy", "title", "h1", "h2", "window-title", "header-title", "btn", "tab--active", "role-badge", "pip", "kit-heading", "kit-name", "kit-section" };
 
         /// <summary>Heavy for elements a screen tagged with a heavy class outside these helpers, leaving any element
         /// whose font is already set inline (a Display headline) alone.</summary>
@@ -65,7 +65,9 @@ namespace GridGame.App
 
         public static VisualElement Window(string title = null, VisualElement parent = null, string classes = null)
         {
-            var w = El("window " + (classes ?? ""), parent);
+            // GG-T454: a window right under a tab strip sits flush on it, so no screen has to zero its top margin.
+            bool tabbed = parent != null && parent.childCount > 0 && parent[parent.childCount - 1].ClassListContains("tabs");
+            var w = El("window " + (classes ?? "") + (tabbed ? " window--tabbed" : ""), parent);
             w.style.backgroundImage = new StyleBackground(Art.Window);
             TintWindow(w);
             // GG-T407: the theme's texture layer (absolute, picking-ignored, first child). A screen that clears and refills
@@ -177,16 +179,143 @@ namespace GridGame.App
             b.EnableInClassList("btn--disabled", !enabled);
         }
 
-        /// <summary>Top bar: back button, title, live gold.</summary>
-        public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold)
+        /// <summary>The page title (kit role, GG-T454): back button, title (with an optional one-line subtitle under it, e.g. a
+        /// station's level), live gold. The bar spans the stage; its contents line up with the windows below (Kit.Gutter).</summary>
+        public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold, string subtitle = null)
         {
             var h = El("header", parent);
             // The bar spans the stage; its back button, title and gold line up with the content column (GG-T398).
-            h.style.paddingLeft = h.style.paddingRight = Fit.Inset + Space.S24;
+            h.style.paddingLeft = h.style.paddingRight = Fit.Inset + Kit.Gutter;
             if (onBack != null) Button("‹", onBack, "btn--small btn--icon", h).name = "back";
-            Text(title, "header-title shadow", h);
+            if (subtitle == null) Text(title, "header-title shadow", h);
+            else
+            {
+                var titles = El("header-titles", h);
+                Text(title, "header-title shadow", titles);
+                var sub = Text(subtitle, "header-sub", titles);
+                sub.name = "header-sub";
+                Marquee(sub);
+            }
             gold = Text("", "header-gold shadow", h);
             return h;
+        }
+
+        // ── The menu kit (GG-T454, Tokens.cs Kit): the builders every menu screen lays itself out with ──────────────
+
+        /// <summary>A page's body under its <see cref="Header"/>: the centred content column, padded so each window (with its
+        /// own S8 margin) sits <see cref="Kit.Gutter"/> from the stage edge and <see cref="Kit.Gap"/> from the header, the
+        /// other windows and the bottom. Every menu page lays its windows into this.</summary>
+        public static VisualElement PageBody(VisualElement col)
+        {
+            var body = El("col grow", col);
+            body.name = "page-body";
+            // A tablet's extra width goes to the backdrop either side rather than stretching every row (GG-T398).
+            Fit.Columnize(body, Kit.Gutter - Space.S8);
+            body.style.paddingTop = body.style.paddingBottom = Kit.Gap - Space.S8;
+            return body;
+        }
+
+        /// <summary>A window holding a block of content (an intro, a form, a summary). <paramref name="fill"/> = it takes the
+        /// column's leftover height (and shares it evenly with any other filling window).</summary>
+        public static VisualElement Panel(VisualElement parent, string title = null, bool fill = false, string name = null)
+        {
+            var w = Window(title, parent, fill ? "window--fill" : null);
+            if (name != null) w.name = name;
+            return w;
+        }
+
+        /// <summary>A window holding a scrolling list that fills the column's leftover height (two of them split it evenly).
+        /// Returns the list's content container, where rows and cards go.</summary>
+        public static VisualElement ListPanel(VisualElement parent, string title = null, string name = null) =>
+            ListPanel(parent, title, out _, name);
+
+        public static VisualElement ListPanel(VisualElement parent, string title, out ScrollView scroll, string name = null)
+        {
+            var w = Panel(parent, title, true, name);
+            scroll = List(w);
+            return scroll.contentContainer;
+        }
+
+        /// <summary>The detail pane under a list: as tall as what it shows, at most <see cref="Kit.DetailMaxPct"/>% of the
+        /// column, then it scrolls inside itself. Returns its content container (clear and refill it on selection).</summary>
+        public static VisualElement DetailPanel(VisualElement parent, string name = null)
+        {
+            var w = Window(null, parent, "window--detail");
+            if (name != null) w.name = name;
+            var sv = new ScrollView(ScrollViewMode.Vertical);
+            sv.AddToClassList("list");
+            sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            sv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            w.Add(sv);
+            return sv.contentContainer;
+        }
+
+        /// <summary>The action bar at the foot of a screen (a total, then the commit button). Returns its row.</summary>
+        public static VisualElement Footer(VisualElement parent, string name = null)
+        {
+            var w = Window(null, parent);
+            if (name != null) w.name = name;
+            return El("kit-footer", w);
+        }
+
+        /// <summary>A row of buttons inside a window or card; they wrap, 24 px apart, edges lined up with the text.</summary>
+        public static VisualElement Actions(VisualElement parent) => El("kit-actions", parent);
+
+        /// <summary>A group header ("Weapon", "Under way"): caption size, gold, flush with the window's left edge.</summary>
+        public static Label Section(string text, VisualElement parent)
+        {
+            var l = Text(text, "kit-section", parent);
+            if (parent != null && parent.childCount == 1) l.AddToClassList("kit-section--first");
+            return l;
+        }
+
+        /// <summary>What an empty list or pane says ("Nothing to sell."): body size, dim, centred.</summary>
+        public static Label Empty(string text, VisualElement parent) => Text(text, "kit-empty", parent);
+
+        /// <summary>A heading (48): a window-level or detail pane's title. <paramref name="tone"/>: gold, dim, good, bad, a rarity class.</summary>
+        public static Label Heading(string text, VisualElement parent, string tone = null) => Text(text, "kit-heading " + (tone ?? ""), parent);
+
+        /// <summary>A card's name (body size, heavy).</summary>
+        public static Label Name(string text, VisualElement parent, string tone = null) => Text(text, "kit-name " + (tone ?? ""), parent);
+
+        /// <summary>A sentence or paragraph (body size, wraps). Anything that wraps is body text (POL-A2).</summary>
+        public static Label Para(string text, VisualElement parent, string tone = null) => Text(text, "kit-text " + (tone ?? ""), parent);
+
+        /// <summary>One line of meta ("Lv 3 · HP 120", "Spent 2"): caption size; a line too long for its space scrolls (marquee).</summary>
+        public static Label Caption(string text, VisualElement parent, string tone = null) => Text(text, "kit-caption " + (tone ?? ""), parent);
+
+        /// <summary>A row's note: a sentence under a menu row (an ability's description, a stage's drops), indented to the
+        /// row's label. Body size, dim unless <paramref name="tone"/> says otherwise.</summary>
+        public static Label Note(string text, VisualElement parent, string tone = "dim")
+        {
+            var l = Para(text, parent, tone);
+            l.AddToClassList("kit-note");
+            return l;
+        }
+
+        /// <summary>A read-only fact: a caption label in a fixed column, then its value in body text (wraps). For facts a
+        /// player reads, not picks (Status gear, bestiary knowledge, a Crucible rule); a pickable line is a <see cref="MenuRow"/>.</summary>
+        public static VisualElement Field(string label, string value, VisualElement parent, string tone = null, string name = null)
+        {
+            var row = El("kit-field", parent);
+            if (name != null) row.name = name;
+            Text(label, "kit-field__label", row);
+            var v = Text(value ?? "", "kit-field__value " + (tone ?? ""), row);
+            v.name = "value";
+            return row;
+        }
+
+        /// <summary>A list card (kit role): portrait (<see cref="Kit.Thumb"/>, or none for a null <paramref name="classId"/>),
+        /// then a column with the card's name. Returns the card; <paramref name="col"/> takes its other lines.</summary>
+        public static VisualElement Card(VisualElement parent, string classId, string name, out VisualElement col, string cardName = null)
+        {
+            var card = El("card kit-card", parent);
+            if (cardName != null) card.name = cardName;
+            if (classId != null) Thumb(classId, card, Kit.Thumb);
+            col = El("col grow", card);
+            col.style.flexShrink = 1; col.style.minWidth = 0;
+            if (name != null) Name(name, col);
+            return card;
         }
 
         public static string Gold(int g) => $"{g:N0} G";
@@ -299,7 +428,7 @@ namespace GridGame.App
 
         /// <summary>A framed card thumbnail: the class's real portrait seen through its Thumbnail window (<see cref="PortraitThumb"/>).
         /// Tint the art (e.g. the bestiary's unseen silhouette) on <c>t.Q(ThumbArt)</c>, not on the frame.</summary>
-        public static VisualElement Thumb(string classId, VisualElement parent, float size = 150)
+        public static VisualElement Thumb(string classId, VisualElement parent, float size = Kit.Thumb)
         {
             var t = El("thumb", parent);
             t.style.width = size;

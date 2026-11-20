@@ -110,7 +110,7 @@
     border-width: 5px;
     border-color: var(--color-frame);
     border-radius: 18px;
-    padding: var(--space-24) var(--space-32);
+    padding: var(--space-16) var(--space-24); /* Kit.PadY / Kit.PadX (GG-T454) */
     margin: var(--space-8);
     background-size: 100% 100%;
     flex-shrink: 0;
@@ -122,7 +122,7 @@
 .window-title {
     font-size: var(--type-h3);
     color: var(--color-white);
-    margin-bottom: var(--space-16);
+    margin-bottom: var(--space-8);
 }
 .window-sub { font-size: var(--type-small); color: var(--color-sub); }
 
@@ -248,6 +248,10 @@
     border-color: var(--color-frame);
 }
 .header-title { flex-grow: 1; font-size: var(--type-h2); -unity-text-align: middle-left; margin-left: var(--space-16); }
+/* GG-T454: a page's subtitle (station level, profile) rides in the header under its title instead of a cramped line below it. */
+.header-titles { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: var(--space-16); justify-content: center; }
+.header-titles > .header-title { flex-grow: 0; margin-left: 0; }
+.header-sub { font-size: var(--type-caption); color: var(--color-gold); -unity-text-align: middle-left; }
 .header-gold { font-size: var(--type-h3); color: var(--color-gold); -unity-text-align: middle-right; margin-right: var(--space-16); }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
@@ -298,12 +302,46 @@
 .list .unity-scroller--vertical { width: 18px; }
 .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(236, 238, 255, 0.6); border-radius: 8px; }
 
+/* ── Menu kit (GG-T454, Tokens.cs Kit) ──────────────────────────────────────
+   One look for every menu: four type sizes (title 60 in the header, heading 48, body 40, caption 30), windows 24 px from
+   the edge and 16 apart, 132-px rows 24 apart, notes indented to the row label. Screens use Ui's kit builders, which put
+   these classes on; a screen never sets its own font size, padding or margin. */
+.kit-heading { font-size: var(--type-h3); color: var(--color-white); }
+.kit-name { font-size: var(--type-body); color: var(--color-white); }
+.kit-text { font-size: var(--type-body); white-space: normal; }
+.kit-caption { font-size: var(--type-caption); }
+.kit-section { font-size: var(--type-caption); color: var(--color-gold); margin: var(--space-16) 0 var(--space-4) 0; }
+.kit-section--first { margin-top: 0; }
+.kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
+/* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
+.kit-field { flex-direction: row; align-items: center; margin: var(--space-4) 0; }
+.kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-caption); color: var(--color-dim); }
+.kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-body); white-space: normal; }
+.kit-empty { font-size: var(--type-body); color: var(--color-dim); white-space: normal; -unity-text-align: middle-center; padding: var(--space-24); }
+/* A list card's portrait and buttons line up with its first line, however tall its text runs. */
+.card.kit-card { align-items: flex-start; }
+.kit-heading, .kit-name { -unity-text-outline-width: 3px; -unity-text-outline-color: var(--color-text-edge); text-shadow: 4px 4px 0 var(--color-text-drop); }
+.kit-caption, .kit-section, .kit-field__label { -unity-text-outline-width: 1px; -unity-text-outline-color: var(--color-text-edge); text-shadow: 2px 2px 0 var(--color-text-drop); }
+/* A window that takes the column's leftover height and scrolls (lists); two of them split it evenly. */
+.window--fill { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 160px; }
+/* A detail pane: as tall as what it shows, at most Kit.DetailMaxPct of the column, then it scrolls inside itself. */
+.window--detail { flex-shrink: 1; min-height: 0; max-height: 45%; }
+.window--detail > .list { flex-grow: 0; flex-shrink: 1; }
+/* Under tabs the window sits flush on the strip (Ui.Window drops its top margin). */
+.window--tabbed { margin-top: 0; }
+/* The action bar at the foot of a screen: what it costs or does on the left, the buttons on the right. */
+.kit-footer { flex-direction: row; align-items: center; }
+.kit-footer > .btn { margin-top: 0; margin-bottom: 0; }
+/* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
+.kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) -12px 0 -12px; } /* buttons keep their 12-px margins; the row's edges line up with the text */
+.kit-actions.kit-note { margin-left: 60px; } /* a row's buttons under its label: Kit.Indent less the first button's 12-px margin */
+
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {
     flex-direction: row;
     align-items: center;
     padding: var(--space-16);
-    margin: var(--space-8) 0;
+    margin: var(--space-12) 0; /* the same 24-px pitch as menu rows (GG-T454) */
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.05);
 }

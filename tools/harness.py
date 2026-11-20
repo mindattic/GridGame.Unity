@@ -391,7 +391,8 @@ def sweep(run="sweep", theme=None):
     time.sleep(1)
     report = {}
     for screen in ["hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
-                   "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "credits"]:
+                   "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "credits",
+                   "caravan", "mercenaries", "quests", "windows", "newgame", "profiles"]:  # GG-T454: every menu
         call("goto", screen=screen)
         time.sleep(0.9)
         shot(f"sweep-{screen}")

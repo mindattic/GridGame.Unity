@@ -89,6 +89,20 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>An item rarity's colour (USS <c>--color-rarity-*</c>), for a rarity named inside rich text.</summary>
+        public static Color Rarity(ItemRarity r)
+        {
+            switch (r)
+            {
+                case ItemRarity.Junk: return new Color(0.55f, 0.55f, 0.55f);
+                case ItemRarity.Uncommon: return new Color(0.43f, 0.9f, 0.47f);
+                case ItemRarity.Rare: return new Color(0.39f, 0.67f, 1f);
+                case ItemRarity.Epic: return new Color(0.78f, 0.47f, 1f);
+                case ItemRarity.Legendary: return new Color(1f, 0.78f, 0.27f);
+                default: return new Color(0.925f, 0.925f, 0.94f);
+            }
+        }
+
         public static Color WithA(this Color c, float a) => new Color(c.r, c.g, c.b, a);
 
         /// <summary>A #RRGGBB content color (vfxstyle.json), or <paramref name="fallback"/> when absent or malformed.</summary>
@@ -126,6 +140,41 @@ namespace GridGame.App
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
     }
 
+    /// <summary>
+    /// The menu kit (GG-T454, owner 2026-11-20: "every single menu needs to have one standardized look and feel that can be
+    /// repeated over and over and over and utilizes space as efficiently as possible"). Every menu screen is built from the
+    /// same few roles (<see cref="Ui"/>'s Header, Tabs, Panel/ListPanel/DetailPanel, Section, MenuRow, Card, Note, Footer,
+    /// Empty) and these are their only sizes. Theme.uss's <c>.kit-*</c> classes carry the same values.
+    /// <para>Type: four sizes and one rule — page title 60, heading 48 (a window's or detail pane's title), body 40 (row
+    /// labels and values, card names, buttons, and every wrapped sentence), caption 30 (one-line meta, section headers,
+    /// hints). Anything that wraps is body; anything that is a single line of meta is caption.</para>
+    /// <para>Space: windows sit <see cref="Gutter"/> from the stage edge and <see cref="Gap"/> apart, padded
+    /// <see cref="PadY"/>/<see cref="PadX"/>; every row and card is at least one <see cref="Row"/> tall with 24 px between
+    /// them (two 12-px margins, POL-C3); a row's note and a section header start at the row label's left edge
+    /// (<see cref="Indent"/>). Lists and detail panes fill the column and scroll inside themselves.</para>
+    /// </summary>
+    public static class Kit
+    {
+        public const float Title = TypeScale.H2, Heading = TypeScale.H3, Body = TypeScale.Body, Caption = TypeScale.Caption;
+        /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>
+        public const float Gutter = Fit.Edge;
+        /// <summary>Between stacked windows, and between the header and the first window (each window's S8 margin, twice).</summary>
+        public const float Gap = Space.S16;
+        /// <summary>A window's inner padding: <see cref="PadY"/> top and bottom, <see cref="PadX"/> left and right.</summary>
+        public const float PadY = Space.S16, PadX = Space.S24;
+        /// <summary>A menu row's height: one tap target (POL-C2).</summary>
+        public const float Row = Size.Target;
+        /// <summary>Where a row's label starts inside it (row padding 8 + cursor 56 + 8): a row's note and a section header
+        /// line up with it.</summary>
+        public const float Indent = Space.S8 + Size.IconM + Space.S8;
+        /// <summary>A list card's portrait (quests, mercenaries, summons, bounties, caravan, party).</summary>
+        public const float Thumb = Size.Thumb;
+        /// <summary>A compact card's portrait (the Camp party window, the Heroes roster strip).</summary>
+        public const float Avatar = Size.Avatar;
+        /// <summary>The most of its column a detail pane takes before it scrolls inside itself (the list above gets the rest).</summary>
+        public const float DetailMaxPct = 45f;
+    }
+
     /// <summary>Aspect-agnostic layout units (GG-T272): fractions of the safe-area stage, which grows from 1170×2532 up to
     /// 3:4 (1899 wide) or 9:23 (2990 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
     /// current screen on <see cref="GameApp.StageResized"/> (the battle re-lays itself out).</summary>
@@ -161,8 +210,8 @@ namespace GridGame.App
         }
 
         /// <summary>Centres an element of a full-stage column (a window under a header) in the content column, keeping
-        /// <paramref name="margin"/> (a window's own S8 by default) on each side (GG-T398).</summary>
-        public static void Center(UnityEngine.UIElements.VisualElement el, float margin = Space.S8)
+        /// <paramref name="margin"/> (the kit's <see cref="Kit.Gutter"/> by default, GG-T454) on each side (GG-T398).</summary>
+        public static void Center(UnityEngine.UIElements.VisualElement el, float margin = Kit.Gutter)
         {
             el.style.marginLeft = Inset + margin;
             el.style.marginRight = Inset + margin;
