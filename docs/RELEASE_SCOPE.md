@@ -95,6 +95,9 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   still 1 g / 1 s. First-pass real prices now: deliberate gold Summon 800 g, one Diamond (LuckyDiamond) 250 g, Rested's
   gold refill 100 g + 15 g per stage cleared (a flat 60 g, tried first, was under 3% of what its 10 launches earn). The Diamond draw stays 1 Diamond (unchanged, deliberately cheaper per attempt than the 800 g
   guaranteed pick) — still a measurement-pending number, not re-derived here. Rested also gained a second, Diamond-priced
+  **GG-T448 playthrough (2026-11-19):** a fresh save played stage by stage banked 6,474 g by stage 13 with nothing to spend
+  it on, and bought the Alchemist's whole still ladder by stage 6. Re-priced: Summon 800 → 1,500 g, Diamond 250 → 600 g,
+  Forge 400/1,500/3,000 → 600/2,500/6,000, Alembic 300/1,200 → 500/3,000. Rested refill unchanged (forgiving by design).
   refill (1 Diamond, instant, no job) alongside the gold one, so Diamonds can pay for either a hero pull or skipping the
   wait, per the owner's request. Checked against measured stage pay (2026-11-17 polish records, winning runs): ≈210–270 g a stage at Lv 1–6,
   400–600 g from Lv 9, ≈9,900 g for one pass of the main campaign. Not yet felt in real play: the owner's call.

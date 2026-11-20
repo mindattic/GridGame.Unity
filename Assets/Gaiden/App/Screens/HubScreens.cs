@@ -1362,6 +1362,7 @@ namespace GridGame.App
                 if (lv > 0) Ui.Text("Now: " + d.Levels[lv - 1].Text, "tiny good", col);
                 if (next != null) Ui.Text("Next: " + next.Text, "tiny", col);
                 var b = Ui.Button(next == null ? "Maxed" : Ui.Gold(next.Cost), () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id))), "btn--small", card);
+                b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
             }
         }

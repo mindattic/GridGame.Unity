@@ -153,21 +153,21 @@
     "BaseRarity": "Uncommon",
     "Levels": [
       {
-        "Cost": 400,
+        "Cost": 600,
         "Value": 1,
         "Name": "Iron Forge",
         "Rarity": "Rare",
         "Text": "Iron Forge: forge Rare gear"
       },
       {
-        "Cost": 1500,
+        "Cost": 2500,
         "Value": 2,
         "Name": "Steel Forge",
         "Rarity": "Epic",
         "Text": "Steel Forge: forge Epic gear"
       },
       {
-        "Cost": 3000,
+        "Cost": 6000,
         "Value": 3,
         "Name": "Mythril Forge",
         "Rarity": "Legendary",
@@ -184,14 +184,14 @@
     "BaseRarity": "Common",
     "Levels": [
       {
-        "Cost": 300,
+        "Cost": 500,
         "Value": 1,
         "Name": "Glass Alembic",
         "Rarity": "Uncommon",
         "Text": "Glass Alembic: brew Uncommon remedies"
       },
       {
-        "Cost": 1200,
+        "Cost": 3000,
         "Value": 2,
         "Name": "Silver Alembic",
         "Rarity": "Legendary",

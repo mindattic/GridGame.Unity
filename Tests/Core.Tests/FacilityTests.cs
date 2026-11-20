@@ -88,12 +88,14 @@ namespace GridGame.Tests
         public void Prices_are_a_real_gold_sink_against_measured_stage_pay()
         {
             // Measured 2026-11-17: ~210-270 G a stage at Lv 1-6, 400-600 G from Lv 9, ~9,900 G for the main campaign.
+            // Re-measured 2026-11-19 (GG-T448, a fresh save played stage by stage through the real camp): ~7,800 G earned by
+            // stage 13 of 40 — region finales pay 600-1,500 G — so the campaign pays well over 20,000 G; the ladder was re-priced.
             var c = Real;
             var forge = Facilities.Def(c, CraftStation.Forge).Levels;
             Assert.That(forge[0].Cost, Is.InRange(210, 600), "the first rung is one or two early stages");
             Assert.That(forge[forge.Count - 1].Cost, Is.GreaterThanOrEqualTo(4 * 500), "the top rung is several late stages");
             int all = Facilities.Def(c, CraftStation.Forge).Levels.Sum(l => l.Cost) + Facilities.Def(c, CraftStation.Alchemy).Levels.Sum(l => l.Cost);
-            Assert.That(all, Is.LessThan(9900), "the whole ladder fits inside one campaign's pay");
+            Assert.That(all, Is.LessThan(20000), "the whole ladder fits inside one campaign's pay");
         }
 
         [Test]

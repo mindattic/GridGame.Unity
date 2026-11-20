@@ -1306,7 +1306,7 @@ def storyarc(run="storyarc", capture=True):
     gold0 = save().get("Gold", 0)
     call("clicktext", text="Recruit"); time.sleep(0.5); call("click", name="confirm-yes"); time.sleep(0.4)
     shot("16-summoning"); time.sleep(2.0)
-    ok["summon_timed_paid"] = len(save().get("roster") or []) == roster0 + 1 and save().get("Gold", 0) < gold0  # the tuned 800 g
+    ok["summon_timed_paid"] = len(save().get("roster") or []) == roster0 + 1 and save().get("Gold", 0) < gold0  # the tuned 1,500 g (GG-T448)
     call("back"); time.sleep(0.6)
     _goto("blacksmith"); time.sleep(1.0); shot("17-forge")
     ok["lucky_craft_section"] = bool(call("names", prefix="lucky-craft"))

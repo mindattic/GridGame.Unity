@@ -26,11 +26,11 @@ namespace GridGame.Meta
     {
         /// <summary>Gold for a deliberate, chosen-hero Summon Circle recruit — the one hero a player fully controls,
         /// priced above the Diamond draw's blind convenience (GG-T427). A few stages' worth of grinding, not a whim.</summary>
-        public const int SummonGoldPrice = 800;
+        public const int SummonGoldPrice = 1500;
         /// <summary>Gold for one Diamond at the forge's "Buy Diamond" button (`LuckyCraftUi`) — the only non-real-money
         /// path to the premium currency today (GG-T427). About a mid consumable's worth, so it's a real choice against
         /// spending the same gold on gear, not free.</summary>
-        public const int DiamondGoldPrice = 250;
+        public const int DiamondGoldPrice = 600;
         /// <summary>Gold to skip the Rested wait on a fresh save (GG-T427); it grows by <see cref="RestedRefillGoldPerStage"/>
         /// per campaign stage cleared, so it stays about half to one stage's pay (measured ~210 g early, 400-600 g late)
         /// instead of shrinking to nothing. See <see cref="RestedPool.DiamondRefillPrice"/> for the Diamond side.</summary>
