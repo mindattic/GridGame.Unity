@@ -7,8 +7,9 @@ using UnityEngine.UIElements;
 
 namespace GridGame.App
 {
-    /// <summary>The Forge's Diamond controls (§24.6.5, GG-T235): buy a Diamond through the paywall hook, and a lucky craft
-    /// that spends one for a far better Masterwork chance, revealed over time.</summary>
+    /// <summary>The Forge's Diamond controls (§24.6.5, GG-T235): the way to the Diamond Store, and a lucky craft that spends
+    /// <see cref="Crafting.LuckyDiamondCost"/> Diamonds (or their gold, GG-T455) for a far better Masterwork chance, revealed
+    /// over time.</summary>
     public static class LuckyCraftUi
     {
         public static void Section(VisualElement w, ContentDb c, SaveData s, RecipeDef r, bool craftable, Action refresh)
@@ -28,23 +29,23 @@ namespace GridGame.App
             }
             Ui.Text($"Diamonds: {s.Count(Crafting.DiamondId)}", "small", head);
 
-            var buy = Ui.Button($"Buy Diamond · {Paywall.Tag(PaywallKind.LuckyDiamond, s)}", () =>
-                TimedJobView.Begin(now => (Paywall.Start(GameApp.I.Save, PaywallKind.LuckyDiamond, Crafting.DiamondId, now, out var job), job),
-                    "Cutting a Diamond…", _ => refresh()), "btn--small", box);
+            // GG-T455: the old 600 g one-Diamond job is retired; Diamonds come from the store's gold exchange.
+            var buy = Ui.Button("Diamond Store", DiamondStores.Open, "btn--small", box);
             buy.name = "buy-diamond";
             buy.style.marginTop = Space.S8;
-            Ui.SetEnabled(buy, s.Gold >= Paywall.Cost(PaywallKind.LuckyDiamond, s) && Paywall.Pending(s, PaywallKind.LuckyDiamond) == null);
 
             bool can = Crafting.CanLucky(c, s, r);
-            var lucky = Ui.Button($"Lucky craft (use 1 Diamond) · ★ {Math.Round(Crafting.MasterworkChance(c, s, true) * 100)}%", () =>
+            var lucky = Ui.Button($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {Math.Round(Crafting.MasterworkChance(c, s, true) * 100)}%", () =>
             {
+                if (!Crafting.CanLucky(c, s, r)) { DiamondStores.OfferStore(DiamondExchange.CanPay(s, Crafting.LuckyDiamondCost, r.Gold).Message); return; }
                 var res = Forging.Forge(c, s, r, lucky: true);
                 if (res.Ok) GameApp.I.Persist();
                 Reveal(res, refresh);
             }, can ? "btn--primary" : null, box);
             lucky.name = "lucky-craft-btn";
             lucky.style.marginTop = Space.S8;
-            Ui.SetEnabled(lucky, can && craftable);
+            // Short of Diamonds and gold it stays tappable and offers the store; it's disabled only when the craft itself isn't.
+            Ui.SetEnabled(lucky, craftable);
         }
 
         /// <summary>The diamond spins up in a veil, then the result lands: a Masterwork with a fanfare, else a softer cue.</summary>

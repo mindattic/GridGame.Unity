@@ -575,6 +575,9 @@ namespace GridGame.App
             if (c.QuestOrder.Any(q => Quests.State(c, s, q) != QuestState.Locked))
                 Item("Quests", () => new QuestScreen(), questsReady > 0 ? $"! {questsReady} to hand in" : $"{s.Quests.Active.Count} under way");
             Station("Summon Circle", CampUnlocks.SummonOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), () => new SummonScreen());
+            // The Diamond Store (§25.18.1, GG-T455): the gold exchange and the real-money packs.
+            if (Features.DiamondStore)
+                Ui.MenuRow("Diamond Store", $"{DiamondExchange.Have(s):N0} Diamonds", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));

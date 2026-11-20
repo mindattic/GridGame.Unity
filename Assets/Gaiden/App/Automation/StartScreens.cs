@@ -10,7 +10,7 @@ namespace GridGame.App.Automation
         {
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
-            "profiles", "newprofile",
+            "profiles", "newprofile", "diamonds",
         };
 
         public static bool TryGet(string id, out GameScreen screen)
@@ -44,6 +44,7 @@ namespace GridGame.App.Automation
                 case "enchantress": screen = new EnchantressScreen(); break;
                 case "talk": screen = new TalkScreen(); break;
                 case "summon": screen = new SummonScreen(); break;
+                case "diamonds": screen = new DiamondStoreScreen(); break; // GG-T455
                 case "caravan": screen = new CaravanScreen(); break; // GG-T448: missing here, so goto/_goto("caravan") always "unknown screen" -- no Caravan purchase could ever be driven through automation
                 case "mercenaries": screen = new MercenaryScreen(); break;
                 case "bounties": screen = new BountyScreen(); break;

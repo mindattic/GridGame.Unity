@@ -1330,14 +1330,14 @@ namespace GridGame.App
         }
 
         /// <summary>The random draw for Diamonds (§25.10.2, GG-T343): a stranger from the wanderer pool, revealed when the
-        /// summoning lands. Diamonds still come only from the LuckyDiamond hook (§24.6.5); there is no store.</summary>
+        /// summoning lands. Priced in Diamonds, payable in gold through the exchange (GG-T455).</summary>
         private void RandomDraw(VisualElement body, bool busy)
         {
             var w = Ui.Panel(body, "Call a stranger", false, "summon-random");
             int diamonds = S.Count(Crafting.DiamondId);
             int left = DiamondSummon.Pool(C, S).Count;
             var t = Ui.Text(left > 0
-                ? $"Spend a Diamond and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
+                ? $"Spend Diamonds and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
                 : "No one is left on the road to answer.", "kit-text", w);
             var row = Ui.Actions(w);
             var icon = Art.ItemIcon(Crafting.DiamondId);
@@ -1349,16 +1349,27 @@ namespace GridGame.App
                 img.style.marginLeft = Space.TargetHalfGap;
             }
             Ui.Name($"Diamonds: {diamonds}", row, "grow").style.marginLeft = Space.S8;
-            var b = Ui.Button($"Draw · {DiamondSummon.Tag(S)}", () => Confirm.Show($"Spend {DiamondSummon.Price} Diamond on a random summon?", "Draw", () =>
+            var b = Ui.Button($"Draw · {DiamondSummon.Tag(S)}", () =>
             {
-                string drawn = null;
-                TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
-                    "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, Refresh); else Refresh(); });
-            }), "btn--small btn--primary", row);
+                var can = DiamondSummon.CanDraw(C, S);
+                if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
+                var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
+                string pay = qg == 0 ? $"{qd:N0} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{qd:N0} Diamonds and {Ui.Gold(qg)}";
+                Confirm.Show($"Pay {pay} for a random summon?", "Draw", () =>
+                {
+                    string drawn = null;
+                    TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
+                        "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, Refresh); else Refresh(); });
+                });
+            }, "btn--small btn--primary", row);
             b.name = "summon-draw";
-            Ui.SetEnabled(b, !busy && DiamondSummon.CanDraw(C, S).Ok);
+            // Short of Diamonds and gold it stays tappable and offers the store (GG-T455); busy or no one left disables it.
+            Ui.SetEnabled(b, !busy && left > 0 && !S.TestMode);
             if (diamonds < DiamondSummon.Price)
-                Ui.Para("Diamonds are bought at the Blacksmith's forge, and also pay for a lucky craft or an instant Rested refill.", w, "dim");
+            {
+                Ui.Para("Short of Diamonds, the rest is paid in gold at the exchange rate. Diamonds also pay for a lucky craft or an instant Rested refill.", w, "dim");
+                Ui.Button("Diamond Store", DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store";
+            }
         }
     }
 

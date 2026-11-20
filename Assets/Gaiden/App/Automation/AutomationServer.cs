@@ -681,7 +681,10 @@ namespace GridGame.App.Automation
                         s.Gold, diamonds = s.Count(Crafting.DiamondId), s.HighestClearedStage,
                         rested = RestedPool.Points(s, now), restedMax = RestedPool.Max, restedExempt = RestedPool.Exempt(s),
                         refill = new { gold = Paywall.Cost(PaywallKind.RestedRefill, s), diamonds = RestedPool.DiamondRefillPrice },
-                        diamondGold = Paywall.Cost(PaywallKind.LuckyDiamond, s), summonDiamonds = DiamondSummon.Price,
+                        // GG-T455: Diamonds are exchanged at goldPerDiamond (diamondGold = one Diamond's gold, as before).
+                        diamondGold = DiamondExchange.GoldFor(1), goldPerDiamond = DiamondExchange.GoldPerDiamond,
+                        diamondsPerDollar = DiamondExchange.DiamondsPerDollar, summonDiamonds = DiamondSummon.Price,
+                        luckyDiamonds = Crafting.LuckyDiamondCost,
                         heroes = s.Roster.Select(h => new { h.ClassId, level = Progression.Level(h), hp = h.Hp, max = Progression.Preview(c, h).MaxHp, inParty = s.Party.Contains(h.ClassId), h.WeaponId }).ToList(),
                         wear = Repair.Pieces(c, s).Select(p => new { hero = p.Hero.ClassId, slot = p.Slot.ToString(), item = p.Item.Id, p.Durability, p.Max,
                             cost = p.Slot == EquipmentSlot.Weapon ? Repair.Cost(c, s, p.Item, p.Durability, p.Hero.WeaponRepairs, p.Hero.WeaponMastery)

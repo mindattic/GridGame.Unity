@@ -101,12 +101,18 @@ namespace GridGame.App
         public static void Refill(Action then = null) =>
             TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party…", r => { if (r.Ok) then?.Invoke(); });
 
-        /// <summary>The Diamond side of the same refill (GG-T427): instant, no timed job — a player short on gold but
-        /// holding Diamonds skips the wait outright instead of grinding for <see cref="Paywall.RestedRefillGoldPrice"/>.</summary>
+        /// <summary>The Diamond side of the same refill (GG-T427): instant, no timed job. Paid through the exchange
+        /// (GG-T455): Diamonds first, any shortfall in gold; too little of both offers the Diamond Store.</summary>
         public static void DiamondRefill(Action then = null)
         {
             var app = GameApp.I;
-            var r = RestedPool.DiamondRefill(app.Save, DateTime.UtcNow);
+            var now = DateTime.UtcNow;
+            if (RestedPool.Points(app.Save, now) < RestedPool.Max && !DiamondExchange.CanPay(app.Save, RestedPool.DiamondRefillPrice).Ok)
+            {
+                DiamondStores.OfferStore(DiamondExchange.CanPay(app.Save, RestedPool.DiamondRefillPrice).Message);
+                return;
+            }
+            var r = RestedPool.DiamondRefill(app.Save, now);
             app.Audio.Sfx(r.Ok ? "ui.confirm" : "ui.error");
             app.Persist();
             if (!string.IsNullOrEmpty(r.Message)) app.Toast(r.Message);
@@ -135,12 +141,11 @@ namespace GridGame.App
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
-            int price = RestedPool.DiamondRefillPrice;
-            // The side window only fits a short label (GG-T400): the gold button says "Refill" under its price line, this one its price.
-            var db = Ui.Button($"{price} Diamond{(price == 1 ? "" : "s")}", () => DiamondRefill(refresh), "btn--small", w);
+            // The side window only fits a short label (GG-T400): the gold button says "Refill" under its price line, this one
+            // both of its prices (GG-T455), scrolling if the window is narrow. Always enabled: short of both, it offers the store.
+            var db = Ui.Button(DiamondExchange.Label(RestedPool.DiamondRefillPrice), () => DiamondRefill(refresh), "btn--small", w);
             db.name = "rested-refill-diamond";
             db.style.marginTop = Space.S8;
-            Ui.SetEnabled(db, s.Count(Crafting.DiamondId) >= price);
         }
     }
 }

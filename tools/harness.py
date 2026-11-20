@@ -392,7 +392,7 @@ def sweep(run="sweep", theme=None):
     report = {}
     for screen in ["hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
                    "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "credits",
-                   "caravan", "mercenaries", "quests", "windows", "newgame", "profiles"]:  # GG-T454: every menu
+                   "caravan", "mercenaries", "quests", "windows", "newgame", "profiles", "diamonds"]:  # GG-T454: every menu; GG-T455 the Diamond Store
         call("goto", screen=screen)
         time.sleep(0.9)
         shot(f"sweep-{screen}")
@@ -1225,7 +1225,7 @@ def storyarc(run="storyarc", capture=True):
     Game -> pick three -> the prologue crawl -> Camp (Rested meter) -> The Tithe Moors I with a forced wanderer, a hero
     pushed to Lv 10 and a forced win -> the wanderer talk on the results -> the Lv 10 interlude -> Camp; then Rested at 0
     refuses a launch and the 1g/1s refill relaunches it. Part 2, on a stocked save: hire a mercenary, the Quests
-    journal, a 1s Summon, a Diamond bought and spent on a lucky craft, The Tithe Moors III's boss intro and rule-break
+    journal, a 1s Summon, Diamonds exchanged for gold and spent on a lucky craft, The Tithe Moors III's boss intro and rule-break
     banner, then cathedral-03's intro (the finale since GG-T350), a forced win, the ending crawl, the rolling credits and the Title."""
     ok, notes, seen = {}, {}, []
     st = lambda: call("state")
@@ -1311,20 +1311,25 @@ def storyarc(run="storyarc", capture=True):
     call("back"); time.sleep(0.6)
     _goto("blacksmith"); time.sleep(1.0); shot("17-forge")
     ok["lucky_craft_section"] = bool(call("names", prefix="lucky-craft"))
-    call("click", name="buy-diamond"); time.sleep(0.4); shot("18-cutting-diamond"); time.sleep(2.0)
-    ok["diamond_bought"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 1
+    # GG-T455: "buy-diamond" opens the Diamond Store; its exchange buys 100 Diamonds (the default amount) for 600 g.
+    econ = call("economy")
+    lucky_cost, refill_cost = econ.get("luckyDiamonds", 50), econ.get("refill", {}).get("diamonds", 25)
+    call("click", name="buy-diamond"); time.sleep(0.8); shot("18-diamond-store")
+    ok["diamond_store_opens"] = st()["screen"] == "diamonds"
+    call("click", name="diamond-exchange"); time.sleep(0.4); call("click", name="confirm-yes"); time.sleep(0.6)
+    ok["diamond_bought"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 100
+    call("back"); time.sleep(0.6)
     call("click", name="lucky-craft-btn"); time.sleep(0.6); shot("19-lucky-reveal"); time.sleep(3.0)
-    ok["diamond_spent_on_lucky_craft"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 0
+    ok["diamond_spent_on_lucky_craft"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 100 - lucky_cost
     shot("20-after-lucky")
     call("back"); time.sleep(0.6)
-    # Rested's Diamond refill (GG-T427): instant, no gold and no timed job, from Camp's Rested window.
-    call("devgive", item="mat_diamond", count=1)
+    # Rested's Diamond refill (GG-T427): instant, no gold while Diamonds cover it and no timed job, from Camp's Rested window.
     call("devrested", points=3)
     _goto("hub")
-    g0 = save().get("Gold", 0)
+    g0, d0 = save().get("Gold", 0), (save().get("inventory") or {}).get("mat_diamond", 0)
     call("click", name="rested-refill-diamond"); time.sleep(0.8); shot("20b-diamond-refill")
     sv = save()
-    ok["diamond_refills_rested"] = (sv.get("rested") == 10 and (sv.get("inventory") or {}).get("mat_diamond", 0) == 0
+    ok["diamond_refills_rested"] = (sv.get("rested") == 10 and (sv.get("inventory") or {}).get("mat_diamond", 0) == d0 - refill_cost
                                     and sv.get("Gold", 0) == g0)
 
     # Boss intros and a rule-break: The Tithe Moors III.
