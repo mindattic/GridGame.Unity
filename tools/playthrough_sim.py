@@ -36,6 +36,12 @@ from harness import call
 RUN = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "playthrough"
 MAX_BATTLES = int(sys.argv[2]) if len(sys.argv) > 2 and not sys.argv[2].startswith("-") else 20
 CAPTURE = "--nocapture" not in sys.argv
+# --resume: drive the player already running on this port (its save as it stands) instead of launching a fresh one,
+# appending to the run's log. --keep: leave the player running at the end. Together they let a long campaign run as a
+# chain of short foreground chunks (`--resume --keep`, MAX_BATTLES battles each), which the CLI's idle-time memory
+# reaper never stops the way it stops a single hour-long background run (GG-T448).
+RESUME = "--resume" in sys.argv
+KEEP = "--keep" in sys.argv
 ROOT = H.ROOT
 LOG = os.path.join(ROOT, "artifacts", RUN, "play.jsonl")
 CONTENT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
@@ -85,6 +91,11 @@ def to_hub():
         sc = call("state")["screen"]
         if sc == "hub":
             return True
+        if sc == "battle":  # a resumed chunk can land mid-battle: let autoplay finish it rather than back out of it
+            H._play_battle("resumed-battle", timeout=600)
+            time.sleep(1.2)
+            H._skip_levelups(call("state"))
+            continue
         if sc in ("crawl", "dialogue"):
             H.through_story(wait=1.0)
         elif sc == "levelup":
@@ -350,18 +361,28 @@ def launch_stage(sid, decisions):
 def main():
     global T0
     T0 = time.time()
-    H.launch(RUN, fresh=True, extra=(("-capture", "video", "hq") if CAPTURE else ()) + ("-rested",))
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
-    open(LOG, "w").close()
-    H._wait_screen("title", 20)
-    time.sleep(0.8)
-    H._tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
-    H._tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
-    if not H.pick_party():
-        print("party pick failed")
-        sys.exit(1)
+    if RESUME:
+        if not H.alive():
+            print("--resume: no player answering on this port")
+            sys.exit(1)
+    else:
+        H.launch(RUN, fresh=True, extra=(("-capture", "video", "hq") if CAPTURE else ()) + ("-rested",))
+        open(LOG, "w").close()
+        H._wait_screen("title", 20)
+        time.sleep(0.8)
+        H._tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+        H._tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
+        if not H.pick_party():
+            print("party pick failed")
+            sys.exit(1)
+    if KEEP:
+        H._launched = False  # harness's atexit hook only quits a player this process launched
     call("speed", x=3)
-    for n in range(MAX_BATTLES):
+    first = 0
+    if RESUME and os.path.exists(LOG):
+        first = sum(1 for l in open(LOG, encoding="utf-8") if '"kind": "camp"' in l)
+    for n in range(first, first + MAX_BATTLES):
         to_hub()
         econ = call("economy")
         decisions = []
@@ -392,7 +413,11 @@ def main():
             log("stuck", where="launch", stage=sid, screen=call("state")["screen"], texts=call("texts")[:20])
             break
         t = time.time()
-        outcome, st = H._play_battle(f"b{n:02d}-{sid}", timeout=600)
+        try:
+            outcome, st = H._play_battle(f"b{n:02d}-{sid}", timeout=600)
+        except Exception as e:  # a one-off automation 500 (seen once in playthrough5): end the chunk, the player lives on
+            log("stuck", where="battle-http", stage=sid, error=str(e)[:200])
+            break
         time.sleep(1.2)
         H._skip_levelups(call("state"))
         won = not call("names", prefix="retry") and not any(tx == "Retry" for tx in call("texts"))
@@ -424,6 +449,8 @@ def main():
             break
     errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     log("end", errors=errs[:10])
+    if KEEP:
+        return
     try:
         call("quit", timeout=3)
     except Exception:
