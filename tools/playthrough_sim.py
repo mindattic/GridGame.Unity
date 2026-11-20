@@ -158,6 +158,43 @@ def repair_worn(econ, decisions):
     time.sleep(0.6)
 
 
+def gear_up_party(econ, decisions):
+    """Equip every empty weapon/armor/jewelry slot on every party hero from the best owned, proficient item in the
+    bag (GG-T448): without this, only the one hero the game's own tutorial walks through a guided forge ever gets
+    anything equipped at all -- a scripted playthrough that stops there hits a difficulty wall that's an artifact of
+    the script, not the game (confirmed: five of six heroes fought 22 stages bare-handed before this existed).
+    Equipment.Candidates sorts by rarity descending, so "equip-ok-<id>" rows come back in best-first order and the
+    first one is always the best the hero can currently wear."""
+    equipped = econ.get("equipped") or {}
+    party = [h["ClassId"] for h in econ["heroes"] if h["inParty"]]
+    empties = [(hero, slot) for hero in party for slot, item in (equipped.get(hero) or {}).items() if item is None]
+    if not empties or not H._goto("equip"):
+        return
+    current_hero = None
+    for hero, slot in empties:
+        if hero != current_hero:
+            r = tap_row(f"hero-pick-{hero}", tries=3)
+            if H._tap_failed(r):
+                decisions.append(f"hero-pick-{hero} tap failed: {r}")
+                continue
+            current_hero = hero
+        r = tap_row(f"equip-slot-{slot}", tries=3)
+        if H._tap_failed(r):
+            continue  # a slot with no candidates at all doesn't even get a bag; not worth logging every miss
+        time.sleep(0.3)
+        ok = call("names", prefix="equip-ok-")
+        if not ok:
+            continue
+        best = ok[0]  # "names" returns DOM/document order, which is Candidates' own rarity-desc order
+        tap_row(best, tries=3)  # preview
+        time.sleep(0.3)
+        r = tap_row(best, tries=3)  # confirm -- same row, same name, after the list's own rebuild
+        if not H._tap_failed(r):
+            decisions.append(f"equip {hero} {slot}: {best[len('equip-ok-'):]}")
+    call("back")
+    time.sleep(0.6)
+
+
 def build_facilities(econ, decisions):
     for station, screen, tab in (("forge", "blacksmith", "tab-forge"), ("alembic", "alchemist", None)):
         c = next((x for x in econ["caravan"] if x["Id"] == station), None)
@@ -288,6 +325,8 @@ def main():
         econ = call("economy")
         decisions = []
         forge_starter(decisions)
+        econ = call("economy")
+        gear_up_party(econ, decisions)
         econ = call("economy")
         repair_worn(econ, decisions)
         econ = call("economy")
