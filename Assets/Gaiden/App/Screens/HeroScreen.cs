@@ -120,16 +120,16 @@ namespace GridGame.App
                 var bw = sel ? 4f : 0f;
                 card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
                 card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = Palette.Gold;
-                Ui.Thumb(id, card, Size.Avatar).style.marginRight = Space.S16;
+                Ui.Thumb(id, card, Kit.Avatar).style.marginRight = Space.S16;
                 var info = Ui.El("col grow", card);
                 info.style.flexShrink = 1; info.style.minWidth = 0;
-                var name = Ui.Text(C.TryClass(id)?.Name ?? id, "small", info);
-                Fonts.UseHeavy(name);
+                // A compact card (kit, GG-T454): name and meta both caption size, the name heavy.
+                var name = Ui.Caption(C.TryClass(id)?.Name ?? id, info, "t-heavy");
                 Ui.Marquee(name);
                 var meta = Ui.El("row", info);
                 meta.style.alignItems = Align.Center;
-                Ui.Text($"Lv {Progression.Level(h)}", "tiny gold", meta);
-                var tag = Ui.Text(inParty ? "Party" : "Reserve", inParty ? "tiny good" : "tiny dim", meta);
+                Ui.Caption($"Lv {Progression.Level(h)}", meta, "gold");
+                var tag = Ui.Caption(inParty ? "Party" : "Reserve", meta, inParty ? "good" : "dim");
                 tag.style.marginLeft = Space.S8;
                 Ui.Marquee(tag);
                 card.AddToClassList("card-tap");

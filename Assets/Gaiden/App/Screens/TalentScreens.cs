@@ -42,14 +42,13 @@ namespace GridGame.App
             var trees = Talents.Trees(C, h);
 
             // Point counter + respec.
-            var head = Ui.Window(null, body);
-            var headRow = Ui.El("row", head);
-            headRow.style.alignItems = Align.Center;
+            var head = Ui.Panel(body, null, false, "talent-head");
+            var headRow = Ui.El("kit-footer", head);
             var counter = Ui.El("col grow", headRow);
-            var pts = Ui.Text($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", "h2 " + (h.SkillPoints > 0 ? "gold" : "dim"), counter);
+            var pts = Ui.Heading($"{h.SkillPoints} skill point{(h.SkillPoints == 1 ? "" : "s")}", counter, h.SkillPoints > 0 ? "gold" : "dim");
             pts.name = "talent-points";
             int spent = Talents.PointsSpent(C, h);
-            Ui.Text($"Spent {spent} · earn more on level-up", "tiny dim", counter);
+            Ui.Caption($"Spent {spent} · earn more on level-up", counter, "dim");
             int cost = Talents.RespecCost(h);
             string closed = Talents.RespecClosed(S);
             var respec = Ui.Button($"Respec · {Ui.Gold(cost)}", () => Confirm.Show(
@@ -57,11 +56,11 @@ namespace GridGame.App
                 "Pay", () => Done(Talents.Respec(C, S, h))), "btn--small", headRow);
             respec.name = "talent-respec";
             Ui.SetEnabled(respec, closed == null && spent > 0 && S.Gold >= cost);
-            if (closed != null) Ui.Text(closed, "tiny dim", head).style.whiteSpace = WhiteSpace.Normal;
+            if (closed != null) Ui.Para(closed, head, "dim");
 
             if (trees.Count == 0)
             {
-                Ui.Text("This hero has no skill tree.", "small dim", Ui.Window(null, body));
+                Ui.Empty("This hero has no skill tree.", Ui.Panel(body, null, true));
                 return;
             }
             tab = Mathf.Clamp(tab, 0, trees.Count - 1);
@@ -80,15 +79,8 @@ namespace GridGame.App
                 offNote = $" · off-tree ({away}): +{Talents.Premium(C, h, tree)} pt a node, deeper tiers need more";
                 if (!Talents.Opened(C, h, tree)) offNote += " · " + (Talents.WhyClosed(C, h, tree) ?? "buying a node opens it");
             }
-            var w = Ui.Window($"{tree.Name} — {Talents.PointsIn(h, tree)} pts in tree{offNote}", body);
-            w.style.flexGrow = 1;
-            if (trees.Count > 1) w.style.marginTop = Space.S0;
-            var list = Ui.List(w).contentContainer;
-            if (!string.IsNullOrEmpty(tree.Description))
-            {
-                var d = GlossaryText.Create(tree.Description, "tiny dim", list);
-                d.style.whiteSpace = WhiteSpace.Normal; d.style.marginBottom = Space.S8;
-            }
+            var list = Ui.ListPanel(body, $"{tree.Name} — {Talents.PointsIn(h, tree)} pts in tree{offNote}", "talent-tree");
+            if (!string.IsNullOrEmpty(tree.Description)) GlossaryText.Create(tree.Description, "kit-text dim", list);
             var cards = Graph(tree, h, list);
 
             var sel = tree.Nodes.FirstOrDefault(n => n.Id == selected)
@@ -133,7 +125,7 @@ namespace GridGame.App
                 row.style.alignItems = Align.Center;
                 row.style.marginBottom = Space.S32;
                 int need = Talents.IsHome(C, h, tree) ? tier.Key : Talents.ScaledRequirement(tier.Key);
-                var lbl = Ui.Text(need == 0 ? "Start" : $"{need} pts", "tiny dim", row);
+                var lbl = Ui.Caption(need == 0 ? "Start" : $"{need} pts", row, "dim");
                 lbl.style.width = Size.ColumnL; lbl.style.unityTextAlign = TextAnchor.MiddleCenter;
                 var cells = Ui.El("row grow", row);
                 cells.style.justifyContent = Justify.SpaceAround; // cards shrink to share a wide tier rather than wrap
@@ -173,11 +165,11 @@ namespace GridGame.App
                 ic.style.marginRight = Space.S0;
                 if (state == TalentState.Locked) ic.style.unityBackgroundImageTintColor = new Color(0.5f, 0.5f, 0.6f, 0.7f);
             }
-            var name = Ui.Text(n.Name ?? a?.Name ?? n.Id, "tiny" + (state == TalentState.Locked ? " dim" : ""), card);
+            var name = Ui.Caption(n.Name ?? a?.Name ?? n.Id, card, state == TalentState.Locked ? "dim" : null);
             name.style.whiteSpace = WhiteSpace.Normal; name.style.unityTextAlign = TextAnchor.MiddleCenter;
             int cost = Talents.Cost(C, h, tree, n);
             string tag = state == TalentState.Purchased || state == TalentState.Innate ? "✔ " + StateLabel(state) : $"{cost} pt{(cost == 1 ? "" : "s")}";
-            var tagLbl = Ui.Text(tag, "tiny", card);
+            var tagLbl = Ui.Caption(tag, card);
             tagLbl.style.color = StateColor(state);
             card.AddToClassList("card-tap");
             if (a != null) InspectCard.Attach(card, b => InspectCard.Ability(b, a, $"{tag} · {tree.Name}"));
@@ -190,27 +182,21 @@ namespace GridGame.App
         {
             var state = Talents.State(C, h, tree, n);
             var a = C.TryAbility(n.Grants);
-            var w = Ui.Window(null, body);
-            w.name = "talent-detail";
+            var w = Ui.DetailPanel(body, "talent-detail");
             var top = Ui.El("row", w);
             top.style.alignItems = Align.Center;
             var icon = Art.AbilityIcon(a);
             if (icon != null) { var ic = Ui.El("menu-icon", top); ic.style.backgroundImage = new StyleBackground(icon); }
             var title = Ui.El("col grow", top);
-            Ui.Text(n.Name ?? a?.Name ?? n.Id, "h2", title);
+            Ui.Heading(n.Name ?? a?.Name ?? n.Id, title);
             string kind = a == null ? "" : a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString();
-            Ui.Text($"{kind}{(a != null && a.Name != n.Name ? " · grants " + a.Name : "")}", "tiny dim", title);
-            var st = Ui.Text(StateLabel(state), "small", top);
+            Ui.Caption($"{kind}{(a != null && a.Name != n.Name ? " · grants " + a.Name : "")}", title, "dim");
+            var st = Ui.Caption(StateLabel(state), top);
             st.style.color = StateColor(state);
-            var desc = GlossaryText.Create(a?.Description ?? n.Description ?? "", "small dim", w);
-            desc.style.whiteSpace = WhiteSpace.Normal; desc.style.marginTop = Space.S8;
+            GlossaryText.Create(a?.Description ?? n.Description ?? "", "kit-text dim", w);
             if (!string.IsNullOrEmpty(n.Description) && a?.Description != null && n.Description != a.Description)
-            {
-                var flavor = GlossaryText.Create(n.Description, "tiny dim", w);
-                flavor.style.whiteSpace = WhiteSpace.Normal; flavor.style.marginTop = Space.S4;
-            }
-            var foot = Ui.El("row", w);
-            foot.style.alignItems = Align.Center; foot.style.marginTop = Space.S8;
+                GlossaryText.Create(n.Description, "kit-text dim", w);
+            var foot = Ui.El("kit-footer", w);
             int cost = Talents.Cost(C, h, tree, n);
             string pts = $"{cost} skill point{(cost == 1 ? "" : "s")}";
             bool offTree = !Talents.IsHome(C, h, tree);
@@ -220,8 +206,7 @@ namespace GridGame.App
                 : state == TalentState.Purchased ? "Bought with skill points (Respec at the Inn refunds it)"
                 : h.SkillPoints < cost ? $"Needs {pts}{premium} ({h.SkillPoints} now)"
                 : $"Costs {pts}{premium}";
-            var g = Ui.Text(gate, "tiny " + (state == TalentState.Locked || (state == TalentState.Available && h.SkillPoints < cost) ? "bad" : "dim") + " grow", foot);
-            g.style.whiteSpace = WhiteSpace.Normal;
+            Ui.Para(gate, foot, (state == TalentState.Locked || (state == TalentState.Available && h.SkillPoints < cost) ? "bad" : "dim") + " grow");
             if (state == TalentState.Available)
             {
                 var hero = C.Class(h.ClassId).Name;
@@ -292,17 +277,12 @@ namespace GridGame.App
 
         protected override void BuildBody(VisualElement body)
         {
-            var info = Ui.Window(null, body);
-            var t = Ui.Text($"Rest a night and forget your training: every skill point a hero spent on talents comes back. " +
+            var list = Ui.ListPanel(body, "Heroes", "respec-list");
+            Ui.Para($"Rest a night and forget your training: every skill point a hero spent on talents comes back. " +
                 $"Costs {Ui.Gold(Talents.RespecBaseGold)} + {Ui.Gold(Talents.RespecGoldPerLevel)} per level. " +
-                "Abilities from a hero's starting kit or bought at Learn are kept.", "small dim", info);
-            t.style.whiteSpace = WhiteSpace.Normal;
+                "Abilities from a hero's starting kit or bought at Learn are kept.", list, "dim");
             string closed = Talents.RespecClosed(S);
-            if (closed != null) Ui.Text(closed, "small bad", info).style.whiteSpace = WhiteSpace.Normal;
-
-            var w = Ui.Window("Heroes", body);
-            w.style.flexGrow = 1;
-            var list = Ui.List(w).contentContainer;
+            if (closed != null) Ui.Para(closed, list, "bad");
             foreach (var h in S.Roster.OrderByDescending(x => S.Party.Contains(x.ClassId)).ThenBy(x => x.ClassId))
             {
                 var hero = h;
