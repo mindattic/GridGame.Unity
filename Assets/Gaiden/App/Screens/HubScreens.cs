@@ -71,13 +71,14 @@ namespace GridGame.App
         /// <summary>Standard item row: glyph · rarity-colored name · right value. <paramref name="masterwork"/> prefixes a ★ (GG-T46).
         /// <paramref name="nameOverride"/> replaces the item's own name in the label (GG-T198: lets a recipe row show
         /// "Result — key inputs" instead of the bare item name, e.g. when two recipes share a result).</summary>
-        public static VisualElement Row(ItemDef i, string value, Action onClick, VisualElement parent, bool enabled = true, bool masterwork = false, string nameOverride = null)
+        public static VisualElement Row(ItemDef i, string value, Action onClick, VisualElement parent, bool enabled = true, bool masterwork = false, string nameOverride = null, string rowName = null)
         {
             var icon = Art.ItemIcon(i.Id);
             string name = nameOverride ?? i.Name;
             string label = (icon != null ? name : $"{Glyph(i)}  {name}");
             if (masterwork) label = "★ " + label;
             var row = Ui.MenuRow(label, value, onClick, parent, icon, enabled);
+            if (rowName != null) row.name = rowName; // GG-T448: an automation id for screens (e.g. Equip) that otherwise have none
             row.Q<Label>("label").AddToClassList(Ui.RarityClass(i.Rarity));
             // Hold any item row to read the whole item — stats, set, slot — without selecting it (GG-T252); a row whose
             // tap does nothing else reads on a tap too (GG-T450).
@@ -404,6 +405,7 @@ namespace GridGame.App
                     bool mastery = MasteryFor(sl);
                     bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
                     var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, w);
+                    row.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
                     if (it != null) row.Q<Label>("value").AddToClassList(Ui.RarityClass(it.Rarity));
                     if (sl == slot) Ui.Select(row);
                 }
@@ -472,7 +474,8 @@ namespace GridGame.App
                 {
                     if (previewId == item.Id) { previewId = null; Done(Equipment.Equip(C, S, h, slot, item.Id)); }
                     else { previewId = item.Id; Refresh(); App.Toast("Tap again to equip"); }
-                }, list.contentContainer, gate == null, Equipment.IsMasterwork(S, item.Id));
+                }, list.contentContainer, gate == null, Equipment.IsMasterwork(S, item.Id),
+                rowName: (gate == null ? "equip-ok-" : "equip-locked-") + item.Id);
                 if (item.Id == previewId) Ui.Select(row);
             }
         }
