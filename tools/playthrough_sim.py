@@ -46,11 +46,12 @@ ROOT = H.ROOT
 LOG = os.path.join(ROOT, "artifacts", RUN, "play.jsonl")
 CONTENT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
 
-_stages = json.load(open(os.path.join(CONTENT, "stages.json"), encoding="utf-8"))
-_stages = _stages if isinstance(_stages, list) else _stages.get("Stages") or _stages.get("stages")
-STAGE_IDS = [s.get("Id") or s.get("id") for s in _stages]
 _campaign = json.load(open(os.path.join(CONTENT, "campaign.json"), encoding="utf-8"))
-THEME_OF = {sid: (t.get("Id") or t.get("id")) for t in _campaign["Themes"] for sid in (t.get("Stages") or t.get("stages"))}
+_themes = _campaign["Themes"]
+THEME_OF = {sid: (t.get("Id") or t.get("id")) for t in _themes for sid in (t.get("Stages") or t.get("stages"))}
+# The game's own play order (ContentDb.CampaignStages: themes in order, stages in order) -- the index
+# HighestClearedStage counts in. stages.json also holds test and synthetic stages, so its file order isn't it.
+STAGE_IDS = [sid for t in _themes for sid in (t.get("Stages") or t.get("stages"))]
 
 
 def log(kind, **kw):
