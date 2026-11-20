@@ -142,8 +142,11 @@ namespace GridGame.App
             // the next click anywhere (a slot, GUARD, the menu) was routed to the board instead (GG-T70).
             bool wasPressing = pressing;
             if (board.Root.HasPointerCapture(evt.pointerId)) board.Root.ReleasePointer(evt.pointerId);
+            // A press still waiting to become a hold, never dragged, is a tap: it reads the unit too (GG-T450).
+            int tapUnit = inspectUnitId >= 0 && !inspectOpen && !dragging ? inspectUnitId : -1;
             // A hold that opened an inspect card only read it: the release does nothing else (GG-T252).
             if (EndBoardInspect() && !dragging) { pressing = false; return; }
+            if (tapUnit >= 0) TapUnitCard(tapUnit, evt.localPosition);
             if (!wasPressing) return;
             if (TargetingSlot >= 0)
             {

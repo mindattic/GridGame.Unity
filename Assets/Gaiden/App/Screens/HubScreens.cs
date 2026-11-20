@@ -79,8 +79,9 @@ namespace GridGame.App
             if (masterwork) label = "★ " + label;
             var row = Ui.MenuRow(label, value, onClick, parent, icon, enabled);
             row.Q<Label>("label").AddToClassList(Ui.RarityClass(i.Rarity));
-            // Hold any item row to read the whole item — stats, set, slot — without selecting it (GG-T252).
-            InspectCard.Attach(row, b => { Detail(b, i, GameApp.I?.Content); return true; });
+            // Hold any item row to read the whole item — stats, set, slot — without selecting it (GG-T252); a row whose
+            // tap does nothing else reads on a tap too (GG-T450).
+            InspectCard.Attach(row, b => { Detail(b, i, GameApp.I?.Content); return true; }, tap: onClick == null);
             return row;
         }
 
@@ -355,7 +356,8 @@ namespace GridGame.App
             {
                 var a = C.TryAbility(id);
                 if (a == null) continue;
-                Ui.MenuRow(a.Name, a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString(), null, abilitiesWindow, Art.AbilityIcon(a));
+                var row = Ui.MenuRow(a.Name, a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString(), null, abilitiesWindow, Art.AbilityIcon(a));
+                InspectCard.Attach(row, body => InspectCard.Ability(body, a), tap: true); // GG-T450: tap or hold to read it
             }
 
             var treeWindow = Ui.Window("Skill Trees", buildList);
@@ -622,7 +624,7 @@ namespace GridGame.App
                 var row = Ui.MenuRow(ab.Name, l.Kit ? "Own kit" : Abilities.IsHeroUsable(ab) ? KindLabel(ab) : "Passive", null, list, Art.AbilityIcon(ab));
                 row.name = "locked-" + ab.Id;
                 if (l.Kit) row.Q<Label>("value")?.AddToClassList("gold");
-                InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
+                InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // GG-T450: a read-only row reads on a tap
                 foreach (var src in l.Sources)
                 {
                     var line = Ui.Text("· " + src, "tiny", list);
@@ -662,7 +664,7 @@ namespace GridGame.App
                 {
                     var ab = a;
                     var row = Ui.MenuRow(a.Name, "Innate", null, list, Art.AbilityIcon(a));
-                    InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
+                    InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // GG-T450
                     Sentence(a, list);
                 }
             }
@@ -1787,7 +1789,7 @@ namespace GridGame.App
                     var icon = Art.AbilityIcon(ab);
                     if (icon != null) { var ic = Ui.El("menu-icon", chip); ic.style.backgroundImage = new StyleBackground(icon); }
                     Ui.Text(ab.Name, "small", chip);
-                    InspectCard.Attach(chip, b => InspectCard.Ability(b, ab));
+                    InspectCard.Attach(chip, b => InspectCard.Ability(b, ab), tap: true); // GG-T450: chips have no other tap
                 }
                 Ui.Text(GridGame.Core.Rules.EnemyPlanner.Describe(d.Targeting != Targeting.Auto ? d.Targeting : d.BaseStats.Intelligence >= 14 ? Targeting.Weakest : d.Tags.Contains("Sentient") ? Targeting.Threat : Targeting.Closest), "small warn", w);
                 Ui.Text(GridGame.Core.Rules.EnemyPlanner.DescribeBrain(d.Brain), "small", w).style.whiteSpace = WhiteSpace.Normal;

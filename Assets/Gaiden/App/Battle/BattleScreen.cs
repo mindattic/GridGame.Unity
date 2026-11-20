@@ -244,7 +244,7 @@ namespace GridGame.App
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
-                panel.schedule.Execute(() => ShowBanner("Tip: hold any hero, foe, slot or icon to read it")).StartingIn(2500);
+                panel.schedule.Execute(() => ShowBanner("Tip: tap or hold any hero, foe, slot or icon to read it")).StartingIn(2500);
             }
             CaptureUnity.Raise("battle-start", new CaptureData { ["stage"] = State.Stage.Id });
         }
@@ -347,7 +347,7 @@ namespace GridGame.App
             pool.AddToClassList("mana-pool");
             pool.style.borderTopColor = pool.style.borderBottomColor = pool.style.borderLeftColor = pool.style.borderRightColor = Palette.Mana;
             pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
-            InspectCard.Attach(pool, ManaPoolCard);
+            InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
             poolOrb = new ManaGlobe { name = "orb0", ReduceMotion = ReduceMotion }; // the globe (the old row's first slot name)
             pool.Add(poolOrb);
             poolOrb.style.width = poolOrb.style.height = Size.Thumb;
@@ -1144,7 +1144,7 @@ namespace GridGame.App
 
         private void OnSlot(int slot)
         {
-            if (!CanCommand()) return;
+            if (!CanCommand()) { TapSlotCard(slot); return; } // GG-T450: looking is free, even mid-playback
             var hero = State.UnitById(SelectedHeroId);
             if (hero == null) return;
             if (TargetingSlot == slot) { CancelByPlayer(); return; }
@@ -1154,6 +1154,7 @@ namespace GridGame.App
             {
                 App.Audio.Sfx("ui.error");
                 ShowBanner(StatusText(status));
+                TapSlotCard(slot); // GG-T450: it can't be aimed, but the tap still reads it
                 return;
             }
             var a = BattleEngine.SlotAbility(State, hero, slot);
@@ -1168,7 +1169,7 @@ namespace GridGame.App
                 return;
             }
             var targets = BattleEngine.ValidTargets(State, hero.Id, slot);
-            if (targets.Count == 0) { ShowBanner("No valid target"); App.Audio.Sfx("ui.error"); return; }
+            if (targets.Count == 0) { ShowBanner("No valid target"); App.Audio.Sfx("ui.error"); TapSlotCard(slot); return; }
             TargetingSlot = slot;
             board.ClearMarks();
             foreach (var t in targets) board.Mark(t, Palette.Gold, 0.35f);

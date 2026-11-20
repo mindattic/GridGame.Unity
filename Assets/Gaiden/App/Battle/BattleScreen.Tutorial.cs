@@ -44,10 +44,10 @@ namespace GridGame.App
                 Text = "Trap an enemy in a straight line between two heroes to PINCER it — both heroes strike. Heroes linked to an attacker by an unbroken chain of allies join in as supporters, each with its class's support action.",
                 Example = "Example: Hero · Slime · Hero in a row or column.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero) },
-            // GG-T252: recognition over recall — anything on screen explains itself when held.
-            new Lesson { Title = "Hold to read", Patience = 3, DoneOnInspect = true,
-                Text = "Hold anything for a moment to read it: a hero, an enemy, a spell slot, a status pip or an icon on the timeline. Let go to close the card — holding never acts.",
-                Example = "Example: press and hold a slime until its card opens.",
+            // GG-T252: recognition over recall — anything on screen explains itself. GG-T450: a tap reads it too.
+            new Lesson { Title = "Tap to read", Patience = 3, DoneOnInspect = true,
+                Text = "Tap a hero, an enemy or an icon on the timeline to read its card; tap a spell slot that can't be used yet to see why. The card stays until your next tap. Holding anything — a spell slot or status pip too — reads it without acting.",
+                Example = "Example: tap a slime to open its card.",
                 Done = (b, c, e) => false },
             // GG-T190: shoving is a tactic, not an accident — the held hero moves other heroes and enemies into place.
             new Lesson { Title = "Shoving", Patience = 4,

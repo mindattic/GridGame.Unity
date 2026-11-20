@@ -16,6 +16,9 @@ namespace GridGame.App
     /// Hold any icon to read it (GG-T252, POL-D1 recognition over recall): one floating card anchored to the held
     /// element, clamped inside the stage and the safe area, shown while the finger stays down and gone on release.
     /// A press that opened the card never also fires the element's tap.
+    /// GG-T450 (owner: "you need the tap-tooltip system so you can read about things you tap once on"): the same card
+    /// also opens on a plain tap (<see cref="Tap"/>) wherever the tap doesn't do something else, and stays until the
+    /// next press anywhere.
     /// </summary>
     public static class InspectCard
     {
@@ -34,8 +37,9 @@ namespace GridGame.App
         public static VisualElement ShownFor => shownFor;
 
         /// <summary>Makes <paramref name="e"/> hold-to-inspect. <paramref name="build"/> fills the card's body and returns
-        /// false when there is nothing to show (e.g. an empty slot).</summary>
-        public static void Attach(VisualElement e, Func<VisualElement, bool> build)
+        /// false when there is nothing to show (e.g. an empty slot). <paramref name="tap"/> (GG-T450): a plain tap also
+        /// opens it, as a sticky card — only for elements whose tap does nothing else that the card would hide.</summary>
+        public static void Attach(VisualElement e, Func<VisualElement, bool> build, bool tap = false)
         {
             bool pressed = false, opened = false, swallowClick = false;
             IVisualElementScheduledItem timer = null;
@@ -70,6 +74,18 @@ namespace GridGame.App
                 swallowClick = false;
                 ev.StopImmediatePropagation();
             }, TrickleDown.TrickleDown);
+            if (tap) e.RegisterCallback<ClickEvent>(_ => Tap(e, build));
+        }
+
+        /// <summary>
+        /// GG-T450: opens <paramref name="anchor"/>'s card on a tap. It stays after release and the next press anywhere
+        /// closes it (that press still acts on what it lands on); re-tapping the same thing just closes it.
+        /// </summary>
+        public static bool Tap(VisualElement anchor, Func<VisualElement, bool> build)
+        {
+            if (anchor == null || anchor.panel == null) return false;
+            if (closedFor == anchor && Time.realtimeSinceStartup - closedAt < HoldSeconds + 0.1f) { closedFor = null; return false; }
+            return Show(anchor, build, true);
         }
 
         /// <summary>Opens the card at <paramref name="anchor"/> now. Returns false if <paramref name="build"/> had nothing.</summary>
@@ -433,9 +449,8 @@ namespace GridGame.App
         /// <summary>A tapped glossary term (GG-T300): the same card, opened by a tap, closed by the next press anywhere.</summary>
         public static void ShowTerm(VisualElement anchor, GlossaryEntry e)
         {
-            if (e == null || anchor == null) return;
-            if (closedFor == anchor && Time.realtimeSinceStartup - closedAt < HoldSeconds + 0.1f) { closedFor = null; return; }
-            Show(anchor, b => Term(b, e), true);
+            if (e == null) return;
+            Tap(anchor, b => Term(b, e));
         }
 
         /// <summary>The term card: headword, what kind of word it is, its definition and, for a link, the live numbers.</summary>

@@ -26,13 +26,21 @@ namespace GridGame.App
         private int Knowledge(Unit u) =>
             u.IsHero ? BestiaryKnowledge.Abilities : BestiaryKnowledge.Tier(App.Save, u.Def.Id);
 
-        private void AttachSlotInspect(VisualElement slot, int idx) =>
-            InspectCard.Attach(slot, body =>
-            {
-                var hero = State.UnitById(SelectedHeroId);
-                var ab = hero == null ? null : BattleEngine.SlotAbility(State, hero, idx);
-                return InspectCard.Ability(body, ab, ab == null ? null : SlotNote(hero, ab));
-            });
+        private void AttachSlotInspect(VisualElement slot, int idx) => InspectCard.Attach(slot, body => SlotCard(body, idx));
+
+        private bool SlotCard(VisualElement body, int idx)
+        {
+            var hero = State.UnitById(SelectedHeroId);
+            var ab = hero == null ? null : BattleEngine.SlotAbility(State, hero, idx);
+            return InspectCard.Ability(body, ab, ab == null ? null : SlotNote(hero, ab));
+        }
+
+        /// <summary>GG-T450: a tapped slot that can't be aimed (recharging, no mana, no target …) still reads — its card
+        /// opens on the tap. A slot that aims needs no card: the Party page shows the ability while it's aimed.</summary>
+        private void TapSlotCard(int idx)
+        {
+            if (idx >= 0 && idx < slotViews.Count) InspectCard.Tap(slotViews[idx], body => SlotCard(body, idx));
+        }
 
         private string SlotNote(Unit hero, AbilityDef a)
         {
@@ -44,7 +52,7 @@ namespace GridGame.App
         private void AttachTimelineInspect(VisualElement icon, TimelineEntry e)
         {
             icon.pickingMode = PickingMode.Position;
-            InspectCard.Attach(icon, body => BuildTimelineCard(body, e));
+            InspectCard.Attach(icon, body => BuildTimelineCard(body, e), tap: true); // GG-T450: a tap selects and reads
         }
 
         /// <summary>The hold card for a timeline entry (an icon or the prominence slot): a cast's ability, else its owner.</summary>
@@ -61,7 +69,7 @@ namespace GridGame.App
         private void AttachStatusInspect(VisualElement pip, BuffDef d, int remaining)
         {
             pip.pickingMode = PickingMode.Position;
-            InspectCard.Attach(pip, body => InspectCard.Buff(body, d, remaining));
+            InspectCard.Attach(pip, body => InspectCard.Buff(body, d, remaining), tap: true); // GG-T450
         }
 
         // ── Holding a unit on the board ─────────────────────────────────────────
@@ -80,6 +88,20 @@ namespace GridGame.App
             var u = State.UnitById(inspectUnitId);
             if (u == null || !u.Alive || !board.Units.TryGetValue(u.Id, out var v)) { inspectUnitId = -1; return; }
             inspectOpen = InspectCard.Show(v.Root, body => InspectCard.Unit(body, State, u, Knowledge(u)));
+        }
+
+        /// <summary>
+        /// GG-T450: a quick tap on a unit (no drag, no hold card, released on its own tile) opens its card after whatever
+        /// the tap already did (a hero is selected, a foe fills the actor panel). The card stays until the next press
+        /// anywhere, and that press still acts — picking the hero up to drag it closes the card and drags as before.
+        /// A recruitable is left out: its tap talks to it.
+        /// </summary>
+        private void TapUnitCard(int unitId, Vector2 local)
+        {
+            var u = State.UnitById(unitId);
+            if (u == null || !u.Alive || u.IsNeutral || !CanCommand() || TargetingSlot >= 0) return;
+            if (board.TileAt(local) != u.Pos || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) return;
+            InspectCard.Tap(v.Root, body => InspectCard.Unit(body, State, u, Knowledge(u)));
         }
 
         /// <summary>Ends a board hold; true when it had opened a card (the release then does nothing else).</summary>

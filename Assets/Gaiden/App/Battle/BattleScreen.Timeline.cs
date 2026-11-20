@@ -221,7 +221,7 @@ namespace GridGame.App
             slotTime.style.left = slotTime.style.right = Space.S0; slotTime.style.bottom = -Space.S8;
             slotTime.style.unityTextAlign = TextAnchor.MiddleCenter;
             Fonts.UseHeavy(slotTime);
-            InspectCard.Attach(timelineSlot, body => drawn.TryGetValue(slotEntry, out var e) && BuildTimelineCard(body, e));
+            InspectCard.Attach(timelineSlot, body => drawn.TryGetValue(slotEntry, out var e) && BuildTimelineCard(body, e), tap: true); // GG-T450
             timelineSlot.RegisterCallback<ClickEvent>(_ => { if (drawn.TryGetValue(slotEntry, out var e)) OnTimelineTap(e.OwnerId); });
         }
 
