@@ -71,6 +71,10 @@ namespace GridGame.Meta
             // profile still on the Chrono default moves to it once; a later pick of Chrono sticks.
             if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 2 && d.MenuTheme == "Chrono")
                 d.MenuTheme = SettingsSave.DefaultMenuTheme;
+            // GG-T453: Classic (the Final Fantasy blue gradient) is the default again (owner 2026-11-20: "the gray backdrop is
+            // bad"); a profile still on the Granite default moves to it once; a later pick of Granite sticks.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 3 && d.MenuTheme == "Granite")
+                d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
@@ -136,7 +140,7 @@ namespace GridGame.Meta
         }
 
         /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
-        public const int CurrentLookVersion = 2;
+        public const int CurrentLookVersion = 3;
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>
         public const string DifficultyLevelKey = "level";

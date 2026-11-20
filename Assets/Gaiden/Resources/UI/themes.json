@@ -2,6 +2,26 @@
  "comment": "Menu window themes (GG-T407). gradient.mode: corners (TL,TR,BL,BR) | linear (angle 0-359, CSS: 180 = top to bottom; 2-4 stops at 0..1) | radial (stops centre->farthest corner, optional center [x,y]); grain 0..0.5. texture.id: granite marble parchment linen brushed stars scanlines checker noise carbon, or file:<name> for Resources/UI/WindowTextures/<name>.png; blend multiply|overlay|screen|soft-light|normal; opacity 0..1; scale 0.1..8. frame.style: classic|granite|chrono|slate|dark (Theme.uss blocks); frame.colors: 1 solid, 2 bevel (light, dark), 3 (light, mid, dark). text/accent: optional #RRGGBB. Validated by Meta/WindowThemeDef.cs; a bad theme is logged and skipped.",
  "themes": [
   {
+   "name": "Classic",
+   "gradient": {
+    "mode": "linear",
+    "angle": 180,
+    "stops": [
+     {
+      "at": 0,
+      "color": "#2C46AA"
+     },
+     {
+      "at": 1,
+      "color": "#0A1246"
+     }
+    ]
+   },
+   "frame": {
+    "style": "classic"
+   }
+  },
+  {
    "name": "Granite",
    "gradient": {
     "mode": "linear",
@@ -100,26 +120,6 @@
    },
    "frame": {
     "style": "chrono"
-   }
-  },
-  {
-   "name": "Classic",
-   "gradient": {
-    "mode": "linear",
-    "angle": 180,
-    "stops": [
-     {
-      "at": 0,
-      "color": "#2C46AA"
-     },
-     {
-      "at": 1,
-      "color": "#0A1246"
-     }
-    ]
-   },
-   "frame": {
-    "style": "classic"
    }
   },
   {

@@ -9,7 +9,7 @@ namespace GridGame.App
 {
     /// <summary>
     /// Data-driven menu window themes (GG-T407). The presets come from <c>Resources/UI/themes.json</c> (validated by
-    /// <see cref="WindowThemeCatalog"/>; a bad one is logged and left out, and the game never runs without Granite), the
+    /// <see cref="WindowThemeCatalog"/>; a bad one is logged and left out, and the game never runs without the default), the
     /// player's own from <see cref="SettingsSave.CustomThemes"/>. A theme is:
     /// <list type="bullet">
     /// <item>a gradient baked into <see cref="Art.Window"/> (256² so it stays smooth when a window stretches it, with a
@@ -35,7 +35,7 @@ namespace GridGame.App
 
         private static List<WindowThemeDef> presets;
 
-        /// <summary>The preset themes in file order (Granite first). Loaded once.</summary>
+        /// <summary>The preset themes in file order (the default, Classic, first). Loaded once.</summary>
         public static IReadOnlyList<WindowThemeDef> Presets
         {
             get
@@ -50,25 +50,25 @@ namespace GridGame.App
                     Debug.LogError("[WindowThemes] Resources/UI/themes.json is missing; using the built-in Granite only");
                 }
                 foreach (var e in errors) Debug.LogError("[WindowThemes] " + e);
-                if (!presets.Any(t => t.Name == DefaultName)) presets.Insert(0, BuiltInGranite());
+                if (!presets.Any(t => t.Name == DefaultName)) presets.Insert(0, BuiltInDefault());
                 return presets;
             }
         }
 
-        /// <summary>The default look if themes.json can't be read (GG-T404's Granite).</summary>
-        private static WindowThemeDef BuiltInGranite() => new WindowThemeDef
+        /// <summary>The default look if themes.json can't be read: Classic's Final Fantasy blue gradient (GG-T453).</summary>
+        private static WindowThemeDef BuiltInDefault() => new WindowThemeDef
         {
             Name = DefaultName,
-            Gradient = new WindowGradientDef { Mode = WindowThemeCatalog.Linear, Angle = 180f, Grain = 0.07f,
-                Stops = new List<WindowStopDef> { new WindowStopDef(0f, "#8696A6"), new WindowStopDef(1f, "#242E3C") } },
-            Frame = new WindowFrameDef { Style = "granite" },
+            Gradient = new WindowGradientDef { Mode = WindowThemeCatalog.Linear, Angle = 180f,
+                Stops = new List<WindowStopDef> { new WindowStopDef(0f, "#2C46AA"), new WindowStopDef(1f, "#0A1246") } },
+            Frame = new WindowFrameDef { Style = "classic" },
         };
 
         public static bool IsPreset(string name) => Presets.Any(t => string.Equals(t.Name, name, StringComparison.OrdinalIgnoreCase));
 
         private static IEnumerable<WindowThemeDef> Customs => GameApp.I?.Settings?.CustomThemes ?? Enumerable.Empty<WindowThemeDef>();
 
-        /// <summary>A theme by name: a preset, else one of the profile's custom themes, else Granite (an old save's
+        /// <summary>A theme by name: a preset, else one of the profile's custom themes, else the default (an old save's
         /// theme name — Chrono, Classic, Slate … — is still a preset).</summary>
         public static WindowThemeDef Resolve(string name)
         {

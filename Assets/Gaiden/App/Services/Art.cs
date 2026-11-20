@@ -226,7 +226,7 @@ namespace GridGame.App
         public static string ThemeUssClass => WindowThemes.UssClass;
         public static string ThemeName => WindowThemes.Current.Name;
 
-        /// <summary>Switches the active theme by name (a preset or a custom theme; an unknown name falls back to Granite),
+        /// <summary>Switches the active theme by name (a preset or a custom theme; an unknown name falls back to the default, Classic),
         /// regenerating any already-created window textures in place (same Texture2D instance, so every
         /// <c>VisualElement</c> already pointing at it updates with no rebuild). Call <c>Ui.ApplyMenuTheme</c> after.</summary>
         public static void ApplyTheme(string name) => ApplyTheme(WindowThemes.Resolve(name));
