@@ -395,25 +395,36 @@ namespace GridGame.App
         {
             var h = Hero;
             bool MasteryFor(EquipmentSlot sl) => sl == EquipmentSlot.Weapon ? h.WeaponMastery > 1f : h.Armor.TryGetValue(sl, out var piece) && piece.Mastery > 1f;
+            // GG-T452: the eleven slots used to be three stacked windows; with the stat compare under them they pushed the
+            // bag below the stage on a phone, so nothing could be equipped. They now share one scrolling window, which
+            // splits the leftover height with the bag (both grow), and scrolls the picked slot into view.
+            var slotsWin = Ui.Window(null, body);
+            slotsWin.name = "equip-slots";
+            slotsWin.style.flexGrow = 1;
+            slotsWin.style.flexBasis = 0;
+            var slotList = Ui.List(slotsWin);
+            VisualElement pickedRow = null;
             void SlotGroup(string title, IEnumerable<EquipmentSlot> slots)
             {
-                var w = Ui.Window(title, body);
+                var head = Ui.Text(title, "small dim", slotList.contentContainer);
+                head.style.marginTop = Space.S8;
                 foreach (var sl in slots)
                 {
                     var s2 = sl;
                     var it = C.TryItem(Equipment.Equipped(h, sl));
                     bool mastery = MasteryFor(sl);
                     bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
-                    var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, w);
+                    var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, slotList.contentContainer);
                     row.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
                     if (it != null) row.Q<Label>("value").AddToClassList(Ui.RarityClass(it.Rarity));
-                    if (sl == slot) Ui.Select(row);
+                    if (sl == slot) { Ui.Select(row); pickedRow = row; }
                 }
             }
             // §24.2 equip screen layout (GG-T89): Weapon, then the five armor pieces, then the five jewelry pieces.
             SlotGroup("Weapon", new[] { EquipmentSlot.Weapon });
             SlotGroup("Armor", BattleEngine.ArmorSlots);
             SlotGroup("Jewelry", Equipment.JewelrySlots);
+            if (pickedRow != null) slotList.schedule.Execute(() => slotList.ScrollTo(pickedRow)).ExecuteLater(30);
 
             var cmp = Ui.Window(null, body);
             var curId = Equipment.Equipped(h, slot);
@@ -457,6 +468,7 @@ namespace GridGame.App
 
             var w = Ui.Window($"{ItemUi.SlotName(slot)} — your bag", body);
             w.style.flexGrow = 1;
+            w.style.flexBasis = 0; // GG-T452: splits the leftover height evenly with the slot list above
             var list = Ui.List(w);
             if (Equipment.Equipped(h, slot) != null)
                 Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot)), list.contentContainer);
