@@ -18,55 +18,47 @@ namespace GridGame.App
 
         protected override void BuildBody(VisualElement body)
         {
-            var head = Ui.Window(null, body);
-            Ui.Text("Swords for hire, paid upfront for a set number of battles. The count runs down every battle, whether they fight or wait in reserve. " +
-                    "One haggle each until the next battle.", "small", head).style.whiteSpace = WhiteSpace.Normal;
+            // GG-T454 (the menu kit): one scrolling list — the terms, who's under contract, then who's for hire.
+            var list = Ui.ListPanel(body, null, "merc-board");
+            Ui.Para("Swords for hire, paid upfront for a set number of battles. The count runs down every battle, whether they fight or wait in reserve. " +
+                    "One haggle each until the next battle.", list, "dim");
 
             if (S.Mercenaries.Contracts.Count > 0)
             {
-                var hired = Ui.Window("Under contract", body);
+                var hired = Ui.El("col", list);
                 hired.name = "merc-contracts";
+                Ui.Section("Under contract", hired);
                 foreach (var k in S.Mercenaries.Contracts)
                 {
                     var def = C.TryClass(k.ClassId);
                     if (def == null) continue;
-                    var card = Ui.El("card", hired);
-                    Ui.Thumb(k.ClassId, card, 96);
-                    var col = Ui.El("col grow", card);
+                    Ui.Card(hired, k.ClassId, null, out var col);
                     var top = Ui.El("row", col);
-                    Ui.Text(def.Name, "h2", top);
+                    Ui.Name(def.Name, top);
                     MercenaryCamp.Tag(S, k.ClassId, top);
-                    Ui.Text($"{k.BattlesLeft} battle{(k.BattlesLeft == 1 ? "" : "s")} left · {Ui.Gold(k.Rate)} a battle", "small", col);
+                    Ui.Caption($"{k.BattlesLeft} battle{(k.BattlesLeft == 1 ? "" : "s")} left · {Ui.Gold(k.Rate)} a battle", col);
                 }
             }
 
-            var w = Ui.Window("For hire", body);
-            w.style.flexGrow = 1;
-            var list = Ui.List(w).contentContainer;
+            Ui.Section("For hire", list);
             var board = Mercenaries.Board(C, S);
-            if (board.Count == 0) Ui.Text("No one's looking for work right now.", "small dim", list);
+            if (board.Count == 0) Ui.Empty("No one's looking for work right now.", list);
             foreach (var m in board)
             {
                 var merc = m;
                 var def = C.Class(m.Class);
                 bool walked = Mercenaries.Walked(S, m.Class);
-                var card = Ui.El("card", list);
-                card.name = "merc-offer-" + m.Class;
-                Ui.Thumb(m.Class, card, 140);
-                var col = Ui.El("col grow", card);
-                col.style.flexShrink = 1; col.style.minWidth = 0;
+                var card = Ui.Card(list, m.Class, null, out var col, "merc-offer-" + m.Class);
                 var top = Ui.El("row", col);
-                Ui.Text(def.Name, "h2", top);
-                Ui.RoleBadge(def.Role, top).style.marginLeft = Space.S8;
-                Ui.Text(m.Temperament.ToString(), "tiny dim", top).style.marginLeft = Space.S8;
-                Ui.Text($"\"{m.Pitch}\"", "tiny", col).style.whiteSpace = WhiteSpace.Normal;
-                GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "tiny gold", col).style.whiteSpace = WhiteSpace.Normal; // GG-T298
+                Ui.Name(def.Name, top);
+                Ui.RoleBadge(def.Role, top, Kit.Caption);
+                Ui.Caption(m.Temperament.ToString(), top, "dim");
+                Ui.Para($"\"{m.Pitch}\"", col);
+                GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", col); // GG-T298
                 int adj = Mercenaries.HaggleAdjust(S, m.Class);
-                if (adj != 0) Ui.Text(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", adj < 0 ? "tiny gold" : "tiny bad", col);
-                if (walked) { Ui.Text("Walked off. Back after the next battle.", "small bad", col); continue; }
-                var terms = Ui.El("row", col);
-                terms.style.flexWrap = Wrap.Wrap;
-                terms.style.marginTop = Space.S8;
+                if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
+                if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
+                var terms = Ui.Actions(col);
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
@@ -74,7 +66,6 @@ namespace GridGame.App
                         $"Hire {def.Name} for {term} battles at {Ui.Gold(price)}, paid now? The contract runs down every battle, used or not.", "Hire",
                         () => Done(Mercenaries.Hire(C, S, merc.Class, term))), "btn--small", terms);
                     b.name = $"merc-hire-{m.Class}-{term}";
-                    b.style.marginRight = Space.S8; b.style.marginBottom = Space.S4;
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
                 var haggle = Ui.Button(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
@@ -89,7 +80,7 @@ namespace GridGame.App
             if (haggling) yield break;
             haggling = true;
             App.Audio.Sfx("ui.press");
-            var think = Ui.Text("...", "h2 gold", card);
+            var think = Ui.Heading("...", card, "gold");
             yield return Tween.Run(Timing.Dramatic, k => { think.style.opacity = 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); });
             var o = Mercenaries.Haggle(C, S, m.Class, out var message);
             haggling = false;
@@ -109,7 +100,7 @@ namespace GridGame.App
         {
             var k = Mercenaries.Contract(s, classId);
             if (k == null) return;
-            var tag = Ui.Text($"MERC · {k.BattlesLeft} left", "tiny gold", parent);
+            var tag = Ui.Caption($"MERC · {k.BattlesLeft} left", parent, "gold");
             tag.name = "merc-tag-" + classId;
             tag.style.marginLeft = Space.S8;
         }
@@ -173,11 +164,10 @@ namespace GridGame.App
             box.style.position = Position.Absolute;
             box.style.left = box.style.right = Fit.Inset + Fit.Edge; box.style.bottom = Space.S64;
             var plate = Ui.El("row", box);
-            Ui.Text(def.Name, "h2 gold", plate);
+            Ui.Heading(def.Name, plate, "gold");
             MercenaryCamp.Tag(S, classId, plate);
-            var line = Ui.Text("", "small", box);
-            line.style.whiteSpace = WhiteSpace.Normal;
-            line.style.minHeight = 120;
+            var line = Ui.Para("", box);
+            line.style.minHeight = Size.Thumb; // the line types out into a box already its height
             string speech = m?.Renewal ?? "My contract's nearly up. Renew, or do we part ways?";
 
             var choices = Ui.El("col", box);
@@ -186,7 +176,7 @@ namespace GridGame.App
             if (m != null && k != null)
             {
                 int loyalty = Mathf.RoundToInt(Mercenaries.Loyalty(k) * 100f);
-                Ui.Text($"Loyalty discount: {loyalty}%", "tiny gold", choices);
+                Ui.Caption($"Loyalty discount: {loyalty}%", choices, "gold");
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.RenewalPrice(C, S, classId, t);

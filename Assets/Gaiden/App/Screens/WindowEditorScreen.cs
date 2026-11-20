@@ -48,11 +48,8 @@ namespace GridGame.App
             BuildPreview(body);
 
             Ui.Tabs(TabNames, tab, i => { tab = i; sel = 0; savedScroll = 0; Rebuild(); }, body).name = "window-tabs";
-            var w = Ui.Window(null, body);
-            w.name = "window-editor";
-            list = Ui.List(w);
-            w.style.flexGrow = 1; // takes every pixel the preview and the footer leave, at any aspect
-            var c = list.contentContainer;
+            // Takes every pixel the preview and the footer leave, at any aspect (a kit list panel, GG-T454).
+            var c = Ui.ListPanel(body, null, out list, "window-editor");
             switch (tab)
             {
                 case 0: BuildPresets(c); break;
@@ -63,11 +60,9 @@ namespace GridGame.App
             float restore = savedScroll;
             list.RegisterCallback<GeometryChangedEvent>(_ => { if (restore > 0) { list.scrollOffset = new Vector2(0, restore); restore = 0; } });
 
-            var foot = Ui.El("row", body);
+            var foot = Ui.Footer(body, "window-actions-bar");
             foot.name = "window-actions";
-            foot.style.justifyContent = Justify.Center;
-            foot.style.flexWrap = Wrap.Wrap;
-            foot.style.marginTop = Space.S8;
+            foot.style.justifyContent = Justify.FlexEnd;
             var save = Ui.Button("Save", Save, "btn--primary", foot);
             save.name = "window-save";
             var reset = Ui.Button("Reset", Reset, null, foot);
@@ -129,7 +124,7 @@ namespace GridGame.App
             var stats = Ui.El("row", w);
             Ui.Text("HP 340/340", "small grow", stats);
             Ui.Text("1,250 G", "small gold", stats);
-            Ui.Text("A dim caption line", "tiny dim", w);
+            Ui.Text("A dim caption line", "small dim", w);
             var row = Ui.El("row", w);
             row.style.justifyContent = Justify.FlexEnd;
             row.style.marginTop = Space.S8;
@@ -141,9 +136,9 @@ namespace GridGame.App
 
         private void BuildPresets(VisualElement c)
         {
-            Ui.Text("Presets", "small dim", c);
+            Ui.Section("Presets", c);
             Grid(c, WindowThemes.Presets, "preset");
-            Ui.Text(St.CustomThemes.Count > 0 ? $"Yours ({St.CustomThemes.Count}/{WindowThemeCatalog.MaxCustom})" : "Yours: edit any theme, then Save", "small dim", c).style.marginTop = Space.S16;
+            Ui.Section(St.CustomThemes.Count > 0 ? $"Yours ({St.CustomThemes.Count}/{WindowThemeCatalog.MaxCustom})" : "Yours: edit any theme, then Save", c);
             if (St.CustomThemes.Count > 0) Grid(c, St.CustomThemes, "custom");
 
             var row = Ui.El("row", c);
@@ -521,7 +516,7 @@ namespace GridGame.App
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
-            var hex = Ui.Text("", "tiny", chip);
+            var hex = Ui.Text("", "small", chip);
             void Show() { chip.style.backgroundColor = WindowThemes.Hex(get(), Color.gray); hex.text = get(); }
             Show();
             live.Add(Show);

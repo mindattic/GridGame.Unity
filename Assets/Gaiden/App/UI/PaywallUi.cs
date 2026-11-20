@@ -124,13 +124,13 @@ namespace GridGame.App
             w.name = "camp-rested";
             Ui.Text("Rested", "small dim", w);
             // "Unlimited" is wider than "10/10": one step smaller, and it scrolls if the window is narrower still (GG-T395).
-            Ui.Marquee(Ui.Text(RestedPool.Exempt(s) ? "Unlimited" : $"{pts}/{RestedPool.Max}", RestedPool.Exempt(s) ? "h3 num" : "h2 num", w), false);
+            Ui.Marquee(Ui.Text(RestedPool.Exempt(s) ? "Unlimited" : $"{pts}/{RestedPool.Max}", "kit-name num", w), false);
             Ui.Gauge(RestedPool.Exempt(s) ? 1f : pts / (float)RestedPool.Max, w);
             if (RestedPool.Exempt(s) || pts >= RestedPool.Max) return;
             var next = RestedPool.NextIn(s, now);
-            Ui.Text($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", "tiny dim", w);
+            Ui.Text($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", "small dim", w);
             // The price has its own line: the side window is too narrow for "Refill · price" on one button (GG-T400).
-            Ui.Text(Paywall.Tag(PaywallKind.RestedRefill, s), "tiny dim", w).style.marginTop = Space.S8;
+            Ui.Text(Paywall.Tag(PaywallKind.RestedRefill, s), "small dim", w).style.marginTop = Space.S8;
             var b = Ui.Button("Refill", () => Refill(refresh), "btn--small", w);
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;

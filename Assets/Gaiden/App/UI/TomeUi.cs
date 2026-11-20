@@ -25,7 +25,7 @@ namespace GridGame.App
         {
             var a = RewardCatalog.TaughtBy(App.Content, tome);
             if (a == null) return;
-            var l = GlossaryText.Create("Teaches " + Sentence(App.Content, a), "tiny dim", parent);
+            var l = GlossaryText.Create("Teaches " + Sentence(App.Content, a), "kit-text dim", parent);
             l.style.whiteSpace = WhiteSpace.Normal;
         }
 
@@ -47,14 +47,14 @@ namespace GridGame.App
             var c = App.Content; var s = App.Save;
             var a = RewardCatalog.TaughtBy(c, tome);
             if (a == null) return;
-            if (sentence) GlossaryText.Create(Sentence(c, a), "tiny", box).style.whiteSpace = WhiteSpace.Normal;
+            if (sentence) GlossaryText.Create(Sentence(c, a), "small", box).style.whiteSpace = WhiteSpace.Normal;
             if (taughtTo != null)
             {
-                var done = Ui.Text($"{taughtTo} learned {a.Name}.", "tiny good", box);
+                var done = Ui.Text($"{taughtTo} learned {a.Name}.", "small good", box);
                 App.StartCoroutine(Tween.Pop(done, 1.12f, 0.18f));
             }
             if (s.Count(tome.Id) <= 0) return;
-            Ui.Text(s.Count(tome.Id) > 1 ? $"Teach to… ({s.Count(tome.Id)} tomes)" : "Teach to…", "tiny dim", box);
+            Ui.Text(s.Count(tome.Id) > 1 ? $"Teach to… ({s.Count(tome.Id)} tomes)" : "Teach to…", "small dim", box);
             var row = Ui.El("row", box);
             row.style.flexWrap = Wrap.Wrap;
             foreach (var h in s.Roster.OrderByDescending(x => s.Party.Contains(x.ClassId)).ToList())

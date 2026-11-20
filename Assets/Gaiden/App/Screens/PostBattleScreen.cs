@@ -84,7 +84,7 @@ namespace GridGame.App
                 {
                     var er = Ui.MenuRow($"Expedition: battle {report.ExpeditionStep} of {report.ExpeditionLength} won", $"{report.CarriedOrbs} orbs carry over", null, list);
                     er.name = "expedition-progress";
-                    Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "tiny dim", list).style.whiteSpace = WhiteSpace.Normal;
+                    Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
             }
             else
@@ -92,7 +92,7 @@ namespace GridGame.App
                 var t = Ui.Text(report.Retreated ? "You fall back with part of your spoils — safer than risking the whole party. The stage is yours to retry." :
                     report.Escaped ? "The party slips away in the smoke. Wounds remain; no rewards." :
                     report.ExpeditionFailed ? $"The {report.ExpeditionName} expedition has failed. The party falls back to the caravan and recovers — the expedition restarts from battle 1." :
-                    "The party retreats to camp and recovers. The gold and loot are lost — but every hero keeps the experience they earned. The stage is yours to retry.", "h2", list);
+                    "The party retreats to camp and recovers. The gold and loot are lost — but every hero keeps the experience they earned. The stage is yours to retry.", "kit-text", list);
                 t.style.whiteSpace = WhiteSpace.Normal;
                 if (report.Retreated)
                 {
@@ -255,7 +255,7 @@ namespace GridGame.App
             text.style.flexGrow = 1; text.style.flexShrink = 1;
             var head = Ui.Text($"{def.Name} wants to join you!", "h2 good", text);
             head.style.whiteSpace = WhiteSpace.Normal;
-            var sub = Ui.Text($"Lv {offer.Level} - fights on its own with the Pincer keyword. No gear or skills; grows slowly (max Lv {Domestication.LevelCap}).", "tiny dim", text);
+            var sub = Ui.Text($"Lv {offer.Level} - fights on its own with the Pincer keyword. No gear or skills; grows slowly (max Lv {Domestication.LevelCap}).", "small dim", text);
             sub.style.whiteSpace = WhiteSpace.Normal;
             var buttons = Ui.El("row", text);
             buttons.style.marginTop = Space.S8;
@@ -301,7 +301,7 @@ namespace GridGame.App
             {
                 bool joined = App.Save.Hero(def.Id) != null;
                 Ui.Text(joined ? $"{def.Name} joins the caravan!" : $"{def.Name} goes their own way.", joined ? "h2 good" : "h2 dim", text).style.whiteSpace = WhiteSpace.Normal;
-                if (!joined) Ui.Text("Back to the road. You may meet them again.", "tiny dim", text);
+                if (!joined) Ui.Text("Back to the road. You may meet them again.", "small dim", text);
                 return;
             }
             var head = Ui.Text($"The wandering {def.Name} lingers to talk.", "h2", text);
@@ -315,11 +315,11 @@ namespace GridGame.App
             var factionBlurb = ContentDb.Blurb(c.FactionBlurbs, faction?.Id); // GG-T374: Prose "faction:<id>"
             if (!string.IsNullOrEmpty(factionBlurb))
             {
-                var fb = Ui.Text(factionBlurb, "tiny dim", text);
+                var fb = Ui.Text(factionBlurb, "small dim", text);
                 fb.name = "wanderer-faction";
                 fb.style.whiteSpace = WhiteSpace.Normal;
             }
-            var rule = Ui.Text(Wanderers.Outlook(c, offer, null), "tiny dim", text);
+            var rule = Ui.Text(Wanderers.Outlook(c, offer, null), "small dim", text);
             rule.name = "wanderer-outlook";
             rule.style.whiteSpace = WhiteSpace.Normal;
             Ui.Text("Who talks with them?", "small", text).style.marginTop = Space.S8;

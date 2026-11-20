@@ -16,9 +16,7 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             if (handedIn != null && C.TryQuest(handedIn) is QuestDef done) TurnInCard(done, body);
-            var w = Ui.Window(null, body);
-            w.style.flexGrow = 1;
-            var list = Ui.List(w).contentContainer;
+            var list = Ui.ListPanel(body, null, "quest-list");
             bool any = false;
 
             void Section(string title, System.Collections.Generic.IEnumerable<QuestDef> quests, System.Action<QuestDef, VisualElement> extra)
@@ -26,7 +24,7 @@ namespace GridGame.App
                 var qs = quests.ToList();
                 if (qs.Count == 0) return;
                 any = true;
-                Ui.Text(title, "h2 gold", list).style.marginTop = Space.S16;
+                Ui.Section(title, list);
                 foreach (var q in qs) Card(q, list, extra);
             }
 
@@ -46,33 +44,26 @@ namespace GridGame.App
             });
             Section("Ask around", all.Where(q => Quests.State(C, S, q) == QuestState.Available && !heard.Contains(q)), null);
             Section("Done", all.Where(q => Quests.State(C, S, q) == QuestState.Done), null);
-            if (!any) Ui.Text("No quests yet. Talk to your companions and the caravan's people between battles: they'll have things they need doing.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+            if (!any) Ui.Empty("No quests yet. Talk to your companions and the caravan's people between battles: they'll have things they need doing.", list);
         }
 
         private void Card(QuestDef q, VisualElement parent, System.Action<QuestDef, VisualElement> extra)
         {
             var st = Quests.State(C, S, q);
-            var card = Ui.El("card", parent);
-            card.name = "quest-" + q.Id;
-            string thumb = ThumbFor(q);
-            if (thumb != null) Ui.Thumb(thumb, card, 110);
-            var col = Ui.El("col grow", card);
-            Ui.Text(q.Name, "h2", col);
+            var card = Ui.Card(parent, ThumbFor(q), q.Name, out var col, "quest-" + q.Id);
             string theme = C.Campaign.Themes.FirstOrDefault(t => t.Id == q.Theme)?.Name;
-            Ui.Text($"{q.Giver}{(theme != null ? " · " + theme : "")}", "tiny dim", col);
+            Ui.Caption($"{q.Giver}{(theme != null ? " · " + theme : "")}", col, "dim");
             var chain = Quests.ChainLine(C, S, q); // GG-T434: the chain's steps
-            if (chain != null) Ui.Text(chain, "tiny gold", col).style.whiteSpace = WhiteSpace.Normal;
+            if (chain != null) Ui.Para(chain, col, "gold");
             if (st == QuestState.Available && !Quests.Heard(C, S).Contains(q))
             {
-                Ui.Text(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party." : $"The {q.Giver} has something on their mind. Talk to them.", "small", col).style.whiteSpace = WhiteSpace.Normal;
+                Ui.Para(q.Giver == "Party" ? "One of your companions has something on their mind. Talk to the party." : $"The {q.Giver} has something on their mind. Talk to them.", col);
                 return;
             }
-            Ui.Text(q.Summary, "small", col).style.whiteSpace = WhiteSpace.Normal;
-            var goal = Ui.Text(st == QuestState.Done ? Quests.Describe(C, q) : $"{Quests.Describe(C, q)}  {Quests.Progress(S, q)}/{Quests.Goal(q)}",
-                st == QuestState.Ready ? "small good" : "small gold", col);
-            goal.style.whiteSpace = WhiteSpace.Normal;
-            Ui.Text("Reward: " + Quests.RewardText(C, q), "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
-            extra?.Invoke(q, card);
+            Ui.Para(q.Summary, col);
+            Ui.Para(st == QuestState.Done ? Quests.Describe(C, q) : $"{Quests.Describe(C, q)}  {Quests.Progress(S, q)}/{Quests.Goal(q)}", col, st == QuestState.Ready ? "good" : "gold");
+            Ui.Para("Reward: " + Quests.RewardText(C, q), col, "dim");
+            if (extra != null) extra(q, Ui.Actions(col));
         }
 
         /// <summary>The portrait a quest card leads with: the foe to defeat (a family's first member), or the hero to
@@ -118,9 +109,9 @@ namespace GridGame.App
         private void TurnInCard(QuestDef q, VisualElement body)
         {
             var w = Ui.Window($"{q.Name} — complete!", body, "quest-turnin is-hidden");
-            if (!string.IsNullOrEmpty(q.TurnIn)) Ui.Text($"\"{q.TurnIn}\"", "small", w).style.whiteSpace = WhiteSpace.Normal;
-            Ui.Text($"— {q.Giver}", "tiny dim", w);
-            Ui.Text("Received: " + Quests.RewardText(C, q), "small gold", w).style.whiteSpace = WhiteSpace.Normal;
+            if (!string.IsNullOrEmpty(q.TurnIn)) Ui.Para($"\"{q.TurnIn}\"", w);
+            Ui.Caption($"— {q.Giver}", w, "dim");
+            Ui.Para("Received: " + Quests.RewardText(C, q), w, "gold");
             if (C.TryItem(q.RewardItem) is ItemDef tome && tome.Type == ItemType.Tome) TomeUi.Offer(w, tome); // GG-T301
             w.schedule.Execute(() => w.RemoveFromClassList("is-hidden")).ExecuteLater(30);
         }
