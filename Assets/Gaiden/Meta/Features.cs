@@ -48,6 +48,10 @@ namespace GridGame.Meta
         /// system's way in.</summary>
         public static bool Offers(string id) => Taming || (id != TamerClass && id != TamingItem);
 
+        /// <summary>Whether the Caravan sells this upgrade (GG-T448): the Enchanter's Wagon discounts armor enchants, so
+        /// while the Enchanter is left out it would be gold spent on nothing.</summary>
+        public static bool OffersCaravan(string id) => Enchanter || id != CaravanUpgrades.EnchanterWagon;
+
         /// <summary>Turns every switch on (the `-allfeatures` launch flag, for sweeps and the owner's review).</summary>
         public static void EnableAll()
         {

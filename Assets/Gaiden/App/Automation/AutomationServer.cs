@@ -669,6 +669,29 @@ namespace GridGame.App.Automation
                         bounty = new { hunting = s.Bounty.Taken.ToList(), slain = s.Bounty.Slain.ToList(), claimed = s.Bounty.Claimed.Count, offers = Bounties.Offers(c, s).Select(b => b.Id).ToList() }, // GG-T431
                     };
                 }
+                case "economy":
+                {
+                    // GG-T448 playthrough: everything a player weighs at camp in one read — purse, Rested, wounds, wear and
+                    // what each gold sink costs right now — so a run can log how the economy feels stage by stage.
+                    var c = app.Content; var s = app.Save;
+                    if (s == null) return new { error = "no save" };
+                    var now = DateTime.UtcNow;
+                    return new
+                    {
+                        s.Gold, diamonds = s.Count(Crafting.DiamondId), s.HighestClearedStage,
+                        rested = RestedPool.Points(s, now), restedMax = RestedPool.Max, restedExempt = RestedPool.Exempt(s),
+                        refill = new { gold = Paywall.Cost(PaywallKind.RestedRefill, s), diamonds = RestedPool.DiamondRefillPrice },
+                        diamondGold = Paywall.Cost(PaywallKind.LuckyDiamond, s), summonDiamonds = DiamondSummon.Price,
+                        heroes = s.Roster.Select(h => new { h.ClassId, level = Progression.Level(h), hp = h.Hp, max = Progression.Preview(c, h).MaxHp, inParty = s.Party.Contains(h.ClassId), h.WeaponId }).ToList(),
+                        wear = Repair.Pieces(c, s).Select(p => new { hero = p.Hero.ClassId, slot = p.Slot.ToString(), item = p.Item.Id, p.Durability, p.Max,
+                            cost = p.Slot == EquipmentSlot.Weapon ? Repair.Cost(c, s, p.Item, p.Durability, p.Hero.WeaponRepairs, p.Hero.WeaponMastery)
+                                 : Repair.Cost(c, s, p.Item, p.Durability, p.Hero.Armor[p.Slot].Repairs, p.Hero.Armor[p.Slot].Mastery) }).ToList(),
+                        stock = Shop.Stock(c).Select(i => new { i.Id, type = i.Type.ToString(), rarity = i.Rarity.ToString(), price = i.BaseCost, have = s.Count(i.Id) }).ToList(),
+                        caravan = c.Caravan.Values.Select(d => new { d.Id, d.Name, level = CaravanUpgrades.Level(s, d.Id), next = CaravanUpgrades.NextLevel(c, s, d.Id) is CaravanLevel n ? new { n.Name, n.Cost } : null }).ToList(),
+                        npcs = CampNpcs.All.Where(n => CampUnlocks.NpcOpen(s, n)).ToList(),
+                        inventory = s.Inventory,
+                    };
+                }
                 case "stagebounds":
                 {
                     var sb = app.Stage.worldBound;

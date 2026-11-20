@@ -1338,7 +1338,7 @@ namespace GridGame.App
             var w = Ui.Window(null, body);
             w.style.flexGrow = 1;
             var list = Ui.List(w).contentContainer;
-            foreach (var def in C.Caravan.Values)
+            foreach (var def in C.Caravan.Values.Where(x => Features.OffersCaravan(x.Id)))
             {
                 var d = def;
                 int lv = CaravanUpgrades.Level(S, d.Id);

@@ -535,6 +535,8 @@ namespace GridGame.App
                 var row = Ui.MenuRow(label, hint, null, list.contentContainer, null, false);
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
                 row.Q<Label>("value").AddToClassList("small");
+                // "Joins at The Tithe Moors II" is wider than the row's value column: it scrolls instead of being cut (GG-T448).
+                Ui.Marquee(row.Q<Label>("value"));
             }
             Item("Adventure", () => new StageSelectScreen(), $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
             // The Crucible (§22.10): endless waves for XP and loot. Closed mid-expedition — the row says why.
