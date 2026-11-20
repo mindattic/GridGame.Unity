@@ -95,16 +95,28 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   still 1 g / 1 s. First-pass real prices now: deliberate gold Summon 800 g, one Diamond (LuckyDiamond) 250 g, Rested's
   gold refill 100 g + 15 g per stage cleared (a flat 60 g, tried first, was under 3% of what its 10 launches earn). The Diamond draw stays 1 Diamond (unchanged, deliberately cheaper per attempt than the 800 g
   guaranteed pick) — still a measurement-pending number, not re-derived here. Rested also gained a second, Diamond-priced
-  **GG-T448 playthrough (2026-11-19):** a fresh save played stage by stage banked 6,474 g by stage 13 with nothing to spend
-  it on, and bought the Alchemist's whole still ladder by stage 6. Re-priced: Summon 800 → 1,500 g, Diamond 250 → 600 g,
-  Forge 400/1,500/3,000 → 600/2,500/6,000, Alembic 300/1,200 → 500/3,000. Rested refill unchanged (forgiving by design).
   refill (1 Diamond, instant, no job) alongside the gold one, so Diamonds can pay for either a hero pull or skipping the
   wait, per the owner's request. Checked against measured stage pay (2026-11-17 polish records, winning runs): ≈210–270 g a stage at Lv 1–6,
   400–600 g from Lv 9, ≈9,900 g for one pass of the main campaign. Not yet felt in real play: the owner's call.
+  **GG-T448 playthrough (2026-11-19):** a fresh save played stage by stage through the real UI banked 6,474 g by stage 13
+  with nothing to spend it on (starting heroes carry no gear that wears, so repair never came up), and bought the
+  Alchemist's whole still ladder by stage 6. Re-priced: Summon 800 → 1,500 g, Diamond 250 → 600 g, Forge
+  400/1,500/3,000 → 600/2,500/6,000, Alembic 300/1,200 → 500/3,000. Rested refill unchanged (forgiving by design).
 - **Facility prices (GG-T432, first pass, not measured).** Iron Forge 400 G, Steel 1,500 G, Mythril 3,000 G; Glass
   Alembic 300 G, Silver 1,200 G: 6,400 G for the whole ladder against ≈9,900 G of main-campaign pay, competing with
   summons (800 G) and training (~300 G a skill). Watch whether Rare gear (Iron Forge) arrives too late for the bots;
-  `CampRoutine` builds a level once it costs half its gold.
+  `CampRoutine` builds a level once it costs half its gold. **Re-priced 2026-11-19 (GG-T448)** to 600/2,500/6,000 and
+  500/3,000 against the measured pay above — see the Paywall entry.
+- **Repair pricing vs. facilities, a genuine tension (GG-T448, 2026-11-19).** A camp bot that forges gear and keeps it
+  repaired every visit spends 97-98% of a whole campaign's gold on repairs — at `Repair.RepairRate` 0.30 (17,246 g
+  earned, 16,758 g repaired per run) and still at 0.15 after halving it (18,152 earned, 17,865 repaired). Cheaper
+  repairs don't free up gold; they just buy more repairs before a piece crosses `IsUneconomical`, because the camp
+  routine repairs every worn piece back to full every visit by design, and facilities/the Summon Circle are
+  deliberately left to repair's leftovers. Halved anyway (0.30 → 0.15) for the modest room it does give facilities/gear
+  (150 → 275, 3,937 → 4,981 g/run), but a player who keeps every piece of gear repaired will likely still feel starved
+  for facility/summon gold. The owner's fresh-save playthrough above never hit this at all (no gear wears without
+  forging), so the two playstyles feel very different — worth a played-through pass that actually forges and repairs
+  gear before trusting either number.
 - **Consumables** run from 20 G (Antidote) to 500 G (X-Potion); the Tent is 300 G, the Revival Charm 450 G. The Healing
   Potion (25 G, 50 HP) vs Hi-Potion (75 G, 150 HP) step is linear, so there is no reason to buy small ones late.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the

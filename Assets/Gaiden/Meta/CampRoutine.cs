@@ -33,10 +33,19 @@ namespace GridGame.Meta
             if (next != null && next.Cost <= s.Gold * FacilityPurseShare) note(Facilities.Build(c, s, station));
         }
 
-        public static List<string> Run(ContentDb c, SaveData s)
+        /// <param name="ledger">When given (the balance report, GG-T448), each phase's net gold spent is added under its
+        /// name — summon, repair, inn, loot, skills, gear, potions, counters, facilities — so a played-out campaign shows
+        /// where the purse went. Gains (chests) come out negative.</param>
+        public static List<string> Run(ContentDb c, SaveData s, Dictionary<string, int> ledger = null)
         {
             var log = new List<string>();
             void Note(Result r) { if (r.Ok && r.Message != null) log.Add(r.Message); }
+            int mark = s.Gold;
+            void Phase(string kind)
+            {
+                if (ledger != null && s.Gold != mark) { ledger.TryGetValue(kind, out var had); ledger[kind] = had + (mark - s.Gold); }
+                mark = s.Gold;
+            }
 
             // Summon Circle (GG-T87): fill an open party slot with a recruit when the gold is there and the
             // circle is actually open (GG-T174's milestone unlock). Checked first, before repair/rest/bounty
@@ -47,6 +56,7 @@ namespace GridGame.Meta
                 var recruit = Summon.Pool(c, s).FirstOrDefault(d => s.Hero(d.Id) == null);
                 if (recruit != null) Note(Summon.Recruit(c, s, recruit.Id));
             }
+            Phase("summon");
 
             // Only the Camp NPCs who have joined (GG-T119) — a service whose keeper hasn't been met yet is hidden
             // from the player, so the routine doesn't use it either. Bounties, the Summon Circle and Learn have no keeper.
@@ -84,12 +94,15 @@ namespace GridGame.Meta
                     else Note(Repair.RepairArmor(c, s, h, slot));
                 }
             }
+            Phase("repair");
             if (inn && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Note(Inn.Rest(c, s));
+            Phase("inn");
 
             // The Bounty Board is the player's own hunt (GG-T431): the routine never takes, hunts or claims a bounty.
             // GG-T301: open chests from the road, then read every Tome to a party hero with a free passive slot.
             foreach (var r in Chests.OpenAll(c, s)) Note(r);
             foreach (var r in Tomes.AutoTeach(c, s)) Note(r);
+            Phase("loot");
 
             // Spend banked skill points on tree nodes (GG-T54) — home tree first — before filling the bar, so a
             // freshly granted ability can take a dead slot on this same visit.
@@ -98,6 +111,7 @@ namespace GridGame.Meta
             // Fill the ability bar (GG-T100) before the discretionary gear pass, so a full gear shopping list
             // can't starve it every visit.
             FillBars(c, s, log);
+            Phase("skills");
 
             // The best affordable upgrade for each party member's weapon and armor: an owned bag copy
             // first, then a Forge recipe, then the Merchant's Bargain shelf (skipping near-shatter rolls).
@@ -132,6 +146,7 @@ namespace GridGame.Meta
                 }
             }
 
+            Phase("gear");
             // Keep a potion stock — brewing it (reagents from field drops) undercuts the shop price
             // (GG-T44), so brew first and only fall back to buying once the reagents run dry. Every pass
             // must add stock: a failed brew falls back to buying, and a pass where neither worked (or one
@@ -164,12 +179,15 @@ namespace GridGame.Meta
 
             // GG-T371 (§3.3.1): there is always a way. Carry the Merchant's counter for the next stage: a flask of an
             // element its walls don't resist, the Disarm Kit or Purifying Salts for what its foes lay.
+            Phase("potions");
             if (merchant) StockCounters(c, s, log, Note);
+            Phase("counters");
 
             // GG-T432 (§25.12.2): with what's left, build the next facility level of a joined station (forge first) when it
             // costs half the purse or less, so the bot climbs the material tiers instead of stalling below them.
             if (workshop) BuildFacility(c, s, CraftStation.Forge, Note);
             if (alchemist) BuildFacility(c, s, CraftStation.Alchemy, Note);
+            Phase("facilities");
             return log;
         }
 

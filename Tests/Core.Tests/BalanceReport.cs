@@ -20,6 +20,12 @@ namespace GridGame.Tests
 
         private sealed class Row { public int Runs, Wins, Actions, HpPct; }
 
+        /// <summary>GG-T448: where a run's gold went — battle pay ("earned") against each camp phase's spend — summed over
+        /// the seeds of one table row, plus the purse after each stage.</summary>
+        private Dictionary<string, int> ledger = new Dictionary<string, int>();
+        private Dictionary<string, int> ledgerBank = new Dictionary<string, int>();
+        private static void Add(Dictionary<string, int> d, string k, int v) { d.TryGetValue(k, out var had); d[k] = had + v; }
+
         private Dictionary<string, Row> Campaign(float randomness, int seed, int maxAttemptsPerStage, out bool finished, bool manageCamp = false) =>
             Campaign(randomness, seed, maxAttemptsPerStage, out finished, out _, manageCamp, Progression.StartingRoster, true);
 
@@ -46,7 +52,7 @@ namespace GridGame.Tests
                 for (int attempt = 0; attempt < maxAttemptsPerStage && !cleared; attempt++)
                 {
                     if (story) DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
-                    if (manageCamp) CampRoutine.Run(c, s);
+                    if (manageCamp) CampRoutine.Run(c, s, ledger);
                     else if (CampNpcs.Joined(s, CampNpcs.Innkeeper) && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Inn.Rest(c, s);
                     var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, BotDifficulty.FromEnv()); // GG-T309
                     var st = BotRunner.Play(c, setup, new HeroBot(battleSeed, randomness), 3000); // the first battle is a 20-wave gauntlet; GG-T311: forced Guards count
@@ -56,8 +62,11 @@ namespace GridGame.Tests
                     var heroes = st.Units.Where(u => u.IsHero).ToList();
                     row.HpPct += (int)(100f * heroes.Sum(u => u.Alive ? u.Hp : 0) / heroes.Sum(u => u.MaxHp));
                     if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
+                    int goldBefore = s.Gold;
                     BattleFactory.Commit(c, s, st);
+                    Add(ledger, "earned", s.Gold - goldBefore);
                 }
+                ledgerBank[stage.Id] = (ledgerBank.TryGetValue(stage.Id, out var b) ? b : 0) + s.Gold;
                 if (cleared && string.Equals(stage.Id, endingStage, System.StringComparison.OrdinalIgnoreCase)) finished = true;
                 if (!cleared) break;
             }
@@ -84,6 +93,7 @@ namespace GridGame.Tests
         public void Campaign_pacing_table(float randomness, string label, bool manageCamp, int startingHeroes, bool story)
         {
             var total = new Dictionary<string, Row>();
+            ledger = new Dictionary<string, int>(); ledgerBank = new Dictionary<string, int>();
             int finishedRuns = 0, recruits = 0, bountiesClaimed = 0, bountySp = 0, roster = 0, spSpent = 0, spBanked = 0;
             const int seeds = 4;
             var party = FiveStart.Take(startingHeroes).ToList();
@@ -109,6 +119,11 @@ namespace GridGame.Tests
             sb.AppendLine("stage                  win%   actions   hp-left%");
             foreach (var kv in total)
                 sb.AppendLine($"{kv.Key,-22} {100 * kv.Value.Wins / kv.Value.Runs,4}%   {kv.Value.Actions / (float)kv.Value.Runs,7:F1}   {kv.Value.HpPct / kv.Value.Runs,6}%");
+            if (manageCamp)
+            {
+                sb.AppendLine("gold per run: " + string.Join(", ", ledger.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value / seeds}")));
+                sb.AppendLine("purse after stage: " + string.Join(", ", ledgerBank.Select(kv => $"{kv.Key} {kv.Value / seeds}")));
+            }
             TestContext.Out.WriteLine(sb.ToString());
             // GG-T311: at the designed difficulty a party that never spends its gear, gold or skill points no longer
             // finishes (gaps too short to act in cost it turns); a managed camp still must.

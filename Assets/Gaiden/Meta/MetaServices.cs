@@ -1814,6 +1814,17 @@ namespace GridGame.Meta
     {
         public const int RepairXp = 8;
 
+        /// <summary>A first repair's price per durability point, as a share of the piece's price per point; each later
+        /// repair of the same piece costs 1.6x the last. GG-T448: a camp bot that forges and keeps its gear equipped
+        /// spends 97-98% of a campaign's gold on repairs regardless of this rate (measured at 0.30: 17,246 earned, 16,758
+        /// repaired; at 0.15: 18,152 earned, 17,865 repaired) — cheaper repairs buy more repairs before a piece crosses
+        /// <see cref="IsUneconomical"/> rather than freeing up gold, since CampRoutine repairs every worn piece back to
+        /// full every visit by design (facilities and the Summon Circle are deliberately left to repair's leftovers).
+        /// Halved from 0.30 regardless, since it still gives facilities/gear a little more room (150→275, 3,937→4,981
+        /// gold/run) — but a player who keeps every piece of gear repaired will still see almost no gold left over for
+        /// anything else. Flagged in RELEASE_SCOPE as a watch item for real play, not something this rate alone fixes.</summary>
+        public const float RepairRate = 0.15f;
+
         /// <summary>The piece's durability ceiling — raised by <see cref="BattleConfig.MasterworkDurabilityMultiplier"/> for a Masterwork copy (GG-T46).</summary>
         public static int EffectiveMax(ItemDef item, int repairs, float mastery = 1f) =>
             Math.Max(1, (int)Math.Round(item.Durability * (mastery > 1f ? BattleConfig.MasterworkDurabilityMultiplier : 1f)) - repairs);
@@ -1832,7 +1843,7 @@ namespace GridGame.Meta
             int missing = Math.Max(0, EffectiveMax(item, repairs, mastery) - current);
             if (missing == 0) return 0;
             float perPoint = (float)item.BaseCost / item.Durability;
-            float mult = 0.30f * (float)Math.Pow(1.6f, Math.Max(0, repairs));
+            float mult = RepairRate * (float)Math.Pow(1.6f, Math.Max(0, repairs));
             return Math.Max(1, (int)Math.Ceiling(missing * perPoint * mult));
         }
 
