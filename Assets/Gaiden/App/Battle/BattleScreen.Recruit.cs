@@ -38,7 +38,10 @@ namespace GridGame.App
             v.SetHp(u.Hp, u.MaxHp);
             v.SetTeamLook(u);
             App.Audio.Sfx("battle.pickup", 0.7f, 0.85f);
-            Billboard($"{u.Name} stands apart. Talk to them! Wants: {string.Join(", ", e.Wants)}", null, RecruitAmber);
+            // GG-T448: e.Wants is one readable phrase per unmet condition, so a recruit with several can run long —
+            // the banner shows at most two and tallies the rest, rather than relying on a tiny floor-size font.
+            string wants = e.Wants.Count <= 2 ? string.Join(", ", e.Wants) : $"{string.Join(", ", e.Wants.Take(2))} (+{e.Wants.Count - 2} more)";
+            Billboard($"{u.Name} stands apart. Talk to them! Wants: {wants}", null, RecruitAmber);
             v.Root.style.opacity = 0f;
             yield return Tween.Run(Timing.Standard, k => { v.Root.style.opacity = k; v.Root.style.translate = new Translate(0, -60f * (1f - k)); }, Tween.EaseOut);
             v.Root.style.opacity = 1f;

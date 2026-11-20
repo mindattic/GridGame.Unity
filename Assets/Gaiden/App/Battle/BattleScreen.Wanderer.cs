@@ -20,7 +20,8 @@ namespace GridGame.App
             v.SetTeamLook(u, true);
             SyncTimeline(null);
             App.Audio.Sfx("battle.pickup", 0.8f);
-            Billboard($"A wandering {u.Name} fights the monsters! Fight beside them to earn their trust.", null, Palette.Wanderer);
+            // GG-T448: trimmed from "A wandering {u.Name} fights the monsters! Fight beside them to earn their trust."
+            Billboard($"A wandering {u.Name} joins the fight — earn its trust!", null, Palette.Wanderer);
             v.Root.style.scale = new Scale(Vector2.zero);
             yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.7f ? k / 0.7f * 1.15f : 1.15f - 0.15f * (k - 0.7f) / 0.3f)));
             v.Root.style.scale = new Scale(Vector2.one);

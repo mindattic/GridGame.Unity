@@ -17,7 +17,9 @@ namespace GridGame.App
             v.SetTeamLook(u, true);
             SyncTimeline(null);
             App.Audio.Sfx("battle.powerup", 0.8f);
-            Billboard($"{u.Name} is tamed! It fights for you on its own for {e.Turns} of its turns ({Mathf.RoundToInt(e.Chance * 100)}% chance).", null, Palette.Tamed);
+            // GG-T448: trimmed from "{u.Name} is tamed! It fights for you on its own for N of its turns (P% chance)." --
+            // same information, reads faster in the banner and leans less on the runtime shrink-to-fit.
+            Billboard($"{u.Name} tamed! Fights for you {e.Turns} turns ({Mathf.RoundToInt(e.Chance * 100)}%).", null, Palette.Tamed);
             App.StartCoroutine(FloatText(u.Id, "Tamed!", Palette.Tamed, 0f, 64));
             yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.6f ? 1f + k / 0.6f * 0.18f : 1.18f - 0.18f * (k - 0.6f) / 0.4f)));
             v.Root.style.scale = new Scale(Vector2.one);

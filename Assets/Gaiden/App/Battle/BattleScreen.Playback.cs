@@ -1203,16 +1203,44 @@ namespace GridGame.App
             }
             var l = Ui.Text(text, "h2 shadow", row);
             l.style.color = color;
-            // Long lines start a step (or two) down so two lines fit the band on their first frame; the layout check below
-            // still catches anything that wraps anyway (GG-T409).
-            l.style.fontSize = text.Length > 44 ? TypeScale.Caption : TypeScale.Body; // the Rounded face's tall lines: two fit the band only at Caption
-            l.style.whiteSpace = WhiteSpace.Normal; // a wider font should wrap here, never overflow the window
+            // GG-T448 (owner: "no wrapping on the announcement box, make sure the font is sized to fit the message"):
+            // one line, never two — the font shrinks to fit instead of wrapping. A long line starts a step down so it
+            // rarely needs the runtime shrink at all; the GeometryChangedEvent below measures the actual unwrapped
+            // width against the row and keeps shrinking (down to BillboardFontFloor) until it fits.
+            l.style.fontSize = text.Length > 44 ? TypeScale.Caption : TypeScale.Body;
+            l.style.whiteSpace = WhiteSpace.NoWrap;
             l.style.flexShrink = 1;
-            // A line that wraps steps down so its two lines fit the band (GG-T405).
-            l.RegisterCallback<GeometryChangedEvent>(_ => { if (l.resolvedStyle.height > BannerViewportHeight - Space.S8 && l.resolvedStyle.fontSize > TypeScale.Caption) l.style.fontSize = TypeScale.Caption; });
+            bool icon0 = icon != null;
+            l.RegisterCallback<GeometryChangedEvent>(_ => ShrinkBillboardLineToFit(l, row, icon0));
             while (billboard.childCount > 1) billboard[0].RemoveFromHierarchy();
             App.StartCoroutine(Tween.Pop(row, 1.12f, 0.12f));
             App.StartCoroutine(RetireBillboardRow(billboard, row));
+        }
+
+        /// <summary>The smallest a billboard line is ever allowed to shrink to (GG-T448): below this a one-line
+        /// announcement is unreadable, so a message that still doesn't fit here belongs to a source string that
+        /// should be shortened, not a smaller font.</summary>
+        private const float BillboardFontFloor = TypeScale.Badge;
+
+        /// <summary>
+        /// GG-T448 (owner: "no wrapping on the announcement box, make sure the font is sized to fit the message, and
+        /// fix any excessively long messages to fit in the announcement box"): measures the line's own natural,
+        /// unwrapped width at its current font size against the row it has to fit in (minus the icon's own width,
+        /// when there is one) and scales the font down proportionally — repeatedly, as each shrink reflows and fires
+        /// another GeometryChangedEvent — until it fits or hits <see cref="BillboardFontFloor"/>. Never grows back:
+        /// the line only gets smaller as it settles, so it can't oscillate.
+        /// </summary>
+        private static void ShrinkBillboardLineToFit(Label l, VisualElement row, bool hasIcon)
+        {
+            if (l.panel == null) return; // RetireBillboardRow already removed it (a late-settling layout event)
+            float rowWidth = row.resolvedStyle.width;
+            if (float.IsNaN(rowWidth) || rowWidth <= 1f) return;
+            float available = rowWidth - (hasIcon ? Size.IconM + Space.S16 : 0f) - Space.S16; // a little breathing room
+            if (available <= 1f) return;
+            float natural = l.MeasureTextSize(l.text ?? "", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
+            if (natural <= available + 0.5f) return;
+            float size = Mathf.Max(BillboardFontFloor, l.resolvedStyle.fontSize * (available / natural));
+            if (size < l.resolvedStyle.fontSize - 0.5f) l.style.fontSize = size;
         }
 
         /// <summary>Drops a billboard line after 1.6 s of game time — held while paused, unlike a scheduler delay (GG-T126).

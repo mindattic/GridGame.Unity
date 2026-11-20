@@ -455,7 +455,10 @@ namespace GridGame.App
             {
                 var at = ViewCenter(hero);
                 ImpactSplash(at, c, 0.9f);
-                Billboard($"{hero.Name}: {def?.Name ?? "Pickup"} — {def?.Description}", Art.UiIcon(def?.Icon), c);
+                // GG-T448: this used to splice the pickup's full flavor sentence in too ("Name: Item — Restores 25% of
+                // max HP…"), which is exactly the kind of message the announcement box was never meant to fit — a
+                // hold/tap on the pickup icon itself still reads the description (GG-T450).
+                Billboard($"{hero.Name} grabs {def?.Name ?? "Pickup"}!", Art.UiIcon(def?.Icon), c);
                 yield return FloatText(hero.Id, def?.Name ?? "Pickup", c, 0.2f, 56);
             }
         }
