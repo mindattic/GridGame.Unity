@@ -131,6 +131,47 @@ def forge_starter(decisions):
         camp_d = call("camp")
 
 
+def forge_upgrades(econ, decisions, cap=4):
+    """Craft affordable Forge recipes beyond the one guided starter piece (GG-T448): Crafting.Craft only ever adds
+    the result to the bag -- it never equips anyone -- so without this step the Blacksmith stays visited but idle
+    for the rest of the campaign and gear_up_party() below has nothing new to find. camp()["forge"] is already
+    filtered to affordable + makeable + unlocked, so anything in it can be crafted right now; re-read fresh after
+    each craft since gold (and the list) moves. Capped per visit so forging doesn't eat every potion/facility visit
+    could otherwise afford too."""
+    if "blacksmith" not in econ["npcs"] or not call("camp").get("workshop"):
+        return
+    if not H._goto("blacksmith"):
+        return
+    call("click", name="tab-forge")
+    time.sleep(0.6)
+    made = 0
+    while made < cap:
+        opts = call("camp").get("forge") or []
+        if not opts:
+            break
+        r = opts[0]
+        names = call("names", prefix=f"recipe-{r['Id']}")
+        if not names:
+            break
+        g = call("economy")["Gold"]
+        tr = tap_row(names[0])
+        if H._tap_failed(tr):
+            decisions.append(f"recipe-{r['Id']} tap failed: {tr}")
+            break
+        time.sleep(0.4)
+        cr = call("click", name="craft")
+        time.sleep(0.6)
+        if H._tap_failed(cr):
+            break
+        g2 = call("economy")["Gold"]
+        if g2 >= g:  # nothing spent: the craft didn't actually go through
+            break
+        decisions.append(f"forge {r['Id']} -> {r['Result']}: gold {g}->{g2}")
+        made += 1
+    call("back")
+    time.sleep(0.6)
+
+
 def repair_worn(econ, decisions):
     worn = [w for w in econ["wear"] if w["Max"] > 0 and w["Durability"] < w["Max"] * 0.7 and w["cost"] > 0]
     if not worn or "blacksmith" not in econ["npcs"]:
@@ -325,6 +366,8 @@ def main():
         econ = call("economy")
         decisions = []
         forge_starter(decisions)
+        econ = call("economy")
+        forge_upgrades(econ, decisions)
         econ = call("economy")
         gear_up_party(econ, decisions)
         econ = call("economy")
