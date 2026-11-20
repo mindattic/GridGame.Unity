@@ -127,6 +127,15 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   Forge 600 G, Glass Alembic 500 G, each bought once). Potions, not repair, were this run's actual gold sink — the
   opposite of the no-gear-wear first playthrough, where nothing but facilities ate gold. Both are real playstyles;
   neither alone tells the whole story. Worth the owner's own feel for X-Potion's price before trusting it.
+  **GG-T448 third playthrough (2026-11-20, 21 of 40 stages, 22/23 battles won through the real UI):** a real
+  automation gap was found and fixed first — the `goto` endpoint had no case for "caravan" at all (added since
+  GG-T432, never wired in), so no automated run had ever been able to open the Caravan screen, let alone buy a
+  wagon. With it fixed, this run bought one of every Caravan upgrade (Scouts, Armory ×2, Mana Casks ×2,
+  Quartermaster's Ledger ×2, Strongbox, Medic Wagon) and ran the Forge ladder up to Steel Forge (2,500 G) — the
+  fullest the buy/repair/upgrade loop has been exercised yet, zero tap failures. It stopped on its own at a real
+  difficulty wall (Cathedral II, Lv 18, 13-hero roster, 3 failed Retry attempts), not a crash or a script bug — the
+  second genuine wall found this session (the first was Cave II, Lv 13–14, in an earlier run). Both are worth the
+  owner's own eyes before calling them intended or a cliff to soften.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
