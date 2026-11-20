@@ -119,6 +119,14 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   gear before trusting either number.
 - **Consumables** run from 20 G (Antidote) to 500 G (X-Potion); the Tent is 300 G, the Revival Charm 450 G. The Healing
   Potion (25 G, 50 HP) vs Hi-Potion (75 G, 150 HP) step is linear, so there is no reason to buy small ones late.
+  **GG-T448 second playthrough (2026-11-19, a fresh save through the real UI, this time forging and repairing gear):**
+  keeping the party's healing stock topped at the best affordable potion recurs every camp visit by its nature
+  (battles consume stock), and once X-Potion (500 G) was the cheapest "under 15% of the purse" tier left to restock,
+  3 of them cost 1,500 G a visit — more gold per visit than repair (6–10 G for one hero's forged weapon+gloves,
+  nowhere near the 97% BalanceReport measured for a fully-geared 10-hero bot) or either facility built that run (Iron
+  Forge 600 G, Glass Alembic 500 G, each bought once). Potions, not repair, were this run's actual gold sink — the
+  opposite of the no-gear-wear first playthrough, where nothing but facilities ate gold. Both are real playstyles;
+  neither alone tells the whole story. Worth the owner's own feel for X-Potion's price before trusting it.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
