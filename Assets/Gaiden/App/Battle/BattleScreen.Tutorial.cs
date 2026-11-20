@@ -169,10 +169,10 @@ namespace GridGame.App
             }
         }
 
-        private void TutorialCard()
+        private void TutorialCard(VisualElement page)
         {
             var l = CurrentLesson;
-            var row = Ui.El("row", panel);
+            var row = Ui.El("row", page);
             row.style.alignItems = Align.Center;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;

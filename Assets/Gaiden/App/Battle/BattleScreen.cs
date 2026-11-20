@@ -700,16 +700,18 @@ namespace GridGame.App
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             SyncLore(u);
-            if (TutorialActive && TargetingSlot < 0 && panelUnitId < 0)
+            // The lessons live in their own Tutorial tab (GG-T449, owner: "built into the tabs at the bottom, not another
+            // popup over the top of the tabs"): Party keeps showing the unit, and a new lesson brings its tab forward once.
+            tutorialPage?.Clear();
+            if (TutorialActive && tutorialPage != null)
             {
-                // A new lesson brings the Party page forward once; the player may still flip to Lore or Log after.
-                if (shownLesson != TutorialStep) { shownLesson = TutorialStep; if (infoTab != InfoTabParty) ShowInfoTab(InfoTabParty); }
-                TutorialCard();
+                if (shownLesson != TutorialStep) { shownLesson = TutorialStep; if (TargetingSlot < 0 && infoTab != InfoTabTutorial) ShowInfoTab(InfoTabTutorial); }
+                TutorialCard(tutorialPage);
                 // Its Next/Skip sit side by side at the top, so the lesson's buttons never scroll out of the short page.
-                var tb = panel.Q("tutorial-skip")?.parent;
+                var tb = tutorialPage.Q("tutorial-skip")?.parent;
                 if (tb != null) { tb.style.flexDirection = FlexDirection.Row; tb.style.alignSelf = Align.FlexStart; }
-                return;
             }
+            else if (infoTab == InfoTabTutorial) ShowInfoTab(InfoTabParty);
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -834,13 +836,13 @@ namespace GridGame.App
         // Info tabs (GG-T391): one tabbed panel under the orbs — Party · Lore · Log
         // ─────────────────────────────────────────────────────────────────────────
 
-        private const int InfoTabParty = 0, InfoTabLore = 1, InfoTabLog = 2;
-        private static readonly string[] InfoTabNames = { "Party", "Lore", "Log" };
+        private const int InfoTabParty = 0, InfoTabLore = 1, InfoTabLog = 2, InfoTabTutorial = 3;
+        private static readonly string[] InfoTabNames = { "Party", "Lore", "Log", "Tutorial" };
         /// <summary>The tab the player picked; it lasts the whole battle (the instance outlives a rebuild).</summary>
         private int infoTab = InfoTabParty;
         private VisualElement infoTabStrip;
-        private readonly VisualElement[] infoPages = new VisualElement[3];
-        private ScrollView lorePage, logPage;
+        private readonly VisualElement[] infoPages = new VisualElement[4];
+        private ScrollView lorePage, logPage, tutorialPage;
         /// <summary>The tutorial lesson last shown, so a new one brings the Party page forward exactly once.</summary>
         private int shownLesson = -1;
         /// <summary>Every combat line this battle (newest last, capped), so the Log survives a rebuild.</summary>
@@ -864,6 +866,8 @@ namespace GridGame.App
             // The combat log keeps the old feed's name, so automation that looks for "feed" still finds it.
             logPage = InfoPage(win, "feed");
             infoPages[InfoTabLog] = logPage;
+            tutorialPage = InfoPage(win, "tutorial");
+            infoPages[InfoTabTutorial] = tutorialPage;
             foreach (var (text, color) in logLines) AddLogLine(text, color);
             ApplyInfoTab();
         }
@@ -881,7 +885,7 @@ namespace GridGame.App
 
         private void ShowInfoTab(int i)
         {
-            infoTab = Mathf.Clamp(i, InfoTabParty, InfoTabLog);
+            infoTab = Mathf.Clamp(i, InfoTabParty, TutorialActive ? InfoTabTutorial : InfoTabLog);
             ApplyInfoTab();
         }
 
@@ -898,6 +902,8 @@ namespace GridGame.App
             {
                 bool on = k++ == shown;
                 t.EnableInClassList("tab--active", on);
+                // The Tutorial tab exists only while lessons are running (GG-T449).
+                if (k - 1 == InfoTabTutorial) t.style.display = TutorialActive ? DisplayStyle.Flex : DisplayStyle.None;
                 if (on) Fonts.UseHeavy(t); else Fonts.UseBody(t);
             }
             if (shown == InfoTabLog) ScrollLogToEnd();
