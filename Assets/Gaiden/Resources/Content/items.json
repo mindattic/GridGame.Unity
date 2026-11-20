@@ -2033,7 +2033,7 @@
     "WeaponType": null,
     "BaseCost": 1,
     "SellValue": 0,
-    "MaxStack": 99,
+    "MaxStack": 999999,
     "Durability": 0,
     "BaseHealing": 0,
     "BaseDamage": 0,

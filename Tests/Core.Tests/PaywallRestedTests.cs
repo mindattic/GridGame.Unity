@@ -25,10 +25,10 @@ namespace GridGame.Tests
         {
             var s = Fresh();
             Assert.That(Paywall.Cost(PaywallKind.Summon, s), Is.EqualTo(Paywall.SummonGoldPrice));
-            Assert.That(Paywall.Cost(PaywallKind.LuckyDiamond, s), Is.EqualTo(Paywall.DiamondGoldPrice));
+            Assert.That(Paywall.Retired(PaywallKind.LuckyDiamond), Is.True, "Diamonds come from the exchange (GG-T455)");
             Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice));
             foreach (PaywallKind k in Enum.GetValues(typeof(PaywallKind)))
-                Assert.That(Paywall.Duration(k, s), Is.EqualTo(1.0), k.ToString());
+                if (!Paywall.Retired(k)) Assert.That(Paywall.Duration(k, s), Is.EqualTo(1.0), k.ToString());
             Assert.That(Paywall.Tag(PaywallKind.RestedRefill, s), Is.EqualTo($"{Paywall.RestedRefillGoldPrice}g · 1s"));
         }
 
@@ -40,7 +40,6 @@ namespace GridGame.Tests
             s.HighestClearedStage = 9; // ten stages cleared
             Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice + 10 * Paywall.RestedRefillGoldPerStage));
             Assert.That(Paywall.Cost(PaywallKind.Summon, s), Is.EqualTo(Paywall.SummonGoldPrice));
-            Assert.That(Paywall.Cost(PaywallKind.LuckyDiamond, s), Is.EqualTo(Paywall.DiamondGoldPrice));
         }
 
         [Test]
@@ -104,7 +103,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_diamond_refill_is_instant_no_gold_no_job()
+        public void A_diamond_refill_is_instant_no_gold_when_diamonds_cover_it_no_job()
         {
             var s = Fresh();
             for (int i = 0; i < 3; i++) RestedPool.Spend(s, T0);
@@ -118,12 +117,27 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_diamond_refill_with_too_few_diamonds_is_refused()
+        public void A_diamond_refill_with_too_few_diamonds_and_gold_is_refused()
         {
             var s = Fresh();
             RestedPool.Spend(s, T0);
+            s.Gold = DiamondExchange.GoldFor(RestedPool.DiamondRefillPrice) - 1;
             Assert.That(RestedPool.DiamondRefill(s, T0).Message, Does.Contain("Diamonds"));
             Assert.That(s.Rested.Points, Is.EqualTo(RestedPool.Max - 1));
+            Assert.That(s.Gold, Is.EqualTo(DiamondExchange.GoldFor(RestedPool.DiamondRefillPrice) - 1), "nothing taken");
+        }
+
+        [Test]
+        public void A_diamond_refill_short_of_diamonds_exchanges_the_rest_from_gold()
+        {
+            var s = Fresh();
+            RestedPool.Spend(s, T0);
+            s.AddItem(Crafting.DiamondId, 10);
+            s.Gold = 1000;
+            Assert.That(RestedPool.DiamondRefill(s, T0).Ok, Is.True);
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
+            Assert.That(s.Gold, Is.EqualTo(1000 - DiamondExchange.GoldFor(RestedPool.DiamondRefillPrice - 10)));
+            Assert.That(s.Rested.Points, Is.EqualTo(RestedPool.Max));
         }
 
         [Test]

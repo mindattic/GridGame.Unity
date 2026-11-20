@@ -9,7 +9,7 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>§24.6.5 (GG-T235): the Diamond lucky craft, bought only through the paywall hook.</summary>
+    /// <summary>§24.6.5 (GG-T235): the Diamond lucky craft, priced in Diamonds and payable with gold through the exchange (GG-T455).</summary>
     public class LuckyCraftTests
     {
         private static readonly DateTime T0 = new DateTime(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
@@ -36,16 +36,18 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Buying_a_diamond_is_a_timed_paywall_job()
+        public void The_old_one_diamond_paywall_job_is_retired_and_an_old_saves_pending_one_is_refunded()
         {
             var c = Real; var s = Rich(c);
             int gold = s.Gold;
-            Assert.That(Paywall.Start(s, PaywallKind.LuckyDiamond, Crafting.DiamondId, T0, out var job).Ok, Is.True);
-            Assert.That(s.Gold, Is.EqualTo(gold - Paywall.DiamondGoldPrice));
-            Assert.That(Paywall.Finish(c, s, job, T0.AddSeconds(0.5)).Ok, Is.False, "not before the second is up");
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
-            Assert.That(Paywall.Finish(c, s, job, T0.AddSeconds(1)).Ok, Is.True);
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
+            Assert.That(Paywall.Start(s, PaywallKind.LuckyDiamond, Crafting.DiamondId, T0, out _).Ok, Is.False, "the exchange sells Diamonds now");
+            Assert.That(s.Gold, Is.EqualTo(gold));
+            // A save from before GG-T455 with the 600 g purchase still pending.
+            var old = new PaywallJob { Kind = PaywallKind.LuckyDiamond, Arg = Crafting.DiamondId, StartedUtc = T0, Seconds = 1, Paid = 600 };
+            s.Jobs.Add(old);
+            var r = Paywall.FinishReady(c, s, T0.AddSeconds(5)).Single();
+            Assert.That(r.Ok, Is.True);
+            Assert.That(s.Gold, Is.EqualTo(gold + 600), "refunded in full");
             Assert.That(s.Jobs, Is.Empty);
         }
 
@@ -63,17 +65,35 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_lucky_craft_needs_a_diamond_and_spends_exactly_one()
+        public void A_lucky_craft_needs_its_diamond_price_and_spends_exactly_that()
         {
             var c = Real; var s = Rich(c);
             var r = Candidate(c);
             foreach (var ic in r.Inputs) s.AddItem(ic.Item, ic.Count);
-            Assert.That(Crafting.Craft(c, s, r, rng: new Rng(1), lucky: true).Ok, Is.False, "no diamond in the bag");
+            s.Gold = r.Gold + DiamondExchange.GoldFor(Crafting.LuckyDiamondCost) - 1; // one gold short of exchanging the Diamonds
+            Assert.That(Crafting.CanLucky(c, s, r), Is.False);
+            Assert.That(Crafting.Craft(c, s, r, rng: new Rng(1), lucky: true).Ok, Is.False, "no Diamonds and too little gold");
             Assert.That(r.Inputs.All(ic => s.Count(ic.Item) >= ic.Count), Is.True, "a refused lucky craft consumes nothing");
+            Assert.That(s.Gold, Is.EqualTo(r.Gold + DiamondExchange.GoldFor(Crafting.LuckyDiamondCost) - 1));
 
-            s.AddItem(Crafting.DiamondId, 2);
+            s.AddItem(Crafting.DiamondId, Crafting.LuckyDiamondCost + 1);
+            int gold = s.Gold;
             Assert.That(Crafting.Craft(c, s, r, rng: new Rng(1), lucky: true).Ok, Is.True);
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
+            Assert.That(s.Gold, Is.EqualTo(gold - r.Gold), "Diamonds, not gold, for the luck");
+        }
+
+        [Test]
+        public void A_lucky_craft_with_no_diamonds_exchanges_gold_on_top_of_the_recipe()
+        {
+            var c = Real; var s = Rich(c);
+            var r = Candidate(c);
+            foreach (var ic in r.Inputs) s.AddItem(ic.Item, ic.Count);
+            s.Gold = r.Gold + DiamondExchange.GoldFor(Crafting.LuckyDiamondCost);
+            Assert.That(Crafting.CanLucky(c, s, r), Is.True);
+            Assert.That(Crafting.Craft(c, s, r, rng: new Rng(1), lucky: true).Ok, Is.True);
+            Assert.That(s.Gold, Is.EqualTo(0));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
         }
 
         [Test]
@@ -88,7 +108,7 @@ namespace GridGame.Tests
                     var s = Progression.NewGame(c, "Seeds");
                     s.Gold = 100000;
                     foreach (var ic in r.Inputs) s.AddItem(ic.Item, ic.Count);
-                    if (lucky) s.AddItem(Crafting.DiamondId, 1);
+                    if (lucky) s.AddItem(Crafting.DiamondId, Crafting.LuckyDiamondCost);
                     var res = Crafting.Craft(c, s, r, rng: new Rng(seed), lucky: lucky);
                     Assert.That(res.Ok, Is.True, res.Message);
                     if (Equipment.IsMasterwork(s, r.Result)) n++;

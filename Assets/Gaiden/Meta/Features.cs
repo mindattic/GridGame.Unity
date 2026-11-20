@@ -44,6 +44,11 @@ namespace GridGame.Meta
         public static bool Enchanter = false;
         public const string TamerClass = "monstertamer", TamingItem = "dog_whistle";
 
+        /// <summary>The Diamond Store's Camp row and its real-money packs (§25.18.1, GG-T455). Off: no Camp row and no packs;
+        /// the store screen still opens from a "not enough Diamonds" moment for the gold exchange, and every Diamond price
+        /// stays payable in gold. Release builds sell nothing until a billing integration replaces the placeholder store.</summary>
+        public static bool DiamondStore = true;
+
         /// <summary>Whether the player may be offered this summon or shop entry: everything, unless it is a hidden
         /// system's way in.</summary>
         public static bool Offers(string id) => Taming || (id != TamerClass && id != TamingItem);
@@ -55,7 +60,7 @@ namespace GridGame.Meta
         /// <summary>Turns every switch on (the `-allfeatures` launch flag, for sweeps and the owner's review).</summary>
         public static void EnableAll()
         {
-            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = Taming = Enchanter = true;
+            Crucible = Bounties = Caravan = LookPresets = InnRespecRow = Taming = Enchanter = DiamondStore = true;
         }
     }
 }

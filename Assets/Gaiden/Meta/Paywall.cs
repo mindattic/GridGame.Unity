@@ -5,6 +5,9 @@ using GridGame.Core.Content;
 
 namespace GridGame.Meta
 {
+    /// <summary>The paywall hooks. <c>LuckyDiamond</c> is retired (GG-T455): Diamonds come from the exchange
+    /// (<see cref="DiamondExchange"/>) now; the value stays (saves store the kind) so an old save's pending job lands as a
+    /// gold refund.</summary>
     public enum PaywallKind { Summon, LuckyDiamond, RestedRefill }
 
     /// <summary>A paid, timed job in progress (§25.18): gold is taken at the start, the effect lands when the time is up.
@@ -27,10 +30,6 @@ namespace GridGame.Meta
         /// <summary>Gold for a deliberate, chosen-hero Summon Circle recruit — the one hero a player fully controls,
         /// priced above the Diamond draw's blind convenience (GG-T427). A few stages' worth of grinding, not a whim.</summary>
         public const int SummonGoldPrice = 1500;
-        /// <summary>Gold for one Diamond at the forge's "Buy Diamond" button (`LuckyCraftUi`) — the only non-real-money
-        /// path to the premium currency today (GG-T427). About a mid consumable's worth, so it's a real choice against
-        /// spending the same gold on gear, not free.</summary>
-        public const int DiamondGoldPrice = 600;
         /// <summary>Gold to skip the Rested wait on a fresh save (GG-T427); it grows by <see cref="RestedRefillGoldPerStage"/>
         /// per campaign stage cleared, so it stays about half to one stage's pay (measured ~210 g early, 400-600 g late)
         /// instead of shrinking to nothing. See <see cref="RestedPool.DiamondRefillPrice"/> for the Diamond side.</summary>
@@ -41,14 +40,17 @@ namespace GridGame.Meta
         private static readonly Dictionary<PaywallKind, (int gold, double seconds)> Table = new Dictionary<PaywallKind, (int, double)>
         {
             [PaywallKind.Summon] = (SummonGoldPrice, 1.0),
-            [PaywallKind.LuckyDiamond] = (DiamondGoldPrice, 1.0),
             [PaywallKind.RestedRefill] = (RestedRefillGoldPrice, 1.0),
         };
 
+        /// <summary>A hook's gold price; 0 for a retired kind (LuckyDiamond, GG-T455), which can no longer start.</summary>
         public static int Cost(PaywallKind kind, SaveData s) =>
-            Table[kind].gold + (kind == PaywallKind.RestedRefill && s != null ? RestedRefillGoldPerStage * Math.Max(0, s.HighestClearedStage + 1) : 0);
+            !Table.TryGetValue(kind, out var row) ? 0
+            : row.gold + (kind == PaywallKind.RestedRefill && s != null ? RestedRefillGoldPerStage * Math.Max(0, s.HighestClearedStage + 1) : 0);
 
-        public static double Duration(PaywallKind kind, SaveData s) => Table[kind].seconds;
+        public static double Duration(PaywallKind kind, SaveData s) => Table.TryGetValue(kind, out var row) ? row.seconds : 0;
+
+        public static bool Retired(PaywallKind kind) => !Table.ContainsKey(kind);
 
         /// <summary>"1g · 1s" — the price tag every paywall button shows.</summary>
         public static string Tag(PaywallKind kind, SaveData s) => $"{Cost(kind, s)}g · {Duration(kind, s):0.#}s";
@@ -59,6 +61,7 @@ namespace GridGame.Meta
         public static Result Start(SaveData s, PaywallKind kind, string arg, DateTime now, out PaywallJob job)
         {
             job = null;
+            if (Retired(kind)) return Result.Fail("Diamonds come from the Diamond exchange now");
             if (Pending(s, kind) != null) return Result.Fail("Already under way");
             int cost = Cost(kind, s);
             if (s.Gold < cost) return Result.Fail("Not enough gold");
@@ -83,15 +86,16 @@ namespace GridGame.Meta
             {
                 case PaywallKind.Summon:
                     var arrived = Summon.Arrive(c, s, job.Arg);
-                    if (!arrived.Ok && job.Diamonds > 0) s.AddItem(Crafting.DiamondId, job.Diamonds); // a fizzled draw gives its Diamonds back
+                    // A fizzled draw gives its whole Diamond price back as Diamonds, however it was paid (GG-T455: any gold
+                    // part was exchanged into Diamonds on the way in).
+                    if (!arrived.Ok && job.Diamonds > 0) s.AddItem(Crafting.DiamondId, job.Diamonds);
                     return arrived;
                 case PaywallKind.RestedRefill: RestedPool.Fill(s, now); return Result.Success("The party is rested.");
                 case PaywallKind.LuckyDiamond:
-                    var diamond = c.TryItem(Crafting.DiamondId);
-                    if (diamond == null) return Result.Fail("No such item");
-                    if (s.Count(diamond.Id) >= diamond.MaxStack) { s.Gold += job.Paid; return Result.Fail("Can't carry more — refunded"); }
-                    s.AddItem(diamond.Id, 1);
-                    return Result.Success($"A {diamond.Name} for the forge.");
+                    // Retired (GG-T455): an old save's pending one-Diamond purchase is refunded in full; the exchange
+                    // sells Diamonds now, at a far better rate for the same gold.
+                    s.Gold += job.Paid;
+                    return Result.Success($"The old Diamond order was refunded: {job.Paid:N0} G. Diamonds are exchanged at the Diamond Store now.");
                 default: return Result.Success();
             }
         }

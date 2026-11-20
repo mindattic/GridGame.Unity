@@ -13,26 +13,39 @@ namespace GridGame.Tests
     {
         private static readonly DateTime T0 = new DateTime(2026, 11, 7, 12, 0, 0, DateTimeKind.Utc);
 
-        private static SaveData WithDiamonds(string name, int diamonds)
+        /// <summary>A new save holding enough Diamonds for <paramref name="draws"/> draws and no gold, so nothing is
+        /// exchanged unless a test gives it gold (GG-T455).</summary>
+        private static SaveData WithDiamonds(string name, int draws)
         {
             var s = Progression.NewGame(Real, name);
-            if (diamonds > 0) s.AddItem(Crafting.DiamondId, diamonds);
+            s.Gold = 0;
+            if (draws > 0) s.AddItem(Crafting.DiamondId, draws * DiamondSummon.Price);
             return s;
         }
 
         [Test]
-        public void A_draw_costs_one_diamond_and_no_gold()
+        public void A_draw_costs_its_diamond_price_and_no_gold_when_diamonds_cover_it()
         {
-            Assert.That(DiamondSummon.Price, Is.EqualTo(1));
             var s = WithDiamonds("D1", 2);
             s.Gold = 500;
-            Assert.That(DiamondSummon.Tag(s), Is.EqualTo("1 Diamond · 1s"));
+            Assert.That(DiamondSummon.Tag(s), Is.EqualTo($"{DiamondSummon.Price} Diamonds (or {DiamondExchange.GoldFor(DiamondSummon.Price):N0} G) · 1s"));
             Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(DiamondSummon.Price));
             Assert.That(s.Gold, Is.EqualTo(500), "Diamonds, not gold");
             Assert.That(job.Kind, Is.EqualTo(PaywallKind.Summon));
-            Assert.That(job.Diamonds, Is.EqualTo(1));
+            Assert.That(job.Diamonds, Is.EqualTo(DiamondSummon.Price));
             Assert.That(job.Paid, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void A_draw_with_no_diamonds_is_paid_in_gold_at_the_exchange_rate()
+        {
+            var s = WithDiamonds("D1g", 0);
+            s.Gold = DiamondExchange.GoldFor(DiamondSummon.Price) + 7;
+            Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
+            Assert.That(s.Gold, Is.EqualTo(7));
+            Assert.That(job.Diamonds, Is.EqualTo(DiamondSummon.Price), "refunded as Diamonds if it fizzles");
+            Assert.That(job.Paid, Is.EqualTo(DiamondExchange.GoldFor(DiamondSummon.Price)));
         }
 
         [Test]
@@ -70,27 +83,27 @@ namespace GridGame.Tests
         public void No_diamond_no_draw_and_one_summoning_at_a_time()
         {
             var none = WithDiamonds("D4", 0);
-            none.Gold = 999;
+            none.Gold = DiamondExchange.GoldFor(DiamondSummon.Price) - 1;
             Assert.That(DiamondSummon.Begin(Real, none, T0, out _).Message, Does.Contain("Diamonds"));
             Assert.That(none.Jobs, Is.Empty);
 
             var s = WithDiamonds("D5", 3);
             Assert.That(DiamondSummon.Begin(Real, s, T0, out _).Ok, Is.True);
             Assert.That(DiamondSummon.Begin(Real, s, T0, out _).Ok, Is.False, "a summoning is under way");
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(2));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(2 * DiamondSummon.Price));
             var gold = Summon.Pool(Real, s).First(d => s.Hero(d.Id) == null);
             s.Gold = Paywall.SummonGoldPrice + 200;
             Assert.That(Summon.BeginRecruit(Real, s, gold.Id, T0, out _).Ok, Is.False, "the gold summon shares the circle");
         }
 
         [Test]
-        public void A_fizzled_draw_gives_its_diamond_back()
+        public void A_fizzled_draw_gives_its_diamonds_back()
         {
             var s = WithDiamonds("D6", 1);
             Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
             Summon.Join(Real, s, job.Arg); // they turned up some other way in the meantime
             Assert.That(Paywall.Finish(Real, s, job, T0.AddSeconds(1)).Ok, Is.False);
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(DiamondSummon.Price));
         }
 
         [Test]
@@ -100,7 +113,7 @@ namespace GridGame.Tests
             Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
             var json = JsonConvert.SerializeObject(s, ContentLoader.Settings);
             var back = SaveMigrations.Migrate(JsonConvert.DeserializeObject<SaveData>(json, ContentLoader.Settings));
-            Assert.That(back.Jobs.Single().Diamonds, Is.EqualTo(1));
+            Assert.That(back.Jobs.Single().Diamonds, Is.EqualTo(DiamondSummon.Price));
             Assert.That(Paywall.FinishReady(Real, back, T0.AddMinutes(1)).Single().Ok, Is.True);
             Assert.That(back.Hero(job.Arg), Is.Not.Null);
         }
@@ -113,7 +126,7 @@ namespace GridGame.Tests
             var s = WithDiamonds("D9", 5);
             s.Gold = 100000;
             for (int i = 0; i < 5; i++) CampRoutine.Run(Real, s);
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(5));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(5 * DiamondSummon.Price));
         }
 
         [Test]
@@ -124,7 +137,7 @@ namespace GridGame.Tests
             s.Gold = Paywall.SummonGoldPrice + 5;
             Assert.That(Summon.Recruit(Real, s, pick.Id).Ok, Is.True);
             Assert.That(s.Gold, Is.EqualTo(5));
-            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(1));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(DiamondSummon.Price));
         }
     }
 }

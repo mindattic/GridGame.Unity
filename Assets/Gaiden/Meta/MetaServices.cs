@@ -1147,6 +1147,9 @@ namespace GridGame.Meta
 
         // ── Lucky craft (§24.6.5, GG-T235): a Diamond spent on a Forge craft ─────────────────────
         public const string DiamondId = "mat_diamond";
+        /// <summary>Diamonds a lucky craft costs: 50 = $0.50 = 300 g at the exchange (GG-T455), paid through the exchange
+        /// (Diamonds first, any shortfall in gold on top of the recipe's own gold).</summary>
+        public const int LuckyDiamondCost = 50;
         /// <summary>A lucky craft adds this to the Masterwork chance…</summary>
         public const float LuckyChanceBonus = 0.40f;
         /// <summary>…and lifts the cap to this…</summary>
@@ -1198,9 +1201,14 @@ namespace GridGame.Meta
             return Math.Max(0f, Math.Min(MasterworkMaxChance, chance));
         }
 
-        /// <summary>A lucky craft is on offer: a Forge recipe whose result can roll Masterwork, with a Diamond in the bag.</summary>
+        /// <summary>A lucky craft fits this recipe: a Forge recipe whose result can roll Masterwork.</summary>
+        public static bool LuckyEligible(ContentDb c, RecipeDef r) =>
+            r != null && r.Station == CraftStation.Forge && r.ResultCount == 1 && c.TryItem(r.Result) is ItemDef it && MasterworkEligible(it);
+
+        /// <summary>A lucky craft is on offer: an eligible recipe, and <see cref="LuckyDiamondCost"/> Diamonds payable (in
+        /// Diamonds, or gold through the exchange beyond the recipe's own gold).</summary>
         public static bool CanLucky(ContentDb c, SaveData s, RecipeDef r) =>
-            r != null && r.Station == CraftStation.Forge && r.ResultCount == 1 && c.TryItem(r.Result) is ItemDef it && MasterworkEligible(it) && s.Count(DiamondId) > 0;
+            LuckyEligible(c, r) && DiamondExchange.CanPay(s, LuckyDiamondCost, r.Gold).Ok;
 
         private static bool MasterworkEligible(ItemDef item) =>
             item.Type == ItemType.Equipment && item.Durability > 0 && (item.Slot == EquipmentSlot.Weapon || Array.IndexOf(BattleEngine.ArmorSlots, item.Slot) >= 0);
@@ -1215,7 +1223,8 @@ namespace GridGame.Meta
             if (!Facilities.Allows(c, s, r)) return Result.Fail($"Needs {Facilities.NeededName(c, r)}");
             if (!Forging.ArmorOpen(c, s, r)) return Result.Fail(Forging.ArmorLockedHint);
             if (potency && r.PotencyResult == null) return Result.Fail("No greater version");
-            if (lucky && (potency || !CanLucky(c, s, r))) return Result.Fail("No Diamond for a lucky craft");
+            if (lucky && (potency || !LuckyEligible(c, r))) return Result.Fail("No lucky craft for this recipe");
+            if (lucky && DiamondExchange.CanPay(s, LuckyDiamondCost, r.Gold) is var luckyPay && !luckyPay.Ok) return luckyPay;
             var inputs = potency ? r.PotencyInputs : r.Inputs;
             var resultId = potency ? r.PotencyResult : r.Result;
             var resultCount = potency ? r.PotencyResultCount : r.ResultCount;
@@ -1223,12 +1232,12 @@ namespace GridGame.Meta
             if (!HasInputs(s, r, inputs)) return Result.Fail("Missing materials");
             var result = c.Item(resultId);
             if (s.Count(result.Id) + resultCount > result.MaxStack) return Result.Fail("Can't carry more");
+            if (lucky && !DiamondExchange.Pay(s, LuckyDiamondCost, r.Gold).Ok) return Result.Fail("Not enough Diamonds for a lucky craft");
             s.Gold -= r.Gold;
             foreach (var ic in inputs) s.AddItem(ic.Item, -ic.Count);
             if (r.BaseItem != null) s.AddItem(r.BaseItem, -1);
             s.AddItem(result.Id, resultCount);
             StationProgress.Gain(s, StationFor(r.Station), CraftXp);
-            if (lucky) s.AddItem(DiamondId, -1);
             bool masterwork = false;
             if (!potency && r.Station == CraftStation.Forge && resultCount == 1 && MasterworkEligible(result))
             {
