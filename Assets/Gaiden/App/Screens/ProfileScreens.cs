@@ -22,14 +22,8 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Profiles", () => App.Router.Back(), col, out _);
-            var hint = Ui.Text("Each profile keeps its own settings and its own three save slots.", "small dim", col);
-            hint.style.marginLeft = Fit.Inset + Space.S24; hint.style.marginBottom = Space.S8;
-            hint.style.whiteSpace = WhiteSpace.Normal;
-
-            var w = Ui.Window("Choose a profile", col);
-            w.style.flexGrow = 1;
-            Fit.Center(w);
-            var list = Ui.List(w).contentContainer;
+            var list = Ui.ListPanel(Ui.PageBody(col), "Choose a profile", "profile-list");
+            Ui.Para("Each profile keeps its own settings and its own three save slots.", list, "dim");
             string current = App.Profile.Name;
             foreach (var name in App.Profile.List())
             {
@@ -38,11 +32,10 @@ namespace GridGame.App
                 var row = Ui.MenuRow(n, active ? "Playing" : "", () => Switch(n), list);
                 row.name = "profile-" + n;
                 if (active) row.Q<Label>("label").AddToClassList("gold");
-                var actions = Ui.El("row", list);
-                actions.style.marginLeft = Space.S64; actions.style.marginBottom = Space.S16;
+                var actions = Ui.Actions(list);
+                actions.AddToClassList("kit-note"); // under the row's label
                 var rename = Ui.Button("Rename", () => App.Router.Push(new ProfileNameScreen(n)), "btn--small", actions);
                 rename.name = "rename-" + n;
-                rename.style.marginRight = Space.S16;
                 var delete = Ui.Button("Delete", () => AskDelete(n), "btn--small", actions);
                 delete.name = "delete-" + n;
             }
@@ -92,8 +85,7 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(renaming == null ? "New Profile" : "Rename Profile", () => App.Router.Back(), col, out _);
-            var w = Ui.Window(renaming == null ? "Name your profile" : $"New name for \"{renaming}\"", col);
-            Fit.Center(w);
+            var w = Ui.Panel(Ui.PageBody(col), renaming == null ? "Name your profile" : $"New name for \"{renaming}\"");
 
             field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = renaming ?? "" };
             field.style.fontSize = TypeScale.H3;
@@ -112,13 +104,11 @@ namespace GridGame.App
             field.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter) Submit(); });
             w.Add(field);
 
-            problem = Ui.Text("", "small warn", w);
+            problem = Ui.Para("", w, "warn");
             problem.name = "profile-name-problem";
-            problem.style.whiteSpace = WhiteSpace.Normal;
 
-            var row = Ui.El("row", w);
+            var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
-            row.style.marginTop = Space.S16;
             Ui.Button("Cancel", () => App.Router.Back(), null, row);
             ok = Ui.Button(renaming == null ? "Create" : "Rename", Submit, "btn--primary", row);
             ok.name = "profile-name-ok";

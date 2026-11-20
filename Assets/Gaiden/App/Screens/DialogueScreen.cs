@@ -557,9 +557,7 @@ namespace GridGame.App
 
         protected override void BuildBody(VisualElement body)
         {
-            var w = Ui.Window(null, body);
-            w.style.flexGrow = 1;
-            var list = Ui.List(w);
+            var list = Ui.ListPanel(body, null, out var scroll, "talk-list");
             foreach (var who in DialogueRunner.TalkPartners(S))
             {
                 bool npc = who.StartsWith(ContentLoader.NpcFlagPrefix);
@@ -568,7 +566,7 @@ namespace GridGame.App
                 string name = npc ? DialogueRunner.Npc(npcId) : C.TryClass(who)?.Name ?? who;
                 string value = topic == null ? "Nothing to say" : S.SeenDialogues.Contains(topic.Id) ? topic.Title ?? "" : "New!";
                 var row = Ui.MenuRow(name, value, () => App.Router.Push(new DialogueScreen(topic, npc ? null : who, null)),
-                    list.contentContainer, null, topic != null);
+                    list, null, topic != null);
                 var ic = Ui.El("menu-icon");
                 if (npc)
                 {
@@ -592,7 +590,7 @@ namespace GridGame.App
                 row.name = "talk-" + (npc ? npcId : who);
                 if (topic != null && !S.SeenDialogues.Contains(topic.Id)) row.Q<Label>("value").AddToClassList("gold");
             }
-            Ui.SelectFirst(list.contentContainer);
+            Ui.SelectFirst(list);
         }
     }
 }

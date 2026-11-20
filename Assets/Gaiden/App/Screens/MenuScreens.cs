@@ -18,6 +18,8 @@ namespace GridGame.App
         protected virtual string Backdrop => "greenvalley";
         /// <summary>Optional line shown under the header title (e.g. station level + next unlock, GG-T35).</summary>
         protected virtual string Subtitle => null;
+        /// <summary>The automation name the subtitle label takes (default "header-sub").</summary>
+        protected virtual string SubtitleName => null;
         /// <summary>The Camp NPC who keeps this station (GG-T119), or null: the header gets a Talk button for them.</summary>
         protected virtual string Npc => null;
         /// <summary>The camp tip this page shows (GG-T173): its own Id, unless a tab has its own tip (the Blacksmith's Forge, GG-T177).</summary>
@@ -29,7 +31,8 @@ namespace GridGame.App
             bg.style.backgroundImage = new StyleBackground(Art.Background(Backdrop, 1));
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
             var col = Ui.El("fill col", root);
-            var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel);
+            var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel, Subtitle);
+            if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
             var topic = Npc != null && CampNpcs.Joined(S, Npc) ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + Npc) : null;
             if (topic != null)
@@ -38,17 +41,8 @@ namespace GridGame.App
                 talk.name = "npc-talk";
                 header.Insert(header.IndexOf(GoldLabel), talk);
             }
-            if (Subtitle != null)
-            {
-                var sub = Ui.Text(Subtitle, "small gold", col);
-                sub.style.marginLeft = Fit.Inset + Space.S16;
-                sub.style.marginTop = -Space.S8;
-            }
-            Body = Ui.El("col grow", col);
-            // Lists, rows and windows sit in the centred content column: a tablet's extra width goes to the backdrop
-            // either side rather than stretching every row (GG-T398).
-            Fit.Columnize(Body, Space.S8);
-            Body.style.paddingBottom = Space.S32;
+            // GG-T454 (the menu kit): the kit's page body, the centred column with the kit's gutters (GG-T398).
+            Body = Ui.PageBody(col);
             BuildBody(Body);
             Typography.Watch(Body);
             UpdateGold();
@@ -145,8 +139,7 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(newGame ? "New Game" : "Load Game", () => App.Router.Back(), col, out _);
-            var w = Ui.Window(newGame ? "Choose a slot" : "Choose a save", col);
-            Fit.Center(w);
+            var w = Ui.Panel(Ui.PageBody(col), newGame ? "Choose a slot" : "Choose a save");
             for (int i = 0; i < SaveStore.Slots; i++)
             {
                 int slot = i;
@@ -156,8 +149,7 @@ namespace GridGame.App
                 var row = Ui.MenuRow(label, value, () => Pick(slot, s), w, null, newGame || s != null);
                 if (s != null)
                 {
-                    var info = Ui.Text($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():g}", "small dim", w);
-                    info.style.marginLeft = Space.S64; info.style.marginBottom = Space.S16;
+                    Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():g}", w);
                 }
             }
         }
@@ -412,11 +404,11 @@ namespace GridGame.App
             veil.pickingMode = PickingMode.Position;
             var w = Ui.Window(null, veil);
             w.style.width = Length.Percent(76);
-            var q = Ui.Text(question, "h2", w);
+            var q = Ui.Heading(question, w);
             q.style.whiteSpace = WhiteSpace.Normal;
-            q.style.marginBottom = Space.S24;
-            var row = Ui.El("row", w);
+            var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
+            row.style.marginTop = Space.S16;
             Ui.Button("Cancel", () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); }, null, row).name = "confirm-no";
             Ui.Button(yes, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
         }
@@ -455,7 +447,8 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.TextDim;
 
             var col = Ui.El("fill col", root);
-            col.style.paddingTop = Space.S48; col.style.paddingLeft = col.style.paddingRight = Space.S16; col.style.paddingBottom = Space.S32;
+            // Camp has no header: its windows keep the kit's gutters (Kit.Gutter at the sides, Kit.Gap at the bottom).
+            col.style.paddingTop = Space.S48; col.style.paddingLeft = col.style.paddingRight = Kit.Gutter - Space.S8; col.style.paddingBottom = Kit.Gap - Space.S8;
 
             // Party window (portraits, level, HP): a 2-column grid so a full party of six fits above the menu.
             // GG-T313: built as explicit two-card rows, not a flex-wrap of six cards sized by a reactive
@@ -488,23 +481,23 @@ namespace GridGame.App
                     card.style.flexGrow = 1; card.style.flexShrink = 1; card.style.flexBasis = Length.Percent(0);
                     card.style.marginTop = card.style.marginBottom = card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
                     card.style.paddingTop = card.style.paddingBottom = card.style.paddingLeft = card.style.paddingRight = Space.S8;
-                    var thumb = Ui.Thumb(id, card, 104);
+                    var thumb = Ui.Thumb(id, card, Kit.Avatar);
                     thumb.style.marginRight = Space.S16;
                     var info = Ui.El("col grow", card);
                     info.style.flexShrink = 1; info.style.minWidth = 0;
                     var top = Ui.El("row", info);
-                    var name = Ui.Text(c.Class(id).Name, "small", top);
-                    Fonts.UseHeavy(name);
+                    // A compact card (kit, GG-T454): name and meta caption size, the name heavy — the Heroes roster strip's look.
+                    var name = Ui.Caption(c.Class(id).Name, top, "t-heavy");
                     Ui.Marquee(name);
                     // The name has its row to itself, so a long one is never cut by the badge (GG-T395).
                     name.style.flexGrow = 1; name.style.flexShrink = 1; name.style.minWidth = 0;
                     var meta = Ui.El("row", info);
                     meta.style.alignItems = Align.Center;
                     Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), meta, TypeScale.Caption).style.marginLeft = Space.S0;
-                    Ui.Text($"Lv {u.Level}", "small gold", meta).style.marginLeft = Space.S8;
+                    Ui.Caption($"Lv {u.Level}", meta, "gold").style.marginLeft = Space.S8;
                     int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
                     Ui.Gauge(hp / (float)u.MaxHp, info, 300).style.marginTop = Space.S8;
-                    Ui.Text($"{hp}/{u.MaxHp}", "small dim", info);
+                    Ui.Caption($"{hp}/{u.MaxHp}", info, "dim");
                     MercenaryCamp.Tag(s, id, info);
                     // A short last row's cards keep their column width: invisible twins hold the empty columns, so the
                     // window stays an even grid with even gutters (POL-C8) at every party size.
@@ -534,7 +527,6 @@ namespace GridGame.App
                 if (open) { Item(label, screen, value); return; }
                 var row = Ui.MenuRow(label, hint, null, list.contentContainer, null, false);
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
-                row.Q<Label>("value").AddToClassList("small");
                 // "Joins at The Tithe Moors II" is wider than the row's value column: it scrolls instead of being cut (GG-T448).
                 Ui.Marquee(row.Q<Label>("value"));
             }
@@ -606,26 +598,27 @@ namespace GridGame.App
                 var ex = Ui.Window(null, side);
                 ex.name = "expedition-strip";
                 var th = Expeditions.Theme(c, s.Expedition.ThemeId);
-                Ui.Text("Expedition", "small dim", ex);
-                Ui.Text(th?.Name ?? "", "small gold", ex).style.whiteSpace = WhiteSpace.Normal;
-                Ui.Text($"Battle {s.Expedition.Next + 1}/{th?.Stages.Count ?? 0}", "small", ex);
-                Ui.Text($"{s.Expedition.CarriedOrbs} orbs carried", "tiny dim", ex);
+                Ui.Caption("Expedition", ex, "dim");
+                Ui.Caption(th?.Name ?? "", ex, "gold");
+                Ui.Caption($"Battle {s.Expedition.Next + 1}/{th?.Stages.Count ?? 0}", ex);
+                Ui.Caption($"{s.Expedition.CarriedOrbs} orbs carried", ex, "dim");
             }
             RestedGate.Panel(side, Refresh);
             var goldW = Ui.Window(null, side);
-            Ui.Text("Gold", "small dim", goldW);
-            Ui.Text(Ui.Gold(s.Gold), "h2 gold num", goldW);
-            Ui.Text("Time", "small dim", goldW).style.marginTop = Space.S16;
-            Ui.Text(TimeSpan.FromSeconds(s.PlaySeconds).ToString(@"h\:mm\:ss"), "h2 num", goldW);
-            if (s.NewGamePlus > 0) Ui.Text($"New Game+ {s.NewGamePlus}", "h2 gold", goldW).style.marginTop = Space.S16;
-            Ui.Text("Cleared", "small dim", goldW).style.marginTop = Space.S16;
-            Ui.Text($"{s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", "h2 num", goldW);
-            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark — flavor, not dialogue.
+            // Caption label over a body-size value, three times (kit, GG-T454).
+            Ui.Caption("Gold", goldW, "dim");
+            Ui.Name(Ui.Gold(s.Gold), goldW, "gold num");
+            Ui.Caption("Time", goldW, "dim");
+            Ui.Name(TimeSpan.FromSeconds(s.PlaySeconds).ToString(@"h\:mm\:ss"), goldW, "num");
+            if (s.NewGamePlus > 0) Ui.Name($"New Game+ {s.NewGamePlus}", goldW, "gold");
+            Ui.Caption("Cleared", goldW, "dim");
+            Ui.Name($"{s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", goldW, "num");
+            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark — flavor, not dialogue. GG-T454:
+            // full width under the menu, where a sentence reads as one or two lines, not a word a line in the side column.
             if (Features.Caravan && CampUnlocks.CaravanOpen(s))
             {
-                var gossip = Ui.Window(null, side);
-                gossip.name = "camp-gossip";
-                Ui.Text("Around the wagons", "small dim", gossip).style.whiteSpace = WhiteSpace.Normal;
+                var gossip = Ui.Panel(col, null, false, "camp-gossip");
+                Ui.Caption("Around the wagons", gossip, "dim");
                 CaravanScreen.BarkLine(c, s, gossip);
             }
             MercenaryCamp.OnCamp(this);
@@ -669,13 +662,10 @@ namespace GridGame.App
             var hunting = Features.Bounties ? Bounties.Hunting(C, S) : new List<BountyDef>();
             if (hunting.Count > 0)
             {
-                var b = Ui.Window(null, body);
-                b.name = "bounty-strip";
-                foreach (var h in hunting) Ui.Text($"☠ {h.Name}: {Bounties.Clue(C, h)}", "small gold", b).style.whiteSpace = WhiteSpace.Normal;
+                var b = Ui.Panel(body, null, false, "bounty-strip");
+                foreach (var h in hunting) Ui.Para($"☠ {h.Name}: {Bounties.Clue(C, h)}", b, "gold");
             }
-            var w = Ui.Window(null, body);
-            w.style.flexGrow = 1;
-            var list = Ui.List(w);
+            var list = Ui.ListPanel(body, null, out var scroll, "stage-list");
             var stages = C.CampaignStages();
             // Unlocked regions, newest first; every locked one collapses into the teaser row at the bottom.
             var regions = new List<ThemeDef>();
@@ -695,16 +685,16 @@ namespace GridGame.App
                 region = S.Expedition?.ThemeId ?? (regions.Count == 1 ? regions[0].Id : null);
             }
             var open = region == null ? null : regions.Find(t => t.Id == region);
-            if (open == null) Regions(regions, locked, list.contentContainer);
-            else Stages(open, stages, regions.Count > 1, list.contentContainer);
-            Ui.SelectFirst(list.contentContainer);
+            if (open == null) Regions(regions, locked, list);
+            else Stages(open, stages, regions.Count > 1, list);
+            Ui.SelectFirst(list);
         }
 
         /// <summary>Step one: every unlocked region with its state — the expedition under way, a stage not yet won (New), or
         /// every stage cleared (huntable).</summary>
         private void Regions(List<ThemeDef> regions, int locked, VisualElement list)
         {
-            Ui.Text("Pick a region. Cleared stages stay open: hunt them for XP, loot and wanderers.", "tiny dim", list).style.whiteSpace = WhiteSpace.Normal;
+            Ui.Para("Pick a region. Cleared stages stay open: hunt them for XP, loot and wanderers.", list, "dim");
             foreach (var theme in regions)
             {
                 var t = theme;
@@ -739,10 +729,7 @@ namespace GridGame.App
             var blurb = ContentDb.Blurb(C.PlaceBlurbs, theme.Id);
             if (!string.IsNullOrEmpty(blurb))
             {
-                var rd = Ui.Text(blurb, "tiny dim", list);
-                rd.name = "region-" + theme.Id;
-                rd.style.whiteSpace = WhiteSpace.Normal;
-                rd.style.marginLeft = Space.S48; rd.style.marginBottom = Space.S8;
+                Ui.Note(blurb, list).name = "region-" + theme.Id;
             }
             for (int k = 0; k < theme.Stages.Count; k++)
             {
@@ -759,22 +746,19 @@ namespace GridGame.App
                 if (Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0) state = "☠ " + state; // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow(label, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
                 row.name = "stage-" + st.Id;
-                row.style.marginLeft = Space.S48;
                 if (!cleared && can) row.Q<Label>("value")?.AddToClassList("gold");
                 if (CaravanUpgrades.Level(S, "scouts") > 0)
                 {
                     var foes = st.Waves.SelectMany(wv => wv.Enemies).Select(e => C.TryClass(e.Class)?.Name).Where(n => n != null).Distinct().Take(5);
-                    var sc = Ui.Text("scouts: " + string.Join(", ", foes), "tiny warn", list);
-                    sc.style.marginLeft = Space.S96 + Space.S16;
+                    Ui.Note("Scouts: " + string.Join(", ", foes), list, "warn");
                 }
                 var drops = DropsHint(st);
                 if (can && drops.Length > 0)
                 {
-                    var d = Ui.Text($"drops: {drops}", "tiny dim", list);
-                    d.style.marginLeft = Space.S96 + Space.S16; d.style.marginBottom = Space.S8;
+                    Ui.Note($"Drops: {drops}", list);
                 }
             }
-            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list).style.marginLeft = Space.S48;
+            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list);
         }
 
         private string DropsHint(StageDef st)
@@ -918,13 +902,8 @@ namespace GridGame.App
             if (rollThen != null) { BuildRoll(root); return; }
             var col = Ui.El("fill col", root);
             Ui.Header("Credits", () => App.Router.Back(), col, out _);
-            var w = Ui.Window(null, col);
-            w.style.flexGrow = 1;
-            Fit.Center(w);
-            var list = Ui.List(w);
-            var text = Resources.Load<TextAsset>("Credits")?.text ?? "GridGame Gaiden — MindAttic";
-            var l = Ui.Text(text, "small", list.contentContainer);
-            l.style.whiteSpace = WhiteSpace.Normal;
+            var list = Ui.ListPanel(Ui.PageBody(col), null, "credits-list");
+            Ui.Para(Resources.Load<TextAsset>("Credits")?.text ?? "GridGame Gaiden — MindAttic", list);
         }
 
         private void BuildRoll(VisualElement root)
