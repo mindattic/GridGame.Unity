@@ -690,6 +690,13 @@ namespace GridGame.App.Automation
                         caravan = c.Caravan.Values.Select(d => new { d.Id, d.Name, level = CaravanUpgrades.Level(s, d.Id), next = CaravanUpgrades.NextLevel(c, s, d.Id) is CaravanLevel n ? new { n.Name, n.Cost } : null }).ToList(),
                         npcs = CampNpcs.All.Where(n => CampUnlocks.NpcOpen(s, n)).ToList(),
                         inventory = s.Inventory,
+                        // GG-T448: every party hero's own equipped-slot map (null where empty), so a gear pass can tell an
+                        // empty slot from a worn one without guessing from the (durability-only) "wear" list above.
+                        equipped = s.Party.Select(s.Hero).Where(h => h != null).ToDictionary(h => h.ClassId, h =>
+                            new[] { EquipmentSlot.Weapon }.Concat(BattleEngine.ArmorSlots).Concat(Equipment.JewelrySlots)
+                                .ToDictionary(sl => sl.ToString(), sl => sl == EquipmentSlot.Weapon ? h.WeaponId
+                                    : Equipment.JewelrySlots.Contains(sl) ? h.Jewelry.TryGetValue(sl, out var j) ? j : null
+                                    : h.Armor.TryGetValue(sl, out var a) ? a.ItemId : null)),
                     };
                 }
                 case "stagebounds":
