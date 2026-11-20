@@ -136,6 +136,17 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   difficulty wall (Cathedral II, Lv 18, 13-hero roster, 3 failed Retry attempts), not a crash or a script bug — the
   second genuine wall found this session (the first was Cave II, Lv 13–14, in an earlier run). Both are worth the
   owner's own eyes before calling them intended or a cliff to soften.
+  **Correction, GG-T448/GG-T452 (2026-11-20): both of those walls were the test, not the game.** The Equip tab
+  overflowed a phone screen (its bag list sat below the stage), so nothing could be equipped through the UI at all, and
+  five of six heroes fought bare-handed. With the layout fixed (GG-T452) and the driver gearing the whole party, run 8
+  **finished the main campaign** (Ending at Cathedral III, `story:ending` set): 24 of 24 main stages won on the first
+  try, Cave II and Cathedral II included, plus the Bloom I-III, all through the real UI. Over the run it equipped 45
+  pieces, repaired 56 times, built the Glass Alembic and Iron Forge, bought 9 Caravan upgrades, and never ran Rested dry
+  (real time between stages regenerated it); gold climbed steadily to about 3,000.
+  **The postgame wall is real** and matches the nightly measurement below: Free Holds I (enemy Lv 28) beat a Lv 20 party
+  four times running. Hunting the Bloom III (the game's intended answer) paid about one level per three hunts, so the
+  gap is roughly 20+ hunts; each costs a Rested point, and the gold refill had grown to 505 G. That is the grind the
+  Diamond/Rested hooks sit on; whether it is the right length is the owner's call (options in the section below).
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
