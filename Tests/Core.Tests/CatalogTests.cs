@@ -119,10 +119,10 @@ namespace GridGame.Tests
             var c = Real;
             var save = Progression.NewGame(c, "Esc");
             save.AddItem("smoke_bomb", 1);
-            save.Hero("paladin").Bar[0] = "item:smoke_bomb";
+            save.Hero("warden").Bar[0] = "item:smoke_bomb"; // the fixed lead (GG-T533)
             var setup = BattleFactory.Build(c, save, c.CampaignStages()[0].Id, 1);
             var s = BattleEngine.Create(c, setup, new List<BattleEvent>());
-            var pal = s.Units.First(u => u.Def.Id == "paladin");
+            var pal = s.Units.First(u => u.Def.Id == "warden");
             pal.Hp = 20;
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = pal.Id, Slot = 0, Target = pal.Pos });
             Assert.That(s.Phase, Is.EqualTo(BattlePhase.Escaped));
@@ -130,7 +130,7 @@ namespace GridGame.Tests
             var rep = BattleFactory.Commit(c, save, s);
             Assert.That(rep.Escaped, Is.True);
             Assert.That(save.Gold, Is.EqualTo(gold));
-            Assert.That(save.Hero("paladin").Hp, Is.EqualTo(20));
+            Assert.That(save.Hero("warden").Hp, Is.EqualTo(20));
             Assert.That(save.Count("smoke_bomb"), Is.EqualTo(0));
         }
 
@@ -139,11 +139,11 @@ namespace GridGame.Tests
         {
             var c = Real;
             var save = Progression.NewGame(c, "Camp");
-            var h = save.Hero("paladin");
+            var h = save.Hero("warden");
             h.Hp = 10;
             save.AddItem("healing_potion_basic", 1);
             int before = save.Count("healing_potion_basic");
-            Assert.That(Camp.Use(c, save, "healing_potion_basic", "paladin").Ok, Is.True);
+            Assert.That(Camp.Use(c, save, "healing_potion_basic", "warden").Ok, Is.True);
             Assert.That(h.Hp > 10 || h.Hp == 0, Is.True);
             Assert.That(save.Count("healing_potion_basic"), Is.EqualTo(before - 1));
             save.Hero("cleric").Hp = 3;

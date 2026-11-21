@@ -242,7 +242,7 @@ namespace GridGame.Tests
             var ronin = s.Hero("ronin");
             ronin.TotalXp = Formulas.TotalXpForLevel(level.Objective.Count - 1);
             Assert.That(Quests.IsReady(Real, s, level), Is.False);
-            s.Hero("paladin").TotalXp = Formulas.TotalXpForLevel(level.Objective.Count + 5);
+            s.Hero("warden").TotalXp =Formulas.TotalXpForLevel(level.Objective.Count + 5);
             Assert.That(Quests.IsReady(Real, s, level), Is.False, "another hero's level doesn't count for a named hero");
             ronin.TotalXp = Formulas.TotalXpForLevel(level.Objective.Count);
             Assert.That(Quests.IsReady(Real, s, level), Is.True);

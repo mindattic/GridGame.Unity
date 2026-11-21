@@ -19,7 +19,7 @@ namespace GridGame.Tests
         public void New_game_has_starting_trio_gold_and_loadouts()
         {
             var s = Progression.NewGame(Real, "Test");
-            Assert.That(s.Party, Is.EqualTo(new[] { "paladin", "barbarian", "cleric" })); // a small start; the rest join at story beats (GG-T118)
+            Assert.That(s.Party, Is.EqualTo(new[] { "warden", "barbarian", "cleric" })); // a small start led by the fixed lead (GG-T533); the rest join at story beats (GG-T118)
             Assert.That(s.Party.Select(id => Real.Classes[id].Role), Is.EqualTo(new[] { "Tank", "Striker", "Healer" }));
             Assert.That(s.Gold, Is.EqualTo(Progression.StartingGold));
             foreach (var h in s.Roster) Assert.That(h.Bar.Any(e => e != null), Is.True);
@@ -432,23 +432,23 @@ namespace GridGame.Tests
         [Test] // GG-T140: a downed hero is still on the roster (no permadeath) and must still block a same-class guest
         public void A_downed_heros_class_still_blocks_a_later_wave_guest_of_that_class()
         {
-            var c = Real; var s = Progression.NewGame(c, "G5"); // default trio includes "paladin"
+            var c = Real; var s = Progression.NewGame(c, "G5"); // default trio includes "barbarian" (GG-T533: Warden, Barbarian, Cleric)
             var setup = BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 1);
-            setup.Stage = TwoWaveGuestStage("paladin");
+            setup.Stage = TwoWaveGuestStage("barbarian");
             var ev = new List<BattleEvent>();
             var st = BattleEngine.Create(c, setup, ev);
 
-            var paladin = st.Units.Single(u => u.IsHero && !u.IsGuest && u.Def.Id == "paladin");
-            paladin.Hp = 0; paladin.OnBoard = false; // downed mid-battle, not removed: no permadeath
+            var barbarian = st.Units.Single(u => u.IsHero && !u.IsGuest && u.Def.Id == "barbarian");
+            barbarian.Hp = 0; barbarian.OnBoard = false; // downed mid-battle, not removed: no permadeath
             var enemy = st.Units.Single(u => u.Team == Team.Enemy && u.Alive);
             enemy.Hp = 0; enemy.OnBoard = false; // clear wave 0 by hand
 
             ev.Clear();
             ev.AddRange(BattleEngine.Apply(st, new ShieldCommand()));
 
-            Assert.That(st.Wave, Is.EqualTo(1), "wave 1 (the paladin guest) should have spawned");
-            Assert.That(ev.OfType<GuestJoinedEvent>(), Is.Empty, "the downed paladin's class should still block the duplicate guest");
-            Assert.That(st.Units.Count(u => u.Def.Id == "paladin"), Is.EqualTo(1), "no duplicate paladin on the board");
+            Assert.That(st.Wave, Is.EqualTo(1), "wave 1 (the barbarian guest) should have spawned");
+            Assert.That(ev.OfType<GuestJoinedEvent>(), Is.Empty, "the downed barbarian's class should still block the duplicate guest");
+            Assert.That(st.Units.Count(u => u.Def.Id == "barbarian"), Is.EqualTo(1), "no duplicate barbarian on the board");
         }
 
         [Test] // GG-T114: "no one dies permanently" — the one permanent-loss rule is off, and Ironman doesn't exist yet

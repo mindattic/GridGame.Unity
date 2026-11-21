@@ -6723,6 +6723,58 @@
         ]
       }
     },
+    "dialogue:talk_quiz_warden": {
+      "key": "dialogue:talk_quiz_warden",
+      "id": "conversation-talk-quiz-warden",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b43da0d6baf3109ebb3e5853d2a68c3c0497b3d5ca1b88926298ca17b6d82e31",
+      "about": [
+        "class-warden"
+      ],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "Advice",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit lorem ipsum.",
+            "choices": [
+              {
+                "text": "A · Error sit voluptatem",
+                "next": "wrong"
+              },
+              {
+                "text": "B · Tempor incididunt ut labore et",
+                "next": "right",
+                "tags": [
+                  "right-answer"
+                ]
+              },
+              {
+                "text": "C · Natus error sit",
+                "next": "wrong"
+              }
+            ]
+          },
+          {
+            "id": "right",
+            "speaker": "$with",
+            "line": "Culpa qui officia deserunt mollit anim id est laborum sed ut perspiciatis."
+          },
+          {
+            "id": "wrong",
+            "speaker": "$with",
+            "line": "Sit aspernatur aut odit aut fugit lorem. Ipsum dolor sit amet consectetur."
+          }
+        ]
+      }
+    },
     "dialogue:talk_quiz_whiteninja": {
       "key": "dialogue:talk_quiz_whiteninja",
       "id": "conversation-talk-quiz-whiteninja",

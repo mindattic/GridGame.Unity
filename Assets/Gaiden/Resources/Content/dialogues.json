@@ -931,6 +931,26 @@
     ]
   },
   {
+    "Id": "talk_quiz_warden",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "warden" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
     "Id": "talk_quiz_myrmidon",
     "Title": "Advice",
     "Trigger": { "Kind": "Talk", "Id": "myrmidon" },

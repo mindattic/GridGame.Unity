@@ -381,7 +381,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "As4");
-            var hero = s.Hero(s.Party[0]); // paladin
+            var hero = s.Hero(s.Party[0]); // warden, the fixed lead (GG-T533)
             Assert.That(hero.Known, Does.Not.Contain("heal")); // learnable, but not known out of the gate
             var result = Abilities.Assign(c, s, hero, 0, "heal");
             Assert.That(result.Ok, Is.False);
@@ -393,7 +393,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "As5");
-            var hero = s.Hero(s.Party[0]); // paladin, bar[0] == "taunt" by default loadout
+            var hero = s.Hero(s.Party[0]); // warden, bar[0] == "taunt" by default loadout
             Assert.That(hero.Bar[0], Is.EqualTo("taunt"));
             var result = Abilities.Assign(c, s, hero, 3, "taunt");
             Assert.That(result.Ok, Is.True, result.Message);
@@ -409,8 +409,8 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "Le1");
-            var hero = s.Hero("paladin");
-            Assert.That(c.Class("paladin").Abilities.Any(id => id == "steal"), Is.False);
+            var hero = s.Hero("warden"); // the fixed lead (GG-T533)
+            Assert.That(c.Class("warden").Abilities.Any(id => id == "steal"), Is.False);
             var result = Abilities.Learn(c, s, hero, "steal");
             Assert.That(result.Ok, Is.False);
             Assert.That(hero.Known, Does.Not.Contain("steal"));
@@ -421,7 +421,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "Le2");
-            var hero = s.Hero("paladin");
+            var hero = s.Hero("warden");
             s.Gold = 0;
             Assert.That(Abilities.Learnable(c, hero).Any(a => a.Id == "heal"), Is.True);
             var result = Abilities.Learn(c, s, hero, "heal");
@@ -434,7 +434,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "Le3");
-            var hero = s.Hero("paladin");
+            var hero = s.Hero("warden");
             s.Gold = 10000;
             int price = Abilities.Price(c.Ability("heal"));
             int before = s.Gold;
@@ -515,8 +515,52 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "Custom", new[] { "paladin", "not_a_real_class", "cleric" });
-            Assert.That(s.Party, Is.EqualTo(new[] { "paladin", "cleric" }));
-            Assert.That(s.Roster.Count, Is.EqualTo(2));
+            Assert.That(s.Party, Is.EqualTo(new[] { "warden", "paladin", "cleric" })); // the fixed lead always sets out first (GG-T533)
+            Assert.That(s.Roster.Count, Is.EqualTo(3));
+        }
+
+        /// <summary>GG-T533: the lead is added once, first, even when the pick names them or would overflow the cap.</summary>
+        [Test]
+        public void NewGame_puts_the_lead_first_once_and_keeps_the_party_cap()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "Lead", new[] { "paladin", "warden", "barbarian", "cleric", "redmage", "engineer", "knight" });
+            Assert.That(s.Party[0], Is.EqualTo(Progression.LeadClass));
+            Assert.That(s.Party.Count(id => id == Progression.LeadClass), Is.EqualTo(1));
+            Assert.That(s.Party.Count, Is.EqualTo(Progression.MaxPartySize));
+            Assert.That(s.Party, Does.Not.Contain("knight"), "the pick past the cap is dropped");
+        }
+
+        /// <summary>GG-T533: the lead can't be moved to the reserve; anyone else still can.</summary>
+        [Test]
+        public void Party_Toggle_refuses_to_bench_the_lead()
+        {
+            var s = Progression.NewGame(Real, "Lock");
+            Assert.That(Party.Toggle(s, Progression.LeadClass).Ok, Is.False);
+            Assert.That(s.Party[0], Is.EqualTo(Progression.LeadClass));
+            Assert.That(Party.Toggle(s, "cleric").Ok, Is.True);
+        }
+
+        /// <summary>GG-T533: a save from before the Warden gets them on load, first in the party; a full party benches its
+        /// last member (who stays on the roster). Running it again changes nothing.</summary>
+        [Test]
+        public void EnsureLead_adds_the_lead_to_an_old_full_party_and_benches_the_last()
+        {
+            var c = Real;
+            var old = new SaveData { Name = "Old" };
+            foreach (var id in new[] { "paladin", "barbarian", "cleric", "redmage", "engineer", "knight" })
+            {
+                old.Roster.Add(Progression.NewHero(c, id));
+                old.Party.Add(id);
+            }
+            SaveMigrations.EnsureLead(old, c);
+            Assert.That(old.Party, Is.EqualTo(new[] { "warden", "paladin", "barbarian", "cleric", "redmage", "engineer" }));
+            Assert.That(old.Hero("warden"), Is.Not.Null);
+            Assert.That(old.Hero("knight"), Is.Not.Null, "benched, not dropped");
+            Assert.That(old.Roster.Count, Is.EqualTo(7));
+            SaveMigrations.EnsureLead(old, c);
+            Assert.That(old.Party, Is.EqualTo(new[] { "warden", "paladin", "barbarian", "cleric", "redmage", "engineer" }));
+            Assert.That(old.Roster.Count, Is.EqualTo(7));
         }
 
         // ── Progression.CanStartNewGamePlus / IsStageUnlocked ──

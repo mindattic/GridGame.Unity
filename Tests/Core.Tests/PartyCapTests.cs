@@ -12,7 +12,8 @@ namespace GridGame.Tests
     /// builds, shares one bag and spawns legally on the 6×8 board.</summary>
     public class PartyCapTests
     {
-        private static readonly string[] Six = { "paladin", "barbarian", "cleric", "redmage", "engineer", "knight" };
+        // The fixed lead (GG-T533) always sets out first, so a full pick of six names them plus five.
+        private static readonly string[] Six = { "warden", "barbarian", "cleric", "redmage", "engineer", "knight" };
 
         [Test]
         public void The_cap_is_six_and_the_start_stays_three()

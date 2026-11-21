@@ -80,13 +80,13 @@ namespace GridGame.Tests
             var s = NewSave();
             s.AddItem("tome_thorns", 2);
             Assert.That(Tomes.Candidates(Real, s, "tome_thorns").Count, Is.EqualTo(s.Roster.Count));
-            var r = Tomes.Teach(Real, s, "tome_thorns", "paladin");
+            var r = Tomes.Teach(Real, s, "tome_thorns", "warden"); // the fixed lead (GG-T533)
             Assert.That(r.Ok, Is.True, r.Message);
-            Assert.That(s.Hero("paladin").Known, Does.Contain("thorns"));
+            Assert.That(s.Hero("warden").Known, Does.Contain("thorns"));
             Assert.That(s.Count("tome_thorns"), Is.EqualTo(1));
-            Assert.That(Tomes.Teach(Real, s, "tome_thorns", "paladin").Ok, Is.False, "already known");
+            Assert.That(Tomes.Teach(Real, s, "tome_thorns", "warden").Ok, Is.False, "already known");
             Assert.That(s.Count("tome_thorns"), Is.EqualTo(1), "a refused teach keeps the tome");
-            Assert.That(Tomes.Teach(Real, s, "tome_counter_attack", "paladin").Ok, Is.False, "no tome in the bag");
+            Assert.That(Tomes.Teach(Real, s, "tome_counter_attack", "warden").Ok, Is.False, "no tome in the bag");
 
             var db = Fresh();
             db.Abilities["thorns"].LearnableBy.Add("Tank");
@@ -106,7 +106,7 @@ namespace GridGame.Tests
             var u = b.Units.First(x => x.IsHero && x.Def.Id == "barbarian");
             Assert.That(u.Passives, Does.Contain("counter_attack"));
             Assert.That(Triggers.Sources(Real, u).Select(a => a.Id), Does.Contain("counter_attack"));
-            Assert.That(b.Units.First(x => x.IsHero && x.Def.Id == "paladin").Passives, Does.Not.Contain("counter_attack"));
+            Assert.That(b.Units.First(x => x.IsHero && x.Def.Id == "warden").Passives, Does.Not.Contain("counter_attack"));
         }
 
         [Test]
@@ -160,14 +160,14 @@ namespace GridGame.Tests
         public void Passive_choices_milestones_and_chest_count_survive_a_save_round_trip()
         {
             var s = NewSave();
-            var h = s.Hero("paladin");
-            s.AddItem("tome_thorns", 1); Tomes.Teach(Real, s, "tome_thorns", "paladin");
-            s.AddItem("tome_berserk", 1); Tomes.Teach(Real, s, "tome_berserk", "paladin");
+            var h = s.Hero("warden");
+            s.AddItem("tome_thorns", 1); Tomes.Teach(Real, s, "tome_thorns", "warden");
+            s.AddItem("tome_berserk", 1); Tomes.Teach(Real, s, "tome_berserk", "warden");
             PassiveLoadout.Toggle(Real, h, "thorns");
             s.Milestones.Add("greenvalley");
             s.ChestsOpened = 4;
             var back = SaveFiles.Deserialize(SaveFiles.Serialize(s));
-            var bh = back.Hero("paladin");
+            var bh = back.Hero("warden");
             Assert.That(bh.PassivesChosen, Is.True);
             Assert.That(bh.ActivePassives, Is.EqualTo(new[] { "berserk" }));
             Assert.That(PassiveLoadout.Active(Real, bh), Is.EqualTo(new[] { "berserk" }));
