@@ -18,8 +18,8 @@ namespace GridGame.Meta
         /// half the 1,500 g chosen-hero summon since it's a blind draw.</summary>
         public const int Price = 100;
 
-        /// <summary>"100 Diamonds (or 600 G) · 1s" for the button.</summary>
-        public static string Tag(SaveData s) => $"{DiamondExchange.Label(Price)} · {Paywall.Duration(PaywallKind.Summon, s):0.#}s";
+        /// <summary>"100 Diamonds (or 600 G)" for the button, plus the wait when it's long enough to matter (GG-T519).</summary>
+        public static string Tag(SaveData s) => DiamondExchange.Label(Price) + Paywall.WaitSuffix(Paywall.Duration(PaywallKind.Summon, s));
 
         /// <summary>Who could come: the wanderer pool (unowned heroes with no other way in).</summary>
         public static List<string> Pool(ContentDb c, SaveData s) => Wanderers.Pool(c, s);

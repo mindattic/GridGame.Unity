@@ -29,7 +29,11 @@ namespace GridGame.Tests
             Assert.That(Paywall.Cost(PaywallKind.RestedRefill, s), Is.EqualTo(Paywall.RestedRefillGoldPrice));
             foreach (PaywallKind k in Enum.GetValues(typeof(PaywallKind)))
                 if (!Paywall.Retired(k)) Assert.That(Paywall.Duration(k, s), Is.EqualTo(1.0), k.ToString());
-            Assert.That(Paywall.Tag(PaywallKind.RestedRefill, s), Is.EqualTo($"{Paywall.RestedRefillGoldPrice}g · 1s"));
+            // GG-T519: a 1 s wait goes unmentioned; a wait that matters says what it is.
+            Assert.That(Paywall.Tag(PaywallKind.RestedRefill, s), Is.EqualTo($"{Paywall.RestedRefillGoldPrice:N0} G"));
+            Assert.That(Paywall.WaitSuffix(30), Is.EqualTo(" · ready in 30s"));
+            Assert.That(Paywall.WaitSuffix(90), Is.EqualTo(" · ready in 2 min"));
+            Assert.That(Paywall.WaitSuffix(7200), Is.EqualTo(" · ready in 2 h"));
         }
 
         [Test]

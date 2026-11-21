@@ -28,7 +28,7 @@ namespace GridGame.Tests
         {
             var s = WithDiamonds("D1", 2);
             s.Gold = 500;
-            Assert.That(DiamondSummon.Tag(s), Is.EqualTo($"{DiamondSummon.Price} Diamonds (or {DiamondExchange.GoldFor(DiamondSummon.Price):N0} G) · 1s"));
+            Assert.That(DiamondSummon.Tag(s), Is.EqualTo($"{DiamondSummon.Price} Diamonds (or {DiamondExchange.GoldFor(DiamondSummon.Price):N0} G)")); // GG-T519: no bare "· 1s"
             Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(DiamondSummon.Price));
             Assert.That(s.Gold, Is.EqualTo(500), "Diamonds, not gold");

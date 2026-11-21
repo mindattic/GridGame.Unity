@@ -52,8 +52,20 @@ namespace GridGame.Meta
 
         public static bool Retired(PaywallKind kind) => !Table.ContainsKey(kind);
 
-        /// <summary>"1g · 1s" — the price tag every paywall button shows.</summary>
-        public static string Tag(PaywallKind kind, SaveData s) => $"{Cost(kind, s)}g · {Duration(kind, s):0.#}s";
+        /// <summary>"175 G" — the price tag every paywall button shows, plus "· ready in 2 min" when the job's wait is long
+        /// enough to matter (GG-T519: a bare "· 1s" read as nothing a new player could decode).</summary>
+        public static string Tag(PaywallKind kind, SaveData s) => $"{Cost(kind, s):N0} G" + WaitSuffix(Duration(kind, s));
+
+        /// <summary>Waits shorter than this play out as a brief progress bar and go unmentioned in the price tag.</summary>
+        public const double NotableWaitSeconds = 5;
+
+        /// <summary>" · ready in 30s" / " · ready in 2 min" / " · ready in 3 h", or "" for a wait under
+        /// <see cref="NotableWaitSeconds"/>.</summary>
+        public static string WaitSuffix(double seconds) =>
+            seconds < NotableWaitSeconds ? ""
+            : seconds < 60 ? $" · ready in {seconds:0}s"
+            : seconds < 3600 ? $" · ready in {Math.Ceiling(seconds / 60):0} min"
+            : $" · ready in {seconds / 3600:0.#} h";
 
         public static PaywallJob Pending(SaveData s, PaywallKind kind) => s?.Jobs.FirstOrDefault(j => j.Kind == kind);
 
