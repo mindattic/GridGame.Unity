@@ -563,6 +563,38 @@ namespace GridGame.Tests
             Assert.That(old.Roster.Count, Is.EqualTo(7));
         }
 
+        /// <summary>GG-T532: a new hero waits for the female/male pick; a v13 save's heroes become female with nothing to
+        /// ask, idempotently; picking sets the variant and ends the wait; a male portrait id maps back to its class.</summary>
+        [Test]
+        public void Hero_variants_new_heroes_wait_old_saves_are_female_and_choosing_sets_it()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "V", new[] { "barbarian", "cleric" });
+            Assert.That(HeroVariants.Pending(s).Select(h => h.ClassId), Is.EqualTo(new[] { "warden", "barbarian", "cleric" }));
+            HeroVariants.Choose(s.Hero("warden"), HeroVariant.Male);
+            Assert.That(s.Hero("warden").Variant, Is.EqualTo(HeroVariant.Male));
+            Assert.That(HeroVariants.Pending(s).Count, Is.EqualTo(2));
+            Assert.That(HeroVariants.Of(s, "warden"), Is.EqualTo(HeroVariant.Male));
+            Assert.That(HeroVariants.Of(s, "knight"), Is.EqualTo(HeroVariant.Female), "not owned");
+
+            var old = Progression.NewGame(c, "Old");
+            old.Version = 13;
+            SaveMigrations.Migrate(old, c);
+            Assert.That(old.Version, Is.EqualTo(SaveData.CurrentVersion));
+            Assert.That(old.Roster.All(h => h.Variant == HeroVariant.Female && !h.VariantPending), Is.True);
+            SaveMigrations.Migrate(old, c);
+            Assert.That(old.Roster.All(h => h.Variant == HeroVariant.Female && !h.VariantPending), Is.True, "idempotent");
+
+            var round = SaveFiles.Deserialize(SaveFiles.Serialize(s));
+            Assert.That(round.Hero("warden").Variant, Is.EqualTo(HeroVariant.Male));
+            Assert.That(round.Hero("barbarian").VariantPending, Is.True);
+
+            Assert.That(HeroVariants.PortraitId("warden", HeroVariant.Male), Is.EqualTo("warden_male"));
+            Assert.That(HeroVariants.PortraitId("warden", HeroVariant.Female), Is.EqualTo("warden"));
+            Assert.That(HeroVariants.ClassOf("warden_male"), Is.EqualTo("warden"));
+            Assert.That(HeroVariants.IsMaleId("warden"), Is.False);
+        }
+
         // ── Progression.CanStartNewGamePlus / IsStageUnlocked ──
 
         [Test]

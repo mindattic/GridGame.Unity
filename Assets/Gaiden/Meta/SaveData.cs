@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 13;
+        public const int CurrentVersion = 14;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -158,6 +158,13 @@ namespace GridGame.Meta
         /// <summary>A domesticated monster (GG-T303, <see cref="Domestication"/>): <see cref="ClassId"/> is an enemy class. It
         /// fights on its own AI, wears no gear, has no skill tree, and grows slowly up to <see cref="Domestication.LevelCap"/>.</summary>
         public bool Domesticated;
+        /// <summary>GG-T532: which version of the class this hero is: the female art (the default) or the male art
+        /// (Portraits/&lt;classId&gt;_male). Looks only: stats, kit and story are the same either way.</summary>
+        public HeroVariant Variant;
+        /// <summary>GG-T532: the player hasn't picked <see cref="Variant"/> yet. Every new hero joins with it set
+        /// (<see cref="Progression.NewHero"/>); the game asks at its next quiet moment and clears it, or clears it silently
+        /// (Female) when the class has no male art yet. A save from before v14 has it clear.</summary>
+        public bool VariantPending;
 
         public string WeaponId;
         public int WeaponDurability;
@@ -178,6 +185,54 @@ namespace GridGame.Meta
         public int ArmorRepairs;
         public float ArmorMastery = 1f;
         public List<string> Relics = new List<string> { null, null, null };
+    }
+
+    /// <summary>GG-T532: a hero's version, picked when they join (owner 2026-11-21: "when they finally join your party you
+    /// get to choose the gender ... no change to story or mechanics makes everything equal").</summary>
+    public enum HeroVariant
+    {
+        Female = 0,
+        Male = 1,
+    }
+
+    /// <summary>GG-T532: the rules of hero variants that need no art: the portrait id a variant reads, the heroes still
+    /// waiting for the player's pick, and picking. Whether the art exists is the app's question (Art.HasMaleArt).</summary>
+    public static class HeroVariants
+    {
+        /// <summary>The male art of class X is Portraits/X_male; the female art is Portraits/X.</summary>
+        public const string MaleSuffix = "_male";
+
+        /// <summary>The portrait id for <paramref name="classId"/> as <paramref name="v"/> (the male id whether or not its art
+        /// exists yet; the app falls back to the female art).</summary>
+        public static string PortraitId(string classId, HeroVariant v) =>
+            string.IsNullOrEmpty(classId) || v != HeroVariant.Male ? classId : classId + MaleSuffix;
+
+        /// <summary>True for a male portrait id (X_male).</summary>
+        public static bool IsMaleId(string portraitId) =>
+            portraitId != null && portraitId.Length > MaleSuffix.Length && portraitId.EndsWith(MaleSuffix, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>The class a portrait id belongs to (X_male → X; anything else is its own class id).</summary>
+        public static string ClassOf(string portraitId) =>
+            IsMaleId(portraitId) ? portraitId.Substring(0, portraitId.Length - MaleSuffix.Length) : portraitId;
+
+        /// <summary>The owned hero's variant; Female for a class the save doesn't hold.</summary>
+        public static HeroVariant Of(SaveData s, string classId) =>
+            s?.Roster == null || string.IsNullOrEmpty(classId) ? HeroVariant.Female : s.Hero(classId)?.Variant ?? HeroVariant.Female;
+
+        /// <summary>Roster heroes still waiting for the player's pick, in join order.</summary>
+        public static List<HeroSave> Pending(SaveData s) =>
+            s?.Roster == null ? new List<HeroSave>() : s.Roster.FindAll(h => h != null && h.VariantPending && !h.Domesticated);
+
+        /// <summary>Sets the hero's variant and ends the wait. Picking again later (the hero screen) works the same way.</summary>
+        public static void Choose(HeroSave h, HeroVariant v)
+        {
+            if (h == null) return;
+            h.Variant = v == HeroVariant.Male ? HeroVariant.Male : HeroVariant.Female;
+            h.VariantPending = false;
+        }
+
+        /// <summary>A wanderer's look on the board (either, evenly), from a seed so a battle replays the same.</summary>
+        public static HeroVariant Roll(int seed) => new Random(seed).Next(2) == 0 ? HeroVariant.Female : HeroVariant.Male;
     }
 
     /// <summary>One equipped armor piece (§24.2, GG-T89): mirrors <see cref="WornGear"/>'s shape plus the item id,
@@ -588,6 +643,21 @@ namespace GridGame.Meta
             // owns on the shelf and in the lists (VendorTiers.Grandfather, below, once content is at hand).
             bool beforeVendorTiers = s.Version < 13;
             if (s.Version < 13) s.Version = 13;
+            if (s.Version < 14)
+            {
+                // GG-T532: heroes have a female or male version now. Everyone already in an older save is the female art they
+                // have always been, and nobody is asked again (a hero who joins from here on is asked when they join).
+                foreach (var h in s.Roster)
+                {
+                    if (h == null) continue;
+                    h.Variant = HeroVariant.Female;
+                    h.VariantPending = false;
+                }
+                s.Version = 14;
+            }
+            // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
+            foreach (var h in s.Roster)
+                if (h != null && h.Variant != HeroVariant.Female && h.Variant != HeroVariant.Male) h.Variant = HeroVariant.Female;
             s.ShopBought ??= new HashSet<string>();
             s.CraftedRecipes ??= new HashSet<string>();
             s.Purchases ??= new PurchaseSave();

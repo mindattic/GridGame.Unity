@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using GridGame.Core.Content;
+using GridGame.Meta;
 using UnityEngine;
 
 namespace GridGame.App
@@ -52,9 +53,49 @@ namespace GridGame.App
         }
 
         /// <summary>A unit's one piece of art (full portrait). Every thumbnail is this texture framed by the class's
-        /// Thumbnail (Ui.PortraitThumb, BIBLE §12.1.1); there are no separate thumb images.</summary>
+        /// Thumbnail (Ui.PortraitThumb, BIBLE §12.1.1); there are no separate thumb images.
         /// A class with no portrait yet shows the mannequin placeholder art (owner 2026-11-07, GG-T351).
-        public static Texture2D Portrait(string classId)
+        /// <para>GG-T532: the one resolver for hero variants. <paramref name="classId"/> reads as the version the player picked
+        /// (<see cref="HeroLooks.Of"/>: an owned hero's <c>Variant</c>, or the look a wanderer on the board was given), so
+        /// every view that draws a unit by class id (thumbnails, figures, cut-ins, dialogue, cards, level-up) shows the right
+        /// art without knowing about variants. The male art is Portraits/&lt;classId&gt;_male; a class without it yet shows the
+        /// female art.</para></summary>
+        public static Texture2D Portrait(string classId) => PortraitById(PortraitId(classId));
+
+        /// <summary>The portrait of <paramref name="classId"/> as <paramref name="v"/>, whoever owns it (the variant picker).</summary>
+        public static Texture2D Portrait(string classId, HeroVariant v) => PortraitById(PortraitId(classId, v));
+
+        /// <summary>The Resources id under Portraits/ that <paramref name="classId"/> draws: its male art when the hero is male
+        /// and that art exists, else the class id itself (GG-T532).</summary>
+        public static string PortraitId(string classId) => PortraitId(classId, HeroLooks.Of(classId));
+
+        public static string PortraitId(string classId, HeroVariant v) =>
+            v == HeroVariant.Male && HasMaleArt(classId) ? HeroVariants.PortraitId(classId, v) : classId;
+
+        private static readonly Dictionary<string, bool> maleArt = new Dictionary<string, bool>(System.StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Whether Portraits/&lt;classId&gt;_male exists (GG-T532). Most classes have no male art yet (GG-T535 draws it);
+        /// the variant picker skips them and they stay female.</summary>
+        public static bool HasMaleArt(string classId)
+        {
+            if (string.IsNullOrEmpty(classId) || HeroVariants.IsMaleId(classId)) return false;
+            if (maleArt.TryGetValue(classId, out var has)) return has;
+            var t = Resources.Load<Texture2D>("Portraits/" + HeroVariants.PortraitId(classId, HeroVariant.Male));
+            has = t != null;
+            if (has) cache["Portraits/" + HeroVariants.PortraitId(classId, HeroVariant.Male)] = t; // it's drawn soon anyway
+            return maleArt[classId] = has;
+        }
+
+        /// <summary>The thumbnail framing for <paramref name="classId"/> drawn as <paramref name="tex"/>: the class's
+        /// <c>MaleThumbnail</c> on its male art (else its Thumbnail), its <c>Thumbnail</c> otherwise.</summary>
+        public static Thumbnail ThumbnailFor(string classId, Texture2D tex)
+        {
+            var def = GameApp.I?.Content?.TryClass(classId);
+            if (def == null) return null;
+            return tex != null && HeroVariants.IsMaleId(tex.name) ? def.MaleThumbnail ?? def.Thumbnail : def.Thumbnail;
+        }
+
+        private static Texture2D PortraitById(string classId)
         {
             string path = "Portraits/" + classId;
             if (cache.TryGetValue(path, out var t) && t != null) return t;
@@ -87,7 +128,9 @@ namespace GridGame.App
         /// a texture with no valid box is used whole.</summary>
         private static Rect FigureRect(Texture2D tex)
         {
-            var f = GameApp.I != null ? GameApp.I.Content?.TryClass(tex.name)?.Figure : null;
+            // GG-T532: a male portrait (X_male) uses class X's MaleFigure, else X's own Figure.
+            var def = GameApp.I != null ? GameApp.I.Content?.TryClass(HeroVariants.ClassOf(tex.name)) : null;
+            var f = def == null ? null : HeroVariants.IsMaleId(tex.name) ? def.MaleFigure ?? def.Figure : def.Figure;
             if (f == null || !f.IsValid) return new Rect(0, 0, tex.width, tex.height);
             float x0 = Mathf.Round(f.X * tex.width), x1 = Mathf.Min(tex.width, Mathf.Round((f.X + f.W) * tex.width));
             float y0 = Mathf.Round(f.Y * tex.height), y1 = Mathf.Min(tex.height, Mathf.Round((f.Y + f.H) * tex.height));
@@ -98,9 +141,13 @@ namespace GridGame.App
         /// <summary>A class's figure (its portrait cut to <see cref="ClassDef.Figure"/>) as a sprite for a
         /// <c>backgroundImage</c>: every whole-portrait view (dialogue, cut-ins, boss intro, level-up, cards, the death
         /// dissolve) draws this instead of the raw texture. Cached per texture; null only when there is no art at all.</summary>
-        public static Sprite PortraitFigure(string classId)
+        public static Sprite PortraitFigure(string classId) => FigureOf(Portrait(classId));
+
+        /// <summary>The figure of <paramref name="classId"/> as <paramref name="v"/> (the variant picker, GG-T532).</summary>
+        public static Sprite PortraitFigure(string classId, HeroVariant v) => FigureOf(Portrait(classId, v));
+
+        private static Sprite FigureOf(Texture2D tex)
         {
-            var tex = Portrait(classId);
             if (tex == null) return null;
             if (figureSprites.TryGetValue(tex, out var s) && s != null) return s;
             s = Sprite.Create(tex, FigureRect(tex), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect);

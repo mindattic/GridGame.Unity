@@ -129,6 +129,12 @@ namespace GridGame.Core.Content
                     p.Add($"class {c.Id}: Thumbnail out of range (Zoom {Thumbnail.MinZoom}..{Thumbnail.MaxZoom}, X/Y {Thumbnail.MinOffset}..{Thumbnail.MaxOffset})");
                 if (c.Figure == null) p.Add($"class {c.Id}: no Figure (tools/import_art.py writes it when the portrait is imported)");
                 else if (!c.Figure.IsValid) p.Add($"class {c.Id}: Figure must be a box with area inside the portrait (fractions 0..1)");
+                // GG-T532: the male art's own framing is optional (it falls back to the female one), but must be sane when set.
+                if (c.MaleFigure != null && !c.MaleFigure.IsValid) p.Add($"class {c.Id}: MaleFigure must be a box with area inside the portrait (fractions 0..1)");
+                var mth = c.MaleThumbnail;
+                if (mth != null && (!(mth.Zoom >= Thumbnail.MinZoom && mth.Zoom <= Thumbnail.MaxZoom) || !(mth.X >= Thumbnail.MinOffset && mth.X <= Thumbnail.MaxOffset)
+                                    || !(mth.Y >= Thumbnail.MinOffset && mth.Y <= Thumbnail.MaxOffset)))
+                    p.Add($"class {c.Id}: MaleThumbnail out of range (Zoom {Thumbnail.MinZoom}..{Thumbnail.MaxZoom}, X/Y {Thumbnail.MinOffset}..{Thumbnail.MaxOffset})");
                 foreach (var a in c.Abilities) NeedAbility(a, $"class {c.Id} abilities");
                 foreach (var s in c.DefaultLoadout)
                 {

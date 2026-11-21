@@ -70,6 +70,15 @@ namespace GridGame.Tests
                 Assert.That(f.Y, Is.EqualTo(y0 / (float)Canvas).Within(px), $"{c.Id}: Figure Y");
                 Assert.That(f.W, Is.EqualTo((x1 - x0) / (float)Canvas).Within(px), $"{c.Id}: Figure W");
                 Assert.That(f.H, Is.EqualTo((y1 - y0) / (float)Canvas).Within(px), $"{c.Id}: Figure H");
+                // GG-T532: the male art (<id>_male.png), when it has its own MaleFigure, is framed by its own alpha bounds.
+                var male = Path.Combine(PortraitDir, c.Id + "_male.png");
+                if (c.MaleFigure == null || !File.Exists(male)) continue;
+                var (m0, n0, m1, n1) = Png.Read(male).AlphaBounds();
+                var mf = c.MaleFigure;
+                Assert.That(mf.X, Is.EqualTo(m0 / (float)Canvas).Within(px), $"{c.Id}: MaleFigure X");
+                Assert.That(mf.Y, Is.EqualTo(n0 / (float)Canvas).Within(px), $"{c.Id}: MaleFigure Y");
+                Assert.That(mf.W, Is.EqualTo((m1 - m0) / (float)Canvas).Within(px), $"{c.Id}: MaleFigure W");
+                Assert.That(mf.H, Is.EqualTo((n1 - n0) / (float)Canvas).Within(px), $"{c.Id}: MaleFigure H");
             }
         }
 

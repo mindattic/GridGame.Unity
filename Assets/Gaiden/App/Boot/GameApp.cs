@@ -101,6 +101,7 @@ namespace GridGame.App
             if (CommandLine.Has("-allfeatures")) GridGame.Meta.Features.EnableAll(); // GG-T392: every hidden system back on
             BuildPanel();
             Router = new ScreenRouter(Stage.Q("screens"), Stage.Q("fade"));
+            Router.Changed += VariantPicker.OnScreen; // GG-T532: a hero who joined is asked female/male at the next quiet screen
             TextFit.Install(Document.rootVisualElement); // GG-T305: every wrapped line and every overflowing one-liner
             ApplySettings(); // the profile's settings hold on the title screen too, before any save is loaded
 

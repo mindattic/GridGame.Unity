@@ -242,10 +242,15 @@ namespace GridGame.App
             Ui.Para(Progression.BuildSummary(C, h), sheet, "gold");
             var top = Ui.El("row", sheet);
             top.style.alignItems = Align.FlexStart;
-            var art = Ui.El("", top);
+            var artCol = Ui.El("col", top);
+            artCol.style.alignItems = Align.Center;
+            var art = Ui.El("", artCol);
             art.style.width = Size.PortraitW; art.style.height = Size.ArtH;
             art.style.backgroundImage = new StyleBackground(Art.PortraitFigure(h.ClassId));
             art.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            // GG-T532: a class with male art can switch looks here any time (the same picker as on joining).
+            if (!h.Domesticated && Art.HasMaleArt(h.ClassId))
+                Ui.Button("Change look", () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
             var stats = Ui.El("col grow", top);
             stats.style.marginLeft = Space.S24; stats.style.flexShrink = 1; stats.style.minWidth = 0;
             int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
@@ -1432,7 +1437,7 @@ namespace GridGame.App
                 Ui.Card(list, d.Id, d.Name, out var col);
                 GlossaryText.Create(d.Card ?? d.Description ?? "", "kit-text dim", col);
                 var b = Ui.Button(owned ? "Joined" : "Recruit", () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
-                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => Refresh())), "btn--small", Ui.Actions(col));
+                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
         }
@@ -1468,7 +1473,7 @@ namespace GridGame.App
                 {
                     string drawn = null;
                     TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
-                        "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, Refresh); else Refresh(); });
+                        "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, () => VariantPicker.ShowPending(Refresh)); else Refresh(); }); // GG-T532: then pick their look
                 });
             }, "btn--small btn--primary", row);
             b.name = "summon-draw";

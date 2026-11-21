@@ -151,6 +151,12 @@ def save_portrait_assets(im, class_id):
     full = fit_canvas(im)
     full.save(os.path.join(portraits, class_id + ".png"), optimize=True)
     box = figure_box(full)
+    if box and class_id.endswith("_male"):
+        # GG-T532: male art (Portraits/<classId>_male) frames its own figure as the class's "MaleFigure".
+        base = class_id[:-len("_male")]
+        if set_class_blocks({base: {"MaleFigure": box}}):
+            print(f"  {base} is not a class: {class_id} has no class to belong to")
+        return full
     if box and set_class_blocks({class_id: {"Figure": box}}):
         print(f"  {class_id} is not a class yet: give it \"Figure\": {json.dumps({k: float(_num(v)) for k, v in box.items()})}")
     return full

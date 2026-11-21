@@ -92,7 +92,9 @@ namespace GridGame.Meta
         public static HeroSave NewHero(ContentDb c, string classId)
         {
             var def = c.Class(classId);
-            var h = new HeroSave { ClassId = def.Id };
+            // GG-T532: every hero who joins (new game, story, summon, Diamond draw, wanderer, freed guest, mercenary, quest)
+            // waits for the player's female/male pick; the app asks at its next quiet moment (VariantPicker).
+            var h = new HeroSave { ClassId = def.Id, VariantPending = true };
             int i = 0;
             foreach (var id in StarterKit(def))
             {

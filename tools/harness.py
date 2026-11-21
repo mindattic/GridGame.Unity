@@ -6,6 +6,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
     python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
+    python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py coach [RUN] [--camp] [--nocapture]  # GG-T542: a new profile follows every coach mark of the tutorial battle (then To Camp)
@@ -361,6 +362,10 @@ def pick_party(ids=STARTING_PARTY, timeout=10.0):
     # A new game plays the prologue crawl (and any opening dialogue) before Camp (GG-T386); skip through to the hub.
     deadline = time.time() + timeout + 30
     while time.time() < deadline:
+        # GG-T532: a -variants run asks each joining hero's look (only classes with male art); take the default.
+        if call("names", prefix="variant-female"):
+            call("click", name="variant-female"); time.sleep(0.8)
+            continue
         screen = call("state")["screen"]
         if screen == "hub":
             return True
@@ -1525,6 +1530,82 @@ def vendortiers(run="vendortiers", capture=True):
     except Exception:
         pass
     print("FAILURES:" if fails else "VENDOR TIERS OK", *fails, sep="\n  ")
+    return not fails
+
+
+def variants(run="t532-variants", capture=True):
+    """GG-T532: the female/male pick. A fresh -variants profile: New Game, lock in the party; the picker asks the locked
+    Warden's look (the only class with male art so far) with both portraits side by side and nobody else (no male art:
+    silently female); pick Male, play through the prologue to Camp, where the Warden's thumbnail is the male art; the
+    hero screen's Change look opens the same picker (current look marked) and Cancel leaves it. Recorded with -capture
+    video hq unless capture=False. Screenshots in artifacts/<run>/."""
+    fails = []
+    launch(run, fresh=True, extra=("-variants",) + (("-capture", "video", "hq") if capture else ()))
+    _wait_screen("title"); time.sleep(0.8)
+    shot("01-title")
+    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
+    time.sleep(0.6)
+    shot("02-charselect")
+    for cid in STARTING_PARTY:
+        call("scrollto", name=f"tile-{cid}"); time.sleep(0.25)
+        call("click", name=f"tile-{cid}"); time.sleep(0.4)
+        call("click", name=f"tile-{cid}"); time.sleep(0.4)
+    end = time.time() + 8
+    while time.time() < end and not call("names", prefix="variant-male"):
+        time.sleep(0.25)
+    if not call("names", prefix="variant-male"):
+        fails.append("no variant picker after the party lock-in")
+    else:
+        time.sleep(0.6)
+        texts = " ".join(str(t) for t in call("texts"))
+        if "Warden" not in texts:
+            fails.append("the picker doesn't name the Warden")
+        shot("03-picker-warden")
+        call("click", name="variant-male"); time.sleep(1.2)
+        if call("names", prefix="variant-male"):
+            fails.append("a second picker opened: classes without male art should stay female silently")
+            shot("03b-unexpected-picker")
+    variants_now = (call("state").get("save") or {}).get("variants") or {}
+    print(f"[variants] after the pick: {variants_now}", flush=True)
+    if variants_now.get("warden") != "Male":
+        fails.append(f"the Warden should be Male, is {variants_now.get('warden')}")
+    for cid in STARTING_PARTY:
+        if variants_now.get(cid) != "Female":
+            fails.append(f"{cid} has no male art and should be Female, is {variants_now.get(cid)}")
+    deadline = time.time() + 60
+    while time.time() < deadline:
+        screen = call("state")["screen"]
+        if screen == "hub":
+            break
+        if screen in ("crawl", "dialogue"):
+            through_story(wait=1.0)
+        time.sleep(0.5)
+    if not _wait_screen("hub", 5):
+        fails.append("never reached Camp")
+    time.sleep(1.5)
+    shot("04-camp-male-warden")
+    _goto("status"); time.sleep(1.0)
+    if call("names", prefix="hero-pick-warden"):
+        call("click", name="hero-pick-warden"); time.sleep(0.6)
+    shot("05-hero-status")
+    if not call("names", prefix="hero-look"):
+        fails.append("no Change look button on the Warden's status tab")
+    else:
+        call("click", name="hero-look"); time.sleep(0.8)
+        shot("06-change-look")
+        if not call("names", prefix="variant-cancel"):
+            fails.append("Change look opened no picker with Cancel")
+        else:
+            call("click", name="variant-cancel"); time.sleep(0.8)
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+    if errs:
+        fails.append(f"log errors {errs[:3]}")
+    try:
+        call("quit", timeout=3)
+    except Exception:
+        pass
+    print("FAILURES:" if fails else "VARIANTS OK", *fails, sep="\n  ")
     return not fails
 
 
@@ -3022,6 +3103,8 @@ if __name__ == "__main__":
         sys.exit(0 if firstbrew() else 1)
     elif cmd == "firstforge":
         sys.exit(0 if firstforge() else 1)
+    elif cmd == "variants":
+        sys.exit(0 if variants(sys.argv[2] if len(sys.argv) > 2 else "t532-variants", capture="--nocapture" not in sys.argv) else 1)
     elif cmd == "vendortiers":
         sys.exit(0 if vendortiers(sys.argv[2] if len(sys.argv) > 2 else "vendortiers", capture="--nocapture" not in sys.argv) else 1)
     elif cmd == "firstarmor":

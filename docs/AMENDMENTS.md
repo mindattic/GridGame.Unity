@@ -1466,3 +1466,19 @@ Owner: "some are progress gated, some are training gated, the usual."
   two gaps, a pincer on a charger that starts charging, a plated foe, a threat beside the Cleric for Taunt), a pickup
   lies where a move ends, orbs top up for the spell. All 17 lessons now show popup and marks. Other stages unchanged.
 - *Why:* owner 2026-11-21: "The tutorial battle (The Tithe Moors I) must teach every step."
+
+## 2026-11-21 — Heroes come in female and male versions, picked on joining (owner, GG-T532)
+
+Owner: "you get one or the other, they randomly show up but when they finally join your party you get to choose the
+gender, same with summoning ... no change to story or mechanics makes everything equal."
+
+- **Was:** one portrait per class; a hero's look was its class.
+- **Now ([BIBLE §25.11.2.3](BIBLE.md#2511123-hero-variants-female-or-male-picked-on-joining-added-2026-11-21-owner-gg-t532)):**
+  each hero stores a variant (save v14; older heroes are Female). Every join (new game incl. the locked Warden, story,
+  summons, the Diamond draw, wanderers, guests, mercenaries, quests) asks with the two portraits side by side; a class
+  without male art yet stays female silently. All portrait loads resolve through `Art.Portrait` (male art
+  `Portraits/<id>_male.png`, falling back to the female art). Wanderers on the board show either version at random. The
+  hero screen's Change look switches it later. Looks only: stats, kits and story are identical, and hero-facing text is
+  gender-neutral.
+- *Why:* the owner wants every class playable as either; male art arrives class by class (GG-T535), so the system
+  must work with partial art.

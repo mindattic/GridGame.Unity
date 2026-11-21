@@ -477,7 +477,7 @@ namespace GridGame.App
             }
             var tex = string.IsNullOrEmpty(classId) ? null : Art.Portrait(classId);
             art.style.backgroundImage = new StyleBackground(tex);
-            var th = GameApp.I?.Content?.TryClass(classId)?.Thumbnail;
+            var th = string.IsNullOrEmpty(classId) ? null : Art.ThumbnailFor(classId, tex); // the male art's own framing (GG-T532)
             if (th == null || tex == null || tex.width <= 0)
             {
                 art.style.left = art.style.top = Space.S0;

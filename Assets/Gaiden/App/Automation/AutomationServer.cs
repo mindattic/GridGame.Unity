@@ -1067,7 +1067,10 @@ namespace GridGame.App.Automation
                 dump["save"] = new { app.Save.Gold, app.Save.HighestClearedStage, party = app.Save.Party, inventory = app.Save.Inventory, levels = app.Save.Roster.ToDictionary(h => h.ClassId, Progression.Level), xp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.TotalXp), hp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.Hp), crucible = new { app.Save.Crucible.Best, app.Save.Crucible.Runs, app.Save.Crucible.TotalWaves }, expedition = app.Save.Expedition?.ThemeId,
                     // GG-T241: story arc checks (seen beats, the ending flag, Rested, the roster, mercenary contracts).
                     seen = app.Save.SeenDialogues, flags = app.Save.Flags, rested = app.Save.Rested.Points,
-                    roster = app.Save.Roster.Select(h => h.ClassId).ToList(), mercs = app.Save.Mercenaries.Contracts.Select(k => k.ClassId).ToList() };
+                    roster = app.Save.Roster.Select(h => h.ClassId).ToList(), mercs = app.Save.Mercenaries.Contracts.Select(k => k.ClassId).ToList(),
+                    // GG-T532: each hero's look ("Female"/"Male", "?" while the pick is pending) and whether the picker is up.
+                    variants = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.VariantPending ? "?" : h.Variant.ToString()),
+                    variantPicker = VariantPicker.Open };
             if (TestMode.Active) dump["testmode"] = new { cycles = TestMode.Completed, last = TestMode.LastLine };
             if (app.Router.Current is BattleScreen b && b.State != null)
             {

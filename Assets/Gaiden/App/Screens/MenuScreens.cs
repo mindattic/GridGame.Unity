@@ -183,7 +183,8 @@ namespace GridGame.App
                 App.Slot = slot;
                 App.ApplySettings();
                 App.Persist();
-                App.Router.ResetTo(StoryBeats.NewCampaign());
+                // GG-T532: the party picks its looks (the locked Warden too) before the story starts.
+                VariantPicker.ShowPending(() => App.Router.ResetTo(StoryBeats.NewCampaign()));
             }));
         }
     }

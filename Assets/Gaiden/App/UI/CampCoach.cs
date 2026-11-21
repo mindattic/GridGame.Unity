@@ -49,6 +49,7 @@ namespace GridGame.App
             IVisualElementScheduledItem item = null;
             item = hub.Root.schedule.Execute(() =>
             {
+                if (hub.Root.panel != null && VariantPicker.Open) return; // GG-T532: a joining hero's look is picked first
                 if (hub.Root.panel == null || ++tries > 30) { item.Pause(); return; }
                 if (Coach.Active) return;
                 item.Pause();

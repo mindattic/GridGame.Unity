@@ -412,6 +412,10 @@ namespace GridGame.Core.Content
         public Thumbnail Thumbnail;
         /// <summary>The figure's box on the portrait (GG-T352).</summary>
         public Figure Figure;
+        /// <summary>GG-T532: the thumbnail framing of the male art (Portraits/&lt;Id&gt;_male); null = <see cref="Thumbnail"/>.</summary>
+        public Thumbnail MaleThumbnail;
+        /// <summary>GG-T532: the figure's box on the male art (tools/import_art.py writes it); null = <see cref="Figure"/>.</summary>
+        public Figure MaleFigure;
         public Footprint Footprint = new Footprint();
         public Stats BaseStats = new Stats();
         public Stats Growth = new Stats();

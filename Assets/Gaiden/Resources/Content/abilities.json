@@ -3368,7 +3368,7 @@
  {
   "Id": "shieldmaiden_valkyrie",
   "Name": "Valkyrie's Call",
-  "Description": "Calls a fallen ally back from the edge: they rise on a free tile beside her with 30 HP.",
+  "Description": "Calls a fallen ally back from the edge: they rise on a free tile beside the Shield Maiden with 30 HP.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
@@ -4759,7 +4759,7 @@
  {
   "Id": "pandagirl_slam",
   "Name": "Bamboo Slam",
-  "Description": "A loud, showy slam (12 damage) that makes every foe want a piece of her: she is [Taunting], and a crowd around her only makes her [Empowered] (Unbowed).",
+  "Description": "A loud, showy slam (12 damage) that makes every foe want a piece of them: they are [Taunting], and a crowd around them only makes them [Empowered] (Unbowed).",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
@@ -9650,7 +9650,7 @@
   "Sfx": null,
   "Id": "herald_lifegift",
   "Name": "Lifegift",
-  "Description": "Gives her own essence: an ally mends 30 HP, and the Herald pays 12% of her max HP for it ([Essence]).",
+  "Description": "Gives their own essence: an ally mends 30 HP, and the Herald pays 12% of their max HP for it ([Essence]).",
   "LifeCost": 0.12
  },
  {

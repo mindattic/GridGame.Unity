@@ -221,6 +221,11 @@ namespace GridGame.App
                 setup.Tutorial = tutorial;
                 if (setupOverride == null && !tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
                 if (setupOverride == null && DevNextWanderer != null) { setup.Wanderer = new WandererSpec { Class = DevNextWanderer, Wave = 0 }; DevNextWanderer = null; }
+                // GG-T532: a wanderer shows either version of its class (when the male art exists), the same for this battle's
+                // replay and its talk after; the player still picks when they join.
+                HeroLooks.ClearShown();
+                if (setup.Wanderer?.Class is string wc && App.Save?.Hero(wc) == null && Art.HasMaleArt(wc))
+                    HeroLooks.Show(wc, HeroVariants.Roll(setup.Seed));
                 State = BattleEngine.Create(App.Content, setup, initial);
                 recorder = new BattleRecorder(State, setup, "player", initial);
                 // Every battle is tagged with the dial and the multipliers it applied (§22.9, GG-T309).

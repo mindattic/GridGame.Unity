@@ -23686,7 +23686,7 @@
       "Healer",
       "Humanoid"
     ],
-    "Card": "Backline [healer]. Free, strong heals paid in her own HP ([Essence]).",
+    "Card": "Backline [healer]. Free, strong heals paid in their own HP ([Essence]).",
     "Portrait": "herald",
     "Thumbnail": {
       "Zoom": 2.844,
@@ -30144,6 +30144,17 @@
       "Zoom": 2.4,
       "X": 0.535,
       "Y": 0.185
+    },
+    "MaleThumbnail": {
+      "Zoom": 2.4,
+      "X": 0.535,
+      "Y": 0.15
+    },
+    "MaleFigure": {
+      "X": 0.1904,
+      "Y": 0,
+      "W": 0.6182,
+      "H": 1
     },
     "Figure": {
       "X": 0.2002,
