@@ -63,10 +63,10 @@ BOSSES THAT BREAK THE RULES
 
 Each region of the main campaign ends in a boss that breaks one rule of battle. One takes a second turn when nobody stands beside it, one gets back up after it falls, and another shrugs off pincers from the side. Learn how each one is beaten before it beats you.
 
-A WORLD UNDER A LOW MOON
+A WORLD UNDER TWO MOONS
 (pending the story pass)
 
-A huge pale moon hangs over every land, and it grows larger the further the road goes. A white order owns the world's light. You lead a crew of runaways in a stolen caravan, out of the storm moors and up the lantern road, through the red Shardfall, past grounded ships and colossal stone arches, toward a white spire. A new chapter of the story opens every five stages.
+Two moons hang over every land: the old, familiar Moon, and beside it a misshapen second moon that grows larger the further the road goes. A white order owns the world's light. You lead a crew of runaways in a stolen caravan, out of the storm moors and up the lantern road, through the red Shardfall, past grounded ships and colossal stone arches, toward a white spire. A new chapter of the story opens every five stages.
 
 GATHER A CREW OF 69 HEROES
 
@@ -101,8 +101,8 @@ FAIR TO YOUR WALLET
 Everything in the game can be earned with gold. Diamonds are an optional shortcut: a random hero draw, a lucky forge craft, or an instant refill of the party's Rested energy. Every Diamond price can also be paid in gold.
 ```
 
-*(3,463 characters, including the "(pending the story pass)" marker line. Before submitting, re-check that the boss rule examples (TwinTurn, Undying, AxisWard) are
-still in stage content, and remove the "A world under a low moon" block or replace it with Prose-approved text once
+*(3,514 characters, including the "(pending the story pass)" marker line. Before submitting, re-check that the boss rule examples (TwinTurn, Undying, AxisWard) are
+still in stage content, and remove the "A world under two moons" block or replace it with Prose-approved text once
 the story pass lands.)*
 
 ## 6. Feature bullets (for screenshots, the website or press)

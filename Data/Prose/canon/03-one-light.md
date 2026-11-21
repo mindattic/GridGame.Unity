@@ -1,6 +1,10 @@
 ## One light: the Somnolith and the people
 
+**The Somnolith** is the world's second moon, a living body asleep inside a crust of grown stone (see *The Somnolith*). This entry covers the bond between it and every living person.
+
 **The core law: the Somnolith's energy and human life force are the same light.** Since the binding, every person's life has been a thread of the Somnolith's, and the Somnolith's sleep has been fed by theirs. The two are bound together: a co-dependency and a synchronicity. Neither is wholly itself any more.
+
+**Which moon's light.** When Halcyon's engineers, the Choir or the Underspire speak of "moonlight" as a power, they mean the Somnolith's light, the faint glow that seeps between its crystals. The ordinary Moon's light is only light; it feeds nothing and binds no one.
 
 **How it happened.** To put the Somnolith to sleep, Halcyon could not simply chain it. A living thing is bound by life, so they bound it through their own people.
 - **The first Lullaby:** a rite sung by thousands at once, braiding their life into the Somnolith's sleep and the Somnolith's light back into them.
@@ -8,11 +12,11 @@
 
 **Science.** Energy cannot cross a distance without a coupling, and Halcyon's coupling is living tissue.
 - **The circuit:** people are the conductors. The Somnolith's radiance flows down the lines of the Anchors, through living bodies, and back up as their life.
-- **Moonlight in the body:** the cyan of the Still's tanks and the Cathedral's pipes is the same light that shines faintly in every heartbeat, made visible.
-- **The winch:** drawing power down a line also pulls along it. Ten thousand years of rising draw became a physical pull. The orbit sinks, the tides worsen, and the Somnolith comes closer.
+- **Its light in the body:** the cyan of the Still's tanks and the Cathedral's pipes is the same light that shines faintly in every heartbeat, made visible.
+- **The winch:** drawing power down a line also pulls along it. Ten thousand years of rising draw became a physical pull. The orbit sinks, the tides worsen, and the Somnolith comes closer, growing larger in the sky beside the unchanging Moon.
 
 **Magic.** It is the same truth in older words: *what you feed on, feeds back.* Sympathy binds the dreamer and its dream.
-- **The synchronicity:** the Somnolith's slow sleep-breath sets human sleep. The tides that came with it move in the blood. When the Somnolith dreams uneasily, whole towns dream the same dream.
+- **The synchronicity:** the Somnolith's slow sleep-breath sets human sleep. The harsher tides that came with it move in the blood. When the Somnolith dreams uneasily, whole towns dream the same dream.
 - **It runs both ways:** when many people die at once, the Somnolith stirs, because less life is holding it under.
 
 **What the co-dependency means:**

@@ -1544,3 +1544,21 @@ gender, same with summoning ... no change to story or mechanics makes everything
   artifacts, endless-mode CSVs) already lived under `persistentDataPath` or a `-artifacts` folder given on the command
   line; MindAttic.Capture only boots on Windows.
 - *Why:* found on the emulator (GG-T547): a dev-only recorder must never disturb play on a device.
+
+## 2026-11-21 — Two moons: the Moon stays, the Somnolith is a second, misshapen moon (owner, GG-T575)
+
+Owner: *"maybe the moon doesn't have to be a perfect sphere ... a normal moon to balance things ... and then an oddly
+shaped 'weird' moon ... the Moon is always the same size but this 'weird moon' is getting closer as the game progresses"*;
+then *"the Somnolith needs to be the same in every picture"*, with a reference photo (a kidney-stone accretion).
+
+- **Was:** the canon's one moon was the Somnolith, a round moon in every backdrop, and the forgotten clue was "no moon in
+  art older than 10,000 years" (old skies empty, no tides).
+- **Now (Prose `gridgame` canon, staging copy `Data/Prose/canon/`; [BIBLE §27.3](BIBLE.md#273-the-sky-two-moons-and-the-staged-backdrop-gg-t575-design-gg-t576-builds-it)):**
+  the ordinary Moon has always been there, unchanged and always the same size. The Somnolith is a second moon: lumpy,
+  potato-shaped like Phobos, a crusted, grown-looking stone (bladed crystal clusters, bubbly amber-brown lumps, pale
+  fibrous tufts) with faint light in its gaps, and it grows in the sky chapter by chapter. The clue becomes "no second
+  moon in art older than 10,000 years"; old shorelines carry only the Moon's gentle tide line. The Cut-the-lines ending
+  leaves one moon, not an empty sky. Backdrops become staged (sky plate, the Moon, one canonical Somnolith asset scaled
+  by progress, drifting shards, foreground plate); designed in §27.3, built by GG-T576.
+- *Why:* the fixed Moon gives the player a sense of scale, so the Somnolith's approach reads as time running out, and a
+  single unchanging Somnolith asset keeps it the same object in every scene.
