@@ -5,7 +5,7 @@
 - **The Choir.** The heirs of Halcyon's first singers, centred on the Choir's Cathedral.
   - **The rite:** they keep the Somnolith asleep with **the Lullaby**, which draws life from the faithful and the tithed and sings it upward to quiet the sleeper.
   - **The skim:** the Lullaby takes more than the Somnolith needs, and the Choir keeps the difference. Its elders live for centuries and glow faintly cyan, and the Cathedral's organ pipes are full of stolen life.
-  - **Who knows:** only the **Hierarch**, the Choir's leader, knows the whole truth, skim included. Everyone below believes sincerely.
+  - **Who knows:** only **Hierarch**, the Choir's leader (named bare, like every archetype), knows the whole truth, skim included. Everyone below believes sincerely.
   - **What they are:** they are both right and wrong. Without the Lullaby the Somnolith wakes, but their skim is why the sleep keeps thinning and why each year they must take more.
   - **Their colours:** their white robes and red crosses are the white-and-red law made into a uniform, worn by the people who decide whose light is taken.
 - **The Underspire.** A neon undercity that still draws moonlight to keep its lights on, and so keeps pulling the Somnolith down. Its gangs and techwear crews are the present-day overdraw.

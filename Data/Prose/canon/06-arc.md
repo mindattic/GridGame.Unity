@@ -27,13 +27,13 @@ Because the light is shared, every ending costs everyone:
 
 ## Decisions (owner, 2026-11-21)
 
-- **The lead: the First Sleeper, called the Warden.** One fixed protagonist, the Knight class, wakes first in the prologue and thaws the others. The story has the Warden's face and voice, and the summoned roster gathers around them.
+- **The lead: the First Sleeper, Warden.** One fixed protagonist, the Knight class, wakes first in the prologue and thaws the others. The story has Warden's face and voice, and the summoned roster gathers around them.
   - **Who:** Halcyon's last guard, left on watch over the Still on the night of the Undertow.
   - **What they wake to:** they wake 1,200 years late, still on duty, sworn to a city that no longer exists, guarding sleepers in a world that has forgotten why.
   - **Their arc:** what a guard owes when the thing they guarded was the wrong thing to keep.
-  - **Name:** just "the Warden". Their own name was lost with Halcyon's dark archives.
-- **Every character is an archetype.** Heroes are known by their role (the Warden, the Sage, the Courier), never by personal names.
-- **Every class comes in a female and a male version** (the owner will generate the male counterparts). Either version may turn up. When a hero joins, through recruiting or a summon, the player picks which version they get, and that includes the Warden.
+  - **Name:** just "Warden", with no article. Their own name was lost with Halcyon's dark archives.
+- **Every character is an archetype.** A hero's role is their name, used bare like a proper name: "Warden", "Paladin", "Thief", never "the Paladin". There are no personal names.
+- **Every class comes in a female and a male version** (the owner will generate the male counterparts). Either version may turn up. When a hero joins, through recruiting or a summon, the player picks which version they get, and that includes Warden.
   - The story and mechanics are identical for both, so story text never assumes a hero's gender.
   - Heroes are referred to by role; any pronouns follow the player's pick, through the game's own tokens.
   - The aim is equal footing, not another phone game full of pin-ups.
