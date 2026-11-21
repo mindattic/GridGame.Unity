@@ -872,12 +872,15 @@ namespace GridGame.App
             // GG-T178 (§25.0.7): once it's made (the starter still selected), it moves on to the first armor piece.
             if (tab == 0 && (selected == null || (Forging.IsStarter(selected) && Forging.Done(S))))
                 selected = Forging.First(C, S)?.Recipe ?? Forging.FirstArmor(C, S)?.Recipe ?? selected;
-            if (tab <= 1) RecipeList(list, detail, C, S, CraftStation.Forge, tab == 1, ref selected, this);
+            if (tab <= 1) RecipeList(list, detail, C, S, CraftStation.Forge, tab == 1, selected, r => selected = r, this);
             else if (tab == 2) SalvageList(list, detail);
             else RepairList(list, detail);
         }
 
-        internal static void RecipeList(VisualElement list, VisualElement detail, ContentDb c, SaveData s, CraftStation station, bool upgrades, ref RecipeDef selected, HubPage page)
+        /// <summary>The station's recipe rows over its detail pane. <paramref name="onPick"/> keeps the page's own selection in
+        /// step with the row the player taps, so a Craft/Brew (which rebuilds the page) stays on that recipe — and the list
+        /// scrolls back to it — instead of jumping to the first or guided one.</summary>
+        internal static void RecipeList(VisualElement list, VisualElement detail, ContentDb c, SaveData s, CraftStation station, bool upgrades, RecipeDef selected, Action<RecipeDef> onPick, HubPage page)
         {
             var recipes = Crafting.Recipes(c, station).Where(r => (r.BaseItem != null) == upgrades).ToList();
             if (station == CraftStation.Enchant) recipes = Crafting.Recipes(c, station).ToList();
@@ -910,7 +913,7 @@ namespace GridGame.App
                     bool can = !locked && Crafting.HasInputs(s, r) && s.Gold >= r.Gold;
                     string nameOverride = resultCounts[r.Result] > 1 ? $"{result.Name} — {InputSummary(c, r)}" : null;
                     string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
-                    row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => ShowRecipe(detail, c, s, rec, page), list, true, false, nameOverride);
+                    row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
                     if (!can) row.style.opacity = 0.55f;
                 }
@@ -918,10 +921,18 @@ namespace GridGame.App
                 {
                     var missing = RecipeDiscovery.OneAwayMissing(s, r);
                     var missingItem = c.TryItem(missing.Item);
-                    row = Ui.MenuRow("???", $"Missing {missingItem?.Name ?? missing.Item}", () => ShowRecipe(detail, c, s, rec, page), list);
+                    row = Ui.MenuRow("???", $"Missing {missingItem?.Name ?? missing.Item}", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list);
                     row.style.opacity = 0.75f;
                 }
-                if (sel == r) Ui.Select(row);
+                if (sel == r)
+                {
+                    Ui.Select(row);
+                    var picked = row;
+                    var scroll = list.GetFirstAncestorOfType<ScrollView>();
+                    bool scrolled = false;
+                    if (scroll != null)
+                        scroll.RegisterCallback<GeometryChangedEvent>(_ => { if (!scrolled && picked.layout.height > 0) { scrolled = true; scroll.ScrollTo(picked); } });
+                }
             }
             if (sel != null) ShowRecipe(detail, c, s, sel, page);
             else Ui.Empty("Pick a recipe to see what it needs.", detail);
@@ -1148,15 +1159,15 @@ namespace GridGame.App
         {
             // GG-T176 (§25.0.5): on the first visit his camp tip walks the first brew, so that bottle recipe opens selected.
             if (selected == null && CampTips.Pending(S, Id) != null) selected = Brewing.FirstBrew(C, S);
-            StationBody(body, CraftStation.Alchemy, false, ref selected, this);
+            StationBody(body, CraftStation.Alchemy, false, selected, r => selected = r, this);
         }
 
         /// <summary>A recipe list over a detail pane — the Alchemist's Brew and the Enchantress's Enchant share it.</summary>
-        internal static void StationBody(VisualElement body, CraftStation station, bool upgrades, ref RecipeDef selected, HubPage page)
+        internal static void StationBody(VisualElement body, CraftStation station, bool upgrades, RecipeDef selected, Action<RecipeDef> onPick, HubPage page)
         {
             var list = Ui.ListPanel(body);
             var detail = Ui.DetailPanel(body);
-            BlacksmithScreen.RecipeList(list, detail, GameApp.I.Content, GameApp.I.Save, station, upgrades, ref selected, page);
+            BlacksmithScreen.RecipeList(list, detail, GameApp.I.Content, GameApp.I.Save, station, upgrades, selected, onPick, page);
         }
     }
 
@@ -1181,7 +1192,7 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             Ui.Tabs(new[] { "Armor", "Weapons" }, tab, i => { tab = i; Refresh(); }, body);
-            if (tab == 1) { AlchemistScreen.StationBody(body, CraftStation.Enchant, true, ref selected, this); return; }
+            if (tab == 1) { AlchemistScreen.StationBody(body, CraftStation.Enchant, true, selected, r => selected = r, this); return; }
             ArmorBody(body);
         }
 
