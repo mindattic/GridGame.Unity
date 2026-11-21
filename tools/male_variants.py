@@ -293,7 +293,7 @@ def run(classes, redo):
                 else:
                     time.sleep(20)
                 break
-            page.wait_for_timeout(15000)
+            time.sleep(15)
             busy = mj.queued()
             if busy is None:
                 continue
@@ -374,16 +374,24 @@ def main():
     if os.name == "nt":  # keep the PC awake for this process only (ES_CONTINUOUS | ES_SYSTEM_REQUIRED); ends with it
         import ctypes
         ctypes.windll.kernel32.SetThreadExecutionState(0x80000000 | 0x00000001)
-    for attempt in range(1, 6):  # unattended: a dropped page or browser restarts the run, which resumes from state.json
+    stalls = 0
+    while True:  # unattended: a dropped DevTools connection just reconnects and resumes from state.json
+        before = sum(done(c["Id"], v) for c in classes for v in PROMPTS)
         try:
-            run(classes, args.redo and attempt == 1)
+            run(classes, args.redo)
             return
         except SystemExit:
             raise
         except Exception as e:
-            log(f"run crashed ({type(e).__name__}: {e}); restarting in 60 s (attempt {attempt}/5)")
-            time.sleep(60)
-
+            args.redo = False
+            progressed = sum(done(c["Id"], v) for c in classes for v in PROMPTS) > before
+            stalls = 0 if progressed else stalls + 1
+            if stalls >= 5:
+                log(f"run crashed 5 times in a row with no progress ({type(e).__name__}: {e}); stopping, rerun to resume")
+                build_gallery(heroes())
+                sys.exit(1)
+            log(f"connection dropped ({type(e).__name__}); reconnecting in 15 s")
+            time.sleep(15)
 
 if __name__ == "__main__":
     main()
