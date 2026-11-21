@@ -29,10 +29,25 @@ namespace GridGame.Core.Content
         /// <summary>Type for anything unmapped (an unarmed hero).</summary>
         public string Default = "blunt";
         public List<AttackTypeDef> Types = new List<AttackTypeDef>();
-        public Dictionary<string, string> Weapons = new Dictionary<string, string>();
-        public Dictionary<string, string> Enemies = new Dictionary<string, string>();
-        public Dictionary<string, string> Abilities = new Dictionary<string, string>();
-        public Dictionary<string, string> Notes = new Dictionary<string, string>();
+        // Keyed case-insensitively, like Validate (ContentDb's ids) reads them; the loader's Replace handling builds
+        // plain dictionaries, so they're rebuilt after reading.
+        public Dictionary<string, string> Weapons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, string> Enemies = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, string> Abilities = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, string> Notes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        [System.Runtime.Serialization.OnDeserialized]
+        private void IgnoreKeyCase(System.Runtime.Serialization.StreamingContext _)
+        {
+            Weapons = IgnoreCase(Weapons); Enemies = IgnoreCase(Enemies); Abilities = IgnoreCase(Abilities); Notes = IgnoreCase(Notes);
+        }
+
+        private static Dictionary<string, string> IgnoreCase(Dictionary<string, string> d)
+        {
+            var ci = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (d != null) foreach (var kv in d) if (!ci.ContainsKey(kv.Key)) ci[kv.Key] = kv.Value;
+            return ci;
+        }
 
         public AttackTypeDef Type(string id) => id == null ? null : Types.FirstOrDefault(t => string.Equals(t.Id, id, StringComparison.OrdinalIgnoreCase));
 

@@ -69,15 +69,15 @@ namespace GridGame.Core.Rules
                 case TriggerEffectKind.Heal: return $"heal {Who(e, "itself")} {Pct(e.Amount)} of max HP";
                 case TriggerEffectKind.Lifesteal: return $"[Lifesteal] {Pct(e.Amount)} of the damage";
                 case TriggerEffectKind.ApplyBuff: return $"give {Who(e, "itself")} [{BuffName(c, e.Buff)}]";
-                case TriggerEffectKind.Counterstrike: return $"[Counterstrike] (×{e.Amount:0.##})";
-                case TriggerEffectKind.FollowUp: return $"strike again (×{e.Amount:0.##})";
+                case TriggerEffectKind.Counterstrike: return FormattableString.Invariant($"[Counterstrike] (×{e.Amount:0.##})");
+                case TriggerEffectKind.FollowUp: return FormattableString.Invariant($"strike again (×{e.Amount:0.##})");
                 case TriggerEffectKind.CastAbility: return $"cast [{c?.TryAbility(e.Ability)?.Name ?? e.Ability}] for free";
                 case TriggerEffectKind.Reflect: return $"[Reflect] {Pct(e.Amount)} of the damage at the attacker";
                 case TriggerEffectKind.Cleanse: return $"[Cleanse] {Who(e, "itself")}";
-                case TriggerEffectKind.ManaCharge: return $"add {e.Amount:0} [mana charge]";
-                case TriggerEffectKind.Pushback: return $"[Pushback] {Who(e, "the attacker")} {e.Amount:0.#}s";
-                case TriggerEffectKind.DamageMultiplier: return $"its blows hit ×{e.Amount:0.##}";
-                case TriggerEffectKind.ReductionMultiplier: return e.Amount <= 0f ? "it takes no damage" : $"it takes ×{e.Amount:0.##} damage";
+                case TriggerEffectKind.ManaCharge: return FormattableString.Invariant($"add {e.Amount:0} [mana charge]");
+                case TriggerEffectKind.Pushback: return FormattableString.Invariant($"[Pushback] {Who(e, "the attacker")} {e.Amount:0.#}s");
+                case TriggerEffectKind.DamageMultiplier: return FormattableString.Invariant($"its blows hit ×{e.Amount:0.##}");
+                case TriggerEffectKind.ReductionMultiplier: return e.Amount <= 0f ? "it takes no damage" : FormattableString.Invariant($"it takes ×{e.Amount:0.##} damage");
                 case TriggerEffectKind.Immunity:
                     var names = new List<string>();
                     if (e.Statuses != null) foreach (var s in e.Statuses) names.Add($"[{BuffName(c, s)}]");
@@ -107,7 +107,7 @@ namespace GridGame.Core.Rules
 
         private static string BuffName(ContentDb c, string id) => c?.TryBuff(id)?.Name ?? id;
 
-        private static string Pct(float f) => $"{Math.Round(f * 100f, 1):0.#}%";
+        private static string Pct(float f) => FormattableString.Invariant($"{Math.Round(f * 100f, 1):0.#}%");
 
         private static string Cap(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s.Substring(1);
     }

@@ -68,7 +68,7 @@ namespace GridGame.Core.Content
 
             // One stream per dimension so adding/removing content in one dimension never reshuffles the others.
             var familyIds = db.Classes.Values
-                .Where(c => c.Team == Team.Enemy && !string.IsNullOrEmpty(c.DropTable))
+                .Where(EncounterCatalog.IsGroupable) // a boss/multi-tile/snake/egg-layer-only family never fills a wave
                 .Select(c => c.DropTable).Distinct(StringComparer.OrdinalIgnoreCase)
                 .OrderBy(f => f, StringComparer.Ordinal).ToList();
             if (familyIds.Count == 0) throw new InvalidOperationException("EncounterSchedule: no enemy family (ClassDef.DropTable) to draw from");

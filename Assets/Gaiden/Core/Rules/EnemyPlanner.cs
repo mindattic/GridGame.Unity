@@ -247,7 +247,9 @@ namespace GridGame.Core.Rules
                 foreach (var d in Coord.Cardinals)
                 {
                     var c = enemy.Pos + d + d; // a leap clears whatever is in between
-                    if (s.Walkable(c) && s.UnitAt(c) == null && s.MovableAt(c) == null) candidates.Add(c);
+                    if (!s.Walkable(c) || s.UnitAt(c) != null || s.MovableAt(c) != null) continue;
+                    if (s.Region.Rules.Count > 0 && RegionBoard.DangerAt(s, c, enemy) > 0f) continue; // GG-T359: nor leap into one
+                    candidates.Add(c);
                 }
             var ward = brain == Brain.Guardian ? Ward(s, enemy) : null;
             Unit patient = null;
@@ -369,14 +371,14 @@ namespace GridGame.Core.Rules
                 Unit pick = null;
                 if (ability.BaseHeal > 0)
                 {
-                    foreach (var al in allies) if (al.HpFraction < 0.7f && (pick == null || al.HpFraction < pick.HpFraction)) pick = al;
+                    foreach (var al in allies) if (!al.IsRemains && al.HpFraction < 0.7f && (pick == null || al.HpFraction < pick.HpFraction)) pick = al;
                     if (pick == null) return null; // nobody needs mending: act normally instead
                 }
                 else if (ability.ApplyBuff != null)
                 {
                     var buff = s.Content.TryBuff(ability.ApplyBuff);
                     bool anyWithout = false;
-                    foreach (var al in allies) if (buff == null || !al.HasBuff(buff.Id)) anyWithout = true;
+                    foreach (var al in allies) if (!al.IsRemains && (buff == null || !al.HasBuff(buff.Id))) anyWithout = true;
                     if (!anyWithout) return null;
                     pick = enemy;
                 }

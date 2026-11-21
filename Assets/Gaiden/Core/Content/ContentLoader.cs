@@ -36,9 +36,14 @@ namespace GridGame.Core.Content
             var stages = ReadList<StageDef>(readText, "stages");
             // A wave that names a group (GG-T184) gets the group's foes, formation and level; Validate reports a bad id.
             foreach (var st in stages)
-                foreach (var w in st.Waves)
-                    if (w.Group != null && w.Enemies.Count == 0 && db.TryEncounter(w.Group) is EncounterGroupDef g)
+                for (int wi = 0; wi < st.Waves.Count; wi++)
+                {
+                    var w = st.Waves[wi];
+                    if (w.Group != null && w.Enemies.Count > 0)
+                        db.LoadProblems.Add($"stage {st.Id} wave {wi + 1}: names both Group '{w.Group}' and its own Enemies (the Group is ignored; use one)");
+                    else if (w.Group != null && db.TryEncounter(w.Group) is EncounterGroupDef g)
                         w.Enemies = EncounterCatalog.Spawns(g, g.Level);
+                }
             AddAll(db.Stages, stages, c => c.Id);
             db.StageOrder.AddRange(stages);
             AddAll(db.Traps, ReadList<TrapDef>(readText, "traps"), c => c.Id);
@@ -120,6 +125,7 @@ namespace GridGame.Core.Content
             void NeedAbility(string id, string where) { if (id != null && !db.Abilities.ContainsKey(id)) p.Add($"{where}: unknown ability '{id}'"); }
             void NeedBuff(string id, string where) { if (id != null && !db.Buffs.ContainsKey(id)) p.Add($"{where}: unknown buff '{id}'"); }
 
+            p.AddRange(db.LoadProblems);
             foreach (var c in db.Classes.Values)
             {
                 if (c.DropTable != null && !db.DropTables.ContainsKey(c.DropTable)) p.Add($"class {c.Id}: unknown drop table '{c.DropTable}'");
@@ -285,7 +291,8 @@ namespace GridGame.Core.Content
             foreach (var t in db.Campaign.Themes)
                 foreach (var s in t.Stages)
                 {
-                    if (!db.Stages.ContainsKey(s)) p.Add($"theme {t.Id}: unknown stage '{s}'");
+                    if (s == null) p.Add($"theme {t.Id}: a null entry in Stages");
+                    else if (!db.Stages.ContainsKey(s)) p.Add($"theme {t.Id}: unknown stage '{s}'");
                     else if (stageThemeOwner.TryGetValue(s, out var owner)) p.Add($"theme {t.Id}: stage '{s}' already belongs to theme '{owner}'");
                     else stageThemeOwner[s] = t.Id;
                 }
@@ -309,7 +316,8 @@ namespace GridGame.Core.Content
                 // GG-T187 (§1.2.3): a class's support action must be playable.
                 if (c.Support != null)
                 {
-                    if (c.Support.Range < 0) p.Add($"class {c.Id}: support range can't be negative");
+                    // Reach 0 would read as unlimited to PincerDetector yet "reach 1" on the card: at least 1.
+                    if (c.Support.Range < 1) p.Add($"class {c.Id}: support range must be at least 1");
                     if (c.Support.Magnitude < 0f) p.Add($"class {c.Id}: support magnitude can't be negative");
                     if (c.Support.Effect == SupportEffect.Buff)
                     {
@@ -331,7 +339,7 @@ namespace GridGame.Core.Content
                     if (bc.Team != Team.Enemy) p.Add($"bounty {b.Id}: target '{b.TargetClass}' is not an enemy class");
                     if (bc.SnakeSegments > 0) p.Add($"bounty {b.Id}: target '{b.TargetClass}' is a snake (segments can't carry the mark)");
                 }
-                if (b.Stage == null || !db.Stages.TryGetValue(b.Stage, out var bs) || bs.IsTest) p.Add($"bounty {b.Id}: unknown campaign stage '{b.Stage}'");
+                if (b.Stage == null || !db.Stages.TryGetValue(b.Stage, out var bs) || bs.IsTest || db.ThemeOf(b.Stage) == null) p.Add($"bounty {b.Id}: unknown campaign stage '{b.Stage}' (must be a real stage in a theme)");
                 else if (b.Wave < 0 || b.Wave >= bs.Waves.Count) p.Add($"bounty {b.Id}: wave {b.Wave} is not a wave of {b.Stage}");
                 if (b.RewardSkillPoints < 0) p.Add($"bounty {b.Id}: skill points can't be negative");
             }
@@ -504,6 +512,9 @@ namespace GridGame.Core.Content
         public static void ValidateTrigger(ContentDb db, AbilityDef a, List<string> p)
         {
             string w = $"ability {a.Id} trigger";
+            // A status a trigger matches on is compared with the buff's own id exactly (Triggers.Matches/ImmunityTo,
+            // Unit.HasBuff), so it must be spelled in the buff's exact case, not just resolve case-insensitively.
+            bool KnownStatus(string id) => id != null && db.Buffs.TryGetValue(id, out var bd) && string.Equals(bd.Id, id, StringComparison.Ordinal);
             var t = a.Trigger;
             if (t == null)
             {
@@ -520,16 +531,16 @@ namespace GridGame.Core.Content
             if (t.On == TriggerOn.OnLowHp && !(t.Threshold > 0f && t.Threshold < 1f)) p.Add($"{w}: OnLowHp needs Threshold in (0, 1)");
             if (t.On != TriggerOn.OnLowHp && t.Threshold != 0f) p.Add($"{w}: Threshold is only for OnLowHp");
             if (t.Status != null && t.On != TriggerOn.OnStatusGained) p.Add($"{w}: Status is only for OnStatusGained");
-            if (t.Status != null && !db.Buffs.ContainsKey(t.Status)) p.Add($"{w}: unknown status '{t.Status}'");
+            if (t.Status != null && !KnownStatus(t.Status)) p.Add($"{w}: unknown status '{t.Status}'");
             var c = t.Condition;
             if (c != null)
             {
                 if (c.SelfHpBelow < 0f || c.SelfHpBelow > 1f || c.SelfHpAbove < 0f || c.SelfHpAbove >= 1f) p.Add($"{w}: condition HP fractions outside 0..1");
-                if (c.HasStatus != null && !db.Buffs.ContainsKey(c.HasStatus)) p.Add($"{w}: condition unknown status '{c.HasStatus}'");
-                if (c.LacksStatus != null && !db.Buffs.ContainsKey(c.LacksStatus)) p.Add($"{w}: condition unknown status '{c.LacksStatus}'");
+                if (c.HasStatus != null && !KnownStatus(c.HasStatus)) p.Add($"{w}: condition unknown status '{c.HasStatus}'");
+                if (c.LacksStatus != null && !KnownStatus(c.LacksStatus)) p.Add($"{w}: condition unknown status '{c.LacksStatus}'");
                 if (c.AdjacentFoesAtLeast < 0 || c.AdjacentFoesAtLeast > 4) p.Add($"{w}: condition AdjacentFoesAtLeast outside 0..4");
                 if (c.OtherTag != null && c.OtherTag.Trim().Length == 0) p.Add($"{w}: condition OtherTag is blank");
-                if (c.OtherHasStatus != null && !db.Buffs.ContainsKey(c.OtherHasStatus)) p.Add($"{w}: condition unknown status '{c.OtherHasStatus}'");
+                if (c.OtherHasStatus != null && !KnownStatus(c.OtherHasStatus)) p.Add($"{w}: condition unknown status '{c.OtherHasStatus}'");
                 if (c.OtherHpBelow < 0f || c.OtherHpBelow >= 1f) p.Add($"{w}: condition OtherHpBelow outside 0..1");
             }
             if (t.Effects == null || t.Effects.Count == 0) { p.Add($"{w}: needs at least one effect"); return; }
@@ -568,7 +579,7 @@ namespace GridGame.Core.Content
                         break;
                     case TriggerEffectKind.Immunity:
                         if (e.Statuses == null || e.Statuses.Count == 0) p.Add($"{we}: needs Statuses");
-                        else foreach (var s in e.Statuses) if (!db.Buffs.ContainsKey(s ?? "")) p.Add($"{we}: unknown status '{s}'");
+                        else foreach (var s in e.Statuses) if (!KnownStatus(s)) p.Add($"{we}: unknown status '{s}'");
                         break;
                     case TriggerEffectKind.CastAbility:
                         if (!db.Abilities.TryGetValue(e.Ability ?? "", out var cast)) p.Add($"{we}: unknown ability '{e.Ability}'");

@@ -13,7 +13,7 @@ namespace GridGame.Core.Bot
     /// </summary>
     public sealed class HeroBot
     {
-        private readonly Rng rng;
+        private Rng rng;
         /// <summary>0 = always best move, 1 = always random legal move.</summary>
         public float Randomness;
 
@@ -44,6 +44,11 @@ namespace GridGame.Core.Bot
         /// <summary>Smart bot: actions in a row that took no enemy HP (a stall), and the enemy HP total last seen.</summary>
         private int stalled;
         private int lastEnemyHp = -1;
+        /// <summary>The window the stall count last saw (battle, wave, clock), so a wave clear or a new battle restarts the
+        /// count and asking twice in one window counts it once.</summary>
+        private StageDef stallStage;
+        private int stallWave = -1;
+        private long stallClock = -1;
 
         /// <summary>
         /// GG-T311: seconds the bot hesitates with a hero held before it moves (route planning), on top of the human drag
@@ -79,8 +84,14 @@ namespace GridGame.Core.Bot
 
         public static HeroBot Skilled(int seed) => new HeroBot(seed) { SkillLevel = SkilledSkillLevel, ThinkSeconds = SkilledThinkSeconds };
 
-        /// <summary>The best drag on offer (hints and automation teach moving, so they ask for a move specifically).</summary>
-        public MoveCommand BestMove(BattleState s) => Decide(s, movesOnly: true) as MoveCommand;
+        /// <summary>The best drag on offer (hints and automation teach moving, so they ask for a move specifically).
+        /// A query only: it leaves the bot's rng (and stall count) as it found them, so `BestMove ?? Decide` decides once.</summary>
+        public MoveCommand BestMove(BattleState s)
+        {
+            var saved = rng.Clone();
+            try { return Decide(s, movesOnly: true) as MoveCommand; }
+            finally { rng = saved; }
+        }
 
         public BattleCommand Decide(BattleState s)
         {
@@ -90,18 +101,25 @@ namespace GridGame.Core.Bot
             return cmd;
         }
 
+        /// <summary>A window that took no enemy HP is a stall. A new battle or wave (fresh, full-HP foes) restarts the count
+        /// rather than reading as one, and a second ask in the same window (same clock) isn't counted again.</summary>
+        private void CountStall(BattleState s)
+        {
+            if (s.Stage != stallStage || s.Wave != stallWave || s.Clock < stallClock) { stalled = 0; lastEnemyHp = -1; }
+            else if (s.Clock == stallClock) return;
+            int hp = 0;
+            foreach (var e in s.LivingList(Team.Enemy)) hp += e.Hp;
+            stalled = lastEnemyHp >= 0 && hp >= lastEnemyHp ? stalled + 1 : 0;
+            lastEnemyHp = hp;
+            stallStage = s.Stage; stallWave = s.Wave; stallClock = s.Clock;
+        }
+
         private BattleCommand Decide(BattleState s, bool movesOnly)
         {
             if (!movesOnly) lockedOut = false;
             // GG-T308: a stall is counted per window (the party now takes several actions in one).
             bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && u.ActedThisWindow);
-            if (TimelineAware && freshWindow)
-            {
-                int hp = 0;
-                foreach (var e in s.LivingList(Team.Enemy)) hp += e.Hp;
-                stalled = lastEnemyHp >= 0 && hp >= lastEnemyHp ? stalled + 1 : 0;
-                lastEnemyHp = hp;
-            }
+            if (TimelineAware && freshWindow && !movesOnly) CountStall(s);
             // A recruitable whose every term is met (GG-T132) is worth more than any swing: talk it round first.
             if (!movesOnly && Recruitment.ReadyTalk(s) is TalkCommand talk) return talk;
             // GG-T311: no hero's action fits the gap — the party has to give the window up.

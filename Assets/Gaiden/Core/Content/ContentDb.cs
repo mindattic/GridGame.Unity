@@ -35,6 +35,9 @@ namespace GridGame.Core.Content
         /// <summary>True when <see cref="ContentLoader.Load"/> found no elements.json (GG-T416): only then is a missing element
         /// table a content error; a hand-built ContentDb (tests, tools) has none and simply skips the GG-T371 checks.</summary>
         public bool ElementsFileMissing;
+        /// <summary>What <see cref="ContentLoader.Load"/> had to drop while reading (e.g. a wave naming both a Group and its own
+        /// Enemies keeps the Enemies); <see cref="ContentLoader.Validate"/> reports each.</summary>
+        public List<string> LoadProblems = new List<string>();
         /// <summary>mercenaries.json (GG-T233), in file order.</summary>
         public readonly List<MercenaryDef> Mercenaries = new List<MercenaryDef>();
         public MercenaryDef TryMercenary(string classId) => Mercenaries.Find(m => string.Equals(m.Class, classId, StringComparison.OrdinalIgnoreCase));
@@ -130,7 +133,7 @@ namespace GridGame.Core.Content
             var list = new List<StageDef>();
             foreach (var t in Campaign.Themes)
                 foreach (var s in t.Stages)
-                    if (Stages.TryGetValue(s, out var def)) list.Add(def);
+                    if (s != null && Stages.TryGetValue(s, out var def)) list.Add(def); // a null entry is Validate's to report
             return list;
         }
 

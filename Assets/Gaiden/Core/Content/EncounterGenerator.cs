@@ -26,8 +26,10 @@ namespace GridGame.Core.Content
             if (donors.Count == 0) throw new InvalidOperationException("EncounterGenerator: no real stage to borrow location/blocks from");
             var donor = rng.Pick(donors);
 
+            // Bosses, multi-tile foes, snakes and egg layers never fill an endless wave (no 2-4 liches when a
+            // family has no authored group): draw only the foes an encounter group could hold.
             var families = db.Classes.Values
-                .Where(c => c.Team == Team.Enemy && !string.IsNullOrEmpty(c.DropTable))
+                .Where(EncounterCatalog.IsGroupable)
                 .GroupBy(c => c.DropTable, StringComparer.OrdinalIgnoreCase)
                 .OrderBy(g => g.Key, StringComparer.Ordinal)
                 .Select(g => g.OrderBy(c => c.Id, StringComparer.Ordinal).ToList())
@@ -56,7 +58,7 @@ namespace GridGame.Core.Content
             {
                 string family = plan.Families[i % plan.Families.Count];
                 var pool = db.Classes.Values
-                    .Where(c => c.Team == Team.Enemy && string.Equals(c.DropTable, family, StringComparison.OrdinalIgnoreCase))
+                    .Where(c => EncounterCatalog.IsGroupable(c) && string.Equals(c.DropTable, family, StringComparison.OrdinalIgnoreCase))
                     .OrderBy(c => c.Id, StringComparer.Ordinal).ToList();
                 if (pool.Count == 0) throw new InvalidOperationException($"EncounterGenerator: no enemy class in family '{family}'");
                 waveFamilies.Add(pool);

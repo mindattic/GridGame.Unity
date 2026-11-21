@@ -125,17 +125,27 @@ namespace GridGame.Core.Content
         public static VfxTier TierOf(AbilityDef a)
         {
             if (a == null) return VfxTier.Minor;
-            if (a.Intensity != null && Enum.TryParse(a.Intensity, true, out VfxTier set)) return set;
+            if (TryParseTier(a.Intensity, out VfxTier set)) return set;
             if (a.Cost >= UltimateCost || a.CooldownTurns >= 5) return VfxTier.Ultimate;
             if (a.Cost >= MajorCost || a.CooldownTurns >= 3) return VfxTier.Major;
             return VfxTier.Minor;
+        }
+
+        /// <summary>A tier by name only (any case): Enum.TryParse alone also takes numbers ("7") and combos ("Minor,Major").</summary>
+        private static bool TryParseTier(string s, out VfxTier tier)
+        {
+            tier = VfxTier.Minor;
+            if (string.IsNullOrWhiteSpace(s)) return false;
+            var trimmed = s.Trim();
+            if (char.IsDigit(trimmed[0]) || trimmed[0] == '-' || trimmed[0] == '+' || trimmed.IndexOf(',') >= 0) return false;
+            return Enum.TryParse(trimmed, true, out tier) && Enum.IsDefined(typeof(VfxTier), tier);
         }
 
         public static void Validate(ContentDb db, List<string> p)
         {
             var sheet = db.Vfx;
             foreach (var a in db.Abilities.Values)
-                if (a.Intensity != null && !Enum.TryParse(a.Intensity, true, out VfxTier _))
+                if (a.Intensity != null && !TryParseTier(a.Intensity, out VfxTier _))
                     p.Add($"ability {a.Id}: unknown Intensity '{a.Intensity}' (Minor, Major or Ultimate)");
             if (sheet == null || sheet.Elements.Count == 0) return; // fixtures without the style table
             foreach (DamageType t in Enum.GetValues(typeof(DamageType)))

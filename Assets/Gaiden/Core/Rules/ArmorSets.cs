@@ -76,7 +76,7 @@ namespace GridGame.Core.Rules
                 float v = get(b.Stats);
                 if (Math.Abs(v) > 0.01f) parts.Add($"{name} {(v > 0 ? "+" : "")}{v:0}");
             }
-            foreach (var kv in b.Resistances) parts.Add($"{kv.Key} ×{kv.Value:0.##}");
+            foreach (var kv in b.Resistances) parts.Add(FormattableString.Invariant($"{kv.Key} ×{kv.Value:0.##}"));
             if (b.PincerDamageBonus > 0) parts.Add($"Pincer +{Math.Round(b.PincerDamageBonus * 100)}%");
             if (b.RegenPerTurn > 0) parts.Add($"Regen {b.RegenPerTurn}/turn");
             if (b.BattleStartManaOrbs > 0) parts.Add($"+{b.BattleStartManaOrbs} orbs at battle start");
