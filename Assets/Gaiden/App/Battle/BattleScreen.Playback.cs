@@ -66,7 +66,7 @@ namespace GridGame.App
                 if (shownLive) continue;
                 // GG-T126: no beat starts while the pause menu is up (a beat's side effects — banners, tallies,
                 // outlines — run the moment Animate is called, before its first yield).
-                while (Tween.Paused) yield return null;
+                while (Tween.Paused || awayOnSettings) yield return null; // ...nor while "How to play" covers the battle
                 PlaybackBeats++;
                 // POL-E5: a pincer's hits land as Major; an ability's at its own tier (AbilityAnim); a new action resets.
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) hitTier = VfxTier.Minor;
@@ -100,8 +100,12 @@ namespace GridGame.App
             RefreshRecoverView(); // GG-T319: the tray snaps to the true state with everything else
             SyncAll();
             BoardAudit.Synced(AuditTokens(true, rendered: true));
-            while (Tween.Paused) yield return null;
+            while (Tween.Paused || awayOnSettings) yield return null;
             playing = false;
+            // SyncAll above ran while still `playing`, which skips the charge ring: after a rollover it read 0 until a
+            // later idle sync. Now that playback is over, ring and shownCharge take the true charge.
+            shownCharge = State.ManaCharge;
+            SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
             if (State.IsOver && !ended) yield return EndBattle();
         }
 
@@ -2166,7 +2170,7 @@ namespace GridGame.App
             yield return Tween.Wait(Timing.Dramatic);
             if (!CommitsToSave || App.Save == null)
             {
-                App.Router.Back();
+                LeaveBattle(); // Router.Back() alone was swallowed by OnBack (it opens the pause menu)
                 yield break;
             }
             var report = BattleFactory.Commit(App.Content, App.Save, State);

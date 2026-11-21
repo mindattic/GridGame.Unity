@@ -18,10 +18,19 @@ namespace GridGame.App
         private const float DiagonalSlipMinSpeed = BoardView.Tile * 6f; // px/s
         private const float DiagonalSlipAngleTolerance = 12f; // degrees off a true 45°
 
+        /// <summary>The finger (or mouse) that owns the current press; a second finger's move/up is ignored, so it can't
+        /// hijack a drag or commit an aim at its own tile (-1 = none).</summary>
+        private int activePointerId = -1;
+
+        /// <summary>Outside the board's tiles (TileAt clamps, so a release past the edge would read as an edge tile).</summary>
+        private static bool OffBoard(Vector2 local) =>
+            local.x < 0 || local.y < 0 || local.x > BoardView.Tile * BattleConfig.Cols || local.y > BoardView.Tile * BattleConfig.Rows;
+
         private void OnPointerDown(PointerDownEvent evt)
         {
             ClearHint();
             if (!CanCommand() || pressing) return;
+            activePointerId = evt.pointerId;
             var tile = board.TileAt(evt.localPosition);
             var unit = State.UnitAt(tile);
 
@@ -36,7 +45,12 @@ namespace GridGame.App
                 return;
             }
 
-            if (unit != null) BeginBoardInspect(unit);
+            if (unit != null)
+            {
+                BeginBoardInspect(unit);
+                // The release must come back here even off the board, or the hold timer opens a card after the lift.
+                board.Root.CapturePointer(evt.pointerId);
+            }
             if (unit != null && unit.IsIndependent) { panelUnitId = unit.Id; SyncPanel(); ShowBanner(unit.Wanderer ? $"{unit.Name} is a wanderer: they fight on their own. Pincer beside them or heal them to earn their trust" : $"{unit.Name} is tamed: it fights on its own"); return; } // GG-T303, GG-T342
             if (unit != null && unit.IsHero)
             {
@@ -61,9 +75,9 @@ namespace GridGame.App
             }
             else if (unit != null && unit.IsNeutral)
             {
+                // Talk goes on the tap's release (OnPointerUp), never on the press or a hold.
                 panelUnitId = unit.Id;
                 SyncPanel();
-                TapRecruitable(unit);
             }
             else if (unit != null)
             {
@@ -76,6 +90,7 @@ namespace GridGame.App
         private void OnPointerMove(PointerMoveEvent evt)
         {
             if (!pressing || Paused) return; // a drag held through Escape-to-pause stays frozen (GG-T126)
+            if (activePointerId >= 0 && evt.pointerId != activePointerId) return; // a second finger never steers the press
             Vector2 local = evt.localPosition;
             if (TargetingSlot >= 0)
             {
@@ -94,6 +109,7 @@ namespace GridGame.App
         /// </summary>
         private void HandlePointerPosition(Vector2 local)
         {
+            if (!pressing) return; // the press was reset (a rebuild, a drop): a late simulated step must not pick the hero up again
             if (!dragging)
             {
                 if ((local - pressPos).magnitude < DragThreshold) return;
@@ -152,17 +168,40 @@ namespace GridGame.App
             // Release first: when the drag timer auto-commits mid-drag (CommitDrag clears `pressing`), the
             // finger/mouse is still captured — returning before this left board.Root holding the capture, so
             // the next click anywhere (a slot, GUARD, the menu) was routed to the board instead (GG-T70).
+            // A second finger lifting never ends (or commits) the first finger's press.
+            if (activePointerId >= 0 && evt.pointerId != activePointerId) return;
+            activePointerId = -1;
             bool wasPressing = pressing;
             if (board.Root.HasPointerCapture(evt.pointerId)) board.Root.ReleasePointer(evt.pointerId);
+            // A release while paused (hold, Escape, let go) can't commit: the drag goes back where it started.
+            if (Paused)
+            {
+                EndBoardInspect();
+                AbortDrag();
+                pressing = false;
+                return;
+            }
             // A press still waiting to become a hold, never dragged, is a tap: it reads the unit too (GG-T450).
             int tapUnit = inspectUnitId >= 0 && !inspectOpen && !dragging ? inspectUnitId : -1;
             // A hold that opened an inspect card only read it: the release does nothing else (GG-T252).
             if (EndBoardInspect() && !dragging) { pressing = false; return; }
-            if (tapUnit >= 0) TapUnitCard(tapUnit, evt.localPosition);
+            if (tapUnit >= 0)
+            {
+                // A recruitable's tap talks to it — on the release over it, not on the press or a hold.
+                var tu = State.UnitById(tapUnit);
+                if (tu != null && tu.IsNeutral)
+                {
+                    if (tu.Alive && CanCommand() && TargetingSlot < 0 && !OffBoard(evt.localPosition) && State.UnitAt(board.TileAt(evt.localPosition)) == tu)
+                        TapRecruitable(tu);
+                }
+                else TapUnitCard(tapUnit, evt.localPosition);
+            }
             if (!wasPressing) return;
             if (TargetingSlot >= 0)
             {
                 pressing = false;
+                // A release off the board is a cancel of this pick, not a pick of the clamped edge tile.
+                if (OffBoard(evt.localPosition)) { RedrawTargeting(); return; }
                 var t = board.TileAt(evt.localPosition);
                 var hero = State.UnitById(SelectedHeroId);
                 var a = hero == null ? null : BattleEngine.SlotAbility(State, hero, TargetingSlot);
@@ -516,9 +555,34 @@ namespace GridGame.App
             board.Lines.Add(b, b - dir * head - side * head * 0.7f, col, 6f);
         }
 
+        /// <summary>Puts a drag back where it started with no command and no clock spent — for a drop that can't be
+        /// committed (paused, the battle ended or busy), so the view never shows a move the state refused.</summary>
+        private void AbortDrag()
+        {
+            if (!dragging) return;
+            dragging = false;
+            pressing = false;
+            board.Lines.ClearLines();
+            board.ClearMarks();
+            ClearOutcomeTags();
+            EndHold();
+            if (board.Units.TryGetValue(dragHeroId, out var v))
+            {
+                board.Trail.Release(v.Root);
+                v.Root.style.scale = new Scale(Vector2.one);
+                var hero = State.UnitById(dragHeroId);
+                if (hero != null) board.Place(v, hero.Pos);
+            }
+            dragPath.Clear();
+            preview = null;
+            SyncAll();
+        }
+
         private void CommitDrag(BattleCommand perfectCmd = null)
         {
             if (!dragging) return;
+            // Commit() refuses while paused / ended / mid-playback: snap back instead of tweening to a tile it won't take.
+            if (playing || ended || State.IsOver || Paused || awayOnSettings) { AbortDrag(); return; }
             // GG-T539: a coached move lands only on its marked tile (a lost pointer capture puts the hero back instead).
             if (CoachRail && dragTile != CoachDest) { CancelDrag(); return; }
             if (CoachRail) coachMoveDone = true;

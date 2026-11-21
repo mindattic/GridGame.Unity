@@ -173,6 +173,7 @@ namespace GridGame.App
             GameApp.StageResized -= OnStageResized;
             DisposePrefabFx();
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
+            awayOnSettings = false;
             // The billboard lives on the Overlay too; without this, each battle left one behind (lines from the
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
             billboard?.RemoveFromHierarchy();
@@ -209,6 +210,25 @@ namespace GridGame.App
             pool = null;
             timelineIconViews.Clear();
             shownCoins = -1;
+            if (!firstBuild)
+            {
+                // Back from "How to play": the aim, a press/drag/hold and an inspect press all belonged to the old board
+                // (left set, CanCommand stayed false and the battle soft-locked); darkness re-hides on the fresh views.
+                TargetingSlot = -1;
+                PendingTarget = null;
+                targetGlows.Clear();
+                EndHold();
+                dragging = pressing = false;
+                dragPath.Clear();
+                preview = null;
+                inspectUnitId = -1;
+                inspectOpen = false;
+                activePointerId = -1;
+                hintShown = false;
+                outcomeTags.Clear();
+                darkHidden.Clear();
+                awayOnSettings = false; // playback, held at its next beat while Settings was up, carries on
+            }
             if (firstBuild)
             {
                 // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
@@ -288,9 +308,10 @@ namespace GridGame.App
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
             SelectedHeroId = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive)?.Id ?? -1;
             if (firstBuild && State.Tutorial) TutorialStep = 0;
+            if (!firstBuild) SyncDarkness();
             SyncAll();
             if (!firstBuild) return;
-            App.StartCoroutine(Play(initial, false));
+            playRoutine = App.StartCoroutine(Play(initial, false));
             if (CommandLine.Has("-autobattle") || DemoMode.Active || TestMode.Active) AutoPlay = true;
             else if (TutorialStep < 0 && App.Save != null && App.Save.Flags.Add("hint:inspect"))
             {
@@ -671,7 +692,9 @@ namespace GridGame.App
         {
             int filled = upTo >= 0 ? Mathf.Min(upTo, State.Bank.Count) : State.Bank.Count;
             shownOrbs = filled; // GG-T366: the pool shows what has landed so far, not the final count
-            shownCharge = State.ManaCharge;
+            // Mid-playback the charge beats own shownCharge (each ChargeAnim starts from the last one's total); the
+            // end-of-action State.ManaCharge here would break the next charge animation in the same playback.
+            if (!playing) shownCharge = State.ManaCharge;
             if (pool == null) return;
             if (!playing) SetChargeBubble(State.ManaCharge / (float)BattleConfig.ManaChargePerOrb);
             ShowPoolCount(filled);
@@ -1268,7 +1291,7 @@ namespace GridGame.App
             if (AutoPlay) autoplayedTurns++;
             Debug.Log($"[Battle] {cmd} → {events.Count} events, clock {State.Clock}");
             TutorialAfterCommit(cmd, events);
-            App.StartCoroutine(Play(events, skipMovePrefix));
+            playRoutine = App.StartCoroutine(Play(events, skipMovePrefix));
         }
 
         private void OnSlot(int slot)
@@ -1410,8 +1433,25 @@ namespace GridGame.App
                 if (board.Units.TryGetValue(u.Id, out var v)) { v.SetGlow(color, 0.9f); targetGlows.Add(u.Id); }
         }
 
+        /// <summary>A programmatic leave (<see cref="LeaveBattle"/>) is under way: the next OnBack lets the router pop.</summary>
+        private bool leaving;
+        /// <summary>"How to play" pushed Settings over this battle (Push never calls OnHidden): playback holds at its next
+        /// beat until the battle is shown again, so it can't end (and route) behind Settings.</summary>
+        private bool awayOnSettings;
+        /// <summary>The running event playback, so the watchdog can stop it rather than let a second Play run beside it.</summary>
+        private Coroutine playRoutine;
+
+        /// <summary>Pops this battle off the router. OnBack swallows Back (it opens the pause menu), so a plain
+        /// Router.Back() from here did nothing; this one-shot flag lets exactly this pop through.</summary>
+        private void LeaveBattle()
+        {
+            leaving = true;
+            App.Router.Back();
+        }
+
         public override bool OnBack()
         {
+            if (leaving) { leaving = false; return true; }
             // Back/Escape on the open pause menu resumes, like its Resume row.
             if (pauseVeil != null) { closePause?.Invoke(); return false; }
             if (TargetingSlot >= 0) { CancelByPlayer(); return false; }
@@ -1487,7 +1527,7 @@ namespace GridGame.App
             closePause = Close;
             Ui.MenuRow("Resume", "", Close, w);
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w);
-            Ui.MenuRow("How to play", "", () => { Close(); App.Router.Push(new SettingsScreen()); }, w);
+            Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
                 Ui.MenuRow("Leave the Crucible", "(keep all)", () => { Close();
@@ -1516,10 +1556,27 @@ namespace GridGame.App
                 var file = System.IO.Path.Combine(dir, $"{DateTime.UtcNow:yyyyMMdd-HHmmss}_{State.Stage.Id}_{State.Phase}.json");
                 System.IO.File.WriteAllText(file, recorder.ToJson());
                 LastRecordPath = file;
+                if (CommandLine.Value("-records") == null && art == null) PruneRecords(dir);
                 Debug.Log($"[Battle] record saved: {file} ({recorder.Turns} turns)");
             }
             catch (Exception e) { Debug.LogWarning($"[Battle] could not save the battle record: {e.Message}"); }
             recorder = null;
+        }
+
+        /// <summary>The default records folder (persistentDataPath) keeps only the newest battles, so a player's device
+        /// doesn't collect one JSON file per battle forever. Names start with a UTC timestamp, so name order is age order.</summary>
+        private const int KeptRecords = 50;
+
+        private static void PruneRecords(string dir)
+        {
+            try
+            {
+                var files = System.IO.Directory.GetFiles(dir, "*.json");
+                if (files.Length <= KeptRecords) return;
+                Array.Sort(files, StringComparer.Ordinal);
+                for (int i = 0; i < files.Length - KeptRecords; i++) System.IO.File.Delete(files[i]);
+            }
+            catch (Exception e) { Debug.LogWarning($"[Battle] could not prune old battle records: {e.Message}"); }
         }
 
         private void Retreat()
@@ -1532,15 +1589,30 @@ namespace GridGame.App
             // Commit — retreating then would overwrite Victory/Defeat and Commit the battle twice (GG-T70).
             if (playing || ended || State.IsOver) return;
             ended = true;
+            // The same end-of-battle bookkeeping EndBattle/EndStalled do (capture event, record, encounter telemetry, the
+            // session's closing record), with the phase set first so the record and the encounter read "retreated".
+            State.Phase = BattlePhase.Retreated;
+            CaptureUnity.Raise("battle-end", new CaptureData { ["stage"] = State.Stage.Id, ["result"] = "retreated" });
             SaveRecord();
+            RecordEncounterTelemetry();
+            TelemetryUnity.Finish(new
+            {
+                stage = State.Stage.Id,
+                result = "retreated",
+                waveReached = State.Wave + 1,
+                actions = State.Results.ActionsTaken,
+                ticks = State.Results.TicksElapsed,
+                coins = State.Results.Coins,
+                xp = State.Results.Xp,
+                heroesStanding = State.Units.Count(u => u.IsHero && u.Alive),
+            });
             if (App.Save != null && CommitsToSave)
             {
-                State.Phase = BattlePhase.Retreated;
                 var rep = BattleFactory.Commit(App.Content, App.Save, State);
                 App.Persist();
                 PostBattleScreen.RouteFrom(rep, State.Stage.Id);
             }
-            else App.Router.Back();
+            else LeaveBattle(); // Router.Back() alone was swallowed by OnBack (it opens the pause menu)
         }
 
         public override void Tick(float dt)
@@ -1564,8 +1636,17 @@ namespace GridGame.App
             if (playing && battleTime - playStarted > 20f)
             {
                 Debug.LogError("[Battle] playback watchdog fired; resyncing");
+                // Stop the stuck playback, or it would carry on beside the next command's Play (and route twice).
+                if (playRoutine != null) { App.StopCoroutine(playRoutine); playRoutine = null; }
+                // What the stopped Play's own epilogue would have reset.
+                board.Lines.ClearLines();
+                unplayedCasts.Clear();
+                actingEntry = -1;
+                pendingItemUser = -1; pendingItemId = null;
+                RefreshRecoverView();
                 playing = false;
                 SyncAll();
+                if (State.IsOver && !ended) App.StartCoroutine(EndBattle()); // the stopped Play would have ended it
             }
             TickLinger(dt);
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
@@ -1742,7 +1823,9 @@ namespace GridGame.App
             idle = 0f;
             if (!hintShown) return;
             hintShown = false;
-            if (TargetingSlot < 0 && !dragging) { board.ClearMarks(); board.Lines.ClearLines(); }
+            // While aiming the marks are the aim's own, but the hint's route lines are still the hint's: clear those.
+            if (!dragging) board.Lines.ClearLines();
+            if (TargetingSlot < 0 && !dragging) board.ClearMarks();
         }
 
         public void SelectHero(int id)
