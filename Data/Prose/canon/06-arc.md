@@ -32,5 +32,4 @@ Because the light is shared, every ending costs everyone:
 - What is the tone: hopeful, bleak, or bittersweet?
 - Is one ending canon, or does the player choose?
 - Does any Choir leader know the full truth, including the skim?
-- When did the Undertow happen? The default is about 1,200 years ago, and it sets how long the heroes slept in the Still.
 - Echo, a blanked figure, could join the party and gain colour as the story goes on. Their portrait is deliberately blank until then.
