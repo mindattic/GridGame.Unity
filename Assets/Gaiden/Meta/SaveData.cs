@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 12;
+        public const int CurrentVersion = 13;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -60,6 +60,12 @@ namespace GridGame.Meta
         /// recipe scroll or first-ever pickup of the recipe's rarest input (§24.6.2, GG-T36). A recipe whose
         /// tier the station has already reached is always discovered regardless of this set.</summary>
         public HashSet<string> DiscoveredRecipes = new HashSet<string>();
+        /// <summary>GG-T538: Merchant items this save has bought. One stays on the shelf whatever its stock tier
+        /// (<see cref="VendorTiers.OnShelf"/>), so nothing a player once bought goes away.</summary>
+        public HashSet<string> ShopBought = new HashSet<string>();
+        /// <summary>GG-T538: Forge and Alchemy recipes this save has made. One stays in its station's list whatever its
+        /// progress tier (<see cref="VendorTiers.RecipeOpen"/>).</summary>
+        public HashSet<string> CraftedRecipes = new HashSet<string>();
         /// <summary>Spare equipment that has been used: item id → its worn copies (per-instance durability, US-246).</summary>
         public Dictionary<string, List<WornGear>> Worn = new Dictionary<string, List<WornGear>>();
         /// <summary>Shattered/broken gear kept as salvage fodder instead of lost outright: item id → count of
@@ -578,6 +584,12 @@ namespace GridGame.Meta
             // takes that beat as told (below, once content is at hand), so it doesn't get a run of join scenes at once.
             bool beforeStoryVendors = s.Version < 12;
             if (s.Version < 12) s.Version = 12;
+            // GG-T538: vendor stock and recipe lists grow with progress and station rank. A save from before keeps what it
+            // owns on the shelf and in the lists (VendorTiers.Grandfather, below, once content is at hand).
+            bool beforeVendorTiers = s.Version < 13;
+            if (s.Version < 13) s.Version = 13;
+            s.ShopBought ??= new HashSet<string>();
+            s.CraftedRecipes ??= new HashSet<string>();
             s.Purchases ??= new PurchaseSave();
             s.Purchases.Granted ??= new Dictionary<string, PurchaseRecord>(StringComparer.Ordinal);
             foreach (var h in s.Roster)
@@ -595,6 +607,7 @@ namespace GridGame.Meta
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
+            if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null)
                 foreach (var h in s.Roster)
                 {

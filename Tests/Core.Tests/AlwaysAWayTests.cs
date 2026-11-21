@@ -71,13 +71,33 @@ namespace GridGame.Tests
                 Assert.That(flask.Rarity, Is.EqualTo(ItemRarity.Common), flask.Id);
                 Assert.That(flask.BaseCost, Is.InRange(potion, grenade), $"{flask.Id}: priced between a Healing Potion and a Hand Grenade");
             }
+            // GG-T538: the hazard tools are on the first shelf; the flasks are stock tier 2 (after The Tithe Moors III), and
+            // any one a reachable stage needs before then is stocked anyway (VendorTiers.NeededCounter, below).
             foreach (var id in new[] { "flask_fire", "flask_frost", "flask_storm", "flask_venom", "flask_holy", "flask_shadow", "flask_arcane", "cons_purifying_salts", "cons_disarm_kit" })
             {
                 var item = c.Item(id);
-                Assert.That(stock, Does.Contain(item), $"{id} is always on the shelf");
-                var s = new SaveData { Gold = item.BaseCost };
+                Assert.That(stock, Does.Contain(item), $"{id} is in the Merchant's catalogue");
+                Assert.That(VendorTiers.ShopTier(item), Is.LessThanOrEqualTo(2), $"{id}: on the shelf by the Lantern Road");
+                var s = new SaveData { Gold = item.BaseCost, HighestClearedStage = 2 };
                 Assert.That(Shop.Buy(c, s, new Dictionary<string, int> { [id] = 1 }).Ok, Is.True, id);
                 Assert.That(c.TryText("item:" + id), Is.Not.Null, $"{id}: its description is Prose text (item:{id})");
+            }
+            foreach (var id in new[] { "cons_purifying_salts", "cons_disarm_kit" })
+                Assert.That(Shop.Stock(c, new SaveData()), Does.Contain(c.Item(id)), $"{id} is on a new save's shelf");
+        }
+
+        [Test]
+        public void Every_counter_a_reachable_stage_needs_is_on_the_shelf_whatever_its_stock_tier()
+        {
+            // GG-T538 keeps GG-T371 whole: before a stage is fought, the Merchant sells its counters.
+            var c = Real;
+            var stages = c.CampaignStages();
+            for (int i = 0; i < stages.Count; i++)
+            {
+                var s = new SaveData { HighestClearedStage = i - 1 };
+                var shelf = Shop.Stock(c, s);
+                foreach (var item in ElementCounters.CountersFor(c, stages[i]))
+                    Assert.That(shelf, Does.Contain(item), $"{item.Id} for {stages[i].Id}");
             }
         }
 

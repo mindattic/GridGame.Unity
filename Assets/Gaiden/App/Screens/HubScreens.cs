@@ -756,7 +756,8 @@ namespace GridGame.App
             var sv = cartScroll;
             if (restore > 0f) sv.RegisterCallback<GeometryChangedEvent>(_ => { if (restore > 0f) { sv.scrollOffset = new Vector2(0f, restore); restore = 0f; } });
             var cart = selling ? sellCart : buyCart;
-            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C).Where(i => Features.Offers(i.Id)).ToList();
+            // GG-T538 (§25.0.10): the shelf grows with progress; a fresh Merchant shows the first stock tier only.
+            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C, S).Where(i => Features.Offers(i.Id)).ToList();
             if (items.Count == 0) Ui.Empty(selling ? "Nothing to sell." : "Sold out.", list);
             var detail = Ui.DetailPanel(body);
             ItemUi.Detail(detail, null);
@@ -792,6 +793,13 @@ namespace GridGame.App
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
+            }
+            if (!selling && Shop.NextStock(C, S) is var next && next.tier > 0)
+            {
+                // The next stock tier, signposted at the foot of the list: "More stock after The Lantern Road III · +14 items".
+                string when = VendorTiers.OpensHint(C, next.tier);
+                var more = Ui.MenuRow($"More stock {when}", $"+{next.count} items", () => { App.Toast($"The Merchant restocks {when}"); }, list, null, false);
+                more.name = "shop-next";
             }
             var fr = Ui.Footer(body, "shop-footer");
             int total = Shop.CartTotal(C, cart, selling);
@@ -903,13 +911,17 @@ namespace GridGame.App
             // Recipe discovery (§24.6.2, GG-T36): undiscovered recipes are hidden, except a "???" tease
             // for ones the player is exactly one input away from.
             // Armor-set recipes open after the first forge (GG-T178, §25.0.7).
-            var visible = recipes.Where(r => Forging.ArmorOpen(c, s, r) && (RecipeDiscovery.IsDiscovered(s, r) || RecipeDiscovery.OneAwayMissing(s, r) != null)).ToList();
+            // GG-T538 (§25.0.10): the Forge and Alchemy lists also grow with progress (VendorTiers.RecipeOpen).
+            var visible = recipes.Where(r => Forging.ArmorOpen(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && (RecipeDiscovery.IsDiscovered(s, r) || RecipeDiscovery.OneAwayMissing(s, r) != null)).ToList();
             // GG-T432 (§25.12.2): the station's next facility level, bought right here (also a card on the Caravan screen).
             if (Facilities.Next(c, s, station) is CaravanLevel nextFacility)
             {
                 var build = Ui.MenuRow($"Build {nextFacility.Name}", Ui.Gold(nextFacility.Cost), () => ConfirmFacility(c, s, station, page), list);
                 build.name = "facility-build";
             }
+            // GG-T538: the station's next rank, in forges or brews ("Journeyman at 150 XP: 40/150, about 8 more brews").
+            if (VendorTiers.Gated(recipes.FirstOrDefault()) && VendorTiers.NextRankLine(s, Crafting.StationFor(station)) is string rankLine)
+                Ui.Note(rankLine, list).name = "rank-next";
             if (visible.Count == 0) Ui.Empty("No recipes.", list);
             RecipeDef sel = selected;
             // GG-T198: two discovered recipes can share a Result (the old Slime Gel brew and the new Empty Bottle
@@ -950,8 +962,70 @@ namespace GridGame.App
                         scroll.RegisterCallback<GeometryChangedEvent>(_ => { if (!scrolled && picked.layout.height > 0) { scrolled = true; scroll.ScrollTo(picked); } });
                 }
             }
-            if (sel != null) ShowRecipe(detail, c, s, sel, page);
+            if (VendorTiers.Gated(recipes.FirstOrDefault())) ComingLater(list, detail, c, s, station, recipes, visible);
+            if (sel != null && visible.Contains(sel)) ShowRecipe(detail, c, s, sel, page);
+            else if (sel != null && !VendorTiers.RecipeOpen(c, s, sel)) ShowLocked(detail, c, s, sel, LockReason(c, s, sel));
+            else if (sel != null) ShowRecipe(detail, c, s, sel, page);
             else Ui.Empty("Pick a recipe to see what it needs.", detail);
+        }
+
+        /// <summary>GG-T538 (§25.0.10): the next tier, shown locked at the foot of the list. Up to
+        /// <see cref="VendorTiers.PreviewRows"/> recipes from the next rank ("🔒 Journeyman") and from the next progress tier
+        /// ("🔒 The Lantern Road III"), with a count of the rest, so the player sees what is coming and what opens it.</summary>
+        private static void ComingLater(VisualElement list, VisualElement detail, ContentDb c, SaveData s, CraftStation station, List<RecipeDef> recipes, List<RecipeDef> visible)
+        {
+            var kind = Crafting.StationFor(station);
+            int rank = StationProgress.Level(s, kind), tier = VendorTiers.ProgressTier(c, s);
+            var shown = new HashSet<RecipeDef>(visible);
+            // Next rank: open on the road, hidden today only because the station's rank is short.
+            var byRank = recipes.Where(r => !shown.Contains(r) && Forging.ArmorOpen(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && r.Tier == rank + 1).ToList();
+            // Next progress tier: the first tier above this save's with anything for this list.
+            int next = recipes.Where(r => !shown.Contains(r) && Forging.ArmorOpen(c, s, r) && !VendorTiers.RecipeOpen(c, s, r))
+                .Select(r => VendorTiers.RecipeTier(c, r)).Where(t => t > tier).DefaultIfEmpty(0).Min();
+            var byRoad = next == 0 ? new List<RecipeDef>() : recipes.Where(r => !shown.Contains(r) && Forging.ArmorOpen(c, s, r) && !VendorTiers.RecipeOpen(c, s, r) && VendorTiers.RecipeTier(c, r) == next)
+                .OrderBy(r => r.Tier).ThenBy(r => r.Gold).ToList();
+            if (byRank.Count == 0 && byRoad.Count == 0) return;
+            Ui.Section("Coming later", list).name = "recipes-later";
+            void Rows(List<RecipeDef> set, string value, string more)
+            {
+                foreach (var r in set.Take(VendorTiers.PreviewRows))
+                {
+                    var rec = r;
+                    var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
+                    row.name = "recipe-locked-" + r.Id;
+                    row.style.opacity = 0.55f;
+                }
+                if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
+            }
+            if (byRank.Count > 0) Rows(byRank, $"🔒 {StationProgress.TierName(rank + 1)}", $"at {StationProgress.TierName(rank + 1)}");
+            if (byRoad.Count > 0)
+            {
+                string after = VendorTiers.OpensHint(c, next);
+                Rows(byRoad, "🔒 " + after.Substring("after ".Length), after);
+            }
+        }
+
+        /// <summary>Why a previewed recipe is locked: "Opens after The Lantern Road III", "Needs a Journeyman blacksmith (40/150 XP)", or both.</summary>
+        private static string LockReason(ContentDb c, SaveData s, RecipeDef r)
+        {
+            var kind = Crafting.StationFor(r.Station);
+            var parts = new List<string>();
+            if (!VendorTiers.RecipeOpen(c, s, r)) parts.Add("Opens " + VendorTiers.OpensHint(c, VendorTiers.RecipeTier(c, r)));
+            if (!Crafting.IsUnlocked(s, r))
+                parts.Add($"Needs a {StationProgress.TierName(r.Tier)} {StationProgress.Id(kind)} (you are {StationProgress.LevelName(s, kind)}, {StationProgress.Xp(s, kind)} XP)");
+            return string.Join(". ", parts);
+        }
+
+        /// <summary>A previewed recipe's detail: what it makes, why it is locked, and what goes in (GG-T538).</summary>
+        private static void ShowLocked(VisualElement w, ContentDb c, SaveData s, RecipeDef r, string reason)
+        {
+            w.Clear();
+            ItemUi.Detail(w, c.Item(r.Result), c);
+            Ui.Para("🔒 " + reason, w, "bad");
+            Ui.Section("Needs", w);
+            if (r.BaseItem != null) Ui.Text($"{c.TryItem(r.BaseItem)?.Name ?? r.BaseItem} ×1", "kit-text dim", w);
+            foreach (var ic in r.Inputs) Ui.Text($"{c.TryItem(ic.Item)?.Name ?? ic.Item} ×{ic.Count}", "kit-text dim", w);
+            Ui.Para(Ui.Gold(r.Gold), w, "dim");
         }
 
         /// <summary>"Slime Gel" or "Empty Bottle + Wolf Pelt + Tattered Cloth" — the recipe's own inputs, joined,

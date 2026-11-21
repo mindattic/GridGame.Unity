@@ -217,7 +217,8 @@ namespace GridGame.Tests
                 if (forge != null)
                     Assert.That(forge.Gold < item.BaseCost * 0.6f, Is.True, $"{item.Id}: forging ({forge.Gold}g) isn't meaningfully cheaper than buying ({item.BaseCost}g)");
 
-                var s = new SaveData { Gold = item.BaseCost };
+                // GG-T538: a save past every stock tier, so every piece is on the shelf.
+                var s = new SaveData { Gold = item.BaseCost, HighestClearedStage = c.CampaignStages().Count - 1 };
                 var r2 = Shop.Buy(c, s, new Dictionary<string, int> { [item.Id] = 1 });
                 Assert.That(r2.Ok, Is.True, $"{item.Id}: {r2.Message}");
                 Assert.That(s.Count(item.Id), Is.EqualTo(1));

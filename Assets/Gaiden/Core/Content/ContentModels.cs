@@ -667,6 +667,10 @@ namespace GridGame.Core.Content
         public string OnUseAbility;
         public Dictionary<DamageType, float> Resistances = new Dictionary<DamageType, float>();
         public bool SoldByVendor;
+        /// <summary>GG-T538: the Merchant's stock tier this item joins at (1 = on the first visit). Tier N opens on the
+        /// clear of <c>Meta.VendorTiers.OpensAfter[N-1]</c>; absent or 0 reads as tier 1. Only means something on a
+        /// <see cref="SoldByVendor"/> item.</summary>
+        public int ShopTier;
         public string Icon;
         public DamageType DamageType = DamageType.Physical;
         public int GrantsOrbs;

@@ -748,7 +748,9 @@ namespace GridGame.App.Automation
                         wear = Repair.Pieces(c, s).Select(p => new { hero = p.Hero.ClassId, slot = p.Slot.ToString(), item = p.Item.Id, p.Durability, p.Max,
                             cost = p.Slot == EquipmentSlot.Weapon ? Repair.Cost(c, s, p.Item, p.Durability, p.Hero.WeaponRepairs, p.Hero.WeaponMastery)
                                  : Repair.Cost(c, s, p.Item, p.Durability, p.Hero.Armor[p.Slot].Repairs, p.Hero.Armor[p.Slot].Mastery) }).ToList(),
-                        stock = Shop.Stock(c).Select(i => new { i.Id, type = i.Type.ToString(), rarity = i.Rarity.ToString(), price = i.BaseCost, have = s.Count(i.Id) }).ToList(),
+                        // GG-T538: the save's own shelf (its open stock tiers plus anything bought before), and its progress tier.
+                        stock = Shop.Stock(c, s).Select(i => new { i.Id, type = i.Type.ToString(), rarity = i.Rarity.ToString(), price = i.BaseCost, have = s.Count(i.Id), tier = VendorTiers.ShopTier(i) }).ToList(),
+                        vendorTier = VendorTiers.ProgressTier(c, s),
                         caravan = c.Caravan.Values.Select(d => new { d.Id, d.Name, level = CaravanUpgrades.Level(s, d.Id), next = CaravanUpgrades.NextLevel(c, s, d.Id) is CaravanLevel n ? new { n.Name, n.Cost } : null }).ToList(),
                         npcs = CampNpcs.All.Where(n => CampUnlocks.NpcOpen(s, n)).ToList(),
                         inventory = s.Inventory,

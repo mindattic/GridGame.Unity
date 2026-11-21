@@ -979,8 +979,25 @@ namespace GridGame.Meta
 
     public static class Shop
     {
+        /// <summary>Everything the Merchant ever sells, every stock tier (the catalogue the content checks read).</summary>
         public static List<ItemDef> Stock(ContentDb c) =>
             c.Items.Values.Where(i => i.SoldByVendor && i.BaseCost > 0).OrderBy(i => i.Type).ThenBy(i => i.BaseCost).ThenBy(i => i.Name).ToList();
+
+        /// <summary>GG-T538: this save's shelf, the stock tiers its progress has opened plus anything it bought before
+        /// (<see cref="VendorTiers.OnShelf"/>).</summary>
+        public static List<ItemDef> Stock(ContentDb c, SaveData s) => Stock(c).Where(i => VendorTiers.OnShelf(c, s, i)).ToList();
+
+        /// <summary>GG-T538: the next stock tier this save hasn't opened, and how many items it brings (0 when every tier is open).</summary>
+        public static (int tier, int count) NextStock(ContentDb c, SaveData s)
+        {
+            int now = VendorTiers.ProgressTier(c, s);
+            for (int t = now + 1; t <= VendorTiers.Count; t++)
+            {
+                int n = Stock(c).Count(i => VendorTiers.ShopTier(i) == t && !VendorTiers.OnShelf(c, s, i));
+                if (n > 0) return (t, n);
+            }
+            return (0, 0);
+        }
 
         public static int SellPrice(ItemDef i) => Math.Max(1, (int)Math.Floor(i.BaseCost * 0.5));
 
@@ -1001,10 +1018,12 @@ namespace GridGame.Meta
             foreach (var kv in cart)
             {
                 var i = c.TryItem(kv.Key);
+                if (i != null && kv.Value > 0 && !VendorTiers.OnShelf(c, s, i))
+                    return Result.Fail($"{i.Name} isn't in stock yet ({VendorTiers.OpensHint(c, VendorTiers.ShopTier(i))})");
                 if (i == null || kv.Value < 0 || kv.Value > MaxBuy(s, i)) return Result.Fail($"Can't carry more {i?.Name}");
             }
             s.Gold -= total;
-            foreach (var kv in cart) s.AddItem(kv.Key, kv.Value);
+            foreach (var kv in cart) { s.AddItem(kv.Key, kv.Value); if (kv.Value > 0) s.ShopBought?.Add(kv.Key); }
             return Result.Success($"Bought for {total}g");
         }
 
@@ -1104,8 +1123,8 @@ namespace GridGame.Meta
     public static class StationProgress
     {
         public static readonly string[] LevelNames = { "Apprentice", "Journeyman", "Master" };
-        /// <summary>Total XP needed to *reach* each level (index 0 = Apprentice, free).</summary>
-        private static readonly int[] Thresholds = { 0, 150, 450 };
+        /// <summary>Total XP needed to *reach* each level (index 0 = Apprentice, free). Tuned in <see cref="VendorTiers.RankXp"/> (GG-T538).</summary>
+        private static int[] Thresholds => VendorTiers.RankXp;
 
         public static string Id(StationKind k) => k == StationKind.Blacksmith ? "blacksmith" : "alchemist";
 
@@ -1267,6 +1286,7 @@ namespace GridGame.Meta
             foreach (var ic in inputs) s.AddItem(ic.Item, -ic.Count);
             if (r.BaseItem != null) s.AddItem(r.BaseItem, -1);
             s.AddItem(result.Id, resultCount);
+            s.CraftedRecipes?.Add(r.Id); // GG-T538: a recipe once made stays in its station's list
             StationProgress.Gain(s, StationFor(r.Station), CraftXp);
             bool masterwork = false;
             if (!potency && r.Station == CraftStation.Forge && resultCount == 1 && MasterworkEligible(result))
@@ -1481,7 +1501,7 @@ namespace GridGame.Meta
         public static RecipeDef FirstBrew(ContentDb c, SaveData s)
         {
             if (s == null) return null;
-            var open = BottleRecipes(c).Where(r => Crafting.CanMake(c, s, r)).ToList();
+            var open = BottleRecipes(c).Where(r => Crafting.CanMake(c, s, r) && VendorTiers.RecipeOpen(c, s, r)).ToList();
             return open.FirstOrDefault(r => Crafting.HasInputs(s, r) && s.Gold >= r.Gold) ?? open.FirstOrDefault(r => HasLoot(s, r));
         }
 
@@ -1557,7 +1577,7 @@ namespace GridGame.Meta
         {
             if (c == null || Done(s)) return null;
             return StarterRecipes(c)
-                .Where(r => Crafting.CanMake(c, s, r) && c.TryItem(r.Result) is ItemDef w && s.Count(w.Id) + r.ResultCount <= w.MaxStack)
+                .Where(r => Crafting.CanMake(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && c.TryItem(r.Result) is ItemDef w && s.Count(w.Id) + r.ResultCount <= w.MaxStack)
                 .Select(r => { var w = c.Item(r.Result); return new Plan { Recipe = r, Weapon = w, Hero = SuitedHero(c, s, w), Ready = Crafting.HasInputs(s, r) && s.Gold >= r.Gold }; })
                 .Where(p => p.Hero != null)
                 .OrderByDescending(p => p.Ready).ThenByDescending(p => Affinity(c, p.Hero, p.Weapon))
@@ -1632,7 +1652,7 @@ namespace GridGame.Meta
         {
             if (c == null || !ArmorStep(s)) return null;
             return SetArmorRecipes(c)
-                .Where(r => r.Tier <= 1 && Crafting.CanMake(c, s, r) && c.TryItem(r.Result) is ItemDef a && s.Count(a.Id) + r.ResultCount <= a.MaxStack)
+                .Where(r => r.Tier <= 1 && Crafting.CanMake(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && c.TryItem(r.Result) is ItemDef a && s.Count(a.Id) + r.ResultCount <= a.MaxStack)
                 .Select(r => { var a = c.Item(r.Result); return new Plan { Recipe = r, Weapon = a, Hero = SuitedWearer(c, s, a), Ready = Crafting.HasInputs(s, r) && s.Gold >= r.Gold }; })
                 .Where(p => p.Hero != null)
                 .OrderByDescending(p => p.Ready).ThenByDescending(p => Affinity(c, p.Hero, p.Weapon))

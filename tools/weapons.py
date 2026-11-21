@@ -313,6 +313,8 @@ def main():
     def owned(iid):
         return iid is not None and re.sub(r"_(plus\d|ench_[a-z]+)$", "", iid) in owned_ids
 
+    # GG-T538: a sold weapon's Merchant stock tier (ShopTier) is hand-tuned in items.json; keep it across a rewrite.
+    shop_tier = {i["Id"]: i["ShopTier"] for i in items if owned(i["Id"]) and "ShopTier" in i}
     items = [i for i in items if not owned(i["Id"])]
     recipes = [r for r in recipes if not owned(r["Result"])]
     for t in tables:
@@ -321,6 +323,9 @@ def main():
     new_items, new_recipes, drops, palettes = build(enchants, {i["Id"] for i in items}, {t["Id"] for t in tables})
     clash = {i["Id"] for i in items} & {i["Id"] for i in new_items}
     assert not clash, clash
+    for i in new_items:
+        if i["Id"] in shop_tier:
+            i["ShopTier"] = shop_tier[i["Id"]]
     by_table = {t["Id"]: t for t in tables}
     for table, entry in drops:
         by_table[table]["Entries"].append(entry)

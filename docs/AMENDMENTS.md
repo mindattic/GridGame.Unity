@@ -1410,3 +1410,18 @@ through incidental triggers.
   has a short join scene (lorem in Prose until written) on the way back to Camp and a line on the results screen; the
   `GearWorn`, `CanBrew` and `FirstArmor` triggers are removed. Saves past a beat get the vendor on load (save v12).
 - *Why:* new systems arrive one at a time at a steady pace, each just before it's needed, and each is part of the story.
+
+## 2026-11-21 — Vendor stock and recipes grow with progress and rank (owner, GG-T538)
+
+Owner: "some are progress gated, some are training gated, the usual."
+
+- **Was:** the Merchant sold every `SoldByVendor` item from the first visit (about 120 rows on the fresh run, the seven
+  elemental flasks among them, "on the shelf from the first expedition"), and the Forge and Alchemist listed every
+  recipe their rank reached (69 Apprentice Forge recipes at once).
+- **Now ([BIBLE §25.0.10](BIBLE.md#25010-vendor-stock-and-recipes-grow-over-time-gg-t538)):** eight progress tiers that
+  open on region clears, plus the existing station ranks. A fresh Merchant shows 18 items (19 with the counter The
+  Tithe Moors I asks for), a fresh Forge 22 recipes, a fresh Alchemist 7; the next tier is signposted. The flasks join
+  at tier 2, but any counter a reachable stage needs is always stocked, so §3.3.1's promise holds. Nothing bought,
+  crafted or learned goes away, and older saves are grandfathered (save v13).
+- *Why:* the RPG-standard pattern: a short, useful first shop, and lists that grow as the party travels and the
+  vendors train.

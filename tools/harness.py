@@ -6,6 +6,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
     python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
+    python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
@@ -1050,6 +1051,60 @@ def firstforge(run="firstforge"):
     except Exception:
         pass
     print("FAILURES:" if fails else "FIRST FORGE OK", *fails, sep="\n  ")
+    return not fails
+
+
+def vendortiers(run="vendortiers", capture=True):
+    """GG-T538: vendor stock and recipes grow with progress and rank. A fresh save with the Merchant, Blacksmith and
+    Alchemist joined: the Merchant lists a short first shelf and signposts the next stock tier at the foot of the list
+    ("More stock after The Tithe Moors III"); the Blacksmith's Forge and the Alchemist show the next rank line and
+    locked next-tier rows ("Coming later": "🔒 Journeyman", "🔒 The Tithe Moors III") whose detail names the gate.
+    Recorded with -capture video hq unless capture=False."""
+    fails = []
+    launch(run, fresh=True, extra=("-capture", "video", "hq") if capture else ())
+    call("newgame", slot=0, gold=300, npcs="merchant,blacksmith,alchemist", seen="merchant,blacksmith,alchemist,blacksmith-forge,blacksmith-armor"); time.sleep(1)
+    econ = call("economy")
+    stock = econ.get("stock", [])
+    print(f"[vendortiers] fresh shelf: {len(stock)} items, tier {econ.get('vendorTier')}: " + ", ".join(i["Id"] for i in stock), flush=True)
+    if not 10 <= len(stock) <= 22:
+        fails.append(f"a fresh Merchant should list 10-22 items, lists {len(stock)}")
+    if not any(i["Id"] == "healing_potion_basic" for i in stock):
+        fails.append("the Healing Potion (the Merchant tip's buy) is not on the first shelf")
+    _goto("shop")
+    shot("01-merchant-fresh")
+    if not call("names", prefix="shop-next"):
+        fails.append("no 'More stock after ...' row at the foot of the Merchant's list")
+    else:
+        call("scrollto", name="shop-next"); time.sleep(0.4)
+        shot("02-merchant-next-tier")
+    call("back"); time.sleep(0.6)
+    for screen, label in (("blacksmith", "forge"), ("alchemist", "brew")):
+        _goto(screen)
+        if screen == "blacksmith":
+            call("clicktext", text="Forge"); time.sleep(0.6)
+        shot(f"03-{label}-fresh")
+        if not call("names", prefix="rank-next"):
+            fails.append(f"{screen}: no next-rank line")
+        locked = call("names", prefix="recipe-locked-")
+        if not locked:
+            fails.append(f"{screen}: no locked next-tier rows")
+        else:
+            call("scrollto", name=locked[-1]); time.sleep(0.4)
+            call("click", name=locked[-1]); time.sleep(0.6)
+            texts = " ".join(str(t) for t in call("texts"))
+            if "Opens after" not in texts and "Needs a" not in texts:
+                fails.append(f"{screen}: a locked row's detail doesn't name its gate")
+            call("scrollto", name=locked[-1]); time.sleep(0.4)
+            shot(f"04-{label}-locked-row")
+        call("back"); time.sleep(0.6)
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    if errs:
+        fails.append(f"log errors {errs[:3]}")
+    try:
+        call("quit", timeout=3)
+    except Exception:
+        pass
+    print("FAILURES:" if fails else "VENDOR TIERS OK", *fails, sep="\n  ")
     return not fails
 
 
@@ -2537,6 +2592,8 @@ if __name__ == "__main__":
         sys.exit(0 if firstbrew() else 1)
     elif cmd == "firstforge":
         sys.exit(0 if firstforge() else 1)
+    elif cmd == "vendortiers":
+        sys.exit(0 if vendortiers(sys.argv[2] if len(sys.argv) > 2 else "vendortiers", capture="--nocapture" not in sys.argv) else 1)
     elif cmd == "firstarmor":
         sys.exit(0 if firstarmor() else 1)
     elif cmd == "firstenchant":

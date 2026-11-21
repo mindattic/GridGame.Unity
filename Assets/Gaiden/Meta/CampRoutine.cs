@@ -125,7 +125,7 @@ namespace GridGame.Meta
                     if (workshop && (owned == null || MetaHeuristics.Score(owned) <= current))
                     {
                         var recipe = Crafting.Recipes(c, CraftStation.Forge)
-                            .Where(r => r.BaseItem == null && Crafting.CanMake(c, s, r) && Forging.ArmorOpen(c, s, r) && Equipment.Fits(c, h, c.Item(r.Result), slot) && Crafting.HasInputs(s, r) && r.Gold <= s.Gold / 2)
+                            .Where(r => r.BaseItem == null && Crafting.CanMake(c, s, r) && Forging.ArmorOpen(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && Equipment.Fits(c, h, c.Item(r.Result), slot) && Crafting.HasInputs(s, r) && r.Gold <= s.Gold / 2)
                             .OrderByDescending(r => MetaHeuristics.Score(c.Item(r.Result))).FirstOrDefault();
                         if (recipe != null && MetaHeuristics.Score(c.Item(recipe.Result)) > current) Note(Crafting.Craft(c, s, recipe));
                         owned = MetaHeuristics.BestFirst(Equipment.Candidates(c, s, slot, h)).FirstOrDefault();
@@ -162,7 +162,7 @@ namespace GridGame.Meta
                 bool ok = false;
                 // GG-T54: a recipe whose inputs are all in the bag beats one still short its bottle — use up the
                 // reagents already held before spending gold on a bottle.
-                var brew = alchemist ? brews.Where(r => Crafting.CanMake(c, s, r) && Brewing.HasLoot(s, r) && s.Gold >= r.Gold)
+                var brew = alchemist ? brews.Where(r => Crafting.CanMake(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && Brewing.HasLoot(s, r) && s.Gold >= r.Gold)
                     .OrderByDescending(r => Crafting.HasInputs(s, r)).FirstOrDefault() : null;
                 if (brew != null && !Crafting.HasInputs(s, brew) && merchant && bottle != null && Brewing.IsBottleRecipe(brew) && s.Gold >= bottle.BaseCost + brew.Gold)
                     Note(Shop.Buy(c, s, new Dictionary<string, int> { [bottle.Id] = 1 }));
@@ -170,7 +170,7 @@ namespace GridGame.Meta
                 {
                     var r = Crafting.Craft(c, s, brew); Note(r); ok = r.Ok;
                 }
-                if (!ok && merchant && s.Gold >= potion.BaseCost * 3)
+                if (!ok && merchant && s.Gold >= potion.BaseCost * 3 && VendorTiers.OnShelf(c, s, potion))
                 {
                     var r = Shop.Buy(c, s, new Dictionary<string, int> { [potion.Id] = System.Math.Min(3, Shop.MaxBuy(s, potion)) }); Note(r); ok = r.Ok;
                 }
@@ -204,7 +204,7 @@ namespace GridGame.Meta
             foreach (var item in ElementCounters.CountersFor(c, next))
             {
                 int want = System.Math.Min(CounterStock, item.MaxStack) - s.Count(item.Id);
-                if (want > 0 && s.Gold >= item.BaseCost * want * 4) note(Shop.Buy(c, s, new Dictionary<string, int> { [item.Id] = want }));
+                if (want > 0 && s.Gold >= item.BaseCost * want * 4 && VendorTiers.OnShelf(c, s, item)) note(Shop.Buy(c, s, new Dictionary<string, int> { [item.Id] = want }));
                 if (s.Count(item.Id) <= 0) continue;
                 string entry = "item:" + item.Id;
                 foreach (var id in s.Party)

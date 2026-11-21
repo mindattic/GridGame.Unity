@@ -26,6 +26,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -115,6 +116,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -145,6 +147,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -174,6 +177,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -203,6 +207,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null
   },
   {
@@ -292,6 +297,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null,
     "Revives": true
   },
@@ -322,6 +328,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null,
     "CuresBuff": "poisoned"
   },
@@ -382,6 +389,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null,
     "CuresBuff": "blinded"
   },
@@ -412,6 +420,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null,
     "CuresAll": true
   },
@@ -472,6 +481,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null,
     "OutOfBattleOnly": true
   },
@@ -596,6 +606,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -686,6 +697,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -746,6 +758,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -956,6 +969,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -1016,6 +1030,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1046,6 +1061,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1106,6 +1122,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1346,6 +1363,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -1375,6 +1393,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1433,6 +1452,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -1582,6 +1602,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1674,6 +1695,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1703,6 +1725,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1732,6 +1755,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1761,6 +1785,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1790,6 +1815,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1819,6 +1845,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1848,6 +1875,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -1877,6 +1905,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1906,6 +1935,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1964,6 +1994,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -1993,6 +2024,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2022,6 +2054,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2080,6 +2113,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2428,6 +2462,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2457,6 +2492,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2486,6 +2522,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2515,6 +2552,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2544,6 +2582,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -2573,6 +2612,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2602,6 +2642,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -2631,6 +2672,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -2660,6 +2702,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -2689,6 +2732,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -2718,6 +2762,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -2747,6 +2792,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -2776,6 +2822,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null
   },
   {
@@ -2805,6 +2852,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null
   },
   {
@@ -2834,6 +2882,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null
   },
   {
@@ -2863,6 +2912,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 5,
     "Icon": null
   },
   {
@@ -2921,6 +2971,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -2950,6 +3001,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 6,
     "Icon": null
   },
   {
@@ -3037,6 +3089,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -3066,6 +3119,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 6,
     "Icon": null
   },
   {
@@ -3095,6 +3149,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 7,
     "Icon": null
   },
   {
@@ -3153,6 +3208,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 7,
     "Icon": null
   },
   {
@@ -6043,6 +6099,7 @@
     "OnUseAbility": "grenade_blast",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null,
     "DamageType": "Fire",
     "BonusVsTag": null,
@@ -7004,6 +7061,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -7124,6 +7182,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -7243,6 +7302,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -7360,6 +7420,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -7663,6 +7724,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -7966,6 +8028,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -8270,6 +8333,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -8876,6 +8940,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -9493,6 +9558,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -10137,6 +10203,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "BankCapacityBonus": 1
   },
@@ -10451,6 +10518,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -16123,6 +16191,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -16426,6 +16495,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -16729,6 +16799,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -17033,6 +17104,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -25845,6 +25917,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -26149,6 +26222,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -26452,6 +26526,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -34682,6 +34757,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null
   },
   {
@@ -34772,6 +34848,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -34802,6 +34879,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -34832,6 +34910,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -34862,6 +34941,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -34952,6 +35032,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null
   },
   {
@@ -35102,6 +35183,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -35252,6 +35334,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -37681,6 +37764,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -37712,6 +37796,7 @@
       "Ice": 0.9
     },
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -38122,6 +38207,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -38151,6 +38237,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -38707,6 +38794,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -38736,6 +38824,7 @@
     "OnUseAbility": null,
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 3,
     "Icon": null
   },
   {
@@ -39357,6 +39446,7 @@
     "OnUseAbility": "dog_whistle_call",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 4,
     "Icon": null
   },
   {
@@ -39386,6 +39476,7 @@
     "OnUseAbility": "flask_fire_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Fire"
   },
@@ -39416,6 +39507,7 @@
     "OnUseAbility": "flask_frost_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Ice"
   },
@@ -39446,6 +39538,7 @@
     "OnUseAbility": "flask_storm_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Lightning"
   },
@@ -39476,6 +39569,7 @@
     "OnUseAbility": "flask_venom_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Poison"
   },
@@ -39506,6 +39600,7 @@
     "OnUseAbility": "flask_holy_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Holy"
   },
@@ -39536,6 +39631,7 @@
     "OnUseAbility": "flask_shadow_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Dark"
   },
@@ -39566,6 +39662,7 @@
     "OnUseAbility": "flask_arcane_burst",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 2,
     "Icon": null,
     "DamageType": "Arcane"
   },
@@ -39596,6 +39693,7 @@
     "OnUseAbility": "purifying_salts_use",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null,
     "DamageType": "Physical"
   },
@@ -39626,6 +39724,7 @@
     "OnUseAbility": "disarm_kit_use",
     "Resistances": {},
     "SoldByVendor": true,
+    "ShopTier": 1,
     "Icon": null,
     "DamageType": "Physical"
   }

@@ -1205,7 +1205,7 @@ Owner: "always a way to defeat them (cast fire against ice, be able to buy a con
   - A tile pick is legal when it clears a trap, even with nobody in reach (throw the kit at the mine). A tile-only use resolves without a "Missed!".
   - Each cleared trap emits `TrapClearedEvent`: the board resyncs, the trap cue plays and "Cleared!" floats.
   - Enemy abilities leave the board alone.
-- **The Merchant's counters** (`tools/counter_items.py`). All are Common, stack 5, and `SoldByVendor`, so they are on the shelf from the first expedition (§25.1). Names are labels; descriptions are Prose `item:<id>` texts.
+- **The Merchant's counters** (`tools/counter_items.py`). All are Common, stack 5, and `SoldByVendor`, so they are on the shelf from the first expedition (§25.1). **Amended 2026-11-21 (GG-T538):** the Disarm Kit and Purifying Salts are on the first shelf and the flasks join at stock tier 2 (after The Tithe Moors III), but a counter any reachable stage needs is stocked whatever its tier (§25.0.10), so the promise holds from the first battle. Names are labels; descriptions are Prose `item:<id>` texts.
 
 | Item | Price | Effect (picks a tile; a plus of radius 1 unless noted) |
 |---|---|---|
@@ -3508,7 +3508,7 @@ BonusVsTag, BonusMultiplier, Resistances{type→mult}, SoldByVendor, Icon
 
 #### 24.6.1 Tier ladder (GG-T35, amended 2026-10-15)
 
-Each crafting station has its own level — **Apprentice → Journeyman → Master** — raised by XP from every craft, brew, repair and salvage done there (`StationProgress`, `SaveData.StationXp`; 150/450 total XP for Journeyman/Master). `RecipeDef.Tier` (1–3, default 1 when absent from content) gates `Crafting.Craft` to the station's current level, failing with "Requires Journeyman"/"Requires Master" below it; Repair and Salvage aren't recipes and are always available, but still feed the Blacksmith's XP. Deliberately independent of §25.12 caravan upgrades (gold-bought stat bonuses, never recipe gates) so the two never double-gate the same thing — tested by `Caravan_upgrades_and_station_tiers_never_double_gate_each_other`. **Amended 2026-11-19 (GG-T432):** the gold-bought **facility** levels of [§25.12.2](#25122-facility-upgrades-gate-material-tiers-gg-t432) are a second gate on a different axis — the *material tier* (the result's rarity), not `Tier` — so a recipe needs both its station's skill tier and its facility (`Crafting.CanMake`). Caravan stat upgrades still never move station XP or open a `Tier`.
+Each crafting station has its own level — **Apprentice → Journeyman → Master** — raised by XP from every craft, brew, repair and salvage done there (`StationProgress`, `SaveData.StationXp`; 150/450 total XP for Journeyman/Master, tuned in `VendorTiers.RankXp` since GG-T538, §25.0.10). `RecipeDef.Tier` (1–3, default 1 when absent from content) gates `Crafting.Craft` to the station's current level, failing with "Requires Journeyman"/"Requires Master" below it; Repair and Salvage aren't recipes and are always available, but still feed the Blacksmith's XP. Deliberately independent of §25.12 caravan upgrades (gold-bought stat bonuses, never recipe gates) so the two never double-gate the same thing — tested by `Caravan_upgrades_and_station_tiers_never_double_gate_each_other`. **Amended 2026-11-19 (GG-T432):** the gold-bought **facility** levels of [§25.12.2](#25122-facility-upgrades-gate-material-tiers-gg-t432) are a second gate on a different axis — the *material tier* (the result's rarity), not `Tier` — so a recipe needs both its station's skill tier and its facility (`Crafting.CanMake`). Caravan stat upgrades still never move station XP or open a `Tier`.
 
 Content assignment: Forge's 11 base (no-`BaseItem`) recipes are all Apprentice; its 39 Upgrade recipes split Journeyman (the first upgrade off a base item) / Master (the deeper `+1 → +2` chains); Alchemy's 14 brews split Apprentice/Journeyman/Master by gold cost; all 78 Enchant recipes are Master (Alchemist-side, alongside Brew). The original "Iron Sword → Steel Sword → Mythril Blade → +1" ladder sketch predates this data shape; upgrades exist as data and UI. *(Tests: `A_station_starts_at_apprentice_and_levels_up_from_real_crafting_actions`, `Repair_and_salvage_grant_blacksmith_xp_but_never_alchemist`.)*
 
@@ -3742,10 +3742,81 @@ The first time the player opens a Camp station, a one-time **camp tip** points a
 - **Automation:** demo, test mode, `-autobattle` and harness runs suppress tips so the UI drivers see the plain screens; `-campTips` turns them back on. `python tools/harness.py camptips` checks show / dismiss / never-again / replay and screenshots each tip. *(Tests: `CampTipsTests`.)*
 - Tab buttons are named `tab-<label>` (`Ui.Tabs`) so tips and harnesses can target them.
 
+### 25.0.10 Vendor stock and recipes grow over time (GG-T538)
+
+Owner 2026-11-21: Merchant stock, Blacksmith recipes and Alchemist recipes start small and grow, "some are progress
+gated, some are training gated, the usual". The fresh-player run (docs/FRESH_PLAYER_RUN.md, GG-T520) found the
+Merchant's first visit listing about 120 rows, materials from regions not yet reached among them. Two axes, all tunables
+in one class, `Meta/VendorTiers.cs`:
+
+- **Progress tiers.** Eight tiers; tier N opens on the clear of `VendorTiers.OpensAfter[N-1]`, a region's last stage, so
+  a region's goods arrive as the party reaches it. A Merchant item carries its tier in content (`ItemDef.ShopTier` in
+  items.json, curated with `tools/vendor_tiers.py --assign`; a sold crafting material joins the tier after the region
+  where it first drops). A Forge, Upgrade or Alchemy recipe's tier is **derived** (`VendorTiers.RecipeTier`): the latest
+  tier any of its inputs or its base item can first be had at (dropped in a campaign region, chests included; bought; or
+  made by another recipe), floored by its result's rarity band (Common 1, Uncommon 2, Rare 3, Epic 5, Legendary 7) and,
+  for a set piece, by its set's level band (`SetLevelCeiling`). Content added later is tiered without new fields. The
+  Enchantress keeps her own gate (the Alchemist's rank, §25.3.4).
+- **Training ranks.** The station ranks of §24.6.1 (`StationProgress`, now reading `VendorTiers.RankXp`): every forge and
+  brew is 15 XP, a repair or salvage 8, so about 10 forges or brews make Journeyman and 30 make Master. A rank opens the
+  recipes of its `Tier` and adds 5% Masterwork chance (§24.6.3).
+- **What a list shows:** the Merchant's Buy tab lists `Shop.Stock(c, s)`, the open tiers. A station lists a recipe once
+  its progress tier is open (`VendorTiers.RecipeOpen`), and then as before (rank-reached or discovered, §24.6.2, or a
+  `???` one input short). `Shop.Buy` refuses an item off the shelf ("Hi-Potion isn't in stock yet (after The Tithe Moors
+  III)"); `Crafting.Craft` is unchanged, since a progress tier only gates what is listed, as discovery does.
+
+| Tier | Opens | Region it fits | Merchant (+new, shelf) | Forge | Upgrade | Alchemy |
+|---|---|---|---|---|---|---|
+| 1 | from the start | The Tithe Moors | 18, shelf 18 | 22 | 45 | 9 |
+| 2 | after The Tithe Moors III | The Lantern Road | +39, 57 | 21 | 57 | 8 |
+| 3 | after The Lantern Road III | The Shardfall | +22, 79 | 22 | 66 | 3 |
+| 4 | after The Shardfall III | The Arkgrave | +10, 89 | 16 | 27 | 3 |
+| 5 | after The Arkgrave III | The Anchor Wastes | +6, 95 | 22 | 39 | 0 |
+| 6 | after The Anchor Wastes III | The Still, Halcyon | +2, 97 | 22 | 33 | 3 |
+| 7 | after Halcyon III | the Cathedral, the Bloom | +2, 99 | 12 | 33 | 0 |
+| 8 | after The Bloom III | the postgame | 0, 99 | 9 | 0 | 0 |
+
+| Rank | Station XP | About | Opens |
+|---|---|---|---|
+| Apprentice | 0 | from the start | `Tier` 1 recipes |
+| Journeyman | 150 | 10 forges or brews | `Tier` 2 recipes (the first upgrade off a base item, most potions past the basics), +5% Masterwork |
+| Master | 450 | 30 forges or brews | `Tier` 3 recipes (deep upgrades, Epic and Legendary gear), +10% Masterwork |
+
+- **First visits:** a fresh Merchant shows 18 items plus any counter a reachable stage needs (19 on a new save, with
+  the Venom Flask, the counter The Tithe Moors I asks for): Healing Potion, Antidote, Eye Drops, Purifying Salts, Disarm Kit, Empty
+  Bottle, Cloth, Leather, Iron Ore, a starter weapon per weapon class (Rusty Sword, Bronze Dagger, Quarterstaff,
+  Apprentice's Wand) and a light armor set (Wayfarer's Cowl, Padded Vest, Leather Gloves, Leggings and Boots). A fresh
+  Forge lists 22 recipes (18 until the first forge opens the set armor, §25.0.7), down from 69; a fresh Alchemist 7 (was 9).
+- **There is always a way (§3.3.1) holds:** whatever its tier, every counter consumable `ElementCounters.CountersFor`
+  names for any campaign stage up to the next uncleared one is on the shelf (`VendorTiers.NeededCounter`). The flasks are
+  stock tier 2, the hazard tools tier 1.
+- **Signposts:** the foot of the Merchant's Buy list reads **"More stock after The Tithe Moors III · +38 items"**
+  (`shop-next`). A station's list opens with its next rank in crafts ("Journeyman at 150 XP: 40/150, about 8 more forges
+  or repairs", `rank-next`) and ends with **Coming later** (`recipes-later`): up to `PreviewRows` = 3 recipes of the next
+  rank ("🔒 Journeyman") and 3 of the next progress tier ("🔒 The Tithe Moors III", rows `recipe-locked-<id>`), each with
+  "+N more after …". A locked row's detail shows the result, why it is locked ("Opens after The Tithe Moors III. Needs a
+  Journeyman alchemist (you are Apprentice, 0 XP)") and its inputs.
+- **Nothing goes away:** an item once bought stays on the shelf (`SaveData.ShopBought`), and a recipe once made, learned
+  from a scroll or discovered stays in its list (`SaveData.CraftedRecipes`, `DiscoveredRecipes`). Test Mode and New
+  Game+ see every tier.
+- **Existing saves** (save version 13): tiers are read live from `HighestClearedStage` and station XP, so a save gets
+  every tier its progress and rank already reach. A save from before also has every vendor item it owns marked bought and
+  every Forge or Alchemy recipe whose result it owns, carried or worn, marked made (`VendorTiers.Grandfather`).
+- **Guided flows:** the starter weapons, the Wayfarer and Militia set pieces (the first armor) and the bottle brews of
+  Healing Potion, Mana Potion and Antidote sit in tier 1 at Apprentice; `Forging.First`, `Forging.FirstArmor` and
+  `Brewing.FirstBrew` pick only listed recipes, and the Healing Potion the Merchant's tip points at is on the first shelf.
+  The camp routine buys, brews and forges only what a player could see.
+- **Audit:** `python tools/vendor_tiers.py` (add `--list` for every row) reads the tuning from `VendorTiers.cs`, prints
+  each vendor's counts per tier and rank, and fails on an orphan: a Merchant tier past the last, a recipe whose input no
+  tier reaches, a vendor item or Forge/Alchemy result never obtainable, or a guided flow's recipe outside tier 1. Today
+  it reports nothing orphaned. *(Tests: `VendorTierTests`, `AlwaysAWayTests.Every_counter_a_reachable_stage_needs_is_on_the_shelf_whatever_its_stock_tier`;
+  harness `vendortiers`: the fresh shelf, the next-stock row, and the locked rows and their gate text at the Forge and
+  the Alchemist, recorded.)*
+
 ### 25.1 Merchant
 
 `ShopScreen` / `Meta.Shop`. Buy / Sell / Bargain tabs; Buy and Sell use separate carts with rows showing name (rarity color), unit price, owned count and a − n + stepper; the footer shows "Pay" (red if unaffordable) or "Receive" and commits the whole cart.
-- **Buy stock:** every `SoldByVendor` item, sorted by type, price, name; stepper capped at `MaxStack − owned`.
+- **Buy stock:** every `SoldByVendor` item, sorted by type, price, name; stepper capped at `MaxStack − owned`. **Amended 2026-11-21 (GG-T538):** only the stock tiers this save's progress has opened, plus anything it bought before and the counters a reachable stage needs; the list ends with the next tier's signpost (§25.0.10).
 - **Sell:** every owned non-quest item with a cost, at `max(1, floor(BaseCost × 0.5))`.
 - **Potion economy (amended 2026-10-15, GG-T44):** every healing/cure consumable (Healing Potion, Hi-Potion, X-Potion, Revival Charm, Antidote, Eye Drops, Remedy, Tent) is now `SoldByVendor`, not just Healing Potion — the Merchant is the convenient, always-available path. Each one's Alchemy brew (§25.3) costs **2.5–5×** less gold per unit, because its reagents come from field drops instead of a gold price; gathering and brewing is the efficient path, buying stays the convenient one. *(Test: `Every_sold_healing_or_cure_potion_is_meaningfully_cheaper_brewed_than_bought`.)*
 - **Fresh baseline gear (amended 2026-10-19, GG-T84):** the 16 unenhanced **Common** weapons, armor and relics (Rusty Sword, Bronze Dagger, Iron Sword, Hunter's Bow; Padded Vest, Leather Armor, Chain Mail, Iron Helm, Leather Boots, Iron Sabatons, Leather Leggings, Leather Gloves; Iron Talisman, Bone Amulet, Copper Ring, Copper Earring) are now `SoldByVendor`, bought new at full `BaseCost` and full durability -- before this, 0 of 155 equipment defs were sold and the worn Bargain shelf was the only gear buy path, so "buy replacements" at camp (owner, 2026-10-19) was impossible. Uncommon-and-up and every enhanced (+N) tier stay drop/forge-only. Where the Forge can make a sold piece, its gold cost stays under 60% of the buy price (materials come from drops), mirroring the potion rule: forging is the efficient path, buying the convenient one. *(Test: `The_merchant_sells_fresh_baseline_gear_and_only_baseline_gear`.)*

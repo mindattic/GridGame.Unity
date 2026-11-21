@@ -87,7 +87,7 @@ namespace GridGame.Tests
             TestContext.Out.WriteLine($"Gold {s.Gold}; inventory {string.Join(", ", s.Inventory.Select(kv => kv.Key + "x" + kv.Value))}");
 
             // Merchant
-            var stock = Shop.Stock(c).Where(i => i.MaxStack >= 2).ToList(); // a stackable consumable (gear is one-per-bag)
+            var stock = Shop.Stock(c, s).Where(i => i.MaxStack >= 2).ToList(); // a stackable consumable on this save's shelf (gear is one-per-bag)
             Assert.That(stock, Is.Not.Empty);
             s.Gold += 2000;
             var buy = new Dictionary<string, int> { [stock[0].Id] = 2 };

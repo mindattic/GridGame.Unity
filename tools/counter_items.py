@@ -105,6 +105,9 @@ def upsert(existing, new):
     index = {r["Id"]: i for i, r in enumerate(existing)}
     for r in new:
         if r["Id"] in index:
+            # GG-T538: keep a hand-tuned Merchant stock tier across a rewrite.
+            if "ShopTier" in existing[index[r["Id"]]] and "ShopTier" not in r:
+                r["ShopTier"] = existing[index[r["Id"]]]["ShopTier"]
             existing[index[r["Id"]]] = r
         else:
             existing.append(r)
