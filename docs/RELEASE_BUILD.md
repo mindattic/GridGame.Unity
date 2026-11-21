@@ -25,7 +25,9 @@ Unity's default graphics APIs (Vulkan with a GLES3 fallback), portrait.
 (`git rev-list --count HEAD`): it only grows on main, so a build of a newer commit always outranks the last upload and
 nothing has to be remembered or committed. Set `GG_ANDROID_VERSION_CODE=<n>` to force one (for example a hotfix built
 from an older commit, which must still be higher than anything uploaded). The build puts the project's own version code
-back afterwards, so `ProjectSettings.asset` doesn't change.
+back afterwards, so `ProjectSettings.asset` doesn't change. On a **shallow clone** (`git rev-parse
+--is-shallow-repository` is true, as in a default CI checkout) the count is wrong, so the release build stops unless
+`GG_ANDROID_VERSION_CODE` is set; fetch the full history or set it.
 
 **The first build is slow.** Switching the project to Android re-imports every texture as ASTC and IL2CPP compiles the
 whole game to C++: expect 20-40 minutes and several GB of RAM the first time, much less after. The next Windows build
@@ -102,9 +104,11 @@ is replaceable, but keep it backed up and keep its passwords out of git.
 3. `pwsh tools/build.ps1 -Platform Android`. The log (`Logs/build-Android.log`) says
    `[Build] Android: signing with the upload key 'upload' from gridgame-upload.jks`.
 
-**Without a keystore** the bundle is signed with Unity's debug key and the build warns
-`DEBUG-signed and Google Play will refuse it`. That bundle is fine for `bundletool` testing on your own phone, not for
-upload.
+**Without a keystore** (unset, or the file is missing) the release build stops before changing any settings, so a
+scripted release can't go green with a bundle Play would refuse. For a local test bundle signed with Unity's debug key
+(fine for `bundletool` testing on your own phone, not for upload), opt in with `-allowDebugSigning` or
+`GG_ANDROID_ALLOW_DEBUG_SIGNING=1` (it can go in `android-signing.env`). An empty `GG_ANDROID_KEY_PASS` counts as unset
+and falls back to the keystore password.
 
 ### Testing a bundle on a phone
 

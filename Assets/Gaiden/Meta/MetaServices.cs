@@ -902,7 +902,9 @@ namespace GridGame.Meta
             {
                 var def = c.TryItem(kv.Key);
                 bool firstEver = s.Count(kv.Key) == 0;
-                int room = def == null ? kv.Value : Math.Max(0, def.MaxStack - s.Count(kv.Key));
+                // An item the Merchant won't buy (SellValue 0, e.g. Diamonds) can't be auto-sold, and dropping it would lose
+                // something the player may have paid real money for: it all goes in the bag, past the stack cap if need be.
+                int room = def == null || Shop.SellPrice(def) <= 0 ? kv.Value : Math.Max(0, def.MaxStack - s.Count(kv.Key));
                 int keep = Math.Min(room, kv.Value), extra = kv.Value - keep;
                 if (keep > 0)
                 {
@@ -1001,10 +1003,15 @@ namespace GridGame.Meta
             return (0, 0);
         }
 
-        public static int SellPrice(ItemDef i) => Math.Max(1, (int)Math.Floor(i.BaseCost * 0.5));
+        /// <summary>What the Merchant pays for one: <see cref="ItemDef.EffectiveSellValue"/> (half the base cost unless the item
+        /// sets its own; an explicit SellValue of 0, e.g. Diamonds, means it can't be sold).</summary>
+        public static int SellPrice(ItemDef i) => i == null ? 0 : Math.Max(0, i.EffectiveSellValue);
+
+        /// <summary>The Merchant takes it: it has a price, isn't a quest item, and isn't marked unsellable (SellValue 0).</summary>
+        public static bool CanSell(ItemDef i) => i != null && i.BaseCost > 0 && i.Type != ItemType.QuestItem && SellPrice(i) > 0;
 
         public static List<ItemDef> Sellable(ContentDb c, SaveData s) =>
-            s.Inventory.Where(kv => kv.Value > 0).Select(kv => c.TryItem(kv.Key)).Where(i => i != null && i.BaseCost > 0 && i.Type != ItemType.QuestItem)
+            s.Inventory.Where(kv => kv.Value > 0).Select(kv => c.TryItem(kv.Key)).Where(CanSell)
                 .OrderBy(i => i.Type).ThenBy(i => i.Name).ToList();
 
         public static int MaxBuy(SaveData s, ItemDef i) => Math.Max(0, i.MaxStack - s.Count(i.Id));
@@ -1032,7 +1039,10 @@ namespace GridGame.Meta
         public static Result Sell(ContentDb c, SaveData s, Dictionary<string, int> cart)
         {
             foreach (var kv in cart)
+            {
                 if (kv.Value < 0 || kv.Value > s.Count(kv.Key)) return Result.Fail("You don't have that many");
+                if (kv.Value > 0 && !CanSell(c.TryItem(kv.Key))) return Result.Fail($"The Merchant won't buy {c.TryItem(kv.Key)?.Name ?? kv.Key}");
+            }
             int total = CartTotal(c, cart, true);
             if (total <= 0) return Result.Fail("Nothing to sell");
             foreach (var kv in cart) s.AddItem(kv.Key, -kv.Value);

@@ -83,8 +83,14 @@ namespace GridGame.Meta
             return Result.Success();
         }
 
-        public static double Progress(PaywallJob job, DateTime now) =>
-            job.Seconds <= 0 ? 1 : Math.Max(0, Math.Min(1, (now - job.StartedUtc).TotalSeconds / job.Seconds));
+        public static double Progress(PaywallJob job, DateTime now)
+        {
+            if (job.Seconds <= 0) return 1;
+            // The clock went backwards (device time changed): restart the wait from now, as RestedPool.Regen does, rather
+            // than lock the job until real time catches up with the old start.
+            if (now < job.StartedUtc) job.StartedUtc = now;
+            return Math.Max(0, Math.Min(1, (now - job.StartedUtc).TotalSeconds / job.Seconds));
+        }
 
         public static bool Ready(PaywallJob job, DateTime now) => Progress(job, now) >= 1;
 
@@ -101,6 +107,12 @@ namespace GridGame.Meta
                     // A fizzled draw gives its whole Diamond price back as Diamonds, however it was paid (GG-T455: any gold
                     // part was exchanged into Diamonds on the way in).
                     if (!arrived.Ok && job.Diamonds > 0) s.AddItem(Crafting.DiamondId, job.Diamonds);
+                    // A chosen-hero summon paid in gold alone (no Diamonds) gives its gold back when the hero can't come.
+                    else if (!arrived.Ok && job.Paid > 0)
+                    {
+                        s.Gold += job.Paid;
+                        return Result.Fail($"{arrived.Message ?? "The summon fizzled."} Refunded {job.Paid:N0} G.");
+                    }
                     return arrived;
                 case PaywallKind.RestedRefill: RestedPool.Fill(s, now); return Result.Success("The party is rested.");
                 case PaywallKind.LuckyDiamond:

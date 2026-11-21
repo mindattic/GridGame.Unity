@@ -31,7 +31,7 @@ if ($Target -eq "Android" -and -not $Dev) {
         Write-Host "android-signing.env loaded"
     }
     if (-not $env:GG_ANDROID_KEYSTORE) {
-        Write-Warning "No GG_ANDROID_KEYSTORE: the bundle will be DEBUG-signed and Google Play will refuse it (docs/RELEASE_BUILD.md)."
+        Write-Warning "No GG_ANDROID_KEYSTORE: the release build will stop. Set GG_ANDROID_ALLOW_DEBUG_SIGNING=1 for a local DEBUG-signed test bundle that Google Play will refuse (docs/RELEASE_BUILD.md)."
     }
 }
 

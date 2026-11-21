@@ -169,11 +169,13 @@ namespace GridGame.Meta
             return m == null || k == null ? 0 : PerBattle(m, term, 0, Loyalty(k)) * term;
         }
 
-        /// <summary>Renegotiate: <paramref name="term"/> more battles on top of the one left, at the loyalty rate.</summary>
+        /// <summary>Renegotiate: <paramref name="term"/> more battles on top of the one left, at the loyalty rate. Only
+        /// while the reoffer is open (last battle, not yet answered), so a second renewal screen can't charge twice.</summary>
         public static Result Renew(ContentDb c, SaveData s, string classId, int term)
         {
             var m = c.TryMercenary(classId); var k = Contract(s, classId);
             if (m == null || k == null) return Result.Fail("No such contract");
+            if (k.BattlesLeft != 1 || k.Reoffered) return Result.Fail("That contract has already been answered");
             if (!m.Terms.Contains(term)) return Result.Fail("Not a term they offer");
             int price = RenewalPrice(c, s, classId, term);
             if (s.Gold < price) return Result.Fail("Not enough gold");

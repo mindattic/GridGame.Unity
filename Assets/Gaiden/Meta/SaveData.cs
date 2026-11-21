@@ -150,6 +150,10 @@ namespace GridGame.Meta
         /// <summary>Skill-tree nodes bought with points, as "treeId/nodeId" (§25.6.3, GG-T53, <see cref="Talents"/>);
         /// the Inn's Respec clears it and refunds their cost. An older save simply has none.</summary>
         public List<string> TreeNodes = new List<string>();
+        /// <summary>Skill points actually paid for each bought node, keyed like <see cref="TreeNodes"/> (premium included), so
+        /// Respec refunds what was paid even if the off-tree premium has since changed. A node bought before this was recorded
+        /// (an older save) has no entry and refunds its current <see cref="Talents.Cost"/>. Null-safe: may be missing.</summary>
+        public Dictionary<string, int> TreeNodeCosts;
         /// <summary>Learned passives the player has switched on (GG-T301, <see cref="PassiveLoadout"/>), read only once
         /// <see cref="PassivesChosen"/> is set; until then the first <see cref="PassiveLoadout.Slots"/> learned are on.</summary>
         public List<string> ActivePassives = new List<string>();
@@ -489,6 +493,9 @@ namespace GridGame.Meta
             return frontier;
         }
 
+        /// <summary>The save version current when GG-T52's gear-proficiency gate shipped; the grandfather step runs only up to it.</summary>
+        public const int GearGateShippedAtVersion = 4;
+
         public static readonly HashSet<string> RetiredAbilities = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "scan" };
 
         /// <summary>Upgrades an older save in place. Unknown future versions are rejected. <paramref name="c"/>
@@ -498,6 +505,8 @@ namespace GridGame.Meta
         {
             if (s == null) return null;
             if (s.Version > SaveData.CurrentVersion) throw new InvalidOperationException($"Save version {s.Version} is newer than this build");
+            // GG-T52's gear gate shipped while saves were v4: only a save that old can hold gear its hero was never gated on.
+            bool beforeGearGate = s.Version <= GearGateShippedAtVersion;
             // v1 is the first shape.
             if (s.Version < 2)
             {
@@ -667,14 +676,17 @@ namespace GridGame.Meta
             // proficiency-unlock passive so Equipment.Fits keeps considering them proficient. Re-running this
             // on an already-fine save is a no-op (every check is already satisfied). No-op entirely without a
             // ContentDb (c == null), e.g. the version-only unit tests above that never touch gear/content.
+            // Only for saves from before the gate (beforeGearGate): on a newer save it would re-grant, free, a proficiency
+            // the Inn's Respec just refunded while the gear stayed on.
             Notes.Clear();
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
-            if (c != null)
+            if (c != null && beforeGearGate)
                 foreach (var h in s.Roster)
                 {
+                    if (h == null) continue;
                     GrandfatherGearProficiency(c, h, h.WeaponId);
                     foreach (var piece in h.Armor.Values) GrandfatherGearProficiency(c, h, piece.ItemId);
                 }

@@ -139,7 +139,9 @@ namespace GridGame.Meta
             int total = 0;
             foreach (var t in c.SkillTrees.Values)
                 foreach (var n in t.Nodes)
-                    if (Bought(h, t, n)) total += Cost(c, h, t, n);
+                    if (Bought(h, t, n))
+                        total += h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(Key(t, n), out var paid) && paid >= 0
+                            ? paid : Cost(c, h, t, n);
             return total;
         }
 
@@ -220,6 +222,8 @@ namespace GridGame.Meta
             h.SkillPoints -= cost;
             if (h.TreeNodes == null) h.TreeNodes = new List<string>();
             h.TreeNodes.Add(Key(t, n));
+            if (h.TreeNodeCosts == null) h.TreeNodeCosts = new Dictionary<string, int>();
+            h.TreeNodeCosts[Key(t, n)] = cost;
             if (!string.IsNullOrEmpty(n.Grants) && !h.Known.Contains(n.Grants)) { h.Known.Add(n.Grants); PassiveLoadout.OnLearned(c, h, n.Grants); }
             var a = c.TryAbility(n.Grants);
             return Result.Success($"Learned {a?.Name ?? n.Name ?? n.Id}");
@@ -253,6 +257,7 @@ namespace GridGame.Meta
                 foreach (var n in t.Nodes)
                     if (Bought(h, t, n) && !string.IsNullOrEmpty(n.Grants)) forget.Add(n.Grants);
             h.TreeNodes.Clear();
+            h.TreeNodeCosts?.Clear();
             h.Known.RemoveAll(forget.Contains);
             h.ActivePassives?.RemoveAll(forget.Contains); // GG-T301
             for (int i = 0; i < h.Bar.Count; i++)

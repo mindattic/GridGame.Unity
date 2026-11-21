@@ -76,6 +76,15 @@ namespace GridGame.EditorTools
         /// </summary>
         public static void BuildAndroidRelease()
         {
+            // A release bundle must be upload-signed: refuse up front (before any PlayerSettings change) rather than finish
+            // "successfully" with a debug-signed .aab Play rejects. A deliberate local bundletool test opts in with
+            // -allowDebugSigning or GG_ANDROID_ALLOW_DEBUG_SIGNING=1.
+            var keystore = Environment.GetEnvironmentVariable("GG_ANDROID_KEYSTORE");
+            bool allowDebugSigning = CommandLine("-allowDebugSigning") || Environment.GetEnvironmentVariable("GG_ANDROID_ALLOW_DEBUG_SIGNING") == "1";
+            if ((string.IsNullOrEmpty(keystore) || !File.Exists(keystore)) && !allowDebugSigning)
+                throw new UnityEditor.Build.BuildFailedException(string.IsNullOrEmpty(keystore)
+                    ? "[Build] Android release: GG_ANDROID_KEYSTORE isn't set, so the bundle would be DEBUG-signed and Google Play refuses it (docs/RELEASE_BUILD.md). Pass -allowDebugSigning (or GG_ANDROID_ALLOW_DEBUG_SIGNING=1) for a local test bundle."
+                    : $"[Build] Android release: GG_ANDROID_KEYSTORE '{keystore}' doesn't exist (docs/RELEASE_BUILD.md). Pass -allowDebugSigning (or GG_ANDROID_ALLOW_DEBUG_SIGNING=1) for a local test bundle.");
             var nt = UnityEditor.Build.NamedBuildTarget.Android;
             PlayerSettings.SetApplicationIdentifier(nt, AndroidPackage);
             PlayerSettings.SetScriptingBackend(nt, ScriptingImplementation.IL2CPP);
@@ -101,8 +110,9 @@ namespace GridGame.EditorTools
                     PlayerSettings.Android.keystoreName = Path.GetFullPath(store);
                     PlayerSettings.Android.keystorePass = Environment.GetEnvironmentVariable("GG_ANDROID_KEYSTORE_PASS") ?? "";
                     PlayerSettings.Android.keyaliasName = Environment.GetEnvironmentVariable("GG_ANDROID_KEY_ALIAS") ?? "upload";
-                    PlayerSettings.Android.keyaliasPass = Environment.GetEnvironmentVariable("GG_ANDROID_KEY_PASS")
-                        ?? PlayerSettings.Android.keystorePass;
+                    // An empty GG_ANDROID_KEY_PASS (a blank line in android-signing.env) means "same as the keystore", like unset.
+                    var keyPass = Environment.GetEnvironmentVariable("GG_ANDROID_KEY_PASS");
+                    PlayerSettings.Android.keyaliasPass = string.IsNullOrEmpty(keyPass) ? PlayerSettings.Android.keystorePass : keyPass;
                     Debug.Log($"[Build] Android: signing with the upload key '{PlayerSettings.Android.keyaliasName}' from {Path.GetFileName(store)}");
                 }
                 else
@@ -162,10 +172,21 @@ namespace GridGame.EditorTools
         {
             var env = Environment.GetEnvironmentVariable("GG_ANDROID_VERSION_CODE");
             if (int.TryParse(env, out var forced) && forced > 0) return forced;
-            int count = 0;
+            // A shallow clone (CI's default fetch depth) counts only the commits it fetched: a tiny code Play rejects as
+            // lower than the last upload. Refuse it rather than guess.
+            if (string.Equals(Git("rev-parse --is-shallow-repository"), "true", StringComparison.OrdinalIgnoreCase))
+                throw new UnityEditor.Build.BuildFailedException("[Build] no version code: the checkout is shallow, so the commit count is wrong. Fetch the full history (git fetch --unshallow) or set GG_ANDROID_VERSION_CODE");
+            int.TryParse(Git("rev-list --count HEAD"), out int count);
+            if (count <= 0) throw new UnityEditor.Build.BuildFailedException("[Build] no version code: git rev-list failed and GG_ANDROID_VERSION_CODE isn't set");
+            return count;
+        }
+
+        /// <summary>Runs git in the project folder and returns its trimmed output, or "" when it fails.</summary>
+        private static string Git(string args)
+        {
             try
             {
-                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-list --count HEAD")
+                var psi = new System.Diagnostics.ProcessStartInfo("git", args)
                 {
                     UseShellExecute = false, RedirectStandardOutput = true, CreateNoWindow = true,
                     WorkingDirectory = Path.GetFullPath("."),
@@ -173,11 +194,9 @@ namespace GridGame.EditorTools
                 using var p = System.Diagnostics.Process.Start(psi);
                 var text = p.StandardOutput.ReadToEnd();
                 p.WaitForExit(30000);
-                int.TryParse(text.Trim(), out count);
+                return text.Trim();
             }
-            catch (Exception e) { Debug.LogWarning("[Build] git rev-list failed (" + e.Message + ")"); }
-            if (count <= 0) throw new UnityEditor.Build.BuildFailedException("[Build] no version code: git rev-list failed and GG_ANDROID_VERSION_CODE isn't set");
-            return count;
+            catch (Exception e) { Debug.LogWarning($"[Build] git {args} failed ({e.Message})"); return ""; }
         }
 
         public static void BuildWebGL()

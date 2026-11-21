@@ -69,7 +69,8 @@ namespace GridGame.Meta
             d.FontName = g.GetString(Keys.FontName, d.FontName);
             // GG-T385: the default look became the Chrono gray window and the M PLUS Rounded face. A profile written before
             // that and still on the old defaults (Classic / Classic) moves to the new ones once; a later pick of Classic sticks.
-            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < CurrentLookVersion)
+            // Only a file from before GG-T385 (lookVersion missing/0): from version 1 on, Classic was a deliberate pick.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 1)
             {
                 if (d.MenuTheme == "Classic") d.MenuTheme = SettingsSave.DefaultMenuTheme;
                 if (d.FontName == "Classic") d.FontName = SettingsSave.DefaultFontName;
@@ -85,8 +86,8 @@ namespace GridGame.Meta
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
-            // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             d.ThemeTones = ReadThemeTones(g.GetObject(Keys.ThemeTones));
+            // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
             if (diff != null)
@@ -123,7 +124,6 @@ namespace GridGame.Meta
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));
             g.Set(Keys.CustomThemes, themes);
-            var x = s.Difficulty ?? new DifficultySettings();
             var tones = new JsonObject();
             foreach (var kv in s.ThemeTones ?? new Dictionary<string, WindowToneDef>())
             {
@@ -132,6 +132,7 @@ namespace GridGame.Meta
                 tones.Set(kv.Key, new JsonObject().Set(ToneBrightness, t.Brightness).Set(ToneContrast, t.Contrast).Set(ToneGamma, t.Gamma));
             }
             g.Set(Keys.ThemeTones, tones);
+            var x = s.Difficulty ?? new DifficultySettings();
             var diff = g.GetOrAddObject(Keys.Difficulty);
             diff.Set(DifficultyLevelKey, DifficultyTable.Clamp(x.Level));
             foreach (var legacy in new[] { "preset", "enemyHp", "enemyDamage", "enemySpeed", "rewardGold", "rewardXp", "itemDropRate" })
@@ -265,8 +266,14 @@ namespace GridGame.Meta
             {
                 var from = SaveFiles.PathFor(legacy, i);
                 var to = SaveFiles.PathFor(target, i);
-                if (File.Exists(to)) { result.Skipped.Add(SaveFiles.FileName(i)); continue; }
-                File.Copy(from, to);
+                // A target left truncated by a crash mid-copy (an earlier run that never reached the folder move below) is
+                // not a real save: replace it. Anything the same size as the source, or that parses, is kept.
+                if (File.Exists(to) && !TruncatedCopy(from, to)) { result.Skipped.Add(SaveFiles.FileName(i)); continue; }
+                // Copy to a temp file, then move it into place, so a crash never leaves a half-written slot under the real name.
+                string tmp = to + ".migrating";
+                File.Copy(from, tmp, true);
+                if (File.Exists(to)) File.Delete(to);
+                File.Move(tmp, to);
                 File.SetLastWriteTimeUtc(to, File.GetLastWriteTimeUtc(from)); // keeps "Continue" pointing at the same slot
                 result.Copied.Add(SaveFiles.FileName(i));
             }
@@ -289,6 +296,19 @@ namespace GridGame.Meta
             result.MovedTo = moved;
             if (store.List().Count == 1) store.Select(profile.Name);
             return result;
+        }
+
+        /// <summary>True when <paramref name="to"/> looks like an interrupted copy of <paramref name="from"/>: shorter than the
+        /// source and not a JSON object that parses. Never throws (an unreadable target counts as truncated only if shorter).</summary>
+        private static bool TruncatedCopy(string from, string to)
+        {
+            try
+            {
+                if (new FileInfo(to).Length >= new FileInfo(from).Length) return false;
+                try { JObject.Parse(File.ReadAllText(to)); return false; }
+                catch (Exception) { return true; }
+            }
+            catch (Exception) { return false; }
         }
 
         /// <summary>The slot whose save says it was played last (UpdatedUtc), falling back to the file's write time.</summary>

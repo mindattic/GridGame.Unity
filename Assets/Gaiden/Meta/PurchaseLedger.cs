@@ -54,6 +54,21 @@ namespace GridGame.Meta
         public static bool Has(SaveData s, string transactionId) =>
             s != null && !string.IsNullOrEmpty(transactionId) && s.Purchases?.Granted != null && s.Purchases.Granted.ContainsKey(transactionId);
 
+        /// <summary>Whether the save file at <paramref name="path"/> records <paramref name="transactionId"/> as granted. Strictly
+        /// read-only: parses the JSON without deserializing, migrating or repairing anything, and never writes; a missing or
+        /// unreadable file is simply false. Used to spot an order already granted in another slot or profile.</summary>
+        public static bool FileHas(string path, string transactionId)
+        {
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(transactionId)) return false;
+            try
+            {
+                if (!System.IO.File.Exists(path)) return false;
+                var root = Newtonsoft.Json.Linq.JObject.Parse(System.IO.File.ReadAllText(path));
+                return root["Purchases"]?["Granted"] is Newtonsoft.Json.Linq.JObject granted && granted[transactionId] != null;
+            }
+            catch (Exception) { return false; }
+        }
+
         public static DiamondPack PackOf(string productId) => DiamondStore.Packs.FirstOrDefault(p => p.ProductId == productId);
 
         /// <summary>Grants <paramref name="productId"/>'s Diamonds for <paramref name="transactionId"/> unless it was granted
