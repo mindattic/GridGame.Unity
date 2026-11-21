@@ -1339,6 +1339,10 @@ namespace GridGame.App
                 pauseVeil.BringToFront();
         }
 
+        /// <summary>GG-T480: the phone went to the background (a call, the home button, the notification shade) — the
+        /// battle stops on its pause menu, so coming back finds it exactly where it was, waiting for "Resume".</summary>
+        public override void OnAppSuspended() => OpenMenu();
+
         private void OpenMenu()
         {
             // Escape/Back re-fires OnBack unconditionally (it doesn't know a veil is already up) — without

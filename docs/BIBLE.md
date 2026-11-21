@@ -4198,6 +4198,14 @@ Owner: "measure things in agnostic units" and "all overflow should be avoided wh
 
 **Type has four sizes and one rule:** title 60, heading 48, body 40, caption 30. Anything that wraps is body (`Ui.Para`, POL-A2, the same rule `Typography.Paragraphs` already enforced for long text, now for every sentence); a single line of meta is caption (`Ui.Caption`). The 24-px badge size is gone from menus except the title's version tag. Screens that stay bespoke: the Title, story crawls and credits roll, dialogue, the Level Up and results celebrations and the character select (art-led), the talent graph's node cards and the battle bar's slots (fixed-size cells), the Bestiary grid (`EvenGrid`), and the window editor's live preview (it shows the theme's sample styles).
 
+### 26.8 App lifecycle on phones (GG-T480)
+
+- **Leaving the app** (home button, app switcher, an incoming call: `OnApplicationPause(true)`) writes the save first, because Android may kill a backgrounded app without warning. The battle itself is not saved: a battle the OS kills is lost and the save is where it was before the stage (the battle only commits on victory, defeat or retreat).
+- **Losing focus** (the notification shade, a system dialog: `OnApplicationFocus(false)`) and leaving both hold the game: the current screen gets `GameScreen.OnAppSuspended`, which opens the battle's pause menu (§GG-T126 pause: the clock, playback and sounds stop), and `AudioListener.pause` holds the music and every ringing effect mid-clip. Coming back brings the sound back; the battle waits on its pause menu for **Resume**.
+- Only phones do this. The desktop build keeps running unfocused (the harness drives it in the background) unless it is started with `-pauseOnFocusLoss`.
+- **Quitting** writes the save (`OnApplicationQuit`).
+- **Android's back button** (and back gesture) arrives as the Escape key and does what Escape does: the screen's `OnBack`, then the router's Back. With nothing to go back to (the Title, the Camp) it asks "Quit the game? Your progress is saved."; Back again cancels the question.
+
 ---
 
 ## 27. Story crawl (no dialog)

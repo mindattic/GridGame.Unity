@@ -30,6 +30,9 @@ namespace GridGame.App
         public virtual void Tick(float dt) { }
         /// <summary>Return false to swallow the back action (e.g. cancel targeting first).</summary>
         public virtual bool OnBack() => true;
+        /// <summary>The app is going to the background or losing focus on a phone (GG-T480): stop anything that runs
+        /// on a clock so nothing happens while the player is away. The battle opens its pause menu.</summary>
+        public virtual void OnAppSuspended() { }
         /// <summary>Rebuilt in place when the stage changes size (GG-T398), so its Fit.* widths follow the new shape. A screen
         /// that re-lays itself out (the battle) or whose rebuild would restart it (a crawl, the credits) opts out.</summary>
         public virtual bool RebuildOnResize => true;
@@ -80,12 +83,14 @@ namespace GridGame.App
             Go(PopOne);
         }
 
-        /// <summary>Back action from the hardware/escape key or a header back button.</summary>
-        public void Back()
+        /// <summary>Back action from the hardware/escape key or a header back button. False when there was nothing to
+        /// go back to (the bottom screen didn't swallow it) — Android's back button then offers to quit (GG-T480).</summary>
+        public bool Back()
         {
-            if (Current != null && !Current.OnBack()) return;
-            if (stack.Count <= 1) return;
+            if (Current != null && !Current.OnBack()) return true;
+            if (stack.Count <= 1) return false;
             Go(PopOne);
+            return true;
         }
 
         // A queued pop runs after earlier queued changes, so it re-checks there is still a screen under the top.

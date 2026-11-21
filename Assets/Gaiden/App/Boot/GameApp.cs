@@ -286,8 +286,62 @@ namespace GridGame.App
             Router.Current?.Tick(dt);
             Ticked?.Invoke(dt);
 
+            // The Input System reports Android's back button (and back gesture) as the Escape key.
             var kb = Keyboard.current;
-            if (kb != null && kb.escapeKey.wasPressedThisFrame) Router.Back();
+            if (kb != null && kb.escapeKey.wasPressedThisFrame) HardwareBack();
+        }
+
+        // ── App lifecycle (GG-T480) ────────────────────────────────────────────────
+
+        private bool suspended;
+        private VisualElement quitVeil;
+
+        /// <summary>Phones pause the game when it leaves the foreground; the desktop build keeps running unfocused (the
+        /// harness drives it in the background) unless <c>-pauseOnFocusLoss</c> asks it to behave like a phone.</summary>
+        private static bool PausesInBackground => Application.isMobilePlatform || CommandLine.Has("-pauseOnFocusLoss");
+
+        /// <summary>Back with nowhere to go back to: on Android it asks to quit (a second Back cancels the question).</summary>
+        private void HardwareBack()
+        {
+            if (quitVeil != null && quitVeil.parent != null) { quitVeil.RemoveFromHierarchy(); quitVeil = null; return; }
+            if (Router.Back()) return;
+            if (Application.platform != RuntimePlatform.Android) return;
+            quitVeil = Confirm.Show("Quit the game? Your progress is saved.", "Quit", () => { Persist(); Application.Quit(); });
+        }
+
+        /// <summary>Home button, an incoming call, the app switcher: the save is written first (Android may kill a
+        /// backgrounded app without warning), then the battle stops on its pause menu and every sound holds.</summary>
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) Suspend(true);
+            else ResumeFromBackground();
+        }
+
+        /// <summary>Focus loss without a pause (the notification shade, a system dialog) holds the game too, without the
+        /// disk write.</summary>
+        private void OnApplicationFocus(bool focused)
+        {
+            if (!focused) Suspend(false);
+            else ResumeFromBackground();
+        }
+
+        private void OnApplicationQuit() => Persist();
+
+        private void Suspend(bool flushSave)
+        {
+            if (flushSave && Save != null) { Save.PlaySeconds += playClock; playClock = 0f; Persist(); }
+            if (!PausesInBackground || suspended || Router == null) return;
+            suspended = true;
+            Router.Current?.OnAppSuspended();
+            AudioListener.pause = true; // music and every ringing effect hold mid-clip and carry on from there
+        }
+
+        /// <summary>Sound comes back; the battle stays on its pause menu until the player taps Resume.</summary>
+        private void ResumeFromBackground()
+        {
+            if (!suspended) return;
+            suspended = false;
+            AudioListener.pause = false;
         }
 
         // ── Session helpers ─────────────────────────────────────────────────────────

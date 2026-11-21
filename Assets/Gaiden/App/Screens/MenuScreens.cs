@@ -396,7 +396,8 @@ namespace GridGame.App
     {
         private const string VeilName = "confirm-veil";
 
-        public static void Show(string question, string yes, Action onYes, Action onNo = null)
+        /// <summary>Returns the veil, so a caller can tell whether its question is still up.</summary>
+        public static VisualElement Show(string question, string yes, Action onYes, Action onNo = null)
         {
             var overlay = GameApp.I.Overlay;
             var veil = Ui.El("fill veil col center", overlay);
@@ -411,6 +412,7 @@ namespace GridGame.App
             row.style.marginTop = Space.S16;
             Ui.Button("Cancel", () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); }, null, row).name = "confirm-no";
             Ui.Button(yes, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
+            return veil;
         }
 
         /// <summary>A confirm veil answers a question about the screen it was raised on — if that screen
