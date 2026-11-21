@@ -4,9 +4,9 @@
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sections = @(
-    @{ Key = 'preamble';      Title = 'GridGame canon: the Morrow mythos'; File = '01-preamble.md' },
-    @{ Key = 'GG-MORROW';     Title = 'Morrow';                            File = '02-morrow.md' },
-    @{ Key = 'GG-MOONLIGHT';  Title = 'Moonlight';                         File = '03-moonlight.md' },
+    @{ Key = 'preamble';      Title = 'GridGame canon: the Pearl';         File = '01-preamble.md' },
+    @{ Key = 'GG-PEARL';      Title = 'The Pearl';                         File = '02-pearl.md' },
+    @{ Key = 'GG-ONE-LIGHT';  Title = 'One light: the Pearl and the people'; File = '03-one-light.md' },
     @{ Key = 'GG-WHY-NOW';    Title = 'Why it is coming now';              File = '04-whynow.md' },
     @{ Key = 'GG-PEOPLES';    Title = 'Peoples, powers and monsters';      File = '05-factions.md' },
     @{ Key = 'GG-ARC';        Title = 'Campaign arc and endings';          File = '06-arc.md' }

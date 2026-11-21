@@ -1,6 +1,6 @@
 # GridGame Gaiden: story outline from the art (GG-T386, for GG-T341)
 
-> **Superseded 2026-11-21 (GG-T526).** The owner adopted the Morrow mythos as canon: the moon is a living thing that slept for ten thousand years inside a shell of debris, and Halcyon's drawing of moonlight is pulling it down. It is staged in `Data/Prose/canon/`, to be pushed to Prose with `push.ps1` once the Prose database resumes. Where this outline disagrees with it, the canon wins.
+> **Superseded 2026-11-21 (GG-T526).** The owner adopted the Pearl mythos as canon: the moon is a living thing, the Pearl, that slept for ten thousand years inside a shell of debris. Its light is also the life in every person. The Choir's Lullaby takes people's life to keep it asleep and keeps a share, and the drawing of that light is pulling it down. It is staged in `Data/Prose/canon/`, to be pushed to Prose with `push.ps1` once the Prose database resumes. Where this outline disagrees with it, the canon wins.
 
 **What this is.** A beat outline for a writer, read out of what the owner's art actually shows: 211 portraits
 (`Resources/Portraits`), 81 landscapes in 12 sets (`Resources/Backgrounds`), `factions.json`, `classes.json`, the
