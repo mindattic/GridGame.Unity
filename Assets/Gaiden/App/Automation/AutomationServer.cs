@@ -175,7 +175,7 @@ namespace GridGame.App.Automation
                     StartCoroutine(Record(SafeName(q["name"], "rec"), (int)F(q["frames"], 60), Math.Max(1, (int)F(q["every"], 1)), F(q["step"], 1f / 30f), reply));
                     return Pending;
                 case "screenshot":
-                    StartCoroutine(Screenshot(SafeName(q["name"], DateTime.Now.ToString("HHmmss")), reply));
+                    StartCoroutine(Screenshot(SafeName(q["name"], DateTime.Now.ToString("HHmmss")), reply, Mathf.Max(1, (int)F(q["super"], 1))));
                     return Pending;
                 case "tap":
                     StartCoroutine(Tap(F(q["x"]), F(q["y"]), reply));
@@ -403,7 +403,8 @@ namespace GridGame.App.Automation
                     var synthId = SynthPrefix + Guid.NewGuid().ToString("N").Substring(0, 8);
                     app.Content.Stages[synthId] = new StageDef
                     {
-                        Id = synthId, Name = $"{src.Name} Skirmish", Theme = src.Theme, Background = src.Background,
+                        // keepname=1 (GG-T487 store screenshots): the source stage's own name in the HUD, no "Skirmish".
+                        Id = synthId, Name = q["keepname"] == "1" ? src.Name : $"{src.Name} Skirmish", Theme = src.Theme, Background = src.Background,
                         Music = src.Music, IsTest = false, LevelOverride = level, Waves = new List<WaveDef> { wave },
                     };
                     if (app.Save == null) { app.Save = Progression.NewGame(app.Content, "Bot"); app.Slot = 2; }
@@ -943,14 +944,16 @@ namespace GridGame.App.Automation
             reply(new { dir, written });
         }
 
-        private IEnumerator Screenshot(string name, Action<object> reply)
+        /// <param name="superSize">GG-T487: render the shot at this multiple of the window (store screenshots taller than
+        /// the desktop allows a window to be).</param>
+        private IEnumerator Screenshot(string name, Action<object> reply, int superSize = 1)
         {
             yield return new WaitForEndOfFrame();
             var file = Path.Combine(artifacts, name.EndsWith(".png") ? name : name + ".png");
             Texture2D tex = null;
             // Same reasoning as Record(): without this, a disk I/O failure here would silently kill the
             // coroutine and leave the HTTP caller hanging for the full 120s timeout instead of an immediate error.
-            try { tex = ScreenCapture.CaptureScreenshotAsTexture(); File.WriteAllBytes(file, tex.EncodeToPNG()); }
+            try { tex = ScreenCapture.CaptureScreenshotAsTexture(superSize); File.WriteAllBytes(file, tex.EncodeToPNG()); }
             catch (Exception e) { reply(new { error = e.Message }); yield break; }
             finally { if (tex != null) Destroy(tex); }
             reply(new { file });
