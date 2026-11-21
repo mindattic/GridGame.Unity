@@ -417,6 +417,9 @@ namespace GridGame.App
             Ui.ApplyMenuTheme(Document?.rootVisualElement);
             Fonts.ApplyFont(presets ? st.FontName : GridGame.Meta.SettingsSave.DefaultFontName);
             TextFit.Configure(presets && st.Hyphenate);
+            // GG-T495 accessibility: text size on the root (USS --type-* overrides), reduce motion for every shared tween.
+            TextSize.Apply(Document?.rootVisualElement, st.TextScale);
+            Tween.Calm = st.ReduceMotion;
         }
 
         /// <summary>Writes the active profile's settings to its settings.json (a settings change, bible §15.2).</summary>

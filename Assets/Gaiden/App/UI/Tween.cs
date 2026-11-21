@@ -23,6 +23,11 @@ namespace GridGame.App
         /// </summary>
         public static bool Paused;
 
+        /// <summary>Settings → Reduce motion (GG-T495), set by <c>GameApp.ApplySettings</c>: <see cref="Shake"/> holds still,
+        /// <see cref="Pop"/> doesn't swell and <see cref="Move"/> takes at most <see cref="Timing.Quick"/>, everywhere —
+        /// menus, celebrations and the battle alike (the battle's own effects already check the setting).</summary>
+        public static bool Calm;
+
         public static float Dt => Paused ? 0f : FixedStep > 0f ? FixedStep : Time.unscaledDeltaTime;
 
         /// <summary>Seconds of unpaused game time since launch, advanced once per frame by GameApp.Update — the
@@ -65,12 +70,12 @@ namespace GridGame.App
 
         public static IEnumerator Move(VisualElement e, Vector2 from, Vector2 to, float seconds, Func<float, float> ease = null)
         {
-            return Run(seconds, k =>
+            return Run(Calm ? Mathf.Min(seconds, Timing.Quick) : seconds, k =>
             {
                 var p = Vector2.LerpUnclamped(from, to, k);
                 e.style.left = p.x;
                 e.style.top = p.y;
-            }, ease ?? EaseOut);
+            }, Calm ? (Func<float, float>)EaseOut : ease ?? EaseOut); // no overshoot (Back) while calm
         }
 
         public static IEnumerator Fade(VisualElement e, float from, float to, float seconds)
@@ -80,6 +85,7 @@ namespace GridGame.App
 
         public static IEnumerator Shake(VisualElement e, float magnitude, float seconds)
         {
+            if (Calm) magnitude = 0f;
             return Run(seconds, k =>
             {
                 float m = magnitude * (1f - k);
@@ -89,6 +95,7 @@ namespace GridGame.App
 
         public static IEnumerator Pop(VisualElement e, float peak, float seconds)
         {
+            if (Calm) peak = 1f;
             return Run(seconds, k =>
             {
                 float s = 1f + (peak - 1f) * Ease.Arc(k);

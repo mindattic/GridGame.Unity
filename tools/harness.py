@@ -5,6 +5,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
     python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
     python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
+    python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
@@ -548,6 +549,46 @@ def safeareas(run="safeareas", height=1200, capture=True, settings=()):
     print(json.dumps(report, indent=1))
     print("FAILURES:" if failures else "ALL SAFE AREAS OK", *failures, sep="\n  ")
     return not failures
+
+
+def a11y(run="a11y", capture=True, settings=()):
+    """GG-T495: the accessibility look at the default 9:19.5 window: Settings, Camp (locked rows and their hints), the
+    Merchant, the results screen (rarity colours) and a battle, with the given automation settings (e.g. textsize=130,
+    reducemotion=1, colorblind=1) applied once the title shows. Each screen's layout audit is printed."""
+    report = {}
+    launch(run, fresh=True, extra=("-capture", "video", "hq") if capture else ())
+    _wait_screen("title"); time.sleep(0.8)
+    for k, v in settings:
+        print(k, v, call("setting", key=k, value=v))
+    targets = {}
+    def snap(tag, name):
+        time.sleep(1.0)
+        shot(tag)
+        lay = call("layout")
+        report[name] = lay.get("problems")
+        pol = lay.get("polish") or {}
+        c2 = (pol.get("counts") or {}).get("POL-C2") or {}
+        # POL-C2: every button / pressable at least 132x132 design px (~44 dp on a 390-dp-wide phone).
+        targets[name] = {"checked": c2.get("checkedCount"), "small": [f["subject"] + " " + f["detail"] for f in pol.get("findings", []) if f.get("rule") == "POL-C2"]}
+    snap("1-title", "title")
+    call("newgame", slot=0); time.sleep(1.2)
+    call("goto", screen="settings"); time.sleep(0.6)
+    snap("2-settings", "settings")
+    call("goto", screen="hub"); time.sleep(0.6)
+    snap("3-camp", "camp")
+    call("goto", screen="shop"); time.sleep(0.6)
+    snap("4-merchant", "merchant")
+    call("goto", screen="results"); time.sleep(0.6)
+    snap("5-results", "results")
+    call("battle")
+    if _wait_screen("battle", 8):
+        time.sleep(2.5)
+        snap("6-battle", "battle")
+    errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
+    print(json.dumps(report, indent=1))
+    print("tap targets (POL-C2):", json.dumps(targets, indent=1))
+    print("log errors:", errs[:3])
+    return not errs and not any(report.values())
 
 
 def _play_battle(tag, timeout=480):
@@ -2466,6 +2507,12 @@ if __name__ == "__main__":
         kvs = tuple(tuple(a.split("=", 1)) for a in rest if "=" in a)
         names = [a for a in rest if "=" not in a]
         sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
+    elif cmd == "a11y":
+        # a11y [RUN] [--nocapture] [key=value ...]  (GG-T495, e.g. textsize=130 reducemotion=1 colorblind=1)
+        rest = [a for a in sys.argv[2:] if a != "--nocapture"]
+        kvs = tuple(tuple(a.split("=", 1)) for a in rest if "=" in a)
+        names = [a for a in rest if "=" not in a]
+        sys.exit(0 if a11y(names[0] if names else "a11y", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
     elif cmd == "camptips":
         sys.exit(0 if camptips() else 1)
     elif cmd == "smithrepair":

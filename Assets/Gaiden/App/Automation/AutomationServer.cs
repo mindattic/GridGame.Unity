@@ -547,6 +547,7 @@ namespace GridGame.App.Automation
                         case "confirm": st.ConfirmActions = on; break;
                         case "menutheme": st.MenuTheme = q["value"]; break; // GG-T185: value=Slate|Classic|...
                         case "hyphenate": st.Hyphenate = on; break; // GG-T305: Text wrapping → Hyphenate
+                        case "textsize": st.TextScale = TextSize.Clamp((int)F(q["value"], 100)); break; // GG-T495: value=100|115|130
                         default: return new { error = "unknown key" };
                     }
                     app.ApplySettings();

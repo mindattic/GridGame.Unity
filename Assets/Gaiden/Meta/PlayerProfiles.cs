@@ -36,7 +36,12 @@ namespace GridGame.Meta
             public const string LookVersion = "lookVersion";
             public const string Hyphenate = "hyphenate";
             public const string Difficulty = "difficulty";
+            /// <summary>Settings → Text size (GG-T495): 100, 115 or 130 (percent).</summary>
+            public const string TextScale = "textScale";
         }
+
+        /// <summary>A text size the game offers (GG-T495), or 100 for anything else in the file.</summary>
+        public static int ClampTextScale(int pct) => pct == 115 || pct == 130 ? pct : 100;
 
         /// <summary>The settings a profile's settings.json holds, with defaults for anything missing.</summary>
         public static SettingsSave Read(ProfileSettings ps)
@@ -76,6 +81,7 @@ namespace GridGame.Meta
             if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 3 && d.MenuTheme == "Granite")
                 d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
+            d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
@@ -109,6 +115,7 @@ namespace GridGame.Meta
             g.Set(Keys.FontName, s.FontName ?? SettingsSave.DefaultFontName);
             g.Set(Keys.LookVersion, CurrentLookVersion);
             g.Set(Keys.Hyphenate, s.Hyphenate);
+            g.Set(Keys.TextScale, ClampTextScale(s.TextScale));
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));

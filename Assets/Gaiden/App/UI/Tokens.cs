@@ -12,7 +12,9 @@ namespace GridGame.App
     {
         // Surfaces and text: neutral grays (GG-T385), so they sit on the Chrono gray window (USS --color-*)
         public static readonly Color Text = new Color(0.957f, 0.957f, 0.965f);
-        public static readonly Color TextDim = new Color(0.69f, 0.69f, 0.72f);
+        /// <summary>Dim text (USS <c>--color-dim</c>). GG-T495: lifted from 176 to 200 grey so it clears 4.5:1 on the lightest
+        /// stop of the Classic blue window (#2C46AA): 4.9:1, was 3.8:1.</summary>
+        public static readonly Color TextDim = new Color(0.784f, 0.784f, 0.816f);
         /// <summary>A window's subtitle line (USS <c>--color-sub</c>, <c>.window-sub</c>).</summary>
         public static readonly Color TextSub = new Color(0.816f, 0.816f, 0.84f);
         public static readonly Color White = Color.white;
@@ -29,7 +31,8 @@ namespace GridGame.App
         public static readonly Color Gold = new Color(1f, 0.85f, 0.35f);
         public static readonly Color GoldLight = new Color(1f, 0.93f, 0.6f);
         public static readonly Color Good = new Color(0.45f, 0.95f, 0.58f);
-        public static readonly Color Bad = new Color(1f, 0.38f, 0.34f);
+        /// <summary>GG-T495: a lighter red (4.5:1 on the Classic window's lightest stop; the old 255/97/87 was 2.8:1).</summary>
+        public static readonly Color Bad = new Color(1f, 0.667f, 0.635f);
         public static readonly Color Warn = new Color(1f, 0.77f, 0.36f);
         public static readonly Color Info = new Color(0.86f, 0.88f, 1f);
         /// <summary>A tappable glossary [term] (GG-T300): the same light blue class cards always marked keywords with.</summary>
@@ -94,10 +97,11 @@ namespace GridGame.App
         {
             switch (r)
             {
-                case ItemRarity.Junk: return new Color(0.55f, 0.55f, 0.55f);
+                // GG-T495: junk, rare and epic lifted to 4.5:1 on the Classic window's lightest stop (were 2.4, 3.4, 3.0).
+                case ItemRarity.Junk: return new Color(0.753f, 0.753f, 0.769f);
                 case ItemRarity.Uncommon: return new Color(0.43f, 0.9f, 0.47f);
-                case ItemRarity.Rare: return new Color(0.39f, 0.67f, 1f);
-                case ItemRarity.Epic: return new Color(0.78f, 0.47f, 1f);
+                case ItemRarity.Rare: return new Color(0.588f, 0.784f, 1f);
+                case ItemRarity.Epic: return new Color(0.863f, 0.698f, 1f);
                 case ItemRarity.Legendary: return new Color(1f, 0.78f, 0.27f);
                 default: return new Color(0.925f, 0.925f, 0.94f);
             }
@@ -114,6 +118,28 @@ namespace GridGame.App
     public static class TypeScale
     {
         public const float Badge = 24, Caption = 30, Small = 36, Body = 40, H3 = 48, H2 = 60, H1 = 76, Display = 96, Title = 120;
+    }
+
+    /// <summary>Settings → Text size (GG-T495): 100, 115 or 130% of the type scale from badge to H2. The root element takes
+    /// <c>text-115</c> / <c>text-130</c>, and Theme.uss redefines the <c>--type-*</c> custom properties under it, so every
+    /// USS-sized label grows at once with no rebuild. The headline sizes (H1, Display, Title) and the battle's fixed-geometry
+    /// labels (board floats, tile badges, set in code) stay as they are: they are already large, and grow they'd break the grid.</summary>
+    public static class TextSize
+    {
+        public static readonly int[] Options = { 100, 115, 130 };
+
+        /// <summary>A saved percent, or 100 when it isn't one of <see cref="Options"/>.</summary>
+        public static int Clamp(int pct) => Array.IndexOf(Options, pct) >= 0 ? pct : 100;
+
+        public static int Next(int pct) => Options[(Array.IndexOf(Options, Clamp(pct)) + 1) % Options.Length];
+
+        /// <summary>Puts the class for <paramref name="pct"/> on the UI root and takes the others off.</summary>
+        public static void Apply(UnityEngine.UIElements.VisualElement root, int pct)
+        {
+            if (root == null) return;
+            pct = Clamp(pct);
+            foreach (var o in Options) if (o != 100) root.EnableInClassList("text-" + o, o == pct);
+        }
     }
 
     /// <summary>8-px spacing scale (POL-C1); S4 is the half step for hairline insets inside small widgets.</summary>

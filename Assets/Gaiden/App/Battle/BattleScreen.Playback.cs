@@ -713,6 +713,8 @@ namespace GridGame.App
                 else App.StartCoroutine(ElementBurst(at, style, tier));
             }
             string text = d.Note == "Armored!" ? "ARMORED" : (crit ? $"{d.Amount}!" : d.Amount.ToString());
+            // GG-T495: an elemental hit names its element under Colorblind palette, since its burst says it only in colour.
+            if (Colorblind && d.Note != "Armored!" && d.Type != DamageType.Physical) text += " " + d.Type;
             var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
             if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note);
             else App.StartCoroutine(FloatAway(board.Float(text, at, color, crit ? TypeScale.Display : TypeScale.H1), 0.75f));

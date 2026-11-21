@@ -787,7 +787,7 @@ namespace GridGame.App
                 }
                 var minus = Ui.Button("−", () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
                 var n = Ui.Name(q.ToString(), row);
-                n.style.width = Size.ColumnS; n.style.unityTextAlign = TextAnchor.MiddleCenter;
+                n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter; // grows with Text size (GG-T495)
                 var plus = Ui.Button("+", () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
@@ -1803,7 +1803,8 @@ namespace GridGame.App
             minus.name = "difficulty-down";
             var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
-            n.style.width = Size.ColumnS; n.style.unityTextAlign = TextAnchor.MiddleCenter;
+            // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
+            n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
             var plus = Ui.Button("+", () => Set(level + 1), "btn--small btn--icon", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
@@ -1841,6 +1842,9 @@ namespace GridGame.App
                 Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
                     () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-wrap";
             }
+            // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
+            Ui.MenuRow("Text size", $"{TextSize.Clamp(st.TextScale)}%",
+                () => { st.TextScale = TextSize.Next(st.TextScale); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-size";
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
             Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:P0}", v => st.MusicVolume = v);
             Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:P0}", v => st.SfxVolume = v);

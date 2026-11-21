@@ -7,7 +7,8 @@
 :root {
     /* Neutrals are gray, not blue (GG-T385), so they sit on the Chrono window; gameplay hues below are unchanged. */
     --color-text: rgb(244, 244, 246);
-    --color-dim: rgb(176, 176, 184);
+    /* GG-T495 contrast: dim, bad and the junk/rare/epic rarities clear 4.5:1 on the Classic window's lightest stop (#2C46AA). */
+    --color-dim: rgb(200, 200, 208);
     --color-sub: rgb(208, 208, 214);
     --color-white: rgb(255, 255, 255);
     --color-ink: rgb(14, 14, 18);
@@ -19,7 +20,7 @@
     --color-text-drop: rgba(0, 0, 0, 0.85);
     --color-gold: rgb(255, 217, 89);
     --color-good: rgb(115, 242, 148);
-    --color-bad: rgb(255, 97, 87);
+    --color-bad: rgb(255, 170, 162);
     --color-warn: rgb(255, 196, 92);
     --color-info: rgb(219, 224, 255);
     --color-mana: rgb(107, 199, 255);
@@ -39,11 +40,11 @@
     --color-el-holy: rgb(255, 247, 199);
     --color-el-dark: rgb(158, 77, 242);
     --color-el-arcane: rgb(255, 115, 217);
-    --color-rarity-junk: rgb(140, 140, 140);
+    --color-rarity-junk: rgb(192, 192, 196);
     --color-rarity-common: rgb(236, 236, 240);
     --color-rarity-uncommon: rgb(110, 230, 120);
-    --color-rarity-rare: rgb(100, 170, 255);
-    --color-rarity-epic: rgb(200, 120, 255);
+    --color-rarity-rare: rgb(150, 200, 255);
+    --color-rarity-epic: rgb(220, 178, 255);
     --color-rarity-legendary: rgb(255, 200, 70);
     --color-gauge-full: rgb(110, 230, 120);
     --color-gauge-mid: rgb(240, 200, 70);
@@ -67,6 +68,25 @@
     --space-48: 48px;
     --space-64: 64px;
     --space-96: 96px;
+}
+
+/* Settings → Text size (GG-T495, Tokens.cs TextSize): the UI root takes one of these and every USS-sized label from
+   badge to H2 grows with it. H1, Display and Title stay: they are headlines already. */
+.text-115 {
+    --type-badge: 28px;
+    --type-caption: 35px;
+    --type-small: 41px;
+    --type-body: 46px;
+    --type-h3: 55px;
+    --type-h2: 69px;
+}
+.text-130 {
+    --type-badge: 31px;
+    --type-caption: 39px;
+    --type-small: 47px;
+    --type-body: 52px;
+    --type-h3: 62px;
+    --type-h2: 78px;
 }
 
 /* Semantic type classes (POL-A1); weight comes from the Heavy font role, applied in Ui.AddClasses. */
@@ -174,7 +194,10 @@
 }
 .menu-row:hover { background-color: rgba(255, 255, 255, 0.06); }
 .menu-row--selected { background-color: rgba(140, 170, 255, 0.20); }
-.menu-row--disabled { opacity: 0.42; }
+/* GG-T495: a locked row greys its name, value and icon, not the whole row, so the hint under it ("Joins when gear
+   wears below 60%") stays readable dim text (4.9:1) instead of dim at 42% opacity (1.8:1). */
+.menu-row--disabled .menu-label, .menu-row--disabled .menu-value, .menu-row--disabled .menu-icon,
+.menu-row--disabled .marquee { opacity: 0.45; }
 .menu-cursor { width: 56px; height: 56px; margin-right: var(--space-8); opacity: 0; background-size: contain; flex-shrink: 0; }
 .menu-row--selected > .menu-cursor { opacity: 1; }
 .menu-label { flex-grow: 1; font-size: var(--type-body); flex-shrink: 1; min-width: 0; white-space: normal; }

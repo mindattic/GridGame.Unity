@@ -357,6 +357,8 @@ namespace GridGame.Meta
         /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
         /// overlong words break at <see cref="Hyphenation"/> points).</summary>
         public bool Hyphenate;
+        /// <summary>Settings → Text size (GG-T495): 100, 115 or 130 percent of the menu type scale; anything else reads as 100.</summary>
+        public int TextScale = 100;
         /// <summary>The difficulty dial 1..10 (§22.9, GG-T309), 10 by default; applies from the next battle.</summary>
         public DifficultySettings Difficulty = new DifficultySettings();
     }
