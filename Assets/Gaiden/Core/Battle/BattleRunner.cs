@@ -654,10 +654,14 @@ namespace GridGame.Core.Battle
             // A fallen guest is down, not gone (GG-T114): revive them and they can still be recruited.
             if (u.IsGuest) Announce(permadeath ? $"{u.Name} has fallen for good" : $"{u.Name} has fallen!", u.Id);
             else if (u.Wanderer && u.Team == Team.Hero) Announce($"{u.Name} has fallen!", u.Id); // down, never lost (GG-T342)
-            if (u.Team == Team.Enemy && !u.NoLoot) AwardLoot(u);
-            if (u.IsBountyTarget) CreditBounty(u); // GG-T431
-            if (u.Team == Team.Enemy) LeaveRemains(u, at);
-            if (u.Team == Team.Enemy && !u.NoLoot && !u.IsRemains && !u.IsSnakeSegment) MaybeDropPickup(u, at, killer);
+            // GG-T566: a revived enemy pays out once. Its first death loots, rolls a pickup, tallies the kill, credits a
+            // bounty and leaves remains; a second death (after an echoed revive) does none of that.
+            bool firstPayout = !u.AlreadyLooted;
+            if (u.Team == Team.Enemy) u.AlreadyLooted = true;
+            if (firstPayout && u.Team == Team.Enemy && !u.NoLoot) AwardLoot(u);
+            if (firstPayout && u.IsBountyTarget) CreditBounty(u); // GG-T431
+            if (firstPayout && u.Team == Team.Enemy) LeaveRemains(u, at);
+            if (firstPayout && u.Team == Team.Enemy && !u.NoLoot && !u.IsRemains && !u.IsSnakeSegment) MaybeDropPickup(u, at, killer);
             // GG-T359: the class's OnDeathRule effects and the region rules' UnitDeath hooks, where it fell.
             if (!u.IsEgg && !u.IsSnakeSegment) RegionDeath(u, at);
             // Death triggers (GG-T296): the killer's OnKill, then each living ally's OnAllyKO in unit-id order.

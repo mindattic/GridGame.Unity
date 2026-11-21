@@ -83,6 +83,12 @@ namespace GridGame.Meta
             // bad"); a profile still on the Granite default moves to it once; a later pick of Granite sticks.
             if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) < 3 && d.MenuTheme == "Granite")
                 d.MenuTheme = SettingsSave.DefaultMenuTheme;
+            // GG-T566: Dark replaced Classic as the default after version 3 shipped. A version-3 file still on Classic moves
+            // to Dark once — every version-3 write stamped 3 whatever the pick, so an untouched default can't be told from a
+            // deliberate Classic and the owner chose to move them all. Versions 1-2 picked Classic deliberately (the default
+            // was Chrono/Granite then) and keep it; from version 4 on, Classic is a deliberate pick again and sticks.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) == 3 && d.MenuTheme == "Classic")
+                d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
@@ -158,7 +164,6 @@ namespace GridGame.Meta
             return list;
         }
 
-        /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
         private const string ToneBrightness = "brightness", ToneContrast = "contrast", ToneGamma = "gamma";
 
         /// <summary>The preset tone map in a settings.json (GG-T563); a missing value reads 0.5, a missing map is empty.</summary>
@@ -175,7 +180,8 @@ namespace GridGame.Meta
             return map;
         }
 
-        public const int CurrentLookVersion = 3;
+        /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
+        public const int CurrentLookVersion = 4; // GG-T566: 4 = Classic-at-3 moved to Dark
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>
         public const string DifficultyLevelKey = "level";

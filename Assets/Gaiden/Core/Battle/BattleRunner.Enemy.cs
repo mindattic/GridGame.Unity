@@ -7,8 +7,26 @@ namespace GridGame.Core.Battle
 {
     internal sealed partial class BattleRunner
     {
-        /// <summary>An enemy icon reached the trigger (§14): boss phases → skip/charge/trap/move → pincer or melee → end-of-turn ticks.</summary>
+        /// <summary>
+        /// An enemy turn, with its charge cooldowns counted down AFTER the turn (GG-T566). A charge with CooldownTurns = N
+        /// sets the cooldown when it is queued; counting down at turn start (before PlanCast) made N=1 do nothing and N wait
+        /// only N-1 turns. Now each of the next N turns is planned with the cooldown still above zero, and the turn after
+        /// those can charge again. Only cooldowns already running when the turn began tick, so one set this turn doesn't.
+        /// </summary>
         private void RunEnemyTurn(Unit enemy)
+        {
+            List<string> ticking = null;
+            if (!enemy.IsRemains && !enemy.IsEgg && enemy.Cooldowns.Count > 0)
+                foreach (var kv in enemy.Cooldowns)
+                    if (kv.Value > 0) (ticking ??= new List<string>()).Add(kv.Key);
+            RunEnemyTurnBody(enemy);
+            if (ticking != null)
+                foreach (var k in ticking)
+                    if (enemy.Cooldowns.TryGetValue(k, out var cd) && cd > 0) enemy.Cooldowns[k] = cd - 1;
+        }
+
+        /// <summary>An enemy icon reached the trigger (§14): boss phases → skip/charge/trap/move → pincer or melee → end-of-turn ticks.</summary>
+        private void RunEnemyTurnBody(Unit enemy)
         {
             MintTimeBank();
             Emit(new TurnStartedEvent { UnitId = enemy.Id });
@@ -26,10 +44,8 @@ namespace GridGame.Core.Battle
             TriggersTurnStart(enemy);
             if (S.IsOver || !enemy.Alive) return;
             // A charge with CooldownTurns waits that many of the caster's own turns before it can be charged again
-            // (GG-T283: templars charged Smite every turn from the board edge and never closed in).
-            if (enemy.Cooldowns.Count > 0)
-                foreach (var k in new List<string>(enemy.Cooldowns.Keys))
-                    if (enemy.Cooldowns[k] > 0) enemy.Cooldowns[k]--;
+            // (GG-T283: templars charged Smite every turn from the board edge and never closed in). The countdown runs
+            // after the turn, in RunEnemyTurn (GG-T566), so N means N full turns.
 
             if (!string.IsNullOrEmpty(enemy.Def.LaysEgg) && enemy.TurnsTaken % Math.Max(1, enemy.Def.EggInterval) == 0)
                 LayEgg(enemy);

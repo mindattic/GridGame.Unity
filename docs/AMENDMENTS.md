@@ -1545,6 +1545,34 @@ gender, same with summoning ... no change to story or mechanics makes everything
   line; MindAttic.Capture only boots on Windows.
 - *Why:* found on the emulator (GG-T547): a dev-only recorder must never disturb play on a device.
 
+## 2026-11-21 — Bughunt owner decisions (owner, GG-T566)
+
+- **Hit before crit ([BIBLE §13.1.1](BIBLE.md#1311-physical-pincer-supporter-enemy-melee)).** *Was:* `Formulas.RollHit`
+  checked the crit band first, so a crit chance above the hit chance landed crits on rolls that should have missed,
+  bypassing Blind and the level shift. *Now:* the hit band is checked first and a crit only happens on a hit (effective
+  crit = min(crit%, hit%)); one Rng draw as before, pincer/supporter blows still undodgeable.
+- **Enemy charge cooldowns wait N full turns ([§3 enemy charges, GG-T283 amendment](BIBLE.md)).** *Was:* counted down
+  at turn start before the charge was planned, so `CooldownTurns` N rested N−1 turns and 1 did nothing. *Now:* counted
+  down after each of the caster's turns; `charge_smite` (2) rests two turns between charges instead of one.
+- **A revived enemy pays out once ([§14.5](BIBLE.md#145-remains--gravestones-and-bone-piles-added-2026-10-10-owner-direction)).**
+  *Was:* an enemy raised by an echoed revive dropped loot, rolled a pickup, tallied a kill, credited its bounty and left
+  remains again on its second death. *Now:* `Unit.AlreadyLooted` (kept through the revive) skips all of that.
+- **Respec warns about gear the hero can't use ([§25.6.3](BIBLE.md#2563-talents-screen-and-inn-respec-gg-t53)).**
+  *Was:* a respec that forgot Heavy Armor / Martial Weapons / Arcane Focus left that gear equipped. *Now:* the confirm
+  lists the pieces and offers "Unequip and respec" (to the bag) or Cancel; `Talents.Respec` refuses otherwise.
+- **Release builds ignore debug launch options unless `-enableDebugOptions` ([§8.1](BIBLE.md#81-release-scope-gg-t392-owner-2026-11-16)).**
+  *Was:* `-allfeatures`, `-start`, `-saveRoot`, `-profile`, `-testmode`, `-demo`, `-skill`, `-telemetry` (and the rest)
+  worked in a release APK via Android intent extras. *Now:* ignored in non-development players without the opt-in, with
+  one log line; editor and development builds unchanged.
+- **One number format ([§8.1](BIBLE.md#81-release-scope-gg-t392-owner-2026-11-16)).** *Was:* device culture leaked
+  into number formatting ("1,5s" timers, regional grouping in the Diamond store). *Now:* the invariant culture is set at
+  startup; the save-slot time is formatted explicitly as local `yyyy-MM-dd HH:mm`.
+- **Classic-default profiles move to Dark ([§ menu window themes](BIBLE.md)).** *Was:* profiles saved at lookVersion 3
+  kept the old Classic default after Dark became the default. *Now:* a lookVersion-3 profile on Classic moves to Dark
+  once (lookVersion 4); a later Classic pick sticks.
+- **Kept:** a Turns buff landing during the unit's own turn gets +1 duration (bughunt change, owner keep).
+- *Why:* owner decisions on the /bughunt findings, 2026-11-21.
+
 ## 2026-11-21 — Two moons: the Moon stays, the Somnolith is a second, misshapen moon (owner, GG-T575)
 
 Owner: *"maybe the moon doesn't have to be a perfect sphere ... a normal moon to balance things ... and then an oddly

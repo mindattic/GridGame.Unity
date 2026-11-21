@@ -242,7 +242,11 @@ namespace GridGame.Meta
 
         /// <summary>The Inn's Respec: pays <see cref="RespecCost"/> gold, refunds every bought node's points and forgets what
         /// those nodes granted (clearing them off the battle bar). Innate nodes — the starting kit, gold-Learned abilities — stay.</summary>
-        public static Result Respec(ContentDb c, SaveData s, HeroSave h)
+        /// <remarks>GG-T566: a respec can take away a proficiency passive (Heavy Armor, Martial Weapons, Arcane Focus) the
+        /// hero's equipped gear depends on. <see cref="GearLostOnRespec"/> lists those pieces; while there are any, Respec
+        /// refuses unless <paramref name="unequipUnusable"/> is true, in which case it takes them off into the bag. The UI
+        /// warns and asks first — the hero never keeps gear it can no longer use.</remarks>
+        public static Result Respec(ContentDb c, SaveData s, HeroSave h, bool unequipUnusable = false)
         {
             if (h == null) return Result.Fail("No hero");
             var closed = RespecClosed(s);
@@ -251,11 +255,11 @@ namespace GridGame.Meta
             if (refund == 0) return Result.Fail("No talent points spent yet");
             int cost = RespecCost(h);
             if (s.Gold < cost) return Result.Fail("Not enough gold");
+            var lost = GearLostOnRespec(c, h);
+            if (lost.Count > 0 && !unequipUnusable)
+                return Result.Fail("Respec would leave gear this hero can't use: " + string.Join(", ", lost.Select(g => c.TryItem(g.ItemId)?.Name ?? g.ItemId)));
             s.Gold -= cost;
-            var forget = new HashSet<string>();
-            foreach (var t in c.SkillTrees.Values)
-                foreach (var n in t.Nodes)
-                    if (Bought(h, t, n) && !string.IsNullOrEmpty(n.Grants)) forget.Add(n.Grants);
+            var forget = RespecForgets(c, h);
             h.TreeNodes.Clear();
             h.TreeNodeCosts?.Clear();
             h.Known.RemoveAll(forget.Contains);
@@ -263,8 +267,45 @@ namespace GridGame.Meta
             for (int i = 0; i < h.Bar.Count; i++)
                 if (h.Bar[i] != null && forget.Contains(h.Bar[i])) h.Bar[i] = null;
             h.SkillPoints += refund;
+            int stowed = 0;
+            foreach (var (slot, _) in lost) if (Equipment.Unequip(c, s, h, slot).Ok) stowed++;
             string hero = c.TryClass(h.ClassId)?.Name ?? h.ClassId;
-            return Result.Success($"{hero}: {refund} skill point{(refund == 1 ? "" : "s")} refunded");
+            return Result.Success($"{hero}: {refund} skill point{(refund == 1 ? "" : "s")} refunded" +
+                (stowed > 0 ? $" · {stowed} piece{(stowed == 1 ? "" : "s")} of gear moved to the bag" : ""));
+        }
+
+        /// <summary>The abilities a respec would forget: everything a bought (non-innate) node granted.</summary>
+        private static HashSet<string> RespecForgets(ContentDb c, HeroSave h)
+        {
+            var forget = new HashSet<string>();
+            foreach (var t in c.SkillTrees.Values)
+                foreach (var n in t.Nodes)
+                    if (Bought(h, t, n) && !string.IsNullOrEmpty(n.Grants)) forget.Add(n.Grants);
+            return forget;
+        }
+
+        /// <summary>GG-T566: the equipped weapon/armor pieces <paramref name="h"/> could no longer use after a
+        /// <see cref="Respec"/> (a forgotten proficiency passive), slot and item id. Empty = the respec leaves all gear usable.</summary>
+        public static List<(EquipmentSlot Slot, string ItemId)> GearLostOnRespec(ContentDb c, HeroSave h)
+        {
+            var lost = new List<(EquipmentSlot, string)>();
+            if (h == null) return lost;
+            var forget = RespecForgets(c, h);
+            if (forget.Count == 0) return lost;
+            var after = new HeroSave { ClassId = h.ClassId, Known = h.Known.Where(k => !forget.Contains(k)).ToList() };
+            foreach (var (slot, id) in EquippedGated(h))
+                if (Equipment.ProficiencyGate(c, h, c.TryItem(id)) == null && Equipment.ProficiencyGate(c, after, c.TryItem(id)) != null)
+                    lost.Add((slot, id));
+            return lost;
+        }
+
+        private static List<(EquipmentSlot Slot, string ItemId)> EquippedGated(HeroSave h)
+        {
+            var list = new List<(EquipmentSlot, string)>();
+            if (h.WeaponId != null) list.Add((EquipmentSlot.Weapon, h.WeaponId));
+            foreach (var kv in h.Armor)
+                if (kv.Value?.ItemId != null) list.Add((kv.Key, kv.Value.ItemId));
+            return list;
         }
     }
 }

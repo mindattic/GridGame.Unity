@@ -132,7 +132,9 @@ namespace GridGame.Core.Rules
             float crit = CritPercent(a);
             if (attacker.SupportCritBonus > 0f) crit = Clamp(crit + attacker.SupportCritBonus * 100f, 0f, SupportDef.MaxSupportedCritPercent); // GG-T298
             float roll = rng.Range(0f, 100f);
-            HitKind kind = roll <= crit ? HitKind.Critical : roll <= hit ? HitKind.Normal : HitKind.Miss;
+            // Hit before crit (GG-T566): the hit band is checked first, so Blind/level penalties can't be bypassed by a
+            // crit chance above the hit chance; a crit only happens on a roll that already hit (crit is effectively min(crit, hit)).
+            HitKind kind = roll > hit ? HitKind.Miss : roll <= crit ? HitKind.Critical : HitKind.Normal;
             if (kind != HitKind.Miss && dodgeable && roll > hit - Evasion(defender))
             {
                 dodged = true;

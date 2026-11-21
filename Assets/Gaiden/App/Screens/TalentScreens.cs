@@ -51,9 +51,9 @@ namespace GridGame.App
             Ui.Caption($"Spent {spent} · earn more on level-up", counter, "dim");
             int cost = Talents.RespecCost(h);
             string closed = Talents.RespecClosed(S);
-            var respec = Ui.Button($"Respec · {Ui.Gold(cost)}", () => Confirm.Show(
+            var respec = Ui.Button($"Respec · {Ui.Gold(cost)}", () => RespecScreen.Ask(C, h,
                 $"Pay {Ui.Gold(cost)} at the Inn to unlearn {C.Class(h.ClassId).Name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?",
-                "Pay", () => Done(Talents.Respec(C, S, h))), "btn--small", headRow);
+                r => Done(r), () => Talents.Respec(C, S, h), () => Talents.Respec(C, S, h, true)), "btn--small", headRow);
             respec.name = "talent-respec";
             Ui.SetEnabled(respec, closed == null && spent > 0 && S.Gold >= cost);
             if (closed != null) Ui.Para(closed, head, "dim");
@@ -291,11 +291,25 @@ namespace GridGame.App
                 string name = C.TryClass(hero.ClassId)?.Name ?? hero.ClassId;
                 string value = spent == 0 ? "No talents bought" : $"{spent} pts · {Ui.Gold(cost)}";
                 bool ok = closed == null && spent > 0 && S.Gold >= cost;
-                var row = Ui.MenuRow($"{name}  Lv {Progression.Level(hero)}", value, () => Confirm.Show(
-                    $"Pay {Ui.Gold(cost)} to unlearn {name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?", "Pay",
-                    () => Done(Talents.Respec(C, S, hero))), list, null, ok);
+                var row = Ui.MenuRow($"{name}  Lv {Progression.Level(hero)}", value, () => Ask(C, hero,
+                    $"Pay {Ui.Gold(cost)} to unlearn {name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?",
+                    r => Done(r), () => Talents.Respec(C, S, hero), () => Talents.Respec(C, S, hero, true)), list, null, ok);
                 row.name = "respec-" + hero.ClassId;
             }
+        }
+
+        /// <summary>
+        /// GG-T566 (owner: "warn and ask user"): the respec confirm. When the respec would forget a proficiency the hero's
+        /// equipped weapon/armor needs, the question lists those pieces and the yes is "Unequip and respec" (they go to the
+        /// bag); Cancel leaves everything as it was. Otherwise it is the plain "Pay" confirm.
+        /// </summary>
+        public static void Ask(ContentDb c, HeroSave hero, string question, Action<Result> done, Func<Result> respec, Func<Result> respecUnequipping)
+        {
+            var lost = Talents.GearLostOnRespec(c, hero);
+            if (lost.Count == 0) { Confirm.Show(question, "Pay", () => done(respec())); return; }
+            string items = string.Join(", ", lost.Select(g => c.TryItem(g.ItemId)?.Name ?? g.ItemId));
+            Confirm.Show($"{question}\n\nAfter the respec this hero can't use: {items}. They'll be unequipped and go to the bag.",
+                "Unequip and respec", () => done(respecUnequipping()));
         }
     }
 }

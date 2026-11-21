@@ -72,9 +72,26 @@ namespace GridGame.App
         private bool fakeInsetsParsed;
         private float playClock;
 
+        /// <summary>
+        /// GG-T566: one number format for the whole app. Every thread (and this one) formats and parses with the invariant
+        /// culture, so a device set to a comma-decimal or other locale no longer shows "1,5s" battle timers or regional digit
+        /// grouping in the Diamond store. Runs as early as Unity allows, before any scene, save or content is touched.
+        /// Dates the player sees are formatted explicitly (the save-slot list shows "yyyy-MM-dd HH:mm" local time).
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void UseInvariantCulture()
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = inv;
+            System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = inv;
+            System.Globalization.CultureInfo.CurrentCulture = inv;
+            System.Globalization.CultureInfo.CurrentUICulture = inv;
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot()
         {
+            UseInvariantCulture(); // again on the boot frame, in case anything reset the main thread's culture in between
             if (I != null) return;
             var go = new GameObject("GameApp");
             DontDestroyOnLoad(go);
@@ -115,7 +132,7 @@ namespace GridGame.App
             if (TestMode.Active) TestMode.Start();
             else if (DemoMode.Active) DemoMode.Start();
             else if (!string.IsNullOrEmpty(start) && Automation.StartScreens.TryGet(start, out var startScreen)) Router.ResetTo(startScreen);
-            else if (global::Unity.Shared.Core.Headless.IsActive) StartHeadlessSession();
+            else if (CommandLine.DebugOptionsAllowed && global::Unity.Shared.Core.Headless.IsActive) StartHeadlessSession(); // GG-T566: release needs -enableDebugOptions
             else Router.ResetTo(new TitleScreen());
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
@@ -474,7 +491,7 @@ namespace GridGame.App
             bool throwaway = DemoMode.Active || TestMode.Active;
             Unity.Shared.Core.ProfileStore store;
             if (!string.IsNullOrEmpty(saveRoot)) store = Unity.Shared.Core.Profiles.UseRoot(System.IO.Path.Combine(saveRoot, Unity.Shared.Core.ProfileStore.FolderName));
-            else if (Unity.Shared.Core.Profiles.OverrideRoot() != null) store = Unity.Shared.Core.Profiles.UseDataPath(Application.persistentDataPath);
+            else if (CommandLine.DebugOptionsAllowed && Unity.Shared.Core.Profiles.OverrideRoot() != null) store = Unity.Shared.Core.Profiles.UseDataPath(Application.persistentDataPath);
             else if (throwaway)
             {
                 var dir = System.IO.Path.Combine(Application.temporaryCachePath, "ThrowawayProfiles");
@@ -484,7 +501,11 @@ namespace GridGame.App
             }
             else
             {
-                store = Unity.Shared.Core.Profiles.UseDataPath(Application.persistentDataPath);
+                // GG-T566: UseDataPath honours the -profiles-root / MINDATTIC_PROFILES_ROOT override itself; a release build
+                // without -enableDebugOptions pins the real folder instead.
+                store = CommandLine.DebugOptionsAllowed
+                    ? Unity.Shared.Core.Profiles.UseDataPath(Application.persistentDataPath)
+                    : Unity.Shared.Core.Profiles.UseRoot(System.IO.Path.Combine(Application.persistentDataPath, Unity.Shared.Core.ProfileStore.FolderName));
                 try
                 {
                     var m = LegacySaveMigration.Run(Application.persistentDataPath, store);
@@ -535,9 +556,48 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>
+    /// The game's launch flags (-allfeatures, -start, -saveRoot, -profile, -testmode, -demo, -skill, -telemetry, -automation,
+    /// -autobattle, ...). Every one of them is a debug/automation option. GG-T566 (owner: "in release mode the debug options
+    /// have to be specified explicitly"): in a non-development player they are all ignored — <see cref="Has"/> is false and
+    /// <see cref="Value"/> null — unless <c>-enableDebugOptions</c> is also on the command line (Android passes intent extras
+    /// as command-line args, so a release APK could otherwise be launched into them). Editor and development builds are
+    /// unchanged. One log line says when a release build ignored them.
+    /// </summary>
     public static class CommandLine
     {
-        public static string Value(string flag)
+        public const string EnableDebugOptions = "-enableDebugOptions";
+        private static bool? allowed;
+
+        /// <summary>True in the Editor and development builds; in a release build only with <see cref="EnableDebugOptions"/>.</summary>
+        public static bool DebugOptionsAllowed
+        {
+            get
+            {
+                if (allowed.HasValue) return allowed.Value;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                allowed = true;
+#else
+                allowed = RawHas(EnableDebugOptions);
+                if (!allowed.Value)
+                {
+                    var flags = new List<string>();
+                    foreach (var a in Environment.GetCommandLineArgs())
+                        if (a.Length > 1 && a[0] == '-') flags.Add(a);
+                    if (flags.Count > 0)
+                        Debug.Log($"[CommandLine] release build: ignoring debug launch options ({string.Join(" ", flags)}); add {EnableDebugOptions} to use them");
+                }
+                else Debug.Log($"[CommandLine] release build: debug launch options enabled by {EnableDebugOptions}");
+#endif
+                return allowed.Value;
+            }
+        }
+
+        public static string Value(string flag) => DebugOptionsAllowed ? RawValue(flag) : null;
+
+        public static bool Has(string flag) => DebugOptionsAllowed && RawHas(flag);
+
+        private static string RawValue(string flag)
         {
             var args = Environment.GetCommandLineArgs();
             for (int i = 0; i < args.Length - 1; i++)
@@ -545,7 +605,7 @@ namespace GridGame.App
             return null;
         }
 
-        public static bool Has(string flag)
+        private static bool RawHas(string flag)
         {
             foreach (var a in Environment.GetCommandLineArgs())
                 if (string.Equals(a, flag, StringComparison.OrdinalIgnoreCase)) return true;

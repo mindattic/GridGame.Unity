@@ -156,7 +156,7 @@ namespace GridGame.App
                 if (damaged) row.Q<Label>("label")?.AddToClassList("bad");
                 if (s != null)
                 {
-                    Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():g}", w);
+                    Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():yyyy-MM-dd HH:mm}", w); // GG-T566: explicit under the invariant culture
                 }
             }
         }

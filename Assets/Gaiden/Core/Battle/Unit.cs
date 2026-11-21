@@ -154,6 +154,12 @@ namespace GridGame.Core.Battle
         public bool IsNeutral => Team == Team.Neutral;
         /// <summary>A risen undead drops nothing the second time.</summary>
         public bool NoLoot;
+        /// <summary>
+        /// GG-T566: this enemy has died once and paid out (loot, pickup roll, kill tally, bounty credit, remains). The flag
+        /// lives on the unit, so it survives a revive (an echoed revive raises the caster's own fallen ally on the same Unit):
+        /// its second death drops nothing, credits nothing and leaves no remains that would rise again.
+        /// </summary>
+        public bool AlreadyLooted;
         public bool IsSnakeSegment => SnakeHeadId >= 0 && SnakeIndex > 0;
         public bool IsSnakeMember => SnakeHeadId >= 0;
         /// <summary>The bounty this unit is the marked target of (§22.4, GG-T431), or null.</summary>
