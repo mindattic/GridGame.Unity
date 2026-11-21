@@ -1932,6 +1932,7 @@ namespace GridGame.App
                 App.StartCoroutine(Tween.Run(Timing.Standard, k => { v.Root.style.opacity = k; v.Root.style.translate = new Translate(0, -80 * (1 - k)); }, Tween.EaseOut));
             }
             SyncTimeline(null);
+            BossWaveMusic(wv);
             if (InCrucible)
             {
                 // The Crucible's waves never run out (§22.10): no "N/total", and a rising sting marks each one.

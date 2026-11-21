@@ -31,6 +31,27 @@ namespace GridGame.App
         public override string Music => music ??= (InCrucible ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Crucible) : null)
             ?? App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "Crusade";
         private string music;
+        private bool bossMusic;
+
+        /// <summary>GG-T459: when a wave brings on a finale's rule-breaking boss (§14.9; a bounty target's rule-break
+        /// doesn't count), the music crossfades to MomentMusic.boss, or .finalboss on the stage the Ending follows (the
+        /// Hierarch), falling back to .boss and then to the stage's own track when those playlists are empty. Kept for
+        /// the rest of the stage, overlays included.</summary>
+        private void BossWaveMusic(WaveStartedEvent wv)
+        {
+            if (bossMusic || InCrucible) return;
+            bool boss = false;
+            foreach (var id in wv.Spawned)
+                if (State.UnitById(id) is Unit u && u.RuleBreak != RuleBreak.None && u.BountyId == null) { boss = true; break; }
+            if (!boss) return;
+            bossMusic = true;
+            var camp = App.Content.Campaign;
+            string track = camp?.Ending?.Stage == stageId ? App.Playlist.Moment(camp, MusicPlaylist.FinalBoss) : null;
+            track ??= App.Playlist.Moment(camp, MusicPlaylist.Boss);
+            if (track == null) return;
+            music = track;
+            App.Audio.Music(track);
+        }
         public override bool RebuildOnResize => false; // ApplyStageLayout re-lays the HUD out in place
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage

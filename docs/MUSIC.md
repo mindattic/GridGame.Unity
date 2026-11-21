@@ -72,6 +72,11 @@ list to put it in rotation (replace the stock name to retire it).
 
 Dialogue keeps whatever is playing (it ducks the music instead).
 
+**Boss waves (GG-T459):** when a wave brings on a finale's rule-breaking boss (bible §14.9; a bounty target's
+rule-break doesn't count), the battle crossfades to a `boss` track, or on the stage the `Ending` follows (the
+Hierarch, `cathedral-03`) a `finalboss` track, falling back to `boss`. With both lists empty the stage keeps its
+own track. The boss track then stays for the rest of the stage. A Crucible run never switches.
+
 ## Tracks still wanted, in priority order
 
 Target: six per region (90 battle tracks) plus four to six for the Camp. Have 17 battle + 2 Camp.
@@ -80,8 +85,7 @@ Target: six per region (90 battle tracks) plus four to six for the Camp. Have 17
 2. **Regions with one (6):** one more each for Anchor Wastes, Halcyon, Choir's Cathedral, The Free Holds,
    The Underspire, Morrow's Shadow.
 3. **Moments (7):** title theme, regional boss, final boss (the Hierarch), Crucible arena, story/dialogue
-   underscore, victory/results, defeat. Boss tracks need a small code change (switch at the boss wave) when they
-   land.
+   underscore, victory/results, defeat. Each goes straight into its `MomentMusic` list; no code change needed.
 4. **Depth:** the rest of the six per region (about 59 more) and 2–4 more Camp tracks.
 
 ## Suno prompts
