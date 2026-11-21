@@ -216,7 +216,7 @@ namespace GridGame.App
         {
             var body = El("col grow", col);
             body.name = "page-body";
-            // A tablet's extra width goes to the backdrop either side rather than stretching every row (GG-T398).
+            // The column is the whole stage on every aspect (GG-T550), so a tablet's windows fill its width like the hub's.
             Fit.Columnize(body, Kit.Gutter - Space.S8);
             body.style.paddingTop = body.style.paddingBottom = Kit.Gap - Space.S8;
             return body;

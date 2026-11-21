@@ -258,10 +258,12 @@ namespace GridGame.App
     {
         /// <summary>The one screen-edge gutter: every full-width panel sits this far from the stage's left and right edges.</summary>
         public const float Edge = Space.S24;
-        /// <summary>The widest a column of menus, rows, text or HUD controls grows (the 9:16 stage width). On a wider stage
-        /// (2:3, 3:4 tablets) it stays this wide and centres, so lines never stretch absurdly; the backdrop, the board's
-        /// surroundings and the timeline take the rest (GG-T398).</summary>
-        public const float ColumnMax = 1424;
+        /// <summary>The widest a column of menus, rows, text or HUD controls grows: the widest stage (3:4), so the column is
+        /// always the full stage. GG-T550 (owner: "every screen scales to fill all aspects 9:23-3:4 with consistent gutters,
+        /// no dead margins"): it used to stop at the 9:16 width (1424) and centre, which left ~240-px empty backdrop bands
+        /// either side of every page on a 3:4 tablet while the hub and battle filled the width. Paragraphs still stop at
+        /// about 60 characters (<see cref="Typography"/>), so lines never stretch absurdly.</summary>
+        public const float ColumnMax = GameApp.MaxStageWidth;
         public static float Width => GameApp.StageWidth;
         public static float Height => GameApp.StageHeight - GameApp.SafeTop - GameApp.SafeBottom;
         /// <summary>The content column's width: the stage width, capped at <see cref="ColumnMax"/>.</summary>
