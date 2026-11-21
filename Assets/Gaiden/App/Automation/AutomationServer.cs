@@ -78,9 +78,66 @@ namespace GridGame.App.Automation
             listener = new HttpListener();
             listener.Prefixes.Add($"http://127.0.0.1:{port}/");
             listener.Start();
+            DisinheritListenerSockets();
             thread = new Thread(Serve) { IsBackground = true, Name = "Automation" };
             thread.Start();
             Debug.Log($"[Automation] listening on {port}, artifacts → {artifacts}");
+        }
+
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetHandleInformation(IntPtr handle, uint mask, uint flags);
+#endif
+
+        /// <summary>
+        /// GG-T522: Windows sockets are inheritable by default, and MindAttic.Capture starts its finalizer
+        /// (capture.exe / ffmpeg) with handle inheritance when the player quits after a <c>-capture</c> run. The
+        /// finalizer then holds this listener's 127.0.0.1:port socket in LISTENING under the dead player's PID
+        /// for the whole export, and the next launch on that port fails to bind ("player did not start"). The
+        /// HttpListener keeps its sockets private (Mono's EndPointManager → EndPointListener), so this finds them
+        /// by reflection and clears HANDLE_FLAG_INHERIT on each. Best effort: if the internals ever change it
+        /// logs and carries on, and tools/harness.py still falls back to a free port.
+        /// </summary>
+        private static void DisinheritListenerSockets()
+        {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+            int cleared = 0;
+            try
+            {
+                var seen = new HashSet<object>();
+                void Walk(object o, int depth)
+                {
+                    if (o == null || depth > 4 || o is string || o.GetType().IsPrimitive || !seen.Add(o)) return;
+                    if (o is System.Net.Sockets.Socket sock)
+                    {
+                        if (SetHandleInformation(sock.Handle, 1 /* HANDLE_FLAG_INHERIT */, 0)) cleared++;
+                        return;
+                    }
+                    if (o is System.Collections.IDictionary dict)
+                    {
+                        foreach (var v in dict.Values) Walk(v, depth + 1);
+                        return;
+                    }
+                    if (o is System.Collections.IEnumerable list)
+                    {
+                        foreach (var v in list) Walk(v, depth + 1);
+                        return;
+                    }
+                    var t = o.GetType();
+                    if (t.Namespace != "System.Net") return;
+                    foreach (var f in t.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public))
+                        if (!f.FieldType.IsPrimitive && f.FieldType != typeof(string)) Walk(f.GetValue(o), depth + 1);
+                }
+                // Older Mono names it EndPointManager, the corefx-based one HttpEndPointManager.
+                foreach (var name in new[] { "System.Net.EndPointManager", "System.Net.HttpEndPointManager" })
+                    if (typeof(HttpListener).Assembly.GetType(name) is Type mgr)
+                    foreach (var f in mgr.GetFields(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public))
+                        Walk(f.GetValue(null), 0);
+            }
+            catch (Exception e) { Debug.LogWarning($"[Automation] couldn't make the listener socket non-inheritable: {e.Message}"); }
+            if (cleared == 0) Debug.LogWarning("[Automation] found no listener socket to make non-inheritable (GG-T522)");
+            else Debug.Log($"[Automation] listener socket(s) non-inheritable: {cleared}");
+#endif
         }
 
         private void OnDestroy()

@@ -37,6 +37,7 @@ import hashlib
 import json
 import os
 import re
+import socket
 import subprocess
 import sys
 import time
@@ -88,6 +89,37 @@ def alive():
         return False
 
 
+def _port_free(port):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        s.bind(("127.0.0.1", port))
+        return True
+    except OSError:
+        return False
+    finally:
+        s.close()
+
+
+def _ensure_port(wait=6.0):
+    """GG-T522: after a -capture run quits, MindAttic.Capture's finalizer (capture.exe/ffmpeg) could inherit the dead
+    player's listening socket and hold 127.0.0.1:PORT for the whole export, so the next launch died binding it
+    ('player did not start'). Players built since make that socket non-inheritable (AutomationServer
+    .DisinheritListenerSockets); for an older build, or anything else squatting the port, wait briefly and then move
+    this run to a free port (every call goes through BASE, so the rest of the run follows)."""
+    global PORT, BASE
+    deadline = time.time() + wait
+    while time.time() < deadline:
+        if _port_free(PORT):
+            return
+        time.sleep(0.5)
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("127.0.0.1", 0))
+    new = s.getsockname()[1]
+    s.close()
+    print(f"[harness] port {PORT} is still held (a capture finalizer?); using {new} for this run", flush=True)
+    PORT, BASE = new, f"http://127.0.0.1:{new}"
+
+
 _launched = False
 
 
@@ -120,6 +152,7 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
                 break
             time.sleep(0.5)
         time.sleep(1.0)
+    _ensure_port()
     art = os.path.join(ROOT, "artifacts", run)
     saves = os.path.join(ROOT, "artifacts", run, "saves")
     if fresh and os.path.isdir(saves):
@@ -1965,6 +1998,7 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
     art = os.path.join(ROOT, "artifacts", run)
     saves = os.path.join(art, "saves")
     os.makedirs(saves, exist_ok=True)
+    _ensure_port()
     args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
             "-screen-width", "585", "-screen-height", "1266", "-screen-fullscreen", "0",
             "-logFile", os.path.join(art, "player.log")]
@@ -2109,6 +2143,7 @@ def endless(count, seed=None, capture=False, run="endless", speed=None,
                 pass
             time.sleep(1.5)
         log_path = os.path.join(art, f"player-{k}.log")
+        _ensure_port()
         args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
                 "-screen-width", "585", "-screen-height", "1266", "-screen-fullscreen", "0",
                 "-logFile", log_path, "-muted", "-demo", "-endless", "-seed", str(base), "-count", str(remaining), *extra]
