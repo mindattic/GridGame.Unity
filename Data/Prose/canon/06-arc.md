@@ -8,10 +8,10 @@ The Pearl is drawn larger in each region's backdrops as the chapters go on. The 
 | 1 | The Lantern Road | A moonless mural in a shrine raises the first question: why does the oldest art have no moon? |
 | 2 | The Arkgrave | Under the wrecks is a harbour with no tide line. Halcyon tried to flee, and something made the seas rise. |
 | 3 | The Anchor Wastes | The arches are taps, not supports. The draw is the pull. |
-| 4 | Halcyon | Ruins and records show that Halcyon caught the Pearl and bound it through its own people. The light in everyone is the Pearl's. |
+| 4 | Halcyon | A dead archive, woken briefly by the heroes' own light, shows the freezing, the feeding and the Undertow. Halcyon bound the Pearl through its own people, and the light in everyone is the Pearl's. |
 | 5 | The Bloom | The Pearl's life takes root here. It is not only a monster. |
 | 6 | The Underspire | The active drain: someone is still pulling. |
-| 7 | The Shardfall | The shell breaks and the body shows through. It is waking, and the blanking is it calling its light home. |
+| 7 | The Shardfall | The shell breaks and the body shows through. The arrival is resuming, and the blanking is its light flowing home. |
 | 8 | Morrow's Shadow | Under the Pearl, gravity fails and stone rises. There is no one to reason with, only the weight of it. |
 
 - **Threaded locations:** the Still and the Choir's Cathedral run through the arc. The Still is the heroes' origin. The Cathedral is the Choir's seat and the heart of the Lullaby, where its surplus is revealed.
@@ -32,4 +32,5 @@ Because the light is shared, every ending costs everyone:
 - What is the tone: hopeful, bleak, or bittersweet?
 - Is one ending canon, or does the player choose?
 - Does any Choir leader know the full truth, including the skim?
+- When did the Undertow happen? The default is about 1,200 years ago, and it sets how long the heroes slept in the Still.
 - Echo, a blanked figure, could join the party and gain colour as the story goes on. Their portrait is deliberately blank until then.

@@ -8,6 +8,22 @@
 - **It has no goals.** The Pearl is a force of nature, not a character. It does not want, plan, speak, hate or love. It sleeps, stirs, draws and sheds the way a storm or a tide does. Every motive in the story belongs to people. No text may give the Pearl lines, intent or a point of view. People may project intent onto it (the Choir calls it Mother and God), but they are wrong.
 - **Closing line:** *"Every pearl begins with something that got inside, and something that couldn't get it out."*
 
+## The history: arrival, freezing, feeding, fall, forgetting
+
+1. **The arrival (about 10,000 years ago).** The Pearl came to do what its kind does, the way a spore lands or a locust swarm descends: not a goal, a life cycle. Had it landed, its light would have poured into everything living and remade the world into one vast Bloom. Every forest, beast and person would have been overgrown red and become part of it.
+2. **The freezing.** Halcyon's ancestors stopped it in the last moment before landfall. With the first Lullaby, sung by thousands at once, they froze the arrival mid-act and held the Pearl asleep in the sky. Whatever it came to do was never finished. It was only paused.
+3. **The feeding.** Halcyon learned to draw on the frozen Pearl's light and built a civilization on it, with towers, Anchors, the Still and the Arks. Over millennia the light ran so deep in them that it became part of them, woven into every life. The quiet horror is that the arrival did happen after all, slowly, through people. Everyone who carries the light is a little bit of the Bloom.
+4. **The fall: the Undertow (default: about 1,200 years ago).**
+   - **The cause:** the Pearl's pull was already growing, and Halcyon tried to escape it. Lifting the Arks took more light than had ever been drawn at once. The spike broke the Pearl's sleep for a single night.
+   - **The night:** the coupling ran backwards and light surged home up every thread. Most of Halcyon was blanked by dawn. The tides rose higher than towers and threw the Arks inland, where they lie in the Arkgrave. The Anchors cracked, and the city fell.
+5. **The forgetting.**
+   - **The singers:** a remnant kept singing through the Undertow and put the Pearl back under. They became the Choir.
+   - **The dark archives:** Halcyon kept its records in moonlight-powered archives, and when the city went dark its memory went dark with it.
+   - **What survived:** chants, half-understood rites, and a moon to worship.
+   - **What the Choir buried:** the rest, out of shame and out of fear of what people would do if they learned the thing in the sky is alive and inside them.
+
+Over twelve centuries the Pearl's true origin became myth, then nothing. The world now believes the moon has always been there.
+
 ## The forgotten clue
 
 The record has a seam. No painting, carving, song or star chart older than about ten thousand years shows a moon:

@@ -1,5 +1,6 @@
 ## Why it is coming now
 
+0. **The arrival is resuming.** The Pearl was frozen mid-landing, not turned away. Every century of drawing, the pull and the thinning sleep let the old descent continue a little further. The approach is not a new disaster. It is the original arrival, ten thousand years late, finishing what was paused.
 1. **The draw never stopped.** Halcyon fell, but the Underspire still runs on moonlight. Its neon is the old taps, rewired by people who don't know or don't care what they are pulling on.
 2. **The Choir keeps more than it needs.** The Lullaby takes more life than the Pearl's sleep requires, and the surplus stays in the Cathedral. A starved sleeper is a restless sleeper, so every year the Lullaby has to take more.
 3. **The shell is breaking.** As the Pearl sinks it sheds its debris. The Shardfall is where the first great pieces came down. Its colossal curved spikes are not all rock: some are the Pearl's own body showing through, claw or rib or horn.
