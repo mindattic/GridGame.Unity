@@ -1395,6 +1395,9 @@ namespace GridGame.App
         /// (4.3%)", <c>summon-odds</c>) and an <b>Odds</b> button (<c>summon-odds-btn</c>) that opens the full list
         /// (<c>summon-odds-list</c>, a row <c>summon-odds-{classId}</c> per hero with its chance). Both read
         /// <see cref="DiamondSummon.Odds"/>, the list the draw picks from.</summary>
+        /// <summary>The open odds list's height in design px: about ten rows, the rest scrolls.</summary>
+        private const float OddsListMaxHeight = 560;
+
         private void OddsRow(VisualElement w)
         {
             var odds = DiamondSummon.Odds(C, S);
@@ -1402,7 +1405,12 @@ namespace GridGame.App
             var line = Ui.Name(DiamondSummon.OddsLine(C, S), row, "gold grow");
             line.name = "summon-odds";
             line.style.whiteSpace = WhiteSpace.Normal;
-            var list = Ui.El("col", w);
+            // A bounded scroller: 41 rows laid out in full pushed the Draw button and the hero list off the bottom of a
+            // page that doesn't scroll (GG-T494 fresh-player run).
+            var list = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+            list.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            list.style.maxHeight = OddsListMaxHeight;
+            w.Add(list);
             list.name = "summon-odds-list";
             list.style.display = DisplayStyle.None;
             foreach (var o in odds)
