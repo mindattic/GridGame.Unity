@@ -49,8 +49,28 @@ spectrograms. `Moonlit Conflict (1)` was a byte-identical copy of `Moonlit Confl
 | LastStandHorn | 最終決戦の合図 (1) | Morrow's Shadow | the brighter, heavier take |
 
 Regions with no music of their own yet (they borrow): The Bloom, The Drowned Arks, Deep Shardfall, Under the
-Anchors. The old stock tracks still play the non-battle moments: TellerOfTheTales (title, story), HeroicAge
-(victory, level-up), Heartbreaking (defeat).
+Anchors.
+
+## Moments (GG-T458)
+
+The non-battle moments are playlists too: `campaign.json` `MomentMusic`, one shuffle bag each, drawn once per
+screen. Until the owner's tracks land they hold the old stock tracks, so nothing changes; add a track to a
+list to put it in rotation (replace the stock name to retire it).
+
+| Key | Plays on | Today | Empty list means |
+|---|---|---|---|
+| `title` | Title screen | TellerOfTheTales | TellerOfTheTales |
+| `story` | story crawls (prologue, chapters, ending) | TellerOfTheTales | TellerOfTheTales |
+| `victory` | results after a win or a Crucible run | HeroicAge | HeroicAge |
+| `defeat` | results after a loss | Heartbreaking | Heartbreaking |
+| `levelup` | the level-up fanfare screen | HeroicAge | HeroicAge |
+| `charselect` | New Campaign's party pick | MinstrelGuild | MinstrelGuild |
+| `credits` | the end-of-story credits roll | HeroicAge | HeroicAge |
+| `crucible` | a Crucible run's battle | (empty) | any region's battle track |
+| `boss` | a stage-III finale's boss wave (GG-T459) | (empty) | the stage keeps its track |
+| `finalboss` | the Hierarch's wave (GG-T459) | (empty) | the stage keeps its track |
+
+Dialogue keeps whatever is playing (it ducks the music instead).
 
 ## Tracks still wanted, in priority order
 

@@ -17,7 +17,11 @@ namespace GridGame.App
         private readonly List<Coroutine> reveals = new List<Coroutine>();
         public PostBattleScreen(BattleReport report, string stageId) { this.report = report; this.stageId = stageId; }
         public override string Id => "postbattle";
-        public override string Music => report.Victory || report.Crucible ? "HeroicAge" : "Heartbreaking";
+        /// <summary>GG-T458: campaign.json MomentMusic.victory (a Crucible run's results too) or .defeat.</summary>
+        public override string Music => music ??= report.Victory || report.Crucible
+            ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Victory) ?? "HeroicAge"
+            : App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Defeat) ?? "Heartbreaking";
+        private string music;
 
         public override void OnHidden()
         {

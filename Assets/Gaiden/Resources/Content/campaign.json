@@ -59,6 +59,18 @@
     }
   ],
   "HubMusic": ["HearthsideCamp", "EmbersAtRest"],
+  "MomentMusic": {
+    "title": ["TellerOfTheTales"],
+    "story": ["TellerOfTheTales"],
+    "victory": ["HeroicAge"],
+    "defeat": ["Heartbreaking"],
+    "levelup": ["HeroicAge"],
+    "charselect": ["MinstrelGuild"],
+    "credits": ["HeroicAge"],
+    "crucible": [],
+    "boss": [],
+    "finalboss": []
+  },
   "Themes": [
     {
       "Id": "greenvalley",

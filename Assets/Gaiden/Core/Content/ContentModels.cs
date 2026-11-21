@@ -930,6 +930,10 @@ namespace GridGame.Core.Content
     {
         /// <summary>GG-T456: the Camp's peaceful tracks, one per return from the field.</summary>
         public List<string> HubMusic = new List<string>();
+        /// <summary>GG-T458: playlists for the non-battle moments, keyed by <c>MusicPlaylist.MomentKeys</c> (title, story,
+        /// victory, defeat, levelup, crucible, boss, finalboss, charselect, credits). Each draws from its own shuffle bag;
+        /// an empty or missing list keeps the screen's fallback.</summary>
+        public Dictionary<string, List<string>> MomentMusic = new Dictionary<string, List<string>>();
         public List<ThemeDef> Themes = new List<ThemeDef>();
         /// <summary>GG-T231: the crawl after New Campaign's party pick, and the one after the final boss.</summary>
         public CrawlDef Prologue;

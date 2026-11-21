@@ -69,5 +69,33 @@ namespace GridGame.Tests
             foreach (var th in db.Campaign.Themes)
                 Assert.That(MusicPlaylist.PlaylistOf(th).Count, Is.GreaterThanOrEqualTo(MusicPlaylist.MinSize), th.Id);
         }
+
+        [Test]
+        public void MomentDrawsFromItsOwnBag_NullWhenEmpty()
+        {
+            var camp = new CampaignDef
+            {
+                MomentMusic = { ["victory"] = new List<string> { "V1", "V2" }, ["boss"] = new List<string>() },
+            };
+            var p = new MusicPlaylist(3);
+            var two = new[] { p.Moment(camp, MusicPlaylist.Victory), p.Moment(camp, MusicPlaylist.Victory) };
+            Assert.That(two, Is.EquivalentTo(new[] { "V1", "V2" }), "no repeat until the bag empties");
+            Assert.That(p.Moment(camp, MusicPlaylist.Boss), Is.Null, "an empty moment keeps the caller's fallback");
+            Assert.That(p.Moment(camp, MusicPlaylist.Title), Is.Null, "a missing moment too");
+        }
+
+        [Test]
+        public void EveryMomentKeyIsKnown_AndItsTracksShip()
+        {
+            var db = TestKit.Real;
+            string dir = System.IO.Path.Combine(TestKit.RepoRoot, "Assets", "Gaiden", "Resources", "Audio", "Music");
+            foreach (var kv in db.Campaign.MomentMusic)
+            {
+                Assert.That(MusicPlaylist.MomentKeys, Does.Contain(kv.Key), $"unknown MomentMusic key '{kv.Key}'");
+                foreach (var n in kv.Value)
+                    Assert.That(System.IO.File.Exists(System.IO.Path.Combine(dir, n + ".ogg"))
+                                || System.IO.File.Exists(System.IO.Path.Combine(dir, n + ".mp3")), $"{kv.Key}: {n} missing");
+            }
+        }
     }
 }

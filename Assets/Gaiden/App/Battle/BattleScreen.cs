@@ -26,8 +26,10 @@ namespace GridGame.App
     {
         public override string Id => "battle";
         /// <summary>GG-T456: one track per stage, drawn once from the region's shuffle bag (Meta.MusicPlaylist) and kept
-        /// while overlays (level-ups, dialogue) come and go over the battle.</summary>
-        public override string Music => music ??= App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "Crusade";
+        /// while overlays (level-ups, dialogue) come and go over the battle. A Crucible run plays MomentMusic.crucible when
+        /// campaign.json lists any (GG-T458), else any region's battle track.</summary>
+        public override string Music => music ??= (InCrucible ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Crucible) : null)
+            ?? App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "Crusade";
         private string music;
         public override bool RebuildOnResize => false; // ApplyStageLayout re-lays the HUD out in place
 

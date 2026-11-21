@@ -75,7 +75,9 @@ namespace GridGame.App
     public sealed class TitleScreen : GameScreen
     {
         public override string Id => "title";
-        public override string Music => "TellerOfTheTales";
+        /// <summary>GG-T458: campaign.json MomentMusic.title, drawn once per screen.</summary>
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Title) ?? "TellerOfTheTales";
+        private string music;
 
         protected override void Build(VisualElement root)
         {
@@ -220,7 +222,8 @@ namespace GridGame.App
         }
 
         public override string Id => "charselect";
-        public override string Music => "MinstrelGuild";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.CharSelect) ?? "MinstrelGuild";
+        private string music;
 
         protected override void Build(VisualElement root)
         {
@@ -843,7 +846,8 @@ namespace GridGame.App
             this.backdrop = backdrop ?? HubScreen.ThemeFor(GameApp.I.Content, GameApp.I.Save);
         }
         public override string Id => "crawl";
-        public override string Music => "TellerOfTheTales";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Story) ?? "TellerOfTheTales";
+        private string music;
         public override bool RebuildOnResize => false; // a rebuild would restart the crawl
 
         protected override void Build(VisualElement root)
@@ -900,7 +904,9 @@ namespace GridGame.App
         /// <paramref name="then"/> (the Title).</summary>
         public CreditsScreen(Func<GameScreen> then) { rollThen = then; }
         public override string Id => rollThen != null ? "credits-roll" : "credits";
-        public override string Music => rollThen != null ? "HeroicAge" : null;
+        public override string Music => rollThen == null ? null
+            : music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Credits) ?? "HeroicAge";
+        private string music;
         public override bool RebuildOnResize => rollThen == null; // a rebuild would restart the roll
 
         protected override void Build(VisualElement root)

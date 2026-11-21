@@ -65,6 +65,32 @@ namespace GridGame.Meta
             return hubTrack;
         }
 
+        // ── Moments (GG-T458): the non-battle cues, each a playlist in campaign.json's MomentMusic ──
+        public const string Title = "title", Story = "story", Victory = "victory", Defeat = "defeat",
+            LevelUp = "levelup", Crucible = "crucible", Boss = "boss", FinalBoss = "finalboss",
+            CharSelect = "charselect", Credits = "credits";
+
+        /// <summary>Every moment key campaign.json may list (MusicPlaylistTests checks it lists no other).</summary>
+        public static readonly string[] MomentKeys =
+            { Title, Story, Victory, Defeat, LevelUp, Crucible, Boss, FinalBoss, CharSelect, Credits };
+
+        /// <summary>The moment's playlist (empty when campaign.json lists none).</summary>
+        public static List<string> MomentList(CampaignDef campaign, string moment)
+        {
+            var list = new List<string>();
+            if (campaign?.MomentMusic != null && campaign.MomentMusic.TryGetValue(moment, out var tracks) && tracks != null)
+                foreach (var t in tracks) if (!string.IsNullOrEmpty(t) && !list.Contains(t)) list.Add(t);
+            return list;
+        }
+
+        /// <summary>Draws the moment's next track from its own shuffle bag, or null when it has none (the caller then
+        /// keeps its fallback: the stock track, or for the boss moments the stage's own track).</summary>
+        public string Moment(CampaignDef campaign, string moment)
+        {
+            if (moment == Crucible) hubStale = true; // a Crucible run is a trip to the field like any battle
+            return Draw("moment:" + moment, MomentList(campaign, moment));
+        }
+
         public string Draw(string key, List<string> pool)
         {
             if (pool == null || pool.Count == 0) return null;
