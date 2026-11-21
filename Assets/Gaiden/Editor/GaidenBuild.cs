@@ -47,9 +47,13 @@ namespace GridGame.EditorTools
 
         public static void BuildWindowsRelease() => Build(BuildTarget.StandaloneWindows64, "Build/WindowsRelease/GridGameGaiden.exe", false);
 
+        public const string AndroidPackage = "com.mindattic.gridgamegaiden";
+
+        /// <summary>The development APK (ARM64 + x86_64, so the emulator runs it; tools/androidcheck.py). Debug-signed.
+        /// <c>tools/build.ps1 -Platform Android -Dev</c>.</summary>
         public static void BuildAndroid()
         {
-            PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, "com.mindattic.gridgamegaiden");
+            PlayerSettings.SetApplicationIdentifier(UnityEditor.Build.NamedBuildTarget.Android, AndroidPackage);
             PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
@@ -58,6 +62,122 @@ namespace GridGame.EditorTools
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, !CommandLine("-vulkan"));
             if (CommandLine("-vulkan")) PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { UnityEngine.Rendering.GraphicsDeviceType.Vulkan });
             Build(BuildTarget.Android, CommandLine("-vulkan") ? "Build/Android/GridGameGaiden-vulkan.apk" : "Build/Android/GridGameGaiden.apk", true);
+        }
+
+        /// <summary>
+        /// GG-T478: the Google Play build — an Android App Bundle (.aab), IL2CPP, ARM64 only, no development flags,
+        /// target SDK = the highest installed (Play's floor rises every year), version code bumped (see
+        /// <see cref="AndroidVersionCode"/>). Signed with the upload keystore named by the environment
+        /// (GG_ANDROID_KEYSTORE, GG_ANDROID_KEYSTORE_PASS, GG_ANDROID_KEY_ALIAS, GG_ANDROID_KEY_PASS — tools/build.ps1
+        /// loads them from the git-ignored android-signing.env); with none, Unity's debug key signs it and the log says
+        /// it can't go to Play. The keystore path is put back afterwards, so ProjectSettings never records a machine's
+        /// key, and the passwords are never written anywhere (Unity keeps them in memory only). docs/RELEASE_BUILD.md.
+        /// <c>tools/build.ps1 -Platform Android</c>.
+        /// </summary>
+        public static void BuildAndroidRelease()
+        {
+            var nt = UnityEditor.Build.NamedBuildTarget.Android;
+            PlayerSettings.SetApplicationIdentifier(nt, AndroidPackage);
+            PlayerSettings.SetScriptingBackend(nt, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetIl2CppCodeGeneration(nt, UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, true);
+            int oldCode = PlayerSettings.Android.bundleVersionCode;
+            PlayerSettings.Android.bundleVersionCode = AndroidVersionCode();
+            EditorUserBuildSettings.buildAppBundle = true;
+            EmbedAndroidSymbols();
+
+            bool hadCustom = PlayerSettings.Android.useCustomKeystore;
+            string oldStore = PlayerSettings.Android.keystoreName, oldAlias = PlayerSettings.Android.keyaliasName;
+            var store = Environment.GetEnvironmentVariable("GG_ANDROID_KEYSTORE");
+            bool signed = !string.IsNullOrEmpty(store) && File.Exists(store);
+            try
+            {
+                if (signed)
+                {
+                    PlayerSettings.Android.useCustomKeystore = true;
+                    PlayerSettings.Android.keystoreName = Path.GetFullPath(store);
+                    PlayerSettings.Android.keystorePass = Environment.GetEnvironmentVariable("GG_ANDROID_KEYSTORE_PASS") ?? "";
+                    PlayerSettings.Android.keyaliasName = Environment.GetEnvironmentVariable("GG_ANDROID_KEY_ALIAS") ?? "upload";
+                    PlayerSettings.Android.keyaliasPass = Environment.GetEnvironmentVariable("GG_ANDROID_KEY_PASS")
+                        ?? PlayerSettings.Android.keystorePass;
+                    Debug.Log($"[Build] Android: signing with the upload key '{PlayerSettings.Android.keyaliasName}' from {Path.GetFileName(store)}");
+                }
+                else
+                {
+                    PlayerSettings.Android.useCustomKeystore = false;
+                    Debug.LogWarning(string.IsNullOrEmpty(store)
+                        ? "[Build] Android: no GG_ANDROID_KEYSTORE — the bundle is DEBUG-signed and Google Play will refuse it (docs/RELEASE_BUILD.md)"
+                        : $"[Build] Android: GG_ANDROID_KEYSTORE '{store}' doesn't exist — the bundle is DEBUG-signed (docs/RELEASE_BUILD.md)");
+                }
+                Debug.Log($"[Build] Android: version {PlayerSettings.bundleVersion} ({PlayerSettings.Android.bundleVersionCode})");
+                Build(BuildTarget.Android, "Build/AndroidRelease/GridGameGaiden.aab", false, exitWhenDone: false);
+            }
+            finally
+            {
+                PlayerSettings.Android.keystorePass = "";
+                PlayerSettings.Android.keyaliasPass = "";
+                PlayerSettings.Android.useCustomKeystore = hadCustom;
+                if (signed) { PlayerSettings.Android.keystoreName = oldStore; PlayerSettings.Android.keyaliasName = oldAlias; }
+                PlayerSettings.Android.bundleVersionCode = oldCode;
+                EditorUserBuildSettings.buildAppBundle = false;
+                AssetDatabase.SaveAssets();
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(lastResult == BuildResult.Succeeded ? 0 : 1);
+        }
+
+        /// <summary>
+        /// GG-T484: puts IL2CPP's native symbol table inside the .aab so Google Play's Android vitals shows readable
+        /// crash stacks with nothing uploaded by hand (UnityEditor.Android.UserBuildSettings.DebugSymbols: level
+        /// SymbolTable, format IncludeInBundle). Reached by reflection because the Android editor extension is only
+        /// referenced while Android is the active target; a missing API only warns.
+        /// </summary>
+        private static void EmbedAndroidSymbols()
+        {
+            try
+            {
+                var t = AppDomain.CurrentDomain.GetAssemblies()
+                    .Select(a => a.GetType("UnityEditor.Android.UserBuildSettings+DebugSymbols", false))
+                    .FirstOrDefault(x => x != null);
+                if (t == null) { Debug.LogWarning("[Build] Android: no DebugSymbols settings; bundle without native symbols"); return; }
+                const System.Reflection.BindingFlags S = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static;
+                var level = t.GetProperty("level", S);
+                var format = t.GetProperty("format", S);
+                level?.SetValue(null, Enum.Parse(level.PropertyType, "SymbolTable"));
+                format?.SetValue(null, Enum.Parse(format.PropertyType, "IncludeInBundle"));
+                Debug.Log($"[Build] Android: native symbols {level?.GetValue(null)} / {format?.GetValue(null)}");
+            }
+            catch (Exception e) { Debug.LogWarning("[Build] Android: couldn't set debug symbols (" + e.Message + ")"); }
+        }
+
+        /// <summary>
+        /// GG-T478: Google Play refuses a bundle whose version code isn't higher than every one uploaded before. It is
+        /// the number of commits on the checked-out history (git rev-list --count HEAD), which only grows on main, so
+        /// every build of a newer commit outranks the last with nothing to remember or commit. GG_ANDROID_VERSION_CODE
+        /// overrides it (a hotfix rebuilt from an older commit). The project's own code (ProjectSettings) is left alone.
+        /// </summary>
+        public static int AndroidVersionCode()
+        {
+            var env = Environment.GetEnvironmentVariable("GG_ANDROID_VERSION_CODE");
+            if (int.TryParse(env, out var forced) && forced > 0) return forced;
+            int count = 0;
+            try
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo("git", "rev-list --count HEAD")
+                {
+                    UseShellExecute = false, RedirectStandardOutput = true, CreateNoWindow = true,
+                    WorkingDirectory = Path.GetFullPath("."),
+                };
+                using var p = System.Diagnostics.Process.Start(psi);
+                var text = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(30000);
+                int.TryParse(text.Trim(), out count);
+            }
+            catch (Exception e) { Debug.LogWarning("[Build] git rev-list failed (" + e.Message + ")"); }
+            if (count <= 0) throw new UnityEditor.Build.BuildFailedException("[Build] no version code: git rev-list failed and GG_ANDROID_VERSION_CODE isn't set");
+            return count;
         }
 
         public static void BuildWebGL()
@@ -116,7 +236,9 @@ namespace GridGame.EditorTools
             catch (Exception e) { Debug.LogWarning("[Build] Prose sync failed (" + e.Message + "); committed Content/Text snapshot"); }
         }
 
-        private static void Build(BuildTarget target, string output, bool development)
+        private static BuildResult lastResult = BuildResult.Unknown;
+
+        private static void Build(BuildTarget target, string output, bool development, bool exitWhenDone = true)
         {
             SyncProse();
             EnsureScene();
@@ -131,7 +253,8 @@ namespace GridGame.EditorTools
             var report = BuildPipeline.BuildPlayer(options);
             var s = report.summary;
             Debug.Log($"[Build] {s.result} {target} → {output} size={s.totalSize} errors={s.totalErrors} warnings={s.totalWarnings} time={s.totalTime}");
-            if (Application.isBatchMode) EditorApplication.Exit(s.result == BuildResult.Succeeded ? 0 : 1);
+            lastResult = s.result;
+            if (exitWhenDone && Application.isBatchMode) EditorApplication.Exit(s.result == BuildResult.Succeeded ? 0 : 1);
         }
 
         /// <summary>Force-reimport every Resources asset so GaidenImport's settings apply (run after adding art).</summary>

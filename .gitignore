@@ -40,3 +40,8 @@ Data/Prose/pending/
 Data/Prose/drafts/
 Data/Prose/outbox.jsonl
 Data/Prose/.kit/
+
+# GG-T478: Android signing secrets (docs/RELEASE_BUILD.md) — the upload keystore and its passwords never enter git
+android-signing.env
+*.keystore
+*.jks
