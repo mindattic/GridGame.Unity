@@ -125,13 +125,19 @@ def item_rule(it, manifest):
     if iid in manifest.get("item", {}):
         return manifest["item"][iid]
     if it["Type"] == "Equipment":
+        slot = it.get("Slot")
         if it.get("WeaponType"):
             svg = WEAPON_SVG.get(it["WeaponType"])
             if svg is None:
                 return None  # unmapped WeaponType: report through the normal "NO ICON MAPPING" path, not a crash
+        elif slot == "Weapon":
+            # A weapon with no WeaponType (the Rusty Sword) is drawn from the weapon its name says, never from the armour
+            # rules below: it used to fall through to the breastplate and read as a vest in the shop (GG-T511).
+            svg = next((v for k, v in sorted(WEAPON_SVG.items(), key=lambda kv: -len(kv[0])) if k in name), WEAPON_SVG["Sword"])
         elif "Ring" in name or "Band" in name:
             svg = "delapouite/ring"
-        elif "Amulet" in name or "Talisman" in name:
+        elif slot == "Necklace" or "Amulet" in name or "Talisman" in name:
+            # by slot first, so a necklace named for a crown (Crown of Stars) is still a pendant (GG-T511)
             svg = "lorc/gem-pendant"
         elif "Crown" in name:
             svg = "lorc/crown"
