@@ -54,7 +54,7 @@ namespace GridGame.App
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");
             if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs} orbs at battle start");
             if (i.BankCapacityBonus > 0) parts.Add($"+{i.BankCapacityBonus} orb slots");
-            if (i.PincerDamageBonus > 0) parts.Add($"Pincer +{i.PincerDamageBonus:P0}");
+            if (i.PincerDamageBonus > 0) parts.Add(FormattableString.Invariant($"Pincer +{i.PincerDamageBonus:0%}"));
             if (i.EvasionBonus > 0) parts.Add($"Evasion +{i.EvasionBonus:0}"); // GG-T297
             if (i.RegenPerTurn > 0) parts.Add($"Regen {i.RegenPerTurn}/turn");
             if (i.StartsProtected) parts.Add("Starts battles Protected");
@@ -63,7 +63,7 @@ namespace GridGame.App
             if (i.Escape) parts.Add("Escape from battle");
             if (i.CuresAll) parts.Add("Cures all ailments");
             else if (i.CuresBuff != null) parts.Add($"Cures {i.CuresBuff}");
-            foreach (var kv in i.Resistances) parts.Add($"{kv.Key} ×{kv.Value:0.##}");
+            foreach (var kv in i.Resistances) parts.Add(FormattableString.Invariant($"{kv.Key} ×{kv.Value:0.##}"));
             if (!string.IsNullOrEmpty(i.PassiveName)) parts.Add($"{i.PassiveName}: {i.PassiveDescription}");
             return string.Join("   ", parts);
         }
@@ -687,7 +687,7 @@ namespace GridGame.App
             return InspectCard.Ability(body, C.TryAbility(entry));
         }
 
-        private static string KindLabel(AbilityDef a) => a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · CD {a.CooldownTurns}" : "Skill") : a.CastTime > 0 ? $"{a.CastTime:0.#}s" : "Instant";
+        private static string KindLabel(AbilityDef a) => a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · CD {a.CooldownTurns}" : "Skill") : a.CastTime > 0 ? FormattableString.Invariant($"{a.CastTime:0.#}s") : "Instant";
 
         private string EntryName(string entry)
         {
@@ -1479,7 +1479,7 @@ namespace GridGame.App
                 var can = DiamondSummon.CanDraw(C, S);
                 if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
-                string pay = qg == 0 ? $"{qd:N0} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{qd:N0} Diamonds and {Ui.Gold(qg)}";
+                string pay = qg == 0 ? $"{Ui.Count(qd)} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{Ui.Count(qd)} Diamonds and {Ui.Gold(qg)}";
                 Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () =>
                 {
                     string drawn = null;
@@ -1912,7 +1912,7 @@ namespace GridGame.App
             void Cycle(string label, float value, float[] opts, string fmt, Action<float> set)
             {
                 int i = Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f);
-                Ui.MenuRow(label, string.Format(fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
+                Ui.MenuRow(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
             }
             void CycleFont()
             {
@@ -1936,8 +1936,8 @@ namespace GridGame.App
             Ui.MenuRow("Text size", $"{TextSize.Clamp(st.TextScale)}%",
                 () => { st.TextScale = TextSize.Next(st.TextScale); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-size";
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
-            Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:P0}", v => st.MusicVolume = v);
-            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:P0}", v => st.SfxVolume = v);
+            Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
+            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
             Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
             Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);

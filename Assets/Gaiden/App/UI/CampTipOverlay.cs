@@ -15,17 +15,24 @@ namespace GridGame.App
     /// </summary>
     public static class CampTipOverlay
     {
+        /// <summary>The one poller waiting to show a tip: every page Build (each Refresh, a resize) replaces it, so
+        /// rebuilds never stack pollers that each open the lesson.</summary>
+        private static IVisualElementScheduledItem poller;
+
         public static void ShowIfPending(GameScreen page, string station)
         {
+            poller?.Pause();
+            poller = null;
             var save = GameApp.I.Save;
             var tip = CampTips.Resolve(GameApp.I.Content, save, CampTips.Pending(save, station));
             if (tip == null || Coach.Suppressed || Coach.Off(save) || page.Root == null) return;
             // Wait for a layout pass so the target has a size, and for a Camp-row lesson that led here to finish.
             int tries = 0;
             IVisualElementScheduledItem item = null;
-            item = page.Root.schedule.Execute(() =>
+            poller = item = page.Root.schedule.Execute(() =>
             {
-                if (page.Root.panel == null || ++tries > 40) { item.Pause(); return; }
+                // Save & Quit drops the save while this page is still fading out: never start a lesson then.
+                if (page.Root.panel == null || ++tries > 40 || GameApp.I.Save != save) { item.Pause(); return; }
                 if (Coach.Active) return;
                 item.Pause();
                 Show(page, tip);

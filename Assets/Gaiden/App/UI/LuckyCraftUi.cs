@@ -46,7 +46,7 @@ namespace GridGame.App
             {
                 if (!Crafting.CanLucky(c, s, r)) { DiamondStores.OfferStore(DiamondExchange.CanPay(s, Crafting.LuckyDiamondCost, r.Gold).Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(s, Crafting.LuckyDiamondCost);
-                string pay = qg == 0 ? $"{qd:N0} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{qd:N0} Diamonds and {Ui.Gold(qg)}";
+                string pay = qg == 0 ? $"{Ui.Count(qd)} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{Ui.Count(qd)} Diamonds and {Ui.Gold(qg)}";
                 Confirm.Show($"Pay {pay} for a lucky craft? Masterwork chance {OddsText.Percent(withDiamond)} (without the Diamond {OddsText.Percent(plain)}).", "Lucky craft", () =>
                 {
                     var res = Forging.Forge(c, s, r, lucky: true);

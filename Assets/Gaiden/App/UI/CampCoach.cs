@@ -40,15 +40,22 @@ namespace GridGame.App
                 Open = CampUnlocks.SummonOpen },
         };
 
+        /// <summary>The one poller per Camp build: a Refresh replaces it rather than stacking another.</summary>
+        private static IVisualElementScheduledItem poller;
+
         public static void OnHub(GameScreen hub)
         {
+            poller?.Pause();
+            poller = null;
             var s = GameApp.I.Save;
             if (s == null || Coach.Suppressed || Coach.Off(s) || hub.Root == null) return;
             // After one layout pass (rows have their size) and once any lesson that brought the player here has ended.
             int tries = 0;
             IVisualElementScheduledItem item = null;
-            item = hub.Root.schedule.Execute(() =>
+            poller = item = hub.Root.schedule.Execute(() =>
             {
+                // Save & Quit nulls the save while Camp is still fading out (GG bughunt): stop, don't coach the Title.
+                if (GameApp.I.Save != s || GameApp.I.Router.Current != hub) { item.Pause(); return; }
                 if (hub.Root.panel != null && VariantPicker.Open) return; // GG-T532: a joining hero's look is picked first
                 if (hub.Root.panel == null || ++tries > 30) { item.Pause(); return; }
                 if (Coach.Active) return;

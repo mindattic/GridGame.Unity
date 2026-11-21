@@ -109,6 +109,9 @@ namespace GridGame.App
         /// go back to (the bottom screen didn't swallow it) — Android's back button then offers to quit (GG-T480).</summary>
         public bool Back()
         {
+            // Mid-transition the top of the stack is a screen on its way out (or one not yet mounted): asking it, or
+            // queueing a pop behind a Push, would pop the screen just pushed. Swallowed, like Pop() does.
+            if (busy) return true;
             if (Current != null && !Current.OnBack()) return true;
             if (stack.Count <= 1) return false;
             Go(PopOne);

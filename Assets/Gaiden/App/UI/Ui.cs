@@ -325,7 +325,10 @@ namespace GridGame.App
             return card;
         }
 
-        public static string Gold(int g) => $"{g:N0} G";
+        public static string Gold(int g) => Count(g) + " G";
+        /// <summary>A whole count with thousands commas ("1,250"), the same on every device: the phone's own culture
+        /// would print "1.250" or a narrow no-break space the game font may not have.</summary>
+        public static string Count(int n) => n.ToString("N0", System.Globalization.CultureInfo.InvariantCulture);
 
         /// <summary>FF-style menu row: cursor hand, optional icon, label, right-aligned value.</summary>
         public static VisualElement MenuRow(string label, string value, Action onClick, VisualElement parent, Texture2D icon = null, bool enabled = true)

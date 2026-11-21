@@ -29,6 +29,21 @@ namespace GridGame.App
             reveals.Clear();
         }
 
+        /// <summary>What the Continue button does (set by Build): Android Back does the same, so it never pops back past the
+        /// results to the stage list and skips StoryBeats.AfterResults (the ending crawl, the credits, chapter crawls).</summary>
+        private System.Action onContinue;
+        private bool continued;
+
+        public override bool OnBack()
+        {
+            if (!continued && onContinue != null) { continued = true; onContinue(); }
+            return false;
+        }
+
+        /// <summary>Tame offers already answered on this results screen (class id → the settled line), so a re-mount (a
+        /// resize, back from a wanderer's talk) shows the answer, not Accept/Decline again.</summary>
+        private readonly Dictionary<string, (string msg, bool good)> tameSettled = new Dictionary<string, (string, bool)>();
+
         /// <summary>The fought stage's theme and name, read from the report (GG-T127): a generated stage may already be
         /// pruned from the ContentDb while its results still show; fall back to a live lookup for older reports.</summary>
         public static string ThemeOf(ContentDb c, BattleReport report, string stageId) => report.StageTheme ?? c.TryStage(stageId)?.Theme;
@@ -140,7 +155,8 @@ namespace GridGame.App
             // (the expedition is kept), and it wore the same orange. There it says where it goes and steps back to a
             // plain button, leaving Next battle the one primary. Its automation name stays "continue" either way.
             bool midExpedition = !ending && report.Victory && report.NextStageId != null;
-            var cont = Ui.Button(midExpedition ? "To Camp" : "Continue", () => StoryBeats.AfterResults(report.Victory, stageId), midExpedition ? null : "btn--primary", row);
+            onContinue = () => StoryBeats.AfterResults(report.Victory, stageId);
+            var cont = Ui.Button(midExpedition ? "To Camp" : "Continue", () => { if (continued) return; continued = true; onContinue(); }, midExpedition ? null : "btn--primary", row);
             cont.name = "continue";
             if (ending) Ui.Text("The road ahead is quiet, for now. Continue to see how the story closes.", "small gold", list).style.whiteSpace = WhiteSpace.Normal;
             if (midExpedition)
@@ -200,7 +216,8 @@ namespace GridGame.App
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
-            var cont = Ui.Button("Continue", () => App.Router.ResetTo(new HubScreen()), "btn--primary", row);
+            onContinue = () => App.Router.ResetTo(new HubScreen());
+            var cont = Ui.Button("Continue", () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
             cont.name = "continue";
             var again = Ui.Button("Again ›", () => CrucibleLauncher.Launch(true), null, row);
             again.name = "crucible-again";
@@ -283,23 +300,34 @@ namespace GridGame.App
             sub.style.whiteSpace = WhiteSpace.Normal;
             var buttons = Ui.El("row", text);
             buttons.style.marginTop = Space.S8;
-            void Settle(string msg, bool good)
+            void Show(string msg, bool good)
             {
                 buttons.Clear();
                 Ui.Text(msg, good ? "small good" : "small dim", buttons).style.whiteSpace = WhiteSpace.Normal;
             }
-            Ui.Button("Accept", () =>
+            void Settle(string msg, bool good)
             {
-                var r = Domestication.Accept(c, App.Save, offer);
-                App.Audio.Sfx(r.Ok ? "battle.victory" : "ui.error", r.Ok ? 0.6f : 1f);
-                if (r.Ok) App.Persist();
-                Settle(r.Message, r.Ok);
-            }, "btn--primary", buttons).name = "tame-accept";
-            Ui.Button("Decline", () =>
+                tameSettled[offer.ClassId] = (msg, good); // the answer stands across a re-mount
+                Show(msg, good);
+            }
+            if (tameSettled.TryGetValue(offer.ClassId, out var settled)) Show(settled.msg, settled.good);
+            else
             {
-                App.Audio.Sfx("ui.cancel");
-                Settle($"{def.Name} slips back into the wild.", false);
-            }, null, buttons).name = "tame-decline";
+                Ui.Button("Accept", () =>
+                {
+                    if (tameSettled.ContainsKey(offer.ClassId)) return;
+                    var r = Domestication.Accept(c, App.Save, offer);
+                    App.Audio.Sfx(r.Ok ? "battle.victory" : "ui.error", r.Ok ? 0.6f : 1f);
+                    if (r.Ok) { App.Persist(); Settle(r.Message, true); }
+                    else Show(r.Message, false); // a refusal (no room, say) isn't an answer: a re-mount offers it again
+                }, "btn--primary", buttons).name = "tame-accept";
+                Ui.Button("Decline", () =>
+                {
+                    if (tameSettled.ContainsKey(offer.ClassId)) return;
+                    App.Audio.Sfx("ui.cancel");
+                    Settle($"{def.Name} slips back into the wild.", false);
+                }, null, buttons).name = "tame-decline";
+            }
             box.style.opacity = 0f;
             reveals.Add(App.StartCoroutine(RevealRow(box, 0.2f)));
         }

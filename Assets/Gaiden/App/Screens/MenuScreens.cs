@@ -148,9 +148,12 @@ namespace GridGame.App
             {
                 int slot = i;
                 var s = App.Saves.Load(i, App.Content);
-                string label = s == null ? $"Slot {i + 1} — Empty" : $"Slot {i + 1} — {s.Name}";
+                // A slot whose file (and backup) exist but won't read is damaged, not empty: it may hold paid Diamonds.
+                bool damaged = s == null && App.Saves.Exists(i);
+                string label = s != null ? $"Slot {i + 1} — {s.Name}" : damaged ? $"Slot {i + 1} — Damaged" : $"Slot {i + 1} — Empty";
                 string value = s == null ? "" : $"Stage {s.HighestClearedStage + 2}  {Ui.Gold(s.Gold)}";
-                var row = Ui.MenuRow(label, value, () => Pick(slot, s), w, null, newGame || s != null);
+                var row = Ui.MenuRow(label, value, () => Pick(slot, s, damaged), w, null, newGame || s != null);
+                if (damaged) row.Q<Label>("label")?.AddToClassList("bad");
                 if (s != null)
                 {
                     Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():g}", w);
@@ -158,10 +161,11 @@ namespace GridGame.App
             }
         }
 
-        private void Pick(int slot, SaveData existing)
+        private void Pick(int slot, SaveData existing, bool damaged)
         {
             if (!newGame)
             {
+                if (existing == null) return;
                 App.Save = existing; App.Slot = slot;
                 App.ApplySettings();
                 App.Router.ResetTo(new HubScreen());
@@ -170,6 +174,11 @@ namespace GridGame.App
             if (existing != null)
             {
                 Confirm.Show($"Overwrite slot {slot + 1}?", "Overwrite", () => Start(slot));
+                return;
+            }
+            if (damaged)
+            {
+                Confirm.Show($"Slot {slot + 1}'s save can't be read. Starting a new game here replaces it for good, along with anything it held. Overwrite it?", "Overwrite", () => Start(slot));
                 return;
             }
             Start(slot);
@@ -216,7 +225,12 @@ namespace GridGame.App
         {
             if (finishRoutine != null) App.StopCoroutine(finishRoutine);
             finishRoutine = null;
+            if (autoRoutine != null) App.StopCoroutine(autoRoutine);
+            autoRoutine = null;
         }
+
+        /// <summary>The -demo picker: one per screen (a resize rebuild must not start a second one), stopped on hide.</summary>
+        private Coroutine autoRoutine;
 
         public CharacterSelectScreen(Action<List<string>> onDone, bool auto = false)
         {
@@ -280,7 +294,7 @@ namespace GridGame.App
             }
 
             RefreshState();
-            if (auto) App.StartCoroutine(AutoPlay());
+            if (auto && autoRoutine == null) autoRoutine = App.StartCoroutine(AutoPlay());
         }
 
         private void Pick(string id)
@@ -428,9 +442,23 @@ namespace GridGame.App
             var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
             row.style.marginTop = Space.S16;
-            Ui.Button("Cancel", () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); }, null, row).name = "confirm-no";
+            Action cancel = () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); };
+            veil.userData = cancel; // Android Back answers Cancel (CancelTop)
+            Ui.Button("Cancel", cancel, null, row).name = "confirm-no";
             Ui.Button(yes, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
             return veil;
+        }
+
+        /// <summary>Android Back with a question up: answers the topmost one Cancel. False when none is open.</summary>
+        public static bool CancelTop()
+        {
+            var overlay = GameApp.I?.Overlay;
+            if (overlay == null) return false;
+            var veils = overlay.Query(VeilName).ToList();
+            if (veils.Count == 0) return false;
+            var top = veils[veils.Count - 1];
+            if (top.userData is Action cancel) cancel(); else top.RemoveFromHierarchy();
+            return true;
         }
 
         /// <summary>A confirm veil answers a question about the screen it was raised on — if that screen
@@ -615,7 +643,7 @@ namespace GridGame.App
             // The Diamond Store (§25.18.1, GG-T455): the gold exchange and the real-money packs.
             // GG-T537: the Diamond Store's row opens with the Summon Circle (a Diamond's first use is a summon).
             if (Features.DiamondStore && CampUnlocks.DiamondStoreOpen(s))
-                Ui.MenuRow("Diamond Store", $"{DiamondExchange.Have(s):N0} Diamonds", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
+                Ui.MenuRow("Diamond Store", $"{Ui.Count(DiamondExchange.Have(s))} Diamonds", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
             else if (Features.DiamondStore) Station("Diamond Store", false, CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), null);
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
@@ -924,6 +952,15 @@ namespace GridGame.App
             if (done) return;
             done = true;
             App.Router.Replace(next);
+        }
+
+        /// <summary>Back skips the crawl like Skip ›. A crawl always hands on to what follows it (a launch's battle that
+        /// has already spent Rested, the credits, Camp); popping it went back to the stage list, and relaunching charged
+        /// again.</summary>
+        public override bool OnBack()
+        {
+            Finish();
+            return false;
         }
     }
 

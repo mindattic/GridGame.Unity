@@ -64,7 +64,12 @@ namespace GridGame.App
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
                     var b = Ui.Button($"{term} battles · {Ui.Gold(price)}", () => Confirm.Show(
                         $"Hire {def.Name} for {term} battles at {Ui.Gold(price)}, paid now? The contract runs down every battle, used or not.", "Hire",
-                        () => Done(Mercenaries.Hire(C, S, merc.Class, term))), "btn--small", terms);
+                        () =>
+                        {
+                            // The price shown may be stale (a haggle landed since): never charge a different amount than asked.
+                            if (haggling || Mercenaries.Price(C, S, merc.Class, term) != price) { App.Toast("The price has changed"); App.Audio.Sfx("ui.error"); Refresh(); return; }
+                            Done(Mercenaries.Hire(C, S, merc.Class, term));
+                        }), "btn--small", terms);
                     b.name = $"merc-hire-{m.Class}-{term}";
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
@@ -79,6 +84,8 @@ namespace GridGame.App
         {
             if (haggling) yield break;
             haggling = true;
+            // Hire and Haggle stay off while the merc thinks (the page isn't rebuilt until the answer lands).
+            Body?.Query<Button>().ForEach(btn => { if (btn.name != null && btn.name.StartsWith("merc-")) Ui.SetEnabled(btn, false); });
             App.Audio.Sfx("ui.press");
             var think = Ui.Heading("...", card, "gold");
             yield return Tween.Run(Timing.Dramatic, k => { think.style.opacity = 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)); });
@@ -117,17 +124,27 @@ namespace GridGame.App
             var pending = Mercenaries.PendingRenewal(s);
             if (gone.Count == 0 && pending == null) return;
             if (gone.Count > 0) app.Persist();
+            // Every Camp rebuild (a Refresh, a resize) runs this: only one announcement/reoffer may be in flight, or two
+            // rebuilds inside the delay stacked two renewal screens.
+            if (gone.Count == 0 && (Time.realtimeSinceStartup < scheduledUntil || RenewalShown(app))) return;
+            int delay = gone.Count > 0 ? 900 : 400;
+            // Held past the router's 0.2 s fade, so the pushed screen is on the stack before the window closes.
+            scheduledUntil = Time.realtimeSinceStartup + delay / 1000f + 0.5f;
             hub.Root.schedule.Execute(() =>
             {
-                if (app.Router.Current != hub) return;
+                if (app.Router.Current != hub || app.Save != s) return;
                 if (gone.Count > 0)
                 {
                     app.Audio.Sfx("ui.cancel");
                     app.Toast(string.Join(", ", gone.Select(id => c.TryClass(id)?.Name ?? id)) + (gone.Count == 1 ? "'s contract is up. They've moved on." : ": contracts up. They've moved on."), 2.6f);
                 }
-                if (pending != null && Mercenaries.PendingRenewal(s) == pending) app.Router.Push(new MercenaryRenewalScreen(pending.ClassId));
-            }).ExecuteLater(gone.Count > 0 ? 900 : 400);
+                if (pending != null && Mercenaries.PendingRenewal(s) == pending && !RenewalShown(app)) app.Router.Push(new MercenaryRenewalScreen(pending.ClassId));
+            }).ExecuteLater(delay);
         }
+
+        private static float scheduledUntil;
+
+        private static bool RenewalShown(GameApp app) => app.Router.Stack.Any(x => x is MercenaryRenewalScreen);
     }
 
     /// <summary>The reoffer (GG-T233): a merc on the last battle of their contract asks to renew. Renew at a loyalty

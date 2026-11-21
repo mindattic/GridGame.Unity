@@ -244,7 +244,7 @@ namespace GridGame.App
                 : a.Kind == AbilityKind.Passive ? "Passive · just happens"
                 : a.Kind == AbilityKind.Reactive ? "Reactive · fires when something happens to it"
                 : a.Kind == AbilityKind.Skill ? (a.CooldownTurns > 0 ? $"Skill · recharges in {a.CooldownTurns} turns" : "Skill · free")
-                : a.CastTime > 0 ? $"Spell · charges {a.CastTime:0.#}s on the timeline" : "Spell · instant";
+                : a.CastTime > 0 ? FormattableString.Invariant($"Spell · charges {a.CastTime:0.#}s on the timeline") : "Spell · instant";
             var head = Header(body, itemTex ?? Art.AbilityIcon(a), a.Name, kind, Palette.Gold);
             if (a.Cost > 0)
             {
@@ -278,7 +278,7 @@ namespace GridGame.App
                 int turns = a.TempoTurns > 0 ? a.TempoTurns : BattleConfig.DefaultTempoTurns;
                 facts.Add($"On an ally: Tempo +{pts} for {turns} turns (every foe's icon slows; stacks). On a foe: hastens its icon");
             }
-            if (a.Pushback > 0) facts.Add($"Pushback {a.Pushback:0.##}s: the foe acts later");
+            if (a.Pushback > 0) facts.Add(FormattableString.Invariant($"Pushback {a.Pushback:0.##}s: the foe acts later"));
             if (a.RemovesDebuffs) facts.Add("Cleanses debuffs");
             if (a.GrantsOrbs > 0) facts.Add($"Grants {a.GrantsOrbs} orbs");
             var factBox = Ui.El("col", body);
@@ -476,7 +476,7 @@ namespace GridGame.App
             }
             else if (e.LinkKind == GlossaryLinkKind.Ability && db?.TryAbility(e.LinkId) is AbilityDef la)
             {
-                var n = Line(body, $"{la.Name}{(la.CastTime > 0 ? $" · charges {la.CastTime:0.#}s" : "")}", "t-caption", Palette.TextDim);
+                var n = Line(body, $"{la.Name}{(la.CastTime > 0 ? FormattableString.Invariant($" · charges {la.CastTime:0.#}s") : "")}", "t-caption", Palette.TextDim);
                 n.style.marginTop = Space.S8;
             }
             return true;

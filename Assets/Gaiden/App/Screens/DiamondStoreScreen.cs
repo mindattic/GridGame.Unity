@@ -179,6 +179,7 @@ namespace GridGame.App
         private PurchaseResult last;
         private string storeSig;
         private float sigClock;
+        private bool nudged;
 
         private static string Signature(IDiamondStore s) =>
             $"{s.Connected}|{s.Status}|{s.PriceOf(DiamondStore.Packs[0])}|{DiamondStores.InFlight}";
@@ -207,9 +208,20 @@ namespace GridGame.App
             sigClock = 0f;
             // A store that never answers mustn't lock the packs for the whole session: after two minutes, unlock and say
             // the purchase is still pending (if it went through, the Diamonds arrive on their own).
+            if (!nudged)
+            {
+                nudged = true;
+#if GG_IAP
+                (DiamondStores.Current as UnityIapDiamondStore)?.Nudge(); // retry a failed store connection on open
+#endif
+            }
             if (DiamondStores.InFlight != null && Time.realtimeSinceStartup - DiamondStores.InFlightSince > 120f)
             {
                 DiamondStores.InFlight = null;
+#if GG_IAP
+                // The store's own in-flight purchase must go too, or every later Buy is refused as "already in progress".
+                (DiamondStores.Current as UnityIapDiamondStore)?.AbandonInFlight();
+#endif
                 Show(PurchaseResult.Of(PurchaseKind.Pending, "The store hasn't answered yet. If the purchase went through, the Diamonds arrive on their own."));
                 return;
             }

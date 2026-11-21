@@ -344,9 +344,26 @@ namespace GridGame.App
         private void HardwareBack()
         {
             if (quitVeil != null && quitVeil.parent != null) { quitVeil.RemoveFromHierarchy(); quitVeil = null; return; }
+            if (ModalSwallowsBack()) return;
             if (Router.Back()) return;
             if (Application.platform != RuntimePlatform.Android) return;
             quitVeil = Confirm.Show("Quit the game? Your progress is saved.", "Quit", () => { Persist(); Application.Quit(); });
+        }
+
+        /// <summary>Modal overlays that play out on their own or need their own answer: while one is up, Back must not
+        /// navigate the screen beneath it (a finishing Rested refill would then launch a battle from the wrong screen).</summary>
+        private static readonly string[] BackBlockingOverlays =
+            { TimedJobView.VeilName, VariantPicker.VeilName, "lucky-reveal", "summon-reveal" };
+
+        /// <summary>True when an overlay took the Back press: a Confirm question is answered Cancel; a paywall job, a
+        /// reveal, the look picker or a coach lesson (outside the battle, whose Back opens Pause) swallow it.</summary>
+        private bool ModalSwallowsBack()
+        {
+            if (Overlay == null) return false;
+            if (Confirm.CancelTop()) return true;
+            foreach (var n in BackBlockingOverlays) if (Overlay.Q(n) != null) return true;
+            if (Coach.Active && Overlay.Q("coach") != null && !(Router.Current is BattleScreen)) return true;
+            return false;
         }
 
         /// <summary>Home button, an incoming call, the app switcher: the save is written first (Android may kill a

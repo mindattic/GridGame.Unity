@@ -32,6 +32,7 @@ namespace GridGame.App
         private float savedScroll;
         private ScrollView list;
         private TextField nameField;
+        private string typedName;
         private readonly List<Action> live = new List<Action>();
 
         private SettingsSave St => App.Settings;
@@ -147,7 +148,9 @@ namespace GridGame.App
             var row = Ui.El("row", c);
             row.style.marginTop = Space.S16;
             row.style.alignItems = Align.Center;
-            nameField = new TextField { name = "window-name-field", maxLength = WindowThemeCatalog.MaxNameLength, value = NextName() };
+            // A rebuild (any structural edit, a resize) keeps what the player typed.
+            nameField = new TextField { name = "window-name-field", maxLength = WindowThemeCatalog.MaxNameLength, value = typedName ?? NextName() };
+            nameField.RegisterValueChangedCallback(e => typedName = e.newValue);
             nameField.style.flexGrow = 1; nameField.style.flexShrink = 1;
             nameField.style.fontSize = TypeScale.Body;
             nameField.style.minHeight = Size.Target;
@@ -251,6 +254,7 @@ namespace GridGame.App
             copy.Name = name;
             if (!Valid(copy)) return;
             St.CustomThemes.Add(copy);
+            typedName = null; // the next save offers a fresh name
             Commit(copy, $"Saved {name}");
         }
 

@@ -52,7 +52,7 @@ namespace GridGame.App
                 float p = (float)Paywall.Progress(job, now);
                 Ui.SetGauge(gauge, p);
                 double remaining = Math.Max(0, job.Seconds - (now - job.StartedUtc).TotalSeconds);
-                left.text = p < 1f ? $"{remaining:0.0}s" : "Done";
+                left.text = p < 1f ? FormattableString.Invariant($"{remaining:0.0}s") : "Done";
                 if (p < 1f) return;
                 finished = true;
                 var r = app.Save == null || !app.Save.Jobs.Contains(job) ? Result.Success() : Paywall.Finish(app.Content, app.Save, job, now);
@@ -98,8 +98,14 @@ namespace GridGame.App
             if (s != null) RestedPool.Spend(s, DateTime.UtcNow);
         }
 
-        public static void Refill(Action then = null) =>
-            TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party…", r => { if (r.Ok) then?.Invoke(); });
+        public static void Refill(Action then = null)
+        {
+            // The follow-up (a launch retry, a page refresh) belongs to the screen the refill was started on: if the
+            // player has left it by the time the job lands, the refill still applies but nothing launches from elsewhere.
+            var from = GameApp.I.Router.Current;
+            TimedJobView.Begin(now => (RestedPool.BeginRefill(GameApp.I.Save, now, out var job), job), "Resting the party…",
+                r => { if (r.Ok && GameApp.I.Router.Current == from) then?.Invoke(); });
+        }
 
         /// <summary>The Diamond side of the same refill (GG-T427): instant, no timed job. Paid through the exchange
         /// (GG-T455): Diamonds first, any shortfall in gold; too little of both offers the Diamond Store.</summary>

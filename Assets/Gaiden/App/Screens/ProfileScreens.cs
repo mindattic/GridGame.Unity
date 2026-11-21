@@ -87,7 +87,8 @@ namespace GridGame.App
             Ui.Header(renaming == null ? "New Profile" : "Rename Profile", () => App.Router.Back(), col, out _);
             var w = Ui.Panel(Ui.PageBody(col), renaming == null ? "Name your profile" : $"New name for \"{renaming}\"");
 
-            field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = renaming ?? "" };
+            // A resize rebuild keeps what was typed (the old field is still referenced here until replaced).
+            field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = field?.value ?? renaming ?? "" };
             field.style.fontSize = TypeScale.H3;
             field.style.marginTop = Space.S8; field.style.marginBottom = Space.S8;
             field.style.minHeight = 96;

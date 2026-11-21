@@ -94,8 +94,27 @@ namespace GridGame.App
             var skip = Ui.Button("Skip ›", Skip, "btn--small", root);
             skip.style.position = Position.Absolute; skip.style.right = Space.S32; skip.style.bottom = Space.S48;
 
+            // A rebuild mid-fanfare (a resize) restarts this hero's fanfare: stop the one already playing, or two ran at
+            // once and each Advance()d (a hero skipped, PostBattle Replace()d twice).
+            if (running != null) App.StopCoroutine(running);
+            foreach (var co in reveals) if (co != null) App.StopCoroutine(co);
+            reveals.Clear();
             running = App.StartCoroutine(PlayHero());
         }
+
+        /// <summary>Android Back skips the rest of the fanfare to the results, like Skip on the last hero — it must not
+        /// pop past them (the results' Continue runs the ending, offers and story beats).</summary>
+        public override bool OnBack()
+        {
+            if (hidden || leaving) return false;
+            leaving = true;
+            if (running != null) App.StopCoroutine(running);
+            running = null;
+            App.Router.Replace(new PostBattleScreen(report, stageId));
+            return false;
+        }
+
+        private bool leaving;
 
         private void Skip()
         {
@@ -107,9 +126,9 @@ namespace GridGame.App
 
         private void Advance()
         {
-            if (hidden) return;
+            if (hidden || leaving) return;
             index++;
-            if (index >= report.LevelUps.Count) { App.Router.Replace(new PostBattleScreen(report, stageId)); return; }
+            if (index >= report.LevelUps.Count) { leaving = true; App.Router.Replace(new PostBattleScreen(report, stageId)); return; }
             Refresh();
         }
 

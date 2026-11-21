@@ -96,6 +96,16 @@ namespace GridGame.App
         /// screen had since been mounted — the same failure class as LevelUpScreen's fanfare coroutine (GG-T127).</summary>
         public override void OnHidden() => done = true;
 
+        /// <summary>A scene that hands on to a next screen (a story beat before a battle that has already spent Rested, a
+        /// beat on the way to Camp) treats Back as Skip ›: popping it went back to the stage list, and relaunching
+        /// charged again. Choices are never skipped, so at one Back does nothing. A plain Camp chat still pops.</summary>
+        public override bool OnBack()
+        {
+            if (next == null && nextFactory == null) return true;
+            if (!done && run != null) SkipAhead();
+            return false;
+        }
+
         protected override void Build(VisualElement root)
         {
             // Started on first show, not at construction: a beat queued behind a story crawl mustn't apply its
