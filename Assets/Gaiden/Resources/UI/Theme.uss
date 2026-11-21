@@ -690,10 +690,12 @@
 /* ── Battle info tabs (GG-T391): Party · Lore · Log under the ability row. The strip sits flush on its window and the
    window takes the rest of the band to the safe bottom; each page scrolls inside it. Buttons in a page drop their
    vertical margin (the page is about one tap target tall on the shortest stage) and keep the 24-px side gap.
-   GG-T405: the strip is thin (60 px, under half the 132-px target); each tab spans a third of the column, so its whole
-   width is the tap target and POL-C2's 132-px minimum doesn't apply to it. The height it gave up goes to the pages. ── */
+   GG-T405: the strip is drawn thin (60 px, under half the 132-px target). GG-T524: its hit areas are full targets. ── */
 .info-tabs .tabs { margin: 0; }
-.info-tabs .tab { height: 60px; font-size: var(--type-small); }
+/* GG-T524: each tab is a 132-px-tall transparent hit area (.info-tab, POL-C2) holding its 60-px drawn face at the bottom,
+   flush on the window; the face keeps the old thin look and takes no clicks itself. */
+.info-tabs .info-tab { flex-grow: 1; flex-basis: 0; height: var(--size-target); margin: 0 var(--space-12); justify-content: flex-end; }
+.info-tabs .tab { height: 60px; font-size: var(--type-small); flex-grow: 0; flex-shrink: 0; margin: 0; }
 /* The mana pool (GG-T405): the "-N" ghost of an aimed spell and the dimmed count fade rather than snap. */
 .mana-pool .mana-pool__ghost { transition-property: opacity; transition-duration: 0.15s; }
 .mana-pool .mana-pool__count { transition-property: opacity; transition-duration: 0.15s; }

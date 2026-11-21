@@ -1110,8 +1110,10 @@ namespace GridGame.App.Automation
             foreach (var el in stage.Query<VisualElement>().Where(e => e.ClassListContains("tab") || e.ClassListContains("btn")).ToList())
             {
                 if (Hidden(el) || el.worldBound.height < 1) continue;
-                // The battle's Party · Lore · Log strip is thin by design (GG-T405, "tabs--thin": 60 px, full-width targets).
-                float want = el.ClassListContains("tab") ? (el.parent != null && el.parent.ClassListContains("tabs--thin") ? 56f : 96f) : el.resolvedStyle.minHeight.value;
+                // The battle's Party · Lore · Log strip is drawn thin by design (GG-T405, "tabs--thin": 60-px faces), each
+                // face inside its own 132-px hit area (GG-T524, ".info-tab"), which POL-C2 measures.
+                bool thin = el.parent != null && (el.parent.ClassListContains("tabs--thin") || el.parent.ClassListContains("info-tab"));
+                float want = el.ClassListContains("tab") ? (thin ? 56f : 96f) : el.resolvedStyle.minHeight.value;
                 float got = el.worldBound.height * (GameApp.StageWidth / sb.width);
                 if (want > 0 && got < want * 0.8f)
                     problems.Add($"squashed {(el.ClassListContains("tab") ? "tab" : "button")} '{Trim((el as TextElement)?.text ?? el.name ?? "")}' {got:0}px of {want:0}");

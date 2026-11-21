@@ -107,7 +107,8 @@ namespace GridGame.App
         // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S16;
-        private static float InfoTabsTop => BarTop + Size.Slot + Space.S16;
+        /// <summary>The info tabs' hit areas start a target gap (POL-C3, 24) under the ability row (GG-T524).</summary>
+        private static float InfoTabsTop => BarTop + Size.Slot + Space.S24;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -881,9 +882,19 @@ namespace GridGame.App
             host.name = "info-tabs";
             host.style.position = Position.Absolute;
             host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right: ApplyStageLayout (the HUD column)
-            // A thin strip (GG-T405: under half the old 132-px tab height); each tab's whole width is its tap target.
-            infoTabStrip = Ui.Tabs(InfoTabNames, infoTab, ShowInfoTab, host);
-            infoTabStrip.AddToClassList("tabs--thin");
+            // A thin drawn strip (GG-T405: 60 px, under half a target) in a full-size hit area (GG-T524): each tab is a
+            // 132-px-tall transparent target with its 60-px face at the bottom, flush on the window.
+            infoTabStrip = Ui.El("tabs tabs--thin", host);
+            for (int i = 0; i < InfoTabNames.Length; i++)
+            {
+                int idx = i;
+                var hit = Ui.El("info-tab", infoTabStrip);
+                hit.name = "tab-" + InfoTabNames[i].ToLowerInvariant();
+                hit.pickingMode = PickingMode.Position;
+                var face = Ui.Text(InfoTabNames[i], "tab" + (i == infoTab ? " tab--active" : ""), hit);
+                face.pickingMode = PickingMode.Ignore;
+                Ui.Tappable(hit, () => ShowInfoTab(idx));
+            }
             var win = Ui.Window(null, host, "window--compact info-tabs__window");
             win.name = "info-panel";
             panel = infoPages[InfoTabParty] = InfoPage(win, "party");
@@ -927,10 +938,13 @@ namespace GridGame.App
             foreach (var t in infoTabStrip.Children())
             {
                 bool on = k++ == shown;
-                t.EnableInClassList("tab--active", on);
                 // The Tutorial tab exists only while lessons are running (GG-T449).
                 if (k - 1 == InfoTabTutorial) t.style.display = TutorialActive ? DisplayStyle.Flex : DisplayStyle.None;
-                if (on) Fonts.UseHeavy(t); else Fonts.UseBody(t);
+                // t is the tab's hit area (GG-T524); its drawn face is its one child.
+                if (t.childCount == 0) continue;
+                var face = t[0];
+                face.EnableInClassList("tab--active", on);
+                if (on) Fonts.UseHeavy(face); else Fonts.UseBody(face);
             }
             if (shown == InfoTabLog) ScrollLogToEnd();
         }
