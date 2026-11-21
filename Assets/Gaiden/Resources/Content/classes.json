@@ -1073,7 +1073,7 @@
   },
   {
     "Id": "blackwitch",
-    "Name": "Black Witch",
+    "Name": "Hexer",
     "Team": "Hero",
     "Tags": [
       "Humanoid",
@@ -11985,7 +11985,7 @@
   },
   {
     "Id": "pandagirl",
-    "Name": "Panda Girl",
+    "Name": "Panda Brawler",
     "Team": "Hero",
     "Tags": [
       "Humanoid"
@@ -14650,7 +14650,7 @@
   },
   {
     "Id": "shieldmaiden",
-    "Name": "Shield Maiden",
+    "Name": "Shieldguard",
     "Team": "Hero",
     "Tags": [
       "Humanoid"
@@ -14792,7 +14792,7 @@
   },
   {
     "Id": "sister",
-    "Name": "Sister",
+    "Name": "Acolyte",
     "Team": "Hero",
     "Tags": [
       "Humanoid",
@@ -21484,7 +21484,7 @@
   },
   {
     "Id": "whitewitch",
-    "Name": "White Witch",
+    "Name": "Lightweaver",
     "Team": "Hero",
     "Tags": [
       "Humanoid",

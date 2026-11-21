@@ -1482,3 +1482,13 @@ gender, same with summoning ... no change to story or mechanics makes everything
   gender-neutral.
 - *Why:* the owner wants every class playable as either; male art arrives class by class (GG-T535), so the system
   must work with partial art.
+
+## 2026-11-21 — Gendered hero class names become neutral (owner, GG-T543)
+
+- **Was:** five classes had gendered names: Shield Maiden, Panda Girl, Black Witch, White Witch, Sister.
+- **Now ([BIBLE §25.11.2.3](BIBLE.md#2511123-hero-variants-female-or-male-picked-on-joining-added-2026-11-21-owner-gg-t532)):**
+  Shieldguard, Panda Brawler, Hexer, Lightweaver, Acolyte. Display names only: the class ids (`shieldmaiden`,
+  `pandagirl`, `blackwitch`, `whitewitch`, `sister`), ability ids, portrait files and Prose keys are unchanged, so saves,
+  art and text keep resolving. The owner asked for "Shieldbearer"; that is already the Bulwark Shieldbearer enemy
+  (`heavytrooper02`), so the hero is the Shieldguard. Sister Ilsabet, the Medic Wagon's crew NPC, keeps her name.
+- *Why:* owner 2026-11-21: every class now has a female and a male version (GG-T532), so no class name may be gendered.

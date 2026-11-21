@@ -3368,7 +3368,7 @@
  {
   "Id": "shieldmaiden_valkyrie",
   "Name": "Valkyrie's Call",
-  "Description": "Calls a fallen ally back from the edge: they rise on a free tile beside the Shield Maiden with 30 HP.",
+  "Description": "Calls a fallen ally back from the edge: they rise on a free tile beside the Shieldguard with 30 HP.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
