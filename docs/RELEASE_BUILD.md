@@ -31,10 +31,43 @@ back afterwards, so `ProjectSettings.asset` doesn't change.
 whole game to C++: expect 20-40 minutes and several GB of RAM the first time, much less after. The next Windows build
 switches back (also slower than usual once).
 
-**Size: too big for Play today (GG-T499).** The first build (2026-11-20, version code 587, 10 minutes on a warm
-Library) produced a 547 MB bundle. Google Play caps the base module at 200 MB compressed download, so it has to shrink
-before upload: the backdrops (1536x3072 ASTC 4x4, about 4.5 MB each) and portraits are most of it. The fix is
-Android texture overrides (ASTC 6x6/8x8) and/or Play Asset Delivery install-time packs.
+**Size budget (GG-T499).** Google Play caps the base module at **200 MB compressed download**. Measure a bundle
+with bundletool (ships with Unity) rather than the .aab file size, which also carries the native debug symbols
+(~22 MB in `BUNDLE-METADATA`, never downloaded):
+
+```powershell
+$t = "C:\Program Files\Unity\Hub\Editor\6000.4.3f1\Editor\Data\PlaybackEngines\AndroidPlayer"
+& "$t\OpenJDK\bin\java.exe" -jar "$t\Tools\bundletool-all-1.17.2.jar" build-apks --bundle=Build\AndroidRelease\GridGameGaiden.aab --output=gg.apks --overwrite
+& "$t\OpenJDK\bin\java.exe" -jar "$t\Tools\bundletool-all-1.17.2.jar" get-size total --apks=gg.apks
+```
+
+The first bundle (2026-11-20) was 547 MB (545 MB download): Unity's automatic Android format had left the 81 JPEG
+backdrops as raw RGB24, 13.5 MB each. `GaidenImport` (`Assets/Gaiden/Editor/GaidenBuild.cs`) now gives Android its own
+explicit settings, and Standalone/iOS/WebGL keep the defaults:
+
+| Asset (Android only) | Setting | Compressed in the bundle |
+|---|---|---|
+| Backdrops, 81 | max 2048 (1024x2048), ASTC 8x8, best quality | 398 MB -> 30 MB |
+| Portraits, 213 | max 1024, ASTC 6x6, best quality | 46 MB -> 43 MB |
+| Music, 24 tracks (56 min) | Streaming Vorbis quality 0.35 (~75 kbps; Standalone 0.6) | 43 MB -> 31 MB |
+| Engine + IL2CPP code (`lib/arm64-v8a`) | - | 28 MB |
+| Everything else (fonts, VFX, data, icons, dex) | unchanged | ~30 MB |
+| **Download (bundletool get-size total)** | | **545 MB -> 163 MB** |
+
+Headroom is about 37 MB. Every new backdrop costs ~0.37 MB, a portrait ~0.2 MB, a minute of music ~0.55 MB. ASTC
+barely shrinks in the zip (portraits only zip well because of their transparent margins), so these per-asset costs add
+up linearly. Visual check (2026-11-20, astcenc via `EditorUtility.CompressTexture`, viewed at 2x zoom): ASTC 8x8 on a
+1024x2048 backdrop is slightly softer than 4x4 in fine detail but clean on the painted skies (PSNR 31-37 dB); a phone
+shows a backdrop about 1080 px wide, so 1024x2048 is close to screen resolution. Portrait ASTC 6x6 looks the same as 4x4
+(PSNR 38-42 dB); 4x4 would add only ~2.5 MB to the download but double the texture memory.
+
+If the budget runs out, the next levers in order: portraits to ASTC 8x8 (~-10 MB, visibly softer line art), music to
+Vorbis 0.25 or 32 kHz (~-5 MB), then **Play Asset Delivery** install-time asset packs (up to 1 GB each, outside the
+200 MB base cap) for music or backdrops. PAD changes how those assets load (Addressables or AssetBundles instead of
+`Resources.Load`), so it is a code change, not a setting.
+
+Changing the import rules: bump `GaidenImport.GetVersion()` so Unity re-imports what they touch, then build Android
+once and commit the rewritten `.meta` files (they record the Android override) with the rule change.
 
 ### Signing (one-time setup, the owner)
 

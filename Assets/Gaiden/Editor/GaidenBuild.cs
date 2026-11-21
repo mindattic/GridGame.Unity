@@ -292,6 +292,10 @@ namespace GridGame.EditorTools
     /// <summary>Import settings by folder so no asset ever needs hand-tuning in the Inspector.</summary>
     public sealed class GaidenImport : AssetPostprocessor
     {
+        /// <summary>Bumped whenever the rules below change, so Unity re-imports everything they touch on its own
+        /// (3: GG-T499 Android overrides).</summary>
+        public override uint GetVersion() => 3;
+
         private void OnPreprocessTexture()
         {
             if (!assetPath.StartsWith("Assets/Gaiden/Resources/")) return;
@@ -306,12 +310,33 @@ namespace GridGame.EditorTools
             ti.textureCompression = TextureImporterCompression.CompressedHQ;
             // GG-T387: portraits are 1024 canvases (§12.1.2) and dialogue draws a person ~1.2x their pixels, so the cap must
             // never shrink one: 2048 imports every 1024 file pixel for pixel and leaves room for higher-resolution art.
-            // No platform overrides (the .meta files carry none), so Android, iOS, WebGL and Standalone all use this.
+            // Standalone, iOS and WebGL use this default; Android has its own override below (GG-T499).
             if (assetPath.Contains("/Portraits/")) ti.maxTextureSize = 2048;
             // GG-T353: backdrops keep the art's resolution (1536x3072 originals): 4096 so Unity never halves them.
             // Still CompressedHQ (BC7 / ASTC 4x4, ~1 byte per pixel, no mips): ~4.5 MB of texture memory each.
             else if (assetPath.Contains("/Backgrounds/")) ti.maxTextureSize = 4096;
             else if (assetPath.Contains("/Icons/")) { ti.maxTextureSize = 128; ti.textureCompression = TextureImporterCompression.Uncompressed; }
+            AndroidOverride(ti);
+        }
+
+        /// <summary>
+        /// GG-T499: Google Play caps the base module at 200 MB, and Unity's automatic Android format left the 1536x3072
+        /// JPEG backdrops as raw RGB24 (13.5 MB each, 547 MB bundle). Android gets an explicit ASTC format instead:
+        /// backdrops 1024x2048 ASTC 8x8 (0.5 MB; a phone shows them about 1080 px wide, so that is close to screen
+        /// resolution, and soft painted skies hide 8x8 blocks), portraits stay 1024 at ASTC 6x6 (0.45 MB; looks the
+        /// same as 4x4 in dialogue, and ASTC 4x4's transparent margins zip so well that 4x4 would only add ~2.5 MB to the
+        /// download). Standalone is untouched. docs/RELEASE_BUILD.md has the size budget.
+        /// </summary>
+        private void AndroidOverride(TextureImporter ti)
+        {
+            var a = ti.GetPlatformTextureSettings("Android");
+            if (assetPath.Contains("/Backgrounds/")) { a.maxTextureSize = 2048; a.format = TextureImporterFormat.ASTC_8x8; }
+            else if (assetPath.Contains("/Portraits/")) { a.maxTextureSize = 1024; a.format = TextureImporterFormat.ASTC_6x6; }
+            else return;
+            a.overridden = true;
+            a.compressionQuality = 100; // "best" ASTC search: slower import, better blocks, same size
+            a.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;
+            ti.SetPlatformTextureSettings(a);
         }
 
         private void OnPreprocessAudio()
@@ -331,6 +356,14 @@ namespace GridGame.EditorTools
                 s.compressionFormat = AudioCompressionFormat.ADPCM;
             }
             ai.defaultSampleSettings = s;
+            if (assetPath.Contains("/Music/"))
+            {
+                // GG-T499: Android streams music at Vorbis 0.35 (about 75 kbps stereo, 31 MB for the 24 tracks instead of
+                // 43 MB; fine on phone speakers and earbuds) to keep the Play bundle small; Standalone keeps 0.6.
+                var android = s;
+                android.quality = 0.35f;
+                ai.SetOverrideSampleSettings("Android", android);
+            }
         }
     }
 }
