@@ -7,6 +7,11 @@ its own tops up from its `MusicBorrow` list (the closest-sounding tracks elsewhe
 peaceful track each time the party comes back from the field. Playlists live in `campaign.json`
 (`HubMusic`, and `Music` / `MusicBorrow` per theme). Files are `Resources/Audio/Music/<Name>.ogg`.
 
+Track changes crossfade (GG-T460, `App/Services/Audio.cs`): two music sources, the new track fading in while the
+old one fades out over `Audio.CrossfadeSeconds` (1.2 s, unscaled time, equal-power curve), both under the
+volume setting and the duck. `Music(null)` fades out. Switching back to a track still fading out turns it around
+in place rather than restarting it; the battle pause holds only sound effects, so music keeps its place.
+
 **Adding a track:** drop the file in `R:\Desktop\GridGameMusic` and run `python tools/import_music.py
 "<file>=<GameName>"` (or `--all` for every new file there; names are derived from the file name when it is
 ASCII). It trims silence (-55 dB both ends), normalises to -18 LUFS (two-pass loudnorm, TP -1.5, LRA 11), adds

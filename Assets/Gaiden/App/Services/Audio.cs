@@ -6,7 +6,7 @@ namespace GridGame.App
     /// <summary>Music + SFX by key. Every battle event maps to a cue (bible §12.0: every event gets a sound).</summary>
     public sealed class Audio : MonoBehaviour
     {
-        private AudioSource music;
+        private AudioSource music, oldMusic; // music = the current track; oldMusic = the one fading out
         private readonly List<AudioSource> sfx = new List<AudioSource>();
         private readonly Dictionary<string, AudioClip> clips = new Dictionary<string, AudioClip>();
         private string currentTrack;
@@ -24,6 +24,9 @@ namespace GridGame.App
             a.music = go.AddComponent<AudioSource>();
             a.music.loop = true;
             a.music.playOnAwake = false;
+            a.oldMusic = go.AddComponent<AudioSource>();
+            a.oldMusic.loop = true;
+            a.oldMusic.playOnAwake = false;
             for (int i = 0; i < 10; i++)
             {
                 var s = go.AddComponent<AudioSource>();
@@ -37,7 +40,7 @@ namespace GridGame.App
         {
             musicVolume = s.MuteMusic ? 0f : s.MusicVolume;
             sfxVolume = s.MuteSfx ? 0f : s.SfxVolume;
-            music.volume = musicVolume * duck;
+            FadeMusic();
         }
 
         // ── Ducking (POL-F3): music dips under cut-ins, fanfares and dialogue, then comes back ──
@@ -53,13 +56,15 @@ namespace GridGame.App
         private void Update()
         {
             float target = Ducked ? Mathf.Pow(10f, DuckDb / 20f) : 1f;
-            if (Mathf.Approximately(duck, target)) return;
-            // Into the duck over Timing.Standard, back out over Timing.Dramatic (eased in dB, so it sounds even).
-            float span = Ducked ? Timing.Standard : Timing.Dramatic;
-            float db = 20f * Mathf.Log10(Mathf.Max(duck, 1e-4f)), goal = 20f * Mathf.Log10(target);
-            db = Mathf.MoveTowards(db, goal, Mathf.Abs(DuckDb) * Time.unscaledDeltaTime / span);
-            duck = Mathf.Pow(10f, db / 20f);
-            if (music != null) music.volume = musicVolume * duck;
+            if (!Mathf.Approximately(duck, target))
+            {
+                // Into the duck over Timing.Standard, back out over Timing.Dramatic (eased in dB, so it sounds even).
+                float span = Ducked ? Timing.Standard : Timing.Dramatic;
+                float db = 20f * Mathf.Log10(Mathf.Max(duck, 1e-4f)), goal = 20f * Mathf.Log10(target);
+                db = Mathf.MoveTowards(db, goal, Mathf.Abs(DuckDb) * Time.unscaledDeltaTime / span);
+                duck = Mathf.Pow(10f, db / 20f);
+            }
+            FadeMusic();
         }
 
         private AudioClip Clip(string path)
@@ -70,16 +75,53 @@ namespace GridGame.App
             return c;
         }
 
+        // ── Crossfades (GG-T460): two music sources; the new track fades in while the old one fades out ──
+        /// <summary>Seconds a track change takes (unscaled time, so it runs through pauses and slow-mo).</summary>
+        public const float CrossfadeSeconds = Timing.Cinematic;
+        private float musicGain, oldGain;
+
+        /// <summary>Changes the music with a crossfade; null fades it out. Switching back to the track still fading
+        /// out turns it around in place instead of restarting it.</summary>
         public void Music(string track)
         {
             if (track == currentTrack) return;
             currentTrack = track;
             var c = track == null ? null : Clip("Audio/Music/" + track);
+            if (c != null && oldMusic.isPlaying && oldMusic.clip == c)
+            {
+                (music, oldMusic) = (oldMusic, music);
+                (musicGain, oldGain) = (oldGain, musicGain);
+                return;
+            }
+            // The outgoing track fades from wherever it is; one already fading out (a third quick change) is cut.
+            if (music.isPlaying)
+            {
+                oldMusic.Stop();
+                (music, oldMusic) = (oldMusic, music);
+                oldGain = musicGain;
+            }
+            musicGain = 0f;
             music.Stop();
-            if (c == null) return;
+            if (c == null) { music.clip = null; return; }
             music.clip = c;
-            music.volume = musicVolume * duck;
+            music.volume = 0f;
             music.Play();
+        }
+
+        /// <summary>Moves the two music sources' fade gains along and applies volume × duck × gain.</summary>
+        private void FadeMusic()
+        {
+            if (music == null) return;
+            float step = Time.unscaledDeltaTime / CrossfadeSeconds;
+            if (music.clip != null) musicGain = Mathf.MoveTowards(musicGain, 1f, step);
+            if (oldMusic.isPlaying)
+            {
+                oldGain = Mathf.MoveTowards(oldGain, 0f, step);
+                if (oldGain <= 0f) oldMusic.Stop();
+            }
+            // Equal-power-ish curve: a linear gain ramp dips in the middle, the square root keeps loudness even.
+            music.volume = musicVolume * duck * Mathf.Sqrt(musicGain);
+            oldMusic.volume = musicVolume * duck * Mathf.Sqrt(oldGain);
         }
 
         /// <summary>Plays a cue. Rapid repeats of the same cue are thinned so chains don't clip into noise.</summary>
@@ -130,8 +172,9 @@ namespace GridGame.App
             held.Clear();
         }
 
-        /// <summary>Number of AudioSources this service owns (music + the fixed SFX pool), for leak checks.</summary>
-        public int SourceCount => sfx.Count + (music != null ? 1 : 0);
+        /// <summary>Number of AudioSources this service owns (the two crossfading music sources + the fixed SFX pool),
+        /// for leak checks.</summary>
+        public int SourceCount => sfx.Count + (music != null ? 1 : 0) + (oldMusic != null ? 1 : 0);
 
         /// <summary>Pre-taxonomy cue names (POL-F1, GG-T254) → their taxonomy key, so an old name still plays.</summary>
         private static readonly Dictionary<string, string> Aliases = new Dictionary<string, string>
