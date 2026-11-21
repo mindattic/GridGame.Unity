@@ -454,19 +454,7 @@ namespace GridGame.Core.Battle
                 piece.Durability--;
                 if (piece.Durability > 0) continue;
                 var armor = C.TryItem(piece.ItemId);
-                if (armor != null)
-                {
-                    hero.GearStats = hero.GearStats + armor.Stats * -piece.Mastery;
-                    hero.GearEvasion -= armor.EvasionBonus; // its Evasion goes with it (GG-T297)
-                    foreach (var kv in armor.Resistances)
-                    {
-                        if (!hero.GearResist.TryGetValue(kv.Key, out var cur)) continue;
-                        // A piece granting 0 resistance (full immunity) can't be divided back out exactly —
-                        // once it breaks, its own contribution simply reverts to neutral (owner direction:
-                        // broken armor should leave 1x effectiveness, not a permanent 0x/immune stuck value).
-                        hero.GearResist[kv.Key] = kv.Value != 0f ? cur / kv.Value : 1f;
-                    }
-                }
+                if (armor != null) RemoveGearBonuses(hero, armor, piece.Mastery);
                 Emit(new ArmorBrokenEvent { UnitId = hero.Id, ArmorId = piece.ItemId });
                 Announce($"{armor?.Name ?? "Armor"} broken!", hero.Id);
                 RecordBroken(S.Results.BrokenArmors, hero.Def.Id, piece.ItemId);
@@ -474,6 +462,38 @@ namespace GridGame.Core.Battle
                 // GG-T182: a broken piece no longer counts toward its set, so any tier it was holding up goes too.
                 var set = C.TryArmorSetOf(piece.ItemId);
                 if (set != null && ResolveSetBonuses(hero).Count > 0) Announce($"{set.Name} set bonus lost", hero.Id);
+            }
+        }
+
+        /// <summary>Everything an equipped item grants for the whole battle (as SpawnHero applies it): stats × mastery,
+        /// Evasion, resistances, regen and pincer bonus. Battle-start-only perks (start orbs, bank size, Protect) are not.</summary>
+        private static void AddGearBonuses(Unit hero, ItemDef item, float mastery)
+        {
+            hero.GearStats = hero.GearStats + item.Stats * mastery;
+            hero.PincerDamageBonus += item.PincerDamageBonus;
+            hero.GearEvasion += item.EvasionBonus;
+            hero.RegenPerTurn += item.RegenPerTurn;
+            foreach (var kv in item.Resistances)
+            {
+                float cur = hero.GearResist.TryGetValue(kv.Key, out var existing) ? existing : 1f;
+                hero.GearResist[kv.Key] = cur * kv.Value;
+            }
+        }
+
+        /// <summary>Undoes <see cref="AddGearBonuses"/> when a piece breaks, shatters or is swapped out.</summary>
+        private static void RemoveGearBonuses(Unit hero, ItemDef item, float mastery)
+        {
+            hero.GearStats = hero.GearStats + item.Stats * -mastery;
+            hero.PincerDamageBonus -= item.PincerDamageBonus;
+            hero.GearEvasion -= item.EvasionBonus; // its Evasion goes with it (GG-T297)
+            hero.RegenPerTurn -= item.RegenPerTurn;
+            foreach (var kv in item.Resistances)
+            {
+                if (!hero.GearResist.TryGetValue(kv.Key, out var cur)) continue;
+                // A piece granting 0 resistance (full immunity) can't be divided back out exactly —
+                // once it breaks, its own contribution simply reverts to neutral (owner direction:
+                // broken armor should leave 1x effectiveness, not a permanent 0x/immune stuck value).
+                hero.GearResist[kv.Key] = kv.Value != 0f ? cur / kv.Value : 1f;
             }
         }
 
@@ -489,7 +509,7 @@ namespace GridGame.Core.Battle
             int self = Math.Max(1, (int)Math.Round(hero.MaxHp * BattleConfig.ShatterSelfDamageFraction));
             var weapon = C.TryItem(hero.WeaponId);
             Emit(new WeaponShatteredEvent { UnitId = hero.Id, WeaponId = hero.WeaponId, SelfDamage = self });
-            if (weapon != null) hero.GearStats = hero.GearStats + weapon.Stats * -hero.WeaponMastery;
+            if (weapon != null) RemoveGearBonuses(hero, weapon, hero.WeaponMastery);
             RecordBroken(S.Results.BrokenWeapons, hero.Def.Id, hero.WeaponId);
             hero.WeaponId = null;
             hero.WeaponPower = 0f;

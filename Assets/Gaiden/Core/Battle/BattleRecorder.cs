@@ -183,7 +183,8 @@ namespace GridGame.Core.Battle
             {
                 case MoveCommand m: return new JObject { ["type"] = "move", ["hero"] = m.HeroId, ["path"] = new JArray(m.Path.Select(c => new JArray(c.X, c.Y))), ["timeLeft"] = m.TimeLeftSeconds, ["held"] = m.HeldSeconds };
                 case UseSlotCommand u: return new JObject { ["type"] = "use", ["hero"] = u.HeroId, ["slot"] = u.Slot, ["target"] = new JArray(u.Target.X, u.Target.Y) };
-                case ShieldCommand _: return new JObject { ["type"] = "guard" };
+                case ShieldCommand sh: return new JObject { ["type"] = "guard", ["held"] = sh.HeldSeconds }; // as CommandCodec keeps it
+                case TalkCommand t: return new JObject { ["type"] = "talk", ["hero"] = t.HeroId, ["target"] = t.TargetId };
                 case TutorialSceneCommand sc: return new JObject { ["type"] = "scene", ["scene"] = sc.Scene };
                 default: return new JObject { ["type"] = cmd?.GetType().Name ?? "none" };
             }

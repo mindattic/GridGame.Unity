@@ -26,7 +26,10 @@ namespace GridGame.Core.Battle
         /// <summary>Fires <paramref name="on"/> for one owner.</summary>
         private void Fire(TriggerOn on, Unit owner, TriggerContext ctx)
         {
-            if (owner == null || !owner.OnBoard || owner.Def == null || S.IsOver) return;
+            // Alive, not just OnBoard: Damage fires OnDamaged/OnAttackedAny before Kill, so the blow that drops an owner to 0 HP
+            // must not let it counter/push/charge mana from the grave. No TriggerOn fires for its own (dead) owner by design —
+            // death hooks are OnKill (the killer) and OnAllyKO (the living allies).
+            if (owner == null || !owner.Alive || owner.Def == null || S.IsOver) return;
             if (owner.IsCorpse || owner.IsRemains || owner.IsEgg) return;
             foreach (var a in Triggers.Sources(C, owner))
             {

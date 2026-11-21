@@ -78,6 +78,7 @@ namespace GridGame.Core.Battle
             Emit(new TurnStartedEvent { UnitId = u.Id });
             u.TurnsTaken++;
             firedThisAction.Clear();
+            pushedThisAction.Clear(); // its own turn is a new action: one push per target per action (§2.3)
             TriggersTurnStart(u);
             if (S.IsOver || !u.Alive) return;
             if (u.Cooldowns.Count > 0)

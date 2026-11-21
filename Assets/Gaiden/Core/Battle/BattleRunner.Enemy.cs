@@ -22,6 +22,7 @@ namespace GridGame.Core.Battle
             if (enemy.IsEgg) { Hatch(enemy); return; }
             enemy.TurnsTaken++;
             firedThisAction.Clear(); // one enemy turn is one action for OncePerAction triggers (GG-T296)
+            pushedThisAction.Clear(); // ...and for the one-push-per-target-per-action rule (§2.3)
             TriggersTurnStart(enemy);
             if (S.IsOver || !enemy.Alive) return;
             // A charge with CooldownTurns waits that many of the caster's own turns before it can be charged again
@@ -147,9 +148,11 @@ namespace GridGame.Core.Battle
             var from = enemy.Pos;
             if (!Relocate(enemy, next, o => o == occ)) return false;
             Emit(new SteppedEvent { UnitId = enemy.Id, From = from, To = next });
-            RegionTrail(enemy, from); // GG-T370 (the swapped occupant lands on it next)
-            if (!Relocate(occ, from)) return true;
+            // The occupant takes the freed tile first, then the trail paints it (GG-T370): painted first, a blocking trail
+            // would make `from` unwalkable and strand the occupant on the swapper's tile.
+            if (!Relocate(occ, from)) { RegionTrail(enemy, from); return true; }
             Emit(new DisplacedEvent { UnitId = occ.Id, From = next, To = from, ByUnitId = enemy.Id });
+            RegionTrail(enemy, from);
             ShovePickupsUnder(occ, next);
             if (BreaksOnMove(occ)) RemoveBuffsWhere(occ, b => b.Def.BreaksOnMove, "moved");
             TriggerTrap(occ); // a hero shoved onto a trap springs it (§14.2), as when a drag displaces it

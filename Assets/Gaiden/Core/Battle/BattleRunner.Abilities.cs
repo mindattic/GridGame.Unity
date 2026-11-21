@@ -468,10 +468,10 @@ namespace GridGame.Core.Battle
             var outgoing = C.TryItem(hero.WeaponId);
             int outgoingDurability = hero.WeaponDurability;
             int incomingDurability = slot.WeaponDurability;
-            if (outgoing != null) hero.GearStats = hero.GearStats + outgoing.Stats * -hero.WeaponMastery;
+            if (outgoing != null) RemoveGearBonuses(hero, outgoing, hero.WeaponMastery);
             if (incoming != null)
             {
-                hero.GearStats = hero.GearStats + incoming.Stats;
+                AddGearBonuses(hero, incoming, 1f);
                 hero.WeaponId = incoming.Id;
                 hero.WeaponPower = incoming.BaseDamage;
                 hero.WeaponDurability = incomingDurability;
@@ -504,13 +504,15 @@ namespace GridGame.Core.Battle
 
         private void Revive(Unit user, int hp)
         {
-            var fallen = S.Units.Find(u => u.IsHero && !u.Alive && u.Hp <= 0 && !u.IsWildTamed); // a wild tamed beast stays down (GG-T303)
+            // The caster's own fallen (an enemy echoing a revive raises a foe, never a hero — Echo.For plans on caster.Team).
+            // A wild tamed beast stays down (GG-T303); a corpse/remains marker is never "revived".
+            var fallen = S.Units.Find(u => u.Team == user.Team && !u.Alive && u.Hp <= 0 && !u.IsWildTamed && !u.IsCorpse && !u.IsRemains);
             if (fallen == null) { Announce("Nobody to revive"); return; }
             var spot = ReviveSpot(user);
             if (spot == null || !Relocate(fallen, spot.Value)) { Announce("No room!"); return; }
             fallen.OnBoard = true;
             fallen.Hp = Math.Min(fallen.MaxHp, Math.Max(1, hp));
-            if (fallen.IsIndependent) EnsureTurnEntry(fallen); // a domesticated monster gets its turn icon back (GG-T303)
+            if (fallen.IsIndependent || fallen.Team == Team.Enemy) EnsureTurnEntry(fallen); // a domesticated monster / a raised foe gets its turn icon back (GG-T303)
             Emit(new RevivedEvent { UnitId = fallen.Id, At = fallen.Pos, Hp = fallen.Hp });
         }
 

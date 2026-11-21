@@ -16,7 +16,7 @@ namespace GridGame.Core.Battle
     /// </summary>
     internal sealed partial class BattleRunner
     {
-        private WandererSpec wanderer;
+        private WandererSpec wanderer => S.WandererSpec; // on the state: a per-command runner must still see it (wave 1+)
 
         /// <summary>A rolled wanderer steps onto its wave at the stage's recommended level with its class loadout.</summary>
         private void SpawnWanderer(int waveIndex)

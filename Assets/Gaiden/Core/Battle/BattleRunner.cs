@@ -432,6 +432,9 @@ namespace GridGame.Core.Battle
                 if (h.Alive) RegionTurn(RuleHook.TurnEnd, h); // GG-T359
                 if (!h.Alive) continue;
                 TickTurnBuffs(h, false);
+                // A halting debuff (Frozen) on a commanded hero counts down on the same shared cycle as an
+                // enemy's — the non-halting pass above skips it, so without this a frozen hero never thaws.
+                if (h.Alive) TickTurnBuffs(h, true);
                 var keys = new List<string>(h.Cooldowns.Keys);
                 foreach (var k in keys)
                     if (h.Cooldowns[k] > 0) h.Cooldowns[k]--;
@@ -640,7 +643,10 @@ namespace GridGame.Core.Battle
             if (!u.IsHero && u.Def.DeathBurst > 0) DeathBurstPending.Add(u);
             u.Hp = 0;
             u.OnBoard = false;
+            var tempoBuffs = u.IsHero ? u.Buffs.FindAll(b => b.Def.Tempo != 0) : null;
             u.Buffs.Clear();
+            // A fallen hero no longer carries its Slow: lift that party tempo unless another living hero still has it (GG-T275).
+            if (tempoBuffs != null) foreach (var b in tempoBuffs) DropBuffTempo(b.Def.Id);
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
             Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
             if (u.IsCorpse) { Announce("Cleared away", u.Id); return; }
@@ -793,6 +799,11 @@ namespace GridGame.Core.Battle
         {
             if (!u.Alive || def == null) return;
             duration = Math.Max(1, duration);
+            // GG-T307, generalised: an enemy/independent ally's Turns buffs count down as its own turn ends, so one gained
+            // during that very turn (a self-buff, a counter's debuff, a support buff) gets one more turn — otherwise it
+            // would expire in the same command it landed.
+            // (Halting buffs tick on the shared cycle in ReturnControl with their own Fresh skip, so they don't need it.)
+            if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
             if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
             if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
             var existing = u.Buffs.Find(b => b.Def.Id == def.Id);

@@ -103,6 +103,9 @@ namespace GridGame.Core.Battle
                 {
                     bool arrived = e.Kind != TimelineKind.Turn ? e.RemainingTicks <= 0 : e.Ip >= BattleConfig.BarLength;
                     if (!arrived) continue;
+                    // A halted (Frozen) owner holds its full icon until it thaws, same as the advance loop above skips it —
+                    // a haste to a full bar or a freeze landing on the arrival tick must not let it act while frozen.
+                    if (e.Kind != TimelineKind.Hazard) { var eo = S.UnitById(e.OwnerId); if (eo != null && eo.Alive && eo.IsTimelineHalted) continue; }
                     if (next == null || Earlier(e, next)) next = e;
                 }
                 if (next == null) break;
@@ -124,7 +127,16 @@ namespace GridGame.Core.Battle
                     recoverActorId = -1;
                     // GG-T318: the turn is done, so its recovery cost is known. Off the bar, then back on at its Speed's entry.
                     if (owner != null && owner.Alive && S.Timeline.Contains(next))
+                    {
+                        // Pushback/haste landed on this icon during its own turn (a reactive OnAttackedDirect/beast_sense push,
+                        // a haste): Ip was 0 at arrival, so stun is the push and any Ip is the haste. ScheduleReentry resets
+                        // both, so carry them across or the PushedBack/Hastened event shown would be silently undone.
+                        int carriedStun = Math.Max(0, next.StunTicks);
+                        int carriedIp = Math.Max(0, next.Ip);
                         ScheduleReentry(next, owner, BattleConfig.RecoverBaseSeconds + turnRecoverSeconds, space: !owner.IsIndependent);
+                        if (carriedStun > 0) next.StunTicks = carriedStun;
+                        if (carriedIp > 0) RushTurn(next, owner, carriedIp / Math.Max(1, BattleEngine.TurnRatePerTick(S, owner)));
+                    }
                 }
             }
         }

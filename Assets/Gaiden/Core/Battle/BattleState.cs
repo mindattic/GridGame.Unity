@@ -187,6 +187,17 @@ namespace GridGame.Core.Battle
         public int Purse;
         /// <summary>The class of the wanderer met this battle (GG-T342), or null.</summary>
         public string Wanderer;
+        // Setup-only inputs a later wave still needs (copied from BattleSetup in BattleRunner.Setup). They live here, not on
+        // the runner, because BattleEngine.Apply builds a fresh runner per command. Never mutated after setup, so
+        // Clone()'s shallow copy may share them.
+        /// <summary>The rolled wanderer spec (<see cref="BattleSetup.Wanderer"/>); spawns when its wave arrives.</summary>
+        public WandererSpec WandererSpec;
+        /// <summary><see cref="BattleSetup.ExcludedGuests"/>: guest/recruitable/wanderer classes that must not appear.</summary>
+        public HashSet<string> ExcludedGuests = new HashSet<string>();
+        /// <summary><see cref="BattleSetup.UnlockedSlots"/>: bar slots a mid-battle guest/recruitable/wanderer is built with.</summary>
+        public int UnlockedSlots = 2;
+        /// <summary><see cref="BattleSetup.Permadeath"/>.</summary>
+        public bool Permadeath;
         public Rng Rng;
         public List<Unit> Units = new List<Unit>();
         public List<TimelineEntry> Timeline = new List<TimelineEntry>();

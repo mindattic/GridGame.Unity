@@ -46,7 +46,9 @@ namespace GridGame.Core.Battle
             int rate = BattleEngine.TurnRatePerTick(s, owner);
             int ip = BattleConfig.BarLength - System.Math.Max(0, ticks) * rate;
             e.StunTicks = 0;
-            if (ip < 0) { e.StunTicks = (-ip + rate - 1) / rate; ip = 0; }
+            // From IP 0 the trip itself takes ceil(BarLength/rate) ticks (TicksUntilAct), so the stand-still is the rest —
+            // ceil(-ip/rate) would land one tick late whenever BarLength isn't a multiple of rate.
+            if (ip < 0) { e.StunTicks = System.Math.Max(0, ticks - (BattleConfig.BarLength + rate - 1) / rate); ip = 0; }
             e.Ip = System.Math.Min(BattleConfig.BarLength - 1, ip);
         }
     }

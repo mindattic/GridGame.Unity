@@ -13,18 +13,20 @@ namespace GridGame.Core.Battle
             new Coord(0, 7), new Coord(5, 7),
         };
 
-        private HashSet<string> excludedGuests = new HashSet<string>();
-        private int unlockedSlotsForGuests = 2;
-        private bool permadeath;
+        // Persisted on the state, not the runner: BattleEngine.Apply builds a new runner per command, so runner fields
+        // set in Setup() would reset before wave 1+ spawns its guests/recruitables/wanderer.
+        private HashSet<string> excludedGuests => S.ExcludedGuests;
+        private int unlockedSlotsForGuests => S.UnlockedSlots;
+        private bool permadeath => S.Permadeath;
 
         public void Setup(BattleSetup setup)
         {
-            excludedGuests = setup.ExcludedGuests ?? new HashSet<string>();
-            permadeath = setup.Permadeath;
-            unlockedSlotsForGuests = setup.UnlockedSlots;
+            S.ExcludedGuests = setup.ExcludedGuests ?? new HashSet<string>();
+            S.Permadeath = setup.Permadeath;
+            S.UnlockedSlots = setup.UnlockedSlots;
             carriedOrbs = Math.Max(0, setup.StartOrbs);
             S.Purse = Math.Max(0, setup.Purse);
-            wanderer = setup.Wanderer;
+            S.WandererSpec = setup.Wanderer;
             S.Bounties = setup.Bounties == null ? new List<BountyMark>() : setup.Bounties.ConvertAll(b => b.Clone()); // GG-T431
             int i = 0;
             foreach (var spec in setup.Party)
@@ -121,7 +123,8 @@ namespace GridGame.Core.Battle
                 u.WeaponDurability = weapon.Durability > 0 ? Math.Max(0, spec.WeaponDurability > 0 ? spec.WeaponDurability : weapon.Durability) : 0;
                 if (!spec.EquippedItemIds.Contains(weapon.Id))
                 {
-                    u.GearStats = u.GearStats + weapon.Stats * spec.WeaponMastery;
+                    // Every weapon bonus, not just stats: a shatter/swap removes them all (RemoveGearBonuses).
+                    AddGearBonuses(u, weapon, spec.WeaponMastery);
                 }
             }
             foreach (var slot in BattleEngine.ArmorSlots)

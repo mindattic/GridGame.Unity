@@ -87,11 +87,9 @@ namespace GridGame.Core.Battle
                     if (buff != null)
                         foreach (var t in targets)
                         {
-                            // GG-T307: an enemy's turn buffs count down as its own turn ends, so a Turns buff lent to the
-                            // enemy whose turn this is gets one more turn — otherwise it would expire before anyone hits it.
-                            int dur = buff.Duration;
-                            if (t == supportTurnOwner && buff.Unit == DurationUnit.Turns) dur++;
-                            ApplyBuff(t, buff, dur);
+                            // GG-T307: a Turns buff lent to the enemy whose turn this is gets one more turn — now done for
+                            // every buff in ApplyBuff (the turn owner is recoverActorId), so it is not added twice here.
+                            ApplyBuff(t, buff, buff.Duration);
                         }
                     break;
                 case SupportEffect.Haste:
@@ -178,7 +176,7 @@ namespace GridGame.Core.Battle
             if (!(seconds > 0f) || !t.Alive) return;
             seconds = Math.Min(seconds, SupportDef.MaxHasteSeconds);
             int ticks = Formulas.SecondsToTicks(seconds);
-            if (t.IsHero)
+            if (t.IsCommandable) // like Hasten: a tamed beast/wanderer has its own icon, hastened directly, not via party tempo
                 AddTempo(source, Math.Max(1, (int)Math.Round(seconds / BattleConfig.BarSeconds / BattleConfig.HastenUPerTempo)), BattleConfig.DefaultTempoTurns);
             var turn = S.TurnEntryOf(t.Id);
             if (turn != null)
