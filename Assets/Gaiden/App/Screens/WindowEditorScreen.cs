@@ -500,10 +500,6 @@ namespace GridGame.App
 
         private static string StyleLabel(string s) => string.IsNullOrEmpty(s) ? "Classic" : char.ToUpperInvariant(s[0]) + s.Substring(1);
 
-        // ── Widgets ─────────────────────────────────────────────────────────────────
-
-        /// <summary>A colour chip: filled with its colour, its name and hex over it; gold-framed when selected.</summary>
-        private void Chip(VisualElement parent, string label, Func<string> get, int perRow, bool selected, Action onTap, string name)
         // ── Tone (GG-T563) ──────────────────────────────────────────────────────────
 
         private const int ToneSteps = 100, ToneMid = ToneSteps / 2;
@@ -565,6 +561,10 @@ namespace GridGame.App
             }
         }
 
+        // ── Widgets ─────────────────────────────────────────────────────────────────
+
+        /// <summary>A colour chip: filled with its colour, its name and hex over it; gold-framed when selected.</summary>
+        private void Chip(VisualElement parent, string label, Func<string> get, int perRow, bool selected, Action onTap, string name)
         {
             var cell = Ui.El(null, parent);
             cell.style.width = Length.Percent(100f / Mathf.Max(1, perRow));
@@ -662,10 +662,6 @@ namespace GridGame.App
             fill.pickingMode = PickingMode.Ignore;
             fill.style.height = Length.Percent(100);
             fill.style.backgroundColor = tint ?? Palette.Neutral;
-            void FromPointer(Vector2 local)
-            {
-                float w = track.contentRect.width;
-                if (w <= 0) return;
             if (mark.HasValue && max > min)
             {
                 var tick = Ui.El(null, track);
@@ -678,6 +674,10 @@ namespace GridGame.App
                 tick.style.marginLeft = -Size.Hairline / 2f;
                 tick.style.backgroundColor = Palette.Text;
             }
+            void FromPointer(Vector2 local)
+            {
+                float w = track.contentRect.width;
+                if (w <= 0) return;
                 Set(Mathf.RoundToInt(min + Mathf.Clamp01(local.x / w) * (max - min)), true);
             }
             track.RegisterCallback<PointerDownEvent>(e => { track.CapturePointer(e.pointerId); FromPointer(e.localPosition); e.StopPropagation(); });
