@@ -102,7 +102,7 @@ def to_hub():
         elif sc == "levelup":
             H._skip_levelups(call("state"))
         elif sc == "postbattle":
-            call("clicktext", text="Continue")
+            call("click", name="continue")  # GG-T513: the results button reads "To Camp" mid-expedition
             time.sleep(1.5)
         else:
             call("back")

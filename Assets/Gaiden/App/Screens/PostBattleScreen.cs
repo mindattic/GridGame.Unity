@@ -128,11 +128,15 @@ namespace GridGame.App
                 string retryId = report.ExpeditionFailed && theme != null ? theme.Stages[0] : stageId;
                 if (c.TryStage(retryId) != null) Ui.Button("Retry", () => StageLauncher.Launch(retryId, true), null, row); // a pruned generated stage can't be retried
             }
-            var cont = Ui.Button("Continue", () => StoryBeats.AfterResults(report.Victory, stageId), "btn--primary", row);
-            cont.name = "continue";
             bool ending = Story.EndingDue(c, App.Save, report.Victory, stageId);
+            // GG-T513: mid-expedition, "Continue" beside "Next battle ›" read as "carry on" though it goes back to Camp
+            // (the expedition is kept), and it wore the same orange. There it says where it goes and steps back to a
+            // plain button, leaving Next battle the one primary. Its automation name stays "continue" either way.
+            bool midExpedition = !ending && report.Victory && report.NextStageId != null;
+            var cont = Ui.Button(midExpedition ? "To Camp" : "Continue", () => StoryBeats.AfterResults(report.Victory, stageId), midExpedition ? null : "btn--primary", row);
+            cont.name = "continue";
             if (ending) Ui.Text("The road ahead is quiet, for now. Continue to see how the story closes.", "small gold", list).style.whiteSpace = WhiteSpace.Normal;
-            if (!ending && report.Victory && report.NextStageId != null)
+            if (midExpedition)
             {
                 Ui.Button("Retreat early", () => Confirm.Show(
                     "Stop the expedition here? You keep everything you've earned so far — you just give up the completion bonus for pushing on.",

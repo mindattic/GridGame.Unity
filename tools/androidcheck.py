@@ -23,7 +23,7 @@ for _ in range(240):
     s = h.call("state")
     if s["screen"] != "battle": break
 check("the battle plays to its results on Android", h.call("state")["screen"] == "postbattle", h.call("state")["screen"])
-h.call("clicktext", text="Continue"); time.sleep(3)
+h.call("click", name="continue"); time.sleep(3)
 save = h.call("state").get("save", {})
 check("the result is saved (gold earned, stage cleared)", save.get("HighestClearedStage", -1) >= 0 and save.get("Gold", 0) > 200, json.dumps(save)[:200])
 errs = [l for l in h.call("logs") if l.startswith(("Error", "Exception", "Assert"))]

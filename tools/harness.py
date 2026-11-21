@@ -598,7 +598,7 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
         for attempt in range(5):
             r = call("click", name="next")
             if _tap_failed(r):
-                call("clicktext", text="Continue")
+                call("click", name="continue")  # GG-T513: reads "To Camp" mid-expedition
             time.sleep(1.5)
             if call("state")["screen"] != "postbattle":
                 break
@@ -663,7 +663,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
             time.sleep(1.2); st = _skip_levelups(call("state"))
         shot(f"03-result{n}")
         last = n == battles - 1
-        call("click" if not last else "clicktext", **({"name": "next"} if not last else {"text": "Continue"}))
+        call("click", name="next" if not last else "continue")
         time.sleep(1.5)
         if not last:
             through_story(wait=1.2)
@@ -1139,7 +1139,7 @@ def story_recruits(run="recruits", speed=3):
     for attempt in range(5):
         r = call("click", name="next")
         if isinstance(r, dict) and r.get("error"):
-            call("clicktext", text="Continue")
+            call("click", name="continue")
         time.sleep(1.5)
         if call("state")["screen"] != "postbattle":
             break
