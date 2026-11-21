@@ -159,6 +159,9 @@ namespace GridGame.Meta
         /// <summary>Whether a purchase can actually complete.</summary>
         bool Connected { get; }
         void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done);
+        /// <summary>The pack's price as the store shows it, in the player's currency ("₩1,400", "1,09 €"), or null when the
+        /// store hasn't said (the screen falls back to <see cref="DiamondPack.Price"/>, the US-dollar list price). GG-T470.</summary>
+        string PriceOf(DiamondPack pack);
         /// <summary>A purchase that finished outside a <see cref="Purchase"/> call (the App toasts it and saves).</summary>
         event Action<PurchaseResult> Delivered;
         /// <summary>The platform offers a "Restore purchases" action (GG-T469: Apple's restore re-sends unfinished
@@ -188,6 +191,7 @@ namespace GridGame.Meta
         public event Action<PurchaseResult> Delivered { add { } remove { } }
         public bool CanRestore => false;
         public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, "Nothing to restore in the test store."));
+        public string PriceOf(DiamondPack pack) => null;
 
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
         {
@@ -207,6 +211,7 @@ namespace GridGame.Meta
         public event Action<PurchaseResult> Delivered { add { } remove { } }
         public bool CanRestore => false;
         public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected));
+        public string PriceOf(DiamondPack pack) => null;
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done) =>
             done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected, pack?.ProductId));
     }

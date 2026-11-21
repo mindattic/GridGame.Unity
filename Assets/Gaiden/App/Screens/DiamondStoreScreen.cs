@@ -41,10 +41,20 @@ namespace GridGame.App
         private static void OnDelivered(PurchaseResult r)
         {
             if (r == null || GameApp.I == null) return;
+            if (GameApp.I.Router?.Current is DiamondStoreScreen ds) { ds.Show(r); return; }
             GameApp.I.Toast(r.Message, 3f);
-            GameApp.I.Audio?.Sfx(r.Ok ? "ui.confirm" : "ui.error");
-            if (GameApp.I.Router?.Current is DiamondStoreScreen ds) ds.Refresh();
+            GameApp.I.Audio?.Sfx(r.Ok ? "ui.diamond" : "ui.error");
         }
+
+        /// <summary>The product id being bought (or "restore") while the store's sheet is up, null otherwise. Static so the
+        /// lockout holds if the player leaves and comes back mid-purchase (GG-T470).</summary>
+        public static string InFlight
+        {
+            get => inFlight;
+            set { inFlight = value; InFlightSince = Time.realtimeSinceStartup; }
+        }
+        private static string inFlight;
+        public static float InFlightSince { get; private set; }
 
         public static void Open() => GameApp.I.Router.Push(new DiamondStoreScreen());
 
@@ -117,17 +127,30 @@ namespace GridGame.App
             if (Features.DiamondStore)
             {
                 var store = DiamondStores.Current;
+                storeSig = Signature(store);
                 var packs = Ui.ListPanel(body, "Buy Diamonds", "diamond-packs");
-                Ui.Para(store.Status, packs, store.Connected ? "dim" : "bad").name = "diamond-store-status";
+                // GG-T470: one line says where the purchase stands: processing, the last answer (success, pending,
+                // cancelled, failed), or the store being unavailable.
+                var (state, text, tone) = StateLine(store);
+                var line = Ui.Para(text, packs, tone);
+                line.name = "diamond-store-status";
+                line.AddToClassList("purchase-state--" + state);
+                bool busy = DiamondStores.InFlight != null;
+                bool open = store.Connected && !busy;
+                bool localized = false;
                 foreach (var p in DiamondStore.Packs)
                 {
                     var pack = p;
-                    var row = Ui.MenuRow($"{pack.Diamonds:N0} Diamonds", pack.Price, () => Buy(store, pack), packs, icon);
+                    var local = store.PriceOf(pack);
+                    localized |= local != null;
+                    var value = DiamondStores.InFlight == pack.ProductId ? "Processing…" : local ?? pack.Price;
+                    var row = Ui.MenuRow($"{pack.Diamonds:N0} Diamonds", value, () => Buy(store, pack), packs, icon, open);
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)
-                    Ui.MenuRow("Restore purchases", "", () => store.Restore(r => Done(r.ToResult(), false)), packs).name = "diamond-restore";
-                Ui.Note("A flat rate: every pack is the same price per Diamond.", packs);
+                    Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking…" : "", () => Restore(store), packs, null, open).name = "diamond-restore";
+                Ui.Note(localized ? "Prices are set by the store in your currency. Every pack is the same price per Diamond."
+                    : "A flat rate: every pack is the same price per Diamond.", packs);
             }
 
             var foot = Ui.Footer(body, "diamond-footer");
@@ -140,18 +163,94 @@ namespace GridGame.App
         private void Exchange()
         {
             int n = amount;
-            Confirm.Show($"Exchange {Ui.Gold(DiamondExchange.GoldFor(n))} for {n:N0} Diamonds?", "Exchange", () => Done(DiamondExchange.Buy(C, S, n)));
+            Confirm.Show($"Exchange {Ui.Gold(DiamondExchange.GoldFor(n))} for {n:N0} Diamonds?", "Exchange", () =>
+            {
+                var r = DiamondExchange.Buy(C, S, n);
+                App.Toast(r.Message ?? (r.Ok ? "Done" : "Can't do that"));
+                App.Audio.Sfx(r.Ok ? "ui.diamond" : "ui.error");
+                if (r.Ok) App.Persist();
+                Refresh();
+            });
+        }
+
+        private const string RestoreId = "restore";
+
+        /// <summary>The last purchase answer this visit (shown on the status line until the next purchase).</summary>
+        private PurchaseResult last;
+        private string storeSig;
+        private float sigClock;
+
+        private static string Signature(IDiamondStore s) =>
+            $"{s.Connected}|{s.Status}|{s.PriceOf(DiamondStore.Packs[0])}|{DiamondStores.InFlight}";
+
+        private (string state, string text, string tone) StateLine(IDiamondStore store)
+        {
+            if (DiamondStores.InFlight == RestoreId) return ("processing", "Checking your purchases…", "warn");
+            if (DiamondStores.InFlight != null) return ("processing", "Processing your purchase… The store will ask you to confirm. Keep the game open.", "warn");
+            if (last != null)
+                switch (last.Kind)
+                {
+                    case PurchaseKind.Granted: return ("success", last.Message, "good");
+                    case PurchaseKind.Pending: return ("pending", last.Message, "warn");
+                    case PurchaseKind.Cancelled: return ("cancelled", last.Message, "dim");
+                    case PurchaseKind.Unavailable: return ("unavailable", last.Message, "bad");
+                    default: return ("failure", last.Message, "bad");
+                }
+            return store.Connected ? ("ready", store.Status, "dim") : ("unavailable", store.Status, "bad");
+        }
+
+        /// <summary>The store connected, its prices arrived or it dropped: redraw (checked twice a second, never mid-purchase).</summary>
+        public override void Tick(float dt)
+        {
+            base.Tick(dt);
+            if (!Features.DiamondStore || (sigClock += dt) < 0.5f) return;
+            sigClock = 0f;
+            // A store that never answers mustn't lock the packs for the whole session: after two minutes, unlock and say
+            // the purchase is still pending (if it went through, the Diamonds arrive on their own).
+            if (DiamondStores.InFlight != null && Time.realtimeSinceStartup - DiamondStores.InFlightSince > 120f)
+            {
+                DiamondStores.InFlight = null;
+                Show(PurchaseResult.Of(PurchaseKind.Pending, "The store hasn't answered yet. If the purchase went through, the Diamonds arrive on their own."));
+                return;
+            }
+            var sig = Signature(DiamondStores.Current);
+            if (sig != storeSig) Refresh();
         }
 
         private void Buy(IDiamondStore store, DiamondPack pack)
         {
+            if (DiamondStores.InFlight != null) return; // GG-T470: no double taps while the store sheet is up
             if (!store.Connected)
             {
-                App.Toast(store.Status);
-                App.Audio.Sfx("ui.error");
+                Show(PurchaseResult.Of(PurchaseKind.Unavailable, store.Status, pack.ProductId));
                 return;
             }
-            store.Purchase(C, S, pack, r => Done(r.ToResult()));
+            DiamondStores.InFlight = pack.ProductId;
+            last = null;
+            App.Audio.Sfx("ui.select");
+            Refresh();
+            store.Purchase(C, S, pack, r => { DiamondStores.InFlight = null; Show(r); });
+        }
+
+        private void Restore(IDiamondStore store)
+        {
+            if (DiamondStores.InFlight != null) return;
+            DiamondStores.InFlight = RestoreId;
+            last = null;
+            Refresh();
+            store.Restore(r => { DiamondStores.InFlight = null; Show(r); });
+        }
+
+        /// <summary>A purchase answer for this screen: the status line, a toast and a sound. Granted Diamonds are already in
+        /// the save (the IAP store writes it before confirming); saving again covers the dev store.</summary>
+        internal void Show(PurchaseResult r)
+        {
+            if (r == null) return;
+            last = r;
+            App.Toast(r.Message, r.Ok ? 2.2f : 3f);
+            App.Audio.Sfx(r.Ok ? "ui.diamond" : r.Kind == PurchaseKind.Pending || r.Kind == PurchaseKind.Cancelled ? "ui.select" : "ui.error");
+            if (r.Ok) App.Persist();
+            if (App.Router.Current == this) Refresh();
         }
     }
 }

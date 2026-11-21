@@ -96,6 +96,13 @@ namespace GridGame.App
 
         private Product ProductOf(DiamondPack pack) => pack == null ? null : store?.GetProductById(pack.ProductId);
 
+        /// <summary>GG-T470: the store's own localized price string, once products are fetched.</summary>
+        public string PriceOf(DiamondPack pack)
+        {
+            if (!productsReady) return null;
+            var s = ProductOf(pack)?.metadata?.localizedPriceString;
+            return string.IsNullOrWhiteSpace(s) ? null : s;
+        }
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
         {
             if (pack == null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, "No such pack")); return; }
