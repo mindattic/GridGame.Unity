@@ -2166,51 +2166,6 @@
     ]
   },
   {
-    "Id": "talk_quiz_echo",
-    "Title": "Advice",
-    "Trigger": {
-      "Kind": "Talk",
-      "Id": "echo"
-    },
-    "Speakers": [
-      {
-        "Id": "hero",
-        "Class": "$with"
-      }
-    ],
-    "Nodes": [
-      {
-        "Id": "ask",
-        "Speaker": "hero",
-        "Choices": [
-          {
-            "Next": "wrong"
-          },
-          {
-            "Next": "right",
-            "Effects": [
-              {
-                "Type": "GrantSkillPoint",
-                "Id": "$with"
-              }
-            ]
-          },
-          {
-            "Next": "wrong"
-          }
-        ]
-      },
-      {
-        "Id": "right",
-        "Speaker": "hero"
-      },
-      {
-        "Id": "wrong",
-        "Speaker": "hero"
-      }
-    ]
-  },
-  {
     "Id": "talk_quiz_dervish",
     "Title": "Advice",
     "Trigger": { "Kind": "Talk", "Id": "dervish" },

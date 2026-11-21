@@ -4331,56 +4331,6 @@
         ]
       }
     },
-    "dialogue:talk_quiz_echo": {
-      "key": "dialogue:talk_quiz_echo",
-      "id": "conversation-talk-quiz-echo",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:3178f8049df3c6841dcf320f23763865dd250e6bfc70d52229c6974a4f361424",
-      "about": [],
-      "speakers": [
-        "$with"
-      ],
-      "payload": {
-        "title": "Advice",
-        "start": "ask",
-        "nodes": [
-          {
-            "id": "ask",
-            "speaker": "$with",
-            "line": "Et dolore magna aliqua ut enim ad minim. Veniam quis nostrud exercitation.",
-            "choices": [
-              {
-                "text": "A · In culpa qui officia",
-                "next": "wrong"
-              },
-              {
-                "text": "B · Consequat duis aute irure",
-                "next": "right",
-                "tags": [
-                  "right-answer"
-                ]
-              },
-              {
-                "text": "C · Totam rem aperiam eaque ipsa",
-                "next": "wrong"
-              }
-            ]
-          },
-          {
-            "id": "right",
-            "speaker": "$with",
-            "line": "Quae ab illo inventore veritatis et quasi architecto. Beatae vitae dicta sunt."
-          },
-          {
-            "id": "wrong",
-            "speaker": "$with",
-            "line": "Anim id est laborum sed ut perspiciatis unde omnis iste natus error."
-          }
-        ]
-      }
-    },
     "dialogue:talk_quiz_engineer": {
       "key": "dialogue:talk_quiz_engineer",
       "id": "conversation-talk-quiz-engineer",

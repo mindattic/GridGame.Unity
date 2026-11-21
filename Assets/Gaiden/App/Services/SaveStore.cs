@@ -81,7 +81,9 @@ namespace GridGame.App
             {
                 var s = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(path), SaveSettings);
                 if (s == null) { error = "empty file"; return null; }
-                return SaveMigrations.Migrate(s, content);
+                var migrated = SaveMigrations.Migrate(s, content);
+                foreach (var note in SaveMigrations.Notes) Debug.LogWarning($"[Save] slot {slot + 1}: {note}"); // GG-T531
+                return migrated;
             }
             catch (Exception e)
             {

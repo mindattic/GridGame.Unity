@@ -7,7 +7,7 @@ namespace GridGame.Core.Battle
     /// <summary>
     /// Echo (GG-T388): the move no other hero had — copying an ability. An Echo picks one unit and repeats the last Active
     /// ability that unit used this battle (<see cref="Unit.LastAbilityId"/>), cast by the echoer from where it stands.
-    /// The Echo hero picks an ally and repeats its move (an ally's Fireball, a second Heal, a Countermarch); the Mocking
+    /// Encore (the Tactician's since the Echo hero was cut, GG-T531) picks an ally and repeats its move (an ally's Fireball, a second Heal, a Countermarch); the Mocking
     /// Echo's charge picks a hero and turns that hero's own move on the party. Aim: the unit the source last aimed at when
     /// the echoer can legally pick it, else (a foe-harming move copied from a foe) the source itself, else the source's
     /// last tile, else the legal pick nearest that tile (ties by row, then column) — deterministic, no dice.

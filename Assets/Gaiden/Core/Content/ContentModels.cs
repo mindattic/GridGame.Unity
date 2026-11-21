@@ -589,7 +589,7 @@ namespace GridGame.Core.Content
         /// <summary>Countermarch (GG-T336, the Tactician): the picked foe's turn icon trades places on the timeline with the
         /// foe whose turn is furthest off (<see cref="Battle.Countermarch"/>). A picked single foe from a Skill or Spell.</summary>
         public bool SwapsTurns;
-        /// <summary>Echo (GG-T388, the Echo and the Mocking Echo): picks one unit and repeats the last Active ability that unit
+        /// <summary>Echo (GG-T388: the Tactician's Encore, GG-T531, and the Mocking Echo): picks one unit and repeats the last Active ability that unit
         /// used this battle, cast by the echoer from where it stands (<see cref="Battle.Echo"/>): at the same target when it
         /// can reach it, else the nearest legal one. A copied spell still costs its orbs from the party's bank; a copied
         /// skill rides the Echo's own cooldown. Nothing else rides an Echo (no damage, heal or buff of its own).</summary>

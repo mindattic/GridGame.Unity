@@ -24,7 +24,7 @@ main campaign (it ends at `Ending.Stage` = `cathedral-03`) and 25-40 are the pos
 whose waves field it (including wave `Group`s from `encounters.json`, guests, recruitables and surprise speakers).
 Class ids named anywhere else (factions, summon pool, mercenaries, bounties, quests, dialogues) are recorded as well.
 Bosses are the rule-break enemies in stage waves (`RuleBreak`, BIBLE §14.9), the classes tagged `Boss`, and the
-bounty targets. Byte-identical portrait files were found with an MD5 pass, which is how the two Echo portraits turned
+bounty targets. Byte-identical portrait files were found with an MD5 pass, which is how the two Echo portraits (the hero's since cut, GG-T531) turned
 out to be copies of the mannequin.
 
 Rerun: `python -I <path>/art_gaps.py D:\Projects\MindAttic\Unity.GridGame`. It prints JSON.
@@ -35,7 +35,7 @@ Rerun: `python -I <path>/art_gaps.py D:\Projects\MindAttic\Unity.GridGame`. It p
 |---|---|---|
 | App icon | 1 | No icon set for any platform (GG-T486) |
 | Portraits missing, so the mannequin shows | 20 | The Hierarch, plus 19 region-rule foes in the postgame |
-| Portraits that are byte copies of the mannequin | 2 | `echo` (hero), `mockingecho` (foe) |
+| Portraits that are byte copies of the mannequin | 1 | `mockingecho` (foe). The `echo` hero copy went with the class (GG-T531) |
 | Other duplicated portraits that ship | 2 pairs | `templar03` = `templar04`, `naga00` = `nagaegg` |
 | Rule-break finale bosses on a plain foe's art | 7 | Stages 3-21. The 8th, the Hierarch, is counted under missing |
 | Bounty targets on their base class's art | 11 | Plus `duskstalker`'s bounty, which has no art at all (counted under missing) |
@@ -87,7 +87,7 @@ same prompt with "no helm, background only" for the background layer.
 | # | Asset id | Where it shows | Now | Prompt |
 |---|---|---|---|---|
 | 1 | `hierarch` (The Hierarch, `Boss`) | **The final boss**: stage 24, The Choir's Cathedral III, wave finale (`Undying`). Also the boss-intro dialogue `boss_intro_cathedral`, cut-ins, inspect card, Bestiary | No file, so the mannequin shows. **Follow-up:** `dialogues.json` speaker `boss` has `"Portrait": "mannequin"` pinned, which must become `"hierarch"` (or be dropped) once the art lands | `the Hierarch, ancient high priest of a white order, towering white ceremonial robes and tall white mitre fused with glowing cyan organ pipes and glass tubes of liquid light, pale ageless face, hands open as if drawing colour out of the air, faint cyan veins, serene and terrible, {…}` |
-| 2 | `echo` (Echo, Hero, Lantern Road faction) | Party member: a Lantern Road wanderer joined by Trust (talk quiz `talk_quiz_echo`). Hero screen, timeline, cut-ins, every battle she's fielded in | `echo.png` is a **byte copy of the mannequin** (BIBLE GG-T388: "copies of the mannequin art until the owner's art arrives") | `Echo, young female road-warden mimic, indigo and black layered robes with a red sash, half mask of polished mirror that reflects the viewer, two mismatched weapons borrowed from others, graceful copying pose, {…}` |
+| 2 | ~~`echo`~~ | **Cut (GG-T531):** the Echo hero class was removed and `echo.png` deleted. No art needed | — | — |
 | 3 | `mockingecho` (Mocking Echo, foe) | Stages 19-20, Halcyon I-II. Inspect card, Bestiary | `mockingecho.png` is a **byte copy of the mannequin** | `Mocking Echo, Echo's pale twin, a faceless woman in white and violet glyph-printed poncho of the Choir, cracked mirror mask grinning, mimicking a fighting stance mockingly, faint cyan light, {…}` |
 
 ### 2.2 Bosses on reused art

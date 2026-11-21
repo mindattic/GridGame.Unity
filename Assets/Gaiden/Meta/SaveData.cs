@@ -587,6 +587,8 @@ namespace GridGame.Meta
             // proficiency-unlock passive so Equipment.Fits keeps considering them proficient. Re-running this
             // on an already-fine save is a no-op (every check is already satisfied). No-op entirely without a
             // ContentDb (c == null), e.g. the version-only unit tests above that never touch gear/content.
+            Notes.Clear();
+            if (c != null) DropRetiredHeroes(s, c);
             if (c != null)
                 foreach (var h in s.Roster)
                 {
@@ -594,6 +596,37 @@ namespace GridGame.Meta
                     foreach (var piece in h.Armor.Values) GrandfatherGearProficiency(c, h, piece.ItemId);
                 }
             return s;
+        }
+
+        /// <summary>What the last <see cref="Migrate"/> did that the player should hear about (e.g. a retired hero leaving,
+        /// GG-T531). Core/Meta can't log, so the save store logs these after a load.</summary>
+        public static readonly List<string> Notes = new List<string>();
+
+        /// <summary>GG-T531: a hero whose class no longer exists (the Echo was cut) can't be built into a battle, so it
+        /// leaves the roster and the party. Its gear goes back to the bag with its wear (as the v3 armor split did, nobody's
+        /// gear vanishes); its levels can't move to a class it never was. Idempotent: a clean roster is untouched.</summary>
+        public static void DropRetiredHeroes(SaveData s, ContentDb c)
+        {
+            if (s?.Roster == null || c == null) return;
+            for (int i = s.Roster.Count - 1; i >= 0; i--)
+            {
+                var h = s.Roster[i];
+                if (h == null) { s.Roster.RemoveAt(i); continue; }
+                if (h.ClassId != null && c.TryClass(h.ClassId) != null) continue;
+                h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();
+                h.Jewelry ??= new Dictionary<EquipmentSlot, string>();
+                var slots = new List<EquipmentSlot> { EquipmentSlot.Weapon };
+                slots.AddRange(h.Armor.Keys);
+                slots.AddRange(h.Jewelry.Keys);
+                foreach (var slot in slots)
+                {
+                    try { Equipment.Unequip(c, s, h, slot); }
+                    catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't return {slot} gear ({e.Message})"); }
+                }
+                s.Roster.RemoveAt(i);
+                s.Party?.RemoveAll(id => string.Equals(id, h.ClassId, StringComparison.OrdinalIgnoreCase));
+                Notes.Add($"hero class '{h.ClassId ?? "(none)"}' no longer exists; removed from the roster, gear returned to the bag");
+            }
         }
 
         /// <summary>GG-T52: if <paramref name="itemId"/> is equipped but <paramref name="h"/> isn't nominally

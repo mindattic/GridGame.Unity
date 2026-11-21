@@ -10320,7 +10320,7 @@
  {
   "Id": "echo_encore",
   "Name": "Encore",
-  "Description": "Repeats the last skill or spell an ally used this battle, cast by the Echo from where she stands: at the same target when she can reach it, else the nearest one. A copied spell still costs its orbs.",
+  "Description": "Repeats the last skill or spell an ally used this battle, cast from where you stand: at the same target when you can reach it, else the nearest one. A copied spell still costs its orbs.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
