@@ -27,9 +27,18 @@ Because the light is shared, every ending costs everyone:
 
 ## Decisions (owner, 2026-11-21)
 
-- **The lead: the First Sleeper.** One fixed protagonist wakes first in the prologue and thaws the others. The story has their face and voice, and the summoned roster gathers around them. Name, look and class are still to be chosen.
+- **The lead: the First Sleeper, called the Warden.** One fixed protagonist, the Knight class, wakes first in the prologue and thaws the others. The story has the Warden's face and voice, and the summoned roster gathers around them.
+  - **Who:** Halcyon's last guard, left on watch over the Still on the night of the Undertow.
+  - **What they wake to:** they wake 1,200 years late, still on duty, sworn to a city that no longer exists, guarding sleepers in a world that has forgotten why.
+  - **Their arc:** what a guard owes when the thing they guarded was the wrong thing to keep.
+  - **Name:** just "the Warden". Their own name was lost with Halcyon's dark archives.
+- **Every character is an archetype.** Heroes are known by their role (the Warden, the Sage, the Courier), never by personal names.
+- **Every class comes in a female and a male version** (the owner will generate the male counterparts). Either version may turn up. When a hero joins, through recruiting or a summon, the player picks which version they get, and that includes the Warden.
+  - The story and mechanics are identical for both, so story text never assumes a hero's gender.
+  - Heroes are referred to by role; any pronouns follow the player's pick, through the game's own tokens.
+  - The aim is equal footing, not another phone game full of pin-ups.
 - **Tone: bittersweet.** Real losses and no clean wins, but warmth and hope between the heroes. Every ending costs something worth paying.
 - **Endings: the player chooses.** A final choice between Keep the Lullaby, Cut the lines and Let it arrive. The postgame regions reflect whichever was picked.
 - **The Choir's secret: only the Hierarch knows.** The Choir's rank and file are sincere believers. Only its leader, the Hierarch, knows everything: the moon is alive, the light in people is its light, and the Lullaby skims a surplus. The Hierarch is a human antagonist with a reason.
-- **Echo is cut.** The Echo hero class is removed (GG-T531). Its abilities stay in the game, and the blank silhouette was only a placeholder, not a story device.
+- **Echo is cut.** The Echo hero class is removed (GG-T531). Encore moved to the Tactician and Mirror Skin to the Courier. The blank silhouette was only a placeholder, not a story device.
 - **The final region keeps its name, Morrow's Shadow:** "morrow" means tomorrow, and it is where tomorrow's shadow falls.
