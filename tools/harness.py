@@ -339,6 +339,11 @@ def _wait_screen(screen, timeout=6.0):
     return False
 
 
+# GG-T546: the story screens ("crawl", "dialogue") the last pick_party walked through on its way to Camp, so a caller
+# can still assert the prologue played (uicheck) even though pick_party skips it itself.
+PICK_STORY = []
+
+
 def pick_party(ids=STARTING_PARTY, timeout=10.0):
     """Drives the New Game party-select screen (CharacterSelectScreen, id "charselect") through the real
     UI: tap a hero's tile to preview it, tap it again to lock it in, once per starting hero. Picks the default
@@ -362,6 +367,7 @@ def pick_party(ids=STARTING_PARTY, timeout=10.0):
             return False
     # A new game plays the prologue crawl (and any opening dialogue) before Camp (GG-T386); skip through to the hub.
     deadline = time.time() + timeout + 30
+    PICK_STORY.clear()
     while time.time() < deadline:
         # GG-T532: a -variants run asks each joining hero's look (only classes with male art); take the default.
         if call("names", prefix="variant-female"):
@@ -371,6 +377,8 @@ def pick_party(ids=STARTING_PARTY, timeout=10.0):
         if screen == "hub":
             return True
         if screen in ("crawl", "dialogue"):
+            if screen not in PICK_STORY:
+                PICK_STORY.append(screen)
             through_story(wait=1.0)
         time.sleep(0.5)
     return False

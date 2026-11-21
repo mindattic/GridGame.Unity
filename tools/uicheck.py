@@ -20,6 +20,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import harness as h  # noqa: E402
 
 results = []
+CAMPAIGN = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                       "Assets", "Gaiden", "Resources", "Content", "campaign.json"), encoding="utf-8"))
+DIALOGUES = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                        "Assets", "Gaiden", "Resources", "Content", "dialogues.json"), encoding="utf-8"))
 
 
 def check(name, ok, detail=""):
@@ -79,10 +83,12 @@ def on_screen(name, screen, timeout=6.0):
 
 
 def skip_prologue(name):
-    # GG-T231: New Game plays the prologue crawl between the party pick and Camp.
-    shown = until(lambda: h.call("state")["screen"] == "crawl", 4.0)
+    # GG-T231: New Game plays the prologue crawl between the party pick and Camp. Since e92c6e2a h.pick_party walks
+    # through it itself (GG-T546), so it counts as shown when pick_party passed a crawl on its way to Camp.
+    shown = "crawl" in h.PICK_STORY or until(lambda: h.call("state")["screen"] == "crawl", 4.0)
+    h.PICK_STORY.clear()  # consumed: a later New Game whose party pick never ran can't pass on this one's crawl
     check(name, shown)
-    if shown:
+    if shown and h.call("state")["screen"] == "crawl":
         h._tap_until(lambda: h.call("clicktext", text="Skip"), lambda: until(lambda: h.call("state")["screen"] != "crawl", 2.0), tries=4, wait=0.3)
 
 
@@ -115,8 +121,11 @@ def main():
         on_screen("new game lands at camp", "hub")
         party = (h.call("state").get("save") or {}).get("party") or []
         check("new game starts with the small party (GG-T118)", party == ["warden", *h.STARTING_PARTY], str(party))  # GG-T533: the fixed lead first
-        check("camp music", h.call("music")["track"] == "MinstrelGuild")
-        for item in ["Adventure", "Items", "Status", "Equip", "Abilities", "Party", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
+        # GG-T456/GG-T546: Camp draws from campaign.json's HubMusic shuffle bag, not one fixed track.
+        track = h.call("music")["track"]
+        check("camp music", track in CAMPAIGN.get("HubMusic", []), f"{track} not in HubMusic {CAMPAIGN.get('HubMusic')}")
+        # GG-T435 folded Status / Equip / Abilities / Party into one Heroes row (GG-T546 updated this list).
+        for item in ["Adventure", "Items", "Heroes", "Talk", "Summon Circle", "Bestiary", "Settings"]:  # Caravan/Bounties hidden by Features (GG-T392)
             if not has_text(item):
                 check(f"camp menu has {item}", False)
                 break
@@ -159,8 +168,16 @@ def main():
         if h.call("state")["screen"] == "crawl":
             check("story crawl plays on first entry", True)
             h.call("clicktext", text="Skip"); time.sleep(1.5)
-        # Story beat (§27.1, GG-T117): the sample merchant dialogue plays between the crawl and the battle.
-        if on_screen("story-beat dialogue plays before the first battle", "dialogue"):
+        # Story beat (§27.1, GG-T117): the region's opening talk plays between the crawl and the battle -- but since
+        # GG-T537 the Tithe Moors one (greenvalley_party_talk) waits for the Lantern Merchant, who joins on a stage
+        # clear, so a fresh save's first battle opens straight onto the board (GG-T546). Its dialogue checks run
+        # whenever a beat does play.
+        first_beat_due = any(d.get("Trigger", {}).get("Kind") == "ThemeStart" and d["Trigger"].get("Id") == "greenvalley"
+                             and not d.get("Conditions") for d in DIALOGUES)
+        if not first_beat_due:
+            check("no story beat before the first battle while the Merchant hasn't joined (GG-T537)",
+                  until(lambda: h.call("state")["screen"] == "battle", 6.0), h.call("state")["screen"])
+        elif on_screen("story-beat dialogue plays before the first battle", "dialogue"):
             names = h.call("names", prefix="dlg-")
             check("dialogue shows a speaker portrait", "dlg-portrait-left" in names, str(names))
             h._tap_until(lambda: h.call("click", name="dlg-skip"), lambda: until(lambda: "choice-0" in h.call("names", prefix="choice-"), 2.0), tries=3, wait=0.2)
@@ -179,7 +196,10 @@ def main():
         time.sleep(1.0)
         check("tutorial shows the suggested move right away", (h.call("banner")["text"] or "").startswith(("Hint", "Tip")))
 
-        check("battle music", h.call("music")["track"] == "Crusade")
+        # GG-T456/GG-T546: a stage draws its track from its region's playlist (Music, topped up from MusicBorrow).
+        theme = next((t for t in CAMPAIGN.get("Themes", []) if "greenvalley-01" in t.get("Stages", [])), {})
+        track = h.call("music")["track"]
+        check("battle music", track in theme.get("Music", []) + theme.get("MusicBorrow", []), f"{track} not in {theme.get('Id')}'s playlist")
 
     with section('HUD'):
         names = h.call("names", prefix="")
@@ -198,7 +218,12 @@ def main():
         b = battle_state()
         enemies = [u for u in b["units"] if u["team"] == "Enemy"]
         # "0" is the empty mana-pool count (BattleScreen.cs poolCount), not a turn badge; a real one would read 1+.
-        check("no turn-number badges on the board (the timeline shows turn order)", not any(x.strip().isdigit() and x.strip() != "0" for x in texts()), str([x for x in texts() if x.strip().isdigit()]))
+        # GG-T546: glossary text (GG-T300) lays prose out one Label per word, so "within 2 tiles" in the tutorial panel
+        # puts a lone "2" on screen too; those carry .glossary-word and are words in a sentence, not badges.
+        badges = [d for d in {x.strip() for x in texts() if x.strip().isdigit() and x.strip() != "0"}
+                  if any((i.get("source") or "").strip() == d and "glossary-word" not in i.get("classes", "")
+                         for i in h.call("textinfo", text=d))]
+        check("no turn-number badges on the board (the timeline shows turn order)", not badges, str(badges))
         track = h.call("element", name="timeline-track")
         icon = next((h.call("element", name=n) for n in names if n.startswith("tl-")), {})
         tcy = track.get("y", 0) + track.get("h", 0) / 2
@@ -448,7 +473,10 @@ def main():
         if boss:
             fr = h.call("child_style", name=f"unit-{boss['Id']}", index=1)
             kl = h.call("child_style", name=f"unit-{boss['Id']}", index=1, child=1)
-            check("unit frame uses the menu portrait frame (white border)", fr.get("border", "").upper().startswith("#ECEEFF"), str(fr))
+            # Tokens.Frame: near-white (#EDEDFF until the Chrono look of 8193a7ea made it neutral #EEEEF0; GG-T546).
+            bd = fr.get("border", "").lstrip("#")
+            white = len(bd) >= 6 and all(int(bd[i:i + 2], 16) >= 0xE0 for i in (0, 2, 4))
+            check("unit frame uses the menu portrait frame (white border)", white, str(fr))
             check("2×2 boss gets the purple boss keyline", kl.get("border", "").upper().startswith("#DB66FF"), str(kl))
             h.shot("boss")
         else:
