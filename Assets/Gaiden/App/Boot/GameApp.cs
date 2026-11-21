@@ -65,6 +65,7 @@ namespace GridGame.App
         private VisualElement stageFrame;
         private Vector2 lastScreen;
         private Rect lastSafe;
+        private float lastDpi; // GG-T551: a density change alone (Android display size) moves the type floor
         /// <summary>A faked notch / gesture bar in screen px (top, bottom), from <c>-safeArea</c> or the automation
         /// <c>safearea</c> endpoint (GG-T483); null = the device's own <see cref="Screen.safeArea"/>.</summary>
         private Vector2? fakeInsets;
@@ -226,9 +227,10 @@ namespace GridGame.App
         {
             var screen = new Vector2(Screen.width, Screen.height);
             var safeNow = SafeAreaPx();
-            if (screen == lastScreen && safeNow == lastSafe && Stage.Q("screens") != null) return;
+            if (screen == lastScreen && safeNow == lastSafe && Screen.dpi == lastDpi && Stage.Q("screens") != null) return;
             lastScreen = screen;
             lastSafe = safeNow;
+            lastDpi = Screen.dpi;
             float screenAspect = screen.x / Mathf.Max(1f, screen.y);
             var size = StageSizeFor(screenAspect);
             bool resized = size.x != StageWidth || size.y != StageHeight;
