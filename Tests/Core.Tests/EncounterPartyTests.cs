@@ -82,7 +82,13 @@ namespace GridGame.Tests
         [Test]
         public void Generated_party_is_playable_without_breaking_invariants()
         {
-            var db = Real;
+            // A private ContentDb: this test registers a generated stage, which the shared Real must never see
+            // (fixtures run in parallel, and EncounterSchedule enumerates Real.Stages; GG-T527).
+            var db = ContentLoader.Load(name =>
+            {
+                var p = System.IO.Path.Combine(ContentDir, name + ".json");
+                return System.IO.File.Exists(p) ? System.IO.File.ReadAllText(p) : null;
+            });
             var stage = EncounterGenerator.Generate(db, 2027);
             db.Stages[stage.Id] = stage;
 
