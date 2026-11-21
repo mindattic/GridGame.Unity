@@ -65,19 +65,9 @@ namespace GridGame.App
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
                     Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list).name = "results-difficulty";
-                if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
-                RevealItems(report.Items, c, list);
-                if (report.Milestone != null) // GG-T301: a theme's first full clear
-                    Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).name = "results-milestone";
-                if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).Q<Label>("value").AddToClassList("gold");
-                if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).Q<Label>("label").AddToClassList("good");
-                if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
-                foreach (var note in report.QuestProgress) Ui.MenuRow("Quest", note, null, list);
-                if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list);
-                foreach (var g in report.GuestsJoined)
-                    Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).Q<Label>("label").AddToClassList("good");
-                foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
-                if (report.WandererOffer != null) WandererBlock(report.WandererOffer, c, list); // GG-T342
+                // GG-T514: milestones, unlocks and decisions (a joining hero, a tame or wanderer offer, a tome's
+                // "Teach to…") come before the loot list. A first-hour stage drops ~15 rows, which pushed all of
+                // these off the bottom, so a player tapping on past the results never saw them.
                 if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).Q<Label>("label").AddToClassList("gold");
                 if (report.ExpeditionComplete)
                 {
@@ -90,6 +80,20 @@ namespace GridGame.App
                     er.name = "expedition-progress";
                     Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
+                if (report.Milestone != null) // GG-T301: a theme's first full clear
+                    Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).name = "results-milestone";
+                if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).Q<Label>("value").AddToClassList("gold");
+                if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).Q<Label>("label").AddToClassList("good");
+                foreach (var g in report.GuestsJoined)
+                    Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).Q<Label>("label").AddToClassList("good");
+                foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
+                if (report.WandererOffer != null) WandererBlock(report.WandererOffer, c, list); // GG-T342
+                if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
+                foreach (var note in report.QuestProgress) Ui.MenuRow("Quest", note, null, list);
+                if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
+                else Ui.Text("Loot", "small dim", list).name = "results-loot-head";
+                RevealItems(report.Items, c, list);
+                if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list);
             }
             else
             {
@@ -209,7 +213,9 @@ namespace GridGame.App
         private void RevealItems(Dictionary<string, int> items, ContentDb c, VisualElement list)
         {
             int i = 0;
-            foreach (var kv in items)
+            // GG-T514: a Tome (with its "Teach to…" choice) or a Chest (with Open) heads the loot, above the plain drops.
+            bool Choice(string id) { var t = c.TryItem(id)?.Type; return t == ItemType.Tome || t == ItemType.Chest; }
+            foreach (var kv in items.OrderBy(kv => Choice(kv.Key) ? 0 : 1))
             {
                 var it = c.TryItem(kv.Key);
                 if (it == null) continue;

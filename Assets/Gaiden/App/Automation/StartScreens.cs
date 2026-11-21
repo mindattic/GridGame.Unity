@@ -57,8 +57,39 @@ namespace GridGame.App.Automation
                 case "load": screen = new SaveSlotScreen(false); break;
                 case "profiles": screen = new ProfileSelectScreen(); break; // GG-T99
                 case "newprofile": screen = new ProfileNameScreen(null); break;
+                // GG-T513/T514: a results screen without fighting for it. "results" ends an expedition with a long
+                // first-hour haul (a Tome among ~15 drops, a theme milestone, the completion bonus); "results-mid" is a
+                // battle won mid-expedition (To Camp / Retreat early / Next battle).
+                case "results": screen = new PostBattleScreen(PreviewReport(app, false), PreviewStage(app)); break;
+                case "results-mid": screen = new PostBattleScreen(PreviewReport(app, true), PreviewStage(app)); break;
             }
             return screen != null;
+        }
+
+        private static string PreviewStage(GameApp app) => app.Content.CampaignStages()[0].Id;
+
+        private static Meta.BattleReport PreviewReport(GameApp app, bool mid)
+        {
+            var c = app.Content;
+            var items = c.Items.Values;
+            var theme = c.ThemeOf(PreviewStage(app));
+            var r = new Meta.BattleReport
+            {
+                Victory = true, StageId = PreviewStage(app), Gold = 214, XpEach = 38,
+                ExpeditionName = theme?.Name ?? "Preview", ExpeditionLength = theme?.Stages.Count ?? 3,
+            };
+            if (mid) { r.ExpeditionStep = 1; r.CarriedOrbs = 4; r.NextStageId = theme?.Stages.Count > 1 ? theme.Stages[1] : null; }
+            else
+            {
+                r.ExpeditionStep = r.ExpeditionLength; r.ExpeditionComplete = true; r.ExpeditionBonus = 342;
+                r.Milestone = theme?.Name ?? "Preview";
+                var milestoneItem = items.FirstOrDefault(i => i.Type == Core.Content.ItemType.Consumable);
+                r.MilestoneItem = milestoneItem?.Id;
+            }
+            var tome = items.FirstOrDefault(i => i.Type == Core.Content.ItemType.Tome);
+            foreach (var it in items.Where(i => i.Type == Core.Content.ItemType.CraftingMaterial).Take(14)) r.Items[it.Id] = 2;
+            if (tome != null) { r.Items[tome.Id] = 1; app.Save.AddItem(tome.Id, 1); }
+            return r;
         }
     }
 }
