@@ -1,0 +1,78 @@
+{
+  "AnchorPulse": {
+    "source": "Propulsive Pulse.m4a",
+    "audio_md5": "794c65916dbd4220b9f4e63a249a881f"
+  },
+  "ArkgraveMarch": {
+    "source": "Propulsive Groove (1).m4a",
+    "audio_md5": "f1d4e20e98186d04f7b2b89456babef7"
+  },
+  "EmbersAtRest": {
+    "source": "Hub of Peace (1).m4a",
+    "audio_md5": "253ae926ae18bbedf7d169ff70900005"
+  },
+  "GlassDunes": {
+    "source": "Mineral Dark (1).m4a",
+    "audio_md5": "bd29b53b212d17714f1737a8817e7b5d"
+  },
+  "GroundedArks": {
+    "source": "Propulsive Groove.m4a",
+    "audio_md5": "a9737dac829f306762b6374b9536356e"
+  },
+  "HeartbeatOfTheBrave": {
+    "source": "勇者の鼓動.m4a",
+    "audio_md5": "3d13e740bb2c69354fc4fcff5118a211"
+  },
+  "HearthsideCamp": {
+    "source": "Hub of Peace.m4a",
+    "audio_md5": "99820ee04233185239a0a27527c14cdc"
+  },
+  "LanternsRising": {
+    "source": "Rising Theme.m4a",
+    "audio_md5": "0b18ed00ee08c6bebef270b509adf8c1"
+  },
+  "LastStandHorn": {
+    "source": "最終決戦の合図 (1).m4a",
+    "audio_md5": "9def2a6f776163f0b5b1ed8714fdadb6"
+  },
+  "MoonlitConflict": {
+    "source": "Moonlit Conflict.m4a",
+    "audio_md5": "44fd4499ab16a455deb9b0b026f80419"
+  },
+  "MoorlandCharge": {
+    "source": "Grassland Charge (1).m4a",
+    "audio_md5": "3fec3907c077af5779e8dab5c45fd129"
+  },
+  "NeonBreakbeat": {
+    "source": "Neon Breakbeat.m4a",
+    "audio_md5": "a3adee0a49a9d10b2ade17f7fd94c27d"
+  },
+  "NeonSteelRush": {
+    "source": "Neon Steel Rush.m4a",
+    "audio_md5": "a8e4c52c9e34a3a6e6fe6e90b3cead1d"
+  },
+  "OverThePass": {
+    "source": "Rising Theme (1).m4a",
+    "audio_md5": "d1738ed62efb83309dbb716a75b259b1"
+  },
+  "Shardfall": {
+    "source": "Mineral Dark.m4a",
+    "audio_md5": "df3ddfe6bd195be61d2792e88c7044e8"
+  },
+  "StillFrost": {
+    "source": "Winter's Edge (1).m4a",
+    "audio_md5": "4d3ec8b3d0bbb0db2c063ab778c10963"
+  },
+  "TheFinalSignal": {
+    "source": "最終決戦の合図.m4a",
+    "audio_md5": "bd70e0098b52ea6bd201d58bd18c69bb"
+  },
+  "TitheDayGallop": {
+    "source": "Grassland Charge.m4a",
+    "audio_md5": "0e26624d04f07e22d55308ee618f6290"
+  },
+  "WintersEdge": {
+    "source": "Winter's Edge.m4a",
+    "audio_md5": "a08c0dc114b4f8ac84bcda206af2704e"
+  }
+}

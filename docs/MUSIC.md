@@ -7,9 +7,14 @@ its own tops up from its `MusicBorrow` list (the closest-sounding tracks elsewhe
 peaceful track each time the party comes back from the field. Playlists live in `campaign.json`
 (`HubMusic`, and `Music` / `MusicBorrow` per theme). Files are `Resources/Audio/Music/<Name>.ogg`.
 
-**Adding a track:** drop the file in `R:\Desktop\GridGameMusic`, convert it (trim silence, -18 LUFS, Vorbis
-q6: the GG-T456 convert script), add its name to the region's `Music` list. Once a region has four of its own,
-its `MusicBorrow` list stops being used.
+**Adding a track:** drop the file in `R:\Desktop\GridGameMusic` and run `python tools/import_music.py
+"<file>=<GameName>"` (or `--all` for every new file there; names are derived from the file name when it is
+ASCII). It trims silence (-55 dB both ends), normalises to -18 LUFS (two-pass loudnorm, TP -1.5, LRA 11), adds
+20 ms de-click fades and writes Vorbis q6 at 44.1 kHz to `Resources/Audio/Music/<GameName>.ogg`. Duplicates are
+caught by audio hash (decoded PCM, so a renamed or re-encoded copy still matches) against the batch and every
+track already imported (`tools/music_sources.json`); an existing track is never overwritten without `--force`.
+It then prints the playlists to list the track in. Add its name to the region's `Music` list (or `HubMusic`,
+or a `MomentMusic` list). Once a region has four of its own, its `MusicBorrow` list stops being used.
 
 ## The first 19 tracks (2026-11-20)
 
