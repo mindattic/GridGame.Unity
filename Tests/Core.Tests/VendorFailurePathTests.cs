@@ -284,9 +284,15 @@ namespace GridGame.Tests
         [Test]
         public void IsUneconomical_once_repeated_repairs_push_cost_to_or_past_BaseCost()
         {
-            var item = new ItemDef { Id = "w", BaseCost = 10, Durability = 10 };
+            // Rate-independent (GG-T529): a fresh piece is worth repairing, the 1.6x-per-repair growth pushes it
+            // past BaseCost within a handful of repairs, and once past it stays past. Pinning one repair count
+            // tied the test to a single Repair.RepairRate (4 repairs crossed at 0.30, not at 0.15).
+            var item = new ItemDef { Id = "w", BaseCost = 100, Durability = 100 };
             Assert.That(Repair.IsUneconomical(item, 0, 0), Is.False);
-            Assert.That(Repair.IsUneconomical(item, 0, 4), Is.True);
+            int first = Enumerable.Range(0, 11).FirstOrDefault(r => Repair.IsUneconomical(item, 0, r));
+            Assert.That(first, Is.GreaterThan(0), "a broken piece's repair never reached BaseCost within 10 repairs");
+            for (int r = first; r <= 10; r++)
+                Assert.That(Repair.IsUneconomical(item, 0, r), Is.True, $"uneconomical at {first} repairs but not at {r}");
         }
 
         [Test]
