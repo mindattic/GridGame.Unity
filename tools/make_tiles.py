@@ -5,8 +5,8 @@ terrain textures that match the level biome you're in: desert, snow, dirt, waste
 
     python tools/make_tiles.py [theme ...]
 
-Reads Assets/Gaiden/Resources/Tiles/tile.png (the original slate tile, imported by tools/import_art.py) and writes
-Tiles/<themeId>.png per campaign theme. The outer bevel rim (the black edge + grey highlight BoardView's
+Reads Assets/Gaiden/Resources/Tiles/tile-00.png (the original slate tile, imported by tools/import_art.py) and writes
+Tiles/<themeId>-00.png per campaign theme (tools/asset_names.py, GG-T561). The outer bevel rim (the black edge + grey highlight BoardView's
 checkerboard tinting relies on) is kept pixel-identical; only the flat interior fill is replaced with a
 deterministically-seeded procedural terrain pattern per biome — sand ripples and grit for the desert, mottled
 grass-and-dirt for the moss moors, bog muck and reed streaks for the swamp, frost-glint rock for the frozen
@@ -17,6 +17,10 @@ import os
 from PIL import Image
 import numpy as np
 
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402  the one asset naming rule (GG-T561)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TILES = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Tiles")
 
@@ -24,7 +28,7 @@ SEED = 20261013
 
 
 def load_base():
-    im = Image.open(os.path.join(TILES, "tile.png")).convert("RGBA")
+    im = Image.open(os.path.join(TILES, asset_names.of("tile") + ".png")).convert("RGBA")
     arr = np.array(im).astype(np.int16)
     fill = arr[arr.shape[0] // 2, arr.shape[1] // 2].copy()
     # Interior = pixels close to the flat fill colour; everything else (bevel rim, outer edge,
@@ -240,7 +244,7 @@ def main():
         out = arr.copy()
         painted = clamp_u8(fn(arr, mask, h, w))
         out[:, :, :3][mask] = painted[mask]
-        Image.fromarray(out.astype(np.uint8), mode="RGBA").save(os.path.join(TILES, theme + ".png"))
+        Image.fromarray(out.astype(np.uint8), mode="RGBA").save(os.path.join(TILES, asset_names.of(theme) + ".png"))
         print("tile:", theme, "textured")
 
 

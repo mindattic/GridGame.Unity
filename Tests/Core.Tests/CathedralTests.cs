@@ -126,10 +126,10 @@ namespace GridGame.Tests
         public void The_cathedral_shows_its_four_landscapes_and_its_own_board_tile()
         {
             var set = Backdrops.Probe("cathedral", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((4, true)), "cathedral_01 .. cathedral_04");
+            Assert.That(set.Count, Is.EqualTo(4), "cathedral-00 .. cathedral-03");
             Assert.That(Backdrops.SetOf(Real, "cathedral"), Is.EqualTo("cathedral"));
-            Assert.That(Backdrops.Resolve("cathedral", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/cathedral_02"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "cathedral.png")), "the cathedral's board tile");
+            Assert.That(Backdrops.Resolve("cathedral", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/cathedral-01"));
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "cathedral-00.png")), "the cathedral's board tile");
         }
 
         [Test]

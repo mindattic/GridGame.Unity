@@ -87,9 +87,9 @@ namespace GridGame.Tests
         public void The_bloom_shows_its_eight_landscapes_and_its_own_board_tile()
         {
             var set = Backdrops.Probe("bloom", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((8, true)), "bloom_01 .. bloom_08");
-            Assert.That(Backdrops.Resolve("bloom", 9, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/bloom_02"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "bloom.png")), "the Bloom's board tile");
+            Assert.That(set.Count, Is.EqualTo(8), "bloom-00 .. bloom-07");
+            Assert.That(Backdrops.Resolve("bloom", 9, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/bloom-01"));
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "bloom-00.png")), "the Bloom's board tile");
         }
 
         [Test]

@@ -960,8 +960,8 @@ namespace GridGame.Core.Content
         /// <summary>Campaign milestone (GG-T301): an item granted once, the first time the theme's last stage is won
         /// (a Tome, so a story beat can teach a passive). Null = none.</summary>
         public string MilestoneReward;
-        /// <summary>GG-T344: the theme's background set, <c>Backgrounds/&lt;set&gt;_01..NN</c> (owner rule: named after the
-        /// story region, numbered from 01). Null = the theme id (<see cref="Backdrops.SetOf"/>).</summary>
+        /// <summary>GG-T344: the theme's background set, <c>Backgrounds/&lt;set&gt;-00..NN</c> (owner rule: named after the
+        /// story region, its words hyphenated, numbered from 00, GG-T561). Null = the theme id (<see cref="Backdrops.SetOf"/>).</summary>
         public string Backgrounds;
         /// <summary>Region rule ids (regionrules.json, GG-T359) every stage of this theme plays under.</summary>
         public List<string> Rules = new List<string>();

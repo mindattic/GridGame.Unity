@@ -83,7 +83,7 @@ namespace GridGame.Tests
 
             var t = themes.Last();
             Assert.That(t.Name, Is.EqualTo("Morrow's Shadow"));
-            Assert.That(t.Backgrounds, Is.EqualTo("morrowsshadow"));
+            Assert.That(t.Backgrounds, Is.EqualTo("morrows-shadow"));
             Assert.That(db.Campaign.Chapters.Last().Stage, Is.EqualTo("morrowsshadow-03"), "GG-T386: per-theme crawls are retired; a chapter crawl follows every fifth stage");
             Assert.That(t.MilestoneReward, Is.EqualTo("chest_gilded"));
             Assert.That(t.Stages, Is.EqualTo(Stages));
@@ -135,10 +135,10 @@ namespace GridGame.Tests
         [Test]
         public void Morrows_shadow_shows_its_ten_landscapes_and_its_own_board_tile()
         {
-            var set = Backdrops.Probe("morrowsshadow", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((10, true)), "morrowsshadow_01 .. morrowsshadow_10");
-            Assert.That(Backdrops.Resolve("morrowsshadow", 13, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/morrowsshadow_04"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "morrowsshadow.png")), "its board tile");
+            var set = Backdrops.Probe("morrows-shadow", OnDisk);
+            Assert.That(set.Count, Is.EqualTo(10), "morrows-shadow-00 .. morrows-shadow-09");
+            Assert.That(Backdrops.Resolve("morrowsshadow", 13, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/morrows-shadow-03"));
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "morrowsshadow-00.png")), "its board tile");
         }
     }
 }

@@ -37,9 +37,9 @@ namespace GridGame.Tests
             Assert.That(t.Stages, Is.EqualTo(new[] { "cityruins-04", "cityruins-05" }));
 
             var set = Backdrops.Probe("underspire", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((9, true)), "underspire_01 .. underspire_09");
-            Assert.That(Backdrops.Resolve("cityruins2", 10, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/underspire_02"));
-            Assert.That(Backdrops.Resolve("cityruins", 0, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/halcyon_01"), "Halcyon keeps its own");
+            Assert.That(set.Count, Is.EqualTo(9), "underspire-00 .. underspire-08");
+            Assert.That(Backdrops.Resolve("cityruins2", 10, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/underspire-01"));
+            Assert.That(Backdrops.Resolve("cityruins", 0, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/halcyon-00"), "Halcyon keeps its own");
 
             var problems = ContentLoader.Validate(db, PortraitOnDisk).Where(p => p.Contains("cityruins2") || p.Contains("cityruins-04") || p.Contains("cityruins-05")).ToList();
             Assert.That(problems, Is.Empty, string.Join("\n", problems));

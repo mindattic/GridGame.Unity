@@ -15,13 +15,13 @@ Produces (under Assets/Gaiden/Resources/):
                              (acolyte-female, hag) and "PortraitVariant" (hag-02), its male art "MalePortrait"
                              (acolyte-male-00); a class without them gets them here. GridGame2026's own art key is
                              the class's "ArtSource".
-  Backgrounds/<set>_<NN>.jpg every GridGame2026 biome backdrop at its original resolution (1536x3072), JPEG q95
-                             (PNG if it had transparency), named after its STORY.md region and numbered from 01
+  Backgrounds/<set>-<NN>.jpg every GridGame2026 biome backdrop at its original resolution (1536x3072), JPEG q95
+                             (PNG if it had transparency), named after its STORY.md region and numbered from 00
                              (owner 2026-11-07, GG-T353: "make sure the source files for the Backgrounds all get
                              proper naming to identify them to their world lore counterparts"). Biome folder -> set in
-                             BIOME_SET; campaign.json names each theme's set ("Backgrounds": "tithemoors"). Byte-
+                             BIOME_SET; campaign.json names each theme's set ("Backgrounds": "tithe-moors"; GG-T561 naming). Byte-
                              identical duplicates are skipped; a new file gets a .meta from an existing backdrop's.
-  Icons/<Key>.png            ability icons (64x64)
+  Icons/<key>-00.png         ability icons (64x64)
   Tiles/tile.png             the original board tile (checkerboard tint applied in BoardView)
   Audio/Sfx/*.ogg|wav, Audio/Music/*.mp3
 
@@ -34,16 +34,19 @@ import sys
 
 from PIL import Image
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402  the one asset naming rule (GG-T561)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
 
 # GridGame2026 biome folder -> background set (its STORY.md region; GG-T353). The campaign theme that shows it, in
 # campaign.json "Backgrounds": greenvalley, desert, swamp, cave, cityruins (their postgame themes borrow the same set).
 BIOME_SET = {
-    "Moors": "tithemoors",
+    "Moors": "tithe-moors",
     "RedThorns": "shardfall",
     "ElectricWasteland": "arkgrave",
-    "UnderTheBridge": "anchorwastes",
+    "UnderTheBridge": "anchor-wastes",
     "CyberNecropolis": "halcyon",
 }
 
@@ -256,7 +259,7 @@ def import_portraits(src, classes):
 
 
 def import_backgrounds(src):
-    """Every biome backdrop, full size, as Backgrounds/<set>_01.. (see the module docstring). No resize: the art's
+    """Every biome backdrop, full size, as Backgrounds/<set>-00.. (see the module docstring). No resize: the art's
     resolution is the asset's (owner rule, GG-T344/GG-T353); GaidenBuild caps Backgrounds at 4096 so Unity keeps it."""
     import hashlib, re, uuid
     out = ensure(os.path.join(RES, "Backgrounds"))
@@ -271,12 +274,12 @@ def import_backgrounds(src):
                 print(f"  {biome}/{f}: a byte-identical duplicate, skipped")
                 continue
             seen.add(digest)
-            n += 1
             im = Image.open(path)
             alpha = im.mode in ("RGBA", "LA", "PA") or "transparency" in im.info
             if alpha and im.convert("RGBA").getchannel("A").getextrema()[0] == 255:
                 alpha = False
-            dest = os.path.join(out, f"{set_name}_{n:02d}." + ("png" if alpha else "jpg"))
+            dest = os.path.join(out, asset_names.file(set_name, n) + "." + ("png" if alpha else "jpg"))
+            n += 1
             if alpha:
                 im.convert("RGBA").save(dest, optimize=True)
             else:
@@ -286,7 +289,7 @@ def import_backgrounds(src):
                 meta = re.sub(r"(?m)^guid: [0-9a-f]{32}$", "guid: " + uuid.uuid4().hex, meta)
                 meta = re.sub(r"maxTextureSize: \d+", "maxTextureSize: 4096", meta)
                 open(dest + ".meta", "w", encoding="utf-8", newline="\n").write(meta)
-        print(f"  {biome} -> {set_name}_01..{n:02d}")
+        print(f"  {biome} -> {asset_names.file(set_name, 0)}..{asset_names.file(set_name, n - 1)}")
     print("  backgrounds done")
 
 
@@ -299,7 +302,7 @@ def import_icons(src, abilities):
             continue
         path = os.path.join(src, "Sprites", "Spells", key + ".png")
         if os.path.exists(path):
-            shutil.copyfile(path, os.path.join(out, key + ".png"))
+            shutil.copyfile(path, os.path.join(out, asset_names.of(key) + ".png"))
             n += 1
     print(f"  icons: {n}")
 
@@ -340,7 +343,7 @@ def main():
         import_audio(args.src)
     if not only or "tiles" in only:
         # The original board tile (GridGame2026 SpriteLibrary "Tile" = Sprites/Tiles/tile3); BoardView tints it into a checkerboard.
-        shutil.copyfile(os.path.join(args.src, "Sprites", "Tiles", "tile3.png"), os.path.join(ensure(os.path.join(RES, "Tiles")), "tile.png"))
+        shutil.copyfile(os.path.join(args.src, "Sprites", "Tiles", "tile3.png"), os.path.join(ensure(os.path.join(RES, "Tiles")), asset_names.of("tile") + ".png"))
         import subprocess
         subprocess.run([sys.executable, os.path.join(ROOT, "tools", "make_tiles.py")], check=True)  # per-biome recolours
 

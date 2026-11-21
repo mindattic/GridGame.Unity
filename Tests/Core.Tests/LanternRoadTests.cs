@@ -78,11 +78,11 @@ namespace GridGame.Tests
         [Test]
         public void The_road_shows_its_four_landscapes_and_its_own_board_tile()
         {
-            var set = Backdrops.Probe("lanternroad", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((4, true)), "lanternroad_01 .. lanternroad_04");
-            Assert.That(Backdrops.SetOf(Real, "lanternroad"), Is.EqualTo("lanternroad"));
-            Assert.That(Backdrops.Resolve("lanternroad", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/lanternroad_02"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "lanternroad.png")), "the road's board tile");
+            var set = Backdrops.Probe("lantern-road", OnDisk);
+            Assert.That(set.Count, Is.EqualTo(4), "lantern-road-00 .. lantern-road-03");
+            Assert.That(Backdrops.SetOf(Real, "lanternroad"), Is.EqualTo("lantern-road"));
+            Assert.That(Backdrops.Resolve("lanternroad", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/lantern-road-01"));
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "lanternroad-00.png")), "the road's board tile");
         }
 
         [Test]

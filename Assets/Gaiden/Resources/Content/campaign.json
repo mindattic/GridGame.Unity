@@ -78,7 +78,7 @@
       "MusicBorrow": ["heartbeat-of-the-brave-00", "still-frost-00"],
       "MilestoneReward": "tome_regenerate",
       "Name": "The Tithe Moors",
-      "Backgrounds": "tithemoors",
+      "Backgrounds": "tithe-moors",
       "Stages": [
         "greenvalley-01",
         "greenvalley-02",
@@ -91,7 +91,7 @@
       "MusicBorrow": ["anchor-pulse-00", "shardfall-00"],
       "MilestoneReward": "tome_steadfast",
       "Name": "The Lantern Road",
-      "Backgrounds": "lanternroad",
+      "Backgrounds": "lantern-road",
       "Stages": [
         "lanternroad-01",
         "lanternroad-02",
@@ -130,7 +130,7 @@
       "MusicBorrow": ["over-the-pass-00", "shardfall-00", "lanterns-rising-00"],
       "MilestoneReward": "tome_lifesteal",
       "Name": "The Anchor Wastes",
-      "Backgrounds": "anchorwastes",
+      "Backgrounds": "anchor-wastes",
       "Stages": [
         "cave-01",
         "cave-02",
@@ -195,7 +195,7 @@
       "MusicBorrow": ["moorland-charge-00", "still-frost-00", "tithe-day-gallop-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Free Holds",
-      "Backgrounds": "freeholds",
+      "Backgrounds": "free-holds",
       "Stages": [
         "greenvalley-04",
         "greenvalley-05"
@@ -267,7 +267,7 @@
       "MusicBorrow": ["the-final-signal-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "Morrow's Shadow",
-      "Backgrounds": "morrowsshadow",
+      "Backgrounds": "morrows-shadow",
       "Stages": [
         "morrowsshadow-01",
         "morrowsshadow-02",

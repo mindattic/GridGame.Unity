@@ -202,50 +202,50 @@ namespace GridGame.App
             return tex == null ? float.MaxValue : FigureRect(tex).height;
         }
 
-        /// <summary>The board tile for a campaign theme (tools/make_tiles.py); the original slate tile when a theme has none.</summary>
+        /// <summary>A pixel icon under <paramref name="folder"/> by id, named by <see cref="AssetNames"/> (GG-T561); null when none.</summary>
         private static Texture2D Pixelled(string folder, string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
-            string path = folder + "/" + id;
+            string path = AssetNames.Path(folder, id); // GG-T561: <folder>/<id words>-00
             if (cache.TryGetValue(path, out var t)) return t;
             return cache[path] = Resources.Load<Texture2D>(path);
         }
 
-        /// <summary>An ability's pixel icon (AbilityIcons/&lt;id&gt;), else its legacy icon, else null.</summary>
+        /// <summary>An ability's pixel icon (AbilityIcons/&lt;id&gt;-00, GG-T561), else its legacy icon, else null.</summary>
         public static Texture2D AbilityIcon(AbilityDef a) => a == null ? null : Pixelled("AbilityIcons", a.Id) ?? (string.IsNullOrEmpty(a.Icon) ? null : Icon(a.Icon));
 
-        /// <summary>An item's pixel icon (ItemIcons/&lt;id&gt;), or null.</summary>
+        /// <summary>An item's pixel icon (ItemIcons/&lt;id&gt;-00, GG-T561), or null.</summary>
         public static Texture2D ItemIcon(string itemId) => Pixelled("ItemIcons", itemId);
 
         /// <summary>Pixel-art status icon (tools/make_status_icons.py) for a buff id or "stunned"; null when none exists.</summary>
         public static Texture2D StatusIcon(string id)
         {
             if (string.IsNullOrEmpty(id)) return null;
-            string path = "StatusIcons/" + id;
+            string path = AssetNames.Path("StatusIcons", id);
             if (cache.TryGetValue(path, out var t)) return t;
             return cache[path] = Resources.Load<Texture2D>(path);
         }
 
-        /// <summary>A theme's board tile: <c>Tiles/&lt;theme&gt;</c>, else its base theme's (a postgame theme with its own
+        /// <summary>A theme's board tile: <c>Tiles/&lt;theme&gt;-00</c>, else its base theme's (a postgame theme with its own
         /// stages, like <c>greenvalley2</c>, keeps the moors' tile, GG-T346), else the plain tile.</summary>
         public static Texture2D BoardTile(string theme)
         {
             foreach (var t in new[] { theme, Backdrops.BaseTheme(theme) })
-                if (!string.IsNullOrEmpty(t) && Exists("Tiles/" + t)) return Load("Tiles/" + t);
-            return Load("Tiles/tile");
+                if (!string.IsNullOrEmpty(t) && Exists(AssetNames.Path("Tiles", t))) return Load(AssetNames.Path("Tiles", t));
+            return Load(AssetNames.Path("Tiles", "tile"));
         }
         /// <summary>A UI-group pixel icon (tools/icons.json "ui": cursor, pickups), or null.</summary>
         public static Texture2D UiIcon(string id) => Pixelled("UI", id);
-        public static Texture2D Icon(string key) => string.IsNullOrEmpty(key) ? null : Load("Icons/" + key);
+        public static Texture2D Icon(string key) => string.IsNullOrEmpty(key) ? null : Load(AssetNames.Path("Icons", key));
 
         private static readonly Dictionary<string, BackdropSet> backdropSets = new Dictionary<string, BackdropSet>(System.StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>A background set as found in Resources (GG-T344: counted once, from <c>_01</c>, or the legacy <c>_0</c>).
+        /// <summary>A background set as found in Resources (GG-T344: counted once, from <c>-00</c>, GG-T561).
         /// GG-T353: each probed image is unloaded again (a full-size backdrop is ~4.5 MB of texture), so counting a set
         /// doesn't keep all of it resident; the one shown is loaded by <see cref="Background"/>.</summary>
         public static BackdropSet BackgroundSet(string set)
         {
-            if (string.IsNullOrEmpty(set)) return new BackdropSet(set, 0, true);
+            if (string.IsNullOrEmpty(set)) return new BackdropSet(set, 0);
             if (!backdropSets.TryGetValue(set, out var s))
                 backdropSets[set] = s = Backdrops.Probe(set, ProbeBackground);
             return s;
@@ -314,8 +314,8 @@ namespace GridGame.App
             if (windowDark != null) WindowThemes.Paint(windowDark, WindowThemes.Current, 0.3f, 0.55f);
         }
 
-        /// <summary>The pointing-glove cursor (tools/make_icons.py, UI/cursor); the generated one if it's missing.</summary>
-        public static Texture2D Cursor => cursor ??= (Resources.Load<Texture2D>("UI/cursor") ?? MakeCursor());
+        /// <summary>The pointing-glove cursor (tools/make_icons.py, UI/cursor-00); the generated one if it's missing.</summary>
+        public static Texture2D Cursor => cursor ??= (Resources.Load<Texture2D>(AssetNames.Path("UI", "cursor")) ?? MakeCursor());
         public static Texture2D Glow => glow ??= MakeGlow();
         public static Texture2D Orb => orb ??= MakeOrb();
 

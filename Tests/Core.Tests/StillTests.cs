@@ -76,35 +76,30 @@ namespace GridGame.Tests
 
             var still = Probe("still");
             Assert.That(still.Count, Is.EqualTo(6), "the six landscapes");
-            Assert.That(still.Padded, Is.True, "owner rule: still_01 .. still_06");
             Assert.That(Real.Campaign.Themes.Single(t => t.Id == "still").Backgrounds, Is.EqualTo("still"), "the campaign names its set");
-            Assert.That(Resolve("still", 0), Is.EqualTo("Backgrounds/still_01"));
-            Assert.That(Resolve("still", 4), Is.EqualTo("Backgrounds/still_05"), "no longer wrapped at four");
-            Assert.That(Resolve("still", 6), Is.EqualTo("Backgrounds/still_01"));
-            Assert.That(Resolve("still", -1), Is.EqualTo("Backgrounds/still_06"));
+            Assert.That(Resolve("still", 0), Is.EqualTo("Backgrounds/still-00"));
+            Assert.That(Resolve("still", 4), Is.EqualTo("Backgrounds/still-04"), "no longer wrapped at four");
+            Assert.That(Resolve("still", 6), Is.EqualTo("Backgrounds/still-00"));
+            Assert.That(Resolve("still", -1), Is.EqualTo("Backgrounds/still-05"));
 
-            // GG-T353 renamed the first five themes' sets after their regions (cave -> anchorwastes_01..04).
-            Assert.That(Resolve("cave", 5), Is.EqualTo("Backgrounds/anchorwastes_02"), "a four-image set wraps at four");
-            Assert.That(Resolve("cave2", 1), Is.EqualTo("Backgrounds/anchorwastes_02"), "a postgame theme borrows its base theme's art");
-            Assert.That(Resolve("nowhere", 2), Is.EqualTo("Backgrounds/tithemoors_03"), "an unknown theme falls to the default theme's set");
-            Assert.That(Resolve(null, 0), Is.EqualTo("Backgrounds/tithemoors_01"));
+            // GG-T353 renamed the first five themes' sets after their regions (cave -> anchor-wastes-00..04).
+            Assert.That(Resolve("cave", 5), Is.EqualTo("Backgrounds/anchor-wastes-01"), "a four-image set wraps at four");
+            Assert.That(Resolve("cave2", 1), Is.EqualTo("Backgrounds/anchor-wastes-01"), "a postgame theme borrows its base theme's art");
+            Assert.That(Resolve("nowhere", 2), Is.EqualTo("Backgrounds/tithe-moors-02"), "an unknown theme falls to the default theme's set");
+            Assert.That(Resolve(null, 0), Is.EqualTo("Backgrounds/tithe-moors-00"));
             Assert.That(OnDisk(Backdrops.Fallback), "the last-resort backdrop exists");
             Assert.That(Backdrops.Resolve("x", 0, _ => default(BackdropSet)), Is.EqualTo(Backdrops.Fallback), "no art at all");
 
-            // A legacy unpadded set (<set>_0 ..) still resolves, though no file uses that numbering any more.
-            var legacy = new HashSet<string> { "Backgrounds/old_0", "Backgrounds/old_1" };
-            Assert.That(Backdrops.Resolve("old", 3, set => Backdrops.Probe(set, legacy.Contains)), Is.EqualTo("Backgrounds/old_1"));
-
             // A theme's set name maps it onto differently named files.
-            var renamed = new HashSet<string> { "Backgrounds/tithemoors_01", "Backgrounds/tithemoors_02" };
-            Assert.That(Backdrops.Resolve("greenvalley", 3, set => Backdrops.Probe(set, renamed.Contains), t => t == "greenvalley" ? "tithemoors" : t),
-                Is.EqualTo("Backgrounds/tithemoors_02"));
-            Assert.That(Backdrops.Key("still", 9, true), Is.EqualTo("Backgrounds/still_10"));
+            var renamed = new HashSet<string> { "Backgrounds/tithe-moors-00", "Backgrounds/tithe-moors-01" };
+            Assert.That(Backdrops.Resolve("greenvalley", 3, set => Backdrops.Probe(set, renamed.Contains), t => t == "greenvalley" ? "tithe-moors" : t),
+                Is.EqualTo("Backgrounds/tithe-moors-01"));
+            Assert.That(Backdrops.Key("still", 9), Is.EqualTo("Backgrounds/still-09"));
             Assert.That(Backdrops.BaseTheme("greenvalley2"), Is.EqualTo("greenvalley"));
 
             foreach (var theme in Real.Campaign.Themes.Select(t => t.Id).Concat(Real.CampaignStages().Select(s => s.Theme)).Distinct())
                 Assert.That(Probe(SetOf(theme)).Count > 0 || Probe(SetOf(Backdrops.BaseTheme(theme))).Count > 0, $"{theme} has art of its own or its base theme's");
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "still.png")), "the Still's board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "still-00.png")), "the Still's board tile");
         }
 
         [Test]

@@ -89,6 +89,8 @@ def art_findings():
                     else {p[:3] for p in small.getdata() if p[3] > 16}
                 if len(cols) > ICON_COLORS:
                     why.append(f"{len(cols)} colours (max {ICON_COLORS})")
+            if not asset_names.is_valid(os.path.basename(f)[:-4]):
+                why.append("not named word-word-00 (tools/asset_names.py, GG-T561)"); hard = True
             out.append(("POL-H2", f"{folder}/{os.path.basename(f)}", not why, "; ".join(why), hard))
 
     for f in sorted(glob.glob(os.path.join(RESD, "Backgrounds", "*"))):
@@ -99,8 +101,8 @@ def art_findings():
         w, h = im.size
         if not f.lower().endswith((".jpg", ".png")) or w * 2 != h or h < BACKDROP_MIN_H:
             why.append(f"{os.path.splitext(f)[1]} {w}x{h}, not a 1:2 JPEG/PNG at least {BACKDROP_MIN_H} tall"); hard = True
-        if not re.fullmatch(r"[a-z]+_\d\d\.(jpg|png)", os.path.basename(f)):
-            why.append("not named <region>_NN (owner rule, GG-T353)"); hard = True
+        if not asset_names.is_valid(os.path.splitext(os.path.basename(f))[0]):
+            why.append("not named <region-words>-NN (tools/asset_names.py, GG-T353/GG-T561)"); hard = True
         mean = ImageStat.Stat(im.convert("L")).mean[0] / 255
         if not BACKDROP_MEAN[0] <= mean <= BACKDROP_MEAN[1]:
             why.append(f"mean luminance {mean:.2f} outside {BACKDROP_MEAN[0]}-{BACKDROP_MEAN[1]}")
@@ -128,7 +130,13 @@ def main():
 
     def _ids(name): return [x["Id"] for x in json.load(open(os.path.join(RESD, "Content", name), encoding="utf-8"))]
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
-        missing += [f"icon:{folder}/{i} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, i + ".png"))]
+        missing += [f"icon:{folder}/{asset_names.of(i)} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, asset_names.of(i) + ".png"))]
+
+    # GG-T561: every image under Resources follows the asset naming rule (word-word-00.ext).
+    for folder in ("Tiles", "Tutorial", "UI", "Backgrounds"):
+        for f in sorted(glob.glob(os.path.join(RESD, folder, "**", "*.*"), recursive=True)):
+            if f.lower().endswith((".png", ".jpg")) and not asset_names.is_valid(os.path.splitext(os.path.basename(f))[0]):
+                missing.append(f"badly named (want word-word-00): {os.path.relpath(f, RESD)}")
 
     # GG-T557: every class's portrait (and male art, when it names one) resolves to a file, by the one naming rule.
     for c in json.load(open(os.path.join(RESD, "Content", "classes.json"), encoding="utf-8-sig")):

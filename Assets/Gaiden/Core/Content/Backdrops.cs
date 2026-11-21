@@ -2,53 +2,47 @@ using System;
 
 namespace GridGame.Core.Content
 {
-    /// <summary>One theme's background set as found on disk: its file name, how many images, and which numbering.</summary>
+    /// <summary>One theme's background set as found on disk: its stem and how many images it has.</summary>
     public readonly struct BackdropSet
     {
         public readonly string Name;
         public readonly int Count;
-        /// <summary>True for the owner's naming (<c>&lt;set&gt;_01</c>, <c>_02</c>, …); false for the legacy <c>&lt;set&gt;_0</c>, <c>_1</c>, ….</summary>
-        public readonly bool Padded;
 
-        public BackdropSet(string name, int count, bool padded) { Name = name; Count = count; Padded = padded; }
+        public BackdropSet(string name, int count) { Name = name; Count = count; }
     }
 
     /// <summary>
-    /// Which backdrop a theme shows (GG-T344). Owner rule: background files are named after their story region, numbered
-    /// from 01 with zero padding (<c>Backgrounds/still_01.jpg</c> … <c>still_06.jpg</c>), at the art's original resolution.
-    /// A campaign theme may name its set (<c>ThemeDef.Backgrounds</c>, e.g. <c>"still"</c>); otherwise the set is the theme id.
-    /// A set has as many images as the art gives it, and an index wraps over that count instead of a fixed four. GG-T353
-    /// re-imported the first five themes the same way (<c>tithemoors</c>, <c>shardfall</c>, <c>arkgrave</c>,
-    /// <c>anchorwastes</c>, <c>halcyon</c>, 1536×3072); the legacy unpadded numbering (<c>&lt;set&gt;_0</c>, <c>_1</c>, …) is
-    /// still read but no file uses it. A theme with no set borrows its base theme's (a postgame theme like <c>cave2</c>
-    /// shows <c>cave</c>'s), then the default theme's, then <see cref="Fallback"/>. Pure: the App passes a Resources
-    /// probe, the tests a file probe.
+    /// Which backdrop a theme shows (GG-T344). Background files are named after their story region and follow the asset
+    /// naming rule (<see cref="AssetNames"/>, GG-T561): the region's words joined by hyphens, numbered from 00
+    /// (<c>Backgrounds/tithe-moors-00.jpg</c> … <c>tithe-moors-04.jpg</c>), at the art's original resolution. A campaign
+    /// theme names its set (<c>ThemeDef.Backgrounds</c>, e.g. <c>"tithe-moors"</c>); otherwise the set is the theme id. A
+    /// set has as many images as the art gives it, and an index wraps over that count. A theme with no set borrows its
+    /// base theme's (a postgame theme like <c>cave2</c> shows <c>cave</c>'s), then the default theme's, then
+    /// <see cref="Fallback"/>. Pure: the App passes a Resources probe, the tests a file probe.
     /// </summary>
     public static class Backdrops
     {
         public const string Folder = "Backgrounds/";
         public const string DefaultTheme = "greenvalley";
-        /// <summary>The last resort: the default theme's (the Tithe Moors') first image.</summary>
-        public const string Fallback = Folder + "tithemoors_01";
+        /// <summary>The default theme's (the Tithe Moors') set.</summary>
+        public const string DefaultSet = "tithe-moors";
+        /// <summary>The last resort: the default theme's first image.</summary>
+        public static readonly string Fallback = Key(DefaultSet, 0);
         /// <summary>The most backgrounds counted per set (a guard on the probe, not a design limit).</summary>
         public const int MaxPerTheme = 32;
 
-        /// <summary>The resource key of image <paramref name="n"/> (0-based) of a set in either numbering.</summary>
-        public static string Key(string set, int n, bool padded) => padded ? $"{Folder}{set}_{n + 1:00}" : $"{Folder}{set}_{n}";
+        /// <summary>The resource key of image <paramref name="n"/> (0-based, the file's variant number) of a set.</summary>
+        public static string Key(string set, int n) => Folder + AssetNames.File(set, n);
 
-        public static string Key(BackdropSet s, int n) => Key(s.Name, n, s.Padded);
+        public static string Key(BackdropSet s, int n) => Key(s.Name, n);
 
-        /// <summary>Counts <paramref name="set"/>'s images: the owner's <c>_01</c> numbering first, else the legacy <c>_0</c>.</summary>
+        /// <summary>Counts <paramref name="set"/>'s images, from <c>-00</c> up while they exist.</summary>
         public static BackdropSet Probe(string set, Func<string, bool> exists)
         {
-            if (string.IsNullOrEmpty(set) || exists == null) return new BackdropSet(set, 0, true);
-            foreach (bool padded in new[] { true, false })
-            {
-                int n = 0;
-                while (n < MaxPerTheme && exists(Key(set, n, padded))) n++;
-                if (n > 0) return new BackdropSet(set, n, padded);
-            }
-            return new BackdropSet(set, 0, true);
+            if (string.IsNullOrEmpty(set) || exists == null) return new BackdropSet(set, 0);
+            int n = 0;
+            while (n < MaxPerTheme && exists(Key(set, n))) n++;
+            return new BackdropSet(set, n);
         }
 
         /// <summary>A postgame theme's art theme: trailing digits dropped ("greenvalley2" → "greenvalley").</summary>

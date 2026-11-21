@@ -97,7 +97,7 @@ namespace GridGame.Tests
         public void Every_weapon_item_has_an_icon()
         {
             var dir = Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "ItemIcons");
-            var missing = Real.Items.Values.Where(i => i.Slot == EquipmentSlot.Weapon && !File.Exists(Path.Combine(dir, i.Id + ".png")))
+            var missing = Real.Items.Values.Where(i => i.Slot == EquipmentSlot.Weapon && !File.Exists(Path.Combine(dir, AssetNames.Of(i.Id) + ".png")))
                 .Select(i => i.Id).ToList();
             Assert.That(missing, Is.Empty, "weapons without an icon (run tools/make_icons.py --missing): " + string.Join(", ", missing));
         }

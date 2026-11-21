@@ -24,23 +24,23 @@ namespace GridGame.Tests
         /// RedThorns, ElectricWasteland, UnderTheBridge, CyberNecropolis less its two byte-identical duplicates).</summary>
         private static readonly Dictionary<string, (string set, int count, int w, int h)> Expected = new Dictionary<string, (string, int, int, int)>
         {
-            ["greenvalley"] = ("tithemoors", 5, 1536, 3072),
-            ["lanternroad"] = ("lanternroad", 4, 768, 1536), // GG-T345: the owner's four lantern-road landscapes, native size
+            ["greenvalley"] = ("tithe-moors", 5, 1536, 3072),
+            ["lanternroad"] = ("lantern-road", 4, 768, 1536), // GG-T345: the owner's four lantern-road landscapes, native size
             ["desert"] = ("shardfall", 5, 1536, 3072),
             ["swamp"] = ("arkgrave", 5, 1536, 3072),
-            ["cave"] = ("anchorwastes", 4, 1536, 3072),
+            ["cave"] = ("anchor-wastes", 4, 1536, 3072),
             ["still"] = ("still", 6, 768, 1536),
             ["cityruins"] = ("halcyon", 14, 1536, 3072),
             ["cathedral"] = ("cathedral", 4, 768, 1536), // GG-T350: the owner's four cathedral landscapes, native size
             ["bloom"] = ("bloom", 8, 768, 1536), // GG-T347: a new postgame chapter (no trailing digit, so it is its own base theme)
-            ["morrowsshadow"] = ("morrowsshadow", 10, 768, 1536), // GG-T348: the final postgame chapter, its own base theme too
+            ["morrowsshadow"] = ("morrows-shadow", 10, 768, 1536), // GG-T348: the final postgame chapter, its own base theme too
         };
 
         /// <summary>Postgame themes (GG-T346/T349) that show a region set of their own instead of borrowing their base
         /// theme's: theme id → (set, image count, source size).</summary>
         private static readonly Dictionary<string, (string set, int count, int w, int h)> OwnPostgame = new Dictionary<string, (string, int, int, int)>
         {
-            ["greenvalley2"] = ("freeholds", 7, 768, 1536), // GG-T346: the owner's seven Free Holds landscapes, native size
+            ["greenvalley2"] = ("free-holds", 7, 768, 1536), // GG-T346: the owner's seven Free Holds landscapes, native size
             ["cityruins2"] = ("underspire", 9, 768, 1536), // GG-T349: the owner's nine underspire night-market landscapes, native size
         };
 
@@ -53,14 +53,13 @@ namespace GridGame.Tests
             var (set, count, w, h) = e;
             Assert.That(t.Backgrounds, Is.EqualTo(set), $"{t.Id} names its region's set");
             var s = Backdrops.Probe(t.Backgrounds, OnDisk);
-            Assert.That(s.Padded, Is.True, $"{set}: numbered from 01");
             Assert.That(s.Count, Is.EqualTo(count).And.AtLeast(4), $"{set}: every image the art gives it");
             for (int i = 0; i < s.Count; i++)
             {
-                var file = Path.Combine(Folder, $"{set}_{i + 1:00}.jpg");
+                var file = Path.Combine(Folder, $"{set}-{i:00}.jpg");
                 Assert.That(JpegSize(file), Is.EqualTo((w, h)), $"{Path.GetFileName(file)}: the original resolution, not downscaled");
             }
-            Assert.That(OnDisk(Backdrops.Key(set, count, true)), Is.False, $"{set} has exactly {count}");
+            Assert.That(OnDisk(Backdrops.Key(set, count)), Is.False, $"{set} has exactly {count}");
         }
 
         [Test]
@@ -81,7 +80,7 @@ namespace GridGame.Tests
                 foreach (var id in t.Stages)
                     Assert.That(Real.Stages[id].Theme, Is.EqualTo(t.Id), $"{id}: the battle backdrop reads the stage's theme, so it names the postgame theme");
                 Assert.That(Backdrops.Resolve(t.Id, kv.Value.count, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(Real, x)),
-                    Is.EqualTo($"Backgrounds/{kv.Value.set}_01"), $"{t.Id}: wraps over its own set");
+                    Is.EqualTo($"Backgrounds/{kv.Value.set}-00"), $"{t.Id}: wraps over its own set");
             }
         }
 
@@ -94,10 +93,10 @@ namespace GridGame.Tests
             {
                 var set = Expected[Backdrops.BaseTheme(t.Id)].set;
                 for (int i = 0; i < 6; i++)
-                    Assert.That(Backdrops.Resolve(t.Id, i, Probe, SetOf), Does.StartWith($"Backgrounds/{set}_"), t.Id);
+                    Assert.That(Backdrops.Resolve(t.Id, i, Probe, SetOf), Does.StartWith($"Backgrounds/{set}-"), t.Id);
             }
-            Assert.That(Backdrops.Resolve("greenvalley", 4, Probe, SetOf), Is.EqualTo("Backgrounds/tithemoors_05"), "all five, not four");
-            Assert.That(Backdrops.Resolve("cityruins", 13, Probe, SetOf), Is.EqualTo("Backgrounds/halcyon_14"));
+            Assert.That(Backdrops.Resolve("greenvalley", 4, Probe, SetOf), Is.EqualTo("Backgrounds/tithe-moors-04"), "all five, not four");
+            Assert.That(Backdrops.Resolve("cityruins", 13, Probe, SetOf), Is.EqualTo("Backgrounds/halcyon-13"));
         }
 
         [Test]
@@ -109,8 +108,8 @@ namespace GridGame.Tests
             var guids = new HashSet<string>();
             foreach (var f in files)
             {
-                var m = Regex.Match(f, @"^([a-z]+)_(\d\d)\.(jpg|png)$");
-                Assert.That(m.Success, $"{f}: named <region>_NN");
+                var m = Regex.Match(f, @"^([a-z]+(?:-[a-z]+)*)-(\d\d)\.(jpg|png)$"); // GG-T561: <region-words>-NN
+                Assert.That(m.Success, $"{f}: named <region>-NN");
                 Assert.That(themeIds, Does.Not.Contain(m.Groups[1].Value), $"{f}: named after its region, not a theme id");
                 var meta = Path.Combine(Folder, f + ".meta");
                 Assert.That(File.Exists(meta), $"{f} has its .meta");
@@ -118,7 +117,7 @@ namespace GridGame.Tests
                 Assert.That(guids.Add(guid), $"{f}: its GUID is unique");
             }
             foreach (var legacy in new[] { "greenvalley", "desert", "swamp", "cave", "cityruins" })
-                Assert.That(files.Where(f => f.StartsWith(legacy + "_")), Is.Empty, $"no legacy {legacy}_<n> files");
+                Assert.That(files.Where(f => f.StartsWith(legacy + "_") || f.StartsWith(legacy + "-")), Is.Empty, $"no legacy {legacy} files");
             Assert.That(Directory.GetFiles(Folder, "*.meta").Length, Is.EqualTo(files.Count), "no orphaned .meta");
         }
 

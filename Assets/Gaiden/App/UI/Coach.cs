@@ -43,7 +43,8 @@ namespace GridGame.App
         public string Id;
         public string Kicker = "Lesson";
         public string Title, Text;
-        /// <summary>Image resource override (default "Tutorial/" + Id); a missing image is simply left out.</summary>
+        /// <summary>Image resource override (default "Tutorial/" + Id; the file is &lt;folder&gt;/&lt;name&gt;-00, GG-T561); a missing
+        /// image is simply left out.</summary>
         public string Image;
         public List<CoachStep> Steps = new List<CoachStep>();
         /// <summary>The popup was already shown (marks retried when the situation came up later): go straight to the steps.</summary>
@@ -94,6 +95,16 @@ namespace GridGame.App
         private static List<Vector2> path;
 
         public static bool Active => lesson != null;
+
+        /// <summary>A lesson image's Resources key: "Tutorial/hub-shop" reads Tutorial/hub-shop-00 (the asset naming rule,
+        /// <see cref="GridGame.Core.Content.AssetNames"/>, GG-T561).</summary>
+        internal static string ImageKey(string image)
+        {
+            if (string.IsNullOrEmpty(image)) return image;
+            int slash = image.LastIndexOf('/');
+            return slash < 0 ? GridGame.Core.Content.AssetNames.Of(image)
+                : GridGame.Core.Content.AssetNames.Path(image.Substring(0, slash), image.Substring(slash + 1));
+        }
         /// <summary>The marks are up (past the popup): input outside the box is refused.</summary>
         public static bool InSteps => lesson != null && stepIndex >= 0;
         public static CoachStep Step => InSteps && stepIndex < lesson.Steps.Count ? lesson.Steps[stepIndex] : null;
@@ -211,7 +222,7 @@ namespace GridGame.App
             var title = Ui.Heading(lesson.Title ?? "", card);
             title.name = "coach-title";
             title.style.whiteSpace = WhiteSpace.Normal;
-            var tex = Resources.Load<Texture2D>(lesson.Image ?? "Tutorial/" + lesson.Id);
+            var tex = Resources.Load<Texture2D>(ImageKey(lesson.Image ?? "Tutorial/" + lesson.Id));
             if (tex != null)
             {
                 var img = new VisualElement { name = "coach-image", pickingMode = PickingMode.Ignore };

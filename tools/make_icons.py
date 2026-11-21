@@ -15,7 +15,7 @@ vertical gradient from its palette (light top, base, dark bottom) -> shrink to 2
 8 colours, no dither -> 1 px dark outline -> centre on 22x22 -> x4 nearest-neighbour (88x88) + a .meta cloned from
 Portraits/slime00 (import settings come from GaidenImport in GaidenBuild.cs).
 
-Output: Assets/Gaiden/Resources/{StatusIcons,AbilityIcons,ItemIcons,UI}/<id>.png
+Output: Assets/Gaiden/Resources/{StatusIcons,AbilityIcons,ItemIcons,UI}/<id>-00.png (tools/asset_names.py, GG-T561)
 """
 import argparse
 import json
@@ -26,11 +26,14 @@ import sys
 import urllib.request
 import uuid
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402  the one asset naming rule (GG-T561)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RES = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
 SRC = os.path.join(ROOT, "tools", "icon_src")
 MANIFEST = os.path.join(ROOT, "tools", "icons.json")
-TEMPLATE = os.path.join(RES, "Portraits", "slime00.png.meta")
+TEMPLATE = os.path.join(RES, "Portraits", "slime-00.png.meta")
 GROUP_DIR = {"status": "StatusIcons", "ability": "AbilityIcons", "item": "ItemIcons", "ui": "UI"}
 
 
@@ -208,7 +211,7 @@ def main():
         flop = "flop" in opts
         rot = next((int(o[4:]) for o in opts if isinstance(o, str) and o.startswith("rot:")), 0)
         svg = fetch(ref)
-        dst = os.path.join(RES, GROUP_DIR[group], iid + ".png")
+        dst = os.path.join(RES, GROUP_DIR[group], asset_names.of(iid) + ".png")
         if args.missing and os.path.exists(dst):
             continue
         build(svg, palettes[pal], dst, flop, rot)

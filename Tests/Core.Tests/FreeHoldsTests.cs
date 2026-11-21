@@ -26,13 +26,13 @@ namespace GridGame.Tests
             var db = Real;
             var t = db.Campaign.Themes.Single(x => x.Id == "greenvalley2");
             Assert.That(t.Name, Is.EqualTo("The Free Holds")); // GG-T386: the region its art shows
-            Assert.That(t.Backgrounds, Is.EqualTo("freeholds"));
+            Assert.That(t.Backgrounds, Is.EqualTo("free-holds"));
             Assert.That(t.Stages, Is.EqualTo(new[] { "greenvalley-04", "greenvalley-05" }), "the existing stages, re-skinned");
 
-            var set = Backdrops.Probe("freeholds", OnDisk);
-            Assert.That((set.Count, set.Padded), Is.EqualTo((7, true)), "freeholds_01 .. freeholds_07");
-            Assert.That(Backdrops.Resolve("greenvalley2", 9, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/freeholds_03"));
-            Assert.That(Backdrops.Resolve("greenvalley", 0, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/tithemoors_01"), "the Tithe Moors keep theirs");
+            var set = Backdrops.Probe("free-holds", OnDisk);
+            Assert.That(set.Count, Is.EqualTo(7), "free-holds-00 .. free-holds-06");
+            Assert.That(Backdrops.Resolve("greenvalley2", 9, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/free-holds-02"));
+            Assert.That(Backdrops.Resolve("greenvalley", 0, s => Backdrops.Probe(s, OnDisk), x => Backdrops.SetOf(db, x)), Is.EqualTo("Backgrounds/tithe-moors-00"), "the Tithe Moors keep theirs");
 
             var problems = ContentLoader.Validate(db, PortraitOnDisk).Where(p => p.Contains("greenvalley2") || p.Contains("greenvalley-04") || p.Contains("greenvalley-05")).ToList();
             Assert.That(problems, Is.Empty, string.Join("\n", problems));

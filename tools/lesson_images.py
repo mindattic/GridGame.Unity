@@ -4,7 +4,7 @@ A run that plays through the lessons with `-coach` saves, for every popup and co
 (`<tag>-NN-<lesson>-<step>.png`, taken with super=2) and the mark's geometry beside it (`.coach.json`: the boxed
 target, a move's dotted route and its destination, in design pixels; `GET /coach` on the automation endpoint). This
 script takes each lesson's first mark, crops the screenshot to the box, the route and the arrow with some of the board
-around them, draws a thin gold frame, and writes Assets/Gaiden/Resources/Tutorial/<lesson>.png (always PNG). The image
+around them, draws a thin gold frame, and writes Assets/Gaiden/Resources/Tutorial/<lesson>-00.png (always PNG; tools/asset_names.py, GG-T561). The image
 already shows the real coach mark (the gold box, the arrow or the dotted path), so nothing is painted over the game.
 
     python tools/lesson_images.py artifacts/<run> [--only move,spell] [--dry]
@@ -19,6 +19,9 @@ import os
 import sys
 
 from PIL import Image, ImageDraw
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402  the one asset naming rule (GG-T561)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Tutorial")
@@ -120,7 +123,7 @@ def main():
         im = render(png, c)
         if im is None:
             continue
-        dest = os.path.join(OUT, name + ".png")
+        dest = os.path.join(OUT, asset_names.of(name) + ".png")
         print(f"{name:14s} <- {os.path.basename(png)}  {im.width}x{im.height}")
         if not dry:
             im.save(dest, optimize=True)
