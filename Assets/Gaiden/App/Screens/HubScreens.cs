@@ -739,6 +739,8 @@ namespace GridGame.App
         private string bargainSelected;
         private readonly Dictionary<string, int> buyCart = new Dictionary<string, int>();
         private readonly Dictionary<string, int> sellCart = new Dictionary<string, int>();
+        private ScrollView cartScroll;
+        private float keepScroll;
         public override string Id => "shop";
         protected override string Title => "Merchant";
         protected override string Npc => CampNpcs.Merchant;
@@ -748,7 +750,11 @@ namespace GridGame.App
             Ui.Tabs(new[] { "Buy", "Sell", "Bargain" }, tab, i => { tab = i; bargainSelected = null; Refresh(); }, body);
             if (tab == 2) { BuildBargain(body); return; }
             bool selling = tab == 1;
-            var list = Ui.ListPanel(body);
+            var list = Ui.ListPanel(body, null, out cartScroll);
+            // A −/+ tap rebuilds the page: keep the list where the player had scrolled it, not back at the top.
+            float restore = keepScroll; keepScroll = 0f;
+            var sv = cartScroll;
+            if (restore > 0f) sv.RegisterCallback<GeometryChangedEvent>(_ => { if (restore > 0f) { sv.scrollOffset = new Vector2(0f, restore); restore = 0f; } });
             var cart = selling ? sellCart : buyCart;
             var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C).Where(i => Features.Offers(i.Id)).ToList();
             if (items.Count == 0) Ui.Empty(selling ? "Nothing to sell." : "Sold out.", list);
@@ -789,6 +795,7 @@ namespace GridGame.App
             cart.TryGetValue(id, out var q);
             q = Mathf.Clamp(q + d, 0, max);
             if (q == 0) cart.Remove(id); else cart[id] = q;
+            keepScroll = cartScroll != null ? cartScroll.scrollOffset.y : 0f;
             Refresh();
         }
 
