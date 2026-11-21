@@ -230,8 +230,8 @@ namespace GridGame.App
                 recorder = new BattleRecorder(State, setup, "player", initial);
                 // Every battle is tagged with the dial and the multipliers it applied (§22.9, GG-T309).
                 var diff = DifficultyTable.At(setup.Difficulty);
-                TelemetryUnity.Begin("GridGameGaiden", seed: setup.Seed, contentVersion: Application.version,
-                    tags: new TelemetryData
+                GameTelemetry.Begin(setup.Seed, Application.version, // GG-T548: a writable folder on every platform, never throws
+                    new TelemetryData
                     {
                         ["stage"] = State.Stage.Id, ["source"] = "player",
                         ["difficulty"] = setup.Difficulty,

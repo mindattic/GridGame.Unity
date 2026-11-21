@@ -1517,3 +1517,16 @@ gender, same with summoning ... no change to story or mechanics makes everything
   game for mouse play. GridGame is its first registered app; the suite source lives outside this repo.
 - *Why:* owner 2026-11-21: test the whole game locally on many device shapes (Android launches first, iOS follows in
   January) without owning the devices; the owner asked for the launcher to be reusable for other APKs.
+
+## 2026-11-21 — Battle telemetry writes to the app's own folder on phones (GG-T548)
+
+- **Was:** every battle start opened a MindAttic.Telemetry session at the library's desktop roots (`R:\Telemetry`, else
+  `Documents\MindAttic\Telemetry`). On Android neither exists, so it tried `/MindAttic/Telemetry` on the read-only root,
+  failed, and its `Debug.LogError` popped Unity's red Development Console over the battle in development APKs.
+- **Now ([RELEASE_BUILD.md, "Crash and error reporting"](RELEASE_BUILD.md)):** sessions start through `GameTelemetry`.
+  The editor and desktop players are unchanged; every other platform (Android now, iOS in January) writes under
+  `persistentDataPath/Telemetry`, keeps the newest 20 sessions, logs failures as plain lines and never throws. Release
+  builds still record nothing. Every other file the game writes (saves, profiles, battle records, crash log, automation
+  artifacts, endless-mode CSVs) already lived under `persistentDataPath` or a `-artifacts` folder given on the command
+  line; MindAttic.Capture only boots on Windows.
+- *Why:* found on the emulator (GG-T547): a dev-only recorder must never disturb play on a device.

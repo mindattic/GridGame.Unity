@@ -174,7 +174,10 @@ What a release build does today, and what is still the owner's call:
   `/sdcard/Android/data/com.mindattic.gridgamegaiden/files/Diagnostics/` (`adb pull` it from a test phone).
 - **MindAttic.Telemetry** gets the same record as an `exception` event, but only where telemetry runs at all: the
   editor and development builds (it is gated off in release builds and writes to the local disk, `R:\Telemetry`, so
-  it can't carry reports from players' phones). That is why it isn't the release sink.
+  it can't carry reports from players' phones). That is why it isn't the release sink. On phones and tablets
+  (development builds), `GameTelemetry` (`App/Services/GameTelemetry.cs`, GG-T548) writes it under
+  `<persistentDataPath>/Telemetry/GridGameGaiden/` instead (Android: `/sdcard/Android/data/com.mindattic.gridgamegaiden/files/Telemetry/`),
+  keeps the newest 20 sessions, and logs a failure as a plain line, never a red error over the battle.
 - **Not built: sending managed exceptions home from players' phones.** It needs a service and a privacy-policy line,
   so it waits for the owner's pick. Options, cheapest first: (1) **Unity Cloud Diagnostics** (free tier; link the
   project to a Unity Cloud project id, add `com.unity.services.cloud-diagnostics`); (2) **Firebase Crashlytics** (free;
