@@ -3,12 +3,35 @@ an ability, item or status has no pixel icon, or an art asset breaks the art sta
 (docs/POLISH.md section H). Softer art-standard misses are printed as warnings and scored by tools/polish.py."""
 import glob, json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESD = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
 SFX = os.path.join(RESD, "Audio", "Sfx")
 MUSIC = os.path.join(RESD, "Audio", "Music")
-# Cue key -> file, as App/Services/Audio.Cue resolves it (GG-T254): dots become underscores, except these.
-SPECIAL = {"ui.back": "ui_click", "battle.move": "battle_move_0", "battle.hit": "battle_hit_0"}
+# Cue key -> file, as App/Services/Audio.Cue resolves it (GG-T254, GG-T562): the key's words joined by hyphens plus
+# variant -00 (battle.crucible_wave -> battle-crucible-wave-00), except these (the random-pick pools always have -00).
+SPECIAL = {"ui.back": "ui-click-00", "battle.move": "battle-move-00", "battle.hit": "battle-hit-00"}
+
+
+def cue_file(cue):
+    return SPECIAL.get(cue) or asset_names.file(asset_names.stem(*cue.split(".")))
+
+
+def campaign_tracks():
+    """Every track campaign.json names (HubMusic, MomentMusic, each theme's Music and MusicBorrow)."""
+    camp = json.load(open(os.path.join(RESD, "Content", "campaign.json"), encoding="utf-8-sig"))
+    out = set(camp.get("HubMusic", []))
+    for tracks in (camp.get("MomentMusic") or {}).values():
+        out |= set(tracks)
+    for th in camp.get("Themes", []):
+        out |= set(th.get("Music", [])) | set(th.get("MusicBorrow", []))
+    return out
+
+
+def music_exists(track):
+    return any(os.path.exists(os.path.join(MUSIC, track + ext)) for ext in (".ogg", ".mp3"))
 
 # docs/POLISH.md section H thresholds.
 PORTRAIT_CANVAS = 1024       # POL-H1, owner 2026-11-07 (GG-T352): "all characters are 1024x1024 with transparent
@@ -91,15 +114,21 @@ def main():
     cues |= set(c for pair in re.findall(r'Sfx\([^;]*?"([a-z.]+)"\s*:\s*"([a-z.]+)"', code) for c in pair)
     for m in re.findall(r'case DamageType\.\w+: return "([a-z._]+)";', code): cues.add(m)
     cues |= set(re.findall(r'StepAnim\([^;]*?"([a-z._]+)"\)', code))
-    missing = [c for c in sorted(cues) if not os.path.exists(os.path.join(SFX, SPECIAL.get(c, c.replace(".", "_")) + ".ogg"))]
-    tracks = set(re.findall(r'Music => "([A-Za-z]+)"', code)) | set(t for p in re.findall(r'Music => [^;]*?"([A-Z][A-Za-z]+)"\s*:\s*"([A-Z][A-Za-z]+)"', code) for t in p)
-    missing += [f"music:{t}" for t in sorted(tracks) if not os.path.exists(os.path.join(MUSIC, t + ".mp3"))]
+    missing = [c for c in sorted(cues) if not os.path.exists(os.path.join(SFX, cue_file(c) + ".ogg"))]
+    # Tracks: every fallback a screen's Music names in code (?? "crusade-00") plus every campaign.json playlist entry.
+    tracks = set(re.findall(r'Music => [^;]*?"([a-z0-9-]+)"', code)) | set(re.findall(r'\?\? "([a-z0-9]+(?:-[a-z0-9]+)*-\d\d)"', code))
+    tracks |= campaign_tracks()
+    missing += [f"music:{t}" for t in sorted(tracks) if not music_exists(t)]
+    # GG-T562: every audio file follows the asset naming rule (word-word-00.ext).
+    for folder in (SFX, MUSIC):
+        missing += [f"badly named (want word-word-00): {os.path.basename(folder)}/{f}" for f in sorted(os.listdir(folder))
+                    if not f.endswith(".meta") and not asset_names.is_valid(os.path.splitext(f)[0])]
 
     def _ids(name): return [x["Id"] for x in json.load(open(os.path.join(RESD, "Content", name), encoding="utf-8"))]
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
         missing += [f"icon:{folder}/{i} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, i + ".png"))]
 
-    # GG-T556: attack-type hit sounds are optional slots (Audio falls back to battle_hit_0..6), so a missing one warns.
+    # GG-T556: attack-type hit sounds are optional slots (Audio falls back to battle-hit-00..06), so a missing one warns.
     at = json.load(open(os.path.join(RESD, "Content", "attacktypes.json"), encoding="utf-8"))
     slots = [f for t in at["Types"] for f in t["Sfx"]]
     pending = [f for f in slots if not os.path.exists(os.path.join(SFX, f + ".ogg"))]

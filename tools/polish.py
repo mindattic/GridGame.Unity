@@ -20,6 +20,7 @@ import datetime
 import html
 import json
 import os
+import re
 import statistics
 import subprocess
 import sys
@@ -217,9 +218,9 @@ def audio(tally):
                       ("Screens/DialogueScreen.cs", "dialogue")):
         tally.one("POL-F3", "Audio.DuckFor(" in src(rel), {"screen": "audio", "subject": what, "detail": "music not ducked"})
     sfx = os.listdir(loudness.SFX_DIR)
-    for pool in ("battle_move_", "battle_hit_"):
-        n = sum(1 for f in sfx if f.startswith(pool) and f.endswith(".ogg"))
-        tally.one("POL-F4", n >= 3, {"screen": "audio", "subject": pool.rstrip("_"), "detail": f"{n} variants"})
+    for pool in ("battle-move", "battle-hit"):  # the random-pick pools: <pool>-00, -01, ... (GG-T562)
+        n = sum(1 for f in sfx if re.fullmatch(re.escape(pool) + r"-\d\d\.ogg", f))
+        tally.one("POL-F4", n >= 3, {"screen": "audio", "subject": pool, "detail": f"{n} variants"})
     tally.one("POL-F4", "lastPlayed" in src("Services/Audio.cs"), {"screen": "audio", "subject": "throttle",
                                                                     "detail": "no repeat throttle"})
 

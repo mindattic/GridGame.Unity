@@ -1,14 +1,15 @@
 """Import music tracks into the game (GG-T461; the recipe from GG-T456).
 
 Each source (any format ffmpeg reads: Suno's .m4a, .mp3, .wav ...) becomes
-Assets/Gaiden/Resources/Audio/Music/<GameName>.ogg: leading/trailing silence trimmed at -55 dB, two-pass
+Assets/Gaiden/Resources/Audio/Music/<game-name-00>.ogg (the asset naming rule, GG-T561/GG-T562,
+tools/asset_names.py): leading/trailing silence trimmed at -55 dB, two-pass
 loudness-normalised to -18 LUFS (TP -1.5, LRA 11; the level the rest of the music sits at), 20 ms de-click fades,
 44.1 kHz, Vorbis q6. Unity's importer settings (Streaming, Vorbis) are forced by GaidenBuild.OnPreprocessAudio.
 
-  python tools/import_music.py "Hub of Peace.m4a=HearthsideCamp"      one file, named
-  python tools/import_music.py "Rising Theme.m4a"                     name derived: RisingTheme
+  python tools/import_music.py "Hub of Peace.m4a=HearthsideCamp"      one file, named: hearthside-camp-00
+  python tools/import_music.py "Rising Theme.m4a"                     name derived: rising-theme-00
   python tools/import_music.py --all                                  every new file in the source folder
-  python tools/import_music.py --record "Hub of Peace.m4a=HearthsideCamp"   hash only (already converted)
+  python tools/import_music.py --record "Hub of Peace.m4a=hearthside-camp-00"   hash only (already converted)
 
 A relative path that doesn't exist is looked up in the source folder (default R:\\Desktop\\GridGameMusic, or
 --src). Duplicates are found by audio hash (the decoded PCM, so a re-encode or a renamed copy still matches):
@@ -16,6 +17,9 @@ against each other and against every track already imported (tools/music_sources
 is never overwritten without --force. Afterwards it prints where to list the new tracks (campaign.json).
 """
 import argparse, hashlib, json, os, re, subprocess, sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DST = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Audio", "Music")
@@ -50,13 +54,12 @@ def duration(path):
 
 
 def derive_name(path):
-    """'Rising Theme (1).m4a' -> 'RisingTheme1'. Non-ASCII titles can't be derived: name them with FILE=Name."""
+    """'Rising Theme (1).m4a' -> 'rising-theme-1-00'. Non-ASCII titles can't be derived: name them with FILE=Name."""
     stem = os.path.splitext(os.path.basename(path))[0]
     words = re.findall(r"[A-Za-z0-9]+", stem)
-    name = "".join(w[:1].upper() + w[1:] for w in words)
-    if not name or not name[0].isalpha() or any(ord(c) > 127 for c in stem):
+    if not words or not words[0][0].isalpha() or any(ord(c) > 127 for c in stem):
         return None
-    return name
+    return asset_names.file(asset_names.stem(*words))
 
 
 def convert(src, name):
@@ -129,14 +132,16 @@ def resolve(item, src_dir):
     if not os.path.isfile(path):
         sys.exit(f"not found: {item}")
     name = name.strip()
-    if name and not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", name):
-        sys.exit(f"game name '{name}' must be PascalCase letters/digits")
+    if name and not asset_names.is_valid(name):
+        name = asset_names.file(asset_names.stem(name))  # HearthsideCamp -> hearthside-camp-00
+    if name and not (asset_names.is_valid(name) and name[0].isalpha()):
+        sys.exit(f"game name '{name}' must be word-word-00 (or words that make one, e.g. HearthsideCamp)")
     return path, name or derive_name(path), bool(name)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("items", nargs="*", help="FILE or FILE=GameName")
+    ap.add_argument("items", nargs="*", help="FILE or FILE=game-name-00 (or FILE=GameName, made into game-name-00)")
     ap.add_argument("--src", default=DEFAULT_SRC, help="folder relative FILEs are looked up in (and --all scans)")
     ap.add_argument("--all", action="store_true", help="import every audio file in --src not already imported")
     ap.add_argument("--force", action="store_true", help="overwrite an existing game track of the same name")

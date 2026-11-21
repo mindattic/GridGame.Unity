@@ -29,7 +29,7 @@ namespace GridGame.App
         /// while overlays (level-ups, dialogue) come and go over the battle. A Crucible run plays MomentMusic.crucible when
         /// campaign.json lists any (GG-T458), else any region's battle track.</summary>
         public override string Music => music ??= (InCrucible ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Crucible) : null)
-            ?? App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "Crusade";
+            ?? App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "crusade-00";
         private string music;
         private bool bossMusic;
 

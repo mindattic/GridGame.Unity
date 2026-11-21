@@ -1,12 +1,14 @@
 """
 Original sound effects, synthesized from scratch (numpy) so every SFX in the repo is MindAttic's own
-work — no third-party pack licensing. Writes OGG files into Assets/Gaiden/Resources/Audio/Sfx/.
+work — no third-party pack licensing. Writes OGG files into Assets/Gaiden/Resources/Audio/Sfx/,
+named by the asset rule (battle-dash-00.ogg, battle-hit-03.ogg; GG-T562).
 
     python tools/make_sfx.py                       # every cue
-    python tools/make_sfx.py crucible_enter ...    # only the named cues (the rest are still synthesized, so the
+    python tools/make_sfx.py crucible_enter ...    # only the named cues (synth, taxonomy or file name) (the rest are still synthesized, so the
                                                    # shared RNG stream and every other file stay byte-identical)
 """
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -16,6 +18,7 @@ import numpy as np
 from scipy.signal import butter, lfilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402
 import loudness  # noqa: E402
 
 SR = 44100
@@ -81,13 +84,21 @@ def norm(x, peak=0.85):
     return x / m * peak
 
 
-def file_for(name):
-    """Synth name -> taxonomy file (POL-F1, GG-T254): battle.dash plays battle_dash.ogg (App/Services/Audio.cs)."""
+def taxonomy_for(name):
+    """Synth name -> taxonomy name (POL-F1, GG-T254): dash -> battle_dash (the cue battle.dash)."""
     if name in FILES:
         return FILES[name]
     if name.startswith(("move_", "hit_")):
         return "battle_" + name
     return name
+
+
+def file_for(name):
+    """Synth name -> file, by the asset naming rule (GG-T561/GG-T562, tools/asset_names.py, App/Services/Audio.Cue):
+    battle.dash plays battle-dash-00.ogg; the random-pick pools number their picks, move_3 -> battle-move-03."""
+    tax = taxonomy_for(name)
+    m = re.fullmatch(r"(battle_(?:move|hit))_(\d+)", tax)
+    return asset_names.file(asset_names.stem(m.group(1)), int(m.group(2))) if m else asset_names.file(asset_names.stem(tax))
 
 
 FILES = {
@@ -106,7 +117,7 @@ FILES = {
 
 def write(name, x, peak=0.85):
     out = file_for(name)
-    if ONLY and name not in ONLY and out not in ONLY:
+    if ONLY and name not in ONLY and out not in ONLY and taxonomy_for(name) not in ONLY:
         return
     name = out
     # Every cue lands at the same perceived loudness, under the true-peak ceiling (POL-F2, tools/loudness.py).

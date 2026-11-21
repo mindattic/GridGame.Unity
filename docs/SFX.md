@@ -5,9 +5,11 @@ Bible §12.0: every event gets a sound. This is the map from every event the pla
 (GG-T464) uses it as its mapping list: the **Wants** column says what a library sound should replace, where the cue
 today is a borrowed or synthesized stand-in.
 
-How cues work: game code calls `Audio.Sfx("<group>.<name>")`; the file is the key with dots as underscores
-(`camp.repair` → `Resources/Audio/Sfx/camp_repair.ogg`). `battle.move` / `battle.hit` pick one of 6 / 7 variants,
-`ui.back` shares `ui_click`. Every file is synthesized by `tools/make_sfx.py` (MindAttic's own, normalised to
+How cues work: game code calls `Audio.Sfx("<group>.<name>")`; the file is the key's words joined by hyphens plus the
+variant `-00`, the asset naming rule (GG-T561/GG-T562, `Core/Content/AssetNames`): `camp.repair` →
+`Resources/Audio/Sfx/camp-repair-00.ogg`, `battle.crucible_wave` → `battle-crucible-wave-00.ogg`. `battle.move` /
+`battle.hit` pick one of 6 / 7 separate sounds at random, numbered as variants (`battle-move-00..05`,
+`battle-hit-00..06`); `ui.back` shares `ui-click-00`. Every file is synthesized by `tools/make_sfx.py` (MindAttic's own, normalised to
 −16 LUFS, ≤ −1 dBTP). Groups: `ui.*`, `battle.*`, `element.*`, `status.*`, `story.*`, and since GG-T465 `camp.*`.
 
 ## New cues (GG-T465)

@@ -105,7 +105,7 @@ def main():
 
     with section('Title / save slots'):
         check("title shows New Game", until(lambda: has_text("New Game")))
-        check("title music", h.call("music")["track"] == "TellerOfTheTales")
+        check("title music", h.call("music")["track"] == "teller-of-the-tales-00")
         time.sleep(0.6)  # the title's fade-in swallows a tap sent the moment it mounts
         # A tap sent while the title is still fading in reports it hit the fade (GG-T121): _tap_until repeats
         # only such a failed tap, never the assertion.
@@ -440,7 +440,7 @@ def main():
         until(lambda: h.call("state")["screen"] in ("levelup", "postbattle"), 4.0)
         h._skip_levelups(h.call("state"))
         on_screen("battle finishes with colorblind + reduce motion + ×3 speed", "postbattle")
-        check("results music", h.call("music")["track"] in ("HeroicAge", "Heartbreaking"))
+        check("results music", h.call("music")["track"] in ("heroic-age-00", "heartbreaking-00"))
         h.shot("results")
         h.call("setting", key="colorblind", value=0)
         h.call("setting", key="reducemotion", value=0)

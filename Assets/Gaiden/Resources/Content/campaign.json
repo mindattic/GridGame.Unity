@@ -58,15 +58,15 @@
       "Backdrop": "morrowsshadow"
     }
   ],
-  "HubMusic": ["HearthsideCamp", "EmbersAtRest"],
+  "HubMusic": ["hearthside-camp-00", "embers-at-rest-00"],
   "MomentMusic": {
-    "title": ["TellerOfTheTales"],
-    "story": ["TellerOfTheTales"],
-    "victory": ["HeroicAge"],
-    "defeat": ["Heartbreaking"],
-    "levelup": ["HeroicAge"],
-    "charselect": ["MinstrelGuild"],
-    "credits": ["HeroicAge"],
+    "title": ["teller-of-the-tales-00"],
+    "story": ["teller-of-the-tales-00"],
+    "victory": ["heroic-age-00"],
+    "defeat": ["heartbreaking-00"],
+    "levelup": ["heroic-age-00"],
+    "charselect": ["minstrel-guild-00"],
+    "credits": ["heroic-age-00"],
     "crucible": [],
     "boss": [],
     "finalboss": []
@@ -74,8 +74,8 @@
   "Themes": [
     {
       "Id": "greenvalley",
-      "Music": ["MoorlandCharge", "TitheDayGallop"],
-      "MusicBorrow": ["HeartbeatOfTheBrave", "StillFrost"],
+      "Music": ["moorland-charge-00", "tithe-day-gallop-00"],
+      "MusicBorrow": ["heartbeat-of-the-brave-00", "still-frost-00"],
       "MilestoneReward": "tome_regenerate",
       "Name": "The Tithe Moors",
       "Backgrounds": "tithemoors",
@@ -87,8 +87,8 @@
     },
     {
       "Id": "lanternroad",
-      "Music": ["OverThePass", "LanternsRising", "MoonlitConflict"],
-      "MusicBorrow": ["AnchorPulse", "Shardfall"],
+      "Music": ["over-the-pass-00", "lanterns-rising-00", "moonlit-conflict-00"],
+      "MusicBorrow": ["anchor-pulse-00", "shardfall-00"],
       "MilestoneReward": "tome_steadfast",
       "Name": "The Lantern Road",
       "Backgrounds": "lanternroad",
@@ -100,8 +100,8 @@
     },
     {
       "Id": "desert",
-      "Music": ["GlassDunes", "Shardfall"],
-      "MusicBorrow": ["LanternsRising", "AnchorPulse"],
+      "Music": ["glass-dunes-00", "shardfall-00"],
+      "MusicBorrow": ["lanterns-rising-00", "anchor-pulse-00"],
       "MilestoneReward": "tome_thorns",
       "Name": "The Shardfall",
       "Backgrounds": "shardfall",
@@ -113,8 +113,8 @@
     },
     {
       "Id": "swamp",
-      "Music": ["GroundedArks", "ArkgraveMarch"],
-      "MusicBorrow": ["TheFinalSignal", "WintersEdge"],
+      "Music": ["grounded-arks-00", "arkgrave-march-00"],
+      "MusicBorrow": ["the-final-signal-00", "winters-edge-00"],
       "MilestoneReward": "tome_poison_ward",
       "Name": "The Arkgrave",
       "Backgrounds": "arkgrave",
@@ -126,8 +126,8 @@
     },
     {
       "Id": "cave",
-      "Music": ["AnchorPulse"],
-      "MusicBorrow": ["OverThePass", "Shardfall", "LanternsRising"],
+      "Music": ["anchor-pulse-00"],
+      "MusicBorrow": ["over-the-pass-00", "shardfall-00", "lanterns-rising-00"],
       "MilestoneReward": "tome_lifesteal",
       "Name": "The Anchor Wastes",
       "Backgrounds": "anchorwastes",
@@ -139,8 +139,8 @@
     },
     {
       "Id": "still",
-      "Music": ["WintersEdge", "StillFrost"],
-      "MusicBorrow": ["HeartbeatOfTheBrave", "MoorlandCharge"],
+      "Music": ["winters-edge-00", "still-frost-00"],
+      "MusicBorrow": ["heartbeat-of-the-brave-00", "moorland-charge-00"],
       "MilestoneReward": "tome_mana_siphon",
       "Name": "The Still",
       "Backgrounds": "still",
@@ -152,8 +152,8 @@
     },
     {
       "Id": "cityruins",
-      "Music": ["NeonSteelRush"],
-      "MusicBorrow": ["NeonBreakbeat", "LastStandHorn", "MoonlitConflict"],
+      "Music": ["neon-steel-rush-00"],
+      "MusicBorrow": ["neon-breakbeat-00", "last-stand-horn-00", "moonlit-conflict-00"],
       "MilestoneReward": "tome_double_attack",
       "Name": "Halcyon",
       "Backgrounds": "halcyon",
@@ -165,8 +165,8 @@
     },
     {
       "Id": "cathedral",
-      "Music": ["TheFinalSignal"],
-      "MusicBorrow": ["LastStandHorn", "MoonlitConflict", "GroundedArks"],
+      "Music": ["the-final-signal-00"],
+      "MusicBorrow": ["last-stand-horn-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "tome_counter_attack",
       "Name": "The Choir's Cathedral",
       "Backgrounds": "cathedral",
@@ -179,7 +179,7 @@
     {
       "Id": "bloom",
       "Music": [],
-      "MusicBorrow": ["MoonlitConflict", "Shardfall", "NeonSteelRush", "AnchorPulse"],
+      "MusicBorrow": ["moonlit-conflict-00", "shardfall-00", "neon-steel-rush-00", "anchor-pulse-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Bloom",
       "Backgrounds": "bloom",
@@ -191,8 +191,8 @@
     },
     {
       "Id": "greenvalley2",
-      "Music": ["HeartbeatOfTheBrave"],
-      "MusicBorrow": ["MoorlandCharge", "StillFrost", "TitheDayGallop"],
+      "Music": ["heartbeat-of-the-brave-00"],
+      "MusicBorrow": ["moorland-charge-00", "still-frost-00", "tithe-day-gallop-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Free Holds",
       "Backgrounds": "freeholds",
@@ -206,8 +206,8 @@
     },
     {
       "Id": "cityruins2",
-      "Music": ["NeonBreakbeat"],
-      "MusicBorrow": ["NeonSteelRush", "LastStandHorn", "GroundedArks"],
+      "Music": ["neon-breakbeat-00"],
+      "MusicBorrow": ["neon-steel-rush-00", "last-stand-horn-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Underspire",
       "Backgrounds": "underspire",
@@ -222,7 +222,7 @@
     {
       "Id": "swamp2",
       "Music": [],
-      "MusicBorrow": ["ArkgraveMarch", "GroundedArks", "TheFinalSignal", "WintersEdge"],
+      "MusicBorrow": ["arkgrave-march-00", "grounded-arks-00", "the-final-signal-00", "winters-edge-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Drowned Arks",
       "Stages": [
@@ -236,7 +236,7 @@
     {
       "Id": "desert2",
       "Music": [],
-      "MusicBorrow": ["Shardfall", "GlassDunes", "AnchorPulse", "LanternsRising"],
+      "MusicBorrow": ["shardfall-00", "glass-dunes-00", "anchor-pulse-00", "lanterns-rising-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "Deep Shardfall",
       "Stages": [
@@ -250,7 +250,7 @@
     {
       "Id": "cave2",
       "Music": [],
-      "MusicBorrow": ["AnchorPulse", "OverThePass", "Shardfall", "NeonBreakbeat"],
+      "MusicBorrow": ["anchor-pulse-00", "over-the-pass-00", "shardfall-00", "neon-breakbeat-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "Under the Anchors",
       "Stages": [
@@ -263,8 +263,8 @@
     },
     {
       "Id": "morrowsshadow",
-      "Music": ["LastStandHorn"],
-      "MusicBorrow": ["TheFinalSignal", "MoonlitConflict", "GroundedArks"],
+      "Music": ["last-stand-horn-00"],
+      "MusicBorrow": ["the-final-signal-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
       "Name": "Morrow's Shadow",
       "Backgrounds": "morrowsshadow",

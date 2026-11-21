@@ -34,7 +34,7 @@ namespace GridGame.App
 
         public LevelUpScreen(BattleReport report, string stageId) { this.report = report; this.stageId = stageId; }
         public override string Id => "levelup";
-        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.LevelUp) ?? "HeroicAge";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.LevelUp) ?? "heroic-age-00";
         private string music;
 
         public override void OnHidden()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GridGame.Core.Content;
 using UnityEngine;
 
 namespace GridGame.App
@@ -196,41 +197,62 @@ namespace GridGame.App
 
         public static string Canonical(string key) => Aliases.TryGetValue(key, out var k) ? k : key;
 
-        /// <summary>Taxonomy key → file: dots become underscores (battle.dash → battle_dash), except the variant
-        /// pools (battle.move, battle.hit, battle.hit.&lt;type&gt;) and the cues that share a file. Keep game code speaking
-        /// in cues, not filenames.</summary>
+        /// <summary>Taxonomy key → file, by the asset naming rule (GG-T561/GG-T562, <see cref="AssetNames"/>): the key's
+        /// words joined by hyphens plus a two-digit variant from -00 (battle.dash → battle-dash-00,
+        /// battle.crucible_wave → battle-crucible-wave-00), except the random-pick pools (battle.move, battle.hit,
+        /// battle.hit.&lt;type&gt;), whose variant number is the pick, and the cues that share a file. Keep game code
+        /// speaking in cues, not filenames.</summary>
         private string Cue(string key)
         {
             switch (key)
             {
-                case "ui.back": return "ui_click";
-                case "battle.move": return "battle_move_" + Random.Range(0, 6);
+                case "ui.back": return CueFile("ui.click");
+                case "battle.move": return AssetNames.File(MoveStem, Random.Range(0, MoveVariants));
                 case "battle.hit": return GenericHit();
                 default:
                     if (key.StartsWith(HitPrefix)) return TypedHit(key.Substring(HitPrefix.Length));
-                    return key.Replace('.', '_'); // every other cue has a same-named file (tools/make_sfx.py)
+                    return CueFile(key); // every other cue has its own file, variant 00 (tools/make_sfx.py)
             }
         }
 
-        // ── Attack-type hits (GG-T556): "battle.hit.<type>" plays a random battle_hit_<type>_<n> that exists ──
+        private readonly Dictionary<string, string> cueFiles = new Dictionary<string, string>();
+
+        /// <summary>A cue's own file: <c>AssetNames.File(AssetNames.Stem(key's dot-separated words))</c>, cached.</summary>
+        private string CueFile(string key)
+        {
+            if (!cueFiles.TryGetValue(key, out var f)) cueFiles[key] = f = FileOf(key);
+            return f;
+        }
+
+        /// <summary>battle.crucible_wave → battle-crucible-wave-00 (variant 00 unless given).</summary>
+        public static string FileOf(string key, int variant = AssetNames.DefaultVariant) =>
+            AssetNames.File(AssetNames.Stem(key.Split('.')), variant);
+
+        // ── Random-pick pools: separate sounds, one drawn at random each time; the variant number is the pick ──
+        private static readonly string MoveStem = AssetNames.Stem("battle", "move"), HitStem = AssetNames.Stem("battle", "hit");
+        /// <summary>battle-move-00 .. -05 (footsteps) and battle-hit-00 .. -06 (the generic hits).</summary>
+        public const int MoveVariants = 6, HitVariants = 7;
+
+        // ── Attack-type hits (GG-T556): "battle.hit.<type>" plays a random battle-hit-<type>-NN that exists ──
         /// <summary>Cue prefix for a typed hit; the types and their file names are Content/attacktypes.json.</summary>
         public const string HitPrefix = "battle.hit.";
-        /// <summary>Highest variant number looked for per type (battle_hit_&lt;type&gt;_0 .. _15).</summary>
+        /// <summary>Highest variant looked for per type, exclusive (battle-hit-&lt;type&gt;-00 .. -15).</summary>
         private const int MaxHitVariants = 16;
         private readonly Dictionary<string, List<string>> hitPools = new Dictionary<string, List<string>>();
 
-        private static string GenericHit() => "battle_hit_" + Random.Range(0, 7);
+        private static string GenericHit() => AssetNames.File(HitStem, Random.Range(0, HitVariants));
 
-        /// <summary>A random existing battle_hit_&lt;type&gt;_&lt;n&gt;; the generic pool while the type has no files yet,
+        /// <summary>A random existing battle-hit-&lt;type&gt;-NN; the generic pool while the type has no files yet,
         /// so no hit goes silent before its assets land.</summary>
         private string TypedHit(string type)
         {
             if (!hitPools.TryGetValue(type, out var pool))
             {
                 pool = new List<string>();
+                var stem = AssetNames.Stem("battle", "hit", type);
                 for (int n = 0; n < MaxHitVariants; n++)
                 {
-                    var name = "battle_hit_" + type + "_" + n;
+                    var name = AssetNames.File(stem, n);
                     if (Clip("Audio/Sfx/" + name) != null) pool.Add(name);
                 }
                 hitPools[type] = pool;

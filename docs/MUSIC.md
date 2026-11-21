@@ -7,7 +7,9 @@ Each region keeps a shuffle bag (`Meta/MusicPlaylist.cs`): no track repeats unti
 played, and a refilled bag never opens with the track that just ended. A region with fewer than four tracks of
 its own tops up from its `MusicBorrow` list (the closest-sounding tracks elsewhere). The Camp draws a new
 peaceful track each time the party comes back from the field. Playlists live in `campaign.json`
-(`HubMusic`, and `Music` / `MusicBorrow` per theme). Files are `Resources/Audio/Music/<Name>.ogg`.
+(`HubMusic`, and `Music` / `MusicBorrow` per theme), naming each track by its file: `Resources/Audio/Music/<name>.ogg`,
+named by the asset rule `word-word-00` (GG-T561/GG-T562: `moorland-charge-00.ogg`; `-01` and up would be alternate
+takes of the same track).
 
 Track changes crossfade (GG-T460, `App/Services/Audio.cs`): two music sources, the new track fading in while the
 old one fades out over `Audio.CrossfadeSeconds` (1.2 s, unscaled time, equal-power curve), both under the
@@ -15,9 +17,9 @@ volume setting and the duck. `Music(null)` fades out. Switching back to a track 
 in place rather than restarting it; the battle pause holds only sound effects, so music keeps its place.
 
 **Adding a track:** drop the file in `R:\Desktop\GridGameMusic` and run `python tools/import_music.py
-"<file>=<GameName>"` (or `--all` for every new file there; names are derived from the file name when it is
-ASCII). It trims silence (-55 dB both ends), normalises to -18 LUFS (two-pass loudnorm, TP -1.5, LRA 11), adds
-20 ms de-click fades and writes Vorbis q6 at 44.1 kHz to `Resources/Audio/Music/<GameName>.ogg`. Duplicates are
+"<file>=<game-name-00>"` (a PascalCase name like `HearthsideCamp` becomes `hearthside-camp-00`; or `--all` for every
+new file there; names are derived from the file name when it is ASCII). It trims silence (-55 dB both ends), normalises to -18 LUFS (two-pass loudnorm, TP -1.5, LRA 11), adds
+20 ms de-click fades and writes Vorbis q6 at 44.1 kHz to `Resources/Audio/Music/<game-name-00>.ogg`. Duplicates are
 caught by audio hash (decoded PCM, so a renamed or re-encoded copy still matches) against the batch and every
 track already imported (`tools/music_sources.json`); an existing track is never overwritten without `--force`.
 It then prints the playlists to list the track in. Add its name to the region's `Music` list (or `HubMusic`,
@@ -28,27 +30,27 @@ or a `MomentMusic` list). Once a region has four of its own, its `MusicBorrow` l
 Analysed with ffmpeg + numpy (tempo, key, loudness, dynamics, brightness, bass weight, energy arc) and
 spectrograms. `Moonlit Conflict (1)` was a byte-identical copy of `Moonlit Conflict` and was dropped.
 
-| Game name | Suno file | Region | Character |
+| File (`.ogg`) | Suno file | Region | Character |
 |---|---|---|---|
-| HearthsideCamp | Hub of Peace | Camp | soft, dark-toned (median 600 Hz), no highs, wide dynamics |
-| EmbersAtRest | Hub of Peace (1) | Camp | same mood, a little brighter, gentle fade |
-| MoorlandCharge | Grassland Charge (1) | Tithe Moors | light, airy, little bass, ~100 BPM |
-| TitheDayGallop | Grassland Charge | Tithe Moors | the brisker take, ~150 BPM |
-| OverThePass | Rising Theme (1) | Lantern Road | builds steadily, C major, heroic |
-| LanternsRising | Rising Theme | Lantern Road | D minor, driving |
-| MoonlitConflict | Moonlit Conflict | Lantern Road | dense, heavy low end, relentless |
-| GlassDunes | Mineral Dark (1) | Shardfall | open, C major, mid-weight |
-| Shardfall | Mineral Dark | Shardfall | D minor, flat-out, crystalline top |
-| GroundedArks | Propulsive Groove | Arkgrave | steady groove |
-| ArkgraveMarch | Propulsive Groove (1) | Arkgrave | the same groove, longer |
-| AnchorPulse | Propulsive Pulse | Anchor Wastes | A minor, pulsing, builds to the end |
-| WintersEdge | Winter's Edge | The Still | A minor, cold, measured |
-| StillFrost | Winter's Edge (1) | The Still | sparser take |
-| NeonSteelRush | Neon Steel Rush | Halcyon | electronic, heaviest bass in the set |
-| HeartbeatOfTheBrave | 勇者の鼓動 ("the brave one's heartbeat") | The Free Holds | warm, folk-heroic, nearest to the moors tracks |
-| NeonBreakbeat | Neon Breakbeat | The Underspire | breakbeat, short (62 s) |
-| TheFinalSignal | 最終決戦の合図 ("signal of the final battle") | Choir's Cathedral | D minor, big, final-chapter |
-| LastStandHorn | 最終決戦の合図 (1) | Morrow's Shadow | the brighter, heavier take |
+| hearthside-camp-00 | Hub of Peace | Camp | soft, dark-toned (median 600 Hz), no highs, wide dynamics |
+| embers-at-rest-00 | Hub of Peace (1) | Camp | same mood, a little brighter, gentle fade |
+| moorland-charge-00 | Grassland Charge (1) | Tithe Moors | light, airy, little bass, ~100 BPM |
+| tithe-day-gallop-00 | Grassland Charge | Tithe Moors | the brisker take, ~150 BPM |
+| over-the-pass-00 | Rising Theme (1) | Lantern Road | builds steadily, C major, heroic |
+| lanterns-rising-00 | Rising Theme | Lantern Road | D minor, driving |
+| moonlit-conflict-00 | Moonlit Conflict | Lantern Road | dense, heavy low end, relentless |
+| glass-dunes-00 | Mineral Dark (1) | shardfall-00 | open, C major, mid-weight |
+| shardfall-00 | Mineral Dark | shardfall-00 | D minor, flat-out, crystalline top |
+| grounded-arks-00 | Propulsive Groove | Arkgrave | steady groove |
+| arkgrave-march-00 | Propulsive Groove (1) | Arkgrave | the same groove, longer |
+| anchor-pulse-00 | Propulsive Pulse | Anchor Wastes | A minor, pulsing, builds to the end |
+| winters-edge-00 | Winter's Edge | The Still | A minor, cold, measured |
+| still-frost-00 | Winter's Edge (1) | The Still | sparser take |
+| neon-steel-rush-00 | Neon Steel Rush | Halcyon | electronic, heaviest bass in the set |
+| heartbeat-of-the-brave-00 | 勇者の鼓動 ("the brave one's heartbeat") | The Free Holds | warm, folk-heroic, nearest to the moors tracks |
+| neon-breakbeat-00 | Neon Breakbeat | The Underspire | breakbeat, short (62 s) |
+| the-final-signal-00 | 最終決戦の合図 ("signal of the final battle") | Choir's Cathedral | D minor, big, final-chapter |
+| last-stand-horn-00 | 最終決戦の合図 (1) | Morrow's Shadow | the brighter, heavier take |
 
 Regions with no music of their own yet (they borrow): The Bloom, The Drowned Arks, Deep Shardfall, Under the
 Anchors.
@@ -61,13 +63,13 @@ list to put it in rotation (replace the stock name to retire it).
 
 | Key | Plays on | Today | Empty list means |
 |---|---|---|---|
-| `title` | Title screen | TellerOfTheTales | TellerOfTheTales |
-| `story` | story crawls (prologue, chapters, ending) | TellerOfTheTales | TellerOfTheTales |
-| `victory` | results after a win or a Crucible run | HeroicAge | HeroicAge |
-| `defeat` | results after a loss | Heartbreaking | Heartbreaking |
-| `levelup` | the level-up fanfare screen | HeroicAge | HeroicAge |
-| `charselect` | New Campaign's party pick | MinstrelGuild | MinstrelGuild |
-| `credits` | the end-of-story credits roll | HeroicAge | HeroicAge |
+| `title` | Title screen | teller-of-the-tales-00 | teller-of-the-tales-00 |
+| `story` | story crawls (prologue, chapters, ending) | teller-of-the-tales-00 | teller-of-the-tales-00 |
+| `victory` | results after a win or a Crucible run | heroic-age-00 | heroic-age-00 |
+| `defeat` | results after a loss | heartbreaking-00 | heartbreaking-00 |
+| `levelup` | the level-up fanfare screen | heroic-age-00 | heroic-age-00 |
+| `charselect` | New Campaign's party pick | minstrel-guild-00 | minstrel-guild-00 |
+| `credits` | the end-of-story credits roll | heroic-age-00 | heroic-age-00 |
 | `crucible` | a Crucible run's battle | (empty) | any region's battle track |
 | `boss` | a stage-III finale's boss wave (GG-T459) | (empty) | the stage keeps its track |
 | `finalboss` | the Hierarch's wave (GG-T459) | (empty) | the stage keeps its track |

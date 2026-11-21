@@ -7,7 +7,7 @@ namespace GridGame.Core.Content
     /// <summary>
     /// One attack type in attacktypes.json (GG-T556): what a physical hit sounds like. <see cref="Sfx"/> names every
     /// file the type wants (Resources/Audio/Sfx/&lt;name&gt;.ogg, played at random among the ones that exist); while none
-    /// exists the hit falls back to the generic battle_hit_0..6. docs/AUDIO_ATTACK_TYPES.md is the sound brief.
+    /// exists the hit falls back to the generic battle-hit-00..06. docs/AUDIO_ATTACK_TYPES.md is the sound brief.
     /// </summary>
     public sealed class AttackTypeDef
     {
@@ -69,8 +69,10 @@ namespace GridGame.Core.Content
                 if (string.IsNullOrEmpty(t.Id)) { p.Add("attacktypes: a type with no Id"); continue; }
                 if (!ids.Add(t.Id)) p.Add($"attacktypes: duplicate type '{t.Id}'");
                 if (t.Sfx.Count == 0) p.Add($"attacktypes: type '{t.Id}' names no Sfx files");
+                var stem = AssetNames.Stem("battle", "hit", t.Id);
                 foreach (var f in t.Sfx)
-                    if (f == null || !f.StartsWith("battle_hit_" + t.Id + "_")) p.Add($"attacktypes: type '{t.Id}' sfx '{f}' must be named battle_hit_{t.Id}_<n>");
+                    if (!AssetNames.TryParse(f, out var fs, out _) || fs != stem)
+                        p.Add($"attacktypes: type '{t.Id}' sfx '{f}' must be named {stem}-NN (GG-T562)");
             }
             void Need(string type, string where) { if (!ids.Contains(type ?? "")) p.Add($"attacktypes {where}: unknown type '{type}'"); }
             Need(s.Default, "Default");

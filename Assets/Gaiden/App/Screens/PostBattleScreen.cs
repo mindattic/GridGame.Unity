@@ -19,8 +19,8 @@ namespace GridGame.App
         public override string Id => "postbattle";
         /// <summary>GG-T458: campaign.json MomentMusic.victory (a Crucible run's results too) or .defeat.</summary>
         public override string Music => music ??= report.Victory || report.Crucible
-            ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Victory) ?? "HeroicAge"
-            : App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Defeat) ?? "Heartbreaking";
+            ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Victory) ?? "heroic-age-00"
+            : App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Defeat) ?? "heartbreaking-00";
         private string music;
 
         public override void OnHidden()

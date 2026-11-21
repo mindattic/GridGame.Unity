@@ -78,7 +78,7 @@ namespace GridGame.App
     {
         public override string Id => "title";
         /// <summary>GG-T458: campaign.json MomentMusic.title, drawn once per screen.</summary>
-        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Title) ?? "TellerOfTheTales";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Title) ?? "teller-of-the-tales-00";
         private string music;
 
         protected override void Build(VisualElement root)
@@ -228,7 +228,7 @@ namespace GridGame.App
         private string Lead => App.Content.TryClass(Progression.LeadClass) != null ? Progression.LeadClass : null;
 
         public override string Id => "charselect";
-        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.CharSelect) ?? "MinstrelGuild";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.CharSelect) ?? "minstrel-guild-00";
         private string music;
 
         protected override void Build(VisualElement root)
@@ -455,7 +455,7 @@ namespace GridGame.App
     {
         public override string Id => "hub";
         /// <summary>GG-T456: the Camp's peaceful track, redrawn after each trip to the field.</summary>
-        public override string Music => App.Playlist.Hub(App.Content.Campaign) ?? "MinstrelGuild";
+        public override string Music => App.Playlist.Hub(App.Content.Campaign) ?? "minstrel-guild-00";
 
         protected override void Build(VisualElement root)
         {
@@ -880,7 +880,7 @@ namespace GridGame.App
             this.backdrop = backdrop ?? HubScreen.ThemeFor(GameApp.I.Content, GameApp.I.Save);
         }
         public override string Id => "crawl";
-        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Story) ?? "TellerOfTheTales";
+        public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Story) ?? "teller-of-the-tales-00";
         private string music;
         public override bool RebuildOnResize => false; // a rebuild would restart the crawl
 
@@ -939,7 +939,7 @@ namespace GridGame.App
         public CreditsScreen(Func<GameScreen> then) { rollThen = then; }
         public override string Id => rollThen != null ? "credits-roll" : "credits";
         public override string Music => rollThen == null ? null
-            : music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Credits) ?? "HeroicAge";
+            : music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Credits) ?? "heroic-age-00";
         private string music;
         public override bool RebuildOnResize => rollThen == null; // a rebuild would restart the roll
 
