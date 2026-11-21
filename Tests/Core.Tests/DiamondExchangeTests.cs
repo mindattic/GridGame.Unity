@@ -82,14 +82,16 @@ namespace GridGame.Tests
             Assert.That(DiamondStore.Packs.All(p => p.Diamonds == p.Cents * DiamondExchange.DiamondsPerDollar / 100), Is.True, "no bonus tiers");
 
             var s = Save(0, 0);
-            Result got = default;
+            PurchaseResult got = null;
             new UnconnectedDiamondStore().Purchase(Real, s, DiamondStore.Packs[0], r => got = r);
             Assert.That(got.Ok, Is.False);
+            Assert.That(got.Kind, Is.EqualTo(PurchaseKind.Unavailable));
             Assert.That(got.Message, Does.Contain(DiamondStore.NotConnected));
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0));
 
             new DevDiamondStore().Purchase(Real, s, DiamondStore.Packs[1], r => got = r);
             Assert.That(got.Ok, Is.True);
+            Assert.That(got.Diamonds, Is.EqualTo(500));
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(500));
         }
     }

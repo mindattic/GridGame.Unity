@@ -12,10 +12,39 @@ namespace GridGame.App
         private static IDiamondStore current;
 
         /// <summary>Editor and development builds: the dev stub, which grants packs for free (clearly marked on screen).
-        /// Release builds: the placeholder that says "Store not connected yet" until a real billing integration (Unity IAP,
-        /// Google Play, Apple) is wired here.</summary>
-        public static IDiamondStore Current =>
-            current ??= Application.isEditor || Debug.isDebugBuild ? new DevDiamondStore() : (IDiamondStore)new UnconnectedDiamondStore();
+        /// Release builds on Android and iOS: Unity IAP over Google Play Billing / StoreKit (GG-T468). Any other release
+        /// build (desktop, WebGL): the placeholder that says "Store not connected yet".</summary>
+        public static IDiamondStore Current => current ??= Choose();
+
+        private static IDiamondStore Choose()
+        {
+            IDiamondStore s;
+            if (Application.isEditor || Debug.isDebugBuild) s = new DevDiamondStore();
+#if GG_IAP
+            else if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) s = new UnityIapDiamondStore();
+#endif
+            else s = new UnconnectedDiamondStore();
+            s.Delivered += OnDelivered;
+            return s;
+        }
+
+        /// <summary>Connects the release store at boot, so an order left unfinished last session lands as soon as a save
+        /// is loaded rather than on the first visit to the Diamond Store.</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void Warm()
+        {
+            if (Features.DiamondStore) _ = Current;
+        }
+
+        /// <summary>A purchase finished outside the store screen's own call (approved later, or left unfinished by a
+        /// crash): say so. The store has already granted it and written the save.</summary>
+        private static void OnDelivered(PurchaseResult r)
+        {
+            if (r == null || GameApp.I == null) return;
+            GameApp.I.Toast(r.Message, 3f);
+            GameApp.I.Audio?.Sfx(r.Ok ? "ui.confirm" : "ui.error");
+            if (GameApp.I.Router?.Current is DiamondStoreScreen ds) ds.Refresh();
+        }
 
         public static void Open() => GameApp.I.Router.Push(new DiamondStoreScreen());
 
@@ -120,7 +149,7 @@ namespace GridGame.App
                 App.Audio.Sfx("ui.error");
                 return;
             }
-            store.Purchase(C, S, pack, r => Done(r));
+            store.Purchase(C, S, pack, r => Done(r.ToResult()));
         }
     }
 }

@@ -112,10 +112,45 @@ namespace GridGame.Meta
         public static DiamondPack Of(int diamonds) => new DiamondPack { ProductId = $"diamonds_{diamonds}", Diamonds = diamonds };
     }
 
+    /// <summary>How a real-money purchase ended (§25.18.1, GG-T468).</summary>
+    public enum PurchaseKind
+    {
+        /// <summary>Paid and the Diamonds are in the bag.</summary>
+        Granted,
+        /// <summary>The store took the order but hasn't charged yet (a parent's approval, a cash payment still clearing).
+        /// The Diamonds land on their own when it clears, even on a later launch.</summary>
+        Pending,
+        /// <summary>The player backed out of the store's sheet. Nothing charged.</summary>
+        Cancelled,
+        /// <summary>The store refused or failed (declined card, network). Nothing charged.</summary>
+        Failed,
+        /// <summary>No store to buy from (not connected, product missing, purchases disabled on the device).</summary>
+        Unavailable,
+    }
+
+    /// <summary>One purchase's answer from an <see cref="IDiamondStore"/>.</summary>
+    public sealed class PurchaseResult
+    {
+        public PurchaseKind Kind;
+        public string Message;
+        public string ProductId;
+        /// <summary>Diamonds added to the bag (Granted only).</summary>
+        public int Diamonds;
+
+        public bool Ok => Kind == PurchaseKind.Granted;
+
+        public static PurchaseResult Of(PurchaseKind kind, string message, string productId = null, int diamonds = 0) =>
+            new PurchaseResult { Kind = kind, Message = message, ProductId = productId, Diamonds = diamonds };
+
+        public Result ToResult() => Kind == PurchaseKind.Granted || Kind == PurchaseKind.Pending ? Result.Success(Message) : Result.Fail(Message);
+    }
+
     /// <summary>
-    /// Where real-money Diamonds come from (§25.18.1, GG-T455). The game talks only to this; a real billing integration
-    /// (Unity IAP / Google Play / Apple) becomes one more implementation, wired in the App layer. Purchases are async in
-    /// every real store, so the result comes back through a callback.
+    /// Where real-money Diamonds come from (§25.18.1, GG-T455). The game talks only to this; the billing integration
+    /// (Unity IAP over Google Play Billing / StoreKit, GG-T468) is an implementation wired in the App layer. Purchases are
+    /// async in every real store, so the answer comes back through a callback, and a purchase can also complete outside any
+    /// Purchase call (a deferred order approved later, an order left unfinished by a crash), which <see cref="Delivered"/>
+    /// reports.
     /// </summary>
     public interface IDiamondStore
     {
@@ -123,7 +158,9 @@ namespace GridGame.Meta
         string Status { get; }
         /// <summary>Whether a purchase can actually complete.</summary>
         bool Connected { get; }
-        void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<Result> done);
+        void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done);
+        /// <summary>A purchase that finished outside a <see cref="Purchase"/> call (the App toasts it and saves).</summary>
+        event Action<PurchaseResult> Delivered;
     }
 
     public static class DiamondStore
@@ -142,19 +179,25 @@ namespace GridGame.Meta
     {
         public string Status => "Test store (dev build): purchases are free and land at once.";
         public bool Connected => true;
+        public event Action<PurchaseResult> Delivered { add { } remove { } }
 
-        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<Result> done)
+        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
         {
             var r = pack == null ? Result.Fail("No such pack") : DiamondExchange.Grant(c, s, pack.Diamonds);
-            done?.Invoke(r.Ok ? Result.Success($"[Test store] +{pack.Diamonds:N0} Diamonds, no charge.") : r);
+            done?.Invoke(r.Ok
+                ? PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] +{pack.Diamonds:N0} Diamonds, no charge.", pack.ProductId, pack.Diamonds)
+                : PurchaseResult.Of(PurchaseKind.Failed, r.Message, pack?.ProductId));
         }
     }
 
-    /// <summary>The release placeholder until a real billing integration is wired: shows the packs, sells nothing.</summary>
+    /// <summary>A release build with no billing on its platform (desktop, WebGL, or the IAP package missing): shows the
+    /// packs, sells nothing.</summary>
     public sealed class UnconnectedDiamondStore : IDiamondStore
     {
         public string Status => DiamondStore.NotConnected + ". Diamonds can still be exchanged for gold.";
         public bool Connected => false;
-        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<Result> done) => done?.Invoke(Result.Fail(DiamondStore.NotConnected));
+        public event Action<PurchaseResult> Delivered { add { } remove { } }
+        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done) =>
+            done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected, pack?.ProductId));
     }
 }
