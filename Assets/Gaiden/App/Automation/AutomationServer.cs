@@ -525,6 +525,12 @@ namespace GridGame.App.Automation
                     var prefix = q["prefix"] ?? "";
                     return app.Stage.Query<VisualElement>().ToList().Where(e => e.name != null && e.name.StartsWith(prefix) && e.worldBound.width > 0).Select(e => e.name).ToList();
                 }
+                case "coach":
+                {
+                    // GG-T539: the running lesson and its current coach mark, in design pixels (box, route, destination).
+                    var info = Coach.Describe(p => DesignPoint(p));
+                    return info ?? (object)new { active = false };
+                }
                 case "music": return new { track = app.Audio.CurrentTrack };
                 case "cues":
                 {

@@ -41,6 +41,8 @@ namespace GridGame.App
             if (unit != null && unit.IsHero)
             {
                 SelectHero(unit.Id);
+                // GG-T539: a tap mark on a hero only selects it; a move mark lifts only the hero it is for.
+                if (CoachBlocksDrag || (coachHeroId >= 0 && unit.Id != coachHeroId)) return;
                 if (!BattleEngine.CanMove(State, unit.Id))
                 {
                     if (!unit.ActedThisWindow && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
@@ -108,6 +110,16 @@ namespace GridGame.App
             lastPointerPos = local;
             lastPointerTime = Time.unscaledTime;
             var v = board.Units[dragHeroId];
+            if (CoachRail)
+            {
+                // GG-T539: a coached move rides its dotted route: the token follows the finger's nearest point on it, and
+                // the path grows only along the route.
+                var rail = OnRail(local);
+                v.Root.style.left = rail.x - BoardView.Tile / 2f;
+                v.Root.style.top = rail.y - BoardView.Tile / 2f;
+                ExtendOnRail(board.TileAt(rail));
+                return;
+            }
             // The hero follows the finger, lifted slightly so it isn't hidden under it.
             v.Root.style.left = Mathf.Clamp(local.x - BoardView.Tile / 2f, -BoardView.Tile * 0.3f, BoardView.Tile * (BattleConfig.Cols - 0.7f));
             v.Root.style.top = Mathf.Clamp(local.y - BoardView.Tile * 0.62f, -BoardView.Tile * 0.3f, BoardView.Tile * (BattleConfig.Rows - 0.7f));
@@ -167,7 +179,11 @@ namespace GridGame.App
             }
             if (dragging)
             {
-                if (DropCancels(evt.localPosition)) CancelDrag();
+                // GG-T539: during the hold-timer mark every drop is the cancel it teaches; a coached move drops only on its
+                // marked tile (anywhere else puts the hero back, no time spent).
+                if (coachCancelStep) { CancelDrag(); coachCancelDone = true; }
+                else if (CoachRail && dragTile != CoachDest) { CancelDrag(); ShowBanner("Drop it on the marked tile"); }
+                else if (DropCancels(evt.localPosition) && !CoachRail) CancelDrag();
                 else CommitDrag();
             }
             pressing = false;
@@ -301,7 +317,8 @@ namespace GridGame.App
             holdElapsed += dt;
             UpdateHold();
             // The bot's simulated drag already fits its path inside the window (HeroBot), and its coroutine owns the drop.
-            if (holdWindow > 0f && holdElapsed >= holdWindow && !simulatingDrag)
+            // A coached drag (GG-T539) is never forced: the lesson waits for the player's own drop.
+            if (holdWindow > 0f && holdElapsed >= holdWindow && !simulatingDrag && !CoachRail && !coachCancelStep)
             {
                 App.Audio.Sfx("ui.error");
                 ShowBanner("Time's up!");
@@ -502,6 +519,9 @@ namespace GridGame.App
         private void CommitDrag(BattleCommand perfectCmd = null)
         {
             if (!dragging) return;
+            // GG-T539: a coached move lands only on its marked tile (a lost pointer capture puts the hero back instead).
+            if (CoachRail && dragTile != CoachDest) { CancelDrag(); return; }
+            if (CoachRail) coachMoveDone = true;
             dragging = false;
             pressing = false;
             ClearOutcomeTags();
@@ -512,7 +532,7 @@ namespace GridGame.App
             v.Root.style.scale = new Scale(Vector2.one);
             // GG-T188: the seconds held travel with the drop; a hold that ran the window out is a forced drop that
             // ends the turn even where the hero never left its tile.
-            float held = holdWindow > 0f ? Mathf.Min(holdElapsed, holdWindow) : holdElapsed;
+            float held = HeldSeconds();
             EndHold();
             if (dragPath.Count == 0 && !BattleEngine.IsTimeUp(State, held))
             {

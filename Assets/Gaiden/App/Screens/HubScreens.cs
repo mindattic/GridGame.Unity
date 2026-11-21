@@ -1937,16 +1937,18 @@ namespace GridGame.App
                 "• Drag a hero tile by tile. Anyone in the way swaps into the tile you left.\n" +
                 "• Trap enemies in a straight line between two heroes to PINCER them. Allies next to the attackers join in.\n" +
                 "• Moving never hurts. Only pincers and spells deal damage.\n" +
-                "• Time moves only when you act. Enemies attack when their icon reaches the right end of the timeline.\n" +
-                "• Hit an enemy in the shaded zone to push its turn back.\n" +
+                "• Time moves only when you act. Icons flow left; whoever reaches the left edge acts, and speed decides who gets there first.\n" +
+                "• Pincer an enemy to push its icon back on the timeline.\n" +
                 "• Pincers fill your mana orbs. Spend them on spells; skills and items cost a turn.\n" +
-                "• Pick a slot, then a target, then Confirm. Spells charge on the timeline before they land.\n" +
+                "• Tap a hero, a slot, a target, then Cast. Spells charge on the timeline before they land.\n" +
                 "• Roles need each other: Tanks Taunt so enemies leave your casters alone, Healers mend (WIS), Mages hit hardest with spells (INT), Strikers swing Cleave and War Cry (STR).\n" +
                 "• Fallen enemies sometimes drop a pickup. Walk a hero over it before it fades.\n" +
-                "• The shield skips to the next enemy turn and guards everyone.", help);
+                "• GUARD skips to the next enemy turn and shields everyone.", help);
             if (S != null)
             {
-                var replay = Ui.Button("Replay camp tips", () => { CampTips.ResetAll(S); Done(Result.Success("Camp tips will show again")); }, "btn--small", Ui.Actions(help));
+                // GG-T539: one button brings back every lesson: the first battle's (on The Tithe Moors I), each battle system's
+                // the next time it comes up, and every Camp and vendor lesson. It also turns lessons back on after Skip tutorial.
+                var replay = Ui.Button("Replay tutorials", () => { Coach.ResetAll(S); Done(Result.Success("Every lesson will show again")); }, "btn--small", Ui.Actions(help));
                 replay.name = "replay-camp-tips";
             }
         }

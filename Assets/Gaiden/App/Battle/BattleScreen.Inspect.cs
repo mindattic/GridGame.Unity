@@ -192,11 +192,21 @@ namespace GridGame.App
             return offBoard || home;
         }
 
+        /// <summary>The seconds held that travel with a drop. A coached drag (GG-T539) never counts as running the window out:
+        /// the player may take their time reading the marks.</summary>
+        private float HeldSeconds()
+        {
+            float held = holdWindow > 0f ? Mathf.Min(holdElapsed, holdWindow) : holdElapsed;
+            if ((CoachRail || coachCancelStep) && holdWindow > 0f) held = Mathf.Min(held, holdWindow * 0.9f);
+            return held;
+        }
+
         private void CancelDrag()
         {
             if (!dragging) return;
-            float held = holdWindow > 0f ? Mathf.Min(holdElapsed, holdWindow) : holdElapsed;
-            if (BattleEngine.IsTimeUp(State, held)) { CommitDrag(); return; } // a forced drop still ends the turn (§2.0)
+            float held = HeldSeconds();
+            // A forced drop still ends the turn (§2.0), except under a coach mark (GG-T539), which never forces one.
+            if (BattleEngine.IsTimeUp(State, held) && !CoachRail && !coachCancelStep) { CommitDrag(); return; }
             dragging = false;
             pressing = false;
             board.Lines.ClearLines();

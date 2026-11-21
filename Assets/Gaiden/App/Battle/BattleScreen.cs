@@ -177,6 +177,7 @@ namespace GridGame.App
             // last ~1.6 s showing over the PostBattle screen) and they piled up battle after battle (GG-T70).
             billboard?.RemoveFromHierarchy();
             billboard = null;
+            if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel(); // GG-T539: a lesson leaves with its battle
             mintTagHost?.RemoveFromHierarchy(); // GG-T405: the globe's source tags live on the Overlay too
             mintTagHost = null;
             mintTags.Clear();
@@ -189,6 +190,8 @@ namespace GridGame.App
         private bool Colorblind => App.Settings.ColorblindMode;
         /// <summary>This battle is a Crucible run (§22.10): open-ended wave count, keep-everything retreat.</summary>
         private bool InCrucible => Crucible.IsStage(stageId);
+        /// <summary>The campaign's first stage (the tutorial battle, The Tithe Moors I).</summary>
+        private bool IsFirstStage => App.Content.CampaignStages().FirstOrDefault()?.Id == stageId;
         private bool ReduceMotion => App.Settings.ReduceMotion;
 
         protected override void Build(VisualElement root)
@@ -272,7 +275,8 @@ namespace GridGame.App
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
             SelectedHeroId = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive)?.Id ?? -1;
-            if (firstBuild && setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && App.Save.HighestClearedStage < 0 && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active) TutorialStep = 0;
+            // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
+            if (firstBuild && setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && (App.Save.HighestClearedStage < 0 || IsFirstStage) && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active) TutorialStep = 0;
             SyncAll();
             if (!firstBuild) return;
             App.StartCoroutine(Play(initial, false));
@@ -1557,14 +1561,15 @@ namespace GridGame.App
             {
                 dragTimeLeft -= dt;
                 timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}";
-                if (dragTimeLeft <= 0f) CommitDrag();
+                if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";
 
             TickBoardInspect();
-            if (TutorialActive && !LessonWaiting && CurrentLesson.DoneOnInspect && InspectCard.IsOpen) NextLesson();
+            if (TutorialActive && !LessonWaiting && CurrentLesson.DoneOnInspect && InspectCard.IsOpen && (!CoachOn || (!Coach.Active && coachPopupFor == TutorialStep))) NextLesson();
+            TickCoach();
 
-            if (!AutoPlay && CanCommand() && !pressing && TargetingSlot < 0 && HintsEnabled)
+            if (!AutoPlay && CanCommand() && !pressing && TargetingSlot < 0 && HintsEnabled && !Coach.Active)
             {
                 idle += dt;
                 if (idle > (TutorialDemoMove ? 0.8f : HintDelay) && !hintShown) ShowHint();
