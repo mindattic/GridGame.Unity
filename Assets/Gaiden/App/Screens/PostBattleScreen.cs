@@ -73,7 +73,7 @@ namespace GridGame.App
                 if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).Q<Label>("label").AddToClassList("good");
                 if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
                 foreach (var note in report.QuestProgress) Ui.MenuRow("Quest", note, null, list);
-                if (report.AutoSold > 0) Ui.MenuRow("Bag full — sold extras", $"{report.AutoSold} items", null, list);
+                if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list);
                 foreach (var g in report.GuestsJoined)
                     Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).Q<Label>("label").AddToClassList("good");
                 foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
@@ -181,7 +181,7 @@ namespace GridGame.App
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);
             if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);
-            if (report.AutoSold > 0) Ui.MenuRow("Bag full: sold extras", $"{report.AutoSold} items", null, list);
+            if (report.AutoSold > 0) Ui.MenuRow("Stack full — sold extras", SoldCount(report.AutoSold), null, list);
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
@@ -203,6 +203,9 @@ namespace GridGame.App
 
         /// <summary>Items pop in one at a time instead of dumping the whole list at once (owner direction
         /// 2026-10-11: the same tempo and pause that makes a results screen enjoyable to read).</summary>
+        /// <summary>Overflow past an item's stack cap auto-sells (US-245); "1 item", not "1 items".</summary>
+        private static string SoldCount(int n) => n == 1 ? "1 item" : $"{n} items";
+
         private void RevealItems(Dictionary<string, int> items, ContentDb c, VisualElement list)
         {
             int i = 0;
