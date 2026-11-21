@@ -3606,6 +3606,13 @@ loot or chance; the `GearWorn`, `CanBrew` and `FirstArmor` dialogue triggers are
 | 10 | The Arkgrave I | **Enchantress** (§25.3.4) | `swamp_enchantress` | A voice in the fog over the grounded arks: a Halcyon-taught binder who sets runes into armour, and who wants to know why the sleepers' light holds when hers fades. |
 | 11 | The Arkgrave II | **Caravan** (§25.12) | `swamp_caravan` | The Merchant strips axles and plating from the ark wrecks and rigs the caravan into wagons that can carry a growing camp. |
 
+*Play order (checked 2026-11-21, GG-T538):* the **#** column is the campaign index, the order of `campaign.json`'s
+`Themes` and their `Stages` (`ContentDb.CampaignStages`), which is the order a player meets and unlocks stages and what
+`HighestClearedStage` counts. The Shardfall (`desert-01..03`) is stages 7 to 9 and the Arkgrave (`swamp-01..03`) 10 to
+12, so the Crucible at The Shardfall I does come before the Arkgrave vendors. The `Chapters` list is a separate thing:
+each chapter names the stage whose arrival plays its crawl (chapter 2, "The Grounded Arks", at `swamp-01`; chapter 7, "The
+March on the Anchors", at `desert-05`, the postgame Deep Shardfall at index 35). Its numbering is not the region order.
+
 - **Not gated:** Adventure, Items, Heroes, Talk, the Bestiary and Settings are open from the start; **Quests** appear as
   each quest's own unlock stage is cleared (§22.11); the **Rested** pool (§25.18) is the launch gate itself, not a vendor,
   and runs from the first battle.
