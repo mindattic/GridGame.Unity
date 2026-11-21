@@ -5,7 +5,7 @@ using System.Text.Json;
 namespace ThumbnailStudio;
 
 /// <summary>What the studio needs from one class object in classes.json.</summary>
-public sealed record ClassInfo(string Id, string Name, string Team, bool IsBoss, Thumb? Thumbnail);
+public sealed record ClassInfo(string Id, string Name, string Team, bool IsBoss, Thumb? Thumbnail, string PortraitFile);
 
 /// <summary>
 /// Reads classes.json, and writes one class's "Thumbnail" back with a targeted byte edit so every other byte
@@ -37,7 +37,11 @@ public static class ClassesFile
                 boss = tags.EnumerateArray().Any(x => x.ValueKind == JsonValueKind.String && x.GetString() == "Boss");
             if (c.TryGetProperty("Footprint", out var fp) && fp.ValueKind == JsonValueKind.Object)
                 boss |= Int(fp, "W") > 1 || Int(fp, "H") > 1;
-            list.Add(new ClassInfo(id, name, team, boss, ReadThumb(c)));
+            // GG-T557: the portrait file the game draws (ClassDef.PortraitFile: the "Portrait" stem at "PortraitVariant").
+            string stem = c.TryGetProperty("Portrait", out var p) && p.ValueKind == JsonValueKind.String && p.GetString() is { Length: > 0 } s
+                ? s : GridGame.Core.Content.AssetNames.Stem(id);
+            int variant = c.TryGetProperty("PortraitVariant", out var pv) && pv.ValueKind == JsonValueKind.Number ? pv.GetInt32() : 0;
+            list.Add(new ClassInfo(id, name, team, boss, ReadThumb(c), GridGame.Core.Content.AssetNames.File(stem, variant)!));
         }
         return list;
     }

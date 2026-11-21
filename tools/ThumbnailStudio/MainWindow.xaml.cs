@@ -39,7 +39,7 @@ public partial class MainWindow : Window
 
         foreach (var c in ClassesFile.Load(classesPath))
         {
-            var u = new UnitEntry(c, Path.Combine(options.PortraitsDir, c.Id.ToLowerInvariant() + ".png"));
+            var u = new UnitEntry(c, Path.Combine(options.PortraitsDir, c.PortraitFile + ".png"));
             u.PropertyChanged += AnyUnit_PropertyChanged;
             units.Add(u);
         }

@@ -29,7 +29,7 @@ The four methods (research summary in the GG-T327 ticket):
 The comparison sheet shows tolerance, ai, hybrid and smoke; unmix (the weakest on the samples) runs only via --pick.
 
 Each variation is written as <name>.<method>.png beside --out, plus <name>.compare.png showing all four over dark and
-light checkerboards with a zoomed detail. --import <classId> saves the --pick'd one as Portraits/<classId>.png the way
+light checkerboards with a zoomed detail. --import <classId> (or <classId>_male) saves the --pick'd one as the class's portrait file (tools/asset_names.py) the way
 tools/import_art.py does: a 1024x1024 transparent canvas, never trimmed or shrunk (owner 2026-11-07, GG-T352: "all
 characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the assets are"; a pasted image of
 another size is fitted onto the canvas whole), with the class's "Figure" box written to classes.json; its existing
@@ -592,11 +592,11 @@ def defringe_pass(ids, threshold=0.01):
     import glob, json
     from import_art import RES, figure_box, set_class_blocks
     pdir = os.path.join(RES, "Portraits")
-    files = [os.path.join(pdir, i + ".png") for i in ids] if ids else sorted(glob.glob(os.path.join(pdir, "*.png")))
+    import asset_names as an
     classes = json.load(open(os.path.join(RES, "Content", "classes.json"), encoding="utf-8-sig"))
-    users = {}
-    for c in classes:
-        users.setdefault((c.get("Portrait") or c["Id"]).lower(), []).append(c["Id"])
+    files = ([os.path.join(pdir, i + ".png") for i in an.portrait_files_for(ids, classes)] if ids
+             else sorted(glob.glob(os.path.join(pdir, "*.png"))))
+    users = an.portrait_users(classes)  # GG-T557: file -> the classes (and figure box) that draw it
     figures = {}
     for f in files:
         name = os.path.splitext(os.path.basename(f))[0]
@@ -713,11 +713,11 @@ def dejag(ids, threshold=0.01, min_gain=0.005):
     import glob, json
     from import_art import RES, figure_box, set_class_blocks
     pdir = os.path.join(RES, "Portraits")
-    files = [os.path.join(pdir, i + ".png") for i in ids] if ids else sorted(glob.glob(os.path.join(pdir, "*.png")))
+    import asset_names as an
     classes = json.load(open(os.path.join(RES, "Content", "classes.json"), encoding="utf-8-sig"))
-    users = {}
-    for c in classes:
-        users.setdefault((c.get("Portrait") or c["Id"]).lower(), []).append(c["Id"])
+    files = ([os.path.join(pdir, i + ".png") for i in an.portrait_files_for(ids, classes)] if ids
+             else sorted(glob.glob(os.path.join(pdir, "*.png"))))
+    users = an.portrait_users(classes)  # GG-T557: file -> the classes (and figure box) that draw it
     figures = {}
     for f in files:
         name = os.path.splitext(os.path.basename(f))[0]
@@ -745,7 +745,7 @@ def main():
     ap.add_argument("--clipboard", action="store_true")
     ap.add_argument("--out", help="output folder (default beside the input, or the current folder)")
     ap.add_argument("--pick", choices=list(RUN), help="run only this method")
-    ap.add_argument("--import", dest="class_id", help="save the --pick'd result as Portraits/<classId>.png")
+    ap.add_argument("--import", dest="class_id", help="save the --pick'd result as the class's portrait (<classId>_male: its male art)")
     ap.add_argument("--score", nargs="*", metavar="PATH", help="print jaggy metrics (default: every portrait)")
     ap.add_argument("--dejag", nargs="*", metavar="ID", help="staircase step in place on these portraits (default: every "
                     "one whose staircase is >= 0.01), kept where it lowers the staircase; Figure boxes follow the alpha")
@@ -796,7 +796,7 @@ def main():
     if args.class_id:
         from import_art import save_portrait_assets
         full = save_portrait_assets(results[args.pick][0], args.class_id)
-        print(f"imported Portraits/{args.class_id}.png {full.size[0]}x{full.size[1]} (re-frame its Thumbnail in tools/ThumbnailStudio)")
+        print(f"imported {args.class_id}: {full.size[0]}x{full.size[1]} (re-frame its Thumbnail in tools/ThumbnailStudio)")
 
 
 if __name__ == "__main__":

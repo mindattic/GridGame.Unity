@@ -375,9 +375,9 @@ namespace GridGame.App
             return talking < 0 ? 0 : 1 - talking;
         }
 
-        /// <summary>True when there is portrait art for <paramref name="id"/> (Resources/Portraits/&lt;id&gt;): a class,
-        /// or an NPC speaker's own <c>Portrait</c>. Dialogue always shows it whole (GG-T225).</summary>
-        internal static bool HasPortrait(string id) => !string.IsNullOrEmpty(id) && !id.StartsWith("$") && Art.Exists("Portraits/" + id);
+        /// <summary>True when there is portrait art for class <paramref name="id"/> (a speaker's class, or the class an NPC
+        /// speaker's <c>Portrait</c> borrows, GG-T557). Dialogue always shows it whole (GG-T225).</summary>
+        internal static bool HasPortrait(string id) => !string.IsNullOrEmpty(id) && !id.StartsWith("$") && Art.HasPortrait(id);
 
         /// <summary>The line has fully typed out: offer its choices, or a Next button.</summary>
         private void LineDone()

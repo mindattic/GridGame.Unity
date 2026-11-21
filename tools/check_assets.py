@@ -64,6 +64,8 @@ def art_findings():
             clear = sum(im.getchannel("A").point(lambda v: 255 if v < 16 else 0).histogram()[255:]) / (w * h)
             if clear < 0.2:
                 hard.append(f"only {clear:.0%} of the canvas is transparent (a solid background left in?)")
+        if not asset_names.is_valid(n):
+            hard.append("not named word-word-00 (tools/asset_names.py, GG-T557)")
         out.append(("POL-H1", f"Portraits/{n}.png", not (hard or soft), "; ".join(hard + soft), bool(hard)))
         if bb:
             bw, bh = bb[2] - bb[0], bb[3] - bb[1]
@@ -127,6 +129,13 @@ def main():
     def _ids(name): return [x["Id"] for x in json.load(open(os.path.join(RESD, "Content", name), encoding="utf-8"))]
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
         missing += [f"icon:{folder}/{i} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, i + ".png"))]
+
+    # GG-T557: every class's portrait (and male art, when it names one) resolves to a file, by the one naming rule.
+    for c in json.load(open(os.path.join(RESD, "Content", "classes.json"), encoding="utf-8-sig")):
+        for male in ((False, True) if c.get("MalePortrait") else (False,)):
+            f = asset_names.portrait_file(c, male=male)
+            if not os.path.exists(os.path.join(RESD, "Portraits", f + ".png")):
+                missing.append(f"portrait:{c['Id']}{' (male)' if male else ''} -> Portraits/{f}.png")
 
     # GG-T556: attack-type hit sounds are optional slots (Audio falls back to battle-hit-00..06), so a missing one warns.
     at = json.load(open(os.path.join(RESD, "Content", "attacktypes.json"), encoding="utf-8"))

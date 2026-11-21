@@ -8,7 +8,8 @@
       "Healer"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Alchemist",
+    "Portrait": "alchemist-female",
+    "ArtSource": "Alchemist",
     "Thumbnail": {
       "Zoom": 2.4,
       "X": 0.5073,
@@ -148,7 +149,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "Assassain",
+    "Portrait": "assassin-female",
+    "ArtSource": "Assassain",
     "Thumbnail": {
       "Zoom": 2.6234,
       "X": 0.5107,
@@ -289,7 +291,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Barbarian",
+    "Portrait": "barbarian-female",
+    "ArtSource": "Barbarian",
     "Thumbnail": {
       "Zoom": 2.4366,
       "X": 0.4589,
@@ -429,7 +432,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Basher",
+    "Portrait": "basher-female",
+    "ArtSource": "Basher",
     "Thumbnail": {
       "Zoom": 2.4331,
       "X": 0.5352,
@@ -570,7 +574,8 @@
       "Flying"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Bat00",
+    "Portrait": "bat",
+    "ArtSource": "Bat00",
     "Thumbnail": {
       "Zoom": 0.8905,
       "X": 0.4922,
@@ -693,7 +698,9 @@
       "Flying"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Bat01",
+    "Portrait": "bat",
+    "PortraitVariant": 1,
+    "ArtSource": "Bat01",
     "Thumbnail": {
       "Zoom": 0.8564,
       "X": 0.5278,
@@ -816,7 +823,9 @@
       "Flying"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Bat02",
+    "Portrait": "bat",
+    "PortraitVariant": 2,
+    "ArtSource": "Bat02",
     "Thumbnail": {
       "Zoom": 0.8586,
       "X": 0.4841,
@@ -939,7 +948,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "BlackNinja",
+    "Portrait": "black-ninja-female",
+    "ArtSource": "BlackNinja",
     "Thumbnail": {
       "Zoom": 2.4262,
       "X": 0.5318,
@@ -1080,7 +1090,8 @@
       "Magic"
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
-    "Portrait": "BlackWitch",
+    "Portrait": "hexer-female",
+    "ArtSource": "BlackWitch",
     "Thumbnail": {
       "Zoom": 2.0711,
       "X": 0.4698,
@@ -1224,7 +1235,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "BlueLion",
+    "Portrait": "blue-lion-female",
+    "ArtSource": "BlueLion",
     "Thumbnail": {
       "Zoom": 1.3186,
       "X": 0.6549,
@@ -1364,7 +1376,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "BlueNinja",
+    "Portrait": "blue-ninja-female",
+    "ArtSource": "BlueNinja",
     "Thumbnail": {
       "Zoom": 3.1709,
       "X": 0.5106,
@@ -1504,7 +1517,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Bruiser",
+    "Portrait": "bruiser-female",
+    "ArtSource": "Bruiser",
     "Thumbnail": {
       "Zoom": 2.5976,
       "X": 0.5836,
@@ -1645,7 +1659,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Captain",
+    "Portrait": "captain",
+    "ArtSource": "Captain",
     "Thumbnail": {
       "Zoom": 2.3879,
       "X": 0.4937,
@@ -1771,7 +1786,8 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight00",
+    "Portrait": "ceramic-knight",
+    "ArtSource": "CeramicKnight00",
     "Thumbnail": {
       "Zoom": 2.4901,
       "X": 0.5169,
@@ -1901,7 +1917,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight01",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 1,
+    "ArtSource": "CeramicKnight01",
     "Thumbnail": {
       "Zoom": 2.5487,
       "X": 0.5152,
@@ -2031,7 +2049,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight02",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 2,
+    "ArtSource": "CeramicKnight02",
     "Thumbnail": {
       "Zoom": 2.5021,
       "X": 0.4873,
@@ -2161,7 +2181,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight03",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 3,
+    "ArtSource": "CeramicKnight03",
     "Thumbnail": {
       "Zoom": 2.5217,
       "X": 0.5137,
@@ -2291,7 +2313,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight04",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 4,
+    "ArtSource": "CeramicKnight04",
     "Thumbnail": {
       "Zoom": 2.5002,
       "X": 0.5044,
@@ -2421,7 +2445,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight05",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 5,
+    "ArtSource": "CeramicKnight05",
     "Thumbnail": {
       "Zoom": 2.4759,
       "X": 0.4939,
@@ -2551,7 +2577,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "CeramicKnight06",
+    "Portrait": "ceramic-knight",
+    "PortraitVariant": 6,
+    "ArtSource": "CeramicKnight06",
     "Thumbnail": {
       "Zoom": 2.5144,
       "X": 0.5068,
@@ -2679,7 +2707,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "ChromaNinja",
+    "Portrait": "chroma-ninja-female",
+    "ArtSource": "ChromaNinja",
     "Thumbnail": {
       "Zoom": 2.5687,
       "X": 0.5083,
@@ -2820,7 +2849,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Cleric",
+    "Portrait": "cleric-female",
+    "ArtSource": "Cleric",
     "Thumbnail": {
       "Zoom": 2.4684,
       "X": 0.4892,
@@ -2960,7 +2990,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Courier",
+    "Portrait": "courier-female",
+    "ArtSource": "Courier",
     "Thumbnail": {
       "Zoom": 2.8998,
       "X": 0.4955,
@@ -3101,7 +3132,8 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "CyberZombie00",
+    "Portrait": "cyber-zombie",
+    "ArtSource": "CyberZombie00",
     "Thumbnail": {
       "Zoom": 0.9897,
       "X": 0.4643,
@@ -3232,7 +3264,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "CyberZombie01",
+    "Portrait": "cyber-zombie",
+    "PortraitVariant": 1,
+    "ArtSource": "CyberZombie01",
     "Thumbnail": {
       "Zoom": 0.9999,
       "X": 0.5106,
@@ -3363,7 +3397,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "CyberZombie02",
+    "Portrait": "cyber-zombie",
+    "PortraitVariant": 2,
+    "ArtSource": "CyberZombie02",
     "Thumbnail": {
       "Zoom": 1.0331,
       "X": 0.5122,
@@ -3494,7 +3530,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "CyberZombie03",
+    "Portrait": "cyber-zombie",
+    "PortraitVariant": 3,
+    "ArtSource": "CyberZombie03",
     "Thumbnail": {
       "Zoom": 1.0077,
       "X": 0.4855,
@@ -3625,7 +3663,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "CyberZombie04",
+    "Portrait": "cyber-zombie",
+    "PortraitVariant": 4,
+    "ArtSource": "CyberZombie04",
     "Thumbnail": {
       "Zoom": 1.0176,
       "X": 0.4584,
@@ -3757,7 +3797,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops00",
+    "Portrait": "cyclops",
+    "ArtSource": "Cyclops00",
     "Thumbnail": {
       "Zoom": 2.4781,
       "X": 0.5328,
@@ -3893,7 +3934,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops01",
+    "Portrait": "cyclops",
+    "PortraitVariant": 1,
+    "ArtSource": "Cyclops01",
     "Thumbnail": {
       "Zoom": 2.4093,
       "X": 0.5021,
@@ -4017,7 +4060,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops02",
+    "Portrait": "cyclops",
+    "PortraitVariant": 2,
+    "ArtSource": "Cyclops02",
     "Thumbnail": {
       "Zoom": 2.4762,
       "X": 0.5302,
@@ -4140,7 +4185,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops03",
+    "Portrait": "cyclops",
+    "PortraitVariant": 3,
+    "ArtSource": "Cyclops03",
     "Thumbnail": {
       "Zoom": 2.4922,
       "X": 0.5428,
@@ -4262,7 +4309,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops04",
+    "Portrait": "cyclops",
+    "PortraitVariant": 4,
+    "ArtSource": "Cyclops04",
     "Thumbnail": {
       "Zoom": 2.4503,
       "X": 0.5222,
@@ -4384,7 +4433,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Cyclops06",
+    "Portrait": "cyclops",
+    "PortraitVariant": 5,
+    "ArtSource": "Cyclops06",
     "Thumbnail": {
       "Zoom": 2.4758,
       "X": 0.5274,
@@ -4505,7 +4556,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "DarkTemplar",
+    "Portrait": "dark-templar-female",
+    "ArtSource": "DarkTemplar",
     "Thumbnail": {
       "Zoom": 2.4296,
       "X": 0.5784,
@@ -4648,7 +4700,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Defender",
+    "Portrait": "defender-female",
+    "ArtSource": "Defender",
     "Thumbnail": {
       "Zoom": 2.3719,
       "X": 0.363,
@@ -4793,7 +4846,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "DemonLord",
+    "Portrait": "demon-lord",
+    "ArtSource": "DemonLord",
     "Thumbnail": {
       "Zoom": 2.4113,
       "X": 0.5436,
@@ -4917,7 +4971,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Dervish",
+    "Portrait": "dervish-female",
+    "ArtSource": "Dervish",
     "Thumbnail": {
       "Zoom": 2.3764,
       "X": 0.5319,
@@ -5057,7 +5112,8 @@
       "Healer"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Doctor",
+    "Portrait": "doctor-female",
+    "ArtSource": "Doctor",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -5196,7 +5252,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
-    "Portrait": "Drifter",
+    "Portrait": "drifter-female",
+    "ArtSource": "Drifter",
     "Thumbnail": {
       "Zoom": 2.3983,
       "X": 0.5441,
@@ -5340,7 +5397,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Duelist",
+    "Portrait": "duelist-female",
+    "ArtSource": "Duelist",
     "Thumbnail": {
       "Zoom": 2.4675,
       "X": 0.5466,
@@ -5481,7 +5539,8 @@
       "Humanoid"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "Engineer",
+    "Portrait": "engineer-female",
+    "ArtSource": "Engineer",
     "Thumbnail": {
       "Zoom": 2.3905,
       "X": 0.531,
@@ -5621,7 +5680,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Fencer",
+    "Portrait": "fencer-female",
+    "ArtSource": "Fencer",
     "Thumbnail": {
       "Zoom": 2.4288,
       "X": 0.4933,
@@ -5762,7 +5822,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Fighter",
+    "Portrait": "fighter-female",
+    "ArtSource": "Fighter",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4664,
@@ -5903,7 +5964,8 @@
       "Flying"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "FlyingMonkey",
+    "Portrait": "flying-monkey",
+    "ArtSource": "FlyingMonkey",
     "Thumbnail": {
       "Zoom": 0.9864,
       "X": 0.4871,
@@ -6028,7 +6090,8 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Frog00",
+    "Portrait": "frog",
+    "ArtSource": "Frog00",
     "Thumbnail": {
       "Zoom": 0.9615,
       "X": 0.5,
@@ -6153,7 +6216,9 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Frog01",
+    "Portrait": "frog",
+    "PortraitVariant": 1,
+    "ArtSource": "Frog01",
     "Thumbnail": {
       "Zoom": 0.9615,
       "X": 0.5,
@@ -6277,7 +6342,9 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Frog02",
+    "Portrait": "frog",
+    "PortraitVariant": 2,
+    "ArtSource": "Frog02",
     "Thumbnail": {
       "Zoom": 0.9615,
       "X": 0.5,
@@ -6402,7 +6469,9 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Frog03",
+    "Portrait": "frog",
+    "PortraitVariant": 3,
+    "ArtSource": "Frog03",
     "Thumbnail": {
       "Zoom": 0.9615,
       "X": 0.5,
@@ -6526,7 +6595,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger00",
+    "Portrait": "ganger",
+    "ArtSource": "Ganger00",
     "Thumbnail": {
       "Zoom": 2.4365,
       "X": 0.5559,
@@ -6652,7 +6722,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger01",
+    "Portrait": "ganger",
+    "PortraitVariant": 1,
+    "ArtSource": "Ganger01",
     "Thumbnail": {
       "Zoom": 2.4342,
       "X": 0.5214,
@@ -6777,7 +6849,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger02",
+    "Portrait": "ganger",
+    "PortraitVariant": 2,
+    "ArtSource": "Ganger02",
     "Thumbnail": {
       "Zoom": 2.4745,
       "X": 0.4689,
@@ -6903,7 +6977,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger03",
+    "Portrait": "ganger",
+    "PortraitVariant": 3,
+    "ArtSource": "Ganger03",
     "Thumbnail": {
       "Zoom": 2.4382,
       "X": 0.5595,
@@ -7028,7 +7104,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger04",
+    "Portrait": "ganger",
+    "PortraitVariant": 4,
+    "ArtSource": "Ganger04",
     "Thumbnail": {
       "Zoom": 2.4375,
       "X": 0.5544,
@@ -7154,7 +7232,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger05",
+    "Portrait": "ganger",
+    "PortraitVariant": 5,
+    "ArtSource": "Ganger05",
     "Thumbnail": {
       "Zoom": 2.4167,
       "X": 0.5192,
@@ -7279,7 +7359,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ganger06",
+    "Portrait": "ganger",
+    "PortraitVariant": 6,
+    "ArtSource": "Ganger06",
     "Thumbnail": {
       "Zoom": 2.4271,
       "X": 0.5201,
@@ -7404,7 +7486,8 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Ghost",
+    "Portrait": "ghost",
+    "ArtSource": "Ghost",
     "Thumbnail": {
       "Zoom": 1.0459,
       "X": 0.4705,
@@ -7530,7 +7613,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "GoblinThug00",
+    "Portrait": "goblin-thug",
+    "ArtSource": "GoblinThug00",
     "Thumbnail": {
       "Zoom": 2.374,
       "X": 0.4978,
@@ -7652,7 +7736,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "GreenNinja",
+    "Portrait": "green-ninja-female",
+    "ArtSource": "GreenNinja",
     "Thumbnail": {
       "Zoom": 2.4326,
       "X": 0.5112,
@@ -7795,7 +7880,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Hag00",
+    "Portrait": "hag",
+    "ArtSource": "Hag00",
     "Thumbnail": {
       "Zoom": 2.4284,
       "X": 0.5043,
@@ -7920,7 +8006,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Hag01",
+    "Portrait": "hag",
+    "PortraitVariant": 1,
+    "ArtSource": "Hag01",
     "Thumbnail": {
       "Zoom": 2.536,
       "X": 0.4579,
@@ -8044,7 +8132,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Hag02",
+    "Portrait": "hag",
+    "PortraitVariant": 2,
+    "ArtSource": "Hag02",
     "Thumbnail": {
       "Zoom": 2.4406,
       "X": 0.5416,
@@ -8167,7 +8257,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Hag03",
+    "Portrait": "hag",
+    "PortraitVariant": 3,
+    "ArtSource": "Hag03",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -8289,7 +8381,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Harbinger",
+    "Portrait": "harbinger-female",
+    "ArtSource": "Harbinger",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.6336,
@@ -8436,7 +8529,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "IceMauler",
+    "Portrait": "ice-mauler",
+    "ArtSource": "IceMauler",
     "Thumbnail": {
       "Zoom": 2.5425,
       "X": 0.5697,
@@ -8562,7 +8656,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "JadeKnight",
+    "Portrait": "jade-knight-female",
+    "ArtSource": "JadeKnight",
     "Thumbnail": {
       "Zoom": 2.4499,
       "X": 0.4865,
@@ -8705,7 +8800,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Knight",
+    "Portrait": "knight-female",
+    "ArtSource": "Knight",
     "Thumbnail": {
       "Zoom": 2.5745,
       "X": 0.6265,
@@ -8848,7 +8944,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Lancer",
+    "Portrait": "lancer-female",
+    "ArtSource": "Lancer",
     "Thumbnail": {
       "Zoom": 2.7513,
       "X": 0.6709,
@@ -8990,7 +9087,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Lurker00",
+    "Portrait": "lurker",
+    "ArtSource": "Lurker00",
     "Thumbnail": {
       "Zoom": 2.5217,
       "X": 0.4336,
@@ -9115,7 +9213,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Lurker01",
+    "Portrait": "lurker",
+    "PortraitVariant": 1,
+    "ArtSource": "Lurker01",
     "Thumbnail": {
       "Zoom": 2.4896,
       "X": 0.4144,
@@ -9240,7 +9340,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Lurker02",
+    "Portrait": "lurker",
+    "PortraitVariant": 2,
+    "ArtSource": "Lurker02",
     "Thumbnail": {
       "Zoom": 2.5683,
       "X": 0.6331,
@@ -9364,7 +9466,8 @@
       "Humanoid"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "Machinist",
+    "Portrait": "machinist-female",
+    "ArtSource": "Machinist",
     "Thumbnail": {
       "Zoom": 2.4402,
       "X": 0.5137,
@@ -9504,7 +9607,8 @@
       "Sentient"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Mannequin",
+    "Portrait": "mannequin",
+    "ArtSource": "Mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -9626,7 +9730,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "MarshShambler00",
+    "Portrait": "marsh-shambler",
+    "ArtSource": "MarshShambler00",
     "Thumbnail": {
       "Zoom": 2.4587,
       "X": 0.5433,
@@ -9751,7 +9856,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "MarshShambler01",
+    "Portrait": "marsh-shambler",
+    "PortraitVariant": 1,
+    "ArtSource": "MarshShambler01",
     "Thumbnail": {
       "Zoom": 2.4982,
       "X": 0.5062,
@@ -9876,7 +9983,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "MarshShambler03",
+    "Portrait": "marsh-shambler",
+    "PortraitVariant": 2,
+    "ArtSource": "MarshShambler03",
     "Thumbnail": {
       "Zoom": 2.4096,
       "X": 0.5433,
@@ -10000,7 +10109,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "MartialArtist",
+    "Portrait": "martial-artist-female",
+    "ArtSource": "MartialArtist",
     "Thumbnail": {
       "Zoom": 2.3812,
       "X": 0.525,
@@ -10142,7 +10252,8 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "MechaArmor00",
+    "Portrait": "mecha-armor",
+    "ArtSource": "MechaArmor00",
     "Thumbnail": {
       "Zoom": 2.5136,
       "X": 0.6256,
@@ -10267,7 +10378,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "MechaArmor01",
+    "Portrait": "mecha-armor",
+    "PortraitVariant": 1,
+    "ArtSource": "MechaArmor01",
     "Thumbnail": {
       "Zoom": 2.5073,
       "X": 0.6336,
@@ -10392,7 +10505,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "MechaArmor02",
+    "Portrait": "mecha-armor",
+    "PortraitVariant": 2,
+    "ArtSource": "MechaArmor02",
     "Thumbnail": {
       "Zoom": 2.5098,
       "X": 0.6239,
@@ -10517,7 +10632,8 @@
       "Healer"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Monk",
+    "Portrait": "monk-female",
+    "ArtSource": "Monk",
     "Thumbnail": {
       "Zoom": 2.3906,
       "X": 0.5076,
@@ -10658,7 +10774,8 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "MountainTroll",
+    "Portrait": "mountain-troll",
+    "ArtSource": "MountainTroll",
     "Thumbnail": {
       "Zoom": 2.4401,
       "X": 0.4874,
@@ -10781,7 +10898,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Myrmidon",
+    "Portrait": "myrmidon-female",
+    "ArtSource": "Myrmidon",
     "Thumbnail": {
       "Zoom": 2.4031,
       "X": 0.474,
@@ -10926,7 +11044,8 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Naga00",
+    "Portrait": "naga",
+    "ArtSource": "Naga00",
     "Thumbnail": {
       "Zoom": 1.03,
       "X": 0.5328,
@@ -11051,7 +11170,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "NightHunter",
+    "Portrait": "night-hunter",
+    "ArtSource": "NightHunter",
     "Thumbnail": {
       "Zoom": 2.4854,
       "X": 0.5197,
@@ -11192,7 +11312,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Odachi",
+    "Portrait": "odachi-female",
+    "ArtSource": "Odachi",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -11334,7 +11455,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Oni00",
+    "Portrait": "oni",
+    "ArtSource": "Oni00",
     "Thumbnail": {
       "Zoom": 2.4701,
       "X": 0.5028,
@@ -11458,7 +11580,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Oni01",
+    "Portrait": "oni",
+    "PortraitVariant": 1,
+    "ArtSource": "Oni01",
     "Thumbnail": {
       "Zoom": 2.3959,
       "X": 0.5141,
@@ -11582,7 +11706,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Oni02",
+    "Portrait": "oni",
+    "PortraitVariant": 2,
+    "ArtSource": "Oni02",
     "Thumbnail": {
       "Zoom": 2.5233,
       "X": 0.5046,
@@ -11705,7 +11831,8 @@
       "Humanoid"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "Operative",
+    "Portrait": "operative-female",
+    "ArtSource": "Operative",
     "Thumbnail": {
       "Zoom": 2.7396,
       "X": 0.4958,
@@ -11849,7 +11976,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Paladin",
+    "Portrait": "paladin-female",
+    "ArtSource": "Paladin",
     "Thumbnail": {
       "Zoom": 2.4034,
       "X": 0.4731,
@@ -11991,7 +12119,8 @@
       "Humanoid"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "PandaGirl",
+    "Portrait": "panda-keeper-female",
+    "ArtSource": "PandaGirl",
     "Thumbnail": {
       "Zoom": 2.4519,
       "X": 0.5024,
@@ -12133,7 +12262,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Phantom",
+    "Portrait": "phantom",
+    "ArtSource": "Phantom",
     "Thumbnail": {
       "Zoom": 2.3848,
       "X": 0.5361,
@@ -12257,7 +12387,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "PrizeFighter",
+    "Portrait": "prize-fighter-female",
+    "ArtSource": "PrizeFighter",
     "Thumbnail": {
       "Zoom": 2.3834,
       "X": 0.5107,
@@ -12397,7 +12528,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Pugilist",
+    "Portrait": "pugilist-female",
+    "ArtSource": "Pugilist",
     "Thumbnail": {
       "Zoom": 2.4355,
       "X": 0.5048,
@@ -12538,7 +12670,8 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "PurplePrototype00",
+    "Portrait": "purple-prototype",
+    "ArtSource": "PurplePrototype00",
     "Thumbnail": {
       "Zoom": 2.4884,
       "X": 0.5097,
@@ -12660,7 +12793,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "PurplePrototype01",
+    "Portrait": "purple-prototype",
+    "PortraitVariant": 1,
+    "ArtSource": "PurplePrototype01",
     "Thumbnail": {
       "Zoom": 2.3993,
       "X": 0.5456,
@@ -12782,7 +12917,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "PurplePrototype02",
+    "Portrait": "purple-prototype",
+    "PortraitVariant": 2,
+    "ArtSource": "PurplePrototype02",
     "Thumbnail": {
       "Zoom": 2.4123,
       "X": 0.5399,
@@ -12904,7 +13041,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "PurplePrototype03",
+    "Portrait": "purple-prototype",
+    "PortraitVariant": 3,
+    "ArtSource": "PurplePrototype03",
     "Thumbnail": {
       "Zoom": 2.4803,
       "X": 0.4946,
@@ -13026,7 +13165,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "PurplePrototype04",
+    "Portrait": "purple-prototype",
+    "PortraitVariant": 4,
+    "ArtSource": "PurplePrototype04",
     "Thumbnail": {
       "Zoom": 2.3801,
       "X": 0.5974,
@@ -13147,7 +13288,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Raider",
+    "Portrait": "raider",
+    "ArtSource": "Raider",
     "Thumbnail": {
       "Zoom": 2.468,
       "X": 0.5534,
@@ -13289,7 +13431,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Reaper",
+    "Portrait": "reaper",
+    "ArtSource": "Reaper",
     "Thumbnail": {
       "Zoom": 2.444,
       "X": 0.4372,
@@ -13412,7 +13555,8 @@
       "Magic"
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
-    "Portrait": "RedMage",
+    "Portrait": "red-mage-female",
+    "ArtSource": "RedMage",
     "Thumbnail": {
       "Zoom": 2.3831,
       "X": 0.4928,
@@ -13556,7 +13700,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "RedNinja",
+    "Portrait": "red-ninja-female",
+    "ArtSource": "RedNinja",
     "Thumbnail": {
       "Zoom": 2.4789,
       "X": 0.5173,
@@ -13697,7 +13842,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Ripper",
+    "Portrait": "ripper-female",
+    "ArtSource": "Ripper",
     "Thumbnail": {
       "Zoom": 2.4757,
       "X": 0.396,
@@ -13839,7 +13985,8 @@
       "Magic"
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
-    "Portrait": "Ritualist",
+    "Portrait": "ritualist-female",
+    "ArtSource": "Ritualist",
     "Thumbnail": {
       "Zoom": 2.4363,
       "X": 0.4771,
@@ -13983,7 +14130,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Ronin",
+    "Portrait": "ronin-female",
+    "ArtSource": "Ronin",
     "Thumbnail": {
       "Zoom": 2.457,
       "X": 0.5058,
@@ -14126,7 +14274,8 @@
       "Healer"
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
-    "Portrait": "Sage",
+    "Portrait": "sage-female",
+    "ArtSource": "Sage",
     "Thumbnail": {
       "Zoom": 2.3729,
       "X": 0.4978,
@@ -14267,7 +14416,8 @@
     "Team": "Enemy",
     "Tags": [],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "SandMaw",
+    "Portrait": "sand-maw",
+    "ArtSource": "SandMaw",
     "Thumbnail": {
       "Zoom": 0.9649,
       "X": 0.4994,
@@ -14390,7 +14540,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Scorpion",
+    "Portrait": "scorpion",
+    "ArtSource": "Scorpion",
     "Thumbnail": {
       "Zoom": 3.5785,
       "X": 0.5401,
@@ -14515,7 +14666,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Sellsword",
+    "Portrait": "sellsword-female",
+    "ArtSource": "Sellsword",
     "Thumbnail": {
       "Zoom": 2.4793,
       "X": 0.4977,
@@ -14656,7 +14808,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "ShieldMaiden",
+    "Portrait": "shieldguard-female",
+    "ArtSource": "ShieldMaiden",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.6227,
@@ -14799,7 +14952,8 @@
       "Healer"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Sister",
+    "Portrait": "acolyte-female",
+    "ArtSource": "Sister",
     "Thumbnail": {
       "Zoom": 2.4223,
       "X": 0.5193,
@@ -14940,7 +15094,8 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Skelepede00",
+    "Portrait": "skelepede",
+    "ArtSource": "Skelepede00",
     "Thumbnail": {
       "Zoom": 0.9731,
       "X": 0.4958,
@@ -15066,7 +15221,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Skelepede01",
+    "Portrait": "skelepede",
+    "PortraitVariant": 1,
+    "ArtSource": "Skelepede01",
     "Thumbnail": {
       "Zoom": 0.9896,
       "X": 0.5138,
@@ -15192,7 +15349,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Skelepede02",
+    "Portrait": "skelepede",
+    "PortraitVariant": 2,
+    "ArtSource": "Skelepede02",
     "Thumbnail": {
       "Zoom": 0.9929,
       "X": 0.5037,
@@ -15317,7 +15476,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "Slasher",
+    "Portrait": "slasher-female",
+    "ArtSource": "Slasher",
     "Thumbnail": {
       "Zoom": 2.6379,
       "X": 0.48,
@@ -15457,7 +15617,8 @@
     "Team": "Enemy",
     "Tags": [],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Slime00",
+    "Portrait": "slime",
+    "ArtSource": "Slime00",
     "Thumbnail": {
       "Zoom": 2.4396,
       "X": 0.5643,
@@ -15578,7 +15739,9 @@
     "Team": "Enemy",
     "Tags": [],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Slime01",
+    "Portrait": "slime",
+    "PortraitVariant": 1,
+    "ArtSource": "Slime01",
     "Thumbnail": {
       "Zoom": 2.0994,
       "X": 0.5389,
@@ -15701,7 +15864,9 @@
     "Team": "Enemy",
     "Tags": [],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Slime02",
+    "Portrait": "slime",
+    "PortraitVariant": 2,
+    "ArtSource": "Slime02",
     "Thumbnail": {
       "Zoom": 2.8506,
       "X": 0.5397,
@@ -15824,7 +15989,9 @@
     "Team": "Enemy",
     "Tags": [],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Slime03",
+    "Portrait": "slime",
+    "PortraitVariant": 3,
+    "ArtSource": "Slime03",
     "Thumbnail": {
       "Zoom": 2.7249,
       "X": 0.5565,
@@ -15948,7 +16115,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Soldier00",
+    "Portrait": "soldier",
+    "ArtSource": "Soldier00",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.4727,
@@ -16072,7 +16240,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Soldier01",
+    "Portrait": "soldier",
+    "PortraitVariant": 1,
+    "ArtSource": "Soldier01",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.5477,
@@ -16196,7 +16366,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Soldier02",
+    "Portrait": "soldier",
+    "PortraitVariant": 2,
+    "ArtSource": "Soldier02",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.5118,
@@ -16320,7 +16492,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Soldier03",
+    "Portrait": "soldier",
+    "PortraitVariant": 3,
+    "ArtSource": "Soldier03",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.5024,
@@ -16443,7 +16617,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "Speedster",
+    "Portrait": "speedster-female",
+    "ArtSource": "Speedster",
     "Thumbnail": {
       "Zoom": 2.5878,
       "X": 0.5368,
@@ -16584,7 +16759,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SteppinRazor00",
+    "Portrait": "steppin-razor",
+    "ArtSource": "SteppinRazor00",
     "Thumbnail": {
       "Zoom": 2.53,
       "X": 0.5371,
@@ -16706,7 +16882,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SteppinRazor01",
+    "Portrait": "steppin-razor",
+    "PortraitVariant": 1,
+    "ArtSource": "SteppinRazor01",
     "Thumbnail": {
       "Zoom": 2.4762,
       "X": 0.6225,
@@ -16828,7 +17006,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SteppinRazor02",
+    "Portrait": "steppin-razor",
+    "PortraitVariant": 2,
+    "ArtSource": "SteppinRazor02",
     "Thumbnail": {
       "Zoom": 2.5018,
       "X": 0.391,
@@ -16950,7 +17130,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SteppinRazor04",
+    "Portrait": "steppin-razor",
+    "PortraitVariant": 3,
+    "ArtSource": "SteppinRazor04",
     "Thumbnail": {
       "Zoom": 2.4871,
       "X": 0.6008,
@@ -17072,7 +17254,9 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SteppinRazor05",
+    "Portrait": "steppin-razor",
+    "PortraitVariant": 4,
+    "ArtSource": "SteppinRazor05",
     "Thumbnail": {
       "Zoom": 2.48,
       "X": 0.6078,
@@ -17193,7 +17377,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "StreetFighter",
+    "Portrait": "street-fighter-female",
+    "ArtSource": "StreetFighter",
     "Thumbnail": {
       "Zoom": 2.4732,
       "X": 0.505,
@@ -17333,7 +17518,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "Striker",
+    "Portrait": "striker-female",
+    "ArtSource": "Striker",
     "Thumbnail": {
       "Zoom": 2.587,
       "X": 0.5053,
@@ -17475,7 +17661,8 @@
       "Sentient"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "SwampMistress00",
+    "Portrait": "swamp-mistress",
+    "ArtSource": "SwampMistress00",
     "Thumbnail": {
       "Zoom": 2.4311,
       "X": 0.5148,
@@ -17598,7 +17785,8 @@
       "Humanoid"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
-    "Portrait": "SwordMaster",
+    "Portrait": "sword-master-female",
+    "ArtSource": "SwordMaster",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.5524,
@@ -17739,7 +17927,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Tank",
+    "Portrait": "tank-female",
+    "ArtSource": "Tank",
     "Thumbnail": {
       "Zoom": 2.5209,
       "X": 0.5743,
@@ -17883,7 +18072,8 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "TechGremlin00",
+    "Portrait": "tech-gremlin",
+    "ArtSource": "TechGremlin00",
     "Thumbnail": {
       "Zoom": 2.6795,
       "X": 0.4595,
@@ -18006,7 +18196,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "TechGremlin01",
+    "Portrait": "tech-gremlin",
+    "PortraitVariant": 1,
+    "ArtSource": "TechGremlin01",
     "Thumbnail": {
       "Zoom": 2.6767,
       "X": 0.4648,
@@ -18128,7 +18320,9 @@
       "Sentient"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "TechGremlin02",
+    "Portrait": "tech-gremlin",
+    "PortraitVariant": 2,
+    "ArtSource": "TechGremlin02",
     "Thumbnail": {
       "Zoom": 2.65,
       "X": 0.4699,
@@ -18250,7 +18444,8 @@
       "Humanoid"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
-    "Portrait": "Technician",
+    "Portrait": "technician-female",
+    "ArtSource": "Technician",
     "Thumbnail": {
       "Zoom": 2.704,
       "X": 0.5151,
@@ -18390,7 +18585,8 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar00",
+    "Portrait": "templar",
+    "ArtSource": "Templar00",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -18515,7 +18711,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar01",
+    "Portrait": "templar",
+    "PortraitVariant": 1,
+    "ArtSource": "Templar01",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -18639,7 +18837,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar02",
+    "Portrait": "templar",
+    "PortraitVariant": 2,
+    "ArtSource": "Templar02",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -18764,7 +18964,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar03",
+    "Portrait": "templar",
+    "PortraitVariant": 3,
+    "ArtSource": "Templar03",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -18888,7 +19090,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar04",
+    "Portrait": "templar",
+    "PortraitVariant": 4,
+    "ArtSource": "Templar04",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -19013,7 +19217,9 @@
       "Sentient"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "Templar05",
+    "Portrait": "templar",
+    "PortraitVariant": 5,
+    "ArtSource": "Templar05",
     "Thumbnail": {
       "Zoom": 2.3788,
       "X": 0.4977,
@@ -19136,7 +19342,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "Thief",
+    "Portrait": "thief-female",
+    "ArtSource": "Thief",
     "Thumbnail": {
       "Zoom": 2.4296,
       "X": 0.5383,
@@ -19278,7 +19485,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "Tinkerer",
+    "Portrait": "tinkerer-female",
+    "ArtSource": "Tinkerer",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -19418,7 +19626,8 @@
       "Sentient"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Toad00",
+    "Portrait": "toad",
+    "ArtSource": "Toad00",
     "Thumbnail": {
       "Zoom": 0.9615,
       "X": 0.5,
@@ -19544,7 +19753,8 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem00",
+    "Portrait": "tree-golem",
+    "ArtSource": "TreeGolem00",
     "Thumbnail": {
       "Zoom": 0.963,
       "X": 0.5005,
@@ -19672,7 +19882,9 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem01",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 1,
+    "ArtSource": "TreeGolem01",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -19800,7 +20012,9 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem02",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 2,
+    "ArtSource": "TreeGolem02",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -19928,7 +20142,9 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem03",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 3,
+    "ArtSource": "TreeGolem03",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -20056,7 +20272,9 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem04",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 4,
+    "ArtSource": "TreeGolem04",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -20184,7 +20402,9 @@
       "Mechanical"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "TreeGolem06",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 5,
+    "ArtSource": "TreeGolem06",
     "Thumbnail": {
       "Zoom": 0.9676,
       "X": 0.5075,
@@ -20312,7 +20532,8 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Undead00",
+    "Portrait": "undead",
+    "ArtSource": "Undead00",
     "Thumbnail": {
       "Zoom": 0.9611,
       "X": 0.4999,
@@ -20436,7 +20657,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Undead01",
+    "Portrait": "undead",
+    "PortraitVariant": 1,
+    "ArtSource": "Undead01",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -20560,7 +20783,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Undead02",
+    "Portrait": "undead",
+    "PortraitVariant": 2,
+    "ArtSource": "Undead02",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -20684,7 +20909,9 @@
       "Undead"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Undead04",
+    "Portrait": "undead",
+    "PortraitVariant": 3,
+    "ArtSource": "Undead04",
     "Thumbnail": {
       "Zoom": 0.9808,
       "X": 0.4899,
@@ -20811,7 +21038,8 @@
       "Sentient"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
-    "Portrait": "Vampire",
+    "Portrait": "vampire-female",
+    "ArtSource": "Vampire",
     "Thumbnail": {
       "Zoom": 2.4924,
       "X": 0.4878,
@@ -20954,7 +21182,8 @@
       "Flying"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Vulture",
+    "Portrait": "vulture",
+    "ArtSource": "Vulture",
     "Thumbnail": {
       "Zoom": 0.9614,
       "X": 0.4998,
@@ -21076,7 +21305,8 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
-    "Portrait": "WarChief",
+    "Portrait": "war-chief-female",
+    "ArtSource": "WarChief",
     "Thumbnail": {
       "Zoom": 2.5045,
       "X": 0.4273,
@@ -21220,7 +21450,8 @@
       "Humanoid"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Werewolf00",
+    "Portrait": "werewolf",
+    "ArtSource": "Werewolf00",
     "Thumbnail": {
       "Zoom": 2.3775,
       "X": 0.4979,
@@ -21348,7 +21579,8 @@
       "Healer"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "WhiteNinja",
+    "Portrait": "white-ninja-female",
+    "ArtSource": "WhiteNinja",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
@@ -21492,7 +21724,8 @@
       "Healer"
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
-    "Portrait": "WhiteWitch",
+    "Portrait": "lightweaver-female",
+    "ArtSource": "WhiteWitch",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4633,
@@ -21633,7 +21866,8 @@
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
-    "Portrait": "WildChild",
+    "Portrait": "wild-child-female",
+    "ArtSource": "WildChild",
     "Thumbnail": {
       "Zoom": 2.5115,
       "X": 0.5016,
@@ -21773,7 +22007,8 @@
       "Beast"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Wolf00",
+    "Portrait": "wolf",
+    "ArtSource": "Wolf00",
     "Thumbnail": {
       "Zoom": 1.007,
       "X": 0.553,
@@ -21900,7 +22135,9 @@
       "Beast"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Wolf01",
+    "Portrait": "wolf",
+    "PortraitVariant": 1,
+    "ArtSource": "Wolf01",
     "Thumbnail": {
       "Zoom": 1.07,
       "X": 0.4994,
@@ -22027,7 +22264,9 @@
       "Beast"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Wolf02",
+    "Portrait": "wolf",
+    "PortraitVariant": 2,
+    "ArtSource": "Wolf02",
     "Thumbnail": {
       "Zoom": 1.0169,
       "X": 0.5194,
@@ -22154,7 +22393,9 @@
       "Beast"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Wolf03",
+    "Portrait": "wolf",
+    "PortraitVariant": 3,
+    "ArtSource": "Wolf03",
     "Thumbnail": {
       "Zoom": 1.0926,
       "X": 0.4975,
@@ -22281,7 +22522,8 @@
       "Humanoid"
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
-    "Portrait": "YellowNinja",
+    "Portrait": "yellow-ninja-female",
+    "ArtSource": "YellowNinja",
     "Thumbnail": {
       "Zoom": 2.4716,
       "X": 0.5316,
@@ -22426,7 +22668,8 @@
       "Humanoid"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
-    "Portrait": "Yeti",
+    "Portrait": "yeti",
+    "ArtSource": "Yeti",
     "Thumbnail": {
       "Zoom": 2.4082,
       "X": 0.542,
@@ -22553,6 +22796,7 @@
     ],
     "Card": "A cracked grave marker. Break it before the dead climb back out.",
     "Portrait": "gravestone",
+    "ArtSource": "gravestone",
     "Thumbnail": {
       "Zoom": 1.9317,
       "X": 0.502,
@@ -22687,7 +22931,8 @@
       "Construct"
     ],
     "Card": "A heap of rattling bones that wants to stand up again. Scatter it.",
-    "Portrait": "bonepile",
+    "Portrait": "bone-pile",
+    "ArtSource": "bonepile",
     "Thumbnail": {
       "Zoom": 2.7024,
       "X": 0.5004,
@@ -22822,6 +23067,7 @@
     ],
     "Card": "A fallen body in the way. Clear it with a pincer or wait for it to rot.",
     "Portrait": "corpse",
+    "ArtSource": "corpse",
     "Thumbnail": {
       "Zoom": 2.7024,
       "X": 0.5004,
@@ -22956,7 +23202,8 @@
       "Aquatic"
     ],
     "Card": "A leathery egg, still warm. Best to break it before it hatches.",
-    "Portrait": "naga00",
+    "Portrait": "naga",
+    "ArtSource": "naga00",
     "Thumbnail": {
       "Zoom": 1.03,
       "X": 0.5328,
@@ -23036,7 +23283,8 @@
       "Humanoid"
     ],
     "Card": "Ranged precision. Converts [patience] into a [piercing shot] nothing else in the party can match.",
-    "Portrait": "hexsniper",
+    "Portrait": "hex-sniper-female",
+    "ArtSource": "hexsniper",
     "Thumbnail": {
       "Zoom": 3.8854,
       "X": 0.5027,
@@ -23178,7 +23426,8 @@
       "Humanoid"
     ],
     "Card": "Ranged control. Converts [distance] into [crowd control] that keeps the front line clean.",
-    "Portrait": "hexwarden",
+    "Portrait": "hex-warden",
+    "ArtSource": "hexwarden",
     "Thumbnail": {
       "Zoom": 3.8278,
       "X": 0.4695,
@@ -23318,7 +23567,8 @@
       "Humanoid"
     ],
     "Card": "Ranged skirmish. Converts [footwork] into [shots] that keep a whole lane at arm's length.",
-    "Portrait": "hexstalker",
+    "Portrait": "hex-stalker",
+    "ArtSource": "hexstalker",
     "Thumbnail": {
       "Zoom": 3.8248,
       "X": 0.5331,
@@ -23456,6 +23706,7 @@
     "Tags": [ "Humanoid", "Caster", "Sentient" ],
     "Card": "Charges [Temporal Drag]: the party loses [tempo] and every foe acts sooner. [Interrupt] the charge, [cleanse] Slowed or [out-haste] it. Rewinds once when badly hurt.",
     "Portrait": "chronomancer",
+    "ArtSource": "chronomancer",
     "Thumbnail": {
       "Zoom": 2.6474,
       "X": 0.4461,
@@ -23504,6 +23755,7 @@
     "Tags": [ "Humanoid", "Boss", "Caster", "Sentient" ],
     "Card": "Charges Tithe Draught, a [drain] on every hero that heals it for each one it touches. [Interrupt] the charge. At half HP the organ pours its reservoir into it. While any of its Choir still stands, it rises once.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -23552,7 +23804,8 @@
       "Humanoid"
     ],
     "Card": "Wild monsters turn [Tamed] and fight for you.",
-    "Portrait": "WildChild",
+    "Portrait": "wild-child-female",
+    "ArtSource": "WildChild",
     "Thumbnail": {
       "Zoom": 2.5115,
       "X": 0.5016,
@@ -23687,7 +23940,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer]. Free, strong heals paid in their own HP ([Essence]).",
-    "Portrait": "herald",
+    "Portrait": "herald-female",
+    "ArtSource": "herald",
     "Thumbnail": {
       "Zoom": 2.844,
       "X": 0.4883,
@@ -23828,7 +24082,8 @@
       "Humanoid"
     ],
     "Card": "Backline [healer]. Mends an ally and pours an orb into the bank.",
-    "Portrait": "aetherist",
+    "Portrait": "aetherist-female",
+    "ArtSource": "aetherist",
     "Thumbnail": {
       "Zoom": 2.816,
       "X": 0.488,
@@ -23968,7 +24223,8 @@
       "Humanoid"
     ],
     "Card": "[Countermarch]: a foe's turn goes to the back of the line.",
-    "Portrait": "tactician",
+    "Portrait": "tactician-female",
+    "ArtSource": "tactician",
     "Thumbnail": {
       "Zoom": 2.69,
       "X": 0.4917,
@@ -24109,7 +24365,8 @@
       "Sentient"
     ],
     "Card": "Swift [Flanker]: strikes, then darts a tile away. Its talons can [Slow] a hero, costing the party [tempo]. [Pincer] it before it lifts off, or [cleanse] the Slow.",
-    "Portrait": "harpy01",
+    "Portrait": "harpy-raider",
+    "ArtSource": "harpy01",
     "Thumbnail": {
       "Zoom": 2.7156,
       "X": 0.4023,
@@ -24234,7 +24491,8 @@
       "Sentient"
     ],
     "Card": "Charges a [Gale Shriek] that blows heroes apart and breaks your [pincer] lines. [Interrupt] the charge or keep the party spread out. Hastens the harpy it backs as a [Supporter].",
-    "Portrait": "harpy02",
+    "Portrait": "harpy-shrieker",
+    "ArtSource": "harpy02",
     "Thumbnail": {
       "Zoom": 2.7801,
       "X": 0.5068,
@@ -24360,7 +24618,8 @@
       "Sentient"
     ],
     "Card": "Hangs back and fires [shots] at your casters; its darts can [Silence]. It is frail up close: close in and [pincer] it.",
-    "Portrait": "harpy03",
+    "Portrait": "harpy-spotter",
+    "ArtSource": "harpy03",
     "Thumbnail": {
       "Zoom": 2.56,
       "X": 0.4355,
@@ -24486,7 +24745,8 @@
       "Magic"
     ],
     "Card": "Charges a [Void Beam] down a marked line that [Silences]: step off the line or [Interrupt] it. Its front is plated, so [pincer] it from the flanks. At half HP its core flares a [Ward].",
-    "Portrait": "voidsentinel",
+    "Portrait": "void-sentinel",
+    "ArtSource": "voidsentinel",
     "Thumbnail": {
       "Zoom": 2.4734,
       "X": 0.4868,
@@ -24618,6 +24878,7 @@
     ],
     "Card": "Charges [Soulfire] on a 3×3 that [Burns]: spread out or [Interrupt] it. At half HP it harvests every hero to heal. It falls into a grave: smash the grave, or it rises again.",
     "Portrait": "lich",
+    "ArtSource": "lich",
     "Thumbnail": {
       "Zoom": 2.5026,
       "X": 0.5,
@@ -24758,7 +25019,8 @@
       "Sentient"
     ],
     "Card": "Its claws can set a hero [Burning], and an Infernalist Executioner hits burning heroes far harder: [cleanse] the burn. Can't be [Burned] itself.",
-    "Portrait": "infernalist01",
+    "Portrait": "infernalist-zealot",
+    "ArtSource": "infernalist01",
     "Thumbnail": {
       "Zoom": 2.9129,
       "X": 0.2148,
@@ -24886,7 +25148,8 @@
       "Sentient"
     ],
     "Card": "Charges [Hellfire] on a cross of tiles that [Burns]: spread out or [Interrupt] it. Hangs back from the fight.",
-    "Portrait": "infernalist02",
+    "Portrait": "infernalist-pyromancer",
+    "ArtSource": "infernalist02",
     "Thumbnail": {
       "Zoom": 2.6179,
       "X": 0.1688,
@@ -25013,7 +25276,8 @@
       "Sentient"
     ],
     "Card": "Charges a [Blood Rite] that heals and [Empowers] its most wounded ally: kill it first or [Interrupt] the rite. Its blows [Lifesteal].",
-    "Portrait": "infernalist03",
+    "Portrait": "infernalist-bloodbinder",
+    "ArtSource": "infernalist03",
     "Thumbnail": {
       "Zoom": 2.8144,
       "X": 0.2108,
@@ -25140,7 +25404,8 @@
       "Sentient"
     ],
     "Card": "Hits [Burning] heroes 50% harder: [cleanse] the burn or keep burning heroes away from it. A duelist: [pincer] it, it hates being outnumbered.",
-    "Portrait": "infernalist04",
+    "Portrait": "infernalist-executioner",
+    "ArtSource": "infernalist04",
     "Thumbnail": {
       "Zoom": 2.6947,
       "X": 0.1682,
@@ -25267,7 +25532,8 @@
       "Sentient"
     ],
     "Card": "Shoots straight down a line from up to 3 tiles away, and a shot can [Blind]: close in and [pincer] it. Weak to Lightning.",
-    "Portrait": "heavytrooper01",
+    "Portrait": "bulwark-rifleman",
+    "ArtSource": "heavytrooper01",
     "Thumbnail": {
       "Zoom": 2.5865,
       "X": 0.474,
@@ -25394,7 +25660,8 @@
       "Sentient"
     ],
     "Card": "Charges [Aegis Field], a [Ward] on every ally within 2 tiles: [Interrupt] it, and hit it from the flank, not its plate.",
-    "Portrait": "heavytrooper02",
+    "Portrait": "bulwark-shieldbearer",
+    "ArtSource": "heavytrooper02",
     "Thumbnail": {
       "Zoom": 2.6195,
       "X": 0.5193,
@@ -25522,7 +25789,8 @@
       "Sentient"
     ],
     "Card": "Charges [Aether Siphon] on your casters, and when it lands an orb leaves your bank: spend your orbs first, or [Interrupt] it.",
-    "Portrait": "heavytrooper03",
+    "Portrait": "bulwark-siphoner",
+    "ArtSource": "heavytrooper03",
     "Thumbnail": {
       "Zoom": 2.7142,
       "X": 0.5253,
@@ -25651,7 +25919,8 @@
       "Sentient"
     ],
     "Card": "Charges a slow [Siege Shot] down a marked line to the board's edge: step off the line or [Interrupt] it. It needs a long rest after.",
-    "Portrait": "heavytrooper04",
+    "Portrait": "bulwark-siege-gunner",
+    "ArtSource": "heavytrooper04",
     "Thumbnail": {
       "Zoom": 2.6349,
       "X": 0.477,
@@ -25779,7 +26048,8 @@
       "Sentient"
     ],
     "Card": "Never leaves its post, and answers a blow from beside it with a chilling [Counterstrike] that can [Slow]: strike from range, or [pincer] it and take the hit. Its grave rises unless smashed.",
-    "Portrait": "wraithknight01",
+    "Portrait": "watch-sentry",
+    "ArtSource": "wraithknight01",
     "Thumbnail": {
       "Zoom": 2.8025,
       "X": 0.5435,
@@ -25910,7 +26180,8 @@
       "Sentient"
     ],
     "Card": "Hunts the weakest hero. The first time it drops low, its oath holds: it heals and gains [Ward]. Finish it in one push, and smash its grave.",
-    "Portrait": "wraithknight02",
+    "Portrait": "watch-reaver",
+    "ArtSource": "wraithknight02",
     "Thumbnail": {
       "Zoom": 2.7733,
       "X": 0.5057,
@@ -26039,7 +26310,8 @@
       "Sentient"
     ],
     "Card": "Charges [Ember Vigil], [Regen] on every ally within 2 tiles: [Interrupt] it or cut it down first. Fire burns the Watch hardest.",
-    "Portrait": "wraithknight03",
+    "Portrait": "watch-vigilant",
+    "ArtSource": "wraithknight03",
     "Thumbnail": {
       "Zoom": 2.7561,
       "X": 0.5252,
@@ -26166,7 +26438,8 @@
       "Sentient"
     ],
     "Card": "Charges the [Tithe Hymn] on the whole party, which can [Silence] every hero it reaches: cast before it lands, [Interrupt] it, or [Cleanse] after.",
-    "Portrait": "cultist01",
+    "Portrait": "choir-cantor",
+    "ArtSource": "cultist01",
     "Thumbnail": {
       "Zoom": 2.8007,
       "X": 0.4995,
@@ -26293,7 +26566,8 @@
       "Sentient"
     ],
     "Card": "Charges [Psalm of Certainty], [Empowers] every ally within 2 tiles: [Interrupt] it, or pull its allies away. Quick and frail.",
-    "Portrait": "cultist02",
+    "Portrait": "choir-psalmist",
+    "ArtSource": "cultist02",
     "Thumbnail": {
       "Zoom": 2.7839,
       "X": 0.483,
@@ -26420,7 +26694,8 @@
       "Sentient"
     ],
     "Card": "Charges [Absolution] on its most wounded ally: a heal, a [Cleanse] of every debuff, and a [Ward]. Kill it first, or [Interrupt] it.",
-    "Portrait": "cultist03",
+    "Portrait": "choir-confessor",
+    "ArtSource": "cultist03",
     "Thumbnail": {
       "Zoom": 2.8583,
       "X": 0.5,
@@ -26546,7 +26821,8 @@
       "Sentient"
     ],
     "Card": "Charges [Feed the Herd], healing and rushing every ally near it: kill it first or [Interrupt] it. Hangs back behind its crew. [Stampede]: when an ally falls, its next turn comes sooner.",
-    "Portrait": "minotaur01",
+    "Portrait": "herd-boss",
+    "ArtSource": "minotaur01",
     "Thumbnail": {
       "Zoom": 2.6286,
       "X": 0.4659,
@@ -26674,7 +26950,8 @@
       "Sentient"
     ],
     "Card": "Guards the crew behind a thick front: flank it, not its chest. Its punches can [Slow] a hero. [Stampede]: when an ally falls, its next turn comes sooner.",
-    "Portrait": "minotaur02",
+    "Portrait": "herd-bouncer",
+    "ArtSource": "minotaur02",
     "Thumbnail": {
       "Zoom": 3.1741,
       "X": 0.4808,
@@ -26804,7 +27081,8 @@
       "Sentient"
     ],
     "Card": "Charges a [Bull Rush] down a marked line to the board's edge: step off the line or [Interrupt] it. [Stampede]: when an ally falls, its next turn comes sooner.",
-    "Portrait": "minotaur03",
+    "Portrait": "herd-gorer",
+    "ArtSource": "minotaur03",
     "Thumbnail": {
       "Zoom": 2.6947,
       "X": 0.4746,
@@ -26932,7 +27210,8 @@
       "Sentient"
     ],
     "Card": "Charges in and never backs off; below half HP it hits harder (Berserk): finish it in one push. [Stampede]: when an ally falls, its next turn comes sooner.",
-    "Portrait": "minotaur04",
+    "Portrait": "herd-breaker",
+    "ArtSource": "minotaur04",
     "Thumbnail": {
       "Zoom": 3.0989,
       "X": 0.4752,
@@ -27059,7 +27338,8 @@
       "Beast"
     ],
     "Card": "[Bloodscent]: hits a hero below half HP 50% harder, and goes for the weakest: keep the party topped up. Can't be [Burned].",
-    "Portrait": "hellspawn01",
+    "Portrait": "hellspawn-ravager",
+    "ArtSource": "hellspawn01",
     "Thumbnail": {
       "Zoom": 2.7504,
       "X": 0.3246,
@@ -27186,7 +27466,8 @@
       "Beast"
     ],
     "Card": "[Bloodscent]: hits a hero below half HP 50% harder. Strikes then darts away, healing on every blow ([Lifesteal]): [pincer] it when it lands. Can't be [Burned].",
-    "Portrait": "hellspawn02",
+    "Portrait": "hellspawn-drinker",
+    "ArtSource": "hellspawn02",
     "Thumbnail": {
       "Zoom": 2.6785,
       "X": 0.3205,
@@ -27315,7 +27596,8 @@
       "Beast"
     ],
     "Card": "Charges a [Red Tide] that floods its target's whole row and sets everyone in it [Burning]: leave the row or [Interrupt] it. [Bloodscent]. Can't be [Burned].",
-    "Portrait": "hellspawn03",
+    "Portrait": "hellspawn-emberheart",
+    "ArtSource": "hellspawn03",
     "Thumbnail": {
       "Zoom": 2.6947,
       "X": 0.3052,
@@ -27442,7 +27724,8 @@
       "Beast"
     ],
     "Card": "Strike it up close and it may set you [Burning] (Searing Scales); flank its scaled front. [Bloodscent]. Never retreats. Can't be [Burned].",
-    "Portrait": "hellspawn04",
+    "Portrait": "hellspawn-scaleback",
+    "ArtSource": "hellspawn04",
     "Thumbnail": {
       "Zoom": 2.7476,
       "X": 0.3021,
@@ -27573,6 +27856,7 @@
     ],
     "Card": "Steady [engineer]. Raises barricades and props up [guardian] lines.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -27697,6 +27981,7 @@
     ],
     "Card": "Heavy [bruiser]. Smashes barricades and deals [knockdown].",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -27821,6 +28106,7 @@
     ],
     "Card": "Patient [striker]. Fires over the walls with a [piercing shot].",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -27954,6 +28240,7 @@
     ],
     "Card": "Distant [controller]. Calls shard strikes down on the party.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28078,6 +28365,7 @@
     ],
     "Card": "Slow [bruiser]. Walks through shard strikes and seeds crystal where it falls.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28213,6 +28501,7 @@
     ],
     "Card": "Quick [flanker]. Brings a shard strike down on whoever pins it.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28345,6 +28634,7 @@
     ],
     "Card": "Patient [controller]. Hauls the anchor to wherever the party stands.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28468,6 +28758,7 @@
     ],
     "Card": "Immovable [guardian]. The heave never moves it.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28595,6 +28886,7 @@
     ],
     "Card": "Wiry [controller]. Hooks one hero out of the line.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28720,6 +29012,7 @@
     ],
     "Card": "Quick [flanker]. The flood never slows it, and its strikes leave you wet for lightning.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28848,6 +29141,7 @@
     ],
     "Card": "Distant [controller]. Sends lightning through the floodwater.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -28973,6 +29267,7 @@
     ],
     "Card": "Swollen [bruiser]. Bursts into floodwater and hurries the tide.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29119,6 +29414,7 @@
     ],
     "Card": "Tunnelling [brawler]. Leaves cracked floor wherever it goes.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29254,6 +29550,7 @@
     ],
     "Card": "Patient [pouncer]. Never falls, and caves the floor in where it dies.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29389,6 +29686,7 @@
     ],
     "Card": "Heavy [bruiser]. Cracks the floor under a hero and shoves them across it.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29513,6 +29811,7 @@
     ],
     "Card": "Sly [controller]. Puts out the braziers and blinds.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29637,6 +29936,7 @@
     ],
     "Card": "Quick [striker]. Hunts from the dark; its eyes light the ground where it falls.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29771,6 +30071,7 @@
     ],
     "Card": "Unseen [healer]. Mends its allies from out of sight.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -29895,6 +30196,7 @@
     ],
     "Card": "Deceiving [flanker]. In the dark, its turn looks like a hero's.",
     "Portrait": "mannequin",
+    "ArtSource": "mannequin",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -30017,7 +30319,8 @@
       "Humanoid"
     ],
     "Card": "Mocking [controller]. Turns a hero's own last move back on the party.",
-    "Portrait": "mockingecho",
+    "Portrait": "mocking-echo",
+    "ArtSource": "mockingecho",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
@@ -30139,7 +30442,9 @@
       "Humanoid"
     ],
     "Card": "Frontline [guardian]. Holds a comrade [Guarded] and keeps their light: wakes the [Asleep] and lifts debuffs.",
-    "Portrait": "Warden",
+    "Portrait": "warden-female",
+    "MalePortrait": "warden-male",
+    "ArtSource": "Warden",
     "Thumbnail": {
       "Zoom": 2.4,
       "X": 0.535,

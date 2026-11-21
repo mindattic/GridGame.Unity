@@ -30,7 +30,7 @@ namespace GridGame.Tests
             Assert.That(k, Is.Not.Null, id);
             Assert.That(k.Team, Is.EqualTo(Team.Hero));
             Assert.That(k.Role, Is.EqualTo(role));
-            Assert.That(k.Portrait, Is.EqualTo(id));
+            Assert.That(k.PortraitFile(), Is.EqualTo(AssetNames.File(AssetNames.Stem(k.Name, "female"))), "a hero's art is named after its Name (GG-T557)");
             foreach (var a in k.Abilities) Assert.That(c.TryAbility(a), Is.Not.Null, $"{id}: unknown ability {a}");
             foreach (var a in k.DefaultLoadout.Where(x => !x.StartsWith("item:"))) Assert.That(k.Abilities, Does.Contain(a), $"{id}: {a} in the bar but not learnable");
             Assert.That(k.DefaultLoadout, Does.Contain(signature), "the signature is on the starting bar");
@@ -68,7 +68,7 @@ namespace GridGame.Tests
         private static void AssertArt(string id, (float x, float y, float w, float h) figure, (float zoom, float x, float y) thumb)
         {
             var k = Real.TryClass(id);
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png")), Is.True);
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", k.PortraitFile() + ".png")), Is.True);
             Assert.That(k.Figure, Is.Not.Null);
             Assert.That(k.Figure.X, Is.EqualTo(figure.x).Within(1e-4)); Assert.That(k.Figure.Y, Is.EqualTo(figure.y).Within(1e-4));
             Assert.That(k.Figure.W, Is.EqualTo(figure.w).Within(1e-4)); Assert.That(k.Figure.H, Is.EqualTo(figure.h).Within(1e-4));

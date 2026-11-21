@@ -4,13 +4,17 @@ Reproducible art/audio import from the GridGame2026 reference project into GridG
     python tools/import_art.py [--src D:/Projects/MindAttic/GridGame2026/Assets]
 
 Produces (under Assets/Gaiden/Resources/):
-  Portraits/<classId>.png    full-body art on a 1024x1024 transparent canvas (owner 2026-11-07, GG-T352: "all
+  Portraits/<stem>-<NN>.png  full-body art on a 1024x1024 transparent canvas (owner 2026-11-07, GG-T352: "all
                              characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the
                              assets are"): the one image per unit, never trimmed or shrunk. Every thumbnail (board
                              token, timeline icon, cards) is a zoom + offset into it, kept in classes.json as the
                              class's "Thumbnail" and framed in tools/ThumbnailStudio (GG-T220) - no thumb images are
                              cut. The figure's own box (alpha bounds) is written to the class's "Figure" so whole-figure
                              views (dialogue, cut-ins, cards) draw the figure, not the empty canvas around it.
+                             The file is named by tools/asset_names.py (GG-T557/GG-T561): the class's "Portrait" stem
+                             (acolyte-female, hag) and "PortraitVariant" (hag-02), its male art "MalePortrait"
+                             (acolyte-male-00); a class without them gets them here. GridGame2026's own art key is
+                             the class's "ArtSource".
   Backgrounds/<set>_<NN>.jpg every GridGame2026 biome backdrop at its original resolution (1536x3072), JPEG q95
                              (PNG if it had transparency), named after its STORY.md region and numbered from 01
                              (owner 2026-11-07, GG-T353: "make sure the source files for the Backgrounds all get
@@ -142,20 +146,95 @@ def set_class_blocks(updates, path=None):
     return missing
 
 
-def save_portrait_assets(im, class_id):
-    """im: an opened RGBA PIL.Image. Writes Portraits/<id>.png as a 1024x1024 RGBA canvas (fit_canvas: a 1024 image
+def set_class_values(cid, values, path=None):
+    """Targeted edit of classes.json like set_class_blocks, for plain string / number properties: each key's value is
+    replaced in place, or the property is inserted after the class's "Portrait" (else "Id") line. False when cid is
+    not a class."""
+    import re
+    path = path or os.path.join(RES, "Content", "classes.json")
+    raw = open(path, "rb").read()
+    text = raw.decode("utf-8-sig")
+    nl = "\r\n" if "\r\n" in text else "\n"
+    m = re.search(r'^([ \t]*)"Id": "' + re.escape(cid) + r'",?\r?$', text, re.M)
+    if not m:
+        return False
+    ind = m.group(1)
+    start = m.start()
+    end = text.find(nl + ind[:-2] + "}", m.end())
+    body = text[start:end]
+    for key, val in values.items():
+        lit = json.dumps(val)
+        vm = re.search(r'^' + re.escape(ind) + '"' + key + r'": ("[^"]*"|-?\d+)', body, re.M)
+        if vm:
+            body = body[:vm.start(1)] + lit + body[vm.end(1):]
+            continue
+        anchor = None
+        for a in ("Portrait", "Id"):
+            anchor = re.search(r'^' + re.escape(ind) + '"' + a + r'": "[^"]*",?(?=\r?$)', body, re.M)
+            if anchor:
+                break
+        line = anchor.group(0)
+        prop = f'{ind}"{key}": {lit}'
+        ins = (line + nl + prop + ",") if line.endswith(",") else (line + "," + nl + prop)
+        body = body[:anchor.start()] + ins + body[anchor.end():]
+    text = text[:start] + body + text[end:]
+    json.loads(text)
+    data = text.encode("utf-8")
+    if raw.startswith(b"\xef\xbb\xbf"):
+        data = b"\xef\xbb\xbf" + data
+    tmp = path + ".import.tmp"
+    open(tmp, "wb").write(data)
+    os.replace(tmp, path)
+    return True
+
+
+def portrait_target(class_id, male=False):
+    """(class entry or None, file name without extension) the portrait of class_id is saved as (GG-T557, the
+    tools/asset_names.py rule). A class that names its art already keeps its file; one that doesn't is given a stem
+    from its Name (a hero's '<name>-female' / '<name>-male', an enemy's '<name>' at the next free number) and the
+    fields are written to classes.json. An unknown id is saved under its own stem."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import asset_names as an
+    classes = json.load(open(os.path.join(RES, "Content", "classes.json"), encoding="utf-8-sig"))
+    c = next((x for x in classes if x["Id"] == class_id), None)
+    if c is None:
+        return None, an.file(an.stem(class_id, "male") if male else an.stem(class_id))
+    hero = c.get("Team") == "Hero" or male or c.get("MalePortrait")
+    if male:
+        if not c.get("MalePortrait"):
+            c["MalePortrait"] = an.stem(c["Name"], "male")
+            set_class_values(class_id, {"MalePortrait": c["MalePortrait"]})
+        return c, an.portrait_file(c, male=True)
+    if not c.get("Portrait"):
+        s = an.stem(c["Name"], "female") if hero else an.stem(c["Name"])
+        pdir = os.path.join(RES, "Portraits")
+        taken = {an.parse(f[:-4])[1] for f in os.listdir(pdir) if f.endswith(".png") and (an.parse(f[:-4]) or ("",))[0] == s}
+        n = 0 if hero else next(i for i in range(100) if i not in taken)
+        c["Portrait"], c["PortraitVariant"] = s, n
+        set_class_values(class_id, {"Portrait": s, **({"PortraitVariant": n} if n else {})})
+    return c, an.portrait_file(c)
+
+
+def save_portrait_assets(im, class_id, male=None):
+    """im: an opened RGBA PIL.Image. Writes the class's portrait file (portrait_target: Portraits/acolyte-female-00.png,
+    or its male art when male, or class_id ends in "_male") as a 1024x1024 RGBA canvas (fit_canvas: a 1024 image
     untouched, never trimmed or shrunk; any other size fitted onto the canvas whole) and returns it. The existing .meta
-    (GUID) is kept, and the class's "Figure" box in classes.json is set from the canvas (figure_box), when the class
-    exists. A new class also needs a "Thumbnail" in classes.json (frame it in tools/ThumbnailStudio)."""
+    (GUID) is kept, and the class's "Figure" (or "MaleFigure") box in classes.json is set from the canvas (figure_box),
+    when the class exists. A new class also needs a "Thumbnail" in classes.json (frame it in tools/ThumbnailStudio)."""
+    if male is None:
+        male = class_id.endswith("_male")
+    if class_id.endswith("_male"):
+        class_id = class_id[:-len("_male")]
     portraits = ensure(os.path.join(RES, "Portraits"))
     full = fit_canvas(im)
-    full.save(os.path.join(portraits, class_id + ".png"), optimize=True)
+    c, name = portrait_target(class_id, male)
+    full.save(os.path.join(portraits, name + ".png"), optimize=True)
+    print(f"  saved Portraits/{name}.png")
     box = figure_box(full)
-    if box and class_id.endswith("_male"):
-        # GG-T532: male art (Portraits/<classId>_male) frames its own figure as the class's "MaleFigure".
-        base = class_id[:-len("_male")]
-        if set_class_blocks({base: {"MaleFigure": box}}):
-            print(f"  {base} is not a class: {class_id} has no class to belong to")
+    if box and male:
+        # GG-T532: male art frames its own figure as the class's "MaleFigure".
+        if set_class_blocks({class_id: {"MaleFigure": box}}):
+            print(f"  {class_id} is not a class: its male art has no class to belong to")
         return full
     if box and set_class_blocks({class_id: {"Figure": box}}):
         print(f"  {class_id} is not a class yet: give it \"Figure\": {json.dumps({k: float(_num(v)) for k, v in box.items()})}")
@@ -165,7 +244,7 @@ def save_portrait_assets(im, class_id):
 def import_portraits(src, classes):
     done = 0
     for c in classes:
-        key = c.get("Portrait") or c["Name"]
+        key = c.get("ArtSource") or c["Name"].replace(" ", "")  # GridGame2026's own art key (GG-T557)
         path = os.path.join(src, "Sprites", "Actor", "Portraits", key + ".png")
         if not os.path.exists(path):
             print("  missing portrait", key)

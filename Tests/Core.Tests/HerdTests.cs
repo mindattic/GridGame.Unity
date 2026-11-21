@@ -29,7 +29,7 @@ namespace GridGame.Tests
                 var c = db.Classes[id];
                 Assert.That(c.HasTag("Sentient"), Is.True, $"{id}: a crew that plans its pincers");
                 Assert.That(c.DropTable, Is.EqualTo("herd"), id);
-                Assert.That(c.Portrait, Is.EqualTo(id), $"{id}: owner art, never overwritten by import_art");
+                Assert.That(c.ArtSource, Is.EqualTo(id), $"{id}: owner art, never overwritten by import_art");
                 Assert.That(new[] { 8f, 11f, 15f, 18f }, Does.Contain(c.BaseStats.Speed), $"{id}: a speed tier");
                 Assert.That(c.Abilities, Does.Contain("herd_stampede"), $"{id}: every bull stampedes");
                 Assert.That(c.Resistances[DamageType.Arcane], Is.LessThan(1f), $"{id}: the splice holds its aether in");

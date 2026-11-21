@@ -43,6 +43,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import prose_keys as K  # noqa: E402
 import prose_text  # noqa: E402
+import asset_names  # noqa: E402
 
 GENERATOR = "tools/prose_map.py"
 MAPPER_VERSION = "1"
@@ -228,8 +229,7 @@ def build(content: dict) -> dict:
             details["role"] = c["Role"]
         if c.get("HomeTree"):
             details["homeTree"] = c["HomeTree"]
-        if c.get("Portrait"):
-            details["art"] = "Portraits/" + c["Portrait"]
+        details["art"] = "Portraits/" + asset_names.portrait_file(c)  # GG-T557: the class's own file
         rel = []
         if faction_of.get(cid) in faction_ids:
             rel.append({"to": K.faction_entity(faction_of[cid]), "kind": "member-of"})
@@ -246,12 +246,13 @@ def build(content: dict) -> dict:
 
     # --- characters: camp NPCs and the caravan crew
     portraits = npc_portraits(content["dialogues"])
+    by_id = {c["Id"]: c for c in classes if c.get("Id")}
     for npc, name in K.NPCS.items():
         entities.append({
             "id": K.character_entity(npc), "type": "character", "name": name,
             "summary": NPC_SUMMARY[npc],
             "details": {"role": "camp NPC", "npcId": npc,
-                        "art": "Portraits/" + portraits.get(npc, NPC_PORTRAIT_FALLBACK[npc])},
+                        "art": "Portraits/" + asset_names.portrait_file(by_id[portraits.get(npc, NPC_PORTRAIT_FALLBACK[npc])])},
             "tags": ["camp-npc"],
         })
     for u in content["caravan"]:

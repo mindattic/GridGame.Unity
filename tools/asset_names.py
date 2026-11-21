@@ -67,6 +67,23 @@ def portrait_file(cls, male=False, variant=None):
     return file(s, cls.get("PortraitVariant", DEFAULT_VARIANT) if variant is None else variant)
 
 
+def portrait_users(classes):
+    """{portrait file: [(classId, "Figure" | "MaleFigure")]}: every class that draws each Portraits/ file, and which of
+    its figure boxes frames it (a shared file, like the Wild Child's that the Monster Tamer draws, has several)."""
+    users = {}
+    for c in classes:
+        users.setdefault(portrait_file(c), []).append((c["Id"], "Figure"))
+        if c.get("MalePortrait"):
+            users.setdefault(portrait_file(c, male=True), []).append((c["Id"], "MaleFigure"))
+    return users
+
+
+def portrait_files_for(names, classes):
+    """Portrait file names for a CLI list that may mix files (acolyte-female-00) and class ids (sister)."""
+    by_id = {c["Id"]: c for c in classes}
+    return [portrait_file(by_id[n]) if n in by_id else n for n in names]
+
+
 if __name__ == "__main__":
     assert stem("PandaKeeper") == "panda-keeper"
     assert stem("Panda Keeper", "female") == "panda-keeper-female"

@@ -11,7 +11,7 @@ namespace GridGame.Meta
         public string NodeId;
         public string SpeakerId;
         public string Name;
-        /// <summary>Portrait id (Resources/Portraits/&lt;id&gt;), or null for none.</summary>
+        /// <summary>The class whose portrait shows (Art.Portrait resolves its file, GG-T557), or null for none.</summary>
         public string Portrait;
         public string Text;
         /// <summary>A choice the player picked to leave this line (null when it auto-advanced).</summary>

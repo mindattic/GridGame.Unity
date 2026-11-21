@@ -29,7 +29,7 @@ namespace GridGame.Tests
                 var c = db.Classes[id];
                 Assert.That(c.HasTag("Sentient"), Is.False, $"{id}: the Ember's beasts don't plan pincers");
                 Assert.That(c.DropTable, Is.EqualTo("hellspawn"), id);
-                Assert.That(c.Portrait, Is.EqualTo(id), $"{id}: owner art, never overwritten by import_art");
+                Assert.That(c.ArtSource, Is.EqualTo(id), $"{id}: owner art, never overwritten by import_art");
                 Assert.That(new[] { 8f, 11f, 15f, 18f }, Does.Contain(c.BaseStats.Speed), $"{id}: a speed tier");
                 Assert.That(c.Abilities, Does.Contain("bloodscent"), $"{id}: every hellspawn smells blood");
                 Assert.That(c.Abilities, Does.Contain("infernal_hide"), $"{id}: born of the Ember, it can't burn");

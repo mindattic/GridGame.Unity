@@ -30,6 +30,9 @@ except ImportError:
     sys.path.insert(0, os.path.join(os.path.dirname(ROOT), "AutoMidjourneyNav"))
     import automjnav
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import asset_names  # noqa: E402  the one asset naming rule (GG-T557)
+
 RES = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
 OUT = os.path.join(ROOT, "_male_variants")
 
@@ -63,7 +66,7 @@ def heroes():
 
 
 def portrait_path(c):
-    return os.path.join(RES, "Portraits", (c.get("Portrait") or c["Id"]).lower() + ".png")
+    return os.path.join(RES, "Portraits", asset_names.portrait_file(c) + ".png")
 
 
 def source_image(c):

@@ -110,7 +110,7 @@ namespace GridGame.Core.Content
         }
 
         /// <summary>Cross-reference check; returns human-readable problems (empty = valid).</summary>
-        /// <param name="portraitExists">Whether Resources/Portraits/&lt;id&gt; exists (dialogue speakers); null skips that
+        /// <param name="portraitExists">Whether Resources/Portraits/&lt;file&gt; exists (a <see cref="ClassDef.PortraitFile"/>); null skips that
         /// art check (Core can't see the art — the app and the dotnet tests pass their own lookup).</param>
         public static List<string> Validate(ContentDb db, Func<string, bool> portraitExists = null)
         {
@@ -132,6 +132,15 @@ namespace GridGame.Core.Content
                 else if (!c.Figure.IsValid) p.Add($"class {c.Id}: Figure must be a box with area inside the portrait (fractions 0..1)");
                 // GG-T532: the male art's own framing is optional (it falls back to the female one), but must be sane when set.
                 if (c.MaleFigure != null && !c.MaleFigure.IsValid) p.Add($"class {c.Id}: MaleFigure must be a box with area inside the portrait (fractions 0..1)");
+                // GG-T557/GG-T561: portrait files follow the asset naming rule, and exist when the caller can look.
+                foreach (var male in c.HasMalePortrait ? new[] { false, true } : new[] { false })
+                {
+                    string file;
+                    try { file = c.PortraitFile(male); }
+                    catch (ArgumentOutOfRangeException) { p.Add($"class {c.Id}: PortraitVariant {c.PortraitVariant} out of 0..99"); continue; }
+                    if (!AssetNames.IsValid(file)) p.Add($"class {c.Id}: portrait '{file}' doesn't follow the asset naming rule (word-word-00)");
+                    else if (portraitExists != null && !portraitExists(file)) p.Add($"class {c.Id}: missing portrait Portraits/{file}");
+                }
                 var mth = c.MaleThumbnail;
                 if (mth != null && (!(mth.Zoom >= Thumbnail.MinZoom && mth.Zoom <= Thumbnail.MaxZoom) || !(mth.X >= Thumbnail.MinOffset && mth.X <= Thumbnail.MaxOffset)
                                     || !(mth.Y >= Thumbnail.MinOffset && mth.Y <= Thumbnail.MaxOffset)))
@@ -760,8 +769,11 @@ namespace GridGame.Core.Content
                 else if (s.Class == "$recruit") { if (!joinsHero) p.Add($"{w} speaker {s.Id}: \"$recruit\" needs a JoinHero effect in this dialogue"); }
                 else if (s.Class != null) { if (db.TryClass(s.Class) == null) p.Add($"{w} speaker {s.Id}: unknown class '{s.Class}'"); }
                 else if (string.IsNullOrEmpty(s.Portrait) || string.IsNullOrEmpty(s.Name)) p.Add($"{w} speaker {s.Id}: needs a Class, or a Name and a Portrait");
+                // A speaker's Portrait names the class whose art it shows (GG-T557).
                 var portrait = s.Portrait ?? (s.Class != null && !s.Class.StartsWith("$") ? s.Class : null);
-                if (portrait != null && portraitExists != null && !portraitExists(portrait)) p.Add($"{w} speaker {s.Id}: missing portrait '{portrait}'");
+                var pc = portrait == null ? null : db.TryClass(portrait);
+                if (portrait != null && pc == null) p.Add($"{w} speaker {s.Id}: portrait '{portrait}' is not a class");
+                else if (pc != null && portraitExists != null && !portraitExists(pc.PortraitFile())) p.Add($"{w} speaker {s.Id}: missing portrait '{pc.PortraitFile()}'");
             }
 
             if (d.Nodes.Count == 0) { p.Add($"{w}: has no nodes"); return; }

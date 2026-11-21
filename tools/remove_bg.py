@@ -19,7 +19,7 @@ How only the background is erased:
 
 Writes, next to the input (or --out): <name>.cut.png (RGBA) and <name>.preview.png (the cut over a checkerboard,
 dark and light, beside the original) to judge it by. --import <classId> also saves the cut as the game's
-Portraits/<classId>.png the same way tools/import_art.py does (a 1024x1024 transparent canvas, never trimmed or shrunk,
+portrait file (tools/asset_names.py) the same way tools/import_art.py does (a 1024x1024 transparent canvas, never trimmed or shrunk,
 GG-T352), keeping its .meta.
 """
 import argparse
@@ -165,8 +165,7 @@ def main():
     if args.class_id:
         from import_art import save_portrait_assets
         full = save_portrait_assets(cutimg, args.class_id)
-        dest = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Portraits", args.class_id + ".png")
-        print(f"imported {dest} {full.size}  (re-frame its Thumbnail in tools/ThumbnailStudio if the crop moved)")
+        print(f"imported {args.class_id} {full.size}  (re-frame its Thumbnail in tools/ThumbnailStudio if the crop moved)")
 
 
 if __name__ == "__main__":

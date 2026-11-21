@@ -564,7 +564,7 @@ namespace GridGame.Tests
         }
 
         /// <summary>GG-T532: a new hero waits for the female/male pick; a v13 save's heroes become female with nothing to
-        /// ask, idempotently; picking sets the variant and ends the wait; a male portrait id maps back to its class.</summary>
+        /// ask, idempotently; picking sets the variant and ends the wait; each variant reads its own file.</summary>
         [Test]
         public void Hero_variants_new_heroes_wait_old_saves_are_female_and_choosing_sets_it()
         {
@@ -589,10 +589,11 @@ namespace GridGame.Tests
             Assert.That(round.Hero("warden").Variant, Is.EqualTo(HeroVariant.Male));
             Assert.That(round.Hero("barbarian").VariantPending, Is.True);
 
-            Assert.That(HeroVariants.PortraitId("warden", HeroVariant.Male), Is.EqualTo("warden_male"));
-            Assert.That(HeroVariants.PortraitId("warden", HeroVariant.Female), Is.EqualTo("warden"));
-            Assert.That(HeroVariants.ClassOf("warden_male"), Is.EqualTo("warden"));
-            Assert.That(HeroVariants.IsMaleId("warden"), Is.False);
+            // GG-T557: the files come from the class's data, named by AssetNames.
+            Assert.That(HeroVariants.PortraitFile(c.Classes["warden"], HeroVariant.Male), Is.EqualTo("warden-male-00"));
+            Assert.That(HeroVariants.PortraitFile(c.Classes["warden"], HeroVariant.Female), Is.EqualTo("warden-female-00"));
+            Assert.That(HeroVariants.PortraitFile(c.Classes["warden"], HeroVariant.Female, 1), Is.EqualTo("warden-female-01"), "a costume is a variant number");
+            Assert.That(HeroVariants.PortraitFile(c.Classes["sister"], HeroVariant.Female), Is.EqualTo("acolyte-female-00"), "named after the class's Name, not its id");
         }
 
         // ── Progression.CanStartNewGamePlus / IsStageUnlocked ──

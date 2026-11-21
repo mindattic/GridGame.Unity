@@ -20,4 +20,9 @@
     <Resource Include="ThumbnailStudio.ico" />
   </ItemGroup>
 
+  <!-- GG-T557: the game's one asset naming rule (portrait file names), shared as source, not a reference. -->
+  <ItemGroup>
+    <Compile Include="..\..\Assets\Gaiden\Core\Content\AssetNames.cs" Link="AssetNames.cs" />
+  </ItemGroup>
+
 </Project>

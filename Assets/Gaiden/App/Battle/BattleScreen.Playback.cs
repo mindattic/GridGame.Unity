@@ -790,7 +790,7 @@ namespace GridGame.App
         private IEnumerator DeathDissolve(Unit u, UnitView v)
         {
             string classId = u.IsCorpse && u.CorpseOf != null ? u.CorpseOf : u.Def?.Id;
-            if (string.IsNullOrEmpty(classId) || !Art.Exists("Portraits/" + classId)) yield break;
+            if (string.IsNullOrEmpty(classId) || !Art.HasPortrait(classId)) yield break;
             var fig = Art.PortraitFigure(classId);
             var size = Art.FigureSize(classId);
             float aspect = size.y > 0 ? size.x / size.y : 1f;

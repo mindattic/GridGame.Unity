@@ -407,12 +407,23 @@ namespace GridGame.Core.Content
         public string Description;
         public string Lore;
         public string Card;
+        /// <summary>GG-T557/GG-T561: the stem of this class's art under Resources/Portraits (<see cref="AssetNames"/>): a hero's
+        /// female art (<c>acolyte-female</c>), an enemy's own name (<c>hag</c>, <c>harpy-raider</c>), or another class's
+        /// stem when it draws that art (Monster Tamer → <c>wild-child-female</c>, placeholders → <c>mannequin</c>). The
+        /// file is <see cref="PortraitFile"/>. Empty = the stem of the <see cref="Id"/>.</summary>
         public string Portrait;
+        /// <summary>The stem of the male art (<c>acolyte-male</c>, GG-T532); null = the class has none yet.</summary>
+        public string MalePortrait;
+        /// <summary>Which numbered file of the stem(s) this class draws (<c>hag-02</c> = 2): one name's looks are numbered
+        /// from 00, so a costume is another number here, not a code change. Default 0.</summary>
+        public int PortraitVariant;
+        /// <summary>Tools only: the GridGame2026 art key tools/import_art.py imported this class's portrait from.</summary>
+        public string ArtSource;
         public PortraitCrop Crop;
         public Thumbnail Thumbnail;
         /// <summary>The figure's box on the portrait (GG-T352).</summary>
         public Figure Figure;
-        /// <summary>GG-T532: the thumbnail framing of the male art (Portraits/&lt;Id&gt;_male); null = <see cref="Thumbnail"/>.</summary>
+        /// <summary>GG-T532: the thumbnail framing of the male art (<see cref="MalePortrait"/>); null = <see cref="Thumbnail"/>.</summary>
         public Thumbnail MaleThumbnail;
         /// <summary>GG-T532: the figure's box on the male art (tools/import_art.py writes it); null = <see cref="Figure"/>.</summary>
         public Figure MaleFigure;
@@ -493,6 +504,16 @@ namespace GridGame.Core.Content
         public int TrailEvery = 1;
 
         public bool HasTag(string tag) => Tags != null && Tags.Contains(tag);
+
+        /// <summary>True when the class has male art (<see cref="MalePortrait"/>).</summary>
+        public bool HasMalePortrait => !string.IsNullOrEmpty(MalePortrait);
+
+        /// <summary>The one portrait-file rule (GG-T557): the file under Resources/Portraits (no extension) this class
+        /// draws, its male art when <paramref name="male"/> and it has one, at <paramref name="variant"/> (default its
+        /// <see cref="PortraitVariant"/>): <c>acolyte-female-00</c>, <c>acolyte-male-00</c>, <c>hag-02</c>.</summary>
+        public string PortraitFile(bool male = false, int? variant = null) =>
+            AssetNames.File(male && HasMalePortrait ? MalePortrait : string.IsNullOrEmpty(Portrait) ? AssetNames.Stem(Id) : Portrait,
+                variant ?? PortraitVariant);
     }
 
     public sealed class AbilityDef
@@ -1204,7 +1225,8 @@ namespace GridGame.Core.Content
         public string Class;
         /// <summary>Display name; defaults to the class's name.</summary>
         public string Name;
-        /// <summary>Portrait id (Resources/Portraits/&lt;id&gt;); defaults to the class id.</summary>
+        /// <summary>The class whose portrait this speaker shows (an NPC borrowing a class's art, e.g. the Lantern Merchant
+        /// shows the courier's); defaults to <see cref="Class"/>.</summary>
         public string Portrait;
     }
 

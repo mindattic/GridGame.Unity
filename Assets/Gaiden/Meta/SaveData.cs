@@ -159,7 +159,7 @@ namespace GridGame.Meta
         /// fights on its own AI, wears no gear, has no skill tree, and grows slowly up to <see cref="Domestication.LevelCap"/>.</summary>
         public bool Domesticated;
         /// <summary>GG-T532: which version of the class this hero is: the female art (the default) or the male art
-        /// (Portraits/&lt;classId&gt;_male). Looks only: stats, kit and story are the same either way.</summary>
+        /// (the class's MalePortrait, GG-T557). Looks only: stats, kit and story are the same either way.</summary>
         public HeroVariant Variant;
         /// <summary>GG-T532: the player hasn't picked <see cref="Variant"/> yet. Every new hero joins with it set
         /// (<see cref="Progression.NewHero"/>); the game asks at its next quiet moment and clears it, or clears it silently
@@ -199,21 +199,11 @@ namespace GridGame.Meta
     /// waiting for the player's pick, and picking. Whether the art exists is the app's question (Art.HasMaleArt).</summary>
     public static class HeroVariants
     {
-        /// <summary>The male art of class X is Portraits/X_male; the female art is Portraits/X.</summary>
-        public const string MaleSuffix = "_male";
-
-        /// <summary>The portrait id for <paramref name="classId"/> as <paramref name="v"/> (the male id whether or not its art
-        /// exists yet; the app falls back to the female art).</summary>
-        public static string PortraitId(string classId, HeroVariant v) =>
-            string.IsNullOrEmpty(classId) || v != HeroVariant.Male ? classId : classId + MaleSuffix;
-
-        /// <summary>True for a male portrait id (X_male).</summary>
-        public static bool IsMaleId(string portraitId) =>
-            portraitId != null && portraitId.Length > MaleSuffix.Length && portraitId.EndsWith(MaleSuffix, StringComparison.OrdinalIgnoreCase);
-
-        /// <summary>The class a portrait id belongs to (X_male → X; anything else is its own class id).</summary>
-        public static string ClassOf(string portraitId) =>
-            IsMaleId(portraitId) ? portraitId.Substring(0, portraitId.Length - MaleSuffix.Length) : portraitId;
+        /// <summary>The Portraits/ file <paramref name="def"/> draws as <paramref name="v"/> (GG-T557,
+        /// <see cref="GridGame.Core.Content.ClassDef.PortraitFile"/>): its male art when male and it has one, else its
+        /// default art; <paramref name="variant"/> picks a numbered alternate (a costume), default the class's own.</summary>
+        public static string PortraitFile(GridGame.Core.Content.ClassDef def, HeroVariant v, int? variant = null) =>
+            def?.PortraitFile(v == HeroVariant.Male, variant);
 
         /// <summary>The owned hero's variant; Female for a class the save doesn't hold.</summary>
         public static HeroVariant Of(SaveData s, string classId) =>

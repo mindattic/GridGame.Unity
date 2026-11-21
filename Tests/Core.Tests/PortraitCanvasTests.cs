@@ -24,6 +24,8 @@ namespace GridGame.Tests
         {
             var files = Directory.GetFiles(PortraitDir, "*.png");
             Assert.That(files.Length, Is.GreaterThan(100));
+            // GG-T561: every portrait file follows the asset naming rule (word-word-00).
+            foreach (var f in files) Assert.That(AssetNames.IsValid(Path.GetFileNameWithoutExtension(f)), Is.True, Path.GetFileName(f));
             foreach (var f in files)
             {
                 var png = Png.Read(f);
@@ -61,7 +63,7 @@ namespace GridGame.Tests
         {
             foreach (var c in Real.Classes.Values)
             {
-                var path = Path.Combine(PortraitDir, c.Id + ".png");
+                var path = Path.Combine(PortraitDir, c.PortraitFile() + ".png"); // GG-T557: the class's own file name
                 if (!File.Exists(path)) continue; // Every_class_can_be_instantiated_and_has_art_reference reports it
                 var (x0, y0, x1, y1) = Png.Read(path).AlphaBounds();
                 var f = c.Figure;
@@ -70,9 +72,9 @@ namespace GridGame.Tests
                 Assert.That(f.Y, Is.EqualTo(y0 / (float)Canvas).Within(px), $"{c.Id}: Figure Y");
                 Assert.That(f.W, Is.EqualTo((x1 - x0) / (float)Canvas).Within(px), $"{c.Id}: Figure W");
                 Assert.That(f.H, Is.EqualTo((y1 - y0) / (float)Canvas).Within(px), $"{c.Id}: Figure H");
-                // GG-T532: the male art (<id>_male.png), when it has its own MaleFigure, is framed by its own alpha bounds.
-                var male = Path.Combine(PortraitDir, c.Id + "_male.png");
-                if (c.MaleFigure == null || !File.Exists(male)) continue;
+                // GG-T532: the male art (its MalePortrait file), when it has its own MaleFigure, is framed by its own alpha bounds.
+                var male = Path.Combine(PortraitDir, c.PortraitFile(male: true) + ".png");
+                if (c.MaleFigure == null || !c.HasMalePortrait || !File.Exists(male)) continue;
                 var (m0, n0, m1, n1) = Png.Read(male).AlphaBounds();
                 var mf = c.MaleFigure;
                 Assert.That(mf.X, Is.EqualTo(m0 / (float)Canvas).Within(px), $"{c.Id}: MaleFigure X");
