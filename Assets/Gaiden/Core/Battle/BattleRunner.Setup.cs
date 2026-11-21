@@ -284,6 +284,7 @@ namespace GridGame.Core.Battle
             AnnounceRuleBreaks(started.Spawned);
             AnnounceBounties(bounties);
             RegionHooks(RuleHook.WaveSpawn, null); // GG-T359
+            BringReinforcementsForward(); // GG-T512: a wave of only delayed spawns doesn't open on an empty board
         }
 
         /// <summary>
@@ -350,6 +351,36 @@ namespace GridGame.Core.Battle
                 AnnounceRuleBreaks(spawned);
             }
             S.PendingSpawns.RemoveAll(p => p.Consumed);
+        }
+
+        /// <summary>True while a living foe (not a body, not a neutral) is on the board: the same test that holds a wave open.</summary>
+        private bool AnyFoeOnBoard()
+        {
+            foreach (var u in S.Units) if (u.Alive && u.Team == Team.Enemy && !u.IsCorpse) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// GG-T512 (§14.8): the board is never empty while a wave is held open. With no living foe on the board and a
+        /// reinforcement still queued for this wave, the earliest-queued group (every pending spawn sharing that trigger
+        /// tick) is moved up to now and lands at once, through the normal placement rules (its own tile, else a free one;
+        /// a footprint with no room anywhere is dropped so the wave can still end). Later groups keep their delay relative
+        /// to the clock, and are pulled in the same way if the board empties again. They enter the timeline as any
+        /// mid-battle arrival does (their Speed's entry from now, spaced).
+        /// </summary>
+        private void BringReinforcementsForward()
+        {
+            for (int guard = 0; guard < 64; guard++)
+            {
+                if (S.IsOver || S.PendingSpawns.Count == 0 || AnyFoeOnBoard()) return;
+                long next = long.MaxValue;
+                foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave && p.TriggerClock < next) next = p.TriggerClock;
+                if (next == long.MaxValue) return;
+                if (next > S.Clock)
+                    foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave && p.TriggerClock == next) p.TriggerClock = S.Clock;
+                ResolvePendingSpawns();
+                CheckTilesStrict("reinforcements");
+            }
         }
 
         internal Unit SpawnEnemy(ClassDef def, int level, int x, int y)

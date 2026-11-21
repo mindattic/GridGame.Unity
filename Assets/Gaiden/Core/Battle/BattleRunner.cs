@@ -467,7 +467,9 @@ namespace GridGame.Core.Battle
                 Emit(new BattleEndedEvent { Victory = false });
                 return true;
             }
-            // A reinforcement still queued for this wave (§14.8) holds it open even with the board clear.
+            // GG-T512: the board just went clear but a reinforcement is queued for this wave (§14.8): it lands now instead
+            // of holding the wave open on an empty board. One that can't be placed anywhere is dropped (the wave ends).
+            if (!enemiesAlive) { BringReinforcementsForward(); enemiesAlive = AnyFoeOnBoard(); }
             if (!enemiesAlive) foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave) enemiesAlive = true;
             if (!enemiesAlive)
             {

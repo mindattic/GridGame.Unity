@@ -405,6 +405,30 @@ namespace GridGame.Tests
             Assert.That(arrivals[0].Line, Is.EqualTo("Reinforcements!"));
         }
 
+        [Test]
+        public void With_no_foe_on_the_board_the_earliest_queued_reinforcement_group_lands_now()
+        {
+            // GG-T512: a wave held open only by delayed spawns never leaves the board empty. The earliest group (every
+            // spawn sharing that trigger tick) comes in together at once; a later group keeps waiting.
+            var db = Mini();
+            var stage = new StageDef { Id = "t", Name = "T", IsTest = true };
+            var wave = new WaveDef();
+            wave.Enemies.Add(new SpawnDef { Class = "wolf", Level = 1, X = 5, Y = 5, DelayTicks = 240 });
+            wave.Enemies.Add(new SpawnDef { Class = "tank", Level = 1, X = 3, Y = 5, DelayTicks = 240 });
+            wave.Enemies.Add(new SpawnDef { Class = "goblin", Level = 1, X = 4, Y = 4, DelayTicks = 400 });
+            stage.Waves.Add(wave);
+            var (s, ev) = Battle(db, stage, ("knight", 0, 0), ("cleric", 2, 1));
+            Assert.That(s.IsOver, Is.False);
+            Assert.That(At(s, 5, 5)?.Def.Id, Is.EqualTo("wolf"));
+            Assert.That(At(s, 3, 5)?.Def.Id, Is.EqualTo("tank"));
+            Assert.That(At(s, 4, 4), Is.Null, "the later group still waits");
+            Assert.That(s.PendingSpawns, Has.Exactly(1).Items);
+            var arrivals = ev.OfType<ReinforcementsArrivedEvent>().ToList();
+            Assert.That(arrivals, Has.Exactly(1).Items);
+            Assert.That(arrivals[0].Spawned.Count, Is.EqualTo(2));
+            Assert.That(s.Timeline.Count(e => e.Kind == TimelineKind.Turn && s.UnitById(e.OwnerId)?.Team == Team.Enemy), Is.EqualTo(2));
+        }
+
         // ── Physical blocks (§1.1.1) ────────────────────────────────────────────
 
         [Test]

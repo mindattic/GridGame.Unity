@@ -68,7 +68,7 @@ namespace GridGame.Core.Battle
             S.Clock++;
             ticksSinceReport++;
 
-            if (S.PendingSpawns.Count > 0) { ResolvePendingSpawns(); CheckTilesStrict("reinforcements"); }
+            if (S.PendingSpawns.Count > 0) { BringReinforcementsForward(); ResolvePendingSpawns(); CheckTilesStrict("reinforcements"); }
             if (S.IsOver) return;
 
             foreach (var e in S.Timeline)
