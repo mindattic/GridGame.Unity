@@ -47,6 +47,8 @@ namespace GridGame.App
         public SettingsSave Settings => Profile?.Settings ?? fallbackSettings;
         private readonly SettingsSave fallbackSettings = new SettingsSave();
         public Audio Audio { get; private set; }
+        /// <summary>GG-T456: which track plays: a shuffle bag per region, one draw per stage, and the Camp's draw.</summary>
+        public Meta.MusicPlaylist Playlist { get; } = new Meta.MusicPlaylist(System.Environment.TickCount);
         public ScreenRouter Router { get; private set; }
         public VisualElement Stage { get; private set; }
         public VisualElement Overlay { get; private set; }

@@ -434,7 +434,8 @@ namespace GridGame.App
     public sealed class HubScreen : GameScreen
     {
         public override string Id => "hub";
-        public override string Music => "MinstrelGuild";
+        /// <summary>GG-T456: the Camp's peaceful track, redrawn after each trip to the field.</summary>
+        public override string Music => App.Playlist.Hub(App.Content.Campaign) ?? "MinstrelGuild";
 
         protected override void Build(VisualElement root)
         {

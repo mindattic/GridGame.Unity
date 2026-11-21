@@ -25,7 +25,10 @@ namespace GridGame.App
     public sealed partial class BattleScreen : GameScreen
     {
         public override string Id => "battle";
-        public override string Music => "Crusade";
+        /// <summary>GG-T456: one track per stage, drawn once from the region's shuffle bag (Meta.MusicPlaylist) and kept
+        /// while overlays (level-ups, dialogue) come and go over the battle.</summary>
+        public override string Music => music ??= App.Playlist.NextBattle(App.Content.Campaign, App.Content.ThemeOf(stageId)) ?? "Crusade";
+        private string music;
         public override bool RebuildOnResize => false; // ApplyStageLayout re-lays the HUD out in place
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage

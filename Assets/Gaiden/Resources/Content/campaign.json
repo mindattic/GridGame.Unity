@@ -58,9 +58,12 @@
       "Backdrop": "morrowsshadow"
     }
   ],
+  "HubMusic": ["HearthsideCamp", "EmbersAtRest"],
   "Themes": [
     {
       "Id": "greenvalley",
+      "Music": ["MoorlandCharge", "TitheDayGallop"],
+      "MusicBorrow": ["HeartbeatOfTheBrave", "StillFrost"],
       "MilestoneReward": "tome_regenerate",
       "Name": "The Tithe Moors",
       "Backgrounds": "tithemoors",
@@ -72,6 +75,8 @@
     },
     {
       "Id": "lanternroad",
+      "Music": ["OverThePass", "LanternsRising", "MoonlitConflict"],
+      "MusicBorrow": ["AnchorPulse", "Shardfall"],
       "MilestoneReward": "tome_steadfast",
       "Name": "The Lantern Road",
       "Backgrounds": "lanternroad",
@@ -83,6 +88,8 @@
     },
     {
       "Id": "desert",
+      "Music": ["GlassDunes", "Shardfall"],
+      "MusicBorrow": ["LanternsRising", "AnchorPulse"],
       "MilestoneReward": "tome_thorns",
       "Name": "The Shardfall",
       "Backgrounds": "shardfall",
@@ -94,6 +101,8 @@
     },
     {
       "Id": "swamp",
+      "Music": ["GroundedArks", "ArkgraveMarch"],
+      "MusicBorrow": ["TheFinalSignal", "WintersEdge"],
       "MilestoneReward": "tome_poison_ward",
       "Name": "The Arkgrave",
       "Backgrounds": "arkgrave",
@@ -105,6 +114,8 @@
     },
     {
       "Id": "cave",
+      "Music": ["AnchorPulse"],
+      "MusicBorrow": ["OverThePass", "Shardfall", "LanternsRising"],
       "MilestoneReward": "tome_lifesteal",
       "Name": "The Anchor Wastes",
       "Backgrounds": "anchorwastes",
@@ -116,6 +127,8 @@
     },
     {
       "Id": "still",
+      "Music": ["WintersEdge", "StillFrost"],
+      "MusicBorrow": ["HeartbeatOfTheBrave", "MoorlandCharge"],
       "MilestoneReward": "tome_mana_siphon",
       "Name": "The Still",
       "Backgrounds": "still",
@@ -127,6 +140,8 @@
     },
     {
       "Id": "cityruins",
+      "Music": ["NeonSteelRush"],
+      "MusicBorrow": ["NeonBreakbeat", "LastStandHorn", "MoonlitConflict"],
       "MilestoneReward": "tome_double_attack",
       "Name": "Halcyon",
       "Backgrounds": "halcyon",
@@ -138,6 +153,8 @@
     },
     {
       "Id": "cathedral",
+      "Music": ["TheFinalSignal"],
+      "MusicBorrow": ["LastStandHorn", "MoonlitConflict", "GroundedArks"],
       "MilestoneReward": "tome_counter_attack",
       "Name": "The Choir's Cathedral",
       "Backgrounds": "cathedral",
@@ -149,6 +166,8 @@
     },
     {
       "Id": "bloom",
+      "Music": [],
+      "MusicBorrow": ["MoonlitConflict", "Shardfall", "NeonSteelRush", "AnchorPulse"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Bloom",
       "Backgrounds": "bloom",
@@ -160,6 +179,8 @@
     },
     {
       "Id": "greenvalley2",
+      "Music": ["HeartbeatOfTheBrave"],
+      "MusicBorrow": ["MoorlandCharge", "StillFrost", "TitheDayGallop"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Free Holds",
       "Backgrounds": "freeholds",
@@ -173,6 +194,8 @@
     },
     {
       "Id": "cityruins2",
+      "Music": ["NeonBreakbeat"],
+      "MusicBorrow": ["NeonSteelRush", "LastStandHorn", "GroundedArks"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Underspire",
       "Backgrounds": "underspire",
@@ -186,6 +209,8 @@
     },
     {
       "Id": "swamp2",
+      "Music": [],
+      "MusicBorrow": ["ArkgraveMarch", "GroundedArks", "TheFinalSignal", "WintersEdge"],
       "MilestoneReward": "chest_gilded",
       "Name": "The Drowned Arks",
       "Stages": [
@@ -198,6 +223,8 @@
     },
     {
       "Id": "desert2",
+      "Music": [],
+      "MusicBorrow": ["Shardfall", "GlassDunes", "AnchorPulse", "LanternsRising"],
       "MilestoneReward": "chest_gilded",
       "Name": "Deep Shardfall",
       "Stages": [
@@ -210,6 +237,8 @@
     },
     {
       "Id": "cave2",
+      "Music": [],
+      "MusicBorrow": ["AnchorPulse", "OverThePass", "Shardfall", "NeonBreakbeat"],
       "MilestoneReward": "chest_gilded",
       "Name": "Under the Anchors",
       "Stages": [
@@ -222,6 +251,8 @@
     },
     {
       "Id": "morrowsshadow",
+      "Music": ["LastStandHorn"],
+      "MusicBorrow": ["TheFinalSignal", "MoonlitConflict", "GroundedArks"],
       "MilestoneReward": "chest_gilded",
       "Name": "Morrow's Shadow",
       "Backgrounds": "morrowsshadow",

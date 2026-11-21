@@ -918,10 +918,18 @@ namespace GridGame.Core.Content
         public string Backgrounds;
         /// <summary>Region rule ids (regionrules.json, GG-T359) every stage of this theme plays under.</summary>
         public List<string> Rules = new List<string>();
+        /// <summary>GG-T456: the region's own battle tracks (Resources/Audio/Music/&lt;name&gt;), drawn one per stage from a
+        /// shuffle bag so none repeats until the whole playlist has played.</summary>
+        public List<string> Music = new List<string>();
+        /// <summary>GG-T456: the closest-sounding tracks from other regions, added to the bag while the region has fewer
+        /// than <c>MusicPlaylist.MinSize</c> tracks of its own. Drop them as the region gets its own music.</summary>
+        public List<string> MusicBorrow = new List<string>();
     }
 
     public sealed class CampaignDef
     {
+        /// <summary>GG-T456: the Camp's peaceful tracks, one per return from the field.</summary>
+        public List<string> HubMusic = new List<string>();
         public List<ThemeDef> Themes = new List<ThemeDef>();
         /// <summary>GG-T231: the crawl after New Campaign's party pick, and the one after the final boss.</summary>
         public CrawlDef Prologue;
