@@ -119,6 +119,32 @@ java -jar bundletool.jar install-apks --apks=gg.apks
 
 For day-to-day testing the `-Dev` APK is simpler: `adb install -r Build\Android\GridGameGaiden.apk`.
 
+### Playing on emulated devices: Android Emulator Suite (GG-T547)
+
+To play the whole game with the mouse as it looks on a given phone or tablet, use the **Android Emulator Suite**
+(its own repo, `D:\Projects\MindAttic\Android.Emulator.Suite`; deployed to
+`C:\Apps\Android.Emulator.Suite\AndroidEmulatorSuite.exe`, Desktop shortcut "Android Emulator Suite").
+
+1. Publish the APK: `powershell -ExecutionPolicy Bypass -File tools\deploy-apk.ps1 -Build` builds the `-Dev` APK
+   and copies it to `C:\Apps\Unity.GridGame\GridGameGaiden.apk` (with `GridGameGaiden.txt`: version, commit, build
+   time). Without `-Build` it publishes the APK already in `Build\Android`. The suite's **Build APK** button runs the
+   same command.
+2. Open the suite: app **GridGame Gaiden**, pick a device from the gallery (about 100 real phones, foldables, tablets
+   and iPhone/iPad aspect profiles, with photo and specs; search and filter by form), pick an emulator (Android
+   Emulator, BlueStacks 5 or LDPlayer; only installed ones show), press **Launch**.
+3. The emulator boots shaped like that device (the Android Emulator gets the device's exact panel: resolution and
+   density, so the window has its aspect), the APK installs when missing or newer, and the game starts. Click = tap,
+   drag = drag. **Reinstall APK** installs again keeping the save; **Reset to native** restores the emulator's own
+   display; **Stop** closes it.
+
+Notes: the Android Emulator is the reference (x86_64 image, real GPU). The suite hides the emulator's Vulkan, so the
+game runs on OpenGL ES 3 there: on the emulator's Vulkan driver the development APK crashed about three minutes in
+(GG-T549). Verified 2026-11-21 on Pixel 7 (20:9), Galaxy Z Flip6 (22:9), iPad 9th gen (4:3), a 480 x 800 mdpi phone
+and BlueStacks 5; findings filed as GG-T548 (telemetry error console), GG-T550 (4:3 list screens), GG-T551 (tiny text
+at 480 x 800). LDPlayer 4 is Android 7.1 and can't install
+Gaiden (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. The development APK shows Unity's
+"Development Build" mark and has the automation endpoint (`tools/androidcheck.py` drives it over `adb forward`).
+
 ### Google Play Console (the owner)
 
 1. A Google Play developer account (one-time US$25), identity verification.
