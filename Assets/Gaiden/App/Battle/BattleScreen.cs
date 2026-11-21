@@ -1217,6 +1217,7 @@ namespace GridGame.App
                 case SlotStatus.CannotAct: return "Can't act";
                 case SlotStatus.Acted: return "Already acted this turn";
                 case SlotStatus.TooLittleTime: return $"Too little time — needs {BattleConfig.HeroActionSeconds:0.0}s"; // GG-T311
+                case SlotStatus.NoTargets: return "No one to use it on"; // GG-T501: a revive with nobody fallen, an Encore with nothing to copy
                 default: return "Empty slot";
             }
         }
