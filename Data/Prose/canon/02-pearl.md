@@ -5,6 +5,7 @@
 - **Its shell is debris.** Over ten millennia it turned and slept while dust, ice and stray stone settled on it, layer on layer, until it looked like a moon.
 - **Its name is a description.** The world calls it **the Pearl** and believes the name is only poetry. It is a literal account of how it formed.
 - **The model** is a dormant living body wearing a shell of rock: something alive that the sky disguised.
+- **It has no goals.** The Pearl is a force of nature, not a character. It does not want, plan, speak, hate or love. It sleeps, stirs, draws and sheds the way a storm or a tide does. Every motive in the story belongs to people. No text may give the Pearl lines, intent or a point of view. People may project intent onto it (the Choir calls it Mother and God), but they are wrong.
 - **Closing line:** *"Every pearl begins with something that got inside, and something that couldn't get it out."*
 
 ## The forgotten clue

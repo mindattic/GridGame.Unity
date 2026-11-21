@@ -17,7 +17,7 @@
 
 **What the co-dependency means:**
 - **If the Pearl dies,** the light in everyone goes out with it.
-- **If the Pearl wakes,** it calls back what is its own. That is the blanking.
+- **If the Pearl wakes,** its light flows back to it. That is the blanking.
 - **If people stop feeding it,** it wakes.
 
 Neither side can leave without breaking the other. This is the trap at the centre of the world, and the reason no ending is clean.
