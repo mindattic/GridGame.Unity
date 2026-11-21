@@ -76,6 +76,9 @@ namespace GridGame.Core.Battle
         public WandererSpec Wanderer;
         /// <summary>Bounty targets the player has taken for this stage (§22.4, GG-T431); empty = none.</summary>
         public List<BountyMark> Bounties = new List<BountyMark>();
+        /// <summary>GG-T542: the guided first battle. Its lessons may stage their situations (<see cref="TutorialSceneCommand"/>);
+        /// nothing else changes. Off for every other battle.</summary>
+        public bool Tutorial;
     }
 
     /// <summary>Totals the meta layer commits after the battle (XP, coins, drops, kills, bestiary).</summary>
@@ -264,6 +267,8 @@ namespace GridGame.Core.Battle
         }
 
         public bool IsOver => Phase != BattlePhase.PlayerInput;
+        /// <summary>GG-T542: the guided first battle (<see cref="BattleSetup.Tutorial"/>): <see cref="TutorialSceneCommand"/> is accepted.</summary>
+        public bool Tutorial;
 
         /// <summary>Per-battle override of <see cref="BattleEngine.StrictTiles"/> (null = follow it) — lets one test
         /// exercise the release self-heal while the rest of the suite runs strict (GG-T97).</summary>

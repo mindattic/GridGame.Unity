@@ -43,4 +43,14 @@ namespace GridGame.Core.Battle
         public float HeldSeconds;
         public override string ToString() => "Shield";
     }
+
+    /// <summary>GG-T542: the tutorial battle sets up a lesson's situation (a two-pincer chain, a charging foe, a plated
+    /// foe ...) the moment that lesson opens, so every lesson has something on the board to point at. Refused outside a
+    /// tutorial battle (<see cref="BattleState.Tutorial"/>); takes no time and no hero's turn. <see cref="Scene"/> is a
+    /// lesson id (BattleRunner.Tutorial.cs lists them); the stage's Scenes say which foe each one brings.</summary>
+    public sealed class TutorialSceneCommand : BattleCommand
+    {
+        public string Scene;
+        public override string ToString() => $"Scene {Scene}";
+    }
 }

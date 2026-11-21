@@ -6,6 +6,16 @@
     "Background": null,
     "Music": "Battle",
     "IsTest": false,
+    "Scenes": [
+      { "Id": "pincer", "Class": "slime00", "Level": 1 },
+      { "Id": "shove", "Class": "slime00", "Level": 1 },
+      { "Id": "chain", "Class": "slime00", "Level": 1 },
+      { "Id": "support", "Class": "slime00", "Level": 1 },
+      { "Id": "taunt", "Class": "goblinthug00", "Level": 1 },
+      { "Id": "pickup", "Pickup": "pk_potion" },
+      { "Id": "interrupt", "Class": "wolf00", "Level": 1 },
+      { "Id": "plate", "Class": "soldier00", "Level": 1 }
+    ],
     "Waves": [
       {
         "Enemies": [

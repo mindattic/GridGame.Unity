@@ -864,6 +864,20 @@ namespace GridGame.Core.Content
         public List<WaveDef> Waves = new List<WaveDef>();
         /// <summary>Region rule ids (regionrules.json, GG-T359) this stage plays under, on top of its theme's.</summary>
         public List<string> Rules = new List<string>();
+        /// <summary>GG-T542: the tutorial battle's lesson set-ups: which foe a lesson brings on when its situation isn't on
+        /// the board (a <see cref="TutorialSceneDef"/> per lesson id). Read only in a tutorial battle.</summary>
+        public List<TutorialSceneDef> Scenes = new List<TutorialSceneDef>();
+    }
+
+    /// <summary>GG-T542: one lesson's set-up in the tutorial battle: the lesson id (chain, interrupt, plate ...) and the
+    /// foe it brings on (spawned at the tile that makes the lesson's move possible).</summary>
+    public sealed class TutorialSceneDef
+    {
+        public string Id;
+        public string Class;
+        public int Level = 1;
+        /// <summary>The Pickups lesson's pickup id (pickups.json), dropped where a hero can walk onto it.</summary>
+        public string Pickup;
     }
 
     /// <summary>A caravan upgrade (§25.12): bought with gold, one value per level.</summary>

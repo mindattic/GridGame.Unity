@@ -47,6 +47,7 @@ namespace GridGame.Core.Battle
                 PartySize = setup.Party.Count,
                 Rng = new Rng(setup.Seed),
                 Blocks = new HashSet<Coord>(setup.Stage?.Blocks ?? new List<Coord>()),
+                Tutorial = setup.Tutorial,
             }, events);
             r.Setup(setup);
             r.EnforceTileInvariant("Setup");

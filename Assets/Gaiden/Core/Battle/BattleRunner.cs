@@ -45,6 +45,8 @@ namespace GridGame.Core.Battle
             if (S.IsOver) { Emit(new AbilityRefusedEvent { CasterId = -1, Reason = "Battle is over" }); return; }
             // GG-LAW-13: the authority refuses a command for a hero another seat owns (single-player: everyone is seat 0).
             if (!BattleEngine.IsAuthorized(S, cmd)) { Emit(new AbilityRefusedEvent { CasterId = BattleEngine.CommandHeroId(cmd), Reason = "Not your hero" }); return; }
+            // GG-T542: a tutorial set-up is no one's action: no time passes, no turn is spent.
+            if (cmd is TutorialSceneCommand scene) { DoScene(scene); EnforceTileInvariant(nameof(TutorialSceneCommand)); return; }
 
             // GG-T308 (§2.0): each hero acts once per window.
             if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit done && done.IsHero && done.ActedThisWindow)

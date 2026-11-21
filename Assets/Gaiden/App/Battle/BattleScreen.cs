@@ -192,6 +192,8 @@ namespace GridGame.App
         private bool InCrucible => Crucible.IsStage(stageId);
         /// <summary>The campaign's first stage (the tutorial battle, The Tithe Moors I).</summary>
         private bool IsFirstStage => App.Content.CampaignStages().FirstOrDefault()?.Id == stageId;
+        /// <summary>GG-T542: the tutorial battle's fixed seed: the same board, the same foes' choices, every time.</summary>
+        private const int TutorialSeed = 542;
         private bool ReduceMotion => App.Settings.ReduceMotion;
 
         protected override void Build(VisualElement root)
@@ -209,10 +211,15 @@ namespace GridGame.App
             shownCoins = -1;
             if (firstBuild)
             {
-                // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet.
-                int seed = InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
+                // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
+                bool tutorial = setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && (App.Save.HighestClearedStage < 0 || IsFirstStage)
+                    && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
+                // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet; the tutorial battle
+                // always plays the same (GG-T542), so its lessons' set pieces land the same way every time.
+                int seed = tutorial ? TutorialSeed : InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
                 var setup = setupOverride ?? BattleFactory.Build(App.Content, App.Save, stageId, seed, App.Settings?.Difficulty?.Level ?? DifficultyTable.Default);
-                if (setupOverride == null) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
+                setup.Tutorial = tutorial;
+                if (setupOverride == null && !tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
                 if (setupOverride == null && DevNextWanderer != null) { setup.Wanderer = new WandererSpec { Class = DevNextWanderer, Wave = 0 }; DevNextWanderer = null; }
                 State = BattleEngine.Create(App.Content, setup, initial);
                 recorder = new BattleRecorder(State, setup, "player", initial);
@@ -275,8 +282,7 @@ namespace GridGame.App
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
             SelectedHeroId = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive)?.Id ?? -1;
-            // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
-            if (firstBuild && setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && (App.Save.HighestClearedStage < 0 || IsFirstStage) && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active) TutorialStep = 0;
+            if (firstBuild && State.Tutorial) TutorialStep = 0;
             SyncAll();
             if (!firstBuild) return;
             App.StartCoroutine(Play(initial, false));

@@ -36,6 +36,9 @@ namespace GridGame.Core.Battle
                 case TalkCommand t:
                     o = new JObject { ["type"] = "talk", ["hero"] = t.HeroId, ["target"] = t.TargetId };
                     break;
+                case TutorialSceneCommand sc:
+                    o = new JObject { ["type"] = "scene", ["scene"] = sc.Scene };
+                    break;
                 default:
                     throw new NotSupportedException("No codec for command " + cmd.GetType().Name);
             }
@@ -64,6 +67,9 @@ namespace GridGame.Core.Battle
                     break;
                 case "talk":
                     cmd = new TalkCommand { HeroId = (int)o["hero"], TargetId = (int)o["target"] };
+                    break;
+                case "scene":
+                    cmd = new TutorialSceneCommand { Scene = (string)o["scene"] };
                     break;
                 default:
                     throw new NotSupportedException("Unknown command type " + (string)o["type"]);

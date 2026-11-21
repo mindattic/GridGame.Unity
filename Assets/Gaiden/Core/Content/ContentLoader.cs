@@ -247,6 +247,13 @@ namespace GridGame.Core.Content
             foreach (var d in db.DropTables.Values)
                 foreach (var e in d.Entries) NeedItem(e.Item, $"droptable {d.Id}");
             foreach (var s in db.Stages.Values)
+                foreach (var sc in s.Scenes ?? new List<TutorialSceneDef>())
+                {
+                    if (string.IsNullOrEmpty(sc.Id)) p.Add($"stage {s.Id}: a tutorial scene needs an Id");
+                    NeedClass(sc.Class, $"stage {s.Id} scene {sc.Id}");
+                    if (sc.Pickup != null && !db.Pickups.ContainsKey(sc.Pickup)) p.Add($"stage {s.Id} scene {sc.Id}: unknown pickup '{sc.Pickup}'");
+                }
+            foreach (var s in db.Stages.Values)
                 foreach (var w in s.Waves)
                 {
                     foreach (var e in w.Enemies) NeedClass(e.Class, $"stage {s.Id}");
