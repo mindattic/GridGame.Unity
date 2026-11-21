@@ -65,6 +65,48 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void The_disclosed_lucky_odds_are_the_chances_the_craft_rolls()
+        {
+            // GG-T503: the Blacksmith shows the Masterwork chance with and without the Diamond before purchase, from the
+            // same function the craft rolls against.
+            var c = Real; var s = Progression.NewGame(c, "LuckyOdds");
+            var (plain, lucky) = Crafting.MasterworkOdds(c, s);
+            Assert.That(plain, Is.EqualTo(Crafting.MasterworkChance(c, s)));
+            Assert.That(lucky, Is.EqualTo(Crafting.MasterworkChance(c, s, lucky: true)));
+            Assert.That(lucky, Is.GreaterThan(plain));
+            Assert.That(Crafting.LuckyOddsLine(c, s), Is.EqualTo(
+                $"Masterwork chance: {OddsText.Percent(plain)} without a Diamond, {OddsText.Percent(lucky)} with one"));
+        }
+
+        [Test]
+        public void A_craft_rolls_at_exactly_the_shown_chance_even_when_it_levels_the_forge()
+        {
+            // The craft's first roll is the Masterwork roll (Rng.Chance: NextFloat() < p), so for every seed the outcome is
+            // exactly "first float under the shown chance": the odds shown are the odds rolled, fixed before the craft's own
+            // station XP can move them. Station XP just under a level-up makes this craft's XP cross it.
+            var c = Real; var r = Candidate(c);
+            var probe = new SaveData();
+            int threshold = 0;
+            while (threshold < 100000 && StationProgress.Level(probe, StationKind.Blacksmith) == 1) probe.StationXp["blacksmith"] = ++threshold;
+            foreach (bool lucky in new[] { false, true })
+            foreach (int startXp in new[] { 0, Math.Max(0, threshold - 1) })
+            for (int seed = 0; seed < 150; seed++)
+            {
+                var s = Progression.NewGame(c, "LuckyRoll");
+                s.Gold = 100000;
+                s.StationXp["blacksmith"] = startXp;
+                foreach (var ic in r.Inputs) s.AddItem(ic.Item, ic.Count);
+                if (lucky) s.AddItem(Crafting.DiamondId, Crafting.LuckyDiamondCost);
+                var (plain, luckyChance) = Crafting.MasterworkOdds(c, s);
+                float shown = lucky ? luckyChance : plain;
+                bool expected = new Rng(seed).Chance(shown);
+                var res = Crafting.Craft(c, s, r, rng: new Rng(seed), lucky: lucky);
+                Assert.That(res.Ok, Is.True, res.Message);
+                Assert.That(Equipment.IsMasterwork(s, r.Result), Is.EqualTo(expected), $"lucky={lucky} xp={startXp} seed={seed} shown={shown}");
+            }
+        }
+
+        [Test]
         public void A_lucky_craft_needs_its_diamond_price_and_spends_exactly_that()
         {
             var c = Real; var s = Rich(c);

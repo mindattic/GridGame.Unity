@@ -34,13 +34,25 @@ namespace GridGame.App
             buy.name = "buy-diamond";
             buy.style.marginTop = Space.S8;
 
+            // The odds, disclosed before purchase (GG-T503): the Masterwork chance without and with the Diamond, from the
+            // same Crafting.MasterworkChance the craft rolls against.
+            var (plain, withDiamond) = Crafting.MasterworkOdds(c, s);
+            var odds = Ui.Para(Crafting.LuckyOddsLine(c, s), box, "gold");
+            odds.name = "lucky-odds";
+            odds.style.marginTop = Space.S8;
+
             bool can = Crafting.CanLucky(c, s, r);
-            var lucky = Ui.Button($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {Math.Round(Crafting.MasterworkChance(c, s, true) * 100)}%", () =>
+            var lucky = Ui.Button($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {OddsText.Percent(withDiamond)}", () =>
             {
                 if (!Crafting.CanLucky(c, s, r)) { DiamondStores.OfferStore(DiamondExchange.CanPay(s, Crafting.LuckyDiamondCost, r.Gold).Message); return; }
-                var res = Forging.Forge(c, s, r, lucky: true);
-                if (res.Ok) GameApp.I.Persist();
-                Reveal(res, refresh);
+                var (qd, qg) = DiamondExchange.Quote(s, Crafting.LuckyDiamondCost);
+                string pay = qg == 0 ? $"{qd:N0} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{qd:N0} Diamonds and {Ui.Gold(qg)}";
+                Confirm.Show($"Pay {pay} for a lucky craft? Masterwork chance {OddsText.Percent(withDiamond)} (without the Diamond {OddsText.Percent(plain)}).", "Lucky craft", () =>
+                {
+                    var res = Forging.Forge(c, s, r, lucky: true);
+                    if (res.Ok) GameApp.I.Persist();
+                    Reveal(res, refresh);
+                });
             }, can ? "btn--primary" : null, box);
             lucky.name = "lucky-craft-btn";
             lucky.style.marginTop = Space.S8;

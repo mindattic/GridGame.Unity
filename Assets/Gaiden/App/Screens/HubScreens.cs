@@ -1003,7 +1003,7 @@ namespace GridGame.App
             }
             Ui.Para($"{(s.Gold >= r.Gold ? "✔" : "✘")} {Ui.Gold(r.Gold)}", need, s.Gold >= r.Gold ? "good" : "bad");
             if (r.Station == CraftStation.Forge)
-                Ui.Para($"★ {Math.Round(Crafting.MasterworkChance(c, s) * 100)}% chance of a Masterwork result", need, "gold");
+                Ui.Para($"★ {OddsText.Percent(Crafting.MasterworkChance(c, s))} chance of a Masterwork result", need, "gold");
             if (Forging.IsGuided(s, r) && Forging.SuitedHero(c, s, result) is HeroSave suited)
                 Ui.Para($"First forge: free, and the {c.TryClass(suited.ClassId)?.Name ?? suited.ClassId} equips it", need, "gold");
             if (Forging.IsGuidedArmor(c, s, r) && Forging.SuitedWearer(c, s, result) is HeroSave wearer)
@@ -1339,6 +1339,7 @@ namespace GridGame.App
             var t = Ui.Text(left > 0
                 ? $"Spend Diamonds and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
                 : "No one is left on the road to answer.", "kit-text", w);
+            if (left > 0) OddsRow(w);
             var row = Ui.Actions(w);
             var icon = Art.ItemIcon(Crafting.DiamondId);
             if (icon != null)
@@ -1355,7 +1356,7 @@ namespace GridGame.App
                 if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
                 string pay = qg == 0 ? $"{qd:N0} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{qd:N0} Diamonds and {Ui.Gold(qg)}";
-                Confirm.Show($"Pay {pay} for a random summon?", "Draw", () =>
+                Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () =>
                 {
                     string drawn = null;
                     TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
@@ -1370,6 +1371,39 @@ namespace GridGame.App
                 Ui.Para("Short of Diamonds, the rest is paid in gold at the exchange rate. Diamonds also pay for a lucky craft or an instant Rested refill.", w, "dim");
                 Ui.Button("Diamond Store", DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store";
             }
+        }
+
+        /// <summary>The draw's odds, disclosed before purchase (GG-T503): one line ("Each of these 23 heroes: 1 in 23
+        /// (4.3%)", <c>summon-odds</c>) and an <b>Odds</b> button (<c>summon-odds-btn</c>) that opens the full list
+        /// (<c>summon-odds-list</c>, a row <c>summon-odds-{classId}</c> per hero with its chance). Both read
+        /// <see cref="DiamondSummon.Odds"/>, the list the draw picks from.</summary>
+        private void OddsRow(VisualElement w)
+        {
+            var odds = DiamondSummon.Odds(C, S);
+            var row = Ui.Actions(w);
+            var line = Ui.Name(DiamondSummon.OddsLine(C, S), row, "gold grow");
+            line.name = "summon-odds";
+            line.style.whiteSpace = WhiteSpace.Normal;
+            var list = Ui.El("col", w);
+            list.name = "summon-odds-list";
+            list.style.display = DisplayStyle.None;
+            foreach (var o in odds)
+            {
+                var def = C.TryClass(o.ClassId);
+                var r = Ui.El("row", list);
+                r.name = $"summon-odds-{o.ClassId}";
+                Ui.Caption(def != null ? $"{def.Name} · {def.Role}" : o.ClassId, r, "grow");
+                Ui.Caption(o.Label, r, "dim");
+            }
+            Ui.Caption("Every hero listed is equally likely. Heroes you already have never come.", list, "dim");
+            Button toggle = null;
+            toggle = Ui.Button("Odds", () =>
+            {
+                bool open = list.style.display == DisplayStyle.None;
+                list.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+                toggle.text = open ? "Hide odds" : "Odds";
+            }, "btn--small", row);
+            toggle.name = "summon-odds-btn";
         }
     }
 

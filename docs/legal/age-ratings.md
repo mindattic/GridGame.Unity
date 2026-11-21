@@ -34,7 +34,7 @@
 | Crude humour | No |
 | Gambling: real money | No |
 | Gambling: simulated | No |
-| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Diamond summon (100 Diamonds) brings a random hero; a lucky craft (50 Diamonds) raises a random Masterwork chance. Diamonds can be bought with real money (and also earned / exchanged for gold). |
+| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Diamond summon (100 Diamonds) brings a random hero; a lucky craft (50 Diamonds) raises a random Masterwork chance. Diamonds can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
 | Users interact / exchange content | No |
 | Shares location | No |
 | Digital purchases | Yes |
@@ -67,19 +67,20 @@ Items)" descriptor because of the summon.
 Expected outcome: **9+** (cartoon/fantasy violence). The loot-box answer adds a notice but doesn't by itself raise
 the age band.
 
-## Compliance gap to close before release: odds disclosure
+## Odds disclosure (done, GG-T503)
 
 Both stores require games that sell randomised items for real money, or for currency bought with real money, to
 **disclose the odds before purchase** (App Store Review Guideline 3.1.1; Google Play Payments policy, "Loot boxes").
-The game doesn't show them yet:
+The game now shows them, computed by the same code that makes the roll (BIBLE §25.18.1):
 
-- **Diamond summon:** one hero from the wanderer pool (`DiamondSummon.Pool`, the unowned heroes with no other way in),
-  each **equally likely** (1 in N, where N is the current pool size). The Summon Circle should show "Each of the N heroes
-  below is equally likely" (and the list) next to the Diamond button.
-- **Lucky craft:** the Masterwork chance it gives (the base chance + `Crafting.LuckyChanceBonus` 40 points, capped at
-  `Crafting.LuckyMaxChance` 75%) should be shown as a percentage on the lucky-craft button or its confirm dialog.
+- **Diamond summon:** one hero from the wanderer pool (the unowned heroes with no other way in), each **equally
+  likely**. The Summon Circle shows "Each of these N heroes: 1 in N (x%)" next to the Draw button, an **Odds** button
+  opens the full list of heroes with each one's chance, and the purchase confirm repeats the odds.
+- **Lucky craft:** the Blacksmith's lucky-craft window shows the Masterwork chance without and with the Diamond (base
+  chance + `Crafting.LuckyChanceBonus` 40 points, capped at `Crafting.LuckyMaxChance` 75%), and the purchase confirm
+  repeats both percentages.
 
-[Owner: file a ticket for this; it's a store-review blocker, not a nicety.]
+So the "loot box" answers above can add: odds are disclosed in-game before every purchase.
 
 ## Target audience (Play Console) and kids categories
 

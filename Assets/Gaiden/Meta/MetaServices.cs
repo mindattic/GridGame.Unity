@@ -1201,6 +1201,18 @@ namespace GridGame.Meta
             return Math.Max(0f, Math.Min(MasterworkMaxChance, chance));
         }
 
+        /// <summary>The lucky craft's odds, disclosed before purchase (GG-T503): this save's Masterwork chance without the
+        /// Diamond and with it — <see cref="MasterworkChance"/>, the very function <see cref="Craft"/> rolls against.</summary>
+        public static (float plain, float lucky) MasterworkOdds(ContentDb c, SaveData s) =>
+            (MasterworkChance(c, s), MasterworkChance(c, s, lucky: true));
+
+        /// <summary>"Masterwork chance: 15% without a Diamond, 55% with one" for the forge's lucky-craft window.</summary>
+        public static string LuckyOddsLine(ContentDb c, SaveData s)
+        {
+            var (plain, lucky) = MasterworkOdds(c, s);
+            return $"Masterwork chance: {OddsText.Percent(plain)} without a Diamond, {OddsText.Percent(lucky)} with one";
+        }
+
         /// <summary>A lucky craft fits this recipe: a Forge recipe whose result can roll Masterwork.</summary>
         public static bool LuckyEligible(ContentDb c, RecipeDef r) =>
             r != null && r.Station == CraftStation.Forge && r.ResultCount == 1 && c.TryItem(r.Result) is ItemDef it && MasterworkEligible(it);
@@ -1232,6 +1244,9 @@ namespace GridGame.Meta
             if (!HasInputs(s, r, inputs)) return Result.Fail("Missing materials");
             var result = c.Item(resultId);
             if (s.Count(result.Id) + resultCount > result.MaxStack) return Result.Fail("Can't carry more");
+            // The chance is fixed before anything changes (GG-T503): the craft's own station XP must not move the odds the
+            // player was shown.
+            float masterworkChance = MasterworkChance(c, s, lucky);
             if (lucky && !DiamondExchange.Pay(s, LuckyDiamondCost, r.Gold).Ok) return Result.Fail("Not enough Diamonds for a lucky craft");
             s.Gold -= r.Gold;
             foreach (var ic in inputs) s.AddItem(ic.Item, -ic.Count);
@@ -1242,7 +1257,7 @@ namespace GridGame.Meta
             if (!potency && r.Station == CraftStation.Forge && resultCount == 1 && MasterworkEligible(result))
             {
                 rng ??= new Rng(masterworkSeed++);
-                if (rng.Chance(MasterworkChance(c, s, lucky)))
+                if (rng.Chance(masterworkChance))
                 {
                     masterwork = true;
                     float mastery = rng.Range(1f + (lucky ? LuckyStatBonusMin : MasterworkStatBonusMin), 1f + MasterworkStatBonusMax);

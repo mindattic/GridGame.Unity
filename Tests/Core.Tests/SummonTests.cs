@@ -80,6 +80,53 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void The_disclosed_odds_are_the_pool_the_draw_picks_from()
+        {
+            // GG-T503: what the Summon Circle shows before purchase is exactly what the draw does.
+            var s = WithDiamonds("D3o", 1);
+            var pool = DiamondSummon.Pool(Real, s);
+            var odds = DiamondSummon.Odds(Real, s);
+            Assert.That(pool.Count, Is.GreaterThan(1), "the real content has several wanderers");
+            Assert.That(odds.Select(o => o.ClassId), Is.EqualTo(pool), "one entry per hero in the draw's pool, in order");
+            Assert.That(odds.Select(o => o.ClassId).Distinct().Count(), Is.EqualTo(odds.Count));
+            foreach (var o in odds)
+            {
+                Assert.That(o.OneIn, Is.EqualTo(pool.Count));
+                Assert.That(o.Chance, Is.EqualTo(1.0 / pool.Count).Within(1e-12));
+            }
+            Assert.That(odds.Sum(o => o.Chance), Is.EqualTo(1.0).Within(1e-9), "the chances cover every outcome");
+            Assert.That(odds.Select(o => o.ClassId), Does.Contain(DiamondSummon.Pick(Real, s)), "the pick is one of the listed heroes");
+            Assert.That(DiamondSummon.OddsLine(Real, s), Is.EqualTo($"Each of these {pool.Count} heroes: 1 in {pool.Count} ({OddsText.Percent(1.0 / pool.Count)})"));
+            Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
+            Assert.That(odds.Select(o => o.ClassId), Does.Contain(job.Arg), "the summoning brings a listed hero");
+        }
+
+        [Test]
+        public void Every_seed_draws_only_listed_heroes_spread_across_the_pool()
+        {
+            var s = WithDiamonds("D3s", 0);
+            var listed = DiamondSummon.Odds(Real, s).Select(o => o.ClassId).ToList();
+            var seen = new System.Collections.Generic.HashSet<string>();
+            for (int i = 0; i < 400; i++)
+            {
+                s.Recruits = i;
+                var pick = DiamondSummon.Pick(Real, s);
+                Assert.That(listed, Does.Contain(pick));
+                seen.Add(pick);
+            }
+            Assert.That(seen.Count, Is.GreaterThan(1), "not one fixed hero whatever the save");
+        }
+
+        [Test]
+        public void Odds_read_as_a_culture_free_percentage()
+        {
+            Assert.That(OddsText.Percent(1.0 / 23), Is.EqualTo("4.3%"));
+            Assert.That(OddsText.Percent(0.35f), Is.EqualTo("35%"));
+            Assert.That(OddsText.Percent(1.0), Is.EqualTo("100%"));
+            Assert.That(new DrawOdds("x", 23).Label, Is.EqualTo("1 in 23 (4.3%)"));
+        }
+
+        [Test]
         public void No_diamond_no_draw_and_one_summoning_at_a_time()
         {
             var none = WithDiamonds("D4", 0);
