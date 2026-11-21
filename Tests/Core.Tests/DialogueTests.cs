@@ -230,11 +230,11 @@ namespace GridGame.Tests
         public void Theme_start_beat_plays_once_and_never_in_test_mode()
         {
             var s = NewSave();
-            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-01")?.Id, Is.EqualTo("greenvalley_road_merchant"));
-            // A postgame theme (GG-T120) carries its own single party-talk beat, played the same way. (It's past the
-            // Blacksmith's and Alchemist's fallback theme, so their GearWorn (GG-T175) and CanBrew (GG-T176) beats would
-            // come first on a save that never met them.)
-            s.SeenDialogues.Add("greenvalley_smith"); s.SeenDialogues.Add("desert_alchemist");
+            // GG-T537: nothing before the tutorial; the Tithe Moors' party talk waits for the Merchant, who joins after it.
+            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-01"), Is.Null);
+            s.Flags.Add("npc:merchant"); s.SeenDialogues.Add("greenvalley_road_merchant");
+            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-01")?.Id, Is.EqualTo("greenvalley_party_talk"));
+            // A postgame theme (GG-T120) carries its own single party-talk beat, played the same way.
             Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-04")?.Id, Is.EqualTo("greenvalley2_party_talk"));
             s.SeenDialogues.Add("greenvalley_road_merchant"); s.SeenDialogues.Add("greenvalley_party_talk");
             Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-01"), Is.Null);
@@ -251,7 +251,9 @@ namespace GridGame.Tests
             s.ClearedStages.Add("greenvalley-01");
             Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-02")?.Id, Is.EqualTo("greenvalley_recruit_mage"), "the story recruit comes first (GG-T118)");
             s.SeenDialogues.Add("greenvalley_recruit_mage");
-            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-02")?.Id, Is.EqualTo("greenvalley_after_first"));
+            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-02"), Is.Null, "the Innkeeper's beat is the next clear (GG-T537)");
+            s.ClearedStages.Add("greenvalley-02");
+            Assert.That(DialogueRunner.PendingBeat(Real, s, "greenvalley-03")?.Id, Is.EqualTo("greenvalley_after_first"));
             // A beat's own conditions gate it too (a fixture: the shipped join beats are unconditional, GG-T119).
             var d = new DialogueDef
             {

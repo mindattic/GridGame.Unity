@@ -742,9 +742,11 @@ def fullloop(run="fullloop", battles=4, speed=3):
     gold0, inv0 = call("camp")["Gold"], _inv()
     shot("01-hub-start")
 
-    # GG-T174: a fresh camp opens stations one at a time — the Bounty board starts locked.
-    if not call("names", prefix="locked-bounties"):
-        fails.append("fresh camp: Bounties should be a locked row")
+    # GG-T174/GG-T537: a fresh camp opens stations one at a time, each on a stage clear: the Merchant (after the
+    # tutorial) and the Bounty board (after The Lantern Road III) both start locked.
+    for row in ("locked-merchant", "locked-bounties"):
+        if not call("names", prefix=row):
+            fails.append(f"fresh camp: {row} should be a locked row")
 
     # Fights: Adventure -> first stage, story beats, then `battles` battles in a row.
     call("clicktext", text="Adventure"); time.sleep(0.8)
@@ -770,6 +772,11 @@ def fullloop(run="fullloop", battles=4, speed=3):
         time.sleep(1.5)
         if not last:
             through_story(wait=1.2)
+    # GG-T537: a vendor whose stage was just cleared joins on the way back to Camp (its scene plays first).
+    time.sleep(1.0)
+    if call("state")["screen"] == "crawl":
+        call("clicktext", text="Skip"); time.sleep(1.2)
+    finish_dialogue()
     if not _wait_screen("hub", 10):
         call("goto", screen="hub"); time.sleep(1)
     camp = call("camp")
@@ -781,9 +788,16 @@ def fullloop(run="fullloop", battles=4, speed=3):
         fails.append("fights dropped nothing into the inventory")
     shot("04-hub-after-fights")
 
-    # Bounty board: opened by now (GG-T174 milestone); take the first hunt (GG-T431).
+    # GG-T537: each vendor whose stage clear is behind us has joined (Merchant 1, Innkeeper 2, Blacksmith 3, Alchemist 4).
+    for row, after in (("merchant", 1), ("inn", 2), ("blacksmith", 3), ("alchemist", 4)):
+        if battles >= after and call("names", prefix=f"locked-{row}"):
+            fails.append(f"{row} still locked after {battles} battles")
+    # Bounty board: opens after The Lantern Road III (GG-T537), the sixth clear; take the first hunt (GG-T431).
     if call("names", prefix="locked-bounties"):
-        fails.append(f"Bounties still locked after {battles} battles")
+        if battles >= 6:
+            fails.append(f"Bounties still locked after {battles} battles")
+        else:
+            notes.append(f"Bounties locked after {battles} battles (opens after the sixth clear)")
     elif _goto("bounties"):
         offers = call("camp")["bounty"]["offers"]
         if offers:

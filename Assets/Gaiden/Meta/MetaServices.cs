@@ -1476,10 +1476,6 @@ namespace GridGame.Meta
         public static bool HasLoot(SaveData s, RecipeDef r) =>
             s != null && r != null && r.Inputs.All(i => i.Item == ContentLoader.EmptyBottle || s.Count(i.Item) >= i.Count);
 
-        /// <summary>The CanBrew story trigger (the Alchemist's join beat): the player has looted enough for an
-        /// Apprentice-tier bottle recipe — their first brew.</summary>
-        public static bool LootedForFirstBrew(ContentDb c, SaveData s) => BottleRecipes(c).Any(r => r.Tier <= 1 && Facilities.Allows(c, s, r) && HasLoot(s, r));
-
         /// <summary>The bottle recipe the Alchemist's camp tip walks through: one this save can brew right now, else
         /// one whose loot is already in the bag (only the bottle missing), else null.</summary>
         public static RecipeDef FirstBrew(ContentDb c, SaveData s)
@@ -1924,8 +1920,6 @@ namespace GridGame.Meta
         /// <summary>The most worn equipped piece (lowest durability fraction), or null when nobody wears gear that wears.</summary>
         public static WornPiece MostWorn(ContentDb c, SaveData s) => Pieces(c, s).OrderBy(p => p.Fraction).FirstOrDefault();
 
-        /// <summary>True once any equipped piece is below <paramref name="percent"/>% of its max — the GearWorn story trigger (GG-T175).</summary>
-        public static bool AnyBelow(ContentDb c, SaveData s, int percent) => Pieces(c, s).Any(p => p.Durability * 100 < p.Max * percent);
 
         public static Result RepairWeapon(ContentDb c, SaveData s, HeroSave h)
         {

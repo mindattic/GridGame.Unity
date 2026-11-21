@@ -1108,15 +1108,12 @@ namespace GridGame.Core.Content
     // interpreter over these shapes; conditions and effects are the save's own vocabulary, not a script.
     // ─────────────────────────────────────────────────────────────────────────────
 
-    /// <summary>When a dialogue plays. Story beats (ThemeStart, StageCleared, GearWorn, CanBrew) play once, between battles,
+    /// <summary>When a dialogue plays. Story beats (ThemeStart, StageCleared) play once, between battles,
     /// from StageLauncher; Talk dialogues are picked from Camp's Talk row and may repeat unless <see cref="DialogueDef.Once"/>.
-    /// GearWorn (GG-T175) fires once any hero's equipped weapon or armor first falls below <see cref="DialogueTrigger.Percent"/>
-    /// of its max durability — the moment a repair first matters — or, if <see cref="DialogueTrigger.Id"/> names a theme,
-    /// at the latest on launching any stage of that theme or a later one (so a party that never wears gear still meets him).
-    /// CanBrew (GG-T176) fires once the bag holds every looted input — everything but the Empty Bottle — of some
-    /// Apprentice-tier bottle recipe (the player's first brew), with the same optional fallback theme in <see cref="DialogueTrigger.Id"/>.
-    /// FirstArmor (GG-T179) fires once the guided first armor piece has been forged (the save flag
-    /// <c>onboard:first-armor</c>), with the same optional fallback theme in <see cref="DialogueTrigger.Id"/>.
+    /// GG-T537 (owner, 2026-11-21): every Camp vendor joins on a story beat of the campaign, never on an incidental trigger,
+    /// so a JoinNpc or OpenStation effect lives only in an unconditional StageCleared beat. That beat also plays on the way
+    /// back to Camp after the clear (the join moment), not only at the next launch. The old GearWorn, CanBrew and
+    /// FirstArmor triggers (GG-T175/T176/T179) were removed with it.
     /// Recruit (GG-T132) is never played between battles: a stage's <see cref="RecruitableDef.Dialogue"/> names it and the
     /// battle speaks it when a hero talks to the neutral (<see cref="DialogueTrigger.Id"/> = the recruitable's class).
     /// LevelReached (GG-T231) fires once any roster hero is at <see cref="DialogueTrigger.Level"/> or above — on the way back
@@ -1129,17 +1126,14 @@ namespace GridGame.Core.Content
     /// question from the wanderer with three replies for the companion, one per <see cref="DialogueChoice.Wit"/> (+1 wins
     /// the point, 0 is neutral, -1 loses it); a later node goes on to <see cref="DialogueDef.OutcomeNext"/>, where the meta
     /// layer's rule (the standing) picks <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
-    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, GearWorn, CanBrew, FirstArmor, Recruit, LevelReached, StageStart,
-        Wanderer }
+    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer }
 
     public sealed class DialogueTrigger
     {
         public DialogueTriggerKind Kind;
         /// <summary>ThemeStart: the theme id. StageCleared: the stage id. Talk: who it's with — a hero class id,
-        /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC). GearWorn, CanBrew, FirstArmor: optional fallback theme id.</summary>
+        /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC).</summary>
         public string Id;
-        /// <summary>GearWorn only: the durability percentage (1-99) a piece must fall below.</summary>
-        public int Percent;
         /// <summary>LevelReached only: the hero level (2+) that fires it.</summary>
         public int Level;
     }
@@ -1164,8 +1158,10 @@ namespace GridGame.Core.Content
     /// GrantSkillPoint (GG-T133) gives a hero — <see cref="DialogueEffect.Id"/> as a class id, or "$with"/null for the
     /// Talk partner — <see cref="DialogueEffect.Amount"/> skill points (default 1), once per dialogue per hero: the
     /// save flag <c>sp:&lt;dialogue&gt;:&lt;hero&gt;</c> guards it, so a replayed Talk can't farm it.
-    /// StartQuest (GG-T237) puts the quests.json quest <see cref="DialogueEffect.Id"/> into the journal (no-op if it's under way or done).</summary>
-    public enum DialogueEffectType { SetFlag, ClearFlag, GrantGold, GrantItem, RecruitHero, JoinNpc, JoinHero, GrantSkillPoint, StartQuest }
+    /// StartQuest (GG-T237) puts the quests.json quest <see cref="DialogueEffect.Id"/> into the journal (no-op if it's under way or done).
+    /// OpenStation (GG-T537) marks the story beat that opens a keeperless Camp station (<see cref="DialogueDef.Stations"/>):
+    /// the station itself opens on the stage clear (Meta's CampUnlocks); the effect only announces it.</summary>
+    public enum DialogueEffectType { SetFlag, ClearFlag, GrantGold, GrantItem, RecruitHero, JoinNpc, JoinHero, GrantSkillPoint, StartQuest, OpenStation }
 
     public sealed class DialogueEffect
     {
@@ -1220,6 +1216,9 @@ namespace GridGame.Core.Content
     {
         /// <summary>Camp NPC ids a JoinNpc effect / NpcJoined condition / "npc:" Talk may name (GG-T119 gates services on them).</summary>
         public static readonly string[] Npcs = { "blacksmith", "alchemist", "enchantress", "merchant", "innkeeper" };
+        /// <summary>GG-T537: the keeperless Camp stations an OpenStation effect may name (Summon Circle with the Diamond Store,
+        /// Bounties with the Mercenaries, the Crucible, the Caravan).</summary>
+        public static readonly string[] Stations = { "summon", "bounties", "crucible", "caravan" };
 
         /// <summary>Wanderer talks (GG-T342): the two endings the <see cref="OutcomeNext"/> marker resolves to.</summary>
         public const string JoinNode = "join", PartNode = "part", OutcomeNext = "$outcome";

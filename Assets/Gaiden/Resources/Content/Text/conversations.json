@@ -1047,6 +1047,45 @@
         ]
       }
     },
+    "dialogue:desert_crucible": {
+      "key": "dialogue:desert_crucible",
+      "id": "conversation-desert-crucible",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9a77fee6923c7bc25506140a7f72cd1779e65215ff6459a149ee75cd47251c4c",
+      "about": [
+        "character-blacksmith",
+        "place-desert-01"
+      ],
+      "speakers": [
+        "character-blacksmith",
+        "$lead"
+      ],
+      "payload": {
+        "title": "Glass that remembers",
+        "start": "a",
+        "nodes": [
+          {
+            "id": "a",
+            "speaker": "character-blacksmith",
+            "line": "",
+            "next": "b"
+          },
+          {
+            "id": "b",
+            "speaker": "$lead",
+            "line": "",
+            "next": "c"
+          },
+          {
+            "id": "c",
+            "speaker": "character-blacksmith",
+            "line": ""
+          }
+        ]
+      }
+    },
     "dialogue:desert_party_talk": {
       "key": "dialogue:desert_party_talk",
       "id": "conversation-desert-party-talk",
@@ -1537,6 +1576,45 @@
         ]
       }
     },
+    "dialogue:lanternroad_bounties": {
+      "key": "dialogue:lanternroad_bounties",
+      "id": "conversation-lanternroad-bounties",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:958217db5e0960fc0348273bf4e8ff9b67d24c63f40df5b9961db9c27730bd21",
+      "about": [
+        "character-innkeeper",
+        "place-lanternroad-03"
+      ],
+      "speakers": [
+        "character-innkeeper",
+        "$lead"
+      ],
+      "payload": {
+        "title": "Names on the board",
+        "start": "a",
+        "nodes": [
+          {
+            "id": "a",
+            "speaker": "character-innkeeper",
+            "line": "",
+            "next": "b"
+          },
+          {
+            "id": "b",
+            "speaker": "$lead",
+            "line": "",
+            "next": "c"
+          },
+          {
+            "id": "c",
+            "speaker": "character-innkeeper",
+            "line": ""
+          }
+        ]
+      }
+    },
     "dialogue:lanternroad_party_talk": {
       "key": "dialogue:lanternroad_party_talk",
       "id": "conversation-lanternroad-party-talk",
@@ -1566,6 +1644,45 @@
             "id": "b",
             "speaker": "character-merchant",
             "line": "Occaecat cupidatat non proident sunt in. Culpa qui officia deserunt mollit anim id est laborum sed. Ut perspiciatis unde omnis iste natus. Error."
+          }
+        ]
+      }
+    },
+    "dialogue:lanternroad_summon_circle": {
+      "key": "dialogue:lanternroad_summon_circle",
+      "id": "conversation-lanternroad-summon-circle",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:6bd732a9f3c5099e3f5e051d198da3e1f1552784a2bb9fc39057afc2b39f9627",
+      "about": [
+        "character-alchemist",
+        "place-lanternroad-02"
+      ],
+      "speakers": [
+        "$lead",
+        "character-alchemist"
+      ],
+      "payload": {
+        "title": "The first thaw",
+        "start": "a",
+        "nodes": [
+          {
+            "id": "a",
+            "speaker": "$lead",
+            "line": "",
+            "next": "b"
+          },
+          {
+            "id": "b",
+            "speaker": "character-alchemist",
+            "line": "",
+            "next": "c"
+          },
+          {
+            "id": "c",
+            "speaker": "$lead",
+            "line": ""
           }
         ]
       }
@@ -3247,6 +3364,45 @@
             "id": "b",
             "speaker": "character-enchantress",
             "line": "Ea commodo consequat duis aute irure. Dolor in reprehenderit in voluptate velit esse. Cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt."
+          }
+        ]
+      }
+    },
+    "dialogue:swamp_caravan": {
+      "key": "dialogue:swamp_caravan",
+      "id": "conversation-swamp-caravan",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:dcbc18e06aaeea020b6bc4103412b243aca100c46e1f0e492bba5c5fdeffbd01",
+      "about": [
+        "character-merchant",
+        "place-swamp-02"
+      ],
+      "speakers": [
+        "character-merchant",
+        "$lead"
+      ],
+      "payload": {
+        "title": "Wheels from the wrecks",
+        "start": "a",
+        "nodes": [
+          {
+            "id": "a",
+            "speaker": "character-merchant",
+            "line": "",
+            "next": "b"
+          },
+          {
+            "id": "b",
+            "speaker": "$lead",
+            "line": "",
+            "next": "c"
+          },
+          {
+            "id": "c",
+            "speaker": "character-merchant",
+            "line": ""
           }
         ]
       }

@@ -549,7 +549,7 @@ namespace GridGame.App
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
                 Subline(row, hint);
             }
-            // GG-T518: a hint ("Joins when gear wears below 60%", "After The Lantern Road II") is wider than a row's value
+            // GG-T518: a hint ("Joins after The Tithe Moors III", "Opens after The Lantern Road II", GG-T537) is wider than a row's value
             // column; scrolled there as a marquee (GG-T448) it read as fragments ("oins at The") most of the time. It now
             // sits whole, wrapping if it must, in small type under the row's name.
             void Subline(VisualElement row, string text)
@@ -587,7 +587,7 @@ namespace GridGame.App
             // Talk (§27.1, GG-T117): chat with party members and joined Camp NPCs.
             int newTalks = DialogueRunner.TalkPartners(s).Count(p => { var t = DialogueRunner.TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); });
             Item("Talk", () => new TalkScreen(), newTalks > 0 ? $"{newTalks} new" : "");
-            // Camp NPCs (GG-T119): each station opens once its keeper has joined the caravan at a story beat.
+            // Camp NPCs (GG-T119): each station opens once its keeper has joined the caravan at a story beat (GG-T537: a stage clear).
             Station("Merchant", CampUnlocks.NpcOpen(s, CampNpcs.Merchant), CampUnlocks.JoinHint(c, CampNpcs.Merchant), () => new ShopScreen());
             if (CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
             {
@@ -611,8 +611,10 @@ namespace GridGame.App
                 Item("Quests", () => new QuestScreen(), questsReady > 0 ? $"! {questsReady} to hand in" : $"{s.Quests.Active.Count} under way");
             Station("Summon Circle", CampUnlocks.SummonOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), () => new SummonScreen());
             // The Diamond Store (§25.18.1, GG-T455): the gold exchange and the real-money packs.
-            if (Features.DiamondStore)
+            // GG-T537: the Diamond Store's row opens with the Summon Circle (a Diamond's first use is a summon).
+            if (Features.DiamondStore && CampUnlocks.DiamondStoreOpen(s))
                 Ui.MenuRow("Diamond Store", $"{DiamondExchange.Have(s):N0} Diamonds", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
+            else if (Features.DiamondStore) Station("Diamond Store", false, CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), null);
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));
@@ -1043,7 +1045,7 @@ namespace GridGame.App
         }
 
         /// <summary>The results screen's Continue: the ending if this victory earned it; else the chapter crawl this
-        /// victory earned (GG-T386), then Camp; else Camp via any interlude. A level interlude due with a chapter waits for
+        /// victory earned (GG-T386), then any vendor join beat (GG-T537), then Camp; else Camp via any interlude. A level interlude due with a chapter waits for
         /// the next launch or results screen, so two scrolls never play back to back.</summary>
         public static void AfterResults(bool victory, string stageId)
         {
@@ -1057,9 +1059,21 @@ namespace GridGame.App
                     new CreditsScreen(() => new TitleScreen())));
                 return;
             }
-            var hub = new HubScreen();
-            var withChapter = WithChapter(hub);
-            app.Router.ResetTo(withChapter != hub ? withChapter : Camp());
+            // GG-T386: the chapter crawl this victory earned, then Camp. GG-T537: a vendor's join beat (no crawl of its own)
+            // still plays between the scroll and Camp, so the vendor arrives with the party; a level interlude waits.
+            var ch = Story.ChapterDue(app.Content, app.Save);
+            if (ch == null) { app.Router.ResetTo(Camp()); return; }
+            Story.MarkChapterSeen(app.Content, app.Save, ch);
+            app.Persist();
+            app.Router.ResetTo(new StoryCrawlScreen(ch, VendorsThenCamp()));
+        }
+
+        /// <summary>GG-T537: Camp, after every vendor join beat that's due (one after another).</summary>
+        private static GameScreen VendorsThenCamp()
+        {
+            var app = GameApp.I;
+            var beat = DialogueRunner.PendingVendorBeat(app.Content, app.Save);
+            return beat == null ? new HubScreen() : Play(beat, VendorsThenCamp, null);
         }
 
         /// <summary>A new campaign's first screen: the prologue crawl (if any), then Camp.</summary>

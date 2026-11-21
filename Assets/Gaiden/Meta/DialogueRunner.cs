@@ -224,7 +224,10 @@ namespace GridGame.Meta
                     return had ? null : $"{c.Class(e.Id).Name} joins you!";
                 }
                 case DialogueEffectType.JoinNpc:
-                    return s.Flags.Add(ContentLoader.NpcFlagPrefix + e.Id) ? $"The {Npc(e.Id)} joins the caravan!" : null;
+                    // Named bare, like every archetype (canon, 2026-11-21): "Blacksmith joins the caravan!".
+                    return s.Flags.Add(ContentLoader.NpcFlagPrefix + e.Id) ? $"{Npc(e.Id)} joins the caravan!" : null;
+                case DialogueEffectType.OpenStation:
+                    return $"{CampUnlocks.StationName(e.Id)} opens at Camp!";
                 case DialogueEffectType.JoinHero:
                     return JoinStoryHero(c, s, Summon.StoryPick(c, s, e.Id, e.Role));
                 case DialogueEffectType.StartQuest:
@@ -273,7 +276,8 @@ namespace GridGame.Meta
 
         /// <summary>The story beat to play before launching <paramref name="stageId"/>, or null: the first dialogue
         /// (file order) not yet seen whose ThemeStart names the stage's theme, whose StageCleared stage is
-        /// cleared, whose GearWorn threshold some equipped piece has fallen below, or whose CanBrew loot is in the bag (GG-T176), or whose FirstArmor piece has been forged (GG-T179), and whose conditions hold. Test Mode saves never get story (GG-T93: bot-only).</summary>
+        /// cleared, whose LevelReached level is reached or whose StageStart is this stage, and whose conditions hold. Test
+        /// Mode saves never get story (GG-T93: bot-only).</summary>
         public static DialogueDef PendingBeat(ContentDb c, SaveData s, string stageId) =>
             s == null || s.TestMode ? null : NextBeat(c, s, stageId);
 
@@ -297,9 +301,6 @@ namespace GridGame.Meta
                 if (d.Trigger == null || s.SeenDialogues.Contains(d.Id) || !All(c, s, d.Conditions)) continue;
                 bool fires = d.Trigger.Kind == DialogueTriggerKind.ThemeStart && theme != null && string.Equals(d.Trigger.Id, theme.Id, StringComparison.OrdinalIgnoreCase)
                     || d.Trigger.Kind == DialogueTriggerKind.StageCleared && s.ClearedStages.Contains(d.Trigger.Id)
-                    || d.Trigger.Kind == DialogueTriggerKind.GearWorn && (Repair.AnyBelow(c, s, d.Trigger.Percent) || ReachedTheme(c, theme, d.Trigger.Id))
-                    || d.Trigger.Kind == DialogueTriggerKind.CanBrew && (Brewing.LootedForFirstBrew(c, s) || ReachedTheme(c, theme, d.Trigger.Id))
-                    || d.Trigger.Kind == DialogueTriggerKind.FirstArmor && (s.Flags.Contains(Forging.FirstArmorFlag) || ReachedTheme(c, theme, d.Trigger.Id))
                     || d.Trigger.Kind == DialogueTriggerKind.LevelReached && LevelReached(s, d.Trigger.Level)
                     || d.Trigger.Kind == DialogueTriggerKind.StageStart && string.Equals(d.Trigger.Id, stageId, StringComparison.OrdinalIgnoreCase);
                 if (fires) return d;
@@ -310,22 +311,27 @@ namespace GridGame.Meta
         /// <summary>True once any roster hero is at <paramref name="level"/> or above (GG-T231).</summary>
         public static bool LevelReached(SaveData s, int level) => level > 0 && s.Roster.Any(h => Progression.Level(h) >= level);
 
-        /// <summary>GG-T231: the LevelReached beat to play on the way back to Camp after a battle (it would otherwise
-        /// wait for the next launch), or null. Never on a Test Mode save.</summary>
+        /// <summary>GG-T231: the beat to play on the way back to Camp after a battle (it would otherwise wait for the next
+        /// launch), or null: a LevelReached interlude, or (GG-T537) a vendor's join beat: a StageCleared beat that joins a
+        /// Camp NPC or opens a station, once its stage is cleared, so the vendor arrives at Camp with the party. Never on a
+        /// Test Mode save.</summary>
         public static DialogueDef PendingInterlude(ContentDb c, SaveData s)
         {
             if (s == null || s.TestMode) return null;
-            return c.DialogueOrder.FirstOrDefault(d => d.Trigger?.Kind == DialogueTriggerKind.LevelReached && !s.SeenDialogues.Contains(d.Id)
-                && LevelReached(s, d.Trigger.Level) && All(c, s, d.Conditions));
+            return c.DialogueOrder.FirstOrDefault(d => d.Trigger != null && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions)
+                && (d.Trigger.Kind == DialogueTriggerKind.LevelReached && LevelReached(s, d.Trigger.Level) || VendorBeatDue(s, d)));
         }
 
-        /// <summary>True when <paramref name="theme"/> is <paramref name="fallbackThemeId"/> or comes after it in the campaign.</summary>
-        private static bool ReachedTheme(ContentDb c, ThemeDef theme, string fallbackThemeId)
-        {
-            if (theme == null || fallbackThemeId == null) return false;
-            int at = c.Campaign.Themes.FindIndex(t => string.Equals(t.Id, fallbackThemeId, StringComparison.OrdinalIgnoreCase));
-            return at >= 0 && c.Campaign.Themes.IndexOf(theme) >= at;
-        }
+        /// <summary>GG-T537: the first vendor join beat due on the way to Camp (its stage cleared, not yet played), or null.
+        /// Never on a Test Mode save.</summary>
+        public static DialogueDef PendingVendorBeat(ContentDb c, SaveData s) =>
+            s == null || s.TestMode ? null : c.DialogueOrder.FirstOrDefault(d => !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && VendorBeatDue(s, d));
+
+        private static bool VendorBeatDue(SaveData s, DialogueDef d) => IsVendorBeat(d) && s.ClearedStages.Contains(d.Trigger.Id);
+
+        /// <summary>GG-T537: a Camp vendor's join beat: a StageCleared story beat with a JoinNpc or OpenStation effect.</summary>
+        public static bool IsVendorBeat(DialogueDef d) => d?.Trigger?.Kind == DialogueTriggerKind.StageCleared
+            && d.AllEffects().Any(e => e != null && (e.Type == DialogueEffectType.JoinNpc || e.Type == DialogueEffectType.OpenStation));
 
         /// <summary>Who Camp's Talk row offers: the party, then every joined NPC ("npc:&lt;id&gt;").</summary>
         public static List<string> TalkPartners(SaveData s)

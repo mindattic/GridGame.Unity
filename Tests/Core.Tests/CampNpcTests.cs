@@ -80,12 +80,12 @@ namespace GridGame.Tests
                 Assert.That(DialogueRunner.TalkTopic(Real, s, ContentLoader.NpcFlagPrefix + npc), Is.Not.Null, $"nothing to say to the {npc}");
         }
 
-        /// <summary>Launching the campaign in order (every pending beat per launch, as StageLauncher does) meets every NPC
-        /// early: the Merchant before battle 1, the Innkeeper and Blacksmith inside the Tithe Moors expedition (the
-        /// Blacksmith once a hero's gear first wears below 60%, GG-T175 — here after two stages), the Alchemist at the
-        /// Shardfall and the Enchantress at the Arkgrave — well before the end of the first act.</summary>
+        /// <summary>GG-T537 (owner): every Camp vendor joins on a story beat of the campaign, clearing a stage, one at a time:
+        /// the Merchant after the tutorial (The Tithe Moors I), the Innkeeper after the second, the Blacksmith after the
+        /// prologue boss (The Tithe Moors III), the Alchemist after The Lantern Road I and the Enchantress after The
+        /// Arkgrave I. Played in order: each launch's pending beats, the clear, then the join beats on the way to Camp.</summary>
         [Test]
-        public void Playing_the_campaign_in_order_meets_everyone_by_the_third_expedition()
+        public void Playing_the_campaign_in_order_meets_each_vendor_after_its_stage()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
@@ -93,33 +93,57 @@ namespace GridGame.Tests
             foreach (var stage in c.CampaignStages())
             {
                 DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
-                foreach (var n in Npcs) if (CampNpcs.Joined(s, n) && !met.ContainsKey(n)) met[n] = stage.Id;
+                foreach (var n in Npcs) Assert.That(CampNpcs.Joined(s, n) && !met.ContainsKey(n), Is.False, $"{n} joined before {stage.Id} was cleared, off its beat");
                 s.ClearedStages.Add(stage.Id);
-                if (stage.Id == "greenvalley-02") WearLeadWeapon(c, s, 0.5f);
+                for (var d = DialogueRunner.PendingVendorBeat(c, s); d != null; d = DialogueRunner.PendingVendorBeat(c, s))
+                    DialogueRunner.PlayHeadless(c, s, d);
+                foreach (var n in Npcs) if (CampNpcs.Joined(s, n) && !met.ContainsKey(n)) met[n] = stage.Id;
             }
             Assert.That(met.Keys, Is.EquivalentTo(Npcs), "someone is never met");
             Assert.That(met[CampNpcs.Merchant], Is.EqualTo("greenvalley-01"));
             Assert.That(met[CampNpcs.Innkeeper], Is.EqualTo("greenvalley-02"));
             Assert.That(met[CampNpcs.Blacksmith], Is.EqualTo("greenvalley-03"));
-            Assert.That(met[CampNpcs.Alchemist], Is.EqualTo("desert-01"));
+            Assert.That(met[CampNpcs.Alchemist], Is.EqualTo("lanternroad-01"));
             Assert.That(met[CampNpcs.Enchantress], Is.EqualTo("swamp-01"));
         }
 
-        /// <summary>GG-T179 (§25.0.8): the Enchantress joins once the first armor piece is forged — wherever the party is —
-        /// and hands over an Arcane Dust toward the first enchant; a party that never forges armor meets her at the Fens.</summary>
+        /// <summary>GG-T537: no vendor waits on an incidental trigger. Every join beat is an unconditional StageCleared beat,
+        /// and no two vendors share a stage, so new systems arrive one at a time.</summary>
         [Test]
-        public void The_enchantress_joins_after_the_first_armor_piece()
+        public void Every_vendor_joins_on_its_own_stage_clear()
+        {
+            var stages = new HashSet<string>();
+            foreach (var npc in Npcs)
+            {
+                var beat = CampUnlocks.JoinBeat(Real, npc);
+                Assert.That(beat, Is.Not.Null, $"no stage-clear beat joins the {npc}");
+                Assert.That(beat.Conditions, Is.Empty, beat.Id);
+                Assert.That(stages.Add(beat.Trigger.Id), $"{npc} shares {beat.Trigger.Id} with another vendor");
+            }
+            foreach (var station in DialogueDef.Stations)
+            {
+                var beat = Real.DialogueOrder.Single(d => DialogueRunner.IsVendorBeat(d) && d.AllEffects().Any(e => e.Type == DialogueEffectType.OpenStation && e.Id == station));
+                Assert.That(stages.Add(beat.Trigger.Id), $"the {station} station shares {beat.Trigger.Id} with another vendor");
+            }
+        }
+
+        /// <summary>GG-T537: the Enchantress joins after The Arkgrave I, armor forged or not, and hands over an Arcane Dust
+        /// toward the first enchant.</summary>
+        [Test]
+        public void The_enchantress_joins_after_the_arkgrave_i()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-02");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Enchantress), Is.False, "no armor yet");
-            s.Flags.Add(Forging.FirstArmorFlag);
+            s.ClearedStages.Add("desert-03");
+            DialogueRunner.PlayPendingBeatsHeadless(c, s, "swamp-01");
+            Assert.That(CampNpcs.Joined(s, CampNpcs.Enchantress), Is.False, "not before The Arkgrave I is cleared");
             int dust = s.Count("mat_arcane_dust");
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-02");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Enchantress), Is.True, "joins after the first armor, still in the Tithe Moors");
+            s.ClearedStages.Add("swamp-01");
+            Assert.That(DialogueRunner.PendingInterlude(c, s)?.Id, Is.EqualTo("swamp_enchantress"), "her scene plays on the way to Camp");
+            DialogueRunner.PlayHeadless(c, s, DialogueRunner.PendingInterlude(c, s));
+            Assert.That(CampNpcs.Joined(s, CampNpcs.Enchantress), Is.True);
             Assert.That(s.Count("mat_arcane_dust"), Is.EqualTo(dust + 1), "she brings an Arcane Dust");
-            Assert.That(CampUnlocks.JoinHint(c, CampNpcs.Enchantress), Is.EqualTo("Joins once you've forged your first armor"));
+            Assert.That(CampUnlocks.JoinHint(c, CampNpcs.Enchantress), Is.EqualTo("Joins after The Arkgrave I"));
         }
 
         /// <summary>Gives the lead a weapon worn to <paramref name="fraction"/> of its max, as battles would.</summary>
@@ -132,48 +156,65 @@ namespace GridGame.Tests
             return Repair.MostWorn(c, s);
         }
 
+        /// <summary>GG-T537 (supersedes GG-T521): the Blacksmith joins after the prologue boss, The Tithe Moors III, whatever
+        /// the party's gear looks like. Worn gear alone no longer brings him.</summary>
         [Test]
-        public void The_blacksmith_joins_once_gear_first_wears_below_sixty_percent()
+        public void The_blacksmith_joins_after_the_prologue_boss_not_on_worn_gear()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Blacksmith), Is.False, "no gear yet: nothing to mend");
-            WearLeadWeapon(c, s, 0.7f);
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Blacksmith), Is.False, "70% is still fine");
-            WearLeadWeapon(c, s, 0.55f);
-            Assert.That(DialogueRunner.PendingBeat(c, s, "greenvalley-01")?.Id, Is.EqualTo("greenvalley_smith"));
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
+            WearLeadWeapon(c, s, 0.1f);
+            s.ClearedStages.Add("greenvalley-01"); s.ClearedStages.Add("greenvalley-02");
+            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-03");
+            Assert.That(CampNpcs.Joined(s, CampNpcs.Blacksmith), Is.False, "worn gear is not his beat");
+            s.ClearedStages.Add("greenvalley-03");
+            Assert.That(CampUnlocks.Arrivals(c, s, "greenvalley-03"), Does.Contain("Blacksmith joins the caravan"), "the results screen says so");
+            Assert.That(DialogueRunner.PendingInterlude(c, s)?.Id, Is.EqualTo("greenvalley_smith"));
+            var log = DialogueRunner.PlayHeadless(c, s, DialogueRunner.PendingInterlude(c, s));
             Assert.That(CampNpcs.Joined(s, CampNpcs.Blacksmith), Is.True);
-
-            var never = Progression.NewGame(c, "T");
-            DialogueRunner.PlayPendingBeatsHeadless(c, never, "desert-01");
-            Assert.That(CampNpcs.Joined(never, CampNpcs.Blacksmith), Is.True, "a party that never wears gear still meets him at the Shardfall");
+            Assert.That(log, Does.Contain("Blacksmith joins the caravan!"), "named bare, like every archetype");
+            Assert.That(CampUnlocks.Arrivals(c, s, "greenvalley-03"), Is.Empty, "told once");
+            Assert.That(CampUnlocks.JoinHint(c, CampNpcs.Blacksmith), Is.EqualTo("Joins after The Tithe Moors III"));
         }
 
-        /// <summary>GG-T176 (§25.0.5): the Alchemist's beat fires once the bag holds the loot for a first bottle brew,
-        /// hands over an Empty Bottle so that brew can happen, and still fires at the Shardfall for a party that never loots.</summary>
+        /// <summary>GG-T537: the Alchemist joins after The Lantern Road I with nothing looted, and hands over an Empty
+        /// Bottle toward the guided first brew (section 25.0.5).</summary>
         [Test]
-        public void The_alchemist_joins_once_the_loot_for_a_first_brew_is_in_the_bag()
+        public void The_alchemist_joins_after_the_lantern_road_i_with_a_bottle()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Alchemist), Is.False, "nothing looted yet");
-            s.AddItem("mat_wolf_pelt", 1);
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
-            Assert.That(CampNpcs.Joined(s, CampNpcs.Alchemist), Is.False, "a pelt alone isn't a healing brew");
-            s.AddItem("mat_tattered_cloth", 1);
-            Assert.That(DialogueRunner.PendingBeat(c, s, "greenvalley-01")?.Id, Is.EqualTo("desert_alchemist"));
-            DialogueRunner.PlayPendingBeatsHeadless(c, s, "greenvalley-01");
+            s.ClearedStages.Add("lanternroad-01");
+            for (var d = DialogueRunner.PendingVendorBeat(c, s); d != null; d = DialogueRunner.PendingVendorBeat(c, s))
+                DialogueRunner.PlayHeadless(c, s, d);
             Assert.That(CampNpcs.Joined(s, CampNpcs.Alchemist), Is.True);
             Assert.That(s.Count(ContentLoader.EmptyBottle), Is.EqualTo(1), "he hands over the first bottle");
-            Assert.That(Crafting.HasInputs(s, c.Recipes["recipe_bottle_healing"]), Is.True, "so the first brew is ready");
+            Assert.That(CampUnlocks.SmithWorkshopOpen(s), Is.True, "and the Blacksmith's workshop opens with him");
+            Assert.That(CampUnlocks.JoinHint(c, CampNpcs.Alchemist), Is.EqualTo("Joins after The Lantern Road I"));
+        }
 
-            var never = Progression.NewGame(c, "T");
-            DialogueRunner.PlayPendingBeatsHeadless(c, never, "desert-01");
-            Assert.That(CampNpcs.Joined(never, CampNpcs.Alchemist), Is.True, "a party that never loots still meets him at the Shardfall");
+        /// <summary>GG-T537: a save from before vendors joined on stage clears gets every vendor whose stage it has cleared
+        /// on load, with those scenes taken as told; a current save past a beat gets the vendor too and still sees the
+        /// scene; nobody met under the old triggers leaves.</summary>
+        [Test]
+        public void Saves_past_a_vendor_beat_get_the_vendor_on_load()
+        {
+            var old = Progression.NewGame(Real, "Old");
+            old.Version = 11;
+            old.Flags.Add("npc:merchant"); old.Flags.Add("npc:alchemist"); // met under the old ThemeStart/CanBrew triggers
+            foreach (var id in new[] { "greenvalley-01", "greenvalley-02", "greenvalley-03" }) old.ClearedStages.Add(id);
+            old.HighestClearedStage = 2;
+            SaveMigrations.Migrate(old, Real);
+            Assert.That(Npcs.Where(n => CampNpcs.Joined(old, n)), Is.EquivalentTo(new[] { CampNpcs.Merchant, CampNpcs.Innkeeper, CampNpcs.Blacksmith, CampNpcs.Alchemist }),
+                "the Innkeeper and Blacksmith arrive; the early Alchemist stays");
+            Assert.That(old.SeenDialogues, Does.Contain("greenvalley_smith").And.Contain("greenvalley_after_first"));
+            Assert.That(DialogueRunner.PendingVendorBeat(Real, old), Is.Null, "no run of join scenes at the next Camp");
+
+            var current = Progression.NewGame(Real, "Now");
+            current.ClearedStages.Add("greenvalley-01"); current.HighestClearedStage = 0;
+            SaveMigrations.Migrate(current, Real);
+            Assert.That(CampNpcs.Joined(current, CampNpcs.Merchant), Is.True);
+            Assert.That(DialogueRunner.PendingVendorBeat(Real, current)?.Id, Is.EqualTo("greenvalley_road_merchant"), "a current save still gets the scene");
         }
 
         [Test]

@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 11;
+        public const int CurrentVersion = 12;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -574,6 +574,10 @@ namespace GridGame.Meta
                 s.Purchases = new PurchaseSave();
                 s.Version = 11;
             }
+            // GG-T537: Camp vendors now join on stage clears. A save from before (v11 or older) already past a vendor's stage
+            // takes that beat as told (below, once content is at hand), so it doesn't get a run of join scenes at once.
+            bool beforeStoryVendors = s.Version < 12;
+            if (s.Version < 12) s.Version = 12;
             s.Purchases ??= new PurchaseSave();
             s.Purchases.Granted ??= new Dictionary<string, PurchaseRecord>(StringComparer.Ordinal);
             foreach (var h in s.Roster)
@@ -590,6 +594,7 @@ namespace GridGame.Meta
             Notes.Clear();
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) EnsureLead(s, c);
+            if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             if (c != null)
                 foreach (var h in s.Roster)
                 {
@@ -653,6 +658,34 @@ namespace GridGame.Meta
                 while (s.Party.Count > Progression.MaxPartySize) s.Party.RemoveAt(s.Party.Count - 1);
             }
             catch (Exception e) { Notes.Add($"couldn't add the lead: {e.Message}"); }
+        }
+
+        /// <summary>GG-T537: every Camp vendor whose story beat's stage this save has cleared is with the caravan: a save past
+        /// the beat (made before vendors joined on stage clears, or one that skipped the scene) gets the vendor on load, never
+        /// locked out. Nobody is ever removed: a vendor met earlier under the old triggers stays. <paramref name="markTold"/>
+        /// (a save from before GG-T537) also takes every vendor beat it is past as told, so the scenes don't all play at
+        /// the next Camp. Idempotent; never throws.</summary>
+        public static void EnsureVendors(SaveData s, ContentDb c, bool markTold)
+        {
+            if (s == null || c == null) return;
+            try
+            {
+                s.Flags ??= new HashSet<string>();
+                s.SeenDialogues ??= new HashSet<string>();
+                var stages = c.CampaignStages();
+                foreach (var d in c.DialogueOrder)
+                {
+                    if (!DialogueRunner.IsVendorBeat(d)) continue;
+                    string stage = d.Trigger.Id;
+                    int at = stages.FindIndex(st => string.Equals(st.Id, stage, StringComparison.OrdinalIgnoreCase));
+                    if (!(s.ClearedStages != null && s.ClearedStages.Contains(stage)) && !(at >= 0 && at <= s.HighestClearedStage)) continue;
+                    foreach (var e in d.AllEffects())
+                        if (e?.Type == DialogueEffectType.JoinNpc && s.Flags.Add(ContentLoader.NpcFlagPrefix + e.Id))
+                            Notes.Add($"{DialogueRunner.Npc(e.Id)} joined (the save is past {stage}, GG-T537)");
+                    if (markTold) s.SeenDialogues.Add(d.Id);
+                }
+            }
+            catch (Exception e) { Notes.Add($"couldn't bring the Camp vendors: {e.Message}"); }
         }
 
         /// <summary>GG-T52: if <paramref name="itemId"/> is equipped but <paramref name="h"/> isn't nominally

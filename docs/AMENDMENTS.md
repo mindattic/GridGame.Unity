@@ -1394,3 +1394,19 @@ Owner (canon decisions, 2026-11-21): the story's one fixed protagonist is Warden
   the reserve and is in no recruit pool; an old save gains Warden on load. Their kit adds a small engine piece, [Guarded]
   (`BuffDef.Intercepts`): the next foe's blow on the guarded ally falls on Warden within 2 tiles.
 - *Why:* the story has Warden's face and voice; the roster gathers around them.
+
+## 2026-11-21 — Every Camp vendor joins on a story beat (owner, GG-T537; supersedes GG-T521)
+
+Owner: the Blacksmith and every other Camp vendor join on a story beat that is part of the campaign progression, not
+through incidental triggers.
+
+- **Was:** the Merchant joined at the start of the Tithe Moors, the Innkeeper after its first stage, the Blacksmith when a
+  hero's gear first wore below 60% (the fresh run: 45 minutes in), the Alchemist once the loot for a brew was in the bag,
+  the Enchantress after the first forged armor; Bounties opened after 2 clears, the Summon Circle and Crucible after 5,
+  the Caravan after 10, and the Diamond Store row was always open.
+- **Now ([BIBLE §25.0.1.1](BIBLE.md#25011-every-vendor-joins-on-a-story-beat-amended-2026-11-21-owner-gg-t537-supersedes-gg-t521)):**
+  one arrival per stage clear: Merchant 1, Innkeeper 2, Blacksmith 3 (the prologue boss), Alchemist 4 (with the forge
+  workshop), Summon Circle and Diamond Store 5, Bounties and Mercenaries 6, Crucible 7, Enchantress 10, Caravan 11. Each
+  has a short join scene (lorem in Prose until written) on the way back to Camp and a line on the results screen; the
+  `GearWorn`, `CanBrew` and `FirstArmor` triggers are removed. Saves past a beat get the vendor on load (save v12).
+- *Why:* new systems arrive one at a time at a steady pace, each just before it's needed, and each is part of the story.

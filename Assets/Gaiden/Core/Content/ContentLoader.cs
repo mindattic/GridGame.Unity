@@ -632,18 +632,6 @@ namespace GridGame.Core.Content
                 case DialogueTriggerKind.StageCleared:
                     if (trigger.Id == null || !db.Stages.ContainsKey(trigger.Id)) p.Add($"{w}: unknown trigger stage '{trigger.Id}'");
                     break;
-                case DialogueTriggerKind.GearWorn:
-                    if (trigger.Percent < 1 || trigger.Percent > 99) p.Add($"{w}: GearWorn needs a Percent of 1-99, has {trigger.Percent}");
-                    if (trigger.Id != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, trigger.Id, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: unknown GearWorn fallback theme '{trigger.Id}'");
-                    break;
-                case DialogueTriggerKind.CanBrew:
-                    if (!new List<RecipeDef>(db.Recipes.Values).Exists(r => r.Station == CraftStation.Alchemy && r.Tier <= 1 && r.Inputs.Exists(i => i.Item == EmptyBottle)))
-                        p.Add($"{w}: CanBrew needs an Apprentice-tier Alchemy recipe that takes an {EmptyBottle}");
-                    if (trigger.Id != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, trigger.Id, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: unknown CanBrew fallback theme '{trigger.Id}'");
-                    break;
-                case DialogueTriggerKind.FirstArmor:
-                    if (trigger.Id != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, trigger.Id, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: unknown FirstArmor fallback theme '{trigger.Id}'");
-                    break;
                 case DialogueTriggerKind.Talk:
                     if (trigger.Id == "party") break;
                     if (trigger.Id != null && trigger.Id.StartsWith(NpcFlagPrefix)) { if (!IsNpc(trigger.Id.Substring(NpcFlagPrefix.Length))) p.Add($"{w}: unknown Talk NPC '{trigger.Id}'"); }
@@ -735,7 +723,14 @@ namespace GridGame.Core.Content
                         break;
                     case DialogueEffectType.StartQuest:
                         if (db.TryQuest(e.Id) == null) p.Add($"{where}: unknown quest '{e.Id}'"); break;
+                    case DialogueEffectType.OpenStation:
+                        if (e.Id == null || Array.IndexOf(DialogueDef.Stations, e.Id) < 0) p.Add($"{where}: unknown Camp station '{e.Id}'"); break;
                 }
+                // GG-T537 (owner): a Camp vendor joins on a story beat of the campaign (clear a stage), never on an
+                // incidental trigger, and always: the beat is a StageCleared one with no conditions.
+                if ((e.Type == DialogueEffectType.JoinNpc || e.Type == DialogueEffectType.OpenStation)
+                    && (trigger.Kind != DialogueTriggerKind.StageCleared || d.Conditions.Count > 0))
+                    p.Add($"{where}: {e.Type} belongs in an unconditional StageCleared story beat (GG-T537)");
             }
             foreach (var c in d.Conditions) Cond(c, w);
 

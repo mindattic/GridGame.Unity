@@ -86,6 +86,13 @@ namespace GridGame.App
                 if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).Q<Label>("label").AddToClassList("good");
                 foreach (var g in report.GuestsJoined)
                     Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).Q<Label>("label").AddToClassList("good");
+                // GG-T537: a vendor whose story beat is this clear arrives at Camp (its join scene plays on the way there).
+                foreach (var arrival in CampUnlocks.Arrivals(c, App.Save, stageId))
+                {
+                    var ar = Ui.MenuRow(arrival + "!", "At Camp", null, list);
+                    ar.name = "results-arrival";
+                    ar.Q<Label>("label").AddToClassList("good");
+                }
                 foreach (var offer in report.TameOffers) TameOfferBlock(offer, c, list); // GG-T303
                 if (report.WandererOffer != null) WandererBlock(report.WandererOffer, c, list); // GG-T342
                 if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list);

@@ -876,7 +876,7 @@ namespace GridGame.App
             if (!workshop) tab = RepairTab;
             var bar = Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i =>
             {
-                if (!workshop && i != RepairTab) { App.Toast(CampUnlocks.SmithWorkshopHint); App.Audio.Sfx("ui.error"); return; }
+                if (!workshop && i != RepairTab) { App.Toast(CampUnlocks.SmithWorkshopHint(App.Content)); App.Audio.Sfx("ui.error"); return; }
                 tab = i; selected = null; Refresh();
             }, body);
             if (!workshop)
