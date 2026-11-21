@@ -252,7 +252,10 @@ namespace GridGame.Tests
         [Test]
         public void Repair_cost_grows_roughly_1_6x_per_prior_repair()
         {
-            var item = new ItemDef { Id = "w", BaseCost = 100, Durability = 100 };
+            // A pricey piece (100 G per durability point), so the costs are in the hundreds and Cost's whole-gold
+            // ceiling can't swamp the ratio whatever Repair.RepairRate is tuned to (at 1 G a point and 0.15 the
+            // costs were 2/3/4, so ceiling noise read as 1.33x; GG-T528).
+            var item = new ItemDef { Id = "w", BaseCost = 10000, Durability = 100 };
             // Hold "missing" constant across repair counts by offsetting current with EffectiveMax, so only
             // the 1.6x-per-repair multiplier in Repair.Cost moves between calls.
             int cost0 = Repair.Cost(item, Repair.EffectiveMax(item, 0) - 10, 0);
