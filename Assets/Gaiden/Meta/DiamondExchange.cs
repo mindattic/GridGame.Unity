@@ -161,6 +161,12 @@ namespace GridGame.Meta
         void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done);
         /// <summary>A purchase that finished outside a <see cref="Purchase"/> call (the App toasts it and saves).</summary>
         event Action<PurchaseResult> Delivered;
+        /// <summary>The platform offers a "Restore purchases" action (GG-T469: Apple's restore re-sends unfinished
+        /// transactions; consumables already finished are never restorable on any store).</summary>
+        bool CanRestore { get; }
+        /// <summary>Asks the store to re-deliver anything unfinished; each one arrives through <see cref="Delivered"/>
+        /// (granted once, by the ledger). <paramref name="done"/> says whether the store answered.</summary>
+        void Restore(Action<PurchaseResult> done);
     }
 
     public static class DiamondStore
@@ -180,6 +186,8 @@ namespace GridGame.Meta
         public string Status => "Test store (dev build): purchases are free and land at once.";
         public bool Connected => true;
         public event Action<PurchaseResult> Delivered { add { } remove { } }
+        public bool CanRestore => false;
+        public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, "Nothing to restore in the test store."));
 
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
         {
@@ -197,6 +205,8 @@ namespace GridGame.Meta
         public string Status => DiamondStore.NotConnected + ". Diamonds can still be exchanged for gold.";
         public bool Connected => false;
         public event Action<PurchaseResult> Delivered { add { } remove { } }
+        public bool CanRestore => false;
+        public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected));
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done) =>
             done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected, pack?.ProductId));
     }

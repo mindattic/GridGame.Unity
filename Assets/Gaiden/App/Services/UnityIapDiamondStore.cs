@@ -79,6 +79,11 @@ namespace GridGame.App
         {
             link = Link.Connected;
             problem = null;
+            if (!revokeHooked && store.AppleStoreExtendedPurchaseService != null)
+            {
+                store.AppleStoreExtendedPurchaseService.OnEntitlementRevoked += OnRevoked;
+                revokeHooked = true;
+            }
             store.FetchProducts(DiamondStore.Packs.Select(p => new ProductDefinition(p.ProductId, ProductType.Consumable)).ToList());
         }
 
@@ -121,25 +126,121 @@ namespace GridGame.App
 
         private static string ProductIdOf(Order order) => order?.CartOrdered?.Items()?.FirstOrDefault()?.Product?.definition?.id;
 
+        /// <summary>Paid orders that arrived with no save loaded (the title screen): granted to the first save loaded.</summary>
+        private readonly List<PendingOrder> waiting = new List<PendingOrder>();
+        private bool draining;
+
+        private static string LedgerStore => Application.platform == RuntimePlatform.IPhonePlayer ? "AppleAppStore" : "GooglePlay";
+
+        private static bool HasSave(GameApp app) => app != null && app.Save != null && app.Slot >= 0;
+
         private void OnPurchasePending(PendingOrder order)
         {
-            var id = ProductIdOf(order);
-            var pack = DiamondStore.Packs.FirstOrDefault(p => p.ProductId == id);
             var app = GameApp.I;
-            if (pack == null)
+            if (!HasSave(app))
             {
-                // Not one of ours (a retired product): finish it so the store stops re-delivering it.
-                Debug.LogWarning("[IAP] unknown product in a pending order: " + id);
-                store.ConfirmPurchase(order);
+                // GG-T469: nowhere to put the Diamonds yet. Hold the order (unfinished, so the store keeps it too) and grant
+                // it the moment a save is loaded.
+                if (!waiting.Contains(order)) waiting.Add(order);
+                if (!draining && app != null) { app.Ticked += DrainWaiting; draining = true; }
                 return;
             }
-            if (app?.Save == null) return; // no save loaded yet: left unfinished, re-delivered on the next fetch
-            var r = DiamondExchange.Grant(app.Content, app.Save, pack.Diamonds);
-            app.Persist();
+            Fulfil(app, order);
+        }
+
+        private void DrainWaiting(float dt)
+        {
+            var app = GameApp.I;
+            if (!HasSave(app) || waiting.Count == 0) return;
+            var batch = waiting.ToList();
+            waiting.Clear();
+            foreach (var o in batch) Fulfil(app, o);
+        }
+
+        /// <summary>GG-T469: grant through the ledger (once per transaction id), write the save, and only then finish the
+        /// order with the store. A failed write leaves the order unfinished: it comes back, and the in-memory ledger keeps
+        /// this session from paying it twice.</summary>
+        private void Fulfil(GameApp app, PendingOrder order)
+        {
+            var id = ProductIdOf(order);
+            var tx = order?.Info?.TransactionID;
+            if (string.IsNullOrEmpty(tx))
+            {
+                Debug.LogWarning("[IAP] pending order without a transaction id, left unfinished: " + id);
+                return;
+            }
+            if (GrantedInAnotherSlot(app, tx))
+            {
+                Debug.Log($"[IAP] {tx} was already granted in another save slot; finishing it");
+                store.ConfirmPurchase(order);
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, "That purchase was already delivered to another save.", id));
+                return;
+            }
+            var outcome = PurchaseLedger.Grant(app.Save, tx, id, DateTime.UtcNow, LedgerStore, out int diamonds);
+            switch (outcome)
+            {
+                case GrantOutcome.UnknownProduct:
+                    // Not one of ours (a retired product): finish it so the store stops re-delivering it.
+                    Debug.LogWarning("[IAP] unknown product in a pending order: " + id);
+                    store.ConfirmPurchase(order);
+                    Answer(id, PurchaseResult.Of(PurchaseKind.Failed, "That product isn't sold any more.", id));
+                    return;
+                case GrantOutcome.AlreadyGranted:
+                    Debug.Log($"[IAP] {tx} re-delivered; already granted, finishing it");
+                    store.ConfirmPurchase(order);
+                    Answer(id, PurchaseResult.Of(PurchaseKind.Granted, "That purchase was already delivered.", id));
+                    return;
+                case GrantOutcome.Invalid:
+                    return;
+            }
+            if (!app.Saves.Write(app.Slot, app.Save))
+            {
+                Debug.LogWarning($"[IAP] save write failed after granting {tx}; leaving the order unfinished so it comes back");
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{diamonds:N0} Diamonds, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
+                return;
+            }
             store.ConfirmPurchase(order);
-            Answer(id, r.Ok
-                ? PurchaseResult.Of(PurchaseKind.Granted, $"+{pack.Diamonds:N0} Diamonds. Thank you!", id, pack.Diamonds)
-                : PurchaseResult.Of(PurchaseKind.Failed, r.Message, id));
+            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{diamonds:N0} Diamonds. Thank you!", id, diamonds));
+        }
+
+        /// <summary>A re-delivered order granted in another slot of this profile before its confirm reached the store.</summary>
+        private static bool GrantedInAnotherSlot(GameApp app, string tx)
+        {
+            for (int i = 0; i < SaveStore.Slots; i++)
+            {
+                if (i == app.Slot || !app.Saves.Exists(i)) continue;
+                if (PurchaseLedger.Has(app.Saves.Load(i), tx)) return true;
+            }
+            return false;
+        }
+
+        private bool revokeHooked;
+
+        /// <summary>GG-T469: Apple reported a purchase refunded. Take back what's left of it (never gold, never below zero).
+        /// Google reports refunds of consumed purchases only to a server (the Voided Purchases API), which this game doesn't
+        /// have, so on Android a refund after delivery isn't clawed back.</summary>
+        private void OnRevoked(string productId)
+        {
+            var app = GameApp.I;
+            if (!HasSave(app)) return;
+            int taken = PurchaseLedger.RefundLatest(app.Save, productId);
+            Debug.Log($"[IAP] entitlement revoked for {productId}: took back {taken} Diamonds");
+            if (taken <= 0) return;
+            app.Persist();
+            Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, $"A refunded purchase was reversed: {taken:N0} Diamonds removed.", productId));
+        }
+
+        public bool CanRestore => Connected && Application.platform == RuntimePlatform.IPhonePlayer;
+
+        public void Restore(Action<PurchaseResult> done)
+        {
+            if (!Connected) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, Status)); return; }
+            // Google Play re-sends unfinished orders on every fetch; Apple's restore re-sends unfinished transactions.
+            // Either way anything found arrives through OnPurchasePending and the ledger grants it at most once.
+            store.FetchPurchases();
+            store.RestoreTransactions((ok, error) => done?.Invoke(ok
+                ? PurchaseResult.Of(PurchaseKind.Granted, "Purchases checked. Anything unfinished has been delivered.")
+                : PurchaseResult.Of(PurchaseKind.Failed, "Couldn't check purchases" + (string.IsNullOrEmpty(error) ? "." : ": " + error))));
         }
 
         private void OnPurchaseConfirmed(Order order)

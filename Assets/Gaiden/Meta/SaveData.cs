@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 10;
+        public const int CurrentVersion = 11;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -93,6 +93,9 @@ namespace GridGame.Meta
         public RestedSave Rested = new RestedSave();
         /// <summary>Paid, timed paywall jobs still running (§25.18, <see cref="Paywall"/>).</summary>
         public List<PaywallJob> Jobs = new List<PaywallJob>();
+        /// <summary>Real-money purchases already granted, by store transaction id (§25.18.1, GG-T469, <see cref="PurchaseLedger"/>).
+        /// Save v11: an older build refuses this save rather than drop the ledger and pay a re-delivered order twice.</summary>
+        public PurchaseSave Purchases = new PurchaseSave();
         public Dictionary<string, BestiaryEntry> Bestiary = new Dictionary<string, BestiaryEntry>();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
@@ -562,6 +565,15 @@ namespace GridGame.Meta
                 Facilities.Grandfather(s);
                 s.Version = 10;
             }
+            if (s.Version < 11)
+            {
+                // GG-T469: the purchase ledger. No older save bought anything with real money (release builds had no store
+                // before GG-T468), so it starts empty.
+                s.Purchases = new PurchaseSave();
+                s.Version = 11;
+            }
+            s.Purchases ??= new PurchaseSave();
+            s.Purchases.Granted ??= new Dictionary<string, PurchaseRecord>(StringComparer.Ordinal);
             foreach (var h in s.Roster)
             {
                 h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();

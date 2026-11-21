@@ -125,6 +125,8 @@ namespace GridGame.App
                     var row = Ui.MenuRow($"{pack.Diamonds:N0} Diamonds", pack.Price, () => Buy(store, pack), packs, icon);
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
+                if (store.CanRestore)
+                    Ui.MenuRow("Restore purchases", "", () => store.Restore(r => Done(r.ToResult(), false)), packs).name = "diamond-restore";
                 Ui.Note("A flat rate: every pack is the same price per Diamond.", packs);
             }
 
