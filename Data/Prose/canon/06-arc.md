@@ -24,7 +24,7 @@ Because the light is shared, every ending costs everyone:
 
 - **Keep the Lullaby.** Side with the Choir: the Pearl sleeps and the world keeps its light, paid for in people. You may end the Choir's skim, which slows the decline, or leave it, and the sleep keeps thinning.
 - **Cut the lines.** Sever every tap and the pull stops. The Pearl drifts back up. Without the circuit, people's borrowed light dims to what it was before the seam, so lives become shorter, quieter and plainer, but wholly their own. The world learns to live under an empty sky, as before.
-- **Wake it.** Break the shell and let the Pearl wake: something small, old and starved, caught ten thousand years ago, whose light has been living in strangers ever since. It will not bargain or forgive. It will do what waking things do. The choice is people's alone: whether to let the light go home and who must be ready when it does. The ending is the world after, shaped by how well people prepared, not by anything the Pearl decides.
+- **Let it arrive.** Stop the Lullaby and let the ten-thousand-year arrival finish. The Pearl is something small, old and starved, caught mid-landing, whose light has been living in strangers ever since. No one knows if it is predator, protector or neither, and nothing in the game answers that before the choice. This is the gamble ending: people choose to stop holding it back without knowing what they are letting in. What follows must stay true to the mystery and must not reveal a tidy answer about what it is.
 
 ## Open questions (owner to decide)
 
