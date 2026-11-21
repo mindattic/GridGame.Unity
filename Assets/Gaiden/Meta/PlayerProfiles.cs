@@ -31,6 +31,8 @@ namespace GridGame.Meta
             public const string MenuTheme = "menuTheme";
             /// <summary>The player's own window themes (GG-T407): an array of <see cref="WindowThemeDef"/> objects.</summary>
             public const string CustomThemes = "customThemes";
+            /// <summary>Brightness/Contrast/Gamma per preset theme (GG-T563): {"&lt;name&gt;": {"brightness", "contrast", "gamma"}}.</summary>
+            public const string ThemeTones = "themeTones";
             public const string FontName = "fontName";
             /// <summary>Which one-time look migration the file has had (GG-T385): missing/0 = from before the Chrono default.</summary>
             public const string LookVersion = "lookVersion";
@@ -84,6 +86,7 @@ namespace GridGame.Meta
             d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
+            d.ThemeTones = ReadThemeTones(g.GetObject(Keys.ThemeTones));
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
             if (diff != null)
@@ -121,6 +124,14 @@ namespace GridGame.Meta
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));
             g.Set(Keys.CustomThemes, themes);
             var x = s.Difficulty ?? new DifficultySettings();
+            var tones = new JsonObject();
+            foreach (var kv in s.ThemeTones ?? new Dictionary<string, WindowToneDef>())
+            {
+                if (string.IsNullOrEmpty(kv.Key) || kv.Value == null || kv.Value.Tone.IsNeutral) continue;
+                var t = kv.Value.Tone;
+                tones.Set(kv.Key, new JsonObject().Set(ToneBrightness, t.Brightness).Set(ToneContrast, t.Contrast).Set(ToneGamma, t.Gamma));
+            }
+            g.Set(Keys.ThemeTones, tones);
             var diff = g.GetOrAddObject(Keys.Difficulty);
             diff.Set(DifficultyLevelKey, DifficultyTable.Clamp(x.Level));
             foreach (var legacy in new[] { "preset", "enemyHp", "enemyDamage", "enemySpeed", "rewardGold", "rewardXp", "itemDropRate" })
@@ -147,6 +158,22 @@ namespace GridGame.Meta
         }
 
         /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
+        private const string ToneBrightness = "brightness", ToneContrast = "contrast", ToneGamma = "gamma";
+
+        /// <summary>The preset tone map in a settings.json (GG-T563); a missing value reads 0.5, a missing map is empty.</summary>
+        private static Dictionary<string, WindowToneDef> ReadThemeTones(JsonObject o)
+        {
+            var map = new Dictionary<string, WindowToneDef>(StringComparer.OrdinalIgnoreCase);
+            if (o == null) return map;
+            foreach (var kv in o)
+            {
+                if (string.IsNullOrEmpty(kv.Key) || !(kv.Value is JsonObject t)) continue;
+                var tone = new WindowTone(t.GetFloat(ToneBrightness, WindowTone.Neutral), t.GetFloat(ToneContrast, WindowTone.Neutral), t.GetFloat(ToneGamma, WindowTone.Neutral));
+                if (!tone.IsNeutral) map[kv.Key] = WindowToneDef.From(tone);
+            }
+            return map;
+        }
+
         public const int CurrentLookVersion = 3;
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>

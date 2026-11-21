@@ -12,7 +12,8 @@ namespace GridGame.App
     /// trigger games ... super flexible and easily modifiable with many different themes to choose from"). A live preview
     /// window up top, then four tabs: Presets (every themes.json preset and the profile's own), Colors (gradient mode, the
     /// four corner colours or 2-4 stops with angle/centre, each colour on R/G/B sliders with a hex readout, grain),
-    /// Texture (overlay, opacity, blend, scale) and Frame (style, 1-3 frame colours, accent, text). Every change applies to
+    /// Texture (overlay, opacity, blend, scale), Frame (style, 1-3 frame colours, accent, text) and Tone (Brightness,
+    /// Contrast, Gamma for the device's display, GG-T563: kept at once, per theme, on this device). Every change applies to
     /// the whole UI at once; Save keeps it as a named custom theme in settings.json, Reset returns to what was picked,
     /// Delete removes a custom one. Leaving with unsaved changes puts the saved theme back.
     /// </summary>
@@ -21,7 +22,7 @@ namespace GridGame.App
         public override string Id => "windows";
         protected override string Title => "Windows";
 
-        private static readonly string[] TabNames = { "Presets", "Colors", "Texture", "Frame" };
+        private static readonly string[] TabNames = { "Presets", "Colors", "Texture", "Frame", "Tone" };
         private static readonly string[] CornerNames = { "Top left", "Top right", "Bottom left", "Bottom right" };
 
         private WindowThemeDef draft;
@@ -55,7 +56,8 @@ namespace GridGame.App
                 case 0: BuildPresets(c); break;
                 case 1: BuildColors(c); break;
                 case 2: BuildTexture(c); break;
-                default: BuildFrame(c); break;
+                case 3: BuildFrame(c); break;
+                default: BuildTone(c); break;
             }
             float restore = savedScroll;
             list.RegisterCallback<GeometryChangedEvent>(_ => { if (restore > 0) { list.scrollOffset = new Vector2(0, restore); restore = 0; } });
@@ -77,6 +79,7 @@ namespace GridGame.App
         {
             // Unsaved edits don't outlive the editor: the saved theme comes back.
             if (dirty) { dirty = false; App.ApplySettings(); App.Toast("Unsaved window changes discarded"); }
+            if (tonePendingSave) { tonePendingSave = false; App.SaveSettings(); }
         }
 
         private void Rebuild()
@@ -137,7 +140,7 @@ namespace GridGame.App
         private void BuildPresets(VisualElement c)
         {
             Ui.Section("Presets", c);
-            Grid(c, WindowThemes.Presets, "preset");
+            Grid(c, WindowThemes.Presets.Select(WindowThemes.Tuned), "preset");
             Ui.Section(St.CustomThemes.Count > 0 ? $"Yours ({St.CustomThemes.Count}/{WindowThemeCatalog.MaxCustom})" : "Yours: edit any theme, then Save", c);
             if (St.CustomThemes.Count > 0) Grid(c, St.CustomThemes, "custom");
 
@@ -199,13 +202,14 @@ namespace GridGame.App
             l.style.unityTextAlign = TextAnchor.MiddleCenter;
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.alignSelf = Align.Stretch; // wraps against the tile's width, not its own shrink-wrapped one
-            if (t.Text != null) l.style.color = WindowThemes.Hex(t.Text, Color.white);
+            // Each tile reads in its own theme's text colour, not the one the active theme puts on the whole stage.
+            l.style.color = WindowThemes.TextColorOf(t) ?? Palette.Text;
             return tile;
         }
 
         private void Pick(WindowThemeDef t)
         {
-            draft = t.Clone();
+            draft = WindowThemes.Resolve(t.Name).Clone();
             baseName = t.Name;
             dirty = false;
             St.MenuTheme = t.Name;
@@ -500,6 +504,67 @@ namespace GridGame.App
 
         /// <summary>A colour chip: filled with its colour, its name and hex over it; gold-framed when selected.</summary>
         private void Chip(VisualElement parent, string label, Func<string> get, int perRow, bool selected, Action onTap, string name)
+        // ── Tone (GG-T563) ──────────────────────────────────────────────────────────
+
+        private const int ToneSteps = 100, ToneMid = ToneSteps / 2;
+
+        /// <summary>Brightness, Contrast and Gamma for this device's display (owner 2026-11-21: "adjusted based on the
+        /// devices on quirks when it comes to nits"). Each bar starts at 0.5 (the theme as authored, marked at the centre)
+        /// and goes either way. Kept at once, apart from Save: a preset's goes in settings.json's tone map (themes.json stays
+        /// pristine), a custom theme's into the theme itself.</summary>
+        private void BuildTone(VisualElement c)
+        {
+            Ui.Section("Display", c);
+            string Fmt(int v) => (v / (float)ToneSteps).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+            int Pos(float v) => Mathf.RoundToInt(v * ToneSteps);
+            var tone = draft.Tone;
+            Slider(c, "Brightness", "window-brightness", 0, ToneSteps, Pos(tone.Brightness), Fmt, v => SetTone(b: v / (float)ToneSteps), mark: ToneMid);
+            Slider(c, "Contrast", "window-contrast", 0, ToneSteps, Pos(tone.Contrast), Fmt, v => SetTone(k: v / (float)ToneSteps), mark: ToneMid);
+            Slider(c, "Gamma", "window-gamma", 0, ToneSteps, Pos(tone.Gamma), Fmt, v => SetTone(g: v / (float)ToneSteps), mark: ToneMid);
+            var row = Ui.El("row", c);
+            row.style.justifyContent = Justify.FlexEnd;
+            row.style.marginTop = Space.S8;
+            row.style.paddingRight = Space.S16;
+            var reset = Ui.Button("Reset", () => { SetTone(WindowTone.Neutral, WindowTone.Neutral, WindowTone.Neutral); Rebuild(); }, null, row);
+            reset.name = "window-tone-reset";
+            void ShowReset() => Ui.SetEnabled(reset, !draft.Tone.IsNeutral);
+            ShowReset();
+            live.Add(ShowReset);
+        }
+
+        private bool tonePendingSave;
+
+        /// <summary>Moves the draft's tone (any value left null stays) and keeps it for the theme it came from, then repaints
+        /// the UI live. Not an edit to Save: it doesn't mark the theme changed.</summary>
+        private void SetTone(float? b = null, float? k = null, float? g = null)
+        {
+            var t = draft.Tone;
+            var tone = new WindowTone(b ?? t.Brightness, k ?? t.Contrast, g ?? t.Gamma);
+            draft.Tone = tone;
+            int i = St.CustomThemes.FindIndex(x => x.Name == baseName);
+            if (i >= 0) St.CustomThemes[i].Tone = tone;
+            else if (tone.IsNeutral) St.ThemeTones.Remove(baseName);
+            else St.ThemeTones[baseName] = WindowToneDef.From(tone);
+            if (Root == null) return;
+            if (!pending)
+            {
+                pending = true;
+                Root.schedule.Execute(() =>
+                {
+                    pending = false;
+                    Art.ApplyTheme(draft);
+                    Ui.ApplyMenuTheme(App.Document != null ? App.Document.rootVisualElement : null);
+                    foreach (var a in live.ToList()) a();
+                });
+            }
+            // settings.json once the bar settles, not on every pointer move.
+            if (!tonePendingSave)
+            {
+                tonePendingSave = true;
+                Root.schedule.Execute(() => { tonePendingSave = false; App.SaveSettings(); }).ExecuteLater(400);
+            }
+        }
+
         {
             var cell = Ui.El(null, parent);
             cell.style.width = Length.Percent(100f / Mathf.Max(1, perRow));
@@ -555,8 +620,9 @@ namespace GridGame.App
             Slider(c, "B", "window-b", 0, 255, Channel(0), v => v.ToString(), v => SetChannel(0, v), Palette.Hero);
         }
 
-        /// <summary>A labelled slider: − and + buttons (one step) either side of a track that follows a drag or a tap.</summary>
-        private void Slider(VisualElement c, string label, string name, int min, int max, int value, Func<int, string> fmt, Action<int> onChange, Color? tint = null)
+        /// <summary>A labelled slider: − and + buttons (one step) either side of a track that follows a drag or a tap.
+        /// <paramref name="mark"/> draws a tick at that value (the neutral centre of a two-way bar, GG-T563).</summary>
+        private void Slider(VisualElement c, string label, string name, int min, int max, int value, Func<int, string> fmt, Action<int> onChange, Color? tint = null, int? mark = null)
         {
             var row = Ui.El("row", c);
             row.name = name;
@@ -600,6 +666,18 @@ namespace GridGame.App
             {
                 float w = track.contentRect.width;
                 if (w <= 0) return;
+            if (mark.HasValue && max > min)
+            {
+                var tick = Ui.El(null, track);
+                tick.name = name + "-mark";
+                tick.pickingMode = PickingMode.Ignore;
+                tick.style.position = Position.Absolute;
+                tick.style.left = Length.Percent((Mathf.Clamp(mark.Value, min, max) - min) * 100f / (max - min));
+                tick.style.top = tick.style.bottom = Space.S8;
+                tick.style.width = Size.Hairline;
+                tick.style.marginLeft = -Size.Hairline / 2f;
+                tick.style.backgroundColor = Palette.Text;
+            }
                 Set(Mathf.RoundToInt(min + Mathf.Clamp01(local.x / w) * (max - min)), true);
             }
             track.RegisterCallback<PointerDownEvent>(e => { track.CapturePointer(e.pointerId); FromPointer(e.localPosition); e.StopPropagation(); });

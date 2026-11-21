@@ -406,6 +406,10 @@ namespace GridGame.Meta
         public string FontName = DefaultFontName;
         public const string DefaultMenuTheme = "Classic", DefaultFontName = "Rounded";
         /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
+        /// <summary>The player's Brightness/Contrast/Gamma for each preset theme, by theme name (GG-T563): kept here, on the
+        /// device, so themes.json stays pristine and an update never wipes the tuning. A preset not listed is at 0.5/0.5/0.5;
+        /// a custom theme carries its own values.</summary>
+        public Dictionary<string, WindowToneDef> ThemeTones = new Dictionary<string, WindowToneDef>(StringComparer.OrdinalIgnoreCase);
         /// overlong words break at <see cref="Hyphenation"/> points).</summary>
         public bool Hyphenate;
         /// <summary>Settings → Text size (GG-T495): 100, 115 or 130 percent of the menu type scale; anything else reads as 100.</summary>

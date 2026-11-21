@@ -23,6 +23,25 @@ namespace GridGame.Meta
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)] public string Text;
         /// <summary>Optional accent (highlights, inspect cards, the Classic frame); null derives it from the gradient.</summary>
         [JsonProperty("accent", NullValueHandling = NullValueHandling.Ignore)] public string Accent;
+        /// <summary>Display adjustment (GG-T563), each 0..1 with 0.5 neutral; missing = 0.5, so themes.json and older
+        /// custom themes need no migration. A preset's player tuning lives in <see cref="SettingsSave.ThemeTones"/>, not here.</summary>
+        [JsonProperty("brightness", NullValueHandling = NullValueHandling.Ignore)] public float? Brightness;
+        [JsonProperty("contrast", NullValueHandling = NullValueHandling.Ignore)] public float? Contrast;
+        [JsonProperty("gamma", NullValueHandling = NullValueHandling.Ignore)] public float? Gamma;
+
+        /// <summary>The theme's <see cref="WindowTone"/> (0.5 for any value not set).</summary>
+        [JsonIgnore]
+        public WindowTone Tone
+        {
+            get => new WindowTone(Brightness ?? WindowTone.Neutral, Contrast ?? WindowTone.Neutral, Gamma ?? WindowTone.Neutral);
+            set
+            {
+                // Neutral values are left out of the JSON, so an untouched theme saves exactly as before.
+                Brightness = Math.Abs(value.Brightness - WindowTone.Neutral) < 0.001f ? (float?)null : value.Brightness;
+                Contrast = Math.Abs(value.Contrast - WindowTone.Neutral) < 0.001f ? (float?)null : value.Contrast;
+                Gamma = Math.Abs(value.Gamma - WindowTone.Neutral) < 0.001f ? (float?)null : value.Gamma;
+            }
+        }
 
         public string ToJson() => JsonConvert.SerializeObject(this, WindowThemeCatalog.Json);
         public static WindowThemeDef FromJson(string json) => JsonConvert.DeserializeObject<WindowThemeDef>(json, WindowThemeCatalog.Json);
@@ -183,6 +202,8 @@ namespace GridGame.Meta
             }
             if (t.Text != null && !TryHex(t.Text, out _)) p.Add($"bad text colour '{t.Text}'");
             if (t.Accent != null && !TryHex(t.Accent, out _)) p.Add($"bad accent colour '{t.Accent}'");
+            foreach (var (label, v) in new[] { ("brightness", t.Brightness), ("contrast", t.Contrast), ("gamma", t.Gamma) })
+                if (v.HasValue && (float.IsNaN(v.Value) || v.Value < 0f || v.Value > 1f)) p.Add($"{label} {v} outside 0..1");
             return p;
         }
 

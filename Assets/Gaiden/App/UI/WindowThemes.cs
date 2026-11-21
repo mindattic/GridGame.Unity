@@ -22,7 +22,11 @@ namespace GridGame.App
     /// lighten-above / darken-below-mid-gray approximation, normal lays the tile's own colours on top;</item>
     /// <item>a frame: a Theme.uss block (<c>.theme-&lt;style&gt;</c>) for the shape of frames, tabs, buttons and header,
     /// optionally recoloured inline by 1-3 frame colours;</item>
-    /// <item>optional default text and accent colours.</item>
+    /// <item>optional default text and accent colours;</item>
+    /// <item>a display adjustment, Brightness/Contrast/Gamma (GG-T563, <see cref="WindowTone"/>), applied to everything
+    /// above: the baked gradient, the overlay tile, the frame, text and accent colours. 0.5/0.5/0.5 paints exactly as
+    /// authored. A preset's adjustment is the player's, from <see cref="SettingsSave.ThemeTones"/> (<see cref="Resolve"/>
+    /// returns a tuned copy); a custom theme carries its own.</item>
     /// </list>
     /// </summary>
     public static class WindowThemes
@@ -74,11 +78,23 @@ namespace GridGame.App
         {
             if (!string.IsNullOrEmpty(name))
             {
-                var t = Presets.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase))
-                        ?? Customs.FirstOrDefault(x => x != null && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                var p = Presets.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (p != null) return Tuned(p);
+                var t = Customs.FirstOrDefault(x => x != null && string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
                 if (t != null) return t;
             }
-            return Presets.FirstOrDefault(x => x.Name == DefaultName) ?? Presets[0];
+            return Tuned(Presets.FirstOrDefault(x => x.Name == DefaultName) ?? Presets[0]);
+        }
+
+        /// <summary>A preset with the player's stored Brightness/Contrast/Gamma (GG-T563): a copy when tuned, the preset
+        /// itself at 0.5, so the shared preset list is never changed.</summary>
+        public static WindowThemeDef Tuned(WindowThemeDef preset)
+        {
+            var tones = GameApp.I?.Settings?.ThemeTones;
+            if (preset == null || tones == null || !tones.TryGetValue(preset.Name, out var d) || d == null || d.Tone.IsNeutral) return preset;
+            var copy = preset.Clone();
+            copy.Tone = d.Tone;
+            return copy;
         }
 
         // ── The active theme ────────────────────────────────────────────────────────
@@ -86,7 +102,7 @@ namespace GridGame.App
         private static WindowThemeDef current;
         public static WindowThemeDef Current => current ??= Resolve(DefaultName);
         private static Color? accent;
-        public static Color Accent => accent ??= Hex(Current.Accent, DerivedAccent(Current));
+        public static Color Accent => accent ??= Current.Accent != null ? Hex(Current.Tone.MapHex(Current.Accent), Color.white) : DerivedAccent(Current);
         /// <summary>The root USS class of the active frame style, or null for Classic (the base stylesheet).</summary>
         public static string UssClass => UssClassOf(Current.Frame?.Style);
         public static string UssClassOf(string style) => string.IsNullOrEmpty(style) || style == "classic" ? null : "theme-" + style;
@@ -97,6 +113,8 @@ namespace GridGame.App
         {
             current = t ?? Resolve(DefaultName);
             accent = null;
+            textColor = null;
+            textColorSet = false;
         }
 
         public static Color Hex(string hex, Color fallback) =>
@@ -108,13 +126,31 @@ namespace GridGame.App
             return WindowThemeCatalog.Hex(k.r, k.g, k.b);
         }
 
-        /// <summary>The theme's first and last gradient colours (corners: top-left and bottom-right).</summary>
+        /// <summary>The theme's first and last gradient colours (corners: top-left and bottom-right), as painted (after its
+        /// Brightness/Contrast/Gamma).</summary>
         public static (Color a, Color b) Ends(WindowThemeDef t)
         {
             var g = t.Gradient;
-            if (g.Mode == WindowThemeCatalog.Corners && g.Corners?.Length == 4) return (Hex(g.Corners[0], Color.gray), Hex(g.Corners[3], Color.black));
-            if (g.Stops != null && g.Stops.Count > 0) return (Hex(g.Stops[0].Color, Color.gray), Hex(g.Stops[g.Stops.Count - 1].Color, Color.black));
-            return (Color.gray, Color.black);
+            var tone = t.Tone;
+            if (g.Mode == WindowThemeCatalog.Corners && g.Corners?.Length == 4) return (Map(tone, Hex(g.Corners[0], Color.gray)), Map(tone, Hex(g.Corners[3], Color.black)));
+            if (g.Stops != null && g.Stops.Count > 0) return (Map(tone, Hex(g.Stops[0].Color, Color.gray)), Map(tone, Hex(g.Stops[g.Stops.Count - 1].Color, Color.black)));
+            return (Map(tone, Color.gray), Map(tone, Color.black));
+        }
+
+        /// <summary>A colour through a theme's Brightness/Contrast/Gamma (<see cref="WindowTone.Map"/>); alpha kept.</summary>
+        public static Color Map(WindowTone tone, Color c) => tone.IsNeutral ? c : new Color(tone.Map(c.r), tone.Map(c.g), tone.Map(c.b), c.a);
+
+        /// <summary>The lightest colour the theme paints a window with (its gradient colours after the tone): what text
+        /// contrast is checked against, as <see cref="Palette.WindowLight"/> is for Classic.</summary>
+        public static Color Lightest(WindowThemeDef t)
+        {
+            var g = t.Gradient ?? new WindowGradientDef();
+            var hexes = g.Mode == WindowThemeCatalog.Corners && g.Corners?.Length == 4
+                ? g.Corners
+                : (g.Stops ?? new List<WindowStopDef>()).Where(s => s != null).Select(s => s.Color).ToArray();
+            var all = hexes.Select(h => Map(t.Tone, Hex(h, Color.gray))).ToList();
+            if (all.Count == 0) return Map(t.Tone, Color.gray);
+            return all.OrderByDescending(c => WindowTone.Luminance(c.r, c.g, c.b)).First();
         }
 
         /// <summary>The accent derived by colour theory, never hand-picked (GG-T185): the complement of the circular
@@ -138,7 +174,7 @@ namespace GridGame.App
             var c = t.Frame?.Colors;
             if (c == null || c.Length == 0)
                 return UssClassOf(t.Frame?.Style) == null ? new[] { accent, accent, accent, accent } : null;
-            var k = c.Select(x => Hex(x, Color.white)).ToArray();
+            var k = c.Select(x => Hex(t.Tone.MapHex(x), Color.white)).ToArray();
             switch (k.Length)
             {
                 case 1: return new[] { k[0], k[0], k[0], k[0] };
@@ -147,7 +183,33 @@ namespace GridGame.App
             }
         }
 
-        public static Color? TextColor => Current.Text != null ? Hex(Current.Text, Color.white) : (Color?)null;
+        private static Color? textColor;
+        private static bool textColorSet;
+
+        /// <summary>The active theme's default text colour, or null to keep the stylesheet's (<see cref="TextColorOf"/>).</summary>
+        public static Color? TextColor
+        {
+            get
+            {
+                if (textColorSet && current != null) return textColor;
+                textColorSet = true;
+                return textColor = TextColorOf(Current);
+            }
+        }
+
+        /// <summary>A theme's default text colour, or null to keep the stylesheet's: its own text colour toned with the
+        /// theme, then held to 4.5:1 against the window's lightest colour (the Tokens.OnWindow guarantee, GG-T563). A theme
+        /// pushed bright enough that the stylesheet's light text would wash out gets a readable one instead.</summary>
+        public static Color? TextColorOf(WindowThemeDef t)
+        {
+            var tone = t.Tone;
+            if (t.Text == null && tone.IsNeutral) return null;
+            var baseText = t.Text != null ? Map(tone, Hex(t.Text, Color.white)) : Palette.Text;
+            var bg = Lightest(t);
+            var (r, g, b) = WindowTone.Readable((baseText.r, baseText.g, baseText.b), (bg.r, bg.g, bg.b));
+            var c = new Color(r, g, b, 1f);
+            return t.Text == null && c == new Color(baseText.r, baseText.g, baseText.b, 1f) ? (Color?)null : c;
+        }
 
         // ── Gradient baking ─────────────────────────────────────────────────────────
 
@@ -165,6 +227,8 @@ namespace GridGame.App
             float dx = Mathf.Sin(rad), dy = -Mathf.Cos(rad); // CSS: 0 = up, 90 = right (y down)
             float len = Mathf.Abs(dx) + Mathf.Abs(dy);
             float cx = g.Center?.Length == 2 ? g.Center[0] : 0.5f, cy = g.Center?.Length == 2 ? g.Center[1] : 0.5f;
+            var tone = t.Tone;
+            bool toned = !tone.IsNeutral;
             float maxD = 0f;
             foreach (var (qx, qy) in new[] { (0f, 0f), (1f, 0f), (0f, 1f), (1f, 1f) })
                 maxD = Mathf.Max(maxD, Mathf.Sqrt((qx - cx) * (qx - cx) + (qy - cy) * (qy - cy)));
@@ -193,6 +257,7 @@ namespace GridGame.App
                         float k = 1f + n * g.Grain * 2f;
                         c = new Color(c.r * k, c.g * k, c.b * k);
                     }
+                    if (toned) c = new Color(tone.Map(c.r), tone.Map(c.g), tone.Map(c.b)); // GG-T563, before WindowDark's darkening
                     if (dark > 0f) c = Color.Lerp(c, Color.black, dark);
                     // Sub-LSB dither: a stretched gradient never shows 8-bit bands.
                     float d = (Hash(x, y, 7) - 0.5f) / 255f;
@@ -233,7 +298,7 @@ namespace GridGame.App
         /// <summary>A small baked gradient of <paramref name="t"/> for the editor's preset tiles (cached by gradient).</summary>
         public static Texture2D Swatch(WindowThemeDef t)
         {
-            string key = Newtonsoft.Json.JsonConvert.SerializeObject(t.Gradient, WindowThemeCatalog.Json);
+            string key = Newtonsoft.Json.JsonConvert.SerializeObject(t.Gradient, WindowThemeCatalog.Json) + "|" + t.Tone;
             if (swatches.TryGetValue(key, out var tex) && tex != null) return tex;
             if (swatches.Count > 96)
             {
@@ -267,10 +332,16 @@ namespace GridGame.App
             if (x == null || string.IsNullOrEmpty(x.Id) || x.Opacity <= 0f) return (null, 0f, 0f);
             string blend = WindowThemeCatalog.Blends.Contains(x.Blend) ? x.Blend : "overlay";
             string bakeAs = blend == "soft-light" ? "overlay" : blend;
-            string key = x.Id + "|" + bakeAs;
+            var tone = t.Tone;
+            string key = x.Id + "|" + bakeAs + "|" + tone;
             if (!tiles.TryGetValue(key, out var tex))
             {
-                tex = BakeTile(x.Id, bakeAs);
+                if (tiles.Count > 64)
+                {
+                    foreach (var old in tiles.Values) if (old != null) UnityEngine.Object.Destroy(old);
+                    tiles.Clear();
+                }
+                tex = BakeTile(x.Id, bakeAs, tone);
                 tiles[key] = tex;
             }
             if (tex == null) return (null, 0f, 0f);
@@ -291,7 +362,9 @@ namespace GridGame.App
             }
         }
 
-        private static Texture2D BakeTile(string id, string blend)
+        /// <summary>The tile for <paramref name="id"/> in <paramref name="blend"/>, its texel values (and a PNG's own colours)
+        /// through the theme's tone, so the texture brightens, flattens or deepens with the gradient under it (GG-T563).</summary>
+        private static Texture2D BakeTile(string id, string blend, WindowTone tone)
         {
             float[] lum; float[] alpha = null; Color32[] src = null; int n;
             if (id.StartsWith(WindowThemeCatalog.FilePrefix))
@@ -304,6 +377,8 @@ namespace GridGame.App
                 lum = new float[n * hh]; alpha = new float[n * hh];
                 for (int i = 0; i < src.Length; i++)
                 {
+                    if (!tone.IsNeutral)
+                        src[i] = new Color32(To8(tone.Map(src[i].r / 255f)), To8(tone.Map(src[i].g / 255f)), To8(tone.Map(src[i].b / 255f)), src[i].a);
                     lum[i] = (0.299f * src[i].r + 0.587f * src[i].g + 0.114f * src[i].b) / 255f;
                     alpha[i] = src[i].a / 255f;
                 }
@@ -311,6 +386,7 @@ namespace GridGame.App
             }
             n = 256;
             lum = Procedural(id, n);
+            if (!tone.IsNeutral) for (int i = 0; i < lum.Length; i++) lum[i] = tone.Map(lum[i]);
             return Compose(lum, null, null, n, n, blend, id);
         }
 
