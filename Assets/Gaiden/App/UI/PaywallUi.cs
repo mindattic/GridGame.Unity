@@ -141,9 +141,15 @@ namespace GridGame.App
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
-            // The side window only fits a short label (GG-T400): the gold button says "Refill" under its price line, this one
-            // both of its prices (GG-T455), scrolling if the window is narrow. Always enabled: short of both, it offers the store.
-            var db = Ui.Button(DiamondExchange.Label(RestedPool.DiamondRefillPrice), () => DiamondRefill(refresh), "btn--small", w);
+            // The side window only fits a short label (GG-T400). GG-T518: the Diamond button used to carry both of its prices
+            // (GG-T455), "25 Diamonds (or 150 G)", which scrolled in ~110 px and read as fragments ("monds (or"); like the
+            // gold one, its price is now a whole line of its own above a short "Refill". Always enabled: short of both,
+            // it offers the store.
+            var dp = Ui.Text(DiamondExchange.Label(RestedPool.DiamondRefillPrice), "small dim", w);
+            dp.name = "rested-refill-diamond-price";
+            dp.style.whiteSpace = WhiteSpace.Normal;
+            dp.style.marginTop = Space.S16;
+            var db = Ui.Button("Refill", () => DiamondRefill(refresh), "btn--small", w);
             db.name = "rested-refill-diamond";
             db.style.marginTop = Space.S8;
         }

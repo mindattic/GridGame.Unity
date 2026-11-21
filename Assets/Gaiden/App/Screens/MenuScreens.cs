@@ -535,10 +535,24 @@ namespace GridGame.App
             void Station(string label, bool open, string hint, Func<GameScreen> screen, string value = "")
             {
                 if (open) { Item(label, screen, value); return; }
-                var row = Ui.MenuRow(label, hint, null, list.contentContainer, null, false);
+                var row = Ui.MenuRow(label, "", null, list.contentContainer, null, false);
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
-                // "Joins at The Tithe Moors II" is wider than the row's value column: it scrolls instead of being cut (GG-T448).
-                Ui.Marquee(row.Q<Label>("value"));
+                Subline(row, hint);
+            }
+            // GG-T518: a hint ("Joins when gear wears below 60%", "After The Lantern Road II") is wider than a row's value
+            // column; scrolled there as a marquee (GG-T448) it read as fragments ("oins at The") most of the time. It now
+            // sits whole, wrapping if it must, in small type under the row's name.
+            void Subline(VisualElement row, string text)
+            {
+                if (string.IsNullOrEmpty(text)) return;
+                var name = row.Q<Label>("label");
+                var stack = Ui.El("col", row);
+                stack.style.flexGrow = 1f; stack.style.flexShrink = 1f;
+                row.Insert(row.IndexOf(name), stack);
+                stack.Add(name);
+                var sub = Ui.Text(text, "small dim", stack);
+                sub.name = "hint";
+                sub.style.whiteSpace = WhiteSpace.Normal;
             }
             Item("Adventure", () => new StageSelectScreen(), $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
             // The Crucible (§22.10): endless waves for XP and loot. Closed mid-expedition — the row says why.
@@ -546,8 +560,9 @@ namespace GridGame.App
             if (Features.Crucible && CampUnlocks.CrucibleOpen(s))
             {
                 bool crucibleOpen = Crucible.CanLaunch(c, s, out var crucibleWhy);
-                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : crucibleWhy, () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
+                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
                 crucible.name = "camp-crucible";
+                if (!crucibleOpen) Subline(crucible, crucibleWhy); // "Closed on an expedition", whole (GG-T518)
             }
             else if (Features.Crucible) Station("Crucible", false, CampUnlocks.MilestoneHint(c, CampUnlocks.CrucibleAfter), null);
             Item("Items", () => new ItemsScreen());
