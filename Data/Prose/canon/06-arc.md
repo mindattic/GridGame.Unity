@@ -27,7 +27,7 @@ Because the light is shared, every ending costs everyone:
 
 ## Decisions (owner, 2026-11-21)
 
-- **The lead: the First Sleeper, Warden.** One fixed protagonist, the Knight class, wakes first in the prologue and thaws the others. The story has Warden's face and voice, and the summoned roster gathers around them.
+- **The lead: the First Sleeper, Warden.** One fixed protagonist of the Warden class, a class of its own (GG-T533) separate from Knight, wakes first in the prologue and thaws the others. The story has Warden's face and voice, and the summoned roster gathers around them.
   - **Who:** Halcyon's last guard, left on watch over the Still on the night of the Undertow.
   - **What they wake to:** they wake 1,200 years late, still on duty, sworn to a city that no longer exists, guarding sleepers in a world that has forgotten why.
   - **Their arc:** what a guard owes when the thing they guarded was the wrong thing to keep.
