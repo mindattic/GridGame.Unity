@@ -1445,6 +1445,9 @@ namespace GridGame.App
             var veil = Ui.El("fill veil col center", app.Overlay);
             veil.name = "summon-reveal";
             veil.pickingMode = PickingMode.Position;
+            // The reveal's name and role are bare text, not a window: the plain veil left the Summon Circle's own text
+            // showing through them. Dim the page almost out so the hero carries the moment.
+            veil.style.backgroundColor = Palette.Ink.WithA(0.9f);
             var thumb = Ui.Thumb(def.Id, veil, 420);
             thumb.style.scale = new Scale(Vector2.zero);
             var name = Ui.Text(def.Name, "title shadow gold", veil);
