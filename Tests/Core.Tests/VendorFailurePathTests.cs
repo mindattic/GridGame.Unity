@@ -301,11 +301,19 @@ namespace GridGame.Tests
             var c = BuildContent();
             var s = NewSave(0);
             var item = new ItemDef { Id = "w", BaseCost = 100, Durability = 100 };
-            // Pick a repair state whose undiscounted cost (7) times the 30% discount (0.7) lands on a
-            // fraction (4.9), so a floor vs. ceiling would disagree.
-            int current = Repair.EffectiveMax(item, 0) - 21;
-            int full = Repair.Cost(item, current, 0);
-            Assert.That(full, Is.EqualTo(7));
+            // Find a repair state whose undiscounted cost times the 30% discount (0.7) lands on a fraction, so a
+            // floor vs. ceiling would disagree. Searched rather than hard-coded so a Repair.RepairRate retune
+            // can't silently move it onto a whole number (21 missing gave 7 at 0.30, but 4 at 0.15; GG-T530).
+            int max = Repair.EffectiveMax(item, 0);
+            int current = -1, full = 0;
+            for (int missing = 1; missing <= max && current < 0; missing++)
+            {
+                int cost = Repair.Cost(item, max - missing, 0);
+                double scaled = cost * (1.0 - 0.3);
+                // At least 4 G: below that the ceiling of 70% is the full price again (3 -> 2.1 -> 3), so no discount shows.
+                if (cost >= 4 && Math.Abs(scaled - Math.Round(scaled)) > 0.05) { current = max - missing; full = cost; }
+            }
+            Assert.That(current, Is.GreaterThanOrEqualTo(0), "no repair state whose discounted price is a fraction");
             s.Caravan["armory"] = 1;
             int discounted = Repair.Cost(c, s, item, current, 0);
             Assert.That(discounted < full, Is.True);
