@@ -99,6 +99,14 @@ def main():
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
         missing += [f"icon:{folder}/{i} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, i + ".png"))]
 
+    # GG-T556: attack-type hit sounds are optional slots (Audio falls back to battle_hit_0..6), so a missing one warns.
+    at = json.load(open(os.path.join(RESD, "Content", "attacktypes.json"), encoding="utf-8"))
+    slots = [f for t in at["Types"] for f in t["Sfx"]]
+    pending = [f for f in slots if not os.path.exists(os.path.join(SFX, f + ".ogg"))]
+    if pending:
+        print(f"sfx warning: {len(pending)} of {len(slots)} attack-type hit sounds still missing "
+              f"(Content/attacktypes.json, docs/AUDIO_ATTACK_TYPES.md); those types play the generic hits")
+
     findings = art_findings()
     broken = [f"{s}: {d}" for r, s, ok, d, hard in findings if hard]
     soft = [(r, s, d) for r, s, ok, d, hard in findings if not ok and not hard and r != "POL-H4"]

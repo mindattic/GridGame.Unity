@@ -26,6 +26,8 @@ namespace GridGame.Core.Content
         public SummonDef Summon = new SummonDef();
         /// <summary>vfxstyle.json (GG-T253): the element/status look table.</summary>
         public VfxStyleSheet Vfx = new VfxStyleSheet();
+        /// <summary>attacktypes.json (GG-T556): which hit sound a physical blow makes (weapon, monster, skill).</summary>
+        public AttackTypeSheet AttackTypes = new AttackTypeSheet();
         /// <summary>vfx.json (GG-T269): the effect prefabs vfxstyle.json points at.</summary>
         public VfxCatalog VfxPrefabs = new VfxCatalog();
         /// <summary>elements.json (GG-T371): the elemental interaction table (counters, statuses, tile reactions).</summary>

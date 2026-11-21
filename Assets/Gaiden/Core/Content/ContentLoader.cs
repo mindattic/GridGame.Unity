@@ -51,6 +51,7 @@ namespace GridGame.Core.Content
             db.Summon = ReadOne<SummonDef>(readText, "summon") ?? new SummonDef();
             db.Vfx = ReadOne<VfxStyleSheet>(readText, "vfxstyle") ?? new VfxStyleSheet();
             db.VfxPrefabs = ReadOne<VfxCatalog>(readText, "vfx") ?? new VfxCatalog();
+            db.AttackTypes = ReadOne<AttackTypeSheet>(readText, "attacktypes") ?? new AttackTypeSheet(); // GG-T556
             var elements = ReadOne<ElementTableDef>(readText, "elements"); // GG-T371
             db.ElementsFileMissing = elements == null; // GG-T416: only a missing file is reported, not a hand-built ContentDb
             db.Elements = elements ?? new ElementTableDef();
@@ -410,6 +411,7 @@ namespace GridGame.Core.Content
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);
             VfxCatalog.Validate(db, p);
+            AttackTypeSheet.Validate(db, p); // GG-T556
             p.AddRange(GridGame.Core.Battle.DifficultyTable.Problems()); // the 1..10 dial (GG-T309)
             Glossary.Validate(db, p);
             p.AddRange(db.TextProblems); // GG-T355: every key resolves, no story text in gameplay JSON, right-answer tags

@@ -71,6 +71,9 @@ namespace GridGame.App
                 // POL-E5: a pincer's hits land as Major; an ability's at its own tier (AbilityAnim); a new action resets.
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) hitTier = VfxTier.Minor;
                 else if (events[i] is PincerFormedEvent) hitTier = VfxTier.Major;
+                // GG-T556: an ability's hits may carry its own attack type; a new action or a weapon strike clears it.
+                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent || events[i] is PincerFormedEvent || events[i] is AttackEvent) hitAbility = null;
+                else if (events[i] is AbilityResolvedEvent rae) hitAbility = rae.AbilityId;
                 IEnumerator anim = null;
                 try { anim = Animate(events[i]); }
                 catch (System.Exception e) { Debug.LogException(e); }
@@ -686,6 +689,21 @@ namespace GridGame.App
             App.StartCoroutine(Tween.Run(Timing.Quick, k => av.Root.style.translate = new Translate(dir.x * lunge * (1 - k), dir.y * lunge * (1 - k))));
         }
 
+        /// <summary>The ability whose hits are playing (GG-T556), or null for weapon strikes.</summary>
+        private string hitAbility;
+
+        /// <summary>A physical hit's sound by attack type (GG-T556, Content/attacktypes.json): the resolving ability's,
+        /// else the attacker's weapon's, else its natural attack; Audio falls back to the generic hits while a type
+        /// has no files.</summary>
+        private string AttackHitCue(Unit src, string note)
+        {
+            var sheet = App.Content.AttackTypes;
+            if (sheet == null || sheet.Types.Count == 0) return "battle.hit";
+            string weaponType = src?.WeaponId != null ? App.Content.TryItem(src.WeaponId)?.WeaponType : null;
+            string type = sheet.ForHit(src?.Def?.Id, weaponType, hitAbility, note);
+            return Audio.HitPrefix + type;
+        }
+
         private IEnumerator DamageAnim(DamagedEvent d)
         {
             var t = State.UnitById(d.TargetId);
@@ -702,8 +720,10 @@ namespace GridGame.App
             var style = StyleOf(d.Type);
             // A crit or a quarter of the target's HP hits one tier harder than the action's own (POL-E5).
             var tier = Vfx.TierDef(crit || d.Amount >= t.MaxHp * 0.25f ? Bump(hitTier) : hitTier);
-            App.Audio.Sfx(d.SourceId < 0 ? "status.debuff" : crit ? "battle.crit" : style.Cue);
             var src = State.UnitById(d.SourceId);
+            string cue = d.SourceId < 0 ? "status.debuff" : crit ? "battle.crit" : style.Cue;
+            if (cue == "battle.hit") cue = AttackHitCue(src, d.Note);
+            App.Audio.Sfx(cue);
             Feed($"{(d.SourceId < 0 ? "☠" : "†")} {(src != null ? src.Name + " → " : "")}{t.Name}: {d.Amount}{(crit ? " CRIT" : "")}{(d.Note != null ? " (" + d.Note + ")" : "")}", t.IsHero ? new Color(1f, 0.65f, 0.6f) : Palette.White.WithA(0.9f));
             // Anticipation (POL-E6): the target braces for a beat before the hit lands.
             if (!ReduceMotion) yield return Tween.Run(Timing.Instant, k => v.Root.style.scale = new Scale(Vector2.one * (1f - 0.06f * Ease.Out(k))));

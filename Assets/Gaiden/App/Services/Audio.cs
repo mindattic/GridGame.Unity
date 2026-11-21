@@ -197,16 +197,45 @@ namespace GridGame.App
         public static string Canonical(string key) => Aliases.TryGetValue(key, out var k) ? k : key;
 
         /// <summary>Taxonomy key → file: dots become underscores (battle.dash → battle_dash), except the variant
-        /// pools and the cues that share a file. Keep game code speaking in cues, not filenames.</summary>
-        private static string Cue(string key)
+        /// pools (battle.move, battle.hit, battle.hit.&lt;type&gt;) and the cues that share a file. Keep game code speaking
+        /// in cues, not filenames.</summary>
+        private string Cue(string key)
         {
             switch (key)
             {
                 case "ui.back": return "ui_click";
                 case "battle.move": return "battle_move_" + Random.Range(0, 6);
-                case "battle.hit": return "battle_hit_" + Random.Range(0, 7);
-                default: return key.Replace('.', '_'); // every other cue has a same-named file (tools/make_sfx.py)
+                case "battle.hit": return GenericHit();
+                default:
+                    if (key.StartsWith(HitPrefix)) return TypedHit(key.Substring(HitPrefix.Length));
+                    return key.Replace('.', '_'); // every other cue has a same-named file (tools/make_sfx.py)
             }
+        }
+
+        // ── Attack-type hits (GG-T556): "battle.hit.<type>" plays a random battle_hit_<type>_<n> that exists ──
+        /// <summary>Cue prefix for a typed hit; the types and their file names are Content/attacktypes.json.</summary>
+        public const string HitPrefix = "battle.hit.";
+        /// <summary>Highest variant number looked for per type (battle_hit_&lt;type&gt;_0 .. _15).</summary>
+        private const int MaxHitVariants = 16;
+        private readonly Dictionary<string, List<string>> hitPools = new Dictionary<string, List<string>>();
+
+        private static string GenericHit() => "battle_hit_" + Random.Range(0, 7);
+
+        /// <summary>A random existing battle_hit_&lt;type&gt;_&lt;n&gt;; the generic pool while the type has no files yet,
+        /// so no hit goes silent before its assets land.</summary>
+        private string TypedHit(string type)
+        {
+            if (!hitPools.TryGetValue(type, out var pool))
+            {
+                pool = new List<string>();
+                for (int n = 0; n < MaxHitVariants; n++)
+                {
+                    var name = "battle_hit_" + type + "_" + n;
+                    if (Clip("Audio/Sfx/" + name) != null) pool.Add(name);
+                }
+                hitPools[type] = pool;
+            }
+            return pool.Count == 0 ? GenericHit() : pool[Random.Range(0, pool.Count)];
         }
     }
 }
