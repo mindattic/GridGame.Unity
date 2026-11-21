@@ -270,7 +270,7 @@ Owner: *"we are aiming for a polished, releasable game once the story has been e
 - **Cast icon** — a spell with a cast time is a diamond on the same bar as the turns, born at `castSeconds / BarSeconds`, and resolves when it reaches the left edge. ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond))
 - **Prominence diamond** — the large diamond at the timeline's left end showing who acts next, with its seconds ("NOW" while acting). ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond))
 - **Sentient** — the enemy tag for a foe with a society or that plans ahead; only Sentient enemies (and every hero) may be pincer attackers. ([§1.3](#13-sentient-restriction))
-- **Clutch** — rare LCK interrupt outcome on hero casts: the hit is shrugged and the cast resolves on the spot. ([§13.4](#134-the-interrupt-path))
+- **Clutch** — the reward for a really cool moment (flash, "Clutch!", bonus mana charge): a rare LCK interrupt outcome on hero casts (the hit is shrugged and the cast resolves on the spot), or a hero's crit landed while Blind. ([§13.4.1](#1341-clutch-added-2026-11-21-gg-t566))
 - **ManaBank / orb** — shared 12-orb pool of identical orbs; any orbs pay any spell. ([§3.1](#31-mana-the-orb-economy))
 - **Drag timer** — optional Terra Battle–style 4 s limit per drag (Settings). ([§2.9](#29-drag-timer-optional))
 - **Time-banked orbs** — Blue orbs minted from drag-timer seconds left at the drop. ([§3.1.8](#318-time-banked-orbs))
@@ -1986,9 +1986,11 @@ raw   = max(1, max(off − max(0, def − 0.25·off)·0.35, 0.20·off))
 raw  ×= defender physical resistance
 var   = raw × U(0.9, 1.1) × LCK tilt (0.99..1.01)
 hit%  = clamp(80 + 0.5·SPD + 0.2·LCK + 3·(attacker lv − defender lv), 5, 95) × Blind accuracy (×0.5)
-crit% = clamp(8 + 0.4·LCK, 0, 50)        roll > hit% → Miss; else roll ≤ crit% → Critical; else Normal
+crit% = clamp(8 + 0.4·LCK, 0, 50) × Blind accuracy (×0.5)
+                                          roll > hit% → Miss; else roll ≤ crit% → Critical; else Normal
                                           (hit before crit, GG-T566: a crit only lands on a hit, so crit% above hit%
                                            never bypasses Blind or the level shift — effective crit = min(crit%, hit%))
+clutch = a hero's Critical landed while Blind is a Clutch! (§13.4.1): flash, "Clutch!", +ClutchCharge
 dodge = a non-pincer, non-supporter would-be hit with roll > hit% − defender Evasion (§13.1.0)
 dmg   = max(1, floor(var × (crit ? 1.6 : 1) × 1.07^(Δlevel) × multiplier))
 dmg   = max(1, floor(dmg × incoming multiplier))     (immune if physical resistance ≤ 0)
@@ -2052,10 +2054,21 @@ The first hero to enter the tile collects it (walking, being displaced, or telep
 Any landing hit (source not null, not a miss) on a unit with a cast in flight runs `BattleRunner.StaggerCasts(caster, attacker)` — hero casts hit by enemies, enemy charges hit by heroes.
 
 Order per hit:
-1. **Clutch** (hero casts only): chance `min(20%, LCK / 200)` → `ClutchEvent`, "Clutch!", the cast resolves immediately (`ResolveCast`). The view plays a white flash + "CLUTCH!".
+1. **Clutch** (hero casts only): chance `min(20%, LCK / 200)` → a Clutch! (§13.4.1, kind `CastThroughInterrupt`), then the cast resolves immediately (`ResolveCast`).
 2. **WIS shrug**: chance `min(60%, 1.5% × WIS)` → `CastStaggeredEvent(Resisted)` "Steady!", no delay.
 3. **Stagger**: `delay = 0.6 s × (1 + attacker STR / 20) / (1 + caster WIS / 15)` → ticks, added to both `RemainingTicks` and `AccumulatedDelayTicks` ("Stagger!").
 4. **Cancel**: once accumulated delay ≥ the cast's original ticks, the cast is removed (`CastCancelledEvent` "interrupted", "Interrupted!"); orbs stay spent. Cancelling an **enemy charge** mints one orb ([§3.1.2](#312-harvesting)).
+
+#### 13.4.1 Clutch! (added 2026-11-21, GG-T566)
+
+Owner: *"if a character is blind their chance to crit is lower, but if they do crit when blind it's considered 'Clutch!' which is a bonus for doing really cool things"*; then *"there are other combinations of things that should be considered 'Clutch!'"*.
+
+A **Clutch!** is the game's reward for a really cool moment. Every kind goes through one path, `BattleRunner.Clutch(unit, ClutchKind)`: it emits `ClutchEvent { CasterId, Kind, EntryId }` (the view's white flash + "CLUTCH!" float), announces "Clutch!", and grants the one shared, tunable bonus, **`BattleConfig.ClutchCharge` (20) mana charge** (`ManaChargedEvent` reason `clutch`, shown as "Clutch!" on the charge tally). It draws nothing from the Rng itself: whatever earns it has already rolled, so seeded replays keep their draw count. Heroes only. Kinds today:
+
+- **`CastThroughInterrupt`**: a hero's cast forced through an interrupt by the LCK roll above (step 1); the cast then resolves.
+- **`BlindCrit`**: a hero lands a **Critical while Blind**. Blind (`Unit.IsBlinded`, any accuracy-lowering debuff; today `blinded`, ×0.5) lowers the crit chance by the same factor as the hit chance, on weapon blows (`Formulas.RollHit`, [§13.1.1](#1311-physical-pincer-supporter-enemy-melee)) and on hero spell crits (`SpellCritFraction` × accuracy), so a Blind crit is rare. Hit-before-crit alone would not have lowered it (it only caps crit at the halved hit chance, which a typical 10-30 % crit sits under). The crit still earns its usual `CritCharge` too.
+
+More combinations are being chosen in GG-T571; each will be a new `ClutchKind` on the same path.
 
 **Enemy charges** ([§14.2](#142-enemy-archetypes-design-palette)): `EnemyPlanner.PlanCast` lets a unit with a `ChargeAbility`, not immobile and **not adjacent to any hero** (unless its boss phase `PrefersCharge`), queue a charge on the nearest hero instead of moving. **Amended 2026-10-09:**
 - Single-target charges **lock onto the hero**, wherever it moves — dodge only by interrupting (or killing).

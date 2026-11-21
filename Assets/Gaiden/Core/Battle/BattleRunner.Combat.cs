@@ -317,6 +317,8 @@ namespace GridGame.Core.Battle
                 if (roll.Dodged) Emit(new DodgedEvent { UnitId = target.Id, AttackerId = attacker.Id });
                 else Damage(target, roll.Damage, attacker, roll.Hit, DamageType.Physical);
                 if (roll.Hit == HitKind.Critical && attacker.IsHero) AddCharge(BattleConfig.CritCharge, attacker.Id, "critical");
+                // A crit landed through Blind (its crit chance was cut with its accuracy) is a Clutch (GG-T566).
+                if (roll.Hit == HitKind.Critical && attacker.IsHero && attacker.IsBlinded) Clutch(attacker, ClutchKind.BlindCrit);
                 if (roll.Hit == HitKind.Miss)
                 {
                     if (Triggers.Foes(target, attacker)) Fire(TriggerOn.OnDodge, target, new TriggerContext { Attacker = attacker, Blow = kind, Type = DamageType.Physical });
@@ -565,6 +567,19 @@ namespace GridGame.Core.Battle
             }
         }
 
+        /// <summary>
+        /// Clutch! (GG-T566): the one path for every "really cool" moment. Emits <see cref="ClutchEvent"/> (the white flash and
+        /// CLUTCH! float), announces "Clutch!" and grants the shared bonus, <see cref="BattleConfig.ClutchCharge"/> mana
+        /// charge. No Rng draw of its own: whatever triggers it has already rolled. Kinds today: a hero's cast forced through
+        /// an interrupt, a hero's crit landed while Blind; more are chosen in GG-T571.
+        /// </summary>
+        private void Clutch(Unit unit, ClutchKind kind, int entryId = -1)
+        {
+            Emit(new ClutchEvent { EntryId = entryId, CasterId = unit.Id, Kind = kind });
+            Announce("Clutch!", unit.Id);
+            if (BattleConfig.ClutchCharge > 0) AddCharge(BattleConfig.ClutchCharge, unit.Id, "clutch");
+        }
+
         /// <summary>Cast-stagger interrupt: Clutch (hero only) → WIS shrug → delay; cancel once delay ≥ cast time.</summary>
         private void StaggerCasts(Unit caster, Unit attacker)
         {
@@ -577,8 +592,7 @@ namespace GridGame.Core.Battle
                 float clutch = Math.Min(BattleConfig.ClutchMaxChance, cs.Luck * BattleConfig.ClutchChancePerLuck);
                 if (S.Rng.Chance(clutch))
                 {
-                    Emit(new ClutchEvent { EntryId = cast.Id, CasterId = caster.Id });
-                    Announce("Clutch!", caster.Id);
+                    Clutch(caster, ClutchKind.CastThroughInterrupt, cast.Id);
                     ResolveCast(cast);
                     return;
                 }

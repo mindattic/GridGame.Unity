@@ -1418,6 +1418,7 @@ namespace GridGame.App
                 case "pincer": return "Pincer";
                 case "critical": return "Critical";
                 case "interrupt": return "Interrupt";
+                case "clutch": return "Clutch!";
                 case "amplifier": return "Amplifier";
                 case "guard": return "Guard";
                 case "support": return "Support";

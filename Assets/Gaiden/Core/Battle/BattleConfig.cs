@@ -121,6 +121,9 @@ namespace GridGame.Core.Battle
         public const float MaxResistChance = 0.60f;
         public const float ClutchChancePerLuck = 1f / 200f;
         public const float ClutchMaxChance = 0.20f;
+        /// <summary>The Clutch! bonus (GG-T566): mana charge every Clutch grants, whatever earned it (a hero's cast forced
+        /// through an interrupt, a crit landed while Blind; more kinds may follow, GG-T571). One shared knob.</summary>
+        public const int ClutchCharge = 20;
 
         // ── Supporters (§1.2.3) ─────────────────────────────────────────────────────
         public const float SupporterDamageFraction = 0.5f;

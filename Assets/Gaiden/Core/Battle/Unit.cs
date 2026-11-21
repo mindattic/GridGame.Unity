@@ -298,6 +298,10 @@ namespace GridGame.Core.Battle
             get { float m = 1f; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
         }
 
+        /// <summary>Blind (any accuracy-lowering debuff, today <c>blinded</c>): lower hit and crit chance, and a crit landed
+        /// anyway is a Clutch (GG-T566, §13.1.1).</summary>
+        public bool IsBlinded => AccuracyMultiplier < 1f;
+
         /// <summary>Evasion points from equipped gear (GG-T297), summed at spawn; a broken piece takes its share back out.</summary>
         public float GearEvasion;
 

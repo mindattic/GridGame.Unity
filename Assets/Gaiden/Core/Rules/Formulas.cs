@@ -131,6 +131,10 @@ namespace GridGame.Core.Rules
             if (acc < 1f) hit = Clamp(hit * acc, 5f, 95f);
             float crit = CritPercent(a);
             if (attacker.SupportCritBonus > 0f) crit = Clamp(crit + attacker.SupportCritBonus * 100f, 0f, SupportDef.MaxSupportedCritPercent); // GG-T298
+            // Blind cuts the crit chance by the same factor as the hit chance (GG-T566, owner: "if a character is blind their
+            // chance to crit is lower"). Hit-before-crit alone only caps crit at the Blind hit chance, which a crit below it
+            // never feels; a crit that lands anyway is a Clutch (BattleRunner.Strike). No extra draw.
+            if (acc < 1f) crit *= acc;
             float roll = rng.Range(0f, 100f);
             // Hit before crit (GG-T566): the hit band is checked first, so Blind/level penalties can't be bypassed by a
             // crit chance above the hit chance; a crit only happens on a roll that already hit (crit is effectively min(crit, hit)).

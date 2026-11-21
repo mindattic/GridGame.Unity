@@ -1571,6 +1571,14 @@ gender, same with summoning ... no change to story or mechanics makes everything
   kept the old Classic default after Dark became the default. *Now:* a lookVersion-3 profile on Classic moves to Dark
   once (lookVersion 4); a later Classic pick sticks.
 - **Kept:** a Turns buff landing during the unit's own turn gets +1 duration (bughunt change, owner keep).
+- **Blind lowers crit; a Blind crit is a Clutch! ([§13.4.1](BIBLE.md#1341-clutch-added-2026-11-21-gg-t566)).** Owner: *"if
+  a character is blind their chance to crit is lower, but if they do crit when blind it's considered 'Clutch!' which is a
+  bonus for doing really cool things"*, then *"there are other combinations of things that should be considered
+  'Clutch!'"*. *Was:* Clutch was only a hero cast forced through an interrupt (flash and "Clutch!", no bonus), and Blind
+  halved hit chance only (hit-before-crit capped crit at the halved hit, rarely below the crit itself). *Now:* Blind
+  scales crit chance by its accuracy factor (×0.5) on blows and hero spells; a hero's crit landed while Blind is a
+  Clutch; every Clutch goes through one path, `BattleRunner.Clutch(unit, ClutchKind)` (`ClutchEvent.Kind`), which grants
+  the shared `BattleConfig.ClutchCharge` (20 mana charge). No extra Rng draws. More kinds: GG-T571.
 - *Why:* owner decisions on the /bughunt findings, 2026-11-21.
 
 ## 2026-11-21 — Two moons: the Moon stays, the Somnolith is a second, misshapen moon (owner, GG-T575)

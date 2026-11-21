@@ -294,10 +294,22 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"CastCancelled {CasterId} {AbilityId} ({Reason})";
     }
 
+    /// <summary>What earned a Clutch! (GG-T566; more combinations to come, GG-T571).</summary>
+    public enum ClutchKind
+    {
+        /// <summary>A hero's cast forced through an interrupt (Luck roll, §13.4).</summary>
+        CastThroughInterrupt,
+        /// <summary>A critical hit landed while Blind (§13.1.1).</summary>
+        BlindCrit,
+    }
+
     public sealed class ClutchEvent : BattleEvent
     {
-        public int EntryId; public int CasterId;
-        public override string ToString() => $"Clutch {CasterId}";
+        /// <summary>The cast entry a <see cref="ClutchKind.CastThroughInterrupt"/> forced through; -1 otherwise.</summary>
+        public int EntryId = -1;
+        public int CasterId;
+        public ClutchKind Kind;
+        public override string ToString() => $"Clutch {CasterId} ({Kind})";
     }
 
     public sealed class AbilityResolvedEvent : BattleEvent
