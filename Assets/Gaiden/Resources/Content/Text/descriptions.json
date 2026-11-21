@@ -413,14 +413,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bd060747baa95929f0d10d87bb447387d46a64d5d7c4d7f6f5108daa17fdce6c",
+      "hash": "sha256:ba2fccfe03772e9ed6b0b9838a3f1d4ae3c6dbe3d357316ed0fb6585c1e2a640",
       "about": [
         "class-aetherist"
       ],
       "speakers": [],
       "payload": {
         "short": "A Choir runaway who pours aether into the party instead of singing it out of them.",
-        "long": "She learned the hymn backwards. The Choir wants her back very badly."
+        "long": "Learned the hymn backwards. The Choir wants this one back very badly."
       }
     },
     "class:alchemist": {
@@ -1853,14 +1853,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b6f7b8e5bd767c76597847b67c73da8d57b7d52238d6d028f6f40d04ec769c49",
+      "hash": "sha256:56956a44638b3663a5e4fb66c52f1f3fd4198c918bd9389e1e5b8b267ad5391a",
       "about": [
         "class-herald"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flower-winged messenger of the Bloom who heals by giving her own essence.",
-        "long": "Where aether is given instead of taken, the Bloom grows. She is the proof."
+        "short": "A flower-winged messenger of the Bloom who heals by spending their own essence.",
+        "long": "Where aether is given instead of taken, the Bloom grows. The Herald is the proof."
       }
     },
     "class:hexsniper": {
@@ -1869,14 +1869,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fa88759232bcb8370b4fbe08313afec31d7d55e883ce868fbb31d8663abd6a75",
+      "hash": "sha256:dfbf1bfc208350e6b9aa3b6f3cd1f9450f97dc551a65c6591447b09017237df6",
       "about": [
         "class-hexsniper"
       ],
       "speakers": [],
       "payload": {
         "short": "A ranged precision attacker — never needs to be adjacent to strike, and hits hardest one target at a time.",
-        "long": "A swamp hag who traded curses for coin, picking off the toughest target in a fight from well outside its reach."
+        "long": "A Fen-dark sharpshooter who traded curses for coin, picking off the toughest target in a fight from well outside its reach."
       }
     },
     "class:hexstalker": {
@@ -1885,14 +1885,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c2fcef9e91e640ae0f88910e0a1c023096341b6d9d14b1dbf26b416708d9835c",
+      "hash": "sha256:9e9587262be31f4a0df5a60c32371c0cb0446d62dfabbd3a53a44ae0d94c5042",
       "about": [
         "class-hexstalker"
       ],
       "speakers": [],
       "payload": {
         "short": "A ranged skirmisher — shoots, falls back and shoots again, never letting a foe close the distance it keeps.",
-        "long": "A swamp hag who never stays where she fired from, drifting through the reeds a step ahead of whatever is chasing her."
+        "long": "A Fen-dark hunter who never stays where the last shot came from, drifting through the reeds a step ahead of whatever gives chase."
       }
     },
     "class:hexwarden": {
@@ -1901,14 +1901,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7e975d48e6a7eeb650e3b8ba5a78d523879afc5f6d3e4f1ea052a4cc5ef62863",
+      "hash": "sha256:c87ef5afd1d2377746eb9e773fb0daaaaa72af54651ee8fdc1b957a3d79f00d9",
       "about": [
         "class-hexwarden"
       ],
       "speakers": [],
       "payload": {
         "short": "A ranged controller — thins out a whole line or column from a distance while hexes slow down anything that gets close.",
-        "long": "A swamp hag who wardens the fens from afar, snaring anything that strays too near with a barbed little curse."
+        "long": "A Fen-dark sentinel who wardens the fens from afar, snaring anything that strays too near with a barbed little curse."
       }
     },
     "class:hierarch": {
@@ -2445,14 +2445,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1b540d9689d8958efaefa086b5af6af1f98b7422d2859ea476f687862adf339a",
+      "hash": "sha256:d3fda76fb8a2d2b54dbc8fdac180c9dff36680e054481786dcbc32d4d8643557",
       "about": [
         "class-monstertamer"
       ],
       "speakers": [],
       "payload": {
         "short": "A beast handler who turns wild monsters to the party's side instead of killing them.",
-        "long": "Grew up among the pack; every snarl is a word she understands."
+        "long": "Grew up among the pack, and understands every snarl as a word."
       }
     },
     "class:mountaintroll": {
@@ -3437,14 +3437,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5bcffbf83c34e7e570974728d6435a9ad373d5c82040b9aabac892e6e03212c5",
+      "hash": "sha256:bde1d0cd0ce91e83ca0a04d730889acd37f9e92c96a7b090e556fdfaf098af92",
       "about": [
         "class-tactician"
       ],
       "speakers": [],
       "payload": {
         "short": "A former Concord staff officer who plans the crew's war and rewrites the enemy's turn order.",
-        "long": "She planned tithe routes until she read the ledgers and saw where the surplus went."
+        "long": "Planned tithe routes until the ledgers showed where the surplus went."
       }
     },
     "class:tank": {

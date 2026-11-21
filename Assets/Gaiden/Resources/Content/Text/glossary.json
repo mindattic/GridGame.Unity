@@ -715,14 +715,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d30baefd674b092b18cdc0c85d1b2d6e33eef6056f8b55e269182b69ab029554",
+      "hash": "sha256:cdef8535da33bee7f72f4a85af2f93ef02455dc42b0bb1eed2268c8595170448",
       "about": [
         "concept-essence"
       ],
       "speakers": [],
       "payload": {
         "term": "Essence",
-        "definition": "Healing paid for in the healer's own HP instead of mana: the Herald's gift. It never takes her last HP."
+        "definition": "Healing paid for in the healer's own HP instead of mana: the Herald's gift. It never costs the last HP."
       }
     },
     "glossary:evasion": {
