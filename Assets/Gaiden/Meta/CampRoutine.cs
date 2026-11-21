@@ -27,6 +27,17 @@ namespace GridGame.Meta
         /// half-the-purse margin its forging uses, so repairs and rest are never starved.</summary>
         public const float FacilityPurseShare = 0.5f;
 
+        /// <summary>GG-T540: the routine repairs a piece only once it has worn below this fraction of its ceiling. Every
+        /// repair, however small, counts toward the 1.6x-per-repair price growth and lowers the ceiling by one
+        /// (BIBLE §24.5), so topping every piece up after every battle (the routine before GG-T540: ~19 repairs a visit)
+        /// compounded the price on cheap scratches and spent 68-70% of the main campaign's gold on repairs. Waiting until a
+        /// piece is half worn pays the same per point restored but far fewer times. Well above the 10% amber warning, so no
+        /// piece goes into a battle near breaking.</summary>
+        public const float RepairBelowFraction = 0.6f;
+
+        private static bool NeedsRepair(ItemDef item, int durability, int repairs, float mastery) =>
+            item != null && durability < Repair.EffectiveMax(item, repairs, mastery) * RepairBelowFraction;
+
         private static void BuildFacility(ContentDb c, SaveData s, CraftStation station, System.Action<Result> note)
         {
             var next = Facilities.Next(c, s, station);
@@ -84,14 +95,14 @@ namespace GridGame.Meta
                 {
                     var w = c.TryItem(h.WeaponId);
                     if (workshop && w != null && Repair.IsUneconomical(w, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery)) Note(Crafting.SalvageEquipped(c, s, h, EquipmentSlot.Weapon));
-                    else Note(Repair.RepairWeapon(c, s, h));
+                    else if (NeedsRepair(w, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery)) Note(Repair.RepairWeapon(c, s, h));
                 }
                 foreach (var slot in BattleEngine.ArmorSlots)
                 {
                     if (!h.Armor.TryGetValue(slot, out var piece)) continue;
                     var a = c.TryItem(piece.ItemId);
                     if (workshop && a != null && Repair.IsUneconomical(a, piece.Durability, piece.Repairs, piece.Mastery)) Note(Crafting.SalvageEquipped(c, s, h, slot));
-                    else Note(Repair.RepairArmor(c, s, h, slot));
+                    else if (NeedsRepair(a, piece.Durability, piece.Repairs, piece.Mastery)) Note(Repair.RepairArmor(c, s, h, slot));
                 }
             }
             Phase("repair");

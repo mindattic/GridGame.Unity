@@ -1877,7 +1877,9 @@ namespace GridGame.Meta
         /// full every visit by design (facilities and the Summon Circle are deliberately left to repair's leftovers).
         /// Halved from 0.30 regardless, since it still gives facilities/gear a little more room (150→275, 3,937→4,981
         /// gold/run) — but a player who keeps every piece of gear repaired will still see almost no gold left over for
-        /// anything else. Flagged in RELEASE_SCOPE as a watch item for real play, not something this rate alone fixes.</summary>
+        /// anything else. Flagged in RELEASE_SCOPE as a watch item for real play, not something this rate alone fixes.
+        /// GG-T540 fixed it at the routine instead: it repairs only below <see cref="CampRoutine.RepairBelowFraction"/>,
+        /// which brought repairs to 19-28% of main-campaign spend (BIBLE §25.0.11).</summary>
         public const float RepairRate = 0.15f;
 
         /// <summary>The piece's durability ceiling — raised by <see cref="BattleConfig.MasterworkDurabilityMultiplier"/> for a Masterwork copy (GG-T46).</summary>

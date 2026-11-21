@@ -7,6 +7,7 @@ dimension A-H 0-100, write a scorecard + report, and ratchet against docs/polish
     python tools/polish.py --balance       # also run the greedy + casual bot soaks (minutes) and score dimension G
                            [--per-stage N] # casual battles per campaign stage (default 4); --keep-records keeps them
                            [--difficulty N] # the dial 1..10 the soaks fight at (default 10; GG-T309, GAIDEN_DIFFICULTY)
+                           [--economy-only] # GG-T540: only the gold ledger (managed-camp campaigns), no soaks
     python tools/polish.py --accept-dims G # merge only these dimensions' rules into the baseline
     python tools/polish.py --records DIR   # score dimension G from existing battle records
     python tools/polish.py --accept        # write this pass as the new baseline (only when nothing regressed)
@@ -359,6 +360,41 @@ def run_soak(out, per_stage=4, difficulty=None):
     return dirs
 
 
+SPEND = ("repair", "gear", "potions", "counters", "skills", "summon", "facilities", "inn")
+
+
+def economy(tally, out, difficulty=None):
+    """GG-T540: where the main campaign's gold goes. Runs BalanceReport.Economy_ledger (greedy and casual bots managing
+    their camp through the main campaign, 4 seeds each), prints each spend's share of everything spent, per run and per
+    theme, and scores POL-G8: repairs take 20-35% of the main campaign's spend (BIBLE §25.0.11)."""
+    proj = os.path.join(ROOT, "Tests", "Core.Tests", "Core.Tests.csproj")
+    path = os.path.join(out, "economy.json")
+    subprocess.run(["dotnet", "test", proj, "--filter", "FullyQualifiedName~BalanceReport.Economy_ledger"], cwd=ROOT,
+                   env={**os.environ, "GAIDEN_ECONOMY_OUT": path, **({"GAIDEN_DIFFICULTY": str(difficulty)} if difficulty else {})})
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+    except Exception as e:
+        print(f"economy: no ledger ({e})")
+        return None
+
+    def line(name, d):
+        spent = {k: d.get(k, 0) for k in SPEND if d.get(k, 0) > 0}
+        total = sum(spent.values()) or 1
+        shares = ", ".join(f"{k} {v / total:.0%}" for k, v in sorted(spent.items(), key=lambda kv: -kv[1]))
+        return (f"  {name:<14} earned {d.get('earned', 0):>7.0f}  spent {total:>7.0f}  loot {-d.get('loot', 0):>5.0f}  "
+                f"repairs x{d.get('#repairs', 0):.0f} salvages x{d.get('#salvages', 0):.0f} breaks x{d.get('#breaks', 0):.0f} "
+                f"battles {d.get('#battles', 0):.0f} | {shares}"), spent.get("repair", 0) / total
+
+    print("\n=== economy: main campaign gold per run (shares of all camp spend) ===")
+    for label, row in data.items():
+        text, share = line("MAIN", row["main"])
+        print(f"{label} (finished {row['finished']}/{row['seeds']})\n{text}")
+        tally.one("POL-G8", 0.20 <= share <= 0.35, {"screen": "economy", "subject": label, "detail": f"repairs {share:.0%} of main-campaign spend"})
+        for theme, d in row["themes"].items():
+            print(line(theme, d)[0])
+    return data
+
+
 # ── scoring, ratchet, report ───────────────────────────────────────────────────
 
 def dimension_scores(rule_scores):
@@ -433,7 +469,9 @@ def main():
     if "--balance" in args:
         per_stage = int(args[args.index("--per-stage") + 1]) if "--per-stage" in args else 4
         difficulty = int(args[args.index("--difficulty") + 1]) if "--difficulty" in args else None
-        rec_dir = soaked = run_soak(out, per_stage, difficulty)
+        economy(tally, out, difficulty)
+        if "--economy-only" not in args:
+            rec_dir = soaked = run_soak(out, per_stage, difficulty)
     battles = balance(tally, rec_dir) if rec_dir else 0
     if soaked and "--keep-records" not in args:
         import shutil

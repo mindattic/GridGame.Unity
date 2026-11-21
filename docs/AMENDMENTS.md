@@ -1425,3 +1425,17 @@ Owner: "some are progress gated, some are training gated, the usual."
   crafted or learned goes away, and older saves are grandfathered (save v13).
 - *Why:* the RPG-standard pattern: a short, useful first shop, and lists that grow as the party travels and the
   vendors train.
+
+## 2026-11-21 — The camp routine repairs only worn gear (GG-T540)
+
+- **Was:** `CampRoutine` (the balance bots' and auto-manage's camp) repaired every worn piece back to full on every
+  visit. Every repair compounds that piece's price 1.6×, so about 19 scratch repairs a visit took **68% (greedy) and 70%
+  (casual)** of the main campaign's camp spend, and 83–95% of it from the Anchor Wastes on.
+- **Now ([BIBLE §25.0.11](BIBLE.md#25011-where-the-main-campaigns-gold-goes-gg-t540)):** it repairs a piece only once
+  it is below `CampRoutine.RepairBelowFraction` = 60% of its ceiling. Repairs are now **28% (greedy) and 19% (casual)**
+  of main-campaign spend, and gear (53% / 45%), facilities (9%) and inn rests take the rest. Repair pricing (`RepairRate`
+  0.15, 1.6× growth, uneconomical at cost ≥ BaseCost), wear, pay, Paywall and Diamond prices are unchanged. `tools/polish.py
+  --balance` now also measures this (POL-G8, repairs 20–35% of main-campaign spend).
+- *Why:* players and the auto-manager were permanently broke, with no gold left for gear, potions, facilities, summons or
+  the new vendor tiers. Waiting until gear is worn is what a sensible player does, and it keeps the design intent that
+  a heavily repaired piece eventually costs more to repair than to replace.

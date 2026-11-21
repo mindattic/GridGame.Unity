@@ -3485,7 +3485,7 @@ BonusVsTag, BonusMultiplier, Resistances{type→mult}, SoldByVendor, Icon
 
 - A hero's equipped weapon loses **1 durability per pincer it attacks in** (not as a supporter); items with `Durability` 0 never wear. Content weapons have 80–250 durability.
 - When a pincer starts with the weapon at 1, that attacker's strikes in that pincer deal **×1.5**; then it wears to 0 and **shatters**: the wielder takes `round(15% MaxHP)` (min 1, "Shatter!", environmental), the weapon's stats leave `GearStats`, and **(amended 2026-10-15, GG-T41)** the weapon becomes a Broken fragment in the save at commit instead of being removed outright — see Broken fragments below.
-- **Repair** (`Meta.Repair`): restores to `EffectiveMax = max(1, Durability − repairs)`, then `repairs++` (so each repair lowers the next ceiling by 1); cost `ceil(missing × BaseCost / Durability × 0.30 × 1.6^repairs)`, min 1; flagged uneconomical when cost ≥ BaseCost. *(Tests: `Weapon_wears_per_pincer_and_shatters_at_zero`, `Full_loop_battle_commit_then_every_vendor`.)*
+- **Repair** (`Meta.Repair`): restores to `EffectiveMax = max(1, Durability − repairs)`, then `repairs++` (so each repair lowers the next ceiling by 1); cost `ceil(missing × BaseCost / Durability × RepairRate × 1.6^repairs)`, min 1, with `Repair.RepairRate` 0.15 (0.30 until GG-T448); flagged uneconomical when cost ≥ BaseCost. Every repair counts toward the growth however few points it restores, so the camp routine waits until a piece is below 60% before repairing it (§25.0.11, GG-T540). *(Tests: `Weapon_wears_per_pincer_and_shatters_at_zero`, `Full_loop_battle_commit_then_every_vendor`.)*
 - **Per-instance durability** (closed 2026-10-10, US-246): unequipping a piece that isn't factory-fresh (worn below max, or repaired) files it into `SaveData.Worn` instead of resetting it; `Equipment.Equip` hands out a fresh copy first, else the **least-worn** tracked copy. *(Test: `Unequipped_gear_remembers_its_wear_and_fresh_copies_are_used_first`.)*
 - **Armor wears in battle** (closed 2026-10-10): a hero's equipped armor loses **1 durability per landing hit taken** (not DOT/environmental); at 0 it breaks mid-fight — stats and resistances leave `GearStats` immediately with an "Armor broken!" feed line and crack VFX; **(amended 2026-10-15, GG-T41)** it becomes a Broken fragment at commit like a shattered weapon (no shatter damage — that stays weapon-only). Repair works as for weapons. *(Test: `Armor_wears_per_enemy_hit_and_breaks_at_zero`.)*
 - **Ability-bar weapon swap** (closed 2026-10-10): a bar slot can hold `weapon:<id>` from the bag; using it swaps weapons (costs a turn, no mana; the incoming weapon enters at factory durability); the save follows the swap.
@@ -3812,6 +3812,40 @@ in one class, `Meta/VendorTiers.cs`:
   it reports nothing orphaned. *(Tests: `VendorTierTests`, `AlwaysAWayTests.Every_counter_a_reachable_stage_needs_is_on_the_shelf_whatever_its_stock_tier`;
   harness `vendortiers`: the fresh shelf, the next-stock row, and the locked rows and their gate text at the Forge and
   the Alchemist, recorded.)*
+
+### 25.0.11 Where the main campaign's gold goes (GG-T540)
+
+Target: across the main campaign (through campaign.json's Ending stage, cathedral-03; the postgame is not covered),
+repairs take roughly **20–35%** of the gold spent at camp. The rest goes to gear, consumables, crafting, inn rests and a
+meaningful but optional share for facilities and summons. A piece repaired over and over still becomes uneconomical
+(repair cost ≥ BaseCost, §24.5) and is salvaged instead.
+
+- **Measured by** `python tools/polish.py --balance` (add `--no-player --economy-only` for just this part, about 5
+  minutes). It runs `BalanceReport.Economy_ledger`: greedy and casual bots managing their camp with `CampRoutine` from the
+  trio start, with story recruits, 4 seeds each. It prints battle pay, chest loot, each camp phase's share of everything
+  spent, and repair, salvage and break counts, per run and per region, and scores **POL-G8** (repairs 20–35% of
+  main-campaign spend).
+- **Before (GG-T540 baseline, 2026-11-21):** greedy: 12,088 g earned a run, 13,954 g spent: **repair 68%**, gear 24%,
+  counters 3%, skills 2%, inn 2%, potions 1%, facilities 0%. Casual: 10,746 g earned, 12,717 g spent: **repair 70%**,
+  gear 20%, inn 4%, skills 3%, counters 2%, potions 1%. From the Anchor Wastes on, repairs took 83–95% of each region's
+  spend. Each run made about 450 repairs over 24–34 battles, close to 19 per camp visit. (GG-T448's 97–98% included the
+  postgame and predates the vendor tiers.)
+- **Why:** the routine topped every worn piece back up to full on every visit, however small the scratch. Each repair
+  multiplies that piece's next repair price by 1.6 and lowers its ceiling by one, so scratch repairs after every battle
+  pushed the multiplier into double digits within a region. Halving `RepairRate` (GG-T448) did not help, because the
+  routine simply made more repairs before reaching the uneconomical point.
+- **Change:** `CampRoutine.RepairBelowFraction` = 0.6. The routine repairs a piece only once it is below 60% of its ceiling.
+  A repair costs the same per point restored as before, but happens far less often. `RepairRate`, the 1.6× growth, wear
+  rates, battle pay, Paywall and Diamond prices are unchanged.
+- **After (2026-11-21):** greedy: 12,068 g earned, 12,540 g spent: **repair 28%**, gear 53%, facilities 9%, counters
+  4%, inn 3%, skills 2%, potions 1% (52 repairs a run). Casual: 11,104 g earned, 11,700 g spent: **repair 19%**, gear
+  45%, inn 18%, facilities 9%, counters 4%, skills 3%, potions 1% (88 repairs). The casual bot now finishes 4/4 runs
+  (was 3/4). The highest regional repair share is the greedy bot's 46–53% in the Still and Halcyon. Breaks mid-battle
+  were unchanged for the greedy bot (2 a run) and rose for the casual bot (12 → 18, mostly in the Arkgrave).
+- **Side effects:** Blacksmith XP from repairs falls with the repair count, so rank now comes mostly from forging, as
+  §25.0.10 intends. Summons never come up in these rows: the story fills the party first. A player who repairs every
+  scratch from the Repair tab still pays the 1.6× growth on each one. The Repair tab's uneconomical warning (§25.2) is
+  what guards against that.
 
 ### 25.1 Merchant
 

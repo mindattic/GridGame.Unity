@@ -106,6 +106,7 @@ Status values: ❌ fails, 🟡 partly passes or partly measured, ✅ passes, ⬜
 | POL-G5 | Impact per use within **0.5× – 2×** of its role's median | No dead or dominant abilities | Balance practice (outlier bands) | records `--abilities`; utility is measured, not flat (GG-T264, `records.credit_utility`: damage-up share, damage prevented/absorbed, ticks, skipped/slowed enemy turns, expected misses) | 🟡 78.0: the lows are pure utility buffs, the one high is Trapline |
 | POL-G6 | **6–20 player actions** per wave | Waves neither trivial nor a slog | Session-pacing practice (BIBLE A §0.3) | records | ⬜ |
 | POL-G7 | No single party composition or strategy wins **> 90%** of all stages for the casual bot | No dominant strategy | Game-theory balance practice | records (party rotation) | ⬜ |
+| POL-G8 | Repairs take **20–35%** of the main campaign's camp spend for each managed-camp bot | Gear upkeep matters, but leaves gold for gear, consumables, facilities and summons (BIBLE §25.0.11) | Resource-economy design | `BalanceReport.Economy_ledger` via `polish.py --balance` (GG-T540) | 🟡 greedy 28%, casual 19% (was 68% / 70%) |
 
 ### H. Art cohesion
 

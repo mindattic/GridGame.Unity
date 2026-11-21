@@ -482,6 +482,24 @@ namespace GridGame.Tests
             Assert.That(log.Any(m => m.Contains("Repaired Iron Sword")), Is.False);
         }
 
+        /// <summary>GG-T540: every repair counts toward the 1.6x price growth, so the routine leaves a lightly scratched
+        /// piece alone and repairs it once it wears below <see cref="CampRoutine.RepairBelowFraction"/>.</summary>
+        [Test]
+        public void CampRoutine_repairs_a_piece_only_once_it_is_worn_below_the_threshold()
+        {
+            var c = Real; var s = Progression.NewGame(c, "CRRepairThreshold"); CampNpcs.JoinAll(s);
+            var h = s.Hero(s.Party[0]);
+            h.WeaponId = "eq_sword_iron";
+            int max = Repair.EffectiveMax(c.Item("eq_sword_iron"), 0);
+            h.WeaponDurability = max - 1;
+            s.Gold = 100000;
+            Assert.That(CampRoutine.Run(c, s).Any(m => m.Contains("Repaired Iron Sword")), Is.False, "topped up a one-point scratch");
+            h.WeaponId = "eq_sword_iron";
+            h.WeaponRepairs = 0;
+            h.WeaponDurability = (int)(max * CampRoutine.RepairBelowFraction) - 1;
+            Assert.That(CampRoutine.Run(c, s).Any(m => m.Contains("Repaired Iron Sword")), Is.True, "left a piece worn past the threshold unrepaired");
+        }
+
         /// <summary>GG-T54 (owner direction): the Bargain shelf's cheap gear is a deliberate player gamble
         /// (10-40% durability left, real risk of shattering before it can be repaired) — an automated buyer
         /// can't judge that risk, so it must never take an offer below the safety threshold.</summary>

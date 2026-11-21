@@ -127,6 +127,9 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   for facility/summon gold. The owner's fresh-save playthrough above never hit this at all (no gear wears without
   forging), so the two playstyles feel very different — worth a played-through pass that actually forges and repairs
   gear before trusting either number.
+  **Resolved 2026-11-21 (GG-T540, BIBLE §25.0.11):** the cause was the routine's scratch repairs after every battle, each
+  compounding the 1.6× growth. With `CampRoutine.RepairBelowFraction` = 0.6, repairs went from 68%/70% to 28%/19%
+  (greedy/casual) of main-campaign spend; measured with `tools/polish.py --balance` (POL-G8). Postgame not measured.
 - **Consumables** run from 20 G (Antidote) to 500 G (X-Potion); the Tent is 300 G, the Revival Charm 450 G. The Healing
   Potion (25 G, 50 HP) vs Hi-Potion (75 G, 150 HP) step is linear, so there is no reason to buy small ones late.
   **GG-T448 second playthrough (2026-11-19, a fresh save through the real UI, this time forging and repairing gear):**

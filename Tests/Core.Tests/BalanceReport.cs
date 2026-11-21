@@ -25,6 +25,10 @@ namespace GridGame.Tests
         private Dictionary<string, int> ledger = new Dictionary<string, int>();
         private Dictionary<string, int> ledgerBank = new Dictionary<string, int>();
         private static void Add(Dictionary<string, int> d, string k, int v) { d.TryGetValue(k, out var had); d[k] = had + v; }
+        /// <summary>GG-T540: the same ledger cut to the main campaign (through campaign.json's Ending stage) and per theme
+        /// (region) of it — the scope of the repair-share target in BIBLE §25.0.11.</summary>
+        private Dictionary<string, int> mainLedger = new Dictionary<string, int>();
+        private Dictionary<string, Dictionary<string, int>> themeLedger = new Dictionary<string, Dictionary<string, int>>();
 
         private Dictionary<string, Row> Campaign(float randomness, int seed, int maxAttemptsPerStage, out bool finished, bool manageCamp = false) =>
             Campaign(randomness, seed, maxAttemptsPerStage, out finished, out _, manageCamp, Progression.StartingRoster, true);
@@ -52,7 +56,14 @@ namespace GridGame.Tests
                 for (int attempt = 0; attempt < maxAttemptsPerStage && !cleared; attempt++)
                 {
                     if (story) DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
-                    if (manageCamp) CampRoutine.Run(c, s, ledger);
+                    var visit = new Dictionary<string, int>();
+                    if (manageCamp)
+                    {
+                        var camp = CampRoutine.Run(c, s, visit);
+                        // GG-T540: how often the routine reaches for the Blacksmith, not just what it paid him.
+                        Add(visit, "#repairs", camp.Count(m => m.StartsWith("Repaired ")));
+                        Add(visit, "#salvages", camp.Count(m => m.StartsWith("Salvaged ")));
+                    }
                     else if (CampNpcs.Joined(s, CampNpcs.Innkeeper) && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Inn.Rest(c, s);
                     var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, BotDifficulty.FromEnv()); // GG-T309
                     var st = BotRunner.Play(c, setup, new HeroBot(battleSeed, randomness), 3000); // the first battle is a 20-wave gauntlet; GG-T311: forced Guards count
@@ -63,8 +74,19 @@ namespace GridGame.Tests
                     row.HpPct += (int)(100f * heroes.Sum(u => u.Alive ? u.Hp : 0) / heroes.Sum(u => u.MaxHp));
                     if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
                     int goldBefore = s.Gold;
+                    Add(visit, "#breaks", st.Results.BrokenWeapons.Values.Sum(l => l.Count) + st.Results.BrokenArmors.Values.Sum(l => l.Count));
                     BattleFactory.Commit(c, s, st);
-                    Add(ledger, "earned", s.Gold - goldBefore);
+                    Add(visit, "earned", s.Gold - goldBefore);
+                    Add(visit, "#battles", 1);
+                    foreach (var kv in visit)
+                    {
+                        Add(ledger, kv.Key, kv.Value);
+                        if (finished) continue; // GG-T540: the main campaign ends at the Ending stage; the postgame is out of scope
+                        Add(mainLedger, kv.Key, kv.Value);
+                        string theme = c.Campaign.Themes.FirstOrDefault(t => t.Stages.Contains(stage.Id))?.Id ?? "?";
+                        if (!themeLedger.TryGetValue(theme, out var tl)) themeLedger[theme] = tl = new Dictionary<string, int>();
+                        Add(tl, kv.Key, kv.Value);
+                    }
                 }
                 ledgerBank[stage.Id] = (ledgerBank.TryGetValue(stage.Id, out var b) ? b : 0) + s.Gold;
                 if (cleared && string.Equals(stage.Id, endingStage, System.StringComparison.OrdinalIgnoreCase)) finished = true;
@@ -94,6 +116,7 @@ namespace GridGame.Tests
         {
             var total = new Dictionary<string, Row>();
             ledger = new Dictionary<string, int>(); ledgerBank = new Dictionary<string, int>();
+            mainLedger = new Dictionary<string, int>(); themeLedger = new Dictionary<string, Dictionary<string, int>>();
             int finishedRuns = 0, recruits = 0, bountiesClaimed = 0, bountySp = 0, roster = 0, spSpent = 0, spBanked = 0;
             const int seeds = 4;
             var party = FiveStart.Take(startingHeroes).ToList();
@@ -134,6 +157,38 @@ namespace GridGame.Tests
             if (manageCamp && !story && startingHeroes < Progression.MaxPartySize) Assert.That(recruits > 0, Is.True, "the camp routine never recruited into an open party slot");
             // GG-T54: a managed campaign actually spends the skill points it earns.
             if (manageCamp && finishedRuns > 0) Assert.That(spSpent > 0, Is.True, "the camp routine never spent a skill point over a played-out campaign");
+        }
+
+        /// <summary>GG-T540: the economy instrument behind <c>tools/polish.py --balance</c>. Plays the managed-camp rows
+        /// (greedy and casual, trio start with story recruits, 4 seeds each) and writes where the main campaign's gold went —
+        /// battle pay against each camp phase, per run and per theme, plus repair/salvage/break counts — as JSON to
+        /// GAIDEN_ECONOMY_OUT. Ignored without that variable, so the regular suite doesn't play these campaigns twice.</summary>
+        [Test]
+        public void Economy_ledger()
+        {
+            var outPath = System.Environment.GetEnvironmentVariable("GAIDEN_ECONOMY_OUT");
+            if (string.IsNullOrEmpty(outPath)) Assert.Ignore("set GAIDEN_ECONOMY_OUT (tools/polish.py --balance does)");
+            const int seeds = 4;
+            var json = new StringBuilder("{");
+            string Obj(Dictionary<string, int> d) => "{" + string.Join(",", d.Select(kv => $"\"{kv.Key}\":{kv.Value / (float)seeds:F1}")) + "}";
+            var rows = new[] { (0.0f, "greedy+camp"), (0.5f, "casual+camp") };
+            for (int i = 0; i < rows.Length; i++)
+            {
+                var (randomness, label) = rows[i];
+                ledger = new Dictionary<string, int>(); ledgerBank = new Dictionary<string, int>();
+                mainLedger = new Dictionary<string, int>(); themeLedger = new Dictionary<string, Dictionary<string, int>>();
+                int finishedRuns = 0;
+                for (int seed = 1; seed <= seeds; seed++)
+                {
+                    Campaign(randomness, seed, 4, out bool finished, out _, true, Progression.StartingRoster, true);
+                    if (finished) finishedRuns++;
+                }
+                json.Append(i > 0 ? "," : "").Append($"\"{label}\":{{\"finished\":{finishedRuns},\"seeds\":{seeds},\"main\":{Obj(mainLedger)},\"themes\":{{");
+                json.Append(string.Join(",", themeLedger.Select(kv => $"\"{kv.Key}\":{Obj(kv.Value)}"))).Append("}}");
+                TestContext.Out.WriteLine($"{label}: main campaign gold per run: " + string.Join(", ", mainLedger.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} {kv.Value / seeds}")));
+            }
+            json.Append("}");
+            System.IO.File.WriteAllText(outPath, json.ToString());
         }
     }
 }
