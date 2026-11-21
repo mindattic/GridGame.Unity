@@ -4,6 +4,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py smoke            # title → new game → hub → battle (autoplay) → results
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
     python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
+    python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
@@ -487,6 +488,65 @@ def aspects(run="aspects", height=1200):
         pass
     print(json.dumps(report, indent=1))
     print("FAILURES:" if failures else "ALL ASPECTS OK", *failures, sep="\n  ")
+    return not failures
+
+
+# GG-T483: a fake notch + gesture bar quoted at a 1080x2400 phone (90 px top, 48 px bottom), scaled to the window height.
+SAFE_INSETS_AT_2400 = (90, 48)
+SAFE_ASPECTS = [("9x23", 9 / 23), ("3x4", 3 / 4)]
+
+
+def safeareas(run="safeareas", height=1200, capture=True, settings=()):
+    """GG-T483: at 9:23 and 3:4 with a fake notch and gesture bar (-safeArea, scaled from 90/48 px at 2400 tall), shoots
+    the title, Camp, a vendor (the Merchant), the results screen and a live battle, runs the layout audit on each
+    (POL-C5 'inside the unsafe area' among its checks) and reports the safe insets the player applied in design px.
+    settings: (key, value) pairs for the automation `setting` endpoint, applied once the title shows (GG-T495 shots).
+    Recorded with -capture video hq unless capture=False. Exit 1 on any layout problem or log error."""
+    failures, report = [], {}
+    top, bottom = (round(v * height / 2400) for v in SAFE_INSETS_AT_2400)
+    for label, a in SAFE_ASPECTS:
+        w = int(round(height * a))
+        extra = ["-safeArea", f"{top},{bottom}"] + (["-capture", "video", "hq"] if capture else [])
+        launch(f"{run}/{label}", width=w, height=height, fresh=True, extra=tuple(extra))
+        _wait_screen("title"); time.sleep(0.8)
+        for k, v in settings:
+            call("setting", key=k, value=v)
+        entry = {"window": [w, height], "insets_px": [top, bottom], "screens": {}}
+        try:
+            entry["safe"] = call("safearea")
+        except Exception:
+            entry["safe"] = None  # an older player without the endpoint
+        def snap(tag, name):
+            time.sleep(1.0)
+            shot(f"{label}-{tag}")
+            entry["screens"][name] = call("layout").get("problems")
+        snap("1-title", "title")
+        call("newgame", slot=0); time.sleep(1.2)
+        snap("2-camp", "camp")
+        call("goto", screen="shop"); time.sleep(0.6)
+        snap("3-merchant", "merchant")
+        call("goto", screen="results"); time.sleep(0.6)
+        snap("4-results", "results")
+        call("battle")
+        if _wait_screen("battle", 8):
+            time.sleep(2.5)
+            snap("5-battle", "battle")
+        else:
+            failures.append(f"{label}: never reached the battle screen")
+        for scr, probs in entry["screens"].items():
+            if probs:
+                failures.append(f"{label}/{scr}: {probs}")
+        errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
+        if errs:
+            failures.append(f"{label}: log errors {errs[:3]}")
+        report[label] = entry
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+        time.sleep(3.0)  # let the capture finalize before the next launch
+    print(json.dumps(report, indent=1))
+    print("FAILURES:" if failures else "ALL SAFE AREAS OK", *failures, sep="\n  ")
     return not failures
 
 
@@ -2400,6 +2460,12 @@ if __name__ == "__main__":
         sweep(sys.argv[2] if len(sys.argv) > 2 else "sweep", sys.argv[3] if len(sys.argv) > 3 else None)
     elif cmd == "aspects":
         sys.exit(0 if aspects() else 1)
+    elif cmd == "safeareas":
+        # safeareas [RUN] [--nocapture] [key=value ...]  (key=value: automation settings, e.g. textsize=130 reducemotion=1)
+        rest = [a for a in sys.argv[2:] if a != "--nocapture"]
+        kvs = tuple(tuple(a.split("=", 1)) for a in rest if "=" in a)
+        names = [a for a in rest if "=" not in a]
+        sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
     elif cmd == "camptips":
         sys.exit(0 if camptips() else 1)
     elif cmd == "smithrepair":

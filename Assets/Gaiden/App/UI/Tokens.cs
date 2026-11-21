@@ -156,6 +156,8 @@ namespace GridGame.App
     public static class Kit
     {
         public const float Title = TypeScale.H2, Heading = TypeScale.H3, Body = TypeScale.Body, Caption = TypeScale.Caption;
+        /// <summary>The page header bar's height (USS <c>.header</c>); under a notch it grows by the inset (GG-T483).</summary>
+        public const float HeaderHeight = 150f;
         /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>
         public const float Gutter = Fit.Edge;
         /// <summary>Between stacked windows, and between the header and the first window (each window's S8 margin, twice).</summary>

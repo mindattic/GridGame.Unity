@@ -767,6 +767,25 @@ namespace GridGame.App.Automation
                     float k = Screen.width / Mathf.Max(1f, root.width);
                     return new { x = sb.x * k, y = sb.y * k, w = sb.width * k, h = sb.height * k, screen = new[] { Screen.width, Screen.height }, design = new[] { GameApp.StageWidth, GameApp.StageHeight }, framed = app.Document.rootVisualElement.Q("stage-frame")?.ClassListContains("hidden") == false };
                 }
+                case "safearea":
+                {
+                    // GG-T483: fake a notch / gesture bar. top=&bottom= in window px, or quoted at a phone's height with
+                    // ref= (top=90&bottom=48&ref=2400 is a 1080x2400 phone's, scaled to this window); clear=1 goes back to
+                    // the device's own. Applies on the next frame; with no arguments, reports the insets in force.
+                    if (q["clear"] == "1") app.FakeSafeArea(-1f, -1f);
+                    else if (q["top"] != null || q["bottom"] != null)
+                    {
+                        float scale = q["ref"] != null ? Screen.height / Mathf.Max(1f, F(q["ref"], Screen.height)) : 1f;
+                        app.FakeSafeArea(F(q["top"]) * scale, F(q["bottom"]) * scale);
+                        return new { ok = true, applies = "next frame", topPx = F(q["top"]) * scale, bottomPx = F(q["bottom"]) * scale };
+                    }
+                    var screensBox = app.Stage.Q("screens")?.layout ?? default;
+                    return new
+                    {
+                        safeTop = GameApp.SafeTop, safeBottom = GameApp.SafeBottom, design = new[] { GameApp.StageWidth, GameApp.StageHeight },
+                        screens = new[] { screensBox.y, screensBox.height }, device = Screen.safeArea.ToString(), screen = new[] { Screen.width, Screen.height },
+                    };
+                }
                 case "resize":
                     Screen.SetResolution((int)F(q["w"], 585), (int)F(q["h"], 1266), FullScreenMode.Windowed);
                     return new { ok = true };

@@ -64,6 +64,11 @@ namespace GridGame.App
         private VisualElement letterbox;
         private VisualElement stageFrame;
         private Vector2 lastScreen;
+        private Rect lastSafe;
+        /// <summary>A faked notch / gesture bar in screen px (top, bottom), from <c>-safeArea</c> or the automation
+        /// <c>safearea</c> endpoint (GG-T483); null = the device's own <see cref="Screen.safeArea"/>.</summary>
+        private Vector2? fakeInsets;
+        private bool fakeInsetsParsed;
         private float playClock;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -219,8 +224,10 @@ namespace GridGame.App
         private void FitStage()
         {
             var screen = new Vector2(Screen.width, Screen.height);
-            if (screen == lastScreen && Stage.Q("screens") != null) return;
+            var safeNow = SafeAreaPx();
+            if (screen == lastScreen && safeNow == lastSafe && Stage.Q("screens") != null) return;
             lastScreen = screen;
+            lastSafe = safeNow;
             float screenAspect = screen.x / Mathf.Max(1f, screen.y);
             var size = StageSizeFor(screenAspect);
             bool resized = size.x != StageWidth || size.y != StageHeight;
@@ -250,32 +257,59 @@ namespace GridGame.App
             stageFrame.style.width = size.x + gap * 2f;
             stageFrame.style.height = size.y + gap * 2f;
 
-            ApplySafeArea(logicalW, logicalH);
-            if (resized) StageResized?.Invoke();
+            bool insetsChanged = ApplySafeArea(logicalW, logicalH, safeNow);
+            // A new notch / gesture bar (a rotation to upside-down portrait, the automation endpoint) changes the usable
+            // height Fit.H reads, so the current screen rebuilds as it does for a new stage size (GG-T483).
+            if (resized || insetsChanged) StageResized?.Invoke();
         }
 
-        /// <summary>Insets the screens where the device's safe area (notch / home bar) overlaps the stage (bible §26.5).</summary>
-        private void ApplySafeArea(float logicalW, float logicalH)
+        /// <summary>The safe area in screen px (bottom-left origin, like <see cref="Screen.safeArea"/>): the device's own, or
+        /// the faked insets when <c>-safeArea top,bottom</c> or the automation <c>safearea</c> endpoint set some (GG-T483).</summary>
+        private Rect SafeAreaPx()
         {
-            var safe = Screen.safeArea;
-            if (Screen.width <= 0 || Screen.height <= 0) return;
-            // Test override: -safeArea <topPx>,<bottomPx> simulates a notch / home bar on desktop.
-            var ov = CommandLine.Value("-safeArea");
-            if (!string.IsNullOrEmpty(ov))
+            if (!fakeInsetsParsed)
             {
-                var parts = ov.Split(',');
-                if (parts.Length == 2 && float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var top)
-                    && float.TryParse(parts[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var bottom))
-                    safe = new Rect(0, bottom, Screen.width, Screen.height - top - bottom);
+                fakeInsetsParsed = true;
+                // -safeArea <topPx>,<bottomPx>: a notch / gesture bar on desktop, in window px.
+                var ov = CommandLine.Value("-safeArea");
+                if (!string.IsNullOrEmpty(ov))
+                {
+                    var parts = ov.Split(',');
+                    if (parts.Length == 2 && float.TryParse(parts[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var t)
+                        && float.TryParse(parts[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var b))
+                        fakeInsets = new Vector2(Mathf.Max(0f, t), Mathf.Max(0f, b));
+                }
             }
+            if (fakeInsets is Vector2 f)
+                return new Rect(0, f.y, Screen.width, Mathf.Max(1f, Screen.height - f.x - f.y));
+            return Screen.safeArea;
+        }
+
+        /// <summary>Fakes a notch of <paramref name="topPx"/> and a gesture bar of <paramref name="bottomPx"/> (window px), or
+        /// goes back to the device's own safe area when both are negative (automation <c>safearea</c>, GG-T483). Applies on
+        /// the next frame.</summary>
+        public void FakeSafeArea(float topPx, float bottomPx)
+        {
+            fakeInsetsParsed = true;
+            fakeInsets = topPx < 0f && bottomPx < 0f ? (Vector2?)null : new Vector2(Mathf.Max(0f, topPx), Mathf.Max(0f, bottomPx));
+        }
+
+        /// <summary>Insets the screens where the safe area (notch / home bar) overlaps the stage (bible §26.5). Each screen's
+        /// backdrop still bleeds under the insets (<see cref="GameScreen.BleedBackdrops"/>). True when the insets changed.</summary>
+        private bool ApplySafeArea(float logicalW, float logicalH, Rect safe)
+        {
+            if (Screen.width <= 0 || Screen.height <= 0) return false;
             float k = logicalH / Screen.height;
             float stageTop = (logicalH - StageHeight) / 2f, stageBottom = stageTop + StageHeight;
             float safeTop = (Screen.height - safe.yMax) * k, safeBottom = logicalH - safe.yMin * k;
             var screens = Stage.Q("screens");
-            SafeTop = Mathf.Max(0f, safeTop - stageTop);
-            SafeBottom = Mathf.Max(0f, stageBottom - safeBottom);
+            float top = Mathf.Round(Mathf.Max(0f, safeTop - stageTop)), bottom = Mathf.Round(Mathf.Max(0f, stageBottom - safeBottom));
+            bool changed = top != SafeTop || bottom != SafeBottom;
+            SafeTop = top;
+            SafeBottom = bottom;
             screens.style.top = SafeTop;
             screens.style.bottom = SafeBottom;
+            return changed;
         }
 
         private void Update()

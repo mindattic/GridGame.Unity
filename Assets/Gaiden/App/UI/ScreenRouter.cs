@@ -21,7 +21,22 @@ namespace GridGame.App
             Root.name = "screen-" + Id;
             Build(Root);
             Ui.ApplyHeavy(Root);
+            BleedBackdrops(Root);
             return Root;
+        }
+
+        /// <summary>The screens container sits inside the safe area (§26.5), so a screen's content and buttons never go under
+        /// a notch or gesture bar; its backdrop layers (a leaf "fill" child of the screen root: the background art, a
+        /// shade) reach out under the insets so the art still covers the whole screen (GG-T483).</summary>
+        internal static void BleedBackdrops(VisualElement root)
+        {
+            if (root == null) return;
+            foreach (var c in root.Children())
+            {
+                if (c.childCount != 0 || c is TextElement || !c.ClassListContains("fill")) continue;
+                c.style.top = -GameApp.SafeTop;
+                c.style.bottom = -GameApp.SafeBottom;
+            }
         }
 
         protected abstract void Build(VisualElement root);
@@ -44,6 +59,7 @@ namespace GridGame.App
             Root.Clear();
             Build(Root);
             Ui.ApplyHeavy(Root);
+            BleedBackdrops(Root);
         }
 
         protected static GameApp App => GameApp.I;
@@ -69,7 +85,13 @@ namespace GridGame.App
         {
             this.host = host;
             this.fade = fade;
-            GameApp.StageResized += () => { var c = Current; if (c != null && !busy && c.RebuildOnResize) c.Refresh(); };
+            GameApp.StageResized += () =>
+            {
+                var c = Current;
+                if (c == null) return;
+                if (!busy && c.RebuildOnResize) c.Refresh();
+                else GameScreen.BleedBackdrops(c.Root); // the battle, a crawl: new insets still reach their backdrop (GG-T483)
+            };
         }
 
         public void Push(GameScreen s) => Go(() => stack.Push(s));

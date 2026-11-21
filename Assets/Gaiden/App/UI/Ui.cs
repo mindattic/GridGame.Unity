@@ -186,6 +186,13 @@ namespace GridGame.App
             var h = El("header", parent);
             // The bar spans the stage; its back button, title and gold line up with the content column (GG-T398).
             h.style.paddingLeft = h.style.paddingRight = Fit.Inset + Kit.Gutter;
+            // GG-T483: under a notch the bar's band reaches up to the screen's top edge, its controls staying below the inset.
+            if (GameApp.SafeTop > 0f)
+            {
+                h.style.marginTop = -GameApp.SafeTop;
+                h.style.paddingTop = GameApp.SafeTop;
+                h.style.height = Kit.HeaderHeight + GameApp.SafeTop;
+            }
             if (onBack != null) Button("‹", onBack, "btn--small btn--icon", h).name = "back";
             if (subtitle == null) Text(title, "header-title shadow", h);
             else
