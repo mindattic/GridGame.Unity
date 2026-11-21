@@ -146,6 +146,77 @@ namespace GridGame.App.Tests
             Assert.IsNull(store.Load(0));
         }
 
+        // ── GG-T482: the rolling backup ──
+
+        [Test]
+        public void Write_KeepsThePreviousSaveAsTheBackup()
+        {
+            store.Write(0, new SaveData { Gold = 1 });
+            Assert.IsFalse(File.Exists(store.BackupPathFor(0)), "a first write has nothing to back up");
+            store.Write(0, new SaveData { Gold = 2 });
+
+            Assert.IsTrue(File.Exists(store.BackupPathFor(0)));
+            Assert.AreEqual(1, SaveFiles.Deserialize(File.ReadAllText(store.BackupPathFor(0))).Gold);
+            Assert.AreEqual(2, store.Load(0).Gold);
+        }
+
+        [Test]
+        public void Load_OfCorruptFile_RestoresTheBackup_AndPutsItBack()
+        {
+            store.Write(0, new SaveData { Gold = 1 });
+            store.Write(0, new SaveData { Gold = 2 });
+            File.WriteAllText(SlotPath(0), "{ truncated");
+
+            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("^\\[Save\\] slot 1 unreadable:.*"));
+            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("^\\[Save\\] slot 1 restored from its backup.*"));
+            var loaded = store.Load(0);
+
+            Assert.AreEqual(1, loaded.Gold);
+            Assert.AreEqual(1, SaveFiles.Deserialize(File.ReadAllText(SlotPath(0))).Gold, "the slot file is the backup again");
+            Assert.IsTrue(File.Exists(SlotPath(0) + ".corrupt"), "the bad file is kept for diagnosis");
+
+            // The next write must rotate the restored (good) save into the backup, not the corrupt one.
+            store.Write(0, new SaveData { Gold = 3 });
+            Assert.AreEqual(1, SaveFiles.Deserialize(File.ReadAllText(store.BackupPathFor(0))).Gold);
+        }
+
+        [Test]
+        public void Load_OfEmptyFile_RestoresTheBackup()
+        {
+            store.Write(0, new SaveData { Gold = 5 });
+            store.Write(0, new SaveData { Gold = 6 });
+            File.WriteAllText(SlotPath(0), "");
+
+            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex("^\\[Save\\] slot 1 unreadable:.*"));
+            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("^\\[Save\\] slot 1 restored from its backup.*"));
+            Assert.AreEqual(5, store.Load(0).Gold);
+        }
+
+        [Test]
+        public void Load_WithOnlyTheBackupLeft_RestoresIt()
+        {
+            store.Write(0, new SaveData { Gold = 7 });
+            store.Write(0, new SaveData { Gold = 8 });
+            File.Delete(SlotPath(0));
+
+            Assert.IsTrue(store.Exists(0));
+            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("^\\[Save\\] slot 1 restored from its backup.*"));
+            Assert.AreEqual(7, store.Load(0).Gold);
+            Assert.IsTrue(File.Exists(SlotPath(0)));
+        }
+
+        [Test]
+        public void Delete_RemovesTheBackupToo()
+        {
+            store.Write(0, new SaveData());
+            store.Write(0, new SaveData());
+
+            store.Delete(0);
+
+            Assert.IsFalse(File.Exists(store.BackupPathFor(0)));
+            Assert.IsFalse(store.Exists(0));
+        }
+
         [Test]
         public void Exists_ReflectsPresence()
         {

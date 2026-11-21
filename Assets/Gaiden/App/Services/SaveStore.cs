@@ -8,7 +8,8 @@ using UnityEngine;
 
 namespace GridGame.App
 {
-    /// <summary>Three save slots as JSON files (atomic write via temp + replace) in one folder: the active player
+    /// <summary>Three save slots as JSON files (atomic write via temp + replace, with the previous write kept as a
+    /// rolling backup that loads automatically when the slot file is bad, GG-T482) in one folder: the active player
     /// profile's <c>Profiles/&lt;Name&gt;/Saves</c> (GG-T99), or a test folder.</summary>
     public sealed class SaveStore
     {
@@ -34,52 +35,92 @@ namespace GridGame.App
         }
 
         private string PathFor(int slot) => SaveFiles.PathFor(Root, slot);
+        /// <summary>GG-T482: the slot as it was before its latest write (slotN.json.bak).</summary>
+        public string BackupPathFor(int slot) => PathFor(slot) + ".bak";
 
-        public bool Exists(int slot) => File.Exists(PathFor(slot));
+        public bool Exists(int slot) => File.Exists(PathFor(slot)) || File.Exists(BackupPathFor(slot));
 
         /// <summary><paramref name="content"/> drives GG-T52's proficiency grandfather clause during
         /// migration (a save equipped before that gate existed keeps its gear instead of losing it);
-        /// omit it only where content isn't loaded yet (e.g. save-shape-only tests).</summary>
+        /// omit it only where content isn't loaded yet (e.g. save-shape-only tests).
+        /// GG-T482: when the slot file is missing or unreadable (a write cut off by a dead battery, a corrupted flash
+        /// block) the rolling backup — the save one write earlier — is loaded instead and put back as the slot file, so
+        /// the next write can't rotate the bad file into the backup. The bad file is kept as slotN.json.corrupt.</summary>
         public SaveData Load(int slot, GridGame.Core.Content.ContentDb content = null)
         {
             var p = PathFor(slot);
-            if (!File.Exists(p)) return null;
+            var bak = BackupPathFor(slot);
+            if (File.Exists(p))
+            {
+                var s = TryRead(p, slot, content, out var error);
+                if (s != null) return s;
+                Debug.LogError($"[Save] slot {slot + 1} unreadable: {error}");
+            }
+            if (!File.Exists(bak)) return null;
+            var restored = TryRead(bak, slot, content, out var bakError);
+            if (restored == null)
+            {
+                Debug.LogError($"[Save] slot {slot + 1} backup unreadable too: {bakError}");
+                return null;
+            }
             try
             {
-                var s = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(p), SaveSettings);
+                if (File.Exists(p)) File.Copy(p, p + ".corrupt", true);
+                File.Copy(bak, p, true);
+                Flush();
+            }
+            catch (Exception e) { Debug.LogError($"[Save] slot {slot + 1} couldn't put the backup back: {e.Message}"); }
+            Debug.LogWarning($"[Save] slot {slot + 1} restored from its backup (saved {restored.UpdatedUtc:u})");
+            return restored;
+        }
+
+        private static SaveData TryRead(string path, int slot, GridGame.Core.Content.ContentDb content, out string error)
+        {
+            error = null;
+            try
+            {
+                var s = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(path), SaveSettings);
+                if (s == null) { error = "empty file"; return null; }
                 return SaveMigrations.Migrate(s, content);
             }
             catch (Exception e)
             {
-                Debug.LogError($"[Save] slot {slot + 1} unreadable: {e.Message}");
+                error = e.Message;
                 return null;
             }
         }
 
         /// <summary>
-        /// Writes the slot atomically (temp file + replace). Never throws: a disk-full/locked-file/permissions
-        /// failure at any step is caught, logged, and reported back as <c>false</c> instead of silently losing
+        /// Writes the slot atomically (temp file flushed to disk, then replace). Never throws: a disk-full/locked-file/
+        /// permissions failure at any step is caught, logged, and reported back as <c>false</c> instead of silently losing
         /// the player's progress (GG-T146) — mirroring how <see cref="Load"/> reports a bad read with a log and
         /// a sentinel return rather than an exception. Best-effort-deletes the temp file on failure so a stray
         /// `.tmp` doesn't linger; a save attempted again later overwrites it either way.
+        /// GG-T482: the replace keeps the previous slot file as the rolling backup (<see cref="BackupPathFor"/>).
         /// </summary>
         public bool Write(int slot, SaveData s)
         {
             s.UpdatedUtc = DateTime.UtcNow;
             var p = PathFor(slot);
             var tmp = p + ".tmp";
+            var bak = BackupPathFor(slot);
             try
             {
-                File.WriteAllText(tmp, JsonConvert.SerializeObject(s, Formatting.Indented, SaveSettings));
+                var bytes = new System.Text.UTF8Encoding(false).GetBytes(JsonConvert.SerializeObject(s, Formatting.Indented, SaveSettings));
+                using (var fs = new FileStream(tmp, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    fs.Write(bytes, 0, bytes.Length);
+                    fs.Flush(true); // on the disk before the rename, so a power cut can't leave a renamed empty file
+                }
                 try
                 {
-                    if (File.Exists(p)) File.Replace(tmp, p, null);
+                    if (File.Exists(p)) File.Replace(tmp, p, bak, true);
                     else File.Move(tmp, p);
                 }
                 catch (PlatformNotSupportedException)
                 {
                     // WebGL's file system has no atomic replace.
-                    if (File.Exists(p)) File.Delete(p);
+                    if (File.Exists(p)) { File.Copy(p, bak, true); File.Delete(p); }
                     File.Move(tmp, p);
                 }
                 Flush();
@@ -108,7 +149,8 @@ namespace GridGame.App
         public void Delete(int slot)
         {
             var p = PathFor(slot);
-            if (File.Exists(p)) File.Delete(p);
+            foreach (var f in new[] { p, BackupPathFor(slot), p + ".corrupt" })
+                if (File.Exists(f)) File.Delete(f);
             Flush();
         }
 
