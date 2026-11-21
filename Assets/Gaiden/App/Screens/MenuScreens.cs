@@ -350,6 +350,8 @@ namespace GridGame.App
                     var empty = Ui.El("thumb", slot);
                     empty.style.width = empty.style.height = Size.Avatar;
                     empty.style.opacity = 0.3f;
+                    // Reserve the name line so the strip doesn't grow (and shove the page down) on the first lock-in.
+                    Ui.Text(" ", "tiny", slot);
                 }
             }
 

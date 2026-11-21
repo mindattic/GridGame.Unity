@@ -133,7 +133,7 @@ namespace GridGame.App
         public const float Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
         // Icons and pictures
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
-            Avatar = 96, PartySlot = 108, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
+            Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
