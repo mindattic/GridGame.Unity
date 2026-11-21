@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using GridGame.Meta;
 using UnityEngine;
@@ -6,106 +7,88 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// The first-use prompt for a Camp station (GG-T173): a see-through veil, a gold outline and a bouncing pointing
-    /// hand on the station's key control, and a one-sentence card with "Got it". Shown once per station per save;
-    /// lives in the screen's own root so it leaves with the screen.
+    /// The first-use lesson for a Camp station (GG-T173; coach marks since GG-T539): a blocking popup naming the station's
+    /// one important action, then the stage dims except the exact control to use, an arrow points at it, and only it takes
+    /// taps until the player has used it (the Merchant's + and then Buy, a recipe and then Craft, the worn piece to mend).
+    /// Shown once per station per save (<see cref="SaveData.SeenCampTips"/>); Settings › How to play › Replay tutorials
+    /// brings them back. The words live in <see cref="CampTips"/>.
     /// </summary>
     public static class CampTipOverlay
     {
-        /// <summary>Bots and harness runs see no tips unless the run asks for them (`-campTips`).</summary>
-        private static bool Suppressed =>
-            DemoMode.Active || TestMode.Active || CommandLine.Has("-autobattle") ||
-            (CommandLine.Has("-automation") && !CommandLine.Has("-campTips"));
-
         public static void ShowIfPending(GameScreen page, string station)
         {
             var save = GameApp.I.Save;
             var tip = CampTips.Resolve(GameApp.I.Content, save, CampTips.Pending(save, station));
-            if (tip == null || Suppressed || page.Root == null) return;
-            // Wait one layout pass so the target control has a size and position to point at.
-            page.Root.schedule.Execute(() => Show(page.Root, tip)).ExecuteLater(60);
+            if (tip == null || Coach.Suppressed || Coach.Off(save) || page.Root == null) return;
+            // Wait for a layout pass so the target has a size, and for a Camp-row lesson that led here to finish.
+            int tries = 0;
+            IVisualElementScheduledItem item = null;
+            item = page.Root.schedule.Execute(() =>
+            {
+                if (page.Root.panel == null || ++tries > 40) { item.Pause(); return; }
+                if (Coach.Active) return;
+                item.Pause();
+                Show(page, tip);
+            }).StartingIn(60).Every(100);
         }
 
-        private static VisualElement FindTarget(VisualElement root, string target)
+        private static void Show(GameScreen page, CampTip tip)
+        {
+            if (CampTips.Pending(GameApp.I.Save, tip.Station) == null) return;
+            Coach.Run(new CoachLesson
+            {
+                Id = "camp-" + tip.Station,
+                Kicker = "Camp",
+                Title = tip.Title,
+                Text = tip.Text,
+                Image = "Tutorial/camp-" + tip.Station,
+                Steps = Steps(tip),
+                // The page stays the lesson's home: a station left mid-lesson ends its marks (they'd point at nothing).
+                Hold = () => GameApp.I.Overlay.Q(TimedJobView.VeilName) != null,
+                Finished = how =>
+                {
+                    if (how == CoachEnd.Completed || how == CoachEnd.Aborted) { CampTips.MarkSeen(GameApp.I.Save, tip.Station); GameApp.I.Persist(); }
+                },
+                CardName = "camp-tip-card", NextName = "camp-tip-ok", RingName = "camp-tip-ring",
+            });
+        }
+
+        /// <summary>The control a camp tip names (a name, or a name prefix ending in '-'), visible on the stage.</summary>
+        public static VisualElement Find(string target)
         {
             if (string.IsNullOrEmpty(target)) return null;
             bool prefix = target.EndsWith("-");
-            return root.Query<VisualElement>().Where(e => e.name != null && (prefix ? e.name.StartsWith(target) : e.name == target)
+            var stage = GameApp.I.Stage.Q("screens") ?? GameApp.I.Stage;
+            return stage.Query<VisualElement>().Where(e => e.name != null && (prefix ? e.name.StartsWith(target) : e.name == target)
                                                          && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.height > 0).First();
         }
 
-        private static void Show(VisualElement root, CampTip tip, bool scrolled = false)
+        private static string Verb(string station) =>
+            station == "alchemist" ? "Brew" : station == "enchantress" ? "Enchant" : station == Training.TipStation ? "Learn" : "Craft";
+
+        /// <summary>The marks a tip walks: one or two taps on the exact controls.</summary>
+        private static List<CoachStep> Steps(CampTip tip)
         {
-            if (root.Q("camp-tip") != null) return;
-            // A target below the fold of a list is scrolled into view first, then pointed at once the list settles.
-            var inList = FindTarget(root, tip.Target)?.GetFirstAncestorOfType<ScrollView>();
-            if (inList != null && !scrolled)
+            var steps = new List<CoachStep>();
+            if (string.IsNullOrEmpty(tip.Target)) return steps;
+            CoachStep Tap(string target, string caption) => new CoachStep { Caption = caption, Element = () => Find(target) };
+            string verb = Verb(tip.Station);
+            if (tip.Station == "shop")
             {
-                inList.ScrollTo(FindTarget(root, tip.Target));
-                root.schedule.Execute(() => Show(root, tip, true)).ExecuteLater(80);
-                return;
+                steps.Add(Tap(tip.Target, "Tap + to put a Healing Potion in your cart."));
+                steps.Add(Tap("shop-commit", "Tap Buy."));
             }
-            var veil = Ui.El("fill", root);
-            veil.name = "camp-tip";
-            veil.style.backgroundColor = new Color(0f, 0f, 0.04f, 0.55f);
-            veil.pickingMode = PickingMode.Position;
-
-            var target = FindTarget(root, tip.Target);
-            bool targetLow = false;
-            if (target != null)
+            else if (tip.Target.StartsWith(CampTips.RecipeRowPrefix) || tip.Target.StartsWith(ArmorEnchanting.EnchantRowPrefix))
             {
-                var r = target.worldBound;
-                var origin = root.worldBound.position;
-                var rect = new Rect(r.position - origin, r.size);
-                targetLow = rect.center.y > root.worldBound.height * 0.55f;
-
-                var ring = Ui.El("", veil);
-                ring.name = "camp-tip-ring";
-                ring.pickingMode = PickingMode.Ignore;
-                ring.style.position = Position.Absolute;
-                ring.style.left = rect.xMin - 8; ring.style.top = rect.yMin - 8;
-                ring.style.width = rect.width + 16; ring.style.height = rect.height + 16;
-                ring.style.borderTopWidth = ring.style.borderBottomWidth = ring.style.borderLeftWidth = ring.style.borderRightWidth = 6;
-                ring.style.borderTopColor = ring.style.borderBottomColor = ring.style.borderLeftColor = ring.style.borderRightColor = Palette.Gold;
-                ring.style.borderTopLeftRadius = ring.style.borderTopRightRadius = ring.style.borderBottomLeftRadius = ring.style.borderBottomRightRadius = 16;
-
-                var hand = Ui.El("", veil);
-                hand.name = "camp-tip-hand";
-                hand.pickingMode = PickingMode.Ignore;
-                hand.style.position = Position.Absolute;
-                hand.style.width = hand.style.height = Size.Glyph;
-                hand.style.backgroundImage = new StyleBackground(Art.Cursor);
-                float hx = Mathf.Max(6f, rect.xMin - 100f), hy = rect.center.y - 44f;
-                hand.style.left = hx; hand.style.top = hy;
-                float t0 = Time.unscaledTime;
-                hand.schedule.Execute(() => hand.style.translate = new Translate(Mathf.Sin((Time.unscaledTime - t0) * 7f) * 12f, 0)).Every(16);
+                steps.Add(Tap(tip.Target, "Tap the recipe to see what goes in."));
+                steps.Add(Tap(CampTips.CraftButton, $"Tap {verb}."));
             }
-
-            var card = Ui.Window(null, veil);
-            card.name = "camp-tip-card";
-            card.style.position = Position.Absolute;
-            card.style.left = Fit.Edge; card.style.right = Fit.Edge;
-            if (targetLow) card.style.top = Fit.H(7.9f); else card.style.bottom = Space.S64;
-            Ui.Text("Camp tip · " + tip.Title, "small gold", card);
-            var text = Ui.Text(tip.Text, "", card);
-            text.style.whiteSpace = WhiteSpace.Normal;
-            text.style.marginTop = Space.S8;
-            var row = Ui.El("row", card);
-            row.style.justifyContent = Justify.FlexEnd;
-            row.style.marginTop = Space.S16;
-            var ok = Ui.Button("Got it", () => Dismiss(veil, tip), "btn--primary", row);
-            ok.name = "camp-tip-ok";
-
-            GameApp.I.Audio.Sfx("ui.select", 0.7f);
-            veil.style.opacity = 0f;
-            veil.schedule.Execute(() => veil.style.opacity = 1f).ExecuteLater(16);
-        }
-
-        private static void Dismiss(VisualElement veil, CampTip tip)
-        {
-            CampTips.MarkSeen(GameApp.I.Save, tip.Station);
-            GameApp.I.Persist();
-            veil.RemoveFromHierarchy();
+            else if (tip.Target == CampTips.CraftButton) steps.Add(Tap(CampTips.CraftButton, $"Tap {verb}."));
+            else if (tip.Station == "blacksmith") steps.Add(Tap(tip.Target, "Tap the worn piece to mend it."));
+            else if (tip.Station == "summon") steps.Add(Tap(tip.Target, "Tap Draw."));
+            else if (tip.Station == "enchantress") steps.Add(Tap(tip.Target, "Tap a piece of worn armor."));
+            else steps.Add(Tap(tip.Target, "Tap here."));
+            return steps;
         }
     }
 }

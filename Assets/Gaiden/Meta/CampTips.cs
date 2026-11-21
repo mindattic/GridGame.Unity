@@ -50,6 +50,10 @@ namespace GridGame.Meta
             new CampTip { Station = Training.TipStation, Title = "Train a Skill",
                 Text = "Training is open: learn a new skill with gold, then set it on a hero's battle bar. Pick a skill, then Learn.",
                 Target = Training.LearnRowPrefix },
+            // GG-T539: the Summon Circle's first visit walks its one action.
+            new CampTip { Station = "summon", Title = "The Summon Circle",
+                Text = "Draw to call a new hero to the caravan. The odds of every hero are listed before you pay.",
+                Target = "summon-draw" },
             new CampTip { Station = "bounties", Title = "Bounties",
                 Text = "Take a hunt, then play the stage its clue names. Kill the marked target (the skull) and come back here to Claim.",
                 Target = "bounty-" },

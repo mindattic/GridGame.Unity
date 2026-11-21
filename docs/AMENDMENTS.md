@@ -1439,3 +1439,19 @@ Owner: "some are progress gated, some are training gated, the usual."
 - *Why:* players and the auto-manager were permanently broke, with no gold left for gear, potions, facilities, summons or
   the new vendor tiers. Waiting until gear is worn is what a sensible player does, and it keeps the design intent that
   a heavily repaired piece eventually costs more to repair than to replace.
+
+## 2026-11-21 — Lessons are blocking popups with coach marks the player follows (owner, GG-T539)
+
+- **Was:** the first battle's 15 lessons sat in the info panel's Tutorial tab beside a glowing demo move, and moved on
+  when the player happened to do the thing (or after a few actions); Camp's first-visit tips were a card with a pointing
+  hand and "Got it". Nothing outside the first battle taught Guard, potions or reinforcements, and nothing taught
+  equipping.
+- **Now:** every lesson opens a blocking popup (title, a line or two, an image of the mark), then dims the stage except
+  the exact target, boxes it, points at it (a dotted route for a move, with the drag held to that route), and takes no
+  other input until the player does exactly that. 17 battle lessons (Supporters and Guard added), Guard / Potions /
+  Reinforcements the first time each appears in any battle, a Camp-menu lesson when each vendor joins, the station
+  lessons (buy, repair, forge, armor, brew, enchant, train, summon) and Equip gear. Skip tutorial (confirmed) turns them
+  all off; Settings › How to play › Replay tutorials brings them back. The Tutorial tab stays as the current lesson's recap.
+- *Why:* owner 2026-11-21: "it shows the user what to do with highlights and arrows and dotted lines ... draw boxes
+  around buttons and wait for the user to click that exact area"; the timeline and the camp economy were being learned
+  by accident, if at all.

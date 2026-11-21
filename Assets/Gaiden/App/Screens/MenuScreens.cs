@@ -540,11 +540,12 @@ namespace GridGame.App
             var menu = Ui.Window(null, lower);
             menu.style.flexGrow = 1;
             var list = Ui.List(menu);
-            void Item(string label, Func<GameScreen> screen, string value = "") => Ui.MenuRow(label, value, () => App.Router.Push(screen()), list.contentContainer);
+            VisualElement Item(string label, Func<GameScreen> screen, string value = "") => Ui.MenuRow(label, value, () => App.Router.Push(screen()), list.contentContainer);
             // Stations open one at a time (GG-T174, §25.0.3): a closed one is a dimmed row saying when it arrives.
             void Station(string label, bool open, string hint, Func<GameScreen> screen, string value = "")
             {
-                if (open) { Item(label, screen, value); return; }
+                // An open station's row is named for the Camp lesson that points at it when its keeper joins (GG-T539).
+                if (open) { Item(label, screen, value).name = "camp-" + label.ToLowerInvariant().Replace(' ', '-'); return; }
                 var row = Ui.MenuRow(label, "", null, list.contentContainer, null, false);
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
                 Subline(row, hint);
@@ -662,6 +663,7 @@ namespace GridGame.App
                 CaravanScreen.BarkLine(c, s, gossip);
             }
             MercenaryCamp.OnCamp(this);
+            CampCoach.OnHub(this); // GG-T539: a vendor who just joined, or a first piece of gear to put on, gets its lesson
         }
 
         private void Rest()
