@@ -210,7 +210,7 @@ namespace GridGame.App
         {
             var l = Ui.Text(text, classes, parent);
             l.style.whiteSpace = WhiteSpace.Normal;
-            if (color.HasValue) l.style.color = color.Value;
+            if (color.HasValue) l.style.color = Palette.OnWindow(color.Value); // GG-T525: readable on the card's window
             return l;
         }
 
@@ -264,7 +264,7 @@ namespace GridGame.App
                 string reach = a.AdjacentOnly ? "an adjacent tile" : a.Radius > 0 ? $"{Words(a.Shape.ToString())}, radius {a.Radius}" : Words(a.Shape.ToString());
                 facts.Add($"Hits {reach} · {Words(a.Filter.ToString())}");
             }
-            if (a.BaseDamage > 0) facts.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.Element(a.DamageType))}>{a.BaseDamage} {a.DamageType} damage</color> (before stats)");
+            if (a.BaseDamage > 0) facts.Add($"<color=#{ColorUtility.ToHtmlStringRGB(Palette.ElementText(a.DamageType))}>{a.BaseDamage} {a.DamageType} damage</color> (before stats)");
             if (a.BaseHeal > 0) facts.Add(a.Revives ? $"Revives a fallen ally with {a.BaseHeal} HP" : $"Heals {a.BaseHeal} (before stats)");
             if (!string.IsNullOrEmpty(a.ApplyBuff) && GameApp.I?.Content?.TryBuff(a.ApplyBuff) is BuffDef bd)
                 facts.Add($"{(a.ApplyBuffChance < 1f ? $"{Mathf.RoundToInt(a.ApplyBuffChance * 100)}% to apply" : "Applies")} {TermOf(bd.Name)}: {Ui.BuffEffect(bd)}");
@@ -341,7 +341,8 @@ namespace GridGame.App
             bool reveal = knowledge >= BestiaryKnowledge.Stats;
             if (u == null) return false;
             var head = Header(body, null, $"{u.Name}  Lv {u.Level}", u.Wanderer && u.IsHero ? $"Wanderer · {u.Def.Role}" : u.IsIndependent ? (u.Domesticated ? "Tamed ally" : "Tamed") : u.IsHero ? u.Def.Role : u.IsNeutral ? "Neutral" : "Enemy",
-                u.Wanderer && u.IsHero ? Palette.Wanderer : u.IsIndependent ? Palette.Tamed : u.IsHero ? Palette.Hero : u.IsNeutral ? Palette.Neutral : Palette.Enemy);
+                // GG-T525: the team colour as text, lifted to 4.5:1 on the window (enemy red was 2.1:1, hero blue 3.5:1).
+                Palette.OnWindow(u.Wanderer && u.IsHero ? Palette.Wanderer : u.IsIndependent ? Palette.Tamed : u.IsHero ? Palette.Hero : u.IsNeutral ? Palette.Neutral : Palette.Enemy));
             if (u.IsBountyTarget)
             {
                 // §22.4, GG-T431: the marked target says so, and where its reward waits.

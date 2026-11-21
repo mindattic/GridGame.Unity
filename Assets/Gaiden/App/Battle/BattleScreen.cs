@@ -591,7 +591,9 @@ namespace GridGame.App
                 if (rides.All(r => r.Id != g.EntryId)) rides.Add((g.EntryId, g.CasterId, g.AbilityId, g.TargetUnitId, g.TargetTile, g.U, g.Span));
             foreach (var e in rides)
             {
-                var color = Art.SpellColor(e.AbilityId);
+                // GG-T525: under Colorblind palette a cast ring says whose spell it is (blue hero / orange foe) instead of
+                // its element's hue, which several deficiencies can't tell apart.
+                var color = Colorblind && State.UnitById(e.OwnerId) is Unit caster ? Palette.TeamCast(caster.Team == Team.Hero) : Art.SpellColor(e.AbilityId);
                 var a = App.Content.TryAbility(e.AbilityId);
                 float u = at != null && at.TryGetValue(e.Id, out var x) ? x : e.U;
                 if (castGhosts.TryGetValue(e.Id, out var ghost)) ghost.U = u;
@@ -1112,7 +1114,8 @@ namespace GridGame.App
         {
             if (logPage == null) return;
             var l = Ui.Text(text, "small", logPage);
-            l.style.color = color;
+            // GG-T525: a line's colour (a team's, an element's, mana blue) is lifted until it reads at 4.5:1 on the window.
+            l.style.color = Palette.OnWindow(color);
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.marginBottom = Space.S4;
             while (logPage.contentContainer.childCount > LogCap) logPage.contentContainer.RemoveAt(0);

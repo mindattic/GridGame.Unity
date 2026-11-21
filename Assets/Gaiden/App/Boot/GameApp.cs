@@ -420,6 +420,10 @@ namespace GridGame.App
             // GG-T495 accessibility: text size on the root (USS --type-* overrides), reduce motion for every shared tween.
             TextSize.Apply(Document?.rootVisualElement, st.TextScale);
             Tween.Calm = st.ReduceMotion;
+            // GG-T525: Colorblind palette swaps the team marks to a blue/orange pair: Palette for marks drawn in code
+            // (timeline icons, cast rings), a root class for the board keylines in USS (Theme.uss .colorblind).
+            Palette.Colorblind = st.ColorblindMode;
+            Document?.rootVisualElement?.EnableInClassList("colorblind", st.ColorblindMode);
         }
 
         /// <summary>Writes the active profile's settings to its settings.json (a settings change, bible §15.2).</summary>

@@ -53,6 +53,54 @@ namespace GridGame.App
         public static readonly Color CastHero = new Color(0.15f, 0.77f, 0.9f);
         public static readonly Color CastEnemy = new Color(1f, 0.55f, 0.1f);
 
+        // GG-T525: Colorblind palette (SettingsSave.ColorblindMode, set by GameApp.ApplySettings). Red/purple/blue team
+        // marks collapse for protan and deutan eyes, so with it on the board and timeline mark sides with one blue/orange
+        // pair (the Okabe-Ito sky blue and a vermilion orange, apart for every common colour deficiency; Okabe-Ito's own
+        // amber read as the gold selection ring): heroes and hero casts blue, foes and foe casts orange, a boss a darker
+        // burnt orange (darker, so it still reads apart from a foe).
+        public static bool Colorblind;
+        public static readonly Color CbHero = new Color(0.34f, 0.71f, 0.91f);
+        public static readonly Color CbFoe = new Color(0.96f, 0.48f, 0.04f);
+        public static readonly Color CbBoss = new Color(0.75f, 0.3f, 0.02f);
+        /// <summary>A foe's mark (keyline, timeline icon): enemy red, or the colourblind orange.</summary>
+        public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
+        public static Color TeamBoss => Colorblind ? CbBoss : Boss;
+        public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
+
+        /// <summary>The lightest stop of the Classic blue window (#2C46AA), the background text contrast is checked against
+        /// (GG-T495).</summary>
+        public static readonly Color WindowLight = new Color(44f / 255f, 70f / 255f, 170f / 255f);
+
+        /// <summary>GG-T525: <paramref name="c"/> as text on a window. Element hues and team colours are art colours, tuned to
+        /// glow on the board, and several are too dark to read on the blue window (dark 1.9:1, fire 3.0:1, enemy 2.1:1, hero
+        /// 3.5:1). This keeps the hue and lifts it toward white just until it clears 4.5:1 against <see cref="WindowLight"/>;
+        /// a colour that already does comes back unchanged. The board keeps the art colours.</summary>
+        public static Color OnWindow(Color c)
+        {
+            float a = c.a;
+            for (int i = 0; i <= 20 && Contrast(c, WindowLight) < 4.5f; i++)
+                c = Color.Lerp(c, Color.white, 0.08f);
+            return new Color(c.r, c.g, c.b, a);
+        }
+
+        /// <summary>WCAG contrast ratio of two opaque sRGB colours (1..21).</summary>
+        public static float Contrast(Color a, Color b)
+        {
+            float la = Luminance(a), lb = Luminance(b);
+            return (Mathf.Max(la, lb) + 0.05f) / (Mathf.Min(la, lb) + 0.05f);
+        }
+
+        private static float Luminance(Color c)
+        {
+            static float Lin(float v) => v <= 0.04045f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
+            return 0.2126f * Lin(c.r) + 0.7152f * Lin(c.g) + 0.0722f * Lin(c.b);
+        }
+
+        /// <summary>Text variants (GG-T525): an element's hue and the team colours, readable on a window.</summary>
+        public static Color ElementText(DamageType t) => OnWindow(Element(t));
+        public static Color HeroText => OnWindow(Hero);
+        public static Color EnemyText => OnWindow(Enemy);
+
         // Statuses that aren't an element
         public static readonly Color Haste = new Color(0.35f, 1f, 0.88f);
         public static readonly Color Buff = new Color(1f, 0.72f, 0.28f);

@@ -212,7 +212,7 @@ namespace GridGame.App
             slotFrame = DiamondPart(timelineSlot, "tl-frame", SlotSide, SlotSpan);
             slotFrame.style.backgroundColor = Palette.Ink;
             slotFrame.style.overflow = Overflow.Hidden;
-            SetBorder(slotFrame, 8f, SlotBorder, Palette.Enemy);
+            SetBorder(slotFrame, 8f, SlotBorder, Palette.TeamFoe);
             slotFrame.style.display = DisplayStyle.None;
             slotTime = Ui.Text("", "tiny shadow", timelineSlot);
             slotTime.name = "tl-slot-time";
@@ -349,12 +349,13 @@ namespace GridGame.App
 
         private static Color TurnRing(Unit owner) =>
             owner != null && owner.IsIndependent ? (owner.Wanderer ? Palette.Wanderer : Palette.Tamed) // an independent ally's own icon (GG-T303, GG-T342)
-            : owner != null && (owner.Def.HasTag("Boss") || owner.IsMultiTile) ? Palette.Boss : Palette.Enemy;
+            : owner != null && (owner.Def.HasTag("Boss") || owner.IsMultiTile) ? Palette.TeamBoss : Palette.TeamFoe;
 
-        /// <summary>An icon's own colour: enemy red, boss purple, hero cast teal, enemy charge amber.</summary>
+        /// <summary>An icon's own colour: enemy red, boss purple, hero cast teal, enemy charge amber; under Colorblind palette
+        /// (GG-T525) hero casts blue, foes and their casts orange, a boss vermilion.</summary>
         private Color EntryColor(TimelineEntry e) =>
             e.Kind == TimelineKind.Hazard ? HazardColor(e) // GG-T359
-            : e.Kind == TimelineKind.Cast ? (e.CasterTeam == Team.Hero ? Palette.CastHero : Palette.CastEnemy) : TurnRing(State.UnitById(e.OwnerId));
+            : e.Kind == TimelineKind.Cast ? Palette.TeamCast(e.CasterTeam == Team.Hero) : TurnRing(State.UnitById(e.OwnerId));
 
         private VisualElement MakeTimelineIcon(TimelineEntry e)
         {
