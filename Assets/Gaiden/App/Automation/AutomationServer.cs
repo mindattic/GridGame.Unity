@@ -349,6 +349,19 @@ namespace GridGame.App.Automation
                     }
                     return new { ok = equipped > 0, equipped };
                 }
+                case "devwear":
+                {
+                    // Test-only (GG-T544): wears one hero's equipped piece to a fraction of its ceiling (slot=Weapon by
+                    // default, or an armor slot), so the Repair tab can show pieces above and below the repair threshold.
+                    if (app.Save == null) return new { error = "no save" };
+                    var h = app.Save.Hero(q["hero"]);
+                    if (h == null) return new { error = $"no hero '{q["hero"]}'" };
+                    var p = Repair.Pieces(app.Content, app.Save).FirstOrDefault(x => x.Hero == h && x.Slot.ToString() == (q["slot"] ?? "Weapon"));
+                    if (p == null) return new { error = "nothing that wears in that slot" };
+                    int d = Math.Max(1, (int)(p.Max * F(q["wear"], 0.5f)));
+                    if (p.Slot == EquipmentSlot.Weapon) h.WeaponDurability = d; else h.Armor[p.Slot].Durability = d;
+                    return new { ok = true, durability = d, p.Max };
+                }
                 case "devgive":
                 {
                     // Test-only: grants bag items for harness checks that need a specific reagent/material
@@ -721,6 +734,9 @@ namespace GridGame.App.Automation
                         sellable = Shop.Sellable(c, s).Select(i => new { i.Id, type = i.Type.ToString(), price = Shop.SellPrice(i), count = s.Count(i.Id) }).ToList(),
                         forge = Craftable(CraftStation.Forge), alchemy = Craftable(CraftStation.Alchemy), enchant = Craftable(CraftStation.Enchant),
                         worn = Repair.MostWorn(c, s) is var mw && mw != null ? new { row = mw.RowName, mw.Durability, mw.Max } : null,
+                        // GG-T544: the rows Repair all would mend (below CampRoutine.RepairBelowFraction) and what it costs.
+                        repairDue = Repair.DuePieces(c, s).Select(p => p.RowName).ToList(),
+                        repairAllCost = Repair.DuePieces(c, s).Sum(p => Repair.Cost(c, s, p)),
                         smith = CampUnlocks.NpcOpen(s, CampNpcs.Blacksmith), workshop = CampUnlocks.SmithWorkshopOpen(s),
                         weapons = s.Party.Select(s.Hero).Where(h => h != null).ToDictionary(h => h.ClassId, h => h.WeaponId),
                         firstForge = Forging.First(c, s) is var ff && ff != null ? new { recipe = ff.Recipe.Id, weapon = ff.Weapon.Id, hero = ff.Hero.ClassId, ready = ff.Ready } : null,
@@ -756,8 +772,7 @@ namespace GridGame.App.Automation
                         luckyDiamonds = Crafting.LuckyDiamondCost,
                         heroes = s.Roster.Select(h => new { h.ClassId, level = Progression.Level(h), hp = h.Hp, max = Progression.Preview(c, h).MaxHp, inParty = s.Party.Contains(h.ClassId), h.WeaponId }).ToList(),
                         wear = Repair.Pieces(c, s).Select(p => new { hero = p.Hero.ClassId, slot = p.Slot.ToString(), item = p.Item.Id, p.Durability, p.Max,
-                            cost = p.Slot == EquipmentSlot.Weapon ? Repair.Cost(c, s, p.Item, p.Durability, p.Hero.WeaponRepairs, p.Hero.WeaponMastery)
-                                 : Repair.Cost(c, s, p.Item, p.Durability, p.Hero.Armor[p.Slot].Repairs, p.Hero.Armor[p.Slot].Mastery) }).ToList(),
+                            cost = Repair.Cost(c, s, p), due = Repair.Due(p.Item, p.Durability, p.Repairs, p.Mastery) }).ToList(),
                         // GG-T538: the save's own shelf (its open stock tiers plus anything bought before), and its progress tier.
                         stock = Shop.Stock(c, s).Select(i => new { i.Id, type = i.Type.ToString(), rarity = i.Rarity.ToString(), price = i.BaseCost, have = s.Count(i.Id), tier = VendorTiers.ShopTier(i) }).ToList(),
                         vendorTier = VendorTiers.ProgressTier(c, s),

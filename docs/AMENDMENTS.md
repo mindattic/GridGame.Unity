@@ -1440,6 +1440,19 @@ Owner: "some are progress gated, some are training gated, the usual."
   the new vendor tiers. Waiting until gear is worn is what a sensible player does, and it keeps the design intent that
   a heavily repaired piece eventually costs more to repair than to replace.
 
+## 2026-11-21 — The Repair tab's Repair all waits for worn gear too (owner, GG-T544)
+
+- **Was:** the Repair tab had only one row per piece. A player mending by hand after every battle paid the 1.6×
+  per-repair growth on every scratch, which GG-T540 had just taken out of the camp routine.
+- **Now ([BIBLE §25.2](BIBLE.md#252-blacksmith)):** a **Repair all** button mends only pieces below
+  `CampRoutine.RepairBelowFraction` (60%, the routine's own constant, via `Repair.Due`), and its label counts and prices
+  only those. With none it reads "Nothing needs repair yet" and is disabled. Pieces above 60% say **"Cheaper to wait"**,
+  and every worn row shows what 10 wear costs to repair now and after this repair. Single rows can still be repaired at
+  any wear. Prices, wear and the routine are unchanged: `polish.py --balance --economy-only` after the change still
+  scores POL-G8 (repairs 26% greedy, 22% casual of main-campaign spend; G 100).
+- *Why:* the same reason as GG-T540. The player should not be the only one paying the compounding price for topping up
+  scratches, and the screen should show why waiting is cheaper.
+
 ## 2026-11-21 — Lessons are blocking popups with coach marks the player follows (owner, GG-T539)
 
 - **Was:** the first battle's 15 lessons sat in the info panel's Tutorial tab beside a glowing demo move, and moved on

@@ -12,6 +12,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py coach [RUN] [--camp] [--nocapture]  # GG-T542: a new profile follows every coach mark of the tutorial battle (then To Camp)
     python tools/harness.py coachcamp [RUN] [--nocapture]  # GG-T542: repair, Forge, armor, enchant and training lessons followed mark by mark
     python tools/harness.py coachskip [RUN] [--nocapture]  # GG-T542: Skip tutorial (and its confirm), then Settings > How to play > Replay tutorials
+    python tools/harness.py repairall [RUN] [--nocapture]  # GG-T544: Repair all takes only gear below 60%, "Cheaper to wait", price hints; 9:23 and 3:4, recorded
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
     python tools/harness.py pause            # GG-T126: pause mid-chain freezes playback (two identical frames), resume finishes it
@@ -1383,6 +1384,86 @@ def smithrepair(run="smithrepair"):
     except Exception:
         pass
     print("FAILURES:" if fails else "SMITH REPAIR OK", *fails, sep="\n  ")
+    return not fails
+
+
+def repairall(run="t544-repair", capture=True):
+    """GG-T544: the Repair tab's Repair all takes only pieces worn below CampRoutine.RepairBelowFraction (60%). Every
+    weapon at 80% first: the button reads "Nothing needs repair yet" and is disabled, and each row says "Cheaper to
+    wait". Then the first hero's sword and vest worn to 40% / 30%: Repair all prices just those two, mends them for
+    exactly that, and leaves the second hero's 80% sword alone. Run at a narrow phone window (9:23) and a wide one (3:4); shots narrow-* / wide-*."""
+    fails = []
+    for tag, (w, h) in (("narrow", (470, 1200)), ("wide", (900, 1200))):
+        launch(run, width=w, height=h, extra=("-capture", "video", "hq") if capture else (), fresh=True)
+        try:
+            _wait_screen("title"); time.sleep(0.8)
+            call("newgame", slot=0, gold=3000, npcs="merchant,blacksmith,alchemist", seen="blacksmith,shop,alchemist",
+                 lessons=CAMP_ROW_LESSONS); time.sleep(1.0)
+            call("devequipall", item="eq_sword_iron", wear=0.8)
+            call("devequipall", item="eq_armor_padded")
+            heroes = list(call("camp")["weapons"].keys())
+            _goto("blacksmith")
+            call("click", name="tab-repair"); time.sleep(0.8)
+            camp = call("camp")
+            if camp["repairDue"]:
+                fails.append(f"{tag}: pieces at 80% counted as due: {camp['repairDue']}")
+            texts = call("texts")
+            if not any("Nothing needs repair yet" in t for t in texts):
+                fails.append(f"{tag}: Repair all didn't say 'Nothing needs repair yet'")
+            if not any("Cheaper to wait" in t for t in texts):
+                fails.append(f"{tag}: no 'Cheaper to wait' hint on the 80% pieces")
+            if not any("per 10 wear" in t for t in texts):
+                fails.append(f"{tag}: no price-growth hint")
+            probs = call("layout").get("problems")
+            if probs:
+                fails.append(f"{tag}: layout {probs}")
+            shot(f"{tag}-01-nothing-due")
+            # The first hero's sword and vest drop below 60%; the second hero's sword stays at 80% and must be left alone.
+            keep = heroes[1]
+            for slot, wear in (("Weapon", 0.4), ("Torso", 0.3)):
+                r = call("devwear", hero=heroes[0], slot=slot, wear=wear)
+                if not r.get("ok"):
+                    fails.append(f"{tag}: devwear {heroes[0]} {slot}: {r}")
+            call("click", name="tab-forge"); time.sleep(0.5)
+            call("click", name="tab-repair"); time.sleep(0.8)
+            camp = call("camp")
+            due, cost, gold = camp["repairDue"], camp["repairAllCost"], camp["Gold"]
+            if len(due) != 2:
+                fails.append(f"{tag}: expected the worn sword and vest due, got {due}")
+            kept = next((p for p in call("economy")["wear"] if p["hero"] == keep and p["slot"] == "Weapon"), None)
+            if not any(t.startswith("Repair all (2)") for t in call("texts")):
+                fails.append(f"{tag}: Repair all label doesn't count the two due pieces")
+            probs = call("layout").get("problems")
+            if probs:
+                fails.append(f"{tag}: layout {probs}")
+            shot(f"{tag}-02-two-due")
+            call("scrollto", name="smith-repair-all"); time.sleep(0.3)
+            r = call("click", name="smith-repair-all"); time.sleep(1.0)
+            if _tap_failed(r):
+                fails.append(f"{tag}: couldn't tap Repair all: {r}")
+            after = call("camp")
+            if after["Gold"] != gold - cost:
+                fails.append(f"{tag}: Repair all charged {gold - after['Gold']}, label said {cost}")
+            if after["repairDue"]:
+                fails.append(f"{tag}: still due after Repair all: {after['repairDue']}")
+            now = next((p for p in call("economy")["wear"] if p["hero"] == keep and p["slot"] == "Weapon"), None)
+            if not kept or kept["due"] or kept["cost"] <= 0:
+                fails.append(f"{tag}: {keep}'s sword should be worn but above 60% before Repair all: {kept}")
+            elif not now or now["Durability"] != kept["Durability"]:
+                fails.append(f"{tag}: Repair all touched {keep}'s 80% sword: {kept} -> {now}")
+            if not any("Cheaper to wait" in t for t in call("texts")):
+                fails.append(f"{tag}: the 80% sword lost its 'Cheaper to wait' hint")
+            shot(f"{tag}-03-repaired")
+            errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+            if errs:
+                fails.append(f"{tag}: log errors {errs[:3]}")
+        finally:
+            try:
+                call("quit", timeout=3)
+            except Exception:
+                pass
+            time.sleep(3)
+    print("FAILURES:" if fails else "REPAIR ALL OK", *fails, sep="\n  ")
     return not fails
 
 
@@ -3099,6 +3180,9 @@ if __name__ == "__main__":
         sys.exit(0 if ok else 1)
     elif cmd == "smithrepair":
         sys.exit(0 if smithrepair() else 1)
+    elif cmd == "repairall":
+        names = [a for a in sys.argv[2:] if not a.startswith("--")]
+        sys.exit(0 if repairall(names[0] if names else "t544-repair", capture="--nocapture" not in sys.argv) else 1)
     elif cmd == "firstbrew":
         sys.exit(0 if firstbrew() else 1)
     elif cmd == "firstforge":

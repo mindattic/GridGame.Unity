@@ -1182,45 +1182,56 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>The Repair tab's Repair all button (GG-T544). Not "repair-…": the Blacksmith's tip rings the first
+        /// control whose name starts with that.</summary>
+        public const string RepairAllButton = "smith-repair-all";
+
+        /// <summary>How much wear the Repair tab's price hint quotes (GG-T544): "3 G per 10 wear, 5 G after this repair".</summary>
+        private const int HintWear = 10;
+
         private void RepairList(VisualElement list, VisualElement detail)
         {
             bool salvage = CampUnlocks.SmithWorkshopOpen(S); // "Salvage instead" waits for the Salvage tab (GG-T175)
-            Ui.Para("Each repair lowers the piece's max durability by 1, and costs more every time." + (salvage ? " An uneconomical repair offers salvage instead." : ""), detail, "dim");
+            int threshold = (int)Math.Round(CampRoutine.RepairBelowFraction * 100);
+            // GG-T544: one threshold for the camp routine and the player. Each repair compounds the piece's next price, so
+            // the tab says so, Repair all mends only pieces worn below the threshold, and the rest say "Cheaper to wait".
+            Ui.Para($"Each repair lowers the piece's max durability by 1 and makes its next repair cost 1.6× as much, so mend gear once it's below {threshold}%, not after every scratch."
+                    + (salvage ? " An uneconomical repair offers salvage instead." : ""), detail, "dim");
+            var due = Repair.DuePieces(C, S);
+            int dueCost = due.Sum(p => Repair.Cost(C, S, p));
+            var all = Ui.Button(due.Count == 0 ? "Nothing needs repair yet" : $"Repair all ({due.Count}) · {Ui.Gold(dueCost)}",
+                () => Done(Repair.RepairAll(C, S), cue: "camp.repair"), "btn--primary", Ui.Actions(detail));
+            all.name = RepairAllButton;
+            Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
             bool any = false;
-            foreach (var h in S.Roster)
+            foreach (var p in Repair.Pieces(C, S))
             {
-                var hero = h;
-                var w = C.TryItem(h.WeaponId);
-                if (w != null && w.Durability > 0)
-                {
-                    any = true;
-                    int cost = Repair.Cost(C, S, w, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
-                    bool bad = cost > 0 && Repair.IsUneconomical(w, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
-                    string name = (h.WeaponMastery > 1f ? "★ " : "") + w.Name;
-                    var row = Ui.MenuRow($"{C.Class(h.ClassId).Name} — {name}  {h.WeaponDurability}/{Repair.EffectiveMax(w, h.WeaponRepairs, h.WeaponMastery)}", cost > 0 ? Ui.Gold(cost) : "OK",
-                        () => Done(Repair.RepairWeapon(C, S, hero), cue: "camp.repair"), list, null, cost > 0);
-                    row.name = Repair.RowNameFor(h.ClassId, EquipmentSlot.Weapon);
-                    if (bad) row.Q<Label>("value").AddToClassList("warn");
-                    if (bad && salvage) SalvageInsteadRow(list, hero, EquipmentSlot.Weapon, w, h.WeaponDurability, cost);
-                }
-                foreach (var slot in BattleEngine.ArmorSlots)
-                {
-                    if (!h.Armor.TryGetValue(slot, out var piece)) continue;
-                    var a = C.TryItem(piece.ItemId);
-                    if (a == null || a.Durability <= 0) continue;
-                    var armorSlot = slot;
-                    any = true;
-                    int cost = Repair.Cost(C, S, a, piece.Durability, piece.Repairs, piece.Mastery);
-                    bool bad = cost > 0 && Repair.IsUneconomical(a, piece.Durability, piece.Repairs, piece.Mastery);
-                    string name = (piece.Mastery > 1f ? "★ " : "") + a.Name;
-                    var row = Ui.MenuRow($"{C.Class(h.ClassId).Name} — {name}  {piece.Durability}/{Repair.EffectiveMax(a, piece.Repairs, piece.Mastery)}", cost > 0 ? Ui.Gold(cost) : "OK",
-                        () => Done(Repair.RepairArmor(C, S, hero, armorSlot), cue: "camp.repair"), list, null, cost > 0);
-                    row.name = Repair.RowNameFor(h.ClassId, armorSlot);
-                    if (bad) row.Q<Label>("value").AddToClassList("warn");
-                    if (bad && salvage) SalvageInsteadRow(list, hero, armorSlot, a, piece.Durability, cost);
-                }
+                any = true;
+                var piece = p;
+                int cost = Repair.Cost(C, S, p);
+                bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
+                string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
+                var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
+                    () => Done(piece.Slot == EquipmentSlot.Weapon ? Repair.RepairWeapon(C, S, piece.Hero) : Repair.RepairArmor(C, S, piece.Hero, piece.Slot), cue: "camp.repair"),
+                    list, null, cost > 0);
+                row.name = p.RowName;
+                if (bad) row.Q<Label>("value").AddToClassList("warn");
+                if (cost > 0) RepairPriceNote(list, p);
+                if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
             }
             if (!any) Ui.Empty("Nobody has gear that wears out. Equip forged weapons first.", list);
+        }
+
+        /// <summary>GG-T544: the line under a worn piece's repair row — "Cheaper to wait" while it's above the threshold, then
+        /// how the price grows: what 10 points of wear cost now, and after this repair (1.6x per repair, BIBLE §24.5).</summary>
+        private void RepairPriceNote(VisualElement list, Repair.WornPiece p)
+        {
+            int now = Repair.WearCost(C, S, p.Item, HintWear, p.Repairs, p.Mastery);
+            int next = Repair.WearCost(C, S, p.Item, HintWear, p.Repairs + 1, p.Mastery);
+            bool wait = !Repair.Due(p.Item, p.Durability, p.Repairs, p.Mastery);
+            var note = Ui.Note((wait ? $"Cheaper to wait ({Mathf.RoundToInt(p.Fraction * 100)}%) · " : "")
+                               + $"{Ui.Gold(now)} per {HintWear} wear, {Ui.Gold(next)} after this repair", list);
+            note.name = $"wear-note-{p.Hero.ClassId}-{p.Slot}"; // not "repair-…" (the tip rings that prefix)
         }
 
         /// <summary>The "repair is a ripoff — salvage it instead" offer, shown right under an uneconomical

@@ -35,8 +35,8 @@ namespace GridGame.Meta
         /// piece goes into a battle near breaking.</summary>
         public const float RepairBelowFraction = 0.6f;
 
-        private static bool NeedsRepair(ItemDef item, int durability, int repairs, float mastery) =>
-            item != null && durability < Repair.EffectiveMax(item, repairs, mastery) * RepairBelowFraction;
+        /// <summary>The Repair tab's Repair all uses the same test (GG-T544): one threshold for the bot and the player.</summary>
+        private static bool NeedsRepair(ItemDef item, int durability, int repairs, float mastery) => Repair.Due(item, durability, repairs, mastery);
 
         private static void BuildFacility(ContentDb c, SaveData s, CraftStation station, System.Action<Result> note)
         {

@@ -1908,13 +1908,50 @@ namespace GridGame.Meta
 
         public static bool IsUneconomical(ItemDef item, int current, int repairs, float mastery = 1f) => Cost(item, current, repairs, mastery) >= item.BaseCost;
 
+        /// <summary>GG-T544: worn below <see cref="CampRoutine.RepairBelowFraction"/> of its ceiling, the point where the camp
+        /// routine repairs it. Above it a repair is "cheaper to wait": every repair, however small, raises the piece's next
+        /// repair price 1.6x, so mending scratches compounds the price. The Repair tab's Repair all takes only these.</summary>
+        public static bool Due(ItemDef item, int durability, int repairs, float mastery = 1f) =>
+            item != null && durability < EffectiveMax(item, repairs, mastery) * CampRoutine.RepairBelowFraction;
+
+        /// <summary>GG-T544: what <paramref name="wear"/> points of wear cost to repair at the piece's current repair count —
+        /// the Repair tab's "per 10 wear" price hint (pass repairs + 1 for the price after this repair).</summary>
+        public static int WearCost(ContentDb c, SaveData s, ItemDef item, int wear, int repairs, float mastery = 1f) =>
+            Cost(c, s, item, Math.Max(0, EffectiveMax(item, repairs, mastery) - wear), repairs, mastery);
+
+        /// <summary>GG-T544: every equipped piece Repair all would mend (worn and <see cref="Due"/>), most worn first.</summary>
+        public static List<WornPiece> DuePieces(ContentDb c, SaveData s) =>
+            Pieces(c, s).Where(p => p.Durability < p.Max && Due(p.Item, p.Durability, p.Repairs, p.Mastery)).OrderBy(p => p.Fraction).ToList();
+
+        /// <summary>The piece's repair price now, after the Armory Wagon discount.</summary>
+        public static int Cost(ContentDb c, SaveData s, WornPiece p) => Cost(c, s, p.Item, p.Durability, p.Repairs, p.Mastery);
+
+        /// <summary>GG-T544: the Repair tab's Repair all — mends every <see cref="DuePieces"/> piece the purse covers, most
+        /// worn first, and leaves pieces above the threshold for later (they can still be repaired by hand).</summary>
+        public static Result RepairAll(ContentDb c, SaveData s)
+        {
+            var due = DuePieces(c, s);
+            if (due.Count == 0) return Result.Fail("Nothing needs repair yet");
+            int done = 0, spent = 0;
+            foreach (var p in due)
+            {
+                int cost = Cost(c, s, p);
+                if (cost <= 0 || cost > s.Gold) continue;
+                var r = p.Slot == EquipmentSlot.Weapon ? RepairWeapon(c, s, p.Hero) : RepairArmor(c, s, p.Hero, p.Slot);
+                if (r.Ok) { done++; spent += cost; }
+            }
+            if (done == 0) return Result.Fail("Not enough gold");
+            return Result.Success(done == 1 ? $"Repaired 1 piece for {spent:N0} G" : $"Repaired {done} pieces for {spent:N0} G");
+        }
+
         /// <summary>One equipped piece that wears (weapon or armor) and how worn it is.</summary>
         public sealed class WornPiece
         {
             public HeroSave Hero;
             public EquipmentSlot Slot;
             public ItemDef Item;
-            public int Durability, Max;
+            public int Durability, Max, Repairs;
+            public float Mastery = 1f;
             public float Fraction => Max <= 0 ? 1f : (float)Durability / Max;
             /// <summary>The Repair tab row's element name ("repair-knight-Weapon") — what the Blacksmith's camp tip points at.</summary>
             public string RowName => RowNameFor(Hero.ClassId, Slot);
@@ -1930,13 +1967,13 @@ namespace GridGame.Meta
             {
                 var w = c.TryItem(h.WeaponId);
                 if (w != null && w.Durability > 0)
-                    yield return new WornPiece { Hero = h, Slot = EquipmentSlot.Weapon, Item = w, Durability = h.WeaponDurability, Max = EffectiveMax(w, h.WeaponRepairs, h.WeaponMastery) };
+                    yield return new WornPiece { Hero = h, Slot = EquipmentSlot.Weapon, Item = w, Durability = h.WeaponDurability, Max = EffectiveMax(w, h.WeaponRepairs, h.WeaponMastery), Repairs = h.WeaponRepairs, Mastery = h.WeaponMastery };
                 foreach (var slot in BattleEngine.ArmorSlots)
                 {
                     if (!h.Armor.TryGetValue(slot, out var piece)) continue;
                     var a = c.TryItem(piece.ItemId);
                     if (a != null && a.Durability > 0)
-                        yield return new WornPiece { Hero = h, Slot = slot, Item = a, Durability = piece.Durability, Max = EffectiveMax(a, piece.Repairs, piece.Mastery) };
+                        yield return new WornPiece { Hero = h, Slot = slot, Item = a, Durability = piece.Durability, Max = EffectiveMax(a, piece.Repairs, piece.Mastery), Repairs = piece.Repairs, Mastery = piece.Mastery };
                 }
             }
         }

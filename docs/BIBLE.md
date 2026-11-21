@@ -3850,8 +3850,9 @@ meaningful but optional share for facilities and summons. A piece repaired over 
   were unchanged for the greedy bot (2 a run) and rose for the casual bot (12 → 18, mostly in the Arkgrave).
 - **Side effects:** Blacksmith XP from repairs falls with the repair count, so rank now comes mostly from forging, as
   §25.0.10 intends. Summons never come up in these rows: the story fills the party first. A player who repairs every
-  scratch from the Repair tab still pays the 1.6× growth on each one. The Repair tab's uneconomical warning (§25.2) is
-  what guards against that.
+  scratch from the Repair tab still pays the 1.6× growth on each one. ~~The Repair tab's uneconomical warning (§25.2) is
+  what guards against that.~~ **Amended 2026-11-21 (GG-T544):** the Repair tab now follows the same rule: its Repair all
+  takes only pieces below 60%, pieces above it say "Cheaper to wait", and each worn row shows how its price grows (§25.2).
 
 ### 25.1 Merchant
 
@@ -3866,6 +3867,17 @@ meaningful but optional share for facilities and summons. A piece repaired over 
 ### 25.2 Blacksmith
 
 `BlacksmithScreen`: **Forge**, **Upgrade**, **Salvage**, **Repair** tabs (only Repair is open until the workshop opens, §25.0.4; the opened Forge starts with the starter weapons of §25.0.6, and its armor-set recipes open after the first weapon, §25.0.7) ([§24.5](#245-weapon-durability), [§24.6](#246-crafting-recipes)). The header shows the Blacksmith's facility ("Iron Forge", [§25.12.2](#25122-facility-upgrades-gate-material-tiers-gg-t432)), station level and XP to its next tier ([§24.6.1](#2461-tier-ladder-gg-t35-amended-2026-10-15)); a tier-locked recipe shows a 🔒 and the level required instead of its price, and a recipe above the facility shows "🔒 Iron Forge" (its detail names the facility and offers **Build Iron Forge · 400 G**; the Forge and Upgrade lists open with a **Build <next facility>** row) — GG-T432; an undiscovered recipe ([§24.6.2](#2462-recipe-discovery-gg-t36-amended-2026-10-15)) one input short shows as `???` instead, everything else undiscovered stays hidden. The recipe detail shows ✔/✘ per input with owned counts. Repair lists every roster hero's durable weapon/armor ("Paladin — Iron Sword 3/9", cost or "OK"), warning when uneconomical. **Amended 2026-10-15 (GG-T42):** when a repair is flagged uneconomical, an indented "Salvage instead" row appears directly beneath it showing the scrap yield for that piece's current durability, so the repair cost and the salvage yield sit side by side — confirming scraps the piece (`Crafting.SalvageEquipped`) instead of repairing it. **Amended 2026-10-15 (GG-T41):** the Salvage tab also lists any `Broken <Name>` fragments alongside spare bag gear, dimmed, salvaging them via `Crafting.SalvageBroken`; the Items screen's All/Gear tabs list them too (also dimmed), with a detail note that they can't be equipped or repaired.
+- **Repair tab: Repair all and price hints (added 2026-11-21, owner, GG-T544):** the player gets the camp routine's
+  repair rule (§25.0.11), one constant for both (`CampRoutine.RepairBelowFraction` = 0.6, tested by `Repair.Due`).
+  - **Repair all** (the detail pane's primary button, `smith-repair-all`) mends only pieces worn below 60% of their
+    ceiling, most worn first, as far as the purse goes (`Repair.RepairAll`). Its label counts and prices only those
+    pieces ("Repair all (3) · 412 G"). With none below the threshold it reads **"Nothing needs repair yet"** and is
+    disabled. Any row can still be repaired by hand at any wear.
+  - **Under every worn row**, a note shows how the price grows: what 10 points of wear cost to repair now, and what
+    they will cost after this repair ("6 G per 10 wear, 10 G after this repair", `Repair.WearCost`, the 1.6× growth of
+    §24.5). A piece still at or above 60% leads with **"Cheaper to wait (82%)"**.
+  - The tab's paragraph says why: each repair lowers the ceiling by 1 and makes the next one cost 1.6× as much, so mend
+    gear once it is below 60%, not after every scratch.
 
 ### 25.3 Alchemist
 
