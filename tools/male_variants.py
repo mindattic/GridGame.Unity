@@ -55,6 +55,11 @@ PROMPTS = {
     "a": "masculine male version of this exact character --ar 2:3",
     "b": "masculine male version of this exact character, a man with a broad-shouldered masculine build and a "
          "handsome male face, the same outfit, colours and weapon tailored for a man --ar 2:3",
+    # c: the owner's direction after seeing a/b - short hair, muscular, no breasts or hips, a classic brave hero.
+    "c": "male version of this exact character as a classic heroic man: short masculine haircut, strong square jaw, "
+         "broad shoulders, muscular arms and chest, flat male chest, narrow hips, brave strong confident stance, "
+         "the same outfit, colours and weapon tailored for a muscular man --no breasts, cleavage, wide hips, "
+         "long hair, feminine --ar 2:3",
 }
 
 JS_API = """async ([path, body]) => {
