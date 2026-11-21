@@ -766,9 +766,25 @@ namespace GridGame.App
                 cart.TryGetValue(item.Id, out var q);
                 int price = selling ? Shop.SellPrice(item) : item.BaseCost;
                 int max = selling ? S.Count(item.Id) : Shop.MaxBuy(S, item);
-                // The value is the price, plus "· own 2" once you have some, so the name keeps its room (GG-T454).
+                // The value is the price, with "own 2" in small type under it once you have some (GG-T454). GG-T515: one
+                // line "250 G · own 15" was wide enough, beside the −/0/+ counter, to squeeze names onto three hyphenated
+                // lines ("Bram- blehide Grips") and clip its own count; stacked, the value column is only as wide as the price.
                 int own = S.Count(item.Id);
-                var row = ItemUi.Row(item, own > 0 ? $"{price} G · own {own}" : $"{price} G", () => ItemUi.Detail(detail, item, C), list);
+                var row = ItemUi.Row(item, $"{price} G", () => ItemUi.Detail(detail, item, C), list);
+                if (own > 0)
+                {
+                    var v = row.Q<Label>("value");
+                    var stack = Ui.El("col", row);
+                    stack.name = "shop-value";
+                    stack.style.flexShrink = 0f;
+                    stack.style.alignItems = Align.FlexEnd;
+                    stack.style.justifyContent = Justify.Center;
+                    row.Insert(row.IndexOf(v), stack);
+                    stack.Add(v);
+                    var ownLabel = Ui.Text($"own {own}", "small dim", stack);
+                    ownLabel.name = "shop-own";
+                    ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
+                }
                 var minus = Ui.Button("−", () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
                 var n = Ui.Name(q.ToString(), row);
                 n.style.width = Size.ColumnS; n.style.unityTextAlign = TextAnchor.MiddleCenter;
