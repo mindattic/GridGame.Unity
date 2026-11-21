@@ -1518,6 +1518,20 @@ gender, same with summoning ... no change to story or mechanics makes everything
 - *Why:* owner 2026-11-21: test the whole game locally on many device shapes (Android launches first, iOS follows in
   January) without owning the devices; the owner asked for the launcher to be reusable for other APKs.
 
+## 2026-11-21 — Pages fill the tablet width; a minimum text size on small screens (owner, GG-T550, GG-T551)
+
+- **Was:** every page (Adventure, vendors, Items, Heroes, settings, results, dialogue) kept to a 1424-design-px column
+  centred on the stage (GG-T398), so a 3:4 tablet showed ~240-px empty backdrop bands either side while the hub and
+  battle used the full width; and on a small low-dpi phone (480×800 at 160 dpi) captions, badges and tab labels drew at
+  8–9 screen px.
+- **Now ([BIBLE §26.3](BIBLE.md#263-adaptive-stage-gg-t169), [§ Text size / Minimum text size](BIBLE.md)):** the
+  content column is the whole stage on every aspect (`Fit.ColumnMax` = 1899), so pages sit one `Kit.Gutter` from the
+  edge like the hub; and `TypeFloor` raises badge … body sizes to at least 12 screen px (or 9 dp on dense screens)
+  through `type-floor-N` root classes that compose with Settings → Text size. Phones and tablets that already clear the
+  floor are unchanged.
+- *Why:* owner: "every screen scales to fill all aspects 9:23–3:4 with consistent gutters, no dead margins"; device
+  emulation (GG-T547) showed both problems on real device shapes.
+
 ## 2026-11-21 — Battle telemetry writes to the app's own folder on phones (GG-T548)
 
 - **Was:** every battle start opened a MindAttic.Telemetry session at the library's desktop roots (`R:\Telemetry`, else

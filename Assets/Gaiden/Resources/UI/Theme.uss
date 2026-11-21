@@ -89,6 +89,26 @@
     --type-h2: 78px;
 }
 
+/* GG-T551 (Tokens.cs TypeFloor): on a small low-dpi screen the UI root takes type-floor-N and the badge..body sizes rise
+   to at least N design px so secondary text (badges, captions, tab labels) stays readable. Each Text size pairs with each
+   floor below, every size the larger of the two, so the setting keeps working on top of the floor. H3 and up are never
+   raised. */
+.type-floor-32 { --type-badge: 32px; --type-caption: 32px; }
+.type-floor-36 { --type-badge: 36px; --type-caption: 36px; }
+.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 40px; }
+.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 44px; --type-body: 44px; }
+.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 48px; }
+.text-115.type-floor-32 { --type-badge: 32px; --type-caption: 35px; --type-small: 41px; --type-body: 46px; }
+.text-115.type-floor-36 { --type-badge: 36px; --type-caption: 36px; --type-small: 41px; --type-body: 46px; }
+.text-115.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 41px; --type-body: 46px; }
+.text-115.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 44px; --type-body: 46px; }
+.text-115.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 48px; }
+.text-130.type-floor-32 { --type-badge: 32px; --type-caption: 39px; --type-small: 47px; --type-body: 52px; }
+.text-130.type-floor-36 { --type-badge: 36px; --type-caption: 39px; --type-small: 47px; --type-body: 52px; }
+.text-130.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 47px; --type-body: 52px; }
+.text-130.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 47px; --type-body: 52px; }
+.text-130.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 52px; }
+
 /* Semantic type classes (POL-A1); weight comes from the Heavy font role, applied in Ui.AddClasses. */
 .t-caption { font-size: var(--type-caption); }
 .t-body { font-size: var(--type-body); }

@@ -190,6 +190,49 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>
+    /// GG-T551: the smallest text a screen may draw. The stage scales uniformly to fit the screen, so on a small low-dpi
+    /// phone (480×800 at 160 dpi) a 30-px caption lands at ~9 screen px, too few pixels to read. The floor is
+    /// <see cref="MinPx"/> screen px, or <see cref="MinDp"/> dp on a dense screen (whichever is larger); when the badge to
+    /// body sizes would land under it, the UI root takes a <c>type-floor-N</c> class and Theme.uss raises those
+    /// <c>--type-*</c> sizes to at least N design px. It composes with Settings → Text size (Theme.uss has a rule for each
+    /// pair, every size the larger of the two), so the setting keeps working. Every mainstream phone and tablet (and the
+    /// harness windows) clear the floor already and see no change.
+    /// </summary>
+    public static class TypeFloor
+    {
+        /// <summary>Fewest screen pixels a line of text may be drawn at.</summary>
+        public const float MinPx = 12f;
+        /// <summary>Smallest physical size, in dp (1/160 inch), on a screen dense enough that it beats <see cref="MinPx"/>.</summary>
+        public const float MinDp = 9f;
+        /// <summary>The floors Theme.uss has classes for, in design px. The largest stops at H3 (48), which is never raised.</summary>
+        public static readonly int[] Steps = { 32, 36, 40, 44, 48 };
+        // A need between the badge (24) and 32 rounds up to the first step.
+
+        /// <summary>The live floor in design px (0 = none); set by <see cref="Apply"/>.</summary>
+        public static int Current { get; private set; }
+
+        /// <summary>The floor step (design px, 0 = none) for a stage drawn at <paramref name="screenPxPerDesignPx"/> on a
+        /// screen of <paramref name="dpi"/> (0 = unknown, read as 160).</summary>
+        public static int StepFor(float screenPxPerDesignPx, float dpi)
+        {
+            if (screenPxPerDesignPx <= 0f) return 0;
+            float floorPx = Mathf.Max(MinPx, MinDp * (dpi > 0f ? dpi : 160f) / 160f);
+            float need = floorPx / screenPxPerDesignPx;
+            if (need <= TypeScale.Badge + 0.5f) return 0;
+            foreach (var s in Steps) if (s >= need - 0.5f) return s;
+            return Steps[Steps.Length - 1];
+        }
+
+        /// <summary>Puts the <c>type-floor-N</c> class for this screen on the UI root and takes the others off.</summary>
+        public static void Apply(UnityEngine.UIElements.VisualElement root, float screenPxPerDesignPx, float dpi)
+        {
+            if (root == null) return;
+            Current = StepFor(screenPxPerDesignPx, dpi);
+            foreach (var s in Steps) root.EnableInClassList("type-floor-" + s, s == Current);
+        }
+    }
+
     /// <summary>8-px spacing scale (POL-C1); S4 is the half step for hairline insets inside small widgets.</summary>
     public static class Space
     {

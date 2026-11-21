@@ -793,7 +793,7 @@ namespace GridGame.App.Automation
                     var sb = app.Stage.worldBound;
                     var root = app.Document.rootVisualElement.worldBound;
                     float k = Screen.width / Mathf.Max(1f, root.width);
-                    return new { x = sb.x * k, y = sb.y * k, w = sb.width * k, h = sb.height * k, screen = new[] { Screen.width, Screen.height }, design = new[] { GameApp.StageWidth, GameApp.StageHeight }, framed = app.Document.rootVisualElement.Q("stage-frame")?.ClassListContains("hidden") == false };
+                    return new { x = sb.x * k, y = sb.y * k, w = sb.width * k, h = sb.height * k, screen = new[] { Screen.width, Screen.height }, design = new[] { GameApp.StageWidth, GameApp.StageHeight }, framed = app.Document.rootVisualElement.Q("stage-frame")?.ClassListContains("hidden") == false, typeFloor = TypeFloor.Current, dpi = Screen.dpi };
                 }
                 case "safearea":
                 {

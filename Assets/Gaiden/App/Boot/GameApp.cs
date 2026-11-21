@@ -246,6 +246,8 @@ namespace GridGame.App
             Document.panelSettings.match = widthLimits ? 0f : 1f;
             float logicalW = widthLimits ? fit.x : fit.y * screenAspect;
             float logicalH = widthLimits ? fit.x / screenAspect : fit.y;
+            // GG-T551: on a small low-dpi screen the uniform scale shrinks captions below readable; floor the type sizes.
+            TypeFloor.Apply(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi);
 
             Stage.style.width = size.x; Stage.style.height = size.y;
             Stage.style.left = (logicalW - size.x) / 2f;
