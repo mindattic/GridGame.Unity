@@ -24,6 +24,10 @@ namespace GridGame.Meta
         /// (mid-tones lighter). Black and white stay put; only the mid-tones move.</summary>
         public const float GammaMax = 2f;
 
+        /// <summary>The text guarantee (POLISH.md §A, WCAG AA body text) and the floor for dim captions (GG-T564: WCAG's
+        /// minimum for large or secondary text).</summary>
+        public const float TextContrast = 4.5f, CaptionContrast = 3f;
+
         public readonly float Brightness, Contrast, Gamma;
 
         public WindowTone(float brightness, float contrast, float gamma)
@@ -86,11 +90,17 @@ namespace GridGame.Meta
             float lw = Luminance(window.r, window.g, window.b);
             float Contrast((float r, float g, float b) c) => Ratio(Luminance(c.r, c.g, c.b), lw);
             if (Contrast(text) >= min) return text;
-            float toward = Ratio(1f, lw) >= min || Ratio(1f, lw) >= Ratio(0f, lw) ? 1f : 0f;
-            var c = text;
-            for (int i = 0; i < 40 && Contrast(c) < min; i++)
-                c = (c.r + (toward - c.r) * 0.08f, c.g + (toward - c.g) * 0.08f, c.b + (toward - c.b) * 0.08f);
-            return Contrast(c) >= min ? c : (toward, toward, toward);
+            (float r, float g, float b) Toward(float t)
+            {
+                var c = text;
+                for (int i = 0; i < 40 && Contrast(c) < min; i++)
+                    c = (c.r + (t - c.r) * 0.08f, c.g + (t - c.g) * 0.08f, c.b + (t - c.b) * 0.08f);
+                return Contrast(c) >= min ? c : (t, t, t);
+            }
+            var up = Toward(1f);
+            if (Contrast(up) >= min) return up;
+            var down = Toward(0f);
+            return Contrast(down) >= Contrast(up) ? down : up;
         }
 
         public bool Equals(WindowTone o) => Brightness == o.Brightness && Contrast == o.Contrast && Gamma == o.Gamma;

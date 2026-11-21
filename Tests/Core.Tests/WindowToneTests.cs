@@ -85,5 +85,19 @@ namespace GridGame.Tests
             var dark = (0.1f, 0.15f, 0.4f);
             Assert.That(WindowTone.Readable(white, dark), Is.EqualTo(white), "already readable: unchanged");
         }
+
+        [Test]
+        public void Dim_captions_keep_three_to_one()
+        {
+            // GG-T564: the Dark theme's dim gray on its window pushed to full brightness and gamma.
+            var tone = new WindowTone(1f, 0.5f, 1f);
+            float w = tone.Map(28 / 255f);
+            var window = (w, w, tone.Map(34 / 255f));
+            var dim = (0.6f, 0.6f, 0.6f);
+            float lw = WindowTone.Luminance(window.Item1, window.Item2, window.Item3);
+            Assert.That(WindowTone.Ratio(WindowTone.Luminance(0.6f, 0.6f, 0.6f), lw), Is.LessThan(WindowTone.CaptionContrast), "the case needs the floor");
+            var r = WindowTone.Readable(dim, window, WindowTone.CaptionContrast);
+            Assert.That(WindowTone.Ratio(WindowTone.Luminance(r.r, r.g, r.b), lw), Is.GreaterThanOrEqualTo(WindowTone.CaptionContrast));
+        }
     }
 }

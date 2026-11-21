@@ -115,6 +115,7 @@ namespace GridGame.App
             accent = null;
             textColor = null;
             textColorSet = false;
+            ThemeChrome.ThemeChanged(); // GG-T564: the stylesheet-drawn chrome follows the tone too
         }
 
         public static Color Hex(string hex, Color fallback) =>
