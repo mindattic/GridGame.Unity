@@ -107,8 +107,18 @@ namespace GridGame.App
         // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S16;
-        /// <summary>The info tabs' hit areas start a target gap (POL-C3, 24) under the ability row (GG-T524).</summary>
-        private static float InfoTabsTop => BarTop + Size.Slot + Space.S24;
+        /// <summary>GG-T523: on a stage wide enough (2:3, 3:4 tablets) the ability bar leaves the row under the board and
+        /// stands beside it as two columns, slots 1-3 on the left and 4-5 + the mana pool on the right, so the info tabs
+        /// get the bar's 196 px and the tutorial card room to breathe. A column must still fit a cell of
+        /// <see cref="SideBarMinWidth"/> (the slot height + its gutters) between the stage edge and the board.</summary>
+        private const float SideBarMinWidth = Size.Slot + Space.S32;
+        private static float SideBarWidth => BoardLeft - Space.S16 - Fit.Edge;
+        private static bool SideBars => SideBarWidth >= SideBarMinWidth;
+        /// <summary>A side-column cell: a little taller than the row's (its width is the column's, well over a slot).</summary>
+        private const float SideCellHeight = Size.Slot + Space.S32;
+        /// <summary>The info tabs start a target gap (POL-C3, 24) under whatever is above them: the ability row, or the
+        /// board itself when the bar stands beside it.</summary>
+        private static float InfoTabsTop => (SideBars ? BoardBottom : BarTop + Size.Slot) + Space.S24;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -308,8 +318,12 @@ namespace GridGame.App
             // The rows under the board (ability bar + mana pool, info tabs) keep to the centred content column, so on a
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
-            if (Root?.Q("abilitybar") is VisualElement bar) bar.style.left = bar.style.right = inset + Space.S16;
-            if (Root?.Q("info-tabs") is VisualElement tabs) tabs.style.left = tabs.style.right = inset + Fit.Edge;
+            LayoutAbilityBar(inset);
+            if (Root?.Q("info-tabs") is VisualElement tabs)
+            {
+                tabs.style.left = tabs.style.right = inset + Fit.Edge;
+                tabs.style.top = InfoTabsTop;
+            }
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
             LayoutTimelineFrame();
         }
@@ -322,13 +336,70 @@ namespace GridGame.App
 
         public override void OnShown() { GameApp.StageResized -= OnStageResized; GameApp.StageResized += OnStageResized; }
 
+        /// <summary>The ability row (named "abilitybar"; on a wide stage the right-hand column) and, on a wide stage only,
+        /// the left-hand column that takes slots 1-3 (GG-T523).</summary>
+        private VisualElement abilityBar, abilityBarLeft;
+
+        /// <summary>Lays the ability cells out as one row under the board, or as two columns beside it when the stage is
+        /// wide enough (<see cref="SideBars"/>, GG-T523), moving slots 1-3 between the row and the left column.</summary>
+        private void LayoutAbilityBar(float inset)
+        {
+            if (abilityBar == null || abilityBarLeft == null) return;
+            bool side = SideBars;
+            var bar = abilityBar;
+            var left = abilityBarLeft;
+            if (side)
+            {
+                for (int i = 0; i < 3 && i < slotViews.Count; i++) if (slotViews[i].parent != left) left.Add(slotViews[i]);
+                float w = SideBarWidth;
+                foreach (var col in new[] { left, bar })
+                {
+                    col.style.flexDirection = FlexDirection.Column;
+                    col.style.justifyContent = Justify.FlexEnd; // bottom-aligned with the board, nearest the thumbs
+                    col.style.alignItems = Align.Stretch;
+                    col.style.top = BoardTop; col.style.height = BoardView.Tile * BattleConfig.Rows;
+                    col.style.width = w;
+                }
+                left.style.left = Fit.Edge; left.style.right = StyleKeyword.Auto;
+                bar.style.right = Fit.Edge; bar.style.left = StyleKeyword.Auto;
+                left.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                for (int i = Mathf.Min(3, slotViews.Count) - 1; i >= 0; i--) if (slotViews[i].parent != bar) bar.Insert(0, slotViews[i]);
+                bar.style.flexDirection = FlexDirection.Row;
+                bar.style.justifyContent = Justify.FlexStart;
+                bar.style.alignItems = StyleKeyword.Null;
+                bar.style.top = BarTop; bar.style.height = Size.Slot;
+                bar.style.width = StyleKeyword.Auto;
+                bar.style.left = bar.style.right = inset + Space.S16;
+                left.style.display = DisplayStyle.None;
+            }
+            foreach (var cell in bar.Children().Concat(left.Children())) LayCell(cell, side);
+        }
+
+        /// <summary>A cell's share of its row (an even split, a gutter either side) or its place in a column (full width, a
+        /// fixed height, a gutter above and below).</summary>
+        private static void LayCell(VisualElement cell, bool column)
+        {
+            cell.style.flexGrow = column ? 0 : 1;
+            cell.style.flexBasis = column ? (StyleLength)StyleKeyword.Auto : 0;
+            cell.style.height = column ? SideCellHeight : Size.Slot;
+            cell.style.marginLeft = cell.style.marginRight = column ? Space.S0 : Space.S8;
+            cell.style.marginTop = cell.style.marginBottom = column ? Space.S8 : Space.S0;
+        }
+
         private void BuildAbilityBar(VisualElement root)
         {
-            var bar = Ui.El("row", root);
+            abilityBarLeft = Ui.El("col", root);
+            abilityBarLeft.name = "abilitybar-left";
+            abilityBarLeft.style.position = Position.Absolute;
+            abilityBarLeft.style.display = DisplayStyle.None;
+            var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
             // Five slots and the mana pool share the row evenly (GG-T405); even gutters on the space scale, and the
-            // cells, not the gaps, take a wider stage (POL-C1/C8).
+            // cells, not the gaps, take a wider stage (POL-C1/C8). Row or columns: LayoutAbilityBar (GG-T523).
             bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
             for (int i = 0; i < 5; i++)
@@ -881,7 +952,7 @@ namespace GridGame.App
             var host = Ui.El("col info-tabs", root);
             host.name = "info-tabs";
             host.style.position = Position.Absolute;
-            host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right: ApplyStageLayout (the HUD column)
+            host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
             // A thin drawn strip (GG-T405: 60 px, under half a target) in a full-size hit area (GG-T524): each tab is a
             // 132-px-tall transparent target with its 60-px face at the bottom, flush on the window.
             infoTabStrip = Ui.El("tabs tabs--thin", host);
