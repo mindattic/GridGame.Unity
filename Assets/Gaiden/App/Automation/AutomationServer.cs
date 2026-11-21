@@ -319,6 +319,10 @@ namespace GridGame.App.Automation
                     // seen=blacksmith,shop: those camp tips already dismissed, to reach a later onboarding step (GG-T177).
                     if (q["seen"] != null)
                         foreach (var t in q["seen"].Split(',')) CampTips.MarkSeen(app.Save, t.Trim());
+                    // lessons=hub-shop,equip: those coach lessons already seen (GG-T542), so a camp-tip harness can open a
+                    // station directly instead of being walked in by the Camp-menu lesson of every vendor it seeds.
+                    if (q["lessons"] != null)
+                        foreach (var l in q["lessons"].Split(',')) Coach.MarkSeen(app.Save, l.Trim());
                     app.ApplySettings();
                     app.Persist();
                     app.Router.ResetTo(new HubScreen());

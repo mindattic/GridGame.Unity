@@ -22,6 +22,9 @@ namespace GridGame.App
         public Func<Rect?> Goal;
         /// <summary>Done when this turns true. Null: a tap inside the box completes the step.</summary>
         public Func<bool> Done;
+        /// <summary>GG-T542: with <see cref="Done"/> null, the step is also done when this turns true: the tapped control's
+        /// effect landed (a Craft whose page rebuilt under the finger, so the release never read as a tap in the box).</summary>
+        public Func<bool> Also;
         /// <summary>The step can still be done; when this turns false the lesson's marks stop (never a soft-lock).</summary>
         public Func<bool> Valid;
         /// <summary>Nothing real under the box: tapping it only moves on (a tour of the timeline, the mana globe).</summary>
@@ -374,7 +377,7 @@ namespace GridGame.App
             var s = Step;
             if (s == null) return;
             if (s.Done != null && SafeTrue(s.Done)) { NextStep(); return; }
-            if (s.Done == null && tapped) { NextStep(); return; }
+            if (s.Done == null && (tapped || (s.Also != null && SafeTrue(s.Also)))) { NextStep(); return; }
             if (s.Valid != null && !SafeTrue(s.Valid)) { End(CoachEnd.Aborted); return; }
             if (!Resolve(s, out var world))
             {

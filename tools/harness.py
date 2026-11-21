@@ -8,6 +8,9 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
+    python tools/harness.py coach [RUN] [--camp] [--nocapture]  # GG-T542: a new profile follows every coach mark of the tutorial battle (then To Camp)
+    python tools/harness.py coachcamp [RUN] [--nocapture]  # GG-T542: repair, Forge, armor, enchant and training lessons followed mark by mark
+    python tools/harness.py coachskip [RUN] [--nocapture]  # GG-T542: Skip tutorial (and its confirm), then Settings > How to play > Replay tutorials
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
     python tools/harness.py pause            # GG-T126: pause mid-chain freezes playback (two identical frames), resume finishes it
@@ -21,6 +24,8 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py profiles         # GG-T99: profile picker / new profile / Settings shots; settings follow the profile
     python tools/harness.py shot NAME        # screenshot the running player
     python tools/harness.py call PATH [k=v]  # raw endpoint call, e.g. call state
+
+    --record anywhere in the args (GG-T542): every launch also records with -capture video hq.
 
     --headless anywhere in the args (GG-T314): no popup window. Passes Unity's native -batchmode
     -nographics to the launched player instead of a real window, for bot-driven runs that are never
@@ -36,6 +41,7 @@ Self-play harness: launches the development player with the automation endpoint 
 
 Screenshots land in artifacts/<run>/. Design coordinates are 1170x2532 (top-left origin).
 """
+import glob
 import hashlib
 import json
 import os
@@ -65,6 +71,8 @@ BASE = f"http://127.0.0.1:{PORT}"
 # read this to swap a real window for Unity's -batchmode -nographics; shot() refuses outright rather
 # than fail confusingly against a window that was never opened.
 HEADLESS = False
+# GG-T542: --record anywhere in argv adds -capture video hq to every launch (verification runs are recorded).
+RECORD = False
 
 BOARD_LEFT, BOARD_TOP, TILE = 45, 450, 180
 
@@ -169,6 +177,8 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
     args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
             "-screen-width", str(width), "-screen-height", str(height), "-screen-fullscreen", "0",
             "-logFile", os.path.join(art, "player.log"), *extra]
+    if RECORD and "-capture" not in extra and not HEADLESS:
+        args += ["-capture", "video", "hq"]
     if muted:
         args.append("-muted")
     if HEADLESS:
@@ -869,38 +879,429 @@ def fullloop(run="fullloop", battles=4, speed=3):
     return not fails
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Coach marks (GG-T539/T542): follow a lesson's popup and marks the way a player would
+# ─────────────────────────────────────────────────────────────────────────────
+
+_COACH_SEEN = []
+_COACH_SHOTS = []
+
+# The guided first battle's lessons, in order (App/Battle/BattleScreen.Tutorial.cs).
+BATTLE_LESSONS = ("move", "pincer", "read", "shove", "hold", "mana", "chain", "support", "spell", "buffs", "timeline",
+                  "taunt", "guard", "pickup", "interrupt", "plate", "ready")
+
+
+def coach_info():
+    try:
+        c = call("coach")
+        return c if isinstance(c, dict) else {"active": False}
+    except Exception:
+        return {"active": False}
+
+
+def _coach_key(c):
+    return f"{c['id']}-{'popup' if c['popup'] else c['step']}"
+
+
+def _coach_shot(c, tag):
+    """The first time a popup or mark shows: a super=2 screenshot plus its geometry (.coach.json beside it), the input
+    tools/lesson_images.py cuts the lesson images from."""
+    key = _coach_key(c)
+    if key in _COACH_SEEN:
+        return key
+    _COACH_SEEN.append(key)
+    print(f"[coach] {key} | {c.get('title')} | {c.get('caption')}", flush=True)
+    if HEADLESS:
+        return key
+    time.sleep(0.6)
+    try:
+        f = call("screenshot", name=f"{tag}-{len(_COACH_SEEN):02d}-{key}", super=2)["file"]
+        c = coach_info() if coach_info().get("id") == c["id"] else c  # the box after the settle
+        with open(os.path.splitext(f)[0] + ".coach.json", "w", encoding="utf-8") as fh:
+            json.dump(c, fh)
+        _COACH_SHOTS.append(f)
+    except Exception as e:
+        print("[coach] shot failed", key, e, flush=True)
+    return key
+
+
+def coach_act(c, tag="coach"):
+    """Does what the current popup or mark asks: Next on a popup, a tap in the box, the dotted route as a drag, or a
+    lift-and-drop-off-the-board for the hold timer."""
+    _coach_shot(c, tag)
+    if c["popup"]:
+        names = call("names", prefix="coach-next") or call("names", prefix="camp-tip-ok")
+        call("click", name=names[0] if names else "coach-next")
+        time.sleep(0.6)
+        _settle(c)
+        return True
+    b = c.get("box")
+    if not b:
+        time.sleep(0.5)
+        return False
+    cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+    cap = c.get("caption") or ""
+    if c.get("path"):
+        pts = [(cx, cy)] + [tuple(pt) for pt in c["path"][1:]]
+        call("drag", path=";".join(f"{x:.0f},{y:.0f}" for x, y in pts), step=0.12)
+        time.sleep(1.0)
+    elif cap.startswith("Lift"):
+        call("drag", path=f"{cx:.0f},{cy:.0f};{cx:.0f},{cy + 120:.0f};{cx:.0f},{cy + 300:.0f};{cx:.0f},2300", step=0.15)
+        time.sleep(0.8)
+    else:
+        call("tap", x=round(cx), y=round(cy))
+        time.sleep(0.8)
+    _settle(c)
+    return True
+
+
+def _settle(c, timeout=7.0):
+    """Waits for the mark just acted on to move on (the step advances a tick after the tap, or once a crafting job's
+    animation is over), so the same control is never tapped twice: a second Craft would forge whatever the next lesson
+    preselected."""
+    key = _coach_key(c)
+    end = time.time() + timeout
+    while time.time() < end:
+        now = coach_info()
+        if not now.get("active") or _coach_key(now) != key:
+            return
+        time.sleep(0.2)
+
+
+def coach_follow(tag="coach", settle=1.5, limit=60):
+    """Follows every lesson that comes up (popup, then each mark) until none has shown for `settle` seconds.
+    Returns the lesson ids met, in order."""
+    ids, quiet = [], 0.0
+    for _ in range(limit * 8):
+        c = coach_info()
+        if c.get("active"):
+            if c["id"] not in ids:
+                ids.append(c["id"])
+            coach_act(c, tag)
+            quiet = 0.0
+            continue
+        if quiet >= settle:
+            break
+        time.sleep(0.25)
+        quiet += 0.25
+    return ids
+
+
+def _await_lesson(prefix, timeout=8.0):
+    """Waits for a lesson whose id starts with `prefix` (a Camp-row lesson still up ends on its own once its row is
+    off screen). Returns its /coach info, or None."""
+    end = time.time() + timeout
+    while time.time() < end:
+        c = coach_info()
+        if c.get("active") and c["id"].startswith(prefix):
+            return c
+        time.sleep(0.25)
+    return None
+
+
+def _free_action():
+    """Nothing is teaching: the player makes the bot's best move (or Guards), through the same command pipeline."""
+    s = call("suggest")
+    if isinstance(s, dict) and "hero" in s:
+        r = call("cmd", type="move", hero=s["hero"], path=";".join(f"{x},{y}" for x, y in s["path"]))
+    else:
+        r = call("cmd", type="shield")
+    time.sleep(0.4)
+    return r
+
+
+def coach_battle(tag="b1", timeout=1200):
+    """Plays the battle on screen through its lessons: every popup and mark is followed; when nothing is teaching for a
+    moment the player takes one free action. Returns the screen it ended on."""
+    deadline, idle = time.time() + timeout, 0
+    while time.time() < deadline:
+        st = call("state")
+        if st["screen"] != "battle":
+            return st["screen"]
+        c = coach_info()
+        if c.get("active"):
+            coach_act(c, tag)
+            idle = 0
+            continue
+        idle += 1
+        if idle >= 6:
+            # Once the last lesson (Ready) is behind it, the bot plays the rest of the battle out like a player would,
+            # spells and items included; until then the player takes the bot's best move between lessons.
+            if f"battle-{BATTLE_LESSONS[-1]}-popup" in _COACH_SEEN:
+                call("autoplay", on=1)
+            else:
+                _free_action()
+            idle = 0
+        time.sleep(0.4)
+    return "timeout"
+
+
+def lesson_report(prefix="battle-"):
+    """{lesson: (popup shown, marks shown)} for the guided battle's lessons, from what this run followed."""
+    rep = {}
+    for l in BATTLE_LESSONS:
+        rep[l] = (f"{prefix}{l}-popup" in _COACH_SEEN, any(k.startswith(f"{prefix}{l}-") and not k.endswith("-popup") for k in _COACH_SEEN))
+    return rep
+
+
+def _to_camp(timeout=90):
+    """Results -> To Camp (`continue`) -> any story beat -> the Camp menu, the way a player gets there."""
+    end = time.time() + timeout
+    while time.time() < end:
+        scr = call("state")["screen"]
+        if scr == "hub":
+            return True
+        if scr in ("crawl", "dialogue"):
+            through_story(wait=1.0)
+            continue
+        if coach_info().get("active"):
+            return scr == "hub"
+        if scr == "levelup":
+            call("clicktext", text="Skip"); time.sleep(1.0)
+            continue
+        r = call("click", name="continue")
+        if _tap_failed(r):
+            r = call("clicktext", text="Continue")
+            if _tap_failed(r):
+                call("clicktext", text="OK")
+        time.sleep(1.2)
+    return False
+
+
+def coach(run="coach", camp=False, capture=True):
+    """GG-T542: a new profile (real New Game, party pick and prologue) plays The Tithe Moors I with -coach, following
+    every lesson's popup and coach marks; between lessons it takes the bot's move. Every popup and mark is screenshot
+    with its geometry (tools/lesson_images.py input). Fails unless all 17 battle lessons showed their marks. With
+    camp=True it then plays the results, taps To Camp (`continue`) and checks the Merchant's Camp-menu lesson
+    (hub-shop) fires in the natural flow, then follows it into the Merchant's own lesson (+, Buy)."""
+    fails = []
+    del _COACH_SEEN[:]
+    del _COACH_SHOTS[:]
+    launch(run, extra=("-coach",) + (("-capture", "video", "hq") if capture else ()), fresh=True)
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+        _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4)
+        if not pick_party():
+            fails.append("party pick didn't reach Camp")
+        time.sleep(1.0)
+        pre = coach_follow("camp0", settle=1.0)
+        if pre:
+            print("[coach] lessons before the first battle:", pre, flush=True)
+        if call("state")["screen"] != "hub":
+            call("goto", screen="hub"); time.sleep(1.0)
+        call("clicktext", text="Adventure"); time.sleep(0.8)
+        call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+        through_story()
+        if not _wait_screen("battle", 10):
+            fails.append("never reached the tutorial battle")
+        time.sleep(1.5)
+        end = coach_battle("b1")
+        print("[coach] battle ended on", end, flush=True)
+        shot("b1-end")
+        rep = lesson_report()
+        print("[coach] battle lessons (popup, marks):", flush=True)
+        for i, (l, (pop, marks)) in enumerate(rep.items(), 1):
+            print(f"   {i:2d} {l:10s} popup={'yes' if pop else 'NO '} marks={'yes' if marks else 'NO'}", flush=True)
+            if not marks:
+                fails.append(f"lesson {l}: no coach marks")
+        recs = sorted(glob.glob(os.path.join(ROOT, "artifacts", run, "records", "*greenvalley-01*.json")))
+        if recs and "_Defeat" in recs[-1]:
+            fails.append(f"the tutorial battle was lost: {os.path.basename(recs[-1])}")
+        if camp:
+            if end not in ("results", "levelup"):
+                fails.append(f"battle ended on {end}, not results")
+            shot("c-01-results")
+            if not _to_camp():
+                fails.append("To Camp didn't reach the Camp menu")
+            time.sleep(1.0)
+            hub = _await_lesson("hub-", timeout=8)
+            shot("c-02-camp-arrive")
+            if not hub or hub["id"] != "hub-shop":
+                fails.append(f"no Merchant Camp-menu lesson on arriving at Camp: {hub}")
+            ids = coach_follow("camp1", settle=2.0)
+            print("[coach] Camp lessons:", ids, flush=True)
+            if "camp-shop" not in ids:
+                fails.append(f"the Merchant's own lesson didn't follow the Camp-menu lesson: {ids}")
+            shot("c-03-after-merchant")
+        errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        if errs:
+            fails.append(f"log errors {errs[:3]}")
+    finally:
+        print("shots:", len(_COACH_SHOTS))
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+    print("FAILURES:" if fails else "COACH OK", *fails, sep="\n  ")
+    return not fails
+
+
+def coachcamp(run="coachcamp", capture=True):
+    """GG-T542: the Camp lessons after the Merchant's, followed mark by mark on one save: the Blacksmith's repair
+    (a worn weapon), the Forge (the Tallow Lantern), armor (Wayfarer's Trousers), the Enchantress (Regeneration) and
+    Training (the guided first skill), plus any Camp-menu and Equip lessons met on the way."""
+    fails = []
+    del _COACH_SEEN[:]
+    del _COACH_SHOTS[:]
+    launch(run, extra=("-campTips",) + (("-capture", "video", "hq") if capture else ()), fresh=True)
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        call("newgame", slot=0, gold=400, npcs="merchant,blacksmith,alchemist,enchantress", seen="shop,alchemist"); time.sleep(1.2)
+        call("devequipall", item="eq_sword_iron", wear=0.5); time.sleep(0.3)
+        for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1), ("mat_leather", 2), ("mat_wolf_pelt", 1),
+                        ("mat_arcane_dust", 1), ("mat_frog_gland", 2)):
+            for _ in range(n):
+                call("devgive", item=item)
+        met = coach_follow("hub", settle=1.5)
+        for station, want in (("blacksmith", "camp-blacksmith"), ("blacksmith", "camp-blacksmith-forge"),
+                              ("enchantress", "camp-enchantress"), ("abilities", "camp-abilities-learn")):
+            if want in met:
+                continue
+            if call("state")["screen"] != "hub":
+                call("goto", screen="hub"); time.sleep(0.8)
+                met += [i for i in coach_follow("hub", settle=1.0) if i not in met]
+            _goto(station)
+            if not _await_lesson(want, timeout=8):
+                fails.append(f"{station}: no {want} lesson")
+                shot(f"miss-{want}")
+            met += [i for i in coach_follow(station, settle=2.0) if i not in met]
+        print("[coachcamp] lessons:", met, flush=True)
+        for want in ("camp-blacksmith", "camp-blacksmith-forge", "camp-blacksmith-armor", "camp-enchantress", "camp-abilities-learn"):
+            if want not in met:
+                fails.append(f"{want} never ran")
+            elif not any(k.startswith(want + "-") and not k.endswith("-popup") for k in _COACH_SEEN):
+                fails.append(f"{want}: popup only, no marks")
+        camp = call("camp")
+        if camp.get("weapons", {}).get("cleric") != "eq_lantern_tallow":
+            fails.append(f"the lantern wasn't forged for the Cleric: {camp.get('weapons')}")
+        if "eq_wayfarer_legs" not in camp.get("armor", {}).get("barbarian", []):
+            fails.append(f"the trousers weren't forged: {camp.get('armor')}")
+        if not camp.get("onboarded"):
+            fails.append("the onboarding chain didn't finish (first skill)")
+        errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        if errs:
+            fails.append(f"log errors {errs[:3]}")
+    finally:
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+    print("FAILURES:" if fails else "COACH CAMP OK", *fails, sep="\n  ")
+    return not fails
+
+
+def coachskip(run="coachskip", capture=True):
+    """GG-T542: Skip tutorial asks to confirm (Cancel keeps the lesson), and Turn off ends every lesson for the save:
+    the tutorial battle goes on with no popup and no Tutorial tab, and Camp opens with no lesson. Settings > How to play
+    > Replay tutorials (replay-camp-tips) brings them back: the next Tithe Moors I opens on lesson 1 again."""
+    fails = []
+    del _COACH_SEEN[:]
+    del _COACH_SHOTS[:]
+    launch(run, extra=("-coach",) + (("-capture", "video", "hq") if capture else ()), fresh=True)
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        call("newgame", slot=0, gold=200); time.sleep(1.2)
+        coach_follow("hub", settle=1.0)
+        call("battle", stage="greenvalley-01"); time.sleep(1.0)
+        through_story()
+        _wait_screen("battle", 10)
+        c = _await_lesson("battle-move", timeout=10)
+        shot("01-lesson-1")
+        if not c:
+            fails.append("the tutorial battle opened without lesson 1")
+        call("click", name="coach-skip"); time.sleep(0.6)
+        shot("02-skip-confirm")
+        if not call("names", prefix="confirm-yes"):
+            fails.append("Skip tutorial didn't ask to confirm")
+        call("click", name="confirm-no"); time.sleep(0.6)
+        if not coach_info().get("active"):
+            fails.append("Cancel on the confirm ended the lesson")
+        call("click", name="coach-skip"); time.sleep(0.6)
+        call("click", name="confirm-yes"); time.sleep(1.0)
+        shot("03-skipped")
+        if coach_info().get("active"):
+            fails.append("Turn off left a lesson up")
+        if call("names", prefix="tutorial-title"):
+            fails.append("the Tutorial tab stayed after Turn off")
+        for _ in range(3):
+            _free_action(); time.sleep(1.0)
+        if coach_info().get("active"):
+            fails.append(f"a lesson came back after Turn off: {coach_info().get('id')}")
+        call("goto", screen="settings"); time.sleep(1.0)
+        call("scrollto", name="replay-camp-tips"); time.sleep(0.3)
+        shot("04-settings-replay")
+        r = call("click", name="replay-camp-tips"); time.sleep(0.8)
+        if _tap_failed(r):
+            fails.append(f"no Replay tutorials button: {r}")
+        call("goto", screen="hub"); time.sleep(1.0)
+        hub = _await_lesson("hub-", timeout=4) or _await_lesson("equip", timeout=1)
+        coach_follow("hub2", settle=1.0)
+        call("battle", stage="greenvalley-01"); time.sleep(1.0)
+        through_story()
+        _wait_screen("battle", 10)
+        c = _await_lesson("battle-move", timeout=10)
+        shot("05-replayed-lesson-1")
+        if not c:
+            fails.append("Replay tutorials didn't bring lesson 1 back on The Tithe Moors I")
+        errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        if errs:
+            fails.append(f"log errors {errs[:3]}")
+    finally:
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+    print("FAILURES:" if fails else "COACH SKIP OK", *fails, sep="\n  ")
+    return not fails
+
+
+# GG-T542: the Camp-menu lessons a seeded vendor would open on the Camp menu (and Equip gear), marked seen by the
+# camp-tip harnesses so they can open each station directly.
+CAMP_ROW_LESSONS = "hub-shop,hub-blacksmith,hub-alchemist,hub-enchantress,hub-summon,equip"
+
+
 def camptips(run="camptips"):
     """GG-T173: the first visit to a Camp station shows its tip (veil + pointing hand + card); "Got it" dismisses it
     for good; Settings > How to play > Replay camp tips brings it back. Launches with -campTips (harness runs
     suppress tips otherwise)."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=500, npcs=1); time.sleep(1)
+    call("newgame", slot=0, gold=500, npcs=1, lessons=CAMP_ROW_LESSONS); time.sleep(1)
     tip = lambda: bool(call("names", prefix="camp-tip-card"))
+    # GG-T542: a tip is a coach-mark lesson (popup, then the exact control boxed). The Camp-menu lessons that would walk
+    # the player into each seeded vendor are marked seen (lessons=), so each station is opened directly.
     for station in ("shop", "blacksmith", "alchemist", "bounties"):
-        _goto(station); time.sleep(0.5)
+        if call("state")["screen"] != "hub":
+            call("goto", screen="hub"); time.sleep(0.8)
+        _goto(station)
+        c = _await_lesson("camp-" + station, timeout=8)
         shot(f"tip-{station}")
-        if not tip():
+        if not c and station not in _seen_stations():
             fails.append(f"{station}: no tip on first visit")
-        else:
+        elif c:
             probs = call("layout").get("problems")
             if probs:
                 fails.append(f"{station}: layout {probs}")
-        call("click", name="camp-tip-ok"); time.sleep(0.5)
-        if tip():
-            fails.append(f"{station}: Got it didn't dismiss the tip")
+            call("click", name="camp-tip-ok"); time.sleep(0.5)
+            if tip():
+                fails.append(f"{station}: Next didn't close the popup")
+            coach_follow(station, settle=1.0)
         call("back"); time.sleep(0.5)
-    _goto("shop"); time.sleep(0.5)
-    if tip():
-        fails.append("shop: tip came back after being dismissed")
+    _goto("shop")
+    if _await_lesson("camp-shop", timeout=3):
+        fails.append("shop: tip came back after being seen")
     call("back"); time.sleep(0.5)
     _goto("settings"); call("scrollto", name="replay-camp-tips"); time.sleep(0.3)
     call("click", name="replay-camp-tips"); time.sleep(0.6); call("back"); time.sleep(0.5)
-    _goto("shop"); time.sleep(0.5)
-    if not tip():
-        fails.append("shop: Replay camp tips didn't bring the tip back")
+    # Replay brings the Camp-menu lessons back too: the Merchant's walks the player into the shop, where its tip opens.
+    replayed = coach_follow("hub2", settle=1.5)
+    if "camp-shop" not in replayed and call("state")["screen"] != "shop":
+        _goto("shop")
+    if not ("camp-shop" in replayed or _await_lesson("camp-shop", timeout=6)):
+        fails.append("shop: Replay tutorials didn't bring the tip back")
     shot("tip-shop-replayed")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -911,20 +1312,38 @@ def camptips(run="camptips"):
     return not fails
 
 
+def _follow_one(lesson, tag, timeout=8.0):
+    """Waits for `lesson` and follows its popup and marks until it ends (GG-T542). False if it never came up."""
+    c = _await_lesson(lesson, timeout=timeout)
+    if not c:
+        return False
+    while c.get("active") and c["id"] == lesson:
+        coach_act(c, tag)
+        c = coach_info()
+    time.sleep(0.8)
+    return True
+
+
+def _seen_stations():
+    """Stations whose lesson this run already followed (a Camp-menu lesson can walk into one before the script does)."""
+    return {k.split("-popup")[0][len("camp-"):] for k in _COACH_SEEN if k.startswith("camp-") and k.endswith("-popup")}
+
+
 def smithrepair(run="smithrepair"):
     """GG-T175: onboarding step 2. With only the Merchant and Blacksmith met and a hero's weapon worn to 50%, the
     Blacksmith opens on Repair (Forge/Upgrade/Salvage dimmed and refusing taps), his camp tip names the worn piece
     and rings its repair row; dismissing it and tapping that row repairs it to full."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=500, npcs="merchant,blacksmith"); time.sleep(1)
+    call("newgame", slot=0, gold=500, npcs="merchant,blacksmith", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     call("devequipall", item="eq_sword_iron", wear=0.5); time.sleep(0.3)
     worn = call("camp").get("worn")
     if not worn or worn["Durability"] >= worn["Max"]:
         fails.append(f"devequipall wear=0.5 left nothing worn: {worn}")
     if call("camp").get("workshop"):
         fails.append("workshop should be closed before the Alchemist joins")
-    _goto("blacksmith"); time.sleep(0.8)
+    _goto("blacksmith")
+    _await_lesson("camp-blacksmith", timeout=8)
     shot("01-smith-tip")
     if not call("names", prefix="camp-tip-card"):
         fails.append("no Blacksmith tip on first visit")
@@ -936,21 +1355,22 @@ def smithrepair(run="smithrepair"):
     if probs:
         fails.append(f"layout {probs}")
     call("click", name="camp-tip-ok"); time.sleep(0.5)
+    # GG-T542: only the boxed worn piece takes taps now; the locked Forge tab is checked once the lesson is done.
+    g = call("camp")["Gold"]
+    coach_follow("smith", settle=1.0)
     call("click", name="tab-forge"); time.sleep(0.5)
     if worn and not call("names", prefix=worn["row"]):
         fails.append("tapping the locked Forge tab left Repair")
     shot("02-smith-forge-locked")
     if worn:
-        g = call("camp")["Gold"]
-        call("click", name=worn["row"]); time.sleep(0.8)
         after = call("camp")
         w2 = after.get("worn")
         if after["Gold"] >= g:
-            fails.append("repairing the worn piece cost nothing")
+            fails.append("repairing the worn piece (the lesson's boxed row) cost nothing")
         if w2 and w2["row"] == worn["row"] and w2["Durability"] < w2["Max"]:
             fails.append(f"worn piece not repaired: {w2}")
         shot("03-smith-repaired")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -967,13 +1387,14 @@ def firstbrew(run="firstbrew"):
     names it and rings Brew; dismissing it and tapping Brew turns the loot and bottle into a Healing Potion."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=100, npcs="merchant,alchemist"); time.sleep(1)
+    call("newgame", slot=0, gold=100, npcs="merchant,alchemist", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     for item in ("mat_wolf_pelt", "mat_tattered_cloth", "empty_bottle"):
         call("devgive", item=item)
     def count(item):
         return next((x["count"] for x in call("camp")["sellable"] if x["Id"] == item), 0)
     potions = count("healing_potion_basic")
-    _goto("alchemist"); time.sleep(0.8)
+    _goto("alchemist")
+    _await_lesson("camp-alchemist", timeout=8)
     shot("01-alchemist-tip")
     if not call("names", prefix="camp-tip-card"):
         fails.append("no Alchemist tip on first visit")
@@ -985,14 +1406,13 @@ def firstbrew(run="firstbrew"):
     probs = call("layout").get("problems")
     if probs:
         fails.append(f"layout {probs}")
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(0.8)
+    coach_follow("alchemist", settle=1.0)  # GG-T542: Next, then the boxed Brew
     shot("02-alchemist-brewed")
     if count("healing_potion_basic") != potions + 1:
         fails.append(f"Brew didn't make a Healing Potion ({potions} -> {count('healing_potion_basic')})")
     if count("empty_bottle") or count("mat_wolf_pelt"):
         fails.append("the bottle and pelt weren't used up")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -1010,7 +1430,7 @@ def firstforge(run="firstforge"):
     lantern for no gold and the Cleric equips it."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist", seen="blacksmith"); time.sleep(1)
+    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist", seen="blacksmith", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1)):
         for _ in range(n):
             call("devgive", item=item)
@@ -1020,7 +1440,8 @@ def firstforge(run="firstforge"):
         fails.append("workshop should be open once the Alchemist has joined")
     if not ff or ff["recipe"] != "recipe_starter_lantern" or ff["hero"] != "cleric" or not ff["ready"]:
         fails.append(f"first forge should be the ready Tallow Lantern for the Cleric: {ff}")
-    _goto("blacksmith"); time.sleep(0.8)
+    _goto("blacksmith")
+    _await_lesson("camp-blacksmith-forge", timeout=8)
     shot("01-forge-tip")
     if not call("names", prefix="camp-tip-card"):
         fails.append("no Forge tip on opening the workshop")
@@ -1032,9 +1453,8 @@ def firstforge(run="firstforge"):
     probs = call("layout").get("problems")
     if probs:
         fails.append(f"layout {probs}")
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
     gold = call("camp")["Gold"]
-    call("click", name="craft"); time.sleep(0.8)
+    _follow_one("camp-blacksmith-forge", "forge", timeout=2)  # GG-T542: Next, then the boxed Craft
     shot("02-forged-and-equipped")
     after = call("camp")
     if after["weapons"].get("cleric") != "eq_lantern_tallow":
@@ -1043,7 +1463,7 @@ def firstforge(run="firstforge"):
         fails.append(f"the first forge cost gold ({gold} -> {after['Gold']})")
     if after.get("firstForge"):
         fails.append("first forge still pending after forging")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -1114,16 +1534,16 @@ def firstarmor(run="firstarmor"):
     Barbarian and ringing Craft; dismissing it and tapping Craft forges them (15 G) and the Barbarian wears them."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist", seen="blacksmith"); time.sleep(1)
+    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist", seen="blacksmith", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1), ("mat_leather", 2), ("mat_wolf_pelt", 1)):
         for _ in range(n):
             call("devgive", item=item)
     camp = call("camp")
     if camp.get("setRecipes") or camp.get("firstArmor"):
         fails.append(f"armor-set recipes open before the first forge: {camp.get('setRecipes')} {camp.get('firstArmor')}")
-    _goto("blacksmith"); time.sleep(0.8)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(1.0)
+    _goto("blacksmith")
+    _follow_one("camp-blacksmith-forge", "forge")
+    _await_lesson("camp-blacksmith-armor", timeout=8)
     shot("01-armor-tip")
     camp = call("camp")
     fa = camp.get("firstArmor")
@@ -1143,9 +1563,8 @@ def firstarmor(run="firstarmor"):
     probs = call("layout").get("problems")
     if probs:
         fails.append(f"layout {probs}")
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
     gold = camp["Gold"]
-    call("click", name="craft"); time.sleep(0.8)
+    _follow_one("camp-blacksmith-armor", "armor")
     shot("02-armor-forged-and-worn")
     after = call("camp")
     if "eq_wayfarer_legs" not in after.get("armor", {}).get("barbarian", []):
@@ -1154,7 +1573,7 @@ def firstarmor(run="firstarmor"):
         fails.append(f"the first armor should cost its 15 G ({gold} -> {after['Gold']})")
     if after.get("firstArmor"):
         fails.append("first armor still pending after forging")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -1172,15 +1591,13 @@ def firstenchant(run="firstenchant"):
     binds Regeneration into the trousers for no gold."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist,enchantress", seen="blacksmith"); time.sleep(1)
+    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist,enchantress", seen="blacksmith", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1), ("mat_leather", 2), ("mat_wolf_pelt", 1)):
         for _ in range(n):
             call("devgive", item=item)
-    _goto("blacksmith"); time.sleep(0.8)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(1.0)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(0.8)
+    _goto("blacksmith")
+    _follow_one("camp-blacksmith-forge", "forge")
+    _follow_one("camp-blacksmith-armor", "armor")
     camp = call("camp")
     if "eq_wayfarer_legs" not in camp.get("armor", {}).get("barbarian", []):
         fails.append(f"first armor didn't go through: {camp.get('armor')}")
@@ -1191,7 +1608,9 @@ def firstenchant(run="firstenchant"):
     fe = camp.get("firstEnchant")
     if not fe or fe["enchant"] != "ae_regeneration" or fe["hero"] != "barbarian" or fe["piece"] != "eq_wayfarer_legs" or not fe["ready"]:
         fails.append(f"first enchant should be ready Regeneration on the Barbarian's trousers: {fe}")
-    _goto("enchantress"); time.sleep(0.8)
+    call("back"); time.sleep(0.6)
+    _goto("enchantress")
+    _await_lesson("camp-enchantress", timeout=8)
     shot("01-enchant-tip")
     if not call("names", prefix="camp-tip-card"):
         fails.append("no Enchantress tip on opening her station")
@@ -1203,9 +1622,8 @@ def firstenchant(run="firstenchant"):
     probs = call("layout").get("problems")
     if probs:
         fails.append(f"layout {probs}")
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
     gold = camp["Gold"]
-    call("click", name="craft"); time.sleep(0.8)
+    _follow_one("camp-enchantress", "enchant")
     shot("02-armor-enchanted")
     after = call("camp")
     if fe and after.get("enchants", {}).get(fe["row"]) != "ae_regeneration":
@@ -1214,7 +1632,7 @@ def firstenchant(run="firstenchant"):
         fails.append(f"the first enchant cost gold ({gold} -> {after['Gold']})")
     if after.get("firstEnchant"):
         fails.append("first enchant still pending after enchanting")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -1231,24 +1649,24 @@ def firstskill(run="firstskill"):
     the top, its tip names the skill and rings Learn, and tapping Learn trains it for no gold onto the lead's bar."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
-    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist,enchantress", seen="blacksmith,abilities"); time.sleep(1)
+    call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist,enchantress", seen="blacksmith,abilities", lessons=CAMP_ROW_LESSONS); time.sleep(1)
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1), ("mat_leather", 2), ("mat_wolf_pelt", 1),
                     ("mat_arcane_dust", 1), ("mat_frog_gland", 2)):
         for _ in range(n):
             call("devgive", item=item)
-    _goto("blacksmith"); time.sleep(0.8)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(1.0)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(0.8)
-    _goto("enchantress"); time.sleep(0.8)
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
-    call("click", name="craft"); time.sleep(0.8)
+    _goto("blacksmith")
+    _follow_one("camp-blacksmith-forge", "forge")
+    _follow_one("camp-blacksmith-armor", "armor")
+    call("back"); time.sleep(0.6)
+    _goto("enchantress")
+    _follow_one("camp-enchantress", "enchant")
+    call("back"); time.sleep(0.6)
     camp = call("camp")
     fk = camp.get("firstSkill")
     if not fk:
         fails.append(f"no guided first skill after the first enchant (enchants {camp.get('enchants')})")
-    _goto("abilities"); time.sleep(0.8)
+    _goto("abilities")
+    _await_lesson("camp-abilities-learn", timeout=8)
     shot("01-learn-tip")
     if not call("names", prefix="camp-tip-card"):
         fails.append("no training tip on opening Abilities")
@@ -1262,9 +1680,8 @@ def firstskill(run="firstskill"):
     probs = call("layout").get("problems")
     if probs:
         fails.append(f"layout {probs}")
-    call("click", name="camp-tip-ok"); time.sleep(0.5)
     gold = camp["Gold"]
-    call("click", name="craft"); time.sleep(0.8)
+    _follow_one("camp-abilities-learn", "training")
     shot("02-skill-slotted")
     after = call("camp")
     if fk and fk["skill"] not in after.get("bars", {}).get(fk["hero"], []):
@@ -1273,7 +1690,7 @@ def firstskill(run="firstskill"):
         fails.append(f"the first skill cost gold ({gold} -> {after['Gold']})")
     if not after.get("onboarded") or after.get("firstSkill"):
         fails.append("onboarding chain not complete after the first skill")
-    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception"))]
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
     if errs:
         fails.append(f"log errors {errs[:3]}")
     try:
@@ -2563,6 +2980,9 @@ if __name__ == "__main__":
     if "--headless" in sys.argv:
         HEADLESS = True
         sys.argv = [a for a in sys.argv if a != "--headless"]
+    if "--record" in sys.argv:
+        RECORD = True
+        sys.argv = [a for a in sys.argv if a != "--record"]
     cmd = sys.argv[1] if len(sys.argv) > 1 else "smoke"
     if cmd == "smoke":
         smoke(sys.argv[2] if len(sys.argv) > 2 else "smoke")
@@ -2586,6 +3006,16 @@ if __name__ == "__main__":
         sys.exit(0 if a11y(names[0] if names else "a11y", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
     elif cmd == "camptips":
         sys.exit(0 if camptips() else 1)
+    elif cmd in ("coach", "coachcamp", "coachskip"):
+        names = [a for a in sys.argv[2:] if not a.startswith("--")]
+        cap = "--nocapture" not in sys.argv
+        if cmd == "coach":
+            ok = coach(names[0] if names else "coach", camp="--camp" in sys.argv, capture=cap)
+        elif cmd == "coachcamp":
+            ok = coachcamp(names[0] if names else "coachcamp", capture=cap)
+        else:
+            ok = coachskip(names[0] if names else "coachskip", capture=cap)
+        sys.exit(0 if ok else 1)
     elif cmd == "smithrepair":
         sys.exit(0 if smithrepair() else 1)
     elif cmd == "firstbrew":

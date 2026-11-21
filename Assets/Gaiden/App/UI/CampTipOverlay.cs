@@ -66,12 +66,37 @@ namespace GridGame.App
         private static string Verb(string station) =>
             station == "alchemist" ? "Brew" : station == "enchantress" ? "Enchant" : station == Training.TipStation ? "Learn" : "Craft";
 
+        /// <summary>What a station's action changes (gold, the bag, gear wear and mastery, station XP, crafted recipes, flags).</summary>
+        private static long Fingerprint(SaveData s)
+        {
+            if (s == null) return 0;
+            long f = s.Gold * 7919L + s.CraftedRecipes.Count * 104729L + s.Flags.Count * 1299709L + s.Roster.Count * 15485863L;
+            foreach (var kv in s.Inventory) f += kv.Value * 31L + kv.Key.GetHashCode();
+            foreach (var kv in s.StationXp) f += kv.Value * 131L;
+            foreach (var kv in s.Worn) foreach (var w in kv.Value) f += w.Durability * 7L + w.Repairs * 13L + (w.Enchant?.Length ?? 0) * 17L;
+            foreach (var h in s.Roster)
+            {
+                if (h == null) continue;
+                f += h.Known.Count * 101L + h.WeaponDurability * 3L + h.WeaponRepairs * 5L + (h.WeaponId?.Length ?? 0) * 11L + h.Armor.Count * 19L + h.Jewelry.Count * 23L;
+                foreach (var b in h.Bar) f += (b?.Length ?? 0) * 29L;
+                foreach (var a in h.Armor.Values) if (a != null) f += (a.ItemId?.Length ?? 0) * 37L + a.Durability * 41L + (a.Enchant?.Length ?? 0) * 43L;
+            }
+            return f;
+        }
+
         /// <summary>The marks a tip walks: one or two taps on the exact controls.</summary>
         private static List<CoachStep> Steps(CampTip tip)
         {
             var steps = new List<CoachStep>();
             if (string.IsNullOrEmpty(tip.Target)) return steps;
-            CoachStep Tap(string target, string caption) => new CoachStep { Caption = caption, Element = () => Find(target) };
+            CoachStep Tap(string target, string caption)
+            {
+                // GG-T542: also done once the tap's effect lands in the save (bought, crafted, repaired, learned): a Craft
+                // rebuilds its page under the finger and the release could miss the box, leaving the mark up after the work.
+                long before = 0;
+                return new CoachStep { Caption = caption, Element = () => Find(target),
+                    Enter = () => before = Fingerprint(GameApp.I.Save), Also = () => Fingerprint(GameApp.I.Save) != before };
+            }
             string verb = Verb(tip.Station);
             if (tip.Station == "shop")
             {

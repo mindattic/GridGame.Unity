@@ -1455,3 +1455,14 @@ Owner: "some are progress gated, some are training gated, the usual."
 - *Why:* owner 2026-11-21: "it shows the user what to do with highlights and arrows and dotted lines ... draw boxes
   around buttons and wait for the user to click that exact area"; the timeline and the camp economy were being learned
   by accident, if at all.
+
+## 2026-11-21 — The tutorial battle sets up every lesson's situation (owner, GG-T542)
+
+- **Was:** each first-battle lesson pointed at whatever happened to be on the board; Chains, Interrupting, Roles & Taunt
+  and Armor plates often found nothing (no two-pincer move, no foe charging, the Warden busy, no plate left) and showed
+  only their popup.
+- **Now ([BIBLE §9](BIBLE.md)):** The Tithe Moors I plays on a fixed seed, and a lesson with nothing to point at sends a
+  tutorial-only `TutorialSceneCommand`: a foe from `StageDef.Scenes` walks on where the lesson's move works (a chain's
+  two gaps, a pincer on a charger that starts charging, a plated foe, a threat beside the Cleric for Taunt), a pickup
+  lies where a move ends, orbs top up for the spell. All 17 lessons now show popup and marks. Other stages unchanged.
+- *Why:* owner 2026-11-21: "The tutorial battle (The Tithe Moors I) must teach every step."
