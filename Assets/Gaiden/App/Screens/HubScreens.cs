@@ -417,7 +417,7 @@ namespace GridGame.App
             // GG-T452: splits the leftover height evenly with the slot list above (both kit list panels).
             var list = Ui.ListPanel(body, $"{ItemUi.SlotName(slot)} — your bag", "equip-bag");
             if (Equipment.Equipped(h, slot) != null)
-                Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot)), list);
+                Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list);
             // GG-T52: the bag listing is shape-only (Equipment.Candidates with no hero) so a piece the hero
             // owns but isn't proficient in still shows up — locked, with a 🔒 and the passive that would
             // unlock it — instead of silently disappearing as if it were never picked up.
@@ -430,7 +430,7 @@ namespace GridGame.App
                 var value = gate != null ? $"🔒 {gate}" : $"×{S.Count(item.Id)}";
                 var row = ItemUi.Row(item, value, () =>
                 {
-                    if (previewId == item.Id) { previewId = null; Done(Equipment.Equip(C, S, h, slot, item.Id)); }
+                    if (previewId == item.Id) { previewId = null; Done(Equipment.Equip(C, S, h, slot, item.Id), cue: "ui.equip"); }
                     else { previewId = item.Id; Refresh(); App.Toast("Tap again to equip"); }
                 }, list, gate == null, Equipment.IsMasterwork(S, item.Id),
                 rowName: (gate == null ? "equip-ok-" : "equip-locked-") + item.Id);
@@ -1085,7 +1085,7 @@ namespace GridGame.App
                     bool bad = cost > 0 && Repair.IsUneconomical(w, h.WeaponDurability, h.WeaponRepairs, h.WeaponMastery);
                     string name = (h.WeaponMastery > 1f ? "★ " : "") + w.Name;
                     var row = Ui.MenuRow($"{C.Class(h.ClassId).Name} — {name}  {h.WeaponDurability}/{Repair.EffectiveMax(w, h.WeaponRepairs, h.WeaponMastery)}", cost > 0 ? Ui.Gold(cost) : "OK",
-                        () => Done(Repair.RepairWeapon(C, S, hero)), list, null, cost > 0);
+                        () => Done(Repair.RepairWeapon(C, S, hero), cue: "camp.repair"), list, null, cost > 0);
                     row.name = Repair.RowNameFor(h.ClassId, EquipmentSlot.Weapon);
                     if (bad) row.Q<Label>("value").AddToClassList("warn");
                     if (bad && salvage) SalvageInsteadRow(list, hero, EquipmentSlot.Weapon, w, h.WeaponDurability, cost);
@@ -1101,7 +1101,7 @@ namespace GridGame.App
                     bool bad = cost > 0 && Repair.IsUneconomical(a, piece.Durability, piece.Repairs, piece.Mastery);
                     string name = (piece.Mastery > 1f ? "★ " : "") + a.Name;
                     var row = Ui.MenuRow($"{C.Class(h.ClassId).Name} — {name}  {piece.Durability}/{Repair.EffectiveMax(a, piece.Repairs, piece.Mastery)}", cost > 0 ? Ui.Gold(cost) : "OK",
-                        () => Done(Repair.RepairArmor(C, S, hero, armorSlot)), list, null, cost > 0);
+                        () => Done(Repair.RepairArmor(C, S, hero, armorSlot), cue: "camp.repair"), list, null, cost > 0);
                     row.name = Repair.RowNameFor(h.ClassId, armorSlot);
                     if (bad) row.Q<Label>("value").AddToClassList("warn");
                     if (bad && salvage) SalvageInsteadRow(list, hero, armorSlot, a, piece.Durability, cost);
@@ -1279,7 +1279,7 @@ namespace GridGame.App
                 Ui.Para(d.Description, col, "dim");
                 if (lv > 0) Ui.Para("Now: " + d.Levels[lv - 1].Text, col, "good");
                 if (next != null) Ui.Para("Next: " + next.Text, col);
-                var b = Ui.Button(next == null ? "Maxed" : Ui.Gold(next.Cost), () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id))), "btn--small", Ui.Actions(col));
+                var b = Ui.Button(next == null ? "Maxed" : Ui.Gold(next.Cost), () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
             }
@@ -1400,7 +1400,7 @@ namespace GridGame.App
             app.StartCoroutine(Play());
             System.Collections.IEnumerator Play()
             {
-                app.Audio.Sfx("battle.powerup", 0.8f);
+                app.Audio.Sfx("camp.summon", 0.9f);
                 yield return Tween.Run(Timing.Standard, k => thumb.style.scale = new Scale(Vector2.one * (k < 0.7f ? k / 0.7f * 1.12f : 1.12f - 0.12f * (k - 0.7f) / 0.3f)), Tween.EaseOut);
                 thumb.style.scale = new Scale(Vector2.one);
                 app.Audio.Sfx("battle.victory", 0.6f);

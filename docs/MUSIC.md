@@ -1,5 +1,7 @@
 # Music (GG-T456)
 
+(Sound effects: [SFX.md](SFX.md).)
+
 How it plays: every battle stage (five waves) plays **one** looping track, drawn from its region's playlist.
 Each region keeps a shuffle bag (`Meta/MusicPlaylist.cs`): no track repeats until the whole playlist has
 played, and a refilled bag never opens with the track that just ended. A region with fewer than four tracks of

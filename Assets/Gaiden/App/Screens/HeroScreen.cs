@@ -33,7 +33,7 @@ namespace GridGame.App
         protected string HeroId { get => Host.HeroId; set => Host.HeroId = value; }
         protected HeroSave Hero => Host.Hero;
         protected void Refresh() => Host.Refresh();
-        protected void Done(Result r, bool persist = true) => Host.TabDone(r, persist);
+        protected void Done(Result r, bool persist = true, string cue = "ui.buy") => Host.TabDone(r, persist, cue);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ namespace GridGame.App
             base.Build(root);
         }
 
-        internal void TabDone(Result r, bool persist) => Done(r, persist);
+        internal void TabDone(Result r, bool persist, string cue) => Done(r, persist, cue);
 
         protected override void BuildBody(VisualElement body)
         {

@@ -56,10 +56,12 @@ namespace GridGame.App
             if (GoldLabel != null && App.Save != null) GoldLabel.text = Ui.Gold(App.Save.Gold);
         }
 
-        protected void Done(Result r, bool persist = true)
+        /// <summary>Toasts the result and voices it: <paramref name="cue"/> on success (the coin by default; equip, repair
+        /// and caravan pass their own, GG-T465), <c>ui.error</c> on a refusal.</summary>
+        protected void Done(Result r, bool persist = true, string cue = "ui.buy")
         {
             App.Toast(r.Message ?? (r.Ok ? "Done" : "Can't do that"));
-            App.Audio.Sfx(r.Ok ? "ui.buy" : "ui.error");
+            App.Audio.Sfx(r.Ok ? cue : "ui.error");
             if (r.Ok && persist) App.Persist();
             Refresh();
         }

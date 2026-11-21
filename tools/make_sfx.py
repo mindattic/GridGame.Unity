@@ -253,6 +253,44 @@ def main():
     fan = np.concatenate([horn(523.3, 0.11, 0.4), horn(659.3, 0.11, 0.4), horn(784.0, 0.5, 0.9)])
     bells = mix(*[np.concatenate([np.zeros(int(SR * (0.22 + 0.05 * k))), tone_env(f, 0.35, 0.001, 0.25)]) for k, f in enumerate((1568, 2093, 2637))])
     write("quest_complete", mix(fan, 0.3 * bells))
+    # ── GG-T465 (the SFX coverage audit, docs/SFX.md): events that were silent or borrowed an unrelated cue ──
+    def delay(x, sec):
+        return np.concatenate([np.zeros(int(SR * sec)), x])
+    # Equip / unequip: a buckle-and-plate "shink" (bright noise burst, two metal partials, a soft thump).
+    shk = filt(noise(0.16), "band", (2500, 7500)) * env(int(SR * 0.16), 0.002, 0.04, 5)
+    plate = mix(tone_env(1870, 0.2, 0.001, 0.08), 0.6 * tone_env(2790, 0.2, 0.001, 0.06))
+    write("ui_equip", mix(shk, 0.5 * plate, 0.6 * tone_env(140, 0.08, 0.001, 0.03)), 0.7)
+    # Repair: three hammer taps on the anvil, the last one ringing.
+    def tap(ring):
+        part = mix(*[tone_env(f, 0.4, 0.001, ring) * a for f, a in ((880, 1.0), (2210, 0.5), (3680, 0.3))])
+        return mix(part, 0.8 * filt(noise(0.05), "band", (1500, 6000)) * env(int(SR * 0.05), 0.001, 0.01, 6))
+    write("camp_repair", mix(0.6 * tap(0.06), delay(0.7 * tap(0.06), 0.2), delay(tap(0.3), 0.4)))
+    # Caravan upgrade: two wooden knocks, then a little bell and a rising pair of notes.
+    knock = filt(noise(0.07), "low", 1400) * env(int(SR * 0.07), 0.001, 0.02, 6) + 0.8 * tone_env(190, 0.07, 0.001, 0.03)
+    bell = mix(*[tone_env(f, 0.7, 0.001, 0.45) * a for f, a in ((1046.5, 1.0), (2888, 0.4), (4186, 0.2))])
+    rise2 = np.concatenate([note(587.3, 0.12, 0.3), note(880.0, 0.4, 0.6)])
+    write("camp_caravan", mix(knock, delay(knock, 0.13), delay(0.5 * bell, 0.28), delay(0.6 * rise2, 0.3)))
+    # Summon reveal: a shimmering swell into a held chord, sparkles on top (the hero steps out of the circle).
+    swell = sine(sweep(220, 880, 1.0), 1.0) * env(int(SR * 1.0), 0.6, 0.5, 2) * 0.4
+    choir = filt(sum(tone_env(f, 1.4, 0.35, 1.0, saw) for f in (220, 277.2, 329.6, 440)), "low", 2000)
+    sparks = mix(*[delay(tone_env(f, 0.5, 0.001, 0.35), 0.45 + 0.07 * k) for k, f in enumerate((2093, 2637, 3136, 3951, 4186))])
+    write("camp_summon", mix(swell, 0.8 * choir, 0.35 * sparks, 0.3 * filt(noise(1.4), "high", 6000) * env(int(SR * 1.4), 0.5, 0.6, 2)))
+    # Diamonds: a quick crystalline run with a glassy shimmer.
+    run4 = mix(*[delay(tone_env(f, 0.45, 0.001, 0.3), 0.045 * k) for k, f in enumerate((2637, 3136, 3951, 5274))])
+    write("ui_diamond", mix(run4, 0.25 * filt(noise(0.5), "high", 7000) * env(int(SR * 0.5), 0.01, 0.15, 3)), 0.75)
+    # A spell interrupted / fizzling: a sputtering downward sweep with crackle.
+    sput = sine(sweep(900, 180, 0.42), 0.42) * (0.55 + 0.45 * np.sign(np.sin(2 * np.pi * 28 * t(0.42)))) * env(int(SR * 0.42), 0.004, 0.25)
+    write("battle_fizzle", mix(sput, 0.4 * filt(noise(0.42), "band", (800, 3000)) * env(int(SR * 0.42), 0.002, 0.15, 3)), 0.6)
+    # Steam (water meets fire, a burn put out): a soft hiss.
+    write("element_steam", filt(noise(0.6), "band", (3000, 9000)) * env(int(SR * 0.6), 0.06, 0.35, 2) * (0.8 + 0.2 * np.sin(2 * np.pi * 7 * t(0.6))), 0.55)
+    # A new wave (campaign stages; the Crucible keeps its own): two war-drum hits and a short horn.
+    wdrum = sine(sweep(120, 50, 0.3), 0.3) * env(int(SR * 0.3), 0.001, 0.16) + 0.4 * filt(noise(0.3), "low", 900) * env(int(SR * 0.3), 0.001, 0.05, 5)
+    whorn = filt(sum(tone_env(f, 0.55, 0.03, 0.4, saw) for f in (146.8, 220)), "low", 1800)
+    write("battle_wave", mix(0.8 * wdrum, delay(wdrum, 0.17), delay(0.5 * whorn, 0.3)))
+    # Asleep (a skipped turn): two soft, falling, wavering tones.
+    def zz(f0, f1):
+        return sine(sweep(f0, f1, 0.22) * (1 + 0.01 * np.sin(2 * np.pi * 6 * t(0.22))), 0.22) * env(int(SR * 0.22), 0.04, 0.15)
+    write("status_sleep", np.concatenate([zz(660, 560), zz(560, 440)]), 0.45)
     print("wrote", len([f for f in os.listdir(OUT) if f.endswith('.ogg')]), "files to", OUT)
 
 

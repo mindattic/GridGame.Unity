@@ -178,11 +178,11 @@ namespace GridGame.App
                 case HastenedEvent hs: return HastenAnim(hs);
                 case TempoChangedEvent tc: return TempoAnim(tc);
                 case TurnStartedEvent ts: FlushTallies(); return TurnAnim(ts);
-                case TurnSkippedEvent sk: return FloatText(sk.UnitId, sk.Reason == "asleep" ? "Zzz…" : "…", new Color(0.7f, 0.8f, 1f), 0.35f);
+                case TurnSkippedEvent sk: App.Audio.Sfx(sk.Reason == "asleep" ? "status.sleep" : "ui.cancel", sk.Reason == "asleep" ? 0.8f : 0.5f); return FloatText(sk.UnitId, sk.Reason == "asleep" ? "Zzz…" : "…", new Color(0.7f, 0.8f, 1f), 0.35f);
 
                 case CastQueuedEvent cq: return CastQueuedAnim(cq);
                 case CastStaggeredEvent cs: return StaggerAnim(cs);
-                case CastCancelledEvent cc: castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", new Color(1f, 0.6f, 0.3f), 0.35f);
+                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", new Color(1f, 0.6f, 0.3f), 0.35f);
                 case ClutchEvent cl: return ClutchAnim(cl);
                 case AbilityResolvedEvent ar: FlushTallies(); return AbilityAnim(ar);
                 case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); return null;
@@ -195,7 +195,7 @@ namespace GridGame.App
                 case PickupExpiredEvent pe: return PickupExpiredAnim(pe);
 
                 case BuffAppliedEvent ba: return InflictAnim(ba);
-                case BuffRemovedEvent br: RefreshUnit(br.UnitId); return br.Reason == "steam" ? FloatText(br.UnitId, "Steam!", Palette.White, 0.25f) : null;
+                case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); return br.Reason == "steam" ? FloatText(br.UnitId, "Steam!", Palette.White, 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); return null;
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
@@ -610,6 +610,7 @@ namespace GridGame.App
             foreach (var id in new[] { rs.Attacker1, rs.Attacker2 })
                 if (board.Units.TryGetValue(id, out var v))
                     App.StartCoroutine(Tween.Run(Timing.Emphasis, k => v.Root.style.rotate = new Rotate(k >= 1f ? 0f : 360f * Tween.EaseInOut(k))));
+            App.Audio.Sfx("battle.whoosh", 0.7f, 1.2f); // GG-T465: the spin was silent
             yield return FloatText(rs.Attacker1, "Respite", new Color(0.8f, 0.95f, 1f), 0.45f, 56);
         }
 
@@ -1947,6 +1948,7 @@ namespace GridGame.App
             else if (wv.Wave > 0 || wv.TotalWaves > 1)
             {
                 ShowBanner($"Wave {wv.Wave + 1}/{wv.TotalWaves}");
+                App.Audio.Sfx("battle.wave", 0.8f); // GG-T465: a campaign wave had only the banner
                 var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.GoldLight, TypeScale.Title);
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
