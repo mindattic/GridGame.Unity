@@ -5,6 +5,7 @@
 - **The Choir.** The heirs of Halcyon's first singers, centred on the Choir's Cathedral.
   - **The rite:** they keep the Somnolith asleep with **the Lullaby**, which draws life from the faithful and the tithed and sings it upward to quiet the sleeper.
   - **The skim:** the Lullaby takes more than the Somnolith needs, and the Choir keeps the difference. Its elders live for centuries and glow faintly cyan, and the Cathedral's organ pipes are full of stolen life.
+  - **Who knows:** only the **Hierarch**, the Choir's leader, knows the whole truth, skim included. Everyone below believes sincerely.
   - **What they are:** they are both right and wrong. Without the Lullaby the Somnolith wakes, but their skim is why the sleep keeps thinning and why each year they must take more.
   - **Their colours:** their white robes and red crosses are the white-and-red law made into a uniform, worn by the people who decide whose light is taken.
 - **The Underspire.** A neon undercity that still draws moonlight to keep its lights on, and so keeps pulling the Somnolith down. Its gangs and techwear crews are the present-day overdraw.
@@ -12,7 +13,7 @@
 
 ## What the monsters are
 
-- **Blanked people:** porcelain knights, white-sheeted undead crowds, mannequins, and Echo and Mocking Echo. Their thread has been called home. Red seeping through cracks means a little light is still in there.
+- **Blanked people:** porcelain knights, white-sheeted undead crowds, mannequins, and Mocking Echoes, which can only turn others' moves back on them because they have no light of their own. Their thread has been called home. Red seeping through cracks means a little light is still in there.
 - **Fallen with the shell:** many-eyed white cyclopes, sandmaws and skelepedes, things that came down from the Somnolith's shell or out of it.
 - **Halcyon's failures:** purple prototypes, cyber-zombies, heavy troopers, mecha armour and tech gremlins. They are attempts to put moonlight into living bodies and machines.
 - **Too much red:** hellspawn, infernalists and the demon lord. They are what grows where the Somnolith's light takes hold too fast, or where a body takes more light than it can hold. The Choir's skimmed surplus has to go somewhere.

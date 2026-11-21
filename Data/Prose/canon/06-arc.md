@@ -15,7 +15,6 @@ The Somnolith is drawn larger in each region's backdrops as the chapters go on. 
 | 8 | Morrow's Shadow | Under the Somnolith, gravity fails and stone rises. There is no one to reason with, only the weight of it. |
 
 - **Threaded locations:** the Still and the Choir's Cathedral run through the arc. The Still is the heroes' origin. The Cathedral is the Choir's seat and the heart of the Lullaby, where its surplus is revealed.
-- **Morrow's Shadow:** "morrow" means tomorrow, and the region keeps its name as the place where tomorrow's shadow falls. It could also be renamed The Somnolith's Shadow (owner to decide).
 - **Postgame:** the postgame regions (Free Holds, Drowned Arks, Deep Shardfall, Under the Anchors) return to the world after the ending and must agree with the ending chosen.
 
 ## Endings
@@ -26,10 +25,11 @@ Because the light is shared, every ending costs everyone:
 - **Cut the lines.** Sever every tap and the pull stops. The Somnolith drifts back up. Without the circuit, people's borrowed light dims to what it was before the seam, so lives become shorter, quieter and plainer, but wholly their own. The world learns to live under an empty sky, as before.
 - **Let it arrive.** Stop the Lullaby and let the ten-thousand-year arrival finish. The Somnolith is something small, old and starved, caught mid-landing, whose light has been living in strangers ever since. No one knows if it is predator, protector or neither, and nothing in the game answers that before the choice. This is the gamble ending: people choose to stop holding it back without knowing what they are letting in. What follows must stay true to the mystery and must not reveal a tidy answer about what it is.
 
-## Open questions (owner to decide)
+## Decisions (owner, 2026-11-21)
 
-- Is there a fixed lead, or is the whole party the protagonist?
-- What is the tone: hopeful, bleak, or bittersweet?
-- Is one ending canon, or does the player choose?
-- Does any Choir leader know the full truth, including the skim?
-- Echo, a blanked figure, could join the party and gain colour as the story goes on. Their portrait is deliberately blank until then.
+- **The lead: the First Sleeper.** One fixed protagonist wakes first in the prologue and thaws the others. The story has their face and voice, and the summoned roster gathers around them. Name, look and class are still to be chosen.
+- **Tone: bittersweet.** Real losses and no clean wins, but warmth and hope between the heroes. Every ending costs something worth paying.
+- **Endings: the player chooses.** A final choice between Keep the Lullaby, Cut the lines and Let it arrive. The postgame regions reflect whichever was picked.
+- **The Choir's secret: only the Hierarch knows.** The Choir's rank and file are sincere believers. Only its leader, the Hierarch, knows everything: the moon is alive, the light in people is its light, and the Lullaby skims a surplus. The Hierarch is a human antagonist with a reason.
+- **Echo is cut.** The Echo hero class is removed (GG-T531). Its abilities stay in the game, and the blank silhouette was only a placeholder, not a story device.
+- **The final region keeps its name, Morrow's Shadow:** "morrow" means tomorrow, and it is where tomorrow's shadow falls.

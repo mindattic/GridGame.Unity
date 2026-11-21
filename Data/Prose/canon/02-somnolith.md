@@ -3,7 +3,7 @@
 - **The moon is not a moon.** It is a living thing that came in from the dark about ten thousand years ago. It was small then, drifting and possibly wounded.
 - **It was put to sleep.** The civilization that became Halcyon sang it into hibernation and held it in the sky.
 - **Its shell is debris.** Over ten millennia it turned and slept while dust, ice and stray stone settled on it, layer on layer, until it looked like a moon.
-- **Its name is a description.** The world calls it **the Somnolith** ("sleeping stone", from *somnus* + *lithos*) and believes the name is only poetry. It is a literal account of what it is: a sleeper wrapped in stone. In speech it is simply "the Somnolith", and commoners shorten it to "the Lith".
+- **Its name is a description.** The world calls it **the Somnolith** ("sleeping stone", from *somnus* + *lithos*) and believes the name is only poetry. It is a literal account of what it is: a sleeper wrapped in stone. It is always "the Somnolith" in full, never shortened or nicknamed.
 - **The model** is a dormant living body wearing a shell of rock: something alive that the sky disguised.
 - **It is a force of nature, not a character.** It never speaks, bargains or explains itself. It sleeps, stirs, draws and sheds the way a storm or a tide does. Every motive the player sees belongs to people. No text gives the Somnolith lines or a point of view.
 - **No one knows what it is for, and the story never says.** It never arrived, so no one has seen what it does on arrival. It might be a predator, a protector, a seed, or something with no human word. Every character's certainty is a guess:
