@@ -30130,5 +30130,145 @@
     "SnakeSegments": 0,
     "Brain": "Kiter",
     "Remains": "corpse"
+  },
+  {
+    "Id": "warden",
+    "Name": "Warden",
+    "Team": "Hero",
+    "Tags": [
+      "Humanoid"
+    ],
+    "Card": "Frontline [guardian]. Holds a comrade [Guarded] and keeps their light: wakes the [Asleep] and lifts debuffs.",
+    "Portrait": "Warden",
+    "Thumbnail": {
+      "Zoom": 2.4,
+      "X": 0.535,
+      "Y": 0.185
+    },
+    "Figure": {
+      "X": 0.1875,
+      "Y": 0,
+      "W": 0.624,
+      "H": 1
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "BaseStats": {
+      "Strength": 16,
+      "Vitality": 18,
+      "Agility": 10,
+      "Speed": 11,
+      "Stamina": 18,
+      "Intelligence": 8,
+      "Wisdom": 10,
+      "Luck": 11
+    },
+    "Growth": {
+      "Strength": 1.05,
+      "Vitality": 1,
+      "Agility": 0.55,
+      "Speed": 0.55,
+      "Stamina": 1,
+      "Intelligence": 0.4,
+      "Wisdom": 0.45,
+      "Luck": 0.45
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.37,
+          "Vitality": 0.35,
+          "Agility": 0.19,
+          "Speed": 0.19,
+          "Stamina": 0.35,
+          "Intelligence": 0.14,
+          "Wisdom": 0.16,
+          "Luck": 0.16
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.47,
+          "Vitality": 0.45,
+          "Agility": 0.25,
+          "Speed": 0.25,
+          "Stamina": 0.45,
+          "Intelligence": 0.18,
+          "Wisdom": 0.2,
+          "Luck": 0.2
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.63,
+          "Vitality": 0.6,
+          "Agility": 0.33,
+          "Speed": 0.33,
+          "Stamina": 0.6,
+          "Intelligence": 0.24,
+          "Wisdom": 0.27,
+          "Luck": 0.27
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.84,
+          "Vitality": 0.8,
+          "Agility": 0.44,
+          "Speed": 0.44,
+          "Stamina": 0.8,
+          "Intelligence": 0.32,
+          "Wisdom": 0.36,
+          "Luck": 0.36
+        }
+      }
+    ],
+    "Resistances": {},
+    "Abilities": [
+      "taunt",
+      "shield_bash",
+      "shove",
+      "antidote",
+      "warden_stand_guard",
+      "warden_reveille",
+      "warden_lantern",
+      "aegisguard_hands_of_mercy",
+      "warden_full_light",
+      "warden_last_watch"
+    ],
+    "DefaultLoadout": [
+      "taunt",
+      "warden_reveille",
+      "item:x_potion",
+      "warden_stand_guard",
+      "warden_lantern"
+    ],
+    "DropTable": null,
+    "MoveRange": 1,
+    "XpReward": 10,
+    "BossPhases": [],
+    "ChargeAbility": null,
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Role": "Tank",
+    "Support": {
+      "Effect": "Haste",
+      "Magnitude": 0.75,
+      "Target": "Chain",
+      "Range": 2,
+      "Label": "Reveille"
+    },
+    "HomeTree": "guardian",
+    "WeaponProficiencies": [
+      "Martial"
+    ],
+    "ArmorProficiency": "Heavy"
   }
 ]

@@ -933,6 +933,22 @@
         ]
       }
     },
+    "glossary:guarded": {
+      "key": "glossary:guarded",
+      "id": "glossary-guarded",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8e8a89214438fa9a729a1ab1e575a5fb0333eff06c52d97998e2fa744b8bccbc",
+      "about": [
+        "concept-guarded"
+      ],
+      "speakers": [],
+      "payload": {
+        "term": "Guarded",
+        "definition": "Under the Warden's watch: the next blow a foe lands falls on the Warden instead, while the Warden stands within 2 tiles."
+      }
+    },
     "glossary:guardian": {
       "key": "glossary:guardian",
       "id": "glossary-guardian",

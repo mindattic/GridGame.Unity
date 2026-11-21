@@ -309,7 +309,9 @@ def drag_tiles(*tiles, step=0.12):
     return call("drag", path=pts, step=step)
 
 
-STARTING_PARTY = ("paladin", "barbarian", "cleric")  # Meta.Progression.StartingRoster (StartingPartySize, GG-T118)
+# Meta.Progression.StartingRoster less its fixed lead: Warden is pre-locked in the first slot, the player picks the other
+# two (StartingPartySize 3, GG-T118, GG-T533).
+STARTING_PARTY = ("barbarian", "cleric")
 
 
 def _wait_screen(screen, timeout=6.0):
@@ -1228,7 +1230,7 @@ def story_recruits(run="recruits", speed=3):
     pick_party()
     shot("02-hub")
     party0 = list(call("state").get("save", {}).get("party") or [])
-    ok["starts_with_three"] = party0 == list(STARTING_PARTY)
+    ok["starts_with_three"] = party0 == ["warden", *STARTING_PARTY]  # the fixed lead first (GG-T533)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
     call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)

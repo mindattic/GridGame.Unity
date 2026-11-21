@@ -3911,6 +3911,22 @@
         "long": "Built on vows and iron patience, they stand where others fall back."
       }
     },
+    "class:warden": {
+      "key": "class:warden",
+      "id": "description-class-warden",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:42c8f260c0d191a7d62298c46f8fcea8a2dcc78dbd9362b7bd08f9a19622775e",
+      "about": [
+        "class-warden"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "Halcyon's last guard and the First Sleeper: wakes first, stands over the sleepers and keeps their light.",
+        "long": "Left on watch over the Still on the night of the Undertow, Warden woke twelve centuries late, still on duty, sworn to a city that no longer exists."
+      }
+    },
     "class:werewolf00": {
       "key": "class:werewolf00",
       "id": "description-class-werewolf00",

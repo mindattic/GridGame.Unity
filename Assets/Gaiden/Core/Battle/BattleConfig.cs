@@ -99,6 +99,8 @@ namespace GridGame.Core.Battle
         public static float PincerPushbackSeconds = 1.5f;
         /// <summary>Cap on one push, whatever its source.</summary>
         public static float PushbackMaxSeconds = 2f;
+        /// <summary>GG-T533: how far (tiles, Manhattan) a guardian may stand from the ally it guards and still take the blow.</summary>
+        public static int GuardReach = 2;
 
         // ── Buffs (§8.3) ────────────────────────────────────────────────────────────
         public const int BuffTickInterval = 10;            // one tick-unit step per 1.0 s of timeline

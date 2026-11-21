@@ -589,6 +589,7 @@ namespace GridGame.Meta
             // ContentDb (c == null), e.g. the version-only unit tests above that never touch gear/content.
             Notes.Clear();
             if (c != null) DropRetiredHeroes(s, c);
+            if (c != null) EnsureLead(s, c);
             if (c != null)
                 foreach (var h in s.Roster)
                 {
@@ -627,6 +628,31 @@ namespace GridGame.Meta
                 s.Party?.RemoveAll(id => string.Equals(id, h.ClassId, StringComparison.OrdinalIgnoreCase));
                 Notes.Add($"hero class '{h.ClassId ?? "(none)"}' no longer exists; removed from the roster, gear returned to the bag");
             }
+        }
+
+        /// <summary>GG-T533: every save holds the fixed lead (<see cref="Progression.LeadClass"/>), first in the party. A save
+        /// from before the Warden existed gets them on load the way a summon joins (the roster's average experience, trained
+        /// to that level, <see cref="Summon.Join"/>); they then go to the front of the party, and if that makes it more than
+        /// the cap the last member steps back to the reserve (no one leaves the roster). Idempotent; never throws on a bad
+        /// save (a content set without the class, or a roster that can't take them, is left as it is).</summary>
+        public static void EnsureLead(SaveData s, ContentDb c)
+        {
+            if (s == null || c == null || c.TryClass(Progression.LeadClass) == null) return;
+            try
+            {
+                s.Roster ??= new List<HeroSave>();
+                s.Party ??= new List<string>();
+                if (s.Hero(Progression.LeadClass) == null)
+                {
+                    Summon.Join(c, s, Progression.LeadClass);
+                    Notes.Add("Warden (the fixed lead, GG-T533) joined this save's roster");
+                }
+                if (s.Party.Count > 0 && Progression.IsLead(s.Party[0])) return;
+                s.Party.RemoveAll(Progression.IsLead);
+                s.Party.Insert(0, Progression.LeadClass);
+                while (s.Party.Count > Progression.MaxPartySize) s.Party.RemoveAt(s.Party.Count - 1);
+            }
+            catch (Exception e) { Notes.Add($"couldn't add the lead: {e.Message}"); }
         }
 
         /// <summary>GG-T52: if <paramref name="itemId"/> is equipped but <paramref name="h"/> isn't nominally

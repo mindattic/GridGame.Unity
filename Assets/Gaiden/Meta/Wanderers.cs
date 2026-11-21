@@ -72,7 +72,7 @@ namespace GridGame.Meta
             // A Camp NPC wears its hero class's face (the Alchemist), so a wanderer of that class would be the NPC's double.
             foreach (var npc in CampNpcs.All) taken.Add(npc);
             return c.Classes.Values
-                .Where(d => d.Team == Team.Hero && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && !taken.Contains(d.Id))
+                .Where(d => d.Team == Team.Hero && !Progression.IsLead(d.Id) && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && !taken.Contains(d.Id))
                 .Select(d => d.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
         }
 

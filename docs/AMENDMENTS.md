@@ -1383,3 +1383,14 @@ gold or with real money, right now lets make it 100 diamonds for $1.00 just to k
   (a free test stub in dev builds, "Store not connected yet" in release). The LuckyDiamond job is retired; an old save's
   pending one is refunded.
 - *Why:* the owner wants every Diamond price reachable by gold or money at one honest rate, Guild Wars style.
+
+## 2026-11-21 — Warden, the fixed lead (owner, GG-T533)
+
+Owner (canon decisions, 2026-11-21): the story's one fixed protagonist is Warden, the First Sleeper, a class of its own.
+
+- **Was:** every hero was optional; character select locked any three; the default start was Paladin, Barbarian, Cleric.
+- **Now ([BIBLE §25.11.2.2](BIBLE.md#251122-warden-the-fixed-lead-added-2026-11-21-owner-gg-t533)):** Warden is in every
+  save, first in the party, locked into character select's first slot (the player picks the other two), can't be moved to
+  the reserve and is in no recruit pool; an old save gains Warden on load. Their kit adds a small engine piece, [Guarded]
+  (`BuffDef.Intercepts`): the next foe's blow on the guarded ally falls on Warden within 2 tiles.
+- *Why:* the story has Warden's face and voice; the roster gathers around them.

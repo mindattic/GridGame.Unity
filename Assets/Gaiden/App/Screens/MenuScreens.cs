@@ -223,6 +223,9 @@ namespace GridGame.App
             this.auto = auto || DemoMode.Active;
         }
 
+        /// <summary>GG-T533: the fixed lead, already locked into the first slot (null when the content has no such class).</summary>
+        private string Lead => App.Content.TryClass(Progression.LeadClass) != null ? Progression.LeadClass : null;
+
         public override string Id => "charselect";
         public override string Music => music ??= App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.CharSelect) ?? "MinstrelGuild";
         private string music;
@@ -234,7 +237,13 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Choose Your Party", () => App.Router.Back(), col, out _);
-            var hint = Ui.Text($"Pick {PartySize} to set out with: tap a hero to preview, tap again to lock in. More join along the road.", "small dim", col);
+            // GG-T533: Warden, the First Sleeper, always leads; the player picks the rest.
+            if (Lead != null && !locked.Contains(Lead)) locked.Insert(0, Lead);
+            int picks = PartySize - (Lead != null ? 1 : 0);
+            string leadName = Lead != null ? App.Content.Class(Lead).Name : null;
+            var hint = Ui.Text(leadName != null
+                ? $"{leadName} leads. Pick {picks} more to set out with: tap a hero to preview, tap again to lock in. More join along the road."
+                : $"Pick {PartySize} to set out with: tap a hero to preview, tap again to lock in. More join along the road.", "small dim", col);
             hint.name = "charselect-hint";
             hint.style.unityTextAlign = TextAnchor.MiddleCenter;
             hint.style.whiteSpace = WhiteSpace.Normal; // the how-to lives here, not in the grid title (GG-T403)
@@ -380,7 +389,8 @@ namespace GridGame.App
                 desc.style.whiteSpace = WhiteSpace.Normal;
                 var sup = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(App.Content, def.Support), "small gold", info); // GG-T298
                 sup.style.whiteSpace = WhiteSpace.Normal; sup.style.marginTop = Space.S8;
-                if (locked.Contains(showId)) Ui.Text("Locked in", "small good", info).style.marginTop = Space.S8;
+                if (showId == Lead) Ui.Text("Your lead: always in the party", "small good", info).style.marginTop = Space.S8;
+                else if (locked.Contains(showId)) Ui.Text("Locked in", "small good", info).style.marginTop = Space.S8;
                 App.StartCoroutine(SlamIn(row));
             }
             else Ui.Text("Tap a hero below to preview them.", "h2 dim", revealPanel).style.unityTextAlign = TextAnchor.MiddleCenter;

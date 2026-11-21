@@ -538,6 +538,14 @@ namespace GridGame.Core.Battle
         private void Damage(Unit target, int amount, Unit source, HitKind hit, DamageType type, string note = null)
         {
             if (!target.Alive) return;
+            // GG-T533 Guard: a guarded unit's guardian steps in and takes the blow (its own reductions apply); the guard is spent.
+            if (hit != HitKind.Miss && amount > 0 && Guardian(target, source) is Unit guardian)
+            {
+                RemoveBuffsWhere(target, b => b.Def.Intercepts, "intercepted");
+                Announce("Guarded!", guardian.Id);
+                Damage(guardian, amount, source, hit, type, "Guarded");
+                return;
+            }
             float hpBefore = target.HpFraction;
             if (hit != HitKind.Miss && amount > 0 && IsArmored(target)) { amount = 0; note = "Armored!"; }
             // Always ReductionMultiplier passives (GG-T296): Tough Hide's physical blows land at 70%, on heroes too now.
@@ -574,6 +582,19 @@ namespace GridGame.Core.Battle
 
             StaggerCasts(target, source);
             if (Triggers.Foes(source, target)) RegionHit(target); // GG-T368: the rules' Hit hooks (a cracked floor cracks)
+        }
+
+        /// <summary>GG-T533: who takes a foe's blow aimed at <paramref name="target"/> — the unit that put an Intercepts buff
+        /// (Stand Guard's [Guarded]) on it, while that guardian is alive, free to move, not the target itself and within
+        /// <see cref="BattleConfig.GuardReach"/> tiles. Null when no guard holds (a source-less tick or blast is never guarded).</summary>
+        private Unit Guardian(Unit target, Unit source)
+        {
+            if (source == null || !Triggers.Foes(source, target)) return null;
+            var guard = target.Buffs.Find(b => b.Def.Intercepts);
+            if (guard == null || guard.SourceId < 0) return null;
+            var g = S.UnitById(guard.SourceId);
+            if (g == null || g == target || g == source || !g.Alive || g.IsImmobile || g.Team != target.Team) return null;
+            return g.DistanceTo(target) <= BattleConfig.GuardReach ? g : null;
         }
 
         /// <summary>Enemies whose death burst is still to go off (resolved after the blow that killed them).</summary>
@@ -764,7 +785,7 @@ namespace GridGame.Core.Battle
         // Buffs (§8)
         // ─────────────────────────────────────────────────────────────────────────────
 
-        private void ApplyBuff(Unit u, BuffDef def, int duration)
+        private void ApplyBuff(Unit u, BuffDef def, int duration, int sourceId = -1)
         {
             if (!u.Alive || def == null) return;
             duration = Math.Max(1, duration);
@@ -789,7 +810,7 @@ namespace GridGame.Core.Battle
                     default: u.Buffs.RemoveAll(b => b.Def.Id == def.Id); break; // Refresh (§8.6 default)
                 }
             }
-            u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true });
+            u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);

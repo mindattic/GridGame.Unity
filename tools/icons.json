@@ -265,6 +265,10 @@
   "blurred": [
    "lorc/sprint",
    "silver"
+  ],
+  "guarded": [
+   "lorc/magic-shield",
+   "teal"
   ]
  },
  "ability": {
@@ -1563,6 +1567,26 @@
   "charge_mockingecho_mock": [
    "lorc/mirror-mirror",
    "shadow"
+  ],
+  "warden_stand_guard": [
+   "lorc/magic-shield",
+   "teal"
+  ],
+  "warden_reveille": [
+   "lorc/bull-horns",
+   "gold"
+  ],
+  "warden_lantern": [
+   "lorc/lantern-flame",
+   "teal"
+  ],
+  "warden_full_light": [
+   "lorc/sun",
+   "holy"
+  ],
+  "warden_last_watch": [
+   "lorc/candle-light",
+   "gold"
   ]
  },
  "item": {

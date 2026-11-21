@@ -296,7 +296,7 @@ namespace GridGame.Core.Battle
                 {
                     int dur = buff.Duration;
                     if (buff.Id == "sleep" && t.HasBuff("warm")) dur = (int)Math.Ceiling(dur * BattleConfig.SleepWhenWarmMultiplier);
-                    ApplyBuff(t, buff, dur);
+                    ApplyBuff(t, buff, dur, caster.Id);
                 }
 
                 if (a.Tame > 0f && t.Alive && !friend) TryTame(caster, t, a); // the Tame effect (GG-T303), last: it changes sides

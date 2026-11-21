@@ -762,5 +762,11 @@
   {
     "Id": "countermarch",
     "Term": "Countermarch"
+  },
+  {
+    "Id": "guarded",
+    "Term": "Guarded",
+    "LinkKind": "Buff",
+    "LinkId": "guarded"
   }
 ]

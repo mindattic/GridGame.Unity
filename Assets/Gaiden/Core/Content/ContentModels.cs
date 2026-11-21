@@ -625,6 +625,10 @@ namespace GridGame.Core.Content
         public bool BlocksSpells;
         /// <summary>Taunt (§14.1.1): while any hero carries this, enemies may only pick taunting heroes.</summary>
         public bool Taunts;
+        /// <summary>Guard (GG-T533, the Warden's Stand Guard): while the bearer carries this, the next foe's blow or hostile
+        /// ability that lands on it is taken by whoever applied the buff (<c>BuffInstance.SourceId</c>) instead, if that
+        /// guardian is alive, free to move and within <c>BattleConfig.GuardReach</c> tiles. The buff is spent on that blow.</summary>
+        public bool Intercepts;
         /// <summary>Damage the bearer deals is scaled by this (War Cry / Might pickup → Empowered).</summary>
         public float OutgoingDamageMultiplier = 1f;
         public string OnExpireApply;

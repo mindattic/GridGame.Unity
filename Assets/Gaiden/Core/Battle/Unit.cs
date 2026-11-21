@@ -11,6 +11,8 @@ namespace GridGame.Core.Battle
         public int TickAccumulator;
         /// <summary>Set on application; a halting (Frozen) buff skips the turn boundary of the action that applied it.</summary>
         public bool Fresh;
+        /// <summary>The unit that applied it, or -1 (GG-T533: the guardian an Intercepts buff hands the blow to).</summary>
+        public int SourceId = -1;
 
         public BuffInstance Clone() => (BuffInstance)MemberwiseClone();
     }
