@@ -98,6 +98,31 @@ For day-to-day testing the `-Dev` APK is simpler: `adb install -r Build\Android\
 6. In-app products (`diamonds_100/500/1000/2500`, GG-T471) can only be created after a bundle with the billing
    permission has been uploaded to some track.
 
+## Crash and error reporting (GG-T484)
+
+What a release build does today, and what is still the owner's call:
+
+- **Native crashes and ANRs (Android): Google Play's Android vitals**, with no SDK. Play Console > Quality > Android
+  vitals lists crashes and "app not responding" freezes from every player who opted into usage sharing. The release
+  bundle embeds IL2CPP's native symbol table (`symbols` in the .aab), so the stacks there are readable without
+  uploading anything by hand.
+- **C# exceptions don't crash a Unity game** (Unity logs them and carries on), so vitals never sees them. Every one is
+  written, in every build, to the device's own error log by `CrashReporter` (`App/Services/CrashReporter.cs`):
+  `<persistentDataPath>/Diagnostics/errors.jsonl`, one JSON line per exception (time, app version, platform, OS,
+  device model, type, message, stack), rolled at 256 KB, at most 50 records a launch and 3 of the same exception.
+  Paths are scrubbed: the data folder becomes `<data>`, a user's home folder `<user>`, a profile name `<profile>`. No
+  save data, device id, account or IP is in it. On Android it's under
+  `/sdcard/Android/data/com.mindattic.gridgamegaiden/files/Diagnostics/` (`adb pull` it from a test phone).
+- **MindAttic.Telemetry** gets the same record as an `exception` event, but only where telemetry runs at all: the
+  editor and development builds (it is gated off in release builds and writes to the local disk, `R:\Telemetry`, so
+  it can't carry reports from players' phones). That is why it isn't the release sink.
+- **Not built: sending managed exceptions home from players' phones.** It needs a service and a privacy-policy line,
+  so it waits for the owner's pick. Options, cheapest first: (1) **Unity Cloud Diagnostics** (free tier; link the
+  project to a Unity Cloud project id, add `com.unity.services.cloud-diagnostics`); (2) **Firebase Crashlytics** (free;
+  needs a Firebase project and its `google-services.json`, adds the Firebase SDK); (3) **Sentry** (free tier, one DSN
+  string). Whichever is picked, `CrashReporter.Record` is the one place to forward from, and the Play data-safety form
+  (GG-T472) must then declare "crash logs" and "diagnostics", collected, not shared, not linked to the user.
+
 ## iOS (GG-T479, needs a Mac — the owner)
 
 Unity on Windows can export the iOS player (the iOSSupport module is installed) but only Xcode on a Mac can compile,

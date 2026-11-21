@@ -78,6 +78,7 @@ namespace GridGame.App
         private void Awake()
         {
             I = this;
+            CrashReporter.Install(); // GG-T484: first, so a boot failure is caught too
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
 
