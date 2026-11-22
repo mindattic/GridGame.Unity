@@ -104,7 +104,7 @@ namespace GridGame.Meta
             { "granite", "marble", "parchment", "linen", "brushed", "stars", "scanlines", "checker", "noise", "carbon" };
         public const string FilePrefix = "file:";
         /// <summary>Frame styles: the Theme.uss blocks (<c>.theme-&lt;style&gt;</c>) plus <c>classic</c>, the base look.</summary>
-        public static readonly string[] FrameStyles = { "classic", "granite", "chrono", "slate", "dark" };
+        public static readonly string[] FrameStyles = { "classic", "granite", "chrono", "slate", "dark", "manapunk" };
         public const int MaxStops = 4, MinStops = 2, MaxNameLength = 24, MaxCustom = 8;
 
         public static readonly JsonSerializerSettings Json = new JsonSerializerSettings

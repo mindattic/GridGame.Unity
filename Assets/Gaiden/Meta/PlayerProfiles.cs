@@ -89,6 +89,10 @@ namespace GridGame.Meta
             // was Chrono/Granite then) and keep it; from version 4 on, Classic is a deliberate pick again and sticks.
             if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) == 3 && d.MenuTheme == "Classic")
                 d.MenuTheme = SettingsSave.DefaultMenuTheme;
+            // GG-T678: Manapunk replaced Dark as the default. As with GG-T566, every version-4 write stamped 4 whatever the
+            // pick, so a version-3/4 file still on Dark moves to Manapunk once; from version 5 on, Dark is a deliberate pick.
+            if (g.ContainsKey(Keys.MenuTheme) && g.GetInt(Keys.LookVersion, 0) is 3 or 4 && d.MenuTheme == "Dark")
+                d.MenuTheme = SettingsSave.DefaultMenuTheme;
             d.Hyphenate = g.GetBool(Keys.Hyphenate, d.Hyphenate);
             d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
@@ -181,7 +185,7 @@ namespace GridGame.Meta
         }
 
         /// <summary>The look migration this build writes (<see cref="Keys.LookVersion"/>, GG-T385).</summary>
-        public const int CurrentLookVersion = 4; // GG-T566: 4 = Classic-at-3 moved to Dark
+        public const int CurrentLookVersion = 5; // GG-T566: 4 = Classic-at-3 moved to Dark; GG-T678: 5 = Dark-at-3/4 moved to Manapunk
 
         /// <summary>The dial's key inside the <c>difficulty</c> object (GG-T309).</summary>
         public const string DifficultyLevelKey = "level";

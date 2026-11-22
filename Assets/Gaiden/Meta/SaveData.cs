@@ -400,8 +400,8 @@ namespace GridGame.Meta
         /// <summary>Pick a target, then confirm (owner direction 2026-10-11). Off = commit on the pick, for veterans.</summary>
         public bool ConfirmActions = true;
         /// <summary>Menu window theme by name: a preset from Resources/UI/themes.json or one of <see cref="CustomThemes"/>
-        /// (GG-T407); unknown/missing names fall back to the default: Dark, GridGame.Gallery's own palette, since
-        /// 2026-11-21 (see <see cref="DefaultMenuTheme"/>).</summary>
+        /// (GG-T407); unknown/missing names fall back to the default: Manapunk since 2026-11-22 (GG-T678), Dark before
+        /// (see <see cref="DefaultMenuTheme"/>).</summary>
         public string MenuTheme = DefaultMenuTheme;
         /// <summary>The player's own window themes from Settings → Windows (GG-T407), at most
         /// <see cref="WindowThemeCatalog.MaxCustom"/>, each named apart from every preset.</summary>
@@ -415,7 +415,8 @@ namespace GridGame.Meta
         // Owner 2026-11-21: "we tried FF, then Chrono, then back to FF - none of these where right; but the colors
         // in all these apps is better" (GridGame.Gallery's own look, see Theme.uss's .theme-dark retint) - "Dark" is
         // the base default now, not "Classic" (the Final Fantasy blue it was reverted to under GG-T453).
-        public const string DefaultMenuTheme = "Dark", DefaultFontName = "Rounded";
+        // GG-T678 (owner 2026-11-22): "Manapunk", between Dark and the FF blue, is the default; Dark stays selectable.
+        public const string DefaultMenuTheme = "Manapunk", DefaultFontName = "Rounded";
         /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
         /// overlong words break at <see cref="Hyphenation"/> points).</summary>
         public bool Hyphenate;

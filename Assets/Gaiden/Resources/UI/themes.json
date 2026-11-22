@@ -1,5 +1,5 @@
 {
- "comment": "Menu window themes (GG-T407). gradient.mode: corners (TL,TR,BL,BR) | linear (angle 0-359, CSS: 180 = top to bottom; 2-4 stops at 0..1) | radial (stops centre->farthest corner, optional center [x,y]); grain 0..0.5. texture.id: granite marble parchment linen brushed stars scanlines checker noise carbon, or file:<name> for Resources/UI/WindowTextures/<name>.png; blend multiply|overlay|screen|soft-light|normal; opacity 0..1; scale 0.1..8. frame.style: classic|granite|chrono|slate|dark (Theme.uss blocks); frame.colors: 1 solid, 2 bevel (light, dark), 3 (light, mid, dark). text/accent: optional #RRGGBB. Validated by Meta/WindowThemeDef.cs; a bad theme is logged and skipped.",
+ "comment": "Menu window themes (GG-T407). gradient.mode: corners (TL,TR,BL,BR) | linear (angle 0-359, CSS: 180 = top to bottom; 2-4 stops at 0..1) | radial (stops centre->farthest corner, optional center [x,y]); grain 0..0.5. texture.id: granite marble parchment linen brushed stars scanlines checker noise carbon, or file:<name> for Resources/UI/WindowTextures/<name>.png; blend multiply|overlay|screen|soft-light|normal; opacity 0..1; scale 0.1..8. frame.style: classic|granite|chrono|slate|dark|manapunk (Theme.uss blocks); frame.colors: 1 solid, 2 bevel (light, dark), 3 (light, mid, dark). text/accent: optional #RRGGBB. Validated by Meta/WindowThemeDef.cs; a bad theme is logged and skipped.",
  "themes": [
   {
    "name": "Classic",
@@ -221,6 +221,35 @@
    "frame": {
     "style": "dark"
    }
+  },
+  {
+   "name": "Manapunk",
+   "gradient": {
+    "mode": "linear",
+    "angle": 180,
+    "stops": [
+     {
+      "at": 0,
+      "color": "#22203A"
+     },
+     {
+      "at": 1,
+      "color": "#100F1C"
+     }
+    ],
+    "grain": 0.02
+   },
+   "frame": {
+    "style": "manapunk"
+   },
+   "texture": {
+    "id": "noise",
+    "opacity": 0.3,
+    "blend": "soft-light",
+    "scale": 1.0
+   },
+   "text": "#E6E6EE",
+   "accent": "#7590C8"
   },
   {
    "name": "Royal",

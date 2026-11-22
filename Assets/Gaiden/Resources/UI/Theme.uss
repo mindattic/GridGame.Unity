@@ -717,6 +717,82 @@
 .theme-dark .card--selected { background-color: rgba(90, 143, 217, 0.14); }
 .theme-dark .thumb { border-width: 2px; border-radius: 8px; border-color: rgb(44, 44, 52); background-color: rgb(38, 38, 46); }
 
+/* ── Menu theme: Manapunk (GG-T678, BIBLE §11.5; owner 2026-11-22: "not steampunk but manapunk... like a high tech
+   facility but also old and abandoned"). Between Dark and Classic: Dark's flat, quiet surfaces, tinted toward the
+   Manalith's indigo. Smoked-glass panes (themes.json gradient #22203A→#100F1C, a faint soft-light wear), framed by
+   thin pewter rails (#60646F, darker #34363F underneath), with contained mana as the one accent: the window's top edge
+   is a lit conduit (#7590C8, sampled from the Manalith art), and so is the active tab and the primary button. Sizes
+   and radii are exactly .theme-dark's, so layout and the POL-C1 lint are untouched; only colour changes. Text #E6E6EE,
+   dim #A4A3BC (both above 6:1 on every pane). gold / good / bad / rarity stay semantic. */
+.theme-manapunk .stage { background-color: rgb(12, 12, 22); color: rgb(230, 230, 238); }
+.theme-manapunk .letterbox { background-color: rgb(7, 7, 14); }
+.theme-manapunk .stage-frame { border-width: 2px; border-color: rgb(96, 100, 111); border-radius: 12px; background-color: rgb(12, 12, 22); }
+
+.theme-manapunk .window { border-width: 2px; border-radius: 10px; border-color: rgb(96, 100, 111); border-bottom-color: rgb(52, 54, 63); border-top-color: rgb(117, 144, 200); }
+.theme-manapunk .window--plain { background-color: rgba(26, 25, 48, 0.94); }
+.theme-manapunk .window-title { color: rgb(230, 230, 238); }
+.theme-manapunk .window-sub { color: rgb(164, 163, 188); }
+.theme-manapunk .title { color: rgb(230, 230, 238); }
+.theme-manapunk .h1, .theme-manapunk .h2 { color: rgb(230, 230, 238); }
+.theme-manapunk .dim { color: rgb(164, 163, 188); }
+.theme-manapunk .shadow { text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+.theme-manapunk .stage, .theme-manapunk .depth-md, .theme-manapunk .title, .theme-manapunk .h1, .theme-manapunk .h2, .theme-manapunk .window-title,
+.theme-manapunk .header-title, .theme-manapunk .header-gold, .theme-manapunk .t-h3, .theme-manapunk .t-h2, .theme-manapunk .t-h1,
+.theme-manapunk .t-display, .theme-manapunk .depth-lg, .theme-manapunk .small, .theme-manapunk .tiny, .theme-manapunk .t-caption,
+.theme-manapunk .role-badge, .theme-manapunk .depth-sm { -unity-text-outline-width: 1px; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+
+.theme-manapunk .menu-row { border-radius: 6px; }
+.theme-manapunk .menu-row:hover { background-color: rgba(164, 163, 188, 0.06); }
+.theme-manapunk .menu-row--selected { background-color: rgba(117, 144, 200, 0.16); }
+.theme-manapunk .menu-row.is-pressed { background-color: rgba(117, 144, 200, 0.28); }
+
+/* Buttons: a capsule with a fine pewter rim on a dark lip; the primary holds contained mana. */
+.theme-manapunk .btn {
+    border-width: 2px;
+    border-bottom-width: 7px;
+    border-radius: 8px;
+    border-color: rgb(96, 100, 111);
+    border-bottom-color: rgb(14, 14, 24);
+    background-color: rgb(42, 40, 64);
+    color: rgb(230, 230, 238);
+}
+.theme-manapunk .btn:hover { background-color: rgb(52, 50, 78); border-color: rgb(117, 144, 200); border-bottom-color: rgb(14, 14, 24); }
+.theme-manapunk .btn--primary { background-color: rgb(117, 144, 200); border-color: rgb(172, 165, 211); border-bottom-color: rgb(65, 56, 111); color: rgb(12, 12, 22); }
+.theme-manapunk .btn--primary:hover { background-color: rgb(140, 164, 214); border-color: rgb(200, 196, 230); border-bottom-color: rgb(65, 56, 111); }
+.theme-manapunk .btn--danger { background-color: rgb(60, 26, 38); border-color: rgb(150, 54, 89); border-bottom-color: rgb(30, 12, 18); color: rgb(255, 176, 184); }
+.theme-manapunk .btn--danger:hover { background-color: rgb(80, 32, 48); border-color: rgb(193, 112, 140); border-bottom-color: rgb(30, 12, 18); }
+.theme-manapunk .btn.is-pressed { border-bottom-width: 2px; translate: 0 5px; background-color: rgb(30, 29, 48); }
+.theme-manapunk .btn--primary.is-pressed { background-color: rgb(84, 99, 170); }
+.theme-manapunk .btn--danger.is-pressed { background-color: rgb(44, 18, 28); }
+.theme-manapunk .btn--small { border-bottom-width: 5px; }
+.theme-manapunk .btn--small.is-pressed { border-bottom-width: 2px; translate: 0 3px; }
+
+.theme-manapunk .role-badge { background-color: rgb(12, 12, 22); border-width: 2px; border-radius: 6px; }
+
+.theme-manapunk .header { background-color: rgba(16, 15, 28, 0.94); border-bottom-width: 2px; border-color: rgb(117, 144, 200); }
+.theme-manapunk .header-title { color: rgb(230, 230, 238); }
+
+.theme-manapunk .tab {
+    border-width: 2px 2px 0 2px;
+    border-color: rgb(96, 100, 111);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: rgb(26, 25, 48);
+    color: rgb(164, 163, 188);
+}
+.theme-manapunk .tab--active { background-color: rgb(42, 40, 64); color: rgb(230, 230, 238); border-top-color: rgb(117, 144, 200); border-top-width: 4px; }
+
+.theme-manapunk .gauge { background-color: rgb(12, 12, 22); border-color: rgb(96, 100, 111); }
+
+.theme-manapunk .toast { background-color: rgba(26, 25, 48, 0.97); border-width: 2px; border-radius: 10px; border-color: rgb(96, 100, 111); border-top-color: rgb(117, 144, 200); color: rgb(230, 230, 238); }
+.theme-manapunk .veil { background-color: rgba(5, 5, 12, 0.72); }
+
+.theme-manapunk .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(117, 144, 200, 0.45); border-radius: 6px; }
+
+.theme-manapunk .card { background-color: rgba(164, 163, 188, 0.04); border-radius: 8px; }
+.theme-manapunk .card--selected { background-color: rgba(117, 144, 200, 0.16); }
+.theme-manapunk .thumb { border-width: 2px; border-radius: 8px; border-color: rgb(96, 100, 111); background-color: rgb(42, 40, 64); }
+
 /* ── Quest journal hand-in card (GG-T237): slides in rather than popping ── */
 .quest-turnin { transition-property: opacity, translate; transition-duration: 0.35s; transition-timing-function: ease-out-back; }
 .quest-turnin.is-hidden { opacity: 0; translate: 0 -40px; }
