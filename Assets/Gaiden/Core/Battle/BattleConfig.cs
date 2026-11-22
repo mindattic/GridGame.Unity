@@ -230,6 +230,22 @@ namespace GridGame.Core.Battle
         public const int CritCharge = 10;
         public const int InterruptCharge = 25;
         public const int AmplifierCharge = 30;
+        // ── Mana orbs (GG-T673, owner 2026-11-22: "make spells cost mana orbs that you regenerate with time and more so with
+        //    actions"; "you accumulate mana orbs by striking enemies, killing enemies, doing 'clutch' things") ─────────
+        /// <summary>The most orbs a spell may cost: "just enough to show as orbs on the icon itself" (the slot's pips).</summary>
+        public const int MaxSpellOrbCost = 4;
+        /// <summary>The most orbs a battle's row can hold (owned Mana Orbs are a progression item, GG-T677; the bank's
+        /// capacity comes from BattleSetup.OrbCapacity, defaulting to <see cref="ManaBankCapacity"/>).</summary>
+        public const int MaxOrbCapacity = 20;
+        /// <summary>Charge for a hero felling a real foe (not remains, eggs, corpses, snake segments or a revived foe).</summary>
+        public const int KillCharge = 15;
+        /// <summary>Charge per foe a hero's skill (not a spell, so mana never feeds itself) strikes for damage. Pincers keep
+        /// their own HP-scaled charge.</summary>
+        public const int StrikeCharge = 5;
+        /// <summary>Time regen: this much charge every <see cref="RegenIntervalSeconds"/> of the battle clock, about one orb
+        /// per 50 clock seconds at an empty bank (the fullness damping slows it as the row fills).</summary>
+        public const int RegenCharge = 10;
+        public const int RegenIntervalSeconds = 5;
 
         /// <summary>Global weight on enemy physical strikes (difficulty knob; tuned with BalanceReport after the brains, §14.6).</summary>
         public static float EnemyStrikeMultiplier = 1.2f;

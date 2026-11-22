@@ -350,6 +350,8 @@ namespace GridGame.Meta
         public int AutoSold;
         /// <summary>Aetherite Dust this victory paid (GG-T623), on top of <see cref="Gold"/>; 0 on anything short of victory.</summary>
         public int DustEarned;
+        /// <summary>GG-T673: mana orbs still in the row when the battle ended (GG-T676 converts them at stage end).</summary>
+        public int OrbsLeft;
         public bool CampaignComplete;
         /// <summary>Campaign milestone (GG-T301): the theme whose first full clear this was, and the reward it paid (also in <see cref="Items"/>).</summary>
         public string Milestone;
@@ -726,6 +728,7 @@ namespace GridGame.Meta
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
                 Difficulty = battle.Difficulty,
+                OrbsLeft = battle.Bank?.Count ?? 0,
             };
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);

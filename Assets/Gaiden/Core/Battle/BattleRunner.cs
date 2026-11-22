@@ -506,6 +506,8 @@ namespace GridGame.Core.Battle
         /// source, so the fullness damping applies here; explicit grants (items, pickups, steal, gear) call MintOrb.</summary>
         private void AddCharge(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
         {
+            // GG-T673: once the row is full, earning stops until a spell spends an orb (the ring doesn't keep filling).
+            if (S.Bank.IsFull) return;
             amount = BattleEngine.DampedCharge(S, amount);
             if (amount <= 0) return;
             S.ManaCharge += amount;
@@ -653,6 +655,10 @@ namespace GridGame.Core.Battle
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
             Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
             NoteFoeDeathForClutch(u, killer, u.AlreadyLooted); // GG-T571: LastStand, HazardKill, the Finisher candidate
+            // GG-T673: felling a real foe earns mana.
+            if (BattleConfig.KillCharge > 0 && u.Team == Team.Enemy && killer != null && killer.IsHero
+                && !u.IsCorpse && !u.IsSnakeSegment && !u.IsRemains && !u.IsEgg && !u.AlreadyLooted)
+                AddCharge(BattleConfig.KillCharge, killer.Id, "kill");
             if (u.IsCorpse) { Announce("Cleared away", u.Id); return; }
             if (u.IsRemains) { Announce("Laid to rest", u.Id); return; }
             // A fallen guest is down, not gone (GG-T114): revive them and they can still be recruited.

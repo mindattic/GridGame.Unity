@@ -266,6 +266,9 @@ namespace GridGame.Core.Battle
                     // Physical skills (Cleave, Shield Bash) meet the plate like any blow; spells go around it (§13.5).
                     if (a.DamageType == DamageType.Physical && PlateAbsorbs(t, caster, dmg)) continue;
                     Damage(t, dmg, caster, crit ? HitKind.Critical : HitKind.Normal, a.DamageType, wet ? "Shock!" : null);
+                    // GG-T673: a hero's skill striking a foe earns mana (spells don't, so mana never feeds itself).
+                    if (dmg > 0 && caster.IsHero && t.Team == Team.Enemy && a.Kind == AbilityKind.Skill && BattleConfig.StrikeCharge > 0)
+                        AddCharge(BattleConfig.StrikeCharge, caster.Id, "strike");
                     if (crit && caster.IsHero) AddCharge(BattleConfig.CritCharge, caster.Id, "critical");
                     if (crit && caster.IsHero && caster.IsBlinded) Clutch(caster, ClutchKind.BlindCrit); // GG-T566
                     if (t.Alive && a.DamageType == DamageType.Lightning && S.Rng.Chance(BattleConfig.LightningBlindChance))

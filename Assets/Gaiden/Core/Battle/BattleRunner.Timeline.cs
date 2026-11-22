@@ -66,6 +66,9 @@ namespace GridGame.Core.Battle
             enemyTurnResolved = false;
             S.Clock++;
             ticksSinceReport++;
+            // GG-T673: the orbs refill slowly with time on the battle clock (one charge step every few clock seconds).
+            if (BattleConfig.RegenCharge > 0 && S.Clock % (BattleConfig.RegenIntervalSeconds * BattleConfig.TicksPerSecond) == 0)
+                AddCharge(BattleConfig.RegenCharge, -1, "regen");
 
             if (S.PendingSpawns.Count > 0) { BringReinforcementsForward(); ResolvePendingSpawns(); CheckTilesStrict("reinforcements"); }
             if (S.IsOver) return;

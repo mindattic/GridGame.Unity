@@ -55,6 +55,9 @@ namespace GridGame.Core.Battle
         public List<HeroSpec> Party = new List<HeroSpec>();
         public int Seed = 1;
         public int UnlockedSlots = 2;
+        /// <summary>GG-T673: how many mana orbs this battle's row holds (the party's owned Mana Orbs, GG-T677 sets it from
+        /// the save). 0 = <see cref="ManaBank.DefaultCapacity"/>; clamped to 1..<see cref="BattleConfig.MaxOrbCapacity"/>.</summary>
+        public int OrbCapacity;
         /// <summary>Enemy levels are floored to this (campaign difficulty curve, §22.3).</summary>
         public int RecommendedLevel = 1;
         /// <summary>New Game+ cycle (0 = first playthrough): enemies +10 levels and coins +50% per cycle.</summary>

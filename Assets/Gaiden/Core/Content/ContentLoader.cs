@@ -184,8 +184,9 @@ namespace GridGame.Core.Content
                     p.Add($"ability {a.Id}: DrainsOrbs is an enemy charge's siphon; name it charge_… (GG-T332)");
                 // GG-T373: a spell has to be payable from a full base bank (bank gear only adds headroom), and skills,
                 // passives and items never spend orbs.
-                if (a.Cost < 0 || a.Cost > Battle.ManaBank.DefaultCapacity)
-                    p.Add($"ability {a.Id}: Cost {a.Cost} outside 0..{Battle.ManaBank.DefaultCapacity} orbs, the base bank (GG-T373)");
+                // GG-T673: a spell costs at most MaxSpellOrbCost orbs, few enough to show as pips on its slot.
+                if (a.Cost < 0 || a.Cost > Battle.BattleConfig.MaxSpellOrbCost)
+                    p.Add($"ability {a.Id}: Cost {a.Cost} outside 0..{Battle.BattleConfig.MaxSpellOrbCost} orbs (GG-T373, GG-T673)");
                 else if (a.Cost > 0 && a.Kind != AbilityKind.Spell)
                     p.Add($"ability {a.Id}: only a Spell spends orbs; a {a.Kind} has Cost 0 (GG-T373)");
                 ValidateTrigger(db, a, p);

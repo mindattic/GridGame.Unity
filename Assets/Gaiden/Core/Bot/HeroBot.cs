@@ -873,8 +873,9 @@ namespace GridGame.Core.Bot
             return 1.5f * (1f - 0.8f * fill);
         }
 
-        /// <summary>GG-T373: a spell of at least this many orbs is one the party saves for (the 5–12 band of the cost curve).</summary>
-        public const int SaveForCost = 5;
+        /// <summary>GG-T373: a spell of at least this many orbs is one the party saves for. GG-T673: costs now run 1..4, and
+        /// the old 5–12 band maps to the top tier.</summary>
+        public const int SaveForCost = Battle.BattleConfig.MaxSpellOrbCost;
         /// <summary>GG-T373: extra price per orb of a cheaper spell while saving — the smart bot saves harder than the casual one.</summary>
         public const float SaveSurchargeSmart = 0.6f, SaveSurchargeCasual = 0.3f;
 

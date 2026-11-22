@@ -41,7 +41,11 @@ namespace GridGame.Core.Battle
                 if (spec.Domesticated) Domesticate(hero); // a domesticated monster fights on its own AI (GG-T303)
                 i++;
             }
-            if (pendingBankBonus > 0) S.Bank = new ManaBank(ManaBank.DefaultCapacity + System.Math.Min(BattleConfig.MaxBankCapacityBonus, pendingBankBonus));
+            // GG-T673: the battle's orb capacity comes from the setup (owned Mana Orbs, GG-T677), defaulting to the old fixed
+            // bank; bank gear adds its bonus on top; never above MaxOrbCapacity.
+            int baseOrbs = setup.OrbCapacity > 0 ? setup.OrbCapacity : ManaBank.DefaultCapacity;
+            int orbCap = System.Math.Max(1, System.Math.Min(BattleConfig.MaxOrbCapacity, baseOrbs + System.Math.Min(BattleConfig.MaxBankCapacityBonus, pendingBankBonus)));
+            if (orbCap != S.Bank.Capacity) S.Bank = new ManaBank(orbCap);
             ApplyBattleStartOrbs();
             var prot = C.TryBuff(BattleConfig.ShieldBuffId);
             if (prot != null)

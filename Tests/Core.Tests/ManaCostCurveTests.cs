@@ -43,7 +43,10 @@ namespace GridGame.Tests
             return v;
         }
 
-        public static int Guide(AbilityDef a) => Math.Max(1, Math.Min(ManaBank.DefaultCapacity, (int)Math.Round(0.9 * Math.Pow(GuideRaw(a), 1.5))));
+        public static int Guide(AbilityDef a) => OrbTier(Math.Max(1, Math.Min(ManaBank.DefaultCapacity, (int)Math.Round(0.9 * Math.Pow(GuideRaw(a), 1.5)))));
+
+        /// <summary>GG-T673: the 1..12 curve folded onto the 1..4 orb costs (1, 2, 3-4, 5+), the same map the content got.</summary>
+        public static int OrbTier(int cost) => cost <= 2 ? cost : cost <= 4 ? 3 : BattleConfig.MaxSpellOrbCost;
 
         private static float Area(AbilityDef a)
         {
@@ -88,7 +91,7 @@ namespace GridGame.Tests
         {
             var costs = Real.Abilities.Values.Where(HeroSpell).Select(a => a.Cost).ToList();
             Assert.That(costs.Count(c => c <= 2), Is.GreaterThanOrEqualTo(10), "bread-and-butter spells stay cheap");
-            Assert.That(costs.Max(), Is.GreaterThanOrEqualTo(8), "an ultimate takes most of the bank");
+            Assert.That(costs.Max(), Is.EqualTo(BattleConfig.MaxSpellOrbCost), "an ultimate costs the top tier (GG-T673)");
             Assert.That(costs.Count(c => c >= HeroBot.SaveForCost), Is.GreaterThanOrEqualTo(5), "several spells are worth saving for");
         }
 
@@ -124,10 +127,10 @@ namespace GridGame.Tests
         public void Validate_refuses_a_spell_dearer_than_the_bank_and_a_skill_that_spends_orbs()
         {
             var db = FreshReal();
-            db.Abilities["meteor"].Cost = ManaBank.DefaultCapacity + 1;
+            db.Abilities["meteor"].Cost = BattleConfig.MaxSpellOrbCost + 1;
             db.Abilities["shield_bash"].Cost = 1;
             var problems = string.Join("\n", ContentLoader.Validate(db, _ => true));
-            Assert.That(problems, Does.Contain("ability meteor: Cost 13"));
+            Assert.That(problems, Does.Contain($"ability meteor: Cost {BattleConfig.MaxSpellOrbCost + 1}"));
             Assert.That(problems, Does.Contain("ability shield_bash: only a Spell spends orbs"));
         }
 
@@ -143,7 +146,7 @@ namespace GridGame.Tests
         private static ContentDb SaverDb()
         {
             var db = Mini();
-            db.Abilities["nova"] = new AbilityDef { Id = "nova", Name = "Nova", Kind = AbilityKind.Spell, Cost = 6, BaseDamage = 20, DamageType = DamageType.Fire, Shape = TargetShape.Square, Radius = 2, Mode = TargetMode.PickTile, Filter = TargetFilter.EnemyOnly };
+            db.Abilities["nova"] = new AbilityDef { Id = "nova", Name = "Nova", Kind = AbilityKind.Spell, Cost = 4, BaseDamage = 20, DamageType = DamageType.Fire, Shape = TargetShape.Square, Radius = 2, Mode = TargetMode.PickTile, Filter = TargetFilter.EnemyOnly };
             return db;
         }
 
@@ -156,8 +159,8 @@ namespace GridGame.Tests
             m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             m.Bar[1] = new AbilitySlot { AbilityId = "nova" };
             s.Bank.Add(2);
-            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(6), "a 6-orb spell on the bar and 2 in the bank");
-            s.Bank.Add(4);
+            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(4), "a 4-orb spell on the bar and 2 in the bank");
+            s.Bank.Add(2);
             Assert.That(HeroBot.SavingFor(s), Is.EqualTo(0), "the bank holds it: nothing left to save for");
         }
 
