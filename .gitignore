@@ -46,3 +46,4 @@ android-signing.env
 *.keystore
 *.jks
 /_male_variants/
+/_wiki/
