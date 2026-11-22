@@ -54,6 +54,7 @@ namespace GridGame.Core.Content
                 if (r == null) { p.Add($"sky: region '{kv.Key}' is null"); continue; }
                 if (r.Size <= 0f || r.Size > 1.5f) p.Add($"sky: region '{kv.Key}' Size {r.Size} must be in (0, 1.5]");
                 if (r.X < 0f || r.X > 1f || r.Y < 0f || r.Y > 1.2f) p.Add($"sky: region '{kv.Key}' X/Y out of range (X 0-1, Y 0-1.2)");
+                if (r.BoardScrim < 0f || r.BoardScrim > 0.8f) p.Add($"sky: region '{kv.Key}' BoardScrim {r.BoardScrim} must be in [0, 0.8]");
             }
             foreach (var kv in db.BackdropLayers)
                 if (kv.Value != null && kv.Value.Sky && (kv.Value.SkyBottom <= 0f || kv.Value.SkyBottom > 1f))
@@ -83,6 +84,10 @@ namespace GridGame.Core.Content
         public float X;
         public float Y;
         public float Rotation;
+        /// <summary>GG-T665: opacity 0-1 of a dark backing behind the battle board in this region, so the grid and danger
+        /// tiles read where a large Somnolith sits behind the board. 0 (the default) keeps the board see-through
+        /// (owner direction 2026-10-11: the stage background reads clearly through the board).</summary>
+        public float BoardScrim;
     }
 
     /// <summary>Fragments of the Somnolith dragged slowly across the sky (cosmetic, not deterministic).</summary>

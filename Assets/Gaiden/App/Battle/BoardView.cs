@@ -459,6 +459,9 @@ namespace GridGame.App
             Root.style.height = Tile * BattleConfig.Rows;
             parent.Add(Root);
 
+            // GG-T665: under everything, a dark backing that is off unless the region's sky asks for it (SetScrim).
+            scrim = Layer("scrim");
+            scrim.style.backgroundColor = Palette.Ink.WithA(0f);
             // Order matters: highlights and lines draw OVER the units so targets and pincer previews read clearly.
             TileLayer = Layer("tiles");
             // Under the units: the streak trails behind the moving token (GG-T219).
@@ -502,6 +505,11 @@ namespace GridGame.App
                     marks[x, y] = m;
                 }
         }
+
+        private readonly VisualElement scrim;
+
+        /// <summary>GG-T665: darkens the board's own rect behind the tiles to <paramref name="opacity"/> (0 = see-through).</summary>
+        public void SetScrim(float opacity) => scrim.style.backgroundColor = Palette.Ink.WithA(Mathf.Clamp01(opacity));
 
         private VisualElement Layer(string name)
         {
