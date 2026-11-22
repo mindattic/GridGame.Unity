@@ -337,6 +337,39 @@ namespace GridGame.EditorTools
             if (Application.isBatchMode) EditorApplication.Exit(0);
         }
 
+        /// <summary>GG-T680: renders the Manalith rig at t = 20 s (fixed 1/30 s steps from t = 0, debris seed 1337) on
+        /// black into docs/images/manalith-unity-00.png, the frame compared with SpaceGod's (docs/MANALITH_VISUAL_SPEC.md).
+        /// Needs graphics: run without -nographics.</summary>
+        public static void ManalithShot()
+        {
+            EnsureScene();
+            int code = 1;
+            try
+            {
+                var rt = GridGame.App.ManalithRig.RenderNow(20f, 1f / 30f, Color.black);
+                if (rt == null) Debug.LogError("[Build] Manalith model or shader missing");
+                else
+                {
+                    var ldr = RenderTexture.GetTemporary(rt.width, rt.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                    Graphics.Blit(rt, ldr);
+                    var prev = RenderTexture.active;
+                    RenderTexture.active = ldr;
+                    var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+                    tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                    tex.Apply();
+                    RenderTexture.active = prev;
+                    RenderTexture.ReleaseTemporary(ldr);
+                    var path = System.IO.Path.GetFullPath("docs/images/manalith-unity-00.png");
+                    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+                    System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
+                    Debug.Log("[Build] Manalith shot -> " + path);
+                    code = 0;
+                }
+            }
+            catch (System.Exception e) { Debug.LogError("[Build] Manalith shot failed: " + e); }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+
         /// <summary>Compile-only check for CI/agents: succeeds when scripts compiled (we got here at all).</summary>
         public static void CompileCheck()
         {
@@ -361,7 +394,25 @@ namespace GridGame.EditorTools
     {
         /// <summary>Bumped whenever the rules below change, so Unity re-imports everything they touch on its own
         /// (3: GG-T499 Android overrides; 4: GG-T576 sky plates and sky bodies; 5: GG-T486 app icons).</summary>
-        public override uint GetVersion() => 5;
+        public override uint GetVersion() => 6;
+
+        private const string ManalithFolder = "Assets/Gaiden/Resources/Manalith/";
+
+        /// <summary>GG-T679: the Manalith model brings only its mesh; ManalithRig builds the material in code.</summary>
+        private void OnPreprocessModel()
+        {
+            if (!assetPath.StartsWith(ManalithFolder)) return;
+            var mi = (ModelImporter)assetImporter;
+            mi.materialImportMode = ModelImporterMaterialImportMode.None;
+            mi.animationType = ModelImporterAnimationType.None;
+            mi.importAnimation = false;
+            mi.importCameras = false;
+            mi.importLights = false;
+            mi.isReadable = false;
+            mi.importNormals = ModelImporterNormals.Import;
+            mi.importTangents = ModelImporterTangents.CalculateMikk;
+            mi.meshCompression = ModelImporterMeshCompression.Medium;
+        }
 
         private void OnPreprocessTexture()
         {
@@ -375,6 +426,21 @@ namespace GridGame.EditorTools
                 icon.npotScale = TextureImporterNPOTScale.None;
                 icon.maxTextureSize = 2048;
                 icon.textureCompression = TextureImporterCompression.Uncompressed;
+                return;
+            }
+            if (assetPath.StartsWith(ManalithFolder))
+            {
+                // GG-T679: the satellite's PBR maps are sampled in 3D at many sizes, so mips and repeat; the normal and
+                // packed metallic/smoothness maps are data, not colour.
+                var m = (TextureImporter)assetImporter;
+                m.textureType = assetPath.Contains("-normal-") ? TextureImporterType.NormalMap : TextureImporterType.Default;
+                m.sRGBTexture = !assetPath.Contains("-normal-") && !assetPath.Contains("-metallic-");
+                m.mipmapEnabled = true;
+                m.alphaIsTransparency = false;
+                m.wrapMode = TextureWrapMode.Repeat;
+                m.filterMode = FilterMode.Trilinear;
+                m.maxTextureSize = 1024;
+                m.textureCompression = TextureImporterCompression.CompressedHQ;
                 return;
             }
             if (!assetPath.StartsWith("Assets/Gaiden/Resources/")) return;

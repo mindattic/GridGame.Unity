@@ -85,7 +85,7 @@ namespace GridGame.App
         private readonly SkyRegionDef region;
         private readonly BackdropLayerDef layer;
         private readonly float aspect, moonAspect, somAspect, start;
-        private readonly bool still;
+        private readonly bool still, live;
         private Color tint = Color.white;
         private float w, h, skyBottom, refW;
         private float somX, somY, somR, rainTop;
@@ -108,9 +108,20 @@ namespace GridGame.App
             var rnd = new System.Random(); // cosmetic: a fresh wake and a fresh roll for the Aetherain every time
             wake = def.DebrisFor(region);
             BuildDebris(rnd); // behind the body: it sits in front of its own wake
-            var somTex = Load(def.Somnolith?.Image);
-            som = somTex != null ? Layer(somTex) : null;
-            somAspect = somTex != null ? (float)somTex.height / somTex.width : 1f;
+            // GG-T679: the Manalith is the live 3D satellite (ManalithRig) when its model loads, else the flat art.
+            if (!string.IsNullOrEmpty(def.Somnolith?.Model))
+            {
+                som = Layer(null);
+                if (ManalithRig.Attach(som)) live = true;
+                else { bg.Remove(som); som = null; }
+            }
+            if (som == null)
+            {
+                var somTex = Load(def.Somnolith?.Image);
+                som = somTex != null ? Layer(somTex) : null;
+                somAspect = somTex != null ? (float)somTex.height / somTex.width : 1f;
+            }
+            else somAspect = 1f;
             if (moon != null) moon.style.opacity = def.Moon.Opacity;
             if (som != null) som.style.opacity = def.Somnolith.Opacity;
             BuildShards();
@@ -254,7 +265,10 @@ namespace GridGame.App
             skyBottom = Mathf.Clamp(top + layer.SkyBottom * coverH, h * 0.15f, h);
             refW = Mathf.Min(w, 0.6f * h);
             if (moon != null) Place(moon, def.Moon.Size, moonAspect, def.Moon.X, def.Moon.Y, def.Moon.Rotation);
-            if (som != null) Place(som, region.Size, somAspect, region.X, region.Y, region.Rotation);
+            // The live satellite fills FillHeight of its square frame, so the frame is enlarged to keep the body the
+            // size the flat art was; it tumbles on its own, so no fixed rotation.
+            if (som != null && live) Place(som, region.Size / ManalithRig.FillHeight, 1f, region.X, region.Y, 0f);
+            else if (som != null) Place(som, region.Size, somAspect, region.X, region.Y, region.Rotation);
             foreach (var sh in shards)
             {
                 float sw = sh.Size * refW;

@@ -121,6 +121,8 @@ namespace GridGame.Core.Content
     public sealed class SkyBodyDef
     {
         public string Image;
+        /// <summary>GG-T679: a 3D model drawn live in place of <see cref="Image"/> (the Image stays the fallback).</summary>
+        public string Model;
         /// <summary>True while the image is stand-in art awaiting the owner's.</summary>
         public bool Placeholder;
         public float Size = 0.1f;
