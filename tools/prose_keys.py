@@ -33,6 +33,8 @@
     bark          bark:merc/<classId>/renewal      bark-merc-<classId>-renewal          mercenaries.json Renewal
     bark          bark:bossphase/<classId>/<n>     bark-bossphase-<classId>-<n>         classes.json BossPhases[n].Announce
     bark          bark:surprise/<stageId>/<wave>   bark-surprise-<stageId>-<wave>       stages.json Waves[wave].SurpriseLine
+    bark          bark:shop/<npcId>/<occasion>     bark-shop-<npcId>-<occasion>         SHOP_BARKS (GG-T570: the Aetherist's
+                                                                                        refinery; DialogueDef.ShopBarks)
 
 Stays in the game (UI and mechanics, not story): names (class, item, ability, theme, stage, quest-board labels;
 Prose holds them as entity names, the game owns the id), ability Description and Trigger.Callout (mechanical floats),
@@ -62,8 +64,13 @@ NPCS = {
     "alchemist": "Alchemist",
     "enchantress": "Enchantress",
     "merchant": "Lantern Merchant",
+    "aetherist": "Aetherist",  # GG-T570: the retired hero class, now the Aetherite refinery's keeper
 }
 NPC_BY_NAME = {v: k for k, v in NPCS.items()}
+
+# GG-T570: a Camp shop keeper's bark occasions, "<npcId>/<occasion>" -> key bark:shop/<npcId>/<occasion>. Mirrors the
+# game's DialogueDef.ShopBarks.
+SHOP_BARKS = ("aetherist/greet", "aetherist/refine", "aetherist/short", "aetherist/leave")
 
 # Choice tags the game's dialogue logic keys on (prose.config.json "tags"):
 #   right-answer  the answer the game rewards: a wanderer reply that wins its exchange in the game of wits (Wit +1,
@@ -176,6 +183,8 @@ def game_keys(content: dict) -> dict:
                     keys["skillnode:" + n["Id"]] = "description"
     for npc in NPCS:
         keys["npc:" + npc] = "description"
+    for b in SHOP_BARKS:  # GG-T570
+        keys["bark:shop/" + b] = "bark"
     for key in description_keys(content).values():  # GG-T374: places, factions, crew
         keys[key] = "description"
     for r in content.get("regionrules") or []:  # GG-T359: a region rule's name and description

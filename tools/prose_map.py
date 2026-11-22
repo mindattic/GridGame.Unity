@@ -26,8 +26,9 @@ description text is `about` it, the way a class's is; main() refuses to write a 
 No balance numbers cross: no stats, levels, prices, rewards, waves or counts. Summaries are placeholder canon taken
 from the gameplay records' own words; Prose owns the words from here on.
 
-The universe record (setting, logline, rules) is the owner's DECIDED premise of 2026-11-07, "A War in Heaven" (v4),
-which supersedes docs/STORY.md's retired "Under Morrow" (v1). Prose holds the story; this is only its seed.
+The universe record (setting, logline, rules) is a short seed of the owner's canon of 2026-11-21, "the Somnolith"
+(amended by GG-T577), which retires "Under Morrow" and "A War in Heaven". The full canon is Prose's UniverseCanon
+sections for `gridgame` (staging copy Data/Prose/canon/); this is only its seed.
 
 Standard library only.
 """
@@ -51,28 +52,26 @@ MAPPER_VERSION = "1"
 UNIVERSE_RECORD = {
     "id": K.UNIVERSE,
     "name": "GridGame",
-    "tagline": "A War in Heaven",
+    "tagline": "The Somnolith",
     "setting": (
-        "A world held at the edge against Morrow, the hungry thing from Outside, by the Bright Host: an army of "
-        "celestial beings, demigods, saints and legendary heroes, winged and armoured in light. The Host burns essence, "
-        "the living light in people and places, and the Pale Concord tithes it from every hold in white domes called "
-        "Stills while the Choir sings it skyward. Every tithe shortens a life and dims a place; once-splendid magical "
-        "cities are cold ruins where the last magic hides."
+        "An ancient thing hangs in the sky beside the Moon. It is not a moon: long ago it was stopped on its way in and "
+        "left there, orbiting the world, and now it is coming closer. Everyone calls it the Somnolith. Its aether is "
+        "also the life in every person. The Choir keeps it asleep with the Lullaby, a rite that tithes people's aether, "
+        "and keeps a share for its leader, the Hierarch. Halcyon, the city that first stopped it, fell 1,200 years ago."
     ),
     "logline": (
-        "The war in heaven is being lost: celestials fall as streaks of light, their bodies rain down, and Morrow's "
-        "beasts come through the breaches. A crew of tithe-runaways from Saltmoss, in a stolen Concord caravan, learn "
-        "that the Hierarch on the Concord's throne is a celestial deserter drinking the tithe meant for the war, and "
-        "that essence given freely burns brighter than essence taken."
+        "The Warden, the Last Sleeper, wakes in Halcyon's old vault 1,200 years too late and must fix what Halcyon left "
+        "broken. With present-day people who stole the Choir's tithe caravan on tithe day, the Warden follows the road "
+        "to the Choir's Cathedral, where the Hierarch drinks the skimmed aether, while the Somnolith fills more of the "
+        "sky every chapter."
     ),
     "rules": [
-        "Essence is the living light in people and places; magic is made of it and celestials burn it to fight.",
-        "Every tithe shortens a life and dims a place; drained places go cold and their magic hides in the ruins.",
-        "The Host is failing: there is not enough essence left, and its defenders die, retreat or are corrupted.",
-        "Where a defender falls the line breaches, and Morrow's beasts come through the holes.",
-        "An Anchor is a siege-gate where celestial power touches ground; when its angel dies the gate goes dark.",
-        "Essence given freely burns brighter than essence taken; where it is given back, the Bloom grows.",
-        "The moons in the sky are only sky: no falling moon, no gravity, no stars as plot.",
+        "Aether is the Somnolith's energy and the life in every person: the same thing. Never 'essence'.",
+        "The Somnolith is not a moon. The Moon is ordinary and always the same size; the Somnolith grows as it nears.",
+        "Every draw of aether pulls the Somnolith closer; Halcyon's Anchors are taps, and the draw is the pull.",
+        "Those whose aether is drawn away, by the blanking or by too much tithe, come back Hollow.",
+        "Every hero is a present-day person except the Warden, the only sleeper; heroes are named by role with the article.",
+        "The Hierarch, the villain, alone knows the whole truth. No text says what the Somnolith is for.",
     ],
 }
 
@@ -83,9 +82,12 @@ NPC_SUMMARY = {
     "alchemist": "A Street splice-cutter who travels with the caravan and knows exactly what grafts cost.",
     "enchantress": "A Choir runaway who travels with the caravan; she still hears the hymn and won't sing it.",
     "merchant": "A Lantern Road trader who follows the caravan; sells to everyone, informs on no one.",
+    "aetherist": "A Choir defector who learned the Lullaby backwards and refines the Somnolith's fallen dust into "
+                 "Aetherite Shards for the caravan.",  # GG-T570
 }
+# A class id (the NPC wears that class's art) or, GG-T570, a Portraits/ file of the NPC's own (aetherist-00).
 NPC_PORTRAIT_FALLBACK = {"merchant": "courier", "innkeeper": "pandagirl", "blacksmith": "tinkerer",
-                         "alchemist": "alchemist", "enchantress": "whitewitch"}
+                         "alchemist": "alchemist", "enchantress": "whitewitch", "aetherist": "aetherist-00"}
 
 
 # Spatial facts the campaign states (theme id -> [(relation, theme id)]): the Still stands at the foot of Halcyon's
@@ -248,11 +250,12 @@ def build(content: dict) -> dict:
     portraits = npc_portraits(content["dialogues"])
     by_id = {c["Id"]: c for c in classes if c.get("Id")}
     for npc, name in K.NPCS.items():
+        pic = portraits.get(npc, NPC_PORTRAIT_FALLBACK[npc])
+        art = asset_names.portrait_file(by_id[pic]) if pic in by_id else pic  # GG-T570: an NPC's own file
         entities.append({
             "id": K.character_entity(npc), "type": "character", "name": name,
             "summary": NPC_SUMMARY[npc],
-            "details": {"role": "camp NPC", "npcId": npc,
-                        "art": "Portraits/" + asset_names.portrait_file(by_id[portraits.get(npc, NPC_PORTRAIT_FALLBACK[npc])])},
+            "details": {"role": "camp NPC", "npcId": npc, "art": "Portraits/" + art},
             "tags": ["camp-npc"],
         })
     for u in content["caravan"]:

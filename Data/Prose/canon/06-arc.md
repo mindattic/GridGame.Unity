@@ -1,45 +1,40 @@
-## The campaign arc, in the game's chapter order
+The campaign follows the Somnolith's approach, from the Warden's waking to the final choice. The Moon is drawn the same size over every region, the fixed measure. The Somnolith beside it is drawn larger and closer in each region as the chapters go on, smallest over the Tithe Moors and largest over Morrow's Shadow, where it fills the sky.
 
-The campaign follows the approach of **the Somnolith**, the world's misshapen second moon, from the waking of the First Sleeper to the final choice. Two moons hang over every region. The ordinary Moon is drawn the same size everywhere, the fixed measure. The Somnolith beside it is drawn larger and closer in each region as the chapters go on, smallest over the Tithe Moors and largest over Morrow's Shadow, where it fills the sky. The story follows that approach.
+## The road, in the game's order
 
-| Chapter | Region | Discovery |
+| Region | Chapter crawl | What the party learns |
 |---|---|---|
-| Prologue | The Tithe Moors | The heroes wake from the Still into a world paying the Choir a tithe of people. |
-| 1 | The Lantern Road | An ancient mural in a shrine shows a night sky with only one moon, the round, familiar Moon. It raises the first question: why does the oldest art have no second moon? |
-| 2 | The Arkgrave | Under the wrecks is an old harbour whose stones carry only the Moon's gentle tide line, and far above it the scar of a sea that rose. Halcyon tried to flee, and something made the seas rise. |
-| 3 | The Anchor Wastes | The arches are taps, not supports. The draw is the pull. |
-| 4 | Halcyon | A dead archive, woken briefly by the heroes' own light, shows the freezing, the feeding and the Undertow. Halcyon bound the Somnolith through its own people, and the light in everyone is the Somnolith's. |
-| 5 | The Bloom | The Somnolith's life takes root here. It is not only a monster. |
-| 6 | The Underspire | The active drain: someone is still pulling. |
-| 7 | The Shardfall | The shell breaks and the body shows through. The arrival is resuming, and the blanking is its light flowing home. |
-| 8 | Morrow's Shadow | The Somnolith fills the sky, its crystals and lumps close enough to count, with the Moon a small, steady disc beside it. Under it, gravity fails and stone rises. There is no one to reason with, only the weight of it. |
-
-- **Threaded locations:** the Still and the Choir's Cathedral run through the arc. The Still is the heroes' origin. The Cathedral is the Choir's seat and the heart of the Lullaby, where its surplus is revealed.
-- **Postgame:** the postgame regions (Free Holds, Drowned Arks, Deep Shardfall, Under the Anchors) return to the world after the ending and must agree with the ending chosen.
+| The Tithe Moors | Prologue | The Warden wakes 1,200 years late and walks into Saltmoss on tithe day. A handful of present-day people steal the Choir's white tithe caravan and run, and the Warden goes with them. The Captain gives chase. |
+| The Lantern Road | 1 | A shrine mural shows a night sky with the Moon alone. Why does the oldest art have no Somnolith? |
+| The Shardfall | | The Somnolith is shedding its shell, and some of what fell is its body. The Choir mines it; the Ember want the rest of it down. |
+| The Arkgrave | 2 | Halcyon's Arks, thrown inland by the tides the night Halcyon fell. Halcyon tried to run. |
+| The Anchor Wastes | 3 | The arches are taps, not supports. The draw is the pull. |
+| The Still | | The Warden's own vault, now the Choir's: its tanks hold the tithe, and more of it than the Lullaby needs. |
+| Halcyon | 4 | A dead archive, woken for a moment by aether, shows the stopping, the feeding and the fall. The aether in everyone is the Somnolith's. |
+| The Choir's Cathedral | | The organ is the reservoir, and the Hierarch drinks from it. The Hierarch falls here (the ending crawl), and the skim ends, but the Somnolith is still coming. |
+| The Bloom | 5 | Where the Somnolith's substance took root. It is not only death. |
+| The Free Holds, the Underspire, the Drowned Arks | 6 | Everyone wants the empty spire. The Underspire is still drawing, and the Captain is still collecting. |
+| Deep Shardfall, Under the Anchors | 7 | The Ember march on the Anchors to open every tap and drag the Somnolith down. |
+| Morrow's Shadow | 8 | The Somnolith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold, and the choice is the player's. |
 
 ## Endings
 
-Because the light is shared, every ending costs everyone:
+Because the aether is shared, every ending costs everyone:
 
-- **Keep the Lullaby.** Side with the Choir: the Somnolith sleeps and the world keeps its light, paid for in people. You may end the Choir's skim, which slows the decline, or leave it, and the sleep keeps thinning.
-- **Cut the lines.** Sever every tap and the pull stops. The Somnolith drifts back up. Without the circuit, people's borrowed light dims to what it was before the seam, so lives become shorter, quieter and plainer, but wholly their own. The world learns to live under one moon again, with the Somnolith shrinking back to a speck.
-- **Let it arrive.** Stop the Lullaby and let the ten-thousand-year arrival finish. The Somnolith is something small, old and starved, caught mid-landing, whose light has been living in strangers ever since. No one knows if it is predator, protector or neither, and nothing in the game answers that before the choice. This is the gamble ending: people choose to stop holding it back without knowing what they are letting in. What follows must stay true to the mystery and must not reveal a tidy answer about what it is.
+- **Keep it asleep.** Keep the Lullaby, without the skim: the Somnolith sleeps and the world keeps its aether, paid for in people.
+- **Cut the lines.** Close every tap and the pull stops. The Somnolith drifts back out. People's aether dims to what it was before the Somnolith came, so lives become shorter, quieter and plainer, but wholly their own.
+- **Let it come.** Stop the Lullaby and let the ten-thousand-year arrival finish, without knowing what it will bring. What follows must stay true to the mystery and must not reveal what the Somnolith is for.
 
 ## Decisions (owner, 2026-11-21)
 
-- **The lead: the First Sleeper, Warden.** One fixed protagonist of the Warden class, a class of its own (GG-T533) separate from Knight, wakes first in the prologue and thaws the others. The story has Warden's face and voice, and the summoned roster gathers around them.
-  - **Who:** Halcyon's last guard, left on watch over the Still on the night of the Undertow.
-  - **What they wake to:** they wake 1,200 years late, still on duty, sworn to a city that no longer exists, guarding sleepers in a world that has forgotten why.
-  - **Their arc:** what a guard owes when the thing they guarded was the wrong thing to keep.
-  - **Name:** just "Warden", with no article. Their own name was lost with Halcyon's dark archives.
-- **Every character is an archetype.** A hero's role is their name, used bare like a proper name: "Warden", "Paladin", "Thief", never "the Paladin". There are no personal names.
-- **Every class comes in a female and a male version** (the owner will generate the male counterparts). Either version may turn up. When a hero joins, through recruiting or a summon, the player picks which version they get, and that includes Warden.
-  - The story and mechanics are identical for both, so story text never assumes a hero's gender.
-  - Heroes are referred to by role; any pronouns follow the player's pick, through the game's own tokens.
-  - The aim is equal footing, not another phone game full of pin-ups.
-- **Tone: bittersweet.** Real losses and no clean wins, but warmth and hope between the heroes. Every ending costs something worth paying.
-- **Endings: the player chooses.** A final choice between Keep the Lullaby, Cut the lines and Let it arrive. The postgame regions reflect whichever was picked.
-- **The Choir's secret: only the Hierarch knows.** The Choir's rank and file are sincere believers. Only its leader, the Hierarch, knows everything: the second moon is alive, the light in people is its light, and the Lullaby skims a surplus. The Hierarch is a human antagonist with a reason.
-- **Echo is cut.** The Echo hero class is removed (GG-T531). Encore moved to the Tactician and Mirror Skin to the Courier. The blank silhouette was only a placeholder, not a story device.
-- **The final region keeps its name, Morrow's Shadow:** "morrow" means tomorrow, and it is where tomorrow's shadow falls.
-- **Two moons (owner, 2026-11-21, GG-T575).** The ordinary Moon stays, unchanged and always the same size, so the sky keeps something familiar. The Somnolith is a second moon, oddly shaped like the moons of Mars: a lumpy, crusted, grown-looking stone, unsettling to look at. Beside the constant Moon it gives the player a sense of scale, and it grows larger as the game progresses.
+- **The lead: the Warden, the Last Sleeper.** One fixed protagonist of the Warden class (GG-T533), a class of its own. Halcyon's last guard, asleep in the Still on the night Halcyon fell, who wakes 1,200 years too late and now must fix things. The Warden is the only sleeper in the story; their own name was lost with Halcyon's archives. *(GG-T577: "the Last Sleeper", replacing "the First Sleeper".)*
+- **Every other hero is a present-day person** of the world as it is now, not a sleeper. *(GG-T577.)*
+- **Every hero is one single character, named by role with the article:** "The Cleric" at the start of a sentence and "the Cleric" anywhere else, the role capitalised, never bare: the Warden, the Paladin, the Thief. Ids and assets stay `cleric`, `warden`. There are no personal names for heroes. *(GG-T565, replacing the earlier bare-name rule.)*
+- **The villain is the Hierarch,** always with the article: the Choir's human leader, who alone knows the whole truth and drinks the skim. *(GG-T577.)*
+- **The Somnolith is not a moon.** An ancient thing, stopped long ago, hanging in the sky and orbiting the world, now coming closer. The world has one Moon, ordinary and always the same size. "Morrow" is not a name for the Somnolith; the word survives only in the region Morrow's Shadow ("morrow" = tomorrow, where tomorrow's shadow falls). *(GG-T575, amended GG-T577.)*
+- **The word is aether,** never essence. *(GG-T577.)*
+- **Every class comes in a female and a male version,** and the player picks one when a hero joins, the Warden included. Story and mechanics are identical for both, so story text never assumes a hero's gender; heroes are referred to by role, and any pronouns follow the player's pick through the game's own tokens.
+- **Tone: bittersweet.** Real losses and no clean wins, but warmth and hope between the heroes.
+- **Endings: the player chooses** between keeping it asleep, cutting the lines and letting it come. The postgame regions reflect the choice.
+- **Keep it simple** (owner, GG-T577: "its a video game so dont make it too complex"). No lore the game does not need.
+- **Retired** (GG-T577), not to be used in any text: the Pale Concord, the Bright Host and its war, celestials and angels, the Hierarch as a celestial deserter, the Herald as a messenger of the Host, "Morrow" or "the moon" for the Somnolith, "essence", heroes as sleepers, the Summon Circle as thawing sleepers. The Echo hero class is cut (GG-T531).

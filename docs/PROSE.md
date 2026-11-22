@@ -144,14 +144,18 @@ crew); the mapper refuses to write an entity without one, and `prose_text.py che
 with `python tools/prose_text.py seed-missing --drafts <dir>`, which only fills keys that have no text yet, then
 `prose --texts-draft gridgame <dir> --batch <tag>`.
 
-The universe record's setting, logline and rules are the owner's DECIDED premise, "A War in Heaven" (v4, 2026-11-07),
-which retires docs/STORY.md's "Under Morrow".
+The universe record's setting, logline and rules (`UNIVERSE_RECORD` in `tools/prose_map.py`) are a short seed of the
+owner's canon, "the Somnolith" (2026-11-21, amended GG-T577), which retires "Under Morrow" and "A War in Heaven". The
+canon itself is Prose's UniverseCanon sections for `gridgame` (preamble, GG-SOMNOLITH, GG-ONE-LIGHT, GG-WHY-NOW,
+GG-PEOPLES, GG-ARC), written with `prose --set-canon-section` (no approval step); `Data/Prose/canon/` is the staging copy.
 
-**Canon is Prose-authored.** The Bright Host, the Pale Concord and its orders, Morrow, essence, the tithe, the falls,
-the Anchors, the Hierarch (a celestial deserter), the Herald, the Bloom, the crew, Saltmoss, Morrow's Shadow, and the
-retired premises (v1 to v3, kept as history) were created in Prose with its own authoring tools, not the interchange
-file, so a pruning push never retires them. They are tagged `DECIDED`, `PROPOSED` or `RETIRED`, and linked to the game's
-entities: the Hierarch `appears-as` `class-hierarch`, and the Pale Concord `serves` the Bright Host.
+**Canon is Prose-authored.** The Somnolith, aether, the Choir and its orders (the Red Seal, the Bulwark, the Kiln Guard),
+the Watch, the Infernalists, the tithe, the Hollow, the Anchors, the Arks, the reservoir, the Bloom, the Hierarch (the
+Choir's human leader, the villain), the party ("the Crew") and Saltmoss were created in Prose with its own authoring
+tools, not the interchange file, so a pruning push never retires them. They are tagged `DECIDED`; the Hierarch
+`appears-as` `class-hierarch`. GG-T577 archived the old-premise entities (the Pale Concord, the Bright Host, the
+celestials, the Herald as the Host's messenger, the breaches, the falls, the old ending, the v1 to v3 premises), tagged
+`RETIRED`; the hero Herald is `class-herald`.
 
 Because the universe now holds entities the game does not own, `kit push`'s round-trip check reports them as "only in
 theirs" and as a leak. The import itself is unaffected (`retired 0`, `relations invalidated 0`). Teaching the kit to set

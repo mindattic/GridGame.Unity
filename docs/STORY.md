@@ -4,8 +4,11 @@
 screen crawls, everything is sourced from prose ... the Game handles gameplay, and Prose handles narrative"*).
 
 - **Canon** (the premise, factions, places, characters and their relations) is the Prose universe **`gridgame`**
-  ("GridGame") in the Prose narrative engine (`D:\Projects\MindAttic\Prose`). The premise is the owner's *A War in
-  Heaven* (v4, DECIDED). *Under Morrow* (v1 to v3), which this file used to hold, is RETIRED and kept in Prose as history.
+  ("GridGame") in the Prose narrative engine (`D:\Projects\MindAttic\Prose`): its UniverseCanon sections, staged in
+  `Data/Prose/canon/`. The premise is the owner's *the Somnolith* (2026-11-21, amended GG-T577): an ancient thing, not a
+  moon, stopped long ago and hanging in the sky beside the Moon, now coming closer; its aether is the life in every
+  person; the Warden, the Last Sleeper, wakes 1,200 years too late, with present-day heroes; the Hierarch is the villain.
+  *Under Morrow* (v1 to v3) and *A War in Heaven* (v4) are RETIRED and kept in Prose as history.
 - **Every word a player reads as story** (dialogue lines and choices, crawls, class/item/armor-set/skill-tree/NPC
   descriptions, quest briefs and turn-ins, glossary definitions, barks) is a Prose text. The game reads it from
   `Assets/Gaiden/Resources/Content/Text/*.json`, which the build pulls from Prose and nobody edits by hand.
