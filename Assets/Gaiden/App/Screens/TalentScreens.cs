@@ -147,6 +147,8 @@ namespace GridGame.App
             var card = Ui.El("col center talent-node", parent);
             card.name = "talent-" + n.Id;
             card.style.width = Size.Card; card.style.minHeight = Size.Thumb + Space.S32;
+            // A tier's cards shrink to share the row; their margins keep neighbours 24 px apart (GG-T656, POL-C3).
+            card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
             card.style.paddingTop = card.style.paddingBottom = Space.S8;
             card.style.paddingLeft = card.style.paddingRight = Space.S8;
             card.style.borderTopLeftRadius = card.style.borderTopRightRadius = card.style.borderBottomLeftRadius = card.style.borderBottomRightRadius = 16;

@@ -399,6 +399,7 @@ namespace GridGame.App
                 }
                 left.style.left = Fit.Edge; left.style.right = StyleKeyword.Auto;
                 bar.style.right = Fit.Edge; bar.style.left = StyleKeyword.Auto;
+                bar.style.paddingLeft = bar.style.paddingRight = Space.S0;
                 left.style.display = DisplayStyle.Flex;
             }
             else
@@ -409,7 +410,10 @@ namespace GridGame.App
                 bar.style.alignItems = StyleKeyword.Null;
                 bar.style.top = BarTop; bar.style.height = Size.Slot;
                 bar.style.width = StyleKeyword.Auto;
-                bar.style.left = bar.style.right = inset + Space.S16;
+                // Row padding + each cell's 12-px margin: slots sit 24 px apart (POL-C3), the row's edge equals that gap
+                // (POL-C8), and the cells still line up with the info tabs at inset + Fit.Edge (GG-T651, GG-T656).
+                bar.style.left = bar.style.right = inset + Fit.Edge - 2 * Space.TargetHalfGap;
+                bar.style.paddingLeft = bar.style.paddingRight = Space.TargetHalfGap;
                 left.style.display = DisplayStyle.None;
             }
             foreach (var cell in bar.Children().Concat(left.Children())) LayCell(cell, side);
@@ -422,7 +426,7 @@ namespace GridGame.App
             cell.style.flexGrow = column ? 0 : 1;
             cell.style.flexBasis = column ? (StyleLength)StyleKeyword.Auto : 0;
             cell.style.height = column ? SideCellHeight : Size.Slot;
-            cell.style.marginLeft = cell.style.marginRight = column ? Space.S0 : Space.S8;
+            cell.style.marginLeft = cell.style.marginRight = column ? Space.S0 : Space.TargetHalfGap;
             cell.style.marginTop = cell.style.marginBottom = column ? Space.S8 : Space.S0;
         }
 
