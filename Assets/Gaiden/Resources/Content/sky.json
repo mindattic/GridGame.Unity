@@ -34,11 +34,11 @@
     "cityruins": { "Size": 0.23, "X": 0.66, "Y": 0.36, "Rotation": -7 },
     "cathedral": { "Size": 0.26, "X": 0.66, "Y": 0.37, "Rotation": -6 },
     "bloom": { "Size": 0.3, "X": 0.64, "Y": 0.38, "Rotation": -6 },
-    "greenvalley2": { "Size": 0.34, "X": 0.62, "Y": 0.4, "Rotation": -5 },
-    "cityruins2": { "Size": 0.38, "X": 0.6, "Y": 0.42, "Rotation": -5 },
-    "swamp2": { "Size": 0.42, "X": 0.6, "Y": 0.43, "Rotation": -4, "BoardScrim": 0.15 },
-    "desert2": { "Size": 0.46, "X": 0.58, "Y": 0.45, "Rotation": -4, "BoardScrim": 0.2 },
-    "cave2": { "Size": 0.5, "X": 0.56, "Y": 0.46, "Rotation": -3, "BoardScrim": 0.25 },
-    "morrowsshadow": { "Size": 0.78, "X": 0.52, "Y": 0.5, "Rotation": -2, "BoardScrim": 0.45 }
+    "greenvalley2": { "Size": 0.34, "X": 0.62, "Y": 0.4, "Rotation": -5, "DebrisAngle": 200 },
+    "cityruins2": { "Size": 0.38, "X": 0.6, "Y": 0.42, "Rotation": -5, "DebrisAngle": 204 },
+    "swamp2": { "Size": 0.42, "X": 0.6, "Y": 0.43, "Rotation": -4, "BoardScrim": 0.15, "DebrisAngle": 206 },
+    "desert2": { "Size": 0.46, "X": 0.58, "Y": 0.45, "Rotation": -4, "BoardScrim": 0.2, "DebrisAngle": 208 },
+    "cave2": { "Size": 0.5, "X": 0.56, "Y": 0.46, "Rotation": -3, "BoardScrim": 0.25, "DebrisAngle": 210 },
+    "morrowsshadow": { "Size": 0.78, "X": 0.52, "Y": 0.5, "Rotation": -2, "BoardScrim": 0.45, "DebrisAngle": 216 }
   }
 }

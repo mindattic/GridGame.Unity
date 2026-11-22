@@ -50,6 +50,7 @@ namespace GridGame.Core.Content
             float k = d.FullAtSize > 0f ? Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / d.FullAtSize)) : 1f;
             var scaled = d.Clone();
             scaled.Count = Math.Max(d.MinCount, (int)Math.Round(d.Count * k));
+            if (r != null && r.DebrisAngle >= 0f) scaled.Angle = r.DebrisAngle;
             return scaled;
         }
 
@@ -95,6 +96,7 @@ namespace GridGame.Core.Content
                 if (r.BoardScrim < 0f || r.BoardScrim > 0.8f) p.Add($"sky: region '{kv.Key}' BoardScrim {r.BoardScrim} must be in [0, 0.8]");
                 if (r.AetherainChance > 1f) p.Add($"sky: region '{kv.Key}' AetherainChance {r.AetherainChance} must be at most 1 (below 0 means 'derive from Size')");
                 r.Debris?.Validate(s, $"sky: region '{kv.Key}' Debris", p);
+                if (r.DebrisAngle >= 360f) p.Add($"sky: region '{kv.Key}' DebrisAngle {r.DebrisAngle} must be below 360 (below 0 means 'the default')");
             }
             foreach (var kv in db.BackdropLayers)
                 if (kv.Value != null && kv.Value.Sky && (kv.Value.SkyBottom <= 0f || kv.Value.SkyBottom > 1f))
@@ -130,6 +132,9 @@ namespace GridGame.Core.Content
         public float BoardScrim;
         /// <summary>GG-T670: this region's own wake, used as written (no size scaling); null = the default scaled by Size.</summary>
         public DebrisDef Debris;
+        /// <summary>GG-T670: this region's wake direction (degrees, see <see cref="DebrisDef.Angle"/>), steering the wake
+        /// into visible sky where the Somnolith sits near the middle of the screen; below 0 (the default) = the default Angle.</summary>
+        public float DebrisAngle = -1f;
         /// <summary>GG-T670: chance 0-1 of a dust fall here; below 0 (the default) = the default Chance scaled by Size.</summary>
         public float AetherainChance = -1f;
     }

@@ -327,7 +327,7 @@ namespace GridGame.App
             foreach (var p in debris)
             {
                 float u = still ? p.U0 : Mathf.Repeat(p.U0 + t / Mathf.Max(1f, wake.DriftSeconds), 1f);
-                float dist = somR * 0.55f + u * length;
+                float dist = somR * 0.8f + u * length; // starts at the body's rim, which is irregular, so a little inside
                 float across = p.Across * spread * (0.25f + 0.75f * u);
                 float x = baseX + wakeDir.x * dist + wakeAcross.x * across;
                 float y = baseY + wakeDir.y * dist + wakeAcross.y * across;
