@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Bot;
 using GridGame.Core.Content;
@@ -90,13 +91,16 @@ namespace GridGame.Tests
             var snaps = new Dictionary<string, SaveData>();
             var s = Progression.NewGame(c, "Snapshot");
             int seed = 7000;
-            foreach (var stage in stages)
+            for (int si = 0; si < stages.Count; si++)
             {
+                var stage = stages[si];
                 bool cleared = false;
                 for (int attempt = 0; attempt < 4 && !cleared; attempt++)
                 {
                     DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
-                    CampRoutine.Run(c, s);
+                    // A seeded Masterwork roll per stage and try: unseeded, the camp's forging rolled off the clock, so the
+                    // same content gave a different snapshot (and win rate) every run.
+                    CampRoutine.Run(c, s, rng: new Rng(9000 + si * 4 + attempt));
                     if (attempt == 0) snaps[stage.Id] = SaveFiles.Deserialize(SaveFiles.Serialize(s));
                     var setup = BattleFactory.Build(c, s, stage.Id, seed++, difficulty);
                     var st = BotRunner.Play(c, setup, new HeroBot(seed, 0f), 3000);

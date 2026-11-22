@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Bot;
 using GridGame.Core.Content;
@@ -47,7 +48,9 @@ namespace GridGame.Meta
         /// <param name="ledger">When given (the balance report, GG-T448), each phase's net gold spent is added under its
         /// name — summon, repair, inn, loot, skills, gear, potions, counters, facilities — so a played-out campaign shows
         /// where the purse went. Gains (chests) come out negative.</param>
-        public static List<string> Run(ContentDb c, SaveData s, Dictionary<string, int> ledger = null)
+        /// <param name="rng">Rolls each forge's Masterwork; null keeps <see cref="Crafting.Craft"/>'s clock-seeded roll, so
+        /// a soak that needs the same campaign every run must pass a seeded one.</param>
+        public static List<string> Run(ContentDb c, SaveData s, Dictionary<string, int> ledger = null, Rng rng = null)
         {
             var log = new List<string>();
             void Note(Result r) { if (r.Ok && r.Message != null) log.Add(r.Message); }
@@ -138,7 +141,7 @@ namespace GridGame.Meta
                         var recipe = Crafting.Recipes(c, CraftStation.Forge)
                             .Where(r => r.BaseItem == null && Crafting.CanMake(c, s, r) && Forging.ArmorOpen(c, s, r) && VendorTiers.RecipeOpen(c, s, r) && Equipment.Fits(c, h, c.Item(r.Result), slot) && Crafting.HasInputs(s, r) && r.Gold <= s.Gold / 2)
                             .OrderByDescending(r => MetaHeuristics.Score(c.Item(r.Result))).FirstOrDefault();
-                        if (recipe != null && MetaHeuristics.Score(c.Item(recipe.Result)) > current) Note(Crafting.Craft(c, s, recipe));
+                        if (recipe != null && MetaHeuristics.Score(c.Item(recipe.Result)) > current) Note(Crafting.Craft(c, s, recipe, rng: rng));
                         owned = MetaHeuristics.BestFirst(Equipment.Candidates(c, s, slot, h)).FirstOrDefault();
                     }
                     if (merchant && (owned == null || MetaHeuristics.Score(owned) <= current))
@@ -179,7 +182,7 @@ namespace GridGame.Meta
                     Note(Shop.Buy(c, s, new Dictionary<string, int> { [bottle.Id] = 1 }));
                 if (brew != null && Crafting.HasInputs(s, brew) && s.Gold >= brew.Gold)
                 {
-                    var r = Crafting.Craft(c, s, brew); Note(r); ok = r.Ok;
+                    var r = Crafting.Craft(c, s, brew, rng: rng); Note(r); ok = r.Ok;
                 }
                 if (!ok && merchant && s.Gold >= potion.BaseCost * 3 && VendorTiers.OnShelf(c, s, potion))
                 {
