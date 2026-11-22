@@ -148,8 +148,11 @@ namespace GridGame.App
             var a = C.TryAbility(n.Grants);
             var card = Ui.El("col center talent-node", parent);
             card.name = "talent-" + n.Id;
-            card.style.width = Size.Card; card.style.minHeight = Size.Thumb + Space.S32;
-            // A tier's cards shrink to share the row; their margins keep neighbours 24 px apart (GG-T656, POL-C3).
+            card.style.minHeight = Size.Thumb + Space.S32;
+            // A tier's cards take equal shares of the row (grow from a zero basis, not a fixed Size.Card): with their
+            // 12-px margins and the row's 12-px padding, edge = gap = 24 at every width. A fixed width left the tablets'
+            // tiers spaced 59-112 px apart with 70-px edges (GG-T656, POL-C8); neighbours stay 24 px apart (POL-C3).
+            card.style.flexGrow = 1; card.style.flexBasis = 0;
             card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
             card.style.paddingTop = card.style.paddingBottom = Space.S8;
             card.style.paddingLeft = card.style.paddingRight = Space.S8;

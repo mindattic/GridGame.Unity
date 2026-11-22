@@ -258,10 +258,15 @@ namespace GridGame.App
             bool column = s.contentContainer.resolvedStyle.flexDirection == FlexDirection.Column;
             s.EnableInClassList("list--fill", column);
             s.contentContainer.style.minHeight = column ? new StyleLength(Mathf.Floor(h)) : new StyleLength(StyleKeyword.Null);
-            // Rows stop growing at two targets (--row-fill-max); a list too short to fill even then spreads the rest
-            // evenly between its rows instead of leaving one dead band under the last (no effect once the list scrolls).
-            s.contentContainer.style.justifyContent = column ? new StyleEnum<Justify>(Justify.SpaceEvenly) : new StyleEnum<Justify>(StyleKeyword.Null);
+            // Rows stop growing at two targets (--row-fill-max); a list of rows too short to fill even then spreads the rest
+            // evenly between them instead of leaving one dead band under the last (no effect once the list scrolls). A
+            // list holding an intro or empty-state paragraph stays top-aligned, so its text never floats mid-panel.
+            bool rowsOnly = column && s.contentContainer.childCount > 0 && s.contentContainer.Children().All(IsFillRow);
+            s.contentContainer.style.justifyContent = rowsOnly ? new StyleEnum<Justify>(Justify.SpaceEvenly) : new StyleEnum<Justify>(StyleKeyword.Null);
         }
+
+        private static bool IsFillRow(VisualElement e) =>
+            e is Button || e.ClassListContains("menu-row") || e.ClassListContains("card") || e.ClassListContains("pressable");
 
         /// <summary>The detail pane under a list: as tall as what it shows, at most <see cref="Kit.DetailMaxPct"/>% of the
         /// column, then it scrolls inside itself. Returns its content container (clear and refill it on selection).</summary>
