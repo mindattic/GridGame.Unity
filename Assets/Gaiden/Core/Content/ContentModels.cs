@@ -387,13 +387,13 @@ namespace GridGame.Core.Content
         public static readonly SupportDef Default = new SupportDef();
 
         /// <summary>Largest Haste a support may give, in seconds (GG-T298).</summary>
-        public const float MaxHasteSeconds = 3f;
+        public const float MaxHasteSeconds = Battle.BattleConfig.SupportMaxHasteSeconds;
         /// <summary>Largest crit chance one Crit support may add (0.5 = +50 points), and the cap on the attacker's total crit
         /// percent while supported (GG-T298).</summary>
-        public const float MaxCritBonus = 0.5f;
-        public const float MaxSupportedCritPercent = 75f;
+        public const float MaxCritBonus = Battle.BattleConfig.SupportMaxCritBonus;
+        public const float MaxSupportedCritPercent = Battle.BattleConfig.SupportMaxSupportedCritPercent;
         /// <summary>Largest spell power fraction a Cast support may use (GG-T298).</summary>
-        public const float MaxCastPower = 1f;
+        public const float MaxCastPower = Battle.BattleConfig.SupportMaxCastPower;
 
         public string DisplayLabel => string.IsNullOrEmpty(Label) ? Effect.ToString() : Label;
     }

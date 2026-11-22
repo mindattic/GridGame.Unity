@@ -52,6 +52,9 @@ namespace GridGame.Core.Battle
         /// waiting on reinforcements). Otherwise a window always runs to the next enemy arrival (GG-T188/GG-T308, §2.0).
         /// </summary>
         public const int ActionTicks = 20;
+        /// <summary>Safety cap on one run of the clock to the next enemy turn (200 game seconds): nothing real waits that long,
+        /// so hitting it means no enemy icon could arrive and the window ends anyway.</summary>
+        public const int MaxAdvanceTicks = 2000;
         /// <summary>
         /// GG-T308 (§2.0): game seconds an Ability, Item, Spell or Talk spends from the party's window (a drag spends the
         /// time it was held instead), so an instant action still costs budget. A spell's cast time rides the bar separately.
@@ -137,6 +140,14 @@ namespace GridGame.Core.Battle
 
         // ── Supporters (§1.2.3) ─────────────────────────────────────────────────────
         public const float SupporterDamageFraction = 0.5f;
+        /// <summary>Largest Haste one support may give, in seconds (GG-T298; validated on SupportDef.Magnitude).</summary>
+        public const float SupportMaxHasteSeconds = 3f;
+        /// <summary>Largest crit chance one Crit support may add (0.5 = +50 points, GG-T298)…</summary>
+        public const float SupportMaxCritBonus = 0.5f;
+        /// <summary>…and the cap on the attacker's total crit percent while supported.</summary>
+        public const float SupportMaxSupportedCritPercent = 75f;
+        /// <summary>Largest spell power fraction a Cast support may use (GG-T298).</summary>
+        public const float SupportMaxCastPower = 1f;
 
         // ── Shield (§2.5) ───────────────────────────────────────────────────────────
         public const string ShieldBuffId = "protection";
@@ -201,6 +212,8 @@ namespace GridGame.Core.Battle
         //    participants in the attack increases the multiplier needed to earn a mana bubble") ─────────────────────
         /// <summary>Charge that makes one orb ("mana bubble").</summary>
         public const int ManaChargePerOrb = 100;
+        /// <summary>Orbs the party's shared bank holds before minting overflows (GG-LAW-6); also the most a spell may cost.</summary>
+        public const int ManaBankCapacity = 12;
         /// <summary>Charge for a pincer that takes away a whole enemy's worth of HP (scaled by the share removed).
         /// GG-T247: 120 → 105 (the bar sat full on 17% of a skilled player's turns and ~half of all mana faded at the cap).</summary>
         public const float PincerChargePerHp = 105f;

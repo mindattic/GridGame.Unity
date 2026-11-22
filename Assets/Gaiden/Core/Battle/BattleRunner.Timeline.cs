@@ -6,7 +6,6 @@ namespace GridGame.Core.Battle
 {
     internal sealed partial class BattleRunner
     {
-        private const int MaxShieldTicks = 2000;
         private int ticksSinceReport;
 
         /// <summary>GG-T308: an enemy turn resolved (or the window was spent) during this command — the party's window is over.</summary>
@@ -30,7 +29,7 @@ namespace GridGame.Core.Battle
         private void AdvanceUntilEnemyTurn()
         {
             int wave = S.Wave;
-            for (int i = 0; i < MaxShieldTicks && !S.IsOver; i++)
+            for (int i = 0; i < BattleConfig.MaxAdvanceTicks && !S.IsOver; i++)
             {
                 Tick(out bool turnResolved);
                 if (turnResolved) { windowOver = true; break; }

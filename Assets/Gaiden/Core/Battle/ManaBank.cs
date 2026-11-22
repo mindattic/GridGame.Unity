@@ -6,7 +6,7 @@ namespace GridGame.Core.Battle
     /// </summary>
     public sealed class ManaBank
     {
-        public const int DefaultCapacity = 12;
+        public const int DefaultCapacity = BattleConfig.ManaBankCapacity;
 
         public int Capacity { get; }
         public int Count { get; private set; }
