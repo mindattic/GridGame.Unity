@@ -2502,7 +2502,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0277a70e2331ee30630bd17e2dfde00dc783b842ed98cdbf737a2c58651aa049",
+      "hash": "sha256:99290143f28f524df9439c76f7bd92a673d19e7677b09feb5f5fb5070ef3240c",
       "about": [
         "character-alchemist"
       ],
@@ -2510,7 +2510,7 @@
         "character-alchemist"
       ],
       "payload": {
-        "title": "Holy essence",
+        "title": "Holy aether",
         "start": "ask",
         "nodes": [
           {

@@ -24261,7 +24261,7 @@
       "Healer",
       "Humanoid"
     ],
-    "Card": "Backline [healer]. Free, strong heals paid in their own HP ([Essence]).",
+    "Card": "Backline [healer]. Free, strong heals paid in their own HP ([Life Price]).",
     "Portrait": "herald-female",
     "MalePortrait": "herald-male",
     "ArtSource": "herald",

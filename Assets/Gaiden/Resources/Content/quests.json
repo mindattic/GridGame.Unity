@@ -130,7 +130,7 @@
     "RewardGold": 550, "RewardItem": "hi_ether"
   },
   {
-    "Id": "q_holy_essence", "Name": "Holy Essence for the Still", "Giver": "Alchemist", "Theme": "still", "Unlock": "still-01", "Requires": "q_lurker_ichor",
+    "Id": "q_holy_essence", "Name": "Holy Aether for the Still", "Giver": "Alchemist", "Theme": "still", "Unlock": "still-01", "Requires": "q_lurker_ichor",
     "Objective": { "Kind": "Bring", "Id": "mat_essence_holy", "Count": 3 },
     "RewardGold": 700, "RewardItem": "x_potion", "RewardItemCount": 2, "RewardSkillPoints": 1
   },

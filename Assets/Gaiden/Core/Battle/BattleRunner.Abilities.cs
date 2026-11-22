@@ -370,7 +370,7 @@ namespace GridGame.Core.Battle
             int cost = Formulas.LifeCostHp(a, caster);
             if (cost <= 0) return;
             caster.Hp -= cost;
-            Emit(new DamagedEvent { TargetId = caster.Id, SourceId = -1, Amount = cost, Hit = HitKind.Normal, Type = DamageType.Holy, HpAfter = caster.Hp, Note = "Essence" });
+            Emit(new DamagedEvent { TargetId = caster.Id, SourceId = -1, Amount = cost, Hit = HitKind.Normal, Type = DamageType.Holy, HpAfter = caster.Hp, Note = "Life Price" });
         }
 
         /// <summary>GG-T332 (§14.15): a foe's siphon that touched a hero draws up to <see cref="AbilityDef.DrainsOrbs"/>

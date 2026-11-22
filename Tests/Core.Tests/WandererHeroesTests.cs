@@ -122,7 +122,7 @@ namespace GridGame.Tests
             Assert.That(cleric.Hp, Is.GreaterThan(5), "the ally is mended");
             Assert.That(giver.Hp, Is.EqualTo(giver.MaxHp - cost), "she pays her essence");
             var paid = ev.OfType<DamagedEvent>().Single(d => d.TargetId == giver.Id);
-            Assert.That(paid.Note, Is.EqualTo("Essence"));
+            Assert.That(paid.Note, Is.EqualTo("Life Price"));
             Assert.That(paid.SourceId, Is.EqualTo(-1), "a price, not a blow");
             AssertEventInvariants(ev);
 

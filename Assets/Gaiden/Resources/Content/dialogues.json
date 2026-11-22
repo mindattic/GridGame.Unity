@@ -3025,7 +3025,7 @@
   },
   {
     "Id": "quest_offer_holy_essence",
-    "Title": "Holy essence",
+    "Title": "Holy aether",
     "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
     "Conditions": [ { "Type": "QuestAvailable", "Id": "q_holy_essence" } ],
     "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],

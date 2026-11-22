@@ -2350,7 +2350,7 @@
   },
   {
     "Id": "mat_essence_flame",
-    "Name": "Flame Essence",
+    "Name": "Flame Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -2379,7 +2379,7 @@
   },
   {
     "Id": "mat_essence_frost",
-    "Name": "Frost Essence",
+    "Name": "Frost Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -2408,7 +2408,7 @@
   },
   {
     "Id": "mat_essence_spark",
-    "Name": "Spark Essence",
+    "Name": "Spark Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Rare",
     "Slot": "None",
@@ -2437,7 +2437,7 @@
   },
   {
     "Id": "mat_essence_shadow",
-    "Name": "Shadow Essence",
+    "Name": "Shadow Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Rare",
     "Slot": "None",
@@ -6136,7 +6136,7 @@
   },
   {
     "Id": "mat_essence_poison",
-    "Name": "Poison Essence",
+    "Name": "Poison Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -6165,7 +6165,7 @@
   },
   {
     "Id": "mat_essence_holy",
-    "Name": "Holy Essence",
+    "Name": "Holy Aether",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
