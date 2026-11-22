@@ -53,6 +53,7 @@
     "AccuracyMultiplier": 1.0,
     "BlocksSpells": false,
     "OnExpireApply": "warm",
+    "Cancels": ["frozen"],
     "Letter": "B",
     "Color": "#FF731A",
     "Stacking": "Stack",
@@ -74,6 +75,7 @@
     "AccuracyMultiplier": 1.0,
     "BlocksSpells": false,
     "OnExpireApply": "wet",
+    "Cancels": ["burning"],
     "Letter": "F",
     "Color": "#8CD9FF"
   },

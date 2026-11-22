@@ -657,6 +657,9 @@ namespace GridGame.Core.Content
         /// <summary>Damage the bearer deals is scaled by this (War Cry / Might pickup → Empowered).</summary>
         public float OutgoingDamageMultiplier = 1f;
         public string OnExpireApply;
+        /// <summary>GG-T667: buffs this one removes from the bearer when it lands, so the newest wins (Burning and Frozen
+        /// cancel each other). A plain removal: the cancelled buff's OnExpireApply chain doesn't run.</summary>
+        public List<string> Cancels = new List<string>();
         public BuffStacking Stacking = BuffStacking.Refresh;
         /// <summary>Cap for Stack buffs (0 = unlimited). Burning stacks to 3.</summary>
         public int MaxStacks;

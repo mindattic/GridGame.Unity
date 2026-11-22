@@ -224,6 +224,11 @@ namespace GridGame.Core.Content
             foreach (var b in db.Buffs.Values)
             {
                 NeedBuff(b.OnExpireApply, $"buff {b.Id}");
+                foreach (var c in b.Cancels ?? new List<string>())
+                {
+                    NeedBuff(c, $"buff {b.Id} Cancels");
+                    if (string.Equals(c, b.Id, StringComparison.OrdinalIgnoreCase)) p.Add($"buff {b.Id}: Cancels itself (GG-T667)");
+                }
                 if (b.Intercepts && b.Kind != BuffKind.Buff) p.Add($"buff {b.Id}: Intercepts must be a Buff (GG-T533)");
                 if (!(b.EvasionBonus >= -Rules.Formulas.EvasionCap && b.EvasionBonus <= Rules.Formulas.EvasionCap))
                     p.Add($"buff {b.Id}: EvasionBonus {b.EvasionBonus} outside -{Rules.Formulas.EvasionCap}..{Rules.Formulas.EvasionCap} (GG-T297)");

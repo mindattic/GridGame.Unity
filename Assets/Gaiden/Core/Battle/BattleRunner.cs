@@ -814,6 +814,8 @@ namespace GridGame.Core.Battle
             if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
             if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
             if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
+            if (def.Cancels != null && def.Cancels.Count > 0) // GG-T667: the newest of a mutually exclusive pair wins
+                RemoveBuffsWhere(u, b => def.Cancels.Exists(c => string.Equals(c, b.Def.Id, StringComparison.OrdinalIgnoreCase)), "cancelled by " + def.Id);
             var existing = u.Buffs.Find(b => b.Def.Id == def.Id);
             if (existing != null)
             {
