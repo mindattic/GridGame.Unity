@@ -75,9 +75,11 @@ namespace GridGame.Tests
                     if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
                     int goldBefore = s.Gold;
                     Add(visit, "#breaks", st.Results.BrokenWeapons.Values.Sum(l => l.Count) + st.Results.BrokenArmors.Values.Sum(l => l.Count));
-                    BattleFactory.Commit(c, s, st);
+                    var report = BattleFactory.Commit(c, s, st);
                     Add(visit, "earned", s.Gold - goldBefore);
                     Add(visit, "#battles", 1);
+                    Add(visit, "#dust", report.DustEarned); // GG-T676: all Mana Dust, of which #orbdust came from unspent orbs
+                    Add(visit, "#orbdust", report.OrbDust);
                     foreach (var kv in visit)
                     {
                         Add(ledger, kv.Key, kv.Value);

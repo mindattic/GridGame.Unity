@@ -352,6 +352,14 @@ namespace GridGame.Meta
         public int DustEarned;
         /// <summary>GG-T673: mana orbs still in the row when the battle ended (GG-T676 converts them at stage end).</summary>
         public int OrbsLeft;
+        /// <summary>GG-T676: the Mana Dust <see cref="OrbsLeft"/> settled back into at the end of a won stage (already counted
+        /// in <see cref="DustEarned"/>); 0 when the orbs carried on with an expedition or the stage was lost.</summary>
+        public int OrbDust;
+        /// <summary>GG-T677: owned Mana Orbs this victory added, and why (a milestone, a Halcyon find).</summary>
+        public int OrbsGained;
+        public List<string> OrbsGainedFrom = new List<string>();
+        /// <summary>GG-T677: a Broken Mana Orb dropped (the Manasmith restores it into an owned orb).</summary>
+        public bool BrokenOrbFound;
         public bool CampaignComplete;
         /// <summary>Campaign milestone (GG-T301): the theme whose first full clear this was, and the reward it paid (also in <see cref="Items"/>).</summary>
         public string Milestone;
@@ -835,6 +843,15 @@ namespace GridGame.Meta
             rep.WandererOffer = Wanderers.OfferFrom(s, battle);
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
             Expeditions.AfterBattle(c, s, rep, battle);
+            // GG-T676: the orbs are Halcyon batteries that can't hold mana for long: what's left in the row at the end of a
+            // won stage settles back into Mana Dust. Orbs an expedition carries to its next battle stay orbs; a lost stage's
+            // orbs simply discharge (no Dust, like every other reward of a loss).
+            if (rep.Victory && rep.CarriedOrbs == 0 && rep.OrbsLeft > 0)
+            {
+                rep.OrbDust = DustEconomy.SettleOrbs(rep.OrbsLeft);
+                s.AddItem(DustEconomy.DustId, rep.OrbDust);
+                rep.DustEarned += rep.OrbDust;
+            }
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             s.LastStage = battle.Stage.Id;
             s.UpdatedUtc = DateTime.UtcNow;

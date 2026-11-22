@@ -1191,6 +1191,22 @@ Owner: *"return the mana orbs line, doing things fills mana orbs which glow with
 - **New sources**, on top of 3.1.9's (conservative first values, 100 charge = 1 orb, all damped by bank fullness): felling a real foe `KillCharge` 15; a hero's skill striking a foe `StrikeCharge` 5 per foe (spells excluded, so mana never feeds itself); time regen `RegenCharge` 10 every `RegenIntervalSeconds` 5 of the battle clock (about one orb per 50 clock seconds at an empty bank). Clutch! keeps `ClutchCharge` 20. Their reasons ("kill", "strike", "regen") show in the GG-T595 held-turn soak JSON beside "guard" and "pincer". Not yet measured; tune with the soak once the owner has targets.
 - **Battle report.** `BattleReport.OrbsLeft` is the orbs still lit when the battle ended (GG-T676 converts them at stage end).
 
+#### 3.1.4.2 Unspent orbs settle into Mana Dust (GG-T676, owner 2026-11-22)
+
+Owner: *"any Mana Orbs you have at the end of a stage are converted back to manadust and added to your currencies."* The
+orbs are Halcyon batteries that can't hold mana for long ([§27.3.3](#2733-the-mana-terminology-gg-t675-owner-2026-11-22)),
+so at the end of a **won** stage every orb still lit in the row (`BattleReport.OrbsLeft`) settles into
+**`DustEconomy.DustPerOrbLeft` = 1 Mana Dust** each, added to the bag with the stage's own Dust (`BattleReport.OrbDust`,
+counted inside `DustEarned`). The results screen's Mana Dust row names the share: "+7 (4 from 4 unspent orbs)".
+
+- **Why 1 per orb:** the same scale as `DustPerVictory` (1) and `FirstClearDustBonus` (4). A late-game row of 12–16
+  owned orbs ended full pays a little more than a first clear, a real choice against casting, and still well short of a
+  Shard's worth (`DustPerShard` = 10) per battle, so Shards stay valuable (GG-T625).
+- **Expeditions:** orbs an expedition carries to its next battle (`CarriedOrbs`) stay orbs; the expedition's last
+  battle settles them.
+- **A loss** (defeat, retreat, escape): the orbs simply discharge, no Dust, like every other reward of a loss.
+- The economy ledger (`polish.py --balance`) prints each run's Mana Dust and the share from orbs (`#dust`, `#orbdust`).
+
 #### 3.1.5–3.1.6 (struck 2026-10-10)
 
 ~~Spend ordering by color~~ and ~~the Colorless wildcard~~ no longer exist — there are no colors to order or substitute.

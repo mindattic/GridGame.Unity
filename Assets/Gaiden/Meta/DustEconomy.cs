@@ -21,6 +21,15 @@ namespace GridGame.Meta
         /// more than a repeat hunt.</summary>
         public const int FirstClearDustBonus = 4;
 
+        /// <summary>Mana Dust each Mana Orb left in the row at the end of a won stage settles back into (GG-T676): the orbs
+        /// are Halcyon batteries that can't hold mana for long. 1 per orb matches <see cref="DustPerVictory"/>'s scale, so a
+        /// player who ends a stage with a full row of 12-16 orbs earns a little more than a first clear's bonus, a real
+        /// choice against casting, while staying far from a Shard's worth (<see cref="DustPerShard"/>) per battle.</summary>
+        public const int DustPerOrbLeft = 1;
+
+        /// <summary>Mana Dust <paramref name="orbsLeft"/> leftover orbs settle into.</summary>
+        public static int SettleOrbs(int orbsLeft) => Math.Max(0, orbsLeft) * DustPerOrbLeft;
+
         /// <summary>Gold for one Dust at the Aetherist's counter (GG-T623).</summary>
         public const int GoldPerDust = 2;
         /// <summary>Dust the Aetherist refines into one Shard (GG-T624). Buying a refine's worth of Dust costs
