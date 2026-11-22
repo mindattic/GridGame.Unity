@@ -39,7 +39,8 @@ namespace GridGame.App
         private const float LoopSeconds = 120f;
         private const float GlowIntensity = 2f, RimLightIntensity = 0.4f, BloomThreshold = 1f;
         /// <summary>View space: +x right, +y up, +z toward the viewer (the camera sits on +z looking at the satellite).</summary>
-        private static readonly Vector3 KeyFrom = new Vector3(-0.5f, 0.7f, 0.5f), RimFrom = new Vector3(0.4f, 0.3f, -1f);
+        /// <summary>The key light is shared with <see cref="MoonRig"/>, so both bodies are lit by the same sun.</summary>
+        internal static readonly Vector3 KeyFrom = new Vector3(-0.5f, 0.7f, 0.5f), RimFrom = new Vector3(0.4f, 0.3f, -1f);
         private const int TexSize = 768;
 
         private static ManalithRig instance;
@@ -154,7 +155,7 @@ namespace GridGame.App
         }
 
         /// <summary>View-space direction (+z toward the viewer) to world (Unity's +z points away from this camera).</summary>
-        private static Vector3 ViewToWorld(Vector3 v) => new Vector3(v.x, v.y, -v.z).normalized;
+        internal static Vector3 ViewToWorld(Vector3 v) => new Vector3(v.x, v.y, -v.z).normalized;
 
         private void Light(Vector3 from, Color c, float intensity)
         {

@@ -1,6 +1,6 @@
 {
   "Somnolith": { "Image": "Sky/somnolith-00", "Model": "Manalith/manalith-satellite-00", "Placeholder": false, "Size": 0.2, "X": 0.7, "Y": 0.35, "Rotation": -8 },
-  "Moon": { "Image": "Sky/moon-00", "Size": 0.085, "X": 0.2, "Y": 0.16, "Opacity": 0.92 },
+  "Moon": { "Image": "Sky/moon-00", "Model": "procedural", "Size": 0.085, "X": 0.2, "Y": 0.16, "Opacity": 0.92 },
   "Shards": {
     "Images": [
       "Sky/somnolith-shard-00", "Sky/somnolith-shard-01", "Sky/somnolith-shard-02",
@@ -25,7 +25,10 @@
     "MinSize": 0.004, "MaxSize": 0.009,
     "Colors": ["#5D64A3", "#5D64A3", "#6D6EA9", "#A096C7", "#B2A4D2", "#9D6492", "#974B72"], "Opacity": 0.85
   },
-  "Parallax": { "Amplitude": 0.012, "Seconds": 36 },
+  "Parallax": {
+    "Amplitude": 0.012, "Seconds": 36,
+    "Depths": { "Sky": 0.12, "Moon": 0.18, "Manalith": 0.3, "ShardsFar": 0.4, "ShardsNear": 0.8, "Foreground": 1 }
+  },
   "Regions": {
     "greenvalley": { "Size": 0.1, "X": 0.74, "Y": 0.3, "Rotation": -10 },
     "lanternroad": { "Size": 0.12, "X": 0.7, "Y": 0.32, "Rotation": -9 },

@@ -89,6 +89,18 @@ namespace GridGame.Core.Content
             if (s.Shards != null && (s.Shards.MinSize <= 0 || s.Shards.MaxSize < s.Shards.MinSize))
                 p.Add("sky: Shards MinSize must be > 0 and MaxSize >= MinSize");
             if (s.Debris != null) s.Debris.Validate(s, "sky: Debris", p);
+            if (!string.IsNullOrEmpty(s.Moon?.Model) && s.Moon.Model != "procedural")
+                p.Add($"sky: Moon Model '{s.Moon.Model}' must be 'procedural' (or left out for the flat image)");
+            if (s.Parallax != null)
+            {
+                var px = s.Parallax;
+                if (px.Amplitude < 0f || px.Amplitude > 0.08f) p.Add($"sky: Parallax Amplitude {px.Amplitude} must be in [0, 0.08]");
+                var d = px.Depths;
+                if (d != null)
+                    foreach (var (name, v) in new[] { ("Sky", d.Sky), ("Moon", d.Moon), ("Manalith", d.Manalith),
+                                 ("ShardsFar", d.ShardsFar), ("ShardsNear", d.ShardsNear), ("Foreground", d.Foreground) })
+                        if (v < 0f || v > 1f) p.Add($"sky: Parallax Depths {name} {v} must be in [0, 1]");
+            }
             if (s.Aetherain != null)
             {
                 var d = s.Aetherain;
@@ -121,7 +133,8 @@ namespace GridGame.Core.Content
     public sealed class SkyBodyDef
     {
         public string Image;
-        /// <summary>GG-T679: a 3D model drawn live in place of <see cref="Image"/> (the Image stays the fallback).</summary>
+        /// <summary>GG-T679: a 3D model drawn live in place of <see cref="Image"/> (the Image stays the fallback). For the
+        /// Moon (GG-T681) the only model is "procedural": a cratered sphere built in code (MoonRig).</summary>
         public string Model;
         /// <summary>True while the image is stand-in art awaiting the owner's.</summary>
         public bool Placeholder;
@@ -248,6 +261,21 @@ namespace GridGame.Core.Content
     {
         public float Amplitude = 0.012f;
         public float Seconds = 36f;
+
+        /// <summary>GG-T681: each stage layer's depth, the share of the foreground's movement it makes (0 = fixed at
+        /// infinity, 1 = moves with the foreground). Shards spread between ShardsFar and ShardsNear by their size.</summary>
+        public StageDepthsDef Depths = new StageDepthsDef();
+    }
+
+    /// <summary>GG-T681: the layered stage's depths (see <see cref="ParallaxDef.Depths"/>).</summary>
+    public sealed class StageDepthsDef
+    {
+        public float Sky = 0.12f;
+        public float Moon = 0.18f;
+        public float Manalith = 0.3f;
+        public float ShardsFar = 0.4f;
+        public float ShardsNear = 0.8f;
+        public float Foreground = 1f;
     }
 
     /// <summary>One backdrop's split (tools/split_backdrops.py): whether it has a sky layer and how far down it reaches.</summary>

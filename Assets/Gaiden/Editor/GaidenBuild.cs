@@ -370,6 +370,37 @@ namespace GridGame.EditorTools
             if (Application.isBatchMode) EditorApplication.Exit(code);
         }
 
+        /// <summary>GG-T681: renders the stage's 3D Moon (MoonRig) on black into artifacts/moon-unity.png. Needs graphics.</summary>
+        public static void MoonShot()
+        {
+            EnsureScene();
+            int code = 1;
+            try
+            {
+                var rt = GridGame.App.MoonRig.RenderNow(0f, Color.black);
+                if (rt == null) Debug.LogError("[Build] Moon shader missing");
+                else
+                {
+                    var ldr = RenderTexture.GetTemporary(rt.width, rt.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                    Graphics.Blit(rt, ldr);
+                    var prev = RenderTexture.active;
+                    RenderTexture.active = ldr;
+                    var tex = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+                    tex.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+                    tex.Apply();
+                    RenderTexture.active = prev;
+                    RenderTexture.ReleaseTemporary(ldr);
+                    var path = System.IO.Path.GetFullPath("artifacts/moon-unity.png");
+                    System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+                    System.IO.File.WriteAllBytes(path, tex.EncodeToPNG());
+                    Debug.Log("[Build] Moon shot -> " + path);
+                    code = 0;
+                }
+            }
+            catch (System.Exception e) { Debug.LogError("[Build] Moon shot failed: " + e); }
+            if (Application.isBatchMode) EditorApplication.Exit(code);
+        }
+
         /// <summary>Compile-only check for CI/agents: succeeds when scripts compiled (we got here at all).</summary>
         public static void CompileCheck()
         {

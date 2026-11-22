@@ -17,6 +17,10 @@ namespace GridGame.App
     /// and then the Aetherain falls from it, glints of aether dust drifting down over the landscape
     /// (<see cref="AetherainDef"/>). Reduce Motion holds the wake still and skips the Aetherain.
     ///
+    /// GG-T681: a stage of separate layers, each with a depth (Content/sky.json Parallax.Depths): the sky plate, the Moon
+    /// (a live 3D body, <see cref="MoonRig"/>), the Manalith and its debris (<see cref="ManalithRig"/>), the drifting shards
+    /// and the foreground plate. Every layer moves by its depth times one shared shift, as if one camera moved.
+    ///
     /// The plates cover the screen at the art's own aspect (cropping, never stretching, so 9:23 to 3:4 all fill), with a
     /// small margin so the sway never shows an edge. The bodies are placed in screen terms (see <see cref="SkyDef"/>), so
     /// the Somnolith stays in the visible sky at every aspect. A backdrop that isn't split (an interior, a rejected split)
@@ -84,8 +88,9 @@ namespace GridGame.App
         private readonly SkyDef def;
         private readonly SkyRegionDef region;
         private readonly BackdropLayerDef layer;
+        private readonly StageDepthsDef depth;
         private readonly float aspect, moonAspect, somAspect, start;
-        private readonly bool still, live;
+        private readonly bool still, live, liveMoon;
         private Color tint = Color.white;
         private float w, h, skyBottom, refW;
         private float somX, somY, somR, rainTop;
@@ -101,10 +106,22 @@ namespace GridGame.App
             bg.style.backgroundImage = StyleKeyword.None;
             bg.style.overflow = Overflow.Hidden;
 
+            depth = def.Parallax?.Depths ?? new StageDepthsDef();
             sky = Layer(skyTex);
-            var moonTex = Load(def.Moon?.Image);
-            moon = moonTex != null ? Layer(moonTex) : null;
-            moonAspect = moonTex != null ? (float)moonTex.height / moonTex.width : 1f;
+            // GG-T681: the Moon is a live 3D body (MoonRig, on the Manalith's render path) when asked for, else its image.
+            if (def.Moon?.Model == "procedural")
+            {
+                moon = Layer(null);
+                if (MoonRig.Attach(moon)) liveMoon = true;
+                else { bg.Remove(moon); moon = null; }
+            }
+            if (moon == null)
+            {
+                var moonTex = Load(def.Moon?.Image);
+                moon = moonTex != null ? Layer(moonTex) : null;
+                moonAspect = moonTex != null ? (float)moonTex.height / moonTex.width : 1f;
+            }
+            else moonAspect = 1f;
             var rnd = new System.Random(); // cosmetic: a fresh wake and a fresh roll for the Aetherain every time
             wake = def.DebrisFor(region);
             BuildDebris(rnd); // behind the body: it sits in front of its own wake
@@ -253,7 +270,7 @@ namespace GridGame.App
         {
             w = bg.resolvedStyle.width; h = bg.resolvedStyle.height;
             if (float.IsNaN(w) || float.IsNaN(h) || w <= 0f || h <= 0f) return;
-            float margin = still ? 0f : def.Parallax.Amplitude * 1.5f;
+            float margin = still ? 0f : MaxShift() * 1.5f;
             float coverW = Mathf.Max(w, h * aspect) * (1f + 2f * margin), coverH = coverW / aspect;
             float left = (w - coverW) / 2f, top = (h - coverH) / 2f;
             foreach (var plate in new[] { sky, fg })
@@ -264,7 +281,8 @@ namespace GridGame.App
             // Where this backdrop's sky ends on screen; bodies sit in the sky above it.
             skyBottom = Mathf.Clamp(top + layer.SkyBottom * coverH, h * 0.15f, h);
             refW = Mathf.Min(w, 0.6f * h);
-            if (moon != null) Place(moon, def.Moon.Size, moonAspect, def.Moon.X, def.Moon.Y, def.Moon.Rotation);
+            if (moon != null && liveMoon) Place(moon, def.Moon.Size / MoonRig.FillHeight, 1f, def.Moon.X, def.Moon.Y, 0f);
+            else if (moon != null) Place(moon, def.Moon.Size, moonAspect, def.Moon.X, def.Moon.Y, def.Moon.Rotation);
             // The live satellite fills FillHeight of its square frame, so the frame is enlarged to keep the body the
             // size the flat art was; it tumbles on its own, so no fixed rotation.
             if (som != null && live) Place(som, region.Size / ManalithRig.FillHeight, 1f, region.X, region.Y, 0f);
@@ -318,23 +336,34 @@ namespace GridGame.App
                 foreach (var (el, c) in tinted) el.style.backgroundColor = new Color(c.r * tint.r, c.g * tint.g, c.b * tint.b, c.a);
             }
             float t = still ? 0f : Time.realtimeSinceStartup - start;
-            float sway = still ? 0f : Mathf.Sin(2f * Mathf.PI * t / Mathf.Max(1f, def.Parallax.Seconds)) * def.Parallax.Amplitude * w;
-            sky.style.translate = new Translate(sway * 0.12f, 0f);
-            if (moon != null) moon.style.translate = new Translate(sway * 0.18f, 0f);
+            // The whole stage moves as one camera: a depth-1 layer shifts by `shift`, a depth-d layer by d x shift.
+            var shift = still ? Vector2.zero : Shift(t);
+            sky.style.translate = Move(shift, depth.Sky);
+            if (moon != null) moon.style.translate = Move(shift, depth.Moon);
             float bob = still ? 0f : Mathf.Sin(t * 0.11f) * 0.004f * h;
-            if (som != null)
-                som.style.translate = new Translate(sway * 0.3f, bob);
-            TickWake(t, sway * 0.3f, bob);
-            TickAetherain(t, sway);
+            var somShift = shift * depth.Manalith + new Vector2(0f, bob);
+            if (som != null) som.style.translate = new Translate(somShift.x, somShift.y);
+            TickWake(t, somShift.x, somShift.y);
+            TickAetherain(t, shift * depth.Foreground);
             foreach (var sh in shards)
             {
                 float sw = sh.Size * refW, span = w + 2f * sw;
                 float x = Mathf.Repeat(sh.X0 * span + t * sh.Speed * w, span) - sw;
-                sh.El.style.translate = new Translate(x + sway * (0.4f + 0.4f * sh.Size / Mathf.Max(0.001f, def.Shards.MaxSize)), 0f);
+                float d = Mathf.Lerp(depth.ShardsFar, depth.ShardsNear, sh.Size / Mathf.Max(0.001f, def.Shards.MaxSize));
+                sh.El.style.translate = new Translate(x + shift.x * d, shift.y * d);
                 sh.El.style.rotate = new Rotate(sh.Angle0 + t * sh.Spin);
             }
-            fg.style.translate = new Translate(sway, 0f);
+            fg.style.translate = Move(shift, depth.Foreground);
         }
+
+        private static Translate Move(Vector2 shift, float d) => new Translate(shift.x * d, shift.y * d);
+
+        /// <summary>How far a depth-1 layer is moved at time <paramref name="t"/>, in pixels: the idle sway.</summary>
+        private Vector2 Shift(float t) =>
+            new Vector2(Mathf.Sin(2f * Mathf.PI * t / Mathf.Max(1f, def.Parallax.Seconds)) * def.Parallax.Amplitude * w, 0f);
+
+        /// <summary>The most a depth-1 layer can move, as a share of the width (the plates are enlarged to hide edges).</summary>
+        private float MaxShift() => def.Parallax.Amplitude;
 
         /// <summary>The wake follows the Somnolith (its sway and bob); each piece drifts from the body to the far end and
         /// starts again near the body, shrinking and fading as it goes. Reduce Motion holds every piece where it began.</summary>
@@ -363,8 +392,9 @@ namespace GridGame.App
         }
 
         /// <summary>The Aetherain: glints fall from the wake's band to the bottom of the screen, drifting and twinkling.</summary>
-        private void TickAetherain(float t, float sway)
+        private void TickAetherain(float t, Vector2 follow)
         {
+            float sway = follow.x;
             if (motes.Count == 0) return;
             float fallTo = h;
             foreach (var m in motes)
@@ -373,7 +403,7 @@ namespace GridGame.App
                 float mw = m.Size * refW;
                 float y = Mathf.Lerp(rainTop, fallTo + mw, f);
                 float x = m.X0 * w + Mathf.Sin(t * 2f * Mathf.PI * m.DriftHz + m.Seed) * m.Drift * w + sway;
-                m.El.style.translate = new Translate(x - mw / 2f, y - mw / 2f);
+                m.El.style.translate = new Translate(x - mw / 2f, y + follow.y - mw / 2f);
                 float twinkle = 0.55f + 0.45f * Mathf.Sin(t * m.Twinkle * 2f * Mathf.PI + m.Seed);
                 float edge = Mathf.Clamp01(f / 0.08f) * Mathf.Clamp01((1f - f) / 0.08f);
                 m.El.style.opacity = rain.Opacity * twinkle * edge;
