@@ -768,5 +768,40 @@
     "Term": "Guarded",
     "LinkKind": "Buff",
     "LinkId": "guarded"
+  },
+  {
+    "Id": "clutch",
+    "Term": "Clutch",
+    "Aliases": [
+      "Clutch!"
+    ]
+  },
+  {
+    "Id": "clutch_cast_through",
+    "Term": "Clutch: Cast Through"
+  },
+  {
+    "Id": "clutch_blind_crit",
+    "Term": "Clutch: Blind Crit"
+  },
+  {
+    "Id": "clutch_last_stand",
+    "Term": "Clutch: Last Stand"
+  },
+  {
+    "Id": "clutch_finisher",
+    "Term": "Clutch: Finisher"
+  },
+  {
+    "Id": "clutch_double_pincer",
+    "Term": "Clutch: Double Pincer"
+  },
+  {
+    "Id": "clutch_hazard_kill",
+    "Term": "Clutch: Hazard Kill"
+  },
+  {
+    "Id": "clutch_last_tick",
+    "Term": "Clutch: Last-Tick Interrupt"
   }
 ]

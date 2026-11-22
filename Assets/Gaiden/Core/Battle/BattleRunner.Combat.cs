@@ -166,6 +166,10 @@ namespace GridGame.Core.Battle
         {
             var pincers = PincerDetector.Detect(S, team, dropped);
             supportTurnOwner = team == Team.Enemy ? mustInclude : null; // GG-T307: whose own turn this enemy pincer is
+            // GG-T571: a hero's move (a drop or a teleport) that closes ClutchPincersInOneMove pincers is a DoublePincer,
+            // awarded as the pincer that reaches the count forms.
+            bool heroMove = team == Team.Hero && mustInclude == null && dropped != null && dropped.IsHero;
+            int clutchAt = BattleConfig.ClutchPincersInOneMove;
             int chain = 0;
             foreach (var p in pincers)
             {
@@ -179,6 +183,7 @@ namespace GridGame.Core.Battle
                     if (chain > 0) Emit(new RespiteEvent { Attacker1 = p.A.Id, Attacker2 = p.B.Id });
                     continue;
                 }
+                if (heroMove && clutchAt >= 2 && chain + 1 == clutchAt) Clutch(dropped, ClutchKind.DoublePincer);
                 ResolvePincer(p, team, chain++);
             }
         }
@@ -399,7 +404,7 @@ namespace GridGame.Core.Battle
             for (int i = 0; i < tiles && t.Alive && !S.IsOver; i++)
             {
                 var next = t.Pos + dir;
-                if (TryShoveIntoPit(t, next)) { Announce("Into the pit!", t.Id); return; } // GG-T368: shoved into an open hole
+                if (TryShoveIntoPit(t, next, caster)) { Announce("Into the pit!", t.Id); return; } // GG-T368: shoved into an open hole
                 if (!S.Walkable(next))
                 {
                     Announce("Slam!", t.Id);
@@ -424,6 +429,7 @@ namespace GridGame.Core.Battle
                 var from = t.Pos;
                 if (!Relocate(t, next)) return;
                 Emit(new DisplacedEvent { UnitId = t.Id, From = from, To = next, ByUnitId = caster.Id });
+                NoteShove(caster, t); // GG-T571: a region danger that kills it now is a HazardKill
                 ShovePickupsUnder(t, from); // knocked onto a pickup: a non-hero shoves it back to the tile it left (GG-T228)
                 TriggerTrap(t); // a hero springs traps; anyone runs the region rules' EnterTile hooks (GG-T368: a foe cracks the floor too)
             }
@@ -570,14 +576,66 @@ namespace GridGame.Core.Battle
         /// <summary>
         /// Clutch! (GG-T566): the one path for every "really cool" moment. Emits <see cref="ClutchEvent"/> (the white flash and
         /// CLUTCH! float), announces "Clutch!" and grants the shared bonus, <see cref="BattleConfig.ClutchCharge"/> mana
-        /// charge. No Rng draw of its own: whatever triggers it has already rolled. Kinds today: a hero's cast forced through
-        /// an interrupt, a hero's crit landed while Blind; more are chosen in GG-T571.
+        /// charge. No Rng draw of its own: whatever triggers it has already rolled. Heroes only, a switched-off kind
+        /// (<see cref="BattleConfig.ClutchDisabled"/>) does nothing, and GG-T571: at most one Clutch per action — the first
+        /// kind to qualify wins (§13.4.1 gives the order). Returns whether it was awarded.
         /// </summary>
-        private void Clutch(Unit unit, ClutchKind kind, int entryId = -1)
+        private bool Clutch(Unit unit, ClutchKind kind, int entryId = -1)
         {
+            if (unit == null || !unit.IsHero || clutchThisAction || !BattleConfig.ClutchEnabled(kind)) return false;
+            clutchThisAction = true;
             Emit(new ClutchEvent { EntryId = entryId, CasterId = unit.Id, Kind = kind });
             Announce("Clutch!", unit.Id);
             if (BattleConfig.ClutchCharge > 0) AddCharge(BattleConfig.ClutchCharge, unit.Id, "clutch");
+            return true;
+        }
+
+        // ── Clutch! bookkeeping (GG-T571). The runner lives for one command, so these start clear every command. ──
+
+        /// <summary>A Clutch was already awarded in this action. An action is the hero's command itself, then each arrival on
+        /// the timeline it runs (a cast resolving, a turn, a rule event): <see cref="BeginClutchAction"/>.</summary>
+        private bool clutchThisAction;
+        /// <summary>HazardKill: foes a hero's knockback/pull moved this command, with that hero.</summary>
+        private readonly Dictionary<int, Unit> shovedByHero = new Dictionary<int, Unit>();
+        /// <summary>HazardKill: &gt; 0 while a hole's fall or a region rule's damage is landing (the "hazard" in the kill).</summary>
+        private int hazardDamageDepth;
+        /// <summary>Finisher: the hero whose blow killed the latest real foe this action (null after any other foe death).</summary>
+        private Unit finisherHero;
+
+        private void BeginClutchAction() { clutchThisAction = false; finisherHero = null; }
+
+        /// <summary>A hero's knockback or pull is about to move <paramref name="t"/>: remember who, for HazardKill.</summary>
+        private void NoteShove(Unit caster, Unit t)
+        {
+            if (caster != null && caster.IsHero && t != null && t.Team == Team.Enemy) shovedByHero[t.Id] = caster;
+        }
+
+        /// <summary>GG-T571: a foe just died (from <see cref="Kill"/>). Corpses and snake segments change nothing; remains,
+        /// eggs and a revived foe's second death (already looted) earn nothing and clear the Finisher. A real foe's death:
+        /// LastStand when a low-HP hero dealt it, HazardKill when a hole or region danger did it to a foe a hero shoved, and
+        /// the Finisher candidate is set (the wave check awards it).</summary>
+        private void NoteFoeDeathForClutch(Unit u, Unit killer, bool alreadyLooted)
+        {
+            if (u.Team != Team.Enemy || u.IsCorpse || u.IsSnakeSegment) return;
+            bool real = !u.IsRemains && !u.IsEgg && !alreadyLooted;
+            bool byHero = killer != null && killer.IsHero;
+            finisherHero = real && byHero ? killer : null;
+            if (!real) return;
+            if (byHero)
+            {
+                float f = BattleConfig.ClutchLastStandHpFraction;
+                if (f > 0f && killer.Alive && killer.Hp <= killer.MaxHp * f) Clutch(killer, ClutchKind.LastStand);
+            }
+            else if (killer == null && hazardDamageDepth > 0 && shovedByHero.TryGetValue(u.Id, out var shover))
+                Clutch(shover, ClutchKind.HazardKill);
+        }
+
+        /// <summary>GG-T571: the wave just cleared (or the battle was won): a Finisher when a hero's blow felled the last foe.</summary>
+        private void ClutchFinisher()
+        {
+            var h = finisherHero;
+            finisherHero = null;
+            if (h != null) Clutch(h, ClutchKind.Finisher);
         }
 
         /// <summary>Cast-stagger interrupt: Clutch (hero only) → WIS shrug → delay; cancel once delay ≥ cast time.</summary>
@@ -607,6 +665,7 @@ namespace GridGame.Core.Battle
                 * (1f + attacker.Effective.Strength / BattleConfig.InterruptStrengthScale)
                 / (1f + cs.Wisdom / BattleConfig.InterruptWisdomDelayScale);
             int delay = Formulas.SecondsToTicks(delaySec);
+            int leftBefore = cast.RemainingTicks; // GG-T571: how close it was to landing when this hit came in
             cast.AccumulatedDelayTicks += delay;
             cast.RemainingTicks += delay;
             Emit(new CastStaggeredEvent { EntryId = cast.Id, CasterId = caster.Id, DelayTicks = delay });
@@ -618,6 +677,10 @@ namespace GridGame.Core.Battle
                 if (cast.CasterTeam == Team.Enemy)
                 {
                     AddCharge(BattleConfig.InterruptCharge, caster.Id, "interrupt");
+                    // GG-T571: cancelled within the last tick window of landing — a LastTickInterrupt Clutch for the hero.
+                    float window = BattleConfig.ClutchLastTickSeconds;
+                    if (window > 0f && attacker.IsHero && leftBefore <= Formulas.SecondsToTicks(window))
+                        Clutch(attacker, ClutchKind.LastTickInterrupt, cast.Id);
                 }
             }
         }

@@ -1598,3 +1598,20 @@ then *"the Somnolith needs to be the same in every picture"*, with a reference p
   by progress, drifting shards, foreground plate); designed in §27.3, built by GG-T576.
 - *Why:* the fixed Moon gives the player a sense of scale, so the Somnolith's approach reads as time running out, and a
   single unchanging Somnolith asset keeps it the same object in every scene.
+
+## 2026-11-21 — More Clutch! kinds, one per action (owner, GG-T571)
+
+Owner: *"there are other combinations of things that should be considered 'Clutch!'"*, then "do" on the recommended five.
+
+- **Was:** two Clutch kinds (`CastThroughInterrupt`, `BlindCrit`), and nothing kept one action from paying out more than
+  one Clutch.
+- **Now ([BIBLE §13.4.1](BIBLE.md#1341-clutch-added-2026-11-21-gg-t566)):** five more kinds on the same path, heroes only,
+  no Rng draw: `LastStand` (a kill at 15 % HP or less), `Finisher` (the blow that fells a wave's last real foe),
+  `DoublePincer` (one move closes 2+ pincers), `HazardKill` (a hero's knockback/pull carries a foe into a hole or region
+  danger that kills it) and `LastTickInterrupt` (cancelling a foe's charge with 0.5 s or less left). At most one Clutch
+  per action (the command, then each timeline arrival); the first to qualify wins. A revived foe, remains, eggs, corpses
+  and snake segments never count for kills. Tunables and per-kind switches in `BattleConfig`; each kind has a stable id
+  and a glossary entry (`glossary:clutch_<id>`, seed text, drafted to Prose as batch `clutch-571`); the view names the
+  kind under "CLUTCH!". Not adopted (future): an exact mana rollover, a shattering-weapon kill, a Taunting tank at 1 HP,
+  a kill while debuffed.
+- *Why:* a bonus for doing really cool things; one per action keeps a big combo from stacking the bonus.

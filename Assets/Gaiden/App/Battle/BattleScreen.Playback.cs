@@ -1731,6 +1731,12 @@ namespace GridGame.App
             yield return Tween.Fade(flash, 0.9f * Mathf.Max(0.3f, Fx), 0f, 0.35f);
             flash.RemoveFromHierarchy();
             yield return FloatText(c.CasterId, "CLUTCH!", Palette.GoldLight, 0.3f, 90);
+            // GG-T571: what earned it, small under the float: the kind's glossary headword, "Clutch: " dropped.
+            if (App.Content.GlossaryIndex.TryGetValue(ClutchKinds.GlossaryId(c.Kind), out var g) && !string.IsNullOrEmpty(g.Term))
+            {
+                string name = g.Term.StartsWith("Clutch: ", System.StringComparison.Ordinal) ? g.Term.Substring(8) : g.Term;
+                yield return FloatText(c.CasterId, name, Palette.GoldLight, 0.2f, 40);
+            }
         }
 
         private IEnumerator AbilityAnim(AbilityResolvedEvent ar)

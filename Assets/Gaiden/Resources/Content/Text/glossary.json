@@ -432,6 +432,121 @@
         "definition": "Swings wide, hitting several foes at once."
       }
     },
+    "glossary:clutch": {
+      "key": "glossary:clutch",
+      "id": "glossary-clutch",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:70e4c5933869c1c7d0e06d69b6e614fed1750b5e4b526bf27f8dd4c02f8d7c16",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch",
+        "definition": "A Clutch! is a hero's reward for a really cool moment in battle: a white flash, a \"Clutch!\" call and a burst of bonus mana charge, earned at most once per action.",
+        "aliases": [
+          "Clutch!"
+        ]
+      }
+    },
+    "glossary:clutch_blind_crit": {
+      "key": "glossary:clutch_blind_crit",
+      "id": "glossary-clutch-blind-crit",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ebe6d2a4b984289a91d1530624174b776469c8d5476fcac47a9db28d98b3658c",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Blind Crit",
+        "definition": "A hero lands a critical hit while Blind, against the lowered odds: a [Clutch]."
+      }
+    },
+    "glossary:clutch_cast_through": {
+      "key": "glossary:clutch_cast_through",
+      "id": "glossary-clutch-cast-through",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:4250ce41dd8a8f192d51b3a606b88cc5df61bf93fcf0a6d2b06df62b50491dac",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Cast Through",
+        "definition": "A hero's spell is struck while still casting and, on a lucky Luck roll, goes off anyway: a [Clutch]."
+      }
+    },
+    "glossary:clutch_double_pincer": {
+      "key": "glossary:clutch_double_pincer",
+      "id": "glossary-clutch-double-pincer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:10c5d68e4672d2412ce96cf26c77e136c3f65ff6b603bf46dab98b78186a71b2",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Double Pincer",
+        "definition": "A single move closes two or more pincers at once: a [Clutch] for the hero who moved."
+      }
+    },
+    "glossary:clutch_finisher": {
+      "key": "glossary:clutch_finisher",
+      "id": "glossary-clutch-finisher",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8380642ea761998f506640dd55c791c7887991ba4df1370e32250fe35bd3378c",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Finisher",
+        "definition": "A hero lands the blow that clears a wave or wins the battle: a [Clutch]. Finishing off remains or an egg does not count."
+      }
+    },
+    "glossary:clutch_hazard_kill": {
+      "key": "glossary:clutch_hazard_kill",
+      "id": "glossary-clutch-hazard-kill",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:40e8a227a888365bd28688201981c0254f225ca7e822f62bfe853b1f4c0619f3",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Hazard Kill",
+        "definition": "A hero knocks back or pulls a foe into a hole or a deadly tile, and the fall or the tile finishes it: a [Clutch]."
+      }
+    },
+    "glossary:clutch_last_stand": {
+      "key": "glossary:clutch_last_stand",
+      "id": "glossary-clutch-last-stand",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e01053e55c337995ae61b9a34582df5f7b5350137230e7123a818d00cbbcfa36",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Last Stand",
+        "definition": "A hero at 15% of their max HP or less lands a killing blow: a [Clutch]."
+      }
+    },
+    "glossary:clutch_last_tick": {
+      "key": "glossary:clutch_last_tick",
+      "id": "glossary-clutch-last-tick",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bed617ebe49c6dda6db433bbac08d3fa037ce07316a776b0198f5a35c5a10858",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Last-Tick Interrupt",
+        "definition": "A hero interrupts a foe's charge in its final half second before it lands: a [Clutch]."
+      }
+    },
     "glossary:combo_finishes": {
       "key": "glossary:combo_finishes",
       "id": "glossary-combo-finishes",

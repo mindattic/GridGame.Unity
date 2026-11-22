@@ -110,6 +110,7 @@ namespace GridGame.Core.Battle
                 }
                 if (next == null) break;
                 ReportAdvance();
+                BeginClutchAction(); // GG-T571: each arrival (a cast resolving, a turn, a rule event) is its own action
                 if (next.Kind == TimelineKind.Cast) { ResolveCast(next); CheckTilesStrict("cast " + next.AbilityId); }
                 else if (next.Kind == TimelineKind.Hazard) { ResolveHazard(next); CheckTilesStrict("rule event " + next.RuleEvent); }
                 else

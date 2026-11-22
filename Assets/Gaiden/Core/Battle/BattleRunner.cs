@@ -62,6 +62,8 @@ namespace GridGame.Core.Battle
             }
             pushedThisAction.Clear();
             firedThisAction.Clear();
+            BeginClutchAction(); // GG-T571: one Clutch per action
+            shovedByHero.Clear();
             int waveBefore = S.Wave;
             // GG-T308 (§2.0): what this hero's action spends of the party's window, measured before it resolves (a drag's
             // hold is a share of the window as it stood at pickup).
@@ -481,6 +483,7 @@ namespace GridGame.Core.Battle
                 int clearCoins = Math.Max(0, S.Stage.Waves[S.Wave].ClearCoins);
                 S.Results.Coins += clearCoins;
                 Emit(new WaveClearedEvent { Wave = S.Wave, Coins = clearCoins });
+                ClutchFinisher(); // GG-T571: a hero's blow felled the last foe
                 if (S.Wave + 1 < S.Stage.Waves.Count)
                 {
                     S.Wave++;
@@ -649,6 +652,7 @@ namespace GridGame.Core.Battle
             if (tempoBuffs != null) foreach (var b in tempoBuffs) DropBuffTempo(b.Def.Id);
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
             Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
+            NoteFoeDeathForClutch(u, killer, u.AlreadyLooted); // GG-T571: LastStand, HazardKill, the Finisher candidate
             if (u.IsCorpse) { Announce("Cleared away", u.Id); return; }
             if (u.IsRemains) { Announce("Laid to rest", u.Id); return; }
             // A fallen guest is down, not gone (GG-T114): revive them and they can still be recruited.

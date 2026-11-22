@@ -270,7 +270,7 @@ Owner: *"we are aiming for a polished, releasable game once the story has been e
 - **Cast icon** — a spell with a cast time is a diamond on the same bar as the turns, born at `castSeconds / BarSeconds`, and resolves when it reaches the left edge. ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond))
 - **Prominence diamond** — the large diamond at the timeline's left end showing who acts next, with its seconds ("NOW" while acting). ([§2.6](#26-one-track-diamond-icons-the-prominence-diamond))
 - **Sentient** — the enemy tag for a foe with a society or that plans ahead; only Sentient enemies (and every hero) may be pincer attackers. ([§1.3](#13-sentient-restriction))
-- **Clutch** — the reward for a really cool moment (flash, "Clutch!", bonus mana charge): a rare LCK interrupt outcome on hero casts (the hit is shrugged and the cast resolves on the spot), or a hero's crit landed while Blind. ([§13.4.1](#1341-clutch-added-2026-11-21-gg-t566))
+- **Clutch** — the reward for a really cool moment (flash, "Clutch!", bonus mana charge): a rare LCK interrupt outcome on hero casts (the hit is shrugged and the cast resolves on the spot), a hero's crit landed while Blind, a kill at 15 % HP or less (Last Stand), the blow that clears a wave (Finisher), two pincers from one move (Double Pincer), a foe shoved into a lethal hazard (Hazard Kill) or a foe's charge interrupted in its last half second (Last-Tick Interrupt); one per action. ([§13.4.1](#1341-clutch-added-2026-11-21-gg-t566))
 - **ManaBank / orb** — shared 12-orb pool of identical orbs; any orbs pay any spell. ([§3.1](#31-mana-the-orb-economy))
 - **Drag timer** — optional Terra Battle–style 4 s limit per drag (Settings). ([§2.9](#29-drag-timer-optional))
 - **Time-banked orbs** — Blue orbs minted from drag-timer seconds left at the drop. ([§3.1.8](#318-time-banked-orbs))
@@ -2070,7 +2070,28 @@ A **Clutch!** is the game's reward for a really cool moment. Every kind goes thr
 - **`CastThroughInterrupt`**: a hero's cast forced through an interrupt by the LCK roll above (step 1); the cast then resolves.
 - **`BlindCrit`**: a hero lands a **Critical while Blind**. Blind (`Unit.IsBlinded`, any accuracy-lowering debuff; today `blinded`, ×0.5) lowers the crit chance by the same factor as the hit chance, on weapon blows (`Formulas.RollHit`, [§13.1.1](#1311-physical-pincer-supporter-enemy-melee)) and on hero spell crits (`SpellCritFraction` × accuracy), so a Blind crit is rare. Hit-before-crit alone would not have lowered it (it only caps crit at the halved hit chance, which a typical 10-30 % crit sits under). The crit still earns its usual `CritCharge` too.
 
-More combinations are being chosen in GG-T571; each will be a new `ClutchKind` on the same path.
+**Added 2026-11-21 (GG-T571, owner: "do", on the recommendation):** five more kinds, heroes only, deterministic (no Rng draw of their own), each a new `ClutchKind` on the same path:
+
+- **`LastStand`**: a hero at or below **`BattleConfig.ClutchLastStandHpFraction` (15 %)** of max HP lands a killing blow.
+- **`Finisher`**: a hero's blow fells the last foe, clearing the wave or winning the battle (`WaveClearedEvent`, then the Clutch). The last foe has to be a real one: when only remains or an egg were left to clear, or the wave ended to a tick, a hazard or a foe's own doing, there is none.
+- **`DoublePincer`**: one hero move (a drop, or a teleport) closes **`BattleConfig.ClutchPincersInOneMove` (2)** or more pincers that strike; awarded to the mover as the pincer that reaches the count forms.
+- **`HazardKill`**: a hero's knockback or pull carries a foe into an open hole (the fall) or onto a region danger (a rule's `Damage` effect or drag collision), and that hazard kills it in the same command. Its own Slam/Crash damage is the hero's blow, not a hazard.
+- **`LastTickInterrupt`**: a hero's hit **cancels** a foe's charge ("Interrupted!") when the charge had at most **`BattleConfig.ClutchLastTickSeconds` (0.5 s)** of timeline left before landing (measured before this hit's stagger).
+
+Kill-based kinds (`LastStand`, `Finisher`, `HazardKill`) never count a revived foe's second death (`Unit.AlreadyLooted`), remains, eggs, corpses or snake segments.
+
+**One Clutch per action; the first to qualify wins.** An *action* is the hero's command itself (`BattleRunner.Apply`), then each arrival on the timeline that command runs into (a cast resolving, a turn, a rule event: `BeginClutchAction`). A Clutch that would follow another in the same action is dropped whole (no float, no bonus); a dropped `CastThroughInterrupt` still forces its cast through. The kinds come up in the order the action happens:
+
+1. `DoublePincer`, as the move's second pincer forms (after the first pincer's blows);
+2. at each kill inside a blow: `LastStand` (a hero dealt it) or `HazardKill` (a hole or region danger did);
+3. after the blow lands: `BlindCrit`; on a hit on a caster: `CastThroughInterrupt` (a hero's cast) or `LastTickInterrupt` (a foe's charge);
+4. `Finisher`, when the wave end is checked after the action's blows.
+
+So a Blind crit that kills at 10 % HP reads as `LastStand`, and a double pincer whose first pincer lands a Blind crit reads as `BlindCrit`.
+
+**Tuning:** the three numbers above live in `BattleConfig`; `BattleConfig.ClutchDisabled` switches any kind off (0 / below 2 also switch the numeric ones off). The bonus stays the one shared `ClutchCharge`. The view shows the kind's glossary headword small under "CLUTCH!" (`glossary:clutch_<id>`, the "Clutch: " prefix dropped). Stable ids (`ClutchKinds.Id`, glossary `clutch_<id>`): `cast_through`, `blind_crit`, `last_stand`, `finisher`, `double_pincer`, `hazard_kill`, `last_tick`. Replays carry the kind by name on `ClutchEvent`; nothing new lives in `BattleState` (the bookkeeping is the one-command runner's).
+
+**Not adopted (future candidates, GG-T571):** a mana rollover that lands exactly on an orb; a kill with the blow that shatters the weapon; a Taunting tank surviving a hit at 1 HP; a kill while the hero is debuffed.
 
 **Enemy charges** ([§14.2](#142-enemy-archetypes-design-palette)): `EnemyPlanner.PlanCast` lets a unit with a `ChargeAbility`, not immobile and **not adjacent to any hero** (unless its boss phase `PrefersCharge`), queue a charge on the nearest hero instead of moving. **Amended 2026-10-09:**
 - Single-target charges **lock onto the hero**, wherever it moves — dodge only by interrupting (or killing).

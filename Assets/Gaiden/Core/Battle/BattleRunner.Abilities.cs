@@ -405,11 +405,12 @@ namespace GridGame.Core.Battle
                 var dir = AxisToward(t.Pos, caster.Pos);
                 if (dir.X == 0 && dir.Y == 0) return;
                 var next = t.Pos + dir;
-                if (TryShoveIntoPit(t, next)) return; // GG-T368: dragged into an open hole
+                if (TryShoveIntoPit(t, next, caster)) return; // GG-T368: dragged into an open hole
                 if (!S.FreeToEnter(next)) return;
                 var from = t.Pos;
                 if (!Relocate(t, next)) return;
                 Emit(new DisplacedEvent { UnitId = t.Id, From = from, To = next, ByUnitId = caster.Id });
+                NoteShove(caster, t); // GG-T571: a region danger that kills it now is a HazardKill
                 ShovePickupsUnder(t, from);
                 TriggerTrap(t); // a hero springs traps; anyone runs the region rules' EnterTile hooks (GG-T368)
             }

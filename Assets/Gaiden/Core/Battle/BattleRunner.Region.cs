@@ -181,7 +181,9 @@ namespace GridGame.Core.Battle
                 case RuleEffectKind.ClearTiles: ClearTiles(e, ctx); break;
                 case RuleEffectKind.ModifyTiles: ModifyTiles(e, ctx); break;
                 case RuleEffectKind.Damage:
+                    hazardDamageDepth++; // GG-T571: region danger, for a HazardKill
                     foreach (var u in RuleUnitsOf(e, ctx)) if (u.Alive) Damage(u, e.Amount, null, HitKind.Normal, e.DamageType, RuleLabel(ctx));
+                    hazardDamageDepth--;
                     break;
                 case RuleEffectKind.Heal:
                     foreach (var u in RuleUnitsOf(e, ctx)) if (u.Alive) Heal(u, e.Amount, null);
@@ -383,11 +385,13 @@ namespace GridGame.Core.Battle
 
         /// <summary>A shove, pull or rule move would carry <paramref name="u"/> into an open hole on <paramref name="next"/>:
         /// it goes in and falls (true), instead of slamming into it as a wall.</summary>
-        private bool TryShoveIntoPit(Unit u, Coord next)
+        /// <param name="by">The hero whose knockback/pull it is, if any: a fall that kills is its HazardKill Clutch (GG-T571).</param>
+        private bool TryShoveIntoPit(Unit u, Coord next, Unit by = null)
         {
             if (PreviewOnly || S.Region.Tiles.Count == 0 || !BattleState.InBounds(next)) return false;
             var def = PitFor(u, next, out var mark);
             if (def == null) return false;
+            NoteShove(by, u);
             Fall(u, next, u.Pos, def, mark.Rule);
             return true;
         }
@@ -427,7 +431,7 @@ namespace GridGame.Core.Battle
             Emit(fell);
             if (u.Pos != from) ShovePickupsUnder(u, hole);
             if (BreaksOnMove(u)) RemoveBuffsWhere(u, b => b.Def.BreaksOnMove, "moved");
-            if (def.FallDamage > 0f) Damage(u, dmg, null, HitKind.Normal, DamageType.Physical, "Fell!");
+            if (def.FallDamage > 0f) { hazardDamageDepth++; Damage(u, dmg, null, HitKind.Normal, DamageType.Physical, "Fell!"); hazardDamageDepth--; } // GG-T571
             if (u.Alive && u.Pos != from) TriggerTrap(u); // it lands somewhere new: a trap, a pickup, a tile's hooks
             if (fell.SwappedId >= 0 && S.UnitById(fell.SwappedId) is Unit o && o.Alive) TriggerTrap(o);
         }
@@ -591,8 +595,10 @@ namespace GridGame.Core.Battle
                         var blocker = S.UnitAt(next);
                         if (e.CollideDamage > 0 && blocker != null && blocker != u && blocker.Alive && !blocker.IsCorpse && !blocker.IsRemains)
                         {
+                            hazardDamageDepth++; // GG-T571: region danger, for a HazardKill
                             Damage(u, e.CollideDamage, null, HitKind.Normal, DamageType.Physical, RuleLabel(ctx));
                             if (blocker.Alive && !S.IsOver) Damage(blocker, e.CollideDamage, null, HitKind.Normal, DamageType.Physical, RuleLabel(ctx));
+                            hazardDamageDepth--;
                         }
                         break;
                     }

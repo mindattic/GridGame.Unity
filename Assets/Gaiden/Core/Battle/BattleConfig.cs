@@ -124,6 +124,16 @@ namespace GridGame.Core.Battle
         /// <summary>The Clutch! bonus (GG-T566): mana charge every Clutch grants, whatever earned it (a hero's cast forced
         /// through an interrupt, a crit landed while Blind; more kinds may follow, GG-T571). One shared knob.</summary>
         public const int ClutchCharge = 20;
+        /// <summary>GG-T571 (§13.4.1): LastStand — the killer is at or below this share of its max HP (0 turns the kind off).</summary>
+        public static float ClutchLastStandHpFraction = 0.15f;
+        /// <summary>GG-T571: DoublePincer — this many pincers closed by one move (below 2 turns the kind off).</summary>
+        public static int ClutchPincersInOneMove = 2;
+        /// <summary>GG-T571: LastTickInterrupt — the cancelled foe charge had at most this much timeline left (0 turns it off).</summary>
+        public static float ClutchLastTickSeconds = 0.5f;
+        /// <summary>GG-T571: Clutch kinds switched off (no flash, no float, no bonus). Empty = every kind on. A switched-off
+        /// CastThroughInterrupt still forces the cast through (that is the interrupt rule); only the Clutch bonus goes.</summary>
+        public static readonly System.Collections.Generic.HashSet<ClutchKind> ClutchDisabled = new System.Collections.Generic.HashSet<ClutchKind>();
+        public static bool ClutchEnabled(ClutchKind k) => !ClutchDisabled.Contains(k);
 
         // ── Supporters (§1.2.3) ─────────────────────────────────────────────────────
         public const float SupporterDamageFraction = 0.5f;

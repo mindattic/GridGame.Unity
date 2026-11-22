@@ -294,18 +294,51 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"CastCancelled {CasterId} {AbilityId} ({Reason})";
     }
 
-    /// <summary>What earned a Clutch! (GG-T566; more combinations to come, GG-T571).</summary>
+    /// <summary>What earned a Clutch! (GG-T566, GG-T571; §13.4.1). Append only: replays store the name, saves never.</summary>
     public enum ClutchKind
     {
         /// <summary>A hero's cast forced through an interrupt (Luck roll, §13.4).</summary>
         CastThroughInterrupt,
         /// <summary>A critical hit landed while Blind (§13.1.1).</summary>
         BlindCrit,
+        /// <summary>GG-T571: a hero at or below <see cref="BattleConfig.ClutchLastStandHpFraction"/> of max HP lands a killing blow.</summary>
+        LastStand,
+        /// <summary>GG-T571: a hero lands the blow that clears the wave or wins the battle (not on remains or an egg).</summary>
+        Finisher,
+        /// <summary>GG-T571: one move closes <see cref="BattleConfig.ClutchPincersInOneMove"/> or more pincers.</summary>
+        DoublePincer,
+        /// <summary>GG-T571: a hero's shove, knockback or pull carries a foe into a hole or region danger that kills it.</summary>
+        HazardKill,
+        /// <summary>GG-T571: a hero interrupts a foe's charge within <see cref="BattleConfig.ClutchLastTickSeconds"/> of it landing.</summary>
+        LastTickInterrupt,
+    }
+
+    /// <summary>GG-T571: each <see cref="ClutchKind"/>'s stable id and its glossary entry (<c>clutch_&lt;id&gt;</c>).</summary>
+    public static class ClutchKinds
+    {
+        public static string Id(ClutchKind k)
+        {
+            switch (k)
+            {
+                case ClutchKind.CastThroughInterrupt: return "cast_through";
+                case ClutchKind.BlindCrit: return "blind_crit";
+                case ClutchKind.LastStand: return "last_stand";
+                case ClutchKind.Finisher: return "finisher";
+                case ClutchKind.DoublePincer: return "double_pincer";
+                case ClutchKind.HazardKill: return "hazard_kill";
+                case ClutchKind.LastTickInterrupt: return "last_tick";
+                default: return k.ToString().ToLowerInvariant();
+            }
+        }
+
+        /// <summary>The glossary entry naming and defining the kind (Content/glossary.json; its words come from Prose).</summary>
+        public static string GlossaryId(ClutchKind k) => "clutch_" + Id(k);
     }
 
     public sealed class ClutchEvent : BattleEvent
     {
-        /// <summary>The cast entry a <see cref="ClutchKind.CastThroughInterrupt"/> forced through; -1 otherwise.</summary>
+        /// <summary>The cast entry a <see cref="ClutchKind.CastThroughInterrupt"/> forced through, or the foe's charge a
+        /// <see cref="ClutchKind.LastTickInterrupt"/> cancelled; -1 otherwise.</summary>
         public int EntryId = -1;
         public int CasterId;
         public ClutchKind Kind;
