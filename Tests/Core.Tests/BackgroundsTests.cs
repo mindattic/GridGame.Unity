@@ -56,8 +56,10 @@ namespace GridGame.Tests
             Assert.That(s.Count, Is.EqualTo(count).And.AtLeast(4), $"{set}: every image the art gives it");
             for (int i = 0; i < s.Count; i++)
             {
-                var file = Path.Combine(Folder, $"{set}-{i:00}.jpg");
-                Assert.That(JpegSize(file), Is.EqualTo((w, h)), $"{Path.GetFileName(file)}: the original resolution, not downscaled");
+                var png = Path.Combine(Folder, $"{set}-{i:00}.png");
+                var file = File.Exists(png) ? png : Path.Combine(Folder, $"{set}-{i:00}.jpg");
+                var size = File.Exists(png) ? PngSize(file) : JpegSize(file);
+                Assert.That(size, Is.EqualTo((w, h)), $"{Path.GetFileName(file)}: the original resolution, not downscaled");
             }
             Assert.That(OnDisk(Backdrops.Key(set, count)), Is.False, $"{set} has exactly {count}");
         }
@@ -119,6 +121,16 @@ namespace GridGame.Tests
             foreach (var legacy in new[] { "greenvalley", "desert", "swamp", "cave", "cityruins" })
                 Assert.That(files.Where(f => f.StartsWith(legacy + "_") || f.StartsWith(legacy + "-")), Is.Empty, $"no legacy {legacy} files");
             Assert.That(Directory.GetFiles(Folder, "*.meta").Length, Is.EqualTo(files.Count), "no orphaned .meta");
+        }
+
+        /// <summary>A PNG's pixel size, from its IHDR chunk (always first, right after the signature).</summary>
+        private static (int w, int h) PngSize(string path)
+        {
+            var b = File.ReadAllBytes(path);
+            Assert.That(b.Length > 24 && b[0] == 0x89 && b[1] == 0x50 && b[2] == 0x4E && b[3] == 0x47, $"{Path.GetFileName(path)} is a PNG");
+            int w = (b[16] << 24) | (b[17] << 16) | (b[18] << 8) | b[19];
+            int h = (b[20] << 24) | (b[21] << 16) | (b[22] << 8) | b[23];
+            return (w, h);
         }
 
         /// <summary>A baseline or progressive JPEG's pixel size, from its first SOF marker.</summary>

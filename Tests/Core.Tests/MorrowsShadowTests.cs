@@ -17,7 +17,8 @@ namespace GridGame.Tests
         private static readonly string[] Stages = { "morrowsshadow-01", "morrowsshadow-02", "morrowsshadow-03" };
 
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
+            || File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
 
         private static bool PortraitOnDisk(string id) =>
             File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
