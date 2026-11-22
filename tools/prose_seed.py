@@ -51,6 +51,11 @@ LOREM = [
 ]
 
 
+# A dialogue line or reply with no words yet: a short lorem, never "" (an empty seed reads as missing text in game).
+LOREM_LINE = "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+LOREM_CHOICE = "Lorem ipsum dolor"
+
+
 def paragraphs(s: str) -> list:
     return [p.strip() for p in (s or "").replace("\r\n", "\n").split("\n\n") if p.strip()]
 
@@ -84,18 +89,18 @@ def conversation(d: dict, known: set):
     nodes = []
     for n in d.get("Nodes") or []:
         node = {"id": n.get("Id"), "speaker": tokens.get(n.get("Speaker"), "$" + K.slug(n.get("Speaker") or "x").replace("-", "_")),
-                "line": n.get("Text") or ""}
+                "line": n.get("Text") or LOREM_LINE}
         if n.get("Next"):
             node["next"] = n["Next"]
         choices = []
-        for c in n.get("Choices") or []:
+        for i, c in enumerate(n.get("Choices") or []):
             tags = []
             effects = [e.get("Type") for e in c.get("Effects") or []]
             if (c.get("Wit") or 0) > 0 or "GrantSkillPoint" in effects:  # GG-T387: a wits reply that wins the point
                 tags.append("right-answer")
             if c.get("Conditions"):
                 tags.append("conditional")
-            ch = {"text": c.get("Label") or "", "next": c.get("Next") or ""}
+            ch = {"text": c.get("Label") or f"{chr(65 + i)} · {LOREM_CHOICE}", "next": c.get("Next") or ""}
             if tags:
                 ch["tags"] = tags
             choices.append(ch)

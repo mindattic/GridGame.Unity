@@ -377,10 +377,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0abadf13ce0a5ce8abbf02ac3b5d35b4de204a38ed6a71f22204b52deccb04ae",
-      "about": [],
+      "hash": "sha256:00de91e1862f50a41e5fdb8d77c8815ece825cb2e659f88f094374bff5c1638c",
+      "about": [
+        "character-aetherist"
+      ],
       "speakers": [
-        "$aetherist"
+        "character-aetherist"
       ],
       "payload": {
         "title": "Chat with the aetherist",
@@ -388,39 +390,39 @@
         "nodes": [
           {
             "id": "greet",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "choices": [
               {
-                "text": "",
+                "text": "A · Lorem ipsum dolor",
                 "next": "dust"
               },
               {
-                "text": "",
+                "text": "B · Lorem ipsum dolor",
                 "next": "hymn"
               },
               {
-                "text": "",
+                "text": "C · Lorem ipsum dolor",
                 "next": "bye"
               }
             ]
           },
           {
             "id": "dust",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "greet"
           },
           {
             "id": "hymn",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "greet"
           },
           {
             "id": "bye",
-            "speaker": "$aetherist",
-            "line": ""
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
@@ -1048,12 +1050,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3f69080db31ab623ab81c0251cc8c640cc2c904322d5de48f84bb25b1d62599f",
+      "hash": "sha256:30afccd212f87368a910d66e6ae3e7b859b48db846a8095b5b59db640ef5d6d5",
       "about": [
+        "character-aetherist",
         "place-desert-02"
       ],
       "speakers": [
-        "$aetherist",
+        "character-aetherist",
         "$lead"
       ],
       "payload": {
@@ -1062,41 +1065,41 @@
         "nodes": [
           {
             "id": "hail",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$lead",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "ask"
           },
           {
             "id": "ask",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "choices": [
               {
-                "text": "",
+                "text": "A · Lorem ipsum dolor",
                 "next": "joined"
               },
               {
-                "text": "",
+                "text": "B · Lorem ipsum dolor",
                 "next": "hymn"
               }
             ]
           },
           {
             "id": "hymn",
-            "speaker": "$aetherist",
-            "line": "",
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "joined"
           },
           {
             "id": "joined",
-            "speaker": "$aetherist",
-            "line": ""
+            "speaker": "character-aetherist",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
@@ -1166,7 +1169,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9a77fee6923c7bc25506140a7f72cd1779e65215ff6459a149ee75cd47251c4c",
+      "hash": "sha256:b717e32993b6263ff7f01f44517c47e662eddc5aaae00d46910096bcf8f76b27",
       "about": [
         "character-blacksmith",
         "place-desert-01"
@@ -1182,19 +1185,19 @@
           {
             "id": "a",
             "speaker": "character-blacksmith",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-blacksmith",
-            "line": ""
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
@@ -1695,7 +1698,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:958217db5e0960fc0348273bf4e8ff9b67d24c63f40df5b9961db9c27730bd21",
+      "hash": "sha256:bf72575fa47c186a662638bc54c4a1ac8bc2ec7beb84348c9f1f375bca0df2fa",
       "about": [
         "character-innkeeper",
         "place-lanternroad-03"
@@ -1711,19 +1714,19 @@
           {
             "id": "a",
             "speaker": "character-innkeeper",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-innkeeper",
-            "line": ""
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
@@ -1767,7 +1770,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6bd732a9f3c5099e3f5e051d198da3e1f1552784a2bb9fc39057afc2b39f9627",
+      "hash": "sha256:8d25e2cd45a51c39c47b554425ccbdb8ac893d8270464821c3c6a96ff78331c5",
       "about": [
         "character-alchemist",
         "place-lanternroad-02"
@@ -1783,19 +1786,19 @@
           {
             "id": "a",
             "speaker": "$lead",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "$lead",
-            "line": ""
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
@@ -3487,7 +3490,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:dcbc18e06aaeea020b6bc4103412b243aca100c46e1f0e492bba5c5fdeffbd01",
+      "hash": "sha256:75219022cfc3b140b899a5ed908177eede7b318227222c1c6cb37f06fe9464ae",
       "about": [
         "character-merchant",
         "place-swamp-02"
@@ -3503,19 +3506,19 @@
           {
             "id": "a",
             "speaker": "character-merchant",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "",
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-merchant",
-            "line": ""
+            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
           }
         ]
       }
