@@ -6,8 +6,9 @@ and the ordinary Moon.
     python tools/make_sky_assets.py --somnolith art.png   # a new Somnolith (the shards follow it)
 
 Writes Resources/Sky/:
-  somnolith-00.png        the Somnolith, the owner's official art (2026-11-21) trimmed to its alpha bounds with a small
-                          margin; never repainted. The source is kept at Art/Sky/somnolith-source.png.
+  somnolith-00.png        the Somnolith, the owner's official art (2026-11-21; the blue, mana-coloured version
+                          2026-11-22, GG-T674) trimmed to its alpha bounds with a small margin; never repainted. The
+                          source is kept at Art/Sky/somnolith-source.png.
   somnolith-shard-00..05  fragments cut from that same image (seeded irregular polygons inside its silhouette), so the
                           drifting shards are visibly pieces of the one Somnolith.
   moon-00.png             the ordinary Moon: the full moon painted in Backgrounds bloom-02 (source in Art/Backgrounds),

@@ -66,6 +66,18 @@ namespace GridGame.Core.Content
             return Math.Min(1f, d.Chance * k);
         }
 
+        /// <summary>A palette must name at least one colour, each "#RRGGBB" (GG-T674).</summary>
+        public static void ValidateColors(List<string> colors, string w, List<string> p)
+        {
+            if (colors == null || colors.Count == 0) { p.Add($"{w}: needs at least one colour"); return; }
+            foreach (var c in colors)
+            {
+                bool ok = c != null && c.Length == 7 && c[0] == '#';
+                for (int i = 1; ok && i < 7; i++) ok = Uri.IsHexDigit(c[i]);
+                if (!ok) p.Add($"{w}: '{c}' is not #RRGGBB");
+            }
+        }
+
         public static void Validate(ContentDb db, List<string> p)
         {
             var s = db.Sky;
@@ -84,6 +96,7 @@ namespace GridGame.Core.Content
                 if (d.Motes < 0 || d.Motes > AetherainDef.MaxMotes) p.Add($"sky: Aetherain Motes {d.Motes} must be in [0, {AetherainDef.MaxMotes}]");
                 if (d.FallSeconds <= 0f) p.Add("sky: Aetherain FallSeconds must be > 0");
                 if (d.MinSize <= 0f || d.MaxSize < d.MinSize) p.Add("sky: Aetherain MinSize must be > 0 and MaxSize >= MinSize");
+                ValidateColors(d.Colors, "sky: Aetherain Colors", p);
             }
             foreach (var kv in s.Regions)
             {
@@ -166,7 +179,9 @@ namespace GridGame.Core.Content
         public float MinSize = 0.008f;
         /// <summary>Share of pieces drawn as fine specks (small dots) instead of shard images.</summary>
         public float SpeckShare = 0.45f;
-        public string SpeckColor = "#6B4E33";
+        /// <summary>GG-T674: speck colours sampled from the Somnolith art; each speck picks one (repeat a colour to
+        /// weight it).</summary>
+        public List<string> SpeckColors = new List<string> { "#2D346C", "#46508E", "#6B3C6A", "#974B72" };
         /// <summary>Seconds a piece takes to drift from the body to the far end of the wake.</summary>
         public float DriftSeconds = 140f;
         public float Opacity = 0.85f;
@@ -183,6 +198,7 @@ namespace GridGame.Core.Content
             if (SpeckShare < 0f || SpeckShare > 1f) p.Add($"{w} SpeckShare {SpeckShare} must be in [0, 1]");
             if (DriftSeconds <= 0f) p.Add($"{w} DriftSeconds must be > 0");
             if (Opacity < 0f || Opacity > 1f) p.Add($"{w} Opacity {Opacity} must be in [0, 1]");
+            SkyDef.ValidateColors(SpeckColors, $"{w} SpeckColors", p);
             if (SpeckShare < 1f && Count > 0 && (s.Shards?.Images == null || s.Shards.Images.Count == 0))
                 p.Add($"{w}: shard pieces need sky Shards Images");
         }
@@ -203,7 +219,9 @@ namespace GridGame.Core.Content
         /// <summary>Mote diameter as a share of the screen width.</summary>
         public float MinSize = 0.004f;
         public float MaxSize = 0.009f;
-        public string Color = "#F2D27A";
+        /// <summary>GG-T674: mote colours from the Somnolith art, mostly its blue with violet and red glints; each mote
+        /// picks one (repeat a colour to weight it).</summary>
+        public List<string> Colors = new List<string> { "#5D64A3", "#5D64A3", "#A096C7", "#B2A4D2", "#9D6492", "#974B72" };
         public float Opacity = 0.85f;
     }
 

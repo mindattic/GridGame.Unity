@@ -4,6 +4,6 @@
 
 **The sky.** There is one Moon, and there is the Somnolith:
 - **The Moon** is the ordinary one: round, pale and familiar, always the same size in the sky. Nothing in the story happens to it.
-- **The Somnolith is not a moon.** It is an ancient thing that was stopped on its way in and left hanging in the sky, where it orbits the world. It is a lumpy, potato-shaped mass of crusted, grown-looking stone, clustered blade-like crystals and bubbled amber-brown lumps, with a faint light seeping out between them. Beside the constant Moon it is visibly larger in every chapter, because it is coming closer. The player measures time running out by how much of the sky it fills.
+- **The Somnolith is not a moon.** It is an ancient thing that was stopped on its way in and left hanging in the sky, where it orbits the world. It is a lumpy, potato-shaped mass of crusted, grown-looking stone, clustered blade-like crystals and bubbled deep blue and violet lumps flushed with red, with a faint light seeping out between them. Beside the constant Moon it is visibly larger in every chapter, because it is coming closer. The player measures time running out by how much of the sky it fills.
 
 **The name is the clue.** *Somnolith* is an old word built from *somnus* (sleep) and *lithos* (stone). Everyone takes it as poetry for the strange still thing in the sky, "the sleeping stone". It is a literal description: a sleeper inside stone.

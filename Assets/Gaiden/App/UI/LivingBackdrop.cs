@@ -178,12 +178,18 @@ namespace GridGame.App
         private static Color ParseColor(string hex, Color fallback) =>
             !string.IsNullOrEmpty(hex) && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
 
+        /// <summary>GG-T674: one colour from a palette sampled from the Somnolith art (repeats weight it).</summary>
+        private static Color PickColor(System.Collections.Generic.List<string> palette, System.Random rnd, Color fallback) =>
+            palette == null || palette.Count == 0 ? fallback : ParseColor(palette[rnd.Next(palette.Count)], fallback);
+
+        /// <summary>The Somnolith art's deep blue (GG-T674), for a palette that is missing.</summary>
+        private static readonly Color SomnolithBlue = new Color(0.365f, 0.392f, 0.639f);
+
         private void BuildDebris(System.Random rnd)
         {
             var d = wake;
             if (d == null || d.Count <= 0) return;
             var images = def.Shards?.Images;
-            var speckColor = ParseColor(d.SpeckColor, new Color(0.42f, 0.31f, 0.2f));
             int count = Mathf.Min(d.Count, DebrisDef.MaxCount);
             for (int i = 0; i < count; i++)
             {
@@ -195,7 +201,7 @@ namespace GridGame.App
                 float across = (float)(rnd.NextDouble() + rnd.NextDouble() - 1.0);
                 var piece = new Debris
                 {
-                    El = speck ? Dot(speckColor) : Layer(tex),
+                    El = speck ? Dot(PickColor(d.SpeckColors, rnd, SomnolithBlue)) : Layer(tex),
                     U0 = Mathf.Pow((float)rnd.NextDouble(), 1.6f),
                     Across = across,
                     Jitter = 0.6f + 0.6f * (float)rnd.NextDouble(),
@@ -212,13 +218,12 @@ namespace GridGame.App
 
         private void BuildAetherain(System.Random rnd)
         {
-            var c = ParseColor(rain.Color, new Color(0.95f, 0.82f, 0.48f));
             int n = Mathf.Min(rain.Motes, AetherainDef.MaxMotes);
             for (int i = 0; i < n; i++)
             {
                 var m = new Mote
                 {
-                    El = Dot(c),
+                    El = Dot(PickColor(rain.Colors, rnd, SomnolithBlue)),
                     X0 = (float)rnd.NextDouble(),
                     Phase = (float)rnd.NextDouble(),
                     Speed = (0.8f + 0.4f * (float)rnd.NextDouble()) / Mathf.Max(1f, rain.FallSeconds),

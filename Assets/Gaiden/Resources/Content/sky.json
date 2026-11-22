@@ -16,12 +16,14 @@
   "Debris": {
     "Count": 60, "MinCount": 12, "FullAtSize": 0.6,
     "Length": 0.75, "Angle": 192, "Spread": 0.09,
-    "MaxSize": 0.05, "MinSize": 0.008, "SpeckShare": 0.45, "SpeckColor": "#6B4E33",
+    "MaxSize": 0.05, "MinSize": 0.008, "SpeckShare": 0.45,
+    "SpeckColors": ["#2D346C", "#2D346C", "#46508E", "#46508E", "#6D6EA9", "#6B3C6A", "#974B72"],
     "DriftSeconds": 140, "Opacity": 0.85
   },
   "Aetherain": {
     "Chance": 0.3, "Motes": 28, "FallSeconds": 16,
-    "MinSize": 0.004, "MaxSize": 0.009, "Color": "#F2D27A", "Opacity": 0.85
+    "MinSize": 0.004, "MaxSize": 0.009,
+    "Colors": ["#5D64A3", "#5D64A3", "#6D6EA9", "#A096C7", "#B2A4D2", "#9D6492", "#974B72"], "Opacity": 0.85
   },
   "Parallax": { "Amplitude": 0.012, "Seconds": 36 },
   "Regions": {
