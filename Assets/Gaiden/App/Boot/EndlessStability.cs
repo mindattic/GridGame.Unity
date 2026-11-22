@@ -25,10 +25,13 @@ namespace GridGame.App
     /// <para><b>Memory.</b> Every <see cref="SampleEvery"/> encounters (and at the start, as a baseline) it unloads
     /// unused assets, forces a full GC and logs one <c>[EndlessStability]</c> line — managed heap, Mono, Unity
     /// native allocated/reserved, graphics, process private bytes and working set, plus object counts (all Unity
-    /// objects, textures, GameObjects, AudioSources, visual elements in the panel, Overlay children, and torn-down
-    /// battle screens still alive) — and appends it to <c>endless-stability.csv</c> (in `-artifacts` or
-    /// persistentDataPath). A metric that rose at every one of the last <see cref="GrowthWindow"/> samples (and by a
-    /// real amount) gets a <c>monotonic growth</c> warning.</para>
+    /// objects, textures, GameObjects, AudioSources, visual elements in the panel, Overlay children, torn-down
+    /// battle screens still alive, prefab-FX camera rigs and RenderTextures) — and appends it to
+    /// <c>endless-stability.csv</c> (in `-artifacts` or persistentDataPath). From the second warmed-up sample on, the
+    /// line also carries the slope in MB per encounter of managed, native and private memory since encounter
+    /// <see cref="SampleEvery"/>, and a closing <c>final</c> row is written at quit (GG-T587). A metric that rose at
+    /// every one of the last <see cref="GrowthWindow"/> samples (and by a real amount) gets a <c>monotonic growth</c>
+    /// warning.</para>
     ///
     /// <para><b>Stall guard.</b> An encounter that runs past <c>-stallTurns</c> actions (default
     /// <see cref="DefaultTurnCap"/>; one -demo battle has needed 412), <c>-stallSeconds</c> of real time (default
@@ -84,9 +87,17 @@ namespace GridGame.App
         {
             "managedMB", "monoMB", "nativeAllocMB", "nativeReservedMB", "gfxMB", "privateMB", "workingSetMB",
             "unityObjects", "textures", "gameObjects", "audioSources", "visualElements", "overlayChildren", "liveOldScreens",
+            "fxRigs", "renderTextures",
         };
         /// <summary>Growth below this (per metric, over the whole window) is noise, not a leak.</summary>
-        private static readonly double[] MinGrowth = { 4, 4, 8, 8, 8, 32, 32, 50, 5, 1, 1, 50, 1, 1 };
+        private static readonly double[] MinGrowth = { 4, 4, 8, 8, 8, 32, 32, 50, 5, 1, 1, 50, 1, 1, 1, 1 };
+        /// <summary>Metrics (indices into <see cref="Metrics"/>) whose overall slope per encounter is logged: managed,
+        /// native allocated, process private bytes.</summary>
+        private static readonly int[] SlopeMetrics = { 0, 2, 5 };
+        /// <summary>The first sample the trend is measured from: encounter <see cref="SampleEvery"/>, once the first-load
+        /// art/audio caches have warmed up (the encounter-0 baseline is before any battle was built).</summary>
+        private int trendFrom = -1;
+        private readonly List<int> sampleEncounters = new List<int>();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Install()
@@ -237,12 +248,25 @@ namespace GridGame.App
             GC.Collect();
             GC.WaitForPendingFinalizers();
             GC.Collect();
+            if (!Record(encounter.ToString(CultureInfo.InvariantCulture), encounter)) { sampling = false; yield break; }
+            CheckGrowth(encounter);
+            sampling = false;
+        }
+
+        /// <summary>Measures (the caller has already collected), logs one line, appends one csv row and keeps the sample.
+        /// <paramref name="label"/> is the csv's encounter column ("final" for the closing sample at quit).</summary>
+        private bool Record(string label, int encounter)
+        {
             double[] v;
             try { v = Measure(); }
-            catch (Exception e) { Debug.LogWarning("[EndlessStability] sample failed: " + e.Message); sampling = false; yield break; }
+            catch (Exception e) { Debug.LogWarning("[EndlessStability] sample failed: " + e.Message); return false; }
             samples.Add(v);
-            var line = new StringBuilder($"[EndlessStability] encounter {encounter} @ {Time.realtimeSinceStartup / 60f:0.0} min, {stalls} stalled:");
+            sampleEncounters.Add(encounter);
+            if (trendFrom < 0 && encounter >= SampleEvery) trendFrom = samples.Count - 1;
+            var line = new StringBuilder($"[EndlessStability] encounter {label} @ {Time.realtimeSinceStartup / 60f:0.0} min, {stalls} stalled:");
             for (int i = 0; i < Metrics.Length; i++) line.Append(' ').Append(Metrics[i]).Append('=').Append(v[i].ToString(i < 7 ? "0.0" : "0", CultureInfo.InvariantCulture));
+            var trend = Trend();
+            if (trend != null) line.Append(" | ").Append(trend);
             lastSampleLine = line.ToString();
             Debug.Log(lastSampleLine);
             if (csvPath != null)
@@ -250,14 +274,29 @@ namespace GridGame.App
                 try
                 {
                     var row = new StringBuilder();
-                    row.Append(encounter).Append(',').Append((Time.realtimeSinceStartup / 60f).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append(stalls);
+                    row.Append(label).Append(',').Append((Time.realtimeSinceStartup / 60f).ToString("0.00", CultureInfo.InvariantCulture)).Append(',').Append(stalls);
                     foreach (var x in v) row.Append(',').Append(x.ToString("0.###", CultureInfo.InvariantCulture));
                     File.AppendAllText(csvPath, row.Append('\n').ToString());
                 }
                 catch (Exception e) { Debug.LogWarning("[EndlessStability] csv: " + e.Message); }
             }
-            CheckGrowth(encounter);
-            sampling = false;
+            return true;
+        }
+
+        /// <summary>GG-T587: the overall slope since the warmed-up sample (encounter <see cref="SampleEvery"/>) of the
+        /// managed heap, native allocations and private bytes, in MB per encounter — the number a leak hunt starts from
+        /// (the GG-T375 leak read ~8-9 MB/encounter of managed heap). Null until there are two warmed-up samples.</summary>
+        private string Trend()
+        {
+            int last = samples.Count - 1;
+            if (trendFrom < 0 || last <= trendFrom) return null;
+            int span = sampleEncounters[last] - sampleEncounters[trendFrom];
+            if (span <= 0) return null;
+            var sb = new StringBuilder($"trend since encounter {sampleEncounters[trendFrom]} (MB/encounter):");
+            foreach (int m in SlopeMetrics)
+                sb.Append(' ').Append(Metrics[m]).Append('=')
+                  .Append(((samples[last][m] - samples[trendFrom][m]) / span).ToString("+0.00;-0.00;0.00", CultureInfo.InvariantCulture));
+            return sb.ToString();
         }
 
         private double[] Measure()
@@ -283,6 +322,8 @@ namespace GridGame.App
                 CountElements(app?.Document != null ? app.Document.rootVisualElement : null),
                 app?.Overlay?.childCount ?? 0,
                 liveOld,
+                CountFxRigs(),
+                Resources.FindObjectsOfTypeAll<RenderTexture>().Length,
             };
         }
 
@@ -320,6 +361,16 @@ namespace GridGame.App
             }
             try { using (var p = System.Diagnostics.Process.GetCurrentProcess()) { priv = p.PrivateMemorySize64; ws = p.WorkingSet64; } }
             catch { /* not available on every platform */ }
+        }
+
+        /// <summary>Prefab-FX camera rigs alive (each battle builds one and disposes it when it's hidden or torn down,
+        /// GG-T586), so anything above 1 is a battle whose FX layer was never released.</summary>
+        private static int CountFxRigs()
+        {
+            int n = 0;
+            foreach (var go in Resources.FindObjectsOfTypeAll<GameObject>())
+                if (go.name == "VfxPrefabRig" && go.scene.IsValid()) n++;
+            return n;
         }
 
         private static int CountElements(VisualElement root)
@@ -380,6 +431,20 @@ namespace GridGame.App
 
         private void OnQuitting()
         {
+            // GG-T587: a closing sample, so a `-count N` run that stops between the every-10 samples still ends its csv
+            // on its true last figures (no UnloadUnusedAssets here: it can't be awaited while quitting).
+            if (!sampling && EndlessDemo.Completed > lastSampledAt)
+            {
+                try
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    lastSampledAt = EndlessDemo.Completed;
+                    Record("final", EndlessDemo.Completed);
+                }
+                catch (Exception e) { Debug.LogWarning("[EndlessStability] final sample: " + e.Message); }
+            }
             Debug.Log($"[EndlessStability] quitting after {EndlessDemo.Completed} encounters, {stalls} stalled; last sample: {lastSampleLine}");
             Heartbeat();
         }
