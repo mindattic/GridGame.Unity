@@ -1055,6 +1055,66 @@ namespace GridGame.Meta
             s.Gold += total;
             return Result.Success($"Sold for {total}g");
         }
+
+        // ── GG-T520: the Buy list in sections, each gear row naming who it fits and whom it upgrades ──
+
+        /// <summary>The Buy list's sections, in the order they are listed (§25.1).</summary>
+        public static readonly string[] Sections = { "Weapons", "Armor", "Jewelry", "Consumables", "Materials", "Other" };
+
+        /// <summary>The index into <see cref="Sections"/> an item is listed under.</summary>
+        public static int SectionOf(ItemDef i)
+        {
+            if (i == null) return Sections.Length - 1;
+            switch (i.Type)
+            {
+                case ItemType.Equipment:
+                    return i.Slot == EquipmentSlot.Weapon ? 0 : Array.IndexOf(BattleEngine.ArmorSlots, i.Slot) >= 0 ? 1 : 2;
+                case ItemType.Consumable: return 3;
+                case ItemType.CraftingMaterial: return 4;
+                default: return 5;
+            }
+        }
+
+        /// <summary>The slots a piece can go in: both of a ring's or an earring's pair, else its own slot.</summary>
+        private static EquipmentSlot[] SlotsFor(ItemDef i) =>
+            i.IsRing ? new[] { EquipmentSlot.Ring1, EquipmentSlot.Ring2 } :
+            i.IsEarring ? new[] { EquipmentSlot.Earring1, EquipmentSlot.Earring2 } : new[] { i.Slot };
+
+        /// <summary>Every party hero who can equip <paramref name="i"/> today (shape and proficiency, <see cref="Equipment.Fits(ContentDb, HeroSave, ItemDef, EquipmentSlot)"/>),
+        /// in party order, and whether it is an upgrade for them: its gear score (<c>MetaHeuristics.Score</c>, the camp
+        /// routine's and the Forge's measure) beats what they have in that slot, or in the weaker of a ring or earring pair
+        /// (an empty slot scores 0). Empty for anything that isn't equipment.</summary>
+        public static List<(HeroSave hero, bool upgrade)> GearFit(ContentDb c, SaveData s, ItemDef i)
+        {
+            var fits = new List<(HeroSave, bool)>();
+            if (c == null || s == null || i == null || i.Type != ItemType.Equipment) return fits;
+            float score = GridGame.Core.Bot.MetaHeuristics.Score(i);
+            var slots = SlotsFor(i);
+            foreach (var h in s.Party.Select(s.Hero))
+            {
+                if (h == null || !Equipment.Fits(c, h, i, slots[0])) continue;
+                float worst = slots.Min(slot => GridGame.Core.Bot.MetaHeuristics.Score(c.TryItem(Equipment.Equipped(h, slot))));
+                fits.Add((h, score > worst));
+            }
+            return fits;
+        }
+
+        /// <summary>The note under a gear row on the Buy list ("Upgrade for Warden · also fits Ranger"), or null for
+        /// anything that isn't equipment; <paramref name="upgrade"/> is true when it beats some hero's current piece.</summary>
+        public static string GearFitLine(ContentDb c, SaveData s, ItemDef i, out bool upgrade)
+        {
+            upgrade = false;
+            if (i == null || i.Type != ItemType.Equipment) return null;
+            var fits = GearFit(c, s, i);
+            string Names(IEnumerable<(HeroSave hero, bool upgrade)> xs) => string.Join(", ", xs.Select(x => c.TryClass(x.hero.ClassId)?.Name ?? x.hero.ClassId));
+            if (fits.Count == 0) return "No one in the party can use it yet";
+            var ups = fits.Where(x => x.upgrade).ToList();
+            var rest = fits.Where(x => !x.upgrade).ToList();
+            upgrade = ups.Count > 0;
+            if (upgrade) return $"Upgrade for {Names(ups)}" + (rest.Count > 0 ? $" · also fits {Names(rest)}" : "");
+            bool everyone = fits.Count == s.Party.Select(s.Hero).Count(h => h != null);
+            return (everyone && fits.Count > 1 ? "Fits everyone" : $"Fits {Names(fits)}") + ", not an upgrade";
+        }
     }
 
     /// <summary>One rolled offer on the Merchant's "Used / Bargain" shelf (§25.1, US-246).</summary>

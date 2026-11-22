@@ -763,12 +763,21 @@ namespace GridGame.App
             var cart = selling ? sellCart : buyCart;
             // GG-T538 (§25.0.10): the shelf grows with progress; a fresh Merchant shows the first stock tier only.
             var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C, S).Where(i => Features.Offers(i.Id)).ToList();
+            // GG-T520 (§25.1): the Buy list in sections (Weapons, Armor, Jewelry, Consumables, Materials), each keeping the
+            // shelf's price order.
+            if (!selling) items = items.OrderBy(Shop.SectionOf).ToList();
             if (items.Count == 0) Ui.Empty(selling ? "Nothing to sell." : "Sold out.", list);
             var detail = Ui.DetailPanel(body);
             ItemUi.Detail(detail, null);
+            int section = -1;
             foreach (var it in items)
             {
                 var item = it;
+                if (!selling && Shop.SectionOf(item) != section)
+                {
+                    section = Shop.SectionOf(item);
+                    Ui.Section(Shop.Sections[section], list).name = "shop-section-" + Shop.Sections[section].ToLowerInvariant();
+                }
                 cart.TryGetValue(item.Id, out var q);
                 int price = selling ? Shop.SellPrice(item) : item.BaseCost;
                 int max = selling ? S.Count(item.Id) : Shop.MaxBuy(S, item);
@@ -798,6 +807,9 @@ namespace GridGame.App
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
+                // GG-T520: under a gear row, which party heroes can equip it and whom it upgrades.
+                if (!selling && Shop.GearFitLine(C, S, item, out bool upgrade) is string fit)
+                    Ui.Note(fit, list, upgrade ? "good" : "dim").name = "shop-fit-" + item.Id;
             }
             if (!selling && Shop.NextStock(C, S) is var next && next.tier > 0)
             {

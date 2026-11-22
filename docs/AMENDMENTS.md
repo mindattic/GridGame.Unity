@@ -1628,3 +1628,14 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   (seed, drafted to Prose as batch `gg-t568`). Internal ids, product ids, save fields and class names keep the old word,
   so saves and purchases still work. The item icon is still a cut diamond; new art is in docs/ART_GAPS.md.
 - *Why:* the currency now belongs to the world: aetherite is the Somnolith's crystal.
+
+## 2026-11-22 — The Merchant's Buy list in sections, with who each piece fits (GG-T520)
+
+- **Was:** the Buy list was one run sorted by item type, price and name, weapons, armor and jewelry mixed together by
+  price, and nothing said which hero could wear a piece or whether it beat what they had on (fresh-player run, GG-T494).
+- **Now ([BIBLE §25.1](BIBLE.md#251-merchant)):** the shelf is still the open stock tiers of GG-T538 (18 items on the
+  first visit, no material from a region not yet reached). It is listed in sections, **Weapons, Armor, Jewelry,
+  Consumables, Materials** (and Other), each in price order. Under every gear row a note names the party heroes who can
+  equip it, in green as "Upgrade for …" when its gear score beats what that hero has in the slot (the weaker of a ring
+  or earring pair), else "Fits …, not an upgrade", or "No one in the party can use it yet".
+- *Why:* a short shelf is still hard to read without knowing what each piece is for and who gains from it.
