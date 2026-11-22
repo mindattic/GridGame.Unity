@@ -31,17 +31,31 @@ namespace GridGame.App
         private const float NextScale = 1.15f;
         /// <summary>Seconds before acting when an icon (and its owner's tile) starts to glow; the glow ramps to full at 0.</summary>
         public const float ApproachSeconds = 3f;
-        /// <summary>GG-T669: seconds before acting when a foe's icon and its owner's tile switch from the approach ramp to one
-        /// strong shared beat, so the foe about to strike is easy to find and pincer for a Pushback.</summary>
+        /// <summary>GG-T669/GG-T672: seconds before acting at which a foe's readying beat is at full strength: unmistakable,
+        /// so the foe about to strike is easy to find and pincer for a Pushback.</summary>
         public const float ImminentSeconds = 1f;
-        /// <summary>GG-T669: one beat of that pulse. Every imminent foe and its icon run on this one clock, in phase.</summary>
+        /// <summary>GG-T672: the share of the bar left (u) where a foe's readying glow starts: faint at half way, ramping to
+        /// full at <see cref="ImminentSeconds"/>.</summary>
+        public const float ReadyRampStart = 0.5f;
+        /// <summary>GG-T672: ease-in exponent on the ramp, so it stays subtle early and climbs late.</summary>
+        private const float ReadyRampEase = 2.2f;
+        /// <summary>GG-T672: intensity just inside the ramp's start (barely distinguishable); 1 at the end.</summary>
+        private const float ReadyMinIntensity = 0.12f;
+        /// <summary>GG-T672: one beat at the ramp's start; the beat quickens to <see cref="ImminentBeat"/> at full.</summary>
+        private const float ReadyBeatSlow = 1.6f;
+        /// <summary>GG-T669: one beat at full strength.</summary>
         private const float ImminentBeat = Timing.Emphasis;
         private const float ImminentHaloFloor = 0.55f, ImminentHaloSwell = 0.25f;
         private const float ImminentFillFloor = 0.22f, ImminentFillSwing = 0.38f;
         private const float ImminentBorder = 6f, ImminentBorderSwing = 4f;
-        /// <summary>GG-T669: drawn entries of enemy-owned icons inside <see cref="ImminentSeconds"/>, and their owners.</summary>
-        private readonly HashSet<int> imminent = new HashSet<int>();
-        private readonly HashSet<int> imminentOwners = new HashSet<int>();
+        /// <summary>GG-T672: eased ramp (0..1] for each drawn enemy-owned icon past <see cref="ReadyRampStart"/>.</summary>
+        private readonly Dictionary<int, float> foeRamp = new Dictionary<int, float>();
+        /// <summary>GG-T672: each ramping icon's beat phase (0..1), accumulated from its current rate so a quickening beat
+        /// never jumps; its owner's tile reads the same phase, so icon and tile stay in step.</summary>
+        private readonly Dictionary<int, float> beatPhase = new Dictionary<int, float>();
+        private readonly Dictionary<int, (float r, float beat)> ownerRamp = new Dictionary<int, (float, float)>();
+        private readonly List<int> phaseDrop = new List<int>();
+        private float lastPulseTime = -1f;
 
         /// <summary>x of the "acts now" end of the track (u = 0): an icon there touches the prominence slot.</summary>
         private static float TrackX0 => Fit.Edge + SlotSpan + Space.S16 + IconSpan / 2f;
@@ -468,7 +482,7 @@ namespace GridGame.App
             }
             nextActorEntry = next?.Id ?? -1;
             approach.Clear();
-            imminent.Clear();
+            foeRamp.Clear();
             bool newGlow = false;
             foreach (var e in drawn.Values)
             {
@@ -480,7 +494,8 @@ namespace GridGame.App
                 icon.EnableInClassList("tl-next", isNext); // its scale is LayoutIcons' (the tray shrinks it)
                 float k = Halted(e) || inTray.Contains(e.Id) ? 0f : Mathf.Clamp01(1f - at[e.Id] * BattleConfig.BarSeconds / ApproachSeconds);
                 approach[e.Id] = (c, k);
-                if (k > 0f && IsImminentFoe(e, at)) imminent.Add(e.Id);
+                float r = Halted(e) || inTray.Contains(e.Id) ? 0f : ReadyRamp(e, at);
+                if (r > 0f) foeRamp[e.Id] = r;
                 if (k > 0f) { if (glowing.Add(e.Id)) newGlow = true; }
                 else glowing.Remove(e.Id);
             }
@@ -489,21 +504,31 @@ namespace GridGame.App
             SyncSlot(at);
         }
 
-        /// <summary>GG-T669: an enemy-owned icon (its turn or its charge) under <see cref="ImminentSeconds"/> from acting, read
-        /// from the same u (seconds-to-act ÷ BarSeconds at today's rates) the bar draws: at rest, during a hold the view plays
-        /// forward, and in playback snapshots. Halted (Frozen) and recovering icons are excluded by the caller (k = 0).</summary>
-        private bool IsImminentFoe(TimelineEntry e, Dictionary<int, float> at) =>
-            e.Id != actingEntry && at.TryGetValue(e.Id, out var u) && u * BattleConfig.BarSeconds < ImminentSeconds
-            && State.UnitById(e.OwnerId) is Unit o && o.Alive && o.Team == Team.Enemy;
+        /// <summary>GG-T672: how ready an enemy-owned icon (its turn or its charge) is, from the same u (seconds-to-act ÷
+        /// BarSeconds at today's rates) the bar draws: at rest, during a hold the view plays forward, and in playback
+        /// snapshots. 0 until <see cref="ReadyRampStart"/> of the bar is left, then eased up to 1 at
+        /// <see cref="ImminentSeconds"/> and held there. Acting, dead and non-enemy owners read 0; the caller zeroes
+        /// halted (Frozen) and tray (recovering) icons, so a Pushback, an action, a freeze or a death drops it at once.</summary>
+        private float ReadyRamp(TimelineEntry e, Dictionary<int, float> at)
+        {
+            if (e.Id == actingEntry || !at.TryGetValue(e.Id, out var u)) return 0f;
+            if (!(State.UnitById(e.OwnerId) is Unit o) || !o.Alive || o.Team != Team.Enemy) return 0f;
+            float s = u * BattleConfig.BarSeconds, start = ReadyRampStart * BattleConfig.BarSeconds;
+            if (s >= start) return 0f;
+            if (s <= ImminentSeconds) return 1f;
+            float lin = (start - s) / Mathf.Max(0.01f, start - ImminentSeconds);
+            return Mathf.Max(0.0001f, Mathf.Pow(Mathf.Clamp01(lin), ReadyRampEase));
+        }
 
-        /// <summary>GG-T669: the shared beat, 0..1 with a sharp peak (one clock, so icons and tiles pulse together); Reduce
-        /// Motion holds it at full, a steady glow.</summary>
-        private float ImminentPulse(float t)
+        /// <summary>GG-T672: the beat at a phase, 0..1 with a sharp peak; Reduce Motion holds it at full, a steady glow.</summary>
+        private float BeatAt(float phase)
         {
             if (ReduceMotion) return 1f;
-            float c = 0.5f + 0.5f * Mathf.Cos(2f * Mathf.PI * t / ImminentBeat);
+            float c = 0.5f + 0.5f * Mathf.Cos(2f * Mathf.PI * phase);
             return c * c;
         }
+
+        private static float ReadyIntensity(float r) => Mathf.Lerp(ReadyMinIntensity, 1f, r);
 
         /// <summary>The prominence slot shows the acting entry during its turn, otherwise the next actor.</summary>
         private void SyncSlot(Dictionary<int, float> at)
@@ -707,26 +732,42 @@ namespace GridGame.App
             if (State == null || board == null || timelineIcons == null || Paused) return;
             if (trayFlights.Count > 0 && lastAt != null) { LayoutIcons(lastAt); SyncTimelineStatus(); } // tray flights run on this beat too
             float t = Time.unscaledTime;
-            float beat = ImminentPulse(t); // GG-T669: one value per frame, shared by every imminent icon and tile
+            // GG-T672: advance each ramping foe icon's beat by its own current rate (slow and faint at half way, quick and
+            // full under ImminentSeconds); accumulating phase keeps a quickening beat continuous.
+            float dt = lastPulseTime < 0f ? 0f : Mathf.Clamp(t - lastPulseTime, 0f, 0.1f);
+            lastPulseTime = t;
+            phaseDrop.Clear();
+            foreach (var id in beatPhase.Keys) if (!foeRamp.ContainsKey(id)) phaseDrop.Add(id);
+            foreach (var id in phaseDrop) beatPhase.Remove(id);
+            foreach (var kv in foeRamp)
+            {
+                float rate = Mathf.Lerp(1f / ReadyBeatSlow, 1f / ImminentBeat, kv.Value);
+                beatPhase.TryGetValue(kv.Key, out var ph);
+                beatPhase[kv.Key] = Mathf.Repeat(ph + dt * rate, 1f);
+            }
             unitCue.Clear();
-            imminentOwners.Clear();
+            ownerRamp.Clear();
             foreach (var kv in approach)
             {
                 if (!timelineIconViews.TryGetValue(kv.Key, out var icon) || !drawn.TryGetValue(kv.Key, out var e)) continue;
                 var (c, k) = kv.Value;
                 float pulse = ReduceMotion ? 1f : 0.65f + 0.35f * Mathf.Sin(t * (3f + 7f * k));
-                bool hot = imminent.Contains(kv.Key) && kv.Key != actingEntry;
-                if (hot) imminentOwners.Add(e.OwnerId);
+                bool ramping = foeRamp.TryGetValue(kv.Key, out var r) && kv.Key != actingEntry;
+                float beat = ramping ? BeatAt(beatPhase.TryGetValue(kv.Key, out var bp) ? bp : 0f) : 0f;
+                float inten = ramping ? ReadyIntensity(r) : 0f;
+                // A foe with a turn and a charge on the bar: its tile follows the readier entry's ramp and beat.
+                if (ramping && (!ownerRamp.TryGetValue(e.OwnerId, out var or) || r > or.r)) ownerRamp[e.OwnerId] = (r, beat);
                 var halo = icon.Q("tl-halo");
                 if (halo != null)
                 {
                     halo.style.unityBackgroundImageTintColor = c;
-                    halo.style.opacity = hot ? ImminentHaloFloor + (1f - ImminentHaloFloor) * beat : k * pulse;
+                    halo.style.opacity = ramping ? inten * (ImminentHaloFloor + (1f - ImminentHaloFloor) * beat) : k * pulse;
                     // The halo swells on the beat; the icon itself keeps LayoutIcons' scale (and GG-T668's shake moves the icon, not the halo).
-                    halo.style.scale = hot && !ReduceMotion ? new Scale(new Vector2(1f + ImminentHaloSwell * beat, 1f + ImminentHaloSwell * beat)) : new StyleScale(StyleKeyword.Null);
+                    float swell = 1f + ImminentHaloSwell * beat * inten;
+                    halo.style.scale = ramping && !ReduceMotion ? new Scale(new Vector2(swell, swell)) : new StyleScale(StyleKeyword.Null);
                 }
                 bool isNext = kv.Key == nextActorEntry;
-                if (k <= 0f && !isNext) continue;
+                if (k <= 0f && !isNext && !ramping) continue;
                 // One cue per unit (a foe can have its turn and a charge on the bar): the nearer entry's colour wins.
                 if (!unitCue.TryGetValue(e.OwnerId, out var have)) have = (c, -1f, false);
                 unitCue[e.OwnerId] = k > have.k ? (c, k, have.next || isNext) : (have.c, have.k, have.next || isNext);
@@ -741,12 +782,14 @@ namespace GridGame.App
                 var fill = c.WithA(0.3f * k * pulse);
                 var border = next ? Palette.Gold : c.WithA(0.35f + 0.65f * k * pulse);
                 float width = next ? 7f : 3f + 4f * k;
-                if (imminentOwners.Contains(kv.Key))
+                if (ownerRamp.TryGetValue(kv.Key, out var ramp))
                 {
-                    // GG-T669: inside the last second the tile beats with its icon's halo, same clock, same phase.
-                    fill = c.WithA(ImminentFillFloor + ImminentFillSwing * beat);
-                    border = next ? Palette.Gold : c;
-                    width = ImminentBorder + ImminentBorderSwing * beat;
+                    // GG-T672: the tile beats with its icon's halo (same phase), faint at half way, unmistakable in the last second.
+                    float inten = ReadyIntensity(ramp.r);
+                    fill = c.WithA(inten * (ImminentFillFloor + ImminentFillSwing * ramp.beat));
+                    border = next ? Palette.Gold : c.WithA(Mathf.Lerp(0.35f, 1f, inten));
+                    float w = Mathf.Lerp(3f, ImminentBorder + ImminentBorderSwing * ramp.beat, inten);
+                    width = next ? Mathf.Max(7f, w) : w;
                 }
                 board.SetCue(kv.Key, v.Tile, v.W, v.H, fill, border, width);
                 cueKeep.Add(kv.Key);
