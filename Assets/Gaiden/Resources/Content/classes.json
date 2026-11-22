@@ -1258,17 +1258,24 @@
   {
     "Id": "bluelion",
     "Name": "Blue Lion",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "blue-lion-female",
+    "MalePortrait": "blue-lion-male",
     "ArtSource": "BlueLion",
     "Thumbnail": {
       "Zoom": 1.3186,
       "X": 0.6549,
       "Y": 0.3709
+    },
+    "MaleFigure": {
+      "X": 0.0947,
+      "Y": 0.0791,
+      "W": 0.8096,
+      "H": 0.8418
     },
     "Figure": {
       "X": 0,
@@ -8908,7 +8915,7 @@
     },
     "MaleFigure": {
       "X": 0.0977,
-      "Y": 0.0391,
+      "Y": 0.0381,
       "W": 0.8037,
       "H": 0.9219
     },
@@ -11291,7 +11298,7 @@
   {
     "Id": "nighthunter",
     "Name": "Night Hunter",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
@@ -13451,7 +13458,7 @@
   {
     "Id": "raider",
     "Name": "Raider",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
@@ -15030,7 +15037,7 @@
       "X": 0.208,
       "Y": 0.0518,
       "W": 0.583,
-      "H": 0.8965
+      "H": 0.8955
     },
     "Figure": {
       "X": 0.0518,
@@ -23579,17 +23586,24 @@
   {
     "Id": "hexsniper",
     "Name": "Hex Sniper",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
     "Card": "Ranged precision. Converts [patience] into a [piercing shot] nothing else in the party can match.",
     "Portrait": "hex-sniper-female",
+    "MalePortrait": "hex-sniper-male",
     "ArtSource": "hexsniper",
     "Thumbnail": {
       "Zoom": 3.8854,
       "X": 0.5027,
       "Y": 0.3152
+    },
+    "MaleFigure": {
+      "X": 0.1768,
+      "Y": 0,
+      "W": 0.6465,
+      "H": 1
     },
     "Figure": {
       "X": 0.1875,
@@ -23722,7 +23736,7 @@
   {
     "Id": "hexwarden",
     "Name": "Hex Warden",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
@@ -23863,7 +23877,7 @@
   {
     "Id": "hexstalker",
     "Name": "Hex Stalker",
-    "Team": "Enemy",
+    "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
