@@ -18,7 +18,7 @@
 - **Gambling:** no real-money gambling and no simulated casino games. **But see randomised paid items below.**
 - **User interaction:** none: no chat, no user-generated content, no sharing, no online play.
 - **Location sharing / personal info:** none.
-- **Digital purchases:** yes, Aetherite Shards (consumable in-app purchases, US$1 to US$25).
+- **Digital purchases:** yes, Mana Shards (consumable in-app purchases, US$1 to US$25).
 - **Ads:** none.
 
 ## Google Play (IARC) answers
@@ -34,7 +34,7 @@
 | Crude humour | No |
 | Gambling: real money | No |
 | Gambling: simulated | No |
-| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Shard summon (100 Aetherite Shards) brings a random hero; a lucky craft (50 Shards) raises a random Masterwork chance. Shards can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
+| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Shard summon (100 Mana Shards) brings a random hero; a lucky craft (50 Shards) raises a random Masterwork chance. Shards can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
 | Users interact / exchange content | No |
 | Shares location | No |
 | Digital purchases | Yes |

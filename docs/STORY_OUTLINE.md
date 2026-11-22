@@ -1,6 +1,6 @@
 # GridGame Gaiden: story outline from the art (GG-T386, for GG-T341)
 
-> **Superseded 2026-11-21 (GG-T526).** The owner adopted the Somnolith mythos as canon: the moon is a living thing, the Somnolith, that slept for ten thousand years inside a shell of debris. Its light is also the life in every person. The Choir's Lullaby takes people's life to keep it asleep and keeps a share, and the drawing of that light is pulling it down. It is staged in `Data/Prose/canon/`, to be pushed to Prose with `push.ps1` once the Prose database resumes. Where this outline disagrees with it, the canon wins.
+> **Superseded 2026-11-21 (GG-T526).** The owner adopted the Manalith mythos as canon: the moon is a living thing, the Manalith, that slept for ten thousand years inside a shell of debris. Its light is also the life in every person. The Choir's Lullaby takes people's life to keep it asleep and keeps a share, and the drawing of that light is pulling it down. It is staged in `Data/Prose/canon/`, to be pushed to Prose with `push.ps1` once the Prose database resumes. Where this outline disagrees with it, the canon wins.
 
 **What this is.** A beat outline for a writer, read out of what the owner's art actually shows: 211 portraits
 (`Resources/Portraits`), 81 landscapes in 12 sets (`Resources/Backgrounds`), `factions.json`, `classes.json`, the
@@ -23,7 +23,7 @@ them, giants of white flesh. Everyone who fights it wears **colour**: neon stree
 indigo and red on the lantern road, the black and blue of the fen witches. The Ember wears **red and black** and wants
 the moon to come down. Where the white order has fallen, **red blossom** grows over its broken pillars.
 
-**The thesis for the writer:** colour is life (the aether, the "tithe"); the Concord drains it, stores it and burns it
+**The thesis for the writer:** colour is life (the mana, the "tithe"); the Concord drains it, stores it and burns it
 to keep the moon up; the crew are runaways in a stolen white caravan who learn what the white is made of.
 
 ## 2. The world, region by region (campaign order; what each backdrop set shows)
@@ -59,14 +59,14 @@ plus a numeral ("The Tithe Moors I", "Deep Shardfall II").
 | **The Street** (24 heroes) | oversized jackets and hoodies in orange, pink, neon green and yellow; cargo pants, platform sneakers, chrome limbs, big blades and bats | the young of the Underspire; couriers, fighters, thieves, engineers; loud colour as defiance |
 | **The Free Holds** (11) | plate and kite shields, greens and whites, furs, warhammers, axes | the hill-fort folk the Concord tithes; knights and barbarians |
 | **The Lantern Road** (15) | indigo and black, red sashes, masks, katana and odachi, a straw kasa, a monk, a sage with a starry staff | pilgrims and road-wardens of the mountain road |
-| **The Fen-dark** (14) | black and deep blue robes, witch hats, plague-doctor and nun habits, a lab coat, a white-ice aetherist | the marsh's witches, healers and hex-hunters; the ones who know what aether is |
+| **The Fen-dark** (14) | black and deep blue robes, witch hats, plague-doctor and nun habits, a lab coat, a white-ice manasmith | the marsh's witches, healers and hex-hunters; the ones who know what mana is |
 | **The Ember** (1) | black with a red sword and red cape | a deserter from the Ember (the Dark Templar) |
 | **The Wild** (4) | a blue lion, a flower-winged girl (the Herald), a beast-tamer | the living world itself, siding with colour |
 
 ### The powers they fight (enemy families, grouped by what the art shares)
 
 - **The Pale Concord (all white).** The Kiln Guard (`ceramicknight`, porcelain knights in white capes), the Red Seal
-  (`templar`, white robes with red crosses), the Bulwark (`heavytrooper`, white power armour, siege rifles, an aether pack
+  (`templar`, white robes with red crosses), the Bulwark (`heavytrooper`, white power armour, siege rifles, an mana pack
   each), the Choir (`cultist`, faceless white-and-violet ponchos printed with glyphs), shield-walkers (`mechaarmor`, white
   tower shields), vat-giants (`cyclops`, white flesh, one red eye), the Chronomancer (white, clock wheels), the Hierarch
   (no portrait yet). The **Hollow** (`undead`, white-hooded crowds with empty faces) and the **Chromed Hollow**
@@ -143,7 +143,7 @@ are `crawl:prologue`, `crawl:chapter/<id>`, `crawl:ending`; titles are in `campa
 
 ### ch03: Where the Beams Go
 - **Closes:** the Anchors hold the moon off, and they run on the tithe; the beams carry it somewhere.
-- **Who:** the Still's queues of Hollow, the Bulwark guarding the tanks, the Choir singing the aether out of people.
+- **Who:** the Still's queues of Hollow, the Bulwark guarding the tanks, the Choir singing the mana out of people.
 - **Conflict:** the tanks hold stored people (the crew finds a whole hold in one). The Still keeps more than the
   Anchors need.
 - **Boss:** the Chronomancer (The Still III, TwinTurn). Then Halcyon: the white city in ruins under the spire.

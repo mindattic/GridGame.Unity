@@ -15,9 +15,9 @@ devices you own or control, under these terms and the terms of the store you got
 Service or Apple's Licensed Application End User License Agreement, which also apply). If these terms conflict with
 the store's mandatory terms, the store's terms win.
 
-## 2. Aetherite Shards (virtual currency)
+## 2. Mana Shards (virtual currency)
 
-- Aetherite Shards ("Shards") are an in-game currency. They can be **earned in play, exchanged for in-game gold** at
+- Mana Shards ("Shards") are an in-game currency. They can be **earned in play, exchanged for in-game gold** at
   the rate shown in the Shard Store (currently 6 gold per Shard), or **bought with real money** in packs through Google
   Play or the App Store at the prices the store shows (currently 100 Shards per US$1.00 or the local equivalent the
   store sets).
@@ -54,7 +54,7 @@ play as you like; we don't police them, but we can't help with saves that were e
 
 We may update, change or stop offering the Game or any feature. The Game is provided "as is", to the extent the law
 allows, without warranties. To the extent the law allows, our total liability to you is limited to the amount you paid
-for Aetherite Shards in the 12 months before the claim.
+for Mana Shards in the 12 months before the claim.
 
 ## 6. Privacy
 

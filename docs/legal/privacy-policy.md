@@ -13,12 +13,12 @@
 
 GridGame Gaiden is a single-player game. It has **no accounts, no ads, no analytics SDK and no online play.** Your
 progress is saved on your device. We don't collect your name, email, location, contacts, photos or device
-identifiers. When you buy Aetherite Shards, Google Play or the Apple App Store handles the payment; we never see your card
+identifiers. When you buy Mana Shards, Google Play or the Apple App Store handles the payment; we never see your card
 or bank details.
 
 ## What stays on your device
 
-- **Save files and settings.** Your save slots (heroes, items, progress, Aetherite Shards, and the list of store transaction
+- **Save files and settings.** Your save slots (heroes, items, progress, Mana Shards, and the list of store transaction
   ids already granted, so a purchase is never paid out twice), your player-profile name and your settings are written
   to the app's private storage on your device. They are not sent to us.
 - **Error log.** If the game hits an unexpected error, it writes a short record to a log file in its private storage:
@@ -28,11 +28,11 @@ or bank details.
   vitals, and Apple may share crash logs if you opted in to share analytics with developers, under their policies.)
 - **Device backups.** Android's Auto Backup and iCloud/iTunes device backups may copy the app's private storage as part
   of your own device backup, under your Google or Apple account and their policies. We cannot read those backups. This
-  is also how a reinstall can bring your progress (and purchased Aetherite Shards) back.
+  is also how a reinstall can bring your progress (and purchased Mana Shards) back.
 
 ## In-app purchases
 
-Aetherite Shards can be bought with real money through **Google Play Billing** (Android) or **Apple's App Store / StoreKit**
+Mana Shards can be bought with real money through **Google Play Billing** (Android) or **Apple's App Store / StoreKit**
 (iOS), using Unity's In-App Purchasing library.
 
 - The store collects and processes your payment information under its own privacy policy

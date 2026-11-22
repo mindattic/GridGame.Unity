@@ -146,10 +146,10 @@ with `python tools/prose_text.py seed-missing --drafts <dir>`, which only fills 
 
 The universe record's setting, logline and rules (`UNIVERSE_RECORD` in `tools/prose_map.py`) are a short seed of the
 owner's canon, "the Somnolith" (2026-11-21, amended GG-T577), which retires "Under Morrow" and "A War in Heaven". The
-canon itself is Prose's UniverseCanon sections for `gridgame` (preamble, GG-SOMNOLITH, GG-ONE-LIGHT, GG-WHY-NOW,
+canon itself is Prose's UniverseCanon sections for `gridgame` (preamble, GG-MANALITH, GG-ONE-LIGHT, GG-WHY-NOW,
 GG-PEOPLES, GG-ARC), written with `prose --set-canon-section` (no approval step); `Data/Prose/canon/` is the staging copy.
 
-**Canon is Prose-authored.** The Somnolith, aether, the Choir and its orders (the Red Seal, the Bulwark, the Kiln Guard),
+**Canon is Prose-authored.** The Manalith, mana, the Choir and its orders (the Red Seal, the Bulwark, the Kiln Guard),
 the Watch, the Infernalists, the tithe, the Hollow, the Anchors, the Arks, the reservoir, the Bloom, the Hierarch (the
 Choir's human leader, the villain), the party ("the Crew") and Saltmoss were created in Prose with its own authoring
 tools, not the interchange file, so a pruning push never retires them. They are tagged `DECIDED`; the Hierarch

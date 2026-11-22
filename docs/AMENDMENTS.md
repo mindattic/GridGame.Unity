@@ -1653,3 +1653,16 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   support heal/buff/haste/cleanse, per stage and overall. No gameplay or `BattleConfig` value changed.
 - *Why:* GG-T596 tunes against agreed targets and needs numbers it can read, overall and per stage, that measure the
   party's own support effects. Not run here (agents don't run soaks); `tools/polish.py --balance` doesn't call it yet.
+
+## 2026-11-22 — The Mana terminology: Manalith, Mana Dust, Mana Shards, Manafall, Manasmith (GG-T675)
+
+- **Was:** the sky body was **the Somnolith**; its energy and the life in people was **aether** (the party panel read
+  "AETHER"); the dust was **Aetherite Dust**, the premium currency **Aetherite Shard(s)**, the dust rain **the
+  Aetherain** and the Camp refiner **the Aetherist**.
+- **Now ([BIBLE §27.3.3](BIBLE.md#2733-the-mana-terminology-gg-t675-owner-2026-11-22)):** **the Manalith**, **mana**
+  everywhere ("MANA" on the party panel), **Mana Dust**, **Mana Shard(s)**, **the Manafall**, **the Manasmith**. Canon
+  adds what the words mean: Mana Dust is the Manalith breaking up in the atmosphere, a blue sparkle everywhere that
+  thickens as it nears; Mana Shards are mana made stable; Mana Orbs are scavenged Halcyon batteries that capture dust
+  for a fight and can't hold it long. Every id is unchanged, so saves, purchases and Prose keys still resolve.
+- *Why:* owner, 2026-11-22: one word for the world's energy, mana, from the Manalith through the dust and orbs to the
+  premium Shards, with a story reason for each.

@@ -26,7 +26,7 @@ description text is `about` it, the way a class's is; main() refuses to write a 
 No balance numbers cross: no stats, levels, prices, rewards, waves or counts. Summaries are placeholder canon taken
 from the gameplay records' own words; Prose owns the words from here on.
 
-The universe record (setting, logline, rules) is a short seed of the owner's canon of 2026-11-21, "the Somnolith"
+The universe record (setting, logline, rules) is a short seed of the owner's canon of 2026-11-21, "the Manalith" (named the Somnolith until GG-T675)
 (amended by GG-T577), which retires "Under Morrow" and "A War in Heaven". The full canon is Prose's UniverseCanon
 sections for `gridgame` (staging copy Data/Prose/canon/); this is only its seed.
 
@@ -52,29 +52,33 @@ MAPPER_VERSION = "1"
 UNIVERSE_RECORD = {
     "id": K.UNIVERSE,
     "name": "GridGame",
-    "tagline": "The Somnolith",
+    "tagline": "The Manalith",
     "setting": (
         "An ancient thing hangs in the sky beside the Moon. It is not a moon: long ago it was stopped on its way in and "
-        "left there, orbiting the world, and now it is coming closer. Everyone calls it the Somnolith. Its aether is "
-        "also the life in every person. The Choir keeps it asleep with the Lullaby, a rite that tithes people's aether, "
+        "left there, orbiting the world, and now it is coming closer. Everyone calls it the Manalith. Its mana is "
+        "also the life in every person. The Choir keeps it asleep with the Lullaby, a rite that tithes people's mana, "
         "and keeps a share for its leader, the Hierarch. Halcyon, the city that first stopped it, fell 1,200 years ago."
     ),
     "logline": (
         "The Warden, the Last Sleeper, wakes in Halcyon's old vault 1,200 years too late and must fix what Halcyon left "
         "broken. With present-day people who stole the Choir's tithe caravan on tithe day, the Warden follows the road "
-        "to the Choir's Cathedral, where the Hierarch drinks the skimmed aether, while the Somnolith fills more of the "
+        "to the Choir's Cathedral, where the Hierarch drinks the skimmed mana, while the Manalith fills more of the "
         "sky every chapter."
     ),
     "rules": [
-        "Aether is the Somnolith's energy and the life in every person: the same thing. Never 'essence'.",
-        "The Somnolith is not a moon. The Moon is ordinary and always the same size; the Somnolith grows as it nears.",
-        "Every draw of aether pulls the Somnolith closer; Halcyon's Anchors are taps, and the draw is the pull.",
-        "Those whose aether is drawn away, by the blanking or by too much tithe, come back Hollow.",
-        "Magic is aether dust concentrated and channelled into a phenomenon or a bodily change (lightning, fire, ice, "
-        "sleep, poison); without the Somnolith there would be no magic.",  # GG-T671
-        "The Somnolith drags a wake of debris across the sky; aether dust sometimes falls from it: the Aetherain.",  # GG-T670
+        "Mana is the Manalith's energy and the life in every person: the same thing. Never 'essence'.",
+        "The Manalith is not a moon. The Moon is ordinary and always the same size; the Manalith grows as it nears.",
+        "Every draw of mana pulls the Manalith closer; Halcyon's Anchors are taps, and the draw is the pull.",
+        "Those whose mana is drawn away, by the blanking or by too much tithe, come back Hollow.",
+        "Magic is mana dust concentrated and channelled into a phenomenon or a bodily change (lightning, fire, ice, "
+        "sleep, poison); without the Manalith there would be no magic.",  # GG-T671
+        "The Manalith drags a wake of debris across the sky and is breaking up: its debris burns apart in the atmosphere "
+        "and settles everywhere as Mana Dust, a blue sparkle that thickens as it nears; when it comes down heavily, "
+        "that is the Manafall.",  # GG-T670, GG-T675
+        "Mana Shards are mana made stable (refined from Mana Dust, they don't dissipate); Mana Orbs are scavenged "
+        "Halcyon batteries that capture Mana Dust for a fight and can't hold it long.",  # GG-T675
         "Every hero is a present-day person except the Warden, the only sleeper; heroes are named by role with the article.",
-        "The Hierarch, the villain, alone knows the whole truth. No text says what the Somnolith is for.",
+        "The Hierarch, the villain, alone knows the whole truth. No text says what the Manalith is for.",
     ],
 }
 
@@ -85,8 +89,8 @@ NPC_SUMMARY = {
     "alchemist": "A Street splice-cutter who travels with the caravan and knows exactly what grafts cost.",
     "enchantress": "A Choir runaway who travels with the caravan; she still hears the hymn and won't sing it.",
     "merchant": "A Lantern Road trader who follows the caravan; sells to everyone, informs on no one.",
-    "aetherist": "A Choir defector who learned the Lullaby backwards and refines the Somnolith's fallen dust into "
-                 "Aetherite Shards for the caravan.",  # GG-T570
+    "aetherist": "A Choir defector who learned the Lullaby backwards and refines the Manalith's fallen dust into "
+                 "Mana Shards for the caravan.",  # GG-T570
 }
 # A class id (the NPC wears that class's art) or, GG-T570, a Portraits/ file of the NPC's own (aetherist-00).
 NPC_PORTRAIT_FALLBACK = {"merchant": "courier", "innkeeper": "pandagirl", "blacksmith": "tinkerer",
