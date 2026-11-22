@@ -20,6 +20,10 @@ namespace GridGame.App
     /// </summary>
     public sealed class LivingBackdrop
     {
+        /// <summary>Marks a living backdrop's root so <see cref="GameScreen.BleedBackdrops"/> still bleeds it under the
+        /// safe-area insets although it holds layer children (GG-T663).</summary>
+        public const string RootClass = "living-backdrop";
+
         /// <summary>Paints <paramref name="bg"/> (a full-screen element) with <paramref name="theme"/>'s
         /// <paramref name="index"/>th backdrop: living when it is split, the flat image otherwise. Set the element's
         /// tint after this as before; the layers pick it up.</summary>
@@ -61,6 +65,7 @@ namespace GridGame.App
         private LivingBackdrop(VisualElement bg, string theme, Texture2D fgTex, Texture2D skyTex, BackdropLayerDef layer, SkyDef def, bool still)
         {
             this.bg = bg; this.layer = layer; this.def = def; this.still = still;
+            bg.AddToClassList(RootClass);
             region = def.RegionFor(theme);
             aspect = (float)fgTex.width / fgTex.height;
             start = Time.realtimeSinceStartup;

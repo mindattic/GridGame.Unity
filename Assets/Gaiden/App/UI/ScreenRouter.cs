@@ -27,13 +27,15 @@ namespace GridGame.App
 
         /// <summary>The screens container sits inside the safe area (§26.5), so a screen's content and buttons never go under
         /// a notch or gesture bar; its backdrop layers (a leaf "fill" child of the screen root: the background art, a
-        /// shade) reach out under the insets so the art still covers the whole screen (GG-T483).</summary>
+        /// shade) reach out under the insets so the art still covers the whole screen (GG-T483). A living backdrop's root
+        /// bleeds too although it holds its layers; they lay out from its full rect (GG-T663).</summary>
         internal static void BleedBackdrops(VisualElement root)
         {
             if (root == null) return;
             foreach (var c in root.Children())
             {
-                if (c.childCount != 0 || c is TextElement || !c.ClassListContains("fill")) continue;
+                if (c is TextElement || !c.ClassListContains("fill")) continue;
+                if (c.childCount != 0 && !c.ClassListContains(LivingBackdrop.RootClass)) continue;
                 c.style.top = -GameApp.SafeTop;
                 c.style.bottom = -GameApp.SafeBottom;
             }
