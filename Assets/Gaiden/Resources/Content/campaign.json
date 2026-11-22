@@ -77,6 +77,7 @@
       "Music": ["moorland-charge-00", "tithe-day-gallop-00"],
       "MusicBorrow": ["heartbeat-of-the-brave-00", "still-frost-00"],
       "MilestoneReward": "tome_regenerate",
+      "MilestoneOrb": true,
       "Name": "The Tithe Moors",
       "Backgrounds": "tithe-moors",
       "Stages": [
@@ -90,6 +91,7 @@
       "Music": ["over-the-pass-00", "lanterns-rising-00", "moonlit-conflict-00"],
       "MusicBorrow": ["anchor-pulse-00", "shardfall-00"],
       "MilestoneReward": "tome_steadfast",
+      "MilestoneOrb": true,
       "Name": "The Lantern Road",
       "Backgrounds": "lantern-road",
       "Stages": [
@@ -103,6 +105,7 @@
       "Music": ["glass-dunes-00", "shardfall-00"],
       "MusicBorrow": ["lanterns-rising-00", "anchor-pulse-00"],
       "MilestoneReward": "tome_thorns",
+      "MilestoneOrb": true,
       "Name": "The Shardfall",
       "Backgrounds": "shardfall",
       "Stages": [
@@ -116,6 +119,7 @@
       "Music": ["grounded-arks-00", "arkgrave-march-00"],
       "MusicBorrow": ["the-final-signal-00", "winters-edge-00"],
       "MilestoneReward": "tome_poison_ward",
+      "MilestoneOrb": true,
       "Name": "The Arkgrave",
       "Backgrounds": "arkgrave",
       "Stages": [
@@ -129,6 +133,7 @@
       "Music": ["anchor-pulse-00"],
       "MusicBorrow": ["over-the-pass-00", "shardfall-00", "lanterns-rising-00"],
       "MilestoneReward": "tome_lifesteal",
+      "MilestoneOrb": true,
       "Name": "The Anchor Wastes",
       "Backgrounds": "anchor-wastes",
       "Stages": [
@@ -142,6 +147,7 @@
       "Music": ["winters-edge-00", "still-frost-00"],
       "MusicBorrow": ["heartbeat-of-the-brave-00", "moorland-charge-00"],
       "MilestoneReward": "tome_mana_siphon",
+      "MilestoneOrb": true,
       "Name": "The Still",
       "Backgrounds": "still",
       "Stages": [
@@ -155,6 +161,8 @@
       "Music": ["neon-steel-rush-00"],
       "MusicBorrow": ["neon-breakbeat-00", "last-stand-horn-00", "moonlit-conflict-00"],
       "MilestoneReward": "tome_double_attack",
+      "MilestoneOrb": true,
+      "OrbFindChance": 0.25,
       "Name": "Halcyon",
       "Backgrounds": "halcyon",
       "Stages": [
@@ -168,6 +176,7 @@
       "Music": ["the-final-signal-00"],
       "MusicBorrow": ["last-stand-horn-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "tome_counter_attack",
+      "MilestoneOrb": true,
       "Name": "The Choir's Cathedral",
       "Backgrounds": "cathedral",
       "Stages": [
@@ -181,6 +190,7 @@
       "Music": [],
       "MusicBorrow": ["moonlit-conflict-00", "shardfall-00", "neon-steel-rush-00", "anchor-pulse-00"],
       "MilestoneReward": "chest_gilded",
+      "MilestoneOrb": true,
       "Name": "The Bloom",
       "Backgrounds": "bloom",
       "Stages": [
@@ -209,6 +219,8 @@
       "Music": ["neon-breakbeat-00"],
       "MusicBorrow": ["neon-steel-rush-00", "last-stand-horn-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
+      "MilestoneOrb": true,
+      "OrbFindChance": 0.25,
       "Name": "The Underspire",
       "Backgrounds": "underspire",
       "Stages": [
@@ -266,6 +278,7 @@
       "Music": ["last-stand-horn-00"],
       "MusicBorrow": ["the-final-signal-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
+      "MilestoneOrb": true,
       "Name": "Morrow's Shadow",
       "Backgrounds": "morrows-shadow",
       "Stages": [

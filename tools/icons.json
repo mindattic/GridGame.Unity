@@ -1727,6 +1727,10 @@
    "lorc/powder",
    "mana"
   ],
+  "mat_broken_mana_orb": [
+   "lorc/crystal-ball",
+   "mana"
+  ],
   "mat_undead_bone": [
    "lorc/crossed-bones",
    "bone"

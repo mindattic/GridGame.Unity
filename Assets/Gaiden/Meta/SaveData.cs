@@ -78,6 +78,15 @@ namespace GridGame.Meta
         public int ChestsOpened;
         /// <summary>Themes whose campaign milestone reward has been paid (GG-T301, <see cref="ThemeDef.MilestoneReward"/>).</summary>
         public HashSet<string> Milestones = new HashSet<string>();
+        /// <summary>GG-T677: Mana Orbs owned, how many the battle's row can fill (<see cref="ManaOrbs"/>). 0 = a save from
+        /// before orbs were owned; <see cref="SaveMigrations"/> derives it from campaign progress.</summary>
+        public int OwnedOrbs;
+        /// <summary>GG-T677: Halcyon-ruin stages whose Mana Orb has been found (each holds one).</summary>
+        public HashSet<string> OrbFinds = new HashSet<string>();
+        /// <summary>GG-T677: Broken Mana Orbs that have dropped so far (at most BattleConfig.MaxBrokenOrbs ever).</summary>
+        public int BrokenOrbsDropped;
+        /// <summary>GG-T677: orb rolls made so far: seeds each find/drop roll, so a save replays its rolls identically.</summary>
+        public int OrbRolls;
         public bool TutorialDone;
         /// <summary>Camp stations whose first-use tip has been shown (GG-T173, <see cref="CampTips"/>).</summary>
         public HashSet<string> SeenCampTips = new HashSet<string>();
@@ -687,6 +696,7 @@ namespace GridGame.Meta
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             JoinNewKeepers(s);
+            if (c != null) GrantOwnedOrbs(s, c);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null && beforeGearGate)
                 foreach (var h in s.Roster)
@@ -732,6 +742,21 @@ namespace GridGame.Meta
                 s.Party?.RemoveAll(id => string.Equals(id, h.ClassId, StringComparison.OrdinalIgnoreCase));
                 Notes.Add($"hero class '{h.ClassId ?? "(none)"}' no longer exists; removed from the roster, gear returned to the bag");
             }
+        }
+
+        /// <summary>GG-T677: a save from before Mana Orbs were owned (OwnedOrbs 0) gets the guaranteed orbs its progress has
+        /// already earned (<see cref="ManaOrbs.Derived"/>: the starting orb plus one per orb milestone cleared), so no
+        /// returning player is stripped of casting. Idempotent; never throws.</summary>
+        public static void GrantOwnedOrbs(SaveData s, ContentDb c)
+        {
+            if (s == null || c == null || s.OwnedOrbs > 0) return;
+            try
+            {
+                s.OrbFinds ??= new HashSet<string>();
+                s.OwnedOrbs = ManaOrbs.Derived(c, s);
+                Notes.Add($"Mana Orbs: this save holds {s.OwnedOrbs} from its campaign progress (GG-T677)");
+            }
+            catch (Exception e) { Notes.Add($"couldn't count Mana Orbs: {e.Message}"); }
         }
 
         /// <summary>GG-T570: a save that had already met every Camp keeper before a new one existed (the Aetherist) is a

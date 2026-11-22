@@ -82,6 +82,17 @@ namespace GridGame.App
                     Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
                         ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "orb" : "orbs")})"
                         : $"+{report.DustEarned:N0}", null, list).name = "results-dust";
+                // GG-T677: an owned Mana Orb gained here is one more orb to fill in every battle from now on.
+                if (report.OrbsGained > 0)
+                {
+                    var orbRow = Ui.MenuRow(report.OrbsGained == 1 ? "Mana Orb found" : $"{report.OrbsGained} Mana Orbs found",
+                        $"you now hold {report.OrbsOwned}", null, list);
+                    orbRow.name = "results-orbs";
+                    orbRow.Q<Label>("label")?.AddToClassList("gold");
+                    Ui.Text(string.Join(" · ", report.OrbsGainedFrom), "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+                }
+                if (report.BrokenOrbFound)
+                    Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)

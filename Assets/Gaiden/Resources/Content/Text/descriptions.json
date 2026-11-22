@@ -22492,6 +22492,21 @@
         "short": "A shattered weapon fragment. Worthless alone, but a blacksmith can melt it down."
       }
     },
+    "item:mat_broken_mana_orb": {
+      "key": "item:mat_broken_mana_orb",
+      "id": "description-item-mat-broken-mana-orb",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:650ddf32ed89fcd40f4071f01e21b5e3caaa0585a792913551ab31943a5f3890",
+      "about": [
+        "item-mat-broken-mana-orb"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A Halcyon battery dug out of the ruins, its glass crazed and its seals gone, so it holds no mana at all. The Manasmith can reseal one, and it joins your Mana Orbs."
+      }
+    },
     "item:mat_ceramic_shard": {
       "key": "item:mat_ceramic_shard",
       "id": "description-item-mat-ceramic-shard",

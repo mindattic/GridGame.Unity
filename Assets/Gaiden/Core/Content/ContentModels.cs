@@ -963,6 +963,11 @@ namespace GridGame.Core.Content
         /// <summary>Campaign milestone (GG-T301): an item granted once, the first time the theme's last stage is won
         /// (a Tome, so a story beat can teach a passive). Null = none.</summary>
         public string MilestoneReward;
+        /// <summary>GG-T677: the theme's first full clear also grants one owned Mana Orb (a scavenged Halcyon battery).</summary>
+        public bool MilestoneOrb;
+        /// <summary>GG-T677: a Halcyon ruin. Each of its stages holds one Mana Orb, found on a victory with this chance
+        /// (0 = none) until found; every stage's find is collected at most once.</summary>
+        public float OrbFindChance;
         /// <summary>GG-T344: the theme's background set, <c>Backgrounds/&lt;set&gt;-00..NN</c> (owner rule: named after the
         /// story region, its words hyphenated, numbered from 00, GG-T561). Null = the theme id (<see cref="Backdrops.SetOf"/>).</summary>
         public string Backgrounds;

@@ -62,7 +62,7 @@ namespace GridGame.Meta
         /// <summary>A custom party (e.g. from the character-select screen) in place of the default <see cref="StartingRoster"/>.</summary>
         public static SaveData NewGame(ContentDb c, string name, IReadOnlyList<string> party)
         {
-            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), Gold = StartingGold };
+            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), Gold = StartingGold, OwnedOrbs = BattleConfig.StartOwnedOrbs };
             // GG-T533: the lead always sets out, first, whatever the pick (a content set without the class skips it).
             var ids = new List<string>();
             if (c.TryClass(LeadClass) != null) ids.Add(LeadClass);
@@ -358,6 +358,8 @@ namespace GridGame.Meta
         /// <summary>GG-T677: owned Mana Orbs this victory added, and why (a milestone, a Halcyon find).</summary>
         public int OrbsGained;
         public List<string> OrbsGainedFrom = new List<string>();
+        /// <summary>GG-T677: Mana Orbs owned after this battle's rewards (0 when not recorded).</summary>
+        public int OrbsOwned;
         /// <summary>GG-T677: a Broken Mana Orb dropped (the Manasmith restores it into an owned orb).</summary>
         public bool BrokenOrbFound;
         public bool CampaignComplete;
@@ -699,6 +701,7 @@ namespace GridGame.Meta
                 NewGamePlus = crucible ? 0 : s.NewGamePlus,
                 Difficulty = difficulty <= DifficultyTable.Neutral ? DifficultyTable.Neutral : DifficultyTable.Clamp(difficulty),
                 StartOrbs = Expeditions.StartOrbs(c, s, stage.Id) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
+                OrbCapacity = ManaOrbs.Owned(c, s), // GG-T677: owned Mana Orbs are how many the row can fill
             };
             foreach (var h in s.Roster) setup.ExcludedGuests.Add(h.ClassId);
             foreach (var g in s.LostGuests) if (Permadeath.IsLost(s, g)) setup.ExcludedGuests.Add(g);
@@ -786,7 +789,8 @@ namespace GridGame.Meta
                     if (index + 1 < list.Count) rep.UnlockedStage = list[index + 1].Name;
                 }
                 rep.QuestProgress = Quests.RecordBattle(c, s, battle);
-                Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
+                var milestone = Milestones.Pay(c, s, rep, battle.Stage.Id); // a theme's first full clear teaches (GG-T301)
+                ManaOrbs.AfterVictory(c, s, rep, battle.Stage.Id, milestone); // GG-T677: milestone orb, Halcyon find, Broken Mana Orb
                 rep.TameOffers.AddRange(Domestication.Offers(c, s, battle)); // a fully bonded tamed monster asks to join (GG-T303)
             }
             else if (rep.Escaped)

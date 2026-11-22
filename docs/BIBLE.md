@@ -1207,6 +1207,46 @@ counted inside `DustEarned`). The results screen's Mana Dust row names the share
 - **A loss** (defeat, retreat, escape): the orbs simply discharge, no Dust, like every other reward of a loss.
 - The economy ledger (`polish.py --balance`) prints each run's Mana Dust and the share from orbs (`#dust`, `#orbdust`).
 
+#### 3.1.4.3 Owned Mana Orbs are progression (GG-T677, owner 2026-11-22)
+
+Owner: *"collecting 'Mana Orbs' becomes important because that is literally how much mana orbs you can fill in combat,
+so once you fill all your mana orbs you have to cast it to gather more mana, so the impact is immediately felt because
+going from one Mana Orb to two Mana Orbs doubles your magic casting abilities, and some spells require more Mana Orbs
+than you have so they aren't even worth equipping."* Numbers: *"with 5 slots and a spell cost max of say 4 mana … that's
+a total of 20 possible orbs in the game, with possible 12-16 being found in straight play through; this is a suggestion
+will need to dial this in naturally."* Sources the owner picked: boss and milestone rewards, finds in Halcyon ruins,
+and the Manasmith restoring broken orbs found as loot.
+
+`SaveData.OwnedOrbs` (`Meta/ManaOrbs.cs`) is how many orbs the battle's row can fill (`BattleSetup.OrbCapacity`, from
+`BattleFactory.Build`); a full row stops earning until a spell spends one (GG-T673). Every source is finite, and
+`ContentLoader` refuses content where they add up past `BattleConfig.MaxOrbCapacity` (20).
+
+| Source | Orbs | Where it lives |
+|---|---|---|
+| Starting orb | 1 | `BattleConfig.StartOwnedOrbs` |
+| Milestone orbs: the first full clear of each main-campaign theme (Tithe Moors through the Cathedral, 8) and of three postgame themes (the Bloom, the Underspire, Morrow's Shadow) | 11 | `campaign.json` `MilestoneOrb` |
+| Halcyon finds: each stage of the two Halcyon ruins (Halcyon ×3, the Underspire ×2) holds one orb, found on a victory there with a 25% chance until found | 5 | `campaign.json` `OrbFindChance` = 0.25 |
+| Broken Mana Orbs: a 4% chance per campaign victory (`ManaOrbs.BrokenOrbChance`) while fewer than 3 have dropped; the Manasmith restores each for 20 Mana Dust + 100 G | 3 | `BattleConfig.MaxBrokenOrbs`, `ManaOrbs.RestoreDust/RestoreGold` |
+| **Total possible** | **20** | |
+
+A straight playthrough (main campaign and postgame, no replays) earns the 12 guaranteed orbs, finds about 1–2 of the 5
+Halcyon orbs on single clears, and turns up about 2 Broken Mana Orbs over its ~50 victories: about 14–16, the owner's
+range. Replaying Halcyon stages and longer play reach 20. Rolls are seeded by `SaveData.OrbRolls`, so a save replays
+them identically.
+
+- **Migration:** a save from before owned orbs (`OwnedOrbs` 0) gets `ManaOrbs.Derived`: the starting orb plus one per
+  orb milestone it has already been paid (`SaveData.Milestones`). Nobody is stripped of casting below what progress
+  earned; a pre-GG-T677 save could fill 12, so a veteran early in the campaign now fills fewer, by design.
+- **Loadout:** the Abilities screen marks a spell whose orb cost is above the orbs held ("Spell · needs 3 orbs, you have
+  2", in the warning colour) and dims its extra pips. It can still be equipped.
+- **Manasmith:** the refinery screen shows orbs held of 20, Broken Mana Orbs carried and a "Restore a Mana Orb" action.
+- **Results:** "Mana Orb found · you now hold N" with the reason (a milestone, a Halcyon find), and a Broken Mana Orb row.
+- **Everywhere you fight** (campaign, expeditions, the Crucible) fills your owned orbs. Only battles built outside
+  `BattleFactory.Build` (harness skirmishes, tests) keep the old default row of 12. Bounties don't drop orbs, and the
+  Crucible pays no orb Dust (it commits on its own path).
+- **Balance:** casting starts at one orb, so every number here and every spell cost needs the next balance pass
+  (GG-T276) to measure with owned orbs.
+
 #### 3.1.5–3.1.6 (struck 2026-10-10)
 
 ~~Spend ordering by color~~ and ~~the Colorless wildcard~~ no longer exist — there are no colors to order or substitute.
