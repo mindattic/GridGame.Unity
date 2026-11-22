@@ -1969,4 +1969,99 @@ namespace GridGame.App
             }
         }
     }
+
+    // ── Aetherist: refine Dust into Shards (§25.18.1, GG-T570/624) ──────────────────
+
+    /// <summary>The Aetherist's counter (GG-T624): buy Aetherite Dust with gold, refine it into Aetherite Shards. The
+    /// only station whose two actions are both currency exchanges — no recipes, no gear.</summary>
+    public sealed class AetheristScreen : HubPage
+    {
+        public override string Id => "aetherist";
+        protected override string Title => "Aetherist";
+        protected override string Backdrop => "desert";
+        protected override string Npc => CampNpcs.Aetherist;
+
+        private int buyAmount = 10;
+        private int refineAmount = 1;
+        private static readonly int[] Steps = { -10, -1, 1, 10 };
+
+        protected override void BuildBody(VisualElement body)
+        {
+            int dust = DustEconomy.Have(S);
+            int shards = DiamondExchange.Have(S);
+            int maxBuy = DustEconomy.MaxBuy(C, S);
+            int maxRefine = DustEconomy.MaxRefine(C, S);
+            buyAmount = Math.Max(1, buyAmount);
+            refineAmount = Math.Max(1, refineAmount);
+
+            var bal = Ui.Panel(body, null, false, "aetherist-balance");
+            Ui.Field(DustEconomy.DustName, dust.ToString("N0"), bal, null, "aetherist-dust-count");
+            Ui.Field(ShardText.Plural, ShardText.ShortOf(shards), bal, null, "aetherist-shard-count");
+            var greet = ShopBark(C, "aetherist/greet");
+            if (greet != null) Ui.Para(greet, bal, "dim");
+
+            var buy = Ui.Panel(body, "Buy Dust with gold", false, "aetherist-buy-panel");
+            var pick = Ui.Actions(buy);
+            pick.style.alignItems = Align.Center;
+            foreach (var step in Steps)
+            {
+                int d = step;
+                if (d > 0) continue;
+                Ui.Button($"−{-d}", () => { buyAmount = Math.Max(1, buyAmount + d); Refresh(); }, "btn--small", pick).name = $"aetherist-buy-minus{-d}";
+            }
+            Ui.Name($"{buyAmount:N0}", pick, "gold").name = "aetherist-buy-amount";
+            foreach (var step in Steps)
+            {
+                int d = step;
+                if (d < 0) continue;
+                Ui.Button($"+{d}", () => { buyAmount += d; Refresh(); }, "btn--small", pick).name = $"aetherist-buy-plus{d}";
+            }
+            var maxBuyBtn = Ui.Button("Max", () => { buyAmount = Math.Max(1, maxBuy); Refresh(); }, "btn--small", pick);
+            maxBuyBtn.name = "aetherist-buy-max";
+            Ui.SetEnabled(maxBuyBtn, maxBuy > 0);
+            Ui.Field("Costs", Ui.Gold(DustEconomy.GoldFor(buyAmount)), buy, S.Gold >= DustEconomy.GoldFor(buyAmount) ? null : "bad", "aetherist-buy-quote");
+            var buyBtn = Ui.Button($"Buy {buyAmount:N0} {DustEconomy.DustName}", () => Done(DustEconomy.Buy(C, S, buyAmount), true, "ui.buy"), "btn--primary", buy);
+            buyBtn.name = "aetherist-buy";
+            Ui.SetEnabled(buyBtn, buyAmount <= maxBuy);
+
+            var refine = Ui.Panel(body, "Refine into " + ShardText.Plural, false, "aetherist-refine-panel");
+            var rpick = Ui.Actions(refine);
+            rpick.style.alignItems = Align.Center;
+            foreach (var step in Steps)
+            {
+                int d = step;
+                if (d > 0) continue;
+                Ui.Button($"−{-d}", () => { refineAmount = Math.Max(1, refineAmount + d); Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-minus{-d}";
+            }
+            Ui.Name($"{refineAmount:N0}", rpick, "gold").name = "aetherist-refine-amount";
+            foreach (var step in Steps)
+            {
+                int d = step;
+                if (d < 0) continue;
+                Ui.Button($"+{d}", () => { refineAmount += d; Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-plus{d}";
+            }
+            var maxRefineBtn = Ui.Button("Max", () => { refineAmount = Math.Max(1, maxRefine); Refresh(); }, "btn--small", rpick);
+            maxRefineBtn.name = "aetherist-refine-max";
+            Ui.SetEnabled(maxRefineBtn, maxRefine > 0);
+            Ui.Field("Needs", $"{refineAmount * DustEconomy.DustPerShard:N0} {DustEconomy.DustName}", refine,
+                dust >= refineAmount * DustEconomy.DustPerShard ? null : "bad", "aetherist-refine-quote");
+            var refineBtn = Ui.Button($"Refine {ShardText.ShortOf(refineAmount)}", () =>
+            {
+                string occasion = dust < maxRefine * DustEconomy.DustPerShard ? "aetherist/short" : "aetherist/refine";
+                var r = DustEconomy.Refine(C, S, refineAmount);
+                var bark = r.Ok ? ShopBark(C, occasion) : null;
+                Done(r, true, "ui.diamond");
+                if (bark != null) App.Toast(bark, 2.6f);
+            }, "btn--primary", refine);
+            refineBtn.name = "aetherist-refine";
+            Ui.SetEnabled(refineBtn, refineAmount <= maxRefine);
+
+            Ui.Note($"{DustEconomy.DustPerShard} {DustEconomy.DustName} refines into 1 {ShardText.Short}. {DustEconomy.DustName} costs {DustEconomy.GoldPerDust} G a piece here — " +
+                $"buying {ShardText.Plural} outright at the {ShardText.Store} is the better rate; Dust is the free-play path, earned in battle.", body);
+        }
+
+        /// <summary>A random line for this shop occasion, or null with nothing authored for it yet.</summary>
+        private static string ShopBark(ContentDb c, string key) =>
+            c != null && c.ShopBarks.TryGetValue(key, out var lines) && lines.Count > 0 ? lines[UnityEngine.Random.Range(0, lines.Count)] : null;
+    }
 }

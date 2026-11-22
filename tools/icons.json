@@ -1718,6 +1718,10 @@
    "lorc/cut-diamond",
    "ice"
   ],
+  "mat_aetherite_dust": [
+   "lorc/powder",
+   "gold"
+  ],
   "mat_undead_bone": [
    "lorc/crossed-bones",
    "bone"

@@ -76,6 +76,8 @@ namespace GridGame.App
             if (report.Victory)
             {
                 Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).Q<Label>("value").AddToClassList("gold");
+                // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
+                if (report.DustEarned > 0) Ui.MenuRow(DustEconomy.DustName, $"+{report.DustEarned:N0}", null, list).name = "results-dust";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)

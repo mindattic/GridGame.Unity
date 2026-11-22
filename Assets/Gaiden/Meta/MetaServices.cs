@@ -348,6 +348,8 @@ namespace GridGame.Meta
         public List<string> QuestProgress = new List<string>();
         /// <summary>Loot past an item's stack limit is sold on the spot (inventory policy, US-245).</summary>
         public int AutoSold;
+        /// <summary>Aetherite Dust this victory paid (GG-T623), on top of <see cref="Gold"/>; 0 on anything short of victory.</summary>
+        public int DustEarned;
         public bool CampaignComplete;
         /// <summary>Campaign milestone (GG-T301): the theme whose first full clear this was, and the reward it paid (also in <see cref="Items"/>).</summary>
         public string Milestone;
@@ -760,6 +762,10 @@ namespace GridGame.Meta
 
                 int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
                 rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
+                // GG-T623: a slow, repeatable trickle of Aetherite Dust on every victory, paid out before the Aetherist
+                // joins the caravan just as gold is — it simply has nowhere to refine until then.
+                rep.DustEarned = DustEconomy.DustPerVictory + (rep.FirstClear ? DustEconomy.FirstClearDustBonus : 0);
+                s.AddItem(DustEconomy.DustId, rep.DustEarned);
                 var all = c.CampaignStages();
                 rep.CampaignComplete = all.Count > 0 && index == all.Count - 1;
                 if (index > s.HighestClearedStage)

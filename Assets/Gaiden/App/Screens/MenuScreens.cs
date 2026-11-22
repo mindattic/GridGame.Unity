@@ -632,6 +632,8 @@ namespace GridGame.App
             Station("Alchemist", CampUnlocks.NpcOpen(s, CampNpcs.Alchemist), CampUnlocks.JoinHint(c, CampNpcs.Alchemist), () => new AlchemistScreen());
             if (Features.Enchanter)
                 Station("Enchantress", CampUnlocks.NpcOpen(s, CampNpcs.Enchantress), CampUnlocks.JoinHint(c, CampNpcs.Enchantress), () => new EnchantressScreen());
+            // GG-T570/624: the Aetherist refines Dust into Shards once they've joined (after The Shardfall II).
+            Station("Aetherist", CampUnlocks.NpcOpen(s, CampNpcs.Aetherist), CampUnlocks.JoinHint(c, CampNpcs.Aetherist), () => new AetheristScreen());
             if (Features.Bounties)
                 Station("Bounties", CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new BountyScreen(),
                     s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : ""); // GG-T431

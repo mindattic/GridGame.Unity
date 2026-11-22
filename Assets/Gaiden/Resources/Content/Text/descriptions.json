@@ -22402,6 +22402,21 @@
         "short": "Restores a small amount of mana."
       }
     },
+    "item:mat_aetherite_dust": {
+      "key": "item:mat_aetherite_dust",
+      "id": "description-item-mat-aetherite-dust",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:865174d875f77d08391afa2e4498b0e1606e2899e3de9651b9b2fe068de0cb13",
+      "about": [
+        "item-mat-aetherite-dust"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A duller grain of the Somnolith's crust than a true Shard, the kind an untrained hand can shake loose in the field. Worthless on its own; the Aetherist refines a counted measure of it into one Aetherite Shard at the counter."
+      }
+    },
     "item:mat_arcane_dust": {
       "key": "item:mat_arcane_dust",
       "id": "description-item-mat-arcane-dust",
