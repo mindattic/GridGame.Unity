@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using GridGame.Core.Battle;
 using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -46,9 +47,10 @@ namespace GridGame.App
     /// </summary>
     public sealed class EndlessStability : MonoBehaviour
     {
-        public const int DefaultTurnCap = 600;
-        public const float DefaultSecondsCap = 900f;
-        public const float FrozenSecondsCap = 75f;
+        // GG-T588: the caps are battle tuning, so they live in BattleConfig with every other number.
+        public const int DefaultTurnCap = BattleConfig.StallActionCap;
+        public const float DefaultSecondsCap = BattleConfig.StallRealSecondsCap;
+        public const float FrozenSecondsCap = BattleConfig.StallIdleSecondsCap;
         public const int SampleEvery = 10;
         public const int GrowthWindow = 5;
         private const float HeartbeatSeconds = 5f;

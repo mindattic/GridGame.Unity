@@ -324,5 +324,14 @@ namespace GridGame.Core.Battle
         /// Kept however the run ends, on top of every coin the foes drop.</summary>
         public const int CrucibleWaveGoldBase = 10;
         public const int CrucibleWaveGoldPerWave = 5;
+
+        // ── Endless-run stall guard (GG-T61, GG-T588; App/Boot/EndlessStability) ─────────
+        /// <summary>A `-demo -endless` encounter that has taken more than this many player actions ends as "stalled"
+        /// (one -demo battle needed 412). `-stallTurns N` overrides it for a run.</summary>
+        public const int StallActionCap = 600;
+        /// <summary>…or that has run longer than this many real seconds (`-stallSeconds S` overrides it).</summary>
+        public const float StallRealSecondsCap = 900f;
+        /// <summary>…or that has sat this many real seconds with no action taken and nothing animating.</summary>
+        public const float StallIdleSecondsCap = 75f;
     }
 }
