@@ -23534,7 +23534,9 @@
       "version": 0,
       "source": "seed",
       "hash": "sha256:fee3b51b281e7917cd3a59525827bf51587156dfec598b5774f5eddebf019075",
-      "about": [],
+      "about": [
+        "character-aetherist"
+      ],
       "speakers": [],
       "payload": {
         "short": "A Choir defector who learned the Lullaby backwards and refines the Somnolith's fallen dust into Aetherite Shards for the caravan."
