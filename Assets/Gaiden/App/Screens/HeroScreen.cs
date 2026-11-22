@@ -93,8 +93,9 @@ namespace GridGame.App
             var w = Ui.Window(null, body);
             w.name = "hero-picker";
             w.style.marginTop = Space.S0; // sits on the tab strip
-            // Edge = gap = 24 (window padding 12 + card margin 12): the Camp party window's even gutters (POL-C8).
-            w.style.paddingLeft = w.style.paddingRight = Space.TargetHalfGap;
+            // Edge = gap = 24 (row padding 12 + card margin 12): the Camp party window's even gutters (POL-C8). The 12 sits
+            // on the scrolled row, not the window, so the row's own box shows it and scrolled cards reach the window edge.
+            w.style.paddingLeft = w.style.paddingRight = Space.S0;
             w.style.paddingTop = w.style.paddingBottom = Space.S8;
             var strip = new ScrollView(ScrollViewMode.Horizontal) { name = "hero-strip" };
             strip.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -103,6 +104,7 @@ namespace GridGame.App
             var row = strip.contentContainer;
             row.style.flexDirection = FlexDirection.Row;
             row.style.minWidth = Length.Percent(100);
+            row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
 
             var heroes = S.Party.Select(S.Hero).Where(h => h != null)
                 .Concat(S.Roster.Where(h => !S.Party.Contains(h.ClassId))).ToList();
