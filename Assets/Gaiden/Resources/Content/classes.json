@@ -10486,7 +10486,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "Brain": "Kiter",
-    "ArmorPlate": 40
+    "ArmorPlate": 30
   },
   {
     "Id": "mechaarmor01",
@@ -10613,7 +10613,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "Brain": "Kiter",
-    "ArmorPlate": 40
+    "ArmorPlate": 30
   },
   {
     "Id": "mechaarmor02",
@@ -10740,7 +10740,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "Brain": "Kiter",
-    "ArmorPlate": 40
+    "ArmorPlate": 30
   },
   {
     "Id": "monk",

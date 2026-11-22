@@ -1096,6 +1096,21 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
     see them with the party held fixed, was cut short by the machine's low-memory guard. 58% is inside the 55–85% band
     but at its bottom; a first stage should sit near the top, so the next pass should take `greenvalley-01` further and
     run the regenerated snapshot once to check `desert-02`.
+  - **Amended 2026-11-22 (GG-T276 pass 4): the Mecha Armor family's plate 40 → 30.** Against the frozen snapshots
+    (24 casual a stage), `desert-02` won 11/24 (46%, under the band); kept records put 11 of its 13 defeats in wave 4
+    with `mechaarmor02` still standing (wave 4 averaged 81 actions). The Mecha Armors were the most stacked foes in the
+    game: the thickest plate (40, against 30 on the other `tough_hide` carriers, `templar*`/`ceramicknight*`), `tough_hide`,
+    `mirror_plating` and a Kiter brain that keeps their front toward an all-melee party. **Change:** `mechaarmor00`–`02`
+    `ArmorPlate` 40 → 30, in line with those siblings (plate doesn't count toward §14's wave weights). **Measured:**
+    `desert-02` 11/24 → 14/24 (58%, in band); `greenvalley-01` 14/24, `greenvalley-02` 22/24 and `swamp-01` 17/24 unchanged.
+    **Tried and reverted:** `mirror_plating`'s chance 0.5 → 0.35 (no change: 14/24) and a fourth foe (`wolf01`) in
+    `greenvalley-02`'s finale (still 22/24, party HP left on wins 67% → 64%). Dropping `tough_hide` from the family was
+    built but its run was cut by the low-memory guard, so it isn't in. **Why `greenvalley-02` stays at 92%:** the snapshot
+    party arrives at level 4 against a recommended level of 2 (`greenvalley-01`'s five waves out-level the curve), and the
+    campaign convention (0202aedb) authors every foe at `Level: 1` under the `RecommendedLevel` floor, so hand-leveling its
+    foes would bring back the very bug that broke `greenvalley-01`. The lever is the XP curve, GG-T474 (owner decision).
+    Still to do: a `GAIDEN_ABILITY_SNAPSHOT=regen` run over `greenvalley-01`..`desert-02` to check knock-on effects (not
+    run: memory), and a second look at `desert-02`'s wave 4 if it lands under the band once regenerated.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
