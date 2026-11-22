@@ -79,8 +79,8 @@ namespace GridGame.App
         public override void OnHidden()
         {
             // Unsaved edits don't outlive the editor: the saved theme comes back.
-            if (dirty) { dirty = false; App.ApplySettings(); App.Toast("Unsaved window changes discarded"); }
             if (tonePendingSave) { tonePendingSave = false; App.SaveSettings(); }
+            if (dirty) { dirty = false; App.ApplySettings(); App.Toast("Unsaved window changes discarded"); }
         }
 
         private void Rebuild()
