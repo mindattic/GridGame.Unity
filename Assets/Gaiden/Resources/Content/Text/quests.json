@@ -28,16 +28,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8e6661f4bd05189388622fea5c52696bb206e54822ae346f71736d8ab385cf97",
+      "hash": "sha256:2b0b7bd428f3778d591496403f43b3e4897903c8e472a3fbfe37ae1cf00ebdb5",
       "about": [
         "place-cityruins"
       ],
       "speakers": [],
       "payload": {
         "title": "The Bulwark Breaks",
-        "brief": "Laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem accusantium doloremque. Laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta.",
+        "brief": "The Bulwark march through Halcyon in white power armour, and they'll follow the wagon all the way up the spire. Break six of them and they'll think twice.",
         "giver": "$party",
-        "complete": "Nisi ut aliquip ex ea commodo consequat duis aute irure dolor. In reprehenderit in voluptate velit esse cillum."
+        "complete": "Six white shells, cracked open. The rest of them are hanging back now."
       }
     },
     "quest:q_choir_level": {
@@ -46,16 +46,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:23bdfd2e77bbb00e189c515a149f3e65d20e31943f3454e8377bf51a78a08862",
+      "hash": "sha256:f8b1dc68674f02078e53cd519f27d2096ed72697bcfdc8be3d56c2e618623e6f",
       "about": [
         "place-cathedral"
       ],
       "speakers": [],
       "payload": {
         "title": "Strong Enough for the Choir",
-        "brief": "Laudantium totam rem aperiam eaque ipsa quae ab illo. Inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas. Sit aspernatur aut odit aut.",
+        "brief": "The Cathedral is the Choir's own ground, and the Hierarch won't be easy. Get the party strong enough before you climb.",
         "giver": "$party",
-        "complete": "Et dolore magna aliqua ut enim ad. Minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex."
+        "complete": "Strong enough. Let's go up."
       }
     },
     "quest:q_city_that_stopped": {
@@ -103,7 +103,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a55ef2d720e7d2193de2af14a958765031f896110c5e82643b768f31ffb9dc6b",
+      "hash": "sha256:16a53643f869f2abdf1915223e17fa0b855296345c1b90ea81e97f4680b7ed19",
       "about": [
         "character-blacksmith",
         "place-cave"
@@ -111,9 +111,9 @@
       "speakers": [],
       "payload": {
         "title": "Quenched in Frost",
-        "brief": "Exercitation ullamco laboris nisi ut aliquip. Ex ea commodo consequat duis aute irure dolor in reprehenderit. In voluptate velit esse cillum dolore eu fugiat nulla. Pariatur excepteur sint occaecat cupidatat.",
+        "brief": "Steel quenched in frost-core holds an edge forever. The blacksmith needs two frost cores from the Anchor Wastes.",
         "giver": "character-blacksmith",
-        "complete": "Amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut. Labore et dolore magna aliqua ut enim ad."
+        "complete": "Quenched and ready. That edge will outlast all of us."
       }
     },
     "quest:q_forge_iron": {
@@ -122,7 +122,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7540dac926a8c0697e5a2f54a70d16cfc934388c626b9afceaf7c3a24873eec8",
+      "hash": "sha256:146d352c0dda9d459e67d05790d20f2281e8578ab602c85264145e13f81d6889",
       "about": [
         "character-blacksmith",
         "place-desert"
@@ -130,9 +130,9 @@
       "speakers": [],
       "payload": {
         "title": "Iron for the Forge",
-        "brief": "Quia voluptas sit aspernatur aut odit aut fugit lorem ipsum dolor. Sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna aliqua ut enim ad.",
+        "brief": "The blacksmith's forge is cold. Six iron ore from the Shardfall will get the fire going again.",
         "giver": "character-blacksmith",
-        "complete": "Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta. Sunt explicabo nemo enim ipsam voluptatem quia."
+        "complete": "The forge is hot again. Now the real work starts."
       }
     },
     "quest:q_forge_plating": {
@@ -141,7 +141,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e0753ea271d4bfc18bed538e9c43f5f937e4dae10c8e2fed7faa80a188dc273c",
+      "hash": "sha256:343f713480df11c5879b37fc4816c6104979f821b344762d81116f31d188a364",
       "about": [
         "character-blacksmith",
         "place-desert"
@@ -149,9 +149,9 @@
       "speakers": [],
       "payload": {
         "title": "Plate from the Wrecks",
-        "brief": "Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit. Aspernatur aut odit aut fugit lorem ipsum dolor sit amet.",
+        "brief": "The walkers at the dig are plated with Halcyon steel. Strip three plates for the blacksmith.",
         "giver": "character-blacksmith",
-        "complete": "Veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut."
+        "complete": "Halcyon plate, twelve hundred years old and still better than anything new."
       }
     },
     "quest:q_free_holds": {
@@ -160,16 +160,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7e1585e40228ade0cc0d9ae8ea58e8e63db589b88048150a0e3a206b82e99cbf",
+      "hash": "sha256:5457c1ddeeabac8cf5d71c2e3e2208b7e07811f551d6b187c2cf293bf42bebe3",
       "about": [
         "place-greenvalley2"
       ],
       "speakers": [],
       "payload": {
         "title": "Holds Without Masters",
-        "brief": "Fugiat nulla pariatur excepteur sint occaecat cupidatat. Non proident sunt in culpa qui officia deserunt. Mollit anim id est laborum sed. Ut perspiciatis unde omnis iste natus error sit voluptatem.",
+        "brief": "The holds have soldiers and no masters now, and ten of them still fight for a tithe nobody's collecting. Show them the Choir is gone.",
         "giver": "$party",
-        "complete": "Veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut."
+        "complete": "Ten soldiers who'll think about what they're fighting for."
       }
     },
     "quest:q_frog_glands": {
@@ -235,7 +235,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:18ed895533e30a9603bb1ed4ac7abfdcaaf152b5af0738241cbcd06d17168f5a",
+      "hash": "sha256:fc2a0a8a0fdaf59562a34daa90c94a30057bd1ec1516a733a0e3f34eb0084c17",
       "about": [
         "character-innkeeper",
         "place-bloom"
@@ -243,9 +243,9 @@
       "speakers": [],
       "payload": {
         "title": "Heartwood of the Bloom",
-        "brief": "Deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium doloremque laudantium. Totam rem aperiam eaque ipsa quae ab illo inventore veritatis et.",
+        "brief": "The Bloom grows trees where nothing should. Their heartwood burns warm for days. The innkeeper wants three pieces for the camp.",
         "giver": "character-innkeeper",
-        "complete": "Eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in. Culpa qui officia deserunt mollit anim."
+        "complete": "Three pieces of red-grained heartwood. The camp won't be cold again."
       }
     },
     "quest:q_hold_the_ward": {
@@ -273,7 +273,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:eec0005b9bf7d8b233d37ad82e51a019c59501484466f0d97c13cca3931d44f7",
+      "hash": "sha256:22c4cfd3b9011b524bf14d3d2f19ac4d8c65723a787030072d9e45c6ab84cf25",
       "about": [
         "character-alchemist",
         "place-still"
@@ -281,9 +281,9 @@
       "speakers": [],
       "payload": {
         "title": "Holy Aether for the Still",
-        "brief": "Quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam voluptatem quia. Voluptas sit aspernatur aut odit aut fugit lorem ipsum. Dolor sit amet consectetur adipiscing elit sed do eiusmod.",
+        "brief": "Some of the tithe in the Still's tanks has turned holy. The alchemist needs three vials of holy aether to brew something that brings people back.",
         "giver": "character-alchemist",
-        "complete": "Deserunt mollit anim id est laborum sed ut perspiciatis unde omnis. Iste natus error sit voluptatem accusantium doloremque."
+        "complete": "Three vials. Handle them gently; they remember who they were."
       }
     },
     "quest:q_hymn_stops": {
@@ -312,16 +312,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:066c1c30ea78be4cb7d1437ee10468654495f9c2ef3bb189f4b157bc0ef619d9",
+      "hash": "sha256:f421dc82f7dc2278248b54da47ec59a433474605f51946114b68706ec01468a4",
       "about": [
         "place-cathedral"
       ],
       "speakers": [],
       "payload": {
         "title": "The Last Rite",
-        "brief": "Sed do eiusmod tempor incididunt ut labore. Et dolore magna aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.",
+        "brief": "The Cathedral will be the hardest fight yet. Learn to mend the whole party at once before you climb.",
         "giver": "$party",
-        "complete": "Quis nostrud exercitation ullamco laboris nisi. Ut aliquip ex ea commodo consequat duis aute. Irure dolor in reprehenderit."
+        "complete": "Everyone mended at once. We'll all come back down."
       }
     },
     "quest:q_long_cold": {
@@ -349,7 +349,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226a49528721ac34200eb8c5b8969908b48091dd16fad4e26d3cfac6dc89e236",
+      "hash": "sha256:5e16369ceba1333725c5c862823d7939e238de951f8eabc4dfa7949dd9fd1a31",
       "about": [
         "character-alchemist",
         "place-swamp"
@@ -357,9 +357,9 @@
       "speakers": [],
       "payload": {
         "title": "Ichor of the Lurkers",
-        "brief": "Excepteur sint occaecat cupidatat non proident sunt. In culpa qui officia deserunt mollit anim id. Est laborum sed ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium doloremque laudantium.",
+        "brief": "The swamp lurkers bleed something that knits wounds shut. The alchemist wants four vials of it.",
         "giver": "character-alchemist",
-        "complete": "Dolor in reprehenderit in voluptate velit esse cillum dolore eu. Fugiat nulla pariatur excepteur sint occaecat cupidatat non."
+        "complete": "Four vials. Ugly, but it holds."
       }
     },
     "quest:q_masks_off": {
@@ -388,7 +388,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9db7892d0cef513a47258e7cb51d3cc717025028c88eaec7e3c1a871c4fd3beb",
+      "hash": "sha256:a17b91d45bb0e6656bb241210ff3a5e506085e57554b68010e3b7c1992e79b36",
       "about": [
         "character-enchantress",
         "place-swamp"
@@ -396,9 +396,9 @@
       "speakers": [],
       "payload": {
         "title": "A Star to Call Down",
-        "brief": "Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur. Aut odit aut fugit lorem ipsum dolor sit amet. Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore.",
+        "brief": "There's a spell that pulls a burning stone down from the sky. The Enchantress wants someone in the party to learn it.",
         "giver": "character-enchantress",
-        "complete": "Laborum sed ut perspiciatis unde omnis iste. Natus error sit voluptatem accusantium doloremque laudantium. Totam rem aperiam eaque."
+        "complete": "A star to call down. Aim it carefully."
       }
     },
     "quest:q_moor_harpies": {
@@ -407,7 +407,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a7662e8b5a9a03fe120fb2fb1ab5cff258b2bc33808b00c007458b0e1ad0ca1e",
+      "hash": "sha256:46d1a99272977210cdcbbd7e5a835e3eb0fb9a1f60fe161dfa879605d303eba0",
       "about": [
         "character-innkeeper",
         "place-greenvalley"
@@ -415,9 +415,9 @@
       "speakers": [],
       "payload": {
         "title": "Harpies over the Wells",
-        "brief": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo. Inventore veritatis et quasi architecto beatae. Vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.",
+        "brief": "Harpies nest over the wells and steal anything shiny. Drive off four so the water carriers can work.",
         "giver": "character-innkeeper",
-        "complete": "Voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur. Sint occaecat cupidatat non proident sunt in culpa."
+        "complete": "Four fewer harpies. The wells are quiet again."
       }
     },
     "quest:q_moor_slimes": {
@@ -426,7 +426,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bc62891eddac8b6fc854dbfeea450f9b388dba00e8ab5ddf2d27af4d66f528c1",
+      "hash": "sha256:5636575a210c6e4a5e765aff20d85e27401287b7ad87dc29cc6aad6b87d13751",
       "about": [
         "character-innkeeper",
         "place-greenvalley"
@@ -434,9 +434,9 @@
       "speakers": [],
       "payload": {
         "title": "Slime in the Cellar",
-        "brief": "Totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta sunt explicabo nemo enim. Ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.",
+        "brief": "Something's living in the innkeeper's cellar and eating the stores. Clear out six slimes.",
         "giver": "character-innkeeper",
-        "complete": "Eu fugiat nulla pariatur excepteur sint occaecat cupidatat. Non proident sunt in culpa qui. Officia deserunt mollit anim."
+        "complete": "Six slimes gone. The cheese did not survive."
       }
     },
     "quest:q_moor_werewolf": {
@@ -445,7 +445,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6196a0e7912a2f19fd8fa3382cfdfbe8a986082bb64ab76d4e37c6f2d5ed86a9",
+      "hash": "sha256:dfdd1112a588285f0a8bdf0c6b8cc53b709bea047c8bfaa85f22c5346e87a30a",
       "about": [
         "character-innkeeper",
         "class-werewolf00",
@@ -454,9 +454,9 @@
       "speakers": [],
       "payload": {
         "title": "The Beast of the Moors",
-        "brief": "Veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit. Aspernatur aut odit aut fugit lorem ipsum dolor. Sit amet consectetur adipiscing elit sed.",
+        "brief": "Something howls on the moors at night, and it isn't a wolf. Hunt the beast before it reaches the inn.",
         "giver": "character-innkeeper",
-        "complete": "Minim veniam quis nostrud exercitation ullamco laboris nisi. Ut aliquip ex ea commodo consequat. Duis aute irure dolor."
+        "complete": "The howling's stopped. The moors are just quiet now."
       }
     },
     "quest:q_organ_quiet": {
@@ -485,16 +485,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ce649ebd2689bc08dc8ee7bb3b3c31473c273d7212262fff266c54084572b631",
+      "hash": "sha256:d31ba3c221a2878ba991580d0848dfb227e471183f700497fabcbe40ff7e7da8",
       "about": [
         "place-cityruins"
       ],
       "speakers": [],
       "payload": {
         "title": "The Reaper's Shroud",
-        "brief": "Nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum. Dolore eu fugiat nulla pariatur excepteur sint occaecat.",
+        "brief": "The reapers in Halcyon wear shrouds cut from something old. Bring back two to learn what the Choir hides up the spire.",
         "giver": "$party",
-        "complete": "Aut fugit lorem ipsum dolor sit amet consectetur adipiscing elit sed. Do eiusmod tempor incididunt ut labore et."
+        "complete": "Two shrouds. Older than the Choir, and stitched with Halcyon's thread."
       }
     },
     "quest:q_ronin_guard": {
@@ -503,7 +503,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0de340ffd6adadcac07820781ffd7eab16749c4e541614209ee17a9892646e05",
+      "hash": "sha256:d992312108063ec172d34cee8580b04ba61ac0282f8e7c5ef191def31f5d0297",
       "about": [
         "class-ronin",
         "place-lanternroad"
@@ -511,9 +511,9 @@
       "speakers": [],
       "payload": {
         "title": "The Guard Stance",
-        "brief": "Quia voluptas sit aspernatur aut odit aut fugit lorem ipsum. Dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt. Ut labore et dolore magna aliqua ut enim ad.",
+        "brief": "The Ronin's style has a guard stance worth learning. Have the Ronin learn it, so the rest of the party can rest easier.",
         "giver": "$party",
-        "complete": "Aliqua ut enim ad minim veniam quis nostrud exercitation ullamco laboris. Nisi ut aliquip ex ea commodo consequat."
+        "complete": "The guard is learned. A blade that guards is worth two that swing."
       }
     },
     "quest:q_ronin_level": {
@@ -522,7 +522,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7075073c0fcd4b39eb0cb07999be1872b689aa76f0ae9ef47ea66b4c587c392a",
+      "hash": "sha256:8cdd00074ead798474087d53caa5951566128c22601794dd6bba03a4661cc961",
       "about": [
         "class-ronin",
         "place-lanternroad"
@@ -530,9 +530,9 @@
       "speakers": [],
       "payload": {
         "title": "The Ronin's Measure",
-        "brief": "Odit aut fugit lorem ipsum dolor sit amet consectetur. Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore. Magna aliqua ut enim ad minim veniam quis nostrud exercitation.",
+        "brief": "The Ronin has the makings of something great. Train them up a little.",
         "giver": "$party",
-        "complete": "Aut fugit lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et."
+        "complete": "Seasoned. The Ronin carries their weight now."
       }
     },
     "quest:q_ronin_recruit": {
@@ -541,7 +541,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a0527ffe0186abd1a71c801fc4f8e27fc41d40d3344242074d8be6361ec29cb7",
+      "hash": "sha256:aab1ef76328c9817b3db51f774286f5917739370cd9713989b5d9b086dfc9c44",
       "about": [
         "class-ronin",
         "place-greenvalley"
@@ -549,9 +549,9 @@
       "speakers": [],
       "payload": {
         "title": "A Blade Without a Lord",
-        "brief": "Ipsa quae ab illo inventore veritatis et quasi. Architecto beatae vitae dicta sunt explicabo nemo. Enim ipsam voluptatem quia voluptas sit aspernatur aut odit. Aut fugit lorem ipsum dolor sit.",
+        "brief": "There's a ronin on the moors with no lord and no school. Find them, and ask them to come along.",
         "giver": "$party",
-        "complete": "Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident. Sunt in culpa qui officia deserunt mollit anim id."
+        "complete": "A blade without a lord, walking beside us now."
       }
     },
     "quest:q_seasoned": {
@@ -560,16 +560,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:50394ce01673b7c47ac6be2d692308eedf84142eb4d13b68f1b82d7c64706912",
+      "hash": "sha256:47213e7b7507cdad2cae1e458f72666022acc1c09c472b9478006bdac296b56d",
       "about": [
         "place-lanternroad"
       ],
       "speakers": [],
       "payload": {
         "title": "Seasoned",
-        "brief": "Accusantium doloremque laudantium totam rem aperiam eaque ipsa. Quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.",
+        "brief": "A month ago the party were thieves on a stolen wagon. Get stronger before the road gets harder.",
         "giver": "$party",
-        "complete": "Enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut. Aliquip ex ea commodo consequat duis aute."
+        "complete": "Look at us now."
       }
     },
     "quest:q_sellsword": {
@@ -578,7 +578,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:70d1217c8761080db8a40a7c1296bdaec52a64744a23a4b61a5b2f529470f63d",
+      "hash": "sha256:69039af5b380f06cda27491af2ff41e2bc8bdb71008bf39a9672c89cb8efa212",
       "about": [
         "character-merchant",
         "class-sellsword",
@@ -587,9 +587,9 @@
       "speakers": [],
       "payload": {
         "title": "A Contract Worth Signing",
-        "brief": "Error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque. Ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae dicta sunt. Explicabo nemo enim ipsam voluptatem quia voluptas.",
+        "brief": "The merchant knows a sellsword in the Shardfall. Hire them, and the merchant will throw something in.",
         "giver": "character-merchant",
-        "complete": "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et. Dolore magna aliqua ut enim ad minim."
+        "complete": "Hired and paid. One more blade on the road."
       }
     },
     "quest:q_travel_light": {

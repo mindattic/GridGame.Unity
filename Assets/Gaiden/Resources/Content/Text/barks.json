@@ -155,7 +155,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:892b7a0547aa574939173c415ffd38c75c9a40526860f9eb620c4b4761d627d1",
+      "hash": "sha256:5f518be818ab32962aec8effb7d3284c39af48a82743349adb115796ec60e9be",
       "about": [
         "character-old-hask"
       ],
@@ -167,7 +167,7 @@
         "context": "caravan: Armory Wagon",
         "lines": [
           "Bring me the dented ones. The shiny ones never have stories.",
-          "Concord steel. Good steel, too. Shame about who it was bought with.",
+          "Choir steel. Good steel, too. Shame about who it was bought with.",
           "Every crack's a lesson. Some lessons are just more expensive."
         ]
       }
@@ -201,7 +201,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d41f063898efbba23e027c98444420ba1ad499873e3ac79d66486d44fda07522",
+      "hash": "sha256:ce390fde3088a2967af32bf8001ba74ca067c9126e7f27c5996d1387e1052e42",
       "about": [
         "character-brannoc"
       ],
@@ -213,8 +213,8 @@
         "context": "caravan: Mana Casks",
         "lines": [
           "Casks sloshing fine today. Mind you don't sit on the blue one.",
-          "These casks came off a Concord wagon. Still stamped 'Property of the Still'. I painted a duck over it.",
-          "The Somnolith's stirring tonight. The orbs hum louder. Probably fine."
+          "These casks came off a Choir wagon. Still stamped 'Property of the Still'. I painted a duck over it.",
+          "The Somnolith looked bigger last night. The orbs hummed louder. Probably fine."
         ]
       }
     },
@@ -247,7 +247,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:907986fc6e2e171ff62ae5df8edefb5fb1b795128aa293767057c7fbc01dad70",
+      "hash": "sha256:8474393f104f04e92e4bcb5d56ebdf2515032f5d9a9806de25a1b40aa22b5fe7",
       "about": [
         "character-osk"
       ],
@@ -259,7 +259,7 @@
         "context": "caravan: Quartermaster's Ledger",
         "lines": [
           "Three iron ore, one wolf pelt, half a cog. It's all in the book.",
-          "The Concord kept a ledger too. Ours adds up. That's the difference.",
+          "The Choir kept a ledger too. Ours adds up. That's the difference.",
           "If it isn't in the ledger, it didn't happen. If it is, it's mine to sort."
         ]
       }
@@ -293,7 +293,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:612af90921ad82ba284d93bc6cb10a6a229a2fb6d3db996a4bcc67d7a9172b65",
+      "hash": "sha256:58211b4f37fc8d67f8126bc65c161c64ad3be641ce76b2a248ead2a83feff399",
       "about": [
         "character-penny-tallow"
       ],
@@ -305,7 +305,7 @@
         "context": "caravan: Strongbox",
         "lines": [
           "Count twice, spend once. That's not a saying, that's a rule.",
-          "The box is locked. The key is somewhere the Concord's auditors never thought to look.",
+          "The box is locked. The key is somewhere the Choir's auditors never thought to look.",
           "Finish the whole road and I'll show you what a bonus looks like."
         ]
       }
@@ -442,7 +442,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e2933cc135d1795835a81a76e8fe82554d11567690288b63c1f0f4a65365fe3f",
+      "hash": "sha256:fcbf2aa8dcb2ab85861b8b70f911503363f2b46d179ff57cfe17a2a0abdc0244",
       "about": [
         "class-prizefighter"
       ],
@@ -453,7 +453,7 @@
         "speaker": "class-prizefighter",
         "context": "mercenary pitch",
         "lines": [
-          "Undefeated in three pit towns and two the Concord shut down. Champions cost champion money."
+          "Undefeated in three pit towns and two the Choir shut down. Champions cost champion money."
         ]
       }
     },
