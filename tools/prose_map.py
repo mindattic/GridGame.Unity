@@ -70,6 +70,9 @@ UNIVERSE_RECORD = {
         "The Somnolith is not a moon. The Moon is ordinary and always the same size; the Somnolith grows as it nears.",
         "Every draw of aether pulls the Somnolith closer; Halcyon's Anchors are taps, and the draw is the pull.",
         "Those whose aether is drawn away, by the blanking or by too much tithe, come back Hollow.",
+        "Magic is aether dust concentrated and channelled into a phenomenon or a bodily change (lightning, fire, ice, "
+        "sleep, poison); without the Somnolith there would be no magic.",  # GG-T671
+        "The Somnolith drags a wake of debris across the sky; aether dust sometimes falls from it: the Aetherain.",  # GG-T670
         "Every hero is a present-day person except the Warden, the only sleeper; heroes are named by role with the article.",
         "The Hierarch, the villain, alone knows the whole truth. No text says what the Somnolith is for.",
     ],

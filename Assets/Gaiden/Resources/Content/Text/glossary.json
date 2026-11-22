@@ -89,6 +89,21 @@
         "definition": "A Bulwark Siphoner's charge: it hits one hero, and an orb leaves the party's bank when it lands. Spend your orbs first, or [Interrupt] it."
       }
     },
+    "glossary:aetherain": {
+      "key": "glossary:aetherain",
+      "id": "glossary-aetherain",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:cbde5a673926093e044388507a9b15b89f9ecd1dbe090a2091df3444bf24927b",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Aetherain",
+        "definition": "A fall of aether dust: now and then the wake of debris the Somnolith drags across the sky lets go of its finest grains, and they drift down as slow, glinting motes. People say \"the Aetherain falls\" the way they say the frost is in.",
+        "aliases": []
+      }
+    },
     "glossary:aetherite_shard": {
       "key": "glossary:aetherite_shard",
       "id": "glossary-aetherite-shard",

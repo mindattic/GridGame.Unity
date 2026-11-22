@@ -13,6 +13,16 @@
     "Spin": 3,
     "Opacity": 0.9
   },
+  "Debris": {
+    "Count": 60, "MinCount": 12, "FullAtSize": 0.6,
+    "Length": 0.75, "Angle": 192, "Spread": 0.09,
+    "MaxSize": 0.05, "MinSize": 0.008, "SpeckShare": 0.45, "SpeckColor": "#6B4E33",
+    "DriftSeconds": 140, "Opacity": 0.85
+  },
+  "Aetherain": {
+    "Chance": 0.3, "Motes": 28, "FallSeconds": 16,
+    "MinSize": 0.004, "MaxSize": 0.009, "Color": "#F2D27A", "Opacity": 0.85
+  },
   "Parallax": { "Amplitude": 0.012, "Seconds": 36 },
   "Regions": {
     "greenvalley": { "Size": 0.1, "X": 0.74, "Y": 0.3, "Rotation": -10 },

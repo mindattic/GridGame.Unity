@@ -13,6 +13,10 @@ namespace GridGame.App
     /// (the backdrop with its sky cut out, under the backdrop's own resource key). A gentle idle sway moves the near layers
     /// more than the far ones. Reduce Motion keeps every layer still.
     ///
+    /// GG-T670: behind the Somnolith runs the wake of debris it drags across the sky (<see cref="DebrisDef"/>), and now
+    /// and then the Aetherain falls from it, glints of aether dust drifting down over the landscape
+    /// (<see cref="AetherainDef"/>). Reduce Motion holds the wake still and skips the Aetherain.
+    ///
     /// The plates cover the screen at the art's own aspect (cropping, never stretching, so 9:23 to 3:4 all fill), with a
     /// small margin so the sway never shows an edge. The bodies are placed in screen terms (see <see cref="SkyDef"/>), so
     /// the Somnolith stays in the visible sky at every aspect. A backdrop that isn't split (an interior, a rejected split)
@@ -52,8 +56,31 @@ namespace GridGame.App
             public float X0, Y, Size, Speed, Spin, Angle0, Opacity, Aspect;
         }
 
+        /// <summary>One piece of the Somnolith's wake (GG-T670). U0 is where it starts along the wake (0 at the body, 1 at
+        /// the far end), Across its offset across the wake (-1..1), Jitter its size wobble; it is sized once at its largest
+        /// and scaled down as it drifts away.</summary>
+        private sealed class Debris
+        {
+            public VisualElement El;
+            public float U0, Across, Jitter, Spin, Angle0, Opacity, Aspect;
+            public bool Speck;
+        }
+
+        /// <summary>One falling glint of the Aetherain (GG-T670).</summary>
+        private sealed class Mote
+        {
+            public VisualElement El;
+            public float X0, Phase, Speed, Size, Drift, DriftHz, Twinkle, Seed;
+        }
+
         private readonly VisualElement bg, sky, moon, som, fg;
         private readonly List<Shard> shards = new List<Shard>();
+        private readonly List<Debris> debris = new List<Debris>();
+        private readonly List<Mote> motes = new List<Mote>();
+        /// <summary>Round pieces (specks, motes) are coloured, not textured, so the backdrop tint is applied to them by hand.</summary>
+        private readonly List<(VisualElement el, Color c)> tinted = new List<(VisualElement, Color)>();
+        private readonly DebrisDef wake;
+        private readonly AetherainDef rain;
         private readonly SkyDef def;
         private readonly SkyRegionDef region;
         private readonly BackdropLayerDef layer;
@@ -61,6 +88,8 @@ namespace GridGame.App
         private readonly bool still;
         private Color tint = Color.white;
         private float w, h, skyBottom, refW;
+        private float somX, somY, somR, rainTop;
+        private Vector2 wakeDir, wakeAcross;
 
         private LivingBackdrop(VisualElement bg, string theme, Texture2D fgTex, Texture2D skyTex, BackdropLayerDef layer, SkyDef def, bool still)
         {
@@ -76,6 +105,9 @@ namespace GridGame.App
             var moonTex = Load(def.Moon?.Image);
             moon = moonTex != null ? Layer(moonTex) : null;
             moonAspect = moonTex != null ? (float)moonTex.height / moonTex.width : 1f;
+            var rnd = new System.Random(); // cosmetic: a fresh wake and a fresh roll for the Aetherain every time
+            wake = def.DebrisFor(region);
+            BuildDebris(rnd); // behind the body: it sits in front of its own wake
             var somTex = Load(def.Somnolith?.Image);
             som = somTex != null ? Layer(somTex) : null;
             somAspect = somTex != null ? (float)somTex.height / somTex.width : 1f;
@@ -83,6 +115,9 @@ namespace GridGame.App
             if (som != null) som.style.opacity = def.Somnolith.Opacity;
             BuildShards();
             fg = Layer(fgTex);
+            // The Aetherain falls in front of the landscape (still inside this backdrop, so behind every screen's content).
+            rain = def.Aetherain;
+            if (!still && rain != null && rnd.NextDouble() < def.AetherainChanceFor(region)) BuildAetherain(rnd);
 
             bg.RegisterCallback<GeometryChangedEvent>(_ => Layout());
             if (!still) bg.schedule.Execute(Tick).Every(33);
@@ -127,6 +162,77 @@ namespace GridGame.App
             }
         }
 
+        private VisualElement Dot(Color c)
+        {
+            var e = new VisualElement { pickingMode = PickingMode.Ignore, usageHints = UsageHints.DynamicTransform };
+            e.style.position = Position.Absolute;
+            var round = Length.Percent(50);
+            e.style.borderTopLeftRadius = round; e.style.borderTopRightRadius = round;
+            e.style.borderBottomLeftRadius = round; e.style.borderBottomRightRadius = round;
+            e.style.backgroundColor = c;
+            bg.Add(e);
+            tinted.Add((e, c));
+            return e;
+        }
+
+        private static Color ParseColor(string hex, Color fallback) =>
+            !string.IsNullOrEmpty(hex) && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
+
+        private void BuildDebris(System.Random rnd)
+        {
+            var d = wake;
+            if (d == null || d.Count <= 0) return;
+            var images = def.Shards?.Images;
+            var speckColor = ParseColor(d.SpeckColor, new Color(0.42f, 0.31f, 0.2f));
+            int count = Mathf.Min(d.Count, DebrisDef.MaxCount);
+            for (int i = 0; i < count; i++)
+            {
+                bool speck = images == null || images.Count == 0 || rnd.NextDouble() < d.SpeckShare;
+                Texture2D tex = speck ? null : Load(images[rnd.Next(images.Count)]);
+                if (!speck && tex == null) speck = true;
+                // Two uniform draws averaged lean the offset toward the wake's centre line; the power leans pieces
+                // toward the body, so the wake is densest where it leaves the Somnolith.
+                float across = (float)(rnd.NextDouble() + rnd.NextDouble() - 1.0);
+                var piece = new Debris
+                {
+                    El = speck ? Dot(speckColor) : Layer(tex),
+                    U0 = Mathf.Pow((float)rnd.NextDouble(), 1.6f),
+                    Across = across,
+                    Jitter = 0.6f + 0.6f * (float)rnd.NextDouble(),
+                    Spin = (def.Shards?.Spin ?? 3f) * (float)(rnd.NextDouble() * 2 - 1),
+                    Angle0 = (float)(rnd.NextDouble() * 360),
+                    Opacity = d.Opacity * (speck ? 0.7f : 1f) * (0.6f + 0.4f * (float)rnd.NextDouble()),
+                    Aspect = tex != null ? (float)tex.height / tex.width : 1f,
+                    Speck = speck,
+                };
+                piece.El.style.opacity = 0f;
+                debris.Add(piece);
+            }
+        }
+
+        private void BuildAetherain(System.Random rnd)
+        {
+            var c = ParseColor(rain.Color, new Color(0.95f, 0.82f, 0.48f));
+            int n = Mathf.Min(rain.Motes, AetherainDef.MaxMotes);
+            for (int i = 0; i < n; i++)
+            {
+                var m = new Mote
+                {
+                    El = Dot(c),
+                    X0 = (float)rnd.NextDouble(),
+                    Phase = (float)rnd.NextDouble(),
+                    Speed = (0.8f + 0.4f * (float)rnd.NextDouble()) / Mathf.Max(1f, rain.FallSeconds),
+                    Size = Mathf.Lerp(rain.MinSize, rain.MaxSize, (float)rnd.NextDouble()),
+                    Drift = 0.006f + 0.01f * (float)rnd.NextDouble(),
+                    DriftHz = 0.08f + 0.12f * (float)rnd.NextDouble(),
+                    Twinkle = 0.6f + 1.4f * (float)rnd.NextDouble(),
+                    Seed = (float)(rnd.NextDouble() * 6.283),
+                };
+                m.El.style.opacity = 0f;
+                motes.Add(m);
+            }
+        }
+
         private void Layout()
         {
             w = bg.resolvedStyle.width; h = bg.resolvedStyle.height;
@@ -150,6 +256,27 @@ namespace GridGame.App
                 sh.El.style.width = sw; sh.El.style.height = sw * sh.Aspect;
                 sh.El.style.left = Space.S0; sh.El.style.top = sh.Y * skyBottom - sw * sh.Aspect / 2f;
             }
+            // The wake leaves the Somnolith's centre along Angle; each piece is sized once at its largest and scaled in Tick.
+            somX = region.X * w; somY = region.Y * skyBottom; somR = region.Size * refW / 2f;
+            if (wake != null)
+            {
+                float a = wake.Angle * Mathf.Deg2Rad;
+                wakeDir = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
+                wakeAcross = new Vector2(-wakeDir.y, wakeDir.x);
+                foreach (var p in debris)
+                {
+                    float pw = (p.Speck ? wake.MinSize * 2.5f : wake.MaxSize) * p.Jitter * refW;
+                    p.El.style.width = pw; p.El.style.height = pw * p.Aspect;
+                    p.El.style.left = Space.S0; p.El.style.top = Space.S0;
+                }
+            }
+            rainTop = Mathf.Max(0f, somY - somR);
+            foreach (var m in motes)
+            {
+                float mw = m.Size * refW;
+                m.El.style.width = mw; m.El.style.height = mw;
+                m.El.style.left = Space.S0; m.El.style.top = Space.S0;
+            }
             Tick();
         }
 
@@ -169,13 +296,17 @@ namespace GridGame.App
             {
                 tint = t2;
                 foreach (var child in bg.Children()) child.style.unityBackgroundImageTintColor = tint;
+                foreach (var (el, c) in tinted) el.style.backgroundColor = new Color(c.r * tint.r, c.g * tint.g, c.b * tint.b, c.a);
             }
             float t = still ? 0f : Time.realtimeSinceStartup - start;
             float sway = still ? 0f : Mathf.Sin(2f * Mathf.PI * t / Mathf.Max(1f, def.Parallax.Seconds)) * def.Parallax.Amplitude * w;
             sky.style.translate = new Translate(sway * 0.12f, 0f);
             if (moon != null) moon.style.translate = new Translate(sway * 0.18f, 0f);
+            float bob = still ? 0f : Mathf.Sin(t * 0.11f) * 0.004f * h;
             if (som != null)
-                som.style.translate = new Translate(sway * 0.3f, still ? 0f : Mathf.Sin(t * 0.11f) * 0.004f * h);
+                som.style.translate = new Translate(sway * 0.3f, bob);
+            TickWake(t, sway * 0.3f, bob);
+            TickAetherain(t, sway);
             foreach (var sh in shards)
             {
                 float sw = sh.Size * refW, span = w + 2f * sw;
@@ -184,6 +315,50 @@ namespace GridGame.App
                 sh.El.style.rotate = new Rotate(sh.Angle0 + t * sh.Spin);
             }
             fg.style.translate = new Translate(sway, 0f);
+        }
+
+        /// <summary>The wake follows the Somnolith (its sway and bob); each piece drifts from the body to the far end and
+        /// starts again near the body, shrinking and fading as it goes. Reduce Motion holds every piece where it began.</summary>
+        private void TickWake(float t, float followX, float followY)
+        {
+            if (wake == null || debris.Count == 0) return;
+            float length = wake.Length * w, spread = wake.Spread * w;
+            float baseX = somX + followX, baseY = somY + followY;
+            foreach (var p in debris)
+            {
+                float u = still ? p.U0 : Mathf.Repeat(p.U0 + t / Mathf.Max(1f, wake.DriftSeconds), 1f);
+                float dist = somR * 0.55f + u * length;
+                float across = p.Across * spread * (0.25f + 0.75f * u);
+                float x = baseX + wakeDir.x * dist + wakeAcross.x * across;
+                float y = baseY + wakeDir.y * dist + wakeAcross.y * across;
+                // Largest at the body, down to MinSize at the far end (specks start at 2.5x MinSize).
+                float big = p.Speck ? wake.MinSize * 2.5f : wake.MaxSize;
+                float k = Mathf.Lerp(1f, wake.MinSize / Mathf.Max(0.0001f, big), Mathf.Pow(u, 0.7f));
+                float pw = big * p.Jitter * refW;
+                p.El.style.translate = new Translate(x - pw / 2f, y - pw * p.Aspect / 2f);
+                p.El.style.scale = new Scale(new Vector2(k, k));
+                if (!p.Speck) p.El.style.rotate = new Rotate(p.Angle0 + t * p.Spin);
+                float fadeIn = Mathf.Clamp01(u / 0.04f), fadeOut = Mathf.Pow(1f - u, 0.8f);
+                p.El.style.opacity = p.Opacity * fadeIn * fadeOut;
+            }
+        }
+
+        /// <summary>The Aetherain: glints fall from the wake's band to the bottom of the screen, drifting and twinkling.</summary>
+        private void TickAetherain(float t, float sway)
+        {
+            if (motes.Count == 0) return;
+            float fallTo = h;
+            foreach (var m in motes)
+            {
+                float f = Mathf.Repeat(m.Phase + t * m.Speed, 1f);
+                float mw = m.Size * refW;
+                float y = Mathf.Lerp(rainTop, fallTo + mw, f);
+                float x = m.X0 * w + Mathf.Sin(t * 2f * Mathf.PI * m.DriftHz + m.Seed) * m.Drift * w + sway;
+                m.El.style.translate = new Translate(x - mw / 2f, y - mw / 2f);
+                float twinkle = 0.55f + 0.45f * Mathf.Sin(t * m.Twinkle * 2f * Mathf.PI + m.Seed);
+                float edge = Mathf.Clamp01(f / 0.08f) * Mathf.Clamp01((1f - f) / 0.08f);
+                m.El.style.opacity = rain.Opacity * twinkle * edge;
+            }
         }
     }
 }

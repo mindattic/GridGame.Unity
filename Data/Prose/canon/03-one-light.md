@@ -8,6 +8,8 @@
 
 **How it works.** People are the conductors. Aether flows down the Anchors' lines, through living bodies, and back up as their life. Drawing aether down a line also pulls along it: ten thousand years of drawing became a physical pull, and the Somnolith comes closer. Engineers called it a coupling and priests call it sympathy; both are true. In play, Halcyon tech, Choir hymns, Underspire neon, a healer's touch and the party's orbs all run on aether.
 
+**Magic.** Magic is aether made to act. A mage, a hymn or a weapon gathers aether dust, concentrates it and channels it into a phenomenon or a change in a living body: lightning, fire, ice, sleep, poison. Because it is the same aether as the life in everyone, a spell can reach into a person as easily as into the air. All of it comes from the Somnolith; without the Somnolith there would be no aether to gather and no magic in the world.
+
 **What the bond means:**
 - **If the Somnolith dies,** the aether in everyone goes out with it.
 - **If the Somnolith wakes,** its aether flows back to it. That is the blanking.
