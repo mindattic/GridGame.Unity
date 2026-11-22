@@ -57,7 +57,24 @@ def _content(content_dir: str) -> dict:
         p = os.path.join(content_dir, name + ".json")
         return pk.load(p) if os.path.isfile(p) else []
     return {n: load(n) for n in ("classes", "abilities", "items", "armorsets", "skilltrees", "campaign", "stages",
-                                 "regionrules", "quests", "factions", "glossary")}
+                                 "regionrules", "quests", "factions", "glossary", "dialogues", "backdroplayers")}
+
+
+def _npc_portrait_file(npc: str, content: dict) -> str:
+    """The Portraits/ file a camp NPC shows: its dialogue speaker portrait, else the game's fallback (prose_map)."""
+    import prose_map  # noqa: E402  (same resolution the Prose entities use)
+    pic = prose_map.npc_portraits(content.get("dialogues") or []).get(npc, prose_map.NPC_PORTRAIT_FALLBACK.get(npc, npc))
+    by_id = {c["Id"]: c for c in content.get("classes") or [] if isinstance(c, dict) and c.get("Id")}
+    return asset_names.portrait_file(by_id[pic]) if pic in by_id else pic
+
+
+def _jpg_ok(art: str) -> bool:
+    """A .jpg backdrop is by design when it has no sky layer (Sky:false in backdroplayers.json, GG-T576)."""
+    if not art.startswith("Backgrounds/") or not art.endswith(".jpg"):
+        return False
+    layers = _content(CONTENT).get("backdroplayers") or {}
+    key = os.path.splitext(os.path.basename(art))[0]
+    return isinstance(layers, dict) and key in layers and not layers[key].get("Sky")
 
 
 def _fill(template, rec: dict, slug: str):
@@ -86,7 +103,7 @@ def records(kind: str, spec: dict, schema: dict, content: dict):
     if src == "registry":
         return list(schema.get("registry", {}).get(kind, []))
     if src == "prose_keys.NPCS":
-        return [{"Id": k, "title": v} for k, v in pk.NPCS.items()]
+        return [{"Id": k, "title": v, "PortraitFile": _npc_portrait_file(k, content)} for k, v in pk.NPCS.items()]
     if src == "campaign.json#Themes":
         camp = content.get("campaign") or {}
         return list(camp.get("Themes") or []) if isinstance(camp, dict) else []
@@ -123,7 +140,7 @@ def _art(spec: dict, rec: dict):
     value = rec.get(a["field"])
     if not value:
         return None
-    stem = asset_names.of(value, a.get("variant", 0))
+    stem = value if a.get("isFile") else asset_names.of(value, a.get("variant", 0))
     for ext in (".png", ".jpg"):
         rel = f"{a['folder']}/{stem}{ext}"
         if os.path.isfile(os.path.join(RESOURCES, rel)):
@@ -286,7 +303,7 @@ def validate(entry: dict, schema: dict, texts: dict, known_ids: set) -> list:
     if art:
         if not os.path.isfile(os.path.join(RESOURCES, art)):
             p.append(f"warn: {eid}: art {art} isn't on disk")
-        elif not art.endswith(".png"):
+        elif not art.endswith(".png") and not _jpg_ok(art):
             p.append(f"warn: {eid}: art {art} isn't a .png")
     return p
 

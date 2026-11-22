@@ -812,5 +812,21 @@
       "Shard",
       "Shards"
     ]
+  },
+  {
+    "Id": "gold",
+    "Term": "Gold"
+  },
+  {
+    "Id": "rested",
+    "Term": "Rested"
+  },
+  {
+    "Id": "summon_circle",
+    "Term": "Summon Circle"
+  },
+  {
+    "Id": "refinery",
+    "Term": "Refinery"
   }
 ]

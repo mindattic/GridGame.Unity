@@ -162,7 +162,7 @@
       "summary": {"text": "npc:{Id}", "field": "short"},
       "body": [{"text": "npc:{Id}", "field": "short"}],
       "infobox": {},
-      "art": {"folder": "Portraits", "field": "Id", "variant": 0},
+      "art": {"folder": "Portraits", "field": "PortraitFile", "isFile": true},
       "bible": "25.0.1"
     },
     "glossary": {
@@ -195,7 +195,13 @@
     "system": [
       {"Id": "pincer", "title": "Pincer attacks", "glossary": "pincer", "bible": "1.2"},
       {"Id": "timeline", "title": "The Timeline", "glossary": "tempo", "bible": "2"},
-      {"Id": "clutch", "title": "Clutch!", "glossary": "clutch", "bible": "13.4.1"}
+      {"Id": "clutch", "title": "Clutch!", "glossary": "clutch", "bible": "13.4.1"},
+      {"Id": "guard", "title": "Guard", "glossary": "guard", "bible": "3.1.9"},
+      {"Id": "mana", "title": "Mana and orbs", "glossary": "mana_charge", "bible": "3.1"},
+      {"Id": "trust", "title": "Trust and recruiting", "glossary": "trust", "bible": "25.11.2.1"},
+      {"Id": "rested", "title": "Rested", "glossary": "rested", "bible": "25.18"},
+      {"Id": "summon", "title": "Summon Circle", "glossary": "summon_circle", "bible": "25.10"},
+      {"Id": "refinery", "title": "The Refinery", "glossary": "refinery", "bible": "24.9.1"}
     ]
   }
 }

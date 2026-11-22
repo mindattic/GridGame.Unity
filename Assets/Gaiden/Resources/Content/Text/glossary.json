@@ -1031,6 +1031,21 @@
         "definition": "A Harpy Shrieker's charge: a whirling gale that hits one hero and every hero beside it and drags each up to 2 tiles toward the harpy, out of formation. [Interrupt] it, or spread out."
       }
     },
+    "glossary:gold": {
+      "key": "glossary:gold",
+      "id": "glossary-gold",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:56fb1aca475bb10b4947e085b6566d4b441fc8a1fcd1798de39f5681812663e6",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Gold",
+        "definition": "The everyday coin of the road. Every battle pays it, and the Merchant, the Blacksmith's repairs, the Camp's facilities, the Summon Circle, Rested refills and the Aetherist's Dust all take it.",
+        "aliases": []
+      }
+    },
     "glossary:good": {
       "key": "glossary:good",
       "id": "glossary-good",
@@ -1549,6 +1564,21 @@
         "definition": "A Hellspawn Emberheart's charge: the red river floods a hero's whole row, burning everyone in it. Leave the row, or [Interrupt] it."
       }
     },
+    "glossary:refinery": {
+      "key": "glossary:refinery",
+      "id": "glossary-refinery",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a48d382722a5b13578ab92c4ccd9c5296383813c4b879fc10cf29bc1c61f47d4",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Refinery",
+        "definition": "The Aetherist's counter at Camp. Aetherite Dust, earned in battle or bought with gold, is refined there into Aetherite Shards, a counted measure at a time.",
+        "aliases": []
+      }
+    },
     "glossary:reflect": {
       "key": "glossary:reflect",
       "id": "glossary-reflect",
@@ -1586,6 +1616,21 @@
         "aliases": [
           "Regenerating"
         ]
+      }
+    },
+    "glossary:rested": {
+      "key": "glossary:rested",
+      "id": "glossary-rested",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:350a8d83e32aaf306205b329e515ed9a9bcb24bd21423e6efbc5cd493f4e1a29",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Rested",
+        "definition": "The party's shared energy. Each stage launch spends one point from a pool of ten, and one point comes back every ten minutes. Gold or Aetherite Shards refill it at once.",
+        "aliases": []
       }
     },
     "glossary:roar": {
@@ -1890,6 +1935,21 @@
           "Stunned",
           "Stuns"
         ]
+      }
+    },
+    "glossary:summon_circle": {
+      "key": "glossary:summon_circle",
+      "id": "glossary-summon-circle",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:58df22974d0442dfe416cd59fee3f59fbed687c187e497d19079a764ab5e1aac",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Summon Circle",
+        "definition": "The Camp's circle for calling a hero to the party: a chosen hero for gold, or a random draw paid in Aetherite Shards. A summoned hero arrives at the roster's average experience.",
+        "aliases": []
       }
     },
     "glossary:supporter": {
