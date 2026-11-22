@@ -449,7 +449,9 @@ namespace GridGame.App
                 AttachSlotInspect(slot, idx);
                 slot.RegisterCallback<ClickEvent>(_ => OnSlot(idx));
                 var icon = Ui.El("menu-icon", slot); icon.name = "icon"; icon.style.marginRight = Space.S0; icon.style.width = icon.style.height = Size.IconL;
-                var name = Ui.Text("", "tiny", slot); name.name = "name"; name.style.unityTextAlign = TextAnchor.MiddleCenter; name.style.whiteSpace = WhiteSpace.Normal; name.style.maxWidth = Length.Percent(94);
+                // One line in the fixed-height slot: a name too wide for a narrow stage (9:23) scrolls as the shared
+                // marquee instead of wrapping into a second line the slot cuts off (GG-T659, POL-C5).
+                var name = Ui.Marquee(Ui.Text("", "tiny", slot), grow: false); name.name = "name"; name.style.unityTextAlign = TextAnchor.MiddleCenter; name.style.maxWidth = Length.Percent(94);
                 var cost = Ui.El("row", slot); cost.name = "cost"; cost.style.height = Size.Pip;
                 slotViews.Add(slot);
             }
@@ -831,8 +833,9 @@ namespace GridGame.App
                 v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
                 v.style.borderTopColor = v.style.borderBottomColor = v.style.borderLeftColor = v.style.borderRightColor = border;
                 v.style.opacity = alpha;
-                // A one-word name ("Taunt") never hyphen-breaks across lines; two-word names still wrap (GG-T408).
-                name.style.whiteSpace = (name.text ?? "").IndexOf(' ') < 0 ? WhiteSpace.NoWrap : WhiteSpace.Normal;
+                // The name never wraps (GG-T408: no hyphen-break; GG-T659: a wrapped two-word name was cut off by the
+                // fixed-height slot at 9:23): too wide, it scrolls as the marquee. Explicit lines (CD, charges, Silenced) still break.
+                name.style.whiteSpace = WhiteSpace.NoWrap;
             }
             SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
