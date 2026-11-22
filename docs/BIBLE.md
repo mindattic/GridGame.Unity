@@ -1044,6 +1044,25 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
       tier its card reads as — 8: `holdwright`, `chainwarden` (9), `holdram` (6), `spireshover` (7), `crystalbrute`,
       `anchorhulk`, `bloatdrowner` (5); 11: `holdmarksman`, `shardcaller`, `stormcaller`, `gloommender` (10),
       `pitlurker`, `mockingecho` (12); 15: `duskmimic` (13, a flanker).
+  - **Amended 2026-11-22 (GG-T276/GG-T215): the frog family poisons less often.** A full `polish.py --no-player
+    --balance` pass scored G 64.0 (POL-G1 24.4, G6 32.8, G8 50.0): the early campaign sits under the 55–85% casual
+    band again (`greenvalley-01` 0/4, `swamp-01` 0/4, `desert-02` 0/4), while the Still/Cathedral sit at 100%. A kept-records
+    re-run of the four worst stages at 8 battles each (the same seeds both sides) showed real defeats, not stalls: the
+    starting trio (Warden, Barbarian, Cleric) won `greenvalley-01` 1/8, mostly falling to the captain's finale after the
+    frog wave had worn them down. Frogs poison through three channels at once — their own blows (`OnHitChance` 0.4),
+    `toxic_skin` whenever struck directly (0.35), and their pincer support — so an all-melee, unarmed early party, whose
+    every pincer on a frog is a direct strike, stacks poison fast. **Change:** `toxic_skin`'s trigger 0.35 → 0.25
+    (description `[fair]` → `[small]`, §9 bands; it also arms `toad00` and `swampmistress00`), and `frog00`–`frog03`
+    `OnHitChance` 0.4 → 0.3. Supports, the `poisoned` buff itself and every wave are unchanged; §14's five-rising-waves
+    weights for `greenvalley-01` (54 < 59 < 81 < 101 < 109) leave no slack to thin a wave, so the lever is the family's kit.
+    **After (same seeds):** `greenvalley-01` 1/8 → 2/8, `greenvalley-02` 3/8 → 5/8, `swamp-01` 1/8 → 1/8, `desert-02`
+    4/8 → 4/8. `swamp-01`'s five wave-1 wipes are not poison: the records attribute ~2,400 damage each to `frog00`,
+    `frog01` and `toad00` blows at that stage's level (84 HP frogs) against the soak's unarmed heroes — the next pass's
+    target, along with whether the casual soak should field the guided starter gear a real save forges.
+    GG-T215's other remaining items, checked: mercenaries (45–70 G a battle) are ~10% of a mid-campaign stage's pay
+    (≈400–700 G), no change; the shop potions' flat-to-worse value per HP at the top (X-Potion 500 G / 500 HP) comes from
+    the owner's own "buying stays the convenient one" price raise (AMENDMENTS, X-Potion 250 → 500) and stays for the owner's
+    feel (RELEASE_SCOPE); the XP curve is GG-T474's owner decision.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge

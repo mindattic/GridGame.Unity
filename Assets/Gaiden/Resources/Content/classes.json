@@ -6288,7 +6288,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "OnHitBuff": "poisoned",
-    "OnHitChance": 0.4,
+    "OnHitChance": 0.3,
     "Brain": "Hopper"
   },
   {
@@ -6414,7 +6414,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "OnHitBuff": "poisoned",
-    "OnHitChance": 0.4,
+    "OnHitChance": 0.3,
     "Brain": "Hopper"
   },
   {
@@ -6541,7 +6541,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "OnHitBuff": "poisoned",
-    "OnHitChance": 0.4,
+    "OnHitChance": 0.3,
     "Brain": "Hopper"
   },
   {
@@ -6667,7 +6667,7 @@
     "Trap": null,
     "SnakeSegments": 0,
     "OnHitBuff": "poisoned",
-    "OnHitChance": 0.4,
+    "OnHitChance": 0.3,
     "Brain": "Hopper"
   },
   {

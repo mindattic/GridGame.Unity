@@ -2136,7 +2136,7 @@
  {
   "Id": "toxic_skin",
   "Name": "Toxic Skin",
-  "Description": "When [attacked directly], a [fair] chance its slick skin [Poisons] the attacker.",
+  "Description": "When [attacked directly], a [small] chance its slick skin [Poisons] the attacker.",
   "Kind": "Reactive",
   "Cost": 0,
   "CastTime": 0.0,
@@ -2163,7 +2163,7 @@
   "Sfx": null,
   "Trigger": {
    "On": "OnAttackedDirect",
-   "Chance": 0.35,
+   "Chance": 0.25,
    "Effects": [
     {
      "Kind": "ApplyBuff",

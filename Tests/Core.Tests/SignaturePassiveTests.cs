@@ -136,7 +136,7 @@ namespace GridGame.Tests
                     Assert.That(s.Units.Single(u => u.Id == poisoned.UnitId).IsHero, Is.True, "the attacker is poisoned, not the frog");
                 }
             }
-            Assert.That(fired, Is.GreaterThan(0), "a 35% reactive fires on some seed");
+            Assert.That(fired, Is.GreaterThan(0), "a 25% reactive fires on some seed");
             Assert.That(fired, Is.LessThan(strikes), "but not on every blow");
         }
     }
