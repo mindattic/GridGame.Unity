@@ -240,6 +240,9 @@ namespace GridGame.App
         {
             var w = Panel(parent, title, true, name);
             scroll = List(w);
+            // A short list's rows grow into the panel's spare height, capped (Theme.uss .list--fill), so the screen has no
+            // dead band under them (GG-T654, POL-C9); a long list scrolls as before.
+            scroll.AddToClassList("list--fill");
             return scroll.contentContainer;
         }
 
@@ -265,7 +268,7 @@ namespace GridGame.App
             return El("kit-footer", w);
         }
 
-        /// <summary>A row of buttons inside a window or card; they wrap, 24 px apart, edges lined up with the text.</summary>
+        /// <summary>A row of buttons inside a window or card; they wrap, 24 px apart and 24 px in from the text column.</summary>
         public static VisualElement Actions(VisualElement parent) => El("kit-actions", parent);
 
         /// <summary>A group header ("Weapon", "Under way"): caption size, gold, flush with the window's left edge.</summary>
