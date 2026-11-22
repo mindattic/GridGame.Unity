@@ -32,7 +32,49 @@ namespace GridGame.EditorTools
             PlayerSettings.SplashScreen.showUnityLogo = false;
             PlayerSettings.SplashScreen.show = false;
             PlayerSettings.bundleVersion = Version();
+            ApplyAppIcons();
             AssetDatabase.SaveAssets();
+        }
+
+        public const string AppIconFolder = "Assets/Gaiden/AppIcon/";
+
+        /// <summary>
+        /// GG-T486: the app icon from Assets/Gaiden/AppIcon (GridGame.Studio/tools/make_app_icon.py): the 1024 master as
+        /// the default icon for every platform, and on Android each legacy, round and adaptive (background + foreground
+        /// layer) slot gets the file drawn at its own size. Uses the generic PlatformIcon API, not
+        /// UnityEditor.Android.AndroidPlatformIconKind, so the editor compiles whatever the active target is (the Android
+        /// extension only loads while Android is active; see EmbedAndroidSymbols). A missing file only warns.
+        /// </summary>
+        [MenuItem("Gaiden/Apply App Icons")]
+        public static void ApplyAppIcons()
+        {
+            Texture2D Load(string name)
+            {
+                var t = AssetDatabase.LoadAssetAtPath<Texture2D>(AppIconFolder + name + ".png");
+                if (t == null) Debug.LogWarning("[Build] app icon: missing " + AppIconFolder + name + ".png");
+                return t;
+            }
+
+            var master = Load("app-icon-00");
+            if (master != null) PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown, new[] { master }, IconKind.Any);
+
+            var android = UnityEditor.Build.NamedBuildTarget.Android;
+            foreach (var kind in PlayerSettings.GetSupportedIconKinds(android))
+            {
+                var icons = PlayerSettings.GetPlatformIcons(android, kind);
+                foreach (var icon in icons)
+                {
+                    int s = icon.width;
+                    if (icon.maxLayerCount >= 2)
+                        icon.SetTextures(Load($"app-icon-adaptive-back-{s}-00"), Load($"app-icon-adaptive-fore-{s}-00"));
+                    else if (kind.ToString().IndexOf("round", StringComparison.OrdinalIgnoreCase) >= 0)
+                        icon.SetTexture(Load($"app-icon-round-{s}-00"));
+                    else
+                        icon.SetTexture(Load($"app-icon-legacy-{s}-00"));
+                }
+                PlayerSettings.SetPlatformIcons(android, kind, icons);
+            }
+            Debug.Log("[Build] app icon applied (GG-T486)");
         }
 
         private static bool CommandLine(string flag) => System.Array.IndexOf(System.Environment.GetCommandLineArgs(), flag) >= 0;
@@ -318,11 +360,23 @@ namespace GridGame.EditorTools
     public sealed class GaidenImport : AssetPostprocessor
     {
         /// <summary>Bumped whenever the rules below change, so Unity re-imports everything they touch on its own
-        /// (3: GG-T499 Android overrides; 4: GG-T576 sky plates and sky bodies).</summary>
-        public override uint GetVersion() => 4;
+        /// (3: GG-T499 Android overrides; 4: GG-T576 sky plates and sky bodies; 5: GG-T486 app icons).</summary>
+        public override uint GetVersion() => 5;
 
         private void OnPreprocessTexture()
         {
+            if (assetPath.StartsWith(GaidenBuild.AppIconFolder))
+            {
+                // GG-T486: icon sources, read by the player build at their exact drawn size, so never resized or compressed.
+                var icon = (TextureImporter)assetImporter;
+                icon.textureType = TextureImporterType.Default;
+                icon.mipmapEnabled = false;
+                icon.alphaIsTransparency = true;
+                icon.npotScale = TextureImporterNPOTScale.None;
+                icon.maxTextureSize = 2048;
+                icon.textureCompression = TextureImporterCompression.Uncompressed;
+                return;
+            }
             if (!assetPath.StartsWith("Assets/Gaiden/Resources/")) return;
             var ti = (TextureImporter)assetImporter;
             ti.textureType = TextureImporterType.Default;

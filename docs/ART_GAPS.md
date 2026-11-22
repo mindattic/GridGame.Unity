@@ -33,7 +33,7 @@ Rerun: `python -I <path>/art_gaps.py D:\Projects\MindAttic\Unity.GridGame`. It p
 
 | Kind | Gaps | Notes |
 |---|---|---|
-| App icon | 1 | No icon set for any platform (GG-T486) |
+| App icon | 0 | Set from the Somnolith sky art (GG-T486); a painted icon is optional |
 | Portraits missing, so the mannequin shows | 20 | The Hierarch, plus 19 region-rule foes in the postgame |
 | Portraits that are byte copies of the mannequin | 1 | `mockingecho` (foe). The `echo` hero copy went with the class (GG-T531) |
 | Other duplicated portraits that ship | 2 pairs | `templar03` = `templar04`, `naga00` = `nagaegg` |
@@ -81,7 +81,7 @@ moon, planet, giant sphere, second moon`
 
 | Asset id | Where it shows | Now | Prompt |
 |---|---|---|---|
-| App icon (iOS, Android legacy and adaptive foreground/background) | Home screen, store listing, task switcher, notifications | `m_BuildTargetIcons: []` and every platform's `m_Textures: []`, so builds ship Unity's default icon. `GaidenBuild.cs` sets no icon. Ticket GG-T486 | `square app icon, a stylized white porcelain knight's helm split by a crimson pincer of two blades, huge pale moon behind, bold readable silhouette, painterly anime style, deep indigo background, centered, no text --ar 1:1 --niji 5` |
+| App icon (iOS, Android legacy and adaptive foreground/background) | Home screen, store listing, task switcher, notifications | Done for now (GG-T486): the Somnolith with the Moon behind it on a night sky, made from the game's own sky art by `GridGame.Studio/tools/make_app_icon.py` into `Assets/Gaiden/AppIcon/` (1024 master, 512 Play listing icon, Android legacy/round/adaptive at every density); `GaidenBuild.ApplyAppIcons` sets them on every build. The prompt is for a painted replacement if the owner wants one | `square app icon, a stylized white porcelain knight's helm split by a crimson pincer of two blades, huge pale moon behind, bold readable silhouette, painterly anime style, deep indigo background, centered, no text --ar 1:1 --niji 5` |
 
 Generate at 1024×1024 or larger. The Android adaptive foreground should keep the subject in the centre 66%. Use the
 same prompt with "no helm, background only" for the background layer.
