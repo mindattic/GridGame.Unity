@@ -243,7 +243,24 @@ namespace GridGame.App
             // A short list's rows grow into the panel's spare height, capped (Theme.uss .list--fill), so the screen has no
             // dead band under them (GG-T654, POL-C9); a long list scrolls as before.
             scroll.AddToClassList("list--fill");
+            var sv = scroll;
+            sv.contentViewport.RegisterCallback<GeometryChangedEvent>(_ => FillViewport(sv));
             return scroll.contentContainer;
+        }
+
+        /// <summary>GG-T654: a column list's content is at least its viewport's height, so its rows have spare height to
+        /// grow into (USS can't size it: a percent of the viewport didn't resolve through the ScrollView's own wrapper). A
+        /// grid (row-wrap content, e.g. the Bestiary) opts out and drops the fill class, so its cells never stretch.</summary>
+        private static void FillViewport(ScrollView s)
+        {
+            float h = s.contentViewport.layout.height;
+            if (float.IsNaN(h) || h <= 0f) return;
+            bool column = s.contentContainer.resolvedStyle.flexDirection == FlexDirection.Column;
+            s.EnableInClassList("list--fill", column);
+            s.contentContainer.style.minHeight = column ? new StyleLength(Mathf.Floor(h)) : new StyleLength(StyleKeyword.Null);
+            // Rows stop growing at two targets (--row-fill-max); a list too short to fill even then spreads the rest
+            // evenly between its rows instead of leaving one dead band under the last (no effect once the list scrolls).
+            s.contentContainer.style.justifyContent = column ? new StyleEnum<Justify>(Justify.SpaceEvenly) : new StyleEnum<Justify>(StyleKeyword.Null);
         }
 
         /// <summary>The detail pane under a list: as tall as what it shows, at most <see cref="Kit.DetailMaxPct"/>% of the

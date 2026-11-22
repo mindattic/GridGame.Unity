@@ -373,17 +373,19 @@
 .window--detail { flex-shrink: 1; min-height: 0; max-height: 45%; }
 .window--detail > .list { flex-grow: 0; flex-shrink: 1; }
 /* Under tabs the window sits flush on the strip (Ui.Window drops its top margin). */
-.window--tabbed { margin-top: 0; }
+.window--tabbed { margin-top: 0; padding-top: var(--space-24); } /* GG-T656: a first control (Respec) clears the tab above it by 24 + border, not 16 + 5 = 21 (POL-C3) */
 /* The action bar at the foot of a screen: what it costs or does on the left, the buttons on the right. */
 .kit-footer { flex-direction: row; align-items: center; }
 .kit-footer > .btn { margin-top: 0; margin-bottom: 0; }
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) 0 0 0; padding: 0 var(--space-12); } /* row padding + each button's 12-px margin: edge = gap = 24 from the text column (GG-T662) */
 .kit-actions.kit-note { margin-left: var(--kit-note-actions); padding-left: 0; }
-/* GG-T654: a ListPanel's content fills its viewport and its rows share the spare height, each at most two targets tall. */
-.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { min-height: 100%; }
-.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container > .pressable,
-.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container > .menu-row { flex-grow: 1; max-height: var(--row-fill-max); }
+/* GG-T654: a ListPanel's content is at least its viewport tall (Ui.FillViewport sets it) and its rows share the spare
+   height, each at most two targets tall. Descendant, not child: Unity's ScrollView wraps the viewport in a
+   content-and-vertical-scroll container, so a `> viewport` selector never matched. */
+.list--fill .unity-scroll-view__content-container > .pressable,
+.list--fill .unity-scroll-view__content-container > .menu-row,
+.list--fill .unity-scroll-view__content-container > .card { flex-grow: 1; max-height: var(--row-fill-max); }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {

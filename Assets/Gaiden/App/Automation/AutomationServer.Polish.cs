@@ -104,17 +104,24 @@ namespace GridGame.App.Automation
 
             var targets = stage.Query<VisualElement>().Where(e => (e is Button || e.ClassListContains("pressable")) && Shown(e)).ToList()
                 .Select(e => (e, r: D(e.worldBound))).Where(p => p.r.width >= 1 && p.r.height >= 1).ToList();
-            foreach (var (e, r) in targets)
+            // GG-T656: spacing is judged on what can be tapped, the part of a target inside its scroll viewport. A row the
+            // list has scrolled away (the shop's next item, hidden under its own viewport edge) sat "5 px" from the Buy
+            // button below the list. Size (C2) still reads the whole control: a half-scrolled row isn't a smaller target.
+            var tappable = targets.Select(p => (p.e, v: D(TappableBound(p.e)))).Where(p => p.v.width >= 1 && p.v.height >= 1).ToList();
+            var visibleOf = tappable.ToDictionary(p => p.e, p => p.v);
+            foreach (var (e, full) in targets)
             {
+                if (!visibleOf.TryGetValue(e, out var r)) continue; // scrolled fully out of view: nothing to tap
+                var rFull = full;
                 string subj = TargetName(e);
                 // GG-T655: the same pixel-snap tolerance as the gaps (GG-T284): a Size.Target (132) control drawn at a
                 // non-integer scale reads 130-131 design px, which isn't a smaller target. Every listed failure was that.
-                Tally("POL-C2", r.width >= MinTarget - GapTolerance && r.height >= MinTarget - GapTolerance, subj, $"{r.width:0}x{r.height:0} < {MinTarget:0}x{MinTarget:0}");
+                Tally("POL-C2", rFull.width >= MinTarget - GapTolerance && rFull.height >= MinTarget - GapTolerance, subj, $"{rFull.width:0}x{rFull.height:0} < {MinTarget:0}x{MinTarget:0}");
                 // GG-T284: the gap is read in design px (divided by the scale the pair is drawn at) with the
                 // pixel-snap tolerance, so a correct 24-px gap that renders as 23 does not fail.
                 float gap = float.MaxValue;
                 float se = LayoutScale(e) * k;
-                foreach (var (o, q) in targets)
+                foreach (var (o, q) in tappable)
                 {
                     if (o == e || e.Contains(o) || o.Contains(e) || r.Overlaps(q)) continue;
                     float dx = Mathf.Max(0, Mathf.Max(r.xMin, q.xMin) - Mathf.Min(r.xMax, q.xMax));
@@ -271,6 +278,23 @@ namespace GridGame.App.Automation
             float o = 1f;
             for (var p = e; p != null; p = p.parent) o *= p.resolvedStyle.opacity;
             return o;
+        }
+
+        /// <summary>GG-T656: the part of <paramref name="e"/>'s world bound inside every ScrollView viewport around it
+        /// (Rect.zero when scrolled fully out of view): what a finger can actually reach.</summary>
+        private static Rect TappableBound(VisualElement e)
+        {
+            var b = e.worldBound;
+            for (var p = e.parent; p != null; p = p.parent)
+            {
+                if (!(p is ScrollView sv)) continue;
+                var v = sv.contentViewport.worldBound;
+                float x0 = Mathf.Max(b.xMin, v.xMin), y0 = Mathf.Max(b.yMin, v.yMin);
+                float x1 = Mathf.Min(b.xMax, v.xMax), y1 = Mathf.Min(b.yMax, v.yMax);
+                if (x1 <= x0 || y1 <= y0) return Rect.zero;
+                b = Rect.MinMaxRect(x0, y0, x1, y1);
+            }
+            return b;
         }
 
         private static bool InScroll(VisualElement e)

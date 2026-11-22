@@ -429,7 +429,8 @@ namespace GridGame.App
             cell.style.flexBasis = column ? (StyleLength)StyleKeyword.Auto : 0;
             cell.style.height = column ? SideCellHeight : Size.Slot;
             cell.style.marginLeft = cell.style.marginRight = column ? Space.S0 : Space.TargetHalfGap;
-            cell.style.marginTop = cell.style.marginBottom = column ? Space.S8 : Space.S0;
+            // Column cells sit 24 px apart like the row's (POL-C3: 8 + 8 read 17 px on the tablets, GG-T656).
+            cell.style.marginTop = cell.style.marginBottom = column ? Space.TargetHalfGap : Space.S0;
         }
 
         private void BuildAbilityBar(VisualElement root)
