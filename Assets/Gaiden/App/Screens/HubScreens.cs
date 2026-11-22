@@ -1958,6 +1958,9 @@ namespace GridGame.App
             Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
             Toggle("Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
             Toggle("Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+            // GG-T607 (§15.2): move a slot to another device as a copyable code, no cloud account needed.
+            Ui.MenuRow("Transfer save", "Copy code", () => App.Router.Push(new SaveExportScreen(App.Slot >= 0 ? App.Slot : Math.Max(0, App.Saves?.Root == null ? 0 : SaveFiles.MostRecent(App.Saves.Root)))), w).name = "settings-transfer-save";
+            Ui.MenuRow("Import save", "Paste code", () => App.Router.Push(new SaveImportScreen()), w).name = "settings-import-save";
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
