@@ -4746,6 +4746,17 @@ dissipate; Mana Orbs capture dust for a fight and can't hold it long. The name: 
 stone", more literal than anyone knows. Player-facing words only changed; every id above is unchanged. Owner quotes
 recorded before 2026-11-22 keep the words the owner used then.
 
+#### 27.3.4 What the Manalith might be (GG-T683, owner 2026-11-22, author-only)
+
+Owner, 2026-11-22: *"even the Manalith could be a chunk of Biomass that was somehow captured by Halcyon and accumulated
+rock and dust obscures its true self; but this is never really discussed; the thing about Cosmic Horrors is that there
+are always more."* Author-only canon: GridGame shares a universe with GLMZ and SpaceGod, whose Biomass is a living
+flesh organism that fell to Earth from space (Prose `docs/universes/GLMZ.md`). The Manalith may be a piece of it that
+Halcyon captured, its true self buried under accreted rock and dust. **No text, NPC, item or scene ever says so**, and
+the rule that no text says what the Manalith is for still holds. At most, things are left for players to wonder about:
+the Manalith tumbles like a body rather than a stone, and "more literal than anyone knows" is allowed to cut both ways.
+It is one horror among many. There are always more, so nothing here closes the question.
+
 ## 28. No Overworld
 
 There is no world map. Stage navigation is the Adventure list ([§22.3](#223-adventure--the-stage-list)). **Confirmed 2026-10-20 (owner, GG-T115):** permanent, not contingent on GridGameCaravan's traversal prototype picking a demo — the earlier pitch for a navigable overworld and terrain gates (design-draft-overworld-and-dialogue.md §2/§2.1, withdrawn; the draft is deleted in GG-T341, git keeps it) is not coming back. The journey is understood without one: the party is travelling, and the story is told by text crawls ([§27](#27-story-crawl-no-dialog)) and dialogue ([§27.1](#271-dialogue-gg-t117)). GridGameCaravan, the traversal lab that would have fed this, is spun off as its own project ("TownWalker"), not a Gaiden prototype.
