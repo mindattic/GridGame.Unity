@@ -81,6 +81,47 @@ namespace GridGame.Tests
             return t == null || t.Stages.Count == 0 ? -1 : order.IndexOf(t.Stages[0]);
         }
 
+        /// <summary>GG-T276: the save a campaign player brings to each stage — gear forged and bought, abilities trained,
+        /// talents spent, potions stocked — taken from one greedy bot managing its camp through the main campaign in order
+        /// (story beats, then <see cref="CampRoutine"/>, then the fight, up to four tries a stage). Snapshot just before the
+        /// stage's first try. A bare new hero is only what a player has at the first stage (no Forge or Merchant yet).</summary>
+        internal static Dictionary<string, SaveData> CampaignSnapshots(ContentDb c, List<StageDef> stages, int difficulty)
+        {
+            var snaps = new Dictionary<string, SaveData>();
+            var s = Progression.NewGame(c, "Snapshot");
+            int seed = 7000;
+            foreach (var stage in stages)
+            {
+                bool cleared = false;
+                for (int attempt = 0; attempt < 4 && !cleared; attempt++)
+                {
+                    DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
+                    CampRoutine.Run(c, s);
+                    if (attempt == 0) snaps[stage.Id] = SaveFiles.Deserialize(SaveFiles.Serialize(s));
+                    var setup = BattleFactory.Build(c, s, stage.Id, seed++, difficulty);
+                    var st = BotRunner.Play(c, setup, new HeroBot(seed, 0f), 3000);
+                    cleared = st.Phase == BattlePhase.Victory;
+                    BattleFactory.Commit(c, s, st);
+                }
+                if (!cleared) break;
+            }
+            return snaps;
+        }
+
+        /// <summary>The soak's save for one fight: the stage's campaign snapshot with <paramref name="party"/> fielded — a
+        /// hero the campaign already has keeps its gear, kit and talents; a rotating joiner comes in fresh.</summary>
+        private static SaveData FromSnapshot(ContentDb c, SaveData snap, List<string> party)
+        {
+            var s = SaveFiles.Deserialize(SaveFiles.Serialize(snap));
+            s.Party.Clear();
+            foreach (var id in party)
+            {
+                if (s.Roster.All(h => !string.Equals(h.ClassId, id, StringComparison.OrdinalIgnoreCase))) s.Roster.Add(Progression.NewHero(c, id));
+                s.Party.Add(id);
+            }
+            return s;
+        }
+
         private static void Soak(string dir, int rounds, bool casual, int perStage, string source)
         {
             Directory.CreateDirectory(dir);
@@ -88,11 +129,21 @@ namespace GridGame.Tests
             var heroes = c.Classes.Values.Where(k => k.Team == Team.Hero).Select(k => k.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
             var stages = MainStages(c);
             var plan = new List<(List<string> party, StageDef stage)>();
+            // GG-T276: GAIDEN_ABILITY_GEAR=campaign (with GAIDEN_ABILITY_PARTY=campaign) fights each per-stage battle from
+            // the save a camp-managing campaign arrives with, instead of bare new heroes. Opt-in until one balance run has
+            // measured it; then it should become the default.
+            Dictionary<string, SaveData> snaps = null;
             if (perStage > 0)
             {
                 // GG-T292: GAIDEN_ABILITY_PARTY=campaign fields the party the campaign has at that stage (the starting three,
                 // plus a rotating hero for each story-beat join before it, up to the cap of six) instead of a flat five.
                 bool campaignParty = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_PARTY") == "campaign";
+                if (campaignParty && Environment.GetEnvironmentVariable("GAIDEN_ABILITY_GEAR") == "campaign")
+                {
+                    var only = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    int last = only == null ? stages.Count - 1 : stages.FindLastIndex(st => only.Contains(st.Id));
+                    snaps = CampaignSnapshots(c, stages.Take(last + 1).ToList(), BotDifficulty.FromEnv());
+                }
                 // GG-T333: GAIDEN_ABILITY_WITH=<hero> fields that hero in every campaign party in place of
                 // GAIDEN_ABILITY_REPLACE (default the starting Cleric); the rotation never draws it, so the same seeds and
                 // joiners compare one hero against another of its role.
@@ -130,10 +181,11 @@ namespace GridGame.Tests
                     // GAIDEN_ABILITY_STAGE=<id> fights only that stage, with the same parties and seeds as the full run (GG-T274).
                     if (onlyStages != null && !onlyStages.Contains(stage.Id)) { battle++; continue; }
                     int seed = 1000 + battle;
-                    var save = Progression.NewGame(c, "Usage", party);
+                    var save = snaps != null && snaps.TryGetValue(stage.Id, out var snap) ? FromSnapshot(c, snap, party) : Progression.NewGame(c, "Usage", party);
                     // GG-T292: GAIDEN_LEVEL_OFFSET=-3 fights under-levelled, a stress test that shows how much skill matters.
                     int level = Math.Max(1, Progression.StageRecommendedLevel(c, save, stage) + (int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_LEVEL_OFFSET"), out var lo) ? lo : 0));
-                    foreach (var h in save.Roster) h.TotalXp = Formulas.TotalXpForLevel(level);
+                    // A campaign hero keeps a higher level it earned; everyone else is set to the stage's level.
+                    foreach (var h in save.Roster) h.TotalXp = snaps != null ? Math.Max(h.TotalXp, Formulas.TotalXpForLevel(level)) : Formulas.TotalXpForLevel(level);
                     var setup = BattleFactory.Build(c, save, stage.Id, seed, difficulty);
                     var opening = new List<BattleEvent>();
                     var s = BattleEngine.Create(c, setup, opening);
