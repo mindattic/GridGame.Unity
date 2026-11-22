@@ -4680,4 +4680,45 @@ Target: **60 fps** on a 4-year-old mid-tier phone; `GameApp.Awake` pins `targetF
 - What the game IS lives here; why we deviated lives in AMENDMENTS; what is pending lives in USER_STORIES + §29; what a session debugged lives only in that conversation.
 - Readers: the owner (sanity check), future sessions, unattended agents (the spec), new contributors. A section one of them can't read without context is a bug.
 
+## 33. The wiki: one entry per thing (GG-T572; schema GG-T626)
+
+Owner, 2026-11-21: design every system, class, region, item and lore entry so it can be published to a dedicated wiki,
+from a single source, with stable ids, one entry per thing and generated pages. The wiki is **built, never written**:
+every page comes from the content JSON and the applied Prose texts (§27.2), so a balance change or a newly approved text
+changes its page on the next build and nothing has to be copied by hand.
+
+- **The schema** is `tools/wiki_schema.json` (`gridgame-wiki-schema/1`); `tools/wiki_schema.py` builds and validates
+  entries from it, and GG-T627's page generator imports that module (`build_all()`, `validate_all()`). Running
+  `python tools/wiki_schema.py` builds every entry and reports problems (`-v` lists warnings, `--id <id>` prints one).
+- **One entry** (`gridgame-wiki/1`): `id`, `kind`, `gameId`, `title`, `summary`, `body`, `infobox`, `links`, `art`,
+  `texts`, `source` {file, BIBLE section}, `version`.
+  - **id** is the Prose entity id wherever one exists (`class-<id>`, `item-<id>`, `place-<theme or stage>`,
+    `concept-<glossaryId>`, `faction-<id>`, `character-<npc>`), else `<kind>-<slug>` (`ability-`, `armorset-`,
+    `skilltree-`, `quest-`, `rule-`, `currency-`, `system-`, `lore-`); the slug is the game id lowercased with `_` → `-`
+    (`prose_keys.slug`). Published ids never change, like the game's own ids.
+  - **title** is the game-owned name (`Name`, a glossary `Term`, a region rule's Prose `name`).
+  - **summary and body hold no words**, only sources: a Prose key and payload field (`class:<id>` short/long,
+    `item:<id>` short, `glossary:<id>` definition, `quest:<id>` brief/complete, …), or a game field for the mechanical
+    text the game itself owns (an ability's `Description`), or a Prose canon section (`lore`). The existing keys are
+    reused (§27.2, PROSE.md); the wiki adds no parallel text.
+  - **infobox** copies record fields (role, stats, cost, rarity, stages, …); a field that names another thing becomes a
+    **link** to that thing's entry id (a class's abilities, a region's stages and milestone reward, an item's on-use
+    ability, a glossary term's `LinkKind`/`LinkId` when it is an ability).
+  - **art** is the entry's picture by the asset rule (§12, `AssetNames`): Portraits, ItemIcons, AbilityIcons or a
+    region's first backdrop, `.png`.
+  - **version** hashes the record and its texts' hashes, so the generator rewrites only pages that changed.
+- **Kinds and where they come from:** `class` and `enemy` (classes.json by `Team`), `ability`, `item`, `armorset`,
+  `skilltree`, `region` (campaign.json themes), `stage` (non-test stages), `rule` (regionrules.json), `quest`,
+  `faction`, `npc` (the Camp NPCs, `prose_keys.NPCS`), `glossary`, `lore` (the canon sections staged in
+  `Data/Prose/canon`), and two small registries in the schema itself for things with no content record: `currency`
+  (Gold, Aetherite Shard, Aetherite Dust; §24.9.1) and `system` (a mechanic: its glossary text and its BIBLE section,
+  e.g. pincer §1.2, the timeline §2, Clutch! §13.4.1). A new kind is a new block in the schema, not new code.
+- **Validation:** every required field; the id matches its kind's template and is unique; the summary resolves to
+  words; every text key exists in Content/Text; every link resolves to an entry; the art is on disk and a `.png`.
+  An unresolved summary or text key is an **error** (the page would be empty); a missing long text, art or a `.jpg`
+  backdrop is a **warning**.
+- *State at GG-T626 (2026-11-22): 2,123 entries over 16 kinds; 2 errors (Gold has no glossary text yet,
+  `glossary:gold`) and 12 warnings (6 regions' backdrops are still `.jpg`, 5 Camp NPCs have no portrait file, one
+  body text missing). GG-T627 renders pages; GG-T628 fills the gaps and the system/currency registries.*
+
 — end of document —

@@ -1,0 +1,201 @@
+{
+  "schema": "gridgame-wiki-schema/1",
+  "doc": "GG-T626 (BIBLE §33): one wiki entry per thing, built only from content JSON (Assets/Gaiden/Resources/Content) and the applied Prose texts (Content/Text). Nothing here holds words: titles are the game's own names, summary/body are Prose text keys, infobox values are copied from the record. tools/wiki_schema.py reads this file; T627's generator renders pages from the entries it builds.",
+  "entry": {
+    "schema": "gridgame-wiki/1",
+    "required": ["schema", "id", "kind", "gameId", "title", "summary", "body", "infobox", "links", "art", "texts", "source", "version"],
+    "fields": {
+      "schema": "always gridgame-wiki/1",
+      "id": "stable id: the Prose entity id where one exists (class-<id>, item-<id>, place-<id>, concept-<id>, faction-<id>, character-<id>), else <kind>-<slug>; never changes once published",
+      "kind": "one of the kinds below",
+      "gameId": "the record's own id, verbatim (underscores and all)",
+      "title": "the game-owned name (Name/Term field, or the registry title)",
+      "summary": "{text: <Prose key>, field: <payload field>}: one standalone sentence or two; resolves through Content/Text",
+      "body": "ordered list of {text, field} or {gameField} sources; game fields only for mechanical text the game owns (ability Description)",
+      "infobox": "label -> value copied from the record; a value that names another thing is a link (also listed in links)",
+      "links": "stable ids of every other entry this one names; each must resolve to an entry",
+      "art": "Resources-relative path of the entry's picture (.png), or null",
+      "texts": "every Prose key the entry reads (summary + body); each must exist in Content/Text",
+      "source": "{file, bible}: the content file and the BIBLE section that define it",
+      "version": "sha256 of the record plus the hashes of its texts: unchanged version, unchanged page"
+    }
+  },
+  "idPattern": "^[a-z]+(-[a-z0-9]+)+$",
+  "kinds": {
+    "system": {
+      "source": "registry",
+      "id": "system-{slug}",
+      "title": "title",
+      "summary": {"text": "glossary:{glossary}", "field": "definition"},
+      "body": [{"text": "glossary:{glossary}", "field": "definition"}],
+      "infobox": {"BIBLE": "bible"},
+      "art": null,
+      "bible": "per registry entry"
+    },
+    "class": {
+      "source": "classes.json",
+      "filter": {"Team": "Hero"},
+      "id": "class-{slug}",
+      "title": "Name",
+      "summary": {"text": "class:{Id}", "field": "short"},
+      "body": [{"text": "class:{Id}", "field": "short"}, {"text": "class:{Id}", "field": "long"}],
+      "infobox": {"Role": "Role", "Card": "Card", "Home tree": {"field": "HomeTree", "link": "skilltree"}, "Move": "MoveRange", "Base stats": "BaseStats", "Resistances": "Resistances", "Abilities": {"field": "Abilities", "link": "ability"}},
+      "art": {"folder": "Portraits", "field": "Portrait", "variant": 0},
+      "bible": "23"
+    },
+    "enemy": {
+      "source": "classes.json",
+      "filter": {"Team": "Enemy"},
+      "id": "class-{slug}",
+      "title": "Name",
+      "summary": {"text": "class:{Id}", "field": "short"},
+      "body": [{"text": "class:{Id}", "field": "short"}, {"text": "class:{Id}", "field": "long"}],
+      "infobox": {"Role": "Role", "Targeting": "Targeting", "XP": "XpReward", "Move": "MoveRange", "Base stats": "BaseStats", "Resistances": "Resistances", "Abilities": {"field": "Abilities", "link": "ability"}, "Drops": "DropTable"},
+      "art": {"folder": "Portraits", "field": "Portrait", "variant": 0},
+      "bible": "20"
+    },
+    "ability": {
+      "source": "abilities.json",
+      "id": "ability-{slug}",
+      "title": "Name",
+      "summary": {"gameField": "Description"},
+      "body": [{"gameField": "Description"}],
+      "infobox": {"Kind": "Kind", "Cost": "Cost", "Cast time": "CastTime", "Cooldown": "CooldownTurns", "Shape": "Shape", "Damage type": "DamageType", "Damage": "BaseDamage", "Heal": "BaseHeal"},
+      "art": {"folder": "AbilityIcons", "field": "Id", "variant": 0},
+      "bible": "7"
+    },
+    "item": {
+      "source": "items.json",
+      "id": "item-{slug}",
+      "title": "Name",
+      "summary": {"text": "item:{Id}", "field": "short"},
+      "body": [{"text": "item:{Id}", "field": "short"}],
+      "infobox": {"Type": "Type", "Rarity": "Rarity", "Slot": "Slot", "Cost": "BaseCost", "Sells for": "SellValue", "Stats": "Stats", "Passive": "PassiveName", "Passive effect": "PassiveDescription", "Use": {"field": "OnUseAbility", "link": "ability"}},
+      "art": {"folder": "ItemIcons", "field": "Id", "variant": 0},
+      "bible": "24"
+    },
+    "armorset": {
+      "source": "armorsets.json",
+      "id": "armorset-{slug}",
+      "title": "Name",
+      "summary": {"text": "armorset:{Id}", "field": "short"},
+      "body": [{"text": "armorset:{Id}", "field": "short"}],
+      "infobox": {"Weight": "Weight", "Level": "Level", "Pieces": {"field": "Pieces", "link": "item"}, "Bonuses": "Bonuses"},
+      "art": null,
+      "bible": "24"
+    },
+    "skilltree": {
+      "source": "skilltrees.json",
+      "id": "skilltree-{slug}",
+      "title": "Name",
+      "summary": {"text": "skilltree:{Id}", "field": "short"},
+      "body": [{"text": "skilltree:{Id}", "field": "short"}],
+      "infobox": {},
+      "art": null,
+      "bible": "25.6.1"
+    },
+    "currency": {
+      "source": "registry",
+      "id": "currency-{slug}",
+      "title": "title",
+      "summary": {"text": "{text}", "field": "{field}"},
+      "body": [{"text": "{text}", "field": "{field}"}],
+      "infobox": {"Item": {"field": "item", "link": "item"}},
+      "art": {"folder": "ItemIcons", "field": "item", "variant": 0},
+      "bible": "24.9.1"
+    },
+    "region": {
+      "source": "campaign.json#Themes",
+      "id": "place-{slug}",
+      "title": "Name",
+      "summary": {"text": "place:{Id}", "field": "short"},
+      "body": [{"text": "place:{Id}", "field": "short"}],
+      "infobox": {"Stages": {"field": "Stages", "link": "stage"}, "Milestone reward": {"field": "MilestoneReward", "link": "item"}, "Backdrops": "Backgrounds"},
+      "art": {"folder": "Backgrounds", "field": "Backgrounds", "variant": 0},
+      "bible": "22.3"
+    },
+    "stage": {
+      "source": "stages.json",
+      "filter": {"IsTest": [null, false]},
+      "id": "place-{slug}",
+      "title": "Name",
+      "summary": {"text": "place:{Id}", "field": "short"},
+      "body": [{"text": "place:{Id}", "field": "short"}],
+      "infobox": {"Region": {"field": "Theme", "link": "region"}, "Level": "LevelOverride", "Rules": {"field": "Rules", "link": "rule"}},
+      "art": null,
+      "bible": "22"
+    },
+    "rule": {
+      "source": "regionrules.json",
+      "id": "rule-{slug}",
+      "title": {"text": "rule:{Id}", "field": "name"},
+      "summary": {"text": "rule:{Id}", "field": "short"},
+      "body": [{"text": "rule:{Id}", "field": "short"}],
+      "infobox": {},
+      "art": null,
+      "bible": "22.3.4"
+    },
+    "quest": {
+      "source": "quests.json",
+      "id": "quest-{slug}",
+      "title": "Name",
+      "summary": {"text": "quest:{Id}", "field": "brief"},
+      "body": [{"text": "quest:{Id}", "field": "brief"}, {"text": "quest:{Id}", "field": "complete"}],
+      "infobox": {"Giver": "Giver", "Region": {"field": "Theme", "link": "region"}, "Gold": "RewardGold", "Reward": {"field": "RewardItem", "link": "item"}},
+      "art": null,
+      "bible": "22"
+    },
+    "faction": {
+      "source": "factions.json",
+      "id": "faction-{slug}",
+      "title": "Name",
+      "summary": {"text": "faction:{Id}", "field": "short"},
+      "body": [{"text": "faction:{Id}", "field": "short"}],
+      "infobox": {"Regions": {"field": "Regions", "link": "region"}, "Heroes": {"field": "Heroes", "link": "class"}},
+      "art": null,
+      "bible": "27.2"
+    },
+    "npc": {
+      "source": "prose_keys.NPCS",
+      "id": "character-{slug}",
+      "title": "title",
+      "summary": {"text": "npc:{Id}", "field": "short"},
+      "body": [{"text": "npc:{Id}", "field": "short"}],
+      "infobox": {},
+      "art": {"folder": "Portraits", "field": "Id", "variant": 0},
+      "bible": "25.0.1"
+    },
+    "glossary": {
+      "source": "glossary.json",
+      "id": "concept-{slug}",
+      "title": "Term",
+      "summary": {"text": "glossary:{Id}", "field": "definition"},
+      "body": [{"text": "glossary:{Id}", "field": "definition"}],
+      "infobox": {"Also": "Aliases", "See": {"field": "LinkId", "linkFromField": "LinkKind"}},
+      "art": null,
+      "bible": "9"
+    },
+    "lore": {
+      "source": "Data/Prose/canon/*.md",
+      "id": "lore-{slug}",
+      "title": "the section's first heading",
+      "summary": {"canon": "{file}", "field": "first paragraph"},
+      "body": [{"canon": "{file}", "field": "all"}],
+      "infobox": {},
+      "art": null,
+      "bible": "27.2"
+    }
+  },
+  "registry": {
+    "currency": [
+      {"Id": "gold", "title": "Gold", "text": "glossary:gold", "field": "definition", "item": null},
+      {"Id": "aetherite_shard", "title": "Aetherite Shard", "text": "glossary:aetherite_shard", "field": "definition", "item": "mat_diamond"},
+      {"Id": "aetherite_dust", "title": "Aetherite Dust", "text": "item:mat_aetherite_dust", "field": "short", "item": "mat_aetherite_dust"}
+    ],
+    "system": [
+      {"Id": "pincer", "title": "Pincer attacks", "glossary": "pincer", "bible": "1.2"},
+      {"Id": "timeline", "title": "The Timeline", "glossary": "tempo", "bible": "2"},
+      {"Id": "clutch", "title": "Clutch!", "glossary": "clutch", "bible": "13.4.1"}
+    ]
+  }
+}
