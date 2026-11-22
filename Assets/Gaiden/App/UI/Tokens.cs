@@ -349,6 +349,20 @@ namespace GridGame.App
         public const float Instant = 0.08f, Quick = 0.15f, Standard = 0.25f, Emphasis = 0.4f, Dramatic = 0.7f, Cinematic = 1.2f;
     }
 
+    /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops
+    /// away) instead of drifting up like a heal; a critical hit falls further, starts bigger and shakes its target.
+    /// Distances and shakes in design px, times in seconds.</summary>
+    public static class Impact
+    {
+        public const float StrikeDrop = 70f, StrikeDropCrit = 110f;
+        public const float StrikeScale = 1.45f, StrikeScaleCrit = 1.9f, StrikeSquash = 0.88f;
+        public const float StrikeIn = 0.09f, StrikeInCrit = 0.07f, StrikeSettle = Timing.Instant;
+        public const float StrikeHold = 0.35f, StrikeHoldCrit = 0.5f, StrikeOut = 0.18f, StrikeExitDrop = 18f;
+        /// <summary>Share of the fall kept while calm (Reduce Motion): the number still lands, with less travel.</summary>
+        public const float CalmTravel = 0.3f;
+        public const float HitTileShake = 14f, CritTileShake = 26f, CritIconShake = 12f;
+    }
+
     /// <summary>Easing tokens (POL-E2).</summary>
     public static class Ease
     {

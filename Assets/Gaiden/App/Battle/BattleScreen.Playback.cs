@@ -741,11 +741,12 @@ namespace GridGame.App
             if (Colorblind && d.Note != "Armored!" && d.Type != DamageType.Physical) text += " " + d.Type;
             var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
             if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note);
-            else App.StartCoroutine(FloatAway(board.Float(text, at, color, crit ? TypeScale.Display : TypeScale.H1), 0.75f));
+            else App.StartCoroutine(StrikeIn(board.Float(text, at, color, crit ? TypeScale.Display : TypeScale.H1), crit));
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
             v.Art.style.unityBackgroundImageTintColor = new Color(1f, 0.55f, 0.55f);
-            App.StartCoroutine(Tween.Shake(v.Root, 14f * Fx, Timing.Quick));
+            App.StartCoroutine(Tween.Shake(v.Root, (crit ? Impact.CritTileShake : Impact.HitTileShake) * Fx, crit ? Timing.Standard : Timing.Quick));
+            if (crit) ShakeTurnIcon(t.Id); // GG-T668: a crit jolts the target's timeline icon too
             if (tier.Shake > 0f) App.StartCoroutine(Tween.Shake(shake, tier.Shake * Fx, Timing.Standard));
             // Impact: the hit-stop holds the frame, longer for heavier tiers (POL-E5/E6); Reduce Motion skips it.
             yield return Tween.Wait(Timing.Instant + (ReduceMotion ? 0f : tier.HitStop));
@@ -1134,7 +1135,7 @@ namespace GridGame.App
             if (realTerms <= 1)
             {
                 tl.El.text = tl.Terms.Count > 0 ? tl.Terms[0] : "";
-                yield return FloatAway(tl.El, 0.6f);
+                yield return StrikeIn(tl.El, tl.Crit);
                 yield break;
             }
             TalliesBurst++;
@@ -1144,8 +1145,52 @@ namespace GridGame.App
             total.name = "tally-total";
             App.Audio.Sfx("battle.crit", 0.7f, 0.9f);
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Quick));
-            yield return Tween.Run(Timing.Quick, k => total.style.scale = new Scale(Vector2.one * (1.7f - 0.7f * Tween.EaseOut(k))));
-            yield return FloatAway(total, 0.9f);
+            if (tl.Crit)
+            {
+                if (board.Units.TryGetValue(tl.UnitId, out var tv)) App.StartCoroutine(Tween.Shake(tv.Root, Impact.CritTileShake * Fx, Timing.Standard));
+                ShakeTurnIcon(tl.UnitId);
+            }
+            yield return StrikeIn(total, tl.Crit);
+        }
+
+        /// <summary>GG-T668: a damage number strikes. It starts big above the target, falls onto it accelerating like a
+        /// blow, squashes, settles with a small overshoot, holds, then drops and fades fast: the opposite of a heal's
+        /// gentle <see cref="FloatAway"/> rise. A crit falls further, starts bigger and lands faster. Calm (Reduce Motion)
+        /// keeps the landing with less travel and no overshoot.</summary>
+        private IEnumerator StrikeIn(Label l, bool crit)
+        {
+            float rest = l.style.top.value.value;
+            float travel = (crit ? Impact.StrikeDropCrit : Impact.StrikeDrop) * (Tween.Calm ? Impact.CalmTravel : 1f);
+            float big = crit ? Impact.StrikeScaleCrit : Impact.StrikeScale;
+            l.style.opacity = 1f;
+            l.style.top = rest - travel;
+            l.style.scale = new Scale(Vector2.one * big);
+            yield return Tween.Run(crit ? Impact.StrikeInCrit : Impact.StrikeIn, k =>
+            {
+                float e = k * k;
+                l.style.top = rest - travel * (1f - e);
+                l.style.scale = new Scale(Vector2.one * Mathf.Lerp(big, Impact.StrikeSquash, e));
+            });
+            if (Tween.Calm) l.style.scale = new Scale(Vector2.one);
+            else yield return Tween.Run(Impact.StrikeSettle, k => l.style.scale = new Scale(Vector2.one * Mathf.LerpUnclamped(Impact.StrikeSquash, 1f, Ease.Back(k))));
+            yield return Tween.Wait(crit ? Impact.StrikeHoldCrit : Impact.StrikeHold);
+            yield return Tween.Run(Impact.StrikeOut, k =>
+            {
+                l.style.top = rest + Impact.StrikeExitDrop * Ease.Out(k);
+                l.style.opacity = 1f - k;
+            });
+            l.RemoveFromHierarchy();
+        }
+
+        /// <summary>Shakes the unit's turn icon on the timeline, if it has one drawn (GG-T668). View only.</summary>
+        private void ShakeTurnIcon(int unitId)
+        {
+            foreach (var e in drawn.Values)
+                if (e.OwnerId == unitId && e.Kind == TimelineKind.Turn && timelineIconViews.TryGetValue(e.Id, out var icon))
+                {
+                    App.StartCoroutine(Tween.Shake(icon, Impact.CritIconShake * Fx, Timing.Standard));
+                    return;
+                }
         }
 
         // ── Billboard (FF VI-style spell window) ──
