@@ -191,7 +191,7 @@ namespace GridGame.App
             {
                 h.style.marginTop = -GameApp.SafeTop;
                 h.style.paddingTop = GameApp.SafeTop;
-                h.style.height = Kit.HeaderHeight + GameApp.SafeTop;
+                h.style.minHeight = Kit.HeaderHeight + GameApp.SafeTop;
             }
             if (onBack != null) Button("‹", onBack, "btn--small btn--icon", h).name = "back";
             if (subtitle == null) Text(title, "header-title shadow", h);
