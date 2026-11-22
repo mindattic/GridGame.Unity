@@ -324,7 +324,13 @@ namespace GridGame.App
             var rig = Ensure();
             if (rig == null) return null;
             int frames = Mathf.RoundToInt(seconds / step);
-            for (int i = 0; i < frames; i++) rig.Advance(step);
+            int prev = 0;
+            for (int i = 0; i < frames; i++)
+            {
+                rig.Advance(step);
+                if (rig.chunks.particleCount > prev) Debug.Log($"[Build] Manalith chunk burst at t={rig.t:0.00}s");
+                prev = rig.chunks.particleCount;
+            }
             Debug.Log($"[Build] Manalith t={rig.t:0.00}s: {rig.debris.particleCount} shards, {rig.chunks.particleCount} chunks alive");
             rig.cam.backgroundColor = background;
             rig.cam.Render();
