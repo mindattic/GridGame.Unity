@@ -112,6 +112,62 @@ namespace GridGame.Tests
             return snaps;
         }
 
+        /// <summary>GG-T276: <see cref="CampaignSnapshots"/> frozen on disk (artifacts/balance-snapshots/d&lt;difficulty&gt;,
+        /// git-ignored), so a tune to one stage changes only that stage's fights and every later stage is judged against
+        /// the same party (regenerated, any upstream change reshuffles the campaign's loot and so every later stage's
+        /// gear). GAIDEN_ABILITY_SNAPSHOT=regen rebuilds them, to see a landed tune's knock-on once; the manifest records
+        /// when and from which content they were made, and a content mismatch only warns.</summary>
+        internal static Dictionary<string, SaveData> FrozenSnapshots(ContentDb c, List<StageDef> stages, int difficulty)
+        {
+            var dir = Path.Combine(RepoRoot, "artifacts", "balance-snapshots", $"d{difficulty}");
+            var manifestPath = Path.Combine(dir, "manifest.json");
+            string hash = ContentHash();
+            bool regen = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_SNAPSHOT") == "regen";
+            if (!regen && File.Exists(manifestPath))
+            {
+                var manifest = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(manifestPath));
+                var covers = new HashSet<string>(manifest["covers"]?.ToObject<List<string>>() ?? new List<string>());
+                if (stages.All(st => covers.Contains(st.Id)))
+                {
+                    if ((string)manifest["contentHash"] != hash)
+                        TestContext.Out.WriteLine($"balance snapshots ({manifest["createdUtc"]}) predate the current content; GAIDEN_ABILITY_SNAPSHOT=regen rebuilds them");
+                    var loaded = new Dictionary<string, SaveData>();
+                    foreach (var st in stages)
+                    {
+                        var f = Path.Combine(dir, st.Id + ".json");
+                        if (File.Exists(f)) loaded[st.Id] = SaveFiles.Deserialize(File.ReadAllText(f));
+                    }
+                    TestContext.Out.WriteLine($"balance snapshots reused from {dir} ({manifest["createdUtc"]})");
+                    return loaded;
+                }
+            }
+            var snaps = CampaignSnapshots(c, stages, difficulty);
+            Directory.CreateDirectory(dir);
+            foreach (var f in Directory.GetFiles(dir, "*.json")) File.Delete(f);
+            foreach (var kv in snaps) File.WriteAllText(Path.Combine(dir, kv.Key + ".json"), SaveFiles.Serialize(kv.Value));
+            File.WriteAllText(manifestPath, new Newtonsoft.Json.Linq.JObject
+            {
+                ["createdUtc"] = DateTime.UtcNow.ToString("o"),
+                ["contentHash"] = hash,
+                ["covers"] = new Newtonsoft.Json.Linq.JArray(stages.Select(st => st.Id)),
+            }.ToString());
+            TestContext.Out.WriteLine($"balance snapshots written to {dir}");
+            return snaps;
+        }
+
+        /// <summary>A short hash of every content JSON file, to tell whether frozen snapshots predate the content.</summary>
+        private static string ContentHash()
+        {
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            foreach (var f in Directory.GetFiles(ContentDir, "*.json", SearchOption.AllDirectories).OrderBy(p => p, StringComparer.Ordinal))
+            {
+                var bytes = File.ReadAllBytes(f);
+                sha.TransformBlock(bytes, 0, bytes.Length, null, 0);
+            }
+            sha.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+            return Convert.ToHexString(sha.Hash).Substring(0, 16);
+        }
+
         /// <summary>The soak's save for one fight: the stage's campaign snapshot with <paramref name="party"/> fielded — a
         /// hero the campaign already has keeps its gear, kit and talents; a rotating joiner comes in fresh.</summary>
         private static SaveData FromSnapshot(ContentDb c, SaveData snap, List<string> party)
@@ -134,8 +190,8 @@ namespace GridGame.Tests
             var stages = MainStages(c);
             var plan = new List<(List<string> party, StageDef stage)>();
             // GG-T276: GAIDEN_ABILITY_GEAR=campaign (with GAIDEN_ABILITY_PARTY=campaign) fights each per-stage battle from
-            // the save a camp-managing campaign arrives with, instead of bare new heroes. Opt-in until one balance run has
-            // measured it; then it should become the default.
+            // the save a camp-managing campaign arrives with, instead of bare new heroes (polish.py's default since 20c776fc),
+            // frozen on disk between runs (FrozenSnapshots).
             Dictionary<string, SaveData> snaps = null;
             if (perStage > 0)
             {
@@ -146,7 +202,7 @@ namespace GridGame.Tests
                 {
                     var only = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     int last = only == null ? stages.Count - 1 : stages.FindLastIndex(st => only.Contains(st.Id));
-                    snaps = CampaignSnapshots(c, stages.Take(last + 1).ToList(), BotDifficulty.FromEnv());
+                    snaps = FrozenSnapshots(c, stages.Take(last + 1).ToList(), BotDifficulty.FromEnv());
                 }
                 // GG-T333: GAIDEN_ABILITY_WITH=<hero> fields that hero in every campaign party in place of
                 // GAIDEN_ABILITY_REPLACE (default the starting Cleric); the rotation never draws it, so the same seeds and
