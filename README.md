@@ -101,12 +101,15 @@ python tools/telemetry_report.py RUN   # endless-run telemetry report (win rates
 
 Each worktree's harness gets its own port derived from its path; set `GAIDEN_PORT` to override. Screenshots land in `artifacts/<run>/`.
 
-Content and art tools:
+Content and art tools: the art, audio and content authoring scripts (portraits, icons, tiles, sound effects, music,
+lesson images, the weapon and counter-item generators, vendor tiers, lorem placeholders, the Midjourney male-variant
+batch) live in the sibling **GridGame.Studio** repo's `tools/` with the Studio app (GG-T579, GGS-T9); they find this
+checkout by themselves. The build gates stay here.
 
 ```powershell
-python tools/make_sfx.py         # regenerate the original sound effects
-python tools/import_art.py       # regenerate art and audio from the GridGame2026 reference project
-python tools/make_icons.py       # regenerate the pixel-art icons
+python ../GridGame.Studio/tools/make_sfx.py         # regenerate the original sound effects
+python ../GridGame.Studio/tools/import_art.py       # regenerate art and audio from the GridGame2026 reference project
+python ../GridGame.Studio/tools/make_icons.py       # regenerate the pixel-art icons
 python tools/check_assets.py     # verify every referenced asset exists
 python tools/check_glyphs.py     # verify every UI glyph exists in the bundled fonts
 ```

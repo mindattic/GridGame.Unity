@@ -11,7 +11,7 @@ Licensed under Creative Commons: By Attribution 4.0 — http://creativecommons.o
 Changes: loudness-normalized to -18 LUFS for in-game playback.
 
 SOUND EFFECTS
-Original sounds synthesized for this game by MindAttic (tools/make_sfx.py).
+Original sounds synthesized for this game by MindAttic (GridGame.Studio/tools/make_sfx.py).
 
 FONTS
 M PLUS Rounded 1c — SIL Open Font License 1.1

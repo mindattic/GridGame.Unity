@@ -49,7 +49,7 @@ $kit = 'D:\Projects\MindAttic\Prose\consumer-kit\kit.ps1'
 python tools/prose_seed.py <dir>          # draft the game's current words (Content/Text joined on) for Prose
 python tools/prose_text.py check         # no story text in gameplay JSON, every key has a text, no orphans
 python tools/prose_text.py seed-missing --drafts <dir>   # seed only keys with no text yet; drafts for Prose
-python tools/prose_lorem.py --drafts <dir>              # GG-T387: every conversation's lines and labels as lorem ipsum
+python ../GridGame.Studio/tools/prose_lorem.py --drafts <dir>              # GG-T387: every conversation's lines and labels as lorem ipsum
 prose --texts-draft gridgame <dir>        # drafts; identical content changes nothing
 python -m unittest tools/test_prose_apply.py   # the applier's tests (run only when the owner asks)
 ```
@@ -65,7 +65,7 @@ prose --texts-approve-all gridgame --kind crawl --by <name> --publish
 ## Placeholder conversations (GG-T387, 2026-11-16)
 
 Owner: "set up all the lorem ipsum for story crawls and conversations". Every `dialogue:<id>` text (story beats, Camp
-talks, Advice quizzes, wanderer talks) is lorem ipsum, written by `tools/prose_lorem.py`: the game's own records give
+talks, Advice quizzes, wanderer talks) is lorem ipsum, written by `GridGame.Studio/tools/prose_lorem.py`: the game's own records give
 the node ids, speakers, `next`, choice order and tags (via `prose_seed.conversation`), so the game plays the same flow;
 each line keeps roughly its old word count, and each choice label is a short phrase behind a marker (`A ·`, `B ·`, `C ·`).
 It writes seeds through `prose_text.upsert_seed` (never over a Prose-applied text) and drafts that went to Prose as
@@ -232,7 +232,7 @@ Every build ships the latest **published** Prose text.
 5. **New content gets a key, its words go to Prose.** A new record's key exists as soon as the record does; until its
    text is approved it shows the placeholder and Validate names it. Draft the words in Prose
    (`prose --texts-draft gridgame <dir>`). Generators use `prose_text.upsert_seed`, which writes a seed entry (never over
-   a Prose-applied text) and a draft in `Data/Prose/drafts/` (`tools/weapons.py` does this for weapon descriptions).
+   a Prose-applied text) and a draft in `Data/Prose/drafts/` (`GridGame.Studio/tools/weapons.py` does this for weapon descriptions).
    BIBLE §20 has the new-unit steps.
 6. **docs/STORY.md** is a pointer to the `gridgame` universe.
 

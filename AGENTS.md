@@ -29,4 +29,5 @@ D:\Projects\MindAttic\GridGame2026 is the frozen design reference — read it, n
 - `App/Battle/BattleScreen*.cs` — HUD, drag input, event playback
 - `App/Screens/*.cs` — title, camp hub, vendors, results; `App/UI/Ui.cs` — widget kit
 - `App/Automation/AutomationServer.cs` — dev-build HTTP control (tap/drag/screenshot/state/layout)
-- `tools/` — test, build, harness, art import, glyph check
+- `tools/` — test, build, harness, asset and glyph checks (the art/audio/content authoring scripts and the thumbnail
+  framer live in the sibling GridGame.Studio repo, GG-T579)

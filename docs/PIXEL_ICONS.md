@@ -4,7 +4,7 @@ The enemy pixel-art timeline sprites (`Resources/Pixel`, `tools/make_pixel_icons
 tools) were deleted on 2026-11-03 (GG-T224): since GG-T221 every timeline turn icon is the unit's portrait framed
 by its class `Thumbnail` (BIBLE §12.1.1). What remains here is the icon pipeline.
 
-## Statuses, abilities, items, cursor (`tools/make_icons.py`)
+## Statuses, abilities, items, cursor (`GridGame.Studio/tools/make_icons.py`)
 
 Owner, 2026-10-10:
 
@@ -29,6 +29,6 @@ Owner, 2026-10-10:
   6. Write a point-filter `.meta`.
 - **Output.** `Resources/StatusIcons`, `AbilityIcons`, `ItemIcons` and `UI`. `Art.StatusIcon`, `Art.AbilityIcon`, `Art.ItemIcon` and `Art.Cursor` load them; `Ui.StatusPip` draws a status icon on a dark disc ringed in the status colour.
 - **Gates.**
-  - `python tools/make_icons.py --check` fails if any ability, item or status has no mapping.
+  - `python ../GridGame.Studio/tools/make_icons.py --check` fails if any ability, item or status has no mapping.
   - `tools/check_assets.py` fails if any icon PNG is missing.
 - **Adding content** means adding a manifest line (or letting the item rule cover it) and re-running the tool.

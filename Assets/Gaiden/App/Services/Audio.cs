@@ -211,7 +211,7 @@ namespace GridGame.App
                 case "battle.hit": return GenericHit();
                 default:
                     if (key.StartsWith(HitPrefix)) return TypedHit(key.Substring(HitPrefix.Length));
-                    return CueFile(key); // every other cue has its own file, variant 00 (tools/make_sfx.py)
+                    return CueFile(key); // every other cue has its own file, variant 00 (GridGame.Studio/tools/make_sfx.py)
             }
         }
 

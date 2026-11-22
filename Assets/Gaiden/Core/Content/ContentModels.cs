@@ -285,7 +285,7 @@ namespace GridGame.Core.Content
     /// "it always uses the real existing portrait and simply zooms in and offsets … no duplicating assets").
     /// (<see cref="X"/>, <see cref="Y"/>) is the portrait point, as fractions of its width and height from the top-left,
     /// that sits at the thumbnail's centre; <see cref="Zoom"/> is portrait width ÷ thumbnail side (1 = the whole width
-    /// fills the square). Framed in tools/ThumbnailStudio.
+    /// fills the square). Framed in GridGame.Studio's Thumbnails tab.
     /// </summary>
     public sealed class Thumbnail
     {
@@ -298,7 +298,7 @@ namespace GridGame.Core.Content
     /// <summary>
     /// GG-T352: where the figure sits on its portrait. Owner 2026-11-07: "all characters are 1024x1024 with transparent
     /// backgrounds; that's the rule, that's what the assets are", so a portrait is the whole canvas, margins included.
-    /// This is the figure's box on it (the alpha bounds, written by tools/import_art.py when the portrait is imported), as
+    /// This is the figure's box on it (the alpha bounds, written by GridGame.Studio/tools/import_art.py when the portrait is imported), as
     /// fractions of the portrait's width and height from its top-left. Whole-figure views (dialogue, cut-ins, cards,
     /// the death dissolve) draw only this box, so a figure reads at the same size whatever its canvas margins;
     /// thumbnails frame the whole canvas through <see cref="Thumbnail"/>.
@@ -417,7 +417,7 @@ namespace GridGame.Core.Content
         /// <summary>Which numbered file of the stem(s) this class draws (<c>hag-02</c> = 2): one name's looks are numbered
         /// from 00, so a costume is another number here, not a code change. Default 0.</summary>
         public int PortraitVariant;
-        /// <summary>Tools only: the GridGame2026 art key tools/import_art.py imported this class's portrait from.</summary>
+        /// <summary>Tools only: the GridGame2026 art key GridGame.Studio/tools/import_art.py imported this class's portrait from.</summary>
         public string ArtSource;
         public PortraitCrop Crop;
         public Thumbnail Thumbnail;
@@ -425,7 +425,7 @@ namespace GridGame.Core.Content
         public Figure Figure;
         /// <summary>GG-T532: the thumbnail framing of the male art (<see cref="MalePortrait"/>); null = <see cref="Thumbnail"/>.</summary>
         public Thumbnail MaleThumbnail;
-        /// <summary>GG-T532: the figure's box on the male art (tools/import_art.py writes it); null = <see cref="Figure"/>.</summary>
+        /// <summary>GG-T532: the figure's box on the male art (GridGame.Studio/tools/import_art.py writes it); null = <see cref="Figure"/>.</summary>
         public Figure MaleFigure;
         public Footprint Footprint = new Footprint();
         public Stats BaseStats = new Stats();

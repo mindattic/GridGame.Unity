@@ -1,6 +1,6 @@
 # Icon sources
 
-Silhouettes from game-icons.net (https://game-icons.net), CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/), pixelated and coloured by tools/make_icons.py.
+Silhouettes from game-icons.net (https://game-icons.net), CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/), pixelated and coloured by GridGame.Studio/tools/make_icons.py.
 
 Authors: carl-olsen, darkzaitzev, delapouite, faithtoken, lorc, sbed, skoll, zeromancer
 

@@ -919,7 +919,7 @@ def _coach_key(c):
 
 def _coach_shot(c, tag):
     """The first time a popup or mark shows: a super=2 screenshot plus its geometry (.coach.json beside it), the input
-    tools/lesson_images.py cuts the lesson images from."""
+    GridGame.Studio/tools/lesson_images.py cuts the lesson images from."""
     key = _coach_key(c)
     if key in _COACH_SEEN:
         return key
@@ -1085,7 +1085,7 @@ def _to_camp(timeout=90):
 def coach(run="coach", camp=False, capture=True):
     """GG-T542: a new profile (real New Game, party pick and prologue) plays The Tithe Moors I with -coach, following
     every lesson's popup and coach marks; between lessons it takes the bot's move. Every popup and mark is screenshot
-    with its geometry (tools/lesson_images.py input). Fails unless all 17 battle lessons showed their marks. With
+    with its geometry (GridGame.Studio/tools/lesson_images.py input). Fails unless all 17 battle lessons showed their marks. With
     camp=True it then plays the results, taps To Camp (`continue`) and checks the Merchant's Camp-menu lesson
     (hub-shop) fires in the natural flow, then follows it into the Merchant's own lesson (+, Buy)."""
     fails = []

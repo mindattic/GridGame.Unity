@@ -84,7 +84,7 @@ namespace GridGame.Tests
             }
         }
 
-        /// <summary>Just enough of a PNG reader for 8-bit, non-interlaced images (what tools/import_art.py writes).</summary>
+        /// <summary>Just enough of a PNG reader for 8-bit, non-interlaced images (what GridGame.Studio/tools/import_art.py writes).</summary>
         private sealed class Png
         {
             public int Width, Height, ColorType, Channels;

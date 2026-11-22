@@ -141,7 +141,7 @@ namespace GridGame.App
         // ── The figure on a portrait (GG-T352) ─────────────────────────────────────
         // Owner 2026-11-07: "all characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the
         // assets are." Thumbnails frame that whole canvas (Ui.PortraitThumb). Whole-figure views draw only the figure's
-        // box on it (ClassDef.Figure, the alpha bounds tools/import_art.py writes), so a figure reads at the same size it
+        // box on it (ClassDef.Figure, the alpha bounds GridGame.Studio/tools/import_art.py writes), so a figure reads at the same size it
         // always did instead of shrinking into its canvas margins.
 
         /// <summary>The size whole-figure views measure a figure by: its box fitted inside this square, never enlarged
@@ -314,7 +314,7 @@ namespace GridGame.App
             if (windowDark != null) WindowThemes.Paint(windowDark, WindowThemes.Current, 0.3f, 0.55f);
         }
 
-        /// <summary>The pointing-glove cursor (tools/make_icons.py, UI/cursor-00); the generated one if it's missing.</summary>
+        /// <summary>The pointing-glove cursor (GridGame.Studio/tools/make_icons.py, UI/cursor-00); the generated one if it's missing.</summary>
         public static Texture2D Cursor => cursor ??= (Resources.Load<Texture2D>(AssetNames.Path("UI", "cursor")) ?? MakeCursor());
         public static Texture2D Glow => glow ??= MakeGlow();
         public static Texture2D Orb => orb ??= MakeOrb();

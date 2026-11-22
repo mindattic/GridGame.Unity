@@ -8,7 +8,7 @@ A clip shorter than one 400 ms block has no gated measure, so it is measured ung
     python tools/loudness.py --json          # machine-readable, read by tools/polish.py
     python tools/loudness.py --music-apply   # re-encode the music tracks to the music target (two-pass loudnorm)
 
-SFX are normalized where they are made: tools/make_sfx.py calls normalize() on every synthesized cue.
+SFX are normalized where they are made: GridGame.Studio/tools/make_sfx.py calls normalize() on every synthesized cue.
 """
 import json
 import math

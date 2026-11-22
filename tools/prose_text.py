@@ -20,7 +20,7 @@ Library (the mapper, the seed and the content generators import it):
 - NARRATIVE: the stripped fields, per content file (ContentLoader's join and TextSourcingTests mirror it).
 - load_texts / hydrate: the Python twin of ContentLoader's join, so tools that read story text (prose_map, prose_seed)
   see the words they used to read from the gameplay JSON.
-- seed_entry / upsert_seed: how a generator (tools/weapons.py) gives a new record its text: a seed entry in Content/Text
+- seed_entry / upsert_seed: how a generator (GridGame.Studio/tools/weapons.py) gives a new record its text: a seed entry in Content/Text
   (version 0, source "seed", never overwriting a Prose-applied text) plus a prose-text/1 draft to hand to Prose
   (`prose --texts-draft gridgame <dir>`; agents only draft, RFC 0009).
 

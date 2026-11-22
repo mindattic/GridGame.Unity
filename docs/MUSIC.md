@@ -16,7 +16,7 @@ old one fades out over `Audio.CrossfadeSeconds` (1.2 s, unscaled time, equal-pow
 volume setting and the duck. `Music(null)` fades out. Switching back to a track still fading out turns it around
 in place rather than restarting it; the battle pause holds only sound effects, so music keeps its place.
 
-**Adding a track:** drop the file in `R:\Desktop\GridGameMusic` and run `python tools/import_music.py
+**Adding a track:** drop the file in `R:\Desktop\GridGameMusic` and run `python ../GridGame.Studio/tools/import_music.py
 "<file>=<game-name-00>"` (a PascalCase name like `HearthsideCamp` becomes `hearthside-camp-00`; or `--all` for every
 new file there; names are derived from the file name when it is ASCII). It trims silence (-55 dB both ends), normalises to -18 LUFS (two-pass loudnorm, TP -1.5, LRA 11), adds
 20 ms de-click fades and writes Vorbis q6 at 44.1 kHz to `Resources/Audio/Music/<game-name-00>.ogg`. Duplicates are

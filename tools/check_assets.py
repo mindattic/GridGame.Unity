@@ -58,7 +58,7 @@ def art_findings():
         if im.mode != "RGBA":
             hard.append(f"{im.mode}, not RGBA (no transparency)")
         if (w, h) != (PORTRAIT_CANVAS, PORTRAIT_CANVAS):
-            hard.append(f"canvas {w}x{h}, not {PORTRAIT_CANVAS}x{PORTRAIT_CANVAS} (run tools/import_art.py / portrait_cut.py --import)")
+            hard.append(f"canvas {w}x{h}, not {PORTRAIT_CANVAS}x{PORTRAIT_CANVAS} (run GridGame.Studio/tools/import_art.py / portrait_cut.py --import)")
         bb = im.getchannel("A").getbbox() if im.mode == "RGBA" else None
         if not hard:
             clear = sum(im.getchannel("A").point(lambda v: 255 if v < 16 else 0).histogram()[255:]) / (w * h)
@@ -130,7 +130,7 @@ def main():
 
     def _ids(name): return [x["Id"] for x in json.load(open(os.path.join(RESD, "Content", name), encoding="utf-8"))]
     for folder, ids in (("AbilityIcons", _ids("abilities.json")), ("ItemIcons", _ids("items.json")), ("StatusIcons", _ids("buffs.json") + ["stunned"])):
-        missing += [f"icon:{folder}/{asset_names.of(i)} (run tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, asset_names.of(i) + ".png"))]
+        missing += [f"icon:{folder}/{asset_names.of(i)} (run GridGame.Studio/tools/make_icons.py)" for i in ids if not os.path.exists(os.path.join(RESD, folder, asset_names.of(i) + ".png"))]
 
     # GG-T561: every image under Resources follows the asset naming rule (word-word-00.ext).
     for folder in ("Tiles", "Tutorial", "UI", "Backgrounds"):

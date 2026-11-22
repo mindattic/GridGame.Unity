@@ -484,7 +484,7 @@ namespace GridGame.App
                     t.style.position = Position.Absolute;
                     t.style.left = x * Tile; t.style.top = y * Tile;
                     t.style.width = Tile; t.style.height = Tile;
-                    // GridGame2026's tile art recoloured per biome (tools/make_tiles.py), tinted light/dark for the checkerboard.
+                    // GridGame2026's tile art recoloured per biome (GridGame.Studio/tools/make_tiles.py), tinted light/dark for the checkerboard.
                     bool light = (x + y) % 2 == 0;
                     t.style.backgroundImage = new StyleBackground(App.Art.BoardTile(theme));
                     // Owner direction 2026-10-11: lighter and lower-contrast so the stage background reads clearly through the board.

@@ -9,7 +9,7 @@ How cues work: game code calls `Audio.Sfx("<group>.<name>")`; the file is the ke
 variant `-00`, the asset naming rule (GG-T561/GG-T562, `Core/Content/AssetNames`): `camp.repair` →
 `Resources/Audio/Sfx/camp-repair-00.ogg`, `battle.crucible_wave` → `battle-crucible-wave-00.ogg`. `battle.move` /
 `battle.hit` pick one of 6 / 7 separate sounds at random, numbered as variants (`battle-move-00..05`,
-`battle-hit-00..06`); `ui.back` shares `ui-click-00`. Every file is synthesized by `tools/make_sfx.py` (MindAttic's own, normalised to
+`battle-hit-00..06`); `ui.back` shares `ui-click-00`. Every file is synthesized by `GridGame.Studio/tools/make_sfx.py` (MindAttic's own, normalised to
 −16 LUFS, ≤ −1 dBTP). Groups: `ui.*`, `battle.*`, `element.*`, `status.*`, `story.*`, and since GG-T465 `camp.*`.
 
 ## New cues (GG-T465)
