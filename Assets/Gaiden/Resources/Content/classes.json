@@ -150,11 +150,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "assassin-female",
+    "MalePortrait": "assassin-male",
     "ArtSource": "Assassain",
     "Thumbnail": {
       "Zoom": 2.6234,
       "X": 0.5107,
       "Y": 0.1802
+    },
+    "MaleFigure": {
+      "X": 0.0957,
+      "Y": 0.0371,
+      "W": 0.8076,
+      "H": 0.9248
     },
     "Figure": {
       "X": 0.3662,
@@ -292,11 +299,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "barbarian-female",
+    "MalePortrait": "barbarian-male",
     "ArtSource": "Barbarian",
     "Thumbnail": {
       "Zoom": 2.4366,
       "X": 0.4589,
       "Y": 0.213
+    },
+    "MaleFigure": {
+      "X": 0.1064,
+      "Y": 0,
+      "W": 0.7871,
+      "H": 0.999
     },
     "Figure": {
       "X": 0.1475,
@@ -433,11 +447,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "basher-female",
+    "MalePortrait": "basher-male",
     "ArtSource": "Basher",
     "Thumbnail": {
       "Zoom": 2.4331,
       "X": 0.5352,
       "Y": 0.2082
+    },
+    "MaleFigure": {
+      "X": 0.1211,
+      "Y": 0.0215,
+      "W": 0.7578,
+      "H": 0.9561
     },
     "Figure": {
       "X": 0.0938,
@@ -1091,11 +1112,18 @@
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
     "Portrait": "hexer-female",
+    "MalePortrait": "hexer-male",
     "ArtSource": "BlackWitch",
     "Thumbnail": {
       "Zoom": 2.0711,
       "X": 0.4698,
       "Y": 0.2347
+    },
+    "MaleFigure": {
+      "X": 0.2822,
+      "Y": 0,
+      "W": 0.4346,
+      "H": 1
     },
     "Figure": {
       "X": 0.2793,
@@ -1230,17 +1258,24 @@
   {
     "Id": "bluelion",
     "Name": "Blue Lion",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "blue-lion-female",
+    "MalePortrait": "blue-lion-male",
     "ArtSource": "BlueLion",
     "Thumbnail": {
       "Zoom": 1.3186,
       "X": 0.6549,
       "Y": 0.3709
+    },
+    "MaleFigure": {
+      "X": 0.0947,
+      "Y": 0.0791,
+      "W": 0.8096,
+      "H": 0.8418
     },
     "Figure": {
       "X": 0,
@@ -1377,11 +1412,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "blue-ninja-female",
+    "MalePortrait": "blue-ninja-male",
     "ArtSource": "BlueNinja",
     "Thumbnail": {
       "Zoom": 3.1709,
       "X": 0.5106,
       "Y": 0.1466
+    },
+    "MaleFigure": {
+      "X": 0.1973,
+      "Y": 0,
+      "W": 0.6045,
+      "H": 1
     },
     "Figure": {
       "X": 0.2285,
@@ -1518,11 +1560,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "bruiser-female",
+    "MalePortrait": "bruiser-male",
     "ArtSource": "Bruiser",
     "Thumbnail": {
       "Zoom": 2.5976,
       "X": 0.5836,
       "Y": 0.2223
+    },
+    "MaleFigure": {
+      "X": 0.0996,
+      "Y": 0.0791,
+      "W": 0.7998,
+      "H": 0.8418
     },
     "Figure": {
       "X": 0.0234,
@@ -2991,11 +3040,18 @@
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
     "Portrait": "courier-female",
+    "MalePortrait": "courier-male",
     "ArtSource": "Courier",
     "Thumbnail": {
       "Zoom": 2.8998,
       "X": 0.4955,
       "Y": 0.1651
+    },
+    "MaleFigure": {
+      "X": 0.2998,
+      "Y": 0,
+      "W": 0.3994,
+      "H": 1
     },
     "Figure": {
       "X": 0.3262,
@@ -4701,11 +4757,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "defender-female",
+    "MalePortrait": "defender-male",
     "ArtSource": "Defender",
     "Thumbnail": {
       "Zoom": 2.3719,
       "X": 0.363,
       "Y": 0.1848
+    },
+    "MaleFigure": {
+      "X": 0.2109,
+      "Y": 0,
+      "W": 0.5771,
+      "H": 1
     },
     "Figure": {
       "X": 0.1406,
@@ -5113,11 +5176,18 @@
     ],
     "Card": "Backline [healer] [buffer]. Restores tempo with [cleanse] and [aid].",
     "Portrait": "doctor-female",
+    "MalePortrait": "doctor-male",
     "ArtSource": "Doctor",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.493,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.293,
+      "Y": 0,
+      "W": 0.4141,
+      "H": 1
     },
     "Figure": {
       "X": 0.2773,
@@ -5398,11 +5468,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "duelist-female",
+    "MalePortrait": "duelist-male",
     "ArtSource": "Duelist",
     "Thumbnail": {
       "Zoom": 2.4675,
       "X": 0.5466,
       "Y": 0.2023
+    },
+    "MaleFigure": {
+      "X": 0.1553,
+      "Y": 0.0361,
+      "W": 0.6895,
+      "H": 0.9277
     },
     "Figure": {
       "X": 0.1211,
@@ -5540,11 +5617,18 @@
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "engineer-female",
+    "MalePortrait": "engineer-male",
     "ArtSource": "Engineer",
     "Thumbnail": {
       "Zoom": 2.3905,
       "X": 0.531,
       "Y": 0.2092
+    },
+    "MaleFigure": {
+      "X": 0.2217,
+      "Y": 0,
+      "W": 0.5557,
+      "H": 1
     },
     "Figure": {
       "X": 0,
@@ -7737,11 +7821,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "green-ninja-female",
+    "MalePortrait": "green-ninja-male",
     "ArtSource": "GreenNinja",
     "Thumbnail": {
       "Zoom": 2.4326,
       "X": 0.5112,
       "Y": 0.2053
+    },
+    "MaleFigure": {
+      "X": 0.2012,
+      "Y": 0,
+      "W": 0.5977,
+      "H": 1
     },
     "Figure": {
       "X": 0.2139,
@@ -8382,11 +8473,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "harbinger-female",
+    "MalePortrait": "harbinger-male",
     "ArtSource": "Harbinger",
     "Thumbnail": {
       "Zoom": 2.3786,
       "X": 0.6336,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.1133,
+      "Y": 0,
+      "W": 0.7725,
+      "H": 1
     },
     "Figure": {
       "X": 0.0479,
@@ -8657,11 +8755,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "jade-knight-female",
+    "MalePortrait": "jade-knight-male",
     "ArtSource": "JadeKnight",
     "Thumbnail": {
       "Zoom": 2.4499,
       "X": 0.4865,
       "Y": 0.2029
+    },
+    "MaleFigure": {
+      "X": 0.2715,
+      "Y": 0,
+      "W": 0.457,
+      "H": 1
     },
     "Figure": {
       "X": 0.3174,
@@ -8801,11 +8906,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "knight-female",
+    "MalePortrait": "knight-male",
     "ArtSource": "Knight",
     "Thumbnail": {
       "Zoom": 2.5745,
       "X": 0.6265,
       "Y": 0.2197
+    },
+    "MaleFigure": {
+      "X": 0.0977,
+      "Y": 0.0391,
+      "W": 0.8037,
+      "H": 0.9219
     },
     "Figure": {
       "X": 0.0381,
@@ -10110,11 +10222,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "martial-artist-female",
+    "MalePortrait": "martial-artist-male",
     "ArtSource": "MartialArtist",
     "Thumbnail": {
       "Zoom": 2.3812,
       "X": 0.525,
       "Y": 0.2068
+    },
+    "MaleFigure": {
+      "X": 0.2666,
+      "Y": 0,
+      "W": 0.4668,
+      "H": 1
     },
     "Figure": {
       "X": 0.2588,
@@ -10633,11 +10752,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "monk-female",
+    "MalePortrait": "monk-male",
     "ArtSource": "Monk",
     "Thumbnail": {
       "Zoom": 2.3906,
       "X": 0.5076,
       "Y": 0.2091
+    },
+    "MaleFigure": {
+      "X": 0.1074,
+      "Y": 0.0342,
+      "W": 0.7842,
+      "H": 0.9316
     },
     "Figure": {
       "X": 0.0547,
@@ -10899,11 +11025,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "myrmidon-female",
+    "MalePortrait": "myrmidon-male",
     "ArtSource": "Myrmidon",
     "Thumbnail": {
       "Zoom": 2.4031,
       "X": 0.474,
       "Y": 0.2077
+    },
+    "MaleFigure": {
+      "X": 0.2715,
+      "Y": 0,
+      "W": 0.457,
+      "H": 1
     },
     "Figure": {
       "X": 0.1758,
@@ -11165,7 +11298,7 @@
   {
     "Id": "nighthunter",
     "Name": "Night Hunter",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
@@ -11313,11 +11446,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "odachi-female",
+    "MalePortrait": "odachi-male",
     "ArtSource": "Odachi",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.0967,
+      "Y": 0.0186,
+      "W": 0.8066,
+      "H": 0.9619
     },
     "Figure": {
       "X": 0.0625,
@@ -11832,11 +11972,18 @@
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "operative-female",
+    "MalePortrait": "operative-male",
     "ArtSource": "Operative",
     "Thumbnail": {
       "Zoom": 2.7396,
       "X": 0.4958,
       "Y": 0.1818
+    },
+    "MaleFigure": {
+      "X": 0.3213,
+      "Y": 0,
+      "W": 0.3574,
+      "H": 1
     },
     "Figure": {
       "X": 0.3252,
@@ -11977,11 +12124,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "paladin-female",
+    "MalePortrait": "paladin-male",
     "ArtSource": "Paladin",
     "Thumbnail": {
       "Zoom": 2.4034,
       "X": 0.4731,
       "Y": 0.2087
+    },
+    "MaleFigure": {
+      "X": 0.1543,
+      "Y": 0,
+      "W": 0.6914,
+      "H": 1
     },
     "Figure": {
       "X": 0.1826,
@@ -12113,18 +12267,25 @@
   },
   {
     "Id": "pandagirl",
-    "Name": "Panda Brawler",
+    "Name": "Panda Keeper",
     "Team": "Hero",
     "Tags": [
       "Humanoid"
     ],
     "Card": "Ferocious [pouncer] [mauler]. Disrupts with [roar] and [knockdown].",
     "Portrait": "panda-keeper-female",
+    "MalePortrait": "panda-keeper-male",
     "ArtSource": "PandaGirl",
     "Thumbnail": {
       "Zoom": 2.4519,
       "X": 0.5024,
       "Y": 0.2039
+    },
+    "MaleFigure": {
+      "X": 0.1055,
+      "Y": 0.084,
+      "W": 0.7891,
+      "H": 0.8311
     },
     "Figure": {
       "X": 0.0244,
@@ -12388,11 +12549,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "prize-fighter-female",
+    "MalePortrait": "prize-fighter-male",
     "ArtSource": "PrizeFighter",
     "Thumbnail": {
       "Zoom": 2.3834,
       "X": 0.5107,
       "Y": 0.2095
+    },
+    "MaleFigure": {
+      "X": 0.1182,
+      "Y": 0,
+      "W": 0.7637,
+      "H": 1
     },
     "Figure": {
       "X": 0.2861,
@@ -12529,11 +12697,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "pugilist-female",
+    "MalePortrait": "pugilist-male",
     "ArtSource": "Pugilist",
     "Thumbnail": {
       "Zoom": 2.4355,
       "X": 0.5048,
       "Y": 0.2056
+    },
+    "MaleFigure": {
+      "X": 0.2695,
+      "Y": 0,
+      "W": 0.4609,
+      "H": 1
     },
     "Figure": {
       "X": 0.3057,
@@ -13283,7 +13458,7 @@
   {
     "Id": "raider",
     "Name": "Raider",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
@@ -13556,11 +13731,18 @@
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
     "Portrait": "red-mage-female",
+    "MalePortrait": "red-mage-male",
     "ArtSource": "RedMage",
     "Thumbnail": {
       "Zoom": 2.3831,
       "X": 0.4928,
       "Y": 0.2022
+    },
+    "MaleFigure": {
+      "X": 0.2324,
+      "Y": 0,
+      "W": 0.5352,
+      "H": 1
     },
     "Figure": {
       "X": 0.2549,
@@ -13701,11 +13883,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "red-ninja-female",
+    "MalePortrait": "red-ninja-male",
     "ArtSource": "RedNinja",
     "Thumbnail": {
       "Zoom": 2.4789,
       "X": 0.5173,
       "Y": 0.2021
+    },
+    "MaleFigure": {
+      "X": 0.1064,
+      "Y": 0.0059,
+      "W": 0.7861,
+      "H": 0.9883
     },
     "Figure": {
       "X": 0.1045,
@@ -13843,11 +14032,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "ripper-female",
+    "MalePortrait": "ripper-male",
     "ArtSource": "Ripper",
     "Thumbnail": {
       "Zoom": 2.4757,
       "X": 0.396,
       "Y": 0.2024
+    },
+    "MaleFigure": {
+      "X": 0.1514,
+      "Y": 0,
+      "W": 0.6963,
+      "H": 1
     },
     "Figure": {
       "X": 0.2363,
@@ -14131,11 +14327,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "ronin-female",
+    "MalePortrait": "ronin-male",
     "ArtSource": "Ronin",
     "Thumbnail": {
       "Zoom": 2.457,
       "X": 0.5058,
       "Y": 0.2096
+    },
+    "MaleFigure": {
+      "X": 0.1865,
+      "Y": 0,
+      "W": 0.627,
+      "H": 1
     },
     "Figure": {
       "X": 0.207,
@@ -14275,11 +14478,18 @@
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
     "Portrait": "sage-female",
+    "MalePortrait": "sage-male",
     "ArtSource": "Sage",
     "Thumbnail": {
       "Zoom": 2.3729,
       "X": 0.4978,
       "Y": 0.2099
+    },
+    "MaleFigure": {
+      "X": 0.0771,
+      "Y": 0.0039,
+      "W": 0.8457,
+      "H": 0.9922
     },
     "Figure": {
       "X": 0.0645,
@@ -14667,11 +14877,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "sellsword-female",
+    "MalePortrait": "sellsword-male",
     "ArtSource": "Sellsword",
     "Thumbnail": {
       "Zoom": 2.4793,
       "X": 0.4977,
       "Y": 0.2021
+    },
+    "MaleFigure": {
+      "X": 0.125,
+      "Y": 0,
+      "W": 0.75,
+      "H": 1
     },
     "Figure": {
       "X": 0.1348,
@@ -14809,11 +15026,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "shieldguard-female",
+    "MalePortrait": "shieldguard-male",
     "ArtSource": "ShieldMaiden",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.6227,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.208,
+      "Y": 0.0518,
+      "W": 0.583,
+      "H": 0.8965
     },
     "Figure": {
       "X": 0.0518,
@@ -14953,11 +15177,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "acolyte-female",
+    "MalePortrait": "acolyte-male",
     "ArtSource": "Sister",
     "Thumbnail": {
       "Zoom": 2.4223,
       "X": 0.5193,
       "Y": 0.2065
+    },
+    "MaleFigure": {
+      "X": 0.1143,
+      "Y": 0,
+      "W": 0.7715,
+      "H": 1
     },
     "Figure": {
       "X": 0.1035,
@@ -16618,11 +16849,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "speedster-female",
+    "MalePortrait": "speedster-male",
     "ArtSource": "Speedster",
     "Thumbnail": {
       "Zoom": 2.5878,
       "X": 0.5368,
       "Y": 0.1696
+    },
+    "MaleFigure": {
+      "X": 0.3066,
+      "Y": 0,
+      "W": 0.3857,
+      "H": 1
     },
     "Figure": {
       "X": 0.3076,
@@ -17378,11 +17616,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "street-fighter-female",
+    "MalePortrait": "street-fighter-male",
     "ArtSource": "StreetFighter",
     "Thumbnail": {
       "Zoom": 2.4732,
       "X": 0.505,
       "Y": 0.2023
+    },
+    "MaleFigure": {
+      "X": 0.1758,
+      "Y": 0,
+      "W": 0.6475,
+      "H": 1
     },
     "Figure": {
       "X": 0.3057,
@@ -17519,11 +17764,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "striker-female",
+    "MalePortrait": "striker-male",
     "ArtSource": "Striker",
     "Thumbnail": {
       "Zoom": 2.587,
       "X": 0.5053,
       "Y": 0.1943
+    },
+    "MaleFigure": {
+      "X": 0.2676,
+      "Y": 0,
+      "W": 0.4648,
+      "H": 1
     },
     "Figure": {
       "X": 0.3301,
@@ -17786,11 +18038,18 @@
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "sword-master-female",
+    "MalePortrait": "sword-master-male",
     "ArtSource": "SwordMaster",
     "Thumbnail": {
       "Zoom": 2.3791,
       "X": 0.5524,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.1699,
+      "Y": 0,
+      "W": 0.6602,
+      "H": 1
     },
     "Figure": {
       "X": 0.0859,
@@ -18445,11 +18704,18 @@
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "technician-female",
+    "MalePortrait": "technician-male",
     "ArtSource": "Technician",
     "Thumbnail": {
       "Zoom": 2.704,
       "X": 0.5151,
       "Y": 0.1845
+    },
+    "MaleFigure": {
+      "X": 0.3096,
+      "Y": 0,
+      "W": 0.3799,
+      "H": 1
     },
     "Figure": {
       "X": 0.3086,
@@ -19486,11 +19752,18 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "tinkerer-female",
+    "MalePortrait": "tinkerer-male",
     "ArtSource": "Tinkerer",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.0986,
+      "Y": 0.0859,
+      "W": 0.8027,
+      "H": 0.8271
     },
     "Figure": {
       "X": 0.0391,
@@ -21039,11 +21312,18 @@
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "vampire-female",
+    "MalePortrait": "vampire-male",
     "ArtSource": "Vampire",
     "Thumbnail": {
       "Zoom": 2.4924,
       "X": 0.4878,
       "Y": 0.2006
+    },
+    "MaleFigure": {
+      "X": 0.2568,
+      "Y": 0,
+      "W": 0.4854,
+      "H": 1
     },
     "Figure": {
       "X": 0.2842,
@@ -21306,11 +21586,18 @@
     ],
     "Card": "Frontline [guardian] [bruiser]. Absorbs pressure and [taunts].",
     "Portrait": "war-chief-female",
+    "MalePortrait": "war-chief-male",
     "ArtSource": "WarChief",
     "Thumbnail": {
       "Zoom": 2.5045,
       "X": 0.4273,
       "Y": 0.2003
+    },
+    "MaleFigure": {
+      "X": 0.1025,
+      "Y": 0,
+      "W": 0.7939,
+      "H": 1
     },
     "Figure": {
       "X": 0.0576,
@@ -21580,11 +21867,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "white-ninja-female",
+    "MalePortrait": "white-ninja-male",
     "ArtSource": "WhiteNinja",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4977,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.2178,
+      "Y": 0,
+      "W": 0.5645,
+      "H": 1
     },
     "Figure": {
       "X": 0.2334,
@@ -21725,11 +22019,18 @@
     ],
     "Card": "Arcane [controller] [debuffer]. Shapes fights with [aoe] [curse].",
     "Portrait": "lightweaver-female",
+    "MalePortrait": "lightweaver-male",
     "ArtSource": "WhiteWitch",
     "Thumbnail": {
       "Zoom": 2.3787,
       "X": 0.4633,
       "Y": 0.2102
+    },
+    "MaleFigure": {
+      "X": 0.1855,
+      "Y": 0,
+      "W": 0.6279,
+      "H": 1
     },
     "Figure": {
       "X": 0.1455,
@@ -22523,11 +22824,18 @@
     ],
     "Card": "Mobile [striker] [flanker]. Leans on [crit] and [backstab] windows.",
     "Portrait": "yellow-ninja-female",
+    "MalePortrait": "yellow-ninja-male",
     "ArtSource": "YellowNinja",
     "Thumbnail": {
       "Zoom": 2.4716,
       "X": 0.5316,
       "Y": 0.2022
+    },
+    "MaleFigure": {
+      "X": 0.2734,
+      "Y": 0,
+      "W": 0.4521,
+      "H": 1
     },
     "Figure": {
       "X": 0.29,
@@ -23278,17 +23586,24 @@
   {
     "Id": "hexsniper",
     "Name": "Hex Sniper",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
     "Card": "Ranged precision. Converts [patience] into a [piercing shot] nothing else in the party can match.",
     "Portrait": "hex-sniper-female",
+    "MalePortrait": "hex-sniper-male",
     "ArtSource": "hexsniper",
     "Thumbnail": {
       "Zoom": 3.8854,
       "X": 0.5027,
       "Y": 0.3152
+    },
+    "MaleFigure": {
+      "X": 0.1768,
+      "Y": 0,
+      "W": 0.6465,
+      "H": 1
     },
     "Figure": {
       "X": 0.1875,
@@ -23421,7 +23736,7 @@
   {
     "Id": "hexwarden",
     "Name": "Hex Warden",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
@@ -23562,7 +23877,7 @@
   {
     "Id": "hexstalker",
     "Name": "Hex Stalker",
-    "Team": "Hero",
+    "Team": "Enemy",
     "Tags": [
       "Humanoid"
     ],
@@ -23805,11 +24120,18 @@
     ],
     "Card": "Wild monsters turn [Tamed] and fight for you.",
     "Portrait": "wild-child-female",
+    "MalePortrait": "monster-tamer-male",
     "ArtSource": "WildChild",
     "Thumbnail": {
       "Zoom": 2.5115,
       "X": 0.5016,
       "Y": 0.2056
+    },
+    "MaleFigure": {
+      "X": 0.2373,
+      "Y": 0,
+      "W": 0.5254,
+      "H": 1
     },
     "Figure": {
       "X": 0.2568,
@@ -23941,11 +24263,18 @@
     ],
     "Card": "Backline [healer]. Free, strong heals paid in their own HP ([Essence]).",
     "Portrait": "herald-female",
+    "MalePortrait": "herald-male",
     "ArtSource": "herald",
     "Thumbnail": {
       "Zoom": 2.844,
       "X": 0.4883,
       "Y": 0.1592
+    },
+    "MaleFigure": {
+      "X": 0.1035,
+      "Y": 0.0391,
+      "W": 0.793,
+      "H": 0.9219
     },
     "Figure": {
       "X": 0.0752,
@@ -24083,11 +24412,18 @@
     ],
     "Card": "Backline [healer]. Mends an ally and pours an orb into the bank.",
     "Portrait": "aetherist-female",
+    "MalePortrait": "aetherist-male",
     "ArtSource": "aetherist",
     "Thumbnail": {
       "Zoom": 2.816,
       "X": 0.488,
       "Y": 0.1087
+    },
+    "MaleFigure": {
+      "X": 0.0869,
+      "Y": 0.0488,
+      "W": 0.8252,
+      "H": 0.9014
     },
     "Figure": {
       "X": 0.0254,
