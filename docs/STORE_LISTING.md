@@ -98,7 +98,7 @@ Portrait mode, one hand, in short sessions. Adjustable battle speed, an optional
 
 FAIR TO YOUR WALLET
 
-Everything in the game can be earned with gold. Diamonds are an optional shortcut: a random hero draw, a lucky forge craft, or an instant refill of the party's Rested energy. Every Diamond price can also be paid in gold.
+Everything in the game can be earned with gold. Aetherite Shards are an optional shortcut: a random hero draw, a lucky forge craft, or an instant refill of the party's Rested energy. Every Shard price can also be paid in gold.
 ```
 
 *(3,514 characters, including the "(pending the story pass)" marker line. Before submitting, re-check that the boss rule examples (TwinTurn, Undying, AxisWard) are
@@ -132,19 +132,21 @@ keyword field. The same terms should appear naturally in the full description, w
 These match the drafts in [legal/age-ratings.md](legal/age-ratings.md) and
 [legal/play-data-safety.md](legal/play-data-safety.md), and those files win where they differ.
 
-- **In-app purchases: yes.** Diamonds are consumables sold in four packs at a flat rate of **100 Diamonds for $1.00**:
-  `diamonds_100` $1.00, `diamonds_500` $5.00, `diamonds_1000` $10.00, `diamonds_2500` $25.00 (`DiamondPack`, Unity IAP,
-  Google Play Billing / StoreKit). There are no subscriptions and no bonus-tiered "best value" packs.
-- **Gold exchange.** Every Diamond price can be paid in gold at 6 G per Diamond (`DiamondExchange`), so nothing is
+- **In-app purchases: yes.** Aetherite Shards (the premium currency, called Diamonds until GG-T568) are consumables
+  sold in four packs at a flat rate of **100 Aetherite Shards for $1.00**: `diamonds_100` "100 Aetherite Shards" $1.00,
+  `diamonds_500` "500 Aetherite Shards" $5.00, `diamonds_1000` "1,000 Aetherite Shards" $10.00, `diamonds_2500` "2,500
+  Aetherite Shards" $25.00 (product ids keep the old word; `DiamondPack`, Unity IAP, Google Play Billing / StoreKit).
+  There are no subscriptions and no bonus-tiered "best value" packs.
+- **Gold exchange.** Every Shard price can be paid in gold at 6 G per Shard (`DiamondExchange`), so nothing is
   locked behind real money.
-- **What Diamonds buy:** a random hero draw at the Summon Circle (100 Diamonds), a lucky craft that raises the
-  masterwork chance at the forge (50 Diamonds), and an instant Rested refill (25 Diamonds).
-- **Random items: yes.** The Diamond summon is a randomised reward that can be paid for with purchased currency. Answer
+- **What Shards buy:** a random hero draw at the Summon Circle (100 Shards), a lucky craft that raises the
+  masterwork chance at the forge (50 Shards), and an instant Rested refill (25 Shards).
+- **Random items: yes.** The Shard summon is a randomised reward that can be paid for with purchased currency. Answer
   the loot-box / "includes random items" questions **yes**. Expect the "In-Game Purchases (Includes Random Items)"
   descriptor. The odds have to be shown before purchase where a store or region requires it (Apple guideline 3.1.1).
   Confirm the Summon Circle shows them.
 - **Energy:** the Rested pool (10 points; each stage launch spends 1, and 1 point comes back every 10 minutes) can be
-  refilled with gold or Diamonds. If the description mentions energy, describe it plainly.
+  refilled with gold or Aetherite Shards. If the description mentions energy, describe it plainly.
 - **Ads: none.** There is no ad SDK and no advertising id.
 - **Online and data:** no account, no chat, no user-generated content and no online play. The only network traffic is
   the store's billing.

@@ -89,6 +89,25 @@
         "definition": "A Bulwark Siphoner's charge: it hits one hero, and an orb leaves the party's bank when it lands. Spend your orbs first, or [Interrupt] it."
       }
     },
+    "glossary:aetherite_shard": {
+      "key": "glossary:aetherite_shard",
+      "id": "glossary-aetherite-shard",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:23172091f4d10959e00dbce07dff31f339b1288817b00a55335cff3818acbdea",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Aetherite Shard",
+        "definition": "The premium currency, bought in the Shard Store. It pays for a random summon, an instant Rested refill and a lucky craft.",
+        "aliases": [
+          "Aetherite Shards",
+          "Shard",
+          "Shards"
+        ]
+      }
+    },
     "glossary:agi": {
       "key": "glossary:agi",
       "id": "glossary-agi",

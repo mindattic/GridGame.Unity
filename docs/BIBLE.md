@@ -3604,6 +3604,8 @@ A handful of Alchemy recipes carry a `RecipeDef.PotencyInputs`/`PotencyResult`/`
 
 #### 24.6.5 Lucky craft — the Diamond (GG-T235)
 
+*Amended 2026-11-21 (GG-T568): the Diamond is now the **Aetherite Shard** on screen ([§24.9.1](#2491-the-currencies-wiki-entries-gg-t568)); a lucky craft costs 50 Shards (or 300 G).*
+
 Owner 2026-11-05: "trying to do a lucky craft with a 'Diamond' to increase chances of a better item that's forged." The **Diamond** (`mat_diamond`, Epic crafting material, never sold by a vendor, never dropped) ~~comes **only** from the LuckyDiamond paywall hook ([§25.18](#2518-rested-and-the-paywall-hooks-gg-t232)): the Forge detail's **Buy Diamond · 1g · 1s** button runs a timed job that lands one in the bag (a full stack refunds).~~ **Amended 2026-11-20 (owner, GG-T455):** comes from the Diamond exchange ([§25.18.1](#25181-the-diamond-exchange-gg-t455-owner-2026-11-20)); the Forge detail's `buy-diamond` button is now **Diamond Store**, and a lucky craft costs **`Crafting.LuckyDiamondCost` = 50 Diamonds (or 300 G)**, paid through `DiamondExchange.Pay` on top of the recipe's own gold, so it is on offer with or without Diamonds in the bag (short of both, it offers the store). Any Forge recipe whose result can roll Masterwork ([§24.6.3](#2463-masterwork-variants-gg-t46)) also shows **Lucky craft (use 1 Diamond) · ★ N%** while one is held: the same craft as **Craft** (`Forging.Forge(c, s, r, lucky: true)` → `Crafting.Craft(…, lucky: true)`, guided first forges included), but it spends one Diamond and rolls Masterwork at `MasterworkChance(c, s, lucky: true)` — the normal chance **+40%**, capped at **75%** instead of 35% — and a lucky Masterwork's stat bonus rolls **+15–20%** instead of +10–20%. Tuning lives in `Crafting.LuckyChanceBonus`/`LuckyMaxChance`/`LuckyStatBonusMin`. A refused lucky craft (no Diamond, potency brew, ineligible result) consumes nothing. The result plays out over time (`LuckyCraftUi`): the Diamond spins up in a veil with a `magic` cue, then the result lands with `powerup` (Masterwork) or `clang` ("the Diamond's luck didn't hold"). Bots and `CampRoutine` never buy or spend Diamonds. *(Tests: `LuckyCraftTests`.)*
 
 ### 24.7 Drops
@@ -3630,6 +3632,21 @@ ENEMIES ─▶ drop tables ─▶ Inventory ─┬▶ Blacksmith (forge / upgrad
 ### 24.9 Currency
 
 **Amended 2026-10-09:** coins collected in battle *are* gold. `BattleResults.Coins` is credited to `SaveData.Gold` (and the `LifetimeCoins` ticker) at a **victorious** commit; coins seen in a lost or escaped battle are lost. The old `GoldTracker` bridge is gone. Gold sinks: Merchant, crafting, repair, Inn, learning abilities, Summon Circle. New saves start with **200 G**.
+
+#### 24.9.1 The currencies (wiki entries, GG-T568)
+
+Each currency has one stable id, one standalone description (its Prose glossary text) and its numbers in data or in one
+tuning class. Player-facing names come from one place in code (`ShardText` for the premium currency).
+
+- **Gold** (`gold`). Earned as coins in battle, quest and milestone rewards, and by selling at the Merchant. It belongs
+  to the save slot (`SaveData.Gold`). It pays for nearly everything at Camp ([§24.9](#249-currency)).
+- **Aetherite Shard** (`aetherite_shard`; glossary `glossary:aetherite_shard`). The premium currency, bought with real
+  money in the **Shard Store**. It pays for a random summon, an instant Rested refill and a lucky craft
+  ([§25.18.1](#25181-the-diamond-exchange-gg-t455-owner-2026-11-20)). Owner 2026-11-21: *"the real-money currency is
+  'Aetherite Shard(s)'"*; it was called **Diamonds** until GG-T568. The rename is words only: the item id
+  `mat_diamond`, the store product ids `diamonds_100` … `diamonds_2500`, the save fields and the `Diamond*` class names
+  are unchanged, so saves and purchases still work. Its item (`mat_diamond`) is named "Aetherite Shard"; its icon is
+  still the game-icons cut diamond (new crystal-shard art is listed in docs/ART_GAPS.md).
 
 ---
 
@@ -4153,6 +4170,8 @@ Owner: "they stay for a negotiated amount of battles at a price; whether you use
 
 #### 25.10.2 Random summon for Diamonds (added 2026-11-07, owner, GG-T343)
 
+*Amended 2026-11-21 (GG-T568): Diamonds read **Aetherite Shards** on screen ([§24.9.1](#2491-the-currencies-wiki-entries-gg-t568)); the draw button reads "Draw · 100 Shards (or 600 G)".*
+
 Owner: *"another way is to simply summon them randomly with Diamonds monetized currency"*.
 
 - **The draw** (`Meta/DiamondSummon.cs`): a "Call a stranger" window at the top of the Summon Circle (`summon-random`) spends ~~**`DiamondSummon.Price` = 1 Diamond** (`mat_diamond`; the one tuning constant for the draw's own price, left at 1 pending a measured pass — GG-T427 tuned the gold-priced hooks around it, deliberately cheaper per attempt than the 1,500 g guaranteed pick (GG-T448) since it's a blind draw) and **no gold**~~ **`DiamondSummon.Price` = 100 Diamonds ($1.00, or 600 G)** since GG-T455 — the same 600 g the one Diamond cost before, still well under the 1,500 g chosen-hero summon — paid through `DiamondExchange.Pay`: Diamonds first, any shortfall in gold ([§25.18.1](#25181-the-diamond-exchange-gg-t455-owner-2026-11-20)). The button reads "Draw · 100 Diamonds (or 600 G)" (a "· 1s" tail dropped, GG-T519) and its confirm names the split ("Pay 40 Diamonds and 360 G …"). It brings one hero from the **wanderer pool** (`Wanderers.Pool`, [§25.11.2](#25112-random-rescues-added-2026-11-05-owner-the-random-character-recruitment-for-saving-them-gg-t236)) — unowned heroes with no other way in, the same pool a wanderer goes back to when it parts ways — never one of the gold summons.
@@ -4382,6 +4401,12 @@ Owner 2026-11-05: "everything costs gold now but eventually there will need to b
 - *(Tests: `PaywallRestedTests` — each hook's own tunable price, spend and regen, refusal at 0 with the wait, Test Mode exemption, the gold refill job (gold up front, not before its time, fills, one at a time), no gold → refused, the Diamond refill (instant, no job, no gold while Diamonds cover it, the shortfall exchanged from gold; too few Diamonds and gold refused; refused when already rested), a running job surviving a save round trip, summoning through the job at the flat price.)*
 
 #### 25.18.1 The Diamond exchange (GG-T455, owner 2026-11-20)
+
+**Amended 2026-11-21 (owner, GG-T568): Diamonds are now Aetherite Shards.** Everything below still holds; only the name
+the player sees changed: "Diamonds" reads **Aetherite Shards** (short form **Shards** on buttons and counters, e.g.
+"25 Shards (or 150 G)"), the **Diamond Store** is the **Shard Store**, and the store packs' display titles read
+"100 Aetherite Shards" … "2,500 Aetherite Shards" (product ids unchanged). Code ids, element names (`diamond-*`,
+`camp-diamonds`), the `ui.diamond` cue and the save shape keep the old word. See [§24.9.1](#2491-the-currencies-wiki-entries-gg-t568).
 
 Owner: *"Like guildwars gold and diamonds need an exchange rate so if something costs diamonds, it can be purchased with gold or with real money, right now lets make it 100 diamonds for $1.00 just to keep it low and honest".*
 

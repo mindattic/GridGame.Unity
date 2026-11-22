@@ -1461,7 +1461,7 @@ namespace GridGame.App
             int diamonds = S.Count(Crafting.DiamondId);
             int left = DiamondSummon.Pool(C, S).Count;
             var t = Ui.Text(left > 0
-                ? $"Spend Diamonds and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
+                ? $"Spend {ShardText.Plural} and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
                 : "No one is left on the road to answer.", "kit-text", w);
             if (left > 0) OddsRow(w);
             var row = Ui.Actions(w);
@@ -1473,13 +1473,13 @@ namespace GridGame.App
                 img.style.backgroundImage = new StyleBackground(icon);
                 img.style.marginLeft = Space.TargetHalfGap;
             }
-            Ui.Name($"Diamonds: {diamonds}", row, "grow").style.marginLeft = Space.S8;
+            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", row, "grow").style.marginLeft = Space.S8;
             var b = Ui.Button($"Draw · {DiamondSummon.Tag(S)}", () =>
             {
                 var can = DiamondSummon.CanDraw(C, S);
                 if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
-                string pay = qg == 0 ? $"{Ui.Count(qd)} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{Ui.Count(qd)} Diamonds and {Ui.Gold(qg)}";
+                string pay = qg == 0 ? ShardText.Of(qd) : qd == 0 ? Ui.Gold(qg) : $"{ShardText.Of(qd)} and {Ui.Gold(qg)}";
                 Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () =>
                 {
                     string drawn = null;
@@ -1492,8 +1492,8 @@ namespace GridGame.App
             Ui.SetEnabled(b, !busy && left > 0 && !S.TestMode);
             if (diamonds < DiamondSummon.Price)
             {
-                Ui.Para("Short of Diamonds, the rest is paid in gold at the exchange rate. Diamonds also pay for a lucky craft or an instant Rested refill.", w, "dim");
-                Ui.Button("Diamond Store", DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store";
+                Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate. {ShardText.Plural} also pay for a lucky craft or an instant Rested refill.", w, "dim");
+                Ui.Button(ShardText.Store, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store";
             }
         }
 

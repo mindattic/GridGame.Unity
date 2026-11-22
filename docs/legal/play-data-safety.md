@@ -13,7 +13,7 @@
 | Accounts / sign-in | None |
 | Ads | None (no ad SDK, no advertising id) |
 | Analytics / crash reporting | None of ours. Unity Analytics, Cloud Diagnostics and performance reporting are off. MindAttic.Telemetry and MindAttic.Capture are inert in release builds (editor/development only, local files only). |
-| Network | Only Google Play Billing (through Unity IAP) when the Diamond Store connects and when you buy. The game has no other network code. |
+| Network | Only Google Play Billing (through Unity IAP) when the Shard Store connects and when you buy. The game has no other network code. |
 | Error log | Unhandled exceptions written to an on-device file (GG-T484 `CrashReporter`: time, version, platform, OS, device model, scrubbed error text). Not uploaded, so not "collected". Android vitals crash/ANR data is collected by Google Play itself, not declared by the developer. |
 | Saves | On device (app-private storage), included in Android Auto Backup |
 | Permissions | `INTERNET` and `com.android.vending.BILLING` (added by Unity IAP). No location, camera, microphone, contacts or storage permissions. [Owner: confirm against the merged AndroidManifest of a release build.] |

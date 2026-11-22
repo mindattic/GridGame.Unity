@@ -13,12 +13,12 @@
 
 GridGame Gaiden is a single-player game. It has **no accounts, no ads, no analytics SDK and no online play.** Your
 progress is saved on your device. We don't collect your name, email, location, contacts, photos or device
-identifiers. When you buy Diamonds, Google Play or the Apple App Store handles the payment; we never see your card
+identifiers. When you buy Aetherite Shards, Google Play or the Apple App Store handles the payment; we never see your card
 or bank details.
 
 ## What stays on your device
 
-- **Save files and settings.** Your save slots (heroes, items, progress, Diamonds, and the list of store transaction
+- **Save files and settings.** Your save slots (heroes, items, progress, Aetherite Shards, and the list of store transaction
   ids already granted, so a purchase is never paid out twice), your player-profile name and your settings are written
   to the app's private storage on your device. They are not sent to us.
 - **Error log.** If the game hits an unexpected error, it writes a short record to a log file in its private storage:
@@ -28,17 +28,17 @@ or bank details.
   vitals, and Apple may share crash logs if you opted in to share analytics with developers, under their policies.)
 - **Device backups.** Android's Auto Backup and iCloud/iTunes device backups may copy the app's private storage as part
   of your own device backup, under your Google or Apple account and their policies. We cannot read those backups. This
-  is also how a reinstall can bring your progress (and purchased Diamonds) back.
+  is also how a reinstall can bring your progress (and purchased Aetherite Shards) back.
 
 ## In-app purchases
 
-Diamonds can be bought with real money through **Google Play Billing** (Android) or **Apple's App Store / StoreKit**
+Aetherite Shards can be bought with real money through **Google Play Billing** (Android) or **Apple's App Store / StoreKit**
 (iOS), using Unity's In-App Purchasing library.
 
 - The store collects and processes your payment information under its own privacy policy
   ([Google](https://policies.google.com/privacy), [Apple](https://www.apple.com/legal/privacy/)). We receive only
   what the store gives the app to complete the order: the product bought, a transaction id / purchase token and a
-  receipt. The app uses them on your device to add the Diamonds once and records the transaction id in your save.
+  receipt. The app uses them on your device to add the Shards once and records the transaction id in your save.
 - **Unity In-App Purchasing** may send purchase-related diagnostics (for example, that a purchase of a product
   succeeded, its price and currency, the store, and app and device attributes) to Unity Technologies, depending on the
   Unity project's Developer Data settings. See Unity's privacy policy: <https://unity.com/legal/privacy-policy>.

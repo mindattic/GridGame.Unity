@@ -5,6 +5,28 @@ using GridGame.Core.Content;
 namespace GridGame.Meta
 {
     /// <summary>
+    /// The premium currency's player-facing name (§25.18.1, GG-T568; owner 2026-11-21: the real-money currency is "Aetherite
+    /// Shard(s)", it was "Diamonds"). Every screen, toast and confirm reads its words from here. The internal ids keep the
+    /// old word so saves and purchases still work: the item <c>mat_diamond</c>, the store product ids <c>diamonds_100</c> …,
+    /// the save fields and the <c>Diamond*</c> class names.
+    /// </summary>
+    public static class ShardText
+    {
+        /// <summary>The currency's stable wiki/glossary id.</summary>
+        public const string Id = "aetherite_shard";
+        public const string Name = "Aetherite Shard", Plural = "Aetherite Shards";
+        /// <summary>The short form for tight labels (buttons, side windows, counters).</summary>
+        public const string Short = "Shard", ShortPlural = "Shards";
+        /// <summary>The real-money store's name (Camp row, screen title, every "not enough Shards" offer).</summary>
+        public const string Store = "Shard Store";
+
+        /// <summary>"1 Aetherite Shard", "250 Aetherite Shards".</summary>
+        public static string Of(int n) => $"{n:N0} {(n == 1 ? Name : Plural)}";
+        /// <summary>"1 Shard", "250 Shards".</summary>
+        public static string ShortOf(int n) => $"{n:N0} {(n == 1 ? Short : ShortPlural)}";
+    }
+
+    /// <summary>
     /// The Diamond exchange (§25.18.1, GG-T455). Owner, 2026-11-20: "Like guildwars gold and diamonds need an exchange rate so
     /// if something costs diamonds, it can be purchased with gold or with real money, right now lets make it 100 diamonds
     /// for $1.00 just to keep it low and honest". Every Diamond price is paid through <see cref="Pay"/>: Diamonds in the bag
@@ -44,7 +66,7 @@ namespace GridGame.Meta
             if (gold > 0 && s.Gold - Math.Max(0, keepGold) < gold)
             {
                 int short_ = price - Have(s);
-                return Result.Fail($"Not enough Diamonds: {short_} more, or {gold:N0} G to exchange");
+                return Result.Fail($"Not enough {ShardText.Plural}: {short_:N0} more, or {gold:N0} G to exchange");
             }
             return Result.Success();
         }
@@ -64,8 +86,8 @@ namespace GridGame.Meta
 
         public static Result Pay(SaveData s, int price, int keepGold = 0) => Pay(s, price, out _, keepGold);
 
-        /// <summary>"25 Diamonds (or 150 G)": the label every Diamond-priced button shows.</summary>
-        public static string Label(int price) => $"{price:N0} Diamond{(price == 1 ? "" : "s")} (or {GoldFor(price):N0} G)";
+        /// <summary>"25 Shards (or 150 G)": the label every Shard-priced button shows (GG-T568: the short name fits a button).</summary>
+        public static string Label(int price) => $"{ShardText.ShortOf(price)} (or {GoldFor(price):N0} G)";
 
         /// <summary>The most Diamonds the bag can hold (the item's MaxStack).</summary>
         public static int Cap(ContentDb c) => c?.TryItem(Crafting.DiamondId)?.MaxStack ?? int.MaxValue;
@@ -81,12 +103,12 @@ namespace GridGame.Meta
         {
             if (s == null) return Result.Fail("No save");
             if (diamonds <= 0) return Result.Fail("Pick an amount");
-            if (Room(c, s) < diamonds) return Result.Fail("Can't carry that many Diamonds");
+            if (Room(c, s) < diamonds) return Result.Fail($"Can't hold that many {ShardText.Plural}");
             int gold = GoldFor(diamonds);
-            if (s.Gold < gold) return Result.Fail($"Not enough gold: {gold:N0} G for {diamonds:N0} Diamonds");
+            if (s.Gold < gold) return Result.Fail($"Not enough gold: {gold:N0} G for {ShardText.Of(diamonds)}");
             s.Gold -= gold;
             s.AddItem(Crafting.DiamondId, diamonds);
-            return Result.Success($"Exchanged {gold:N0} G for {diamonds:N0} Diamonds.");
+            return Result.Success($"Exchanged {gold:N0} G for {ShardText.Of(diamonds)}.");
         }
 
         /// <summary>Adds Diamonds bought with real money (or a refund), up to the bag's cap.</summary>
@@ -94,9 +116,9 @@ namespace GridGame.Meta
         {
             if (s == null) return Result.Fail("No save");
             if (diamonds <= 0) return Result.Fail("Nothing to add");
-            if (Room(c, s) < diamonds) return Result.Fail("Can't carry that many Diamonds");
+            if (Room(c, s) < diamonds) return Result.Fail($"Can't hold that many {ShardText.Plural}");
             s.AddItem(Crafting.DiamondId, diamonds);
-            return Result.Success($"+{diamonds:N0} Diamonds.");
+            return Result.Success($"+{ShardText.Of(diamonds)}.");
         }
     }
 
@@ -197,7 +219,7 @@ namespace GridGame.Meta
         {
             var r = pack == null ? Result.Fail("No such pack") : DiamondExchange.Grant(c, s, pack.Diamonds);
             done?.Invoke(r.Ok
-                ? PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] +{pack.Diamonds:N0} Diamonds, no charge.", pack.ProductId, pack.Diamonds)
+                ? PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] +{ShardText.Of(pack.Diamonds)}, no charge.", pack.ProductId, pack.Diamonds)
                 : PurchaseResult.Of(PurchaseKind.Failed, r.Message, pack?.ProductId));
         }
     }
@@ -206,7 +228,7 @@ namespace GridGame.Meta
     /// packs, sells nothing.</summary>
     public sealed class UnconnectedDiamondStore : IDiamondStore
     {
-        public string Status => DiamondStore.NotConnected + ". Diamonds can still be exchanged for gold.";
+        public string Status => DiamondStore.NotConnected + ". " + ShardText.Plural + " can still be exchanged for gold.";
         public bool Connected => false;
         public event Action<PurchaseResult> Delivered { add { } remove { } }
         public bool CanRestore => false;

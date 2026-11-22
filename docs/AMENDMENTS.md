@@ -1615,3 +1615,16 @@ Owner: *"there are other combinations of things that should be considered 'Clutc
   kind under "CLUTCH!". Not adopted (future): an exact mana rollover, a shattering-weapon kill, a Taunting tank at 1 HP,
   a kill while debuffed.
 - *Why:* a bonus for doing really cool things; one per action keeps a big combo from stacking the bonus.
+
+## 2026-11-21 — Diamonds are Aetherite Shards (owner, GG-T568)
+
+Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
+
+- **Was:** the premium currency read "Diamonds" everywhere: the Diamond Store, counters, the summon, lucky craft and
+  Rested refill buttons and confirms, the `mat_diamond` item ("Diamond"), the store listing and the legal pages.
+- **Now ([BIBLE §24.9.1](BIBLE.md#2491-the-currencies-wiki-entries-gg-t568)):** every player-facing word reads
+  **Aetherite Shard(s)** (short **Shards** on buttons and counters), the store is the **Shard Store**, the item is named
+  "Aetherite Shard" with a new Prose description, and a `glossary:aetherite_shard` entry is the currency's wiki text
+  (seed, drafted to Prose as batch `gg-t568`). Internal ids, product ids, save fields and class names keep the old word,
+  so saves and purchases still work. The item icon is still a cut diamond; new art is in docs/ART_GAPS.md.
+- *Why:* the currency now belongs to the world: aetherite is the Somnolith's crystal.

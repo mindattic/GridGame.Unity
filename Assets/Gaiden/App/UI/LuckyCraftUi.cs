@@ -27,10 +27,10 @@ namespace GridGame.App
                 img.style.width = img.style.height = Size.IconS; img.style.marginRight = Space.S8;
                 img.style.backgroundImage = new StyleBackground(tex);
             }
-            Ui.Text($"Diamonds: {s.Count(Crafting.DiamondId)}", "small", head);
+            Ui.Text($"{ShardText.ShortPlural}: {Ui.Count(DiamondExchange.Have(s))}", "small", head);
 
             // GG-T455: the old 600 g one-Diamond job is retired; Diamonds come from the store's gold exchange.
-            var buy = Ui.Button("Diamond Store", DiamondStores.Open, "btn--small", box);
+            var buy = Ui.Button(ShardText.Store, DiamondStores.Open, "btn--small", box);
             buy.name = "buy-diamond";
             buy.style.marginTop = Space.S8;
 
@@ -46,8 +46,8 @@ namespace GridGame.App
             {
                 if (!Crafting.CanLucky(c, s, r)) { DiamondStores.OfferStore(DiamondExchange.CanPay(s, Crafting.LuckyDiamondCost, r.Gold).Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(s, Crafting.LuckyDiamondCost);
-                string pay = qg == 0 ? $"{Ui.Count(qd)} Diamonds" : qd == 0 ? Ui.Gold(qg) : $"{Ui.Count(qd)} Diamonds and {Ui.Gold(qg)}";
-                Confirm.Show($"Pay {pay} for a lucky craft? Masterwork chance {OddsText.Percent(withDiamond)} (without the Diamond {OddsText.Percent(plain)}).", "Lucky craft", () =>
+                string pay = qg == 0 ? ShardText.Of(qd) : qd == 0 ? Ui.Gold(qg) : $"{ShardText.Of(qd)} and {Ui.Gold(qg)}";
+                Confirm.Show($"Pay {pay} for a lucky craft? Masterwork chance {OddsText.Percent(withDiamond)} (without the {ShardText.ShortPlural} {OddsText.Percent(plain)}).", "Lucky craft", () =>
                 {
                     var res = Forging.Forge(c, s, r, lucky: true);
                     if (res.Ok) GameApp.I.Persist();

@@ -643,8 +643,8 @@ namespace GridGame.App
             // The Diamond Store (§25.18.1, GG-T455): the gold exchange and the real-money packs.
             // GG-T537: the Diamond Store's row opens with the Summon Circle (a Diamond's first use is a summon).
             if (Features.DiamondStore && CampUnlocks.DiamondStoreOpen(s))
-                Ui.MenuRow("Diamond Store", $"{Ui.Count(DiamondExchange.Have(s))} Diamonds", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
-            else if (Features.DiamondStore) Station("Diamond Store", false, CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), null);
+                Ui.MenuRow(ShardText.Store, $"{Ui.Count(DiamondExchange.Have(s))} {ShardText.ShortPlural}", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
+            else if (Features.DiamondStore) Station(ShardText.Store, false, CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), null);
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));

@@ -18,7 +18,7 @@
 - **Gambling:** no real-money gambling and no simulated casino games. **But see randomised paid items below.**
 - **User interaction:** none: no chat, no user-generated content, no sharing, no online play.
 - **Location sharing / personal info:** none.
-- **Digital purchases:** yes, Diamonds (consumable in-app purchases, US$1 to US$25).
+- **Digital purchases:** yes, Aetherite Shards (consumable in-app purchases, US$1 to US$25).
 - **Ads:** none.
 
 ## Google Play (IARC) answers
@@ -34,7 +34,7 @@
 | Crude humour | No |
 | Gambling: real money | No |
 | Gambling: simulated | No |
-| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Diamond summon (100 Diamonds) brings a random hero; a lucky craft (50 Diamonds) raises a random Masterwork chance. Diamonds can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
+| **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Shard summon (100 Aetherite Shards) brings a random hero; a lucky craft (50 Shards) raises a random Masterwork chance. Shards can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
 | Users interact / exchange content | No |
 | Shares location | No |
 | Digital purchases | Yes |
@@ -73,10 +73,10 @@ Both stores require games that sell randomised items for real money, or for curr
 **disclose the odds before purchase** (App Store Review Guideline 3.1.1; Google Play Payments policy, "Loot boxes").
 The game now shows them, computed by the same code that makes the roll (BIBLE §25.18.1):
 
-- **Diamond summon:** one hero from the wanderer pool (the unowned heroes with no other way in), each **equally
+- **Shard summon:** one hero from the wanderer pool (the unowned heroes with no other way in), each **equally
   likely**. The Summon Circle shows "Each of these N heroes: 1 in N (x%)" next to the Draw button, an **Odds** button
   opens the full list of heroes with each one's chance, and the purchase confirm repeats the odds.
-- **Lucky craft:** the Blacksmith's lucky-craft window shows the Masterwork chance without and with the Diamond (base
+- **Lucky craft:** the Blacksmith's lucky-craft window shows the Masterwork chance without and with the Shards (base
   chance + `Crafting.LuckyChanceBonus` 40 points, capped at `Crafting.LuckyMaxChance` 75%), and the purchase confirm
   repeats both percentages.
 

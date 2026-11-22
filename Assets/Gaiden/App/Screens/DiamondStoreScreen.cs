@@ -62,7 +62,7 @@ namespace GridGame.App
         public static void OfferStore(string why)
         {
             GameApp.I.Audio.Sfx("ui.error");
-            Confirm.Show($"{why}\nOpen the Diamond Store?", "Diamond Store", Open);
+            Confirm.Show($"{why}\nOpen the {ShardText.Store}?", ShardText.Store, Open);
         }
     }
 
@@ -74,7 +74,7 @@ namespace GridGame.App
     public sealed class DiamondStoreScreen : HubPage
     {
         public override string Id => "diamonds";
-        protected override string Title => "Diamond Store";
+        protected override string Title => ShardText.Store; // GG-T568: Aetherite Shards, was Diamonds
         protected override string Backdrop => "cityruins";
 
         private int amount = 100;
@@ -97,9 +97,9 @@ namespace GridGame.App
                 img.style.marginRight = Space.S16;
                 img.style.backgroundImage = new StyleBackground(icon);
             }
-            Ui.Heading($"{have:N0} Diamonds", head, "gold").name = "diamond-count";
-            Ui.Caption($"1 Diamond = {DiamondExchange.GoldPerDiamond} G · {DiamondExchange.DiamondsPerDollar} Diamonds = $1.00", bal, "dim");
-            Ui.Para("Diamonds pay for a random summon, an instant Rested refill and a lucky craft. Anything priced in Diamonds can also be paid in gold at the same rate.", bal, "dim");
+            Ui.Heading(ShardText.Of(have), head, "gold").name = "diamond-count";
+            Ui.Caption($"1 {ShardText.Short} = {DiamondExchange.GoldPerDiamond} G · {ShardText.ShortOf(DiamondExchange.DiamondsPerDollar)} = $1.00", bal, "dim");
+            Ui.Para($"{ShardText.Plural} pay for a random summon, an instant Rested refill and a lucky craft. Anything priced in {ShardText.ShortPlural} can also be paid in gold at the same rate.", bal, "dim");
 
             var ex = Ui.Panel(body, "Exchange gold", false, "diamond-exchange-panel");
             var pick = Ui.Actions(ex);
@@ -122,13 +122,13 @@ namespace GridGame.App
             maxB.name = "diamond-amount-max";
             Ui.SetEnabled(maxB, max > 0);
             Ui.Field("Costs", Ui.Gold(DiamondExchange.GoldFor(amount)), ex, S.Gold >= DiamondExchange.GoldFor(amount) ? null : "bad", "diamond-quote");
-            Ui.Field("You can buy", $"{max:N0} Diamonds", ex, "dim");
+            Ui.Field("You can buy", ShardText.ShortOf(max), ex, "dim");
 
             if (Features.DiamondStore)
             {
                 var store = DiamondStores.Current;
                 storeSig = Signature(store);
-                var packs = Ui.ListPanel(body, "Buy Diamonds", "diamond-packs");
+                var packs = Ui.ListPanel(body, "Buy " + ShardText.Plural, "diamond-packs");
                 // GG-T470: one line says where the purchase stands: processing, the last answer (success, pending,
                 // cancelled, failed), or the store being unavailable.
                 var (state, text, tone) = StateLine(store);
@@ -144,17 +144,17 @@ namespace GridGame.App
                     var local = store.PriceOf(pack);
                     localized |= local != null;
                     var value = DiamondStores.InFlight == pack.ProductId ? "Processing…" : local ?? pack.Price;
-                    var row = Ui.MenuRow($"{pack.Diamonds:N0} Diamonds", value, () => Buy(store, pack), packs, icon, open);
+                    var row = Ui.MenuRow(ShardText.ShortOf(pack.Diamonds), value, () => Buy(store, pack), packs, icon, open);
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)
                     Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking…" : "", () => Restore(store), packs, null, open).name = "diamond-restore";
-                Ui.Note(localized ? "Prices are set by the store in your currency. Every pack is the same price per Diamond."
-                    : "A flat rate: every pack is the same price per Diamond.", packs);
+                Ui.Note(localized ? $"Prices are set by the store in your currency. Every pack is the same price per {ShardText.Short}."
+                    : $"A flat rate: every pack is the same price per {ShardText.Short}.", packs);
             }
 
             var foot = Ui.Footer(body, "diamond-footer");
-            Ui.Name($"{amount:N0} Diamonds for {Ui.Gold(DiamondExchange.GoldFor(amount))}", foot, "grow");
+            Ui.Name($"{ShardText.ShortOf(amount)} for {Ui.Gold(DiamondExchange.GoldFor(amount))}", foot, "grow");
             var go = Ui.Button("Exchange", Exchange, "btn--primary", foot);
             go.name = "diamond-exchange";
             Ui.SetEnabled(go, amount <= max);
@@ -163,7 +163,7 @@ namespace GridGame.App
         private void Exchange()
         {
             int n = amount;
-            Confirm.Show($"Exchange {Ui.Gold(DiamondExchange.GoldFor(n))} for {n:N0} Diamonds?", "Exchange", () =>
+            Confirm.Show($"Exchange {Ui.Gold(DiamondExchange.GoldFor(n))} for {ShardText.Of(n)}?", "Exchange", () =>
             {
                 var r = DiamondExchange.Buy(C, S, n);
                 App.Toast(r.Message ?? (r.Ok ? "Done" : "Can't do that"));
@@ -222,7 +222,7 @@ namespace GridGame.App
                 // The store's own in-flight purchase must go too, or every later Buy is refused as "already in progress".
                 (DiamondStores.Current as UnityIapDiamondStore)?.AbandonInFlight();
 #endif
-                Show(PurchaseResult.Of(PurchaseKind.Pending, "The store hasn't answered yet. If the purchase went through, the Diamonds arrive on their own."));
+                Show(PurchaseResult.Of(PurchaseKind.Pending, $"The store hasn't answered yet. If the purchase went through, the {ShardText.ShortPlural} arrive on their own."));
                 return;
             }
             var sig = Signature(DiamondStores.Current);

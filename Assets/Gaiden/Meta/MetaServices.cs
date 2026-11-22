@@ -1252,11 +1252,11 @@ namespace GridGame.Meta
         public static (float plain, float lucky) MasterworkOdds(ContentDb c, SaveData s) =>
             (MasterworkChance(c, s), MasterworkChance(c, s, lucky: true));
 
-        /// <summary>"Masterwork chance: 15% without a Diamond, 55% with one" for the forge's lucky-craft window.</summary>
+        /// <summary>"Masterwork chance: 15% without Shards, 55% with them" for the forge's lucky-craft window (GG-T568).</summary>
         public static string LuckyOddsLine(ContentDb c, SaveData s)
         {
             var (plain, lucky) = MasterworkOdds(c, s);
-            return $"Masterwork chance: {OddsText.Percent(plain)} without a Diamond, {OddsText.Percent(lucky)} with one";
+            return $"Masterwork chance: {OddsText.Percent(plain)} without {ShardText.ShortPlural}, {OddsText.Percent(lucky)} with them";
         }
 
         /// <summary>A lucky craft fits this recipe: a Forge recipe whose result can roll Masterwork.</summary>
@@ -1293,7 +1293,7 @@ namespace GridGame.Meta
             // The chance is fixed before anything changes (GG-T503): the craft's own station XP must not move the odds the
             // player was shown.
             float masterworkChance = MasterworkChance(c, s, lucky);
-            if (lucky && !DiamondExchange.Pay(s, LuckyDiamondCost, r.Gold).Ok) return Result.Fail("Not enough Diamonds for a lucky craft");
+            if (lucky && !DiamondExchange.Pay(s, LuckyDiamondCost, r.Gold).Ok) return Result.Fail($"Not enough {ShardText.Plural} for a lucky craft");
             s.Gold -= r.Gold;
             foreach (var ic in inputs) s.AddItem(ic.Item, -ic.Count);
             if (r.BaseItem != null) s.AddItem(r.BaseItem, -1);
@@ -1313,7 +1313,7 @@ namespace GridGame.Meta
                     list.Add(new WornGear { Durability = durability, Repairs = 0, Mastery = mastery });
                 }
             }
-            if (lucky && !masterwork) return Result.Success($"Made {result.Name} — the Diamond's luck didn't hold");
+            if (lucky && !masterwork) return Result.Success($"Made {result.Name} — the {ShardText.ShortPlural}' luck didn't hold");
             return Result.Success(masterwork ? $"★ Masterwork {result.Name}!" : $"Made {result.Name}");
         }
 

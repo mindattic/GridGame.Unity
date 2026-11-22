@@ -73,7 +73,7 @@ namespace GridGame.Meta
         public static Result Start(SaveData s, PaywallKind kind, string arg, DateTime now, out PaywallJob job)
         {
             job = null;
-            if (Retired(kind)) return Result.Fail("Diamonds come from the Diamond exchange now");
+            if (Retired(kind)) return Result.Fail($"{ShardText.Plural} come from the {ShardText.Store} now");
             if (Pending(s, kind) != null) return Result.Fail("Already under way");
             int cost = Cost(kind, s);
             if (s.Gold < cost) return Result.Fail("Not enough gold");
@@ -119,7 +119,7 @@ namespace GridGame.Meta
                     // Retired (GG-T455): an old save's pending one-Diamond purchase is refunded in full; the exchange
                     // sells Diamonds now, at a far better rate for the same gold.
                     s.Gold += job.Paid;
-                    return Result.Success($"The old Diamond order was refunded: {job.Paid:N0} G. Diamonds are exchanged at the Diamond Store now.");
+                    return Result.Success($"The old {ShardText.Short} order was refunded: {job.Paid:N0} G. {ShardText.Plural} come from the {ShardText.Store} now.");
                 default: return Result.Success();
             }
         }

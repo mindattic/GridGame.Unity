@@ -803,5 +803,14 @@
   {
     "Id": "clutch_last_tick",
     "Term": "Clutch: Last-Tick Interrupt"
+  },
+  {
+    "Id": "aetherite_shard",
+    "Term": "Aetherite Shard",
+    "Aliases": [
+      "Aetherite Shards",
+      "Shard",
+      "Shards"
+    ]
   }
 ]

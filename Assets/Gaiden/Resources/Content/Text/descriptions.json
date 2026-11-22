@@ -22573,13 +22573,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:614994b808742a5fdbb4fc1ad4b036d9b40507a4dc9d8ec1752a170c4053ee43",
+      "hash": "sha256:ac2fbc518b728f85a1b5ad2e80053b4a5e87354fe7c257c8917be5e4ebc744d2",
       "about": [
         "item-mat-diamond"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flawless cut stone. Set in the forge's crucible, it coaxes a Masterwork out of the metal far more often."
+        "short": "A clear shard of aetherite, the hard crystal of the Somnolith's crust. It pays for a random summon at the circle, an instant Rested refill, or a lucky craft at the forge."
       }
     },
     "item:mat_dragon_scale": {

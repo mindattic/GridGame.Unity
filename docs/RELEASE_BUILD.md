@@ -159,7 +159,11 @@ Gaiden (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. T
 5. New personal developer accounts must run a **closed test with at least 12 testers for 14 days** before they can
    publish to production.
 6. In-app products (`diamonds_100/500/1000/2500`, GG-T471) can only be created after a bundle with the billing
-   permission has been uploaded to some track.
+   permission has been uploaded to some track. **Display titles (GG-T568):** the currency is **Aetherite Shards**, so
+   create the products with these titles (the product ids keep the old word and must not change): `diamonds_100`
+   "100 Aetherite Shards", `diamonds_500` "500 Aetherite Shards", `diamonds_1000` "1,000 Aetherite Shards",
+   `diamonds_2500` "2,500 Aetherite Shards"; description "Aetherite Shards for GridGame Gaiden: a random summon, an
+   instant Rested refill or a lucky craft." Use the same titles on App Store Connect.
 
 ## Crash and error reporting (GG-T484)
 

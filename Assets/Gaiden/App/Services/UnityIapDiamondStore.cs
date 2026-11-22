@@ -89,7 +89,7 @@ namespace GridGame.App
         internal void Tick(float dt)
         {
             if (inFlightId != null && Time.realtimeSinceStartup - inFlightSince > InFlightTimeout)
-                ReleaseInFlight("The store hasn't answered yet. If the purchase went through, the Diamonds arrive on their own.");
+                ReleaseInFlight($"The store hasn't answered yet. If the purchase went through, the {ShardText.ShortPlural} arrive on their own.");
 
             if (waiting.Count > 0) DrainWaiting();
 
@@ -118,7 +118,7 @@ namespace GridGame.App
         public string Status =>
             Connected ? "Purchases go through " + StoreName + "."
             : link == Link.Connecting ? "Connecting to " + StoreName + "…"
-            : "Store unavailable" + (string.IsNullOrEmpty(problem) ? "" : ": " + problem) + ". Diamonds can still be exchanged for gold.";
+            : "Store unavailable" + (string.IsNullOrEmpty(problem) ? "" : ": " + problem) + ". " + ShardText.Plural + " can still be exchanged for gold.";
 
         private static string StoreName => Application.platform == RuntimePlatform.IPhonePlayer ? "the App Store" : "Google Play";
 
@@ -166,7 +166,7 @@ namespace GridGame.App
             Debug.LogWarning("[IAP] store disconnected (will retry): " + d?.Message);
             // The sheet's answer may never come now: free the packs. A purchase that did go through comes back as an
             // unfinished order once the store reconnects.
-            ReleaseInFlight("The connection to the store dropped. If the purchase went through, the Diamonds arrive on their own.");
+            ReleaseInFlight($"The connection to the store dropped. If the purchase went through, the {ShardText.ShortPlural} arrive on their own.");
         }
 
         private void FetchProducts()
@@ -214,7 +214,7 @@ namespace GridGame.App
             var product = ProductOf(pack);
             if (product == null || !product.availableToPurchase)
             {
-                done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{pack.Diamonds:N0} Diamonds isn't on sale in this store right now.", pack.ProductId));
+                done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{ShardText.Of(pack.Diamonds)} isn't on sale in this store right now.", pack.ProductId));
                 return;
             }
             inFlightId = pack.ProductId;
@@ -279,7 +279,7 @@ namespace GridGame.App
                 Debug.LogWarning("[IAP] pending order without a transaction id, left unfinished: " + id);
                 NeedRefetch(); // it comes back with its id on a later fetch
                 if (inFlightId != null && id == inFlightId)
-                    ReleaseInFlight("The store is still processing the purchase. The Diamonds arrive as soon as it clears.");
+                    ReleaseInFlight($"The store is still processing the purchase. The {ShardText.ShortPlural} arrive as soon as it clears.");
                 return;
             }
             if (GrantedElsewhere(app, tx))
@@ -318,11 +318,11 @@ namespace GridGame.App
             {
                 Debug.LogWarning($"[IAP] save write failed after granting {tx}; leaving the order unfinished so it comes back");
                 NeedRefetch();
-                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{diamonds:N0} Diamonds, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
                 return;
             }
             store.ConfirmPurchase(order);
-            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{diamonds:N0} Diamonds. Thank you!", id, diamonds));
+            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}. Thank you!", id, diamonds));
         }
 
         /// <summary>A re-delivered order granted in another save slot, of this profile or any other, before its confirm
@@ -368,7 +368,7 @@ namespace GridGame.App
             Debug.Log($"[IAP] entitlement revoked for {productId}: took back {taken} Diamonds");
             if (taken <= 0) return;
             app.Persist();
-            Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, $"A refunded purchase was reversed: {taken:N0} Diamonds removed.", productId));
+            Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, $"A refunded purchase was reversed: {ShardText.Of(taken)} removed.", productId));
         }
 
         public bool CanRestore => Connected && Application.platform == RuntimePlatform.IPhonePlayer;
@@ -406,7 +406,7 @@ namespace GridGame.App
         private void OnPurchaseDeferred(DeferredOrder order)
         {
             var id = ProductIdOf(order);
-            Answer(id, PurchaseResult.Of(PurchaseKind.Pending, "Waiting for approval. The Diamonds arrive as soon as the purchase goes through.", id));
+            Answer(id, PurchaseResult.Of(PurchaseKind.Pending, $"Waiting for approval. The {ShardText.ShortPlural} arrive as soon as the purchase goes through.", id));
         }
 
         internal static PurchaseResult FailureOf(PurchaseFailureReason reason, string id)
@@ -422,7 +422,7 @@ namespace GridGame.App
                 case PurchaseFailureReason.UserNotAuthenticated:
                     return PurchaseResult.Of(PurchaseKind.Unavailable, "The store isn't available right now. Nothing was charged.", id);
                 case PurchaseFailureReason.ExistingPurchasePending:
-                    return PurchaseResult.Of(PurchaseKind.Pending, "An earlier purchase is still going through. Its Diamonds arrive when it clears.", id);
+                    return PurchaseResult.Of(PurchaseKind.Pending, $"An earlier purchase is still going through. Its {ShardText.ShortPlural} arrive when it clears.", id);
                 case PurchaseFailureReason.PaymentDeclined:
                     return PurchaseResult.Of(PurchaseKind.Failed, "The payment was declined. Nothing was charged.", id);
                 default:
