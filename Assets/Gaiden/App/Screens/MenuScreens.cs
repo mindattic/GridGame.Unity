@@ -510,14 +510,16 @@ namespace GridGame.App
             var party = Ui.Window(null, col);
             party.name = "camp-party";
             // Edge = gap = 24 (row padding 12 + card margin 12): even gutters at every width (POL-C8), and
-            // 24 px between the tappable cards (POL-C3).
-            party.style.paddingLeft = party.style.paddingRight = Space.TargetHalfGap;
+            // 24 px between the tappable cards (POL-C3). The 12 sits on each card row, not the window, so the row's
+            // own box carries it.
+            party.style.paddingLeft = party.style.paddingRight = Space.S0;
             var ids = s.Party;
             // Two cards abreast on a phone; three on a 2:3 / 3:4 tablet, which has the width for them (GG-T398).
             int perRow = Fit.Roomy ? 3 : 2;
             for (int i = 0; i < ids.Count; i += perRow)
             {
                 var row = Ui.El("row", party);
+                row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
                 for (int j = i; j < Math.Min(i + perRow, ids.Count); j++)
                 {
                     var id = ids[j];
