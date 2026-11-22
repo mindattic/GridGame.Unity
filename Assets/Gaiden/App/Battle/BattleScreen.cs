@@ -1457,6 +1457,8 @@ namespace GridGame.App
         private bool awayOnSettings;
         /// <summary>The running event playback, so the watchdog can stop it rather than let a second Play run beside it.</summary>
         private Coroutine playRoutine;
+        /// <summary>The autoplay bot's simulated drag in flight (GG-T586: stopped when the battle is torn down).</summary>
+        private Coroutine dragRoutine;
 
         /// <summary>Pops this battle off the router. OnBack swallows Back (it opens the pause menu), so a plain
         /// Router.Back() from here did nothing; this one-shot flag lets exactly this pop through.</summary>
@@ -1696,7 +1698,7 @@ namespace GridGame.App
                     perfectBot ??= new HeroBot(BotSeed ?? Environment.TickCount) { SkillLevel = 100f };
                     perfect = perfectBot.Decide(State);
                 }
-                if (cmd is MoveCommand m && m.Path.Count > 0) App.StartCoroutine(SimulatedHumanDrag(m, perfect));
+                if (cmd is MoveCommand m && m.Path.Count > 0) dragRoutine = App.StartCoroutine(SimulatedHumanDrag(m, perfect));
                 else Commit(cmd, perfectCmd: perfect);
             }
         }

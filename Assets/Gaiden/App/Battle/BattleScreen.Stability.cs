@@ -66,10 +66,20 @@ namespace GridGame.App
 
         /// <summary>
         /// Called once this battle is off screen for good (the next encounter is showing): drops everything it could
-        /// still be holding — its bots, its visual tree (board, FX layer, cut-in cards, timeline icons and their
-        /// scheduled pulses) — and clears the global pause/hold flags in case it was torn down mid-beat. Any coroutine
-        /// still running for it works on detached elements and finishes harmlessly; with `ended` set it can no
-        /// longer commit or route.
+        /// still be holding and clears the global pause/hold flags in case it was torn down mid-beat (GG-T586):
+        /// <list type="bullet">
+        /// <item>its long-lived coroutines — the event playback (a stalled battle can be ended mid-beat, and its
+        /// playback would otherwise keep stepping through events, playing their sounds over the next encounter), the
+        /// bot's simulated drag and the banner marquee — are stopped;</item>
+        /// <item>the long-press ticker is cancelled and the prefab FX layer disposed (its camera rig GameObject,
+        /// RenderTexture, material and pooled particle instances; OnHidden does this too, and it is idempotent);</item>
+        /// <item>its Overlay-hosted pieces (pause veil, billboard, mana-tag host) are removed and the per-battle
+        /// caches (cast ghosts, unplayed casts, mint tags) emptied;</item>
+        /// <item>its whole visual tree (board, FX layer, cut-in cards, timeline icons) is detached and cleared, which
+        /// also stops every scheduled pulse on those elements.</item>
+        /// </list>
+        /// Short Tween coroutines still running finish on detached elements within a second or two; with `ended` set
+        /// nothing can commit or route. The SFX pool is stopped by the caller (<see cref="Audio.StopSfx"/>).
         /// </summary>
         internal void TearDownAfterEncounter()
         {
@@ -77,13 +87,33 @@ namespace GridGame.App
             AutoPlay = false;
             autoBot = null;
             perfectBot = null;
+            StopRoutine(ref playRoutine);
+            StopRoutine(ref dragRoutine);
+            StopRoutine(ref bannerScrollRoutine);
+            playing = simulatingDrag = pressing = dragging = false;
+            holdTicker?.Pause();
+            holdTicker = null;
+            DisposePrefabFx();
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; }
+            billboard?.RemoveFromHierarchy();
+            billboard = null;
+            mintTagHost?.RemoveFromHierarchy();
+            mintTagHost = null;
+            mintTags.Clear();
+            castGhosts.Clear();
+            unplayedCasts.Clear();
             Tween.Paused = false;
             if (Root != null)
             {
                 Root.RemoveFromHierarchy();
                 Root.Clear();
             }
+        }
+
+        private void StopRoutine(ref Coroutine routine)
+        {
+            if (routine != null && App != null) App.StopCoroutine(routine);
+            routine = null;
         }
     }
 }
