@@ -107,7 +107,9 @@ namespace GridGame.App.Automation
             foreach (var (e, r) in targets)
             {
                 string subj = TargetName(e);
-                Tally("POL-C2", r.width >= MinTarget - 0.5f && r.height >= MinTarget - 0.5f, subj, $"{r.width:0}x{r.height:0} < {MinTarget:0}x{MinTarget:0}");
+                // GG-T655: the same pixel-snap tolerance as the gaps (GG-T284): a Size.Target (132) control drawn at a
+                // non-integer scale reads 130-131 design px, which isn't a smaller target. Every listed failure was that.
+                Tally("POL-C2", r.width >= MinTarget - GapTolerance && r.height >= MinTarget - GapTolerance, subj, $"{r.width:0}x{r.height:0} < {MinTarget:0}x{MinTarget:0}");
                 // GG-T284: the gap is read in design px (divided by the scale the pair is drawn at) with the
                 // pixel-snap tolerance, so a correct 24-px gap that renders as 23 does not fail.
                 float gap = float.MaxValue;
