@@ -204,6 +204,7 @@ namespace GridGame.Tests
         public void An_expedition_runs_its_battles_in_order_carrying_mana_with_the_inn_closed()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex");
+            s.OwnedOrbs = ManaBank.DefaultCapacity; // GG-T685: a new save owns 1 orb (GG-T677); room to carry the 4 below
             var theme = c.Campaign.Themes[0];
             Assert.That(Expeditions.CanLaunch(c, s, theme.Stages[1], out _), Is.False, "expeditions start at battle 1");
             var b1 = Fight(c, s, theme.Stages[0], true);
