@@ -1063,6 +1063,20 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
     (≈400–700 G), no change; the shop potions' flat-to-worse value per HP at the top (X-Potion 500 G / 500 HP) comes from
     the owner's own "buying stays the convenient one" price raise (AMENDMENTS, X-Potion 250 → 500) and stays for the owner's
     feel (RELEASE_SCOPE); the XP curve is GG-T474's owner decision.
+  - **Amended 2026-11-22 (GG-T276): the casual soak fights from the campaign's save.** A real new save is unarmed at
+    `greenvalley-01` too (two starter abilities, 200 G, no Forge or Merchant yet), but from the next stage on the soak
+    fielded bare heroes no player could still have. `AbilityUsageSoak` (cc2eb8ea) can copy a camp-managing greedy
+    campaign's save before each stage (heroes keep its gear, abilities, talents and level; joiners come in fresh), and
+    `polish.py` now turns it on by default for the casual per-stage soak (`GAIDEN_ABILITY_GEAR=bare` restores the old
+    way). **Measured (8 a stage):** `greenvalley-01` 2/8 (unchanged, as it should be: bare there too), `greenvalley-02`
+    in band, `swamp-01` 1/8 → 3/8, `desert-02` 4/8 → 7/8. **Tried and reverted:** the captain's `ArmorPlate` 24 → 18
+    and Rally's radius 2 → 1 (only the captain carries Rally; neither number counts toward §14's wave weights). Kept
+    records showed `greenvalley-01`'s defeats land in wave 5 with all four of the captain's people at full health and
+    the trio's X-Potions spent, but the change left it at 2/8 and pushed `desert-03` to 8/8, so it went back.
+    `greenvalley-01` is attrition across all five waves against a level-1 trio, not the captain alone. **Noise:** the
+    snapshot campaign is replayed every run, so `swamp-01` (no captain) read 3/8 then 8/8 across two runs with no
+    relevant change; 8 battles a stage can't separate a tune from that, so the next pass should use a fixed snapshot
+    seed or more battles before tuning `greenvalley-01`.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge

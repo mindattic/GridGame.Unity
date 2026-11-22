@@ -351,7 +351,11 @@ def run_soak(out, per_stage=4, difficulty=None):
     # otherwise punishes with up to +60% enemy HP/strike on early stages. Set for both soaks: it only changes
     # behavior on the per-stage path (casual, perStage>0) today, but is included for greedy too so neither soak
     # silently reverts to flat-5 if its own per-stage mode is ever turned on.
-    for label, extra in (("greedy", {}), ("casual", {"GAIDEN_ABILITY_BOT": "casual", "GAIDEN_ABILITY_PER_STAGE": str(per_stage)})):
+    # GG-T276: the casual per-stage soak fights each stage from the save a camp-managing campaign arrives with
+    # (gear, trained abilities, talents) instead of bare new heroes; GAIDEN_ABILITY_GEAR=bare restores the old way.
+    gear = os.environ.get("GAIDEN_ABILITY_GEAR", "campaign")
+    for label, extra in (("greedy", {}), ("casual", {"GAIDEN_ABILITY_BOT": "casual", "GAIDEN_ABILITY_PER_STAGE": str(per_stage),
+                                                     "GAIDEN_ABILITY_GEAR": gear})):
         d = os.path.join(out, "records", label)
         os.makedirs(d, exist_ok=True)
         subprocess.run(["dotnet", "test", proj, "--filter", "FullyQualifiedName~AbilityUsageSoak"], cwd=ROOT,
