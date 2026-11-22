@@ -1639,3 +1639,17 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   equip it, in green as "Upgrade for …" when its gear score beats what that hero has in the slot (the weaker of a ring
   or earring pair), else "Fits …, not an upgrade", or "No one in the party can use it yet".
 - *Why:* a short shelf is still hard to read without knowing what each piece is for and who gains from it.
+
+## 2026-11-22 — Held-turn soak metrics ready for tuning (GG-T595, under GG-T191)
+
+- **Was (2026-11-02 entry above):** `HeldTurnSoakReport` printed per-stage win rate, turn time used, Guard share,
+  forced drops, mana by source and support totals, but only as console text, with no all-stages row. It counted every
+  heal after any support action until the next pincer as support healing, and counted foes' supports and heals on foes
+  into the party's totals.
+- **Now:** support healing is a heal whose source is the supporter of the last Heal support action (until the next
+  support action or pincer); support counts and heal totals are hero-side only. The table gains average held seconds
+  per move and an `ALL` row. With `GAIDEN_SOAK_OUT` set to a folder, each bot (greedy, casual) also writes
+  `held-turn-<label>.json`: raw sums plus winPct, turnUsedPct, avgHeldSeconds, guardPct, forcedPct, mana by reason,
+  support heal/buff/haste/cleanse, per stage and overall. No gameplay or `BattleConfig` value changed.
+- *Why:* GG-T596 tunes against agreed targets and needs numbers it can read, overall and per stage, that measure the
+  party's own support effects. Not run here (agents don't run soaks); `tools/polish.py --balance` doesn't call it yet.
