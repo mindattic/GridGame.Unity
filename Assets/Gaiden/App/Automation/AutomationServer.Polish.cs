@@ -135,7 +135,7 @@ namespace GridGame.App.Automation
                 for (int i = 0; i < kids.Count && hit == null; i++)
                     for (int j = i + 1; j < kids.Count && hit == null; j++)
                     {
-                        var a = kids[i].worldBound; var b = kids[j].worldBound;
+                        var a = VisibleBound(kids[i]); var b = VisibleBound(kids[j]);
                         float ox = (Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin)) * k;
                         float oy = (Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin)) * k;
                         if (ox > 8 && oy > 8) hit = $"'{TargetName(kids[i])}' overlaps '{TargetName(kids[j])}' by {ox:0}x{oy:0}";
@@ -242,6 +242,18 @@ namespace GridGame.App.Automation
         {
             var l = xs.OrderBy(x => x).ToList();
             return l.Count == 0 ? 0 : l[l.Count / 2];
+        }
+
+        /// <summary>What an element draws, for overlap checks: a glossary term's box is padded out to a finger-sized hit
+        /// area and pulled back by the same negative margin (GlossaryText.HitPadV/H), so its bound overlaps the words
+        /// around it invisibly; its text sits inside the padding (GG-T657).</summary>
+        private static Rect VisibleBound(VisualElement e)
+        {
+            var r = e.worldBound;
+            if (!e.ClassListContains("glossary-term") || e.layout.width < 1 || e.layout.height < 1) return r;
+            var s = e.resolvedStyle;
+            float sx = r.width / e.layout.width, sy = r.height / e.layout.height;
+            return Rect.MinMaxRect(r.xMin + s.paddingLeft * sx, r.yMin + s.paddingTop * sy, r.xMax - s.paddingRight * sx, r.yMax - s.paddingBottom * sy);
         }
 
         private static bool Shown(VisualElement e)
