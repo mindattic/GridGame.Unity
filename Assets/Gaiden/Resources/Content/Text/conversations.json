@@ -164,7 +164,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:447cd976767a702fc99f91d8d97420d4289e3ff9a74729fd37f475ba396d82fa",
+      "hash": "sha256:352998f4538e0d6800a05e0ab8b73cb161ad1f4193f38d94030f52dd02227247",
       "about": [
         "class-mechaarmor01",
         "place-desert-03"
@@ -180,25 +180,25 @@
           {
             "id": "a",
             "speaker": "class-mechaarmor01",
-            "line": "Ab illo inventore veritatis et quasi. Architecto beatae vitae dicta sunt explicabo nemo enim ipsam. Voluptatem quia.",
+            "line": "CHOIR DIG. TITHED CREWS ONLY. TURN BACK. ...Look, kids, I just drive this thing for the Red Seal. Go home.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Dolor in reprehenderit in voluptate velit esse cillum. Dolore eu fugiat nulla pariatur excepteur. Sint occaecat cupidatat non proident sunt in.",
+            "line": "Look at the crates, they're glowing. They're digging aether out of the Somnolith's fallen shell.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "class-mechaarmor01",
-            "line": "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore. Et dolore magna aliqua ut enim ad minim. Veniam.",
+            "line": "SHIELD WALL ACTIVE. SIDE ASSAULTS WILL BE DEFLECTED. ...That's the card talking. The card's not wrong.",
             "next": "d"
           },
           {
             "id": "d",
             "speaker": "$lead",
-            "line": "Labore et dolore magna aliqua ut. Enim ad minim veniam quis nostrud exercitation. Ullamco laboris nisi ut aliquip ex ea."
+            "line": "Side hits glance off that shield. Pincer it top to bottom, or keep cracking it until it breaks."
           }
         ]
       }
@@ -209,7 +209,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:113392c7a83264f5872e34260f4b8d6701fbc2fa365748649a0fc5ec4ad63385",
+      "hash": "sha256:f6f641a8452962c35e4b5cf1aa68eaceefbad862faa3c1394e4c13dc44028845",
       "about": [
         "class-captain",
         "place-greenvalley-03"
@@ -225,25 +225,25 @@
           {
             "id": "a",
             "speaker": "class-captain",
-            "line": "Explicabo nemo enim ipsam voluptatem quia voluptas sit. Aspernatur aut odit aut fugit lorem ipsum dolor sit.",
+            "line": "Saltmoss runaways in a Choir wagon. I wear their white for the holds' sake, and you've made a fool of me.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Eaque ipsa quae ab illo inventore veritatis et quasi. Architecto beatae vitae dicta sunt explicabo nemo enim ipsam.",
+            "line": "You stood there while they took the colour out of your own people. Don't call us thieves.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "class-captain",
-            "line": "Doloremque laudantium totam rem aperiam eaque ipsa quae ab. Illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo. Enim ipsam voluptatem quia voluptas sit aspernatur.",
+            "line": "I kept the tithe at quota. Without me it's three times that. Give me room on my field and I strike twice.",
             "next": "d"
           },
           {
             "id": "d",
             "speaker": "$lead",
-            "line": "Cupidatat non proident sunt in culpa qui officia deserunt mollit. Anim id est laborum sed."
+            "line": "Then no room. Stay close to the Captain, everyone. Never let the Captain end a turn alone."
           }
         ]
       }
@@ -332,7 +332,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:18498cd5188894aa264734aec05d10f9c9979f8545b6b3ada935a6b6a12190a1",
+      "hash": "sha256:73e727efa22f9c2d791b96cf3c626a3b3f7737e6d18edcee71c6d3e91c820fb9",
       "about": [
         "class-swampmistress00",
         "place-swamp-03"
@@ -348,25 +348,25 @@
           {
             "id": "a",
             "speaker": "class-swampmistress00",
-            "line": "Commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse. Cillum dolore eu fugiat nulla pariatur excepteur. Sint occaecat cupidatat non proident sunt. In culpa qui officia deserunt mollit anim id.",
+            "line": "Little drivers. This hull is mine. Halcyon built her to run from the sky, and the tide threw her here instead. The fen and I keep her now.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Cillum dolore eu fugiat nulla pariatur excepteur sint. Occaecat cupidatat non proident.",
+            "line": "It's a wreck in a swamp. Nobody's flying anything. You could walk away.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "class-swampmistress00",
-            "line": "Veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea. Commodo consequat duis aute irure dolor in reprehenderit in. Voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "line": "And leave her to the Choir's salvage crews? My coven holds the mire for me. Strike at me and I'm simply... somewhere else.",
             "next": "d"
           },
           {
             "id": "d",
             "speaker": "$lead",
-            "line": "Enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit."
+            "line": "She trades places with her coven. Cut them down first, and she has nowhere left to go."
           }
         ]
       }
@@ -377,7 +377,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:00de91e1862f50a41e5fdb8d77c8815ece825cb2e659f88f094374bff5c1638c",
+      "hash": "sha256:7d59f58ff0497d604b0eb7f021faf1114640bc8773a8943ed7761ab3fcf01b19",
       "about": [
         "character-aetherist"
       ],
@@ -391,18 +391,18 @@
           {
             "id": "greet",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Back again? Mind the trays. The dust on them still remembers being part of something bigger.",
             "choices": [
               {
-                "text": "A · Lorem ipsum dolor",
+                "text": "What is the dust, really?",
                 "next": "dust"
               },
               {
-                "text": "B · Lorem ipsum dolor",
+                "text": "Do you still sing?",
                 "next": "hymn"
               },
               {
-                "text": "C · Lorem ipsum dolor",
+                "text": "Just passing through.",
                 "next": "bye"
               }
             ]
@@ -410,19 +410,19 @@
           {
             "id": "dust",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Crust off the Somnolith. Most of it's dead stone. A little still holds aether, and if you sing to it right, it gathers into a Shard instead of drifting home.",
             "next": "greet"
           },
           {
             "id": "hymn",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Not their Lullaby. I sang that for the Choir until I saw where the surplus went. Now I only hum to the trays. They listen better.",
             "next": "greet"
           },
           {
             "id": "bye",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "Go carefully. And bring me anything that glitters when the Somnolith is up."
           }
         ]
       }
@@ -845,7 +845,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:72dbfe2536925eddd6632b01e40d27e0fa86755c90ccc5126bd5ae55b29200ff",
+      "hash": "sha256:6b4d08df915ccec65674e2f5ddafd5f242c706b6b66fa6cb4eb5469cf02e41bb",
       "about": [
         "place-cave"
       ],
@@ -860,20 +860,20 @@
           {
             "id": "meet",
             "speaker": "$recruit",
-            "line": "Architecto beatae vitae dicta sunt explicabo nemo enim. Ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit lorem.",
+            "line": "Halt. That's a Choir wagon on Anchor ice. Give me one reason my hammer stays on my back.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$lead",
-            "line": "Ut aliquip ex ea commodo consequat duis. Aute irure dolor in reprehenderit.",
+            "line": "Because we stole it. We ran from the tithe at Saltmoss, and we're following the beams.",
             "choices": [
               {
-                "text": "A · Esse cillum dolore eu",
+                "text": "Help us see where they go.",
                 "next": "joined"
               },
               {
-                "text": "B · Dolore eu fugiat nulla",
+                "text": "It only gets worse ahead.",
                 "next": "warned"
               }
             ]
@@ -881,13 +881,13 @@
           {
             "id": "warned",
             "speaker": "$recruit",
-            "line": "Error sit voluptatem accusantium doloremque laudantium totam rem aperiam. Eaque ipsa quae ab illo inventore.",
+            "line": "Worse than this? My hold sent me to guard these arches. Every night they hum, and our tithe rides the beam.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Consectetur adipiscing elit sed do eiusmod. Tempor incididunt ut labore et dolore magna aliqua ut enim ad. Minim veniam quis."
+            "line": "Saltmoss paid the same tithe as my hold. My shield is yours. I stand in front. It's what I'm for."
           }
         ]
       }
@@ -1050,7 +1050,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:30afccd212f87368a910d66e6ae3e7b859b48db846a8095b5b59db640ef5d6d5",
+      "hash": "sha256:376808830c54a9204690cdb4b589a0bd1d7fa7de28ee4a3cf9f7bc63a7dd3eeb",
       "about": [
         "character-aetherist",
         "place-desert-02"
@@ -1066,26 +1066,26 @@
           {
             "id": "hail",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Don't step on the trays! Every grain on them took me a day to sift out of the sand.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "You're sifting the Shardfall? The Choir punishes anyone who steals from its dig.",
             "next": "ask"
           },
           {
             "id": "ask",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Then it's a good thing I'm leaving. You have a wagon and I have a trade: bring me dust, I'll make you Shards. Room for one more?",
             "choices": [
               {
-                "text": "A · Lorem ipsum dolor",
+                "text": "Climb on. We could use a trade.",
                 "next": "joined"
               },
               {
-                "text": "B · Lorem ipsum dolor",
+                "text": "How do you make Shards out of dust?",
                 "next": "hymn"
               }
             ]
@@ -1093,13 +1093,13 @@
           {
             "id": "hymn",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "I sing to it. I learned the Lullaby in the Cathedral's lower choir, then learned to sing it backwards. It makes the aether gather instead of drain.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "character-aetherist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "Then I'll set my trays by your fire. Keep bringing me dust and I'll keep you in Shards."
           }
         ]
       }
@@ -1169,7 +1169,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b717e32993b6263ff7f01f44517c47e662eddc5aaae00d46910096bcf8f76b27",
+      "hash": "sha256:449e0ad02f65de078d40ca6ed7f4ee2dce183238ef97ac6c6d95c60a3c02e9b3",
       "about": [
         "character-blacksmith",
         "place-desert-01"
@@ -1185,19 +1185,19 @@
           {
             "id": "a",
             "speaker": "character-blacksmith",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "See this? Shardfall sand, fired with a sliver of shell. It comes out as glass, and the glass remembers the heat. It remembers anything you pour through it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Can it remember an edge? We're losing blades faster than we find them.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-blacksmith",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "Give me a crucible and a few quiet nights at camp. Bring me shards and steel, and I'll find out what they'll take."
           }
         ]
       }
@@ -1241,7 +1241,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ea9f761e5d99990f03cb850e27cd6e9e618e903554e57a42d6157602f2b42c0d",
+      "hash": "sha256:6a70103900329f241aca8cb380af45c109346dde257007252f8bda6e2cc06aae",
       "about": [
         "place-desert"
       ],
@@ -1256,20 +1256,20 @@
           {
             "id": "meet",
             "speaker": "$recruit",
-            "line": "Ut aliquip ex ea commodo consequat duis aute. Irure dolor in reprehenderit in voluptate velit esse cillum dolore. Eu fugiat nulla.",
+            "line": "Hey! White wagon! Don't run me down, I'm not with the Choir. I just look this dusty.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$lead",
-            "line": "Nisi ut aliquip ex ea commodo consequat duis aute.",
+            "line": "You're a long way from the Underspire. What are you doing out in the red?",
             "choices": [
               {
-                "text": "A · Error sit voluptatem accusantium",
+                "text": "Climb aboard.",
                 "next": "joined"
               },
               {
-                "text": "B · Architecto beatae vitae dicta sunt",
+                "text": "It's rough out here.",
                 "next": "warned"
               }
             ]
@@ -1277,13 +1277,13 @@
           {
             "id": "warned",
             "speaker": "$recruit",
-            "line": "Labore et dolore magna aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco.",
+            "line": "Rough? The Choir's dig hired me to fix their walkers, then stiffed me. They're cracking the Somnolith's fallen shell open out there.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Eaque ipsa quae ab illo inventore veritatis et. Quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas. Sit."
+            "line": "Deal. I'll fix your axle on the move. And keep the wagon moving. The Ember hates anything white."
           }
         ]
       }
@@ -1420,7 +1420,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e6293332e05117544144a57779c692c5676d5d71025ecb8522278fb9d49aa32a",
+      "hash": "sha256:aea9b9792939e984b09d7285cdbefceac29a8304bb98e0d06bc9b6a808258be6",
       "about": [
         "place-greenvalley-01"
       ],
@@ -1435,20 +1435,20 @@
           {
             "id": "meet",
             "speaker": "$recruit",
-            "line": "Sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae. Ab illo inventore veritatis et quasi architecto. Beatae vitae dicta sunt.",
+            "line": "Easy, I'm not with the Choir. I followed the smoke from Saltmoss. You're the ones who stole their white wagon?",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$lead",
-            "line": "Dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation. Ullamco laboris.",
+            "line": "We are, and they'll want it back. Three of us against the whole moor. We could use a fourth.",
             "choices": [
               {
-                "text": "A · Voluptatem quia voluptas",
+                "text": "Then ride with us.",
                 "next": "joined"
               },
               {
-                "text": "B · Cupidatat non proident sunt",
+                "text": "It won't be safe.",
                 "next": "warned"
               }
             ]
@@ -1456,13 +1456,13 @@
           {
             "id": "warned",
             "speaker": "$recruit",
-            "line": "Et dolore magna aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco laboris nisi ut aliquip ex.",
+            "line": "Safe is the tithe line. I watched my aunt walk out of one white as chalk. I'll take the moor.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Aliquip ex ea commodo consequat duis aute irure. Dolor in reprehenderit in voluptate velit esse. Cillum dolore eu fugiat nulla."
+            "line": "Then I'm in. In the fens we know what the tithe really takes, and how to make it burn back."
           }
         ]
       }
@@ -1698,7 +1698,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bf72575fa47c186a662638bc54c4a1ac8bc2ec7beb84348c9f1f375bca0df2fa",
+      "hash": "sha256:f3d9711b91addaabee5dfd4a5a6a58ae6dfa236c32875b0b7d8873a74ad41a4a",
       "about": [
         "character-innkeeper",
         "place-lanternroad-03"
@@ -1714,19 +1714,19 @@
           {
             "id": "a",
             "speaker": "character-innkeeper",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Every shrine on this road has a board, and every board has names on it. Beasts, bandits, a deserter or two from the Red Seal.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "And somebody pays for those names?",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-innkeeper",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "The shrines do, and the villages, when the Choir won't. I'll copy the board for camp. Bring back proof and I'll bring back coin."
           }
         ]
       }
@@ -1770,7 +1770,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8d25e2cd45a51c39c47b554425ccbdb8ac893d8270464821c3c6a96ff78331c5",
+      "hash": "sha256:373d3116853d4248ea0a01cabc5df64d5a5aac56eb7cfe39fc590638e2e303f6",
       "about": [
         "character-alchemist",
         "place-lanternroad-02"
@@ -1780,25 +1780,25 @@
         "character-alchemist"
       ],
       "payload": {
-        "title": "The first thaw",
+        "title": "A calling circle",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "There's a ring burned into the shrine floor, and every lantern on the wall leans toward it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "A calling circle. Pilgrims used them to send for help along the road. Put coin in the bowl, and someone out there looking for a cause hears it.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "Then we'll carry it back to camp. We need every hand we can get."
           }
         ]
       }
@@ -3343,7 +3343,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d34ce758c18a50bf8684ae39a27547269cc8f30dad408ddf7ef15ddb9922c088",
+      "hash": "sha256:0b866c56c85abdab14a217f565aea97068548ea6f6b04d905975365c7365687b",
       "about": [
         "class-ronin"
       ],
@@ -3358,19 +3358,19 @@
           {
             "id": "ask",
             "speaker": "class-ronin",
-            "line": "Ut labore et dolore magna aliqua ut enim ad minim veniam quis. Nostrud exercitation ullamco laboris nisi.",
+            "line": "Stay back. This wound is from the Captain's riders, and I'd rather not give them a second one to boast about.",
             "next": "ask2"
           },
           {
             "id": "ask2",
             "speaker": "$with",
-            "line": "Eaque ipsa quae ab illo inventore. Veritatis et quasi architecto beatae vitae dicta sunt explicabo nemo. Enim ipsam.",
+            "line": "We're running from the same riders. Come with us and you can pay them back.",
             "next": "join"
           },
           {
             "id": "join",
             "speaker": "class-ronin",
-            "line": "Et quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam. Voluptatem quia voluptas sit aspernatur aut odit aut fugit lorem."
+            "line": "A blade without a lord still needs a road. Yours will do. Lead, and I'll guard the rear."
           }
         ]
       }
@@ -3381,7 +3381,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3b14aa71af45db714bc8a2e98fbb3a585a1b99a095bd70201918e7206042d13a",
+      "hash": "sha256:7748c50a8150cf49187e6f8376cca55eb98c22e8e371c4d07779d0a723e6e6f9",
       "about": [
         "class-sellsword"
       ],
@@ -3395,13 +3395,13 @@
           {
             "id": "ask",
             "speaker": "class-sellsword",
-            "line": "Aliquip ex ea commodo consequat duis. Aute irure dolor in reprehenderit in voluptate velit esse cillum dolore. Eu fugiat nulla pariatur excepteur.",
+            "line": "You look like people who can pay. I take coin, I keep my word, and I don't ask what you stole.",
             "next": "join"
           },
           {
             "id": "join",
             "speaker": "class-sellsword",
-            "line": "Cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non."
+            "line": "Then we have a contract. Point me at whatever wants you dead."
           }
         ]
       }
@@ -3490,7 +3490,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:75219022cfc3b140b899a5ed908177eede7b318227222c1c6cb37f06fe9464ae",
+      "hash": "sha256:f903123b563e0190fe7f292f6b73198ee1f29bd808b2a8387b2cfb0ad33afb02",
       "about": [
         "character-merchant",
         "place-swamp-02"
@@ -3506,19 +3506,19 @@
           {
             "id": "a",
             "speaker": "character-merchant",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Those Ark hulls are full of fittings nobody has touched in twelve hundred years. Springs, plates, axles that never rust.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            "line": "Our wagon is held together with rope and stubbornness. Can you use them?",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "character-merchant",
-            "line": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            "line": "Can I! Bring me salvage and coin, and I'll make that white wagon the toughest thing on any road."
           }
         ]
       }
@@ -7261,7 +7261,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d69a98c4af0b7409705b56609d85c3cc423836841492b856f9516b36bd09aedf",
+      "hash": "sha256:27b3c082b6d37a23ef1f5cb1e28970bbfd8868a8b5ecd86c07333dbe1321601d",
       "about": [],
       "speakers": [
         "$hero",
@@ -7274,33 +7274,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Anim id est laborum sed ut perspiciatis unde omnis. Iste natus error sit voluptatem accusantium doloremque laudantium. Totam rem aperiam eaque ipsa quae ab. Illo inventore veritatis et.",
+            "line": "You saw the red in my blade. Most people run when they see it.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat. Cupidatat non proident sunt.",
+            "line": "We've seen worse on this road. What is the red?",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Quasi architecto beatae vitae dicta sunt explicabo nemo enim ipsam. Voluptatem quia.",
+            "line": "Aether, taken too fast. I drank from the Shardfall to win a fight I was losing. Do you judge me?",
             "choices": [
               {
-                "text": "A · Architecto beatae vitae dicta",
+                "text": "No. You did what you had to. What matters is what you do now.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Excepteur sint occaecat cupidatat non",
+                "text": "I don't know enough to judge.",
                 "next": "ask2"
               },
               {
-                "text": "C · Tempor incididunt ut labore et",
+                "text": "Yes. You should have lost.",
                 "next": "ask2"
               }
             ]
@@ -7308,21 +7308,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Ad minim veniam quis nostrud exercitation ullamco laboris nisi ut. Aliquip ex.",
+            "line": "Sometimes the red wants more. If I start to lose myself, what will you do?",
             "choices": [
               {
-                "text": "A · Tempor incididunt ut labore",
+                "text": "Put you down.",
                 "next": "ask3"
               },
               {
-                "text": "B · Sunt explicabo nemo",
+                "text": "Stand beside you until you find your way back.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Labore et dolore magna",
+                "text": "Keep our distance and hope.",
                 "next": "ask3"
               }
             ]
@@ -7330,18 +7330,18 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Exercitation ullamco laboris nisi ut aliquip ex ea. Commodo consequat duis aute.",
+            "line": "Why fight at all? The Somnolith comes either way.",
             "choices": [
               {
-                "text": "A · Dicta sunt explicabo nemo",
+                "text": "Because there's nothing else to do.",
                 "next": "weigh"
               },
               {
-                "text": "B · Dicta sunt explicabo",
+                "text": "For the glory.",
                 "next": "weigh"
               },
               {
-                "text": "C · Aliquip ex ea commodo",
+                "text": "Because the people under it are worth fighting for.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
@@ -7352,18 +7352,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Doloremque laudantium totam rem aperiam eaque ipsa. Quae ab illo inventore veritatis.",
+            "line": "The red is quiet. Strange. Let me listen to it.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Sed do eiusmod tempor incididunt ut labore. Et dolore magna aliqua ut enim. Ad minim."
+            "line": "Then I'll carry my red sword beside you. Point it at the right things."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Dolor sit amet consectetur adipiscing elit sed do eiusmod. Tempor incididunt."
+            "line": "No. The red says no. Better that I walk alone."
           }
         ]
       }
@@ -7374,7 +7374,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fd4c1320bc495c655fd9e797c3f9768fea4d9e1272cf854862c8cebd4c901b88",
+      "hash": "sha256:e40240f95cb1ccd53b33db2e7ebeefc7d9ae7d5bb57360b980a00cd7ae889d42",
       "about": [
         "faction-ember"
       ],
@@ -7389,33 +7389,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo.",
+            "line": "Hah! You fight hot. Good. The Shardfall has no respect for the cold.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Aut fugit lorem ipsum dolor sit amet consectetur adipiscing.",
+            "line": "You fight like you're angry at the sky.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Nostrud exercitation ullamco laboris nisi ut aliquip ex ea. Commodo consequat duis.",
+            "line": "I am. Look at it, bigger every year. What should be done about the Somnolith?",
             "choices": [
               {
-                "text": "A · Commodo consequat duis aute irure",
+                "text": "Nothing. The Choir has it handled.",
                 "next": "ask2"
               },
               {
-                "text": "B · Accusantium doloremque laudantium totam",
+                "text": "Something. Anything but sitting under it, singing.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Nisi ut aliquip ex ea",
+                "text": "I don't know yet. I'm still learning what it is.",
                 "next": "ask2"
               }
             ]
@@ -7423,21 +7423,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Lorem ipsum dolor sit amet consectetur adipiscing elit. Sed do eiusmod tempor.",
+            "line": "We drink from the red rivers out here. It burns. Would you?",
             "choices": [
               {
-                "text": "A · Dolore magna aliqua",
+                "text": "If it kept me fighting, yes.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Reprehenderit in voluptate",
+                "text": "Maybe once, to see.",
                 "next": "ask3"
               },
               {
-                "text": "C · Magna aliqua ut",
+                "text": "Never. It's poison.",
                 "next": "ask3"
               }
             ]
@@ -7445,18 +7445,18 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Irure dolor in reprehenderit in voluptate velit esse cillum dolore eu. Fugiat.",
+            "line": "The Choir digs up the Somnolith's shell and sells it back to us. What would you do about their dig?",
             "choices": [
               {
-                "text": "A · Ipsam voluptatem quia",
+                "text": "Leave it. Too many guards.",
                 "next": "weigh"
               },
               {
-                "text": "B · Totam rem aperiam",
+                "text": "Take it over and run it ourselves.",
                 "next": "weigh"
               },
               {
-                "text": "C · In culpa qui officia deserunt",
+                "text": "Shut it down and give the shards to the people they took them from.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
@@ -7467,18 +7467,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Eu fugiat nulla pariatur excepteur sint occaecat cupidatat. Non proident sunt in.",
+            "line": "Let the fire settle. Then I'll know.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa. Qui officia deserunt mollit anim."
+            "line": "You'll do. I'll bring the heat, you bring the plan."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Et dolore magna aliqua ut enim ad minim veniam quis nostrud exercitation. Ullamco laboris."
+            "line": "Bah. You're too cold for the Ember. Go on, then."
           }
         ]
       }
@@ -7489,7 +7489,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:18a01891eff5a1da08cc242ae7c220acfb6ef05bcc62b9b02aaffabb9f29fd35",
+      "hash": "sha256:1cbe61e47e631fdba1e6f64a6de039201bff4c3e5f640338a01a69bd13f31407",
       "about": [
         "faction-fendark"
       ],
@@ -7504,33 +7504,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et. Dolore magna aliqua ut enim ad minim veniam quis.",
+            "line": "You fight well for people who don't know what they're bleeding.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt.",
+            "line": "Aether. Same as everyone. Same as you.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Sed do eiusmod tempor incididunt ut. Labore et dolore magna aliqua ut.",
+            "line": "Good. Most don't even know the word. Do you know where the Choir sends the tithe?",
             "choices": [
               {
-                "text": "A · Officia deserunt mollit anim",
+                "text": "Up the spire to the Cathedral, and more of it than the Lullaby needs.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Fugiat nulla pariatur excepteur",
+                "text": "Somewhere it does good, I'm sure.",
                 "next": "ask2"
               },
               {
-                "text": "C · Sunt in culpa",
+                "text": "Up to the Somnolith, to keep it asleep.",
                 "next": "ask2"
               }
             ]
@@ -7538,21 +7538,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
+            "line": "A healer spends a little of their own colour to mend you. Would you let them?",
             "choices": [
               {
-                "text": "A · Eu fugiat nulla pariatur excepteur",
+                "text": "If I'm dying, yes.",
                 "next": "ask3"
               },
               {
-                "text": "B · Sunt explicabo nemo enim",
+                "text": "Only if they'd let me do the same for them.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Nulla pariatur excepteur sint occaecat",
+                "text": "That's what healers are for.",
                 "next": "ask3"
               }
             ]
@@ -7560,18 +7560,18 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur.",
+            "line": "I ran from the Choir. If they come for me, will you hand me over?",
             "choices": [
               {
-                "text": "A · Culpa qui officia deserunt",
+                "text": "If they pay well enough.",
                 "next": "weigh"
               },
               {
-                "text": "B · Ut aliquip ex ea",
+                "text": "I'd try to talk them out of it.",
                 "next": "weigh"
               },
               {
-                "text": "C · Omnis iste natus error",
+                "text": "Never. Anyone who comes for you comes through us.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
@@ -7582,18 +7582,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Dolore magna aliqua ut enim ad minim. Veniam quis nostrud exercitation ullamco.",
+            "line": "Mm. The fen teaches us to listen twice.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Proident sunt in culpa qui officia deserunt mollit anim id. Est laborum sed."
+            "line": "Then I'll come. Someone has to teach you what the colour costs."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam."
+            "line": "No. I've run from one choir already. I won't join another."
           }
         ]
       }
@@ -7604,7 +7604,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7220ff63f746e49e6e1dd923bf90a5502b45691d3a3aeba7c610a0d2842d3705",
+      "hash": "sha256:01a1c93638e7a063995381a592fde9c266ffe1fa89bb0956c572c6d5c76fc003",
       "about": [
         "faction-holds"
       ],
@@ -7619,30 +7619,30 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Unde omnis iste natus error sit voluptatem. Accusantium doloremque laudantium totam rem aperiam eaque. Ipsa quae ab illo inventore veritatis et quasi. Architecto.",
+            "line": "Well fought. You held the line like you'd sworn to it.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut. Odit aut fugit.",
+            "line": "We swore to each other. That's enough for us.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Ea commodo consequat duis aute irure dolor. In reprehenderit in voluptate velit.",
+            "line": "My hold paid the tithe every year and hated every drop. What did you do on tithe day?",
             "choices": [
               {
-                "text": "A · Eu fugiat nulla pariatur excepteur",
+                "text": "We paid. It's the law.",
                 "next": "ask2"
               },
               {
-                "text": "B · Est laborum sed ut perspiciatis",
+                "text": "We kept our heads down and got out.",
                 "next": "ask2"
               },
               {
-                "text": "C · In voluptate velit",
+                "text": "We stole the Choir's caravan, so Saltmoss kept its colour.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
@@ -7653,21 +7653,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Quasi architecto beatae vitae dicta sunt explicabo nemo enim. Ipsam voluptatem quia.",
+            "line": "An oath is only worth what it costs you. Would you keep one that hurt?",
             "choices": [
               {
-                "text": "A · Magna aliqua ut",
+                "text": "Yes. That's the only kind that means anything.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · In reprehenderit in",
+                "text": "Depends who I swore it to.",
                 "next": "ask3"
               },
               {
-                "text": "C · Nostrud exercitation ullamco laboris",
+                "text": "No. Words are cheap.",
                 "next": "ask3"
               }
             ]
@@ -7675,21 +7675,21 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore.",
+            "line": "The Captain sold our tithe to the Choir. If you had the Captain at sword's point, what then?",
             "choices": [
               {
-                "text": "A · Occaecat cupidatat non proident",
+                "text": "Walk away. It's not my fight.",
                 "next": "weigh"
               },
               {
-                "text": "B · Sit amet consectetur adipiscing",
+                "text": "Bring the Captain back to answer to the holds.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Sed do eiusmod",
+                "text": "Strike a deal. The Captain pays well.",
                 "next": "weigh"
               }
             ]
@@ -7697,18 +7697,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco laboris nisi.",
+            "line": "Give me a moment. I don't swear lightly.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa."
+            "line": "Then I swear it: my sword is yours until the road ends. Lead on."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Ad minim veniam quis nostrud exercitation ullamco. Laboris nisi ut aliquip ex ea commodo consequat duis aute."
+            "line": "No. You haven't earned an oath from me. Go with care."
           }
         ]
       }
@@ -7719,7 +7719,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d4ea56c03d7933f52bb6170364880d555b3e66964ebf0002dd3f69f28a77bcc1",
+      "hash": "sha256:cbe97d31ab585a284eb20b430a51662d723688a7d346d2827946d3d5111f36d2",
       "about": [
         "faction-lantern"
       ],
@@ -7734,30 +7734,30 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Occaecat cupidatat non proident sunt in culpa qui officia. Deserunt mollit anim id est.",
+            "line": "The lanterns burned brighter while you fought. The monks would call that a good sign.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas.",
+            "line": "We could use a few good signs.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Vitae dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur.",
+            "line": "A pilgrim walks the road without asking where it ends. Why do you walk it?",
             "choices": [
               {
-                "text": "A · Laboris nisi ut aliquip",
+                "text": "To get somewhere safer.",
                 "next": "ask2"
               },
               {
-                "text": "B · Nemo enim ipsam",
+                "text": "To find out everything the monks are hiding.",
                 "next": "ask2"
               },
               {
-                "text": "C · Anim id est",
+                "text": "To keep moving. Every step is one the Choir didn't take from us.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
@@ -7768,21 +7768,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.",
+            "line": "Who keeps the lanterns lit?",
             "choices": [
               {
-                "text": "A · Magna aliqua ut enim ad",
+                "text": "The Choir. They light everything.",
                 "next": "ask3"
               },
               {
-                "text": "B · Ut enim ad minim veniam",
+                "text": "Whoever walks past an empty one.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Voluptatem accusantium doloremque",
+                "text": "The monks, I suppose.",
                 "next": "ask3"
               }
             ]
@@ -7790,21 +7790,21 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Beatae vitae dicta sunt explicabo nemo enim ipsam. Voluptatem quia voluptas sit.",
+            "line": "A student is only as good as the master. Who taught you to fight?",
             "choices": [
               {
-                "text": "A · Fugiat nulla pariatur",
+                "text": "Everyone who has stood beside me, and everyone I've lost.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Proident sunt in culpa",
+                "text": "I taught myself, mostly.",
                 "next": "weigh"
               },
               {
-                "text": "C · Voluptatem quia voluptas sit",
+                "text": "Nobody. I'm just better.",
                 "next": "weigh"
               }
             ]
@@ -7812,18 +7812,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Aspernatur aut odit aut fugit lorem ipsum dolor sit amet consectetur adipiscing.",
+            "line": "Let me sit with your answers, the way the masters taught.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Explicabo nemo enim ipsam voluptatem quia. Voluptas sit aspernatur aut odit aut fugit lorem ipsum dolor."
+            "line": "Then I'll walk your road. We'll keep the lanterns lit together."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia. Deserunt mollit."
+            "line": "No. Our roads part here. May the lanterns light yours."
           }
         ]
       }
@@ -7834,7 +7834,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:54780424bd02b01507797703b9d86f799702d7122e0313fd5a53ad1397c451c5",
+      "hash": "sha256:f2503918a112100cb2dd5a29562c744ae5faac993bdf812d9ad4ba9dc37c130e",
       "about": [],
       "speakers": [
         "$hero",
@@ -7847,33 +7847,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Labore et dolore magna aliqua ut enim ad minim veniam quis nostrud. Exercitation ullamco laboris nisi ut aliquip.",
+            "line": "You fought well. Better than the beasts, anyway. I've been walking this road alone a long time.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Totam rem aperiam eaque ipsa quae ab illo inventore veritatis. Et quasi architecto beatae vitae.",
+            "line": "So did you. We could use someone who doesn't run.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Laborum sed ut perspiciatis unde omnis iste natus. Error sit voluptatem accusantium.",
+            "line": "Tell me straight. Why are you out here in a stolen Choir wagon?",
             "choices": [
               {
-                "text": "A · Sed do eiusmod tempor incididunt",
+                "text": "Because the tithe was taking people we love, and somebody had to stop paying.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Labore et dolore magna aliqua",
+                "text": "We needed a way out, and the wagon was there.",
                 "next": "ask2"
               },
               {
-                "text": "C · Exercitation ullamco laboris",
+                "text": "For the loot. That wagon was full.",
                 "next": "ask2"
               }
             ]
@@ -7881,18 +7881,18 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Sunt in culpa qui officia deserunt. Mollit anim id est laborum sed.",
+            "line": "The Somnolith is bigger every season. What do you think it is?",
             "choices": [
               {
-                "text": "A · Occaecat cupidatat non proident",
+                "text": "A rock in the sky. I try not to look at it.",
                 "next": "ask3"
               },
               {
-                "text": "B · Officia deserunt mollit",
+                "text": "Whatever the Choir says it is.",
                 "next": "ask3"
               },
               {
-                "text": "C · Consequat duis aute irure dolor",
+                "text": "Nobody knows. Anyone who says they do is selling something.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
@@ -7903,21 +7903,21 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Ut labore et dolore magna aliqua ut enim ad minim veniam. Quis.",
+            "line": "If I come with you, what do I get?",
             "choices": [
               {
-                "text": "A · Culpa qui officia",
+                "text": "You get to follow orders.",
                 "next": "weigh"
               },
               {
-                "text": "B · Ut perspiciatis unde omnis",
+                "text": "A share of everything, and people who'll stand beside you.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Aperiam eaque ipsa",
+                "text": "Food, a fire and a fight most days.",
                 "next": "weigh"
               }
             ]
@@ -7925,18 +7925,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Culpa qui officia deserunt mollit anim. Id est laborum sed ut perspiciatis.",
+            "line": "Hm. Let me think on that.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Ipsum dolor sit amet consectetur adipiscing. Elit sed do eiusmod tempor."
+            "line": "All right. I'll walk with you for a while. Don't make me regret it."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute. Irure dolor."
+            "line": "No. Not this road, not yet. Maybe we'll meet again."
           }
         ]
       }
@@ -7947,7 +7947,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:09ca2ab20a07946fa587ac7da0b7d9f9e1d32b2a0dea4a414dd08b2490fe6059",
+      "hash": "sha256:c60a7da0b351933bc57db0cafe0bbe4f7efb56f853fbcdc901c857fbfc6072e2",
       "about": [
         "faction-street"
       ],
@@ -7962,33 +7962,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Culpa qui officia deserunt mollit anim id est laborum sed ut.",
+            "line": "Nice work. You fight like Underspire kids, all elbows and no manners.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Esse cillum dolore eu fugiat nulla pariatur excepteur. Sint occaecat cupidatat non proident sunt in.",
+            "line": "Some of us are. You're a long way from the neon.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.",
+            "line": "Out here you're the ones in the Choir's white wagon. So which is it: collectors or runners?",
             "choices": [
               {
-                "text": "A · Proident sunt in",
+                "text": "Just travellers. The paint came with it.",
                 "next": "ask2"
               },
               {
-                "text": "B · Velit esse cillum dolore eu",
+                "text": "Runners. We took the wagon so the tithe never got where it was going.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Doloremque laudantium totam rem",
+                "text": "Collectors, in our own way.",
                 "next": "ask2"
               }
             ]
@@ -7996,21 +7996,21 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Dicta sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur aut.",
+            "line": "Underspire rule one. What do you do when the Red Seal comes down your street?",
             "choices": [
               {
-                "text": "A · Unde omnis iste natus error",
+                "text": "Split up, take the roofs, meet at the noodle stall later.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Inventore veritatis et quasi",
+                "text": "Stand there and pay. It's easier.",
                 "next": "ask3"
               },
               {
-                "text": "C · Aliqua ut enim ad minim",
+                "text": "Hide and hope they pick another door.",
                 "next": "ask3"
               }
             ]
@@ -8018,18 +8018,18 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Voluptatem quia voluptas sit aspernatur aut odit aut fugit. Lorem ipsum dolor.",
+            "line": "The whole Underspire runs its lights off Halcyon's old taps. Should we shut them off?",
             "choices": [
               {
-                "text": "A · Quia voluptas sit aspernatur",
+                "text": "Who cares? Lights are lights.",
                 "next": "weigh"
               },
               {
-                "text": "B · Esse cillum dolore eu",
+                "text": "That's for someone smarter than me.",
                 "next": "weigh"
               },
               {
-                "text": "C · Laudantium totam rem aperiam eaque",
+                "text": "Not on our own. But we should know what they're pulling on.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
@@ -8040,18 +8040,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Aut odit aut fugit lorem ipsum dolor sit amet consectetur adipiscing. Elit.",
+            "line": "Let me count what you said against what you did out there.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt."
+            "line": "You're all right. I'll run with your crew. Somebody has to watch your backs."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat."
+            "line": "Nah. You talk like you've never been squeezed. Catch you around."
           }
         ]
       }
@@ -8062,7 +8062,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7c05f76abf360a63f2b65a3b47a17cfe067ae1b79eb10f22e7699b747e3b62f7",
+      "hash": "sha256:48024871fc21db1eabd04cae5fc9d2309576c6bae0b491c7582783c2f41d80d5",
       "about": [
         "faction-wild"
       ],
@@ -8077,33 +8077,33 @@
           {
             "id": "meet",
             "speaker": "$hero",
-            "line": "Quae ab illo inventore veritatis et quasi architecto beatae.",
+            "line": "The beasts here listen to me. They didn't mind you. That's rare.",
             "next": "reply"
           },
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque.",
+            "line": "We didn't come to hurt anything that leaves us alone.",
             "next": "ask1"
           },
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Magna aliqua ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris.",
+            "line": "Out in the Bloom, red things grow where pieces of the Somnolith fell. Should we burn them?",
             "choices": [
               {
-                "text": "A · Reprehenderit in voluptate",
+                "text": "Only the ones that bite.",
                 "next": "ask2"
               },
               {
-                "text": "B · Sunt in culpa qui",
+                "text": "No. Something growing isn't the same as something hurting.",
                 "next": "ask2",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "C · Quis nostrud exercitation ullamco",
+                "text": "Burn it all. It came from the sky.",
                 "next": "ask2"
               }
             ]
@@ -8111,18 +8111,18 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "Sed do eiusmod tempor incididunt ut labore et dolore. Magna aliqua ut.",
+            "line": "A wolf takes a sheep from a hold. Who's wrong?",
             "choices": [
               {
-                "text": "A · Duis aute irure dolor",
+                "text": "The wolf. Hunt down every one.",
                 "next": "ask3"
               },
               {
-                "text": "B · Voluptatem accusantium doloremque laudantium totam",
+                "text": "The wolf, I guess.",
                 "next": "ask3"
               },
               {
-                "text": "C · Fugit lorem ipsum dolor",
+                "text": "Nobody. The wolf is hungry and the hold is poor. Fix the hunger.",
                 "next": "ask3",
                 "tags": [
                   "right-answer"
@@ -8133,21 +8133,21 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Sunt explicabo nemo enim ipsam voluptatem quia voluptas sit aspernatur. Aut odit.",
+            "line": "If I come, my animals come too. Will your people mind fur in the stew?",
             "choices": [
               {
-                "text": "A · Nulla pariatur excepteur sint",
+                "text": "Bring them. A camp with beasts in it is never taken by surprise.",
                 "next": "weigh",
                 "tags": [
                   "right-answer"
                 ]
               },
               {
-                "text": "B · Ea commodo consequat",
+                "text": "Leave them. They'll slow us down.",
                 "next": "weigh"
               },
               {
-                "text": "C · Eu fugiat nulla",
+                "text": "As long as they don't eat the rations.",
                 "next": "weigh"
               }
             ]
@@ -8155,18 +8155,18 @@
           {
             "id": "weigh",
             "speaker": "$hero",
-            "line": "Ipsa quae ab illo inventore veritatis et. Quasi architecto beatae vitae dicta.",
+            "line": "Let me ask them what they think. ...They're thinking.",
             "next": "$outcome"
           },
           {
             "id": "join",
             "speaker": "$hero",
-            "line": "Ipsum dolor sit amet consectetur adipiscing elit sed. Do eiusmod."
+            "line": "They like you. So do I, a little. We'll come."
           },
           {
             "id": "part",
             "speaker": "$hero",
-            "line": "Occaecat cupidatat non proident sunt in culpa qui officia. Deserunt mollit anim id est laborum."
+            "line": "They don't trust you. Neither do I. Off you go."
           }
         ]
       }

@@ -505,7 +505,7 @@
   },
   {
     "Id": "lanternroad_summon_circle",
-    "Title": "The first thaw",
+    "Title": "A calling circle",
     "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-02" },
     "Speakers": [
       { "Id": "lead", "Class": "$lead" },
