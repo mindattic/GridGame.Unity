@@ -73,6 +73,21 @@
         "definition": "A Bulwark Shieldbearer's charge: every ally within 2 tiles of it gains [Ward]. [Interrupt] it, or pull the soldiers apart."
       }
     },
+    "glossary:aether": {
+      "key": "glossary:aether",
+      "id": "glossary-aether",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b63b00c038756b61c6a42e7eb58f513d05fd962bd544f3253585f8e698c1f874",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Aether",
+        "definition": "The Somnolith's energy and the life in every person: one thing. The party's orbs, every spell, a healer's touch and Halcyon's old machines all run on it.",
+        "aliases": []
+      }
+    },
     "glossary:aether_siphon": {
       "key": "glossary:aether_siphon",
       "id": "glossary-aether-siphon",
@@ -1294,6 +1309,21 @@
       "payload": {
         "term": "likely",
         "definition": "Likely: about 75% (63% and up)."
+      }
+    },
+    "glossary:magic": {
+      "key": "glossary:magic",
+      "id": "glossary-magic",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fc16fa335cad6f255ee65f54b6e3cbe7210306762589299d13c7ed94b0e15826",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Magic",
+        "definition": "Aether made to act: aether dust gathered, concentrated and channelled into a phenomenon or a change in a living body, such as fire, ice, lightning, sleep or poison. Every spell, hymn and enchantment works this way, and all of it comes from the Somnolith; without it there would be no magic.",
+        "aliases": []
       }
     },
     "glossary:mana_charge": {

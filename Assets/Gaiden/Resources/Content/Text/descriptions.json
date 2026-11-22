@@ -22423,13 +22423,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:36730449f4bc16c3a02ecf931340e913ad3fdb2cd7f50f08f994c6445510e28e",
+      "hash": "sha256:8e39bb4357a72af944bf91be5287868a8f03bd7627283facb867dab8234d7a61",
       "about": [
         "item-mat-arcane-dust"
       ],
       "speakers": [],
       "payload": {
-        "short": "Shimmering dust imbued with magical energy."
+        "short": "Aether dust gathered fine and not yet shaped: the raw stuff every spell is made from."
       }
     },
     "item:mat_bandit_trophy": {
@@ -22633,13 +22633,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a532e7ca466ffc03acae2cb549717c6b757f5646697a02ebd9aff62882b66f99",
+      "hash": "sha256:8972ac2f0a0dc64be936f5e788466fd5a71d6c50098db47eee19806b9ab12823",
       "about": [
         "item-mat-essence-flame"
       ],
       "speakers": [],
       "payload": {
-        "short": "A shard of captured fire. Imbues weapons with burning fury (+STR)."
+        "short": "Aether dust concentrated and set to burn, a shard of fire held still. Imbues weapons with burning fury (+STR)."
       }
     },
     "item:mat_essence_frost": {
@@ -22648,13 +22648,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b12d0592f4af7fb5a65e3885364533eb9664e3edf9835ce398a7f1ff29d5dae3",
+      "hash": "sha256:2ed17a091cee06561bf86dee3a633246933dc1d3c921f7766d96a7636d198e91",
       "about": [
         "item-mat-essence-frost"
       ],
       "speakers": [],
       "payload": {
-        "short": "Crystallized winter. Imbues weapons with piercing intellect (+INT)."
+        "short": "Aether dust concentrated and set to freeze, winter packed into a crystal. Imbues weapons with piercing intellect (+INT)."
       }
     },
     "item:mat_essence_holy": {
@@ -22663,13 +22663,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:57b1354f141df7d7ded35b4008c8f2e48f1fcc011d27c7d8e77e90f95e27fae2",
+      "hash": "sha256:8a8460b3215c85edeb74098dca97970a7c61a54551859003b940bd8b4d24a480",
       "about": [
         "item-mat-essence-holy"
       ],
       "speakers": [],
       "payload": {
-        "short": "A captured sliver of dawn light. Imbues weapons with clear-eyed wisdom (+WIS)."
+        "short": "Aether dust concentrated into a sliver of clean dawn light. Imbues weapons with clear-eyed wisdom (+WIS)."
       }
     },
     "item:mat_essence_poison": {
@@ -22678,13 +22678,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c6efc88fa054d6a6c15c69ed4bdc83f539dc91d2770c627925140c4647874d6f",
+      "hash": "sha256:6a0042520da5c5f01c31d24f20005e139e3aacfe96e9d64aa080c5886d1688d0",
       "about": [
         "item-mat-essence-poison"
       ],
       "speakers": [],
       "payload": {
-        "short": "A vial of distilled venom. Imbues weapons with a toxin-hardened body (+VIT, +LCK)."
+        "short": "Aether dust concentrated into a venom that works on the body. Imbues weapons with a toxin-hardened body (+VIT, +LCK)."
       }
     },
     "item:mat_essence_shadow": {
@@ -22693,13 +22693,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:27178aadb85a570fe996f1a174950dc607d68dfa3953ef6ecc72153b44482b10",
+      "hash": "sha256:ddf8f7308b15a06e2ae1a52d104bdc83a6c9861f9016e5d49a1a8680dcf260f2",
       "about": [
         "item-mat-essence-shadow"
       ],
       "speakers": [],
       "payload": {
-        "short": "A sliver of living darkness. Imbues weapons with lethal fortune (+LCK, +STR)."
+        "short": "Aether dust concentrated into a sliver of living darkness. Imbues weapons with lethal fortune (+LCK, +STR)."
       }
     },
     "item:mat_essence_spark": {
@@ -22708,13 +22708,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:177aeaf4337edcd57ebcef96b353ca33339b0f834026529830ebeb7181dbbc32",
+      "hash": "sha256:1657975ebee306f3f2b71d18d4811c7ff05f6676787d84081b0f91a5d0a34635",
       "about": [
         "item-mat-essence-spark"
       ],
       "speakers": [],
       "payload": {
-        "short": "Bottled lightning. Imbues weapons with quickened reflexes (+AGI, +WIS)."
+        "short": "Aether dust concentrated into a crackle of lightning, caught in glass. Imbues weapons with quickened reflexes (+AGI, +WIS)."
       }
     },
     "item:mat_frog_gland": {

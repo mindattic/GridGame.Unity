@@ -832,5 +832,13 @@
   {
     "Id": "aetherain",
     "Term": "Aetherain"
+  },
+  {
+    "Id": "aether",
+    "Term": "Aether"
+  },
+  {
+    "Id": "magic",
+    "Term": "Magic"
   }
 ]
