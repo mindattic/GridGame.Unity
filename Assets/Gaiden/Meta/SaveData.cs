@@ -400,20 +400,23 @@ namespace GridGame.Meta
         /// <summary>Pick a target, then confirm (owner direction 2026-10-11). Off = commit on the pick, for veterans.</summary>
         public bool ConfirmActions = true;
         /// <summary>Menu window theme by name: a preset from Resources/UI/themes.json or one of <see cref="CustomThemes"/>
-        /// (GG-T407); unknown/missing names fall back to the default: Classic, the Final Fantasy blue gradient, again since
-        /// GG-T453 (owner 2026-11-20: "the gray backdrop is bad, go back to the Final Fantasy blue gradient").</summary>
+        /// (GG-T407); unknown/missing names fall back to the default: Dark, GridGame.Gallery's own palette, since
+        /// 2026-11-21 (see <see cref="DefaultMenuTheme"/>).</summary>
         public string MenuTheme = DefaultMenuTheme;
         /// <summary>The player's own window themes from Settings → Windows (GG-T407), at most
         /// <see cref="WindowThemeCatalog.MaxCustom"/>, each named apart from every preset.</summary>
         public List<WindowThemeDef> CustomThemes = new List<WindowThemeDef>();
-        /// <summary>Body font by name (App.Fonts.Presets); unknown/missing names fall back to Rounded (GG-T385).</summary>
-        public string FontName = DefaultFontName;
-        public const string DefaultMenuTheme = "Classic", DefaultFontName = "Rounded";
-        /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
         /// <summary>The player's Brightness/Contrast/Gamma for each preset theme, by theme name (GG-T563): kept here, on the
         /// device, so themes.json stays pristine and an update never wipes the tuning. A preset not listed is at 0.5/0.5/0.5;
         /// a custom theme carries its own values.</summary>
         public Dictionary<string, WindowToneDef> ThemeTones = new Dictionary<string, WindowToneDef>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>Body font by name (App.Fonts.Presets); unknown/missing names fall back to Rounded (GG-T385).</summary>
+        public string FontName = DefaultFontName;
+        // Owner 2026-11-21: "we tried FF, then Chrono, then back to FF - none of these where right; but the colors
+        // in all these apps is better" (GridGame.Gallery's own look, see Theme.uss's .theme-dark retint) - "Dark" is
+        // the base default now, not "Classic" (the Final Fantasy blue it was reverted to under GG-T453).
+        public const string DefaultMenuTheme = "Dark", DefaultFontName = "Rounded";
+        /// <summary>Settings → Text wrapping (GG-T305): false = Word wrap (default), true = Hyphenate (ragged lines and
         /// overlong words break at <see cref="Hyphenation"/> points).</summary>
         public bool Hyphenate;
         /// <summary>Settings → Text size (GG-T495): 100, 115 or 130 percent of the menu type scale; anything else reads as 100.</summary>
