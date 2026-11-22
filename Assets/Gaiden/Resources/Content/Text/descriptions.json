@@ -509,14 +509,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:e6e2c446027e130bcc14fc7adcf205ffe137fd7cc92ab0bdec14d15f00d4fb0f",
       "about": [
         "class-bat00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A tan-furred bat with enormous ears and wide, pink-veined wings, its fanged mouth stretched open in a shriek.",
+        "long": "Ordinary bats of a world under strain. They roost by the thousand in Halcyon's dead towers and the lantern gorges, and they have learned that lantern-light means people."
       }
     },
     "class:bat01": {
@@ -525,14 +525,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:f35b91c27e1dd14b5f23f63fbea4016e85b9a30e4bc9f734afc38c4c5b86d1a9",
       "about": [
         "class-bat01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A smaller tan bat with pricked ears and bared fangs, wings flung wide to dive.",
+        "long": "Ordinary bats of a world under strain. They roost by the thousand in Halcyon's dead towers and the lantern gorges, and they have learned that lantern-light means people."
       }
     },
     "class:bat02": {
@@ -541,14 +541,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:88bff6700814ac632fb797b67c9ade257fbf240bd980f251d040c567485f2464",
       "about": [
         "class-bat02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A dark-furred bat with glowing red eyes and broad black wings, mouth open on a pink tongue.",
+        "long": "Ordinary bats of a world under strain. They roost by the thousand in Halcyon's dead towers and the lantern gorges, and they have learned that lantern-light means people."
       }
     },
     "class:blackninja": {
@@ -605,14 +605,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:428203f74c54cfeea85644f073874930bbc0625b4ca1c7ffe474d1300c24633b",
+      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
       "about": [
         "class-bluelion"
       ],
       "speakers": [],
       "payload": {
-        "short": "A great lion with a ragged midnight-blue mane that flares like feathers, a black body traced with pale lines like frost cracking on stone, a long dark tail and paws as wide as shields.",
-        "long": "The Blue Lion came out of the Bloom, where the Somnolith's fallen substance takes root and red flowers break through white stone. The pale lines on the Blue Lion's hide appeared the same season the flowers did. The pride scattered as the sky came closer; the Blue Lion stayed, and now walks with the Warden's crew toward wherever the trouble is coming from."
+        "short": "A flexible fighter with no single defining specialty.",
+        "long": "Walks many roads, never lost for lack of a single path."
       }
     },
     "class:blueninja": {
@@ -669,14 +669,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:6db41990d84e80e746dd6c387ce7a1c1149e05a3200c8c93182434cea89053be",
       "about": [
         "class-captain"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A tall knight in black-and-steel plate under a white surcoat crossed with red straps, face hidden behind a closed helm, a sword at the hip.",
+        "long": "The Free Holds' militia captain, who sold the holds' tithe to the Choir and now wears its white and red. The Captain hunts the runaways who took the tithe caravan, and does not tire."
       }
     },
     "class:ceramicknight00": {
@@ -685,14 +685,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:3c5f0e88fbed2f23ab079f7e38ac95045b314ef3dc40ce5b5cf1ac0130759fd4",
       "about": [
         "class-ceramicknight00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A tall porcelain knight in a tattered white cape, a red sigil painted on its chest and a long red ribbon hanging from its belt.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight01": {
@@ -701,14 +701,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:0cf35b1610a9dafad3dadd51e47571e930415e4edc85079228bfb75edcdd70f1",
       "about": [
         "class-ceramicknight01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A white porcelain knight with a sword at its side, a single red rosette on its shoulder and fine cracks running down its plates.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight02": {
@@ -717,14 +717,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:f305296af8210055b0a48e17e76b93152ef612f2f6acc5719caf7d8a1197f286",
       "about": [
         "class-ceramicknight02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A porcelain knight with dark seams cracking its white shell, its ragged cape streaked red along the hem.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight03": {
@@ -733,14 +733,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:64e6ee744fa7bf7ffd28ce569d0ac83bee1dfef7341a9ff3af93fc269f6881f8",
       "about": [
         "class-ceramicknight03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A porcelain knight in a hanging white cape, small red spots seeping through the cracks in its plates.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight04": {
@@ -749,14 +749,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:ed55811294be0c748650f91f3a281d6154558e166847040063626138ff594326",
       "about": [
         "class-ceramicknight04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A porcelain knight spotted with red at every joint, as if its shoulders and knees were bleeding through the glaze.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight05": {
@@ -765,14 +765,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:7575e6cc22f1d3d1ad8c52af36f749009cb1f3f2fb12b2bb29ac053b242fbcff",
       "about": [
         "class-ceramicknight05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A porcelain knight with red glyphs painted down its limbs, a thin blade held at its side under a draped white cape.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:ceramicknight06": {
@@ -781,14 +781,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:c52d0814e5496c6ddfc58578c140e4b5120d08955c458adb4a25275932754aaa",
       "about": [
         "class-ceramicknight06"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A porcelain knight whose chest has cracked open in plates, the dark under-shell showing, red marks scattered across the white.",
+        "long": "The Kiln Guard: Hollow soldiers, blanked white as porcelain and kept as the Hierarch's honour guard. Where their shells crack, a little red still seeps through, so a little aether is still inside. They do not speak, and they do not break ranks."
       }
     },
     "class:chainwarden": {
@@ -829,13 +829,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:23c2dd8350534bf8bfcda2eeac63d1f5d2837fc6c65d56e88a6e94609fab7082",
+      "hash": "sha256:91baaa1bfdcfe19c221a80553b8e7bed00f1cc9b3330489045f88899fee3622e",
       "about": [
         "class-chronomancer"
       ],
       "speakers": [],
       "payload": {
-        "short": "A caster who fights the party's tempo instead of its health.",
+        "short": "A white-haired caster in a long white coat, ringed by great dark clockwork wheels with cold blue cores.",
         "long": "It does not hurry. It makes everyone else late."
       }
     },
@@ -909,14 +909,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:15e19a1994ce1d29ecf64a58d20e5ec73582f86fc9ebbadda045257c1370bba5",
+      "hash": "sha256:0fdcc464b17f0b865ba646995c931e54bce73494f1e3d19fffe004c4ff3f3b12",
       "about": [
         "class-cultist01"
       ],
       "speakers": [],
       "payload": {
         "short": "Leads the hymn that sings the aether out of a crowd. Nobody has heard its real voice; the glyphs on its poncho sing for it.",
-        "long": "The Choir: the Pale Concord's engineer-priests, faceless under white ponchos printed with violet circuit-glyphs. They run the Stills and sing the aether out of people. The glyphs are the hymn."
+        "long": "The Choir: heirs of the singers who kept the Lullaby going the night Halcyon fell, faceless under white ponchos printed with violet glyphs. Their hymn takes the colour from every hold and sings it up to keep the Somnolith asleep. The glyphs are the hymn."
       }
     },
     "class:cultist02": {
@@ -925,14 +925,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:aa1bddef0b6006983d05dbbca015482987b098180ead4714a9d18a0e1f964d91",
+      "hash": "sha256:f9852d5f5076c05fce7870e504d501340045ea26b7deb6a9ab688b7a441cfc89",
       "about": [
         "class-cultist02"
       ],
       "speakers": [],
       "payload": {
-        "short": "Sings the Concord's certainty into its soldiers until they stop doubting and start hitting harder.",
-        "long": "The Choir: the Pale Concord's engineer-priests, faceless under white ponchos printed with violet circuit-glyphs. They run the Stills and sing the aether out of people. The glyphs are the hymn."
+        "short": "A faceless singer under a white poncho printed with violet glyphs, singing the Choir's certainty into its soldiers until they stop doubting.",
+        "long": "The Choir: heirs of the singers who kept the Lullaby going the night Halcyon fell, faceless under white ponchos printed with violet glyphs. Their hymn takes the colour from every hold and sings it up to keep the Somnolith asleep. The glyphs are the hymn."
       }
     },
     "class:cultist03": {
@@ -941,14 +941,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:62abb031aa16323fc9637733751182ea3f137d357a6c12483b0b4ea4fe9f7e8d",
+      "hash": "sha256:bb89fd3eafae378e31dab3b730795f9b5a71492eca4486134f511ea0432524b1",
       "about": [
         "class-cultist03"
       ],
       "speakers": [],
       "payload": {
-        "short": "Hears the Concord's wounded confess, then absolves them: the hurt and the curse both lifted, and a ward in their place.",
-        "long": "The Choir: the Pale Concord's engineer-priests, faceless under white ponchos printed with violet circuit-glyphs. They run the Stills and sing the aether out of people. The glyphs are the hymn."
+        "short": "A faceless confessor under a white poncho of violet glyphs, who hears the Choir's wounded and lifts both the hurt and the curse.",
+        "long": "The Choir: heirs of the singers who kept the Lullaby going the night Halcyon fell, faceless under white ponchos printed with violet glyphs. Their hymn takes the colour from every hold and sings it up to keep the Somnolith asleep. The glyphs are the hymn."
       }
     },
     "class:cyberzombie00": {
@@ -957,14 +957,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:df0334c9743c081f626e33c1f9f1086bdaa8230a1c9158a9531fda8c467eeaeb",
       "about": [
         "class-cyberzombie00"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A skeletal cyborg with wild dark hair and a grinning skull face, metal claws reaching out of a flapping pale scarf.",
+        "long": "Halcyon's failures: people Halcyon tried to run on aether through wire and plate. When the city went dark their hearts stopped, but the machinery kept them walking, and twelve centuries have not worn it out."
       }
     },
     "class:cyberzombie01": {
@@ -973,14 +973,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:f3bc4fe53e889764d3a3abbd6c75a848f1287a672ec755758f032b79ff81f7c3",
       "about": [
         "class-cyberzombie01"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A hunched cyborg corpse in a hooded pale wrap, ribs of black metal and loose green trousers, lurching on one bare bone foot.",
+        "long": "Halcyon's failures: people Halcyon tried to run on aether through wire and plate. When the city went dark their hearts stopped, but the machinery kept them walking, and twelve centuries have not worn it out."
       }
     },
     "class:cyberzombie02": {
@@ -989,14 +989,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:856d466635eee6fd8c8318b5b5c8b57d7d22f59a81312e84861d2dae5874776f",
       "about": [
         "class-cyberzombie02"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A grinning skull-faced cyborg in a green scarf, one arm bare white bone and steel, the other a cluster of black wire.",
+        "long": "Halcyon's failures: people Halcyon tried to run on aether through wire and plate. When the city went dark their hearts stopped, but the machinery kept them walking, and twelve centuries have not worn it out."
       }
     },
     "class:cyberzombie03": {
@@ -1005,14 +1005,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:69e8b9af675117165dc821475fd3b845a45207f8538ad67f4d7b25e06c368bf0",
       "about": [
         "class-cyberzombie03"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A lurching cyborg wrapped in a green scarf like a shroud, its skull head bowed and its metal hands hanging low.",
+        "long": "Halcyon's failures: people Halcyon tried to run on aether through wire and plate. When the city went dark their hearts stopped, but the machinery kept them walking, and twelve centuries have not worn it out."
       }
     },
     "class:cyberzombie04": {
@@ -1021,14 +1021,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:afc639caa5113678752ca51ec76228f81d49deb7980090968581044952789704",
       "about": [
         "class-cyberzombie04"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A broad cyborg corpse in a green wrap, red light glowing at its metal joints, its pale limbs plated over wire.",
+        "long": "Halcyon's failures: people Halcyon tried to run on aether through wire and plate. When the city went dark their hearts stopped, but the machinery kept them walking, and twelve centuries have not worn it out."
       }
     },
     "class:cyclops00": {
@@ -1037,14 +1037,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:0ce48bb0374c71b6478507f5ea15fdeba949d02df013738b43165494ea1032ac",
       "about": [
         "class-cyclops00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hulking pale brute of folded white hide, one huge red-rimmed eye set in the middle of its chest, red flecks on its hands.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:cyclops01": {
@@ -1053,14 +1053,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:24ce17eb63c208f86b2fec567b6feabe01c7d054bb26d80aa259df903c18d893",
       "about": [
         "class-cyclops01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A white, knuckle-walking hulk with a single great eye in its chest and red veins creeping out from around it.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:cyclops02": {
@@ -1069,14 +1069,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:6451194ea23f46e09d39c3c3ea6a09f975e4d5d7dd3af918cf6d7787c9e21176",
       "about": [
         "class-cyclops02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A pale, stooped giant with one red eye in its chest and smaller eyes dotting its shoulders.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:cyclops03": {
@@ -1085,14 +1085,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:0aeb3683ed67cd857d135185398eac7822723414323e662a30f143bf835b35ce",
       "about": [
         "class-cyclops03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A white hulk with a glowing red eye in its chest, smaller red eyes on its shoulders and red-tipped claws.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:cyclops04": {
@@ -1101,14 +1101,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:22cd472a3425d02cc75e8c889d366567072c0cdfd054ac7d44beee26fcec5615",
       "about": [
         "class-cyclops04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A huge, folded white brute with a red eye on its chest, its back swelling into lumps like the crust it fell with.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:cyclops06": {
@@ -1117,14 +1117,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:0804239738cf26a3c0b489a8d7ef5ec533f6a1323ac319ee29b149197049e721",
       "about": [
         "class-cyclops06"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A pale giant covered in red eyes, dozens of them blinking across its swollen back and shoulders.",
+        "long": "Fallen with the shell: hulks that came down with the Somnolith's crust, or out of it. They are pale as the crust they fell with, with eyes where no eyes should be, and more of them the deeper you meet them."
       }
     },
     "class:darktemplar": {
@@ -1165,14 +1165,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:244e9da7c286891d713c68e32d50132566c8dd95e6290df9f3a445dcbecdc847",
       "about": [
         "class-demonlord"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A towering black demon veined with glowing red, swept horns and a mane of dark spines, claws hooked at its sides.",
+        "long": "Too much red: what a body becomes when it takes in far more aether than it can hold. The Ember tell of a lord of the red who walks where the Somnolith hangs lowest. Most of them pray it is only a story."
       }
     },
     "class:dervish": {
@@ -1325,14 +1325,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:df51ad8ca5774fb4cc81fadf1f6f4a63caf1efb73d9d66df2b8f47c7121e38e1",
       "about": [
         "class-flyingmonkey"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A dark-furred ape crouched on clawed hands, broad bat wings spread behind it and fangs bared in a snarl.",
+        "long": "Gorge apes that grew wings. The Lantern Road's pilgrims swear they were ordinary monkeys once, before something in the Shardfall's red rivers got into the water."
       }
     },
     "class:frog00": {
@@ -1341,14 +1341,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:1d652fbce2418df7f651a600944e15e2e19164d5d3191a1f8db3b7ccf3143c2c",
       "about": [
         "class-frog00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A huge, squat frog with moss-green mottled skin, a pale belly and round yellow eyes.",
+        "long": "Fen frogs grown huge on the Arkgrave's warm water, where the grounded Arks still leak. The Fen-dark eat the small ones and run from the big ones."
       }
     },
     "class:frog01": {
@@ -1357,14 +1357,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:ca953c8a40d6ee25a20bc7976d889deada75903642df0dd40180e7a6bf2ce3a9",
       "about": [
         "class-frog01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A lanky lime-green frog dotted with white and pink spots, pink-tipped fingers splayed and a pink frill at its throat.",
+        "long": "Fen frogs grown huge on the Arkgrave's warm water, where the grounded Arks still leak. The Fen-dark eat the small ones and run from the big ones."
       }
     },
     "class:frog02": {
@@ -1373,14 +1373,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:35bdd50376b5ba792c92342f19a8f69db56958f8f9a9442ef71722a9c568ffdf",
       "about": [
         "class-frog02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A spiny green frog blotched with magenta, its wide mouth open on a pink gullet and a ridge of green spikes down its back.",
+        "long": "Fen frogs grown huge on the Arkgrave's warm water, where the grounded Arks still leak. The Fen-dark eat the small ones and run from the big ones."
       }
     },
     "class:frog03": {
@@ -1389,14 +1389,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:d76209a0c715b23d38ff3f6aed239e4aaa0bf7a35285e7e383ba704565ccdfd1",
       "about": [
         "class-frog03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A gangly green frog splashed with pink and red spots, long clawed fingers and a stitched yellow eye.",
+        "long": "Fen frogs grown huge on the Arkgrave's warm water, where the grounded Arks still leak. The Fen-dark eat the small ones and run from the big ones."
       }
     },
     "class:ganger00": {
@@ -1405,14 +1405,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:12098c07c4ad6fcc67d923debc5e8ad3a1117db263ddf251172f8b5a4247b160",
       "about": [
         "class-ganger00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in an oversized orange-red hoodie and baggy dark trousers, a gas mask over the face, red sneakers and swords slung behind.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger01": {
@@ -1421,14 +1421,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:a594af2378dfaf1964f64dcafc7fa944b3bf0910ed7aafa35f4a094097509211",
       "about": [
         "class-ganger01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in layered black techwear with a red-lined hood, the face lost behind a black mask.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger02": {
@@ -1437,14 +1437,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:c13d7dbb540db56f7e9ecdc8677e6bf160975635b98b36ae9ea1fbc92b4fe54c",
       "about": [
         "class-ganger02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in a grey jacket over a red hoodie, masked, with straps and pouches hung all over.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger03": {
@@ -1453,14 +1453,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:f39cf5992a5a9893ae49c78aa66b8aef202b79f516d17c1774c7f2c3e9bcc554",
       "about": [
         "class-ganger03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in a red hoodie with mechanical forearms, a gas mask and two swords crossed behind the back.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger04": {
@@ -1469,14 +1469,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:f1b5ed45c86eb0ef72213135aa696fad4a521f101df841f6f66087038f193179",
       "about": [
         "class-ganger04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in a red hoodie and baggy trousers, a masked face and a long blade held low.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger05": {
@@ -1485,14 +1485,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:e370b7518e9aacf5b4fee8af81bd93171ed2a9e6e4bb54c7de91b7d9f1623a19",
       "about": [
         "class-ganger05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in heavy black techwear with a red hood, red gloves and a black cap pulled low.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ganger06": {
@@ -1501,14 +1501,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:88caf94f23a0634914d4d571b6a3ba9e2bd6f50786731c934274ee79fa1f12d9",
       "about": [
         "class-ganger06"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A Redline runner in black layered techwear with red-lined hood and seams, a gas mask over the face.",
+        "long": "Redline: an Underspire gang in red-and-black techwear, faces always masked. They run the Bloom's red flowers out to anyone who'll pay, and take the road between the holds as their own."
       }
     },
     "class:ghost": {
@@ -1517,14 +1517,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:a1917595834f70e0a90f4b41972a965ec89be1c7853308bb39e227c7c40fdd7e",
       "about": [
         "class-ghost"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A pale figure in a white oversized hoodie, white trousers and white sneakers, long white hair and a pale pack on the back.",
+        "long": "The Hollow: a person whose aether was drawn away, still walking the route they walked when they had a self. White from hair to shoes, with a pack on their back nobody remembers packing."
       }
     },
     "class:gloommender": {
@@ -1549,14 +1549,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:2ad39274b8510b4ff1bb42e5ba9ad619a74433fca974f456f8af2b229e9410d7",
       "about": [
         "class-goblinthug00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hunched, green-skinned goblin with long pointed ears, a sharp grin and an olive hoodie, in baggy trousers and sandals.",
+        "long": "Small, mean and paid by the day. Goblin crews hire out as muscle on the moors and down in the Anchor Wastes, and keep whatever falls off the cart."
       }
     },
     "class:gravestone": {
@@ -1597,14 +1597,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:9bda53520966a74c091244a8c885609245f7d75e82e83ecf0dcf8dd1f36a23e6",
       "about": [
         "class-hag00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A tall hag in trailing blue-black robes, her hood low over a pale grin, mist spilling off the hem and red flecks on the cloth.",
+        "long": "Hags of the Arkgrave: fen witches who drank the grounded Arks' leaking aether until it drank them back. What is left grins under its hood and still remembers every working it ever knew."
       }
     },
     "class:hag01": {
@@ -1613,14 +1613,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:bedb9e550a2c60068bac35c40572faada63f7b9a92bba704068db7019ccc61c9",
       "about": [
         "class-hag01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hooded hag with glowing eyes and a wide grin, wrapped in ragged blue layers spotted with red.",
+        "long": "Hags of the Arkgrave: fen witches who drank the grounded Arks' leaking aether until it drank them back. What is left grins under its hood and still remembers every working it ever knew."
       }
     },
     "class:hag02": {
@@ -1629,14 +1629,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:3c7d8a2cf18d8d7973c0941374756a78b77dee68cc59ed444f0db8c48c975dff",
       "about": [
         "class-hag02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hunched hag with long grey hair streaming from her hood, long arms and blue robes stained red at the hem.",
+        "long": "Hags of the Arkgrave: fen witches who drank the grounded Arks' leaking aether until it drank them back. What is left grins under its hood and still remembers every working it ever knew."
       }
     },
     "class:hag03": {
@@ -1645,14 +1645,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:79faa980a84b10ff6ac93066413698b9ff7d0ce9af71767203345651b968f3e4",
       "about": [
         "class-hag03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hag with her hood drawn low and her robes dripping, red stains at the sleeves and tangled hair falling to the ground.",
+        "long": "Hags of the Arkgrave: fen witches who drank the grounded Arks' leaking aether until it drank them back. What is left grins under its hood and still remembers every working it ever knew."
       }
     },
     "class:harbinger": {
@@ -1677,14 +1677,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e78f68ac39eadfeda0db40140ddd188ad20077de0994777463f7ca207864c872",
+      "hash": "sha256:ad55468cffb6e69635530e78dac6ac73d2c4c675cb7d953b22d2aa370640499f",
       "about": [
         "class-harpy01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A Murder runner spliced with black wings: it dives on the weakest hero, rakes it and is gone again.",
-        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past Concord checkpoints. They never land for long."
+        "short": "A Murder runner in a black hoodie with neon-green zips, big black-and-violet feathered wings and chunky neon sneakers.",
+        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past the Choir's checkpoints. They never land for long."
       }
     },
     "class:harpy02": {
@@ -1693,14 +1693,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:052b30d7dada61eb45924d1cd22865ea05c4572d3973b2cda58b371091650b87",
+      "hash": "sha256:b74b2941baabef3817732ab5433ef2226591facb0afceaa097f82c36e5a663f0",
       "about": [
         "class-harpy02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A Murder lookout whose spliced throat shrieks a gale that drags runaways out of formation.",
-        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past Concord checkpoints. They never land for long."
+        "short": "A violet-haired Murder lookout in a black hood, a glowing green throat and wide violet wings, in neon-green sneakers.",
+        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past the Choir's checkpoints. They never land for long."
       }
     },
     "class:harpy03": {
@@ -1709,14 +1709,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a490b3b5e5fa35f1c19025e79e39e3a2f508a964b982986a3ad6a3b6039aa479",
+      "hash": "sha256:6c3532b0ccf7e97aeaccbc5fbdb03db2c35891aae68af27961bf2cb2e5371746",
       "about": [
         "class-harpy03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A Murder smuggler rigged with signal jammers: it hangs back and snipes the party's casters.",
-        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past Concord checkpoints. They never land for long."
+        "short": "A Murder smuggler in a neon-yellow hood and pink-and-violet jacket, grey wings folded behind and signal gear on every strap.",
+        "long": "The Murder: Street kids spliced with black wings, who fly contraband (and people) past the Choir's checkpoints. They never land for long."
       }
     },
     "class:heavytrooper01": {
@@ -1725,14 +1725,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1d2f66a7e6b62ca54297b4621eae1fcd4dce01f5558665fbbcfc527302eabd4e",
+      "hash": "sha256:1c0af3cd05c4fd5e630913384438125f087d77ec10b841d30235660b5f54731b",
       "about": [
         "class-heavytrooper01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A white-armoured Concord soldier who keeps three tiles back and fires its siege rifle down any clear line.",
-        "long": "The Bulwark: the Pale Concord's soldiers, sealed in white power armour with siege rifles and an aether pack on every back. Each pack is a portable Still; where the Bulwark marches, the tithe comes with it."
+        "short": "A soldier sealed in bulky white power armour, a long siege rifle in both hands and a squared aether tank on its back.",
+        "long": "The Bulwark: the Choir's soldiers, sealed in white power armour with siege rifles and an aether tank on every back. The tanks carry the tithe, and where the Bulwark marches, the colour goes up the spire with it."
       }
     },
     "class:heavytrooper02": {
@@ -1741,14 +1741,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a82d058ea557ba3fe45ea198bc3ea2cc027c1fbca216c72c3e1096fc79caa553",
+      "hash": "sha256:b4cd4c723c819cae54a5b1764e10341bbdbf656875e69eef605522a82b823bd8",
       "about": [
         "class-heavytrooper02"
       ],
       "speakers": [],
       "payload": {
-        "short": "Its aether pack unfolds into a shield-Still that wards every soldier standing near it.",
-        "long": "The Bulwark: the Pale Concord's soldiers, sealed in white power armour with siege rifles and an aether pack on every back. Each pack is a portable Still; where the Bulwark marches, the tithe comes with it."
+        "short": "A soldier in white power armour whose broad back tank unfolds into a ward over everyone standing near.",
+        "long": "The Bulwark: the Choir's soldiers, sealed in white power armour with siege rifles and an aether tank on every back. The tanks carry the tithe, and where the Bulwark marches, the colour goes up the spire with it."
       }
     },
     "class:heavytrooper03": {
@@ -1757,14 +1757,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c3b24619d972961393d813c35e6488c20eb684ba2ed10da58c47851b9440cbfa",
+      "hash": "sha256:a88f450d179c61cc19906a64229c77e6c289c5c02f80f3cd5698549d792ff526",
       "about": [
         "class-heavytrooper03"
       ],
       "speakers": [],
       "payload": {
-        "short": "Its pack runs open: a walking Still that drinks the aether out of whoever it points at.",
-        "long": "The Bulwark: the Pale Concord's soldiers, sealed in white power armour with siege rifles and an aether pack on every back. Each pack is a portable Still; where the Bulwark marches, the tithe comes with it."
+        "short": "A soldier in white power armour with its back tank run open and its rifle levelled, drinking the aether out of whoever it points at.",
+        "long": "The Bulwark: the Choir's soldiers, sealed in white power armour with siege rifles and an aether tank on every back. The tanks carry the tithe, and where the Bulwark marches, the colour goes up the spire with it."
       }
     },
     "class:heavytrooper04": {
@@ -1773,14 +1773,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3163a737de55a9a7ff2cbe98dcbaa42731bd31e90406979f96228654574ee783",
+      "hash": "sha256:534095c8376a6a9941eaf5fe00333553906ec47b25bcbb81a0747e8bff695fc7",
       "about": [
         "class-heavytrooper04"
       ],
       "speakers": [],
       "payload": {
-        "short": "Plants its feet, braces the siege rifle on its pack and puts one round through everything in a line.",
-        "long": "The Bulwark: the Pale Concord's soldiers, sealed in white power armour with siege rifles and an aether pack on every back. Each pack is a portable Still; where the Bulwark marches, the tithe comes with it."
+        "short": "A soldier in white power armour braced behind the heaviest siege rifle the Bulwark carries, its back tank humming.",
+        "long": "The Bulwark: the Choir's soldiers, sealed in white power armour with siege rifles and an aether tank on every back. The tanks carry the tithe, and where the Bulwark marches, the colour goes up the spire with it."
       }
     },
     "class:hellspawn01": {
@@ -1869,14 +1869,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ae5984deca9362f187e374b0af6af030fb8b66ce0f81e12dac2b07ab55f6785d",
+      "hash": "sha256:dfbf1bfc208350e6b9aa3b6f3cd1f9450f97dc551a65c6591447b09017237df6",
       "about": [
         "class-hexsniper"
       ],
       "speakers": [],
       "payload": {
-        "short": "A face never seen whole: some meet a stooped figure in a deep blue shroud flecked with red, red eyes glinting under the hood and long clawed hands; others a tall shape in a white cap, filtered black mask and oversized white jacket, plated legs braced to aim. Either way the shot comes from very far off.",
-        "long": "The Hex Sniper keeps watch from the highest wreck in the Arkgrave, where a Fen-dark curse travels as far as an eye can see. For years the targets were whatever crawled out of the old Arks. Then the Choir's collectors began coming into the fog, and the Hex Sniper found a better use for all that patience: watching over the Warden's crew from a very long way off."
+        "short": "A ranged precision attacker — never needs to be adjacent to strike, and hits hardest one target at a time.",
+        "long": "A Fen-dark sharpshooter who traded curses for coin, picking off the toughest target in a fight from well outside its reach."
       }
     },
     "class:hexstalker": {
@@ -1885,14 +1885,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b86a8a0015e1384a75e509ff50db205bd56d8cadfd736e588976af26fa4d5d23",
+      "hash": "sha256:9e9587262be31f4a0df5a60c32371c0cb0446d62dfabbd3a53a44ae0d94c5042",
       "about": [
         "class-hexstalker"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stooped figure in a long dark-blue robe flecked with red, red eyes and a bared grin under a ragged hood, and forearms bound tight in black cord down to the claws. Long grey hair and torn hems stream sideways, as if already moving off.",
-        "long": "The Hex Stalker hunts through the Arkgrave's fog and never shoots twice from the same spot. Fen-dark children are told the Hex Stalker can't be caught, which is true, and eats the disobedient, which is not. Whatever is draining the fen villages keeps moving too, and the Hex Stalker joined the Warden because it takes a hunter to follow it."
+        "short": "A ranged skirmisher — shoots, falls back and shoots again, never letting a foe close the distance it keeps.",
+        "long": "A Fen-dark hunter who never stays where the last shot came from, drifting through the reeds a step ahead of whatever gives chase."
       }
     },
     "class:hexwarden": {
@@ -1901,14 +1901,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4f0f0924d49d479a437c76745c193b78eeb56a2458a79c3b4cd80d6f0188e826",
+      "hash": "sha256:c87ef5afd1d2377746eb9e773fb0daaaaa72af54651ee8fdc1b957a3d79f00d9",
       "about": [
         "class-hexwarden"
       ],
       "speakers": [],
       "payload": {
-        "short": "A hunched figure under a heavy shawl of mottled dark blue streaked with red, wide unblinking eyes and a thin, wide grin in the shadow of the hood. Long grey hair trails to the ground, and the robes pool round the feet like spilled ink.",
-        "long": "The Hex Warden marks the Fen-dark's borders with curses nobody sees until they step on one. Curse-work leaves its mark on whoever does it, and the Hex Warden has done a great deal of it. The villages around the Arkgrave sleep easier for it, though nobody invites the Hex Warden to supper. The Warden's crew asked politely, which was new, so the Hex Warden came along to keep their road clear."
+        "short": "A ranged controller — thins out a whole line or column from a distance while hexes slow down anything that gets close.",
+        "long": "A Fen-dark sentinel who wardens the fens from afar, snaring anything that strays too near with a barbed little curse."
       }
     },
     "class:hierarch": {
@@ -1917,14 +1917,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a6ce3e4ce7839f5eec73502aad3a4e9b3d9890998db2a1379a42a77862dccb17",
+      "hash": "sha256:3dc3f2d3ae44df32158c12961a3e342708d0605799e6fd43cd20c1def147e306",
       "about": [
         "class-hierarch"
       ],
       "speakers": [],
       "payload": {
-        "short": "The Concord's head, two hundred years old on other people's lives.",
-        "long": "Called Hierarch by the faithful and the Leech by everyone else."
+        "short": "The Choir's head, in white and red at the top of Halcyon's spire, kept alive far past any natural span by the skim.",
+        "long": "The Choir's human leader, seated in the Cathedral at the top of Halcyon's spire. Everyone below believes. Only the Hierarch knows what the Somnolith is, and where the skim goes."
       }
     },
     "class:holdmarksman": {
@@ -1997,14 +1997,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:83b80ad313004b1ff8dd0b0041f4598827f2f0476952210e03f4ee41af02fc12",
       "about": [
         "class-icemauler"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A low, snarling beast of jagged ice-blue crystal plates, claws splayed and frost shedding from its back.",
+        "long": "A beast of the Anchor Wastes grown a hide of ice. It hunts the cold between the arches, where the cracked Anchors leak and freeze whatever stands still too long."
       }
     },
     "class:infernalist01": {
@@ -2141,13 +2141,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c0eb3ec79976eeb1f4d4548cdcff85d665a391b2ed0201c37e507916ad5d243",
+      "hash": "sha256:cf3f346680df8c8d65dc27a9ee3d6d5436c094a599b5b00ef92bd86246419afd",
       "about": [
         "class-lich"
       ],
       "speakers": [],
       "payload": {
-        "short": "A deathless captain who rains soulfire from behind his crew, drains the party when cornered, and leaves a grave that raises him again.",
+        "short": "A skull under a horned hood, robed in violet that trails violet flame, its bony arms crossed over its chest.",
         "long": "The last captain of the Ark Long Patience. When his ship came down he refused to let it die, and kept himself instead."
       }
     },
@@ -2157,14 +2157,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:8f0f5a3c2a2e5e6a51b1630380d2b8a89edd1003631422356cac03b088383d6a",
       "about": [
         "class-lurker00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A long-tailed fen lizard with teal plated scales, a row of orange-red crest fins and a toothy, gaping maw.",
+        "long": "Fen predators that sit in the Arkgrave's black water with only their crests showing. The Fen-dark read the crests like weather: bright means hungry."
       }
     },
     "class:lurker01": {
@@ -2173,14 +2173,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:2a40a1e7cbbfaa57ffc0d89e8d211f85e87cc58f91abef545612814230423308",
       "about": [
         "class-lurker01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A long-necked fen lizard with teal scales and pale belly plates, its crest fins flushed red and its jaws dripping.",
+        "long": "Fen predators that sit in the Arkgrave's black water with only their crests showing. The Fen-dark read the crests like weather: bright means hungry."
       }
     },
     "class:lurker02": {
@@ -2189,14 +2189,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:dc6c8cf21922c5a146cbc983a405584aeb702a0e05e044b58921eba0ae473383",
       "about": [
         "class-lurker02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hunched fen lizard with pale bony plates along its flanks, teal scales, red-orange legs and spined crest fins.",
+        "long": "Fen predators that sit in the Arkgrave's black water with only their crests showing. The Fen-dark read the crests like weather: bright means hungry."
       }
     },
     "class:machinist": {
@@ -2221,14 +2221,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:014bae2f07d6b490ee3b1fe23b1bc5d88c2c06aaab9da2889303bcf4e8f5537e",
       "about": [
         "class-mannequin"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A blank white figure, smooth as a tailor's dummy: no face, no seams, no colour at all.",
+        "long": "The Hollow: what is left when a person's aether is drawn all the way out. No colour, no face, no self. Red seeping through a crack means something is still inside; nothing seeps from a mannequin."
       }
     },
     "class:marshshambler00": {
@@ -2237,14 +2237,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:103da4e53d6fe16151963782315523df44785dc9df0339543a0221eb49560908",
       "about": [
         "class-marshshambler00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hulking mound of dark, rotted bark and rope with a small pale grinning face, spiked and stooped on heavy arms.",
+        "long": "What the Arkgrave makes of whatever falls in: mud, wreck and drowned rope packed into a body that walks. Something in the Arks' leaking holds keeps it moving."
       }
     },
     "class:marshshambler01": {
@@ -2253,14 +2253,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:da6e39f7bb9ffb60803402e1aeb8f7377be3358bc63aaf435fda5f5e144983a9",
       "about": [
         "class-marshshambler01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A dark marsh hulk with a round head and a white-toothed grin, heavy fists dragging through the mud.",
+        "long": "What the Arkgrave makes of whatever falls in: mud, wreck and drowned rope packed into a body that walks. Something in the Arks' leaking holds keeps it moving."
       }
     },
     "class:marshshambler03": {
@@ -2269,14 +2269,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:39829c3a273c06b17861c28f3d0942182c798dc0cae46634d39ed3cbe5f50bd6",
       "about": [
         "class-marshshambler03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A banded dark hulk of wet wreck and weed, faint pale eyes in a sunken face and arms like sacks of stone.",
+        "long": "What the Arkgrave makes of whatever falls in: mud, wreck and drowned rope packed into a body that walks. Something in the Arks' leaking holds keeps it moving."
       }
     },
     "class:martialartist": {
@@ -2301,14 +2301,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:24222ffd59b2ef131fa793c8fdc93a6e63bf06b798e5bffb5ca7734d43184ac6",
       "about": [
         "class-mechaarmor00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A white armoured knight-machine behind a towering white shield painted with a green circuit wheel, a long blade in hand.",
+        "long": "Halcyon's failures: armour built to carry aether instead of a soldier. Some still have a soldier inside. The rest march empty under the Shardfall's spikes, and fight no worse for it."
       }
     },
     "class:mechaarmor01": {
@@ -2317,14 +2317,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:afe6fa7a13c847ecf7c84f5b33d5d69c60a04b4bd6fb71d58f736e68626b5fc5",
       "about": [
         "class-mechaarmor01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A white armoured machine with a plumed helm, crouched behind a huge white shield with a green circuit emblem.",
+        "long": "Halcyon's failures: armour built to carry aether instead of a soldier. Some still have a soldier inside. The rest march empty under the Shardfall's spikes, and fight no worse for it."
       }
     },
     "class:mechaarmor02": {
@@ -2333,14 +2333,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:a0b512be90a2472bcd39c02c595b891bcbb861da5c3bbd8d38a25139c63c2359",
       "about": [
         "class-mechaarmor02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A white armoured machine with a split visor, its tall white shield and long blade held ready.",
+        "long": "Halcyon's failures: armour built to carry aether instead of a soldier. Some still have a soldier inside. The rest march empty under the Shardfall's spikes, and fight no worse for it."
       }
     },
     "class:minotaur01": {
@@ -2349,14 +2349,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e7a8b362349a08b19939a602af56d72658e04c214c94fc3419520d7970e1d477",
+      "hash": "sha256:2afa46fdc46e7758058e2a319214275bb66c6f6edc18591f2ab863851176a7e5",
       "about": [
         "class-minotaur01"
       ],
       "speakers": [],
       "payload": {
         "short": "The bull who takes the contracts: chain, pink sleeves, and a watch that tells it when the crew gets paid.",
-        "long": "The Herd: Street kids spliced with horns and bull-mass in the underspire's back-room clinics, so the Stills can't sing the aether out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
+        "long": "The Herd: Street kids spliced with horns and bull-mass in the Underspire's back-room clinics, so the Choir's tithe can't take the colour out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
       }
     },
     "class:minotaur02": {
@@ -2365,14 +2365,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c544d838a68aaf49fab4f985a318ec6e63eb2084704006b052422086209946d0",
+      "hash": "sha256:8c23ba22a0f2d0348c631d0b39976a952530884be7b769f0ad7dc627ff560245",
       "about": [
         "class-minotaur02"
       ],
       "speakers": [],
       "payload": {
         "short": "A bull in a white puffer with brass on both fists, paid to stand in front of whoever pays.",
-        "long": "The Herd: Street kids spliced with horns and bull-mass in the underspire's back-room clinics, so the Stills can't sing the aether out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
+        "long": "The Herd: Street kids spliced with horns and bull-mass in the Underspire's back-room clinics, so the Choir's tithe can't take the colour out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
       }
     },
     "class:minotaur03": {
@@ -2381,14 +2381,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:db5ccd8eacb9d89ef98b6be5e12d66c17fb7ca407aa27730d82256ae464505ee",
+      "hash": "sha256:1d5156cf5492c5eca8b3c2802cb047209ed1e7ba5ba507e10fd911b7fc6290fe",
       "about": [
         "class-minotaur03"
       ],
       "speakers": [],
       "payload": {
         "short": "The biggest of the crew, gas-masked, who lowers its horns and runs a whole street flat.",
-        "long": "The Herd: Street kids spliced with horns and bull-mass in the underspire's back-room clinics, so the Stills can't sing the aether out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
+        "long": "The Herd: Street kids spliced with horns and bull-mass in the Underspire's back-room clinics, so the Choir's tithe can't take the colour out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
       }
     },
     "class:minotaur04": {
@@ -2397,14 +2397,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5196e9052b4d4882fe13a786b49c9fba1ea090aa0b2bfb369baf62850e791e72",
+      "hash": "sha256:f6f5d8c7d62378c694d7be440257caf461f36de2e3ee56cd3010882ca59f8f9f",
       "about": [
         "class-minotaur04"
       ],
       "speakers": [],
       "payload": {
         "short": "A bull on chrome-braced legs, goggles down, who hits hardest once it's bleeding.",
-        "long": "The Herd: Street kids spliced with horns and bull-mass in the underspire's back-room clinics, so the Stills can't sing the aether out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
+        "long": "The Herd: Street kids spliced with horns and bull-mass in the Underspire's back-room clinics, so the Choir's tithe can't take the colour out of them. Muscle for hire, loyal to whichever crew pays them and keeps them fed."
       }
     },
     "class:mockingecho": {
@@ -2413,13 +2413,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f5aba3dee53fa0d7010fe77cabfdefeaef510680c29a9cda8f17f63601b71ec",
+      "hash": "sha256:69497e26b62d31ee638dfcf1e829025b41a6db00085495b94b76b298ac8108a8",
       "about": [
         "class-mockingecho"
       ],
       "speakers": [],
       "payload": {
-        "short": "A hollow mimic that charges, then turns a hero's own last move back on the party.",
+        "short": "A blank white figure with no face, smooth as a tailor's dummy, that moves only when you do.",
         "long": "It has no voice of its own, only the last thing you did."
       }
     },
@@ -2461,14 +2461,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:58b6fdeb44d6a4c74b23c54d39ed81f476dce04050baf4bdb0bafb54df33fa0a",
       "about": [
         "class-mountaintroll"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A huge, shaggy grey troll with a white mane, a ragged shirt and vest, a toothy grin and great clawed hands.",
+        "long": "Trolls of the high passes over the Anchor Wastes: ordinary creatures of a world under strain, hungrier every year and closer to the road."
       }
     },
     "class:myrmidon": {
@@ -2493,14 +2493,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:50f63c0c8cfcc440c41efb98dc011bc3bf05241e8baff6090a841429f4f95ff2",
       "about": [
         "class-naga00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A serpent-tailed figure of teal scales traced with glowing red lines, red fins trailing like ribbons and eyes burning cyan.",
+        "long": "Nagas nest in the Arkgrave's deepest channels, where the grounded Arks still leak, and the red under their scales is aether they have drunk. The Fen-dark leave the eggs alone; a mother does not forget a broken one."
       }
     },
     "class:nagaegg": {
@@ -2525,14 +2525,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9b6d23c8fc62178aea2c2cb79e64aa0e319a4f87dee8cbc21fb86f98a82b0d10",
+      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
       "about": [
         "class-nighthunter"
       ],
       "speakers": [],
       "payload": {
-        "short": "A low crouch in an oversized pale hoodie wrapped in loose, flapping strips, baggy grey trousers and a hood that hides everything but a dark mask with a thin orange glow behind it. The forearms end in long hooked claws, wrapped at the wrist.",
-        "long": "The Night Hunter works the Underspire after the neon dims, tracking whatever climbs up out of Halcyon's old service tunnels. Nobody on the Street has seen the face under the hood, and nobody has asked twice. The tunnels have been getting busier, the trail leads out of the city, and the Night Hunter is following it with the Warden."
+        "short": "A flexible fighter with no single defining specialty.",
+        "long": "Walks many roads, never lost for lack of a single path."
       }
     },
     "class:odachi": {
@@ -2557,14 +2557,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:8764c388a918beed9ebad9877610335e07dd167dd66492da157603944fc8907d",
       "about": [
         "class-oni00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A blue-skinned oni with curled horns and a white mane, crouched in a white floral kimono and deep blue trousers.",
+        "long": "The Lantern Road's oni: horned brutes in festival cloth who keep to the gorges. Pilgrims leave offerings at the unlit lanterns. The oni take the offerings, and sometimes the pilgrims."
       }
     },
     "class:oni01": {
@@ -2573,14 +2573,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:6bc6e9a0c469cd4950f06fc9dafff497a7c726379dba0e542034801207a7fa1a",
       "about": [
         "class-oni01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A red-faced oni with a wild red mane, in a red jacket and white floral trousers, standing in straw sandals.",
+        "long": "The Lantern Road's oni: horned brutes in festival cloth who keep to the gorges. Pilgrims leave offerings at the unlit lanterns. The oni take the offerings, and sometimes the pilgrims."
       }
     },
     "class:oni02": {
@@ -2589,14 +2589,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:983719818523f42ce534d08d5de43e5bcc2a87c864b909a2a5feb18fb81499df",
       "about": [
         "class-oni02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A blue horned oni with tusks and a white mane, squatting in a white kimono tied with a blue sash.",
+        "long": "The Lantern Road's oni: horned brutes in festival cloth who keep to the gorges. Pilgrims leave offerings at the unlit lanterns. The oni take the offerings, and sometimes the pilgrims."
       }
     },
     "class:operative": {
@@ -2653,14 +2653,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:9c9fdd5ee672e00ce5ccea2150093794ae81da8c4d748594060aa2db8be88b3a",
       "about": [
         "class-phantom"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A slim woman in a black hooded jacket and black trousers over a white top, long dark hair, smoke curling off her hands.",
+        "long": "Something that walks Halcyon's dead towers wearing a living face. It fights like a person and fades like smoke, and no one who has met it agrees on whose face it wore."
       }
     },
     "class:pitlurker": {
@@ -2717,14 +2717,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:66cb8b6abf1ebc5cbe4af031184254f19750fe844633fa3482490596d7b0bc34",
       "about": [
         "class-purpleprototype00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A wiry black-plated body sheathed in swollen violet muscle, hunched on long clawed arms.",
+        "long": "Halcyon's failures: prototypes for a body that could hold aether without breaking. These did not hold. Their violet flesh is what the aether made of them, and it has not stopped growing."
       }
     },
     "class:purpleprototype01": {
@@ -2733,14 +2733,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:10e9ac8d3894f4a6c7e2caf7e09619c612ec15586107e1c00439d796599f823f",
       "about": [
         "class-purpleprototype01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A black-framed body with a bulging violet carapace over its head and shoulders, cables trailing behind.",
+        "long": "Halcyon's failures: prototypes for a body that could hold aether without breaking. These did not hold. Their violet flesh is what the aether made of them, and it has not stopped growing."
       }
     },
     "class:purpleprototype02": {
@@ -2749,14 +2749,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:e33ebc0b6a989f55abbd431011a74d0989afd0b4e4b0a32166f1f4cef41218c4",
       "about": [
         "class-purpleprototype02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A lean black-plated body with a glowing pink eye, violet sheaths on its limbs and ribbons of cable streaming from its back.",
+        "long": "Halcyon's failures: prototypes for a body that could hold aether without breaking. These did not hold. Their violet flesh is what the aether made of them, and it has not stopped growing."
       }
     },
     "class:purpleprototype03": {
@@ -2765,14 +2765,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:bf979ebf5c69fe1319fe07f58cb9b8b6316eb78210ad97f76f3810011890360e",
       "about": [
         "class-purpleprototype03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A black-plated body with a violet membrane hanging off it like a cape and a gaping, ribbed chest.",
+        "long": "Halcyon's failures: prototypes for a body that could hold aether without breaking. These did not hold. Their violet flesh is what the aether made of them, and it has not stopped growing."
       }
     },
     "class:purpleprototype04": {
@@ -2781,14 +2781,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:8151fa80b2789018149d2eff532b9b62cf542f9cf11d0c148a7cb26240e0ba06",
       "about": [
         "class-purpleprototype04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A black-plated body with violet tendrils of cable whipping from its back and claws hanging past its knees.",
+        "long": "Halcyon's failures: prototypes for a body that could hold aether without breaking. These did not hold. Their violet flesh is what the aether made of them, and it has not stopped growing."
       }
     },
     "class:raider": {
@@ -2797,14 +2797,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fcfd0a3851caf6dea5a91c68324e83d64a6f732adeff1c32c64197ae0949a6a0",
+      "hash": "sha256:c1993a4b2395246d32d3c04c27b3c2ac0ef4ef3bc2576ececb64db4e37a034d4",
       "about": [
         "class-raider"
       ],
       "speakers": [],
       "payload": {
-        "short": "A hood pulled low over a shadowed face, a cream cloak and patterned shawl that billow behind, dark baggy trousers tied at the ankles and bare feet. One hand swings a heavy iron lantern on a short chain, glowing like a small sun.",
-        "long": "The Raider runs the Underspire's back stairs, where the neon never reaches, and lights the way with a lantern heavy enough to settle arguments. Couriers pay for a safe climb, and the Raider has never lost a parcel or a passenger. When the Choir's collectors started using the same stairs, the Raider started using the lantern differently, and the Warden's road became a good place to be."
+        "short": "A close-quarters specialist that thrives in direct engagements.",
+        "long": "Every scar is a lesson. Every lesson becomes an opening."
       }
     },
     "class:reaper": {
@@ -2813,14 +2813,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:6a71f56946760d1c29390971179cf97f282c90eb2e06660056714f94b5211b43",
       "about": [
         "class-reaper"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A white-haired girl in an orange-and-green hooded jacket, plaid skirt and chunky sneakers, a scythe-blade bigger than she is over her shoulder.",
+        "long": "A Street kid with a harvest blade bigger than she is, working Halcyon's ruins for whoever pays. She calls it collecting."
       }
     },
     "class:redmage": {
@@ -2925,14 +2925,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:12f6dcf6c58c2c19a0a71d5f2f78ea1e46e4223638a313869767900d3d9e4654",
       "about": [
         "class-sandmaw"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A huge, pale segmented burrower of ridged crust plates, its front end a gaping ring of red teeth.",
+        "long": "Fallen with the shell: a burrower that came down with the Somnolith's crust and took to the Shardfall's sand. It swallows the ground ahead of it, and whatever stands on it."
       }
     },
     "class:scorpion": {
@@ -2941,14 +2941,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c1993a4b2395246d32d3c04c27b3c2ac0ef4ef3bc2576ececb64db4e37a034d4",
+      "hash": "sha256:0e552667c06d1f8e21e40768bd5cb6ce07971952ba22ee58b50c069d9e843190",
       "about": [
         "class-scorpion"
       ],
       "speakers": [],
       "payload": {
-        "short": "A close-quarters specialist that thrives in direct engagements.",
-        "long": "Every scar is a lesson. Every lesson becomes an opening."
+        "short": "A blue-black armoured scorpion crouched among pale rocks, plated claws spread and its segmented tail arched high.",
+        "long": "Shardfall scorpions plated in something harder than shell. Ember children are told never to sleep in the shade of a curved spike, because something else already does."
       }
     },
     "class:sellsword": {
@@ -3037,14 +3037,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:c0a505c5478d3d875e82610beb8f01ed8038c0c071c657109410fb99d93d2aac",
       "about": [
         "class-skelepede00"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A towering centipede of dark bone segments and red sinew, a human skull for a head and spines curling off its sides.",
+        "long": "Fallen with the shell: centipedes of bone and red sinew that crawled out of the Somnolith's fallen crust. Each wears a skull on its head end. No one has found out whose."
       }
     },
     "class:skelepede01": {
@@ -3053,14 +3053,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:45b7906b37f8354618ee2931bd3b3ed83690f69f9ce7c15ac9d5f27ce47e92d8",
       "about": [
         "class-skelepede01"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A towering centipede of pale bone segments bound with red sinew, a grinning skull on top.",
+        "long": "Fallen with the shell: centipedes of bone and red sinew that crawled out of the Somnolith's fallen crust. Each wears a skull on its head end. No one has found out whose."
       }
     },
     "class:skelepede02": {
@@ -3069,14 +3069,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:01515590edaf42223ecf02188f1a66afa1231247b3ca44c99d77e288076b9cfb",
       "about": [
         "class-skelepede02"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A pale, ridged centipede of bone rising tall, red showing between its segments and a white skull for a head.",
+        "long": "Fallen with the shell: centipedes of bone and red sinew that crawled out of the Somnolith's fallen crust. Each wears a skull on its head end. No one has found out whose."
       }
     },
     "class:slasher": {
@@ -3101,14 +3101,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:fe6c14b4b2be541ff2329ff4b8b600afd6223528e24a736ae870f8b95d300757",
       "about": [
         "class-slime00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A lime-green slime with a sleepy little smile, puddling at the edges.",
+        "long": "Moor slimes: ordinary creatures, harmless alone and a nuisance in numbers. They gather wherever the tithe road runs wet."
       }
     },
     "class:slime01": {
@@ -3117,14 +3117,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:694862765afe787f79e092f662bff72e0989aaa1da87389f6197a74c4063bcd5",
       "about": [
         "class-slime01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A mint-green slime with dot eyes and a small smile, dripping as it moves.",
+        "long": "Moor slimes: ordinary creatures, harmless alone and a nuisance in numbers. They gather wherever the tithe road runs wet."
       }
     },
     "class:slime02": {
@@ -3133,14 +3133,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:151a0e4cf65db1044a07b707fc1bf67b7d2f2abd584f8c3fa8d6cb4705299cc0",
       "about": [
         "class-slime02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A glossy lavender slime with round eyes and a wobbly mouth.",
+        "long": "Moor slimes: ordinary creatures, harmless alone and a nuisance in numbers. They gather wherever the tithe road runs wet."
       }
     },
     "class:slime03": {
@@ -3149,14 +3149,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:21a456e1b57a3b53e9ceef7af04d1fd7ef500d1172b40f44d92a590e59469f1a",
       "about": [
         "class-slime03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A bright cyan slime, glossy and swirled with darker blue, staring out of two round eyes.",
+        "long": "Moor slimes: ordinary creatures, harmless alone and a nuisance in numbers. They gather wherever the tithe road runs wet."
       }
     },
     "class:soldier00": {
@@ -3165,14 +3165,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:171e9b3b706c1f5a7352d99d0beb35f2a07fd4e3e36daa9e68aa01d955ccb17d",
       "about": [
         "class-soldier00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hold militiaman in a kettle helm and green cloak, a white scarf over a quilted coat and a short blade at the hip.",
+        "long": "Free Holds militia in green and grey, sworn to their holds and sent out by the Captain to bring back the runaways and the tithe they took. Most of them would rather be home."
       }
     },
     "class:soldier01": {
@@ -3181,14 +3181,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:588c7f16609beb0111da741a7b7a1eff47124579a762a4710aa1bb672451a054",
       "about": [
         "class-soldier01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hold militiaman in a kettle helm and white shawl over a green tunic tied with red, a sword on the back.",
+        "long": "Free Holds militia in green and grey, sworn to their holds and sent out by the Captain to bring back the runaways and the tithe they took. Most of them would rather be home."
       }
     },
     "class:soldier02": {
@@ -3197,14 +3197,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:9ec8f35df8b48badcd3befd04b139f953848180bafec064260e2d5a797ebad9e",
       "about": [
         "class-soldier02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hold militiaman in a visored helm and a white mantle over a belted green tunic, a longsword on the back.",
+        "long": "Free Holds militia in green and grey, sworn to their holds and sent out by the Captain to bring back the runaways and the tithe they took. Most of them would rather be home."
       }
     },
     "class:soldier03": {
@@ -3213,14 +3213,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:fb86dd063ad5904c8423e68d12b3fa1b05971a39f1b6924434eba2ce75d4971d",
       "about": [
         "class-soldier03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A hold militiaman in a round helm and a green dotted tabard under a white mantle, with a sword slung behind.",
+        "long": "Free Holds militia in green and grey, sworn to their holds and sent out by the Captain to bring back the runaways and the tithe they took. Most of them would rather be home."
       }
     },
     "class:speedster": {
@@ -3277,14 +3277,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:6528941bd3e3c430a116a1559283d85c7eebd0c595e69eb485313fb93728343d",
       "about": [
         "class-steppinrazor00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A barefoot dancer in a white hood and long dark skirt, huge gauntlets of curved blades trailing from both arms.",
+        "long": "A Lantern Road sword-school gone wrong: dancers who traded their swords for gauntlets of curved blades, and fight barefoot so they can feel the next step coming."
       }
     },
     "class:steppinrazor01": {
@@ -3293,14 +3293,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:4673dcf701574a56c7efc0132b3a1cac28acee8a7db403aa92415df98650ee64",
       "about": [
         "class-steppinrazor01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A barefoot dancer in a white top and a sweeping dark skirt, arms spread under fans of long curved blades.",
+        "long": "A Lantern Road sword-school gone wrong: dancers who traded their swords for gauntlets of curved blades, and fight barefoot so they can feel the next step coming."
       }
     },
     "class:steppinrazor02": {
@@ -3309,14 +3309,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:46588243f18686621fb6c5b8919b71b614976ae5685934b5578aa03efd19bd5d",
       "about": [
         "class-steppinrazor02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A barefoot dancer in a dark hood, both clawed gauntlets of curved blades flung wide.",
+        "long": "A Lantern Road sword-school gone wrong: dancers who traded their swords for gauntlets of curved blades, and fight barefoot so they can feel the next step coming."
       }
     },
     "class:steppinrazor04": {
@@ -3325,14 +3325,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:327d4675d682e812d42583fabe906f790a72d18406002cacd127ec987c838ba9",
       "about": [
         "class-steppinrazor04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A barefoot dancer in a white hood, her curved blades streaked red-orange, skirt sweeping behind.",
+        "long": "A Lantern Road sword-school gone wrong: dancers who traded their swords for gauntlets of curved blades, and fight barefoot so they can feel the next step coming."
       }
     },
     "class:steppinrazor05": {
@@ -3341,14 +3341,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:570f99157f10b8be6a2a948ae4c3de469cf6eb589b6f5c4e8bbc4d3c93fc60e3",
       "about": [
         "class-steppinrazor05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A barefoot dancer in a white hood and dark skirt, gauntlets of curved blades held ready on both arms.",
+        "long": "A Lantern Road sword-school gone wrong: dancers who traded their swords for gauntlets of curved blades, and fight barefoot so they can feel the next step coming."
       }
     },
     "class:stormcaller": {
@@ -3405,14 +3405,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:2da49f9798167cfc8515b736d4c385878867f78e2ba708199950e566e488accb",
       "about": [
         "class-swampmistress00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A tall figure drowned in layered teal and green robes and trailing weed-like hair, red flowers crowning her head and red sashes at her waist.",
+        "long": "Whoever rules the Arkgrave's black water this year. The Fen-dark pay her toll at the channels and don't ask how she came by the crown of red flowers."
       }
     },
     "class:swordmaster": {
@@ -3469,14 +3469,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:d15f162d880dec97bf095f32bd42a4ec7e9a274f30acbb85722444ba2a291cf1",
       "about": [
         "class-techgremlin00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A stocky, spotted gremlin in a red hood with a glowing eye and a jagged grin, metal bracers and clawed boots.",
+        "long": "Halcyon's failures that learned to live with it: small, quick things born in the old machinery, who strip every tap and wire Halcyon left in the Shardfall."
       }
     },
     "class:techgremlin01": {
@@ -3485,14 +3485,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:893e6e83909016b6127fe03f8c30833f18cde3a9e05380c857811731badd6dc7",
       "about": [
         "class-techgremlin01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A tattooed gremlin in a red hood and baggy trousers, sharp teeth bared, metal cuffs on its wrists.",
+        "long": "Halcyon's failures that learned to live with it: small, quick things born in the old machinery, who strip every tap and wire Halcyon left in the Shardfall."
       }
     },
     "class:techgremlin02": {
@@ -3501,14 +3501,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8f1c6c1075edcdce052222a47fbdd341e504a7f51779661bb2c786270c36f76e",
+      "hash": "sha256:d6d91df5453a1fb72e751b50868fa184b1fec7a8547aeca0c2c1dbcbf0d80ef5",
       "about": [
         "class-techgremlin02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A gadgeteer who leverages devices, traps, and tactical tools.",
-        "long": "Blueprints and boldness turned problems into levers and switches."
+        "short": "A big-eared gremlin in a ragged red hood, metal bracers and spiked boots, crouched to spring.",
+        "long": "Halcyon's failures that learned to live with it: small, quick things born in the old machinery, who strip every tap and wire Halcyon left in the Shardfall."
       }
     },
     "class:technician": {
@@ -3533,14 +3533,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:31c041c2443cc030bfc013de1d11455ed2e84b138b9ccc930b564dcb1a4c4926",
       "about": [
         "class-templar00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A tall figure in a white hooded robe with a black cross down the front, black armour beneath and a faceless dark visor.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:templar01": {
@@ -3549,14 +3549,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:e822d132d8e37f09e25af5c04f7ae2d07da57070b73610caeac4ceadeaf7ff3e",
       "about": [
         "class-templar01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A white-robed warden with red eyes in a dark visor, small red crosses scattered across the robe.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:templar02": {
@@ -3565,14 +3565,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:0f53b528ea64f67464816a77c0dd052751305ec4f416c2fa1a4321bd3bf87592",
       "about": [
         "class-templar02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A white-robed warden with a large red cross on the chest, black armour beneath and a faceless visor.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:templar03": {
@@ -3581,14 +3581,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:28e86430d303081ad79f196a8746e8a4d55a93ca5fcea26621c21a0cdbbe15f1",
       "about": [
         "class-templar03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A white-robed warden marked with red crosses on robe and cape, faceless under the white hood.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:templar04": {
@@ -3597,14 +3597,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:bdf954c291f6b6b7b356a9d6295b6094f371f6a7b39abd44c976f0ecc5f82ce0",
       "about": [
         "class-templar04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A white-robed warden with red crosses on its robe and cape and a blade at the hip, face hidden under the hood.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:templar05": {
@@ -3613,14 +3613,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2d896f2ff7076d645e917dea7cea4f3c3fef789dbdaea2145c85ed7b17283814",
+      "hash": "sha256:bcbc0cb4e67bcbdffd36d4281932be4ce08aa310eb88df1a7f8aac0d6860a68e",
       "about": [
         "class-templar05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A stalwart defender that anchors the line and absorbs pressure.",
-        "long": "Built on vows and iron patience, they stand where others fall back."
+        "short": "A slim white-robed warden with red eyes in a dark visor and a red cross on one shoulder.",
+        "long": "The Red Seal: the Choir's tithe wardens, in white robes and red crosses, the white-and-red law made into a uniform. They walk behind the white collectors and see that every hold pays the colour."
       }
     },
     "class:thief": {
@@ -3677,14 +3677,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:0e53bca858cf973d8a93c526b2b3e86e6c09a8d7f66bbae5ee9252ad76a7d541",
       "about": [
         "class-toad00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A broad, squat toad with warty green hide veined in gold and a wide, grinning mouth.",
+        "long": "Fen frogs grown huge on the Arkgrave's warm water, where the grounded Arks still leak. The Fen-dark eat the small ones and run from the big ones."
       }
     },
     "class:treegolem00": {
@@ -3693,14 +3693,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:ed6fe9b1f427f82bfb34f1d600579b3d92dd7d6052ee546ddcae3a7e86a4aa76",
       "about": [
         "class-treegolem00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A great skeleton of dark bone with a round crest, moss and white flowers heaped on its back and red pinpoint eyes.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:treegolem01": {
@@ -3709,14 +3709,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:6cc6c8c4e73f2fa76aff50d6948deb7605eff9d8e4a5b9e6bd28fdc91d6e7103",
       "about": [
         "class-treegolem01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A skull-headed skeleton beast with moss on its back dotted with orange flowers, its ribs bare.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:treegolem02": {
@@ -3725,14 +3725,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:cc0f7f814f560db6474e509aba74c8c175bfa13b08e239cdbae462044d1de57c",
       "about": [
         "class-treegolem02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A horned skull on a skeleton of moss-hung bone, long strands trailing from its arms.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:treegolem03": {
@@ -3741,14 +3741,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:62d535e9ac4e3ecc0552a89a2ea86985ae897664d4e3eff731078bf3d96a6b7f",
       "about": [
         "class-treegolem03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A bone-plated skeleton beast under a thick mat of moss and small white flowers.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:treegolem04": {
@@ -3757,14 +3757,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:c31cff0c826f6fd3998b3b9eeb7328ee1d1d150f8deb8eb2971f35c3947dcd9b",
       "about": [
         "class-treegolem04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A skeleton beast with curled horns and red flowers blooming in the moss across its back.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:treegolem06": {
@@ -3773,14 +3773,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:c3b67b8afc0a3146d41491318b7492d243ddb01e711d1a2dfb111b473d10fd29",
       "about": [
         "class-treegolem06"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A long-jawed skeleton beast with a red eye, vines trailing from its bones and moss heaped high on its back.",
+        "long": "Moss growing over old bone: a great skeleton walking under a garden. In the Bloom, the moss flowers red."
       }
     },
     "class:undead00": {
@@ -3789,14 +3789,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:13d5e1a13ff44838ace5311363c0ed4efdc9bf713d12534a31afad8b3b757ecb",
       "about": [
         "class-undead00"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A shrouded figure in a white hood and dark trousers, red smeared on the hood, a white crowd of pale bald shapes behind.",
+        "long": "The Hollow: people whose aether was drawn away, by the blanking or by too much tithe. They walk in white crowds behind whoever still has a little colour, and follow it."
       }
     },
     "class:undead01": {
@@ -3805,14 +3805,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:b04ba9a69d5af07af1eba47b112d7b67b48042aafb795f763217724457bb0ea2",
       "about": [
         "class-undead01"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A hollow-eyed figure with a white shroud over the shoulders and a strap bag, leading a crowd of pale figures.",
+        "long": "The Hollow: people whose aether was drawn away, by the blanking or by too much tithe. They walk in white crowds behind whoever still has a little colour, and follow it."
       }
     },
     "class:undead02": {
@@ -3821,14 +3821,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:bc93995617e09e60324ce7b318425d7ce19d78c6aa6a16c97eaeb987ffff4344",
       "about": [
         "class-undead02"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A shrouded figure with bare ribs showing under the white, a pale crowd pressing in behind it.",
+        "long": "The Hollow: people whose aether was drawn away, by the blanking or by too much tithe. They walk in white crowds behind whoever still has a little colour, and follow it."
       }
     },
     "class:undead04": {
@@ -3837,14 +3837,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:226d57b6a0e704650c2f066db6630eaf2d5bf4a2514b4d52bef8d996a8fc070b",
+      "hash": "sha256:52c1be382b33df71cf4ead34ba84a2bbacdc63e4c95698c12136353d8b2d730c",
       "about": [
         "class-undead04"
       ],
       "speakers": [],
       "payload": {
-        "short": "An unnatural entity that endures through grim resilience and dread.",
-        "long": "Life ended. Purpose remained. The rest is hunger and memory."
+        "short": "A hooded figure with its jaw bared under a white shroud, pale shapes crowding at its back.",
+        "long": "The Hollow: people whose aether was drawn away, by the blanking or by too much tithe. They walk in white crowds behind whoever still has a little colour, and follow it."
       }
     },
     "class:vampire": {
@@ -3885,14 +3885,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:e2edf5c62b16e22e3b1ddd9326d1f75bef03bc263294d1024dd3c462b8a0b5a4",
       "about": [
         "class-vulture"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A black-and-grey vulture with a bald pink head, wings half spread over hooked talons.",
+        "long": "Shardfall vultures. They follow the Infernalists' columns across the sand, because the Infernalists always leave something behind."
       }
     },
     "class:warchief": {
@@ -3917,14 +3917,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fb78f815ae1fb603fec2e05d38eba17b80b8aa6706ef258e35dcfec435becdd0",
+      "hash": "sha256:42c8f260c0d191a7d62298c46f8fcea8a2dcc78dbd9362b7bd08f9a19622775e",
       "about": [
         "class-warden"
       ],
       "speakers": [],
       "payload": {
-        "short": "Long white hair, a small dark horned crest tied with a red bow, and silver plate with a red gem at the breast over a red tabard. A long red sash trails to the ground, and one hand rests on a towering silver greatsword, chained and red-tipped, planted point-down like a post.",
-        "long": "The Warden is the Last Sleeper, Halcyon's last guard, who woke in the Still 1,200 years too late. The city is gone, the Somnolith hangs closer in the sky every year, and the world has forgotten what Halcyon did to it. The Warden's own name was lost with the city; only the duty is left, and the duty now is to fix what was broken."
+        "short": "Halcyon's last guard and the First Sleeper: wakes first, stands over the sleepers and keeps their light.",
+        "long": "Left on watch over the Still on the night of the Undertow, Warden woke twelve centuries late, still on duty, sworn to a city that no longer exists."
       }
     },
     "class:werewolf00": {
@@ -3933,14 +3933,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:69a1509dca5f68719bd53b970cce4edf76df4cc146e828e5c098ca6e10301fcb",
       "about": [
         "class-werewolf00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A huge white-and-grey wolfman, fur streaked blood-red, jaws open in a snarl and claws hooked low.",
+        "long": "A Wild thing: a wolf the Bloom touched, or a person who ran with wolves too long. Out where the Bloom takes root, it stops mattering which."
       }
     },
     "class:whiteninja": {
@@ -3997,14 +3997,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:fc2087079011a9a60e024a34ad161e7ab534e292b11969a21381d6972f92fdf8",
       "about": [
         "class-wolf00"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A grey-brown wolf sitting tall, watching with pale eyes.",
+        "long": "Moor and gorge wolves, ordinary creatures of a world under strain, driven down to the road by lean seasons. The holds count their sheep after every one."
       }
     },
     "class:wolf01": {
@@ -4013,14 +4013,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:e8934ee2a4a968022fd3c1b7fec563df1432da1d57e5b38746a45912c90643d5",
       "about": [
         "class-wolf01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A white wolf with green moss grown in patches over its back and burning orange eyes.",
+        "long": "Moor and gorge wolves, ordinary creatures of a world under strain, driven down to the road by lean seasons. The holds count their sheep after every one."
       }
     },
     "class:wolf02": {
@@ -4029,14 +4029,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:faadab6539665add69faf1e1cde9e361a5a3efc382eaeab06ca53b3f3be4804b",
       "about": [
         "class-wolf02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A pale cream wolf prowling low, head down and ears forward.",
+        "long": "Moor and gorge wolves, ordinary creatures of a world under strain, driven down to the road by lean seasons. The holds count their sheep after every one."
       }
     },
     "class:wolf03": {
@@ -4045,14 +4045,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:a20f2e149968812cbe15adec6fa58ff4fb606f98127d7b79f75135b504f390c0",
       "about": [
         "class-wolf03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A shaggy dark-grey wolf mid-stride, lips curled back from its teeth.",
+        "long": "Moor and gorge wolves, ordinary creatures of a world under strain, driven down to the road by lean seasons. The holds count their sheep after every one."
       }
     },
     "class:wraithknight01": {
@@ -4061,13 +4061,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e1cf470f3c595595e1aa1ff1f9d93029ae0bb575fe6386b18a0b8f52a5d7ece4",
+      "hash": "sha256:5aa4c5e072975121d1c5fb5e60e5f5718d33f7c50f278cb9a17e033b93d20960",
       "about": [
         "class-wraithknight01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A grey knight that has stood on the same stone under the same arch for longer than Halcyon has had a name. It does not leave its post.",
+        "short": "A grey-plated knight under a cloak the colour of old fire, standing on the same stone under the same arch since before anyone alive remembers Halcyon.",
         "long": "The Anchor Watch: knights sworn to guard the Anchors forever, kept going by the arches' own leaking aether long after they should have died. Grey plate, cloaks the colour of old fire, and an oath nobody is left to release."
       }
     },
@@ -4125,14 +4125,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e97363d8b79b30045bc78305c53d42ebc7c52472d353e9d30f9048f1d8ee4571",
+      "hash": "sha256:a47b0d35d30a28711ef488088484c2eb7abd6e01da80bd9d9042e58c98ae3c61",
       "about": [
         "class-yeti"
       ],
       "speakers": [],
       "payload": {
-        "short": "A feral threat that overwhelms foes with instinct and power.",
-        "long": "Born to the deep places, it runs by instinct and strikes without doubt."
+        "short": "A huge white-furred ape tinged icy blue, hunched on its fists with frost clinging to its coat.",
+        "long": "Yetis of the frozen passes over the Anchor Wastes, white as the snow they sleep under, and as quiet until they move."
       }
     },
     "faction:ember": {
