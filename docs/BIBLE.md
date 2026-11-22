@@ -279,7 +279,9 @@ Owner: *"we are aiming for a polished, releasable game once the story has been e
 - **Camp** — the Final Fantasy–style hub menu (`HubScreen`). ([§25](#25-the-camp-merged-hub))
 - **Event player** — `BattleScreen.Play`, which animates an event list one awaited beat at a time.
 - ~~**Undearth**~~ — struck 2026-10-10 (owner): the missing-sun / Undearth lore is removed in favor of the story premise that landed in GG-T120 (US-348) — itself retired in GG-T341 for *Under Morrow*.
-- **Morrow** — the moon, hanging so low it fills a third of the sky and "nearing" every lifetime; it pulls at **aether**, the current that lets a body heal and a spell catch. Never explained in game. ([STORY.md](STORY.md) §1)
+- ~~**Morrow** — the moon, hanging so low it fills a third of the sky and "nearing" every lifetime; it pulls at **aether**, the current that lets a body heal and a spell catch.~~ **Superseded 2026-11-21 (GG-T575):** "Morrow" is not a moon's name any more; it survives only in the region **Morrow's Shadow** ("morrow" = tomorrow) and the chapter **Morrow Holds**. The sky has **two moons** (canon: Prose `gridgame`, staging copy `Data/Prose/canon/`; staging in [§27.3](#273-the-sky-two-moons-and-the-staged-backdrop-gg-t575-design-gg-t576-builds-it)):
+  - **The Moon** — the ordinary one: round, pale, familiar, always the same size in every region; nothing in the story happens to it.
+  - **The Somnolith** — the second moon: a lumpy, crusted, grown-looking mass of bladed crystal and amber lumps with faint light in its cracks, alive and asleep, growing larger in the sky chapter by chapter until it fills the sky over Morrow's Shadow. Always "the Somnolith" in full, never "the Lith" or a nickname.
 - **The tithe** — the aether every hold pays the Pale Concord at its white domes (**Stills**) to feed the Anchors; pay too much and you come back **Hollow**. The surplus feeds the Hierarch. ([STORY.md](STORY.md) §2)
 - **Story crawl** — the skippable per-theme intro text shown on first entry into a theme. ([§27](#27-story-crawl-no-dialog))
 - **Summon Circle** — the Camp service where gold recruits a hero class. ([§25.10](#2510-summon-circle))
@@ -3084,6 +3086,8 @@ PostBattle — gold, items, unlocks, bounty ════════════
 - **The Crucible is the exception** (*Amended 2026-10-19*): a wipe, Leave or escape there keeps the whole haul and all XP, party restored to full ([§22.10](#2210-the-crucible)).
 
 ### 22.3 Adventure — the stage list
+
+**Story flavour superseded 2026-11-21 (GG-T575).** The stage list, order, waves, levels and save rules in §22.3 and its subsections still hold. Their story flavour does not: it was written for the retired premises (*Under Morrow*, then *A War in Heaven*), so "Morrow" as the moon, "the moon" coming home or hanging low, the Nearing, moon-changed beasts, fallen moon-rock, aether and the Pale Concord's tithe are retired history. The world now has two moons, the ordinary **Moon** (fixed size) and the **Somnolith** (the living second moon that grows chapter by chapter and fills the sky over Morrow's Shadow); read every region's story against the canon (Prose `gridgame`, staging copy `Data/Prose/canon/`) and [§27.3](#273-the-sky-two-moons-and-the-staged-backdrop-gg-t575-design-gg-t576-builds-it). Region and chapter names stay, including **Morrow's Shadow** ("morrow" = tomorrow). A painted moon named in a backdrop entry below describes the old art, which GG-T576 splits and repaints.
 
 **Amended 2026-11-16:** stage names are the region name plus a numeral (the Green Valley/Sandsea/Mireholt/Frostmaw/Veshker leftovers are retired; greenvalley2 is The Free Holds, GG-T386). Adventure is region, then stage, each row Cleared/New; a cleared stage is a **hunt** when no expedition is under way (`Expeditions.IsHunt`), rolling drops and wanderers afresh (GG-T388).
 

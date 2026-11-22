@@ -57,17 +57,23 @@ and 17 status icons.
   greens and whites, plate and furs, the Lantern Road wears indigo and black with red sashes, and the marsh is dark blue.
   **Every character prompt ends `--niji 5`** (never `--v 7`).
 - **Backdrops** match the existing sets (for example `arkgrave_01.jpg`). They are vertical cinematic matte paintings,
-  near-photoreal, hazy and backlit, with the huge pale moon in the sky, no people and no text. Each set has 4-8 images,
+  near-photoreal, hazy and backlit, no people and no text. Each set has 4-8 images,
   delivered at 1536×3072 (1:2, POL-H3, mean luminance 0.25-0.50) and named `<set>_01.jpg` onward. The backdrop prompts
   carry no model flag. They are not characters, so `--niji` doesn't apply.
+  **Two moons (GG-T575, BIBLE §27.3):** a new backdrop paints at most the ordinary **Moon**: one small, round, pale
+  moon, about 7% of the frame's height, high in open sky. It never paints the **Somnolith** (the lumpy second moon) or
+  any large moon, planet or giant sphere. The Somnolith is one canonical sprite composited in-engine at a size set by
+  chapter, so leave a generous stretch of clear, uncluttered sky (upper third) for it to sit in. Interiors keep a
+  window, oculus or opening that shows that sky.
 
 Shared character suffix (the `{…}` in each prompt below):
 `full body character concept art, standing three-quarter view, painterly anime style, loose ink linework, soft flat
 shading, muted palette, isolated on plain off-white background, no text, no frame --ar 1:1 --niji 5`
 
 Shared backdrop suffix (the `[…]` below):
-`vertical cinematic matte painting, near-photoreal concept art, atmospheric haze, volumetric backlight, huge pale moon in
-the sky, no people, no text --ar 1:2 --style raw`
+`vertical cinematic matte painting, near-photoreal concept art, atmospheric haze, volumetric backlight, one small round
+pale moon high in the sky, wide clear open sky in the upper third, no people, no text --ar 1:2 --style raw --no large
+moon, planet, giant sphere, second moon`
 
 ---
 

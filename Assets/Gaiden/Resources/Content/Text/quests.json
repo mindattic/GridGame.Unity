@@ -178,7 +178,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7c2b3ed121f99730ae8ab79767b2f6faa69d872232a3737148511ad9a2263939",
+      "hash": "sha256:eea5dd721ad1092ad862d173ba6f773396fb8f127f79a45f7c0e340b252a1a0d",
       "about": [
         "character-merchant",
         "place-greenvalley"
@@ -186,9 +186,9 @@
       "speakers": [],
       "payload": {
         "title": "What the Frogs Know",
-        "brief": "The merchant swears the moor frogs glow brighter under a full Morrow, and that the glow is aether caught in their glands. Bring three and they'll test the theory -- and find someone to pay for it.",
+        "brief": "The merchant swears the moor frogs glow brighter on the nights the Somnolith stirs, and that the glow is its light caught in their glands. Bring three and they'll test the theory -- and find someone to pay for it.",
         "giver": "character-merchant",
-        "complete": "Bright as a lantern, the lot of them. Aether, right in the gland. That's worth knowing, and worth paying for."
+        "complete": "Bright as a lantern, the lot of them. Somnolith light, right in the gland. That's worth knowing, and worth paying for."
       }
     },
     "quest:q_grown_not_forged": {
@@ -616,7 +616,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:be712f10ef0392f0e94de1ab5c17e1328bec7fc7512a286d7bbdedbe14f8185b",
+      "hash": "sha256:218bcf76b6fe09b3e658e3c947cbba2bf3f178c29cf46f9099890195b5f4288d",
       "about": [
         "character-innkeeper",
         "class-wolf00",
@@ -625,7 +625,7 @@
       "speakers": [],
       "payload": {
         "title": "Wolves at the Wells",
-        "brief": "The moor wolves run bold under a full Morrow, and they've learned the water carriers' path to the last clean well. Thin the pack so the barrels come back full -- and the carriers come back at all.",
+        "brief": "The moor wolves run bold these days, and they've learned the water carriers' path to the last clean well. Thin the pack so the barrels come back full -- and the carriers come back at all.",
         "giver": "character-innkeeper",
         "complete": "The carriers made the round without a single howl behind them. Drinks are on the house -- well, these are."
       }

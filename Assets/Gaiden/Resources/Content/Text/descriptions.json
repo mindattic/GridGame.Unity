@@ -1245,14 +1245,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d44998750b26b9ca77733a8d533f482255ae9ca005b9526a8dcd1c186232a80f",
+      "hash": "sha256:4efe0418cb81782e6dbd4e2dd9eee6a410cf824241e3fe07eda410af9e3f29f4",
       "about": [
         "class-duskmimic"
       ],
       "speakers": [],
       "payload": {
-        "short": "A shape in the dark whose turn on the timeline wears a hero's face.",
-        "long": "Under Morrow, you learn to count your friends twice."
+        "short": "A shape in the dark the size of a person, its outline never quite still, long clawed hands the only part of it that stays the same.",
+        "long": "A shape in the dark that wears a hero's face on the timeline. Count your friends twice. Met out past the last road, where the ground floats under the Somnolith."
       }
     },
     "class:duskstalker": {
@@ -1533,14 +1533,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0dd25979ca58d3bff6ea70b02b863313f5f303bd99cd3ddc3ffa06a6ab962201",
+      "hash": "sha256:031801cf6bbbe766c655daeb65ce300270f1e5fbba969ed89c212167864998e3",
       "about": [
         "class-gloommender"
       ],
       "speakers": [],
       "payload": {
-        "short": "A mender that keeps its allies standing from somewhere out of sight.",
-        "long": "The wounded under Morrow do not know who heals them. They have stopped asking."
+        "short": "A stooped, veiled figure in grey rags, hands glowing faintly with a cold light that never reaches its face.",
+        "long": "A mender that keeps its allies standing from somewhere out of sight. Met out past the last road, where the ground floats under the Somnolith."
       }
     },
     "class:goblinthug00": {
@@ -1789,14 +1789,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f09b3478b991a382ba4466d35f251c7249cf231f4482691737f4807cc9bc0889",
+      "hash": "sha256:7663a52416186c06dcc019764c950aa819e88e15cd253a02f3c712f3987e6d64",
       "about": [
         "class-hellspawn01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A red-scaled hunter with a mane of blood-light and one great hooked claw.",
-        "long": "The Ember: what Morrow's hunger makes of a beast or a person who drinks from the Shardfall's red rivers. Whatever it was is gone; what is left can smell blood across the sand."
+        "short": "A red-scaled demon beast with a mane of blood-red flame, dark spined plating and one great hooked claw on each arm, a spiny tail lashing behind it.",
+        "long": "Red-scaled beasts that run with the Infernalists in the Shardfall. This one can smell blood across the sand."
       }
     },
     "class:hellspawn02": {
@@ -1805,14 +1805,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f6acb5b20d0031a7d117f8558962d53d38f6f9af7215dc76319d9c1cbc39699b",
+      "hash": "sha256:752d33edbb8b575b7c28fdc4f15a65341953e0bc9d1307d9df90690a225261ad",
       "about": [
         "class-hellspawn02"
       ],
       "speakers": [],
       "payload": {
-        "short": "Still running with the red river it drank: it strikes, drinks, and is gone.",
-        "long": "The Ember: what Morrow's hunger makes of a beast or a person who drinks from the Shardfall's red rivers. Whatever it was is gone; what is left can smell blood across the sand."
+        "short": "A crimson, dragon-headed demon wreathed in streaming red flame, its body plated in dark ridged scales, claws and tail hooked like sickles.",
+        "long": "Red-scaled beasts that run with the Infernalists in the Shardfall. It strikes, drinks, and is gone."
       }
     },
     "class:hellspawn03": {
@@ -1821,14 +1821,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:cd717073b5e2b5e95c906dfb541b8d090b52c37b5d6a4d75962b24f7bc41cc99",
+      "hash": "sha256:fbcf1f1e47223f2d0f360b68b7ebf4f5d2f6187bea20d48108c82c4f5806278e",
       "about": [
         "class-hellspawn03"
       ],
       "speakers": [],
       "payload": {
-        "short": "Its arm has split to the ember inside, and the red river pours out of it.",
-        "long": "The Ember: what Morrow's hunger makes of a beast or a person who drinks from the Shardfall's red rivers. Whatever it was is gone; what is left can smell blood across the sand."
+        "short": "A red-scaled demon whose arm has split open along an ornate seam of ember light, red flame pouring off its shoulders and its tail curled behind.",
+        "long": "Red-scaled beasts that run with the Infernalists in the Shardfall. Its arm has split to the ember inside."
       }
     },
     "class:hellspawn04": {
@@ -1837,14 +1837,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1a822ae7d2fab6c758b70ee1fd82b352d4aa99cb651a414c8cff0911cb702f7d",
+      "hash": "sha256:462871d559ac02d8d7cc6b99030af556f70381741a626e0add684d9bfde9fab1",
       "about": [
         "class-hellspawn04"
       ],
       "speakers": [],
       "payload": {
-        "short": "Grown a hide of hot red scales that sear whatever touches them.",
-        "long": "The Ember: what Morrow's hunger makes of a beast or a person who drinks from the Shardfall's red rivers. Whatever it was is gone; what is left can smell blood across the sand."
+        "short": "A scaled red demon with a curved blade-spur along one arm, a crest of dark horns and a hide of hot red scales that steam where they touch.",
+        "long": "Red-scaled beasts that run with the Infernalists in the Shardfall. Its scales sear whatever touches them, so it goes first."
       }
     },
     "class:herald": {
@@ -2013,14 +2013,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:442fe1cc38aa0fe477399c5d9e0ce51b1dc3fe3ec6d6f83596b5cc2ef7840b88",
+      "hash": "sha256:7e1b635e68073070e9e7dd03767c03ac576640299dfd99475812d9cb88f3e901",
       "about": [
         "class-infernalist01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A black-armoured zealot whose claws drip cinders onto anyone it strikes.",
-        "long": "The Ember: zealots in black armour and long red capes who believe the Nearing is a homecoming. They want the Anchors broken and Morrow to finish falling."
+        "short": "A slender zealot in black armour with a horned, spiked helm and glowing red seams, a huge red cape streaming behind it and fading to blue at the hem.",
+        "long": "Infernalists: Ember zealots in black armour and red capes, met in the Shardfall, who want the Anchors broken. The Zealots go in first and leave cinders behind."
       }
     },
     "class:infernalist02": {
@@ -2029,14 +2029,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:07695f4200d7e20551ef5dd0abdf8787ac5aea1d6ab7daa98833cafb503638ad",
+      "hash": "sha256:d360087c107c78bbfc3a03d1fa58565af71f7bfa95d8582e567f133370a62ea5",
       "about": [
         "class-infernalist02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A zealot with a blood-light core in its chest that calls fire down in a cross.",
-        "long": "The Ember: zealots in black armour and long red capes who believe the Nearing is a homecoming. They want the Anchors broken and Morrow to finish falling."
+        "short": "A black-armoured zealot with a spiked helm and a core of blood-red light in its chest, a vast red cape billowing behind it.",
+        "long": "Infernalists: Ember zealots in black armour and red capes, met in the Shardfall, who want the Anchors broken. The Pyromancers call fire down in a cross, praying as they do it."
       }
     },
     "class:infernalist03": {
@@ -2045,14 +2045,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:081dcfe2308ab94307bcd75dd4205f4138f085c021b385efc265f1e300aab801",
+      "hash": "sha256:6195ea738fb94dee73fabbc0fd6a688f5e5e8a60b8afa81d242ae977742a0270",
       "about": [
         "class-infernalist03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A zealot who opens its own veins to mend and madden its kin.",
-        "long": "The Ember: zealots in black armour and long red capes who believe the Nearing is a homecoming. They want the Anchors broken and Morrow to finish falling."
+        "short": "A zealot in black armour veined with glowing red, a red heart-light beating in its chest, its long red cape whipping out in tatters.",
+        "long": "Infernalists: Ember zealots in black armour and red capes, met in the Shardfall, who want the Anchors broken. The Bloodbinders open their own veins to mend their kin."
       }
     },
     "class:infernalist04": {
@@ -2061,14 +2061,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7e874db99c01541ed8715fec7399c12029e1fc308f9c7c974e0cdd34c0762041",
+      "hash": "sha256:93d089f01fcdb03f24add659f3a91a6e7306e401307b11badf6a73b84214e155",
       "about": [
         "class-infernalist04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A zealot with a red blade who finishes whatever the Ember has set alight.",
-        "long": "The Ember: zealots in black armour and long red capes who believe the Nearing is a homecoming. They want the Anchors broken and Morrow to finish falling."
+        "short": "A black-armoured zealot with a jagged horned helm and red light running down its limbs, a red blade in hand and a red cape flaring wide.",
+        "long": "Infernalists: Ember zealots in black armour and red capes, met in the Shardfall, who want the Anchors broken. The Executioners finish whatever the Ember has set alight."
       }
     },
     "class:jadeknight": {
@@ -2109,14 +2109,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8d6ebcd36fdaa4b53f4ce7ae538be2fd84395a4d9891e39cdf05b2ceb05e5b9f",
+      "hash": "sha256:3151a206bf4bc450ceaf9d75217a03705c2c671c029cae3f6120817cff1dc639",
       "about": [
         "class-lampsnuffer"
       ],
       "speakers": [],
       "payload": {
-        "short": "A shade that puts out the braziers and blinds whoever carries a light.",
-        "long": "Every light under Morrow is borrowed. It comes to collect."
+        "short": "A thin, hooded shade with long smoke-dark fingers, its face lost in shadow, the air dimming around it as it moves.",
+        "long": "A shade that puts out the braziers and blinds whoever carries a light. Met out past the last road, where the ground floats under the Somnolith."
       }
     },
     "class:lancer": {
@@ -23653,13 +23653,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ad28fe9fe878c02efc5cab57073882dca6e6d91503652e7eb05acaa60c4cefac",
+      "hash": "sha256:360dcaa251f4ce6c5ef19f778b84bce3bd3fe691c0df8b1fd150197c662c8ccb",
       "about": [
         "place-cathedral"
       ],
       "speakers": [],
       "payload": {
-        "short": "At the top of Halcyon's spire, above the neon, stands the Choir's cathedral: rose windows, pews by the hundred, a moon in the vault, and an organ of aether pipes glowing the colour of a cold sky."
+        "short": "At the top of Halcyon's spire, above the neon, stands the Choir's cathedral: rose windows, pews by the hundred, a window high in the vault that shows the sky, and an organ of aether pipes glowing cold cyan."
       }
     },
     "place:cathedral-01": {
@@ -23923,13 +23923,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0d1453a8cd3167968153d0758e58df1f8b2963283bca27341db82adb4eefaf1b",
+      "hash": "sha256:0db42eac8a723472caf2aea2f519053ffa002989ef6e16c8ab8cf48c5484d824",
       "about": [
         "place-desert"
       ],
       "speakers": [],
       "payload": {
-        "short": "South of the moors the grass gives out and the ground turns red. This is where the pieces of Morrow came down."
+        "short": "South of the moors the grass gives out and the ground turns red. This is where the first great pieces of the Somnolith's shell came down."
       }
     },
     "place:desert-01": {
@@ -24028,13 +24028,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d5c721cbfb5e9d3833c4ba0b3e9e1a42381a2be804d4278565a6706de5451127",
+      "hash": "sha256:0790ac6a501d2d5e490744432f94bdb325924c60127ecd0f00ecb2d23b98911f",
       "about": [
         "place-greenvalley"
       ],
       "speakers": [],
       "payload": {
-        "short": "Grey-green moss country, cut by stone walls older than the Concord and dotted with the white domes of the Stills. Morrow sits on the horizon like a second sky."
+        "short": "Grey-green moss country, cut by stone walls older than the Concord and dotted with the white domes of the Stills. Over it hang the two moons: the old Moon, round and familiar, and beside it the Somnolith, lumpy and strange, a little larger than anyone's grandparents remember."
       }
     },
     "place:greenvalley-01": {
@@ -24193,13 +24193,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:96dcef608a4a21f648f0d4483ce85db859aae1c32abf0abf96757c45d2183588",
+      "hash": "sha256:cf3a454dcefce86baa6a77c76ebbeffac97dbd588a81aef198d75e88c1c53ecb",
       "about": [
         "place-morrowsshadow"
       ],
       "speakers": [],
       "payload": {
-        "short": "Far out past the last road, Morrow hangs so low it fills half the sky, and its pull lifts the ground: stones the size of houses drift over the cracked plain and never come down."
+        "short": "Far out past the last road, the Somnolith hangs so low it fills the sky, the old Moon a small disc beside it, and its pull lifts the ground: stones the size of houses drift over the cracked plain and never come down."
       }
     },
     "place:morrowsshadow-01": {
@@ -24474,12 +24474,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:12bcda9a9d9ffe3d9acc7dcc7271cfa3e2c31756d66b3b467fdfdcd7bdcd8df1",
+      "hash": "sha256:384f4d4124d769480f92e9063ef029248169b371a39cded29d929dbc6b6bd1c4",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Holy Light",
-        "short": "Holy power leaves the ground glowing for a few seconds. In Morrow's dark it shows any foe standing in it, and a foe that starts its turn in it is Blinded."
+        "short": "Holy power leaves the ground glowing for a few seconds. In Morrow's Dark it shows any foe standing in it, and a foe that starts its turn in it is Blinded."
       }
     },
     "rule:icetrail": {
@@ -24516,12 +24516,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1cadc3c8ba46b4c830550965ceeb35eaaf1631cb24738d4232fb326ef0b5cc25",
+      "hash": "sha256:58ad8f82030da2e359bfe46e8268dba8b2b8d4208e7098b47a8bed6fb01a5a09",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Morrow's Dark",
-        "short": "Under Morrow there is no light but the braziers. A foe more than two tiles from every hero, and off the brazier-light, is hidden on the field and its timeline icon is a question mark."
+        "short": "In Morrow's Shadow the Somnolith blots out the sky, and there is no light but the braziers. A foe more than two tiles from every hero, and off the brazier-light, is hidden on the field and its timeline icon is a question mark."
       }
     },
     "rule:rising-tide": {
