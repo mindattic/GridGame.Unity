@@ -199,7 +199,12 @@
    "#e0eeff",
    "#5a86ff",
    "#1a2a8a"
-  ]
+  ],
+   "mana": [
+    "#d0c6f2",
+    "#5d64a3",
+    "#2d346c"
+   ]
  },
  "status": {
   "burning": [
@@ -1716,11 +1721,11 @@
   ],
   "mat_diamond": [
    "lorc/cut-diamond",
-   "ice"
+   "mana"
   ],
   "mat_aetherite_dust": [
    "lorc/powder",
-   "gold"
+   "mana"
   ],
   "mat_undead_bone": [
    "lorc/crossed-bones",

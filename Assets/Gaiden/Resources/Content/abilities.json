@@ -8722,7 +8722,7 @@
  {
   "Id": "charge_void_beam",
   "Name": "Void Beam",
-  "Description": "Charges, then fires a beam of leaking aether straight down a line to the board's edge: a Dark spell on every hero still on the marked line, and each one hit is [Silenced]. Step off the line, or [Interrupt] the charge.",
+  "Description": "Charges, then fires a beam of leaking mana straight down a line to the board's edge: a Dark spell on every hero still on the marked line, and each one hit is [Silenced]. Step off the line, or [Interrupt] the charge.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.5,
@@ -9068,8 +9068,8 @@
  },
  {
   "Id": "charge_aether_siphon",
-  "Name": "Aether Siphon",
-  "Description": "Charges, then draws the aether out of one hero: 4 Arcane, and an orb leaves the party's bank. Spend your orbs before it lands, or [Interrupt] it.",
+  "Name": "Mana Siphon",
+  "Description": "Charges, then draws the mana out of one hero: 4 Arcane, and an orb leaves the party's bank. Spend your orbs before it lands, or [Interrupt] it.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.0,
@@ -9251,7 +9251,7 @@
  {
   "Id": "charge_tithe_hymn",
   "Name": "Tithe Hymn",
-  "Description": "Charges, then sings the aether out of the whole party: 3 Arcane to every hero, each with a [good] chance to be [Silenced]. Cast before it lands, or [Interrupt] it.",
+  "Description": "Charges, then sings the mana out of the whole party: 3 Arcane to every hero, each with a [good] chance to be [Silenced]. Cast before it lands, or [Interrupt] it.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.5,
@@ -9650,7 +9650,7 @@
   "Sfx": null,
   "Id": "herald_lifegift",
   "Name": "Lifegift",
-  "Description": "Gives their own aether: an ally mends 30 HP, and the Herald pays 12% of their max HP for it ([Life Price]).",
+  "Description": "Gives their own mana: an ally mends 30 HP, and the Herald pays 12% of their max HP for it ([Life Price]).",
   "LifeCost": 0.12
  },
  {
@@ -9698,8 +9698,8 @@
   "LingerVfx": "BuffLife",
   "Sfx": null,
   "Id": "aetherist_aetherpour",
-  "Name": "Aether Pour",
-  "Description": "Pours aether in instead of drawing it out: an ally mends 15 HP and one orb flows into the party's bank.",
+  "Name": "Mana Pour",
+  "Description": "Pours mana in instead of drawing it out: an ally mends 15 HP and one orb flows into the party's bank.",
   "GrantsOrbs": 1
  },
  {
@@ -9909,7 +9909,7 @@
  },
  {
   "Id": "flask_arcane_burst",
-  "Name": "Aether Flask",
+  "Name": "Mana Flask",
   "Description": "Shatter a flask: 20 arcane damage to every foe in a plus and a [fair] chance of [Silenced].",
   "Kind": "Item",
   "Cost": 0,

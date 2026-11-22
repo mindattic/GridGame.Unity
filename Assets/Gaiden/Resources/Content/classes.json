@@ -25975,7 +25975,7 @@
       "Humanoid",
       "Sentient"
     ],
-    "Card": "Charges [Aether Siphon] on your casters, and when it lands an orb leaves your bank: spend your orbs first, or [Interrupt] it.",
+    "Card": "Charges [Mana Siphon] on your casters, and when it lands an orb leaves your bank: spend your orbs first, or [Interrupt] it.",
     "Portrait": "bulwark-siphoner",
     "ArtSource": "heavytrooper03",
     "Thumbnail": {
@@ -25998,7 +25998,7 @@
       "Magnitude": 1.0,
       "Target": "Attacker",
       "Range": 2,
-      "Label": "Vent Aether"
+      "Label": "Vent Mana"
     },
     "BaseStats": {
       "Strength": 10,

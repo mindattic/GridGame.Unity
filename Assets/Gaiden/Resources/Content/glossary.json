@@ -691,7 +691,7 @@
   },
   {
     "Id": "aether_siphon",
-    "Term": "Aether Siphon",
+    "Term": "Mana Siphon",
     "LinkKind": "Ability",
     "LinkId": "charge_aether_siphon"
   },
@@ -806,9 +806,9 @@
   },
   {
     "Id": "aetherite_shard",
-    "Term": "Aetherite Shard",
+    "Term": "Mana Shard",
     "Aliases": [
-      "Aetherite Shards",
+      "Mana Shards",
       "Shard",
       "Shards"
     ]
@@ -831,14 +831,23 @@
   },
   {
     "Id": "aetherain",
-    "Term": "Aetherain"
+    "Term": "Manafall"
   },
   {
     "Id": "aether",
-    "Term": "Aether"
+    "Term": "Mana"
   },
   {
     "Id": "magic",
     "Term": "Magic"
+  },
+  {
+    "Id": "mana_dust",
+    "Term": "Mana Dust"
+  },
+  {
+    "Id": "mana_orb",
+    "Term": "Mana Orb",
+    "Aliases": ["Mana Orbs"]
   }
 ]

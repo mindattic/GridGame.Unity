@@ -178,7 +178,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:eea5dd721ad1092ad862d173ba6f773396fb8f127f79a45f7c0e340b252a1a0d",
+      "hash": "sha256:a612f89b281997c9a901bf07b0927a20d3988bb9e8205f0bca92904078435e68",
       "about": [
         "character-merchant",
         "place-greenvalley"
@@ -186,9 +186,9 @@
       "speakers": [],
       "payload": {
         "title": "What the Frogs Know",
-        "brief": "The merchant swears the moor frogs glow brighter on the nights the Somnolith stirs, and that the glow is its light caught in their glands. Bring three and they'll test the theory -- and find someone to pay for it.",
+        "brief": "The merchant swears the moor frogs glow brighter on the nights the Manalith stirs, and that the glow is its light caught in their glands. Bring three and they'll test the theory -- and find someone to pay for it.",
         "giver": "character-merchant",
-        "complete": "Bright as a lantern, the lot of them. Somnolith light, right in the gland. That's worth knowing, and worth paying for."
+        "complete": "Bright as a lantern, the lot of them. Manalith light, right in the gland. That's worth knowing, and worth paying for."
       }
     },
     "quest:q_grown_not_forged": {
@@ -216,7 +216,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2ad46661368da6b4da8f8c4d92d0fe27a01ac4e27243854bdd89e1090e060cad",
+      "hash": "sha256:ad3f3e257684f8832605749637c3e902aac110497dae514b9038f9050d101bf9",
       "about": [
         "character-alchemist",
         "place-swamp"
@@ -224,7 +224,7 @@
       "speakers": [],
       "payload": {
         "title": "The Hag's Hand",
-        "brief": "The fen hags were Choir once. Now they sing aether into curses and bind them into their own claws, where they hold. Three claws, and the alchemist might learn how.",
+        "brief": "The fen hags were Choir once. Now they sing mana into curses and bind them into their own claws, where they hold. Three claws, and the alchemist might learn how.",
         "giver": "character-alchemist",
         "complete": "Bound in the bone itself. Ugly, but it holds. Here -- the first thing I've made that'll survive the worst the fen can sing."
       }
@@ -273,15 +273,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:22c4cfd3b9011b524bf14d3d2f19ac4d8c65723a787030072d9e45c6ab84cf25",
+      "hash": "sha256:7e9f7cad04b6beacc66a9855e32aed35d21181e9a84f0f3a5a63c8703c034413",
       "about": [
         "character-alchemist",
         "place-still"
       ],
       "speakers": [],
       "payload": {
-        "title": "Holy Aether for the Still",
-        "brief": "Some of the tithe in the Still's tanks has turned holy. The alchemist needs three vials of holy aether to brew something that brings people back.",
+        "title": "Holy Mana for the Still",
+        "brief": "Some of the tithe in the Still's tanks has turned holy. The alchemist needs three vials of holy mana to brew something that brings people back.",
         "giver": "character-alchemist",
         "complete": "Three vials. Handle them gently; they remember who they were."
       }

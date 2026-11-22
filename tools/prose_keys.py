@@ -64,7 +64,7 @@ NPCS = {
     "alchemist": "Alchemist",
     "enchantress": "Enchantress",
     "merchant": "Lantern Merchant",
-    "aetherist": "Aetherist",  # GG-T570: the retired hero class, now the Aetherite refinery's keeper
+    "aetherist": "Manasmith",  # GG-T570: the retired hero class, now the refinery's keeper; named Manasmith by GG-T675 (id kept)
 }
 NPC_BY_NAME = {v: k for k, v in NPCS.items()}
 

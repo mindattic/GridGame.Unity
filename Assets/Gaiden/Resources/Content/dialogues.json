@@ -550,7 +550,7 @@
     "Title": "The dust-sifter",
     "Trigger": { "Kind": "StageCleared", "Id": "desert-02" },
     "Speakers": [
-      { "Id": "aetherist", "Name": "Aetherist", "Portrait": "aetherist-00" },
+      { "Id": "aetherist", "Name": "Manasmith", "Portrait": "aetherist-00" },
       { "Id": "lead", "Class": "$lead" }
     ],
     "Nodes": [
@@ -930,9 +930,9 @@
   },
   {
     "Id": "camp_aetherist_chat",
-    "Title": "Chat with the aetherist",
+    "Title": "Chat with the manasmith",
     "Trigger": { "Kind": "Talk", "Id": "npc:aetherist" },
-    "Speakers": [ { "Id": "aetherist", "Name": "Aetherist", "Portrait": "aetherist-00" } ],
+    "Speakers": [ { "Id": "aetherist", "Name": "Manasmith", "Portrait": "aetherist-00" } ],
     "Nodes": [
       {
         "Id": "greet", "Speaker": "aetherist",
@@ -3025,7 +3025,7 @@
   },
   {
     "Id": "quest_offer_holy_essence",
-    "Title": "Holy aether",
+    "Title": "Holy mana",
     "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
     "Conditions": [ { "Type": "QuestAvailable", "Id": "q_holy_essence" } ],
     "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],

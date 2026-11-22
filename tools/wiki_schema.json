@@ -189,8 +189,8 @@
   "registry": {
     "currency": [
       {"Id": "gold", "title": "Gold", "text": "glossary:gold", "field": "definition", "item": null},
-      {"Id": "aetherite_shard", "title": "Aetherite Shard", "text": "glossary:aetherite_shard", "field": "definition", "item": "mat_diamond"},
-      {"Id": "aetherite_dust", "title": "Aetherite Dust", "text": "item:mat_aetherite_dust", "field": "short", "item": "mat_aetherite_dust"}
+      {"Id": "aetherite_shard", "title": "Mana Shard", "text": "glossary:aetherite_shard", "field": "definition", "item": "mat_diamond"},
+      {"Id": "aetherite_dust", "title": "Mana Dust", "text": "item:mat_aetherite_dust", "field": "short", "item": "mat_aetherite_dust"}
     ],
     "system": [
       {"Id": "pincer", "title": "Pincer attacks", "glossary": "pincer", "bible": "1.2"},

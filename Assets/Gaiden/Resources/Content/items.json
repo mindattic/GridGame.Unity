@@ -2059,7 +2059,7 @@
   },
   {
     "Id": "mat_aetherite_dust",
-    "Name": "Aetherite Dust",
+    "Name": "Mana Dust",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -2088,7 +2088,7 @@
   },
   {
     "Id": "mat_diamond",
-    "Name": "Aetherite Shard",
+    "Name": "Mana Shard",
     "Type": "CraftingMaterial",
     "Rarity": "Epic",
     "Slot": "None",
@@ -2350,7 +2350,7 @@
   },
   {
     "Id": "mat_essence_flame",
-    "Name": "Flame Aether",
+    "Name": "Flame Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -2379,7 +2379,7 @@
   },
   {
     "Id": "mat_essence_frost",
-    "Name": "Frost Aether",
+    "Name": "Frost Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -2408,7 +2408,7 @@
   },
   {
     "Id": "mat_essence_spark",
-    "Name": "Spark Aether",
+    "Name": "Spark Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Rare",
     "Slot": "None",
@@ -2437,7 +2437,7 @@
   },
   {
     "Id": "mat_essence_shadow",
-    "Name": "Shadow Aether",
+    "Name": "Shadow Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Rare",
     "Slot": "None",
@@ -6136,7 +6136,7 @@
   },
   {
     "Id": "mat_essence_poison",
-    "Name": "Poison Aether",
+    "Name": "Poison Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -6165,7 +6165,7 @@
   },
   {
     "Id": "mat_essence_holy",
-    "Name": "Holy Aether",
+    "Name": "Holy Mana",
     "Type": "CraftingMaterial",
     "Rarity": "Uncommon",
     "Slot": "None",
@@ -39666,7 +39666,7 @@
   },
   {
     "Id": "flask_arcane",
-    "Name": "Aether Flask",
+    "Name": "Mana Flask",
     "Type": "Consumable",
     "Rarity": "Common",
     "Slot": "None",

@@ -79,12 +79,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b63b00c038756b61c6a42e7eb58f513d05fd962bd544f3253585f8e698c1f874",
+      "hash": "sha256:e0ee9685ef6c07da64595217f673c70de3bbccd5308481f6270d1b860ef702f6",
       "about": [],
       "speakers": [],
       "payload": {
-        "term": "Aether",
-        "definition": "The Somnolith's energy and the life in every person: one thing. The party's orbs, every spell, a healer's touch and Halcyon's old machines all run on it.",
+        "term": "Mana",
+        "definition": "The Manalith's energy and the life in every person: one thing. The party's orbs, every spell, a healer's touch and Halcyon's old machines all run on it.",
         "aliases": []
       }
     },
@@ -94,13 +94,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c189472430353a97b6f472a24cb02a34485d4515571755df7477100d8f224320",
+      "hash": "sha256:1b533943609f705ae33d2dec5a2f1286febb368b6e1251e95d7ca5598c78429f",
       "about": [
         "concept-aether-siphon"
       ],
       "speakers": [],
       "payload": {
-        "term": "Aether Siphon",
+        "term": "Mana Siphon",
         "definition": "A Bulwark Siphoner's charge: it hits one hero, and an orb leaves the party's bank when it lands. Spend your orbs first, or [Interrupt] it."
       }
     },
@@ -110,12 +110,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:cbde5a673926093e044388507a9b15b89f9ecd1dbe090a2091df3444bf24927b",
+      "hash": "sha256:f5a15befc813018a1826d8a6658c04d91d64e932e986cf8f187138353613f273",
       "about": [],
       "speakers": [],
       "payload": {
-        "term": "Aetherain",
-        "definition": "A fall of aether dust: now and then the wake of debris the Somnolith drags across the sky lets go of its finest grains, and they drift down as slow, glinting motes. People say \"the Aetherain falls\" the way they say the frost is in.",
+        "term": "Manafall",
+        "definition": "When the Manalith's wake lets go and its Mana Dust comes down heavily: slow, glinting blue motes drifting out of the sky. It comes more often, and thicker, the closer the Manalith draws.",
         "aliases": []
       }
     },
@@ -125,14 +125,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:23172091f4d10959e00dbce07dff31f339b1288817b00a55335cff3818acbdea",
+      "hash": "sha256:9488428b036976635fb29a5523c90075e907f0a3680a608c2ced2ee628734b0a",
       "about": [],
       "speakers": [],
       "payload": {
-        "term": "Aetherite Shard",
-        "definition": "The premium currency, bought in the Shard Store. It pays for a random summon, an instant Rested refill and a lucky craft.",
+        "term": "Mana Shard",
+        "definition": "Mana made stable. The Manasmith refines Mana Dust into these crystals, which hold their mana instead of dissipating. The premium currency, bought in the Shard Store; it pays for a random summon, an instant Rested refill and a lucky craft.",
         "aliases": [
-          "Aetherite Shards",
+          "Mana Shards",
           "Shard",
           "Shards"
         ]
@@ -879,14 +879,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:07e5bd10e61f39dd9686327b8dcfd365cc40895037f014596458d3a90944a99e",
+      "hash": "sha256:829619202f68ca097a315425c93fa146815eeff35635fb6d58a56f4b8d5aae04",
       "about": [
         "concept-essence"
       ],
       "speakers": [],
       "payload": {
         "term": "Life Price",
-        "definition": "Healing paid for in the healer's own HP instead of mana: they give the aether that is their own life. It never costs the last HP."
+        "definition": "Healing paid for in the healer's own HP instead of mana: they give the mana that is their own life. It never costs the last HP."
       }
     },
     "glossary:evasion": {
@@ -1067,12 +1067,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:56fb1aca475bb10b4947e085b6566d4b441fc8a1fcd1798de39f5681812663e6",
+      "hash": "sha256:28ef0aed7e44783f27ed57cbd6ca0168238bd962d9705a3c14f40133d47f51e5",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Gold",
-        "definition": "The everyday coin of the road. Every battle pays it, and the Merchant, the Blacksmith's repairs, the Camp's facilities, the Summon Circle, Rested refills and the Aetherist's Dust all take it.",
+        "definition": "The everyday coin of the road. Every battle pays it, and the Merchant, the Blacksmith's repairs, the Camp's facilities, the Summon Circle, Rested refills and the Manasmith's Dust all take it.",
         "aliases": []
       }
     },
@@ -1317,12 +1317,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fc16fa335cad6f255ee65f54b6e3cbe7210306762589299d13c7ed94b0e15826",
+      "hash": "sha256:5d83c3672127bc8739487cff3b2334849eb0feeda4677a437afdb622dc771ff2",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Magic",
-        "definition": "Aether made to act: aether dust gathered, concentrated and channelled into a phenomenon or a change in a living body, such as fire, ice, lightning, sleep or poison. Every spell, hymn and enchantment works this way, and all of it comes from the Somnolith; without it there would be no magic.",
+        "definition": "Mana made to act: mana dust gathered, concentrated and channelled into a phenomenon or a change in a living body, such as fire, ice, lightning, sleep or poison. Every spell, hymn and enchantment works this way, and all of it comes from the Manalith; without it there would be no magic.",
         "aliases": []
       }
     },
@@ -1340,6 +1340,38 @@
       "payload": {
         "term": "mana charge",
         "definition": "Fills the party's mana meter; every 100 is one orb for spells."
+      }
+    },
+    "glossary:mana_dust": {
+      "key": "glossary:mana_dust",
+      "id": "glossary-mana-dust",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ed76f0750eee6be0313a9066f7b138e7a0f4d2803ec34ec3e295f2af39cf6dfd",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Mana Dust",
+        "definition": "The Manalith breaking up: its debris burns and grinds apart high in the air and settles across the world as a blue sparkle, thicker in every region as the Manalith draws closer. Raw mana that dissipates if nothing holds it. Mana Orbs capture it for a fight; the Manasmith refines it into Mana Shards.",
+        "aliases": []
+      }
+    },
+    "glossary:mana_orb": {
+      "key": "glossary:mana_orb",
+      "id": "glossary-mana-orb",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3772fabe4dcc767e2cb03a35de857ac7ee574a2fd7b6fca3ded24d87557b96c9",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Mana Orb",
+        "definition": "Halcyon's old batteries, scavenged from its ruins. An orb captures Mana Dust and holds it ready to cast, but it can't hold it for long: whatever charge is left after a battle settles back into dust. How many orbs you carry is how much mana you can bring to bear at once.",
+        "aliases": [
+          "Mana Orbs"
+        ]
       }
     },
     "glossary:mauler": {
@@ -1615,12 +1647,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a48d382722a5b13578ab92c4ccd9c5296383813c4b879fc10cf29bc1c61f47d4",
+      "hash": "sha256:33dabc944bfc0ae5303c4f0cf3c7e6fc9809a7d04aa7ebe3457f4a1b3f3044cb",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Refinery",
-        "definition": "The Aetherist's counter at Camp. Aetherite Dust, earned in battle or bought with gold, is refined there into Aetherite Shards, a counted measure at a time.",
+        "definition": "The Manasmith's counter at Camp. Mana Dust, earned in battle or bought with gold, is refined there into Mana Shards, a counted measure at a time.",
         "aliases": []
       }
     },
@@ -1669,12 +1701,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:350a8d83e32aaf306205b329e515ed9a9bcb24bd21423e6efbc5cd493f4e1a29",
+      "hash": "sha256:f35953f90221c0217eafcf6db66a10c61474f5ab392962f4785a1154a714c0c9",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Rested",
-        "definition": "The party's shared energy. Each stage launch spends one point from a pool of ten, and one point comes back every ten minutes. Gold or Aetherite Shards refill it at once.",
+        "definition": "The party's shared energy. Each stage launch spends one point from a pool of ten, and one point comes back every ten minutes. Gold or Mana Shards refill it at once.",
         "aliases": []
       }
     },
@@ -1988,12 +2020,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:58df22974d0442dfe416cd59fee3f59fbed687c187e497d19079a764ab5e1aac",
+      "hash": "sha256:ba5958d97c184fde377aa5495f53479f231f9a52447418b9762fabbd26dfe930",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Summon Circle",
-        "definition": "The Camp's circle for calling a hero to the party: a chosen hero for gold, or a random draw paid in Aetherite Shards. A summoned hero arrives at the roster's average experience.",
+        "definition": "The Camp's circle for calling a hero to the party: a chosen hero for gold, or a random draw paid in Mana Shards. A summoned hero arrives at the roster's average experience.",
         "aliases": []
       }
     },

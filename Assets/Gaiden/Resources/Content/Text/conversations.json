@@ -8,7 +8,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fcb5080a463b3d461035f73d9f7879356a66fcc5dd53f54deeddd934e75e4d58",
+      "hash": "sha256:f55444eec5b1dc90930f7c1119a6f709727e03dbc69382ab36510881fe28ac52",
       "about": [
         "character-merchant",
         "place-bloom"
@@ -30,7 +30,7 @@
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "This is where a piece of the Somnolith came down and took root. It's not only death up there. That's the strangest thing I've seen."
+            "line": "This is where a piece of the Manalith came down and took root. It's not only death up there. That's the strangest thing I've seen."
           }
         ]
       }
@@ -41,7 +41,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5c20a6dda73287762959c2e1d6b991278fd9cf8c983e73f876e0f4e8c5fb7318",
+      "hash": "sha256:3afb579035eae03d6caa0700de99878bab63c3dc1046e815306a4179aba99e10",
       "about": [
         "class-hierarch",
         "place-cathedral-03"
@@ -57,13 +57,13 @@
           {
             "id": "a",
             "speaker": "class-hierarch",
-            "line": "Thieves from the holds, in my own white wagon. Do you know how long I have kept the Somnolith in the sky?",
+            "line": "Thieves from the holds, in my own white wagon. Do you know how long I have kept the Manalith in the sky?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "The Anchors hold the Somnolith. They need a thread of the tithe. You drank everything else.",
+            "line": "The Anchors hold the Manalith. They need a thread of the tithe. You drank everything else.",
             "next": "c"
           },
           {
@@ -164,7 +164,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:352998f4538e0d6800a05e0ab8b73cb161ad1f4193f38d94030f52dd02227247",
+      "hash": "sha256:1002d64fc14840eeefb3058c888aa885901364095ac167f1a08dadff830e85cc",
       "about": [
         "class-mechaarmor01",
         "place-desert-03"
@@ -186,7 +186,7 @@
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Look at the crates, they're glowing. They're digging aether out of the Somnolith's fallen shell.",
+            "line": "Look at the crates, they're glowing. They're digging mana out of the Manalith's fallen shell.",
             "next": "c"
           },
           {
@@ -377,7 +377,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7d59f58ff0497d604b0eb7f021faf1114640bc8773a8943ed7761ab3fcf01b19",
+      "hash": "sha256:5c2b19de7ce5066c6c6f8496fbc1caba4f21ef584986f5e3606a86deb04a75e9",
       "about": [
         "character-aetherist"
       ],
@@ -385,7 +385,7 @@
         "character-aetherist"
       ],
       "payload": {
-        "title": "Chat with the aetherist",
+        "title": "Chat with the manasmith",
         "start": "greet",
         "nodes": [
           {
@@ -410,7 +410,7 @@
           {
             "id": "dust",
             "speaker": "character-aetherist",
-            "line": "Crust off the Somnolith. Most of it's dead stone. A little still holds aether, and if you sing to it right, it gathers into a Shard instead of drifting home.",
+            "line": "Crust off the Manalith. Most of it's dead stone. A little still holds mana, and if you sing to it right, it gathers into a Shard instead of drifting home.",
             "next": "greet"
           },
           {
@@ -422,7 +422,7 @@
           {
             "id": "bye",
             "speaker": "character-aetherist",
-            "line": "Go carefully. And bring me anything that glitters when the Somnolith is up."
+            "line": "Go carefully. And bring me anything that glitters when the Manalith is up."
           }
         ]
       }
@@ -525,7 +525,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bf6a9e762bd27d266b33b37a71649ed8e8ed5ac1713c8a660892830b8de94918",
+      "hash": "sha256:daa42b07f43e818fc0afc226c1349a5768aeee6ee42a141a3e117585c7f81926",
       "about": [
         "character-enchantress"
       ],
@@ -554,7 +554,7 @@
           {
             "id": "runes",
             "speaker": "character-enchantress",
-            "line": "That the Somnolith is closer than it was last month. They always say that. They're always right.",
+            "line": "That the Manalith is closer than it was last month. They always say that. They're always right.",
             "next": "greet"
           },
           {
@@ -571,7 +571,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ee16fdf9cf6a1d235175048e09fa549955dcbf439f0e7342628893a062ca1584",
+      "hash": "sha256:666c01b8b81bde0ce5e8603201952b8ea1563bec53eb13134e95c07d10d42c0c",
       "about": [
         "character-innkeeper"
       ],
@@ -600,7 +600,7 @@
           {
             "id": "news",
             "speaker": "character-innkeeper",
-            "line": "The Captain's still looking for us. Someone in the last hold swore they saw the Somnolith blink. People talk.",
+            "line": "The Captain's still looking for us. Someone in the last hold swore they saw the Manalith blink. People talk.",
             "next": "greet"
           },
           {
@@ -617,7 +617,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:563418723a1fb6abf00999afb56d3536833a2f95b172f65f067b1c8b2b155a4c",
+      "hash": "sha256:c6707008d765e31c023a18a9ac30e6d6bdb39aa9a734091c5442127e7ab8942f",
       "about": [
         "character-merchant"
       ],
@@ -663,7 +663,7 @@
           {
             "id": "map",
             "speaker": "character-merchant",
-            "line": "Still accurate, mostly. The roads move when the Somnolith pulls. Trust the lanterns over the paper.",
+            "line": "Still accurate, mostly. The roads move when the Manalith pulls. Trust the lanterns over the paper.",
             "next": "greet"
           },
           {
@@ -898,7 +898,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5ae7a901bbb3e58e62048eb864f36b6b34ad4a4f0dc1069af6589bfc9ef1f8f2",
+      "hash": "sha256:7f0db45baae60c31cf5ad6a3b65d6a32afa2ea58f4720e3fe6ccf467f771ec5d",
       "about": [
         "character-innkeeper",
         "place-cityruins2"
@@ -920,7 +920,7 @@
           {
             "id": "b",
             "speaker": "character-innkeeper",
-            "line": "They're still drawing off Halcyon's old taps. Now the spire's empty, everyone wants it. Including the people pulling the Somnolith closer."
+            "line": "They're still drawing off Halcyon's old taps. Now the spire's empty, everyone wants it. Including the people pulling the Manalith closer."
           }
         ]
       }
@@ -931,7 +931,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4aebafe0585ef40c896b84dcc168fd4c1f625cca9ecb63728da58f632781fb2c",
+      "hash": "sha256:731c45742e9d08d20b914d1ee0b59881ddd56b9994f48fec4d6a23cf86ba23f1",
       "about": [
         "character-innkeeper",
         "place-cityruins"
@@ -953,7 +953,7 @@
           {
             "id": "b",
             "speaker": "character-innkeeper",
-            "line": "Into the Somnolith, the night it woke. And the Choir has been taking from us ever since. I say we give it back."
+            "line": "Into the Manalith, the night it woke. And the Choir has been taking from us ever since. I say we give it back."
           }
         ]
       }
@@ -1017,7 +1017,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ec856b172c7e8b800f8542d2231446b6eeae1c6f1aa7cf4600a28d7c37bb256b",
+      "hash": "sha256:99c0cdf2ce6f16f3e772be338469f59d3be0646cc9e9e3f39a89ee207043a753",
       "about": [
         "character-alchemist",
         "place-desert2"
@@ -1039,7 +1039,7 @@
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "To the Anchors. They want to open every tap and drag the Somnolith down. We can't let them reach the arches."
+            "line": "To the Anchors. They want to open every tap and drag the Manalith down. We can't let them reach the arches."
           }
         ]
       }
@@ -1050,7 +1050,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:376808830c54a9204690cdb4b589a0bd1d7fa7de28ee4a3cf9f7bc63a7dd3eeb",
+      "hash": "sha256:019e18d7b719f711377a10affb209e7e8898fc00b9e927dc05b8365e3a9afcb1",
       "about": [
         "character-aetherist",
         "place-desert-02"
@@ -1093,7 +1093,7 @@
           {
             "id": "hymn",
             "speaker": "character-aetherist",
-            "line": "I sing to it. I learned the Lullaby in the Cathedral's lower choir, then learned to sing it backwards. It makes the aether gather instead of drain.",
+            "line": "I sing to it. I learned the Lullaby in the Cathedral's lower choir, then learned to sing it backwards. It makes the mana gather instead of drain.",
             "next": "joined"
           },
           {
@@ -1208,7 +1208,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2cb6873c9032bca11914fdd4c3baf5036387f032a47a4a3a7d32ce07eb33f764",
+      "hash": "sha256:8448efa3b871895de755cfff5387bac092377d9f7129fa14c9f5548c42afab27",
       "about": [
         "character-alchemist",
         "place-desert"
@@ -1230,7 +1230,7 @@
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "Some fell. Some are stone. And some, I think, are the Somnolith's own body, shed like old skin. Don't lick any."
+            "line": "Some fell. Some are stone. And some, I think, are the Manalith's own body, shed like old skin. Don't lick any."
           }
         ]
       }
@@ -1241,7 +1241,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6a70103900329f241aca8cb380af45c109346dde257007252f8bda6e2cc06aae",
+      "hash": "sha256:fef13782f6808235ecb2218cf1fc3a3021e3869c390375df74a92338d84ebb76",
       "about": [
         "place-desert"
       ],
@@ -1277,7 +1277,7 @@
           {
             "id": "warned",
             "speaker": "$recruit",
-            "line": "Rough? The Choir's dig hired me to fix their walkers, then stiffed me. They're cracking the Somnolith's fallen shell open out there.",
+            "line": "Rough? The Choir's dig hired me to fix their walkers, then stiffed me. They're cracking the Manalith's fallen shell open out there.",
             "next": "joined"
           },
           {
@@ -1737,7 +1737,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:936b49a366f860356a8f4bf9e983997b2c18790be21e75e20caa8bf6e44e9526",
+      "hash": "sha256:db114c5bd12f4df7622c7f12bdeaab7020f2b1e48ec4ba45bc340295e3bcf770",
       "about": [
         "character-merchant",
         "place-lanternroad"
@@ -1759,7 +1759,7 @@
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "The pilgrims. Every one they light is a prayer the Somnolith stays asleep. I sell the oil. Business is very good."
+            "line": "The pilgrims. Every one they light is a prayer the Manalith stays asleep. I sell the oil. Business is very good."
           }
         ]
       }
@@ -1842,7 +1842,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ee371c0706859c640ec015b3c87e008048582d8b01eb4c2854cc4681363001c7",
+      "hash": "sha256:7f616d1d616f72ab35585ee21ea1a5050be1b5133dde6ceba679c71648db54e7",
       "about": [
         "character-blacksmith"
       ],
@@ -1869,7 +1869,7 @@
           {
             "id": "c",
             "speaker": "character-blacksmith",
-            "line": "Out of whatever the gremlins drink at the dig. The Somnolith's shell, maybe. I'll keep studying them."
+            "line": "Out of whatever the gremlins drink at the dig. The Manalith's shell, maybe. I'll keep studying them."
           }
         ]
       }
@@ -2277,7 +2277,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:754998c973e464d0fc05c3321fa47e3398d2e077780d4f33747e2f7b4c13942b",
+      "hash": "sha256:7cd9552e8d20b0adcf8946853fd9d186f700d43401de115c9b1a4589d070fb61",
       "about": [
         "character-merchant"
       ],
@@ -2291,7 +2291,7 @@
           {
             "id": "ask",
             "speaker": "character-merchant",
-            "line": "The moor frogs glow brighter on the nights the Somnolith stirs. I think it's caught in their glands. Bring me three and I'll prove it.",
+            "line": "The moor frogs glow brighter on the nights the Manalith stirs. I think it's caught in their glands. Bring me three and I'll prove it.",
             "choices": [
               {
                 "text": "We'll catch some.",
@@ -2367,7 +2367,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:81f73afeb4bf6c9dd16e8f66bc0f12faf2328c1de1dd60c4cb2e6aa1e2883115",
+      "hash": "sha256:f7caf79dce60a028e84dc34ecd216df846731d87e46f5b4657eb7006ae517151",
       "about": [
         "character-alchemist"
       ],
@@ -2381,7 +2381,7 @@
           {
             "id": "ask",
             "speaker": "character-alchemist",
-            "line": "The fen hags were Choir once. Now they sing aether into curses and bind them into their own claws. Three claws, and I might learn how they hold.",
+            "line": "The fen hags were Choir once. Now they sing mana into curses and bind them into their own claws. Three claws, and I might learn how they hold.",
             "choices": [
               {
                 "text": "We'll get them.",
@@ -2502,7 +2502,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3824c0004ebd33355fb88fcbed28bc3893a52582956275de69758c0a44b2a826",
+      "hash": "sha256:7357185e84fa5276a5590851b58d84915a223deea8775d1037c1994954290e9c",
       "about": [
         "character-alchemist"
       ],
@@ -2510,13 +2510,13 @@
         "character-alchemist"
       ],
       "payload": {
-        "title": "Holy aether",
+        "title": "Holy mana",
         "start": "ask",
         "nodes": [
           {
             "id": "ask",
             "speaker": "character-alchemist",
-            "line": "The Still's tanks are full of tithe, and some of it's turned holy. Three vials of holy aether and I can brew something that brings people back.",
+            "line": "The Still's tanks are full of tithe, and some of it's turned holy. Three vials of holy mana and I can brew something that brings people back.",
             "choices": [
               {
                 "text": "We'll fetch it.",
@@ -7261,7 +7261,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:27b3c082b6d37a23ef1f5cb1e28970bbfd8868a8b5ecd86c07333dbe1321601d",
+      "hash": "sha256:1c70923785c7c48d9818f26cbb93e7c0d12a3d7b51a6382889e5d26d5372f440",
       "about": [],
       "speakers": [
         "$hero",
@@ -7286,7 +7286,7 @@
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Aether, taken too fast. I drank from the Shardfall to win a fight I was losing. Do you judge me?",
+            "line": "Mana, taken too fast. I drank from the Shardfall to win a fight I was losing. Do you judge me?",
             "choices": [
               {
                 "text": "No. You did what you had to. What matters is what you do now.",
@@ -7330,7 +7330,7 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "Why fight at all? The Somnolith comes either way.",
+            "line": "Why fight at all? The Manalith comes either way.",
             "choices": [
               {
                 "text": "Because there's nothing else to do.",
@@ -7374,7 +7374,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e40240f95cb1ccd53b33db2e7ebeefc7d9ae7d5bb57360b980a00cd7ae889d42",
+      "hash": "sha256:015ebd7f97289676b81e0037b2e3de64619018aa38f12201816a27a1713d32cc",
       "about": [
         "faction-ember"
       ],
@@ -7401,7 +7401,7 @@
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "I am. Look at it, bigger every year. What should be done about the Somnolith?",
+            "line": "I am. Look at it, bigger every year. What should be done about the Manalith?",
             "choices": [
               {
                 "text": "Nothing. The Choir has it handled.",
@@ -7445,7 +7445,7 @@
           {
             "id": "ask3",
             "speaker": "$hero",
-            "line": "The Choir digs up the Somnolith's shell and sells it back to us. What would you do about their dig?",
+            "line": "The Choir digs up the Manalith's shell and sells it back to us. What would you do about their dig?",
             "choices": [
               {
                 "text": "Leave it. Too many guards.",
@@ -7489,7 +7489,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1cbe61e47e631fdba1e6f64a6de039201bff4c3e5f640338a01a69bd13f31407",
+      "hash": "sha256:b346fa0feab159887d1486aaa87c39f38d31c7a35e59c0afab7526d882f3f018",
       "about": [
         "faction-fendark"
       ],
@@ -7510,7 +7510,7 @@
           {
             "id": "reply",
             "speaker": "$with",
-            "line": "Aether. Same as everyone. Same as you.",
+            "line": "Mana. Same as everyone. Same as you.",
             "next": "ask1"
           },
           {
@@ -7530,7 +7530,7 @@
                 "next": "ask2"
               },
               {
-                "text": "Up to the Somnolith, to keep it asleep.",
+                "text": "Up to the Manalith, to keep it asleep.",
                 "next": "ask2"
               }
             ]
@@ -7834,7 +7834,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f2503918a112100cb2dd5a29562c744ae5faac993bdf812d9ad4ba9dc37c130e",
+      "hash": "sha256:383ca607fcbc23ebc250f822d8a0cc1cf64cd971d2eea04e651907bbe1d433e5",
       "about": [],
       "speakers": [
         "$hero",
@@ -7881,7 +7881,7 @@
           {
             "id": "ask2",
             "speaker": "$hero",
-            "line": "The Somnolith is bigger every season. What do you think it is?",
+            "line": "The Manalith is bigger every season. What do you think it is?",
             "choices": [
               {
                 "text": "A rock in the sky. I try not to look at it.",
@@ -8062,7 +8062,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:48024871fc21db1eabd04cae5fc9d2309576c6bae0b491c7582783c2f41d80d5",
+      "hash": "sha256:a792626dc3f53e714b5b57e6cc4d36a32c4ec512e5a00c3c43eb6065fe790593",
       "about": [
         "faction-wild"
       ],
@@ -8089,7 +8089,7 @@
           {
             "id": "ask1",
             "speaker": "$hero",
-            "line": "Out in the Bloom, red things grow where pieces of the Somnolith fell. Should we burn them?",
+            "line": "Out in the Bloom, red things grow where pieces of the Manalith fell. Should we burn them?",
             "choices": [
               {
                 "text": "Only the ones that bite.",
