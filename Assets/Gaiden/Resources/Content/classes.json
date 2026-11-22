@@ -114,7 +114,7 @@
       "aegiswardens_cleansingvigil",
       "aegiswardens_sanctuaryrite",
       "poison_ward",
-      "mending_touch"
+      "arcane_insight"
     ],
     "DefaultLoadout": [
       "heal",
@@ -1264,18 +1264,11 @@
     ],
     "Card": "Flexible [fighter]. Converts [openings] into [combo finishes].",
     "Portrait": "blue-lion-female",
-    "MalePortrait": "blue-lion-male",
     "ArtSource": "BlueLion",
     "Thumbnail": {
       "Zoom": 1.3186,
       "X": 0.6549,
       "Y": 0.3709
-    },
-    "MaleFigure": {
-      "X": 0.0947,
-      "Y": 0.0791,
-      "W": 0.8096,
-      "H": 0.8418
     },
     "Figure": {
       "X": 0,
@@ -3003,7 +2996,7 @@
       "aegiswardens_preemptiveward",
       "aegiswardens_cleansingvigil",
       "aegiswardens_sanctuaryrite",
-      "mending_touch",
+      "pure_spirit",
       "vigil"
     ],
     "DefaultLoadout": [
@@ -15286,7 +15279,7 @@
       "sleep",
       "sister_benediction",
       "skirmishmenders_guardiansrush",
-      "skirmishmenders_flowingcurrent",
+      "aetherist_aetherpour",
       "skirmishmenders_coveringwithdrawal",
       "mending_touch",
       "vigil"
@@ -23592,18 +23585,11 @@
     ],
     "Card": "Ranged precision. Converts [patience] into a [piercing shot] nothing else in the party can match.",
     "Portrait": "hex-sniper-female",
-    "MalePortrait": "hex-sniper-male",
     "ArtSource": "hexsniper",
     "Thumbnail": {
       "Zoom": 3.8854,
       "X": 0.5027,
       "Y": 0.3152
-    },
-    "MaleFigure": {
-      "X": 0.1768,
-      "Y": 0,
-      "W": 0.6465,
-      "H": 1
     },
     "Figure": {
       "X": 0.1875,
@@ -24399,155 +24385,6 @@
       "Target": "Chain",
       "Range": 3,
       "Label": "Petalfall"
-    },
-    "HomeTree": "cleric"
-  },
-  {
-    "Id": "aetherist",
-    "Name": "Aetherist",
-    "Team": "Hero",
-    "Tags": [
-      "Healer",
-      "Humanoid"
-    ],
-    "Card": "Backline [healer]. Mends an ally and pours an orb into the bank.",
-    "Portrait": "aetherist-female",
-    "MalePortrait": "aetherist-male",
-    "ArtSource": "aetherist",
-    "Thumbnail": {
-      "Zoom": 2.816,
-      "X": 0.488,
-      "Y": 0.1087
-    },
-    "MaleFigure": {
-      "X": 0.0869,
-      "Y": 0.0488,
-      "W": 0.8252,
-      "H": 0.9014
-    },
-    "Figure": {
-      "X": 0.0254,
-      "Y": 0.0322,
-      "W": 0.8887,
-      "H": 0.9443
-    },
-    "Footprint": {
-      "W": 1,
-      "H": 1
-    },
-    "BaseStats": {
-      "Strength": 7,
-      "Vitality": 9,
-      "Agility": 11,
-      "Speed": 12,
-      "Stamina": 12,
-      "Intelligence": 18,
-      "Wisdom": 18,
-      "Luck": 12
-    },
-    "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Stamina": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9,
-      "Luck": 0.6
-    },
-    "Milestones": [
-      {
-        "Level": 5,
-        "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Stamina": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32,
-          "Luck": 0.21
-        }
-      },
-      {
-        "Level": 10,
-        "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Stamina": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41,
-          "Luck": 0.27
-        }
-      },
-      {
-        "Level": 20,
-        "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Stamina": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54,
-          "Luck": 0.36
-        }
-      },
-      {
-        "Level": 40,
-        "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Stamina": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72,
-          "Luck": 0.48
-        }
-      }
-    ],
-    "Resistances": {},
-    "Abilities": [
-      "heal",
-      "mass_heal",
-      "antidote",
-      "regen",
-      "rejuvenate",
-      "silence",
-      "quicken",
-      "sleep",
-      "aetherist_aetherpour",
-      "aegiswardens_preemptiveward",
-      "aegiswardens_cleansingvigil",
-      "aegiswardens_sanctuaryrite",
-      "arcane_insight",
-      "pure_spirit"
-    ],
-    "DefaultLoadout": [
-      "heal",
-      "aegiswardens_preemptiveward",
-      "item:x_potion",
-      "aetherist_aetherpour",
-      "aegiswardens_sanctuaryrite"
-    ],
-    "DropTable": null,
-    "MoveRange": 1,
-    "XpReward": 10,
-    "BossPhases": [],
-    "ChargeAbility": null,
-    "ChargeShape": "Single",
-    "Trap": null,
-    "SnakeSegments": 0,
-    "Role": "Healer",
-    "Support": {
-      "Effect": "Heal",
-      "Magnitude": 0.1,
-      "Target": "Attacker",
-      "Range": 3,
-      "Label": "Cyan Current"
     },
     "HomeTree": "cleric"
   },
