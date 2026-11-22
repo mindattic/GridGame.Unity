@@ -106,7 +106,7 @@ namespace GridGame.App
         // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots and
         // the mana pool), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
-        private static float BarTop => BoardBottom + Space.S16;
+        private static float BarTop => BoardBottom + Space.S24; // 24 px from the board's tiles, also targets (GG-T656, POL-C3)
         /// <summary>GG-T523: on a stage wide enough (2:3, 3:4 tablets) the ability bar leaves the row under the board and
         /// stands beside it as two columns, slots 1-3 on the left and 4-5 + the mana pool on the right, so the info tabs
         /// get the bar's 196 px and the tutorial card room to breathe. A column must still fit a cell of

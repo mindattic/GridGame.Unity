@@ -129,6 +129,8 @@ namespace GridGame.App
                 lbl.style.width = Size.ColumnL; lbl.style.unityTextAlign = TextAnchor.MiddleCenter;
                 var cells = Ui.El("row grow", row);
                 cells.style.justifyContent = Justify.SpaceAround; // cards shrink to share a wide tier rather than wrap
+                // With each card's 12-px margin, the row's edge equals the 24-px gap between cards (GG-T656, POL-C8).
+                cells.style.paddingLeft = cells.style.paddingRight = Space.TargetHalfGap;
                 foreach (var n in tier.OrderBy(RootIndex).ThenBy(x => tree.Nodes.IndexOf(x)))
                     cards[n.Id] = Card(tree, n, h, cells);
             }

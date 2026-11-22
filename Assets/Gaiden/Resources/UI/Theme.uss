@@ -382,7 +382,8 @@
 .kit-actions.kit-note { margin-left: var(--kit-note-actions); padding-left: 0; }
 /* GG-T654: a ListPanel's content fills its viewport and its rows share the spare height, each at most two targets tall. */
 .list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container { min-height: 100%; }
-.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container > .pressable { flex-grow: 1; max-height: var(--row-fill-max); }
+.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container > .pressable,
+.list--fill > .unity-scroll-view__content-viewport > .unity-scroll-view__content-container > .menu-row { flex-grow: 1; max-height: var(--row-fill-max); }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {
