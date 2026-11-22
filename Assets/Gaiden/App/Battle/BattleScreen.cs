@@ -336,7 +336,9 @@ namespace GridGame.App
             var mid = Ui.El("col grow", bar);
             mid.style.alignItems = Align.Center;
             Ui.Text(State.Stage.Name, "h2 shadow", mid);
-            waveLabel = Ui.Text("", "small shadow dim", mid);
+            // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
+            // vanished against a pale shard so the label read as just "Wave" (GG-T666).
+            waveLabel = Ui.Text("", "small shadow", mid);
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
             timerLabel = Ui.Text("", "h1 shadow warn", root);
