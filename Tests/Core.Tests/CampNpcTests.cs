@@ -12,10 +12,10 @@ namespace GridGame.Tests
     {
         private static ContentDb Real => TestKit.Real;
 
-        private static readonly string[] Npcs = { CampNpcs.Merchant, CampNpcs.Blacksmith, CampNpcs.Alchemist, CampNpcs.Enchantress, CampNpcs.Innkeeper };
+        private static readonly string[] Npcs = { CampNpcs.Merchant, CampNpcs.Blacksmith, CampNpcs.Alchemist, CampNpcs.Enchantress, CampNpcs.Innkeeper, CampNpcs.Aetherist };
 
         [Test]
-        public void The_five_camp_npcs_are_the_dialogue_npcs()
+        public void The_six_camp_npcs_are_the_dialogue_npcs()
         {
             Assert.That(CampNpcs.All, Is.EquivalentTo(Npcs));
         }
@@ -105,6 +105,20 @@ namespace GridGame.Tests
             Assert.That(met[CampNpcs.Blacksmith], Is.EqualTo("greenvalley-03"));
             Assert.That(met[CampNpcs.Alchemist], Is.EqualTo("lanternroad-01"));
             Assert.That(met[CampNpcs.Enchantress], Is.EqualTo("swamp-01"));
+            Assert.That(met[CampNpcs.Aetherist], Is.EqualTo("desert-02")); // GG-T570: the refinery, at The Shardfall II
+        }
+
+        /// <summary>GG-T570: a save that had met every other keeper before the Aetherist existed keeps its veteran Camp.</summary>
+        [Test]
+        public void A_save_that_met_every_other_keeper_meets_the_aetherist_on_load()
+        {
+            var s = Progression.NewGame(Real, "T");
+            foreach (var n in Npcs) if (n != CampNpcs.Aetherist) s.Flags.Add(ContentLoader.NpcFlagPrefix + n);
+            SaveMigrations.JoinNewKeepers(s);
+            Assert.That(CampNpcs.Joined(s, CampNpcs.Aetherist));
+            var fresh = Progression.NewGame(Real, "T");
+            SaveMigrations.JoinNewKeepers(fresh);
+            Assert.That(CampNpcs.Joined(fresh, CampNpcs.Aetherist), Is.False, "a new game still meets the Aetherist on the road");
         }
 
         /// <summary>GG-T537: no vendor waits on an incidental trigger. Every join beat is an unconditional StageCleared beat,

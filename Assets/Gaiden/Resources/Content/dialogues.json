@@ -546,6 +546,28 @@
     ]
   },
   {
+    "Id": "desert_aetherist",
+    "Title": "The dust-sifter",
+    "Trigger": { "Kind": "StageCleared", "Id": "desert-02" },
+    "Speakers": [
+      { "Id": "aetherist", "Name": "Aetherist", "Portrait": "aetherist-00" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "aetherist", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "aetherist",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "aetherist" } ] },
+          { "Next": "hymn" }
+        ]
+      },
+      { "Id": "hymn", "Speaker": "aetherist", "Effects": [ { "Type": "JoinNpc", "Id": "aetherist" } ], "Next": "joined" },
+      { "Id": "joined", "Speaker": "aetherist" }
+    ]
+  },
+  {
     "Id": "swamp_caravan",
     "Title": "Wheels from the wrecks",
     "Trigger": { "Kind": "StageCleared", "Id": "swamp-02" },
@@ -904,6 +926,25 @@
       },
       { "Id": "runes", "Speaker": "enchantress", "Next": "greet" },
       { "Id": "bye", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "camp_aetherist_chat",
+    "Title": "Chat with the aetherist",
+    "Trigger": { "Kind": "Talk", "Id": "npc:aetherist" },
+    "Speakers": [ { "Id": "aetherist", "Name": "Aetherist", "Portrait": "aetherist-00" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "aetherist",
+        "Choices": [
+          { "Next": "dust" },
+          { "Next": "hymn" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "dust", "Speaker": "aetherist", "Next": "greet" },
+      { "Id": "hymn", "Speaker": "aetherist", "Next": "greet" },
+      { "Id": "bye", "Speaker": "aetherist" }
     ]
   },
   {
@@ -2113,51 +2154,6 @@
     "Trigger": {
       "Kind": "Talk",
       "Id": "herald"
-    },
-    "Speakers": [
-      {
-        "Id": "hero",
-        "Class": "$with"
-      }
-    ],
-    "Nodes": [
-      {
-        "Id": "ask",
-        "Speaker": "hero",
-        "Choices": [
-          {
-            "Next": "wrong"
-          },
-          {
-            "Next": "right",
-            "Effects": [
-              {
-                "Type": "GrantSkillPoint",
-                "Id": "$with"
-              }
-            ]
-          },
-          {
-            "Next": "wrong"
-          }
-        ]
-      },
-      {
-        "Id": "right",
-        "Speaker": "hero"
-      },
-      {
-        "Id": "wrong",
-        "Speaker": "hero"
-      }
-    ]
-  },
-  {
-    "Id": "talk_quiz_aetherist",
-    "Title": "Advice",
-    "Trigger": {
-      "Kind": "Talk",
-      "Id": "aetherist"
     },
     "Speakers": [
       {

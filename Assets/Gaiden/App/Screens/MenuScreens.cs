@@ -28,7 +28,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(Backdrop, 1));
+            LivingBackdrop.Show(bg, Backdrop, 1);
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
             var col = Ui.El("fill col", root);
             var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel, Subtitle);
@@ -84,7 +84,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
+            LivingBackdrop.Show(bg, "cityruins", 0);
             var shade = Ui.El("fill", root);
             shade.style.backgroundColor = new Color(0, 0, 0.05f, 0.45f);
 
@@ -139,7 +139,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
+            LivingBackdrop.Show(bg, "cityruins", 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(newGame ? "New Game" : "Load Game", () => App.Router.Back(), col, out _);
@@ -248,7 +248,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
+            LivingBackdrop.Show(bg, "cityruins", 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Choose Your Party", () => App.Router.Back(), col, out _);
@@ -492,7 +492,7 @@ namespace GridGame.App
             if (App.Overlay.Q(TimedJobView.VeilName) == null)
                 foreach (var done in Paywall.FinishReady(c, s, DateTime.UtcNow)) { App.Toast(done.Message ?? "Done"); App.Persist(); }
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(ThemeFor(c, s), 2));
+            LivingBackdrop.Show(bg, ThemeFor(c, s), 2);
             bg.style.unityBackgroundImageTintColor = Palette.TextDim;
 
             var col = Ui.El("fill col", root);
@@ -915,7 +915,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(backdrop, 0));
+            LivingBackdrop.Show(bg, backdrop, 0);
             bg.style.unityBackgroundImageTintColor = new Color(0.35f, 0.35f, 0.45f);
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
@@ -992,7 +992,7 @@ namespace GridGame.App
         private void BuildRoll(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(App.Content.Campaign.Ending?.Backdrop ?? "cityruins", 3));
+            LivingBackdrop.Show(bg, App.Content.Campaign.Ending?.Backdrop ?? "cityruins", 3);
             bg.style.unityBackgroundImageTintColor = new Color(0.25f, 0.25f, 0.32f);
             var clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;

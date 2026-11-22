@@ -57,6 +57,10 @@ namespace GridGame.Core.Content
             db.Vfx = ReadOne<VfxStyleSheet>(readText, "vfxstyle") ?? new VfxStyleSheet();
             db.VfxPrefabs = ReadOne<VfxCatalog>(readText, "vfx") ?? new VfxCatalog();
             db.AttackTypes = ReadOne<AttackTypeSheet>(readText, "attacktypes") ?? new AttackTypeSheet(); // GG-T556
+            db.Sky = ReadOne<SkyDef>(readText, "sky") ?? new SkyDef(); // GG-T576
+            var layers = ReadOne<Dictionary<string, BackdropLayerDef>>(readText, "backdroplayers");
+            if (layers != null)
+                foreach (var kv in layers) db.BackdropLayers[kv.Key] = kv.Value;
             var elements = ReadOne<ElementTableDef>(readText, "elements"); // GG-T371
             db.ElementsFileMissing = elements == null; // GG-T416: only a missing file is reported, not a hand-built ContentDb
             db.Elements = elements ?? new ElementTableDef();
@@ -296,6 +300,7 @@ namespace GridGame.Core.Content
                     else if (stageThemeOwner.TryGetValue(s, out var owner)) p.Add($"theme {t.Id}: stage '{s}' already belongs to theme '{owner}'");
                     else stageThemeOwner[s] = t.Id;
                 }
+            SkyDef.Validate(db, p); // GG-T576
             ValidateCrawl(db, db.Campaign.Prologue, "campaign Prologue", false, p);
             ValidateCrawl(db, db.Campaign.Ending, "campaign Ending", true, p);
             ValidateChapters(db, p);
@@ -644,6 +649,11 @@ namespace GridGame.Core.Content
 
         public const string NpcFlagPrefix = "npc:";
 
+        /// <summary>GG-T570: a speaker Portrait that names a Portraits/ file rather than a class (<c>aetherist-00</c>: an
+        /// asset stem plus its two-digit number), accepted as such when validation can't look on disk.</summary>
+        public static readonly System.Text.RegularExpressions.Regex OwnPortraitName =
+            new System.Text.RegularExpressions.Regex(@"^[a-z0-9]+(-[a-z0-9]+)*-\d\d$");
+
         /// <summary>The Merchant's cheap Empty Bottle (GG-T176): an Alchemy recipe that takes one is a "bottle recipe",
         /// brewed from it plus looted monster trophies.</summary>
         public const string EmptyBottle = "empty_bottle";
@@ -780,10 +790,15 @@ namespace GridGame.Core.Content
                 else if (s.Class == "$recruit") { if (!joinsHero) p.Add($"{w} speaker {s.Id}: \"$recruit\" needs a JoinHero effect in this dialogue"); }
                 else if (s.Class != null) { if (db.TryClass(s.Class) == null) p.Add($"{w} speaker {s.Id}: unknown class '{s.Class}'"); }
                 else if (string.IsNullOrEmpty(s.Portrait) || string.IsNullOrEmpty(s.Name)) p.Add($"{w} speaker {s.Id}: needs a Class, or a Name and a Portrait");
-                // A speaker's Portrait names the class whose art it shows (GG-T557).
+                // A speaker's Portrait names the class whose art it shows (GG-T557), or (GG-T570) a Portraits/ file no class
+                // draws: a Camp NPC with art of its own (the Aetherist, aetherist-00), which must then be on disk.
                 var portrait = s.Portrait ?? (s.Class != null && !s.Class.StartsWith("$") ? s.Class : null);
                 var pc = portrait == null ? null : db.TryClass(portrait);
-                if (portrait != null && pc == null) p.Add($"{w} speaker {s.Id}: portrait '{portrait}' is not a class");
+                if (portrait != null && pc == null)
+                {
+                    bool ownFile = portraitExists != null ? portraitExists(portrait) : OwnPortraitName.IsMatch(portrait);
+                    if (!ownFile) p.Add($"{w} speaker {s.Id}: portrait '{portrait}' is not a class or a portrait file");
+                }
                 else if (pc != null && portraitExists != null && !portraitExists(pc.PortraitFile())) p.Add($"{w} speaker {s.Id}: missing portrait '{pc.PortraitFile()}'");
             }
 

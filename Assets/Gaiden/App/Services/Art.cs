@@ -68,16 +68,23 @@ namespace GridGame.App
         public static Texture2D Portrait(string classId, HeroVariant v, int? variant = null)
         {
             var def = Class(classId);
+            if (def == null && IsOwnPortrait(classId)) return PortraitByFile(classId, null, false); // GG-T570: an NPC's own art
             bool male = v == HeroVariant.Male && HasMaleArt(classId);
             return PortraitByFile(def?.PortraitFile(male, variant), def, male);
         }
 
-        /// <summary>Whether <paramref name="classId"/> is a class whose portrait file exists (dialogue, the death dissolve).</summary>
+        /// <summary>Whether <paramref name="classId"/> is a class whose portrait file exists (dialogue, the death dissolve),
+        /// or (GG-T570) a Portraits/ file of its own that no class draws: a Camp NPC with art of its own, like the Aetherist
+        /// (<c>aetherist-00</c>), drawn whole (no class, so no figure box).</summary>
         public static bool HasPortrait(string classId)
         {
             var def = Class(classId);
-            return def != null && Exists(PortraitFolder + def.PortraitFile());
+            return def != null ? Exists(PortraitFolder + def.PortraitFile()) : IsOwnPortrait(classId);
         }
+
+        /// <summary>GG-T570: <paramref name="id"/> names a Portraits/ file directly (<c>aetherist-00</c>), not a class.</summary>
+        private static bool IsOwnPortrait(string id) =>
+            !string.IsNullOrEmpty(id) && !id.StartsWith("$") && GameApp.I?.Content != null && Exists(PortraitFolder + id);
 
         private static ClassDef Class(string classId) =>
             string.IsNullOrEmpty(classId) || GameApp.I == null ? null : GameApp.I.Content?.TryClass(classId);
@@ -264,9 +271,16 @@ namespace GridGame.App
         /// (<see cref="Backdrops.Resolve"/>).</summary>
         public static Texture2D Background(string theme, int index = 0)
         {
-            var content = GameApp.I != null ? GameApp.I.Content : null;
-            var t = Resources.Load<Texture2D>(Backdrops.Resolve(theme, index, BackgroundSet, x => Backdrops.SetOf(content, x)));
+            var t = Resources.Load<Texture2D>(BackgroundKey(theme, index));
             return t != null ? t : Load(Backdrops.Fallback);
+        }
+
+        /// <summary>The resource key <see cref="Background"/> loads (GG-T576: <see cref="LivingBackdrop"/> reads the
+        /// backdrop's split from it).</summary>
+        public static string BackgroundKey(string theme, int index = 0)
+        {
+            var content = GameApp.I != null ? GameApp.I.Content : null;
+            return Backdrops.Resolve(theme, index, BackgroundSet, x => Backdrops.SetOf(content, x));
         }
 
         // ── Generated pieces ────────────────────────────────────────────────────────

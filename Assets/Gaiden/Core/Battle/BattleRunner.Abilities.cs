@@ -308,7 +308,7 @@ namespace GridGame.Core.Battle
 
             if (a.DrainsOrbs > 0 && targets.Exists(t => t.IsHero && t.Team != caster.Team)) DrainOrbs(caster, a);
             if (a.LifeCost > 0f && caster.Alive && !S.IsOver) GiveEssence(caster, a);
-            // GG-T337: the Aetherist pours aether in — an orb grant riding a heal lands once it has reached someone.
+            // GG-T337: Aether Pour (the Sister's since the Aetherist hero was retired, GG-T570) pours aether in — an orb grant riding a heal lands once it has reached someone.
             if (a.PoursOrbs && !S.IsOver) for (int i = 0; i < a.GrantsOrbs; i++) MintOrb(caster.Id, "aether");
             if (a.StepBack > 0 && caster.Alive && !S.IsOver) StepAway(caster, a.StepBack);
         }

@@ -30,6 +30,11 @@ namespace GridGame.Core.Content
         public AttackTypeSheet AttackTypes = new AttackTypeSheet();
         /// <summary>vfx.json (GG-T269): the effect prefabs vfxstyle.json points at.</summary>
         public VfxCatalog VfxPrefabs = new VfxCatalog();
+        /// <summary>sky.json (GG-T576): the living backdrop's Moon, Somnolith (per region), shards and parallax.</summary>
+        public SkyDef Sky = new SkyDef();
+        /// <summary>backdroplayers.json (GG-T576, tools/split_backdrops.py): which backdrops are split into sky and
+        /// foreground plates, keyed by file stem (<c>halcyon-00</c>).</summary>
+        public Dictionary<string, BackdropLayerDef> BackdropLayers = new Dictionary<string, BackdropLayerDef>(StringComparer.OrdinalIgnoreCase);
         /// <summary>elements.json (GG-T371): the elemental interaction table (counters, statuses, tile reactions).</summary>
         public ElementTableDef Elements = new ElementTableDef();
         /// <summary>True when <see cref="ContentLoader.Load"/> found no elements.json (GG-T416): only then is a missing element
@@ -112,6 +117,9 @@ namespace GridGame.Core.Content
         public readonly List<string> TextProblems = new List<string>();
         /// <summary>The camp NPCs' blurbs (Prose "npc:&lt;id&gt;" descriptions), by NPC id.</summary>
         public readonly Dictionary<string, string> NpcBlurbs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>GG-T570: a Camp shop keeper's barks by occasion ("aetherist/refine", <see cref="DialogueDef.ShopBarks"/>),
+        /// the lines of the Prose bark <c>bark:shop/&lt;npc&gt;/&lt;occasion&gt;</c>; a missing text is one placeholder line.</summary>
+        public readonly Dictionary<string, List<string>> ShopBarks = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         /// <summary>GG-T374: each campaign region's and stage's description (Prose "place:&lt;theme|stage&gt;"), by theme or stage id.</summary>
         public readonly Dictionary<string, string> PlaceBlurbs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         /// <summary>GG-T374: each hero faction's description (Prose "faction:&lt;id&gt;"), by faction id.</summary>

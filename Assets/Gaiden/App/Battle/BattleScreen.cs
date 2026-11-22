@@ -262,7 +262,7 @@ namespace GridGame.App
             }
 
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(State.Stage.Theme, Math.Abs(stageId.GetHashCode() % 4096))); // Art wraps it over the theme's own count (GG-T344)
+            LivingBackdrop.Show(bg, State.Stage.Theme, Math.Abs(stageId.GetHashCode() % 4096)); // Art wraps it over the theme's own count (GG-T344); staged sky (GG-T576)
             bg.style.unityBackgroundImageTintColor = new Color(0.78f, 0.78f, 0.86f);
             shake = Ui.El("fill", root);
 

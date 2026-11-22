@@ -57,7 +57,7 @@ namespace GridGame.App
         {
             var c = App.Content;
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(ThemeOf(c, report, stageId), 3));
+            LivingBackdrop.Show(bg, ThemeOf(c, report, stageId), 3);
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
             var col = Ui.El("fill col", root);
             col.style.paddingTop = Fit.H(5.5f); col.style.paddingBottom = Space.S48;

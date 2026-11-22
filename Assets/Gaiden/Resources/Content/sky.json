@@ -1,0 +1,34 @@
+{
+  "Somnolith": { "Image": "Sky/somnolith-00", "Placeholder": false, "Size": 0.2, "X": 0.7, "Y": 0.35, "Rotation": -8 },
+  "Moon": { "Image": "Sky/moon-00", "Size": 0.085, "X": 0.2, "Y": 0.16, "Opacity": 0.92 },
+  "Shards": {
+    "Images": [
+      "Sky/somnolith-shard-00", "Sky/somnolith-shard-01", "Sky/somnolith-shard-02",
+      "Sky/somnolith-shard-03", "Sky/somnolith-shard-04", "Sky/somnolith-shard-05"
+    ],
+    "Count": 7,
+    "MinSize": 0.035,
+    "MaxSize": 0.09,
+    "CrossSeconds": 80,
+    "Spin": 3,
+    "Opacity": 0.9
+  },
+  "Parallax": { "Amplitude": 0.012, "Seconds": 36 },
+  "Regions": {
+    "greenvalley": { "Size": 0.1, "X": 0.74, "Y": 0.3, "Rotation": -10 },
+    "lanternroad": { "Size": 0.12, "X": 0.7, "Y": 0.32, "Rotation": -9 },
+    "desert": { "Size": 0.14, "X": 0.72, "Y": 0.33, "Rotation": -9 },
+    "swamp": { "Size": 0.16, "X": 0.68, "Y": 0.34, "Rotation": -8 },
+    "cave": { "Size": 0.18, "X": 0.7, "Y": 0.35, "Rotation": -8 },
+    "still": { "Size": 0.2, "X": 0.7, "Y": 0.35, "Rotation": -7 },
+    "cityruins": { "Size": 0.23, "X": 0.66, "Y": 0.36, "Rotation": -7 },
+    "cathedral": { "Size": 0.26, "X": 0.66, "Y": 0.37, "Rotation": -6 },
+    "bloom": { "Size": 0.3, "X": 0.64, "Y": 0.38, "Rotation": -6 },
+    "greenvalley2": { "Size": 0.34, "X": 0.62, "Y": 0.4, "Rotation": -5 },
+    "cityruins2": { "Size": 0.38, "X": 0.6, "Y": 0.42, "Rotation": -5 },
+    "swamp2": { "Size": 0.42, "X": 0.6, "Y": 0.43, "Rotation": -4 },
+    "desert2": { "Size": 0.46, "X": 0.58, "Y": 0.45, "Rotation": -4 },
+    "cave2": { "Size": 0.5, "X": 0.56, "Y": 0.46, "Rotation": -3 },
+    "morrowsshadow": { "Size": 0.78, "X": 0.52, "Y": 0.5, "Rotation": -2 }
+  }
+}

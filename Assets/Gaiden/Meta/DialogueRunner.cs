@@ -370,6 +370,9 @@ namespace GridGame.Meta
         public const string Alchemist = "alchemist";
         public const string Enchantress = "enchantress";
         public const string Innkeeper = "innkeeper";
+        /// <summary>GG-T570: the Aetherist, a Choir defector who refines Aetherite Dust into Aetherite Shards at Camp (the
+        /// retired hero class's lore and art, BIBLE §25.0.1). Joins after The Shardfall II.</summary>
+        public const string Aetherist = "aetherist";
 
         public static IReadOnlyList<string> All => DialogueDef.Npcs;
 

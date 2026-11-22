@@ -58,9 +58,15 @@ namespace GridGame.EditorTools
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
             EditorUserBuildSettings.buildAppBundle = false;
-            // -vulkan: Vulkan-only test build (diagnostics); default keeps Unity's automatic API list.
-            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, !CommandLine("-vulkan"));
-            if (CommandLine("-vulkan")) PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { UnityEngine.Rendering.GraphicsDeviceType.Vulkan });
+            // GG-T549: the dev APK is GLES3-first. A development build labels every Vulkan object, and the Android
+            // Emulator's Vulkan driver (vulkan.ranchu) crashes in vk_common_SetDebugUtilsObjectNameEXT ~3 min in, so
+            // emulator testing no longer depends on the Emulator Suite hiding Vulkan. Real phones that lack GLES3 still
+            // fall back to Vulkan. -vulkan: Vulkan-only test build (diagnostics). The release bundle
+            // (BuildAndroidRelease) keeps Unity's automatic list.
+            PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
+            PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, CommandLine("-vulkan")
+                ? new[] { UnityEngine.Rendering.GraphicsDeviceType.Vulkan }
+                : new[] { UnityEngine.Rendering.GraphicsDeviceType.OpenGLES3, UnityEngine.Rendering.GraphicsDeviceType.Vulkan });
             Build(BuildTarget.Android, CommandLine("-vulkan") ? "Build/Android/GridGameGaiden-vulkan.apk" : "Build/Android/GridGameGaiden.apk", true);
         }
 
@@ -312,8 +318,8 @@ namespace GridGame.EditorTools
     public sealed class GaidenImport : AssetPostprocessor
     {
         /// <summary>Bumped whenever the rules below change, so Unity re-imports everything they touch on its own
-        /// (3: GG-T499 Android overrides).</summary>
-        public override uint GetVersion() => 3;
+        /// (3: GG-T499 Android overrides; 4: GG-T576 sky plates and sky bodies).</summary>
+        public override uint GetVersion() => 4;
 
         private void OnPreprocessTexture()
         {
@@ -334,6 +340,9 @@ namespace GridGame.EditorTools
             // GG-T353: backdrops keep the art's resolution (1536x3072 originals): 4096 so Unity never halves them.
             // Still CompressedHQ (BC7 / ASTC 4x4, ~1 byte per pixel, no mips): ~4.5 MB of texture memory each.
             else if (assetPath.Contains("/Backgrounds/")) ti.maxTextureSize = 4096;
+            // GG-T576: sky plates are soft 512x1024 fills behind a split backdrop's foreground; the Somnolith (786 px),
+            // its shards and the Moon are drawn at most about screen-width.
+            else if (assetPath.Contains("/Skies/") || assetPath.Contains("/Sky/")) ti.maxTextureSize = 1024;
             else if (assetPath.Contains("/Icons/")) { ti.maxTextureSize = 128; ti.textureCompression = TextureImporterCompression.Uncompressed; }
             AndroidOverride(ti);
         }
@@ -351,6 +360,10 @@ namespace GridGame.EditorTools
             var a = ti.GetPlatformTextureSettings("Android");
             if (assetPath.Contains("/Backgrounds/")) { a.maxTextureSize = 2048; a.format = TextureImporterFormat.ASTC_8x8; }
             else if (assetPath.Contains("/Portraits/")) { a.maxTextureSize = 1024; a.format = TextureImporterFormat.ASTC_6x6; }
+            // GG-T576: a split backdrop's foreground plate stays under /Backgrounds/ (ASTC 8x8 keeps its alpha at the same
+            // 1 bit per pixel); its sky plate is soft, so ASTC 12x12 (~0.9 bits per pixel, ~60 KB each).
+            else if (assetPath.Contains("/Skies/")) { a.maxTextureSize = 1024; a.format = TextureImporterFormat.ASTC_12x12; }
+            else if (assetPath.Contains("/Sky/")) { a.maxTextureSize = 1024; a.format = TextureImporterFormat.ASTC_6x6; }
             else return;
             a.overridden = true;
             a.compressionQuality = 100; // "best" ASTC search: slower import, better blocks, same size

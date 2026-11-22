@@ -371,6 +371,60 @@
         ]
       }
     },
+    "dialogue:camp_aetherist_chat": {
+      "key": "dialogue:camp_aetherist_chat",
+      "id": "conversation-camp-aetherist-chat",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0abadf13ce0a5ce8abbf02ac3b5d35b4de204a38ed6a71f22204b52deccb04ae",
+      "about": [],
+      "speakers": [
+        "$aetherist"
+      ],
+      "payload": {
+        "title": "Chat with the aetherist",
+        "start": "greet",
+        "nodes": [
+          {
+            "id": "greet",
+            "speaker": "$aetherist",
+            "line": "",
+            "choices": [
+              {
+                "text": "",
+                "next": "dust"
+              },
+              {
+                "text": "",
+                "next": "hymn"
+              },
+              {
+                "text": "",
+                "next": "bye"
+              }
+            ]
+          },
+          {
+            "id": "dust",
+            "speaker": "$aetherist",
+            "line": "",
+            "next": "greet"
+          },
+          {
+            "id": "hymn",
+            "speaker": "$aetherist",
+            "line": "",
+            "next": "greet"
+          },
+          {
+            "id": "bye",
+            "speaker": "$aetherist",
+            "line": ""
+          }
+        ]
+      }
+    },
     "dialogue:camp_alchemist_chat": {
       "key": "dialogue:camp_alchemist_chat",
       "id": "conversation-camp-alchemist-chat",
@@ -984,6 +1038,65 @@
             "id": "b",
             "speaker": "character-alchemist",
             "line": "Consequat duis aute irure dolor in reprehenderit. In voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint. Occaecat cupidatat non proident sunt."
+          }
+        ]
+      }
+    },
+    "dialogue:desert_aetherist": {
+      "key": "dialogue:desert_aetherist",
+      "id": "conversation-desert-aetherist",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3f69080db31ab623ab81c0251cc8c640cc2c904322d5de48f84bb25b1d62599f",
+      "about": [
+        "place-desert-02"
+      ],
+      "speakers": [
+        "$aetherist",
+        "$lead"
+      ],
+      "payload": {
+        "title": "The dust-sifter",
+        "start": "hail",
+        "nodes": [
+          {
+            "id": "hail",
+            "speaker": "$aetherist",
+            "line": "",
+            "next": "reply"
+          },
+          {
+            "id": "reply",
+            "speaker": "$lead",
+            "line": "",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "$aetherist",
+            "line": "",
+            "choices": [
+              {
+                "text": "",
+                "next": "joined"
+              },
+              {
+                "text": "",
+                "next": "hymn"
+              }
+            ]
+          },
+          {
+            "id": "hymn",
+            "speaker": "$aetherist",
+            "line": "",
+            "next": "joined"
+          },
+          {
+            "id": "joined",
+            "speaker": "$aetherist",
+            "line": ""
           }
         ]
       }

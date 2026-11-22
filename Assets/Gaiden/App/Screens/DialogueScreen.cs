@@ -114,7 +114,7 @@ namespace GridGame.App
             shownLines = shownLog = 0;
             talking = -1;
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(backdrop, 0));
+            LivingBackdrop.Show(bg, backdrop, 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
 
             // The stage: a whole portrait standing on each side, feet behind the text box.

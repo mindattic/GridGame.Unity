@@ -685,6 +685,7 @@ namespace GridGame.Meta
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
+            JoinNewKeepers(s);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null && beforeGearGate)
                 foreach (var h in s.Roster)
@@ -700,9 +701,10 @@ namespace GridGame.Meta
         /// GG-T531). Core/Meta can't log, so the save store logs these after a load.</summary>
         public static readonly List<string> Notes = new List<string>();
 
-        /// <summary>GG-T531: a hero whose class no longer exists (the Echo was cut) can't be built into a battle, so it
-        /// leaves the roster and the party. Its gear goes back to the bag with its wear (as the v3 armor split did, nobody's
-        /// gear vanishes); its levels can't move to a class it never was. Idempotent: a clean roster is untouched.</summary>
+        /// <summary>GG-T531: a hero whose class no longer exists (the Echo was cut; the Aetherist, GG-T570, became a Camp
+        /// NPC) can't be built into a battle, so it leaves the roster and the party. Its gear goes back to the bag with its
+        /// wear (as the v3 armor split did, nobody's gear vanishes); its levels and skill points can't move to a class it
+        /// never was. Idempotent: a clean roster is untouched. Never throws: a hero it can't clear is still removed.</summary>
         public static void DropRetiredHeroes(SaveData s, ContentDb c)
         {
             if (s?.Roster == null || c == null) return;
@@ -711,20 +713,42 @@ namespace GridGame.Meta
                 var h = s.Roster[i];
                 if (h == null) { s.Roster.RemoveAt(i); continue; }
                 if (h.ClassId != null && c.TryClass(h.ClassId) != null) continue;
-                h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();
-                h.Jewelry ??= new Dictionary<EquipmentSlot, string>();
-                var slots = new List<EquipmentSlot> { EquipmentSlot.Weapon };
-                slots.AddRange(h.Armor.Keys);
-                slots.AddRange(h.Jewelry.Keys);
-                foreach (var slot in slots)
+                try
                 {
-                    try { Equipment.Unequip(c, s, h, slot); }
-                    catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't return {slot} gear ({e.Message})"); }
+                    h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();
+                    h.Jewelry ??= new Dictionary<EquipmentSlot, string>();
+                    var slots = new List<EquipmentSlot> { EquipmentSlot.Weapon };
+                    slots.AddRange(h.Armor.Keys);
+                    slots.AddRange(h.Jewelry.Keys);
+                    foreach (var slot in slots)
+                    {
+                        try { Equipment.Unequip(c, s, h, slot); }
+                        catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't return {slot} gear ({e.Message})"); }
+                    }
                 }
+                catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't clear its gear ({e.Message})"); }
                 s.Roster.RemoveAt(i);
                 s.Party?.RemoveAll(id => string.Equals(id, h.ClassId, StringComparison.OrdinalIgnoreCase));
                 Notes.Add($"hero class '{h.ClassId ?? "(none)"}' no longer exists; removed from the roster, gear returned to the bag");
             }
+        }
+
+        /// <summary>GG-T570: a save that had already met every Camp keeper before a new one existed (the Aetherist) is a
+        /// veteran Camp (<see cref="CampUnlocks"/>): it meets the newcomer on load too, so nothing it had open closes. A save
+        /// past the newcomer's join stage gets them from <see cref="EnsureVendors"/> anyway. Idempotent; never throws.</summary>
+        public static void JoinNewKeepers(SaveData s)
+        {
+            if (s == null) return;
+            try
+            {
+                s.Flags ??= new HashSet<string>();
+                if (CampNpcs.Joined(s, CampNpcs.Aetherist)) return;
+                foreach (var npc in CampNpcs.All)
+                    if (npc != CampNpcs.Aetherist && !CampNpcs.Joined(s, npc)) return;
+                s.Flags.Add(ContentLoader.NpcFlagPrefix + CampNpcs.Aetherist);
+                Notes.Add("the Aetherist joined (the save had met every other Camp keeper, GG-T570)");
+            }
+            catch (Exception e) { Notes.Add($"couldn't bring the Aetherist: {e.Message}"); }
         }
 
         /// <summary>GG-T533: every save holds the fixed lead (<see cref="Progression.LeadClass"/>), first in the party. A save

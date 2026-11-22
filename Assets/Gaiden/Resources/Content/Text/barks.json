@@ -562,6 +562,90 @@
         ]
       }
     },
+    "bark:shop/aetherist/greet": {
+      "key": "bark:shop/aetherist/greet",
+      "id": "bark-shop-aetherist-greet",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9f31312b456f2c16e3360e2ea0fbf7e84ac67f47494b807bd862403117359b38",
+      "about": [
+        "character-aetherist"
+      ],
+      "speakers": [
+        "character-aetherist"
+      ],
+      "payload": {
+        "speaker": "character-aetherist",
+        "context": "shop greet",
+        "lines": [
+          "Dust in your pockets? Bring it here before it forgets what it wants to be."
+        ]
+      }
+    },
+    "bark:shop/aetherist/leave": {
+      "key": "bark:shop/aetherist/leave",
+      "id": "bark-shop-aetherist-leave",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:04b811c238222845dfef06d675fc8216f458fba78d1df668823cc77a4cc9f832",
+      "about": [
+        "character-aetherist"
+      ],
+      "speakers": [
+        "character-aetherist"
+      ],
+      "payload": {
+        "speaker": "character-aetherist",
+        "context": "shop goodbye",
+        "lines": [
+          "Go on. I'll be here, same as the thing I'm sifting."
+        ]
+      }
+    },
+    "bark:shop/aetherist/refine": {
+      "key": "bark:shop/aetherist/refine",
+      "id": "bark-shop-aetherist-refine",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:63f82dd0e72ec179643482cd7a0428c3118f8b1ee96c517608c39ae1bc15309c",
+      "about": [
+        "character-aetherist"
+      ],
+      "speakers": [
+        "character-aetherist"
+      ],
+      "payload": {
+        "speaker": "character-aetherist",
+        "context": "shop refine",
+        "lines": [
+          "There. I sang it the way they never taught me, and it came in instead of going out."
+        ]
+      }
+    },
+    "bark:shop/aetherist/short": {
+      "key": "bark:shop/aetherist/short",
+      "id": "bark-shop-aetherist-short",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:03b6fb00f8eed68fa65cb175e77dea7aa7fdee24c64105c74bfbf72ac70af9f4",
+      "about": [
+        "character-aetherist"
+      ],
+      "speakers": [
+        "character-aetherist"
+      ],
+      "payload": {
+        "speaker": "character-aetherist",
+        "context": "shop short on dust",
+        "lines": [
+          "Not enough fell off it yet. Go shake a few more loose and come back."
+        ]
+      }
+    },
     "bark:surprise/cityruins-03/3": {
       "key": "bark:surprise/cityruins-03/3",
       "id": "bark-surprise-cityruins-03-3",

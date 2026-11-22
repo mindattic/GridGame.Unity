@@ -53,7 +53,7 @@ namespace GridGame.App
             var def = c.Class(classId);
 
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background(PostBattleScreen.ThemeOf(c, report, stageId), 1));
+            LivingBackdrop.Show(bg, PostBattleScreen.ThemeOf(c, report, stageId), 1);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col center", root);
 

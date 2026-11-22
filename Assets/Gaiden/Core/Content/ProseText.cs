@@ -105,6 +105,7 @@ namespace GridGame.Core.Content
                 foreach (var n in t.Nodes) k["skillnode:" + n.Id] = "description";
             }
             foreach (var npc in DialogueDef.Npcs) k["npc:" + npc] = "description";
+            foreach (var b in DialogueDef.ShopBarks) k["bark:shop/" + b] = "bark"; // GG-T570
             foreach (var key in DescribedKeys(db).Values) k[key] = "description"; // GG-T374
             foreach (var r in db.RegionRuleOrder) k["rule:" + r.Id] = "description"; // GG-T359: payload name + short
             foreach (var s in db.StageOrder)
@@ -301,6 +302,11 @@ namespace GridGame.Core.Content
             }
             foreach (var npc in DialogueDef.Npcs)
                 db.NpcBlurbs[npc] = Need(Get("npc:" + npc, "description"), "short", "npc:" + npc);
+            foreach (var b in DialogueDef.ShopBarks)
+            {
+                string key = "bark:shop/" + b; // GG-T570: the Aetherist's refinery lines
+                db.ShopBarks[b] = Lines(Get(key, "bark"), key);
+            }
             foreach (var kv in DescribedKeys(db))
             {
                 // GG-T374: places, factions and the caravan crew; a missing key shows the placeholder like any other.

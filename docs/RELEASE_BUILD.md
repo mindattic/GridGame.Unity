@@ -143,7 +143,9 @@ To play the whole game with the mouse as it looks on a given phone or tablet, us
 
 Notes: the Android Emulator is the reference (x86_64 image, real GPU). The suite hides the emulator's Vulkan, so the
 game runs on OpenGL ES 3 there: on the emulator's Vulkan driver the development APK crashed about three minutes in
-(GG-T549). Verified 2026-11-21 on Pixel 7 (20:9), Galaxy Z Flip6 (22:9), iPad 9th gen (4:3), a 480 x 800 mdpi phone
+(a development build labels every Vulkan object). The development APK is now OpenGL ES 3 first with Vulkan as the
+fallback, so any emulator runs it without hiding Vulkan; `-vulkan` still builds a Vulkan-only APK for diagnostics,
+and the release bundle keeps Unity's default list (GG-T549). Verified 2026-11-21 on Pixel 7 (20:9), Galaxy Z Flip6 (22:9), iPad 9th gen (4:3), a 480 x 800 mdpi phone
 and BlueStacks 5; findings filed as GG-T548 (telemetry error console), GG-T550 (4:3 list screens), GG-T551 (tiny text
 at 480 x 800). LDPlayer 4 is Android 7.1 and can't install
 Gaiden (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. The development APK shows Unity's

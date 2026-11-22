@@ -607,7 +607,7 @@ namespace GridGame.Core.Content
         /// (at least 1 HP, never its last one). 0 = free. A heal only (BaseHeal &gt; 0, AllyOnly), 0..<see cref="MaxLifeCost"/>.</summary>
         public float LifeCost;
         public const float MaxLifeCost = 0.5f;
-        /// <summary>GG-T337 (the Aetherist): an orb grant that rides a per-target effect (a heal, a hit, a buff) instead of
+        /// <summary>GG-T337 (Aether Pour, the Sister's since GG-T570): an orb grant that rides a per-target effect (a heal, a hit, a buff) instead of
         /// being the whole ability (Meditate, an ether). It resolves on its targets first, then pours
         /// <see cref="GrantsOrbs"/> into the bank.</summary>
         public bool PoursOrbs => GrantsOrbs > 0 && (BaseHeal > 0 || BaseDamage > 0 || ApplyBuff != null);
@@ -1258,8 +1258,13 @@ namespace GridGame.Core.Content
 
     public sealed class DialogueDef
     {
-        /// <summary>Camp NPC ids a JoinNpc effect / NpcJoined condition / "npc:" Talk may name (GG-T119 gates services on them).</summary>
-        public static readonly string[] Npcs = { "blacksmith", "alchemist", "enchantress", "merchant", "innkeeper" };
+        /// <summary>Camp NPC ids a JoinNpc effect / NpcJoined condition / "npc:" Talk may name (GG-T119 gates services on them).
+        /// GG-T570: the Aetherist (the retired hero class, now the keeper of the Aetherite refinery) joins at The Shardfall II.</summary>
+        public static readonly string[] Npcs = { "blacksmith", "alchemist", "enchantress", "merchant", "innkeeper", "aetherist" };
+        /// <summary>GG-T570: a Camp shop keeper's bark occasions, "&lt;npc&gt;/&lt;occasion&gt;". Each is the Prose bark
+        /// <c>bark:shop/&lt;npc&gt;/&lt;occasion&gt;</c> (its lines, one said at a time), joined into
+        /// <see cref="ContentDb.ShopBarks"/>: the Aetherist greets, refines Dust into Shards, is short of Dust, and says goodbye.</summary>
+        public static readonly string[] ShopBarks = { "aetherist/greet", "aetherist/refine", "aetherist/short", "aetherist/leave" };
         /// <summary>GG-T537: the keeperless Camp stations an OpenStation effect may name (Summon Circle with the Diamond Store,
         /// Bounties with the Mercenaries, the Crucible, the Caravan).</summary>
         public static readonly string[] Stations = { "summon", "bounties", "crucible", "caravan" };

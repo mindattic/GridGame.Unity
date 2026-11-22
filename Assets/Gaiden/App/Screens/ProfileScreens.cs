@@ -18,7 +18,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
+            LivingBackdrop.Show(bg, "cityruins", 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Profiles", () => App.Router.Back(), col, out _);
@@ -81,7 +81,7 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             var bg = Ui.El("fill", root);
-            bg.style.backgroundImage = new StyleBackground(Art.Background("cityruins", 0));
+            LivingBackdrop.Show(bg, "cityruins", 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header(renaming == null ? "New Profile" : "Rename Profile", () => App.Router.Back(), col, out _);

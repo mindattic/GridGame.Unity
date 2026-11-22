@@ -133,20 +133,17 @@ namespace GridGame.Tests
             Assert.That(Formulas.LifeCostHp(db.Abilities["herald_lifegift"], giver), Is.EqualTo(0));
         }
 
-        // ── GG-T337 the Aetherist ───────────────────────────────────────────────────
+        // ── GG-T337 Aether Pour (the Aetherist hero was retired into a Camp NPC, GG-T570) ─────────────
 
         [Test]
-        public void Aetherist_is_a_healer_with_a_valid_kit() => AssertKit("aetherist", "Healer", "aetherist_aetherpour", "cleric");
-
-        [Test]
-        public void Aetherist_is_recruited_as_a_wanderer_of_the_fen_dark() => AssertWanderer("aetherist", "fendark");
-
-        [Test]
-        public void Aetherist_has_an_advice_quiz() => AssertQuiz("aetherist");
-
-        [Test]
-        public void Aetherist_has_her_figure_and_thumbnail() =>
-            AssertArt("aetherist", (0.0254f, 0.0322f, 0.8887f, 0.9443f), (2.816f, 0.4880f, 0.1087f));
+        public void The_retired_aetherist_kit_lives_on_in_other_healers()
+        {
+            Assert.That(Real.TryClass("aetherist"), Is.Null, "no longer a playable hero");
+            Assert.That(Real.Classes["sister"].Abilities, Does.Contain("aetherist_aetherpour"));
+            Assert.That(Real.Classes["cleric"].Abilities, Does.Contain("pure_spirit"));
+            Assert.That(Real.Classes["alchemist"].Abilities, Does.Contain("arcane_insight"));
+            Assert.That(DialogueDef.Npcs, Does.Contain("aetherist"), "the Aetherist keeps the refinery at Camp");
+        }
 
         [Test]
         public void Aether_pour_heals_an_ally_and_pours_an_orb_into_the_bank()
