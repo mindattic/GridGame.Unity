@@ -605,14 +605,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:428203f74c54cfeea85644f073874930bbc0625b4ca1c7ffe474d1300c24633b",
       "about": [
         "class-bluelion"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A great lion with a ragged midnight-blue mane that flares like feathers, a black body traced with pale lines like frost cracking on stone, a long dark tail and paws as wide as shields.",
+        "long": "The Blue Lion came out of the Bloom, where the Somnolith's fallen substance takes root and red flowers break through white stone. The pale lines on the Blue Lion's hide appeared the same season the flowers did. The pride scattered as the sky came closer; the Blue Lion stayed, and now walks with the Warden's crew toward wherever the trouble is coming from."
       }
     },
     "class:blueninja": {
@@ -1869,14 +1869,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:dfbf1bfc208350e6b9aa3b6f3cd1f9450f97dc551a65c6591447b09017237df6",
+      "hash": "sha256:ae5984deca9362f187e374b0af6af030fb8b66ce0f81e12dac2b07ab55f6785d",
       "about": [
         "class-hexsniper"
       ],
       "speakers": [],
       "payload": {
-        "short": "A ranged precision attacker — never needs to be adjacent to strike, and hits hardest one target at a time.",
-        "long": "A Fen-dark sharpshooter who traded curses for coin, picking off the toughest target in a fight from well outside its reach."
+        "short": "A face never seen whole: some meet a stooped figure in a deep blue shroud flecked with red, red eyes glinting under the hood and long clawed hands; others a tall shape in a white cap, filtered black mask and oversized white jacket, plated legs braced to aim. Either way the shot comes from very far off.",
+        "long": "The Hex Sniper keeps watch from the highest wreck in the Arkgrave, where a Fen-dark curse travels as far as an eye can see. For years the targets were whatever crawled out of the old Arks. Then the Choir's collectors began coming into the fog, and the Hex Sniper found a better use for all that patience: watching over the Warden's crew from a very long way off."
       }
     },
     "class:hexstalker": {
@@ -1885,14 +1885,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9e9587262be31f4a0df5a60c32371c0cb0446d62dfabbd3a53a44ae0d94c5042",
+      "hash": "sha256:b86a8a0015e1384a75e509ff50db205bd56d8cadfd736e588976af26fa4d5d23",
       "about": [
         "class-hexstalker"
       ],
       "speakers": [],
       "payload": {
-        "short": "A ranged skirmisher — shoots, falls back and shoots again, never letting a foe close the distance it keeps.",
-        "long": "A Fen-dark hunter who never stays where the last shot came from, drifting through the reeds a step ahead of whatever gives chase."
+        "short": "A stooped figure in a long dark-blue robe flecked with red, red eyes and a bared grin under a ragged hood, and forearms bound tight in black cord down to the claws. Long grey hair and torn hems stream sideways, as if already moving off.",
+        "long": "The Hex Stalker hunts through the Arkgrave's fog and never shoots twice from the same spot. Fen-dark children are told the Hex Stalker can't be caught, which is true, and eats the disobedient, which is not. Whatever is draining the fen villages keeps moving too, and the Hex Stalker joined the Warden because it takes a hunter to follow it."
       }
     },
     "class:hexwarden": {
@@ -1901,14 +1901,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c87ef5afd1d2377746eb9e773fb0daaaaa72af54651ee8fdc1b957a3d79f00d9",
+      "hash": "sha256:4f0f0924d49d479a437c76745c193b78eeb56a2458a79c3b4cd80d6f0188e826",
       "about": [
         "class-hexwarden"
       ],
       "speakers": [],
       "payload": {
-        "short": "A ranged controller — thins out a whole line or column from a distance while hexes slow down anything that gets close.",
-        "long": "A Fen-dark sentinel who wardens the fens from afar, snaring anything that strays too near with a barbed little curse."
+        "short": "A hunched figure under a heavy shawl of mottled dark blue streaked with red, wide unblinking eyes and a thin, wide grin in the shadow of the hood. Long grey hair trails to the ground, and the robes pool round the feet like spilled ink.",
+        "long": "The Hex Warden marks the Fen-dark's borders with curses nobody sees until they step on one. Curse-work leaves its mark on whoever does it, and the Hex Warden has done a great deal of it. The villages around the Arkgrave sleep easier for it, though nobody invites the Hex Warden to supper. The Warden's crew asked politely, which was new, so the Hex Warden came along to keep their road clear."
       }
     },
     "class:hierarch": {
@@ -2525,14 +2525,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c65bb6ee5dab407cefeb15f9cdf056e8db4252d674d10df9844385408cafcce",
+      "hash": "sha256:9b6d23c8fc62178aea2c2cb79e64aa0e319a4f87dee8cbc21fb86f98a82b0d10",
       "about": [
         "class-nighthunter"
       ],
       "speakers": [],
       "payload": {
-        "short": "A flexible fighter with no single defining specialty.",
-        "long": "Walks many roads, never lost for lack of a single path."
+        "short": "A low crouch in an oversized pale hoodie wrapped in loose, flapping strips, baggy grey trousers and a hood that hides everything but a dark mask with a thin orange glow behind it. The forearms end in long hooked claws, wrapped at the wrist.",
+        "long": "The Night Hunter works the Underspire after the neon dims, tracking whatever climbs up out of Halcyon's old service tunnels. Nobody on the Street has seen the face under the hood, and nobody has asked twice. The tunnels have been getting busier, the trail leads out of the city, and the Night Hunter is following it with the Warden."
       }
     },
     "class:odachi": {
@@ -2797,14 +2797,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c1993a4b2395246d32d3c04c27b3c2ac0ef4ef3bc2576ececb64db4e37a034d4",
+      "hash": "sha256:fcfd0a3851caf6dea5a91c68324e83d64a6f732adeff1c32c64197ae0949a6a0",
       "about": [
         "class-raider"
       ],
       "speakers": [],
       "payload": {
-        "short": "A close-quarters specialist that thrives in direct engagements.",
-        "long": "Every scar is a lesson. Every lesson becomes an opening."
+        "short": "A hood pulled low over a shadowed face, a cream cloak and patterned shawl that billow behind, dark baggy trousers tied at the ankles and bare feet. One hand swings a heavy iron lantern on a short chain, glowing like a small sun.",
+        "long": "The Raider runs the Underspire's back stairs, where the neon never reaches, and lights the way with a lantern heavy enough to settle arguments. Couriers pay for a safe climb, and the Raider has never lost a parcel or a passenger. When the Choir's collectors started using the same stairs, the Raider started using the lantern differently, and the Warden's road became a good place to be."
       }
     },
     "class:reaper": {
@@ -3917,14 +3917,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:42c8f260c0d191a7d62298c46f8fcea8a2dcc78dbd9362b7bd08f9a19622775e",
+      "hash": "sha256:fb78f815ae1fb603fec2e05d38eba17b80b8aa6706ef258e35dcfec435becdd0",
       "about": [
         "class-warden"
       ],
       "speakers": [],
       "payload": {
-        "short": "Halcyon's last guard and the First Sleeper: wakes first, stands over the sleepers and keeps their light.",
-        "long": "Left on watch over the Still on the night of the Undertow, Warden woke twelve centuries late, still on duty, sworn to a city that no longer exists."
+        "short": "Long white hair, a small dark horned crest tied with a red bow, and silver plate with a red gem at the breast over a red tabard. A long red sash trails to the ground, and one hand rests on a towering silver greatsword, chained and red-tipped, planted point-down like a post.",
+        "long": "The Warden is the Last Sleeper, Halcyon's last guard, who woke in the Still 1,200 years too late. The city is gone, the Somnolith hangs closer in the sky every year, and the world has forgotten what Halcyon did to it. The Warden's own name was lost with the city; only the duty is left, and the duty now is to fix what was broken."
       }
     },
     "class:werewolf00": {
