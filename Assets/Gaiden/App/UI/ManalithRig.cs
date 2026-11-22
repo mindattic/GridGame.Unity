@@ -34,8 +34,9 @@ namespace GridGame.App
         private const float Speed = 0.02f, SpeedSpread = 0.5f, Fall = 0.05f, SpinMin = 30f, SpinMax = 180f;
         private const float Life = 6f, FadeSeconds = 1.5f, BurstMin = 8f, BurstMax = 12f;
         private const int BurstCount = 5;
-        /// <summary>The particle systems' loop: long, so the precomputed burst times rarely repeat.</summary>
-        private const float LoopSeconds = 600f;
+        /// <summary>The particle systems' loop. The chunk bursts are drawn once over it (8-12 s apart) and repeat with it;
+        /// GG-T684: a 600 s loop of ~60 burst entries, stepped by hand, crashed the player inside ParticleSystem.Simulate.</summary>
+        private const float LoopSeconds = 120f;
         private const float GlowIntensity = 2f, RimLightIntensity = 0.4f, BloomThreshold = 1f;
         /// <summary>View space: +x right, +y up, +z toward the viewer (the camera sits on +z looking at the satellite).</summary>
         private static readonly Vector3 KeyFrom = new Vector3(-0.5f, 0.7f, 0.5f), RimFrom = new Vector3(0.4f, 0.3f, -1f);
@@ -228,6 +229,7 @@ namespace GridGame.App
             var full = new ParticleSystem.MinMaxCurve(0f, 2f * Mathf.PI);
             main.startRotationX = full; main.startRotationY = full; main.startRotationZ = full;
             main.simulationSpace = ParticleSystemSimulationSpace.World;
+            main.useUnscaledTime = true; // the sky keeps moving while the game is paused, like the rest of the backdrop
             main.scalingMode = ParticleSystemScalingMode.Shape;
             main.maxParticles = 256;
             var shape = ps.shape;
@@ -307,8 +309,8 @@ namespace GridGame.App
 
         private void Pose() => pivot.localRotation = PoseAt(t);
 
-        /// <summary>Moves the satellite and its debris on by <paramref name="dt"/> seconds (runtime and the screenshot
-        /// tool share this, so a fixed step from t = 0 is repeatable).</summary>
+        /// <summary>Moves the satellite and its debris on by <paramref name="dt"/> seconds with hand-stepped particles, so
+        /// a fixed step from t = 0 is repeatable (the screenshot tool only: GG-T684, at runtime the systems play).</summary>
         public void Advance(float dt)
         {
             t += dt;
@@ -347,10 +349,21 @@ namespace GridGame.App
                 if (e.panel != null) shown = true;
             }
             cam.enabled = shown;
-            if (!shown) return;
             var app = GameApp.I;
-            if (app != null && app.Settings != null && app.Settings.ReduceMotion) return;
-            Advance(Mathf.Min(Time.unscaledDeltaTime, 0.1f));
+            bool hold = !shown || (app != null && app.Settings != null && app.Settings.ReduceMotion);
+            Run(!hold);
+            if (hold) return;
+            t += Mathf.Min(Time.unscaledDeltaTime, 0.1f);
+            Pose();
+        }
+
+        /// <summary>GG-T684: at runtime the particle systems play on their own (unscaled) clock, paused while no layer shows
+        /// the rig or Reduce Motion holds the sky still.</summary>
+        private void Run(bool on)
+        {
+            if (on == debris.isPlaying) return;
+            if (on) { debris.Play(true); chunks.Play(true); }
+            else { debris.Pause(true); chunks.Pause(true); }
         }
 
         private void OnDestroy()
