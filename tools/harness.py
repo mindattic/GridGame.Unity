@@ -2027,8 +2027,10 @@ def storyarc(run="storyarc", capture=True):
     _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: st()["screen"] == "charselect", tries=4, wait=1.0)
     pick_party()
-    ok["prologue_plays"] = _wait_screen("crawl", 6)
-    if ok["prologue_plays"]:
+    # Since GG-T546 pick_party skips through the opening story itself and lists what it skipped in PICK_STORY.
+    notes["pick_story"] = list(PICK_STORY)
+    ok["prologue_plays"] = "crawl" in PICK_STORY or _wait_screen("crawl", 6)
+    if st()["screen"] == "crawl":
         time.sleep(3.0); shot("02-prologue-mid")
         ok["prologue_crawl_text"] = shows_text(crawl_opening("crawl:prologue"), call("texts"))
         call("clicktext", text="Skip")
@@ -2111,7 +2113,9 @@ def storyarc(run="storyarc", capture=True):
     call("click", name="diamond-exchange"); time.sleep(0.4); call("click", name="confirm-yes"); time.sleep(0.6)
     ok["diamond_bought"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 100
     call("back"); time.sleep(0.6)
-    call("click", name="lucky-craft-btn"); time.sleep(0.6); shot("19-lucky-reveal"); time.sleep(3.0)
+    call("click", name="lucky-craft-btn"); time.sleep(0.6)
+    call("click", name="confirm-yes")  # GG-T503: the price and odds are confirmed before paying
+    time.sleep(0.6); shot("19-lucky-reveal"); time.sleep(3.0)
     ok["diamond_spent_on_lucky_craft"] = (save().get("inventory") or {}).get("mat_diamond", 0) == 100 - lucky_cost
     shot("20-after-lucky")
     call("back"); time.sleep(0.6)
