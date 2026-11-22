@@ -13,7 +13,7 @@ namespace GridGame.Meta
     public static class DustEconomy
     {
         public const string DustId = "mat_aetherite_dust";
-        public const string DustName = "Aetherite Dust";
+        public const string DustName = "Mana Dust"; // GG-T675; was "Aetherite Dust" (id kept)
 
         /// <summary>Dust every battle victory pays (GG-T623), on top of gold and loot — a slow, repeatable trickle.</summary>
         public const int DustPerVictory = 1;

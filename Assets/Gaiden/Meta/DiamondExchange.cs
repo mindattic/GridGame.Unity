@@ -5,22 +5,23 @@ using GridGame.Core.Content;
 namespace GridGame.Meta
 {
     /// <summary>
-    /// The premium currency's player-facing name (§25.18.1, GG-T568; owner 2026-11-21: the real-money currency is "Aetherite
-    /// Shard(s)", it was "Diamonds"). Every screen, toast and confirm reads its words from here. The internal ids keep the
-    /// old word so saves and purchases still work: the item <c>mat_diamond</c>, the store product ids <c>diamonds_100</c> …,
-    /// the save fields and the <c>Diamond*</c> class names.
+    /// The premium currency's player-facing name (§25.18.1, GG-T568 then GG-T675; owner 2026-11-22: the real-money currency
+    /// is "Mana Shard(s)", the stable form of mana that doesn't dissipate; it was "Aetherite Shard(s)", before that
+    /// "Diamonds"). Every screen, toast and confirm reads its words from here. The internal ids keep the old words so saves
+    /// and purchases still work: the item <c>mat_diamond</c>, the store product ids <c>diamonds_100</c> …, the glossary id
+    /// <c>aetherite_shard</c>, the save fields and the <c>Diamond*</c> class names.
     /// </summary>
     public static class ShardText
     {
         /// <summary>The currency's stable wiki/glossary id.</summary>
         public const string Id = "aetherite_shard";
-        public const string Name = "Aetherite Shard", Plural = "Aetherite Shards";
+        public const string Name = "Mana Shard", Plural = "Mana Shards";
         /// <summary>The short form for tight labels (buttons, side windows, counters).</summary>
         public const string Short = "Shard", ShortPlural = "Shards";
         /// <summary>The real-money store's name (Camp row, screen title, every "not enough Shards" offer).</summary>
         public const string Store = "Shard Store";
 
-        /// <summary>"1 Aetherite Shard", "250 Aetherite Shards".</summary>
+        /// <summary>"1 Mana Shard", "250 Mana Shards".</summary>
         public static string Of(int n) => $"{n:N0} {(n == 1 ? Name : Plural)}";
         /// <summary>"1 Shard", "250 Shards".</summary>
         public static string ShortOf(int n) => $"{n:N0} {(n == 1 ? Short : ShortPlural)}";

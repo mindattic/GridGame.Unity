@@ -1996,7 +1996,7 @@ namespace GridGame.App
     public sealed class AetheristScreen : HubPage
     {
         public override string Id => "aetherist";
-        protected override string Title => "Aetherist";
+        protected override string Title => "Manasmith";
         protected override string Backdrop => "desert";
         protected override string Npc => CampNpcs.Aetherist;
 

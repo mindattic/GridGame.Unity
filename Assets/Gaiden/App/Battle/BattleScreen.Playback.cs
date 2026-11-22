@@ -1467,7 +1467,7 @@ namespace GridGame.App
                 case "armor": return "Armor";
                 case "steal": return "Steal";
                 case "item": return "Item";
-                case "aether": return "Aether Pour";
+                case "aether": return "Mana Pour";
                 case "battle start": return "Gear";
                 case "carried": return "Carried";
                 case "time bank": return "Quick move";

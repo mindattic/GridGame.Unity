@@ -382,7 +382,7 @@ namespace GridGame.Core.Battle
         {
             if (S.IsOver || caster.Team != Team.Enemy) return;
             int n = Math.Min(a.DrainsOrbs, S.Bank.Count);
-            if (n <= 0) { Announce("No aether to take", caster.Id); return; }
+            if (n <= 0) { Announce("No mana to take", caster.Id); return; }
             S.Bank.Spend(n);
             Emit(new OrbsSpentEvent { Count = n, CountAfter = S.Bank.Count, Drained = true, DrainedById = caster.Id });
             Announce(n == 1 ? "Siphoned an orb!" : $"Siphoned {n} orbs!", caster.Id);

@@ -747,9 +747,9 @@ namespace GridGame.Meta
                 foreach (var npc in CampNpcs.All)
                     if (npc != CampNpcs.Aetherist && !CampNpcs.Joined(s, npc)) return;
                 s.Flags.Add(ContentLoader.NpcFlagPrefix + CampNpcs.Aetherist);
-                Notes.Add("the Aetherist joined (the save had met every other Camp keeper, GG-T570)");
+                Notes.Add("the Manasmith joined (the save had met every other Camp keeper, GG-T570)");
             }
-            catch (Exception e) { Notes.Add($"couldn't bring the Aetherist: {e.Message}"); }
+            catch (Exception e) { Notes.Add($"couldn't bring the Manasmith: {e.Message}"); }
         }
 
         /// <summary>GG-T533: every save holds the fixed lead (<see cref="Progression.LeadClass"/>), first in the party. A save

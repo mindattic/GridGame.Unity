@@ -764,7 +764,7 @@ namespace GridGame.App
                     "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to it too.",
                     "Guard trades the turn time you give up for charge (10 per second, up to 40).",
                     "A quick move banks the drag timer's spare seconds as orbs at the next foe's turn.",
-                    "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Aether Pour give whole orbs.",
+                    "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Mana Pour give whole orbs.",
                     "Some gear starts the battle with orbs, an expedition carries orbs over, and some regions' rules grant them.",
                 },
                 "Aiming a spell marks the orbs it will spend; a red rim marks the ones you still lack. The Log tab lists every orb and where it came from.");
@@ -941,7 +941,7 @@ namespace GridGame.App
             if (u.IsHero)
             {
                 var aetherRow = Ui.El("row", col);
-                Ui.Text("AETHER", "tiny dim", aetherRow).style.marginRight = Space.S8;
+                Ui.Text("MANA", "tiny dim", aetherRow).style.marginRight = Space.S8;
                 Ui.Text($"{State.Bank.Count}/{State.Bank.Capacity}", "small", aetherRow);
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297

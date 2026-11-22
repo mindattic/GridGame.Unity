@@ -70,7 +70,7 @@ namespace GridGame.Tests
             }
             Assert.That(seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon"), Is.True);
             Assert.That(seen.OfType<OrbsSpentEvent>().Any(e => e.Drained), Is.False);
-            Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text == "No aether to take"), Is.True);
+            Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text == "No mana to take"), Is.True);
         }
 
         [Test]
