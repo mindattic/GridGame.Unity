@@ -434,7 +434,8 @@ namespace GridGame.App
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
             bar.style.position = Position.Absolute;
-            // Five slots and the mana pool share the row evenly (GG-T405); even gutters on the space scale, and the
+            // Exactly five slots fill the row evenly (owner 2026-11-21: "the 5 abilities should perfectly fit that
+            // row" - the mana pool no longer shares it, see BuildManaPool); even gutters on the space scale, and the
             // cells, not the gaps, take a wider stage (POL-C1/C8). Row or columns: LayoutAbilityBar (GG-T523).
             bar.style.top = BarTop; bar.style.height = Size.Slot; // left/right: ApplyStageLayout (the HUD column)
             bar.style.justifyContent = Justify.FlexStart;
@@ -452,7 +453,7 @@ namespace GridGame.App
                 var cost = Ui.El("row", slot); cost.name = "cost"; cost.style.height = Size.Pip;
                 slotViews.Add(slot);
             }
-            BuildManaPool(bar);
+            BuildManaPool(root);
         }
 
         /// <summary>One cell of the ability row: a window-framed column that takes an even share of the row.</summary>
@@ -469,16 +470,23 @@ namespace GridGame.App
 
         /// <summary>The mana pool (owner 2026-11-17, GG-T405: "a single 'mana pool' on the far right ... instead of keeping
         /// an entire row of 12 orbs, that way the manapool can grow but always represent a growing number"; then "a glass
-        /// sphere filled with blue liquid", "like Diablo or PoE2"): the ability row's sixth cell. A <see cref="ManaGlobe"/>
-        /// fills to count / cap with the count in outlined white and "MANA" on it, the cap small beneath, gold when full;
-        /// the ring round its bezel is the next orb forming (the mana charge, §3.1.9); an aimed spell lightens the band it
-        /// will drain and shows a "-N" ghost. Mints fly into it from their source, spends fly out (BattleScreen.Playback).
-        /// Holding it explains it (ManaPoolCard).</summary>
-        private void BuildManaPool(VisualElement bar)
+        /// sphere filled with blue liquid", "like Diablo or PoE2"). A <see cref="ManaGlobe"/> fills to count / cap with the
+        /// count in outlined white and "MANA" on it, the cap small beneath, gold when full; the ring round its bezel is the
+        /// next orb forming (the mana charge, §3.1.9); an aimed spell lightens the band it will drain and shows a "-N"
+        /// ghost. Mints fly into it from their source, spends fly out (BattleScreen.Playback). Holding it explains it
+        /// (ManaPoolCard). No longer the ability row's sixth cell (owner 2026-11-21: the row is exactly 5 ability slots
+        /// now) - parked top-right as its own element for now; the owner hasn't decided its permanent spot yet.</summary>
+        private void BuildManaPool(VisualElement root)
         {
-            pool = HudCell(bar);
+            pool = Ui.El("col center", root);
             pool.name = "orbs";
             pool.AddToClassList("mana-pool");
+            pool.style.position = Position.Absolute;
+            pool.style.top = Space.S16; pool.style.right = Space.S16;
+            pool.style.width = pool.style.height = Size.Slot;
+            pool.style.borderTopLeftRadius = pool.style.borderTopRightRadius = pool.style.borderBottomLeftRadius = pool.style.borderBottomRightRadius = 18;
+            pool.style.borderTopWidth = pool.style.borderBottomWidth = pool.style.borderLeftWidth = pool.style.borderRightWidth = 4;
+            pool.style.backgroundImage = new StyleBackground(Art.Window);
             pool.style.borderTopColor = pool.style.borderBottomColor = pool.style.borderLeftColor = pool.style.borderRightColor = Palette.Mana;
             pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
             InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
@@ -871,9 +879,18 @@ namespace GridGame.App
             Ui.Text($"Lv {u.Level}", "h2 gold", top);
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
+            // FF-style plain numbers, no bar (owner 2026-11-21): "HEALTH"/"AETHER" are the same width, so those labels
+            // line up instead of "HP"/"MP". Aether is the party's one shared pool (ManaBank), so it reads the same on
+            // every hero's card.
             var hpRow = Ui.El("row", col);
-            Ui.Gauge(u.HpFraction, hpRow, 460);
-            Ui.Text(know >= BestiaryKnowledge.Stats ? $"  {u.Hp}/{u.MaxHp}" : "  ???", "small", hpRow);
+            Ui.Text("HEALTH", "tiny dim", hpRow).style.marginRight = Space.S8;
+            Ui.Text(know >= BestiaryKnowledge.Stats ? $"{u.Hp}/{u.MaxHp}" : "???", "small", hpRow);
+            if (u.IsHero)
+            {
+                var aetherRow = Ui.El("row", col);
+                Ui.Text("AETHER", "tiny dim", aetherRow).style.marginRight = Space.S8;
+                Ui.Text($"{State.Bank.Count}/{State.Bank.Capacity}", "small", aetherRow);
+            }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);
             if (!u.IsHero && know >= BestiaryKnowledge.Elements) Ui.Text(BestiaryKnowledge.ElementLine(u.Def), "tiny dim", col);
