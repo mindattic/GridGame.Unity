@@ -247,7 +247,7 @@ namespace GridGame.App
     public static class Size
     {
         // Lines, bars and pips
-        public const float Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
+        public const float Underline = 2, Hairline = 3, Track = 6, Bar = 8, Shard = 13, Gauge = 14, HpBar = 18, Crack = 24, Pip = 34;
         // Icons and pictures
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
@@ -255,6 +255,8 @@ namespace GridGame.App
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
+        /// <summary>A multi-line paste box (a save transfer code).</summary>
+        public const float CodeBox = 360;
     }
 
     /// <summary>
@@ -307,6 +309,8 @@ namespace GridGame.App
         /// either side of every page on a 3:4 tablet while the hub and battle filled the width. Paragraphs still stop at
         /// about 60 characters (<see cref="Typography"/>), so lines never stretch absurdly.</summary>
         public const float ColumnMax = GameApp.MaxStageWidth;
+        /// <summary>A position far outside any stage, for an element laid out only to be measured.</summary>
+        public const float Offstage = -20000f;
         public static float Width => GameApp.StageWidth;
         public static float Height => GameApp.StageHeight - GameApp.SafeTop - GameApp.SafeBottom;
         /// <summary>The content column's width: the stage width, capped at <see cref="ColumnMax"/>.</summary>

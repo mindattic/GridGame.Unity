@@ -175,7 +175,7 @@ namespace GridGame.App
         public static TextField CodeField(string name, string value, bool readOnly, VisualElement parent)
         {
             var f = new TextField { name = name, multiline = true, isReadOnly = readOnly, value = value ?? "", maxLength = SaveTransfer.MaxCodeChars };
-            f.style.height = 360;
+            f.style.height = Size.CodeBox;
             f.style.marginTop = Space.S8; f.style.marginBottom = Space.S8;
             f.style.whiteSpace = WhiteSpace.Normal;
             var input = f.Q(className: "unity-text-field__input") ?? f.Q(className: "unity-base-text-field__input");

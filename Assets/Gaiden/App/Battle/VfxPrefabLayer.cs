@@ -46,7 +46,7 @@ namespace GridGame.App
             host = fxHost;
             overlay = new VisualElement { name = "vfx-prefab-overlay", pickingMode = PickingMode.Ignore };
             overlay.style.position = Position.Absolute;
-            overlay.style.left = overlay.style.top = overlay.style.right = overlay.style.bottom = 0;
+            overlay.style.left = overlay.style.top = overlay.style.right = overlay.style.bottom = Space.S0;
             host.Add(overlay);
             overlay.RegisterCallback<GeometryChangedEvent>(_ => Resize());
 

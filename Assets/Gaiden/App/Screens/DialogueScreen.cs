@@ -477,7 +477,7 @@ namespace GridGame.App
             for (int i = 0; i < w.Max; i++)
             {
                 var pip = new VisualElement { pickingMode = PickingMode.Ignore, name = "dlg-wits-pip-" + (i + 1) };
-                pip.style.width = pip.style.height = 40;
+                pip.style.width = pip.style.height = Size.IconS;
                 pip.style.marginLeft = pip.style.marginRight = Space.S4;
                 SetRadius(pip, 20);
                 SetBorder(pip, i + 1 == w.Threshold ? 5 : 3);

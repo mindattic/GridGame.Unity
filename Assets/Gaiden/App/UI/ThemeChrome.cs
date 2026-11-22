@@ -95,7 +95,7 @@ namespace GridGame.App
             string style = StyleKey;
             var box = new VisualElement { name = "theme-chrome-probe", pickingMode = PickingMode.Ignore };
             box.style.position = Position.Absolute;
-            box.style.left = -20000; box.style.top = 0;
+            box.style.left = Fit.Offstage; box.style.top = Space.S0;
             box.style.visibility = Visibility.Hidden;
             // A window under the stage, so rules scoped to windows (.window .dim) resolve as they do on screen.
             var host = new VisualElement();

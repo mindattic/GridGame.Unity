@@ -57,7 +57,7 @@ namespace GridGame.App
                 {
                     var br = new VisualElement { pickingMode = PickingMode.Ignore };
                     br.style.flexBasis = Length.Percent(100);
-                    br.style.height = 0;
+                    br.style.height = Space.S0;
                     box.Add(br);
                     continue;
                 }
@@ -99,8 +99,8 @@ namespace GridGame.App
             var l = Ui.Text(text, classes, parent);
             l.style.whiteSpace = WhiteSpace.NoWrap;
             l.style.flexShrink = 0;
-            l.style.marginLeft = l.style.marginRight = l.style.marginTop = l.style.marginBottom = 0;
-            l.style.paddingLeft = l.style.paddingRight = l.style.paddingTop = l.style.paddingBottom = 0;
+            l.style.marginLeft = l.style.marginRight = l.style.marginTop = l.style.marginBottom = Space.S0;
+            l.style.paddingLeft = l.style.paddingRight = l.style.paddingTop = l.style.paddingBottom = Space.S0;
             return l;
         }
 
@@ -116,7 +116,7 @@ namespace GridGame.App
             l.style.color = Palette.Term;
             var u = new VisualElement { pickingMode = PickingMode.Ignore };
             u.style.position = Position.Absolute;
-            u.style.height = 2;
+            u.style.height = Size.Underline;
             u.style.backgroundColor = Palette.Term.WithA(0.45f);
             t.Add(u);
             float padV = tappable ? HitPadV : 0f, padH = tappable ? HitPadH : 0f;

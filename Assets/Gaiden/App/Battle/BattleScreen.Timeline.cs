@@ -326,7 +326,7 @@ namespace GridGame.App
                     art.style.backgroundColor = Palette.Ink;
                     var q = new Label("?") { pickingMode = PickingMode.Ignore };
                     q.style.position = Position.Absolute;
-                    q.style.left = q.style.top = q.style.right = q.style.bottom = 0;
+                    q.style.left = q.style.top = q.style.right = q.style.bottom = Space.S0;
                     q.style.unityTextAlign = TextAnchor.MiddleCenter;
                     q.style.fontSize = TypeScale.H1;
                     q.style.color = Palette.TextDim;
@@ -746,7 +746,7 @@ namespace GridGame.App
             name = "tl-recover";
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
-            style.left = style.top = 0f;
+            style.left = style.top = Space.S0;
             style.width = style.height = span;
             style.display = DisplayStyle.None;
             generateVisualContent += Draw;

@@ -578,7 +578,7 @@ namespace GridGame.App
                 layer = new VisualElement { name = OverlayClass, pickingMode = PickingMode.Ignore };
                 layer.AddToClassList(OverlayClass);
                 layer.style.position = Position.Absolute;
-                layer.style.left = layer.style.top = layer.style.right = layer.style.bottom = 0;
+                layer.style.left = layer.style.top = layer.style.right = layer.style.bottom = Space.S0;
                 layer.RegisterCallback<GeometryChangedEvent>(_ => SyncRadius(layer));
                 window.hierarchy.Insert(0, layer);
             }

@@ -143,7 +143,7 @@ namespace GridGame.App
             {
                 float sw = sh.Size * refW;
                 sh.El.style.width = sw; sh.El.style.height = sw * sh.Aspect;
-                sh.El.style.left = 0f; sh.El.style.top = sh.Y * skyBottom - sw * sh.Aspect / 2f;
+                sh.El.style.left = Space.S0; sh.El.style.top = sh.Y * skyBottom - sw * sh.Aspect / 2f;
             }
             Tick();
         }

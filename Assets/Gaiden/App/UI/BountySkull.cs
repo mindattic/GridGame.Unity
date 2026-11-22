@@ -26,8 +26,8 @@ namespace GridGame.App
             glyph.style.fontSize = size * 0.7f;
             glyph.style.color = Color.white;
             glyph.style.unityTextAlign = TextAnchor.MiddleCenter;
-            glyph.style.marginLeft = glyph.style.marginRight = glyph.style.marginTop = glyph.style.marginBottom = 0;
-            glyph.style.paddingLeft = glyph.style.paddingRight = glyph.style.paddingTop = glyph.style.paddingBottom = 0;
+            glyph.style.marginLeft = glyph.style.marginRight = glyph.style.marginTop = glyph.style.marginBottom = Space.S0;
+            glyph.style.paddingLeft = glyph.style.paddingRight = glyph.style.paddingTop = glyph.style.paddingBottom = Space.S0;
             Fonts.UseHeavy(glyph);
             disc.Add(glyph);
             parent?.Add(disc);

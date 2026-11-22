@@ -862,7 +862,7 @@ namespace GridGame.App
             {
                 var l = new Label(glyph) { pickingMode = PickingMode.Ignore };
                 l.style.position = Position.Absolute;
-                l.style.left = l.style.top = l.style.right = l.style.bottom = 0;
+                l.style.left = l.style.top = l.style.right = l.style.bottom = Space.S0;
                 l.style.unityTextAlign = TextAnchor.MiddleCenter;
                 l.style.fontSize = TypeScale.H1;
                 l.style.color = border.WithA(0.9f);

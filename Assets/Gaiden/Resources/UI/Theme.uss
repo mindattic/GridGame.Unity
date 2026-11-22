@@ -62,6 +62,7 @@
     --space-8: 8px;
     --space-12: 12px; /* half of the 24-px target gap: two neighbours' margins add up to POL-C3 */
     --size-target: 132px; /* POL-C2 minimum tap target (44 pt) */
+    --kit-note-actions: 60px; /* Kit.Indent (72) less a button's 12-px margin: a row's buttons under its label */
     --space-16: 16px;
     --space-24: 24px;
     --space-32: 32px;
@@ -377,7 +378,7 @@
 .kit-footer > .btn { margin-top: 0; margin-bottom: 0; }
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) -12px 0 -12px; } /* buttons keep their 12-px margins; the row's edges line up with the text */
-.kit-actions.kit-note { margin-left: 60px; } /* a row's buttons under its label: Kit.Indent less the first button's 12-px margin */
+.kit-actions.kit-note { margin-left: var(--kit-note-actions); }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {
