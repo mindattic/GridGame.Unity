@@ -1406,12 +1406,8 @@ namespace GridGame.App
         private int lastActorId = -1;
         private string lastActionLabel;
 
-        /// <summary>The mana pool's orb centre in Overlay (stage) coordinates.</summary>
-        private Vector2 PoolCenter()
-        {
-            if (poolOrb != null && !float.IsNaN(poolOrb.worldBound.x)) return poolOrb.worldBound.center - App.Stage.worldBound.position;
-            return new Vector2(GameApp.StageWidth - Fit.Edge - Size.Slot / 2f, BarTop + Size.Slot / 2f);
-        }
+        /// <summary>Where a charge or mint mote lands by default: the next unfilled orb in the row (GG-T673).</summary>
+        private Vector2 PoolCenter() => OrbCenter(shownOrbs);
 
         private VisualElement FlyingOrb()
         {
@@ -1487,21 +1483,51 @@ namespace GridGame.App
 
         /// <summary>Flies one glowing mote on a curved path from <paramref name="from"/> into the globe. A time slice (Guard)
         /// starts gold and turns mana-blue on the way, so it reads as turn time poured into mana.</summary>
-        private IEnumerator MoteFlight(Vector2 from, float seconds, bool fades, Color? startTint = null, float scale = 1f)
+        /// <summary>A mana mote flies from its source along a quadratic bezier (GG-T673, owner: "particle trails spawn and
+        /// bezier curve their way to the next unfilled mana orb"): the control point sits off the midpoint by a randomised
+        /// sideways and upward offset, so several motes launched together fan out instead of stacking, and the mote sheds a
+        /// fading trail of sparks as it goes. <paramref name="to"/> defaults to the next unfilled orb.</summary>
+        private IEnumerator MoteFlight(Vector2 from, float seconds, bool fades, Color? startTint = null, float scale = 1f, Vector2? to = null)
         {
             var orb = FlyingOrb();
             orb.style.scale = new Scale(Vector2.one * scale);
-            Vector2 to = PoolCenter();
+            Vector2 end = to ?? PoolCenter();
             PlaceOrb(orb, from);
             var core = orb[1];
+            Vector2 mid = (from + end) / 2f, dir = end - from;
+            Vector2 normal = dir.sqrMagnitude > 1f ? new Vector2(-dir.y, dir.x).normalized : Vector2.right;
+            Vector2 control = mid + normal * Random.Range(-Size.TrailSwing, Size.TrailSwing) + Vector2.down * Random.Range(Size.TrailLift * 0.5f, Size.TrailLift);
+            float sparkClock = 0f;
             yield return Tween.Run(seconds, k =>
             {
-                float side = from.x < to.x ? 1f : -1f;
-                PlaceOrb(orb, Vector2.Lerp(from, to, Tween.EaseInOut(k)) + new Vector2(side * -60f, -140f) * Ease.Arc(k));
-                if (startTint.HasValue) core.style.unityBackgroundImageTintColor = Color.Lerp(startTint.Value, Art.Mana, k);
+                float t = Tween.EaseInOut(k), u = 1f - t;
+                Vector2 at = u * u * from + 2f * u * t * control + t * t * end;
+                PlaceOrb(orb, at);
+                if (startTint.HasValue) core.style.unityBackgroundImageTintColor = Color.Lerp(startTint.Value, Palette.ManaBloom, k);
                 if (fades) orb.style.opacity = 1f - k;
+                sparkClock += Tween.Dt;
+                if (sparkClock >= Timing.TrailSparkEvery) { sparkClock = 0f; App.StartCoroutine(TrailSpark(at, scale * (1f - 0.5f * k))); }
             });
             orb.RemoveFromHierarchy();
+        }
+
+        /// <summary>One spark of a mana trail: a small violet-to-glint dot left behind the mote that shrinks and fades.</summary>
+        private IEnumerator TrailSpark(Vector2 at, float scale)
+        {
+            if (App.Overlay == null) yield break;
+            var s = new VisualElement { pickingMode = PickingMode.Ignore };
+            s.style.position = Position.Absolute;
+            s.style.width = s.style.height = Size.TrailSpark;
+            s.style.left = at.x - Size.TrailSpark / 2f; s.style.top = at.y - Size.TrailSpark / 2f;
+            s.style.backgroundImage = new StyleBackground(Art.Glow);
+            s.style.unityBackgroundImageTintColor = Random.value < 0.25f ? Palette.ManaGlint : Palette.ManaBloom;
+            App.Overlay.Add(s);
+            yield return Tween.Run(Timing.TrailSparkLife, k =>
+            {
+                s.style.opacity = 1f - k;
+                s.style.scale = new Scale(Vector2.one * scale * (1f - 0.6f * k));
+            });
+            s.RemoveFromHierarchy();
         }
 
         /// <summary>An orb mints (§3.1.2): a glowing mote flies from its real source (MintFrom) into the mana globe; on
@@ -1517,13 +1543,19 @@ namespace GridGame.App
             if (o.Landed) { OrbSlotsFlown.Add(index); if (OrbSlotsFlown.Count > 24) OrbSlotsFlown.RemoveAt(0); }
             // An item or ability that grants orbs (a Mana Potion, Meditate, Aether Pour) is named by the action that used it.
             string label = (o.Reason == "item" || o.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(o.Reason);
-            yield return MoteFlight(MintFrom(o.Reason, o.SourceUnitId), Timing.Standard + Timing.Quick, !o.Landed);
+            // Each orb's trail flies into its own slot, so orbs minted together land in order (GG-T673). Time regen has
+            // no source on the board, and Reduce Motion skips the flight: the orb just fills.
+            if (!ReduceMotion && o.Reason != "regen")
+                yield return MoteFlight(MintFrom(o.Reason, o.SourceUnitId), Timing.Standard + Timing.Quick, !o.Landed, null, 1f, OrbCenter(index));
             if (o.Landed)
             {
                 SyncOrbs(o.Slot >= 0 ? o.Slot + 1 : -1); // count up to this orb; later orbs add theirs
-                poolOrb?.Fill();
+                if (index >= 0 && index < orbViews.Count)
+                {
+                    orbViews[index].Flash();
+                    if (orbViews[index].parent != null) App.StartCoroutine(Tween.Pop(orbViews[index].parent, 1.25f, Timing.Quick));
+                }
                 App.Audio.Sfx("battle.pickup", 0.35f, 1.1f + 0.03f * Mathf.Min(shownOrbs, 16));
-                if (poolOrb != null) App.StartCoroutine(Tween.Pop(poolOrb, 1.15f, Timing.Quick));
                 MintTag(label, 1, Palette.Mana);
                 Feed($"{label}: +1 mana ({shownOrbs}/{State.Bank.Capacity})", Palette.Mana);
             }
@@ -1596,14 +1628,13 @@ namespace GridGame.App
             int from = os.CountAfter + os.Count, to = os.CountAfter;
             if (pool == null || ReduceMotion) { SyncOrbs(to); yield return Tween.Wait(Timing.Quick); yield break; }
             var target = State.UnitById(os.Drained ? os.DrainedById : lastActorId);
-            Vector2 start = PoolCenter();
+            Vector2 start = OrbCenter(from - 1); // the newest orb being spent
             Vector2 end = target != null && board.Units.TryGetValue(target.Id, out var v)
                 ? new Vector2(BoardLeft, BoardTop) + BoardView.CenterOf(v.Tile) : new Vector2(GameApp.StageWidth / 2f, BoardTop + BoardView.Tile * 4);
             int n = Mathf.Clamp(os.Count, 1, 5);
             var orbs = new List<VisualElement>();
             for (int i = 0; i < n; i++) { var o = FlyingOrb(); o.style.opacity = 0f; orbs.Add(o); }
-            poolOrb.Drain();
-            App.StartCoroutine(Tween.Pop(poolOrb, 0.92f, Timing.Quick));
+            App.StartCoroutine(Tween.Pop(pool, 0.97f, Timing.Quick));
             const float Stagger = 0.4f; // the share of the flight the launches are spread over
             yield return Tween.Run(Timing.Emphasis, k =>
             {

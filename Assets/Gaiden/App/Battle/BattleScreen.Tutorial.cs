@@ -608,7 +608,7 @@ namespace GridGame.App
         {
             var marks = new List<CoachStep>
             {
-                new CoachStep { Caption = "Pincers fill this mana globe. Every 100 mana becomes an orb (tap the globe).", Element = () => pool, Info = true },
+                new CoachStep { Caption = "Pincers, strikes, kills and Clutch! moments fill these mana orbs; spells spend them (tap the orbs).", Element = () => pool, Info = true },
             };
             var hero = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive);
             for (int i = 0; hero != null && i < slotViews.Count; i++)

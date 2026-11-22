@@ -1180,6 +1180,17 @@ The view flies each orb from its source to its slot in a 0.22 s arc (overflowing
 
 `ItemDef.BankCapacityBonus` gear raises the cap (summed over the party, max +4).
 
+#### 3.1.4.1 The orbs row, orb costs and regeneration (GG-T673, owner 2026-11-22)
+
+Owner: *"return the mana orbs line, doing things fills mana orbs which glow with bloom once they are active"*; *"it's easier to interpret orbs than it is to do math … make spells cost mana orbs that you regenerate with time and more so with actions"*; *"all mana orbs need to always be sized properly and spaced equally, rendered from left to right."*
+
+- **HUD.** GG-T405's single globe is gone. A row of orbs (one per bank slot) sits a target gap under the ability row (under the board when the bar stands beside it). Every orb is the same size and the same gap apart, left to right, shrinking for a larger count so any capacity 1–20 fits. Lit orbs bloom (soft breathing glow, steady under Reduce Motion); the next empty orb shows the forming charge as a ring round its rim. Each orb earned from an action flies in as a mote with a sparkling trail along a quadratic bezier (randomised control point, so several fan out) into its own slot in order; time regen and Reduce Motion fill the orb without a flight. Aiming a spell pulses the orbs it would spend and rims the ones it still lacks in red; slot cost pips the row can't cover dim. Colours come from the blue Somnolith art (GG-T674): `Palette.ManaDeep` #20193C, `ManaIndigo` #4B447D, `ManaBloom` #7A74AB, `ManaGlint` #B4516C.
+- **Costs run 1–4 orbs** (`BattleConfig.MaxSpellOrbCost`, few enough to show as pips on the slot; validation refuses more). The old 1–10 costs folded monotonically, so cheap stays cheap and big stays big: 1→1 (12 spells), 2→2 (17), 3 and 4→3 (15), 5 to 10→4 (10). `HeroBot.SaveForCost` follows to the top tier (4).
+- **Capacity is per battle** (`BattleSetup.OrbCapacity`, 0 = the old 12; bank gear adds its bonus; never above `BattleConfig.MaxOrbCapacity` 20). Owned Mana Orbs become a progression item in GG-T677 (start with 1, about 12–16 found in a straight run, cap 20); that ticket sets `OrbCapacity` from the save.
+- **Full stops earning.** While every orb is lit, earned charge doesn't accrue at all (the ring stays empty) until a spell spends an orb. Explicit grants (potions, pickups) still overflow as in 3.1.4.
+- **New sources**, on top of 3.1.9's (conservative first values, 100 charge = 1 orb, all damped by bank fullness): felling a real foe `KillCharge` 15; a hero's skill striking a foe `StrikeCharge` 5 per foe (spells excluded, so mana never feeds itself); time regen `RegenCharge` 10 every `RegenIntervalSeconds` 5 of the battle clock (about one orb per 50 clock seconds at an empty bank). Clutch! keeps `ClutchCharge` 20. Their reasons ("kill", "strike", "regen") show in the GG-T595 held-turn soak JSON beside "guard" and "pincer". Not yet measured; tune with the soak once the owner has targets.
+- **Battle report.** `BattleReport.OrbsLeft` is the orbs still lit when the battle ended (GG-T676 converts them at stage end).
+
 #### 3.1.5–3.1.6 (struck 2026-10-10)
 
 ~~Spend ordering by color~~ and ~~the Colorless wildcard~~ no longer exist — there are no colors to order or substitute.

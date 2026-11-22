@@ -523,10 +523,12 @@ namespace GridGame.App
         }
 
         /// <summary>Most orb pips a cost draws before it switches to one orb and a count (GG-T372).</summary>
-        public const int MaxCostPips = 3;
+        /// <summary>GG-T673: spells cost at most BattleConfig.MaxSpellOrbCost orbs, so every cost shows as pips.</summary>
+        public const int MaxCostPips = GridGame.Core.Battle.BattleConfig.MaxSpellOrbCost;
 
-        /// <summary>Mana cost as orb pips: 3 → three orbs; above <see cref="MaxCostPips"/> one orb and "×N" (out of space).</summary>
-        public static VisualElement CostPips(int cost, VisualElement parent, float size = 34)
+        /// <summary>Mana cost as orb pips: 3 → three orbs; above <see cref="MaxCostPips"/> one orb and "×N" (out of space).
+        /// <paramref name="have"/> (GG-T673): orbs the party holds; pips past it dim, so an unaffordable spell reads at a glance.</summary>
+        public static VisualElement CostPips(int cost, VisualElement parent, float size = 34, int have = int.MaxValue)
         {
             var row = El("row", parent);
             row.pickingMode = PickingMode.Ignore;
@@ -537,6 +539,7 @@ namespace GridGame.App
                 var p = Text("", "pip pip--mana", row);
                 p.style.width = size; p.style.height = size; p.style.borderTopLeftRadius = p.style.borderTopRightRadius = p.style.borderBottomLeftRadius = p.style.borderBottomRightRadius = size / 2;
                 p.style.fontSize = size * 0.6f;
+                if (i >= have) p.style.opacity = 0.3f;
             }
             if (cost > MaxCostPips)
             {

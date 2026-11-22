@@ -38,6 +38,13 @@ namespace GridGame.App
         /// <summary>A tappable glossary [term] (GG-T300): the same light blue class cards always marked keywords with.</summary>
         public static readonly Color Term = new Color(0.61f, 0.78f, 1f);
         public static readonly Color Mana = Art.Mana;
+        // GG-T673: the battle's mana orbs, their bloom and their trails, sampled from the blue Somnolith art (GG-T674,
+        // owner: "it's blue like mana is expected to be"): near-black navy glass, indigo liquid, a lighter violet bloom and
+        // the art's red-pink glint.
+        public static readonly Color ManaDeep = new Color(0x20 / 255f, 0x19 / 255f, 0x3C / 255f);
+        public static readonly Color ManaIndigo = new Color(0x4B / 255f, 0x44 / 255f, 0x7D / 255f);
+        public static readonly Color ManaBloom = new Color(0x7A / 255f, 0x74 / 255f, 0xAB / 255f);
+        public static readonly Color ManaGlint = new Color(0xB4 / 255f, 0x51 / 255f, 0x6C / 255f);
 
         // Teams
         public static readonly Color Hero = new Color(0.47f, 0.67f, 1f);
@@ -252,6 +259,9 @@ namespace GridGame.App
         public const float IconS = 40, Chip = 50, IconM = 56, Orb = 60, Icon = 64, IconL = 76, AvatarW = 80, Glyph = 88,
             Avatar = 96, PartySlot = 180, Thumb = 120, Medallion = 140, Gem = 192, PortraitW = 360, PortraitH = 400,
             ArtW = 420, ArtH = 620;
+        // GG-T673: the mana orbs row (one orb per bank slot) and the trails that fly into it. OrbBloom is how far an orb's
+        // bloom spills past it; TrailSwing/TrailLift bound the bezier control point's random sideways and upward offset.
+        public const float OrbRow = 56, OrbBloom = 18, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
@@ -347,6 +357,9 @@ namespace GridGame.App
     public static class Timing
     {
         public const float Instant = 0.08f, Quick = 0.15f, Standard = 0.25f, Emphasis = 0.4f, Dramatic = 0.7f, Cinematic = 1.2f;
+        /// <summary>GG-T673: a lit orb's bloom breathes on this period; a mana trail drops a spark every TrailSparkEvery
+        /// seconds, each living TrailSparkLife.</summary>
+        public const float OrbBreathe = 2.4f, TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
     }
 
     /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops

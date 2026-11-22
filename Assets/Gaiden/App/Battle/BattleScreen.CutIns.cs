@@ -296,7 +296,8 @@ namespace GridGame.App
                 Feed($"Guard: {secs:0.#}s of turn time → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb ({to * 100 / BattleConfig.ManaChargePerOrb}% toward the next)", Palette.Mana);
             }
             // GG-T405: every charge shows where it came from: a small mote from its source into the globe's charge ring.
-            if (mc.Reason != "guard" && !ReduceMotion) App.StartCoroutine(MoteFlight(MintFrom(mc.Reason, mc.SourceId), Timing.Standard, true, null, 0.55f));
+            // Time regen (GG-T673) has no source on the board: its charge fills the ring without a mote.
+            if (mc.Reason != "guard" && mc.Reason != "regen" && !ReduceMotion) App.StartCoroutine(MoteFlight(MintFrom(mc.Reason, mc.SourceId), Timing.Standard, true, null, 0.55f));
             App.Audio.Sfx("battle.orb", 0.35f, 0.7f + 0.5f * (to / (float)BattleConfig.ManaChargePerOrb));
             yield return Tween.Run(Timing.Standard, k =>
             {
@@ -308,11 +309,20 @@ namespace GridGame.App
             else SetChargeBubble(to / (float)BattleConfig.ManaChargePerOrb);
         }
 
-        /// <summary>The next orb forming (0..1): an arc round the mana globe's bezel (GG-T405; it was a bubble filling the
-        /// next empty orb of the old 12-orb row). It closes the ring as the orb that rolls into the count forms.</summary>
+        /// <summary>The next orb forming (0..1): an arc round the rim of the next empty orb in the row (GG-T673; GG-T405 drew
+        /// it round the single globe). It closes the ring as the orb that rolls into the count forms.</summary>
         private void SetChargeBubble(float frac)
         {
-            if (poolOrb != null) poolOrb.Charge = Mathf.Clamp01(frac);
+            orbCharge = Mathf.Clamp01(frac);
+            ApplyOrbCharge();
+        }
+
+        private float orbCharge;
+
+        /// <summary>Puts the forming charge on the orb right after the ones shown, and clears it from the rest.</summary>
+        private void ApplyOrbCharge()
+        {
+            for (int i = 0; i < orbViews.Count; i++) orbViews[i].Charge = i == shownOrbs ? orbCharge : 0f;
         }
     }
 }

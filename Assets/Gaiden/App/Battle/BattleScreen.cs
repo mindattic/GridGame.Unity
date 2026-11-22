@@ -81,12 +81,12 @@ namespace GridGame.App
         private readonly BattleSetup setupOverride;
         private BoardView board;
         private readonly List<VisualElement> slotViews = new List<VisualElement>();
-        /// <summary>The mana pool (GG-T405): one widget at the ability row's right end instead of a row of 12 orbs: an
-        /// orb with the spendable count large, the cap small beneath it, the next orb's charge as a thin gauge, and a
-        /// "-N" ghost while a spell is aimed. Named "orbs" (the old row's name) so automation still finds it.</summary>
+        /// <summary>The mana orbs row (GG-T673, back from GG-T405's single globe): one orb per bank slot, named "orbs" with
+        /// children "orb0".."orbN" so automation finds it. Filled orbs glow (their bloom behind them); the next orb forming
+        /// shows the mana charge round its rim; an aimed spell marks the orbs it would spend.</summary>
         private VisualElement pool;
-        private ManaGlobe poolOrb;
-        private Label poolCount, poolCap, poolGhost;
+        private readonly List<ManaOrbView> orbViews = new List<ManaOrbView>();
+        private readonly List<VisualElement> orbBlooms = new List<VisualElement>();
         /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
         /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
         /// pool never shows an orb before its fly-in or after it was spent.</summary>
@@ -118,7 +118,10 @@ namespace GridGame.App
         private const float SideCellHeight = Size.Slot + Space.S32;
         /// <summary>The info tabs start a target gap (POL-C3, 24) under whatever is above them: the ability row, or the
         /// board itself when the bar stands beside it.</summary>
-        private static float InfoTabsTop => (SideBars ? BoardBottom : BarTop + Size.Slot) + Space.S24;
+        private static float InfoTabsTop => OrbRowTop + Size.OrbRow + Space.S24;
+        /// <summary>The mana orbs row (GG-T673) sits a target gap under the ability row, or under the board when the bar
+        /// stands beside it; the info tabs start a gap under it.</summary>
+        private static float OrbRowTop => (SideBars ? BoardBottom : BarTop + Size.Slot) + Space.S24;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -208,6 +211,7 @@ namespace GridGame.App
             bool firstBuild = State == null;
             slotViews.Clear();
             pool = null;
+            orbViews.Clear(); orbBlooms.Clear();
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -358,6 +362,11 @@ namespace GridGame.App
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             LayoutAbilityBar(inset);
+            if (pool != null)
+            {
+                pool.style.left = pool.style.right = inset + Fit.Edge;
+                pool.style.top = OrbRowTop;
+            }
             if (Root?.Q("info-tabs") is VisualElement tabs)
             {
                 tabs.style.left = tabs.style.right = inset + Fit.Edge;
@@ -478,58 +487,78 @@ namespace GridGame.App
             return cell;
         }
 
-        /// <summary>The mana pool (owner 2026-11-17, GG-T405: "a single 'mana pool' on the far right ... instead of keeping
-        /// an entire row of 12 orbs, that way the manapool can grow but always represent a growing number"; then "a glass
-        /// sphere filled with blue liquid", "like Diablo or PoE2"). A <see cref="ManaGlobe"/> fills to count / cap with the
-        /// count in outlined white and "MANA" on it, the cap small beneath, gold when full; the ring round its bezel is the
-        /// next orb forming (the mana charge, §3.1.9); an aimed spell lightens the band it will drain and shows a "-N"
-        /// ghost. Mints fly into it from their source, spends fly out (BattleScreen.Playback). Holding it explains it
-        /// (ManaPoolCard). No longer the ability row's sixth cell (owner 2026-11-21: the row is exactly 5 ability slots
-        /// now) - parked top-right as its own element for now; the owner hasn't decided its permanent spot yet.</summary>
+        /// <summary>The mana orbs row (GG-T673, owner 2026-11-22: "return the mana orbs line ... it's easier to interpret orbs
+        /// than it is to do math"), replacing GG-T405's single globe (owner 2026-11-17). One <see cref="ManaOrbView"/> per bank
+        /// slot under the ability row; lit orbs bloom; the next empty orb carries the forming charge round its rim. Mints
+        /// fly into their own slot along a bezier trail, spends leave from the newest orbs (BattleScreen.Playback). Holding
+        /// it explains it (ManaPoolCard).</summary>
         private void BuildManaPool(VisualElement root)
         {
-            pool = Ui.El("col center", root);
+            // GG-T673 (owner 2026-11-22: "return the mana orbs line"): a row of orbs, one per bank slot, under the ability
+            // row. Spells cost whole orbs, so the row reads at a glance: no count to do maths on.
+            pool = Ui.El("row", root);
             pool.name = "orbs";
-            pool.AddToClassList("mana-pool");
+            pool.AddToClassList("mana-orbs");
             pool.style.position = Position.Absolute;
-            pool.style.top = Space.S16; pool.style.right = Space.S16;
-            pool.style.width = pool.style.height = Size.Slot;
-            pool.style.borderTopLeftRadius = pool.style.borderTopRightRadius = pool.style.borderBottomLeftRadius = pool.style.borderBottomRightRadius = 18;
-            pool.style.borderTopWidth = pool.style.borderBottomWidth = pool.style.borderLeftWidth = pool.style.borderRightWidth = 4;
-            pool.style.backgroundImage = new StyleBackground(Art.Window);
-            pool.style.borderTopColor = pool.style.borderBottomColor = pool.style.borderLeftColor = pool.style.borderRightColor = Palette.Mana;
+            pool.style.height = Size.OrbRow;
+            pool.style.justifyContent = Justify.FlexStart; // left to right, equal gaps (LayoutOrbs)
+            pool.style.alignItems = Align.Center;
+            pool.RegisterCallback<GeometryChangedEvent>(_ => LayoutOrbs());
             pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
             InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
-            poolOrb = new ManaGlobe { name = "orb0", ReduceMotion = ReduceMotion }; // the globe (the old row's first slot name)
-            pool.Add(poolOrb);
-            poolOrb.style.width = poolOrb.style.height = Size.Thumb;
-            poolOrb.style.alignItems = Align.Center; poolOrb.style.justifyContent = Justify.Center;
-            // The count in outlined white over the liquid, "MANA" small beneath it, so it says what it is.
-            poolCount = Ui.Text("0", "mana-pool__count", poolOrb);
-            poolCount.name = "orbs-count";
-            poolCount.pickingMode = PickingMode.Ignore;
-            poolCount.style.fontSize = TypeScale.H2; Fonts.UseHeavy(poolCount);
-            poolCount.style.unityTextAlign = TextAnchor.MiddleCenter;
-            poolCount.style.unityTextOutlineWidth = Size.Hairline; poolCount.style.unityTextOutlineColor = Palette.Ink;
-            var word = Ui.Text("MANA", "", poolOrb);
-            word.name = "orbs-label";
-            word.pickingMode = PickingMode.Ignore;
-            word.style.fontSize = TypeScale.Badge; Fonts.UseHeavy(word);
-            word.style.color = Palette.Info;
-            word.style.unityTextOutlineWidth = Size.Hairline; word.style.unityTextOutlineColor = Palette.Ink;
-            word.style.marginTop = -Space.S8;
-            poolCap = Ui.Text("", "shadow", pool);
-            poolCap.name = "orbs-cap";
-            poolCap.pickingMode = PickingMode.Ignore;
-            poolCap.style.fontSize = TypeScale.Small;
-            poolCap.style.unityTextAlign = TextAnchor.MiddleCenter;
-            poolGhost = Ui.Text("", "h3 shadow mana-pool__ghost", pool);
-            poolGhost.name = "orbs-cost";
-            poolGhost.pickingMode = PickingMode.Ignore;
-            poolGhost.style.position = Position.Absolute;
-            poolGhost.style.top = Space.S4; poolGhost.style.right = Space.S4;
-            poolGhost.style.fontSize = TypeScale.Body; Fonts.UseHeavy(poolGhost);
-            poolGhost.style.opacity = 0f;
+            int cap = Mathf.Max(1, State?.Bank?.Capacity ?? BattleConfig.ManaBankCapacity);
+            for (int i = 0; i < cap; i++)
+            {
+                var cell = Ui.El("", pool);
+                cell.name = "orb" + i;
+                cell.pickingMode = PickingMode.Ignore;
+                cell.style.width = cell.style.height = Size.OrbRow; // LayoutOrbs fits these to the row
+                cell.style.flexShrink = 0;
+                var bloom = new VisualElement { name = "bloom", pickingMode = PickingMode.Ignore };
+                bloom.style.position = Position.Absolute;
+                bloom.style.backgroundImage = new StyleBackground(Art.Glow);
+                bloom.style.unityBackgroundImageTintColor = Palette.ManaBloom;
+                bloom.style.opacity = 0f;
+                cell.Add(bloom);
+                var orb = new ManaOrbView { ReduceMotion = ReduceMotion };
+                orb.style.position = Position.Absolute;
+                orb.style.left = orb.style.top = orb.style.right = orb.style.bottom = Space.S0;
+                cell.Add(orb);
+                orbViews.Add(orb);
+                orbBlooms.Add(bloom);
+            }
+            if (!ReduceMotion) pool.schedule.Execute(BreatheOrbs).Every(33);
+        }
+
+        /// <summary>Owner 2026-11-22: "all mana orbs need to always be sized properly and spaced equally, rendered from left
+        /// to right." Any count from 1 to MaxOrbCapacity: every orb the same size (at most Size.OrbRow, smaller as the count
+        /// grows so the row always fits), the same gap between each, starting at the left edge.</summary>
+        private void LayoutOrbs()
+        {
+            if (pool == null || orbViews.Count == 0) return;
+            float avail = pool.contentRect.width;
+            if (float.IsNaN(avail) || avail <= 0f) return;
+            int n = orbViews.Count;
+            float gap = Space.S8;
+            float size = Mathf.Min(Size.OrbRow, (avail - gap * (n - 1)) / n);
+            size = Mathf.Max(1f, size);
+            for (int i = 0; i < n; i++)
+            {
+                var cell = orbViews[i].parent;
+                if (cell == null) continue;
+                cell.style.width = cell.style.height = size;
+                cell.style.marginRight = i < n - 1 ? gap : Space.S0;
+                var bloom = orbBlooms[i];
+                bloom.style.left = bloom.style.top = bloom.style.right = bloom.style.bottom = -size * Size.OrbBloom / Size.OrbRow;
+            }
+        }
+
+        /// <summary>Lit orbs breathe their bloom softly, in step, so the row reads as live mana (GG-T673).</summary>
+        private void BreatheOrbs()
+        {
+            float k = 0.78f + 0.22f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / Timing.OrbBreathe);
+            for (int i = 0; i < orbBlooms.Count; i++)
+                if (orbViews[i].Filled) orbBlooms[i].style.opacity = k;
         }
 
         // ─────────────────────────────────────────────────────────────────────────
@@ -724,32 +753,46 @@ namespace GridGame.App
         private bool ManaPoolCard(VisualElement body)
         {
             int cap = State.Bank.Capacity;
-            return InspectCard.Explain(body, Art.Orb, "Mana pool", $"{State.Bank.Count}/{cap} orbs", Palette.Mana,
-                "The party's shared mana. Every spell is paid in orbs from here; skills and items cost none. It holds " + cap + " orbs; an orb earned while it is full is lost.",
+            return InspectCard.Explain(body, Art.Orb, "Mana orbs", $"{State.Bank.Count}/{cap} orbs", Palette.ManaBloom,
+                "The party's shared mana. Every spell costs whole orbs from this row; skills and items cost none. It holds " + cap + " orbs; once they're all full, earning stops until a spell spends one.",
                 new[]
                 {
-                    "Pincers fill the ring round the globe by the HP they take (fewer heroes and longer chains fill it faster); a full ring becomes an orb.",
-                    "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to the ring too.",
+                    "The next empty orb fills a ring as you fight; a full ring becomes an orb.",
+                    "Pincers fill it by the HP they take (fewer heroes and longer chains fill it faster).",
+                    "Striking a foe with a skill, felling a foe, and every Clutch! add to it.",
+                    "It also refills slowly on its own as the battle clock runs.",
+                    "Critical hits, interrupting a foe's charge, the power amplifier and Mana supporters add to it too.",
                     "Guard trades the turn time you give up for charge (10 per second, up to 40).",
                     "A quick move banks the drag timer's spare seconds as orbs at the next foe's turn.",
                     "Mana pickups on the board, Mana Potions and Ethers, Steal and Mug, and Meditate or Aether Pour give whole orbs.",
                     "Some gear starts the battle with orbs, an expedition carries orbs over, and some regions' rules grant them.",
                 },
-                "Kills alone earn nothing: it is the pincer's damage that fills the ring. The Log tab lists every orb and where it came from.");
+                "Aiming a spell marks the orbs it will spend; a red rim marks the ones you still lack. The Log tab lists every orb and where it came from.");
         }
 
         /// <summary>The pool's numbers: the globe's level and the count on it, and the cap beneath, gold when full.</summary>
         private void ShowPoolCount(int count)
         {
             if (pool == null) return;
-            int cap = State.Bank.Capacity;
-            poolCount.text = count.ToString();
-            poolCap.text = "/" + cap;
-            bool full = count >= cap;
-            poolOrb.Target = cap > 0 ? Mathf.Clamp01(count / (float)cap) : 0f;
-            poolCount.style.color = count > 0 ? Palette.White : Palette.TextDim;
-            poolCap.style.color = full ? Palette.Gold : Palette.TextSub;
-            pool.EnableInClassList("mana-pool--full", full);
+            for (int i = 0; i < orbViews.Count; i++)
+            {
+                bool lit = i < count;
+                orbViews[i].Filled = lit;
+                if (!lit || ReduceMotion) orbBlooms[i].style.opacity = lit ? 1f : 0f;
+            }
+            pool.EnableInClassList("mana-orbs--full", count >= orbViews.Count);
+            ApplyOrbCharge(); // the forming-orb ring moves to the new next empty orb
+        }
+
+        /// <summary>The stage-space centre of orb <paramref name="index"/> (clamped), for trails that fly into it.</summary>
+        private Vector2 OrbCenter(int index)
+        {
+            if (orbViews.Count > 0)
+            {
+                var o = orbViews[Mathf.Clamp(index, 0, orbViews.Count - 1)];
+                if (!float.IsNaN(o.worldBound.x) && o.worldBound.width > 0f) return o.worldBound.center - App.Stage.worldBound.position;
+            }
+            return new Vector2(GameApp.StageWidth / 2f, OrbRowTop + Size.OrbRow / 2f);
         }
 
         /// <summary>The pending-cost preview (GG-T405): while a spell is aimed the count dims and a "-N" ghost fades in over
@@ -765,14 +808,13 @@ namespace GridGame.App
                 var a = BattleEngine.SlotAbility(State, hero, TargetingSlot);
                 if (a != null && a.Kind == AbilityKind.Spell && !sl.IsItem && !sl.IsWeapon) cost = a.Cost;
             }
-            if (cost > 0)
+            // The orbs it would spend (the newest ones) pulse; orbs it still lacks show a red rim, so "can I afford it"
+            // reads from the row itself (GG-T673).
+            for (int i = 0; i < orbViews.Count; i++)
             {
-                poolGhost.text = "-" + cost;
-                poolGhost.style.color = cost <= shownOrbs ? Palette.Gold : Palette.Bad;
+                orbViews[i].Preview = cost > 0 && i < shownOrbs && i >= shownOrbs - cost;
+                orbViews[i].Short = cost > shownOrbs && i >= shownOrbs && i < cost;
             }
-            poolGhost.style.opacity = cost > 0 ? 1f : 0f;
-            poolOrb.Preview = cost > 0 && State.Bank.Capacity > 0 ? Mathf.Min(cost, shownOrbs) / (float)State.Bank.Capacity : 0f;
-            poolCount.style.opacity = cost > 0 ? 0.55f : 1f;
         }
 
         private void SyncBar()
@@ -829,7 +871,7 @@ namespace GridGame.App
                         else
                         {
                             border = Palette.Mana;
-                            Ui.CostPips(a.Cost, cost, 30);
+                            Ui.CostPips(a.Cost, cost, 30, shownOrbs); // pips the row can't cover dim (GG-T673)
                         }
                     }
                     if (status == SlotStatus.Silenced) { border = new Color(1f, 0.25f, 0.25f); name.text += "\nSilenced"; }
