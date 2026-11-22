@@ -1077,6 +1077,25 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
     snapshot campaign is replayed every run, so `swamp-01` (no captain) read 3/8 then 8/8 across two runs with no
     relevant change; 8 battles a stage can't separate a tune from that, so the next pass should use a fixed snapshot
     seed or more battles before tuning `greenvalley-01`.
+  - **Amended 2026-11-22 (GG-T276 pass 3): the soak replays exactly, its snapshots are frozen, and Tithe Moors I's
+    reinforcements arrive in turn.** *Noise, found:* the snapshot campaign's forging rolled each Masterwork off the clock
+    (`Crafting.Craft` falls back to a `TickCount` seed when no `Rng` is passed, and `CampRoutine` passed none), so the
+    same content gave different gear every run. `CampRoutine.Run` now takes an optional `Rng` and the soak seeds one per
+    stage and try (23234ca3); two runs of the same content then gave 96/96 identical battles. *Cascade, found:* even
+    replayed exactly, regenerating the snapshot each run made any upstream tune reshuffle every later stage's loot and
+    forging (Tithe Moors I's change below took `desert-02` from 23/24 to 11/24, its Barbarian arriving with a different
+    weapon). The per-stage saves are now frozen to `artifacts/balance-snapshots/` (9ae4b102), reused until
+    `GAIDEN_ABILITY_SNAPSHOT=regen`; regenerate after a tune lands to see its knock-on once. **Change:** in
+    `greenvalley-01` the third frog (`frog02`) and two of the captain's soldiers (`soldier02`, `soldier03`) arrive 240,
+    240 and 480 ticks into their waves (`SpawnDef.DelayTicks`, already how wave 4's `soldier00` arrives), so the trio
+    meets each wave in parts. No foe, level or stat changed, so §14's rising weights (54 < 59 < 81 < 101 < 109) stand.
+    **Measured (24 a stage, casual, exact replay):** `greenvalley-01` 6/24 (25%) → 14/24 (58%), with wave-5 defeats
+    11 → 4. The first stage doesn't depend on the snapshot (a new save is unarmed), so that change is clean. Later
+    stages were measured only with the snapshot regenerated, so their moves are the cascade above, not this tune:
+    `greenvalley-02` 20 → 22/24, `swamp-01` 13 → 17/24, `desert-02` 23 → 11/24. A run against the frozen snapshot, to
+    see them with the party held fixed, was cut short by the machine's low-memory guard. 58% is inside the 55–85% band
+    but at its bottom; a first stage should sit near the top, so the next pass should take `greenvalley-01` further and
+    run the regenerated snapshot once to check `desert-02`.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
