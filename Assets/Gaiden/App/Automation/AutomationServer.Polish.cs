@@ -150,7 +150,9 @@ namespace GridGame.App.Automation
                 var dir = parent.resolvedStyle.flexDirection;
                 if (dir != FlexDirection.Row && dir != FlexDirection.RowReverse) continue;
                 if (parent.layout.width < 1) continue;
-                var kids = parent.Children().Where(c => c.resolvedStyle.position == Position.Relative && Shown(c) && c.layout.width >= 1 && c.layout.height >= 1).ToList();
+                // An EvenGrid short last row holds its cells' places with invisible "grid-filler"s: they count as cells here,
+                // so a left-aligned last row isn't read as a ragged right edge (GG-T658).
+                var kids = parent.Children().Where(c => c.resolvedStyle.position == Position.Relative && (Shown(c) || c.name == "grid-filler") && c.layout.width >= 1 && c.layout.height >= 1).ToList();
                 if (kids.Count < 3) continue;
                 float mw = Median(kids.Select(c => c.layout.width)), mh = Median(kids.Select(c => c.layout.height));
                 if (kids.Any(c => Mathf.Abs(c.layout.width - mw) > mw * 0.1f || Mathf.Abs(c.layout.height - mh) > mh * 0.1f)) continue;

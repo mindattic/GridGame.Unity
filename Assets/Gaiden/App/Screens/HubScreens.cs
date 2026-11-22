@@ -1628,15 +1628,19 @@ namespace GridGame.App
             // GG-T430: you pick one team before the run (the active party, up to the party-size cap) and it fights
             // every wave; "Change team" swaps it on the Party page and comes straight back here.
             var team = Ui.Panel(body, $"Your team {S.Party.Count}/{Progression.MaxPartySize}", false, "crucible-team");
+            // GG-T658: the faces share the row evenly (each cell grows from the avatar's width), with the edge equal to
+            // the gap (row padding + cell margins = 24 each), instead of piling up at the left edge (POL-C8).
             var faces = Ui.El("row", team);
             faces.style.flexWrap = Wrap.Wrap;
+            faces.style.paddingLeft = faces.style.paddingRight = Space.TargetHalfGap;
             foreach (var id in S.Party)
             {
                 var h = S.Hero(id);
                 if (h == null) continue;
                 var cell = Ui.El("col", faces);
                 cell.style.alignItems = Align.Center;
-                cell.style.marginRight = Space.S16;
+                cell.style.flexGrow = 1; cell.style.flexShrink = 0; cell.style.flexBasis = Kit.Avatar;
+                cell.style.marginLeft = cell.style.marginRight = Space.TargetHalfGap;
                 Ui.Thumb(id, cell, Kit.Avatar).style.marginRight = Space.S0;
                 Ui.Caption($"Lv {Progression.Level(h)}", cell);
             }
