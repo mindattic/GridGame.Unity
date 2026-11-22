@@ -1111,6 +1111,32 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
     foes would bring back the very bug that broke `greenvalley-01`. The lever is the XP curve, GG-T474 (owner decision).
     Still to do: a `GAIDEN_ABILITY_SNAPSHOT=regen` run over `greenvalley-01`..`desert-02` to check knock-on effects (not
     run: memory), and a second look at `desert-02`'s wave 4 if it lands under the band once regenerated.
+  - **Amended 2026-11-22 (GG-T276 pass 6): first measurement with owned-orb mana; no tune.** Mana is now owned Mana Orbs
+    (GG-T673 spells cost 1–4 orbs; GG-T677 a new save owns 1, milestones/finds raise it; GG-T676 leftovers → Mana Dust).
+    The soak already fights with the orbs a player would own: every fight is built by `BattleFactory.Build`, whose
+    `OrbCapacity` reads the save's owned orbs, the campaign snapshot's `Commit` grants milestone/find/broken orbs, and
+    `greenvalley-01` starts from a new save (1 orb). Snapshots regenerated (`GAIDEN_ABILITY_SNAPSHOT=regen`, kept in
+    `artifacts/balance-snapshots/d10`), 24 casual a stage, run `2026-11-22_1658`:
+
+    | Stage | Wins | Orbs minted / battle | Wasted (row full) | Casts / battle |
+    |---|---|---|---|---|
+    | greenvalley-01 | 13/24 (54%) | 5.7 | 11% | 4.2 |
+    | greenvalley-02 | 22/24 (92%) | 4.7 | 8% | 3.4 |
+    | swamp-01 | 23/24 (96%) | 11.3 | 1% | 10.7 |
+    | desert-02 | 19/24 (79%) | 15.6 | 1% | 12.2 |
+    | cave-02 | 9/24 (38%) | 13.0 | 1% | 12.0 |
+    | cityruins-02 | 24/24 | 17.1 | 0% | 16.9 |
+    | cathedral-02 | 24/24 | 13.8 | 0% | 14.2 |
+
+    **Read:** with one orb, early casting is scarce but used (4 casts a fight at Tithe Moors I; the 11% waste is earning
+    into a full one-orb row), so the earn rates don't look wrong. Casual campaign Mana Dust: 111, 24 of it from leftover
+    orbs (~22%); the gold split holds (gear 43%, repairs 22%, facilities 9%). **Why no tune:** nothing clearly traces to
+    the orb economy. `cave-02`'s defeats spread over waves 2–5 (attrition, not a spike) with healthy casting;
+    `cityruins-02`/`cathedral-02` at 24/24 and `swamp-01`/`greenvalley-02` above the band match the campaign party
+    arriving over-levelled (GG-T474, the owner's XP-curve call), and cheaper big spells (GG-T673: 10 → 4 orbs) may add to
+    it. **Next pass:** a counterfactual (the same seeds with spell orb costs at their old scale, or orbs off) to split the
+    late 100% between levels and cheap spells before tuning either; `cave-02` triage; and the casual camp-managing
+    campaigns finished 2/4 this run (earlier runs 4/4), which points at `cave-02` as a new wall.
 - *(Tests: `TimelineSpacingTests`.)*
 
 ### 2.10 Countdown badge
