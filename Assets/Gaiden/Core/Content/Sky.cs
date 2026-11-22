@@ -94,7 +94,10 @@ namespace GridGame.Core.Content
             if (s.Parallax != null)
             {
                 var px = s.Parallax;
-                if (px.Amplitude < 0f || px.Amplitude > 0.08f) p.Add($"sky: Parallax Amplitude {px.Amplitude} must be in [0, 0.08]");
+                if (px.Amplitude < 0f || px.TiltAmplitude < 0f || px.Amplitude + px.TiltAmplitude > 0.08f)
+                    p.Add("sky: Parallax Amplitude and TiltAmplitude must be >= 0 and add up to at most 0.08");
+                if (px.TiltDegrees <= 0f || px.TiltSmoothSeconds <= 0f || px.TiltRecenterSeconds <= px.TiltSmoothSeconds)
+                    p.Add("sky: Parallax TiltDegrees and TiltSmoothSeconds must be > 0, and TiltRecenterSeconds longer than TiltSmoothSeconds");
                 var d = px.Depths;
                 if (d != null)
                     foreach (var (name, v) in new[] { ("Sky", d.Sky), ("Moon", d.Moon), ("Manalith", d.Manalith),
@@ -265,6 +268,16 @@ namespace GridGame.Core.Content
         /// <summary>GG-T681: each stage layer's depth, the share of the foreground's movement it makes (0 = fixed at
         /// infinity, 1 = moves with the foreground). Shards spread between ShardsFar and ShardsNear by their size.</summary>
         public StageDepthsDef Depths = new StageDepthsDef();
+
+        /// <summary>GG-T682: the most a depth-1 layer moves for a full device tilt, as a share of the screen's width (up
+        /// and down by the same number of pixels).</summary>
+        public float TiltAmplitude = 0.018f;
+        /// <summary>Degrees of tilt away from the held pose that reach the full TiltAmplitude (clamped beyond).</summary>
+        public float TiltDegrees = 14f;
+        /// <summary>Low-pass time constant (seconds) on the accelerometer, so the stage glides instead of jittering.</summary>
+        public float TiltSmoothSeconds = 0.35f;
+        /// <summary>Time constant (seconds) of the slow drift that re-centres the stage on however the device is held.</summary>
+        public float TiltRecenterSeconds = 6f;
     }
 
     /// <summary>GG-T681: the layered stage's depths (see <see cref="ParallaxDef.Depths"/>).</summary>

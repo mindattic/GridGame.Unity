@@ -358,12 +358,17 @@ namespace GridGame.App
 
         private static Translate Move(Vector2 shift, float d) => new Translate(shift.x * d, shift.y * d);
 
-        /// <summary>How far a depth-1 layer is moved at time <paramref name="t"/>, in pixels: the idle sway.</summary>
-        private Vector2 Shift(float t) =>
-            new Vector2(Mathf.Sin(2f * Mathf.PI * t / Mathf.Max(1f, def.Parallax.Seconds)) * def.Parallax.Amplitude * w, 0f);
+        /// <summary>How far a depth-1 layer is moved at time <paramref name="t"/>, in pixels: the idle sway plus the device's
+        /// tilt (GG-T682), the layers sliding the way gravity pulls, near ones more than far ones.</summary>
+        private Vector2 Shift(float t)
+        {
+            var p = def.Parallax;
+            var tilt = StageTilt.Read(p) * (p.TiltAmplitude * w);
+            return new Vector2(Mathf.Sin(2f * Mathf.PI * t / Mathf.Max(1f, p.Seconds)) * p.Amplitude * w + tilt.x, -tilt.y);
+        }
 
         /// <summary>The most a depth-1 layer can move, as a share of the width (the plates are enlarged to hide edges).</summary>
-        private float MaxShift() => def.Parallax.Amplitude;
+        private float MaxShift() => def.Parallax.Amplitude + def.Parallax.TiltAmplitude;
 
         /// <summary>The wake follows the Somnolith (its sway and bob); each piece drifts from the body to the far end and
         /// starts again near the body, shrinking and fading as it goes. Reduce Motion holds every piece where it began.</summary>

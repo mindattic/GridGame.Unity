@@ -487,6 +487,9 @@ namespace GridGame.App.Automation
                     app.Router.ResetTo(new BattleScreen(synthId));
                     return new { ok = true, stage = synthId, source = src.Id, level, enemies = wave.Enemies.Select(e => e.Class).ToList() };
                 }
+                case "tilt": // GG-T682: stand in for the accelerometer (gravity x,y,z in device axes); off=1 hands it back
+                    StageTilt.Simulated = q["off"] == "1" ? (Vector3?)null : new Vector3(F(q["x"], 0), F(q["y"], -1), F(q["z"], 0));
+                    return new { ok = true, simulated = StageTilt.Simulated.HasValue, tilt = new[] { StageTilt.Last.x, StageTilt.Last.y } };
                 case "autoplay":
                     if (app.Router.Current is BattleScreen bs) { bs.AutoPlay = q["on"] != "0"; return new { ok = true }; }
                     return new { error = "not in battle" };

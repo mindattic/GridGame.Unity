@@ -27,7 +27,8 @@
   },
   "Parallax": {
     "Amplitude": 0.012, "Seconds": 36,
-    "Depths": { "Sky": 0.12, "Moon": 0.18, "Manalith": 0.3, "ShardsFar": 0.4, "ShardsNear": 0.8, "Foreground": 1 }
+    "Depths": { "Sky": 0.12, "Moon": 0.18, "Manalith": 0.3, "ShardsFar": 0.4, "ShardsNear": 0.8, "Foreground": 1 },
+    "TiltAmplitude": 0.018, "TiltDegrees": 14, "TiltSmoothSeconds": 0.35, "TiltRecenterSeconds": 6
   },
   "Regions": {
     "greenvalley": { "Size": 0.1, "X": 0.74, "Y": 0.3, "Rotation": -10 },
