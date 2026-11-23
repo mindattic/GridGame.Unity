@@ -36,6 +36,28 @@ namespace GridGame.App
         public static string StateLabel(TalentState s) => s == TalentState.Purchased ? "Learned"
             : s == TalentState.Innate ? "Known" : s == TalentState.Available ? "Available" : "Locked";
 
+        private static readonly string[] StatShort = { "STR", "VIT", "AGI", "SPD", "STA", "INT", "WIS", "LCK" };
+
+        /// <summary>Level-up stat points (GG-T591): the unspent count and one "+" button per stat (in
+        /// <see cref="StatGrantDef.Names"/> order), each showing the points already put there. Picks are permanent.</summary>
+        private void StatPointsPanel(VisualElement body, HeroSave h)
+        {
+            int unspent = StatPoints.Unspent(h);
+            var panel = Ui.Panel(body, null, false, "stat-points");
+            Ui.Heading($"{unspent} stat point{(unspent == 1 ? "" : "s")}", panel, unspent > 0 ? "gold" : "dim").name = "stat-points-count";
+            Ui.Caption("One a level · put each into any stat · picks are permanent", panel, "dim");
+            var row = Ui.El("row", panel);
+            row.style.flexWrap = Wrap.Wrap;
+            for (int i = 0; i < StatGrantDef.Names.Length; i++)
+            {
+                string stat = StatGrantDef.Names[i];
+                int n = StatPoints.In(h, stat);
+                var b = Ui.Button($"+ {StatShort[i]}{(n > 0 ? $" ({n})" : "")}", () => Done(StatPoints.Spend(h, stat)), "btn--small", row);
+                b.name = "stat-point-" + stat.ToLowerInvariant();
+                Ui.SetEnabled(b, unspent > 0);
+            }
+        }
+
         public override void BuildBody(VisualElement body)
         {
             var h = Hero;
@@ -57,6 +79,8 @@ namespace GridGame.App
             respec.name = "talent-respec";
             Ui.SetEnabled(respec, closed == null && spent > 0 && S.Gold >= cost);
             if (closed != null) Ui.Para(closed, head, "dim");
+
+            StatPointsPanel(body, h);
 
             if (trees.Count == 0)
             {

@@ -163,6 +163,10 @@ namespace GridGame.Meta
         /// Respec refunds what was paid even if the off-tree premium has since changed. A node bought before this was recorded
         /// (an older save) has no entry and refunds its current <see cref="Talents.Cost"/>. Null-safe: may be missing.</summary>
         public Dictionary<string, int> TreeNodeCosts;
+        /// <summary>Level-up stat points put into each stat (GG-T591, <see cref="StatPoints"/>), keyed by a
+        /// <see cref="StatGrantDef.Names"/> entry: how many points, not how much stat. Earned points are derived from the
+        /// level, so only the picks are saved. Null-safe: an older save has none (all its points are simply unspent).</summary>
+        public Dictionary<string, int> StatPicks;
         /// <summary>Learned passives the player has switched on (GG-T301, <see cref="PassiveLoadout"/>), read only once
         /// <see cref="PassivesChosen"/> is set; until then the first <see cref="PassiveLoadout.Slots"/> learned are on.</summary>
         public List<string> ActivePassives = new List<string>();
