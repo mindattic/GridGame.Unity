@@ -34,7 +34,7 @@ __pycache__/
 
 # GG-T355: the Prose conduit (docs/PROSE.md). The universe file is rebuilt from the content JSON by the mapper
 # (tools/prose_map.py); the consumer kit's pending texts, Outbox journal and scratch are local. Committed: the kit
-# config, applied.jsonl and the applied texts under Assets/Gaiden/Resources/Content/Text.
+# config, applied.jsonl and the applied texts under Assets/GridGame/Resources/Content/Text.
 Data/Prose/*.universe.json
 Data/Prose/pending/
 Data/Prose/drafts/

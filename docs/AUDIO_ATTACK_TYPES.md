@@ -2,7 +2,7 @@
 
 A landed physical hit sounds like whatever dealt it: a sword slashes, a hammer thuds, a wolf bites, a scorpion
 stings. Ten attack types cover every weapon and every foe in the game. This page is the sound brief and the file
-list. The data lives in one place, [`Assets/Gaiden/Resources/Content/attacktypes.json`](../Assets/Gaiden/Resources/Content/attacktypes.json),
+list. The data lives in one place, [`Assets/GridGame/Resources/Content/attacktypes.json`](../Assets/GridGame/Resources/Content/attacktypes.json),
 which also lists every file name each type wants (its `Sfx` arrays). Grep for `battle-hit-` there to find every slot.
 
 ## How a hit picks its sound
@@ -28,7 +28,7 @@ doesn't fail) while slots are still empty.
 
 ## Asset spec
 
-- Folder: `Assets/Gaiden/Resources/Audio/Sfx/`, Ogg Vorbis, mono is fine.
+- Folder: `Assets/GridGame/Resources/Audio/Sfx/`, Ogg Vorbis, mono is fine.
 - Length: 0.15-0.6 s, the transient in the first 30 ms (the hit lands on the damage number).
 - Loudness: **−16 LUFS ± 2, ≤ −1 dBTP** (POLISH.md §F; `tools/loudness.py` measures it).
 - Names follow the asset rule (GG-T561/GG-T562, `word-word-00`): `battle-hit-<type>-00`, `-01`, ... The variants

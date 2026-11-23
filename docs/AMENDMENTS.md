@@ -7,16 +7,19 @@ status: living
 updated: 2026-10-09
 ---
 
-# GridGame Gaiden — Amendments to the GridGame2026 bible
+# GridGame — Amendments to the GridGame2026 bible
 
-> Every deliberate deviation of GridGame Gaiden from the GridGame2026 `docs/BIBLE.md`, one bullet
+> **GG-T694 (2026-11-23):** the working title dropped "Gaiden" — this log says GridGame throughout;
+> entries below that use "Gaiden" as a historical nickname for a specific past decision are left as written.
+>
+> Every deliberate deviation of GridGame from the GridGame2026 `docs/BIBLE.md`, one bullet
 > each, with rationale. The [BIBLE](BIBLE.md) marks each inline as **Amended 2026-10-09:**. Items
 > the new code simply has not built yet are not amendments; they stay as spec marked ⬜ in the bible
 > and [USER_STORIES](USER_STORIES.md). "Owner" = confirmed by the project owner.
 
 ## Architecture & process
 
-- **Pure simulation + event playback** (owner). `Gaiden.Core` is engine-free and deterministic;
+- **Pure simulation + event playback** (owner). `GridGame.Core` is engine-free and deterministic;
   `BattleEngine.Apply(command) → events` is the only way a battle changes; Unity only plays events
   back (`BattleScreen.Play`). *Why:* the old Unity-managers-and-coroutines game could not be tested
   or reasoned about and was declared unplayable; a pure core runs under `dotnet test` in seconds.

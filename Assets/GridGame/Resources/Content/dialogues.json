@@ -1,0 +1,3152 @@
+[
+  {
+    "Id": "recruit_ronin_greenvalley",
+    "Title": "A wounded ronin",
+    "Trigger": { "Kind": "Recruit", "Id": "ronin" },
+    "Speakers": [
+      { "Id": "ronin", "Class": "ronin" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "ask", "Speaker": "ronin", "Next": "ask2" },
+      { "Id": "ask2", "Speaker": "hero", "Next": "join" },
+      { "Id": "join", "Speaker": "ronin" }
+    ]
+  },
+  {
+    "Id": "recruit_sellsword_desert",
+    "Title": "A sellsword for hire",
+    "Trigger": { "Kind": "Recruit", "Id": "sellsword" },
+    "Speakers": [
+      { "Id": "merc", "Class": "sellsword" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "ask", "Speaker": "merc", "Next": "join" },
+      { "Id": "join", "Speaker": "merc" }
+    ]
+  },
+  {
+    "Id": "wanderer_met",
+    "Title": "A wanderer",
+    "Trigger": { "Kind": "Wanderer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": 0 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_street",
+    "Title": "A face from the Street",
+    "Trigger": { "Kind": "Wanderer", "Id": "street" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_holds",
+    "Title": "A sworn sword of the Holds",
+    "Trigger": { "Kind": "Wanderer", "Id": "holds" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": -1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_lantern",
+    "Title": "A walker of the Lantern Road",
+    "Trigger": { "Kind": "Wanderer", "Id": "lantern" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_fendark",
+    "Title": "Someone out of the fens",
+    "Trigger": { "Kind": "Wanderer", "Id": "fendark" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_ember",
+    "Title": "An Ember-touched stranger",
+    "Trigger": { "Kind": "Wanderer", "Id": "ember" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": -1 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_wild",
+    "Title": "Something from the Wild",
+    "Trigger": { "Kind": "Wanderer", "Id": "wild" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 0 },
+          { "Next": "ask3", "Wit": 1 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 1 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 0 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "wanderer_darktemplar",
+    "Title": "A templar with a red sword",
+    "Trigger": { "Kind": "Wanderer", "Id": "darktemplar" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$hero" },
+      { "Id": "with", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "hero", "Next": "reply" },
+      { "Id": "reply", "Speaker": "with", "Next": "ask1" },
+      {
+        "Id": "ask1", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask2", "Wit": 1 },
+          { "Next": "ask2", "Wit": 0 },
+          { "Next": "ask2", "Wit": -1 }
+        ]
+      },
+      {
+        "Id": "ask2", "Speaker": "hero",
+        "Choices": [
+          { "Next": "ask3", "Wit": -1 },
+          { "Next": "ask3", "Wit": 1 },
+          { "Next": "ask3", "Wit": 0 }
+        ]
+      },
+      {
+        "Id": "ask3", "Speaker": "hero",
+        "Choices": [
+          { "Next": "weigh", "Wit": 0 },
+          { "Next": "weigh", "Wit": -1 },
+          { "Next": "weigh", "Wit": 1 }
+        ]
+      },
+      { "Id": "weigh", "Speaker": "hero", "Next": "$outcome" },
+      { "Id": "join", "Speaker": "hero" },
+      { "Id": "part", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "greenvalley_road_merchant",
+    "Title": "A lantern on the road",
+    "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-01" },
+    "Speakers": [
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "merchant", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "merchant" } ] },
+          {
+            "Next": "map",
+            "Conditions": [ { "Type": "GoldAtLeast", "Amount": 20 } ],
+            "Effects": [ { "Type": "GrantGold", "Amount": -20 }, { "Type": "SetFlag", "Id": "bought_map" } ]
+          },
+          { "Next": "snubbed", "Effects": [ { "Type": "SetFlag", "Id": "merchant_snubbed" } ] }
+        ]
+      },
+      {
+        "Id": "map", "Speaker": "merchant",
+        "Effects": [ { "Type": "GrantItem", "Id": "healing_potion_basic", "Amount": 1 } ],
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "merchant" } ] },
+          { "Next": "snubbed", "Effects": [ { "Type": "SetFlag", "Id": "merchant_snubbed" } ] }
+        ]
+      },
+      { "Id": "snubbed", "Speaker": "merchant", "Effects": [ { "Type": "JoinNpc", "Id": "merchant" } ] },
+      { "Id": "joined", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "greenvalley_party_talk",
+    "Title": "Three times the quota",
+    "Trigger": { "Kind": "ThemeStart", "Id": "greenvalley" },
+    "Conditions": [ { "Type": "NpcJoined", "Id": "merchant" } ],
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "greenvalley_recruit_mage",
+    "Title": "A caster on the ridge",
+    "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-01" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "recruit", "Class": "$recruit" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
+      {
+        "Id": "reply", "Speaker": "lead",
+        "Choices": [
+          { "Next": "joined" },
+          { "Next": "warned" }
+        ]
+      },
+      { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
+      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "redmage", "Role": "Mage" } ] }
+    ]
+  },
+  {
+    "Id": "greenvalley_after_first",
+    "Title": "The innkeeper catches up",
+    "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-02" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
+    ],
+    "Nodes": [
+      { "Id": "one", "Speaker": "lead", "Next": "two" },
+      { "Id": "two", "Speaker": "innkeeper", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "innkeeper" } ] },
+          { "Next": "cheap", "Effects": [ { "Type": "JoinNpc", "Id": "innkeeper" } ] }
+        ]
+      },
+      { "Id": "cheap", "Speaker": "innkeeper", "Next": "joined" },
+      { "Id": "joined", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "greenvalley_smith",
+    "Title": "A smith who said no",
+    "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-03" },
+    "Speakers": [
+      { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "smith", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "blacksmith" } ] },
+          { "Next": "proof" }
+        ]
+      },
+      { "Id": "proof", "Speaker": "smith", "Effects": [ { "Type": "JoinNpc", "Id": "blacksmith" } ], "Next": "joined" },
+      { "Id": "joined", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "desert_recruit_support",
+    "Title": "Stranded in the red",
+    "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "recruit", "Class": "$recruit" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
+      {
+        "Id": "reply", "Speaker": "lead",
+        "Choices": [
+          { "Next": "joined" },
+          { "Next": "warned" }
+        ]
+      },
+      { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
+      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "engineer", "Role": "Support" } ] }
+    ]
+  },
+  {
+    "Id": "desert_alchemist",
+    "Title": "A splice-cutter",
+    "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-01" },
+    "Speakers": [
+      { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "alchemist", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "alchemist" } ] },
+          { "Next": "safe" }
+        ]
+      },
+      { "Id": "safe", "Speaker": "alchemist", "Effects": [ { "Type": "JoinNpc", "Id": "alchemist" } ], "Next": "joined" },
+      { "Id": "joined", "Speaker": "alchemist", "Effects": [ { "Type": "GrantItem", "Id": "empty_bottle", "Amount": 1 } ] }
+    ]
+  },
+  {
+    "Id": "lanternroad_summon_circle",
+    "Title": "A calling circle",
+    "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-02" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "alchemist", "Next": "c" },
+      { "Id": "c", "Speaker": "lead", "Effects": [ { "Type": "OpenStation", "Id": "summon" } ] }
+    ]
+  },
+  {
+    "Id": "lanternroad_bounties",
+    "Title": "Names on the board",
+    "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-03" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "innkeeper", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "innkeeper", "Effects": [ { "Type": "OpenStation", "Id": "bounties" } ] }
+    ]
+  },
+  {
+    "Id": "desert_crucible",
+    "Title": "Glass that remembers",
+    "Trigger": { "Kind": "StageCleared", "Id": "desert-01" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "smith", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "smith", "Effects": [ { "Type": "OpenStation", "Id": "crucible" } ] }
+    ]
+  },
+  {
+    "Id": "desert_aetherist",
+    "Title": "The dust-sifter",
+    "Trigger": { "Kind": "StageCleared", "Id": "desert-02" },
+    "Speakers": [
+      { "Id": "aetherist", "Name": "Manasmith", "Portrait": "aetherist-00" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "aetherist", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "aetherist",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "aetherist" } ] },
+          { "Next": "hymn" }
+        ]
+      },
+      { "Id": "hymn", "Speaker": "aetherist", "Effects": [ { "Type": "JoinNpc", "Id": "aetherist" } ], "Next": "joined" },
+      { "Id": "joined", "Speaker": "aetherist" }
+    ]
+  },
+  {
+    "Id": "swamp_caravan",
+    "Title": "Wheels from the wrecks",
+    "Trigger": { "Kind": "StageCleared", "Id": "swamp-02" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "merchant", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "merchant", "Effects": [ { "Type": "OpenStation", "Id": "caravan" } ] }
+    ]
+  },
+  {
+    "Id": "lanternroad_party_talk",
+    "Title": "Lanterns on the stairs",
+    "Trigger": { "Kind": "ThemeStart", "Id": "lanternroad" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "desert_party_talk",
+    "Title": "What the shards are",
+    "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "cave_recruit_tank",
+    "Title": "A guard on the ice",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cave" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "recruit", "Class": "$recruit" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
+      {
+        "Id": "reply", "Speaker": "lead",
+        "Choices": [
+          { "Next": "joined" },
+          { "Next": "warned" }
+        ]
+      },
+      { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
+      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "knight", "Role": "Tank" } ] }
+    ]
+  },
+  {
+    "Id": "cave_party_talk",
+    "Title": "Where the light goes",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cave" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "still_party_talk",
+    "Title": "What the tanks hold",
+    "Trigger": { "Kind": "ThemeStart", "Id": "still" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "enchantress", "Next": "c" },
+      { "Id": "c", "Speaker": "lead", "Next": "d" },
+      { "Id": "d", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "cityruins_recruit_healer",
+    "Title": "A healer in the underspire",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cityruins" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "recruit", "Class": "$recruit" }
+    ],
+    "Nodes": [
+      { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
+      {
+        "Id": "reply", "Speaker": "lead",
+        "Choices": [
+          { "Next": "joined" },
+          { "Next": "warned" }
+        ]
+      },
+      { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
+      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "sage", "Role": "Healer" } ] }
+    ]
+  },
+  {
+    "Id": "cityruins_party_talk",
+    "Title": "Give it back",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cityruins" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "cathedral_party_talk",
+    "Title": "The organ",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cathedral" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "bloom_party_talk",
+    "Title": "Where it came down",
+    "Trigger": { "Kind": "ThemeStart", "Id": "bloom" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "greenvalley2_party_talk",
+    "Title": "Where the rain missed",
+    "Trigger": { "Kind": "ThemeStart", "Id": "greenvalley2" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "desert2_party_talk",
+    "Title": "Marching north",
+    "Trigger": { "Kind": "ThemeStart", "Id": "desert2" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "swamp2_party_talk",
+    "Title": "Passage offered",
+    "Trigger": { "Kind": "ThemeStart", "Id": "swamp2" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "cave2_party_talk",
+    "Title": "Older than the arches",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cave2" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "cityruins2_party_talk",
+    "Title": "Everyone wants the spire",
+    "Trigger": { "Kind": "ThemeStart", "Id": "cityruins2" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "morrowsshadow_party_talk",
+    "Title": "Under the face",
+    "Trigger": { "Kind": "ThemeStart", "Id": "morrowsshadow" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "swamp_enchantress",
+    "Title": "A voice in the fog",
+    "Trigger": { "Kind": "StageCleared", "Id": "swamp-01" },
+    "Speakers": [
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "hail", "Speaker": "enchantress", "Next": "reply" },
+      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "joined", "Effects": [ { "Type": "JoinNpc", "Id": "enchantress" } ] },
+          { "Next": "rune" }
+        ]
+      },
+      { "Id": "rune", "Speaker": "enchantress", "Effects": [ { "Type": "JoinNpc", "Id": "enchantress" } ], "Next": "joined" },
+      { "Id": "joined", "Speaker": "enchantress", "Effects": [ { "Type": "GrantItem", "Id": "mat_arcane_dust", "Amount": 1 } ] }
+    ]
+  },
+  {
+    "Id": "swamp_party_talk",
+    "Title": "The ships' logs",
+    "Trigger": { "Kind": "ThemeStart", "Id": "swamp" },
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "b", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "camp_merchant_chat",
+    "Title": "Chat with the merchant",
+    "Trigger": { "Kind": "Talk", "Id": "npc:merchant" },
+    "Speakers": [
+      { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
+    ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "map", "Conditions": [ { "Type": "FlagSet", "Id": "bought_map" } ] },
+          {
+            "Next": "forgiven",
+            "Conditions": [ { "Type": "FlagSet", "Id": "merchant_snubbed" } ],
+            "Effects": [ { "Type": "ClearFlag", "Id": "merchant_snubbed" } ]
+          },
+          {
+            "Next": "hired",
+            "Conditions": [ { "Type": "GoldAtLeast", "Amount": 300 }, { "Type": "RosterLacks", "Id": "sellsword" } ],
+            "Effects": [ { "Type": "GrantGold", "Amount": -300 }, { "Type": "RecruitHero", "Id": "sellsword" } ]
+          },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "map", "Speaker": "merchant", "Next": "greet" },
+      { "Id": "forgiven", "Speaker": "merchant" },
+      { "Id": "hired", "Speaker": "merchant" },
+      { "Id": "bye", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "camp_innkeeper_chat",
+    "Title": "Chat with the innkeeper",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "news" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "news", "Speaker": "innkeeper", "Next": "greet" },
+      { "Id": "bye", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "camp_blacksmith_chat",
+    "Title": "Chat with the blacksmith",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "smith",
+        "Choices": [
+          { "Next": "trade" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "trade", "Speaker": "smith", "Next": "greet" },
+      { "Id": "bye", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "camp_alchemist_chat",
+    "Title": "Chat with the alchemist",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "green" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "green", "Speaker": "alchemist", "Next": "greet" },
+      { "Id": "bye", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "camp_enchantress_chat",
+    "Title": "Chat with the enchantress",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "runes" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "runes", "Speaker": "enchantress", "Next": "greet" },
+      { "Id": "bye", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "camp_aetherist_chat",
+    "Title": "Chat with the manasmith",
+    "Trigger": { "Kind": "Talk", "Id": "npc:aetherist" },
+    "Speakers": [ { "Id": "aetherist", "Name": "Manasmith", "Portrait": "aetherist-00" } ],
+    "Nodes": [
+      {
+        "Id": "greet", "Speaker": "aetherist",
+        "Choices": [
+          { "Next": "dust" },
+          { "Next": "hymn" },
+          { "Next": "bye" }
+        ]
+      },
+      { "Id": "dust", "Speaker": "aetherist", "Next": "greet" },
+      { "Id": "hymn", "Speaker": "aetherist", "Next": "greet" },
+      { "Id": "bye", "Speaker": "aetherist" }
+    ]
+  },
+  {
+    "Id": "camp_party_chat",
+    "Title": "Chat",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "hero",
+        "Choices": [
+          { "Next": "holding" },
+          { "Next": "merchant", "Conditions": [ { "Type": "NpcJoined", "Id": "merchant" } ] },
+          { "Next": "rest" }
+        ]
+      },
+      { "Id": "holding", "Speaker": "hero", "Next": "open" },
+      { "Id": "merchant", "Speaker": "hero" },
+      { "Id": "rest", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_defender",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "defender" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_knight",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "knight" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_paladin",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "paladin" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_warden",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "warden" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_myrmidon",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "myrmidon" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_tank",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "tank" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_shieldmaiden",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "shieldmaiden" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_warchief",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "warchief" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_darktemplar",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "darktemplar" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_jadeknight",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "jadeknight" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_alchemist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "alchemist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_cleric",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "cleric" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_doctor",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "doctor" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_sage",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "sage" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_whitewitch",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "whitewitch" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_monk",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "monk" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_sister",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "sister" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_whiteninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "whiteninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_harbinger",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "harbinger" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_redmage",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "redmage" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_drifter",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "drifter" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_operative",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "operative" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_blackwitch",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "blackwitch" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_ritualist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "ritualist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_barbarian",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "barbarian" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_basher",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "basher" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_bruiser",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "bruiser" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_pandagirl",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "pandagirl" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_assassain",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "assassain" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_duelist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "duelist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_fencer",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "fencer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_ronin",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "ronin" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_sellsword",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "sellsword" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_swordmaster",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "swordmaster" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_thief",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "thief" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_blackninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "blackninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_blueninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "blueninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_chromaninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "chromaninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_greenninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "greenninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_redninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "redninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_yellowninja",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "yellowninja" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_lancer",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "lancer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_raider",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "raider" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_speedster",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "speedster" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_streetfighter",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "streetfighter" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_striker",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "striker" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_fighter",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "fighter" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_martialartist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "martialartist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_prizefighter",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "prizefighter" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_pugilist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "pugilist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_nighthunter",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "nighthunter" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_ripper",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "ripper" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_odachi",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "odachi" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_slasher",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "slasher" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_vampire",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "vampire" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_bluelion",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "bluelion" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_wildchild",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "wildchild" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_monstertamer",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "monstertamer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_courier",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "courier" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_herald",
+    "Title": "Advice",
+    "Trigger": {
+      "Kind": "Talk",
+      "Id": "herald"
+    },
+    "Speakers": [
+      {
+        "Id": "hero",
+        "Class": "$with"
+      }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask",
+        "Speaker": "hero",
+        "Choices": [
+          {
+            "Next": "wrong"
+          },
+          {
+            "Next": "right",
+            "Effects": [
+              {
+                "Type": "GrantSkillPoint",
+                "Id": "$with"
+              }
+            ]
+          },
+          {
+            "Next": "wrong"
+          }
+        ]
+      },
+      {
+        "Id": "right",
+        "Speaker": "hero"
+      },
+      {
+        "Id": "wrong",
+        "Speaker": "hero"
+      }
+    ]
+  },
+  {
+    "Id": "talk_quiz_tactician",
+    "Title": "Advice",
+    "Trigger": {
+      "Kind": "Talk",
+      "Id": "tactician"
+    },
+    "Speakers": [
+      {
+        "Id": "hero",
+        "Class": "$with"
+      }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask",
+        "Speaker": "hero",
+        "Choices": [
+          {
+            "Next": "wrong"
+          },
+          {
+            "Next": "right",
+            "Effects": [
+              {
+                "Type": "GrantSkillPoint",
+                "Id": "$with"
+              }
+            ]
+          },
+          {
+            "Next": "wrong"
+          }
+        ]
+      },
+      {
+        "Id": "right",
+        "Speaker": "hero"
+      },
+      {
+        "Id": "wrong",
+        "Speaker": "hero"
+      }
+    ]
+  },
+  {
+    "Id": "talk_quiz_dervish",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "dervish" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_engineer",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "engineer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_machinist",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "machinist" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_technician",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "technician" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_tinkerer",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "tinkerer" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_hexsniper",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "hexsniper" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_hexwarden",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "hexwarden" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "talk_quiz_hexstalker",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "hexstalker" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "interlude_level10_motives",
+    "Title": "Why We Ran",
+    "Trigger": { "Kind": "LevelReached", "Level": 10 },
+    "HasCrawl": true,
+    "Backdrop": "cave",
+    "Speakers": [
+      { "Id": "lead", "Class": "$lead" },
+      { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "innkeeper", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "coin", "Effects": [ { "Type": "SetFlag", "Id": "motive:coin" } ] },
+          { "Next": "people", "Effects": [ { "Type": "SetFlag", "Id": "motive:people" } ] },
+          { "Next": "truth", "Effects": [ { "Type": "SetFlag", "Id": "motive:truth" } ] },
+          { "Next": "crew", "Effects": [ { "Type": "SetFlag", "Id": "motive:crew" } ] }
+        ]
+      },
+      { "Id": "coin", "Speaker": "innkeeper", "Next": "close" },
+      { "Id": "people", "Speaker": "innkeeper", "Next": "close" },
+      { "Id": "truth", "Speaker": "innkeeper", "Next": "close" },
+      { "Id": "crew", "Speaker": "innkeeper", "Next": "close" },
+      { "Id": "close", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_greenvalley",
+    "Title": "The Captain's Field",
+    "Trigger": { "Kind": "StageStart", "Id": "greenvalley-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "captain" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_lanternroad",
+    "Title": "The Mask on the Pass",
+    "Trigger": { "Kind": "StageStart", "Id": "lanternroad-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "oni02" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_desert",
+    "Title": "The Walker at the Dig",
+    "Trigger": { "Kind": "StageStart", "Id": "desert-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "mechaarmor01" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_swamp",
+    "Title": "The Mistress of the Arkgrave",
+    "Trigger": { "Kind": "StageStart", "Id": "swamp-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "swampmistress00" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_cave",
+    "Title": "The Keeper of the Great Anchor",
+    "Trigger": { "Kind": "StageStart", "Id": "cave-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "cyclops02" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_still",
+    "Title": "The Keeper of the Clocks",
+    "Trigger": { "Kind": "StageStart", "Id": "still-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "chronomancer" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_cityruins",
+    "Title": "The Kiln Guard on the Stair",
+    "Trigger": { "Kind": "StageStart", "Id": "cityruins-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "ceramicknight06" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "boss_intro_cathedral",
+    "Title": "The Hierarch",
+    "Trigger": { "Kind": "StageStart", "Id": "cathedral-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "hierarch", "Portrait": "mannequin" },
+      { "Id": "lead", "Class": "$lead" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "lead" }
+    ]
+  },
+  {
+    "Id": "quest_offer_wells_wolves",
+    "Title": "Something on the innkeeper's mind",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_wells_wolves" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_wells_wolves" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_frog_glands",
+    "Title": "The merchant's theory",
+    "Trigger": { "Kind": "Talk", "Id": "npc:merchant" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_frog_glands" } ],
+    "Speakers": [ { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_frog_glands" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "merchant" },
+      { "Id": "no", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "quest_offer_travel_light",
+    "Title": "Travel light",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_travel_light" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_travel_light" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_grown_not_forged",
+    "Title": "A cog on the bench",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_grown_not_forged" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_grown_not_forged" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_after_grown_not_forged",
+    "Title": "What the cogs mean",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "FlagSet", "Id": "quest:smith_cogs" } ],
+    "Once": true,
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }, { "Id": "lead", "Class": "$lead" } ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "smith", "Next": "b" },
+      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "c", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_antivenom",
+    "Title": "Venom that won't sit still",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_antivenom" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_antivenom" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_hags_hand",
+    "Title": "How the hags hold",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_hags_hand" }, { "Type": "QuestDone", "Id": "q_antivenom" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_hags_hand" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_hold_the_ward",
+    "Title": "The Enchantress's test",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_hold_the_ward" } ],
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_hold_the_ward" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "enchantress" },
+      { "Id": "no", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "quest_offer_long_cold",
+    "Title": "Cold bunks",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_long_cold" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_long_cold" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_cold_iron",
+    "Title": "Cores that never warm",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_cold_iron" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_cold_iron" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_city_that_stopped",
+    "Title": "The ones who paid",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_city_that_stopped" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_city_that_stopped" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_hymn_stops",
+    "Title": "The hymn stops here",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_hymn_stops" } ],
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_hymn_stops" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "enchantress" },
+      { "Id": "no", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "quest_offer_masks_off",
+    "Title": "Masks off",
+    "Trigger": { "Kind": "Talk", "Id": "npc:merchant" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_masks_off" } ],
+    "Speakers": [ { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_masks_off" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "merchant" },
+      { "Id": "no", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "quest_offer_organ_quiet",
+    "Title": "Quiet the organ",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_organ_quiet" } ],
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_organ_quiet" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "enchantress" },
+      { "Id": "no", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "quest_offer_moor_slimes",
+    "Title": "Something in the cellar",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_slimes" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_slimes" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_moor_harpies",
+    "Title": "Shadows over the wells",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_harpies" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_harpies" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_moor_werewolf",
+    "Title": "The howl at night",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_moor_werewolf" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_moor_werewolf" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_recruit",
+    "Title": "A blade without a lord",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_recruit" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_recruit" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_level",
+    "Title": "The ronin's measure",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_level" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_level" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_ronin_guard",
+    "Title": "A stance worth learning",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_ronin_guard" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_ronin_guard" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_seasoned",
+    "Title": "How far we've come",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_seasoned" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_seasoned" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_iron",
+    "Title": "A cold forge",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_iron" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_iron" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_plating",
+    "Title": "Plate from the wrecks",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_plating" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_plating" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_forge_frost",
+    "Title": "Quenched in frost",
+    "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_forge_frost" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "smith",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_forge_frost" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "smith" },
+      { "Id": "no", "Speaker": "smith" }
+    ]
+  },
+  {
+    "Id": "quest_offer_sellsword",
+    "Title": "A contract worth signing",
+    "Trigger": { "Kind": "Talk", "Id": "npc:merchant" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_sellsword" } ],
+    "Speakers": [ { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_sellsword" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "merchant" },
+      { "Id": "no", "Speaker": "merchant" }
+    ]
+  },
+  {
+    "Id": "quest_offer_lurker_ichor",
+    "Title": "Ichor of the lurkers",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_lurker_ichor" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_lurker_ichor" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_meteor",
+    "Title": "A star to call down",
+    "Trigger": { "Kind": "Talk", "Id": "npc:enchantress" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_meteor" } ],
+    "Speakers": [ { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_meteor" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "enchantress" },
+      { "Id": "no", "Speaker": "enchantress" }
+    ]
+  },
+  {
+    "Id": "quest_offer_holy_essence",
+    "Title": "Holy mana",
+    "Trigger": { "Kind": "Talk", "Id": "npc:alchemist" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_holy_essence" } ],
+    "Speakers": [ { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_holy_essence" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "alchemist" },
+      { "Id": "no", "Speaker": "alchemist" }
+    ]
+  },
+  {
+    "Id": "quest_offer_bulwark_breaks",
+    "Title": "The bulwark breaks",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_bulwark_breaks" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_bulwark_breaks" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_reaper_shroud",
+    "Title": "The reaper's shroud",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_reaper_shroud" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_reaper_shroud" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_choir_level",
+    "Title": "Strong enough",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_choir_level" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_choir_level" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_last_rite",
+    "Title": "The last rite",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_last_rite" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_last_rite" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  },
+  {
+    "Id": "quest_offer_heartwood",
+    "Title": "Heartwood",
+    "Trigger": { "Kind": "Talk", "Id": "npc:innkeeper" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_heartwood" } ],
+    "Speakers": [ { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_heartwood" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "innkeeper" },
+      { "Id": "no", "Speaker": "innkeeper" }
+    ]
+  },
+  {
+    "Id": "quest_offer_free_holds",
+    "Title": "Holds without masters",
+    "Trigger": { "Kind": "Talk", "Id": "party" },
+    "Conditions": [ { "Type": "QuestAvailable", "Id": "q_free_holds" } ],
+    "Speakers": [ { "Id": "with", "Class": "$with" } ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "yes", "Effects": [ { "Type": "StartQuest", "Id": "q_free_holds" } ] },
+          { "Next": "no" }
+        ]
+      },
+      { "Id": "yes", "Speaker": "with" },
+      { "Id": "no", "Speaker": "with" }
+    ]
+  }
+]

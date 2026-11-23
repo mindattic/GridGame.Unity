@@ -1,4 +1,6 @@
-# GridGame Gaiden: Age-rating questionnaire answers
+# GridGame: Age-rating questionnaire answers
+
+> **GG-T694 (2026-11-23):** the working title dropped "Gaiden"; this document now says GridGame throughout.
 
 > **DRAFT for the owner's review (GG-T472, 2026-11-20).** Suggested answers for Google Play's IARC questionnaire
 > (Play Console > App content > Content ratings) and Apple's age-rating questions (App Store Connect > App

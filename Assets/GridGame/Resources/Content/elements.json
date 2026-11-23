@@ -1,0 +1,126 @@
+{
+  "HeavyResistance": 0.25,
+  "Elements": [
+    {
+      "Type": "Physical",
+      "Counters": [],
+      "Status": null,
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Fire",
+      "Counters": ["Ice"],
+      "Status": "burning",
+      "Breaks": ["frozen", "wet"],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "slime_trail", "Kind": "Clear" },
+        { "On": "venom_snare", "Kind": "Clear" },
+        { "On": "miasma", "Kind": "Clear" },
+        { "On": "slime", "Kind": "Clear" },
+        { "On": "ice", "Kind": "Clear" },
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Ice",
+      "Counters": ["Fire"],
+      "Status": "frozen",
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "mire", "Kind": "Clear" },
+        { "On": "quicksand", "Kind": "Clear" },
+        { "On": "fire", "Kind": "Clear" },
+        { "On": "floodwater", "Kind": "Becomes", "Into": "ice" },
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Lightning",
+      "Counters": ["Poison", "Arcane"],
+      "Status": null,
+      "Breaks": [],
+      "Exploits": ["wet"],
+      "Tiles": [
+        { "On": "shock_mine", "Kind": "Clear" },
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Poison",
+      "Counters": [],
+      "Status": "poisoned",
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Holy",
+      "Counters": ["Dark"],
+      "Status": null,
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "miasma", "Kind": "Clear" },
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Dark",
+      "Counters": ["Holy", "Arcane"],
+      "Status": "blinded",
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    },
+    {
+      "Type": "Arcane",
+      "Counters": ["Physical"],
+      "Status": "silenced",
+      "Breaks": [],
+      "Exploits": [],
+      "Tiles": [
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+      ]
+    }
+  ],
+  "Reactions": [
+    {
+      "Id": "disarm",
+      "Tiles": [
+        { "On": "venom_snare", "Kind": "Clear" },
+        { "On": "shock_mine", "Kind": "Clear" },
+        { "On": "caltrops", "Kind": "Clear" },
+        { "On": "mine", "Kind": "Clear" }
+      ]
+    },
+    {
+      "Id": "cleanse",
+      "Tiles": [
+        { "On": "slime_trail", "Kind": "Clear" },
+        { "On": "mire", "Kind": "Clear" },
+        { "On": "quicksand", "Kind": "Clear" },
+        { "On": "miasma", "Kind": "Clear" },
+        { "On": "slime", "Kind": "Clear" },
+        { "On": "fire", "Kind": "Clear" },
+        { "On": "ice", "Kind": "Clear" }
+      ]
+    }
+  ],
+  "RuleBreaks": [
+    { "Rule": "TwinTurn", "Counter": "Positional" },
+    { "Rule": "AxisWard", "Counter": "Positional" },
+    { "Rule": "MireSwap", "Counter": "Positional" },
+    { "Rule": "GravityStamp", "Counter": "Positional" },
+    { "Rule": "Undying", "Counter": "Positional" }
+  ]
+}

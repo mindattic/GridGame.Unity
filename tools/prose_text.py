@@ -2,7 +2,7 @@
 """GG-T355 Phase 2: the game reads every story string from Content/Text (docs/PROSE.md, BIBLE section 27.2).
 
 The narrative fields are gone from the gameplay JSON. Their words live in Prose (universe `gridgame`) and reach the game
-as Assets/Gaiden/Resources/Content/Text/<kind>.json: written by tools/prose_apply.py from published Prose texts, or, until
+as Assets/GridGame/Resources/Content/Text/<kind>.json: written by tools/prose_apply.py from published Prose texts, or, until
 the owner approves a text, by the one-time SEED this tool made from the text the gameplay JSON used to hold.
 
     python tools/prose_text.py check                  every key has a text, no narrative field is left in gameplay JSON

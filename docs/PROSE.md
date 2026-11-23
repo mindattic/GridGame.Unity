@@ -16,7 +16,7 @@ content JSON ──tools/prose_map.py──> Data/Prose/gridgame.universe.json �
                                                                                          │
                          the author writes and approves texts in Prose; agents only draft (RFC 0009)
                                                                                          │
-Assets/Gaiden/Resources/Content/Text/*.json <──tools/prose_apply.py── pending/ <──kit pull── published texts
+Assets/GridGame/Resources/Content/Text/*.json <──tools/prose_apply.py── pending/ <──kit pull── published texts
                 └──────────────── Data/Prose/applied.jsonl {id, version, hash, key, kind} ────────────────┘
 ```
 

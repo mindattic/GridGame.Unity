@@ -13,7 +13,7 @@ connected to billing yet (release builds say "Store not connected yet").
 
 ## The switch
 
-`Assets/Gaiden/Meta/Features.cs` holds one `static bool` per hidden system. A switch that is off hides only the App
+`Assets/GridGame/Meta/Features.cs` holds one `static bool` per hidden system. A switch that is off hides only the App
 entry points (Camp row, side panel, Settings row, Adventure strip, results row). The rules engine, content, save data,
 the bots (`CampRoutine`, Test Mode, soaks) and the automation `goto` routes don't change. A save that already used a
 hidden system keeps everything it bought. To bring a system back, set its switch to `true`. To turn every switch on for

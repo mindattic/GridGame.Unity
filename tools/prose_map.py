@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """GG-T355: GridGame's mapper for the Prose conduit (docs/PROSE.md; Prose docs/CONDUIT.md section 6).
 
-    python tools/prose_map.py [--content Assets/Gaiden/Resources/Content] [--out Data/Prose/gridgame.universe.json]
+    python tools/prose_map.py [--content Assets/GridGame/Resources/Content] [--out Data/Prose/gridgame.universe.json]
 
 Reads the gameplay content JSON (read only) and writes the Universe Interchange file (RFC 0007) the consumer kit pushes
 to Prose's `gridgame` universe. Deterministic: the same content gives the same bytes.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """GG-T355: GridGame's applier for the Prose conduit (docs/PROSE.md; Prose docs/CONDUIT.md section 6).
 
-    python tools/prose_apply.py <pending-dir> [--content Assets/Gaiden/Resources/Content]
-                                [--out Assets/Gaiden/Resources/Content/Text] [--dry-run]
+    python tools/prose_apply.py <pending-dir> [--content Assets/GridGame/Resources/Content]
+                                [--out Assets/GridGame/Resources/Content/Text] [--dry-run]
 
 The consumer kit (`kit.ps1 apply`) runs it from the repo root with pending/ full of approved or published
 `prose-text/1` documents. It writes each one into the game's text file for its kind, keyed by the text's key, and

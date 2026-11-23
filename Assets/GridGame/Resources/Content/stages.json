@@ -1,0 +1,4719 @@
+[
+  {
+    "Id": "greenvalley-01",
+    "Name": "The Tithe Moors I",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Scenes": [
+      { "Id": "pincer", "Class": "slime00", "Level": 1 },
+      { "Id": "shove", "Class": "slime00", "Level": 1 },
+      { "Id": "chain", "Class": "slime00", "Level": 1 },
+      { "Id": "support", "Class": "slime00", "Level": 1 },
+      { "Id": "taunt", "Class": "goblinthug00", "Level": 1 },
+      { "Id": "pickup", "Pickup": "pk_potion" },
+      { "Id": "interrupt", "Class": "wolf00", "Level": 1 },
+      { "Id": "plate", "Class": "soldier00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "frog00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "DelayTicks": 240
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "DelayTicks": 240
+          }
+        ],
+        "SurpriseSpeaker": "captain"
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "DelayTicks": 240
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "DelayTicks": 480
+          },
+          {
+            "Class": "wolf01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "greenvalley-02",
+    "Rules": [
+      "slimetrail"
+    ],
+    "Name": "The Tithe Moors II",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": 2,
+            "Y": 5
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": 3,
+            "Y": 1
+          }
+        ]
+      },
+      {
+        "Group": "wolf-line-3"
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "frog00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "harpy01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "harpy02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wolf02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "greenvalley-03",
+    "Name": "The Tithe Moors III",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": 2,
+            "Y": 5
+          },
+          {
+            "Class": "slime03",
+            "Level": 1,
+            "X": 4,
+            "Y": 3
+          }
+        ],
+        "Recruitables": [
+          {
+            "Class": "ronin",
+            "Level": 1,
+            "X": 0,
+            "Y": 4,
+            "Dialogue": "recruit_ronin_greenvalley",
+            "Conditions": [
+              {
+                "Type": "HealedBy"
+              },
+              {
+                "Type": "ParticipatedInPincerWith"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wolf02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "minotaur02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "minotaur03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "skelepede00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "RuleBreak": "TwinTurn",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "toad00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "lanternroad-01",
+    "Name": "The Lantern Road I",
+    "Theme": "lanternroad",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "wolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "oni00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "oni02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "steppinrazor00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "steppinrazor02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "oni02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "lanternroad-02",
+    "Name": "The Lantern Road II",
+    "Theme": "lanternroad",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "flyingmonkey",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "steppinrazor04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "steppinrazor05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "oni01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "oni02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "lanternroad-03",
+    "Name": "The Lantern Road III",
+    "Theme": "lanternroad",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 4
+      },
+      {
+        "X": 4,
+        "Y": 3
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "bat01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "flyingmonkey",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "steppinrazor04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "steppinrazor05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wolf01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "oni01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "steppinrazor02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "oni02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "RuleBreak": "Undying"
+          },
+          {
+            "Class": "steppinrazor00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "desert-01",
+    "Name": "The Shardfall I",
+    "Theme": "desert",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "vulture",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "vulture",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "flyingmonkey",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "infernalist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "purpleprototype00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "techgremlin00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "mechaarmor00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "desert-02",
+    "Name": "The Shardfall II",
+    "Theme": "desert",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "vulture",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ],
+        "Guests": [
+          {
+            "Class": "dervish",
+            "Level": 1,
+            "X": 0,
+            "Y": 5
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "infernalist04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "sandmaw",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "purpleprototype02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "techgremlin01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "mechaarmor02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "techgremlin02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "sandmaw",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "desert-03",
+    "Rules": [
+      "firetrail"
+    ],
+    "Name": "The Shardfall III",
+    "Theme": "desert",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "vulture",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ],
+        "Recruitables": [
+          {
+            "Class": "sellsword",
+            "Level": 1,
+            "X": 5,
+            "Y": 4,
+            "Dialogue": "recruit_sellsword_desert",
+            "Conditions": [
+              {
+                "Type": "PayGold",
+                "Amount": 150
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hellspawn01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hellspawn02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "infernalist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "purpleprototype04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mechaarmor00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hellspawn04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hellspawn03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "techgremlin00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "vulture",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mechaarmor01",
+            "RuleBreak": "AxisWard",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "swamp-01",
+    "Name": "The Arkgrave I",
+    "Theme": "swamp",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "frog00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "toad00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "lurker00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lurker01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "marshshambler00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "marshshambler01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "marshshambler03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lich",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "swamp-02",
+    "Name": "The Arkgrave II",
+    "Theme": "swamp",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "lurker01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "marshshambler01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ],
+        "Guests": [
+          {
+            "Class": "drifter",
+            "Level": 1,
+            "X": 5,
+            "Y": 5
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "frog00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "marshshambler00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "frog02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "naga00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "swamp-03",
+    "Name": "The Arkgrave III",
+    "Theme": "swamp",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "frog03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "frog01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "lurker00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lurker01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lurker02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "marshshambler00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "marshshambler01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "marshshambler03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "swampmistress00",
+            "RuleBreak": "MireSwap",
+            "Level": 5,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hag02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hag03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cave-01",
+    "Name": "The Anchor Wastes I",
+    "Theme": "cave",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 2,
+        "Y": 3
+      },
+      {
+        "X": 3,
+        "Y": 3
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wraithknight02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "voidsentinel",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wraithknight01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mountaintroll",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "icemauler",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cave-02",
+    "Rules": [
+      "icetrail"
+    ],
+    "Name": "The Anchor Wastes II",
+    "Theme": "cave",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 4
+      },
+      {
+        "X": 5,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ],
+        "Guests": [
+          {
+            "Class": "lancer",
+            "Level": 1,
+            "X": 0,
+            "Y": 5
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ceramicknight03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "chronomancer",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wraithknight01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mountaintroll",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "yeti",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "icemauler",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ceramicknight04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cave-03",
+    "Rules": [
+      "crackingfloor"
+    ],
+    "Name": "The Anchor Wastes III",
+    "Theme": "cave",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 2
+      },
+      {
+        "X": 4,
+        "Y": 2
+      },
+      {
+        "X": 2,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wraithknight03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "skelepede00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mountaintroll",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "yeti",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyclops02",
+            "RuleBreak": "GravityStamp",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "still-01",
+    "Name": "The Still I",
+    "Theme": "still",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 3
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyberzombie00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "still-02",
+    "Name": "The Still II",
+    "Theme": "still",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 4
+      },
+      {
+        "X": 2,
+        "Y": 3
+      },
+      {
+        "X": 5,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cyberzombie01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyclops04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "still-03",
+    "Rules": [
+      "landmines"
+    ],
+    "Name": "The Still III",
+    "Theme": "still",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 2
+      },
+      {
+        "X": 4,
+        "Y": 2
+      },
+      {
+        "X": 2,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "chronomancer",
+            "RuleBreak": "TwinTurn",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cityruins-01",
+    "Name": "Halcyon I",
+    "Theme": "cityruins",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 4
+      },
+      {
+        "X": 4,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ghost",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ],
+        "Guests": [
+          {
+            "Class": "machinist",
+            "Level": 1,
+            "X": 5,
+            "Y": 5
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "templar01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "phantom",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mockingecho",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyberzombie01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "minotaur01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "minotaur04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cityruins-02",
+    "Name": "Halcyon II",
+    "Theme": "cityruins",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 2,
+        "Y": 2
+      },
+      {
+        "X": 3,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "undead00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ghost",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "phantom",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "mechaarmor02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mockingecho",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "reaper",
+            "Level": 6,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cityruins-03",
+    "Name": "Halcyon III",
+    "Theme": "cityruins",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 3
+      },
+      {
+        "X": 5,
+        "Y": 3
+      },
+      {
+        "X": 2,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Group": "undead-flank-2"
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "demonlord",
+            "Level": 1,
+            "X": -1,
+            "Y": -1,
+            "DelayTicks": 240
+          }
+        ],
+        "SurpriseSpeaker": "demonlord"
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight06",
+            "RuleBreak": "AxisWard",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "undead04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cathedral-01",
+    "Name": "The Choir's Cathedral I",
+    "Theme": "cathedral",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 3
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cathedral-02",
+    "Rules": [
+      "crackingfloor"
+    ],
+    "Name": "The Choir's Cathedral II",
+    "Theme": "cathedral",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 2
+      },
+      {
+        "X": 4,
+        "Y": 2
+      },
+      {
+        "X": 2,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "cathedral-03",
+    "Name": "The Choir's Cathedral III",
+    "Theme": "cathedral",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 4
+      },
+      {
+        "X": 5,
+        "Y": 4
+      },
+      {
+        "X": 2,
+        "Y": 2
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "heavytrooper04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hierarch",
+            "RuleBreak": "Undying",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "bloom-01",
+    "Name": "The Bloom I",
+    "Theme": "bloom",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "ganger00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 25
+  },
+  {
+    "Id": "bloom-02",
+    "Name": "The Bloom II",
+    "Theme": "bloom",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 2
+      },
+      {
+        "X": 4,
+        "Y": 2
+      },
+      {
+        "X": 2,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 26
+  },
+  {
+    "Id": "bloom-03",
+    "Name": "The Bloom III",
+    "Theme": "bloom",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 4
+      },
+      {
+        "X": 5,
+        "Y": 4
+      },
+      {
+        "X": 2,
+        "Y": 2
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "ganger06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "treegolem03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "templar05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "heavytrooper03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 27
+  },
+  {
+    "Id": "test-00",
+    "Name": "Test-00",
+    "Theme": null,
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": true,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 10,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "yeti",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "test-01",
+    "Name": "Test-01",
+    "Theme": null,
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": true,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bat00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "test-snake",
+    "Name": "Test-Snake",
+    "Theme": null,
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": true,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "naga00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "test-harness",
+    "Name": "Test-Harness",
+    "Theme": null,
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": true,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "slime00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "slime01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "greenvalley-04",
+    "Name": "The Free Holds I",
+    "Theme": "greenvalley2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdwright",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "undead01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdmarksman",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "undead02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdram",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 28
+  },
+  {
+    "Id": "greenvalley-05",
+    "Name": "The Free Holds II",
+    "Theme": "greenvalley2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdmarksman",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ganger01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdwright",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "soldier01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdram",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "soldier02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdmarksman",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "holdwright",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 29
+  },
+  {
+    "Id": "desert-04",
+    "Name": "Deep Shardfall I",
+    "Theme": "desert2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "techgremlin00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "shardskitter",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "soldier00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "mechaarmor00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "shardcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "flyingmonkey",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "crystalbrute",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "sandmaw",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 34
+  },
+  {
+    "Id": "desert-05",
+    "Name": "Deep Shardfall II",
+    "Theme": "desert2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "purpleprototype00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "shardcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "mechaarmor01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "crystalbrute",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "scorpion",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "shardskitter",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "purpleprototype03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "shardcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "captain",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "crystalbrute",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "sandmaw",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 35
+  },
+  {
+    "Id": "swamp-04",
+    "Name": "The Drowned Arks I",
+    "Theme": "swamp2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "frog03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "tidestrider",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "lurker02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "stormcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hag00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hag01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bloatdrowner",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "marshshambler01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lurker02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 32
+  },
+  {
+    "Id": "swamp-05",
+    "Name": "The Drowned Arks II",
+    "Theme": "swamp2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "frog01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "stormcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "treegolem04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bloatdrowner",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hag02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "tidestrider",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "lurker01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "stormcaller",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "swampmistress00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hag01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "bloatdrowner",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 33
+  },
+  {
+    "Id": "cave-04",
+    "Name": "Under the Anchors I",
+    "Theme": "cave2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "skelepede00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "chainwarden",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hookthrower",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "wraithknight02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "anchorhulk",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyclops06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "icemauler",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wraithknight01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 36
+  },
+  {
+    "Id": "cave-05",
+    "Name": "Under the Anchors II",
+    "Theme": "cave2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hookthrower",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyclops02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "anchorhulk",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "goblinthug00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "chainwarden",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "ceramicknight05",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "mountaintroll",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "yeti",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "icemauler",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "chainwarden",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 37
+  },
+  {
+    "Id": "cityruins-04",
+    "Name": "The Underspire I",
+    "Theme": "cityruins2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "ganger02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "spireburrower",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cyberzombie00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "pitlurker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "harpy01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "spireshover",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "minotaur02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "minotaur04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cyberzombie02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 30
+  },
+  {
+    "Id": "cityruins-05",
+    "Name": "The Underspire II",
+    "Theme": "cityruins2",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "cyberzombie03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "spireshover",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "minotaur03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "spireburrower",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "harpy03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "pitlurker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "cultist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "minotaur01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "cultist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "ganger06",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 31
+  },
+  {
+    "Id": "morrowsshadow-01",
+    "Name": "Morrow's Shadow I",
+    "Theme": "morrowsshadow",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 1,
+        "Y": 3
+      },
+      {
+        "X": 4,
+        "Y": 4
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "hellspawn01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "duskstalker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "voidsentinel",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "wolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lampsnuffer",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "gloommender",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "duskmimic",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 38
+  },
+  {
+    "Id": "morrowsshadow-02",
+    "Name": "Morrow's Shadow II",
+    "Theme": "morrowsshadow",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 2,
+        "Y": 2
+      },
+      {
+        "X": 3,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "wolf01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "duskstalker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "hellspawn04",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "voidsentinel",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lampsnuffer",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hellspawn01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "gloommender",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "infernalist02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "duskmimic",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 39
+  },
+  {
+    "Id": "morrowsshadow-03",
+    "Name": "Morrow's Shadow III",
+    "Theme": "morrowsshadow",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Blocks": [
+      {
+        "X": 0,
+        "Y": 3
+      },
+      {
+        "X": 5,
+        "Y": 3
+      },
+      {
+        "X": 2,
+        "Y": 5
+      }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          {
+            "Class": "yeti",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "duskstalker",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "voidsentinel",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "infernalist01",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "hellspawn02",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "gloommender",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "werewolf00",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "lampsnuffer",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      },
+      {
+        "Enemies": [
+          {
+            "Class": "demonlord",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "voidsentinel",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          },
+          {
+            "Class": "infernalist03",
+            "Level": 1,
+            "X": -1,
+            "Y": -1
+          }
+        ]
+      }
+    ],
+    "LevelOverride": 40
+  }
+]

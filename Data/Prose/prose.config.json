@@ -5,7 +5,7 @@
   "displayName": "GridGame",
   "root": "../..",
   "mapper": "python tools/prose_map.py --out Data/Prose/gridgame.universe.json",
-  "applier": "python tools/prose_apply.py Data/Prose/pending --content Assets/Gaiden/Resources/Content --out Assets/Gaiden/Resources/Content/Text",
+  "applier": "python tools/prose_apply.py Data/Prose/pending --content Assets/GridGame/Resources/Content --out Assets/GridGame/Resources/Content/Text",
   "kinds": [
     "conversation",
     "crawl",

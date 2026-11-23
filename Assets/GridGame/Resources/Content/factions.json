@@ -1,0 +1,36 @@
+[
+  {
+    "Id": "street", "Name": "the Street",
+    "Regions": [ "cityruins", "cityruins2", "still", "cathedral" ],
+    "Heroes": [ "courier", "engineer", "technician", "speedster", "basher", "slasher", "fencer", "streetfighter", "striker", "fighter",
+      "prizefighter", "pugilist", "thief", "chromaninja", "yellowninja", "machinist", "tinkerer", "ripper", "raider", "lancer",
+      "duelist", "assassain", "operative", "nighthunter" ]
+  },
+  {
+    "Id": "holds", "Name": "the Free Holds",
+    "Regions": [ "greenvalley", "greenvalley2", "cave" ],
+    "Heroes": [ "knight", "paladin", "defender", "shieldmaiden", "tank", "jadeknight", "myrmidon", "warchief", "barbarian", "bruiser", "tactician" ]
+  },
+  {
+    "Id": "lantern", "Name": "the Lantern Road",
+    "Regions": [ "lanternroad", "desert", "desert2" ],
+    "Heroes": [ "ronin", "odachi", "swordmaster", "sellsword", "monk", "martialartist", "drifter", "dervish", "blackninja", "blueninja",
+      "greenninja", "redninja", "whiteninja", "pandagirl", "sage" ]
+  },
+  {
+    "Id": "fendark", "Name": "the Fen-dark",
+    "Regions": [ "swamp", "swamp2" ],
+    "Heroes": [ "blackwitch", "whitewitch", "ritualist", "hexwarden", "hexsniper", "hexstalker", "harbinger", "redmage", "alchemist",
+      "doctor", "sister", "cleric", "vampire" ]
+  },
+  {
+    "Id": "ember", "Name": "the Ember",
+    "Regions": [ "cave2", "morrowsshadow" ],
+    "Heroes": [ "darktemplar" ]
+  },
+  {
+    "Id": "wild", "Name": "the Wild",
+    "Regions": [ "bloom" ],
+    "Heroes": [ "wildchild", "monstertamer", "bluelion", "herald" ]
+  }
+]

@@ -54,7 +54,7 @@ import json
 import os
 import re
 
-CONTENT_DIR = os.path.join("Assets", "Gaiden", "Resources", "Content")
+CONTENT_DIR = os.path.join("Assets", "GridGame", "Resources", "Content")
 UNIVERSE = "gridgame"
 
 # Camp NPCs: the game's npc id (Talk trigger "npc:<id>", JoinNpc) -> the name dialogues and quests use for them.

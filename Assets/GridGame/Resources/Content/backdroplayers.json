@@ -1,0 +1,438 @@
+{
+  "anchor-wastes-00": {
+    "Sky": false,
+    "Why": "the pale 'sky' under the arches is fog and far walls; the cut is blotchy"
+  },
+  "anchor-wastes-01": {
+    "Sky": false,
+    "Why": "the pale 'sky' under the arches is fog and far walls; the cut is blotchy"
+  },
+  "anchor-wastes-02": {
+    "Sky": false,
+    "Why": "the pale 'sky' under the arches is fog and far walls; the cut is blotchy"
+  },
+  "anchor-wastes-03": {
+    "Sky": false,
+    "Why": "the pale 'sky' under the arches is fog and far walls; the cut is blotchy"
+  },
+  "arkgrave-00": {
+    "Sky": false,
+    "Why": "SegFormer reads the wrecked masts in the glowing fog as sky, so the Somnolith would float in front of them"
+  },
+  "arkgrave-01": {
+    "Sky": false,
+    "Why": "SegFormer reads the wrecked masts in the glowing fog as sky, so the Somnolith would float in front of them"
+  },
+  "arkgrave-02": {
+    "Sky": false,
+    "Why": "SegFormer reads the wrecked masts in the glowing fog as sky, so the Somnolith would float in front of them"
+  },
+  "arkgrave-03": {
+    "Sky": false,
+    "Why": "SegFormer reads the wrecked masts in the glowing fog as sky, so the Somnolith would float in front of them"
+  },
+  "arkgrave-04": {
+    "Sky": false,
+    "Why": "SegFormer reads the wrecked masts in the glowing fog as sky, so the Somnolith would float in front of them"
+  },
+  "bloom-00": {
+    "Sky": true,
+    "SkyBottom": 0.665,
+    "SkyShare": 0.205,
+    "Removed": 0.056
+  },
+  "bloom-01": {
+    "Sky": true,
+    "SkyBottom": 0.677,
+    "SkyShare": 0.24,
+    "Removed": 0.092
+  },
+  "bloom-02": {
+    "Sky": true,
+    "SkyBottom": 0.264,
+    "SkyShare": 0.124,
+    "Removed": 0.037
+  },
+  "bloom-03": {
+    "Sky": true,
+    "SkyBottom": 0.393,
+    "SkyShare": 0.166,
+    "Removed": 0.034
+  },
+  "bloom-04": {
+    "Sky": true,
+    "SkyBottom": 0.612,
+    "SkyShare": 0.23,
+    "Removed": 0.041
+  },
+  "bloom-05": {
+    "Sky": true,
+    "SkyBottom": 0.598,
+    "SkyShare": 0.199,
+    "Removed": 0.029
+  },
+  "bloom-06": {
+    "Sky": true,
+    "SkyBottom": 0.516,
+    "SkyShare": 0.175,
+    "Removed": 0.028
+  },
+  "bloom-07": {
+    "Sky": true,
+    "SkyBottom": 0.632,
+    "SkyShare": 0.169,
+    "Removed": 0.099
+  },
+  "cathedral-00": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "cathedral-01": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "cathedral-02": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "cathedral-03": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "free-holds-00": {
+    "Sky": false,
+    "SkyShare": 0.035,
+    "Removed": 0.003,
+    "Why": "sky is only 3% of the frame"
+  },
+  "free-holds-01": {
+    "Sky": false,
+    "SkyShare": 0.0,
+    "Removed": 0.0,
+    "Why": "sky is only 0% of the frame"
+  },
+  "free-holds-02": {
+    "Sky": true,
+    "SkyBottom": 0.42,
+    "SkyShare": 0.157,
+    "Removed": 0.023
+  },
+  "free-holds-03": {
+    "Sky": true,
+    "SkyBottom": 0.503,
+    "SkyShare": 0.107,
+    "Removed": 0.035
+  },
+  "free-holds-04": {
+    "Sky": true,
+    "SkyBottom": 0.491,
+    "SkyShare": 0.44,
+    "Removed": 0.032
+  },
+  "free-holds-05": {
+    "Sky": false,
+    "SkyShare": 0.0,
+    "Removed": 0.0,
+    "Why": "sky is only 0% of the frame"
+  },
+  "free-holds-06": {
+    "Sky": true,
+    "SkyBottom": 0.389,
+    "SkyShare": 0.323,
+    "Removed": 0.134
+  },
+  "halcyon-00": {
+    "Sky": true,
+    "SkyBottom": 0.625,
+    "SkyShare": 0.384,
+    "Removed": 0.022
+  },
+  "halcyon-01": {
+    "Sky": true,
+    "SkyBottom": 0.604,
+    "SkyShare": 0.389,
+    "Removed": 0.06
+  },
+  "halcyon-02": {
+    "Sky": true,
+    "SkyBottom": 0.425,
+    "SkyShare": 0.234,
+    "Removed": 0.009
+  },
+  "halcyon-03": {
+    "Sky": true,
+    "SkyBottom": 0.796,
+    "SkyShare": 0.344,
+    "Removed": 0.008
+  },
+  "halcyon-04": {
+    "Sky": true,
+    "SkyBottom": 0.66,
+    "SkyShare": 0.408,
+    "Removed": 0.021
+  },
+  "halcyon-05": {
+    "Sky": true,
+    "SkyBottom": 0.592,
+    "SkyShare": 0.449,
+    "Removed": 0.005
+  },
+  "halcyon-06": {
+    "Sky": true,
+    "SkyBottom": 0.712,
+    "SkyShare": 0.353,
+    "Removed": 0.006
+  },
+  "halcyon-07": {
+    "Sky": true,
+    "SkyBottom": 0.497,
+    "SkyShare": 0.143,
+    "Removed": 0.003
+  },
+  "halcyon-08": {
+    "Sky": true,
+    "SkyBottom": 0.565,
+    "SkyShare": 0.2,
+    "Removed": 0.016
+  },
+  "halcyon-09": {
+    "Sky": true,
+    "SkyBottom": 0.665,
+    "SkyShare": 0.345,
+    "Removed": 0.024
+  },
+  "halcyon-10": {
+    "Sky": true,
+    "SkyBottom": 0.53,
+    "SkyShare": 0.269,
+    "Removed": 0.005
+  },
+  "halcyon-11": {
+    "Sky": true,
+    "SkyBottom": 0.686,
+    "SkyShare": 0.455,
+    "Removed": 0.087
+  },
+  "halcyon-12": {
+    "Sky": true,
+    "SkyBottom": 0.707,
+    "SkyShare": 0.23,
+    "Removed": 0.01
+  },
+  "halcyon-13": {
+    "Sky": true,
+    "SkyBottom": 0.605,
+    "SkyShare": 0.191,
+    "Removed": 0.066
+  },
+  "lantern-road-00": {
+    "Sky": true,
+    "SkyBottom": 0.397,
+    "SkyShare": 0.096,
+    "Removed": 0.005
+  },
+  "lantern-road-01": {
+    "Sky": true,
+    "SkyBottom": 0.474,
+    "SkyShare": 0.156,
+    "Removed": 0.042
+  },
+  "lantern-road-02": {
+    "Sky": true,
+    "SkyBottom": 0.615,
+    "SkyShare": 0.12,
+    "Removed": 0.01
+  },
+  "lantern-road-03": {
+    "Sky": true,
+    "SkyBottom": 0.461,
+    "SkyShare": 0.139,
+    "Removed": 0.024
+  },
+  "morrows-shadow-00": {
+    "Sky": true,
+    "SkyBottom": 0.628,
+    "SkyShare": 0.648,
+    "Removed": 0.326
+  },
+  "morrows-shadow-01": {
+    "Sky": true,
+    "SkyBottom": 0.613,
+    "SkyShare": 0.594,
+    "Removed": 0.14
+  },
+  "morrows-shadow-02": {
+    "Sky": true,
+    "SkyBottom": 0.685,
+    "SkyShare": 0.678,
+    "Removed": 0.269
+  },
+  "morrows-shadow-03": {
+    "Sky": true,
+    "SkyBottom": 0.699,
+    "SkyShare": 0.633,
+    "Removed": 0.296
+  },
+  "morrows-shadow-04": {
+    "Sky": true,
+    "SkyBottom": 0.682,
+    "SkyShare": 0.678,
+    "Removed": 0.202
+  },
+  "morrows-shadow-05": {
+    "Sky": true,
+    "SkyBottom": 0.728,
+    "SkyShare": 0.721,
+    "Removed": 0.216
+  },
+  "morrows-shadow-06": {
+    "Sky": true,
+    "SkyBottom": 0.639,
+    "SkyShare": 0.606,
+    "Removed": 0.312
+  },
+  "morrows-shadow-07": {
+    "Sky": true,
+    "SkyBottom": 0.608,
+    "SkyShare": 0.587,
+    "Removed": 0.292
+  },
+  "morrows-shadow-08": {
+    "Sky": false,
+    "Why": "its giant moon is in shadow and melts into the cloud bank; the cut leaves a ring"
+  },
+  "morrows-shadow-09": {
+    "Sky": true,
+    "SkyBottom": 0.637,
+    "SkyShare": 0.657,
+    "Removed": 0.33
+  },
+  "shardfall-00": {
+    "Sky": false,
+    "Why": "the giant painted planet fills the sky and is fused with the horn spires; needs an art pass"
+  },
+  "shardfall-01": {
+    "Sky": false,
+    "Why": "the giant painted planet fills the sky and is fused with the horn spires; needs an art pass"
+  },
+  "shardfall-02": {
+    "Sky": false,
+    "Why": "the giant painted planet fills the sky and is fused with the horn spires; needs an art pass"
+  },
+  "shardfall-03": {
+    "Sky": false,
+    "Why": "the giant painted planet fills the sky and is fused with the horn spires; needs an art pass"
+  },
+  "shardfall-04": {
+    "Sky": false,
+    "Why": "the giant painted planet fills the sky and is fused with the horn spires; needs an art pass"
+  },
+  "still-00": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "still-01": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "still-02": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "still-03": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "still-04": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "still-05": {
+    "Sky": false,
+    "Why": "interior"
+  },
+  "tithe-moors-00": {
+    "Sky": true,
+    "SkyBottom": 0.279,
+    "SkyShare": 0.131,
+    "Removed": 0.002
+  },
+  "tithe-moors-01": {
+    "Sky": true,
+    "SkyBottom": 0.32,
+    "SkyShare": 0.279,
+    "Removed": 0.007
+  },
+  "tithe-moors-02": {
+    "Sky": true,
+    "SkyBottom": 0.394,
+    "SkyShare": 0.401,
+    "Removed": 0.112
+  },
+  "tithe-moors-03": {
+    "Sky": true,
+    "SkyBottom": 0.315,
+    "SkyShare": 0.264,
+    "Removed": 0.019
+  },
+  "tithe-moors-04": {
+    "Sky": true,
+    "SkyBottom": 0.332,
+    "SkyShare": 0.25,
+    "Removed": 0.011
+  },
+  "underspire-00": {
+    "Sky": true,
+    "SkyBottom": 0.466,
+    "SkyShare": 0.256,
+    "Removed": 0.004
+  },
+  "underspire-01": {
+    "Sky": true,
+    "SkyBottom": 0.508,
+    "SkyShare": 0.443,
+    "Removed": 0.015
+  },
+  "underspire-02": {
+    "Sky": true,
+    "SkyBottom": 0.417,
+    "SkyShare": 0.242,
+    "Removed": 0.02
+  },
+  "underspire-03": {
+    "Sky": true,
+    "SkyBottom": 0.458,
+    "SkyShare": 0.245,
+    "Removed": 0.012
+  },
+  "underspire-04": {
+    "Sky": true,
+    "SkyBottom": 0.479,
+    "SkyShare": 0.279,
+    "Removed": 0.009
+  },
+  "underspire-05": {
+    "Sky": true,
+    "SkyBottom": 0.431,
+    "SkyShare": 0.234,
+    "Removed": 0.014
+  },
+  "underspire-06": {
+    "Sky": true,
+    "SkyBottom": 0.484,
+    "SkyShare": 0.241,
+    "Removed": 0.007
+  },
+  "underspire-07": {
+    "Sky": true,
+    "SkyBottom": 0.422,
+    "SkyShare": 0.257,
+    "Removed": 0.005
+  },
+  "underspire-08": {
+    "Sky": true,
+    "SkyBottom": 0.507,
+    "SkyShare": 0.239,
+    "Removed": 0.0
+  }
+}

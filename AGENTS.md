@@ -7,10 +7,10 @@ A clean rebuild of GridGame2026 (Terra Battle pincer combat + Grandia II timelin
 D:\Projects\MindAttic\GridGame2026 is the frozen design reference — read it, never edit it.
 
 ## Laws (do not break)
-1. **Core is pure C#.** `Assets/Gaiden/Core` and `Assets/Gaiden/Meta` have `noEngineReferences`; no `UnityEngine`.
+1. **Core is pure C#.** `Assets/GridGame/Core` and `Assets/GridGame/Meta` have `noEngineReferences`; no `UnityEngine`.
    The battle changes only through `BattleEngine.Apply(command) → events`. Presentation never mutates state.
 2. **Content is data.** Classes, abilities, buffs, items, recipes, drops, stages, campaign live in
-   `Assets/Gaiden/Resources/Content/*.json` and must pass `ContentLoader.Validate`.
+   `Assets/GridGame/Resources/Content/*.json` and must pass `ContentLoader.Validate`.
 3. **No editor work.** One empty scene; `GameApp` builds everything in code (UI Toolkit + `Theme.uss`).
    No prefabs, no Inspector wiring, never ask the owner to click around in the Unity Editor.
 4. **Done = verified by play, not asserted.** Before claiming anything works:

@@ -2,7 +2,7 @@
 
 Build: `pwsh tools/build.ps1`, then run `Build/Windows/GridGameGaiden.exe` (resize the window as you like —
 the game letterboxes to portrait and never stretches). Or open the project in Unity 6000.4.3f1 and press
-Play on `Assets/Gaiden/Scenes/Main.unity` (it's empty on purpose; everything is built from code).
+Play on `Assets/GridGame/Scenes/Main.unity` (it's empty on purpose; everything is built from code).
 
 Mouse = finger. `Esc` = back / pause.
 

@@ -1,0 +1,346 @@
+using System.Collections.Generic;
+using GridGame.Core.Content;
+
+namespace GridGame.Core.Battle
+{
+    public sealed class BuffInstance
+    {
+        public BuffDef Def;
+        public int Remaining;
+        /// <summary>Tick-unit buffs accumulate timeline ticks here; one duration step per BattleConfig.BuffTickInterval.</summary>
+        public int TickAccumulator;
+        /// <summary>Set on application; a halting (Frozen) buff skips the turn boundary of the action that applied it.</summary>
+        public bool Fresh;
+        /// <summary>The unit that applied it, or -1 (GG-T533: the guardian an Intercepts buff hands the blow to).</summary>
+        public int SourceId = -1;
+
+        public BuffInstance Clone() => (BuffInstance)MemberwiseClone();
+    }
+
+    /// <summary>One armor piece worn in battle (§24.2, GG-T89): mirrors the save's per-piece durability/mastery.</summary>
+    public sealed class EquippedPiece
+    {
+        public string ItemId;
+        public int Durability;
+        public float Mastery = 1f;
+        /// <summary>Armor enchant id (GG-T179): grants its passive while this piece is worn (a broken piece leaves Gear).</summary>
+        public string Enchant;
+
+        public EquippedPiece Clone() => (EquippedPiece)MemberwiseClone();
+    }
+
+    /// <summary>One AbilityBar slot: an ability (skill/spell) or a consumable item stack.</summary>
+    public sealed class AbilitySlot
+    {
+        public string AbilityId;
+        public string ItemId;
+        /// <summary>A spare weapon carried on the bar; using it swaps it with the equipped one.</summary>
+        public string WeaponId;
+        /// <summary>Remaining durability of the weapon stowed in this slot, carried across swaps so stowing and re-equipping never resets wear.</summary>
+        public int WeaponDurability;
+        public int Charges;
+        public int MaxCharges;
+        /// <summary>True when the stack came from the player's inventory (use also consumes the item).</summary>
+        public bool FromInventory;
+
+        public bool IsEmpty => AbilityId == null && ItemId == null && WeaponId == null;
+        public bool IsWeapon => WeaponId != null;
+        public bool IsItem => ItemId != null;
+
+        public AbilitySlot Clone() => (AbilitySlot)MemberwiseClone();
+    }
+
+    public sealed class Unit
+    {
+        public int Id;
+        /// <summary>The seat that commands this hero (GG-LAW-13). Seat 0 (the default) in the single-player game;
+        /// only a hero's owner may move it or use its bar. Meaningless for enemies.</summary>
+        public PlayerId Owner;
+        public ClassDef Def;
+        public Team Team;
+        public int Level = 1;
+        /// <summary>Enemy turns this unit has started (brains with a rhythm: sluggish, blinkers, burrowers).</summary>
+        public int TurnsTaken;
+        /// <summary>Steps taken toward the next <see cref="ClassDef.TrailRule"/> drop (GG-T370).</summary>
+        public int TrailSteps;
+
+        /// <summary>Level-derived stats before equipment.</summary>
+        public Stats LevelStats = new Stats();
+        /// <summary>Summed equipment stat bonuses.</summary>
+        public Stats GearStats = new Stats();
+
+        public int MaxHp;
+        public int Hp;
+
+        public Coord Pos;
+        public int W = 1;
+        public int H = 1;
+        public bool OnBoard = true;
+
+        public List<BuffInstance> Buffs = new List<BuffInstance>();
+        public Dictionary<string, int> Cooldowns = new Dictionary<string, int>();
+        /// <summary>Passive/Reactive ability ids this hero learned (skill-tree nodes, rewards), from <see cref="HeroSpec.Passives"/>
+        /// (GG-T296). One of the trigger sources (<see cref="GridGame.Core.Rules.Triggers.Sources"/>).</summary>
+        public List<string> Passives = new List<string>();
+        /// <summary>Trigger ability id → own turns before it may fire again (<see cref="TriggerDef.Cooldown"/>).</summary>
+        public Dictionary<string, int> TriggerCooldowns = new Dictionary<string, int>();
+        public List<AbilitySlot> Bar = new List<AbilitySlot>();
+        public int UnlockedSlots = 2;
+
+        // Equipment (heroes)
+        public string WeaponId;
+        public float WeaponPower;
+        public int WeaponDurability;
+        /// <summary>Masterwork stat multiplier for the current weapon (1 = normal, §24.6.2, GG-T46).</summary>
+        public float WeaponMastery = 1f;
+        /// <summary>Armor pieces currently worn (Head/Torso/Legs/Gloves/Boots), each with its own durability
+        /// and Masterwork multiplier; a piece is removed from here the instant it breaks (§24.2, GG-T89).</summary>
+        public Dictionary<EquipmentSlot, EquippedPiece> Gear = new Dictionary<EquipmentSlot, EquippedPiece>();
+        public float PincerDamageBonus;
+        /// <summary>Crit chance (0.2 = +20 points) a Crit supporter lent this unit for the pincer resolving now (GG-T298);
+        /// set as the pincer forms, cleared once its attackers have struck.</summary>
+        public float SupportCritBonus;
+        public int RegenPerTurn;
+        public Dictionary<DamageType, float> GearResist = new Dictionary<DamageType, float>();
+        /// <summary>Armor set bonus tiers currently folded into GearStats/GearResist/PincerDamageBonus/RegenPerTurn
+        /// (GG-T182) — kept so a piece breaking mid-battle can take back exactly the tiers it switches off.</summary>
+        public List<SetBonusDef> SetBonuses = new List<SetBonusDef>();
+
+        // Snake chain (segmented boss): head has SnakeIndex 0; segments 1..n follow.
+        public int SnakeHeadId = -1;
+        public int SnakeIndex;
+
+        public int BossPhase = -1;
+        /// <summary>A finale boss's rule-break (§14.9, GG-T234).</summary>
+        public RuleBreak RuleBreak;
+        /// <summary>Rule-break bookkeeping: AxisWard cracks taken; Undying 1 once it has risen.</summary>
+        public int RuleBreakCount;
+        /// <summary>Damage this hero has dealt this battle (enemy threat targeting, US-080).</summary>
+        public int DamageDealt;
+
+        public bool Alive => Hp > 0 && OnBoard;
+        public bool IsHero => Team == Team.Hero;
+        /// <summary>A hero the player commands (drags, bar, the window): every hero-team unit except an <see cref="IsIndependent"/> one.</summary>
+        public bool IsCommandable => Team == Team.Hero && !IsIndependent;
+        public bool IsMultiTile => W > 1 || H > 1;
+        /// <summary>A grave marker left by an undead (§14.5): solid, never acts except to raise its owner.</summary>
+        public bool IsRemains => Def != null && Def.HasTag("Remains");
+        /// <summary>An egg laid mid-battle (§14.8): solid, never acts except to hatch.</summary>
+        public bool IsEgg => Def != null && Def.HasTag("Egg");
+        /// <summary>A body left on the board (§14.7): blocks its tile, never rises, doesn't hold up a wave, rots away.</summary>
+        public bool IsCorpse => Def != null && Def.HasTag("Corpse");
+        /// <summary>Class id of the fallen unit a corpse came from (its art, its name).</summary>
+        public string CorpseOf;
+        /// <summary>Player actions until a corpse rots away.</summary>
+        public int DecayIn;
+        /// <summary>Armor plate (§13.5): HP left on the plate and its full value; 0 = none or broken.</summary>
+        public int PlateHp, PlateMax;
+        /// <summary>The side the unit faces (a cardinal unit vector): its plate is on this side.</summary>
+        public Coord Facing = new Coord(0, 1);
+        public bool HasPlate => PlateHp > 0;
+        /// <summary>For remains: the class and level that rise when its turn arrives.</summary>
+        public string RisesAs;
+        public int RisesLevel;
+        /// <summary>Remains: turns still to pass before the owner rises (§14.5, GG-T261); 0 = rise on the next turn.</summary>
+        public int RisesInTurns;
+        /// <summary>A guest ally (§25.11), hero-team and player-controlled for this battle only.</summary>
+        public bool IsGuest;
+        /// <summary>GG-T308 (§2.0): this hero has already acted in the current window (each hero acts once per window).</summary>
+        public bool ActedThisWindow;
+        /// <summary>A neutral recruitable's terms (§25.11.1, GG-T132); kept after it joins. Null for everyone else.</summary>
+        public RecruitableDef Recruitable;
+        /// <summary>What heroes have done for a recruitable so far: "healed", "healed:&lt;class&gt;", "pincer", "pincer:&lt;class&gt;".</summary>
+        public HashSet<string> RecruitMarks = new HashSet<string>();
+        public bool IsNeutral => Team == Team.Neutral;
+        /// <summary>A risen undead drops nothing the second time.</summary>
+        public bool NoLoot;
+        /// <summary>
+        /// GG-T566: this enemy has died once and paid out (loot, pickup roll, kill tally, bounty credit, remains). The flag
+        /// lives on the unit, so it survives a revive (an echoed revive raises the caster's own fallen ally on the same Unit):
+        /// its second death drops nothing, credits nothing and leaves no remains that would rise again.
+        /// </summary>
+        public bool AlreadyLooted;
+        public bool IsSnakeSegment => SnakeHeadId >= 0 && SnakeIndex > 0;
+        public bool IsSnakeMember => SnakeHeadId >= 0;
+        /// <summary>The bounty this unit is the marked target of (§22.4, GG-T431), or null.</summary>
+        public string BountyId;
+        /// <summary>A bounty target's own title ("Grimjaw the Mauler"); null = the class name.</summary>
+        public string Title;
+        public bool IsBountyTarget => BountyId != null;
+        public string Name => Title ?? Def.Name;
+        /// <summary>Pincer eligibility (bible §1.2, GG-LAW-2): heroes always; enemies only with a society (tag Sentient, GG-T289);
+        /// anything carrying the Pincer keyword (a tamed or domesticated monster, or a class tagged Pincer — GG-T303).</summary>
+        public bool CanPincer => Team == Team.Hero || Def.HasTag("Sentient") || HasPincerKeyword;
+
+        // ── Taming (§25.11.3, GG-T303) ──
+        /// <summary>A wild monster tamed this battle: hero team, acting on its own AI against the party's foes.</summary>
+        public bool Tamed;
+        /// <summary>Own turns left before a tame wears off (ignored once <see cref="Bonded"/>).</summary>
+        public int TameTurnsLeft;
+        /// <summary>Bond earned this battle (one per own turn fought while tamed) and what this monster needs to want to join.</summary>
+        public int Bond, BondNeeded;
+        /// <summary>The bond is full: the tame no longer wears off, and standing at a victory it asks to join (GG-T303).</summary>
+        public bool Bonded => Tamed && BondNeeded > 0 && Bond >= BondNeeded;
+        /// <summary>A domesticated monster from the roster (HeroSave.Domesticated): always the party's, still on its own AI.</summary>
+        public bool Domesticated;
+        /// <summary>A hero-team unit the player never commands: it keeps its own timeline icon and acts on its own turn (Umaro, FF VI).</summary>
+        public bool IsIndependent => Team == Team.Hero && (Tamed || Domesticated || Wanderer);
+        /// <summary>The Pincer keyword (GG-T303): tamed and domesticated monsters may end or support a pincer though not Sentient.</summary>
+        public bool HasPincerKeyword => Tamed || Domesticated || (Def != null && Def.HasTag("Pincer"));
+        /// <summary>A wild monster fighting for the party only for this battle (not a roster member).</summary>
+        public bool IsWildTamed => Tamed && !Domesticated;
+
+        // ── Wanderers (§25.11.2, GG-T342) ──
+        /// <summary>A wandering hero met this battle: hero team, fighting on its own AI, earning trust; not a roster member.</summary>
+        public bool Wanderer;
+        /// <summary>Trust earned this battle (hero pincers that include it, heals from heroes) and its full gauge.</summary>
+        public int Trust, TrustNeeded;
+        public bool TrustFull => Wanderer && TrustNeeded > 0 && Trust >= TrustNeeded;
+        /// <summary>On the party's side for this battle only, never the player's own hero: a wild tamed beast or a wanderer.</summary>
+        public bool IsVisitor => IsWildTamed || Wanderer;
+        public bool IsRanged => Def.AttackRange > 1;
+
+        // ── Echo (GG-T388): what an Echo copies ──
+        /// <summary>The last Active ability (skill or spell, not an item) this unit used this battle, and the unit and tile it
+        /// aimed at (-1 = no unit). An Echo (<see cref="Content.AbilityDef.Echoes"/>) picking this unit repeats it.</summary>
+        public string LastAbilityId;
+        public int LastTargetUnitId = -1;
+        public Coord LastAnchor;
+
+        public Stats Effective
+        {
+            get
+            {
+                var s = LevelStats + GearStats;
+                s.Speed = LevelStats.Speed + GearStats.Speed + GearStats.Agility * 0.5f;
+                if (s.Strength < 1) s.Strength = 1;
+                if (s.Vitality < 1) s.Vitality = 1;
+                if (s.Speed < 1) s.Speed = 1;
+                return s;
+            }
+        }
+
+        public bool Occupies(Coord c) =>
+            OnBoard && c.X >= Pos.X && c.X < Pos.X + W && c.Y >= Pos.Y && c.Y < Pos.Y + H;
+
+        public IEnumerable<Coord> Tiles()
+        {
+            for (int dy = 0; dy < H; dy++)
+                for (int dx = 0; dx < W; dx++)
+                    yield return new Coord(Pos.X + dx, Pos.Y + dy);
+        }
+
+        /// <summary>Cardinal adjacency, footprint-aware (a 2×2 touches any tile beside its body).</summary>
+        public bool IsAdjacentTo(Unit o)
+        {
+            foreach (var a in Tiles())
+                foreach (var b in o.Tiles())
+                    if (a.IsCardinalNeighbor(b)) return true;
+            return false;
+        }
+
+        public int DistanceTo(Unit o)
+        {
+            int best = int.MaxValue;
+            foreach (var a in Tiles())
+                foreach (var b in o.Tiles())
+                {
+                    int d = a.Manhattan(b);
+                    if (d < best) best = d;
+                }
+            return best;
+        }
+
+        public bool HasBuff(string id)
+        {
+            foreach (var b in Buffs) if (b.Def.Id == id) return true;
+            return false;
+        }
+
+        public bool IsImmobile
+        {
+            get { foreach (var b in Buffs) if (b.Def.Immobile) return true; return false; }
+        }
+
+        public bool IsTimelineHalted
+        {
+            get { foreach (var b in Buffs) if (b.Def.HaltsTimeline) return true; return false; }
+        }
+
+        public bool IsSilenced
+        {
+            get { foreach (var b in Buffs) if (b.Def.BlocksSpells) return true; return false; }
+        }
+
+        /// <summary>Carries a taunt buff: enemies must come for this hero (§14.1.1).</summary>
+        public bool IsTaunting
+        {
+            get { foreach (var b in Buffs) if (b.Def.Taunts) return true; return false; }
+        }
+
+        public float OutgoingDamageMultiplier
+        {
+            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.OutgoingDamageMultiplier; return m; }
+        }
+
+        public float IncomingDamageMultiplier
+        {
+            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.IncomingDamageMultiplier; return m; }
+        }
+
+        public float TimelineSpeedMultiplier
+        {
+            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.TimelineSpeedMultiplier; return m; }
+        }
+
+        public float AccuracyMultiplier
+        {
+            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
+        }
+
+        /// <summary>Blind (any accuracy-lowering debuff, today <c>blinded</c>): lower hit and crit chance, and a crit landed
+        /// anyway is a Clutch (GG-T566, §13.1.1).</summary>
+        public bool IsBlinded => AccuracyMultiplier < 1f;
+
+        /// <summary>Evasion points from equipped gear (GG-T297), summed at spawn; a broken piece takes its share back out.</summary>
+        public float GearEvasion;
+
+        /// <summary>Evasion points from gear and buffs (GG-T297); <see cref="GridGame.Core.Rules.Formulas.Evasion"/> adds AGI/Luck and caps it.</summary>
+        public float EvasionBonus
+        {
+            get { float e = GearEvasion; foreach (var b in Buffs) e += b.Def.EvasionBonus; return e; }
+        }
+
+        public float ResistanceMultiplier(DamageType type)
+        {
+            float m = 1f;
+            if (Def.Resistances != null && Def.Resistances.TryGetValue(type, out var r)) m *= r;
+            if (GearResist != null && GearResist.TryGetValue(type, out var g)) m *= g;
+            return m;
+        }
+
+        public float HpFraction => MaxHp <= 0 ? 0f : (float)Hp / MaxHp;
+
+        public Unit Clone()
+        {
+            var u = (Unit)MemberwiseClone();
+            u.LevelStats = LevelStats.Clone();
+            u.GearStats = GearStats.Clone();
+            u.Buffs = new List<BuffInstance>(Buffs.Count);
+            foreach (var b in Buffs) u.Buffs.Add(b.Clone());
+            u.Cooldowns = new Dictionary<string, int>(Cooldowns);
+            u.Passives = new List<string>(Passives);
+            u.TriggerCooldowns = new Dictionary<string, int>(TriggerCooldowns);
+            u.Bar = new List<AbilitySlot>(Bar.Count);
+            foreach (var s in Bar) u.Bar.Add(s.Clone());
+            u.GearResist = new Dictionary<DamageType, float>(GearResist);
+            u.SetBonuses = new List<SetBonusDef>(SetBonuses);
+            u.RecruitMarks = new HashSet<string>(RecruitMarks);
+            u.Gear = new Dictionary<EquipmentSlot, EquippedPiece>();
+            foreach (var kv in Gear) u.Gear[kv.Key] = kv.Value.Clone();
+            return u;
+        }
+
+        public override string ToString() => $"{Name}#{Id}";
+    }
+}

@@ -1,7 +1,7 @@
 # Release builds (GG-T478, GG-T479)
 
 How to produce the store builds. Everything runs from the command line through `tools/build.ps1`, which drives Unity
-in batchmode through `Assets/Gaiden/Editor/GaidenBuild.cs`. The Unity Editor must be closed while it runs.
+in batchmode through `Assets/GridGame/Editor/GaidenBuild.cs`. The Unity Editor must be closed while it runs.
 
 | Command | Output | What it is |
 |---|---|---|
@@ -44,7 +44,7 @@ $t = "C:\Program Files\Unity\Hub\Editor\6000.4.3f1\Editor\Data\PlaybackEngines\A
 ```
 
 The first bundle (2026-11-20) was 547 MB (545 MB download): Unity's automatic Android format had left the 81 JPEG
-backdrops as raw RGB24, 13.5 MB each. `GaidenImport` (`Assets/Gaiden/Editor/GaidenBuild.cs`) now gives Android its own
+backdrops as raw RGB24, 13.5 MB each. `GaidenImport` (`Assets/GridGame/Editor/GaidenBuild.cs`) now gives Android its own
 explicit settings, and Standalone/iOS/WebGL keep the defaults:
 
 | Asset (Android only) | Setting | Compressed in the bundle |

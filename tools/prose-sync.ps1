@@ -1,4 +1,4 @@
-﻿# GG-T355: pull the latest PUBLISHED story text from Prose and apply it to Assets/Gaiden/Resources/Content/Text
+﻿# GG-T355: pull the latest PUBLISHED story text from Prose and apply it to Assets/GridGame/Resources/Content/Text
 # before a build (docs/PROSE.md, "Build-time pull"). Runs Prose's consumer kit by path: kit pull, then kit apply.
 #
 #   pwsh tools/prose-sync.ps1 [-Skip]

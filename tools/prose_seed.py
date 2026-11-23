@@ -3,7 +3,7 @@
 (RFC 0017 section 7, "First seed"). Since Phase 2 the gameplay JSON holds no story text, so this reads the content with
 Content/Text joined back on (prose_text.load_content_with_text): re-seeding drafts the game's current words.
 
-    python tools/prose_seed.py <out-dir> [--content Assets/Gaiden/Resources/Content]
+    python tools/prose_seed.py <out-dir> [--content Assets/GridGame/Resources/Content]
                                [--universe Data/Prose/gridgame.universe.json]
     prose --texts-draft gridgame <out-dir>          (drafts only: agents never approve or publish, RFC 0009)
 

@@ -2,7 +2,7 @@
 
 A portrait-mobile tactics RPG in Unity 6: Terra Battle pincer combat on a Grandia II-style timeline that only moves when you act, plus a Final Fantasy-style camp, all on a deterministic engine-free battle core.
 
-[![Unity](https://img.shields.io/badge/Unity-6000.4.3f1-black)](ProjectSettings/ProjectVersion.txt) [![C#](https://img.shields.io/badge/language-C%23-239120)](Assets/Gaiden) [![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Android%20%7C%20WebGL-blue)](tools/build.ps1) [![Tests](https://img.shields.io/badge/tests-880%20passing-brightgreen)](Tests/Core.Tests) [![Status](https://img.shields.io/badge/status-in%20development-orange)](docs/BIBLE.md)
+[![Unity](https://img.shields.io/badge/Unity-6000.4.3f1-black)](ProjectSettings/ProjectVersion.txt) [![C#](https://img.shields.io/badge/language-C%23-239120)](Assets/GridGame) [![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Android%20%7C%20WebGL-blue)](tools/build.ps1) [![Tests](https://img.shields.io/badge/tests-880%20passing-brightgreen)](Tests/Core.Tests) [![Status](https://img.shields.io/badge/status-in%20development-orange)](docs/BIBLE.md)
 
 ![A pincer landing in Green Valley III: two heroes flank a slime, the Mana banner reads plus 48 clean pincer, and the timeline sits above the 6 by 8 board](docs/images/battle-pincer.png)
 
@@ -148,13 +148,13 @@ python tools/check_glyphs.py     # verify every UI glyph exists in the bundled f
 
 | Layer | Where | What |
 |---|---|---|
-| Simulation | `Assets/Gaiden/Core` | Pure C# with no `UnityEngine`. `BattleEngine.Apply(command)` returns events. Deterministic and seeded. Tuning numbers live in `Core/Battle/BattleConfig.cs`. |
-| Bot | `Assets/Gaiden/Core/Bot` | `HeroBot` drives soak tests, Auto mode, hints and `-demo`. |
-| Meta | `Assets/Gaiden/Meta` | Pure C# save model and camp services (shop, craft, repair, inn, equip, learn, party, summon, bounties); `CampRoutine` is the bot camp manager. |
-| Content | `Assets/Gaiden/Resources/Content` | 15 JSON files: every class, ability, buff, item, recipe, drop table, stage, campaign theme, trap and caravan upgrade. |
-| App | `Assets/Gaiden/App` | Unity presentation. One empty scene; `GameApp` builds everything in code with UI Toolkit and `Theme.uss`. |
-| Automation | `Assets/Gaiden/App/Automation` | Development-build HTTP endpoint for scripted play, input injection, screenshots and layout audits. |
-| Build | `Assets/Gaiden/Editor/GaidenBuild.cs` | Batchmode build and compile-check entry points used by `tools/unity.ps1`. |
+| Simulation | `Assets/GridGame/Core` | Pure C# with no `UnityEngine`. `BattleEngine.Apply(command)` returns events. Deterministic and seeded. Tuning numbers live in `Core/Battle/BattleConfig.cs`. |
+| Bot | `Assets/GridGame/Core/Bot` | `HeroBot` drives soak tests, Auto mode, hints and `-demo`. |
+| Meta | `Assets/GridGame/Meta` | Pure C# save model and camp services (shop, craft, repair, inn, equip, learn, party, summon, bounties); `CampRoutine` is the bot camp manager. |
+| Content | `Assets/GridGame/Resources/Content` | 15 JSON files: every class, ability, buff, item, recipe, drop table, stage, campaign theme, trap and caravan upgrade. |
+| App | `Assets/GridGame/App` | Unity presentation. One empty scene; `GameApp` builds everything in code with UI Toolkit and `Theme.uss`. |
+| Automation | `Assets/GridGame/App/Automation` | Development-build HTTP endpoint for scripted play, input injection, screenshots and layout audits. |
+| Build | `Assets/GridGame/Editor/GaidenBuild.cs` | Batchmode build and compile-check entry points used by `tools/unity.ps1`. |
 
 No prefabs, no hand-built scenes, no Inspector wiring.
 
@@ -171,7 +171,7 @@ No prefabs, no hand-built scenes, no Inspector wiring.
 `tools/launch.ps1` (and `tools/launch.bat`) and `tools/harness.py`'s `launch()` launch muted by
 default: Unity.Shared's shared session mute (GG-T205), set either with the `-muted` command-line
 switch or the `MINDATTIC_CLI_MUTED=1` environment variable, read once by
-`Unity.Shared.ProfilesBootstrap` before the first scene loads. `Assets/Gaiden/App/Services/SessionAudio.cs`
+`Unity.Shared.ProfilesBootstrap` before the first scene loads. `Assets/GridGame/App/Services/SessionAudio.cs`
 then zeroes `AudioListener.volume` for that run; nothing is written to this game's own save data, so a
 normal launch still has sound. Pass `-Sound` to `tools/launch.ps1` to opt back into audio for manual
 play; the two switches work on their own against a built exe too:
@@ -181,7 +181,7 @@ play; the two switches work on their own against a built exe too:
 $env:MINDATTIC_CLI_MUTED = '1'; .\Build\Windows\GridGameGaiden.exe
 ```
 
-GridGame's own music/SFX volume (`Assets/Gaiden/App/Services/Audio.cs`, driven by `Meta.SettingsSave`)
+GridGame's own music/SFX volume (`Assets/GridGame/App/Services/Audio.cs`, driven by `Meta.SettingsSave`)
 does not yet read from Unity.Shared profiles (that migration is the separate, larger GG-T99); this mute
 is a session-only override independent of it, reaching only `AudioListener.volume`.
 
@@ -203,6 +203,6 @@ is a session-only override independent of it, reaching only `AudioListener.volum
 
 ## License
 
-No LICENSE file: all rights reserved. Third-party music, fonts and icon sources and their licenses are listed in [Credits.txt](Assets/Gaiden/Resources/Credits.txt): music by Kevin MacLeod (CC BY 4.0), fonts under the SIL Open Font License 1.1, and icons derived from game-icons.net (CC BY 3.0).
+No LICENSE file: all rights reserved. Third-party music, fonts and icon sources and their licenses are listed in [Credits.txt](Assets/GridGame/Resources/Credits.txt): music by Kevin MacLeod (CC BY 4.0), fonts under the SIL Open Font License 1.1, and icons derived from game-icons.net (CC BY 3.0).
 
 Part of [MindAttic](https://mindattic.com) — see more projects at [github.com/mindattic](https://github.com/mindattic). Related: [GridGame2026](https://github.com/mindattic/GridGame2026), the design reference this is rebuilt from, and [MindAttic.Capture](https://github.com/mindattic/MindAttic.Capture).

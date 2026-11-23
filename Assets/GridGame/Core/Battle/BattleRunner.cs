@@ -1,0 +1,962 @@
+using System;
+using System.Collections.Generic;
+using GridGame.Core.Content;
+using GridGame.Core.Rules;
+
+namespace GridGame.Core.Battle
+{
+    /// <summary>Executes one command against a state, appending events. Split across partial files by concern.</summary>
+    internal sealed partial class BattleRunner
+    {
+        public const int MaxSlots = 5;
+
+        public readonly BattleState S;
+        private readonly List<BattleEvent> ev;
+        public bool PreviewOnly;
+
+        /// <summary>
+        /// Enemies already pushed back this player action (owner direction 2026-10-11 capped a single push's
+        /// magnitude, but a pincer's several landed hits on the same target each re-triggered Pushback, stacking
+        /// far past that cap — a big combo could erase an enemy's whole Zone approach in one action).
+        /// </summary>
+        private readonly HashSet<int> pushedThisAction = new HashSet<int>();
+
+        private ContentDb C => S.Content;
+
+        public BattleRunner(BattleState s, List<BattleEvent> events)
+        {
+            S = s;
+            ev = events;
+        }
+
+        private void Emit(BattleEvent e)
+        {
+            if (!PreviewOnly) ev.Add(e);
+        }
+
+        private void Announce(string text, int unitId = -1) => Emit(new AnnounceEvent { Text = text, UnitId = unitId });
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Command dispatch
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        public void Apply(BattleCommand cmd)
+        {
+            if (S.IsOver) { Emit(new AbilityRefusedEvent { CasterId = -1, Reason = "Battle is over" }); return; }
+            // GG-LAW-13: the authority refuses a command for a hero another seat owns (single-player: everyone is seat 0).
+            if (!BattleEngine.IsAuthorized(S, cmd)) { Emit(new AbilityRefusedEvent { CasterId = BattleEngine.CommandHeroId(cmd), Reason = "Not your hero" }); return; }
+            // GG-T542: a tutorial set-up is no one's action: no time passes, no turn is spent.
+            if (cmd is TutorialSceneCommand scene) { DoScene(scene); EnforceTileInvariant(nameof(TutorialSceneCommand)); return; }
+
+            // GG-T308 (§2.0): each hero acts once per window.
+            if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit done && done.IsHero && done.ActedThisWindow)
+            {
+                Emit(new AbilityRefusedEvent { CasterId = done.Id, Reason = "Already acted" });
+                return;
+            }
+            // GG-T311 (§2.0): an action starts only in a gap at least as long as it takes; with none, the party Guards.
+            if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit doer && doer.IsHero && !BattleEngine.ActionFits(S, BattleEngine.MinActionSeconds(cmd)))
+            {
+                Emit(new AbilityRefusedEvent { CasterId = doer.Id, Reason = "Too little time" });
+                return;
+            }
+            pushedThisAction.Clear();
+            firedThisAction.Clear();
+            BeginClutchAction(); // GG-T571: one Clutch per action
+            shovedByHero.Clear();
+            int waveBefore = S.Wave;
+            // GG-T308 (§2.0): what this hero's action spends of the party's window, measured before it resolves (a drag's
+            // hold is a share of the window as it stood at pickup).
+            int spend = BattleEngine.CommandTicks(S, cmd);
+            bool forcedGuard = cmd is ShieldCommand && BattleEngine.TooLittleTime(S); // GG-T311: a sacrifice, not a choice
+            bool acted;
+            switch (cmd)
+            {
+                case MoveCommand m: acted = DoMove(m); break;
+                case UseSlotCommand u: acted = DoUseSlot(u); break;
+                case ShieldCommand sh: acted = DoShield(sh); break;
+                case TalkCommand t: acted = DoTalk(t); break;
+                default: acted = false; break;
+            }
+            if (!acted) return;
+            // GG-T311 (§2.0): a forced Guard (no action fitted the gap) rallies the party — enemy icons slow a tempo step,
+            // stacking to RallyMaxStacks — so a run of too-short gaps always opens; any hero action resets it.
+            if (forcedGuard) S.Rally = Math.Min(BattleConfig.RallyMaxStacks, S.Rally + 1);
+            else if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit rallied && rallied.IsHero) S.Rally = 0;
+            CheckTilesStrict(cmd.GetType().Name);
+
+            S.Results.ActionsTaken++;
+            CheckEnd();
+            // ActionEnd passives/reactives of the hero whose command it was (GG-T296).
+            if (!S.IsOver && S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit actor && actor.IsHero && actor.Alive)
+            {
+                Fire(TriggerOn.ActionEnd, actor, new TriggerContext());
+                CheckEnd();
+            }
+            // GG-T308 (§2.0): the window — the time until the next enemy reaches the left of the bar — is the party's
+            // budget, and each able hero acts once in it. A hero's action spends its time (CommandTicks); a Pushback or
+            // Slow it landed has already lengthened the window. Control comes back to the party while time is left and
+            // someone hasn't acted; when the time runs out the enemy acts, when everyone has acted the clock runs on to
+            // the next enemy turn, and Guard gives the rest of the window up. Clearing a wave opens a fresh window.
+            windowOver = false;
+            if (!S.IsOver && S.Wave == waveBefore)
+            {
+                if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit hero && hero.IsHero) hero.ActedThisWindow = true;
+                if (!(cmd is ShieldCommand)) AdvanceClock(spend, stopAtEnemyTurn: true);
+                bool spent = cmd is ShieldCommand || BattleEngine.HeroesLeftToAct(S).Count == 0;
+                if (!S.IsOver && S.Wave == waveBefore && !windowOver && spent) SpendWindow();
+            }
+            if (!S.IsOver) CheckEnd();
+            bool newWindow = windowOver || S.Wave != waveBefore;
+            if (newWindow) foreach (var u in S.Units) u.ActedThisWindow = false;
+            if (!S.IsOver) ReturnControl(newWindow);
+            EnforceTileInvariant(cmd.GetType().Name);
+            S.Results.TicksElapsed = (int)S.Clock;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Occupancy (§1.1, GG-T97): two actors never share a tile once a slide is over. Every position write in the
+        // engine goes through Relocate / MoveMovable / AddUnit below, which refuse a footprint that isn't open; the
+        // invariant check after every command is only a last-resort net (it throws under BattleEngine.StrictTiles).
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Is every tile of <paramref name="u"/>'s footprint, anchored at <paramref name="anchor"/>, on the walkable board
+        /// and free of every other living unit and of movable tiles? <paramref name="yields"/> names units this same step
+        /// moves out of the way (a swap partner, heroes a 2×2 shoves); <paramref name="movablesYield"/> is true when the
+        /// mover shoves any movable it lands on. Dead units (OnBoard false) never count — they're off the board.
+        /// </summary>
+        private bool FootprintOpen(Unit u, Coord anchor, Func<Unit, bool> yields = null, bool movablesYield = false)
+        {
+            for (int dy = 0; dy < u.H; dy++)
+                for (int dx = 0; dx < u.W; dx++)
+                {
+                    var t = new Coord(anchor.X + dx, anchor.Y + dy);
+                    if (!S.Walkable(t)) return false;
+                    foreach (var o in S.Units)
+                        if (o != u && o.Alive && o.Occupies(t) && (yields == null || !yields(o))) return false;
+                    if (!movablesYield && S.MovableAt(t) != null) return false;
+                }
+            return true;
+        }
+
+        /// <summary>
+        /// The single chokepoint for moving a unit on the board. Refuses (false, nothing moves) when the destination
+        /// footprint isn't open — under <see cref="BattleEngine.StrictTiles"/> that's a bug and it throws.
+        /// </summary>
+        private bool Relocate(Unit u, Coord to, Func<Unit, bool> yields = null, bool movablesYield = false)
+        {
+            if (!FootprintOpen(u, to, yields, movablesYield))
+            {
+                Violation($"{u} can't move {u.Pos}->{to}: footprint not free");
+                return false;
+            }
+            u.Pos = to;
+            return true;
+        }
+
+        /// <summary>The chokepoint for a movable tile (§1.1.2): it may only land on a walkable tile nobody stands on that
+        /// holds no other item (§1.1.3, GG-T129: never onto a pickup or another movable).</summary>
+        private bool MoveMovable(MovableTile m, Coord to, Unit by)
+        {
+            var from = m.Pos;
+            if (from == to) return true;
+            var other = S.MovableAt(to);
+            if (!S.Walkable(to) || S.UnitAt(to) != null || (other != null && other != m) || PickupBlocksMovable(to))
+            {
+                Violation($"movable at {from} can't be pushed to {to}");
+                return false;
+            }
+            m.Pos = to;
+            Emit(new AmplifierMovedEvent { From = from, To = to, ByUnitId = by?.Id ?? -1 });
+            return true;
+        }
+
+        /// <summary>
+        /// Does a pickup on <paramref name="c"/> keep a movable off it (§1.1.3)? Always, except in a hero-path preview:
+        /// there pickups aren't collected, so the tiles the walk already crossed still list pickups that the real move
+        /// will have picked up before the amplifier is shoved back onto them.
+        /// </summary>
+        private bool PickupBlocksMovable(Coord c) => !PreviewOnly && S.PickupAt(c) != null;
+
+        /// <summary>The nearest tile a movable may land on (walkable, nobody there, no item), or null on a full board.</summary>
+        private Coord? NearestMovableSpot(MovableTile m, Coord near) =>
+            NearestSpot(near, c => S.Walkable(c) && S.UnitAt(c) == null && !PickupBlocksMovable(c) && (S.MovableAt(c) == null || S.MovableAt(c) == m));
+
+        /// <summary>The open tile nearest <paramref name="near"/> (ties: first in row-major order), or null.</summary>
+        private static Coord? NearestSpot(Coord near, Func<Coord, bool> open)
+        {
+            Coord? best = null; int bestD = int.MaxValue;
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    if (!open(c)) continue;
+                    int d = c.Manhattan(near);
+                    if (d < bestD) { bestD = d; best = c; }
+                }
+            return best;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Pickups move like actors (§13.3.1, GG-T228): a hero entering a pickup's tile collects it; any other unit that
+        // enters one shoves it exactly like a movable tile — onto the tile the mover just left when that is open, else the
+        // nearest open, item-free tile — so no unit ever shares a tile with a pickup.
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /// <summary>A pickup may land here: walkable, nobody standing there, no movable and no other pickup.</summary>
+        private bool PickupSpotOpen(Pickup p, Coord c)
+        {
+            if (!S.Walkable(c) || S.UnitAt(c) != null || S.MovableAt(c) != null) return false;
+            var other = S.PickupAt(c);
+            return other == null || other == p;
+        }
+
+        /// <summary>Shove one pickup toward <paramref name="to"/> (falling back to the nearest open tile); with nowhere to
+        /// go at all it fades rather than stay under a unit.</summary>
+        private void ShovePickup(Pickup p, Coord to, Unit by)
+        {
+            var from = p.At;
+            Coord? spot = PickupSpotOpen(p, to) ? to : NearestSpot(to, c => PickupSpotOpen(p, c));
+            if (spot == null)
+            {
+                S.Pickups.Remove(p);
+                Emit(new PickupExpiredEvent { PickupEntryId = p.Id, PickupId = p.PickupId, At = p.At });
+                return;
+            }
+            if (spot.Value == from) return;
+            p.At = spot.Value;
+            Emit(new PickupMovedEvent { PickupEntryId = p.Id, PickupId = p.PickupId, From = from, To = spot.Value, ByUnitId = by?.Id ?? -1 });
+        }
+
+        /// <summary>
+        /// A unit just landed (its footprint anchored where it now stands): every pickup under a non-hero is shoved aside.
+        /// <paramref name="laneFrom"/> names the tile the mover vacated on each entered tile's lane (2×2 steps); by default
+        /// it is the same offset from <paramref name="from"/>, the mover's previous anchor. Heroes collect instead (via
+        /// <see cref="TriggerTrap"/>); the drag preview collects nothing and shoves nothing.
+        /// </summary>
+        private void ShovePickupsUnder(Unit u, Coord from, Func<Coord, Coord> laneFrom = null)
+        {
+            if (PreviewOnly || !u.Alive || u.IsHero || S.Pickups.Count == 0) return;
+            foreach (var t in new List<Coord>(u.Tiles()))
+            {
+                var p = S.PickupAt(t);
+                if (p == null) continue;
+                ShovePickup(p, laneFrom != null ? laneFrom(t) : from + (t - u.Pos), u);
+            }
+        }
+
+        /// <summary>The chokepoint for putting a new unit on the board (spawns, waves, reinforcements, eggs, remains, guests).</summary>
+        private bool AddUnit(Unit u)
+        {
+            if (u.OnBoard && !FootprintOpen(u, u.Pos))
+            {
+                Violation($"{u} can't appear at {u.Pos}: footprint not free");
+                return false;
+            }
+            S.Units.Add(u);
+            return true;
+        }
+
+        private bool Strict => S.StrictTilesOverride ?? BattleEngine.StrictTiles;
+
+        /// <summary>A position write that would have broken the board. Strict mode throws; release refuses the write.</summary>
+        private void Violation(string what)
+        {
+            if (Strict && !PreviewOnly)
+                throw new TileConflictException(what + " (stage " + S.Stage?.Id + ", wave " + S.Wave + ", clock " + S.Clock + ")");
+        }
+
+        /// <summary>
+        /// The first tile two actors share (or an actor off the walkable board), or two board items share (§1.1.3,
+        /// GG-T129: a pickup on a pickup or under a movable, or a pickup off the walkable board), or null on a healthy
+        /// board. Since GG-T228 a unit standing on a pickup is a conflict too — pickups move like actors (§13.3.1).
+        /// </summary>
+        private (Unit mover, Unit stays, MovableTile movable, Pickup pickup, Coord at)? FindTileConflict()
+        {
+            var seen = new Dictionary<Coord, Unit>();
+            foreach (var u in S.Units)
+            {
+                if (!u.Alive) continue;
+                foreach (var t in u.Tiles())
+                {
+                    if (!S.Walkable(t)) return (u, null, null, null, t);
+                    if (!seen.TryGetValue(t, out var other)) { seen[t] = u; continue; }
+                    var mover = u.Id > other.Id ? u : other;
+                    return (mover, mover == u ? other : u, null, null, t);
+                }
+            }
+            var itemTiles = new HashSet<Coord>();
+            foreach (var m in S.Movables)
+            {
+                seen.TryGetValue(m.Pos, out var under);
+                if (under != null || !S.Walkable(m.Pos) || !itemTiles.Add(m.Pos)) return (under, null, m, null, m.Pos);
+            }
+            foreach (var p in S.Pickups)
+            {
+                if (!S.Walkable(p.At) || !itemTiles.Add(p.At)) return (null, null, S.MovableAt(p.At), p, p.At);
+                // GG-T228: a pickup moves like an actor, so no unit (hero or not) ever stands on one once a step is over.
+                if (seen.TryGetValue(p.At, out var stander)) return (stander, null, null, p, p.At);
+            }
+            return null;
+        }
+
+        /// <summary>Strict mode only: check the board at an inner boundary (after an enemy turn, a cast, a reinforcement).</summary>
+        private void CheckTilesStrict(string context)
+        {
+            if (!Strict || PreviewOnly) return;
+            var c = FindTileConflict();
+            if (c != null) throw new TileConflictException(Describe(c.Value, context));
+        }
+
+        private string Describe((Unit mover, Unit stays, MovableTile movable, Pickup pickup, Coord at) c, string context) =>
+            "Tile conflict at " + c.at + " after " + context + ": "
+            + (c.pickup != null
+                ? "pickup " + c.pickup.Id + " (" + c.pickup.PickupId + ") vs " + (c.mover != null ? c.mover.ToString() : c.movable != null ? "movable" : S.Walkable(c.at) ? "another pickup" : "off-board")
+                : (c.mover?.ToString() ?? "-") + " vs " + (c.movable != null ? "movable" : c.stays?.ToString() ?? "off-board"))
+            + " (stage " + S.Stage?.Id + ", wave " + S.Wave + ", clock " + S.Clock + ")";
+
+        /// <summary>
+        /// Last-resort net, run after every command: two actors must never share a tile (bible §1.1/§6). Every
+        /// position write already goes through the chokepoints above, so this never fires on a healthy engine. Under
+        /// <see cref="BattleEngine.StrictTiles"/> (tests, soak) a conflict throws so the root cause is found; in a
+        /// release build it nudges the newer unit (or the movable) to a free tile with a visible step and emits a
+        /// <see cref="TileConflictEvent"/> that the App logs loudly.
+        /// </summary>
+        internal void EnforceTileInvariant(string lastCommand)
+        {
+            var found = FindTileConflict();
+            if (found == null) return;
+            var c = found.Value;
+            if (Strict) throw new TileConflictException(Describe(c, lastCommand));
+            if (c.pickup != null && c.mover != null)
+            {
+                // A unit on a pickup (GG-T228): the pickup slides to the nearest open tile (or fades on a full board).
+                Emit(new TileConflictEvent { UnitId = c.mover.Id, OtherUnitId = -1, At = c.at, Command = lastCommand });
+                ShovePickup(c.pickup, c.at, null);
+                return;
+            }
+            if (c.pickup != null && c.movable == null)
+            {
+                // Two pickups on one tile (or one off the board): the newer one fades, so only one token is ever drawn.
+                Emit(new TileConflictEvent { UnitId = -1, OtherUnitId = -1, At = c.at, Command = lastCommand });
+                S.Pickups.Remove(c.pickup);
+                Emit(new PickupExpiredEvent { PickupEntryId = c.pickup.Id, PickupId = c.pickup.PickupId, At = c.pickup.At });
+                return;
+            }
+            if (c.movable != null)
+            {
+                Emit(new TileConflictEvent { UnitId = c.mover?.Id ?? -1, OtherUnitId = -1, At = c.at, Command = lastCommand });
+                var spot = NearestMovableSpot(c.movable, c.at);
+                if (spot != null && spot.Value != c.movable.Pos) MoveMovable(c.movable, spot.Value, null);
+                else S.Movables.Remove(c.movable);
+                return;
+            }
+            var mover = c.mover;
+            var from = mover.Pos;
+            var free = RandomFreeTile(mover.W, mover.H, 0, BattleConfig.Rows - 1);
+            Emit(new TileConflictEvent { UnitId = mover.Id, OtherUnitId = c.stays?.Id ?? -1, At = c.at, Command = lastCommand });
+            if (free != null)
+            {
+                mover.Pos = free.Value;
+                Emit(new DisplacedEvent { UnitId = mover.Id, From = from, To = free.Value, ByUnitId = c.stays?.Id ?? -1 });
+            }
+            // One conflict per command is already an exceptional event; the next command re-scans.
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Shield (§2.5)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        private bool DoShield(ShieldCommand cmd)
+        {
+            Emit(new ActionBeganEvent { ActorId = -1, Label = "Shield" });
+            var prot = C.TryBuff(BattleConfig.ShieldBuffId);
+            if (prot != null)
+                foreach (var h in S.LivingList(Team.Hero)) ApplyBuff(h, prot, prot.Duration);
+            // GG-T189: Guard ends the turn early and banks the turn time it gives up as mana charge (the forming bubble,
+            // §3.1.9) — measured before the clock runs. It replaces the drag-timer time bank (§3.1.8), which only a
+            // move feeds, so a pending drag remainder is dropped rather than stacked on top.
+            S.PendingTimeBankSeconds = 0f;
+            AddCharge(BattleEngine.GuardCharge(S, cmd.HeldSeconds), -1, "guard");
+            return true;
+        }
+
+        /// <summary>Power Amplifier (§1.2.6): with none on the board, roll the luck-scaled chance to place one on a free tile.</summary>
+        private void MaybeSpawnAmplifier()
+        {
+            if (S.Amplifier.HasValue || S.IsOver) return;
+            float luck = 0f;
+            foreach (var h in S.Living(Team.Hero)) luck += h.Effective.Luck;
+            if (!S.Rng.Chance(Formulas.AmplifierChance(luck))) return;
+            var free = new List<Coord>();
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    if (S.FreeForItem(c)) free.Add(c); // never onto a pickup (§1.1.3, GG-T129)
+                }
+            if (free.Count == 0) return;
+            var at = free[S.Rng.Range(0, free.Count)];
+            S.Amplifier = at;
+            Emit(new AmplifierSpawnedEvent { At = at });
+            Announce("Power Amplifier!");
+        }
+
+        /// <summary>Control returns to the player: hero turn-unit buffs and skill cooldowns tick (§8.3, §4.1.1).</summary>
+        /// <summary>Corpses rot away a few actions after they fall (§14.7).</summary>
+        private void AgeCorpses()
+        {
+            foreach (var u in S.LivingList(Team.Enemy))
+            {
+                if (!u.IsCorpse || --u.DecayIn > 0) continue;
+                var at = u.Pos;
+                u.Hp = 0; u.OnBoard = false;
+                Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
+            }
+        }
+
+        /// <param name="newWindow">GG-T308: false when control returns mid-window (heroes still to act): no turn
+        /// boundary — buffs, cooldowns, tempo, pickups and corpses count party turns, which are windows.</param>
+        private void ReturnControl(bool newWindow = true)
+        {
+            if (!newWindow) { Emit(new PlayerControlEvent { NewWindow = false }); return; }
+            AgePickups();
+            AgeCorpses();
+            MaybeSpawnAmplifier();
+            foreach (var h in S.LivingList(Team.Hero))
+            {
+                // An independent ally (GG-T303) counts its own turns like an enemy: only a halting buff ticks here.
+                if (h.IsIndependent) { TickTurnBuffs(h, true); continue; }
+                if (h.RegenPerTurn > 0 && h.Hp < h.MaxHp) Heal(h, h.RegenPerTurn, h);
+                // TurnEnd passives (GG-T296): a hero's turn ends each time control returns (Regenerate knits 6%).
+                if (h.Alive) Fire(TriggerOn.TurnEnd, h, new TriggerContext());
+                if (h.Alive) RegionTurn(RuleHook.TurnEnd, h); // GG-T359
+                if (!h.Alive) continue;
+                TickTurnBuffs(h, false);
+                // A halting debuff (Frozen) on a commanded hero counts down on the same shared cycle as an
+                // enemy's — the non-halting pass above skips it, so without this a frozen hero never thaws.
+                if (h.Alive) TickTurnBuffs(h, true);
+                var keys = new List<string>(h.Cooldowns.Keys);
+                foreach (var k in keys)
+                    if (h.Cooldowns[k] > 0) h.Cooldowns[k]--;
+            }
+            // Timeline-halting debuffs on enemies (Frozen) count down on the shared turn cycle,
+            // since a halted icon never reaches its own turn boundary.
+            foreach (var e in S.LivingList(Team.Enemy)) TickTurnBuffs(e, true);
+            TickTempo();
+            // The party's new turn begins: hero trigger cooldowns tick, TurnStart and OnSurrounded fire (GG-T296).
+            foreach (var h in S.LivingList(Team.Hero))
+                if (!S.IsOver && h.Alive && !h.IsIndependent) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359
+            if (!S.IsOver && S.Region.Rules.Count > 0) CheckEnd(); // a region rule's turn hook may have felled someone
+            if (S.IsOver) return;
+            Emit(new PlayerControlEvent());
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Battle end / waves
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /// <summary>Wave/victory/defeat bookkeeping; call after anything that can kill. Returns true if the battle ended.</summary>
+        private bool CheckEnd()
+        {
+            if (S.IsOver) return true;
+            bool heroesAlive = false, enemiesAlive = false;
+            foreach (var u in S.Units)
+            {
+                if (!u.Alive) continue;
+                // A tamed or domesticated monster alone doesn't keep the party in the fight (GG-T303).
+                if (u.Team == Team.Hero) { if (!u.IsIndependent) heroesAlive = true; } else if (u.Team == Team.Enemy && !u.IsCorpse) enemiesAlive = true; // bodies (and neutrals, GG-T132) don't hold up a wave
+            }
+            if (!heroesAlive)
+            {
+                S.Phase = BattlePhase.Defeat;
+                Emit(new BattleEndedEvent { Victory = false });
+                return true;
+            }
+            // GG-T512: the board just went clear but a reinforcement is queued for this wave (§14.8): it lands now instead
+            // of holding the wave open on an empty board. One that can't be placed anywhere is dropped (the wave ends).
+            if (!enemiesAlive) { BringReinforcementsForward(); enemiesAlive = AnyFoeOnBoard(); }
+            if (!enemiesAlive) foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave) enemiesAlive = true;
+            if (!enemiesAlive)
+            {
+                int clearCoins = Math.Max(0, S.Stage.Waves[S.Wave].ClearCoins);
+                S.Results.Coins += clearCoins;
+                Emit(new WaveClearedEvent { Wave = S.Wave, Coins = clearCoins });
+                ClutchFinisher(); // GG-T571: a hero's blow felled the last foe
+                if (S.Wave + 1 < S.Stage.Waves.Count)
+                {
+                    S.Wave++;
+                    SpawnWave(S.Wave);
+                    return false;
+                }
+                S.Phase = BattlePhase.Victory;
+                BattleEngine.SnapshotGear(S);
+                Emit(new BattleEndedEvent { Victory = true });
+                return true;
+            }
+            return false;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Mana
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /// <summary>Fill the mana meter; every full ManaChargePerOrb becomes an orb (§3.1.9). Every caller is an earned
+        /// source, so the fullness damping applies here; explicit grants (items, pickups, steal, gear) call MintOrb.</summary>
+        private void AddCharge(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
+        {
+            // GG-T673: once the row is full, earning stops until a spell spends an orb (the ring doesn't keep filling).
+            if (S.Bank.IsFull) return;
+            amount = BattleEngine.DampedCharge(S, amount);
+            if (amount <= 0) return;
+            S.ManaCharge += amount;
+            int orbs = 0;
+            while (S.ManaCharge >= BattleConfig.ManaChargePerOrb) { S.ManaCharge -= BattleConfig.ManaChargePerOrb; orbs++; }
+            Emit(new ManaChargedEvent { SourceId = sourceId, Amount = amount, Total = S.ManaCharge, Reason = reason, Participants = participants, Chain = chain });
+            for (int i = 0; i < orbs; i++) MintOrb(sourceId, reason);
+        }
+
+        private void MintOrb(int sourceId, string reason)
+        {
+            bool landed = S.Bank.Add(1) == 1;
+            Emit(new OrbMintedEvent { SourceUnitId = sourceId, Landed = landed, Reason = reason, Slot = landed ? S.Bank.Count - 1 : -1 });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Damage / heal / death (the single choke-points)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        private bool IsArmored(Unit u) => BattleEngine.IsArmored(S, u);
+
+        /// <summary>Named weapon passive (§24.6.1, GG-T47): the strongest adjacent ally hero's Guardian-type weapon
+        /// reduces incoming damage to this hero (non-stacking — the best adjacent guardian wins).</summary>
+        private float BestAdjacentGuardianReduction(Unit target)
+        {
+            float best = 0f;
+            foreach (var h in S.Living(Team.Hero))
+            {
+                if (h == target || h.WeaponId == null || !h.IsAdjacentTo(target)) continue;
+                var weapon = C.TryItem(h.WeaponId);
+                if (weapon != null && weapon.AdjacentAllyDamageReduction > best) best = weapon.AdjacentAllyDamageReduction;
+            }
+            return best;
+        }
+
+        /// <summary>
+        /// Applies damage, handles Sleep-break, threat, cast stagger and death. A plain hit never pushes back (GG-T286).
+        /// <paramref name="source"/> null = environmental (DOT, trap): no stagger.
+        /// </summary>
+        private void Damage(Unit target, int amount, Unit source, HitKind hit, DamageType type, string note = null)
+        {
+            if (!target.Alive) return;
+            // GG-T533 Guard: a guarded unit's guardian steps in and takes the blow (its own reductions apply); the guard is spent.
+            if (hit != HitKind.Miss && amount > 0 && Guardian(target, source) is Unit guardian)
+            {
+                RemoveBuffsWhere(target, b => b.Def.Intercepts, "intercepted");
+                Announce("Guarded!", guardian.Id);
+                Damage(guardian, amount, source, hit, type, "Guarded");
+                return;
+            }
+            float hpBefore = target.HpFraction;
+            if (hit != HitKind.Miss && amount > 0 && IsArmored(target)) { amount = 0; note = "Armored!"; }
+            // Always ReductionMultiplier passives (GG-T296): Tough Hide's physical blows land at 70%, on heroes too now.
+            if (hit != HitKind.Miss && amount > 0)
+            {
+                float reduce = Triggers.IncomingMultiplier(S, target, source, type);
+                if (reduce < 1f) amount = reduce <= 0f ? 0 : Triggers.FloorScaled(amount, reduce);
+            }
+            // The difficulty dial (GG-T309): an enemy's blow on a hero lands at the level's EnemyDamage (min 1; 1.0 at 10).
+            if (hit != HitKind.Miss && amount > 0 && target.IsHero && source != null && source.Team == Team.Enemy && !(S.Stage?.IsTest ?? false))
+                amount = DifficultyTable.Scale(amount, DifficultyTable.At(S.Difficulty).EnemyDamage, 1);
+            if (hit != HitKind.Miss && amount > 0 && target.IsHero && source != null)
+            {
+                float reduction = BestAdjacentGuardianReduction(target);
+                if (reduction > 0f) amount = Math.Max(1, (int)Math.Round(amount * (1f - reduction)));
+            }
+            if (hit != HitKind.Miss && amount > 0)
+                RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
+            target.Hp = Math.Max(0, target.Hp - amount);
+            Emit(new DamagedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note });
+            if (source != null && source.IsHero && target.Team == Team.Enemy) source.DamageDealt += amount;
+            // Damage triggers (GG-T296), before WearArmor: the blow that breaks an enchanted piece still pricks (Thorns).
+            if (hit != HitKind.Miss && amount > 0)
+                Fire(TriggerOn.OnDamaged, target, new TriggerContext { Attacker = source, Damage = amount, Type = type });
+            if (source != null && hit != HitKind.Miss && Triggers.Foes(source, target))
+                Fire(TriggerOn.OnAttackedAny, target, new TriggerContext { Attacker = source, Damage = amount, Type = type });
+            if (hit != HitKind.Miss && amount > 0 && target.Hp > 0)
+                Fire(TriggerOn.OnLowHp, target, new TriggerContext { Attacker = source, Damage = amount, Type = type, HpBefore = hpBefore });
+            if (source != null && hit != HitKind.Miss && amount > 0 && target.IsHero && source.Team == Team.Enemy)
+                WearArmor(target);
+
+            if (target.Hp <= 0) { Kill(target, source); ResolveDeathBursts(); return; }
+            if (source == null || hit == HitKind.Miss) return;
+
+            StaggerCasts(target, source);
+            if (Triggers.Foes(source, target)) RegionHit(target); // GG-T368: the rules' Hit hooks (a cracked floor cracks)
+        }
+
+        /// <summary>GG-T533: who takes a foe's blow aimed at <paramref name="target"/> — the unit that put an Intercepts buff
+        /// (Stand Guard's [Guarded]) on it, while that guardian is alive, free to move, not the target itself and within
+        /// <see cref="BattleConfig.GuardReach"/> tiles. Null when no guard holds (a source-less tick or blast is never guarded).</summary>
+        private Unit Guardian(Unit target, Unit source)
+        {
+            if (source == null || !Triggers.Foes(source, target)) return null;
+            var guard = target.Buffs.Find(b => b.Def.Intercepts);
+            if (guard == null || guard.SourceId < 0) return null;
+            var g = S.UnitById(guard.SourceId);
+            if (g == null || g == target || g == source || !g.Alive || g.IsImmobile || g.Team != target.Team) return null;
+            return g.DistanceTo(target) <= BattleConfig.GuardReach ? g : null;
+        }
+
+        /// <summary>Enemies whose death burst is still to go off (resolved after the blow that killed them).</summary>
+        private readonly List<Unit> DeathBurstPending = new List<Unit>();
+        private bool bursting;
+
+        /// <summary>Self-destruct kit (§14.4): damage every hero adjacent to the fallen enemy.</summary>
+        private void ResolveDeathBursts()
+        {
+            if (bursting) return;
+            bursting = true;
+            while (DeathBurstPending.Count > 0 && !S.IsOver)
+            {
+                var u = DeathBurstPending[0];
+                DeathBurstPending.RemoveAt(0);
+                Announce($"{u.Name} self-destructs!", u.Id);
+                var victims = new List<Unit>();
+                foreach (var h in S.Living(Team.Hero)) if (u.IsAdjacentTo(h)) victims.Add(h);
+                Emit(new AbilityResolvedEvent { CasterId = u.Id, AbilityId = "death_burst", Anchor = u.Pos });
+                foreach (var h in victims) if (h.Alive) Damage(h, u.Def.DeathBurst, null, HitKind.Normal, DamageType.Fire, "Blast");
+            }
+            bursting = false;
+        }
+
+        private void Heal(Unit target, int amount, Unit source)
+        {
+            if (!target.Alive || amount <= 0) return;
+            int before = target.Hp;
+            target.Hp = Math.Min(target.MaxHp, target.Hp + amount);
+            Emit(new HealedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = target.Hp - before, HpAfter = target.Hp });
+            if (target.IsNeutral && source != null && source.IsHero) MarkRecruit(target, "healed", source);
+            if (target.Wanderer) TrustFromHeal(target, source, target.Hp - before); // GG-T342
+        }
+
+        private void Kill(Unit u, Unit killer)
+        {
+            if (DefiesDeath(u)) return;
+            var at = u.Pos;
+            if (!u.IsHero && u.Def.DeathBurst > 0) DeathBurstPending.Add(u);
+            u.Hp = 0;
+            u.OnBoard = false;
+            var tempoBuffs = u.IsHero ? u.Buffs.FindAll(b => b.Def.Tempo != 0) : null;
+            u.Buffs.Clear();
+            // A fallen hero no longer carries its Slow: lift that party tempo unless another living hero still has it (GG-T275).
+            if (tempoBuffs != null) foreach (var b in tempoBuffs) DropBuffTempo(b.Def.Id);
+            S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
+            Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
+            NoteFoeDeathForClutch(u, killer, u.AlreadyLooted); // GG-T571: LastStand, HazardKill, the Finisher candidate
+            // GG-T673: felling a real foe earns mana.
+            if (BattleConfig.KillCharge > 0 && u.Team == Team.Enemy && killer != null && killer.IsHero
+                && !u.IsCorpse && !u.IsSnakeSegment && !u.IsRemains && !u.IsEgg && !u.AlreadyLooted)
+                AddCharge(BattleConfig.KillCharge, killer.Id, "kill");
+            if (u.IsCorpse) { Announce("Cleared away", u.Id); return; }
+            if (u.IsRemains) { Announce("Laid to rest", u.Id); return; }
+            // A fallen guest is down, not gone (GG-T114): revive them and they can still be recruited.
+            if (u.IsGuest) Announce(permadeath ? $"{u.Name} has fallen for good" : $"{u.Name} has fallen!", u.Id);
+            else if (u.Wanderer && u.Team == Team.Hero) Announce($"{u.Name} has fallen!", u.Id); // down, never lost (GG-T342)
+            // GG-T566: a revived enemy pays out once. Its first death loots, rolls a pickup, tallies the kill, credits a
+            // bounty and leaves remains; a second death (after an echoed revive) does none of that.
+            bool firstPayout = !u.AlreadyLooted;
+            if (u.Team == Team.Enemy) u.AlreadyLooted = true;
+            if (firstPayout && u.Team == Team.Enemy && !u.NoLoot) AwardLoot(u);
+            if (firstPayout && u.IsBountyTarget) CreditBounty(u); // GG-T431
+            if (firstPayout && u.Team == Team.Enemy) LeaveRemains(u, at);
+            if (firstPayout && u.Team == Team.Enemy && !u.NoLoot && !u.IsRemains && !u.IsSnakeSegment) MaybeDropPickup(u, at, killer);
+            // GG-T359: the class's OnDeathRule effects and the region rules' UnitDeath hooks, where it fell.
+            if (!u.IsEgg && !u.IsSnakeSegment) RegionDeath(u, at);
+            // Death triggers (GG-T296): the killer's OnKill, then each living ally's OnAllyKO in unit-id order.
+            if (u.IsEgg) return;
+            if (killer != null && killer.Alive && Triggers.Foes(killer, u)) Fire(TriggerOn.OnKill, killer, new TriggerContext { Target = u });
+            var team = u.Team;
+            if (team != Team.Neutral) FireAll(TriggerOn.OnAllyKO, x => x.Team == team && x != u && !x.IsCorpse && !x.IsRemains && !x.IsEgg, _ => new TriggerContext { Target = u, Attacker = killer });
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Pickups (§13.3.1)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        /// <summary>A fallen enemy sometimes leaves a pickup on its tile (or the nearest free one beside it).</summary>
+        private void MaybeDropPickup(Unit fallen, Coord at, Unit killer)
+        {
+            if (C.Pickups.Count == 0 || S.Pickups.Count >= BattleConfig.MaxPickups || S.IsOver) return;
+            float luck = killer != null && killer.IsHero ? killer.Effective.Luck : 0f;
+            float chance = Math.Min(BattleConfig.PickupMaxChance, BattleConfig.PickupDropChance + luck * BattleConfig.PickupDropChancePerLuck);
+            if (!S.Rng.Chance(chance)) return;
+            Coord? spot = null;
+            if (PickupSpotFree(at)) spot = at;
+            else foreach (var d in Coord.Cardinals) if (spot == null && PickupSpotFree(at + d)) spot = at + d;
+            if (spot == null) return;
+            int total = 0;
+            foreach (var pk in C.Pickups.Values) total += pk.Weight;
+            int roll = S.Rng.Range(0, total);
+            PickupDef def = null;
+            foreach (var pk in C.Pickups.Values) { if (roll < pk.Weight) { def = pk; break; } roll -= pk.Weight; }
+            if (def == null) return;
+            var p = new Pickup { Id = S.NextPickupId++, PickupId = def.Id, At = spot.Value, ActionsLeft = BattleConfig.PickupLifetimeActions };
+            S.Pickups.Add(p);
+            Emit(new PickupDroppedEvent { PickupEntryId = p.Id, PickupId = def.Id, At = p.At, FromUnitId = fallen.Id });
+        }
+
+        private bool PickupSpotFree(Coord c) => S.FreeForItem(c);
+
+        /// <summary>A hero entered a tile: collect what lies there.</summary>
+        private void CollectPickup(Unit hero)
+        {
+            if (!hero.Alive || !hero.IsHero) return;
+            foreach (var t in new List<Coord>(hero.Tiles()))
+            {
+                var p = S.PickupAt(t);
+                if (p == null) continue;
+                S.Pickups.Remove(p);
+                var def = C.Pickups.TryGetValue(p.PickupId, out var d) ? d : null;
+                Emit(new PickupCollectedEvent { PickupEntryId = p.Id, PickupId = p.PickupId, At = p.At, UnitId = hero.Id });
+                if (def == null) continue;
+                if (def.HealFraction > 0f) Heal(hero, Math.Max(1, (int)Math.Round(hero.MaxHp * def.HealFraction)), hero);
+                for (int i = 0; i < def.Orbs; i++) MintOrb(hero.Id, "pickup");
+                if (def.HastenU > 0f) Hasten(hero, def.HastenU, "pickup:" + def.Id);
+                var buff = C.TryBuff(def.ApplyBuff);
+                if (buff != null) ApplyBuff(hero, buff, buff.Duration);
+            }
+        }
+
+        /// <summary>Each control return, pickups age one action; the stale ones fade.</summary>
+        private void AgePickups()
+        {
+            for (int i = S.Pickups.Count - 1; i >= 0; i--)
+            {
+                var p = S.Pickups[i];
+                if (--p.ActionsLeft > 0) continue;
+                S.Pickups.RemoveAt(i);
+                Emit(new PickupExpiredEvent { PickupEntryId = p.Id, PickupId = p.PickupId, At = p.At });
+            }
+        }
+
+        /// <summary>Undead leave a solid grave marker on their tile (§14.5); destroy it or they rise again.</summary>
+        private void LeaveRemains(Unit u, Coord at)
+        {
+            var def = C.TryClass(u.Def.Remains);
+            if (def == null || u.IsMultiTile || u.IsSnakeSegment) return; // one marker per creature, not per body segment
+            var r = SpawnEnemy(def, u.Level, at.X, at.Y);
+            if (r == null || r.Pos != at) { if (r != null) { r.OnBoard = false; r.Hp = 0; S.Timeline.RemoveAll(e => e.OwnerId == r.Id); } return; }
+            if (r.IsCorpse)
+            {
+                // A body in the way (§14.7): no turn, never rises, rots after a few actions.
+                S.Timeline.RemoveAll(e => e.OwnerId == r.Id);
+                r.CorpseOf = u.Def.Id;
+                r.DecayIn = BattleConfig.CorpseDecayActions;
+                r.NoLoot = true;
+                Emit(new RemainsLeftEvent { RemainsId = r.Id, FromUnitId = u.Id, At = at });
+                return;
+            }
+            r.MaxHp = r.Hp = Math.Max(1, (int)Math.Ceiling(u.MaxHp * BattleConfig.RemainsHpFraction));
+            r.RisesAs = u.Def.Id;
+            r.RisesLevel = u.Level;
+            r.RisesInTurns = BattleConfig.RemainsTurnsToRise - 1;
+            Emit(new RemainsLeftEvent { RemainsId = r.Id, FromUnitId = u.Id, At = at });
+            Announce($"{u.Name} leaves {def.Name.ToLowerInvariant()} — destroy it!", r.Id);
+        }
+
+        private void AwardLoot(Unit enemy)
+        {
+            // A kill mid pincer-chain pays out more XP, same multiplier the chain already pays in mana (§3.1.9).
+            float chainMult = 1f + BattleConfig.ChargeChainBonus * chainBonusDepth;
+            var loot = new LootEvent { FromUnitId = enemy.Id, Xp = (int)Math.Round(Formulas.XpReward(enemy) * chainMult) };
+            C.DropTables.TryGetValue(enemy.Def.DropTable ?? "", out var table);
+            if (table != null && table.CoinsMax > 0) loot.Coins = S.Rng.Range(table.CoinsMin, table.CoinsMax + 1);
+            else if (!enemy.IsSnakeSegment) loot.Coins = CoinsFor(loot.Xp);
+            // Higher difficulty, greater rewards (GG-T309): the dial scales coins, XP and every drop chance.
+            var dial = DifficultyTable.At(S.Difficulty);
+            if (table != null)
+            {
+                foreach (var entry in table.Entries)
+                    if (S.Rng.Chance(Math.Min(1f, entry.Chance * dial.DropChance)))
+                        loot.Items.Add(new ItemCount { Item = entry.Item, Count = S.Rng.Range(entry.Min, entry.Max + 1) });
+            }
+            if (S.NewGamePlus > 0) loot.Coins = (int)Math.Round(loot.Coins * (1f + BattleConfig.NgPlusCoinBonus * S.NewGamePlus));
+            loot.Coins = DifficultyTable.Scale(loot.Coins, dial.RewardGold, loot.Coins > 0 ? 1 : 0);
+            loot.Xp = DifficultyTable.Scale(loot.Xp, dial.RewardXp, loot.Xp > 0 ? 1 : 0);
+            S.Results.Coins += loot.Coins;
+            S.Results.Xp += loot.Xp;
+            foreach (var ic in loot.Items) Add(S.Results.Items, ic.Item, ic.Count);
+            if (!enemy.IsSnakeSegment) Add(S.Results.Kills, enemy.Def.Id, 1);
+            Emit(loot);
+        }
+
+        /// <summary>Default coin drop when a table doesn't author one: about half the XP value, ±20%.</summary>
+        private int CoinsFor(int xp)
+        {
+            float baseCoins = Math.Max(1f, xp * 0.5f);
+            return Math.Max(1, (int)Math.Round(baseCoins * S.Rng.Range(0.8f, 1.2f)));
+        }
+
+        private static void Add(Dictionary<string, int> map, string key, int n)
+        {
+            map.TryGetValue(key, out var v);
+            map[key] = v + n;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────────
+        // Buffs (§8)
+        // ─────────────────────────────────────────────────────────────────────────────
+
+        private void ApplyBuff(Unit u, BuffDef def, int duration, int sourceId = -1)
+        {
+            if (!u.Alive || def == null) return;
+            duration = Math.Max(1, duration);
+            // GG-T307, generalised: an enemy/independent ally's Turns buffs count down as its own turn ends, so one gained
+            // during that very turn (a self-buff, a counter's debuff, a support buff) gets one more turn — otherwise it
+            // would expire in the same command it landed.
+            // (Halting buffs tick on the shared cycle in ReturnControl with their own Fresh skip, so they don't need it.)
+            if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
+            if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
+            if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
+            if (def.Cancels != null && def.Cancels.Count > 0) // GG-T667: the newest of a mutually exclusive pair wins
+                RemoveBuffsWhere(u, b => def.Cancels.Exists(c => string.Equals(c, b.Def.Id, StringComparison.OrdinalIgnoreCase)), "cancelled by " + def.Id);
+            var existing = u.Buffs.Find(b => b.Def.Id == def.Id);
+            if (existing != null)
+            {
+                switch (def.Stacking)
+                {
+                    case BuffStacking.Ignore: return;
+                    case BuffStacking.Upgrade:
+                        if (existing.Remaining >= duration) return;
+                        u.Buffs.Remove(existing);
+                        break;
+                    case BuffStacking.Stack:
+                        // Keep every stack (ticks and effects apply per stack) up to MaxStacks; at the cap the
+                        // oldest stack is replaced, so re-applying still refreshes the timer.
+                        var stacks = u.Buffs.FindAll(b => b.Def.Id == def.Id);
+                        if (def.MaxStacks > 0 && stacks.Count >= def.MaxStacks) u.Buffs.Remove(stacks[0]);
+                        break;
+                    default: u.Buffs.RemoveAll(b => b.Def.Id == def.Id); break; // Refresh (§8.6 default)
+                }
+            }
+            u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
+            Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
+            if (u.IsCommandable && def.Tempo != 0)
+                AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
+            Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
+        }
+
+        // ── Party tempo (GG-T268, §2.11) ─────────────────────────────────────────────────────────────────
+
+        /// <summary>Sources already counted this command: one multi-target cast is one tempo effect, not one per target.</summary>
+        private readonly HashSet<string> tempoThisCommand = new HashSet<string>();
+
+        private void AddTempo(string source, int amount, int turns)
+        {
+            if (amount == 0 || !tempoThisCommand.Add(source)) return;
+            S.Tempo.Add(new TempoEffect { Source = source, Amount = amount, TurnsLeft = Math.Max(1, turns) });
+            EmitTempo(source);
+        }
+
+        private void EmitTempo(string source) =>
+            Emit(new TempoChangedEvent { Net = S.NetTempo, Multiplier = BattleEngine.EnemyTempoMultiplier(S), Source = source });
+
+        /// <summary>Counts every tempo effect down at the party's turn boundary; expired ones fall away together.</summary>
+        private void TickTempo()
+        {
+            bool changed = false;
+            for (int i = S.Tempo.Count - 1; i >= 0; i--)
+            {
+                var t = S.Tempo[i];
+                if (t.Fresh) { t.Fresh = false; continue; }
+                if (--t.TurnsLeft <= 0) { S.Tempo.RemoveAt(i); changed = true; }
+            }
+            if (changed) EmitTempo("expired");
+        }
+
+        private void RemoveBuffsWhere(Unit u, Predicate<BuffInstance> pred, string reason)
+        {
+            for (int i = u.Buffs.Count - 1; i >= 0; i--)
+            {
+                if (!pred(u.Buffs[i])) continue;
+                var def = u.Buffs[i].Def;
+                u.Buffs.RemoveAt(i);
+                Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = def.Id, Reason = reason });
+                if (u.IsHero && def.Tempo != 0) DropBuffTempo(def.Id);
+            }
+        }
+
+        /// <summary>Cleansing a tempo buff (Slow) off the last hero carrying it lifts its party tempo too (GG-T275).</summary>
+        private void DropBuffTempo(string buffId)
+        {
+            foreach (var h in S.Living(Team.Hero)) if (h.HasBuff(buffId)) return;
+            if (S.Tempo.RemoveAll(t => t.Source == "buff:" + buffId) > 0) EmitTempo("cleansed");
+        }
+
+        private void Expire(Unit u, BuffInstance b)
+        {
+            u.Buffs.Remove(b);
+            Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = b.Def.Id, Reason = "expired" });
+            var chain = C.TryBuff(b.Def.OnExpireApply);
+            if (chain != null && u.Alive) ApplyBuff(u, chain, chain.Duration);
+        }
+
+        /// <summary>Removes a buff as if it expired (runs its expire chain) — e.g. Fire melting Frozen.</summary>
+        private void ForceExpire(Unit u, string buffId)
+        {
+            var b = u.Buffs.Find(x => x.Def.Id == buffId);
+            if (b != null) Expire(u, b);
+        }
+
+        /// <param name="haltingOnly">Only tick timeline-halting turn buffs (used for enemies at the shared turn boundary).</param>
+        private void TickTurnBuffs(Unit u, bool haltingOnly)
+        {
+            // Snapshot first: Expire()'s OnExpireApply chain, or a Stack-cap eviction, can remove a
+            // *different* buff than the one just ticked and append a freshly chained one — index-based
+            // iteration over the live list would then either skip an entry or immediately re-tick the
+            // brand-new instance in this same pass. Buffs added mid-pass simply wait for the next tick.
+            foreach (var b in u.Buffs.ToArray())
+            {
+                if (!u.Buffs.Contains(b)) continue;
+                if (b.Def.Unit != DurationUnit.Turns) continue;
+                if (haltingOnly != b.Def.HaltsTimeline) continue;
+                if (b.Def.HaltsTimeline && b.Fresh) { b.Fresh = false; continue; }
+                b.Remaining--;
+                if (b.Remaining <= 0) Expire(u, b);
+                else Emit(new BuffTickedEvent { UnitId = u.Id, BuffId = b.Def.Id, Remaining = b.Remaining });
+            }
+        }
+
+        /// <summary>Tick-unit buffs: one step (and one damage tick) per BuffTickInterval of timeline time (§8.3).</summary>
+        private void TickTimedBuffs(int ticks)
+        {
+            foreach (var u in S.Units.ToArray())
+            {
+                if (!u.Alive) continue;
+                // Snapshot for the same reason as TickTurnBuffs: a chain/stack-cap eviction triggered from
+                // within this loop can remove or add sibling buffs, which index-based iteration can't survive.
+                foreach (var b in u.Buffs.ToArray())
+                {
+                    if (!u.Buffs.Contains(b)) continue;
+                    if (b.Def.Unit != DurationUnit.Ticks) continue;
+                    b.TickAccumulator += ticks;
+                    while (b.TickAccumulator >= BattleConfig.BuffTickInterval && u.Alive && u.Buffs.Contains(b))
+                    {
+                        b.TickAccumulator -= BattleConfig.BuffTickInterval;
+                        if (b.Def.DamagePerTick > 0)
+                            Damage(u, b.Def.DamagePerTick, null, HitKind.Normal, DamageType.Physical, b.Def.Name);
+                        if (b.Def.HealPerTick > 0 && u.Alive && u.Hp < u.MaxHp) Heal(u, b.Def.HealPerTick, null);
+                        if (!u.Alive) break;
+                        b.Remaining--;
+                        if (b.Remaining <= 0) { Expire(u, b); break; }
+                        Emit(new BuffTickedEvent { UnitId = u.Id, BuffId = b.Def.Id, Remaining = b.Remaining });
+                    }
+                    if (!u.Alive) break;
+                }
+                if (!u.Alive && CheckEnd()) return;
+            }
+        }
+    }
+}

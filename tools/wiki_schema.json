@@ -1,6 +1,6 @@
 {
   "schema": "gridgame-wiki-schema/1",
-  "doc": "GG-T626 (BIBLE §33): one wiki entry per thing, built only from content JSON (Assets/Gaiden/Resources/Content) and the applied Prose texts (Content/Text). Nothing here holds words: titles are the game's own names, summary/body are Prose text keys, infobox values are copied from the record. tools/wiki_schema.py reads this file; T627's generator renders pages from the entries it builds.",
+  "doc": "GG-T626 (BIBLE §33): one wiki entry per thing, built only from content JSON (Assets/GridGame/Resources/Content) and the applied Prose texts (Content/Text). Nothing here holds words: titles are the game's own names, summary/body are Prose text keys, infobox values are copied from the record. tools/wiki_schema.py reads this file; T627's generator renders pages from the entries it builds.",
   "entry": {
     "schema": "gridgame-wiki/1",
     "required": ["schema", "id", "kind", "gameId", "title", "summary", "body", "infobox", "links", "art", "texts", "source", "version"],

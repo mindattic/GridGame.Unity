@@ -1,0 +1,235 @@
+{
+  "schema": "gridgame-text/1",
+  "kind": "crawl",
+  "texts": {
+    "crawl:chapter/ch01": {
+      "key": "crawl:chapter/ch01",
+      "id": "crawl-chapter-ch01",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:600d27c33ba28755d934e5fa64eeecb28c49917503775d256d5f7a5bf2bf7c8a",
+      "about": [
+        "place-lanternroad",
+        "place-lanternroad-02"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Over the Pass",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch02": {
+      "key": "crawl:chapter/ch02",
+      "id": "crawl-chapter-ch02",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:552e2b1c03f0abbf25361f26f42278c94067ca326e29ad26254cbb5142e38a6a",
+      "about": [
+        "place-swamp",
+        "place-swamp-01"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Grounded Arks",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch03": {
+      "key": "crawl:chapter/ch03",
+      "id": "crawl-chapter-ch03",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5ebb8dbd3bd419991f9ebfbb960df532022a08c6cfd9f9bf43e5b9a5913e4372",
+      "about": [
+        "place-cave",
+        "place-cave-03"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Where the Beams Go",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch04": {
+      "key": "crawl:chapter/ch04",
+      "id": "crawl-chapter-ch04",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2251a93f6fe19894cbbdb9a78ab9a6651f612dd459035ef070cb914d9ba82e50",
+      "about": [
+        "place-cityruins",
+        "place-cityruins-02"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Spire Stair",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch05": {
+      "key": "crawl:chapter/ch05",
+      "id": "crawl-chapter-ch05",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:29bea82a1167f7b8c62defa2b23cccfb2ab58b2803b478292f51a7094192a39d",
+      "about": [
+        "place-bloom",
+        "place-bloom-01"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "What Came Down",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch06": {
+      "key": "crawl:chapter/ch06",
+      "id": "crawl-chapter-ch06",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:4660063a95f2a6deeb23c0cb87530d49bee16e070d34bc1c67427fd12a62e89e",
+      "about": [
+        "place-cityruins-04",
+        "place-cityruins2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Claimants to the Spire",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch07": {
+      "key": "crawl:chapter/ch07",
+      "id": "crawl-chapter-ch07",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:cc624ff68d5d201f11d48e94315faff975465057124bad979b9461930dcc7141",
+      "about": [
+        "place-desert",
+        "place-desert-05"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The March on the Anchors",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:chapter/ch08": {
+      "key": "crawl:chapter/ch08",
+      "id": "crawl-chapter-ch08",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:98f52d339d5cd669e1260b1d6e307bc594f682141d0b315006e33c2d3460e7f2",
+      "about": [
+        "place-morrowsshadow",
+        "place-morrowsshadow-03"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Anchors Hold",
+        "paragraphs": [
+          "The Demon Lord falls under the Manalith he tried to call down. It doesn't come.",
+          "The Anchors hold. Their chains still hum in the cold, and the arches still stand over the snow. The Manalith stays in the sky, as close as it has ever been and no closer.",
+          "Nobody can say for how long. Keep it asleep, cut the lines, or let it come: that question is yours now, and it isn't answered today.",
+          "Which leaves the caravan. It was the Choir's, white from axle to awning, and you stole it on tithe day. It has been a home, a battlefield and a rumour on every road since.",
+          "Now you decide what it becomes."
+        ]
+      }
+    },
+    "crawl:dialogue/interlude_level10_motives": {
+      "key": "crawl:dialogue/interlude_level10_motives",
+      "id": "crawl-dialogue-interlude-level10-motives",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2bb61959c83c72d9b86627ee9b762c392246f6a20b2bf5fccaaa11ef8a61976c",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "title": "Why We Ran",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:ending": {
+      "key": "crawl:ending",
+      "id": "crawl-ending",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:079e156f47f83a4caeaa93a13ca42b4f24de4993ed915359715015f101bd730c",
+      "about": [
+        "place-cathedral",
+        "place-cathedral-03"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Still Here",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    },
+    "crawl:prologue": {
+      "key": "crawl:prologue",
+      "id": "crawl-prologue",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fca7f309222ab23a1a8ec2f19b3359d2aa3e2e5c915d83186088b7742c66d360",
+      "about": [
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Tithe Day",
+        "paragraphs": [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+        ]
+      }
+    }
+  }
+}

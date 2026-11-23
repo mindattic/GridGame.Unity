@@ -1,0 +1,634 @@
+{
+  "schema": "gridgame-text/1",
+  "kind": "quest",
+  "texts": {
+    "quest:q_antivenom": {
+      "key": "quest:q_antivenom",
+      "id": "quest-q-antivenom",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:798f15212c09d67a65b722e5cd0d70765e0fd565c6a6c33e3cbf6ebae84bb2e2",
+      "about": [
+        "character-alchemist",
+        "class-scorpion",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Antivenom",
+        "brief": "The Shardfall scorpions drink from the red rivers, and the Ember changes their venom faster than the alchemist can brew. Put down four of them so this week's batch can be studied before it changes again.",
+        "giver": "character-alchemist",
+        "complete": "Fresh enough. The new strain clots the old cure -- so I'll make a new cure. Take these, they're the last of the old ones that still work."
+      }
+    },
+    "quest:q_bulwark_breaks": {
+      "key": "quest:q_bulwark_breaks",
+      "id": "quest-q-bulwark-breaks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2b0b7bd428f3778d591496403f43b3e4897903c8e472a3fbfe37ae1cf00ebdb5",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Bulwark Breaks",
+        "brief": "The Bulwark march through Halcyon in white power armour, and they'll follow the wagon all the way up the spire. Break six of them and they'll think twice.",
+        "giver": "$party",
+        "complete": "Six white shells, cracked open. The rest of them are hanging back now."
+      }
+    },
+    "quest:q_choir_level": {
+      "key": "quest:q_choir_level",
+      "id": "quest-q-choir-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f8b1dc68674f02078e53cd519f27d2096ed72697bcfdc8be3d56c2e618623e6f",
+      "about": [
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Strong Enough for the Choir",
+        "brief": "The Cathedral is the Choir's own ground, and the Hierarch won't be easy. Get the party strong enough before you climb.",
+        "giver": "$party",
+        "complete": "Strong enough. Let's go up."
+      }
+    },
+    "quest:q_city_that_stopped": {
+      "key": "quest:q_city_that_stopped",
+      "id": "quest-q-city-that-stopped",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9e97bdccb9e689d60f390fd2cd5a20e0445be7851e7773889e0f8b62c982f8be",
+      "about": [
+        "class-ghost",
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Ones Who Paid",
+        "brief": "Halcyon's ghosts are what's left of people tithed past Hollow -- nothing but the shape of someone. Lay five of them to rest. Somebody should.",
+        "giver": "$party",
+        "complete": "Five laid down. Nobody in this city ever said their names. We did. That's the whole of it."
+      }
+    },
+    "quest:q_cold_iron": {
+      "key": "quest:q_cold_iron",
+      "id": "quest-q-cold-iron",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fce5d75c04255bf45e4c91bbd9b8f0f6c22d9ddc0fb37082e89a06b8b609ee62",
+      "about": [
+        "character-blacksmith",
+        "class-icemauler",
+        "place-cave"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Cold Iron",
+        "brief": "The ice maulers drink what leaks from the arches, and their cores never warm, whatever the forge does. Break three of them and bring the smith something worth hammering.",
+        "giver": "character-blacksmith",
+        "complete": "Three down, and the cores still cold in my hand. Whatever the Anchors leak, it isn't just light."
+      }
+    },
+    "quest:q_forge_frost": {
+      "key": "quest:q_forge_frost",
+      "id": "quest-q-forge-frost",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:16a53643f869f2abdf1915223e17fa0b855296345c1b90ea81e97f4680b7ed19",
+      "about": [
+        "character-blacksmith",
+        "place-cave"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Quenched in Frost",
+        "brief": "Steel quenched in frost-core holds an edge forever. The blacksmith needs two frost cores from the Anchor Wastes.",
+        "giver": "character-blacksmith",
+        "complete": "Quenched and ready. That edge will outlast all of us."
+      }
+    },
+    "quest:q_forge_iron": {
+      "key": "quest:q_forge_iron",
+      "id": "quest-q-forge-iron",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:146d352c0dda9d459e67d05790d20f2281e8578ab602c85264145e13f81d6889",
+      "about": [
+        "character-blacksmith",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Iron for the Forge",
+        "brief": "The blacksmith's forge is cold. Six iron ore from the Shardfall will get the fire going again.",
+        "giver": "character-blacksmith",
+        "complete": "The forge is hot again. Now the real work starts."
+      }
+    },
+    "quest:q_forge_plating": {
+      "key": "quest:q_forge_plating",
+      "id": "quest-q-forge-plating",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:343f713480df11c5879b37fc4816c6104979f821b344762d81116f31d188a364",
+      "about": [
+        "character-blacksmith",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Plate from the Wrecks",
+        "brief": "The walkers at the dig are plated with Halcyon steel. Strip three plates for the blacksmith.",
+        "giver": "character-blacksmith",
+        "complete": "Halcyon plate, twelve hundred years old and still better than anything new."
+      }
+    },
+    "quest:q_free_holds": {
+      "key": "quest:q_free_holds",
+      "id": "quest-q-free-holds",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5457c1ddeeabac8cf5d71c2e3e2208b7e07811f551d6b187c2cf293bf42bebe3",
+      "about": [
+        "place-greenvalley2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Holds Without Masters",
+        "brief": "The holds have soldiers and no masters now, and ten of them still fight for a tithe nobody's collecting. Show them the Choir is gone.",
+        "giver": "$party",
+        "complete": "Ten soldiers who'll think about what they're fighting for."
+      }
+    },
+    "quest:q_frog_glands": {
+      "key": "quest:q_frog_glands",
+      "id": "quest-q-frog-glands",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a612f89b281997c9a901bf07b0927a20d3988bb9e8205f0bca92904078435e68",
+      "about": [
+        "character-merchant",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "What the Frogs Know",
+        "brief": "The merchant swears the moor frogs glow brighter on the nights the Manalith stirs, and that the glow is its light caught in their glands. Bring three and they'll test the theory -- and find someone to pay for it.",
+        "giver": "character-merchant",
+        "complete": "Bright as a lantern, the lot of them. Manalith light, right in the gland. That's worth knowing, and worth paying for."
+      }
+    },
+    "quest:q_grown_not_forged": {
+      "key": "quest:q_grown_not_forged",
+      "id": "quest-q-grown-not-forged",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a0eafe1354cde9dec99596b10ed945c1c391495d0c2f933a37166c1162ef1a21",
+      "about": [
+        "character-blacksmith",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Grown, Not Forged",
+        "brief": "The gremlins at the Choir's dig carry cogs with teeth no file ever cut. The blacksmith wants four of them on the bench to see how the Choir makes a gear without a forge.",
+        "giver": "character-blacksmith",
+        "complete": "Look at the grain -- it runs round the teeth like a tree ring. Nobody forged this. It was grown. I need to sit down."
+      }
+    },
+    "quest:q_hags_hand": {
+      "key": "quest:q_hags_hand",
+      "id": "quest-q-hags-hand",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ad3f3e257684f8832605749637c3e902aac110497dae514b9038f9050d101bf9",
+      "about": [
+        "character-alchemist",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Hag's Hand",
+        "brief": "The fen hags were Choir once. Now they sing mana into curses and bind them into their own claws, where they hold. Three claws, and the alchemist might learn how.",
+        "giver": "character-alchemist",
+        "complete": "Bound in the bone itself. Ugly, but it holds. Here -- the first thing I've made that'll survive the worst the fen can sing."
+      }
+    },
+    "quest:q_heartwood": {
+      "key": "quest:q_heartwood",
+      "id": "quest-q-heartwood",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fc2a0a8a0fdaf59562a34daa90c94a30057bd1ec1516a733a0e3f34eb0084c17",
+      "about": [
+        "character-innkeeper",
+        "place-bloom"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Heartwood of the Bloom",
+        "brief": "The Bloom grows trees where nothing should. Their heartwood burns warm for days. The innkeeper wants three pieces for the camp.",
+        "giver": "character-innkeeper",
+        "complete": "Three pieces of red-grained heartwood. The camp won't be cold again."
+      }
+    },
+    "quest:q_hold_the_ward": {
+      "key": "quest:q_hold_the_ward",
+      "id": "quest-q-hold-the-ward",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8c99f265931875036d1ddd9c4f8403185fa855a2d80ed36d8e8cc1bf616b0220",
+      "about": [
+        "character-enchantress",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Every Voice",
+        "brief": "The Choir taught that a hymn needs every voice or it falls apart. The Enchantress wants proof that can mean something kinder: clear the heart of the Arkgrave without anyone falling.",
+        "giver": "character-enchantress",
+        "complete": "Not one voice dropped. That is what a hymn sounds like when people sing it for each other. Keep this -- you've earned the harder lessons."
+      }
+    },
+    "quest:q_holy_essence": {
+      "key": "quest:q_holy_essence",
+      "id": "quest-q-holy-essence",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7e9f7cad04b6beacc66a9855e32aed35d21181e9a84f0f3a5a63c8703c034413",
+      "about": [
+        "character-alchemist",
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Holy Mana for the Still",
+        "brief": "Some of the tithe in the Still's tanks has turned holy. The alchemist needs three vials of holy mana to brew something that brings people back.",
+        "giver": "character-alchemist",
+        "complete": "Three vials. Handle them gently; they remember who they were."
+      }
+    },
+    "quest:q_hymn_stops": {
+      "key": "quest:q_hymn_stops",
+      "id": "quest-q-hymn-stops",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d7999f1aff5f4f121365517d8c01dbd855183876d208564840bfc2c114bc7b62",
+      "about": [
+        "character-enchantress",
+        "class-cultist01",
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Hymn Stops Here",
+        "brief": "The Choir's Cantors lead the hymn that sings the holds into the Still's tanks. The Enchantress knows their parts by heart. Silence three of them, and she'll believe the hymn can stop.",
+        "giver": "character-enchantress",
+        "complete": "Three voices out of the hymn, and the tanks did not fill any faster. It can stop. It can actually stop."
+      }
+    },
+    "quest:q_last_rite": {
+      "key": "quest:q_last_rite",
+      "id": "quest-q-last-rite",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f421dc82f7dc2278248b54da47ec59a433474605f51946114b68706ec01468a4",
+      "about": [
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Last Rite",
+        "brief": "The Cathedral will be the hardest fight yet. Learn to mend the whole party at once before you climb.",
+        "giver": "$party",
+        "complete": "Everyone mended at once. We'll all come back down."
+      }
+    },
+    "quest:q_long_cold": {
+      "key": "quest:q_long_cold",
+      "id": "quest-q-long-cold",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:77ece6557a60c56a6ac54dc84d22dd822af1b82157760f8b22683f7c436711b9",
+      "about": [
+        "character-innkeeper",
+        "place-cave"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Furs for the Long Cold",
+        "brief": "The cold off the Anchors gets into the beds. Three yeti furs would line the bunks before somebody wakes up blue.",
+        "giver": "character-innkeeper",
+        "complete": "Warm bunks, warm crew. The arches can hum all night if they like -- we'll sleep through it."
+      }
+    },
+    "quest:q_lurker_ichor": {
+      "key": "quest:q_lurker_ichor",
+      "id": "quest-q-lurker-ichor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5e16369ceba1333725c5c862823d7939e238de951f8eabc4dfa7949dd9fd1a31",
+      "about": [
+        "character-alchemist",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Ichor of the Lurkers",
+        "brief": "The swamp lurkers bleed something that knits wounds shut. The alchemist wants four vials of it.",
+        "giver": "character-alchemist",
+        "complete": "Four vials. Ugly, but it holds."
+      }
+    },
+    "quest:q_masks_off": {
+      "key": "quest:q_masks_off",
+      "id": "quest-q-masks-off",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fe7ae6d4ff915ea57088ec78c3383e418eeb72e7a8082231feacd09ccc0d946f",
+      "about": [
+        "character-merchant",
+        "class-oni00",
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Masks Off",
+        "brief": "Oni road-raiders are robbing pilgrims on the Lantern Road's narrow stairs. Drive off three of them so the road is safe to trade on again.",
+        "giver": "character-merchant",
+        "complete": "Three masks fewer on the stairs. The pilgrims are moving again, and so is trade."
+      }
+    },
+    "quest:q_meteor": {
+      "key": "quest:q_meteor",
+      "id": "quest-q-meteor",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a17b91d45bb0e6656bb241210ff3a5e506085e57554b68010e3b7c1992e79b36",
+      "about": [
+        "character-enchantress",
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Star to Call Down",
+        "brief": "There's a spell that pulls a burning stone down from the sky. The Enchantress wants someone in the party to learn it.",
+        "giver": "character-enchantress",
+        "complete": "A star to call down. Aim it carefully."
+      }
+    },
+    "quest:q_moor_harpies": {
+      "key": "quest:q_moor_harpies",
+      "id": "quest-q-moor-harpies",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:46d1a99272977210cdcbbd7e5a835e3eb0fb9a1f60fe161dfa879605d303eba0",
+      "about": [
+        "character-innkeeper",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Harpies over the Wells",
+        "brief": "Harpies nest over the wells and steal anything shiny. Drive off four so the water carriers can work.",
+        "giver": "character-innkeeper",
+        "complete": "Four fewer harpies. The wells are quiet again."
+      }
+    },
+    "quest:q_moor_slimes": {
+      "key": "quest:q_moor_slimes",
+      "id": "quest-q-moor-slimes",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5636575a210c6e4a5e765aff20d85e27401287b7ad87dc29cc6aad6b87d13751",
+      "about": [
+        "character-innkeeper",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Slime in the Cellar",
+        "brief": "Something's living in the innkeeper's cellar and eating the stores. Clear out six slimes.",
+        "giver": "character-innkeeper",
+        "complete": "Six slimes gone. The cheese did not survive."
+      }
+    },
+    "quest:q_moor_werewolf": {
+      "key": "quest:q_moor_werewolf",
+      "id": "quest-q-moor-werewolf",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:dfdd1112a588285f0a8bdf0c6b8cc53b709bea047c8bfaa85f22c5346e87a30a",
+      "about": [
+        "character-innkeeper",
+        "class-werewolf00",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Beast of the Moors",
+        "brief": "Something howls on the moors at night, and it isn't a wolf. Hunt the beast before it reaches the inn.",
+        "giver": "character-innkeeper",
+        "complete": "The howling's stopped. The moors are just quiet now."
+      }
+    },
+    "quest:q_organ_quiet": {
+      "key": "quest:q_organ_quiet",
+      "id": "quest-q-organ-quiet",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:10ce6c0579a9d8f8cea6babc78c9c678f4f67c284610cf9bf3a2553678564314",
+      "about": [
+        "character-enchantress",
+        "class-cultist03",
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Quiet the Organ",
+        "brief": "The Choir's Confessors keep the hymn going under the cathedral's organ. Silence three of them, and the pipes the Hierarch drinks from begin to falter.",
+        "giver": "character-enchantress",
+        "complete": "Three voices gone, and the organ sounds thinner already."
+      }
+    },
+    "quest:q_reaper_shroud": {
+      "key": "quest:q_reaper_shroud",
+      "id": "quest-q-reaper-shroud",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d31ba3c221a2878ba991580d0848dfb227e471183f700497fabcbe40ff7e7da8",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Reaper's Shroud",
+        "brief": "The reapers in Halcyon wear shrouds cut from something old. Bring back two to learn what the Choir hides up the spire.",
+        "giver": "$party",
+        "complete": "Two shrouds. Older than the Choir, and stitched with Halcyon's thread."
+      }
+    },
+    "quest:q_ronin_guard": {
+      "key": "quest:q_ronin_guard",
+      "id": "quest-q-ronin-guard",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d992312108063ec172d34cee8580b04ba61ac0282f8e7c5ef191def31f5d0297",
+      "about": [
+        "class-ronin",
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Guard Stance",
+        "brief": "The Ronin's style has a guard stance worth learning. Have the Ronin learn it, so the rest of the party can rest easier.",
+        "giver": "$party",
+        "complete": "The guard is learned. A blade that guards is worth two that swing."
+      }
+    },
+    "quest:q_ronin_level": {
+      "key": "quest:q_ronin_level",
+      "id": "quest-q-ronin-level",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8cdd00074ead798474087d53caa5951566128c22601794dd6bba03a4661cc961",
+      "about": [
+        "class-ronin",
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Ronin's Measure",
+        "brief": "The Ronin has the makings of something great. Train them up a little.",
+        "giver": "$party",
+        "complete": "Seasoned. The Ronin carries their weight now."
+      }
+    },
+    "quest:q_ronin_recruit": {
+      "key": "quest:q_ronin_recruit",
+      "id": "quest-q-ronin-recruit",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:aab1ef76328c9817b3db51f774286f5917739370cd9713989b5d9b086dfc9c44",
+      "about": [
+        "class-ronin",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Blade Without a Lord",
+        "brief": "There's a ronin on the moors with no lord and no school. Find them, and ask them to come along.",
+        "giver": "$party",
+        "complete": "A blade without a lord, walking beside us now."
+      }
+    },
+    "quest:q_seasoned": {
+      "key": "quest:q_seasoned",
+      "id": "quest-q-seasoned",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:47213e7b7507cdad2cae1e458f72666022acc1c09c472b9478006bdac296b56d",
+      "about": [
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Seasoned",
+        "brief": "A month ago the party were thieves on a stolen wagon. Get stronger before the road gets harder.",
+        "giver": "$party",
+        "complete": "Look at us now."
+      }
+    },
+    "quest:q_sellsword": {
+      "key": "quest:q_sellsword",
+      "id": "quest-q-sellsword",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:69039af5b380f06cda27491af2ff41e2bc8bdb71008bf39a9672c89cb8efa212",
+      "about": [
+        "character-merchant",
+        "class-sellsword",
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "A Contract Worth Signing",
+        "brief": "The merchant knows a sellsword in the Shardfall. Hire them, and the merchant will throw something in.",
+        "giver": "character-merchant",
+        "complete": "Hired and paid. One more blade on the road."
+      }
+    },
+    "quest:q_travel_light": {
+      "key": "quest:q_travel_light",
+      "id": "quest-q-travel-light",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2882f1a6fab1fe3a669aa8df6956f8f27f3c6551ae00c3b307928a0d3bcae6a6",
+      "about": [
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Travel Light",
+        "brief": "The Captain's patrols are hunting for a big caravan crew. A small one slips through. Prove it: clear the Captain's field with three heroes or fewer in the fight.",
+        "giver": "$party",
+        "complete": "Three of us, one field, nobody carried. The Choir counts heads. Turns out it can't count very well."
+      }
+    },
+    "quest:q_wells_wolves": {
+      "key": "quest:q_wells_wolves",
+      "id": "quest-q-wells-wolves",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:218bcf76b6fe09b3e658e3c947cbba2bf3f178c29cf46f9099890195b5f4288d",
+      "about": [
+        "character-innkeeper",
+        "class-wolf00",
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Wolves at the Wells",
+        "brief": "The moor wolves run bold these days, and they've learned the water carriers' path to the last clean well. Thin the pack so the barrels come back full -- and the carriers come back at all.",
+        "giver": "character-innkeeper",
+        "complete": "The carriers made the round without a single howl behind them. Drinks are on the house -- well, these are."
+      }
+    }
+  }
+}
