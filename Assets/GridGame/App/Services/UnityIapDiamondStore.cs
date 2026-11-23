@@ -244,10 +244,15 @@ namespace GridGame.App
 
         private static bool HasSave(GameApp app) => app != null && app.Save != null && app.Slot >= 0 && app.Saves != null;
 
+        /// <summary>GG-T702: the account wallet is bound, so a paid order needs no save loaded: it lands in the wallet.</summary>
+        private static bool HasWallet(GameApp app) => app != null && app.WalletStore != null && DiamondExchange.Wallet != null;
+
+        private static bool CanGrant(GameApp app) => HasWallet(app) || HasSave(app);
+
         private void OnPurchasePending(PendingOrder order)
         {
             var app = GameApp.I;
-            if (!HasSave(app))
+            if (!CanGrant(app))
             {
                 // GG-T469: nowhere to put the Diamonds yet. Hold the order (unfinished, so the store keeps it too) and grant
                 // it the moment a save is loaded: the pump (IapPump) drains it every frame, whether or not the app object
@@ -261,7 +266,7 @@ namespace GridGame.App
         private void DrainWaiting()
         {
             var app = GameApp.I;
-            if (!HasSave(app) || waiting.Count == 0) return;
+            if (!CanGrant(app) || waiting.Count == 0) return;
             var batch = waiting.ToList();
             waiting.Clear();
             foreach (var o in batch) Fulfil(app, o);
@@ -282,6 +287,7 @@ namespace GridGame.App
                     ReleaseInFlight($"The store is still processing the purchase. The {ShardText.ShortPlural} arrive as soon as it clears.");
                 return;
             }
+            if (HasWallet(app)) { FulfilToWallet(app, order, id, tx); return; }
             if (GrantedElsewhere(app, tx))
             {
                 Debug.Log($"[IAP] {tx} was already granted in another save slot; finishing it");
@@ -317,6 +323,54 @@ namespace GridGame.App
             if (!app.Saves.Write(app.Slot, app.Save))
             {
                 Debug.LogWarning($"[IAP] save write failed after granting {tx}; leaving the order unfinished so it comes back");
+                NeedRefetch();
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
+                return;
+            }
+            store.ConfirmPurchase(order);
+            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}. Thank you!", id, diamonds));
+        }
+
+        /// <summary>GG-T702: grant into the account wallet (once per transaction id, across every profile and slot), write
+        /// the wallet, and only then finish the order. A failed write leaves the order unfinished so it comes back; the
+        /// in-memory wallet keeps this session from paying it twice.</summary>
+        private void FulfilToWallet(GameApp app, PendingOrder order, string id, string tx)
+        {
+            var w = DiamondExchange.Wallet;
+            if (AccountWallets.Has(w, tx))
+            {
+                if (!app.PersistWallet())
+                {
+                    Debug.LogWarning($"[IAP] {tx} re-delivered, granted but the wallet still isn't saved; leaving it unfinished");
+                    NeedRefetch();
+                    return;
+                }
+                Debug.Log($"[IAP] {tx} re-delivered; already in the wallet, finishing it");
+                store.ConfirmPurchase(order);
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, "That purchase was already delivered.", id));
+                return;
+            }
+            if (GrantedElsewhere(app, tx))
+            {
+                // A save that couldn't be moved into the wallet (it won't read) booked it: it isn't paid twice.
+                Debug.Log($"[IAP] {tx} was already granted in a save slot; finishing it");
+                store.ConfirmPurchase(order);
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, "That purchase was already delivered to another save.", id));
+                return;
+            }
+            var outcome = AccountWallets.Grant(w, tx, id, DateTime.UtcNow, LedgerStore, out int diamonds);
+            if (outcome == GrantOutcome.UnknownProduct)
+            {
+                Debug.LogWarning("[IAP] unknown product in a pending order: " + id);
+                store.ConfirmPurchase(order);
+                Answer(id, PurchaseResult.Of(PurchaseKind.Failed, "That product isn't sold any more.", id));
+                return;
+            }
+            if (outcome != GrantOutcome.Granted) return;
+            DiamondExchange.WalletDirty = true;
+            if (!app.PersistWallet())
+            {
+                Debug.LogWarning($"[IAP] wallet write failed after granting {tx}; leaving the order unfinished so it comes back");
                 NeedRefetch();
                 Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
                 return;
@@ -363,6 +417,17 @@ namespace GridGame.App
         private void OnRevoked(string productId)
         {
             var app = GameApp.I;
+            if (HasWallet(app))
+            {
+                // GG-T702: purchases are booked in the account wallet, so the refund comes out of it (what's left, never gold).
+                int fromWallet = AccountWallets.RefundLatest(DiamondExchange.Wallet, productId);
+                DiamondExchange.WalletDirty = true; // the record is marked refunded even when nothing was left to take
+                app.PersistWallet();
+                Debug.Log($"[IAP] entitlement revoked for {productId}: took back {fromWallet} Diamonds from the wallet");
+                if (fromWallet > 0)
+                    Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, $"A refunded purchase was reversed: {ShardText.Of(fromWallet)} removed.", productId));
+                return;
+            }
             if (!HasSave(app)) return;
             int taken = PurchaseLedger.RefundLatest(app.Save, productId);
             Debug.Log($"[IAP] entitlement revoked for {productId}: took back {taken} Diamonds");

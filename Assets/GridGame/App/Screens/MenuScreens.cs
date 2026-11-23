@@ -123,6 +123,7 @@ namespace GridGame.App
             // GG-T608: a newer cloud copy of this slot is offered first (no-op without a signed-in cloud).
             App.Cloud.BeforeLoad(App, slot, s, chosen =>
             {
+                App.MoveToWallet(slot, chosen); // GG-T702: every load (a cloud copy too) moves into the account wallet
                 App.Save = chosen; App.Slot = slot;
                 App.ApplySettings();
                 App.Router.ResetTo(new HubScreen());
@@ -184,6 +185,7 @@ namespace GridGame.App
                 if (existing == null) return;
                 App.Cloud.BeforeLoad(App, slot, existing, chosen =>
                 {
+                    App.MoveToWallet(slot, chosen); // GG-T702
                     App.Save = chosen; App.Slot = slot;
                     App.ApplySettings();
                     App.Router.ResetTo(new HubScreen());
@@ -209,6 +211,7 @@ namespace GridGame.App
             {
                 App.Save = Progression.NewGame(App.Content, "Player", party);
                 App.Slot = slot;
+                App.MoveToWallet(-1, App.Save); // GG-T702: a new game spends from the account wallet from its first Shard
                 App.ApplySettings();
                 App.Persist();
                 // GG-T532: the party picks its looks (the locked Warden too) before the story starts.

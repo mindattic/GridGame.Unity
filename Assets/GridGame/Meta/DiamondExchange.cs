@@ -44,7 +44,38 @@ namespace GridGame.Meta
         /// <summary>Diamonds per US dollar at the real-money store: flat, no bonus tiers (owner: "low and honest").</summary>
         public const int DiamondsPerDollar = 100;
 
-        public static int Have(SaveData s) => s?.Count(Crafting.DiamondId) ?? 0;
+        /// <summary>GG-T702: the account wallet of the signed-in store login (<see cref="AccountWallet"/>, §25.18.1), bound by
+        /// the App at boot. Every save moved into it (<see cref="WalletMigration.IsMoved"/>) reads, spends and earns its
+        /// Diamonds here instead of in its bag; a save that isn't moved yet, or any save while none is bound (the tests, a
+        /// sim), keeps using the bag.</summary>
+        public static AccountWallet Wallet { get; set; }
+
+        /// <summary>The bound wallet changed since it was last written. The App writes the wallet before the save (a save
+        /// written without its wallet could hold what a spend bought while the wallet still holds the Diamonds) and clears
+        /// this once the write held.</summary>
+        public static bool WalletDirty { get; set; }
+
+        /// <summary>The wallet <paramref name="s"/>'s Diamonds live in, or null when they're still in its bag.</summary>
+        public static AccountWallet WalletOf(SaveData s) => Wallet != null && WalletMigration.IsMoved(s) ? Wallet : null;
+
+        /// <summary>The Diamonds in the save's own bag, wallet or not (what <see cref="WalletMigration"/> drains).</summary>
+        public static int Bag(SaveData s) => s?.Count(Crafting.DiamondId) ?? 0;
+
+        /// <summary>The Diamonds this save can spend: its wallet's when it was moved into the bound one, else its bag's.</summary>
+        public static int Have(SaveData s) => WalletOf(s) is AccountWallet w ? Math.Max(0, w.Diamonds) : Bag(s);
+
+        /// <summary>Adds (positive) or takes (negative, never below zero) Diamonds where this save keeps them: the bound
+        /// wallet (marked dirty for the App to write first) or the bag. Callers check the balance and the room first.</summary>
+        public static void Add(SaveData s, int diamonds)
+        {
+            if (s == null || diamonds == 0) return;
+            var w = WalletOf(s);
+            if (w == null) { s.AddItem(Crafting.DiamondId, diamonds); return; }
+            if (diamonds > 0) AccountWallets.Add(w, diamonds);
+            else w.Diamonds = Math.Max(0, Math.Max(0, w.Diamonds) + diamonds);
+            w.UpdatedUtc = DateTime.UtcNow;
+            WalletDirty = true;
+        }
 
         /// <summary>Gold worth of <paramref name="diamonds"/> Diamonds at the exchange rate.</summary>
         public static int GoldFor(int diamonds) => Math.Max(0, diamonds) * GoldPerDiamond;
@@ -80,7 +111,7 @@ namespace GridGame.Meta
             var ok = CanPay(s, price, keepGold);
             if (!ok.Ok) return ok;
             paid = Quote(s, price);
-            if (paid.diamonds > 0) s.AddItem(Crafting.DiamondId, -paid.diamonds);
+            if (paid.diamonds > 0) Add(s, -paid.diamonds);
             s.Gold -= paid.gold;
             return Result.Success();
         }
@@ -93,8 +124,8 @@ namespace GridGame.Meta
         /// <summary>The most Diamonds the bag can hold (the item's MaxStack).</summary>
         public static int Cap(ContentDb c) => c?.TryItem(Crafting.DiamondId)?.MaxStack ?? int.MaxValue;
 
-        /// <summary>Room left in the bag for Diamonds.</summary>
-        public static int Room(ContentDb c, SaveData s) => Math.Max(0, Cap(c) - Have(s));
+        /// <summary>Room left for Diamonds: the bag's cap, or (moved into the wallet, GG-T702) no cap at all.</summary>
+        public static int Room(ContentDb c, SaveData s) => WalletOf(s) != null ? int.MaxValue - Have(s) : Math.Max(0, Cap(c) - Have(s));
 
         /// <summary>The most Diamonds this save's gold can buy right now (and the bag can hold).</summary>
         public static int MaxBuy(ContentDb c, SaveData s) => s == null ? 0 : Math.Min(Room(c, s), Math.Max(0, s.Gold) / GoldPerDiamond);
@@ -108,7 +139,7 @@ namespace GridGame.Meta
             int gold = GoldFor(diamonds);
             if (s.Gold < gold) return Result.Fail($"Not enough gold: {gold:N0} G for {ShardText.Of(diamonds)}");
             s.Gold -= gold;
-            s.AddItem(Crafting.DiamondId, diamonds);
+            Add(s, diamonds);
             return Result.Success($"Exchanged {gold:N0} G for {ShardText.Of(diamonds)}.");
         }
 
@@ -118,7 +149,7 @@ namespace GridGame.Meta
             if (s == null) return Result.Fail("No save");
             if (diamonds <= 0) return Result.Fail("Nothing to add");
             if (Room(c, s) < diamonds) return Result.Fail($"Can't hold that many {ShardText.Plural}");
-            s.AddItem(Crafting.DiamondId, diamonds);
+            Add(s, diamonds);
             return Result.Success($"+{ShardText.Of(diamonds)}.");
         }
     }

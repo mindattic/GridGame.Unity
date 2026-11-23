@@ -39,7 +39,8 @@ namespace GridGame.Meta
         public static bool CaravanOpen(SaveData s) => s != null && (Veteran(s) || Cleared(s) >= CaravanAfter || (s.Caravan?.Where(kv => !Facilities.IsFacilityId(kv.Key)).Sum(kv => kv.Value) ?? 0) > 0);
         /// <summary>GG-T537: the Diamond Store's Camp row opens with the Summon Circle (a Diamond's first use is a summon), or
         /// once the save has bought anything with real money. A paywall prompt short of Diamonds still offers the store.</summary>
-        public static bool DiamondStoreOpen(SaveData s) => s != null && (SummonOpen(s) || (s.Purchases?.Granted?.Count ?? 0) > 0);
+        public static bool DiamondStoreOpen(SaveData s) => s != null && (SummonOpen(s) || (s.Purchases?.Granted?.Count ?? 0) > 0
+            || (DiamondExchange.WalletOf(s)?.Granted?.Count ?? 0) > 0); // GG-T702: purchases are booked in the account wallet now
 
         /// <summary>The Blacksmith's Forge, Upgrade and Salvage tabs (GG-T175, §25.0.4). He joins to mend worn gear, so
         /// Repair is his only tab at first; the workshop opens a step later in the onboarding chain — once the Alchemist

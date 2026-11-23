@@ -100,9 +100,14 @@ namespace GridGame.App
         /// `.tmp` doesn't linger; a save attempted again later overwrites it either way.
         /// GG-T482: the replace keeps the previous slot file as the rolling backup (<see cref="BackupPathFor"/>).
         /// </summary>
-        public bool Write(int slot, SaveData s)
+        public bool Write(int slot, SaveData s) => Write(slot, s, true);
+
+        /// <summary><see cref="Write(int, SaveData)"/>; <paramref name="stamp"/> false keeps the save's UpdatedUtc, for a
+        /// housekeeping write the player didn't make (GG-T702's boot move into the wallet), so it can't change which slot
+        /// is the most recent.</summary>
+        public bool Write(int slot, SaveData s, bool stamp)
         {
-            s.UpdatedUtc = DateTime.UtcNow;
+            if (stamp) s.UpdatedUtc = DateTime.UtcNow;
             var p = PathFor(slot);
             var tmp = p + ".tmp";
             var bak = BackupPathFor(slot);

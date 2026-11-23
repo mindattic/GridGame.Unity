@@ -68,7 +68,7 @@ namespace GridGame.Meta
 
         /// <summary>The most Shards this save's Dust can refine right now (and the bag can hold).</summary>
         public static int MaxRefine(ContentDb c, SaveData s) =>
-            s == null ? 0 : Math.Min(ShardsFor(Have(s)), Math.Max(0, DiamondExchange.Cap(c) - DiamondExchange.Have(s)));
+            s == null ? 0 : Math.Min(ShardsFor(Have(s)), DiamondExchange.Room(c, s));
 
         /// <summary>Refines <paramref name="shards"/> Shards' worth of Dust (<see cref="DustPerShard"/> each) at the
         /// Aetherist's counter. Dust under a whole Shard's worth stays banked for next time. Takes nothing on failure.</summary>
@@ -78,9 +78,9 @@ namespace GridGame.Meta
             if (shards <= 0) return Result.Fail("Pick an amount");
             int dust = shards * DustPerShard;
             if (Have(s) < dust) return Result.Fail($"Not enough {DustName}: {dust - Have(s):N0} more needed");
-            if (Math.Max(0, DiamondExchange.Cap(c) - DiamondExchange.Have(s)) < shards) return Result.Fail($"Can't hold that many {ShardText.Plural}");
+            if (DiamondExchange.Room(c, s) < shards) return Result.Fail($"Can't hold that many {ShardText.Plural}");
             s.AddItem(DustId, -dust);
-            s.AddItem(Crafting.DiamondId, shards);
+            DiamondExchange.Add(s, shards); // GG-T702: into the account wallet once the save was moved
             return Result.Success($"Refined {dust:N0} {DustName} into {ShardText.Of(shards)}.");
         }
     }

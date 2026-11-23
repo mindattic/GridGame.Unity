@@ -1489,7 +1489,7 @@ namespace GridGame.App
         private void RandomDraw(VisualElement body, bool busy)
         {
             var w = Ui.Panel(body, "Call a stranger", false, "summon-random");
-            int diamonds = S.Count(Crafting.DiamondId);
+            int diamonds = DiamondExchange.Have(S); // GG-T702: the account wallet once the save was moved
             int left = DiamondSummon.Pool(C, S).Count;
             var t = Ui.Text(left > 0
                 ? $"Spend {ShardText.Plural} and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."

@@ -61,6 +61,12 @@ namespace GridGame.App
         public VisualElement Overlay { get; private set; }
         public UIDocument Document { get; private set; }
 
+        /// <summary>GG-T702: where the account wallet lives (beside the profiles); its wallet is bound as
+        /// <see cref="DiamondExchange.Wallet"/>.</summary>
+        public AccountWalletStore WalletStore { get; private set; }
+        /// <summary>The store login the wallet belongs to: null (this device's wallet) until the store names one.</summary>
+        public string WalletLogin { get; private set; }
+
         /// <summary>The save being played (null on the title screen).</summary>
         public SaveData Save { get; set; }
         public int Slot { get; set; } = -1;
@@ -121,6 +127,8 @@ namespace GridGame.App
             Content = LoadContent();
             Art.IndexSpells(Content.Abilities.Keys);
             OpenProfiles();
+            OpenWallet(); // GG-T702: every slot moved into the wallet before the real-money store connects
+            DiamondStores.Warm(); // (only when Features.DiamondStore is on)
             Cloud = CloudSaves.Create();
             Cloud.Start();
             Audio = Audio.Create(transform);
@@ -431,6 +439,9 @@ namespace GridGame.App
 
         public void Persist()
         {
+            // GG-T702: the wallet first. A save written while its wallet isn't could hold what a spend bought while the
+            // wallet on disk still holds the Diamonds, so the save waits for the next try.
+            if (!PersistWallet()) { if (Save != null && Slot >= 0) Toast("Couldn't save!"); return; }
             if (Save == null || Slot < 0) return;
             // SaveStore.Write never throws — it logs and reports failure via its return value (GG-T146).
             if (!Saves.Write(Slot, Save)) { Toast("Couldn't save!"); return; }
@@ -534,6 +545,75 @@ namespace GridGame.App
             Saves = new SaveStore(Profile.SavesFolder);
             SaveStore.SyncFiles();
             Debug.Log($"[Profiles] profile '{Profile.Name}' ({store.Root})");
+        }
+
+        // ── Account wallet (§25.18.1, GG-T702) ─────────────────────────────────────
+
+        /// <summary>Binds this device's account wallet and moves every slot of every profile into it (GG-T621's
+        /// <see cref="WalletMigration"/>), before the real-money store connects, so a re-delivered order and every spender
+        /// see one balance. A slot that won't read is left alone (it moves when it is loaded once it reads again).</summary>
+        private void OpenWallet()
+        {
+            var profiles = Profile?.Store;
+            if (profiles == null) return;
+            try
+            {
+                WalletStore = AccountWalletStore.For(profiles);
+                DiamondExchange.Wallet = WalletStore.Load(WalletLogin);
+                DiamondExchange.WalletDirty = false;
+                var folders = new List<string> { Saves.Root };
+                foreach (var name in profiles.List()) folders.Add(System.IO.Path.Combine(profiles.Root, name, "Saves"));
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var folder in folders)
+                {
+                    if (!System.IO.Directory.Exists(folder) || !seen.Add(System.IO.Path.GetFullPath(folder))) continue;
+                    var saves = string.Equals(System.IO.Path.GetFullPath(folder), System.IO.Path.GetFullPath(Saves.Root), StringComparison.OrdinalIgnoreCase) ? Saves : new SaveStore(folder);
+                    for (int i = 0; i < SaveStore.Slots; i++)
+                    {
+                        if (!saves.Exists(i)) continue;
+                        var s = saves.Load(i, Content);
+                        if (s != null) MoveToWallet(saves, i, s, false);
+                    }
+                }
+                Debug.Log($"[Wallet] {WalletStore.PathFor(WalletLogin)}: {DiamondExchange.Wallet.Diamonds} Diamonds, {DiamondExchange.Wallet.Granted.Count} purchases, {DiamondExchange.Wallet.Migrated.Count} saves carried in");
+            }
+            catch (Exception e) { Debug.LogError("[Wallet] couldn't open the account wallet: " + e.Message); }
+        }
+
+        /// <summary>Moves a save just loaded (or just made) into the account wallet: the wallet is written first, the save
+        /// after (into <paramref name="slot"/> of the active profile, unless it is -1). A failed wallet write leaves the
+        /// save as it was, spending from its bag, and it is tried again on the next load. Safe to call on every load.</summary>
+        public WalletMigrationResult MoveToWallet(int slot, SaveData s) => MoveToWallet(Saves, slot, s, true);
+
+        private WalletMigrationResult MoveToWallet(SaveStore saves, int slot, SaveData s, bool stamp)
+        {
+            if (WalletStore == null || DiamondExchange.Wallet == null || s == null) return null;
+            if (!PersistWallet()) return null; // anything spent since the last write lands before the file is read back
+            var r = WalletMigration.Run(WalletStore, WalletLogin, s, DateTime.UtcNow);
+            if (r.Outcome != WalletMigrationOutcome.Failed && r.WalletChanged)
+                DiamondExchange.Wallet = WalletStore.Load(WalletLogin);
+            string where = $"{saves?.Root} slot {slot + 1}";
+            switch (r.Outcome)
+            {
+                case WalletMigrationOutcome.Moved:
+                    Debug.Log($"[Wallet] {where} moved in: {r.Drained} out of the bag, {r.Carried} carried, {r.Purchases} purchases");
+                    if (slot >= 0 && saves != null && !saves.Write(slot, s, stamp)) Debug.LogWarning($"[Wallet] {where} moved but not rewritten; the wallet already counts it");
+                    break;
+                case WalletMigrationOutcome.Failed:
+                    Debug.LogWarning($"[Wallet] {where}: the wallet couldn't be written; the save keeps its Diamonds for now");
+                    break;
+            }
+            if (r.Stray > 0) Debug.LogWarning($"[Wallet] {where}: {r.Stray} Diamonds in the bag of a moved save, not carried");
+            return r;
+        }
+
+        /// <summary>Writes the account wallet if a spend or grant changed it. True when it is on disk (or unchanged).</summary>
+        public bool PersistWallet()
+        {
+            if (!DiamondExchange.WalletDirty || WalletStore == null || DiamondExchange.Wallet == null) return true;
+            if (!WalletStore.Save(DiamondExchange.Wallet)) { Debug.LogError("[Wallet] write failed"); return false; }
+            DiamondExchange.WalletDirty = false;
+            return true;
         }
 
         /// <summary>Makes <paramref name="name"/> the active profile: its settings apply at once and its slots replace the old ones.</summary>

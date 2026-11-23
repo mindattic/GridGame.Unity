@@ -766,7 +766,7 @@ namespace GridGame.App.Automation
                     var now = DateTime.UtcNow;
                     return new
                     {
-                        s.Gold, diamonds = s.Count(Crafting.DiamondId), s.HighestClearedStage,
+                        s.Gold, diamonds = DiamondExchange.Have(s), bagDiamonds = DiamondExchange.Bag(s), s.HighestClearedStage, // GG-T702: wallet balance
                         rested = RestedPool.Points(s, now), restedMax = RestedPool.Max, restedExempt = RestedPool.Exempt(s),
                         refill = new { gold = Paywall.Cost(PaywallKind.RestedRefill, s), diamonds = RestedPool.DiamondRefillPrice },
                         // GG-T455: Diamonds are exchanged at goldPerDiamond (diamondGold = one Diamond's gold, as before).

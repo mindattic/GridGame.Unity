@@ -106,7 +106,7 @@ namespace GridGame.Meta
                     var arrived = Summon.Arrive(c, s, job.Arg);
                     // A fizzled draw gives its whole Diamond price back as Diamonds, however it was paid (GG-T455: any gold
                     // part was exchanged into Diamonds on the way in).
-                    if (!arrived.Ok && job.Diamonds > 0) s.AddItem(Crafting.DiamondId, job.Diamonds);
+                    if (!arrived.Ok && job.Diamonds > 0) DiamondExchange.Add(s, job.Diamonds); // GG-T702: back where they came from (the wallet once moved)
                     // A chosen-hero summon paid in gold alone (no Diamonds) gives its gold back when the hero can't come.
                     else if (!arrived.Ok && job.Paid > 0)
                     {

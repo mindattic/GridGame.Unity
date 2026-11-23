@@ -29,9 +29,9 @@ namespace GridGame.App
         }
 
         /// <summary>Connects the release store at boot, so an order left unfinished last session lands as soon as a save
-        /// is loaded rather than on the first visit to the Diamond Store.</summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-        private static void Warm()
+        /// is loaded rather than on the first visit to the Diamond Store. GG-T702: called by GameApp once every save is
+        /// moved into the account wallet, never before.</summary>
+        public static void Warm()
         {
             if (Features.DiamondStore) _ = Current;
         }

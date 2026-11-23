@@ -110,13 +110,13 @@ namespace GridGame.Meta
             if (IsMoved(s))
             {
                 r.Outcome = WalletMigrationOutcome.AlreadyMoved;
-                r.Stray = DiamondExchange.Have(s);
+                r.Stray = DiamondExchange.Bag(s);
                 if (r.Purchases > 0 && r.Identity != null && w.Migrated.TryGetValue(r.Identity, out var known)) known.Purchases += r.Purchases;
                 if (r.WalletChanged) w.UpdatedUtc = utc;
                 return r;
             }
 
-            int bag = Math.Max(0, DiamondExchange.Have(s));
+            int bag = Math.Max(0, DiamondExchange.Bag(s));
             w.Migrated.TryGetValue(r.Identity, out var before);
             int counted = before?.Diamonds ?? 0;
             r.Carried = AccountWallets.Add(w, Math.Max(0, bag - counted));
