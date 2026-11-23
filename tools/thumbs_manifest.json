@@ -433,56 +433,56 @@
  },
  "cyclops-00": {
   "framing": {
-   "X": 0.5328,
-   "Y": 0.2021,
-   "Zoom": 2.4781
+   "X": 0.39,
+   "Y": 0.37,
+   "Zoom": 3
   },
-  "hash": "b5694bf5570ba191d1be",
+  "hash": "e5adb30be2b7f619918b",
   "owner": "cyclops00"
  },
  "cyclops-01": {
   "framing": {
-   "X": 0.5021,
-   "Y": 0.2075,
-   "Zoom": 2.4093
+   "X": 0.4,
+   "Y": 0.44,
+   "Zoom": 3
   },
-  "hash": "20b33f2e1a2faa77667b",
+  "hash": "e0bb6c85dd63106fe3c5",
   "owner": "cyclops01"
  },
  "cyclops-02": {
   "framing": {
-   "X": 0.5302,
-   "Y": 0.2016,
-   "Zoom": 2.4762
+   "X": 0.47,
+   "Y": 0.32,
+   "Zoom": 3
   },
-  "hash": "9ce8694199608d057789",
+  "hash": "b92e8c0b2f9720df972f",
   "owner": "cyclops02"
  },
  "cyclops-03": {
   "framing": {
-   "X": 0.5428,
-   "Y": 0.2007,
-   "Zoom": 2.4922
+   "X": 0.45,
+   "Y": 0.36,
+   "Zoom": 2.8
   },
-  "hash": "6363706e49da90c8cb3c",
+  "hash": "688bd4cf7494ed5eabfc",
   "owner": "cyclops03"
  },
  "cyclops-04": {
   "framing": {
-   "X": 0.5222,
-   "Y": 0.2041,
-   "Zoom": 2.4503
+   "X": 0.34,
+   "Y": 0.36,
+   "Zoom": 3
   },
-  "hash": "d62591402930d0673ec7",
+  "hash": "2294ec0effd64a0a1b1d",
   "owner": "cyclops04"
  },
  "cyclops-05": {
   "framing": {
-   "X": 0.5274,
-   "Y": 0.2017,
-   "Zoom": 2.4758
+   "X": 0.43,
+   "Y": 0.38,
+   "Zoom": 3
   },
-  "hash": "de1217cc83eabfb5bdcb",
+  "hash": "4795dbeef896fdffdb32",
   "owner": "cyclops06"
  },
  "dark-templar-female-00": {
@@ -847,38 +847,38 @@
  },
  "hellspawn-drinker-00": {
   "framing": {
-   "X": 0.3205,
-   "Y": 0.1364,
-   "Zoom": 2.6785
+   "X": 0.3,
+   "Y": 0.15,
+   "Zoom": 3.4
   },
-  "hash": "a3ac405ce73f23368d0f",
+  "hash": "23ecbdb413b0909e5822",
   "owner": "hellspawn02"
  },
  "hellspawn-emberheart-00": {
   "framing": {
-   "X": 0.3052,
-   "Y": 0.1555,
-   "Zoom": 2.6947
+   "X": 0.33,
+   "Y": 0.16,
+   "Zoom": 3.4
   },
-  "hash": "c6c742289fa883383cda",
+  "hash": "1634f1868cdf57cf9b7c",
   "owner": "hellspawn03"
  },
  "hellspawn-ravager-00": {
   "framing": {
-   "X": 0.3246,
-   "Y": 0.1567,
-   "Zoom": 2.7504
+   "X": 0.33,
+   "Y": 0.14,
+   "Zoom": 3.6
   },
-  "hash": "3648b5ca2540973b4333",
+  "hash": "1f22a6ebca67ccd78aa2",
   "owner": "hellspawn01"
  },
  "hellspawn-scaleback-00": {
   "framing": {
-   "X": 0.3021,
-   "Y": 0.1603,
-   "Zoom": 2.7476
+   "X": 0.34,
+   "Y": 0.16,
+   "Zoom": 3.4
   },
-  "hash": "033b8332566168c74bce",
+  "hash": "4f70dceb0f2702344dad",
   "owner": "hellspawn04"
  },
  "herald-female-00": {
@@ -946,11 +946,11 @@
  },
  "hex-sniper-male-00": {
   "framing": {
-   "X": 0.5027,
-   "Y": 0.3152,
-   "Zoom": 3.8854
+   "X": 0.44,
+   "Y": 0.16,
+   "Zoom": 3.2
   },
-  "hash": "0a855f6983af04a23c5a",
+  "hash": "f048fd40772066fed9c5",
   "owner": "hexsniper (male)"
  },
  "hex-stalker-00": {
@@ -991,47 +991,47 @@
  },
  "ice-mauler-00": {
   "framing": {
-   "X": 0.5697,
-   "Y": 0.2001,
-   "Zoom": 2.5425
+   "X": 0.38,
+   "Y": 0.62,
+   "Zoom": 3
   },
-  "hash": "cb6099127d63e4d4cf3b",
+  "hash": "ac3a9a5091e8a26bf90e",
   "owner": "icemauler"
  },
  "infernalist-bloodbinder-00": {
   "framing": {
-   "X": 0.2108,
-   "Y": 0.235,
-   "Zoom": 2.8144
+   "X": 0.27,
+   "Y": 0.22,
+   "Zoom": 3.2
   },
-  "hash": "c43fac3e866a5d796271",
+  "hash": "920cee9c896578bed61a",
   "owner": "infernalist03"
  },
  "infernalist-executioner-00": {
   "framing": {
-   "X": 0.1682,
-   "Y": 0.2335,
-   "Zoom": 2.6947
+   "X": 0.23,
+   "Y": 0.25,
+   "Zoom": 3.2
   },
-  "hash": "454c71fc62bced1df3d0",
+  "hash": "1c05507af9a8635f543c",
   "owner": "infernalist04"
  },
  "infernalist-pyromancer-00": {
   "framing": {
-   "X": 0.1688,
-   "Y": 0.2504,
-   "Zoom": 2.6179
+   "X": 0.25,
+   "Y": 0.23,
+   "Zoom": 3.2
   },
-  "hash": "eb5b6aa2fc9234d02ffa",
+  "hash": "cd4613fc139c7c705e5f",
   "owner": "infernalist02"
  },
  "infernalist-zealot-00": {
   "framing": {
-   "X": 0.2148,
-   "Y": 0.2406,
-   "Zoom": 2.9129
+   "X": 0.25,
+   "Y": 0.22,
+   "Zoom": 3.2
   },
-  "hash": "236b3e35b16b42bfc52c",
+  "hash": "b146b265e6a9fdf35954",
   "owner": "infernalist01"
  },
  "jade-knight-female-00": {
@@ -1108,29 +1108,29 @@
  },
  "lurker-00": {
   "framing": {
-   "X": 0.4336,
-   "Y": 0.2069,
-   "Zoom": 2.5217
+   "X": 0.16,
+   "Y": 0.44,
+   "Zoom": 3.2
   },
-  "hash": "ceb4a8a6853657e13930",
+  "hash": "1678d0909e7b521cbc3b",
   "owner": "lurker00"
  },
  "lurker-01": {
   "framing": {
-   "X": 0.4144,
-   "Y": 0.2011,
-   "Zoom": 2.4896
+   "X": 0.16,
+   "Y": 0.3,
+   "Zoom": 3.2
   },
-  "hash": "0791337a3d9556aaea7b",
+  "hash": "736119a1e47bfd6477e7",
   "owner": "lurker01"
  },
  "lurker-02": {
   "framing": {
-   "X": 0.6331,
-   "Y": 0.202,
-   "Zoom": 2.5683
+   "X": 0.84,
+   "Y": 0.32,
+   "Zoom": 3.2
   },
-  "hash": "597af26037deff17497c",
+  "hash": "6957518ca212cd6912d8",
   "owner": "lurker02"
  },
  "machinist-female-00": {
@@ -1198,29 +1198,29 @@
  },
  "mecha-armor-00": {
   "framing": {
-   "X": 0.6256,
-   "Y": 0.2078,
-   "Zoom": 2.5136
+   "X": 0.37,
+   "Y": 0.15,
+   "Zoom": 3.2
   },
-  "hash": "dcb3a6e266e14fcc4542",
+  "hash": "c1ba195dcc4843856536",
   "owner": "mechaarmor00"
  },
  "mecha-armor-01": {
   "framing": {
-   "X": 0.6336,
-   "Y": 0.2083,
-   "Zoom": 2.5073
+   "X": 0.39,
+   "Y": 0.17,
+   "Zoom": 3.2
   },
-  "hash": "5855df9b67ce95786a80",
+  "hash": "13e66f23f9102ae8192b",
   "owner": "mechaarmor01"
  },
  "mecha-armor-02": {
   "framing": {
-   "X": 0.6239,
-   "Y": 0.2083,
-   "Zoom": 2.5098
+   "X": 0.38,
+   "Y": 0.16,
+   "Zoom": 3.2
   },
-  "hash": "2f7b541cd0282cd07538",
+  "hash": "6354d73c1d7368f239b9",
   "owner": "mechaarmor02"
  },
  "mocking-echo-00": {
@@ -1450,47 +1450,47 @@
  },
  "purple-prototype-00": {
   "framing": {
-   "X": 0.5097,
-   "Y": 0.213,
-   "Zoom": 2.4884
+   "X": 0.31,
+   "Y": 0.18,
+   "Zoom": 3
   },
-  "hash": "3457045920af74cb1f64",
+  "hash": "070c51ba0fd43dcb4cab",
   "owner": "purpleprototype00"
  },
  "purple-prototype-01": {
   "framing": {
-   "X": 0.5456,
-   "Y": 0.2092,
-   "Zoom": 2.3993
+   "X": 0.3,
+   "Y": 0.18,
+   "Zoom": 3
   },
-  "hash": "42753e960e48b88c8086",
+  "hash": "d21d5e116979681eafe7",
   "owner": "purpleprototype01"
  },
  "purple-prototype-02": {
   "framing": {
-   "X": 0.5399,
-   "Y": 0.2072,
-   "Zoom": 2.4123
+   "X": 0.33,
+   "Y": 0.17,
+   "Zoom": 3
   },
-  "hash": "372b631338ba1acd3b2f",
+  "hash": "d2268d853f0d219efe92",
   "owner": "purpleprototype02"
  },
  "purple-prototype-03": {
   "framing": {
-   "X": 0.4946,
-   "Y": 0.2018,
-   "Zoom": 2.4803
+   "X": 0.42,
+   "Y": 0.27,
+   "Zoom": 2.6
   },
-  "hash": "ada8e4d6d71feefa2726",
+  "hash": "7ed8d127c088be6c0615",
   "owner": "purpleprototype03"
  },
  "purple-prototype-04": {
   "framing": {
-   "X": 0.5974,
-   "Y": 0.2101,
-   "Zoom": 2.3801
+   "X": 0.41,
+   "Y": 0.17,
+   "Zoom": 3
   },
-  "hash": "c57699b3eafd5aeb92cd",
+  "hash": "b239171cea0bc614ef5e",
   "owner": "purpleprototype04"
  },
  "raider-00": {
@@ -2242,11 +2242,11 @@
  },
  "werewolf-00": {
   "framing": {
-   "X": 0.4979,
-   "Y": 0.2102,
-   "Zoom": 2.3775
+   "X": 0.18,
+   "Y": 0.23,
+   "Zoom": 3.2
   },
-  "hash": "087d5ef5a619fbfc9c5e",
+  "hash": "8e2cdc639fc231cdd9df",
   "owner": "werewolf00"
  },
  "white-ninja-female-00": {
@@ -2278,38 +2278,38 @@
  },
  "wolf-00": {
   "framing": {
-   "X": 0.553,
-   "Y": 0.4949,
-   "Zoom": 1.007
+   "X": 0.26,
+   "Y": 0.16,
+   "Zoom": 3.2
   },
-  "hash": "5d49d2451883e6a97723",
+  "hash": "0a24512af3ec45dfedea",
   "owner": "wolf00"
  },
  "wolf-01": {
   "framing": {
-   "X": 0.4994,
-   "Y": 0.4999,
-   "Zoom": 1.07
+   "X": 0.74,
+   "Y": 0.37,
+   "Zoom": 3
   },
-  "hash": "c3628cd7a2879906f76e",
+  "hash": "dc599a0d92fb4f29c137",
   "owner": "wolf01"
  },
  "wolf-02": {
   "framing": {
-   "X": 0.5194,
-   "Y": 0.4943,
-   "Zoom": 1.0169
+   "X": 0.79,
+   "Y": 0.31,
+   "Zoom": 3
   },
-  "hash": "47ad0c7a635c26fe0b30",
+  "hash": "9e61362e67b0da126fdd",
   "owner": "wolf02"
  },
  "wolf-03": {
   "framing": {
-   "X": 0.4975,
-   "Y": 0.4811,
-   "Zoom": 1.0926
+   "X": 0.71,
+   "Y": 0.38,
+   "Zoom": 3
   },
-  "hash": "128f12675ecbc18e05fc",
+  "hash": "17e2b9751f93cbc696b2",
   "owner": "wolf03"
  },
  "yellow-ninja-female-00": {
@@ -2332,11 +2332,11 @@
  },
  "yeti-00": {
   "framing": {
-   "X": 0.542,
-   "Y": 0.2081,
-   "Zoom": 2.4082
+   "X": 0.33,
+   "Y": 0.27,
+   "Zoom": 3.2
   },
-  "hash": "503f54794e06f03d3c66",
+  "hash": "f4b4b9bc6fc03e607f36",
   "owner": "yeti"
  }
 }

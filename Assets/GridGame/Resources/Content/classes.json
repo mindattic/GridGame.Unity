@@ -3856,9 +3856,9 @@
     "Portrait": "cyclops",
     "ArtSource": "Cyclops00",
     "Thumbnail": {
-      "Zoom": 2.4781,
-      "X": 0.5328,
-      "Y": 0.2021
+      "Zoom": 3,
+      "X": 0.39,
+      "Y": 0.37
     },
     "Figure": {
       "X": 0.0508,
@@ -3994,9 +3994,9 @@
     "PortraitVariant": 1,
     "ArtSource": "Cyclops01",
     "Thumbnail": {
-      "Zoom": 2.4093,
-      "X": 0.5021,
-      "Y": 0.2075
+      "Zoom": 3,
+      "X": 0.4,
+      "Y": 0.44
     },
     "Figure": {
       "X": 0.0332,
@@ -4120,9 +4120,9 @@
     "PortraitVariant": 2,
     "ArtSource": "Cyclops02",
     "Thumbnail": {
-      "Zoom": 2.4762,
-      "X": 0.5302,
-      "Y": 0.2016
+      "Zoom": 3,
+      "X": 0.47,
+      "Y": 0.32
     },
     "Figure": {
       "X": 0.0391,
@@ -4245,9 +4245,9 @@
     "PortraitVariant": 3,
     "ArtSource": "Cyclops03",
     "Thumbnail": {
-      "Zoom": 2.4922,
-      "X": 0.5428,
-      "Y": 0.2007
+      "Zoom": 2.8,
+      "X": 0.45,
+      "Y": 0.36
     },
     "Figure": {
       "X": 0.0264,
@@ -4369,9 +4369,9 @@
     "PortraitVariant": 4,
     "ArtSource": "Cyclops04",
     "Thumbnail": {
-      "Zoom": 2.4503,
-      "X": 0.5222,
-      "Y": 0.2041
+      "Zoom": 3,
+      "X": 0.34,
+      "Y": 0.36
     },
     "Figure": {
       "X": 0.0488,
@@ -4493,9 +4493,9 @@
     "PortraitVariant": 5,
     "ArtSource": "Cyclops06",
     "Thumbnail": {
-      "Zoom": 2.4758,
-      "X": 0.5274,
-      "Y": 0.2017
+      "Zoom": 3,
+      "X": 0.43,
+      "Y": 0.38
     },
     "Figure": {
       "X": 0,
@@ -8630,9 +8630,9 @@
     "Portrait": "ice-mauler",
     "ArtSource": "IceMauler",
     "Thumbnail": {
-      "Zoom": 2.5425,
-      "X": 0.5697,
-      "Y": 0.2001
+      "Zoom": 3,
+      "X": 0.38,
+      "Y": 0.62
     },
     "Figure": {
       "X": 0,
@@ -9202,9 +9202,9 @@
     "Portrait": "lurker",
     "ArtSource": "Lurker00",
     "Thumbnail": {
-      "Zoom": 2.5217,
-      "X": 0.4336,
-      "Y": 0.2069
+      "Zoom": 3.2,
+      "X": 0.16,
+      "Y": 0.44
     },
     "Figure": {
       "X": 0.0322,
@@ -9329,9 +9329,9 @@
     "PortraitVariant": 1,
     "ArtSource": "Lurker01",
     "Thumbnail": {
-      "Zoom": 2.4896,
-      "X": 0.4144,
-      "Y": 0.2011
+      "Zoom": 3.2,
+      "X": 0.16,
+      "Y": 0.3
     },
     "Figure": {
       "X": 0.0254,
@@ -9456,9 +9456,9 @@
     "PortraitVariant": 2,
     "ArtSource": "Lurker02",
     "Thumbnail": {
-      "Zoom": 2.5683,
-      "X": 0.6331,
-      "Y": 0.202
+      "Zoom": 3.2,
+      "X": 0.84,
+      "Y": 0.32
     },
     "Figure": {
       "X": 0.0293,
@@ -10374,9 +10374,9 @@
     "Portrait": "mecha-armor",
     "ArtSource": "MechaArmor00",
     "Thumbnail": {
-      "Zoom": 2.5136,
-      "X": 0.6256,
-      "Y": 0.2078
+      "Zoom": 3.2,
+      "X": 0.37,
+      "Y": 0.15
     },
     "Figure": {
       "X": 0,
@@ -10501,9 +10501,9 @@
     "PortraitVariant": 1,
     "ArtSource": "MechaArmor01",
     "Thumbnail": {
-      "Zoom": 2.5073,
-      "X": 0.6336,
-      "Y": 0.2083
+      "Zoom": 3.2,
+      "X": 0.39,
+      "Y": 0.17
     },
     "Figure": {
       "X": 0,
@@ -10628,9 +10628,9 @@
     "PortraitVariant": 2,
     "ArtSource": "MechaArmor02",
     "Thumbnail": {
-      "Zoom": 2.5098,
-      "X": 0.6239,
-      "Y": 0.2083
+      "Zoom": 3.2,
+      "X": 0.38,
+      "Y": 0.16
     },
     "Figure": {
       "X": 0,
@@ -12848,9 +12848,9 @@
     "Portrait": "purple-prototype",
     "ArtSource": "PurplePrototype00",
     "Thumbnail": {
-      "Zoom": 2.4884,
-      "X": 0.5097,
-      "Y": 0.213
+      "Zoom": 3,
+      "X": 0.31,
+      "Y": 0.18
     },
     "Figure": {
       "X": 0.0732,
@@ -12972,9 +12972,9 @@
     "PortraitVariant": 1,
     "ArtSource": "PurplePrototype01",
     "Thumbnail": {
-      "Zoom": 2.3993,
-      "X": 0.5456,
-      "Y": 0.2092
+      "Zoom": 3,
+      "X": 0.3,
+      "Y": 0.18
     },
     "Figure": {
       "X": 0.1582,
@@ -13096,9 +13096,9 @@
     "PortraitVariant": 2,
     "ArtSource": "PurplePrototype02",
     "Thumbnail": {
-      "Zoom": 2.4123,
-      "X": 0.5399,
-      "Y": 0.2072
+      "Zoom": 3,
+      "X": 0.33,
+      "Y": 0.17
     },
     "Figure": {
       "X": 0.2354,
@@ -13220,9 +13220,9 @@
     "PortraitVariant": 3,
     "ArtSource": "PurplePrototype03",
     "Thumbnail": {
-      "Zoom": 2.4803,
-      "X": 0.4946,
-      "Y": 0.2018
+      "Zoom": 2.6,
+      "X": 0.42,
+      "Y": 0.27
     },
     "Figure": {
       "X": 0.0303,
@@ -13344,9 +13344,9 @@
     "PortraitVariant": 4,
     "ArtSource": "PurplePrototype04",
     "Thumbnail": {
-      "Zoom": 2.3801,
-      "X": 0.5974,
-      "Y": 0.2101
+      "Zoom": 3,
+      "X": 0.41,
+      "Y": 0.17
     },
     "Figure": {
       "X": 0.0576,
@@ -21740,9 +21740,9 @@
     "Portrait": "werewolf",
     "ArtSource": "Werewolf00",
     "Thumbnail": {
-      "Zoom": 2.3775,
-      "X": 0.4979,
-      "Y": 0.2102
+      "Zoom": 3.2,
+      "X": 0.18,
+      "Y": 0.23
     },
     "Figure": {
       "X": 0,
@@ -22311,9 +22311,9 @@
     "Portrait": "wolf",
     "ArtSource": "Wolf00",
     "Thumbnail": {
-      "Zoom": 1.007,
-      "X": 0.553,
-      "Y": 0.4949
+      "Zoom": 3.2,
+      "X": 0.26,
+      "Y": 0.16
     },
     "Figure": {
       "X": 0.1572,
@@ -22440,9 +22440,9 @@
     "PortraitVariant": 1,
     "ArtSource": "Wolf01",
     "Thumbnail": {
-      "Zoom": 1.07,
-      "X": 0.4994,
-      "Y": 0.4999
+      "Zoom": 3,
+      "X": 0.74,
+      "Y": 0.37
     },
     "Figure": {
       "X": 0.0869,
@@ -22569,9 +22569,9 @@
     "PortraitVariant": 2,
     "ArtSource": "Wolf02",
     "Thumbnail": {
-      "Zoom": 1.0169,
-      "X": 0.5194,
-      "Y": 0.4943
+      "Zoom": 3,
+      "X": 0.79,
+      "Y": 0.31
     },
     "Figure": {
       "X": 0.0918,
@@ -22698,9 +22698,9 @@
     "PortraitVariant": 3,
     "ArtSource": "Wolf03",
     "Thumbnail": {
-      "Zoom": 1.0926,
-      "X": 0.4975,
-      "Y": 0.4811
+      "Zoom": 3,
+      "X": 0.71,
+      "Y": 0.38
     },
     "Figure": {
       "X": 0.0664,
@@ -22979,9 +22979,9 @@
     "Portrait": "yeti",
     "ArtSource": "Yeti",
     "Thumbnail": {
-      "Zoom": 2.4082,
-      "X": 0.542,
-      "Y": 0.2081
+      "Zoom": 3.2,
+      "X": 0.33,
+      "Y": 0.27
     },
     "Figure": {
       "X": 0,
@@ -23598,6 +23598,11 @@
       "Zoom": 3.8854,
       "X": 0.5027,
       "Y": 0.3152
+    },
+    "MaleThumbnail": {
+      "Zoom": 3.2,
+      "X": 0.44,
+      "Y": 0.16
     },
     "MaleFigure": {
       "X": 0.1768,
@@ -25209,9 +25214,9 @@
     "Portrait": "infernalist-zealot",
     "ArtSource": "infernalist01",
     "Thumbnail": {
-      "Zoom": 2.9129,
-      "X": 0.2148,
-      "Y": 0.2406
+      "Zoom": 3.2,
+      "X": 0.25,
+      "Y": 0.22
     },
     "Figure": {
       "X": 0.0898,
@@ -25338,9 +25343,9 @@
     "Portrait": "infernalist-pyromancer",
     "ArtSource": "infernalist02",
     "Thumbnail": {
-      "Zoom": 2.6179,
-      "X": 0.1688,
-      "Y": 0.2504
+      "Zoom": 3.2,
+      "X": 0.25,
+      "Y": 0.23
     },
     "Figure": {
       "X": 0,
@@ -25466,9 +25471,9 @@
     "Portrait": "infernalist-bloodbinder",
     "ArtSource": "infernalist03",
     "Thumbnail": {
-      "Zoom": 2.8144,
-      "X": 0.2108,
-      "Y": 0.235
+      "Zoom": 3.2,
+      "X": 0.27,
+      "Y": 0.22
     },
     "Figure": {
       "X": 0.0713,
@@ -25594,9 +25599,9 @@
     "Portrait": "infernalist-executioner",
     "ArtSource": "infernalist04",
     "Thumbnail": {
-      "Zoom": 2.6947,
-      "X": 0.1682,
-      "Y": 0.2335
+      "Zoom": 3.2,
+      "X": 0.23,
+      "Y": 0.25
     },
     "Figure": {
       "X": 0.0234,
@@ -27528,9 +27533,9 @@
     "Portrait": "hellspawn-ravager",
     "ArtSource": "hellspawn01",
     "Thumbnail": {
-      "Zoom": 2.7504,
-      "X": 0.3246,
-      "Y": 0.1567
+      "Zoom": 3.6,
+      "X": 0.33,
+      "Y": 0.14
     },
     "Figure": {
       "X": 0.0391,
@@ -27656,9 +27661,9 @@
     "Portrait": "hellspawn-drinker",
     "ArtSource": "hellspawn02",
     "Thumbnail": {
-      "Zoom": 2.6785,
-      "X": 0.3205,
-      "Y": 0.1364
+      "Zoom": 3.4,
+      "X": 0.3,
+      "Y": 0.15
     },
     "Figure": {
       "X": 0.0273,
@@ -27786,9 +27791,9 @@
     "Portrait": "hellspawn-emberheart",
     "ArtSource": "hellspawn03",
     "Thumbnail": {
-      "Zoom": 2.6947,
-      "X": 0.3052,
-      "Y": 0.1555
+      "Zoom": 3.4,
+      "X": 0.33,
+      "Y": 0.16
     },
     "Figure": {
       "X": 0.0254,
@@ -27914,9 +27919,9 @@
     "Portrait": "hellspawn-scaleback",
     "ArtSource": "hellspawn04",
     "Thumbnail": {
-      "Zoom": 2.7476,
-      "X": 0.3021,
-      "Y": 0.1603
+      "Zoom": 3.4,
+      "X": 0.34,
+      "Y": 0.16
     },
     "Figure": {
       "X": 0.0361,
