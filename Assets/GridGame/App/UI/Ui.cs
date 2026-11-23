@@ -471,30 +471,35 @@ namespace GridGame.App
             f.EnableInClassList("gauge-fill--low", frac <= 0.25f);
         }
 
-        /// <summary>A framed card thumbnail: the class's real portrait seen through its Thumbnail window (<see cref="PortraitThumb"/>).
+        /// <summary>A framed card thumbnail: the class's baked thumbnail (<see cref="PortraitThumb"/>). Above
+        /// <see cref="ThumbMaxSize"/> it draws the full portrait through its Thumbnail window instead (the summon reveal).
         /// Tint the art (e.g. the bestiary's unseen silhouette) on <c>t.Q(ThumbArt)</c>, not on the frame.</summary>
         public static VisualElement Thumb(string classId, VisualElement parent, float size = Kit.Thumb)
         {
             var t = El("thumb", parent);
             t.style.width = size;
             t.style.height = size;
-            PortraitThumb(t, classId);
+            PortraitThumb(t, classId, size <= ThumbMaxSize);
             return t;
         }
+
+        /// <summary>GG-T720: the largest draw (design px) that uses the 256 px baked thumbnail; bigger ones use the portrait.</summary>
+        public const float ThumbMaxSize = 200f;
 
         /// <summary>Name of the portrait child <see cref="PortraitThumb"/> puts in a host (tint/opacity it, not the host).</summary>
         public const string ThumbArt = "thumb-art";
 
         /// <summary>
-        /// Fills a square host with the class's real portrait, zoomed and offset by its <see cref="Thumbnail"/>
-        /// (BIBLE §12.1.1, GG-T221): no thumbnail images exist, only the portrait already in memory. The host
-        /// clips (overflow hidden); inside it an inset-0 clip box holds the portrait child, sized and placed in
-        /// percent of that box (width = Zoom×100%, height = Zoom×aspect×100%, left = 50% − X·width,
-        /// top = 50% − Y·height), so the framing is right at any size with no layout pass. A class with no
-        /// Thumbnail (or an id that isn't a class) shows the whole portrait contained. Returns the portrait
-        /// child (named <see cref="ThumbArt"/>), which callers tint.
+        /// Fills a square host with the actor's thumbnail (BIBLE §12.1.1, GG-T713/GG-T720): its baked 256 px
+        /// thumbnail (<see cref="Art.Thumb(string)"/>, the class's Thumbnail crop already in it) drawn whole. With no
+        /// baked thumb, or <paramref name="useThumb"/> false (a draw too large for 256 px), it falls back to the full
+        /// portrait zoomed and offset by its <see cref="Thumbnail"/> (GG-T221). The host clips (overflow hidden);
+        /// inside it an inset-0 clip box holds the art child, sized and placed in percent of that box (width =
+        /// Zoom×100%, height = Zoom×aspect×100%, left = 50% − X·width, top = 50% − Y·height), so the framing is
+        /// right at any size with no layout pass. A portrait with no Thumbnail (or an id that isn't a class) shows
+        /// whole, contained. Returns the art child (named <see cref="ThumbArt"/>), which callers tint.
         /// </summary>
-        public static VisualElement PortraitThumb(VisualElement host, string classId)
+        public static VisualElement PortraitThumb(VisualElement host, string classId, bool useThumb = true)
         {
             host.style.overflow = Overflow.Hidden;
             var clip = host.Q("thumb-clip");
@@ -512,6 +517,17 @@ namespace GridGame.App
                 art = new VisualElement { name = ThumbArt, pickingMode = PickingMode.Ignore };
                 art.style.position = Position.Absolute;
                 clip.Add(art);
+            }
+            var thumb = useThumb ? Art.Thumb(classId) : null;
+            if (thumb != null)
+            {
+                // The crop is baked in (tools/make_thumbs.py): the whole square thumb is exactly the old window.
+                // Hosts are reused, so every placement is reset here.
+                art.style.backgroundImage = new StyleBackground(thumb);
+                art.style.left = art.style.top = Space.S0;
+                art.style.width = art.style.height = Length.Percent(100);
+                art.style.backgroundSize = new BackgroundSize(Length.Percent(100), Length.Percent(100));
+                return art;
             }
             var tex = string.IsNullOrEmpty(classId) ? null : Art.Portrait(classId);
             art.style.backgroundImage = new StyleBackground(tex);

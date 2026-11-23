@@ -52,8 +52,8 @@ namespace GridGame.App
             return Color.HSVToRGB(hue, 0.72f, 1f);
         }
 
-        /// <summary>A unit's one piece of art (full portrait). Every thumbnail is this texture framed by the class's
-        /// Thumbnail (Ui.PortraitThumb, BIBLE §12.1.1); there are no separate thumb images.
+        /// <summary>A unit's full portrait (1024 canvas). Small draws use its baked thumbnail instead (<see cref="Thumb(string)"/>,
+        /// Ui.PortraitThumb, BIBLE §12.1.1, GG-T713); the portrait is for whole-figure and large views.
         /// A class with no portrait yet shows the mannequin placeholder art (owner 2026-11-07, GG-T351).
         /// <para>GG-T532: the one resolver for hero variants. <paramref name="classId"/> reads as the version the player picked
         /// (<see cref="HeroLooks.Of"/>: an owned hero's <c>Variant</c>, or the look a wanderer on the board was given), so
@@ -71,6 +71,30 @@ namespace GridGame.App
             if (def == null && IsOwnPortrait(classId)) return PortraitByFile(classId, null, false); // GG-T570: an NPC's own art
             bool male = v == HeroVariant.Male && HasMaleArt(classId);
             return PortraitByFile(def?.PortraitFile(male, variant), def, male);
+        }
+
+        /// <summary>The Resources folder of every baked thumbnail (tools/make_thumbs.py, GG-T719): one 256 px PNG per
+        /// portrait, same file name, the class's head framing already cropped in, mipmapped.</summary>
+        public const string ThumbFolder = "Thumbs/";
+
+        private static readonly Dictionary<string, Texture2D> thumbs = new Dictionary<string, Texture2D>(System.StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>GG-T720: the baked thumbnail of the art <see cref="Portrait(string)"/> would draw for
+        /// <paramref name="classId"/> (the picked variant's file, or an NPC's own Portraits/ file like <c>aetherist-00</c>),
+        /// or null when that file has no thumbnail; the caller then falls back to the portrait through its Thumbnail
+        /// framing (which also covers the mannequin). Every small actor draw goes through this (BIBLE §12.1.1).</summary>
+        public static Texture2D Thumb(string classId) => Thumb(classId, HeroLooks.Of(classId));
+
+        /// <summary>The thumbnail of <paramref name="classId"/> as <paramref name="v"/>; null when there is none.</summary>
+        public static Texture2D Thumb(string classId, HeroVariant v)
+        {
+            if (string.IsNullOrEmpty(classId) || classId.StartsWith("$") || GameApp.I?.Content == null) return null;
+            var def = Class(classId);
+            // A class resolves its file as Portrait does; an id that is no class may name a Portraits/ file itself (GG-T570).
+            string file = def != null ? def.PortraitFile(v == HeroVariant.Male && HasMaleArt(classId)) : classId;
+            if (string.IsNullOrEmpty(file)) return null;
+            if (thumbs.TryGetValue(file, out var t)) return t;
+            return thumbs[file] = Resources.Load<Texture2D>(ThumbFolder + file);
         }
 
         /// <summary>Whether <paramref name="classId"/> is a class whose portrait file exists (dialogue, the death dissolve),
@@ -147,7 +171,7 @@ namespace GridGame.App
 
         // ── The figure on a portrait (GG-T352) ─────────────────────────────────────
         // Owner 2026-11-07: "all characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the
-        // assets are." Thumbnails frame that whole canvas (Ui.PortraitThumb). Whole-figure views draw only the figure's
+        // assets are." Thumbnail framings window that whole canvas (baked into Thumbs/ by tools/make_thumbs.py). Whole-figure views draw only the figure's
         // box on it (ClassDef.Figure, the alpha bounds GridGame.Studio/tools/import_art.py writes), so a figure reads at the same size it
         // always did instead of shrinking into its canvas margins.
 

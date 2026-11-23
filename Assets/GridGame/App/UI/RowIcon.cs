@@ -22,7 +22,7 @@ namespace GridGame.App
         Ability,
         /// <summary>A buff, debuff or condition: <c>StatusIcons/&lt;id&gt;-00</c>, else the aura emblem.</summary>
         Status,
-        /// <summary>A hero: its portrait through its Thumbnail framing, else the bust emblem.</summary>
+        /// <summary>A hero: its baked thumbnail (§12.1.1), else the bust emblem.</summary>
         Hero,
         /// <summary>A Camp NPC or other speaker: its portrait, else the bust emblem.</summary>
         Npc,
@@ -145,9 +145,8 @@ namespace GridGame.App
 
         private static bool IsActor(RowKind k) => k == RowKind.Hero || k == RowKind.Npc || k == RowKind.Keeper;
 
-        /// <summary>An actor's face in an icon host. GG-T713 is building the shared actor thumbnail helper; until it lands
-        /// this is the one place that draws it (the portrait through its §12.1.1 Thumbnail framing), so swapping it is one
-        /// line here.</summary>
+        /// <summary>An actor's face in an icon host: its baked thumbnail through the shared helper (§12.1.1, GG-T720),
+        /// falling back to the portrait through its Thumbnail framing.</summary>
         private static void ActorThumb(VisualElement host, string actorId) => Ui.PortraitThumb(host, actorId);
 
         private static VisualElement Fallback(RowKind kind)

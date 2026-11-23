@@ -580,20 +580,18 @@ namespace GridGame.App
                 var ic = Ui.El("menu-icon");
                 if (npc)
                 {
-                    // An NPC is a person, not a party hero: their own whole portrait (the topic's first speaker with art),
-                    // contain-fit — the same picture that stands in their conversation (GG-T225).
+                    // An NPC: the thumbnail of the topic's first speaker with art (GG-T225), like every other small actor
+                    // image (GG-T720, BIBLE §12.1.1); the whole figure stands only in the conversation itself.
                     string art = topic?.Speakers.Select(sp => sp.Portrait ?? sp.Class).FirstOrDefault(DialogueScreen.HasPortrait);
                     if (art != null)
                     {
-                        ic.style.width = Size.AvatarW; ic.style.height = Size.Avatar;
-                        ic.style.backgroundImage = new StyleBackground(Art.PortraitFigure(art));
-                        ic.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Bottom);
                         row.Insert(1, ic); // after the cursor, where MenuRow puts an icon
+                        Ui.PortraitThumb(ic, art);
                     }
                 }
                 else if (DialogueScreen.HasPortrait(who))
                 {
-                    // A hero keeps the face framing every other hero list uses (Thumbnail, GG-T221).
+                    // A hero: its baked thumbnail, like every other hero list (§12.1.1, GG-T720).
                     row.Insert(1, ic);
                     Ui.PortraitThumb(ic, who);
                 }

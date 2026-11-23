@@ -281,9 +281,10 @@ namespace GridGame.Core.Content
     }
 
     /// <summary>
-    /// GG-T220: a unit's thumbnail is a window onto its one real portrait, never a separate image (owner 2026-11-03:
-    /// "it always uses the real existing portrait and simply zooms in and offsets … no duplicating assets").
-    /// (<see cref="X"/>, <see cref="Y"/>) is the portrait point, as fractions of its width and height from the top-left,
+    /// A unit's thumbnail framing: the head window onto its real portrait. Since GG-T713 (owner 2026-11-23, superseding
+    /// GG-T220's "no separate thumbnail images") tools/make_thumbs.py bakes this window into a 256 px image per portrait
+    /// (Resources/Thumbs/), which every small actor draw uses; the live window is only the fallback. Rerun
+    /// make_thumbs.py (then --check) after changing a framing. (<see cref="X"/>, <see cref="Y"/>) is the portrait point, as fractions of its width and height from the top-left,
     /// that sits at the thumbnail's centre; <see cref="Zoom"/> is portrait width ÷ thumbnail side (1 = the whole width
     /// fills the square). Framed in GridGame.Studio's Thumbnails tab.
     /// </summary>
