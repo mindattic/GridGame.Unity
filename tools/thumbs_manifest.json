@@ -1,0 +1,2342 @@
+{
+ "acolyte-female-00": {
+  "framing": {
+   "X": 0.5193,
+   "Y": 0.2065,
+   "Zoom": 2.4223
+  },
+  "hash": "6422b103dbf7463f317c",
+  "owner": "sister"
+ },
+ "acolyte-male-00": {
+  "framing": {
+   "X": 0.5193,
+   "Y": 0.2065,
+   "Zoom": 2.4223
+  },
+  "hash": "2b6966b53cc130faa6b4",
+  "owner": "sister (male)"
+ },
+ "aetherist-00": {
+  "framing": {
+   "X": 0.4697,
+   "Y": 0.2163,
+   "Zoom": 2.5213
+  },
+  "hash": "6adcd251ce2ca4d25f0a",
+  "owner": "default"
+ },
+ "aetherist-male-00": {
+  "framing": {
+   "X": 0.4995,
+   "Y": 0.2247,
+   "Zoom": 2.6386
+  },
+  "hash": "262161c49fa2892d5fc2",
+  "owner": "default"
+ },
+ "alchemist-female-00": {
+  "framing": {
+   "X": 0.5073,
+   "Y": 0.1861,
+   "Zoom": 2.4
+  },
+  "hash": "49859f14f1dc70305d28",
+  "owner": "alchemist"
+ },
+ "assassin-female-00": {
+  "framing": {
+   "X": 0.5107,
+   "Y": 0.1802,
+   "Zoom": 2.6234
+  },
+  "hash": "2a20f5188c4f6a26c424",
+  "owner": "assassain"
+ },
+ "assassin-male-00": {
+  "framing": {
+   "X": 0.5107,
+   "Y": 0.1802,
+   "Zoom": 2.6234
+  },
+  "hash": "509c2e3f013ffabf7975",
+  "owner": "assassain (male)"
+ },
+ "barbarian-female-00": {
+  "framing": {
+   "X": 0.4589,
+   "Y": 0.213,
+   "Zoom": 2.4366
+  },
+  "hash": "ac9c4046fab25dbc36d2",
+  "owner": "barbarian"
+ },
+ "barbarian-male-00": {
+  "framing": {
+   "X": 0.4589,
+   "Y": 0.213,
+   "Zoom": 2.4366
+  },
+  "hash": "3a8a23a112efa7a9d3b1",
+  "owner": "barbarian (male)"
+ },
+ "basher-female-00": {
+  "framing": {
+   "X": 0.5352,
+   "Y": 0.2082,
+   "Zoom": 2.4331
+  },
+  "hash": "23790119b9d2a70f7cf0",
+  "owner": "basher"
+ },
+ "basher-male-00": {
+  "framing": {
+   "X": 0.5352,
+   "Y": 0.2082,
+   "Zoom": 2.4331
+  },
+  "hash": "c3f157f7e3a4a0241956",
+  "owner": "basher (male)"
+ },
+ "bat-00": {
+  "framing": {
+   "X": 0.4922,
+   "Y": 0.4328,
+   "Zoom": 0.8905
+  },
+  "hash": "8cfcce27cbaf5f58383a",
+  "owner": "bat00"
+ },
+ "bat-01": {
+  "framing": {
+   "X": 0.5278,
+   "Y": 0.3413,
+   "Zoom": 0.8564
+  },
+  "hash": "81402aed94829c0acb87",
+  "owner": "bat01"
+ },
+ "bat-02": {
+  "framing": {
+   "X": 0.4841,
+   "Y": 0.3953,
+   "Zoom": 0.8586
+  },
+  "hash": "40950711aeb1ce02982b",
+  "owner": "bat02"
+ },
+ "black-ninja-female-00": {
+  "framing": {
+   "X": 0.5318,
+   "Y": 0.1814,
+   "Zoom": 2.4262
+  },
+  "hash": "fc070025df671e2bfd5a",
+  "owner": "blackninja"
+ },
+ "blue-lion-female-00": {
+  "framing": {
+   "X": 0.6549,
+   "Y": 0.3709,
+   "Zoom": 1.3186
+  },
+  "hash": "4c488a344fc30b00b741",
+  "owner": "bluelion"
+ },
+ "blue-lion-male-00": {
+  "framing": {
+   "X": 0.6549,
+   "Y": 0.3709,
+   "Zoom": 1.3186
+  },
+  "hash": "e7940b5b8bdc50038b43",
+  "owner": "bluelion (male)"
+ },
+ "blue-ninja-female-00": {
+  "framing": {
+   "X": 0.5106,
+   "Y": 0.1466,
+   "Zoom": 3.1709
+  },
+  "hash": "c77ed14dab3da88ff399",
+  "owner": "blueninja"
+ },
+ "blue-ninja-male-00": {
+  "framing": {
+   "X": 0.5106,
+   "Y": 0.1466,
+   "Zoom": 3.1709
+  },
+  "hash": "a332976bb8710d9df40d",
+  "owner": "blueninja (male)"
+ },
+ "bone-pile-00": {
+  "framing": {
+   "X": 0.5004,
+   "Y": 0.6459,
+   "Zoom": 2.7024
+  },
+  "hash": "6ba8ba8f924d6b7d6c06",
+  "owner": "bonepile"
+ },
+ "bruiser-female-00": {
+  "framing": {
+   "X": 0.5836,
+   "Y": 0.2223,
+   "Zoom": 2.5976
+  },
+  "hash": "66c16455ad138605cec7",
+  "owner": "bruiser"
+ },
+ "bruiser-male-00": {
+  "framing": {
+   "X": 0.5836,
+   "Y": 0.2223,
+   "Zoom": 2.5976
+  },
+  "hash": "9b8f39bb0fcbe30c0107",
+  "owner": "bruiser (male)"
+ },
+ "bulwark-rifleman-00": {
+  "framing": {
+   "X": 0.474,
+   "Y": 0.1328,
+   "Zoom": 2.5865
+  },
+  "hash": "44ee9e06da3d2524a93a",
+  "owner": "heavytrooper01"
+ },
+ "bulwark-shieldbearer-00": {
+  "framing": {
+   "X": 0.5193,
+   "Y": 0.1386,
+   "Zoom": 2.6195
+  },
+  "hash": "8081c178ab2fca733330",
+  "owner": "heavytrooper02"
+ },
+ "bulwark-siege-gunner-00": {
+  "framing": {
+   "X": 0.477,
+   "Y": 0.1491,
+   "Zoom": 2.6349
+  },
+  "hash": "61d5c3fc6da34f8cf8fd",
+  "owner": "heavytrooper04"
+ },
+ "bulwark-siphoner-00": {
+  "framing": {
+   "X": 0.5253,
+   "Y": 0.1361,
+   "Zoom": 2.7142
+  },
+  "hash": "b185e011f626f3317268",
+  "owner": "heavytrooper03"
+ },
+ "captain-00": {
+  "framing": {
+   "X": 0.4937,
+   "Y": 0.2023,
+   "Zoom": 2.3879
+  },
+  "hash": "37846930ac4160702479",
+  "owner": "captain"
+ },
+ "ceramic-knight-00": {
+  "framing": {
+   "X": 0.5169,
+   "Y": 0.1956,
+   "Zoom": 2.4901
+  },
+  "hash": "501a6c7b9bd9530f4854",
+  "owner": "ceramicknight00"
+ },
+ "ceramic-knight-01": {
+  "framing": {
+   "X": 0.5152,
+   "Y": 0.1971,
+   "Zoom": 2.5487
+  },
+  "hash": "bee14bb3e7bb72d70e4b",
+  "owner": "ceramicknight01"
+ },
+ "ceramic-knight-02": {
+  "framing": {
+   "X": 0.4873,
+   "Y": 0.204,
+   "Zoom": 2.5021
+  },
+  "hash": "0f1756147a2573aa0fb4",
+  "owner": "ceramicknight02"
+ },
+ "ceramic-knight-03": {
+  "framing": {
+   "X": 0.5137,
+   "Y": 0.1987,
+   "Zoom": 2.5217
+  },
+  "hash": "e2733c8b32f69058006b",
+  "owner": "ceramicknight03"
+ },
+ "ceramic-knight-04": {
+  "framing": {
+   "X": 0.5044,
+   "Y": 0.1994,
+   "Zoom": 2.5002
+  },
+  "hash": "9c84abff6ce2855a53d2",
+  "owner": "ceramicknight04"
+ },
+ "ceramic-knight-05": {
+  "framing": {
+   "X": 0.4939,
+   "Y": 0.2017,
+   "Zoom": 2.4759
+  },
+  "hash": "9a1624a7bd8295509325",
+  "owner": "ceramicknight05"
+ },
+ "ceramic-knight-06": {
+  "framing": {
+   "X": 0.5068,
+   "Y": 0.2001,
+   "Zoom": 2.5144
+  },
+  "hash": "188d0c64c809f2c6a3a0",
+  "owner": "ceramicknight06"
+ },
+ "choir-cantor-00": {
+  "framing": {
+   "X": 0.4995,
+   "Y": 0.1236,
+   "Zoom": 2.8007
+  },
+  "hash": "6e7344e4717cf8d36cbc",
+  "owner": "cultist01"
+ },
+ "choir-confessor-00": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.1251,
+   "Zoom": 2.8583
+  },
+  "hash": "cd09c1b4b2fa51cfe667",
+  "owner": "cultist03"
+ },
+ "choir-psalmist-00": {
+  "framing": {
+   "X": 0.483,
+   "Y": 0.1124,
+   "Zoom": 2.7839
+  },
+  "hash": "7ef67a2f948dfa497b63",
+  "owner": "cultist02"
+ },
+ "chroma-ninja-female-00": {
+  "framing": {
+   "X": 0.5083,
+   "Y": 0.194,
+   "Zoom": 2.5687
+  },
+  "hash": "ed34a0fb83aa6c915098",
+  "owner": "chromaninja"
+ },
+ "chronomancer-00": {
+  "framing": {
+   "X": 0.4461,
+   "Y": 0.292,
+   "Zoom": 2.6474
+  },
+  "hash": "3cbc3311e7c5c2fdb319",
+  "owner": "chronomancer"
+ },
+ "cleric-female-00": {
+  "framing": {
+   "X": 0.4892,
+   "Y": 0.2017,
+   "Zoom": 2.4684
+  },
+  "hash": "51740de25817baecd384",
+  "owner": "cleric"
+ },
+ "corpse-00": {
+  "framing": {
+   "X": 0.5004,
+   "Y": 0.6459,
+   "Zoom": 2.7024
+  },
+  "hash": "9fe93311122f305811f3",
+  "owner": "corpse"
+ },
+ "courier-female-00": {
+  "framing": {
+   "X": 0.4955,
+   "Y": 0.1651,
+   "Zoom": 2.8998
+  },
+  "hash": "719837ebb2c69c8f8c7b",
+  "owner": "courier"
+ },
+ "courier-male-00": {
+  "framing": {
+   "X": 0.4955,
+   "Y": 0.1651,
+   "Zoom": 2.8998
+  },
+  "hash": "4a246205b60111879068",
+  "owner": "courier (male)"
+ },
+ "cyber-zombie-00": {
+  "framing": {
+   "X": 0.4643,
+   "Y": 0.4961,
+   "Zoom": 0.9897
+  },
+  "hash": "83a69cc5cd5090ea5acd",
+  "owner": "cyberzombie00"
+ },
+ "cyber-zombie-01": {
+  "framing": {
+   "X": 0.5106,
+   "Y": 0.5055,
+   "Zoom": 0.9999
+  },
+  "hash": "837f59152d975f437b00",
+  "owner": "cyberzombie01"
+ },
+ "cyber-zombie-02": {
+  "framing": {
+   "X": 0.5122,
+   "Y": 0.4934,
+   "Zoom": 1.0331
+  },
+  "hash": "edd2eaf67b1b826e732a",
+  "owner": "cyberzombie02"
+ },
+ "cyber-zombie-03": {
+  "framing": {
+   "X": 0.4855,
+   "Y": 0.5049,
+   "Zoom": 1.0077
+  },
+  "hash": "b372cb0f5b4c364e6228",
+  "owner": "cyberzombie03"
+ },
+ "cyber-zombie-04": {
+  "framing": {
+   "X": 0.4584,
+   "Y": 0.5048,
+   "Zoom": 1.0176
+  },
+  "hash": "2f37d4abf775cf566407",
+  "owner": "cyberzombie04"
+ },
+ "cyclops-00": {
+  "framing": {
+   "X": 0.5328,
+   "Y": 0.2021,
+   "Zoom": 2.4781
+  },
+  "hash": "b5694bf5570ba191d1be",
+  "owner": "cyclops00"
+ },
+ "cyclops-01": {
+  "framing": {
+   "X": 0.5021,
+   "Y": 0.2075,
+   "Zoom": 2.4093
+  },
+  "hash": "20b33f2e1a2faa77667b",
+  "owner": "cyclops01"
+ },
+ "cyclops-02": {
+  "framing": {
+   "X": 0.5302,
+   "Y": 0.2016,
+   "Zoom": 2.4762
+  },
+  "hash": "9ce8694199608d057789",
+  "owner": "cyclops02"
+ },
+ "cyclops-03": {
+  "framing": {
+   "X": 0.5428,
+   "Y": 0.2007,
+   "Zoom": 2.4922
+  },
+  "hash": "6363706e49da90c8cb3c",
+  "owner": "cyclops03"
+ },
+ "cyclops-04": {
+  "framing": {
+   "X": 0.5222,
+   "Y": 0.2041,
+   "Zoom": 2.4503
+  },
+  "hash": "d62591402930d0673ec7",
+  "owner": "cyclops04"
+ },
+ "cyclops-05": {
+  "framing": {
+   "X": 0.5274,
+   "Y": 0.2017,
+   "Zoom": 2.4758
+  },
+  "hash": "de1217cc83eabfb5bdcb",
+  "owner": "cyclops06"
+ },
+ "dark-templar-female-00": {
+  "framing": {
+   "X": 0.5784,
+   "Y": 0.2062,
+   "Zoom": 2.4296
+  },
+  "hash": "69d77d9d8aa84d132eaa",
+  "owner": "darktemplar"
+ },
+ "defender-female-00": {
+  "framing": {
+   "X": 0.363,
+   "Y": 0.1848,
+   "Zoom": 2.3719
+  },
+  "hash": "50709953d03fe57a3677",
+  "owner": "defender"
+ },
+ "defender-male-00": {
+  "framing": {
+   "X": 0.363,
+   "Y": 0.1848,
+   "Zoom": 2.3719
+  },
+  "hash": "c563af50fa0158114000",
+  "owner": "defender (male)"
+ },
+ "demon-lord-00": {
+  "framing": {
+   "X": 0.5436,
+   "Y": 0.2073,
+   "Zoom": 2.4113
+  },
+  "hash": "5869fdb80f1399011375",
+  "owner": "demonlord"
+ },
+ "dervish-female-00": {
+  "framing": {
+   "X": 0.5319,
+   "Y": 0.2103,
+   "Zoom": 2.3764
+  },
+  "hash": "9b9a090c7bd0a824da82",
+  "owner": "dervish"
+ },
+ "doctor-female-00": {
+  "framing": {
+   "X": 0.493,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "6f3a939932297dbc9cd8",
+  "owner": "doctor"
+ },
+ "doctor-male-00": {
+  "framing": {
+   "X": 0.493,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "5ae933b3d75e14601010",
+  "owner": "doctor (male)"
+ },
+ "drifter-female-00": {
+  "framing": {
+   "X": 0.5441,
+   "Y": 0.2084,
+   "Zoom": 2.3983
+  },
+  "hash": "29c2b1223c8da0fd96d3",
+  "owner": "drifter"
+ },
+ "duelist-female-00": {
+  "framing": {
+   "X": 0.5466,
+   "Y": 0.2023,
+   "Zoom": 2.4675
+  },
+  "hash": "1bb94fb8c7ac7a886115",
+  "owner": "duelist"
+ },
+ "duelist-male-00": {
+  "framing": {
+   "X": 0.5466,
+   "Y": 0.2023,
+   "Zoom": 2.4675
+  },
+  "hash": "f846acac8baf57ab0755",
+  "owner": "duelist (male)"
+ },
+ "engineer-female-00": {
+  "framing": {
+   "X": 0.531,
+   "Y": 0.2092,
+   "Zoom": 2.3905
+  },
+  "hash": "577da6cec5a05ab1e562",
+  "owner": "engineer"
+ },
+ "engineer-male-00": {
+  "framing": {
+   "X": 0.531,
+   "Y": 0.2092,
+   "Zoom": 2.3905
+  },
+  "hash": "840c77bb8d7e8d9565d1",
+  "owner": "engineer (male)"
+ },
+ "fencer-female-00": {
+  "framing": {
+   "X": 0.4933,
+   "Y": 0.206,
+   "Zoom": 2.4288
+  },
+  "hash": "38929c763fc2486492b1",
+  "owner": "fencer"
+ },
+ "fighter-female-00": {
+  "framing": {
+   "X": 0.4664,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "2f0ad76059623074e5f0",
+  "owner": "fighter"
+ },
+ "flying-monkey-00": {
+  "framing": {
+   "X": 0.4871,
+   "Y": 0.4896,
+   "Zoom": 0.9864
+  },
+  "hash": "d2dd38467676ea95a38f",
+  "owner": "flyingmonkey"
+ },
+ "frog-00": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.5,
+   "Zoom": 0.9615
+  },
+  "hash": "5b2992568af9be4d088f",
+  "owner": "frog00"
+ },
+ "frog-01": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.5,
+   "Zoom": 0.9615
+  },
+  "hash": "2a06f57f0694f76e3fbf",
+  "owner": "frog01"
+ },
+ "frog-02": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.5,
+   "Zoom": 0.9615
+  },
+  "hash": "17cf6395c2219ddb79ae",
+  "owner": "frog02"
+ },
+ "frog-03": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.5,
+   "Zoom": 0.9615
+  },
+  "hash": "975da213651cfa84b186",
+  "owner": "frog03"
+ },
+ "ganger-00": {
+  "framing": {
+   "X": 0.5559,
+   "Y": 0.2051,
+   "Zoom": 2.4365
+  },
+  "hash": "03f71f64b2f77758a738",
+  "owner": "ganger00"
+ },
+ "ganger-01": {
+  "framing": {
+   "X": 0.5214,
+   "Y": 0.2061,
+   "Zoom": 2.4342
+  },
+  "hash": "d6107fdbdabdee046034",
+  "owner": "ganger01"
+ },
+ "ganger-02": {
+  "framing": {
+   "X": 0.4689,
+   "Y": 0.2026,
+   "Zoom": 2.4745
+  },
+  "hash": "cd12979044a947af4312",
+  "owner": "ganger02"
+ },
+ "ganger-03": {
+  "framing": {
+   "X": 0.5595,
+   "Y": 0.2058,
+   "Zoom": 2.4382
+  },
+  "hash": "8fd2b005bc61d6a65e2d",
+  "owner": "ganger03"
+ },
+ "ganger-04": {
+  "framing": {
+   "X": 0.5544,
+   "Y": 0.205,
+   "Zoom": 2.4375
+  },
+  "hash": "9fadac6a5e16204004d2",
+  "owner": "ganger04"
+ },
+ "ganger-05": {
+  "framing": {
+   "X": 0.5192,
+   "Y": 0.2068,
+   "Zoom": 2.4167
+  },
+  "hash": "74d11fdd88cbe553aef2",
+  "owner": "ganger05"
+ },
+ "ganger-06": {
+  "framing": {
+   "X": 0.5201,
+   "Y": 0.2053,
+   "Zoom": 2.4271
+  },
+  "hash": "68ea4058f9a60064cfa4",
+  "owner": "ganger06"
+ },
+ "ghost-00": {
+  "framing": {
+   "X": 0.4705,
+   "Y": 0.4939,
+   "Zoom": 1.0459
+  },
+  "hash": "c7674cd7a078746db5fa",
+  "owner": "ghost"
+ },
+ "goblin-thug-00": {
+  "framing": {
+   "X": 0.4978,
+   "Y": 0.2102,
+   "Zoom": 2.374
+  },
+  "hash": "7df688739ed8e535309f",
+  "owner": "goblinthug00"
+ },
+ "gravestone-00": {
+  "framing": {
+   "X": 0.502,
+   "Y": 0.5674,
+   "Zoom": 1.9317
+  },
+  "hash": "870739dab0aa4ab9cc14",
+  "owner": "gravestone"
+ },
+ "green-ninja-female-00": {
+  "framing": {
+   "X": 0.5112,
+   "Y": 0.2053,
+   "Zoom": 2.4326
+  },
+  "hash": "13d11907350911a2a9b3",
+  "owner": "greenninja"
+ },
+ "green-ninja-male-00": {
+  "framing": {
+   "X": 0.5112,
+   "Y": 0.2053,
+   "Zoom": 2.4326
+  },
+  "hash": "83301f86acb511a5aabb",
+  "owner": "greenninja (male)"
+ },
+ "hag-00": {
+  "framing": {
+   "X": 0.5043,
+   "Y": 0.2062,
+   "Zoom": 2.4284
+  },
+  "hash": "f139eb48f7540f4075ae",
+  "owner": "hag00"
+ },
+ "hag-01": {
+  "framing": {
+   "X": 0.4579,
+   "Y": 0.2023,
+   "Zoom": 2.536
+  },
+  "hash": "fc15c770468bc7eb8cb0",
+  "owner": "hag01"
+ },
+ "hag-02": {
+  "framing": {
+   "X": 0.5416,
+   "Y": 0.2049,
+   "Zoom": 2.4406
+  },
+  "hash": "04e2823c39e78eee0ad6",
+  "owner": "hag02"
+ },
+ "hag-03": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "e400cc75849df327b835",
+  "owner": "hag03"
+ },
+ "harbinger-female-00": {
+  "framing": {
+   "X": 0.6336,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "2f60934231a47679b740",
+  "owner": "harbinger"
+ },
+ "harbinger-male-00": {
+  "framing": {
+   "X": 0.6336,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "f2b01feb7c625e59cb63",
+  "owner": "harbinger (male)"
+ },
+ "harpy-raider-00": {
+  "framing": {
+   "X": 0.4023,
+   "Y": 0.1045,
+   "Zoom": 2.7156
+  },
+  "hash": "ee78f0c26236c8cf7cc8",
+  "owner": "harpy01"
+ },
+ "harpy-shrieker-00": {
+  "framing": {
+   "X": 0.5068,
+   "Y": 0.1076,
+   "Zoom": 2.7801
+  },
+  "hash": "29a31cb4268af586a0df",
+  "owner": "harpy02"
+ },
+ "harpy-spotter-00": {
+  "framing": {
+   "X": 0.4355,
+   "Y": 0.128,
+   "Zoom": 2.56
+  },
+  "hash": "558747efd6564b7fcbdf",
+  "owner": "harpy03"
+ },
+ "hellspawn-drinker-00": {
+  "framing": {
+   "X": 0.3205,
+   "Y": 0.1364,
+   "Zoom": 2.6785
+  },
+  "hash": "a3ac405ce73f23368d0f",
+  "owner": "hellspawn02"
+ },
+ "hellspawn-emberheart-00": {
+  "framing": {
+   "X": 0.3052,
+   "Y": 0.1555,
+   "Zoom": 2.6947
+  },
+  "hash": "c6c742289fa883383cda",
+  "owner": "hellspawn03"
+ },
+ "hellspawn-ravager-00": {
+  "framing": {
+   "X": 0.3246,
+   "Y": 0.1567,
+   "Zoom": 2.7504
+  },
+  "hash": "3648b5ca2540973b4333",
+  "owner": "hellspawn01"
+ },
+ "hellspawn-scaleback-00": {
+  "framing": {
+   "X": 0.3021,
+   "Y": 0.1603,
+   "Zoom": 2.7476
+  },
+  "hash": "033b8332566168c74bce",
+  "owner": "hellspawn04"
+ },
+ "herald-female-00": {
+  "framing": {
+   "X": 0.4883,
+   "Y": 0.1592,
+   "Zoom": 2.844
+  },
+  "hash": "5c9cc98792b959a1c184",
+  "owner": "herald"
+ },
+ "herald-male-00": {
+  "framing": {
+   "X": 0.4883,
+   "Y": 0.1592,
+   "Zoom": 2.844
+  },
+  "hash": "ec4d501f499930e8d223",
+  "owner": "herald (male)"
+ },
+ "herd-boss-00": {
+  "framing": {
+   "X": 0.4659,
+   "Y": 0.1049,
+   "Zoom": 2.6286
+  },
+  "hash": "16a7f09e71bd84993c87",
+  "owner": "minotaur01"
+ },
+ "herd-bouncer-00": {
+  "framing": {
+   "X": 0.4808,
+   "Y": 0.1041,
+   "Zoom": 3.1741
+  },
+  "hash": "53b82fc1e0f2b1a2d53c",
+  "owner": "minotaur02"
+ },
+ "herd-breaker-00": {
+  "framing": {
+   "X": 0.4752,
+   "Y": 0.0988,
+   "Zoom": 3.0989
+  },
+  "hash": "544ad3c1f1bb03d8562e",
+  "owner": "minotaur04"
+ },
+ "herd-gorer-00": {
+  "framing": {
+   "X": 0.4746,
+   "Y": 0.0997,
+   "Zoom": 2.6947
+  },
+  "hash": "ef8b3c63b1d706d6290e",
+  "owner": "minotaur03"
+ },
+ "hex-sniper-female-00": {
+  "framing": {
+   "X": 0.5027,
+   "Y": 0.3152,
+   "Zoom": 3.8854
+  },
+  "hash": "0a8fa5537ec300e69d70",
+  "owner": "hexsniper"
+ },
+ "hex-sniper-male-00": {
+  "framing": {
+   "X": 0.5027,
+   "Y": 0.3152,
+   "Zoom": 3.8854
+  },
+  "hash": "0a855f6983af04a23c5a",
+  "owner": "hexsniper (male)"
+ },
+ "hex-stalker-00": {
+  "framing": {
+   "X": 0.5331,
+   "Y": 0.3183,
+   "Zoom": 3.8248
+  },
+  "hash": "03bce6a2ac1ad84018e3",
+  "owner": "hexstalker"
+ },
+ "hex-warden-00": {
+  "framing": {
+   "X": 0.4695,
+   "Y": 0.3015,
+   "Zoom": 3.8278
+  },
+  "hash": "a719d43be45f6f940d0f",
+  "owner": "hexwarden"
+ },
+ "hexer-female-00": {
+  "framing": {
+   "X": 0.4698,
+   "Y": 0.2347,
+   "Zoom": 2.0711
+  },
+  "hash": "69bc4025d58bc21c63dd",
+  "owner": "blackwitch"
+ },
+ "hexer-male-00": {
+  "framing": {
+   "X": 0.4698,
+   "Y": 0.2347,
+   "Zoom": 2.0711
+  },
+  "hash": "f28cb6439f63ccf44a13",
+  "owner": "blackwitch (male)"
+ },
+ "ice-mauler-00": {
+  "framing": {
+   "X": 0.5697,
+   "Y": 0.2001,
+   "Zoom": 2.5425
+  },
+  "hash": "cb6099127d63e4d4cf3b",
+  "owner": "icemauler"
+ },
+ "infernalist-bloodbinder-00": {
+  "framing": {
+   "X": 0.2108,
+   "Y": 0.235,
+   "Zoom": 2.8144
+  },
+  "hash": "c43fac3e866a5d796271",
+  "owner": "infernalist03"
+ },
+ "infernalist-executioner-00": {
+  "framing": {
+   "X": 0.1682,
+   "Y": 0.2335,
+   "Zoom": 2.6947
+  },
+  "hash": "454c71fc62bced1df3d0",
+  "owner": "infernalist04"
+ },
+ "infernalist-pyromancer-00": {
+  "framing": {
+   "X": 0.1688,
+   "Y": 0.2504,
+   "Zoom": 2.6179
+  },
+  "hash": "eb5b6aa2fc9234d02ffa",
+  "owner": "infernalist02"
+ },
+ "infernalist-zealot-00": {
+  "framing": {
+   "X": 0.2148,
+   "Y": 0.2406,
+   "Zoom": 2.9129
+  },
+  "hash": "236b3e35b16b42bfc52c",
+  "owner": "infernalist01"
+ },
+ "jade-knight-female-00": {
+  "framing": {
+   "X": 0.4865,
+   "Y": 0.2029,
+   "Zoom": 2.4499
+  },
+  "hash": "817a10fbe1a62fa67205",
+  "owner": "jadeknight"
+ },
+ "jade-knight-male-00": {
+  "framing": {
+   "X": 0.4865,
+   "Y": 0.2029,
+   "Zoom": 2.4499
+  },
+  "hash": "d412caa2b2263a257d0d",
+  "owner": "jadeknight (male)"
+ },
+ "knight-female-00": {
+  "framing": {
+   "X": 0.6265,
+   "Y": 0.2197,
+   "Zoom": 2.5745
+  },
+  "hash": "dec5dfc62432900c40fd",
+  "owner": "knight"
+ },
+ "knight-male-00": {
+  "framing": {
+   "X": 0.6265,
+   "Y": 0.2197,
+   "Zoom": 2.5745
+  },
+  "hash": "2d4465e0dfefd2b496c6",
+  "owner": "knight (male)"
+ },
+ "lancer-female-00": {
+  "framing": {
+   "X": 0.6709,
+   "Y": 0.2182,
+   "Zoom": 2.7513
+  },
+  "hash": "e109d5df1ec79ccfc809",
+  "owner": "lancer"
+ },
+ "lich-00": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.1601,
+   "Zoom": 2.5026
+  },
+  "hash": "e21f07893112b00a5594",
+  "owner": "lich"
+ },
+ "lightweaver-female-00": {
+  "framing": {
+   "X": 0.4633,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "cba7a32aff573b81b52e",
+  "owner": "whitewitch"
+ },
+ "lightweaver-male-00": {
+  "framing": {
+   "X": 0.4633,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "dc7c68ec05d840374be3",
+  "owner": "whitewitch (male)"
+ },
+ "lurker-00": {
+  "framing": {
+   "X": 0.4336,
+   "Y": 0.2069,
+   "Zoom": 2.5217
+  },
+  "hash": "ceb4a8a6853657e13930",
+  "owner": "lurker00"
+ },
+ "lurker-01": {
+  "framing": {
+   "X": 0.4144,
+   "Y": 0.2011,
+   "Zoom": 2.4896
+  },
+  "hash": "0791337a3d9556aaea7b",
+  "owner": "lurker01"
+ },
+ "lurker-02": {
+  "framing": {
+   "X": 0.6331,
+   "Y": 0.202,
+   "Zoom": 2.5683
+  },
+  "hash": "597af26037deff17497c",
+  "owner": "lurker02"
+ },
+ "machinist-female-00": {
+  "framing": {
+   "X": 0.5137,
+   "Y": 0.2048,
+   "Zoom": 2.4402
+  },
+  "hash": "e1c37dad7fdb914f8545",
+  "owner": "machinist"
+ },
+ "mannequin-00": {
+  "framing": {
+   "X": 0.493,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "17689c339b154de5c40f",
+  "owner": "mannequin"
+ },
+ "marsh-shambler-00": {
+  "framing": {
+   "X": 0.5433,
+   "Y": 0.2034,
+   "Zoom": 2.4587
+  },
+  "hash": "afeef46c524ad3da4d94",
+  "owner": "marshshambler00"
+ },
+ "marsh-shambler-01": {
+  "framing": {
+   "X": 0.5062,
+   "Y": 0.2159,
+   "Zoom": 2.4982
+  },
+  "hash": "43c4ad63b0a27c5ddbd0",
+  "owner": "marshshambler01"
+ },
+ "marsh-shambler-02": {
+  "framing": {
+   "X": 0.5433,
+   "Y": 0.2079,
+   "Zoom": 2.4096
+  },
+  "hash": "e010af6232a935c77c6b",
+  "owner": "marshshambler03"
+ },
+ "martial-artist-female-00": {
+  "framing": {
+   "X": 0.525,
+   "Y": 0.2068,
+   "Zoom": 2.3812
+  },
+  "hash": "41af74f7e74c93248705",
+  "owner": "martialartist"
+ },
+ "martial-artist-male-00": {
+  "framing": {
+   "X": 0.525,
+   "Y": 0.2068,
+   "Zoom": 2.3812
+  },
+  "hash": "8ad02a9693133821ac1e",
+  "owner": "martialartist (male)"
+ },
+ "mecha-armor-00": {
+  "framing": {
+   "X": 0.6256,
+   "Y": 0.2078,
+   "Zoom": 2.5136
+  },
+  "hash": "dcb3a6e266e14fcc4542",
+  "owner": "mechaarmor00"
+ },
+ "mecha-armor-01": {
+  "framing": {
+   "X": 0.6336,
+   "Y": 0.2083,
+   "Zoom": 2.5073
+  },
+  "hash": "5855df9b67ce95786a80",
+  "owner": "mechaarmor01"
+ },
+ "mecha-armor-02": {
+  "framing": {
+   "X": 0.6239,
+   "Y": 0.2083,
+   "Zoom": 2.5098
+  },
+  "hash": "2f7b541cd0282cd07538",
+  "owner": "mechaarmor02"
+ },
+ "mocking-echo-00": {
+  "framing": {
+   "X": 0.493,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "17689c339b154de5c40f",
+  "owner": "mockingecho"
+ },
+ "monk-female-00": {
+  "framing": {
+   "X": 0.5076,
+   "Y": 0.2091,
+   "Zoom": 2.3906
+  },
+  "hash": "5d372924e1175c52277f",
+  "owner": "monk"
+ },
+ "monk-male-00": {
+  "framing": {
+   "X": 0.5076,
+   "Y": 0.2091,
+   "Zoom": 2.3906
+  },
+  "hash": "7fa8475e5c6eb601443c",
+  "owner": "monk (male)"
+ },
+ "monster-tamer-male-00": {
+  "framing": {
+   "X": 0.5016,
+   "Y": 0.2056,
+   "Zoom": 2.5115
+  },
+  "hash": "3d920da3461fef7cbf6b",
+  "owner": "monstertamer (male)"
+ },
+ "mountain-troll-00": {
+  "framing": {
+   "X": 0.4874,
+   "Y": 0.2056,
+   "Zoom": 2.4401
+  },
+  "hash": "f83937e39b41d17b6cbd",
+  "owner": "mountaintroll"
+ },
+ "myrmidon-female-00": {
+  "framing": {
+   "X": 0.474,
+   "Y": 0.2077,
+   "Zoom": 2.4031
+  },
+  "hash": "8930c863d648e6cbf634",
+  "owner": "myrmidon"
+ },
+ "myrmidon-male-00": {
+  "framing": {
+   "X": 0.474,
+   "Y": 0.2077,
+   "Zoom": 2.4031
+  },
+  "hash": "5abeec7a51819f97d2ea",
+  "owner": "myrmidon (male)"
+ },
+ "naga-00": {
+  "framing": {
+   "X": 0.5328,
+   "Y": 0.4906,
+   "Zoom": 1.03
+  },
+  "hash": "7d7126fd7196b54d8431",
+  "owner": "naga00"
+ },
+ "night-hunter-00": {
+  "framing": {
+   "X": 0.5197,
+   "Y": 0.2011,
+   "Zoom": 2.4854
+  },
+  "hash": "0bd8a50ed2dcade8f0ba",
+  "owner": "nighthunter"
+ },
+ "odachi-female-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "fc299fd468e7c74d74f7",
+  "owner": "odachi"
+ },
+ "odachi-male-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "f360185a3b63340bb508",
+  "owner": "odachi (male)"
+ },
+ "oni-00": {
+  "framing": {
+   "X": 0.5028,
+   "Y": 0.2023,
+   "Zoom": 2.4701
+  },
+  "hash": "fbe0eaf15f785a47f7f7",
+  "owner": "oni00"
+ },
+ "oni-01": {
+  "framing": {
+   "X": 0.5141,
+   "Y": 0.2082,
+   "Zoom": 2.3959
+  },
+  "hash": "98bc1bb1800cf188b631",
+  "owner": "oni01"
+ },
+ "oni-02": {
+  "framing": {
+   "X": 0.5046,
+   "Y": 0.1986,
+   "Zoom": 2.5233
+  },
+  "hash": "754c72df9d4983ecf724",
+  "owner": "oni02"
+ },
+ "operative-female-00": {
+  "framing": {
+   "X": 0.4958,
+   "Y": 0.1818,
+   "Zoom": 2.7396
+  },
+  "hash": "c6de9ea3383a15712d9a",
+  "owner": "operative"
+ },
+ "operative-male-00": {
+  "framing": {
+   "X": 0.4958,
+   "Y": 0.1818,
+   "Zoom": 2.7396
+  },
+  "hash": "d157566da848bb3cea99",
+  "owner": "operative (male)"
+ },
+ "paladin-female-00": {
+  "framing": {
+   "X": 0.4731,
+   "Y": 0.2087,
+   "Zoom": 2.4034
+  },
+  "hash": "0dbd255bd4ab823d5f00",
+  "owner": "paladin"
+ },
+ "paladin-male-00": {
+  "framing": {
+   "X": 0.4731,
+   "Y": 0.2087,
+   "Zoom": 2.4034
+  },
+  "hash": "1959302aaf0d0634f6e2",
+  "owner": "paladin (male)"
+ },
+ "panda-keeper-female-00": {
+  "framing": {
+   "X": 0.5024,
+   "Y": 0.2039,
+   "Zoom": 2.4519
+  },
+  "hash": "68b591e54c377b1da4bd",
+  "owner": "pandagirl"
+ },
+ "panda-keeper-male-00": {
+  "framing": {
+   "X": 0.5024,
+   "Y": 0.2039,
+   "Zoom": 2.4519
+  },
+  "hash": "b29dfe0814b1a1a869db",
+  "owner": "pandagirl (male)"
+ },
+ "phantom-00": {
+  "framing": {
+   "X": 0.5361,
+   "Y": 0.2095,
+   "Zoom": 2.3848
+  },
+  "hash": "47728c72e9904a388161",
+  "owner": "phantom"
+ },
+ "prize-fighter-female-00": {
+  "framing": {
+   "X": 0.5107,
+   "Y": 0.2095,
+   "Zoom": 2.3834
+  },
+  "hash": "de56782c783e53335392",
+  "owner": "prizefighter"
+ },
+ "prize-fighter-male-00": {
+  "framing": {
+   "X": 0.5107,
+   "Y": 0.2095,
+   "Zoom": 2.3834
+  },
+  "hash": "a85ec87beb612a88348a",
+  "owner": "prizefighter (male)"
+ },
+ "pugilist-female-00": {
+  "framing": {
+   "X": 0.5048,
+   "Y": 0.2056,
+   "Zoom": 2.4355
+  },
+  "hash": "2923bb552572b701b3dd",
+  "owner": "pugilist"
+ },
+ "pugilist-male-00": {
+  "framing": {
+   "X": 0.5048,
+   "Y": 0.2056,
+   "Zoom": 2.4355
+  },
+  "hash": "afdca5c45eb16f76cb73",
+  "owner": "pugilist (male)"
+ },
+ "purple-prototype-00": {
+  "framing": {
+   "X": 0.5097,
+   "Y": 0.213,
+   "Zoom": 2.4884
+  },
+  "hash": "3457045920af74cb1f64",
+  "owner": "purpleprototype00"
+ },
+ "purple-prototype-01": {
+  "framing": {
+   "X": 0.5456,
+   "Y": 0.2092,
+   "Zoom": 2.3993
+  },
+  "hash": "42753e960e48b88c8086",
+  "owner": "purpleprototype01"
+ },
+ "purple-prototype-02": {
+  "framing": {
+   "X": 0.5399,
+   "Y": 0.2072,
+   "Zoom": 2.4123
+  },
+  "hash": "372b631338ba1acd3b2f",
+  "owner": "purpleprototype02"
+ },
+ "purple-prototype-03": {
+  "framing": {
+   "X": 0.4946,
+   "Y": 0.2018,
+   "Zoom": 2.4803
+  },
+  "hash": "ada8e4d6d71feefa2726",
+  "owner": "purpleprototype03"
+ },
+ "purple-prototype-04": {
+  "framing": {
+   "X": 0.5974,
+   "Y": 0.2101,
+   "Zoom": 2.3801
+  },
+  "hash": "c57699b3eafd5aeb92cd",
+  "owner": "purpleprototype04"
+ },
+ "raider-00": {
+  "framing": {
+   "X": 0.5534,
+   "Y": 0.2037,
+   "Zoom": 2.468
+  },
+  "hash": "9466356069922a96cbb4",
+  "owner": "raider"
+ },
+ "reaper-00": {
+  "framing": {
+   "X": 0.4372,
+   "Y": 0.2043,
+   "Zoom": 2.444
+  },
+  "hash": "c04bb0bca6d7425004fc",
+  "owner": "reaper"
+ },
+ "red-mage-female-00": {
+  "framing": {
+   "X": 0.4928,
+   "Y": 0.2022,
+   "Zoom": 2.3831
+  },
+  "hash": "b51a5bf88237fa9d19c4",
+  "owner": "redmage"
+ },
+ "red-mage-male-00": {
+  "framing": {
+   "X": 0.4928,
+   "Y": 0.2022,
+   "Zoom": 2.3831
+  },
+  "hash": "ff5bdd3b411d78ebb58f",
+  "owner": "redmage (male)"
+ },
+ "red-ninja-female-00": {
+  "framing": {
+   "X": 0.5173,
+   "Y": 0.2021,
+   "Zoom": 2.4789
+  },
+  "hash": "0051c1646ebde2b61a36",
+  "owner": "redninja"
+ },
+ "red-ninja-male-00": {
+  "framing": {
+   "X": 0.5173,
+   "Y": 0.2021,
+   "Zoom": 2.4789
+  },
+  "hash": "f87628ec59c6ad028646",
+  "owner": "redninja (male)"
+ },
+ "ripper-female-00": {
+  "framing": {
+   "X": 0.396,
+   "Y": 0.2024,
+   "Zoom": 2.4757
+  },
+  "hash": "7230ed03fcc85a20df2b",
+  "owner": "ripper"
+ },
+ "ripper-male-00": {
+  "framing": {
+   "X": 0.396,
+   "Y": 0.2024,
+   "Zoom": 2.4757
+  },
+  "hash": "653cdca4ab247543623c",
+  "owner": "ripper (male)"
+ },
+ "ritualist-female-00": {
+  "framing": {
+   "X": 0.4771,
+   "Y": 0.2051,
+   "Zoom": 2.4363
+  },
+  "hash": "79fb6a813c69ba0d020f",
+  "owner": "ritualist"
+ },
+ "ronin-female-00": {
+  "framing": {
+   "X": 0.5058,
+   "Y": 0.2096,
+   "Zoom": 2.457
+  },
+  "hash": "dd1f12b1624e0dced5f4",
+  "owner": "ronin"
+ },
+ "ronin-male-00": {
+  "framing": {
+   "X": 0.5058,
+   "Y": 0.2096,
+   "Zoom": 2.457
+  },
+  "hash": "fe53b68a431bd8112574",
+  "owner": "ronin (male)"
+ },
+ "sage-female-00": {
+  "framing": {
+   "X": 0.4978,
+   "Y": 0.2099,
+   "Zoom": 2.3729
+  },
+  "hash": "f61610e3d4064c9b62f3",
+  "owner": "sage"
+ },
+ "sage-male-00": {
+  "framing": {
+   "X": 0.4978,
+   "Y": 0.2099,
+   "Zoom": 2.3729
+  },
+  "hash": "d1a0a38257f8f046c409",
+  "owner": "sage (male)"
+ },
+ "sand-maw-00": {
+  "framing": {
+   "X": 0.4994,
+   "Y": 0.5017,
+   "Zoom": 0.9649
+  },
+  "hash": "e200bdddc56999c24fda",
+  "owner": "sandmaw"
+ },
+ "scorpion-00": {
+  "framing": {
+   "X": 0.5401,
+   "Y": 0.1397,
+   "Zoom": 3.5785
+  },
+  "hash": "fab5c699894d913c62c7",
+  "owner": "scorpion"
+ },
+ "sellsword-female-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2021,
+   "Zoom": 2.4793
+  },
+  "hash": "338534e7221e32aaf94d",
+  "owner": "sellsword"
+ },
+ "sellsword-male-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2021,
+   "Zoom": 2.4793
+  },
+  "hash": "45535c635f3937bafe85",
+  "owner": "sellsword (male)"
+ },
+ "shieldguard-female-00": {
+  "framing": {
+   "X": 0.6227,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "79ff33d640efd2f73803",
+  "owner": "shieldmaiden"
+ },
+ "shieldguard-male-00": {
+  "framing": {
+   "X": 0.6227,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "25fb4be8082cde6bb32e",
+  "owner": "shieldmaiden (male)"
+ },
+ "skelepede-00": {
+  "framing": {
+   "X": 0.4958,
+   "Y": 0.5047,
+   "Zoom": 0.9731
+  },
+  "hash": "69974414372fe279a674",
+  "owner": "skelepede00"
+ },
+ "skelepede-01": {
+  "framing": {
+   "X": 0.5138,
+   "Y": 0.5071,
+   "Zoom": 0.9896
+  },
+  "hash": "7c9e6ab135a5e5ce1759",
+  "owner": "skelepede01"
+ },
+ "skelepede-02": {
+  "framing": {
+   "X": 0.5037,
+   "Y": 0.5047,
+   "Zoom": 0.9929
+  },
+  "hash": "d9416151963909013ede",
+  "owner": "skelepede02"
+ },
+ "slasher-female-00": {
+  "framing": {
+   "X": 0.48,
+   "Y": 0.2057,
+   "Zoom": 2.6379
+  },
+  "hash": "359a2f2d34c9635bc9af",
+  "owner": "slasher"
+ },
+ "slime-00": {
+  "framing": {
+   "X": 0.5643,
+   "Y": 0.4999,
+   "Zoom": 2.4396
+  },
+  "hash": "4daef23b17098c82a4a4",
+  "owner": "slime00"
+ },
+ "slime-01": {
+  "framing": {
+   "X": 0.5389,
+   "Y": 0.4999,
+   "Zoom": 2.0994
+  },
+  "hash": "4e4b1dc62906e24019f6",
+  "owner": "slime01"
+ },
+ "slime-02": {
+  "framing": {
+   "X": 0.5397,
+   "Y": 0.4918,
+   "Zoom": 2.8506
+  },
+  "hash": "72ce6977ac5e2b45cce7",
+  "owner": "slime02"
+ },
+ "slime-03": {
+  "framing": {
+   "X": 0.5565,
+   "Y": 0.4999,
+   "Zoom": 2.7249
+  },
+  "hash": "f08cbe9c1a663c5ab8bd",
+  "owner": "slime03"
+ },
+ "soldier-00": {
+  "framing": {
+   "X": 0.4727,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "19b129741f97699c3912",
+  "owner": "soldier00"
+ },
+ "soldier-01": {
+  "framing": {
+   "X": 0.5477,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "4e421783c1acbdff7625",
+  "owner": "soldier01"
+ },
+ "soldier-02": {
+  "framing": {
+   "X": 0.5118,
+   "Y": 0.2102,
+   "Zoom": 2.3786
+  },
+  "hash": "62262d80a7b72336d23c",
+  "owner": "soldier02"
+ },
+ "soldier-03": {
+  "framing": {
+   "X": 0.5024,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "6c1fa942cefd58837d02",
+  "owner": "soldier03"
+ },
+ "speedster-female-00": {
+  "framing": {
+   "X": 0.5368,
+   "Y": 0.1696,
+   "Zoom": 2.5878
+  },
+  "hash": "598da59c81866a2b2ff4",
+  "owner": "speedster"
+ },
+ "speedster-male-00": {
+  "framing": {
+   "X": 0.5368,
+   "Y": 0.1696,
+   "Zoom": 2.5878
+  },
+  "hash": "cbe5d036327ec649e889",
+  "owner": "speedster (male)"
+ },
+ "steppin-razor-00": {
+  "framing": {
+   "X": 0.5371,
+   "Y": 0.2151,
+   "Zoom": 2.53
+  },
+  "hash": "522cb76e7925f56a5a69",
+  "owner": "steppinrazor00"
+ },
+ "steppin-razor-01": {
+  "framing": {
+   "X": 0.6225,
+   "Y": 0.2018,
+   "Zoom": 2.4762
+  },
+  "hash": "f55d59637680a6b3ef94",
+  "owner": "steppinrazor01"
+ },
+ "steppin-razor-02": {
+  "framing": {
+   "X": 0.391,
+   "Y": 0.2014,
+   "Zoom": 2.5018
+  },
+  "hash": "c5192a480ded0524c482",
+  "owner": "steppinrazor02"
+ },
+ "steppin-razor-03": {
+  "framing": {
+   "X": 0.6008,
+   "Y": 0.2017,
+   "Zoom": 2.4871
+  },
+  "hash": "d4ad8859780867931171",
+  "owner": "steppinrazor04"
+ },
+ "steppin-razor-04": {
+  "framing": {
+   "X": 0.6078,
+   "Y": 0.2021,
+   "Zoom": 2.48
+  },
+  "hash": "f9631d50f7881f7c7440",
+  "owner": "steppinrazor05"
+ },
+ "street-fighter-female-00": {
+  "framing": {
+   "X": 0.505,
+   "Y": 0.2023,
+   "Zoom": 2.4732
+  },
+  "hash": "73533d6b0db27e69d593",
+  "owner": "streetfighter"
+ },
+ "street-fighter-male-00": {
+  "framing": {
+   "X": 0.505,
+   "Y": 0.2023,
+   "Zoom": 2.4732
+  },
+  "hash": "d7fe38ec089a66657604",
+  "owner": "streetfighter (male)"
+ },
+ "striker-female-00": {
+  "framing": {
+   "X": 0.5053,
+   "Y": 0.1943,
+   "Zoom": 2.587
+  },
+  "hash": "e9bd0065892413b598d8",
+  "owner": "striker"
+ },
+ "striker-male-00": {
+  "framing": {
+   "X": 0.5053,
+   "Y": 0.1943,
+   "Zoom": 2.587
+  },
+  "hash": "8f73cb64e4260ab8ac07",
+  "owner": "striker (male)"
+ },
+ "swamp-mistress-00": {
+  "framing": {
+   "X": 0.5148,
+   "Y": 0.2058,
+   "Zoom": 2.4311
+  },
+  "hash": "f26a20051d04a76a88ec",
+  "owner": "swampmistress00"
+ },
+ "sword-master-female-00": {
+  "framing": {
+   "X": 0.5524,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "938dea129de9a590cb90",
+  "owner": "swordmaster"
+ },
+ "sword-master-male-00": {
+  "framing": {
+   "X": 0.5524,
+   "Y": 0.2102,
+   "Zoom": 2.3791
+  },
+  "hash": "c265aee324d62308ca6d",
+  "owner": "swordmaster (male)"
+ },
+ "tactician-female-00": {
+  "framing": {
+   "X": 0.4917,
+   "Y": 0.1162,
+   "Zoom": 2.69
+  },
+  "hash": "7da1e0e3858ff2c44fae",
+  "owner": "tactician"
+ },
+ "tank-female-00": {
+  "framing": {
+   "X": 0.5743,
+   "Y": 0.2145,
+   "Zoom": 2.5209
+  },
+  "hash": "ae25c8fd9eef24c3011c",
+  "owner": "tank"
+ },
+ "tech-gremlin-00": {
+  "framing": {
+   "X": 0.4595,
+   "Y": 0.2278,
+   "Zoom": 2.6795
+  },
+  "hash": "375346b3f8a6f4c203c2",
+  "owner": "techgremlin00"
+ },
+ "tech-gremlin-01": {
+  "framing": {
+   "X": 0.4648,
+   "Y": 0.2368,
+   "Zoom": 2.6767
+  },
+  "hash": "4bb777f3b6d0f0c3ca14",
+  "owner": "techgremlin01"
+ },
+ "tech-gremlin-02": {
+  "framing": {
+   "X": 0.4699,
+   "Y": 0.2254,
+   "Zoom": 2.65
+  },
+  "hash": "f03760274a7fbbbd1da1",
+  "owner": "techgremlin02"
+ },
+ "technician-female-00": {
+  "framing": {
+   "X": 0.5151,
+   "Y": 0.1845,
+   "Zoom": 2.704
+  },
+  "hash": "f811b6db6a9ff3b8de25",
+  "owner": "technician"
+ },
+ "technician-male-00": {
+  "framing": {
+   "X": 0.5151,
+   "Y": 0.1845,
+   "Zoom": 2.704
+  },
+  "hash": "ce5b3d23807ebdd5b082",
+  "owner": "technician (male)"
+ },
+ "templar-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "3063cc4e8853e4db7b97",
+  "owner": "templar00"
+ },
+ "templar-01": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "6faae69df3cf1eae5bef",
+  "owner": "templar01"
+ },
+ "templar-02": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "c6ea65975a0b58d9e896",
+  "owner": "templar02"
+ },
+ "templar-03": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "b4dee59b96cccc68bce6",
+  "owner": "templar03"
+ },
+ "templar-04": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "b4dee59b96cccc68bce6",
+  "owner": "templar04"
+ },
+ "templar-05": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3788
+  },
+  "hash": "955b2fbd4fc7541a3c8c",
+  "owner": "templar05"
+ },
+ "thief-female-00": {
+  "framing": {
+   "X": 0.5383,
+   "Y": 0.206,
+   "Zoom": 2.4296
+  },
+  "hash": "15fc7e912b9623d16cc8",
+  "owner": "thief"
+ },
+ "tinkerer-female-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "8329635f7263d0d703e8",
+  "owner": "tinkerer"
+ },
+ "tinkerer-male-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "6d6b871cf886ff98c9bf",
+  "owner": "tinkerer (male)"
+ },
+ "toad-00": {
+  "framing": {
+   "X": 0.5,
+   "Y": 0.5,
+   "Zoom": 0.9615
+  },
+  "hash": "266f700230e2437af058",
+  "owner": "toad00"
+ },
+ "tree-golem-00": {
+  "framing": {
+   "X": 0.5005,
+   "Y": 0.5002,
+   "Zoom": 0.963
+  },
+  "hash": "a7b2886039cbd264db17",
+  "owner": "treegolem00"
+ },
+ "tree-golem-01": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "c8c2ebaa107db1ac2c1e",
+  "owner": "treegolem01"
+ },
+ "tree-golem-02": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "df53b50d23979b64cea9",
+  "owner": "treegolem02"
+ },
+ "tree-golem-03": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "4ecfe4f6e25b92eb0285",
+  "owner": "treegolem03"
+ },
+ "tree-golem-04": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "7b8f08173ec673e350dc",
+  "owner": "treegolem04"
+ },
+ "tree-golem-05": {
+  "framing": {
+   "X": 0.5075,
+   "Y": 0.5029,
+   "Zoom": 0.9676
+  },
+  "hash": "bdac5b3a963a728eaf7d",
+  "owner": "treegolem06"
+ },
+ "undead-00": {
+  "framing": {
+   "X": 0.4999,
+   "Y": 0.508,
+   "Zoom": 0.9611
+  },
+  "hash": "9a462267329b0dc71c19",
+  "owner": "undead00"
+ },
+ "undead-01": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "18b53e3638e3dcc185ec",
+  "owner": "undead01"
+ },
+ "undead-02": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "bed6ea74560f9dc2f09d",
+  "owner": "undead02"
+ },
+ "undead-03": {
+  "framing": {
+   "X": 0.4899,
+   "Y": 0.5112,
+   "Zoom": 0.9808
+  },
+  "hash": "f6dbab0abf4b929f01ab",
+  "owner": "undead04"
+ },
+ "vampire-female-00": {
+  "framing": {
+   "X": 0.4878,
+   "Y": 0.2006,
+   "Zoom": 2.4924
+  },
+  "hash": "36c7b14721502b799313",
+  "owner": "vampire"
+ },
+ "vampire-male-00": {
+  "framing": {
+   "X": 0.4878,
+   "Y": 0.2006,
+   "Zoom": 2.4924
+  },
+  "hash": "76becb415cff16b8c55b",
+  "owner": "vampire (male)"
+ },
+ "void-sentinel-00": {
+  "framing": {
+   "X": 0.4868,
+   "Y": 0.1448,
+   "Zoom": 2.4734
+  },
+  "hash": "f064815ed7c6a63d2d5f",
+  "owner": "voidsentinel"
+ },
+ "vulture-00": {
+  "framing": {
+   "X": 0.4998,
+   "Y": 0.4998,
+   "Zoom": 0.9614
+  },
+  "hash": "093e5845b30ae77a35c8",
+  "owner": "vulture"
+ },
+ "war-chief-female-00": {
+  "framing": {
+   "X": 0.4273,
+   "Y": 0.2003,
+   "Zoom": 2.5045
+  },
+  "hash": "f6b50e26e7f57f7f26e0",
+  "owner": "warchief"
+ },
+ "war-chief-male-00": {
+  "framing": {
+   "X": 0.4273,
+   "Y": 0.2003,
+   "Zoom": 2.5045
+  },
+  "hash": "9fd549cf45e087843ce5",
+  "owner": "warchief (male)"
+ },
+ "warden-female-00": {
+  "framing": {
+   "X": 0.535,
+   "Y": 0.185,
+   "Zoom": 2.4
+  },
+  "hash": "b76d0060379a0a124816",
+  "owner": "warden"
+ },
+ "warden-male-00": {
+  "framing": {
+   "X": 0.535,
+   "Y": 0.15,
+   "Zoom": 2.4
+  },
+  "hash": "397d953d4fc125fdac32",
+  "owner": "warden (male)"
+ },
+ "watch-reaver-00": {
+  "framing": {
+   "X": 0.5057,
+   "Y": 0.0765,
+   "Zoom": 2.7733
+  },
+  "hash": "4eb909c9c2aaf15bc15b",
+  "owner": "wraithknight02"
+ },
+ "watch-sentry-00": {
+  "framing": {
+   "X": 0.5435,
+   "Y": 0.0845,
+   "Zoom": 2.8025
+  },
+  "hash": "6aa16cd4ef59cd47baee",
+  "owner": "wraithknight01"
+ },
+ "watch-vigilant-00": {
+  "framing": {
+   "X": 0.5252,
+   "Y": 0.0907,
+   "Zoom": 2.7561
+  },
+  "hash": "fa6880970e542b4c5235",
+  "owner": "wraithknight03"
+ },
+ "werewolf-00": {
+  "framing": {
+   "X": 0.4979,
+   "Y": 0.2102,
+   "Zoom": 2.3775
+  },
+  "hash": "087d5ef5a619fbfc9c5e",
+  "owner": "werewolf00"
+ },
+ "white-ninja-female-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "8617c1b19b7b10e69cad",
+  "owner": "whiteninja"
+ },
+ "white-ninja-male-00": {
+  "framing": {
+   "X": 0.4977,
+   "Y": 0.2102,
+   "Zoom": 2.3787
+  },
+  "hash": "7abc3f373b8f10e31ccd",
+  "owner": "whiteninja (male)"
+ },
+ "wild-child-female-00": {
+  "framing": {
+   "X": 0.5016,
+   "Y": 0.2056,
+   "Zoom": 2.5115
+  },
+  "hash": "bec628e5a4f7c500c8b8",
+  "owner": "wildchild"
+ },
+ "wolf-00": {
+  "framing": {
+   "X": 0.553,
+   "Y": 0.4949,
+   "Zoom": 1.007
+  },
+  "hash": "5d49d2451883e6a97723",
+  "owner": "wolf00"
+ },
+ "wolf-01": {
+  "framing": {
+   "X": 0.4994,
+   "Y": 0.4999,
+   "Zoom": 1.07
+  },
+  "hash": "c3628cd7a2879906f76e",
+  "owner": "wolf01"
+ },
+ "wolf-02": {
+  "framing": {
+   "X": 0.5194,
+   "Y": 0.4943,
+   "Zoom": 1.0169
+  },
+  "hash": "47ad0c7a635c26fe0b30",
+  "owner": "wolf02"
+ },
+ "wolf-03": {
+  "framing": {
+   "X": 0.4975,
+   "Y": 0.4811,
+   "Zoom": 1.0926
+  },
+  "hash": "128f12675ecbc18e05fc",
+  "owner": "wolf03"
+ },
+ "yellow-ninja-female-00": {
+  "framing": {
+   "X": 0.5316,
+   "Y": 0.2022,
+   "Zoom": 2.4716
+  },
+  "hash": "cba777fff4b3881e5d91",
+  "owner": "yellowninja"
+ },
+ "yellow-ninja-male-00": {
+  "framing": {
+   "X": 0.5316,
+   "Y": 0.2022,
+   "Zoom": 2.4716
+  },
+  "hash": "805198822a6b4e4862e1",
+  "owner": "yellowninja (male)"
+ },
+ "yeti-00": {
+  "framing": {
+   "X": 0.542,
+   "Y": 0.2081,
+   "Zoom": 2.4082
+  },
+  "hash": "503f54794e06f03d3c66",
+  "owner": "yeti"
+ }
+}
