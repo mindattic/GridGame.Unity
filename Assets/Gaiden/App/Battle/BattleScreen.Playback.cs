@@ -1284,7 +1284,8 @@ namespace GridGame.App
             l.style.flexShrink = 1;
             bool icon0 = icon != null;
             l.RegisterCallback<GeometryChangedEvent>(_ => ShrinkBillboardLineToFit(l, row, icon0));
-            while (billboard.childCount > 1) billboard[0].RemoveFromHierarchy();
+            var rows = BillboardRows(billboard);
+            for (int i = 0; i < rows.Count - 1; i++) rows[i].RemoveFromHierarchy();
             App.StartCoroutine(Tween.Pop(row, 1.12f, 0.12f));
             App.StartCoroutine(RetireBillboardRow(billboard, row));
         }
@@ -1315,13 +1316,18 @@ namespace GridGame.App
             if (size < l.resolvedStyle.fontSize - 0.5f) l.style.fontSize = size;
         }
 
+        /// <summary>The billboard's message rows, not the theme's texture layer WindowThemes.Dress puts first (GG-T687: with
+        /// Manapunk's wear texture that layer kept childCount above 0, so an emptied billboard stayed up as a bare pane).</summary>
+        private static List<VisualElement> BillboardRows(VisualElement bb) =>
+            bb.Children().Where(c => !c.ClassListContains(WindowThemes.OverlayClass)).ToList();
+
         /// <summary>Drops a billboard line after 1.6 s of game time — held while paused, unlike a scheduler delay (GG-T126).
         /// Takes the billboard itself: OnHidden may null the field before this fires.</summary>
         private IEnumerator RetireBillboardRow(VisualElement bb, VisualElement row)
         {
             yield return Tween.Wait(Timing.Cinematic + Timing.Emphasis);
             row.RemoveFromHierarchy();
-            if (bb.childCount == 0)
+            if (BillboardRows(bb).Count == 0)
             {
                 bb.style.display = DisplayStyle.None;
                 if (bb == billboard && bannerViewport != null) App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (bannerViewport != null) bannerViewport.style.opacity = k; }));
