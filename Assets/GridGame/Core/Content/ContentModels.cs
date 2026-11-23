@@ -625,6 +625,58 @@ namespace GridGame.Core.Content
         /// <summary>Region rule effects (GG-T359) run once this resolves: the caster is their subject and the anchor
         /// their Target (mark/clear/modify tiles, queue or retime events, move anchors, raise flags).</summary>
         public List<RuleEffectDef> RuleEffects = new List<RuleEffectDef>();
+
+        /// <summary>GG-T590 (§25.6.5, GG-T168): the stat-threshold vector a hero must reach before the Learn screen will sell
+        /// it this ability (Fireball: INT 8; a hybrid such as Paladin Bulwark: VIT 5 and WIS 4). Each non-zero stat is a
+        /// minimum and every one must be met; a zero stat doesn't gate. It is measured against the stat points the hero has
+        /// spent on level-ups (GG-T591's one-free-point-per-level trail), not its effective stats, so it reads on the same
+        /// 0-up scale for every class. Null, or all zero, = no requirement. Authored for every Learn-screen ability
+        /// (hero-usable Skills and Spells); passives, reactives, items and enemy charges leave it null.</summary>
+        public Stats Requires;
+
+        /// <summary>Does this ability carry a stat requirement at all (<see cref="Requires"/> set with a non-zero stat)?</summary>
+        public bool HasRequires => Requires != null && RequiredStats().Count > 0;
+
+        /// <summary>The non-zero stats in <see cref="Requires"/>, in the game's usual stat order, as (short label, full
+        /// stat name, minimum): <c>("INT", "Intelligence", 8)</c>. Empty when there is no requirement.</summary>
+        public List<(string Abbrev, string Stat, float Min)> RequiredStats()
+        {
+            var list = new List<(string, string, float)>();
+            if (Requires == null) return list;
+            foreach (var (abbrev, stat, get) in RequirementStats)
+            {
+                var min = get(Requires);
+                if (min > 0f) list.Add((abbrev, stat, min));
+            }
+            return list;
+        }
+
+        /// <summary>True when <paramref name="points"/> (the hero's spent level-up stat points) meet every stat in
+        /// <see cref="Requires"/>. An ability with no requirement is always met; null points count as all zero.</summary>
+        public bool RequiresMet(Stats points) => UnmetRequires(points).Count == 0;
+
+        /// <summary>The requirement stats <paramref name="points"/> falls short on, as (short label, full stat name,
+        /// minimum, have): what a locked Learn entry says it needs ("needs INT 8"). Empty when <see cref="RequiresMet"/>.</summary>
+        public List<(string Abbrev, string Stat, float Min, float Have)> UnmetRequires(Stats points)
+        {
+            var list = new List<(string, string, float, float)>();
+            if (Requires == null) return list;
+            foreach (var (abbrev, stat, get) in RequirementStats)
+            {
+                var min = get(Requires);
+                var have = points == null ? 0f : get(points);
+                if (min > 0f && have < min) list.Add((abbrev, stat, min, have));
+            }
+            return list;
+        }
+
+        private static readonly (string Abbrev, string Stat, System.Func<Stats, float> Get)[] RequirementStats =
+        {
+            ("STR", nameof(Stats.Strength), s => s.Strength), ("VIT", nameof(Stats.Vitality), s => s.Vitality),
+            ("AGI", nameof(Stats.Agility), s => s.Agility), ("SPD", nameof(Stats.Speed), s => s.Speed),
+            ("STA", nameof(Stats.Stamina), s => s.Stamina), ("INT", nameof(Stats.Intelligence), s => s.Intelligence),
+            ("WIS", nameof(Stats.Wisdom), s => s.Wisdom), ("LCK", nameof(Stats.Luck), s => s.Luck),
+        };
     }
 
     public sealed class BuffDef

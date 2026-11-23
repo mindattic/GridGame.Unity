@@ -4316,6 +4316,15 @@ Owner: heroes get passive/reactive abilities from class kits, skill-tree nodes, 
 - **Bots:** `CampRoutine` opens every chest and reads each Tome to the first party hero with a free slot.
 - *(Tests: `PassiveRewardTests`.)*
 
+### 25.6.5 Stat requirements on abilities (GG-T590, from GG-T168)
+
+**Added 2026-11-23.** Every ability the Learn screen sells (a hero-usable Skill or Spell, `Abilities.IsHeroUsable`) carries `AbilityDef.Requires`: a `Stats` vector of minimums, written in abilities.json as only the stats that gate it (`"Requires": { "Strength": 5, "Wisdom": 4 }`). Every non-zero stat must be met; a zero stat doesn't gate; null means no requirement. Passives, reactives, items, enemy charges and the boss-only abilities leave it null.
+
+- **Scale.** Thresholds count the **stat points the hero has spent on level-ups** (GG-T591's one free point a level, `HeroSave.StatPicks`), not its effective stats, so they read on the same 0-up scale for every class. They are whole points from 1 to 10.
+- **Authoring.** A pure ability needs one stat, scaled by its power proxy (a spell's orb cost, a skill's `CooldownTurns`): cheap moves 2–3, mid-tier 5–6, capstones 8–10. A hybrid needs two smaller ones, split by flavor (blade-and-spell fangs AGI + INT, holy warding VIT + WIS, tempo spells INT + SPD). GG-T168's worked trail is authored as drawn: Cleave STR 3, Reckless STR 5, Last Man Swinging STR 8, Fireball INT 8.
+- **Reading it.** `AbilityDef.HasRequires`, `RequiredStats()` (label, stat, minimum, in the usual STR VIT AGI SPD STA INT WIS LCK order), `RequiresMet(points)` and `UnmetRequires(points)` (what a locked entry says it needs). Nothing gates on it yet: the Learn screen's locked state is GG-T592 and the bots' stat spending GG-T593.
+- *(Tests: `AbilityRequiresTests`.)*
+
 ### 25.7 Shared Camp utilities
 
 `App/UI/Ui.cs` (windows, menu rows, lists, tabs, gauges, cost pips, buttons, gold formatting), `ItemUi` (item rows, glyphs, detail pane), `Confirm` (modal), `GameApp.Toast`.
