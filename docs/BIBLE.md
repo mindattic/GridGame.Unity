@@ -4696,6 +4696,51 @@ Why 9:16 … 9:23: the layout is designed at 9:19.5 (1170×2532); the vertical s
 | Foldables opened (Z Fold inner, Pixel Fold) | ≈ 5:6 … 6:5 | ≈ 0.85–1.2 | letterboxed (wide fog bands) |
 | Chromebooks / desktop windows (landscape 16:9, 16:10, 3:2) | 16:9 … 3:2 | 1.5–1.78 | letterboxed (fog either side) |
 
+**Amended 2026-11-23 (GG-T724; owner: "some devices are just too small for this game; this game should be targeting flagship models that can actually run games" and "for now lets just focus on iPhones, Samsung Galaxy and Google Pixel releases").** GridGame targets **flagship iPhone, Samsung Galaxy (S and Z) and Google Pixel phones from 2021 on**. The table above still describes what the stage *does* on any shape; this one is what we *design and test for*. Figures are portrait px (w×h) and logical width in pt (iOS) or dp at the default display size (Android), from the makers' spec pages (Apple, Samsung, Google Store) and GSMArena, checked 2026-11-23; a "≈" figure is the panel class, not re-verified for that exact model.
+
+| Family | Model (year) | Physical px | Logical | Aspect w/h | ppi | SoC | Result |
+|---|---|---|---|---|---|---|---|
+| iPhone | 18 Pro / 18 Pro Max (2026) | 1206×2622 / 1320×2868 | 402 / 440 pt | 0.460 | 460 | A20 Pro | fills |
+| iPhone | Duo (foldable, 2026) outer / inner | 1398×2034 / 1878×2670 | ≈466 / ≈626 pt | 0.687 / 0.703 | 460 / 430 | A20 Pro | **letterboxed** on both screens (fog side bands) |
+| iPhone | 17 / 17 Pro / 17 Pro Max / Air (2025) | 1206×2622, 1206×2622, 1320×2868, 1260×2736 | 402 / 402 / 440 / 420 pt | 0.46 | 460 | A19 / A19 Pro | fills |
+| iPhone | 17e (2026), 16e (2025) | 1170×2532 | 390 pt | 0.462 | 460 | A19 / A18 | fills |
+| iPhone | 16 / 16 Plus / 16 Pro / 16 Pro Max (2024) | 1179×2556, 1290×2796, 1206×2622, 1320×2868 | 393–440 pt | 0.46 | 460 | A18 / A18 Pro | fills |
+| iPhone | 15 / 15 Plus / 15 Pro / 15 Pro Max (2023) | 1179×2556, 1290×2796 | 393 / 430 pt | 0.461 | 460 | A16 / A17 Pro | fills |
+| iPhone | 14 / 14 Plus / 14 Pro / 14 Pro Max (2022) | 1170×2532, 1284×2778, 1179×2556, 1290×2796 | 390–430 pt | 0.46 | 460 | A15 / A16 | fills |
+| iPhone | **13 / 13 Pro / 13 Pro Max (2021): minimum** | 1170×2532, 1284×2778 | 390 / 428 pt | 0.462 | 460 | A15 (floor) | fills |
+| iPhone | 12 mini / 13 mini; SE 2nd/3rd gen | 1080×2340; 750×1334 | 375 pt | 0.462; 0.562 | 476; 326 | A14 / A15 | **below the minimum screen: not designed for** (below) |
+| Galaxy S | S26 / S26+ / S26 Ultra (2026) | 1080×2340, 1440×3120, 1440×3120 | ≈384–412 dp | 0.462 | 411 / ≈513 / 498 | SD 8 Elite Gen 5 / Exynos 2600 | fills |
+| Galaxy S | S25, S24, S23 series (2023–25); **S22 series (2022): minimum** | 1080×2340 or 1440×3088–3120 | ≈384–412 dp | 0.462–0.466 | 416–505 | SD 8 Elite … SD 8 Gen 1 / Exynos 2200 (floor) | fills |
+| Galaxy Z Fold | Fold8 Ultra (2026), Fold7 (2025) cover | 1080×2520 | ≈411 dp | 0.429 (9:21) | ≈422 | SD 8 Elite (Gen 5) | fills |
+| Galaxy Z Fold | Fold8 (2026, the 4:3 "wide" model) cover / inner | 1248×1972 / 1848×2448 | — | 0.633 (≈10:16) / 0.755 | ≈420 / 404 | SD 8 Elite Gen 5 | **letterboxed** (fog side bands) |
+| Galaxy Z Fold | Fold6 (2024), Fold5 (2023), Fold4 (2022) cover | 968×2376, 904×2316 | — | 0.407 / 0.390 | ≈402–410 | SD 8 Gen 3 … 8+ Gen 1 | fills (Fold4/5 at the 9:23 edge) |
+| Galaxy Z Fold | inner screens, every generation but the Fold8 | ≈1812–1968 × 2160–2184 | — | ≈0.83–0.90 | ≈368–374 | — | **letterboxed** (wide fog bands) |
+| Galaxy Z Flip | Flip8 (2026), Flip7 (2025) main | 1080×2520 | ≈411 dp | 0.429 (9:21) | ≈400 | Exynos 2600 / 2500 | fills |
+| Galaxy Z Flip | Flip6 / 5 / 4 (2022–24) main | 1080×2640 | — | 0.409 (9:22) | ≈425 | SD 8 Gen 3 … 8+ Gen 1 | fills |
+| Galaxy Z Flip | cover screen (FlexWindow, 3.4–4.1", ≈1:1) | e.g. 948×1048 | — | ≈0.9 | — | — | **not supported**: the game is a main-screen app |
+| Pixel | 11 / 11 Pro / 11 Pro XL (2026) | ≈1080×2424, ≈1280×2856, 1344×2992 | ≈412 dp | 0.449 (20:9) | ≈422 / ≈495 / 482 | Tensor G6 | fills |
+| Pixel | 10 series (2025), 9 series (2024), 8 (2023), 7 (2022) | 1080×2400–2424, 1280×2856, 1344×2992, 1440×3120 | ≈412 dp | 0.445–0.462 | 422–512 | Tensor G5 … G2 | fills |
+| Pixel | **6 / 6 Pro (2021): minimum** | 1080×2400, 1440×3120 | ≈412 dp | 0.45 / 0.462 | 411 / 512 | Tensor G1 (floor) | fills |
+| Pixel Fold | 11 Pro Fold (2026), 10 Pro Fold (2025), 9 Pro Fold (2024) outer | 1080×2342–2424 | ≈412 dp | 0.446–0.461 | 399–422 | Tensor G6 / G5 / G4 | fills |
+| Pixel Fold | the original Pixel Fold (2023) outer | 1080×2092 | — | 0.516 | 408 | Tensor G2 | fills |
+| Pixel Fold | inner screens (2076×2152; original Fold 2208×1840) | — | — | ≈0.96 / 1.2 | ≈372–380 | — | **letterboxed** (wide fog bands) |
+| Pixel | a-series (6a–10a) | 1080×2400 | ≈412 dp | 0.45 | ≈410–430 | Tensor (mid tier) | not a target; same shape and chip family, so it runs |
+
+**Targets (GG-T724).**
+- **Minimum hardware: a 2021 flagship chip.** Apple A15 (iPhone 13), Snapdragon 8 Gen 1 / Exynos 2200 (Galaxy S22, Z Fold4, Z Flip4), Google Tensor G1 (Pixel 6). Everything newer in the three families is supported. That floor brings 4–8 GB RAM, Metal 3 and Vulkan 1.1 with it.
+- **Minimum OS: iOS 17.0** (`iOSTargetOSVersionString`, raised from 15.0 in GG-T724). Every target iPhone runs it, and nothing it drops (iPhone 8/X) is above the hardware floor. **Android 12 (API 31)** for the Play release bundle: the Galaxy S22 and Pixel 6 shipped with it. *Not applied yet:* `GridGameBuild.cs` sets `minSdkVersion = 26` on every Android build, so changing the project setting alone would not change the bundle; the release bundle's floor moves in that file (follow-up ticket). The development APK stays at 26 so BlueStacks 5 (Android 9) and the emulator suite still install it (docs/RELEASE_BUILD.md). Target SDK stays "highest installed".
+- **Aspect range unchanged: 9:23 … 9:16.** Every target phone, and every fold/flip outer or main screen above, is inside it (iPhones ≈0.46, Galaxy S 0.462, Pixels 0.445–0.462, Fold7/8 Ultra covers and Flip main screens 9:21–9:22, Fold4/5 covers at 9:23). Deliberately letterboxed in the mystic fog: every foldable inner screen, the Galaxy Z Fold8's 10:16 cover and both iPhone Duo screens. No flagship falls just outside the range, so it did not move.
+- **Minimum screen: a 6.1-inch-class phone, short side ≥ 390 pt (iOS) or ≈ 384 dp (Android, default display size), ≥ 1080 physical px wide.** At 1080 px the stage draws at ≥ 0.92 screen px per design px (1080 / 1170), so `TypeFloor` never engages on a target device.
+- **Below the minimum (iPhone SE 2nd/3rd gen, 12 mini, 13 mini, and any non-flagship Android): "not designed for", not blocked.** They still install and render (the SE's 9:16 even fills), but nobody lays out, tunes or tests for them, and a layout problem that shows only there is not a bug. Blocking is a store setting, not a Unity one (below). *Owner decision, reversible:* SE and mini are out (flagships only). Galaxy A-series and Pixel a-series are not targets either, but are not excluded from the store: they share the shape, and recent ones pass the chip floor.
+
+**Withdrawn design rules** (they existed only for small or odd devices; GG-T724). From the GG-T706 table above, these rows are no longer design targets: "Older 16:9 phones, iPhone 8/SE" (9:16 stays the widest supported *shape*, for split-screen windows and the harness, not a device to design for), "21:9 phones (Xperia 1/5/10)", "Fold 3/4 cover, other ultra-tall", "Old 3:5 phones/tablets (WVGA, 1024×600)", and the tablet, Chromebook and desktop rows beyond "it letterboxes". The "Resolution and DPI" paragraph below keeps its maths, but its small-window thresholds (usable down to a ≈ 640-px-tall window, scale ≈ 0.25) are now a desktop-window fallback, not a phone requirement. `TypeFloor` and GG-T711's shrink-to-fit floor stay as safety nets. No code was removed.
+
+**Store settings (the owner; Unity cannot set these).**
+- **Play Console › Release › Device catalog:** the simplest rule for "iPhones, Samsung Galaxy and Google Pixel" is to **include only the manufacturers Samsung and Google**, then exclude the Galaxy A/M/F series if they shouldn't see it, plus a rule *RAM < 6 GB* and *SoC older than Snapdragon 8 Gen 1 / Exynos 2200 / Tensor G1*. Exclude tablets and Chromebooks (form factor) unless a letterboxed phone game is wanted there. The API 31 floor then comes from the bundle once the follow-up lands.
+- **App Store Connect:** iPhone only; minimum iOS comes from the Xcode project (17.0). Apple can't exclude by model, and no hardware capability cleanly separates the SE/mini from the targets, so they stay "not designed for". `ProjectSettings` `targetDevice: 2` is iPhone + iPad; switching the export to iPhone only (0) belongs in the `BuildIOS` entry when it is written (GG-T479, docs/RELEASE_BUILD.md), since iPads letterbox anyway.
+
+**Verification:** `python tools/harness.py aspects devices` runs the target matrix by name (`DEVICE_ASPECTS`: one window per flagship screen shape, plus the letterboxed fold inners); plain `aspects` keeps the generic sweep that `tools/polish.py` uses.
+
 **Resolution and DPI.** Scaling is one uniform factor (screen px per design px = limiting screen axis ÷ stage axis incl. the 36-px frame pad); it is not clamped up or down, so a 4K window or a 460-dpi phone just draws sharper. The minimum usable stage is the design stage itself, 1170×2532 design px; what limits a small or low-dpi screen is text size, which `TypeFloor` (Tokens.cs) clamps: no line drawn below 12 screen px or 9 dp, raising the body/caption sizes in steps (32 … 48 design px). Thresholds: the stage is fully usable down to a window ≈ 640 px tall (scale ≈ 0.25: 132-design-px tap targets ≈ 32 px, the text floor active; a 1366×768 laptop window is ≈ 0.27); below that targets shrink under 32 px and the shape is unsupported (it still renders, never cropped). A phone at 1080 px wide or more draws at ≥ 0.76 with no floor. Very high DPI needs no clamp.
 
 ### 26.4 Camera

@@ -4,6 +4,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py smoke            # title → new game → hub → battle (autoplay) → results
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
     python tools/harness.py aspects          # GG-T169/T706: title/hub/battle; 9:23..9:16 fill, 10:16/2:3/3:4, 9:25 and 1:1 framed
+    python tools/harness.py aspects devices  # GG-T724: the same per flagship screen shape (BIBLE §26.3 device matrix)
     python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
@@ -472,13 +473,22 @@ ASPECT_MIN, ASPECT_MAX = 9 / 23, 9 / 16  # GG-T706: tablets are letterboxed in t
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
            ("9x16", 9 / 16), ("10x16-tablet", 10 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
+# GG-T724: the target device matrix (BIBLE §26.3), one shape per flagship screen, by name: (label, aspect w/h from the
+# panel's portrait px). `harness.py aspects devices` runs these instead of the generic ASPECTS (which polish.py uses).
+DEVICE_ASPECTS = [("iphone-13-14-16e-17e", 1170 / 2532), ("iphone-15-16-17-pro", 1179 / 2556), ("iphone-pro-max", 1320 / 2868),
+                  ("iphone-air", 1260 / 2736), ("galaxy-s22-s26", 1080 / 2340), ("galaxy-z-flip7-8", 1080 / 2520),
+                  ("galaxy-z-flip4-6", 1080 / 2640), ("galaxy-z-fold7-8u-cover", 1080 / 2520), ("galaxy-z-fold5-cover", 904 / 2316),
+                  ("pixel-6-11", 1080 / 2400), ("pixel-pro-xl", 1344 / 2992), ("pixel-pro-fold-cover", 1080 / 2342),
+                  ("galaxy-z-fold8-cover-framed", 1248 / 1972), ("iphone-duo-outer-framed", 1398 / 2034),
+                  ("pixel-fold-inner-framed", 2076 / 2152), ("galaxy-z-fold-inner-framed", 1968 / 2184)]
 
-def aspects(run="aspects", height=1200):
+
+def aspects(run="aspects", height=1200, shapes=None):
     """GG-T169: launches the player at every supported phone ratio plus tablet/ultra-tall shapes; shoots the
     title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x2990, fills the
     window (no frame) from 9:23 to 9:16 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
     failures, report = [], {}
-    for label, a in ASPECTS:
+    for label, a in (shapes or ASPECTS):
         w = int(round(height * a))
         launch(f"{run}/{label}", width=w, height=height, fresh=True)
         _wait_screen("title"); time.sleep(0.8)
@@ -3165,7 +3175,9 @@ if __name__ == "__main__":
     elif cmd == "sweep":
         sweep(sys.argv[2] if len(sys.argv) > 2 else "sweep", sys.argv[3] if len(sys.argv) > 3 else None)
     elif cmd == "aspects":
-        sys.exit(0 if aspects() else 1)
+        # aspects [devices]  (devices: the GG-T724 flagship matrix, DEVICE_ASPECTS)
+        devices = len(sys.argv) > 2 and sys.argv[2] == "devices"
+        sys.exit(0 if (aspects("aspects-devices", shapes=DEVICE_ASPECTS) if devices else aspects()) else 1)
     elif cmd == "safeareas":
         # safeareas [RUN] [--nocapture] [key=value ...]  (key=value: automation settings, e.g. textsize=130 reducemotion=1)
         rest = [a for a in sys.argv[2:] if a != "--nocapture"]

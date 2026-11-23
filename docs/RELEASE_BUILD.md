@@ -21,6 +21,13 @@ platform installed with Unity (36 with Unity 6000.4.3f1; Play's minimum target r
 "optimize speed" code generation, ARM64 only (every Play device since 2019; x86_64 is only for the emulator APK),
 Unity's default graphics APIs (Vulkan with a GLES3 fallback), portrait.
 
+**Target devices (GG-T724, BIBLE §26.3).** Flagship iPhone, Samsung Galaxy (S, Z Fold, Z Flip) and Google Pixel
+phones from 2021 on: a Snapdragon 8 Gen 1 / Exynos 2200 / Tensor G1 or newer. The chosen Android floor is **API 31
+(Android 12)** for the release bundle; `BuildAndroidRelease` still sets 26 until the follow-up changes it there (the
+development APK keeps 26 for BlueStacks 5 and the emulator suite). Restricting who can install it is a **Play Console
+device catalog** job (Release > Device catalog): include only Samsung and Google, exclude Galaxy A/M/F if wanted, RAM
+< 6 GB, chips older than the floor, tablets and Chromebooks.
+
 **Version.** `versionName` is `version.txt`. `versionCode` is the number of commits on the checked-out history
 (`git rev-list --count HEAD`): it only grows on main, so a build of a newer commit always outranks the last upload and
 nothing has to be remembered or committed. Set `GG_ANDROID_VERSION_CODE=<n>` to force one (for example a hotfix built
@@ -235,3 +242,7 @@ sign and upload it. What the owner needs:
    signing", add the In-App Purchase capability, Product > Archive, then Distribute App > App Store Connect >
    Upload. TestFlight makes it installable on your iPhone within minutes of processing.
 5. App Store review needs the privacy "nutrition label" answers and screenshots for 6.7" and 6.5" iPhones.
+6. **Target devices (GG-T724, BIBLE §26.3):** iPhone 13 (A15) and newer flagships; minimum **iOS 17.0**
+   (`iOSTargetOSVersionString`, so the exported Xcode project carries it). Make the export iPhone-only (`targetDevice`
+   0; the project is 2, iPhone + iPad) when `BuildIOS` is written. App Store Connect can't exclude models, so the
+   iPhone SE and 12/13 mini are "not designed for" rather than blocked.
