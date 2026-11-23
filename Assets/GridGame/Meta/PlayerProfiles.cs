@@ -16,11 +16,11 @@ namespace GridGame.Meta
     /// <c>Profiles/&lt;Name&gt;/settings.json</c> plus <c>Profiles/&lt;Name&gt;/Saves/slot1-3.json</c>. Settings belong to the
     /// profile, not to a save slot (this reverses the 2026-10-09 "settings are per save slot" amendment). The shared
     /// <c>common</c> block carries what every MindAttic game reads (volumes, mutes, reduce motion, language); everything
-    /// Gaiden-only lives under <c>game</c>. <see cref="SettingsSave"/> stays the in-memory model the app reads.
+    /// GridGame-only lives under <c>game</c>. <see cref="SettingsSave"/> stays the in-memory model the app reads.
     /// </summary>
-    public static class GaidenSettings
+    public static class GameSettings
     {
-        /// <summary>Keys of the Gaiden-only <c>game</c> block of settings.json.</summary>
+        /// <summary>Keys of the GridGame-only <c>game</c> block of settings.json.</summary>
         public static class Keys
         {
             public const string BattleSpeed = "battleSpeed";
@@ -294,7 +294,7 @@ namespace GridGame.Meta
                 var settings = recent >= 0 ? ReadLegacySettings(SaveFiles.PathFor(legacy, recent)) : null;
                 if (settings != null)
                 {
-                    GaidenSettings.Write(profile.Settings, settings);
+                    GameSettings.Write(profile.Settings, settings);
                     result.SeededFromSlot = recent;
                 }
                 profile.SaveSettings();
@@ -417,14 +417,14 @@ namespace GridGame.Meta
         /// <summary>Writes <see cref="Settings"/> to the active profile's settings.json. False when the disk refuses.</summary>
         public bool SaveSettings()
         {
-            GaidenSettings.Write(Profile.Settings, Settings);
+            GameSettings.Write(Profile.Settings, Settings);
             return Profile.TrySaveSettings();
         }
 
         private void Use(Profile p)
         {
             Profile = p;
-            Settings = GaidenSettings.Read(p.ReloadSettings());
+            Settings = GameSettings.Read(p.ReloadSettings());
         }
     }
 }

@@ -81,7 +81,7 @@ moon, planet, giant sphere, second moon`
 
 | Asset id | Where it shows | Now | Prompt |
 |---|---|---|---|
-| App icon (iOS, Android legacy and adaptive foreground/background) | Home screen, store listing, task switcher, notifications | Done for now (GG-T486): the Manalith with the Moon behind it on a night sky, made from the game's own sky art by `GridGame.Studio/tools/make_app_icon.py` into `Assets/GridGame/AppIcon/` (1024 master, 512 Play listing icon, Android legacy/round/adaptive at every density); `GaidenBuild.ApplyAppIcons` sets them on every build. The prompt is for a painted replacement if the owner wants one | `square app icon, a stylized white porcelain knight's helm split by a crimson pincer of two blades, huge pale moon behind, bold readable silhouette, painterly anime style, deep indigo background, centered, no text --ar 1:1 --niji 5` |
+| App icon (iOS, Android legacy and adaptive foreground/background) | Home screen, store listing, task switcher, notifications | Done for now (GG-T486): the Manalith with the Moon behind it on a night sky, made from the game's own sky art by `GridGame.Studio/tools/make_app_icon.py` into `Assets/GridGame/AppIcon/` (1024 master, 512 Play listing icon, Android legacy/round/adaptive at every density); `GridGameBuild.ApplyAppIcons` sets them on every build. The prompt is for a painted replacement if the owner wants one | `square app icon, a stylized white porcelain knight's helm split by a crimson pincer of two blades, huge pale moon behind, bold readable silhouette, painterly anime style, deep indigo background, centered, no text --ar 1:1 --niji 5` |
 
 Generate at 1024×1024 or larger. The Android adaptive foreground should keep the subject in the centre 66%. Use the
 same prompt with "no helm, background only" for the background layer.
@@ -218,7 +218,7 @@ mannequin in battle, on the inspect card, in the Bestiary and on the death disso
 ```python
 import glob, hashlib, json, os, sys, collections
 ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
-RES = os.path.join(ROOT, "Assets", "Gaiden", "Resources"); C = os.path.join(RES, "Content")
+RES = os.path.join(ROOT, "Assets", "GridGame", "Resources"); C = os.path.join(RES, "Content")
 L = lambda n: json.load(open(os.path.join(C, n + ".json"), encoding="utf-8-sig"))
 def files(folder):
     d = os.path.join(RES, folder)

@@ -11,8 +11,8 @@ using static GridGame.Tests.TestKit;
 namespace GridGame.Tests
 {
     /// <summary>
-    /// Battle records (§22.6). The check always runs; set GAIDEN_RECORDS=&lt;dir&gt; to also write a soak of bot-played
-    /// first battles there (GAIDEN_RECORD_SEEDS = how many per bot, default 12) for balance analysis and ML.
+    /// Battle records (§22.6). The check always runs; set GRIDGAME_RECORDS=&lt;dir&gt; to also write a soak of bot-played
+    /// first battles there (GRIDGAME_RECORD_SEEDS = how many per bot, default 12) for balance analysis and ML.
     /// </summary>
     public class RecordTests
     {
@@ -57,9 +57,9 @@ namespace GridGame.Tests
         [Test]
         public void Record_soak_of_the_first_battle()
         {
-            var dir = Environment.GetEnvironmentVariable("GAIDEN_RECORDS");
-            int seeds = int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_RECORD_SEEDS"), out var n) ? n : 12;
-            if (string.IsNullOrEmpty(dir)) { TestContext.Out.WriteLine("GAIDEN_RECORDS not set — nothing written"); return; }
+            var dir = Environment.GetEnvironmentVariable("GRIDGAME_RECORDS");
+            int seeds = int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_RECORD_SEEDS"), out var n) ? n : 12;
+            if (string.IsNullOrEmpty(dir)) { TestContext.Out.WriteLine("GRIDGAME_RECORDS not set — nothing written"); return; }
             Directory.CreateDirectory(dir);
             foreach (var (label, randomness) in new[] { ("bot:greedy", 0f), ("bot:casual", 0.5f) })
                 for (int seed = 1; seed <= seeds; seed++)

@@ -1,5 +1,5 @@
 # Shared helper: resolves the Unity editor for this project and runs a batchmode method.
-#   pwsh tools/unity.ps1 -Method GridGame.EditorTools.GaidenBuild.CompileCheck [-Log name]
+#   pwsh tools/unity.ps1 -Method GridGame.EditorTools.GridGameBuild.CompileCheck [-Log name]
 param(
     [Parameter(Mandatory = $true)][string]$Method,
     [string]$Log = "unity",

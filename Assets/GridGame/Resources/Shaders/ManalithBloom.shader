@@ -1,7 +1,7 @@
 // GG-T679/GG-T680: bloom for the Manalith rig's HDR render (threshold 1.0, docs/MANALITH_VISUAL_SPEC.md). The built-in
 // pipeline has no post-processing stack here, so: prefilter, box down/up chain, then combine. The combine turns the
 // rig's premultiplied colour into straight alpha (bloom over empty sky becomes its own coverage) for UI Toolkit.
-Shader "Hidden/Gaiden/ManalithBloom"
+Shader "Hidden/GridGame/ManalithBloom"
 {
     Properties { _MainTex ("", 2D) = "black" {} }
     CGINCLUDE

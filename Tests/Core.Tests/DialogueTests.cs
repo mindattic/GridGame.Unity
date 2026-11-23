@@ -12,7 +12,7 @@ namespace GridGame.Tests
     public class DialogueTests
     {
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(TestKit.RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(TestKit.RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         private static ContentDb Real => TestKit.Real;
 

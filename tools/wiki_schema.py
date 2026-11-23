@@ -29,7 +29,7 @@ import prose_keys as pk  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 SCHEMA_PATH = os.path.join(HERE, "wiki_schema.json")
-RESOURCES = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
+RESOURCES = os.path.join(ROOT, "Assets", "GridGame", "Resources")
 CONTENT = os.path.join(RESOURCES, "Content")
 CANON = os.path.join(ROOT, "Data", "Prose", "canon")
 ENTRY_SCHEMA = "gridgame-wiki/1"

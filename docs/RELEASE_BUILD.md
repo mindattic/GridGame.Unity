@@ -1,14 +1,14 @@
 # Release builds (GG-T478, GG-T479)
 
 How to produce the store builds. Everything runs from the command line through `tools/build.ps1`, which drives Unity
-in batchmode through `Assets/GridGame/Editor/GaidenBuild.cs`. The Unity Editor must be closed while it runs.
+in batchmode through `Assets/GridGame/Editor/GridGameBuild.cs`. The Unity Editor must be closed while it runs.
 
 | Command | Output | What it is |
 |---|---|---|
-| `pwsh tools/build.ps1` | `Build/Windows/GridGameGaiden.exe` | Windows development player (automation endpoint on) |
-| `pwsh tools/build.ps1 -Release` | `Build/WindowsRelease/GridGameGaiden.exe` | Windows release player |
-| `pwsh tools/build.ps1 -Platform Android` | `Build/AndroidRelease/GridGameGaiden.aab` | **Google Play bundle**: IL2CPP, ARM64 only, release, signed with the upload key |
-| `pwsh tools/build.ps1 -Platform Android -Dev` | `Build/Android/GridGameGaiden.apk` | Emulator/test APK: ARM64 + x86_64, development, debug-signed (`tools/androidcheck.py`) |
+| `pwsh tools/build.ps1` | `Build/Windows/GridGame.exe` | Windows development player (automation endpoint on) |
+| `pwsh tools/build.ps1 -Release` | `Build/WindowsRelease/GridGame.exe` | Windows release player |
+| `pwsh tools/build.ps1 -Platform Android` | `Build/AndroidRelease/GridGame.aab` | **Google Play bundle**: IL2CPP, ARM64 only, release, signed with the upload key |
+| `pwsh tools/build.ps1 -Platform Android -Dev` | `Build/Android/GridGame.apk` | Emulator/test APK: ARM64 + x86_64, development, debug-signed (`tools/androidcheck.py`) |
 | `pwsh tools/build.ps1 -Platform WebGL` | `Build/WebGL` | WebGL |
 
 `-Platform` and `-Target` are the same switch. Add `-SkipProse` to build with the committed story text instead of
@@ -16,7 +16,7 @@ pulling the latest from Prose first.
 
 ## Android (Google Play)
 
-**What the bundle is.** Package `com.mindattic.gridgamegaiden`, min SDK 26 (Android 8), target SDK = the highest
+**What the bundle is.** Package `com.mindattic.gridgame`, min SDK 26 (Android 8), target SDK = the highest
 platform installed with Unity (36 with Unity 6000.4.3f1; Play's minimum target rises every August), IL2CPP with
 "optimize speed" code generation, ARM64 only (every Play device since 2019; x86_64 is only for the emulator APK),
 Unity's default graphics APIs (Vulkan with a GLES3 fallback), portrait.
@@ -39,12 +39,12 @@ with bundletool (ships with Unity) rather than the .aab file size, which also ca
 
 ```powershell
 $t = "C:\Program Files\Unity\Hub\Editor\6000.4.3f1\Editor\Data\PlaybackEngines\AndroidPlayer"
-& "$t\OpenJDK\bin\java.exe" -jar "$t\Tools\bundletool-all-1.17.2.jar" build-apks --bundle=Build\AndroidRelease\GridGameGaiden.aab --output=gg.apks --overwrite
+& "$t\OpenJDK\bin\java.exe" -jar "$t\Tools\bundletool-all-1.17.2.jar" build-apks --bundle=Build\AndroidRelease\GridGame.aab --output=gg.apks --overwrite
 & "$t\OpenJDK\bin\java.exe" -jar "$t\Tools\bundletool-all-1.17.2.jar" get-size total --apks=gg.apks
 ```
 
 The first bundle (2026-11-20) was 547 MB (545 MB download): Unity's automatic Android format had left the 81 JPEG
-backdrops as raw RGB24, 13.5 MB each. `GaidenImport` (`Assets/GridGame/Editor/GaidenBuild.cs`) now gives Android its own
+backdrops as raw RGB24, 13.5 MB each. `GridGameImport` (`Assets/GridGame/Editor/GridGameBuild.cs`) now gives Android its own
 explicit settings, and Standalone/iOS/WebGL keep the defaults:
 
 | Asset (Android only) | Setting | Compressed in the bundle |
@@ -68,7 +68,7 @@ Vorbis 0.25 or 32 kHz (~-5 MB), then **Play Asset Delivery** install-time asset 
 200 MB base cap) for music or backdrops. PAD changes how those assets load (Addressables or AssetBundles instead of
 `Resources.Load`), so it is a code change, not a setting.
 
-Changing the import rules: bump `GaidenImport.GetVersion()` so Unity re-imports what they touch, then build Android
+Changing the import rules: bump `GridGameImport.GetVersion()` so Unity re-imports what they touch, then build Android
 once and commit the rewritten `.meta` files (they record the Android override) with the rule change.
 
 ### Signing (one-time setup, the owner)
@@ -116,12 +116,12 @@ An `.aab` doesn't install directly. Either upload it to an **internal testing** 
 test, installs from the Play Store on your devices), or use `bundletool`:
 
 ```powershell
-java -jar bundletool.jar build-apks --bundle=Build\AndroidRelease\GridGameGaiden.aab --output=gg.apks --connected-device `
+java -jar bundletool.jar build-apks --bundle=Build\AndroidRelease\GridGame.aab --output=gg.apks --connected-device `
   --ks=D:\Secrets\gridgame-upload.jks --ks-key-alias=upload
 java -jar bundletool.jar install-apks --apks=gg.apks
 ```
 
-For day-to-day testing the `-Dev` APK is simpler: `adb install -r Build\Android\GridGameGaiden.apk`.
+For day-to-day testing the `-Dev` APK is simpler: `adb install -r Build\Android\GridGame.apk`.
 
 ### Playing on emulated devices: Android Emulator Suite (GG-T547)
 
@@ -130,10 +130,10 @@ To play the whole game with the mouse as it looks on a given phone or tablet, us
 `C:\Apps\Android.Emulator.Suite\AndroidEmulatorSuite.exe`, Desktop shortcut "Android Emulator Suite").
 
 1. Publish the APK: `powershell -ExecutionPolicy Bypass -File tools\deploy-apk.ps1 -Build` builds the `-Dev` APK
-   and copies it to `C:\Apps\Unity.GridGame\GridGameGaiden.apk` (with `GridGameGaiden.txt`: version, commit, build
+   and copies it to `C:\Apps\Unity.GridGame\GridGame.apk` (with `GridGame.txt`: version, commit, build
    time). Without `-Build` it publishes the APK already in `Build\Android`. The suite's **Build APK** button runs the
    same command.
-2. Open the suite: app **GridGame Gaiden**, pick a device from the gallery (about 100 real phones, foldables, tablets
+2. Open the suite: app **GridGame**, pick a device from the gallery (about 100 real phones, foldables, tablets
    and iPhone/iPad aspect profiles, with photo and specs; search and filter by form), pick an emulator (Android
    Emulator, BlueStacks 5 or LDPlayer; only installed ones show), press **Launch**.
 3. The emulator boots shaped like that device (the Android Emulator gets the device's exact panel: resolution and
@@ -148,7 +148,7 @@ fallback, so any emulator runs it without hiding Vulkan; `-vulkan` still builds 
 and the release bundle keeps Unity's default list (GG-T549). Verified 2026-11-21 on Pixel 7 (20:9), Galaxy Z Flip6 (22:9), iPad 9th gen (4:3), a 480 x 800 mdpi phone
 and BlueStacks 5; findings filed as GG-T548 (telemetry error console), GG-T550 (4:3 list screens), GG-T551 (tiny text
 at 480 x 800). LDPlayer 4 is Android 7.1 and can't install
-Gaiden (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. The development APK shows Unity's
+GridGame (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. The development APK shows Unity's
 "Development Build" mark and has the automation endpoint (`tools/androidcheck.py` drives it over `adb forward`).
 
 ### Google Play Console (the owner)
@@ -164,7 +164,7 @@ Gaiden (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time. T
    permission has been uploaded to some track. **Display titles (GG-T568):** the currency is **Mana Shards**, so
    create the products with these titles (the product ids keep the old word and must not change): `diamonds_100`
    "100 Aetherite Shards", `diamonds_500` "500 Aetherite Shards", `diamonds_1000` "1,000 Aetherite Shards",
-   `diamonds_2500` "2,500 Aetherite Shards"; description "Mana Shards for GridGame Gaiden: a random summon, an
+   `diamonds_2500` "2,500 Aetherite Shards"; description "Mana Shards for GridGame: a random summon, an
    instant Rested refill or a lucky craft." Use the same titles on App Store Connect.
 
 ## Crash and error reporting (GG-T484)
@@ -181,12 +181,12 @@ What a release build does today, and what is still the owner's call:
   device model, type, message, stack), rolled at 256 KB, at most 50 records a launch and 3 of the same exception.
   Paths are scrubbed: the data folder becomes `<data>`, a user's home folder `<user>`, a profile name `<profile>`. No
   save data, device id, account or IP is in it. On Android it's under
-  `/sdcard/Android/data/com.mindattic.gridgamegaiden/files/Diagnostics/` (`adb pull` it from a test phone).
+  `/sdcard/Android/data/com.mindattic.gridgame/files/Diagnostics/` (`adb pull` it from a test phone).
 - **MindAttic.Telemetry** gets the same record as an `exception` event, but only where telemetry runs at all: the
   editor and development builds (it is gated off in release builds and writes to the local disk, `R:\Telemetry`, so
   it can't carry reports from players' phones). That is why it isn't the release sink. On phones and tablets
   (development builds), `GameTelemetry` (`App/Services/GameTelemetry.cs`, GG-T548) writes it under
-  `<persistentDataPath>/Telemetry/GridGameGaiden/` instead (Android: `/sdcard/Android/data/com.mindattic.gridgamegaiden/files/Telemetry/`),
+  `<persistentDataPath>/Telemetry/GridGame/` instead (Android: `/sdcard/Android/data/com.mindattic.gridgame/files/Telemetry/`),
   keeps the newest 20 sessions, and logs a failure as a plain line, never a red error over the battle.
 - **Not built: sending managed exceptions home from players' phones.** It needs a service and a privacy-policy line,
   so it waits for the owner's pick. Options, cheapest first: (1) **Unity Cloud Diagnostics** (free tier; link the
@@ -203,8 +203,8 @@ sign and upload it. What the owner needs:
 1. A Mac with the current Xcode (from the Mac App Store) and Unity 6000.4.3f1 with iOS Build Support, or just Xcode if
    the Xcode project is exported on Windows and copied over.
 2. An Apple Developer Program membership (US$99/year), then in App Store Connect: the app record with bundle id
-   `com.mindattic.gridgamegaiden`, and the `diamonds_*` in-app purchases (GG-T471).
-3. Export: a `BuildIOS` entry in `GaidenBuild.cs` (IL2CPP is the only backend, ARM64, minimum iOS version, the bundle
+   `com.mindattic.gridgame`, and the `diamonds_*` in-app purchases (GG-T471).
+3. Export: a `BuildIOS` entry in `GridGameBuild.cs` (IL2CPP is the only backend, ARM64, minimum iOS version, the bundle
    id) writes an Xcode project folder; not written yet because nothing can verify it without a Mac.
 4. In Xcode: open `Unity-iPhone.xcodeproj`, Signing & Capabilities > Team = your account, "Automatically manage
    signing", add the In-App Purchase capability, Product > Archive, then Distribute App > App Store Connect >

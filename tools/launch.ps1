@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Deploys the current Release build to C:\Apps\GridGameGaiden, then offers Normal Play, Demo +
+  Deploys the current Release build to C:\Apps\GridGame, then offers Normal Play, Demo +
   Capture, or Quit.
 .PARAMETER Sound
   Launch with audio. Without it, launches muted: Unity.Shared's session mute (-muted /
@@ -21,7 +21,7 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-$exe = "C:\Apps\GridGameGaiden\GridGameGaiden.exe"
+$exe = "C:\Apps\GridGame\GridGame.exe"
 if (-not (Test-Path $exe)) {
     Write-Host "Deploy reported success but $exe is missing." -ForegroundColor Red
     exit 1
@@ -36,7 +36,7 @@ if ($Sound) { Remove-Item Env:MINDATTIC_CLI_MUTED -ErrorAction SilentlyContinue 
 
 $muteLabel = if ($Sound) { "" } else { " (muted)" }
 Write-Host ""
-Write-Host "  GridGameGaiden" -ForegroundColor Cyan
+Write-Host "  GridGame" -ForegroundColor Cyan
 Write-Host "  [1] Normal Play$muteLabel"
 Write-Host "  [2] Demo + Capture$muteLabel"
 Write-Host "  [3] Quit"

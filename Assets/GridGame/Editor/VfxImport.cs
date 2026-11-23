@@ -19,7 +19,7 @@ namespace GridGame.EditorTools
         private const string PrefabDir = "Assets/GridGame/Resources/Vfx";
         private const string LibDir = "Assets/GridGame/Vfx";
 
-        [MenuItem("Gaiden/Prepare Effect Prefabs")]
+        [MenuItem("GridGame/Prepare Effect Prefabs")]
         public static void Prepare()
         {
             FixMaterials();
@@ -96,7 +96,7 @@ namespace GridGame.EditorTools
         /// <summary>The project's stand-in for URP's default particle material: legacy Alpha Blended, Unity's soft dot.</summary>
         private static Material DefaultMaterial()
         {
-            const string path = LibDir + "/Materials/GaidenDefaultParticle.mat";
+            const string path = LibDir + "/Materials/GridGameDefaultParticle.mat";
             if (defaultMat != null) return defaultMat;
             defaultMat = AssetDatabase.LoadAssetAtPath<Material>(path);
             if (defaultMat != null) return defaultMat;

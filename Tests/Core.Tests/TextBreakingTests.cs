@@ -135,10 +135,10 @@ namespace GridGame.Tests
         {
             Assert.That(new SettingsSave().Hyphenate, Is.False);
             var ps = Unity.Shared.Core.ProfileSettings.CreateDefault("t");
-            Assert.That(GaidenSettings.Read(ps).Hyphenate, Is.False);
-            GaidenSettings.Write(ps, new SettingsSave { Hyphenate = true });
-            Assert.That(ps.Game.GetBool(GaidenSettings.Keys.Hyphenate), Is.True);
-            Assert.That(GaidenSettings.Read(ps).Hyphenate, Is.True);
+            Assert.That(GameSettings.Read(ps).Hyphenate, Is.False);
+            GameSettings.Write(ps, new SettingsSave { Hyphenate = true });
+            Assert.That(ps.Game.GetBool(GameSettings.Keys.Hyphenate), Is.True);
+            Assert.That(GameSettings.Read(ps).Hyphenate, Is.True);
         }
 
         [Test]

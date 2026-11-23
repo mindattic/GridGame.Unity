@@ -68,7 +68,7 @@ namespace GridGame.Tests
         private static void AssertArt(string id, (float x, float y, float w, float h) figure, (float zoom, float x, float y) thumb)
         {
             var k = Real.TryClass(id);
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", k.PortraitFile() + ".png")), Is.True);
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", k.PortraitFile() + ".png")), Is.True);
             Assert.That(k.Figure, Is.Not.Null);
             Assert.That(k.Figure.X, Is.EqualTo(figure.x).Within(1e-4)); Assert.That(k.Figure.Y, Is.EqualTo(figure.y).Within(1e-4));
             Assert.That(k.Figure.W, Is.EqualTo(figure.w).Within(1e-4)); Assert.That(k.Figure.H, Is.EqualTo(figure.h).Within(1e-4));

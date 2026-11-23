@@ -14,13 +14,13 @@ using NUnit.Framework;
 namespace GridGame.Tests
 {
     /// <summary>
-    /// GG-T321: a measurement soak for the re-entry timeline (GG-T318), not a gate. With GAIDEN_TIMELINE_SOAK=&lt;out.md&gt;
+    /// GG-T321: a measurement soak for the re-entry timeline (GG-T318), not a gate. With GRIDGAME_TIMELINE_SOAK=&lt;out.md&gt;
     /// it plays the main campaign stages with the smart and casual bots and reports, per stage: wins, the gap between
     /// consecutive enemy turns (median, share under a minimum drag), the forced-Guard share of hero actions and the
     /// actions per window. Unset, it does nothing.
-    /// Knobs: GAIDEN_DIFFICULTY (1..10, default 10); GAIDEN_SOAK_PARTY = campaign (default: the party the campaign has at
-    /// that stage, starting with the real three) | six; GAIDEN_SOAK_PER_STAGE (default 4); GAIDEN_MINGAP / GAIDEN_MAXSPREAD
-    /// / GAIDEN_JITTER override that difficulty row's spacing; GAIDEN_TUNE="EntryBaseSeconds=4;RecoverBaseSeconds=1"
+    /// Knobs: GRIDGAME_DIFFICULTY (1..10, default 10); GRIDGAME_SOAK_PARTY = campaign (default: the party the campaign has at
+    /// that stage, starting with the real three) | six; GRIDGAME_SOAK_PER_STAGE (default 4); GRIDGAME_MINGAP / GRIDGAME_MAXSPREAD
+    /// / GRIDGAME_JITTER override that difficulty row's spacing; GRIDGAME_TUNE="EntryBaseSeconds=4;RecoverBaseSeconds=1"
     /// overrides BattleConfig statics.
     /// </summary>
     public class TimelineTuningSoak
@@ -37,21 +37,21 @@ namespace GridGame.Tests
         [Test]
         public void Timeline_tuning_soak()
         {
-            var outPath = Environment.GetEnvironmentVariable("GAIDEN_TIMELINE_SOAK");
-            if (string.IsNullOrEmpty(outPath)) { TestContext.Out.WriteLine("GAIDEN_TIMELINE_SOAK not set — nothing run"); return; }
+            var outPath = Environment.GetEnvironmentVariable("GRIDGAME_TIMELINE_SOAK");
+            if (string.IsNullOrEmpty(outPath)) { TestContext.Out.WriteLine("GRIDGAME_TIMELINE_SOAK not set — nothing run"); return; }
 
             int difficulty = BotDifficulty.FromEnv();
-            string partyMode = Environment.GetEnvironmentVariable("GAIDEN_SOAK_PARTY") ?? "campaign";
-            int perStage = int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_SOAK_PER_STAGE"), out var ps) ? ps : 4;
+            string partyMode = Environment.GetEnvironmentVariable("GRIDGAME_SOAK_PARTY") ?? "campaign";
+            int perStage = int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_SOAK_PER_STAGE"), out var ps) ? ps : 4;
             var row = DifficultyTable.At(difficulty);
-            if (EnvF("GAIDEN_MINGAP") is float mg) row.MinGapSeconds = mg;
-            if (EnvF("GAIDEN_MAXSPREAD") is float sp) row.MaxSpreadSeconds = sp;
-            if (EnvF("GAIDEN_JITTER") is float jt) row.JitterSeconds = jt;
-            foreach (var kv in (Environment.GetEnvironmentVariable("GAIDEN_TUNE") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries))
+            if (EnvF("GRIDGAME_MINGAP") is float mg) row.MinGapSeconds = mg;
+            if (EnvF("GRIDGAME_MAXSPREAD") is float sp) row.MaxSpreadSeconds = sp;
+            if (EnvF("GRIDGAME_JITTER") is float jt) row.JitterSeconds = jt;
+            foreach (var kv in (Environment.GetEnvironmentVariable("GRIDGAME_TUNE") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = kv.Split('=');
                 var f = typeof(BattleConfig).GetField(parts[0].Trim());
-                Assert.That(f != null && !f.IsLiteral && !f.IsInitOnly, $"GAIDEN_TUNE: {parts[0]} is not a tunable BattleConfig field");
+                Assert.That(f != null && !f.IsLiteral && !f.IsInitOnly, $"GRIDGAME_TUNE: {parts[0]} is not a tunable BattleConfig field");
                 f.SetValue(null, Convert.ChangeType(float.Parse(parts[1], CultureInfo.InvariantCulture), f.FieldType, CultureInfo.InvariantCulture));
             }
 
@@ -66,8 +66,8 @@ namespace GridGame.Tests
             sb.AppendLine("|---|---|---|---|---|---|---|---|");
             var bots = new[] { "smart", "skilled", "casual" };
             var totals = bots.ToDictionary(b => b, _ => new Tally());
-            float skilledLevel = EnvF("GAIDEN_SKILLED_LEVEL") ?? HeroBot.SkilledSkillLevel;
-            float skilledThink = EnvF("GAIDEN_SKILLED_THINK") ?? HeroBot.SkilledThinkSeconds;
+            float skilledLevel = EnvF("GRIDGAME_SKILLED_LEVEL") ?? HeroBot.SkilledSkillLevel;
+            float skilledThink = EnvF("GRIDGAME_SKILLED_THINK") ?? HeroBot.SkilledThinkSeconds;
             sb.Insert(sb.ToString().IndexOf("| stage", StringComparison.Ordinal), $"Skilled bot: SkillLevel {skilledLevel}, think {skilledThink}s\n\n");
             int battle = 0;
             for (int si = 0; si < stages.Count; si++)

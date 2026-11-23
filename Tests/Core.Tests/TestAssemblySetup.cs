@@ -11,7 +11,7 @@ using NUnit.Framework;
 /// instead of being quietly self-healed by the release net (GG-T97). Never toggled per test — fixtures run in parallel.
 /// </summary>
 [SetUpFixture]
-public sealed class GaidenTestAssemblySetup
+public sealed class GridGameTestAssemblySetup
 {
     [OneTimeSetUp]
     public void StrictBoard() => BattleEngine.StrictTiles = true;

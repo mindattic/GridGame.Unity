@@ -15,11 +15,11 @@ namespace GridGame.Tests
     public class FreeHoldsTests
     {
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
-            || File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
+            || File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         [Test]
         public void The_moors_beyond_the_stills_show_the_free_holds()

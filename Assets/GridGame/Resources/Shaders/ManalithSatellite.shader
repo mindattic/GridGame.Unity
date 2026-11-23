@@ -1,6 +1,6 @@
 // GG-T679/GG-T680: the Manalith satellite. Standard PBR from the Meshy maps plus a Fresnel rim in the Manalith's blue
 // (docs/MANALITH_VISUAL_SPEC.md). _MetallicGlossMap packs metallic in R and smoothness (1 - roughness) in A.
-Shader "Gaiden/ManalithSatellite"
+Shader "GridGame/ManalithSatellite"
 {
     Properties
     {

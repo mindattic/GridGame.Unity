@@ -170,8 +170,8 @@ namespace GridGame.App
         private void BuildPanel()
         {
             var settings = ScriptableObject.CreateInstance<PanelSettings>();
-            settings.name = "GaidenPanel";
-            settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("UI/GaidenTheme");
+            settings.name = "GridGamePanel";
+            settings.themeStyleSheet = Resources.Load<ThemeStyleSheet>("UI/GridGameTheme");
             settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
             settings.referenceResolution = new Vector2Int(DesignWidth, DesignHeight);
             settings.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;

@@ -391,7 +391,7 @@ namespace GridGame.Meta
     }
 
     /// <summary>The player's settings — one set per profile, stored in Profiles/&lt;Name&gt;/settings.json through
-    /// <see cref="GaidenSettings"/> (GG-T99), not in a save slot.</summary>
+    /// <see cref="GameSettings"/> (GG-T99), not in a save slot.</summary>
     public sealed class SettingsSave
     {
         public float MusicVolume = 0.6f;

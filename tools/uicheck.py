@@ -21,9 +21,9 @@ import harness as h  # noqa: E402
 
 results = []
 CAMPAIGN = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                       "Assets", "Gaiden", "Resources", "Content", "campaign.json"), encoding="utf-8"))
+                                       "Assets", "GridGame", "Resources", "Content", "campaign.json"), encoding="utf-8"))
 DIALOGUES = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                        "Assets", "Gaiden", "Resources", "Content", "dialogues.json"), encoding="utf-8"))
+                                        "Assets", "GridGame", "Resources", "Content", "dialogues.json"), encoding="utf-8"))
 
 
 def check(name, ok, detail=""):

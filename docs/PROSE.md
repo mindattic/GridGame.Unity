@@ -29,7 +29,7 @@ Assets/GridGame/Resources/Content/Text/*.json <──tools/prose_apply.py── 
 | Text tool | `tools/prose_text.py` | Phase 2: `check` (no story in gameplay JSON, every key has a text), the one-time `snapshot`, the Python join, `upsert_seed` for generators |
 | Loader join | `Core/Content/ProseText.cs` | reads Content/Text into the models, placeholders and `TextRef` (id, GUID, version) |
 | Applier | `tools/prose_apply.py` (+ `tools/test_prose_apply.py`, fixture `tools/fixtures/prose/`) | pending texts → `Content/Text/<kind>.json` |
-| Build-time pull | `tools/prose-sync.ps1`, `tools/build.ps1`, `GaidenBuild.SyncProse` | kit pull + apply before every build |
+| Build-time pull | `tools/prose-sync.ps1`, `tools/build.ps1`, `GridGameBuild.SyncProse` | kit pull + apply before every build |
 
 Gitignored (local): `Data/Prose/*.universe.json`, `pending/`, `drafts/`, `outbox.jsonl`, `.kit/`. Committed: the config,
 `applied.jsonl` and the applied texts under `Content/Text`.
@@ -183,8 +183,8 @@ Every build ships the latest **published** Prose text.
 
 - **Where the pull runs:**
   - `tools/build.ps1` runs `tools/prose-sync.ps1` (kit pull with `--status published`, then kit apply) before Unity.
-  - `GaidenBuild.Build` calls `SyncProse()`, which does the same for menu and batch builds.
-  - `GaidenProsePreBuild` (an `IPreprocessBuildWithReport`) covers File > Build.
+  - `GridGameBuild.Build` calls `SyncProse()`, which does the same for menu and batch builds.
+  - `GridGameProsePreBuild` (an `IPreprocessBuildWithReport`) covers File > Build.
   - Each pull runs once per build. After `build.ps1` has pulled, Unity does not pull again (`GG_PROSE_SYNCED=1`).
 - **When Prose can't be reached** (the Hub is offline, the kit is missing, or a kit step fails), the step logs a warning
   and the build uses the committed `Content/Text` snapshot. A build never fails because Prose is down.

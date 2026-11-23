@@ -14,10 +14,10 @@ namespace GridGame.Tests
     public class StillTests
     {
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         private static readonly HashSet<string> Concord = new HashSet<string> { "bulwark", "choir", "templar", "undead", "cyberzombie", "cyclops", "ceramicknight", "hag" };
 
@@ -99,7 +99,7 @@ namespace GridGame.Tests
 
             foreach (var theme in Real.Campaign.Themes.Select(t => t.Id).Concat(Real.CampaignStages().Select(s => s.Theme)).Distinct())
                 Assert.That(Probe(SetOf(theme)).Count > 0 || Probe(SetOf(Backdrops.BaseTheme(theme))).Count > 0, $"{theme} has art of its own or its base theme's");
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "still-00.png")), "the Still's board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Tiles", "still-00.png")), "the Still's board tile");
         }
 
         [Test]

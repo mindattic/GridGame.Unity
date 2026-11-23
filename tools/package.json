@@ -1,5 +1,5 @@
 {
-  "name": "gridgamegaiden-tools",
+  "name": "gridgame-tools",
   "private": true,
   "type": "module",
   "devDependencies": { "playwright": "1.64.0" }

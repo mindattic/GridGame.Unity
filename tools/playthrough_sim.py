@@ -44,7 +44,7 @@ RESUME = "--resume" in sys.argv
 KEEP = "--keep" in sys.argv
 ROOT = H.ROOT
 LOG = os.path.join(ROOT, "artifacts", RUN, "play.jsonl")
-CONTENT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
+CONTENT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content")
 
 _campaign = json.load(open(os.path.join(CONTENT, "campaign.json"), encoding="utf-8"))
 _themes = _campaign["Themes"]

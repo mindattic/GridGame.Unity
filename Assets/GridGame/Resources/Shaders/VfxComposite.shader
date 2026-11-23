@@ -1,6 +1,6 @@
 // GG-T269: turns the effects camera's render (additive particles leave alpha at 0) into straight alpha that
 // UI Toolkit can blend over the board: alpha = brightest channel, color un-premultiplied by it.
-Shader "Hidden/Gaiden/VfxComposite"
+Shader "Hidden/GridGame/VfxComposite"
 {
     Properties { _MainTex ("Texture", 2D) = "black" {} }
     SubShader

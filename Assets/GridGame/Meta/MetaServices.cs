@@ -685,7 +685,7 @@ namespace GridGame.Meta
             Build(c, s, c.Stage(stageId), seed, difficulty);
 
         /// <summary>A battle for this save. <paramref name="difficulty"/> is the profile's dial 1..10 (GG-T309; the app passes
-        /// <c>Settings.Difficulty.Level</c>, the soaks GAIDEN_DIFFICULTY); the default <see cref="DifficultyTable.Neutral"/> is unscaled.</summary>
+        /// <c>Settings.Difficulty.Level</c>, the soaks GRIDGAME_DIFFICULTY); the default <see cref="DifficultyTable.Neutral"/> is unscaled.</summary>
         public static BattleSetup Build(ContentDb c, SaveData s, StageDef stage, int seed, int difficulty = DifficultyTable.Neutral)
         {
             Mercenaries.Settle(c, s); // a spent contract never fights an unpaid battle (GG-T233)

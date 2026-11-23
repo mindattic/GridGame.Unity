@@ -12,7 +12,7 @@ Character counts were measured with Python `len()` on the exact strings below. R
 ## 1. App name
 
 The current product name is **`GridGame Gaiden`** (`ProjectSettings/ProjectSettings.asset`, `productName`, company
-`MindAttic`, package `com.mindattic.gridgamegaiden`).
+`MindAttic`, package `com.mindattic.gridgame`).
 
 | Candidate | Length | Conflict check (web search, 2026-11-20) | Notes |
 |---|---|---|---|

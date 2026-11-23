@@ -6,13 +6,13 @@ dimension A-H 0-100, write a scorecard + report, and ratchet against docs/polish
     python tools/polish.py --no-player     # static parts only (lint, art, gates, records)
     python tools/polish.py --balance       # also run the greedy + casual bot soaks (minutes) and score dimension G
                            [--per-stage N] # casual battles per campaign stage (default 4); --keep-records keeps them
-                           [--difficulty N] # the dial 1..10 the soaks fight at (default 10; GG-T309, GAIDEN_DIFFICULTY)
+                           [--difficulty N] # the dial 1..10 the soaks fight at (default 10; GG-T309, GRIDGAME_DIFFICULTY)
                            [--economy-only] # GG-T540: only the gold ledger (managed-camp campaigns), no soaks
     python tools/polish.py --accept-dims G # merge only these dimensions' rules into the baseline
     python tools/polish.py --records DIR   # score dimension G from existing battle records
     python tools/polish.py --accept        # write this pass as the new baseline (only when nothing regressed)
 
-Set GAIDEN_PORT to a free port when another tool may be driving a player on the default one.
+Set GRIDGAME_PORT to a free port when another tool may be driving a player on the default one.
 Exit 1 when any dimension scored in both the baseline and this pass drops (rules measured in only one of them are
 reported, never failed, so adding a measurement can't block a pass). Build the player first (tools/build.ps1).
 """
@@ -209,7 +209,7 @@ def audio(tally):
         for f in rep[kind]["files"]:
             tally.one(rule, f["ok"], {"screen": "audio", "subject": f["file"],
                                       "detail": f"{f['lufs']} LUFS, {f['dbtp']} dBTP (target {rep[kind]['target']})"})
-    app = os.path.join(ROOT, "Assets", "Gaiden", "App")
+    app = os.path.join(ROOT, "Assets", "GridGame", "App")
 
     def src(rel):
         p = os.path.join(app, rel)
@@ -249,7 +249,7 @@ def uicheck():
 
 def campaign_order():
     try:
-        camp = json.load(open(os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "campaign.json"), encoding="utf-8"))
+        camp = json.load(open(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "campaign.json"), encoding="utf-8"))
         return [sid for t in camp["Themes"] for sid in t["Stages"]]
     except Exception:
         return []
@@ -346,21 +346,21 @@ def run_soak(out, per_stage=4, difficulty=None):
     bot fighting each campaign stage `per_stage` times with rotating parties (POL-G1, G2, G7)."""
     proj = os.path.join(ROOT, "Tests", "Core.Tests", "Core.Tests.csproj")
     dirs = []
-    # GG-T423: GAIDEN_ABILITY_PARTY=campaign makes the soak field the roster size each stage is actually designed
+    # GG-T423: GRIDGAME_ABILITY_PARTY=campaign makes the soak field the roster size each stage is actually designed
     # against (AbilityUsageSoak.CampaignPartySize) instead of a flat five, which BattleConfig.PartyScale (GG-T321)
     # otherwise punishes with up to +60% enemy HP/strike on early stages. Set for both soaks: it only changes
     # behavior on the per-stage path (casual, perStage>0) today, but is included for greedy too so neither soak
     # silently reverts to flat-5 if its own per-stage mode is ever turned on.
     # GG-T276: the casual per-stage soak fights each stage from the save a camp-managing campaign arrives with
-    # (gear, trained abilities, talents) instead of bare new heroes; GAIDEN_ABILITY_GEAR=bare restores the old way.
-    gear = os.environ.get("GAIDEN_ABILITY_GEAR", "campaign")
-    for label, extra in (("greedy", {}), ("casual", {"GAIDEN_ABILITY_BOT": "casual", "GAIDEN_ABILITY_PER_STAGE": str(per_stage),
-                                                     "GAIDEN_ABILITY_GEAR": gear})):
+    # (gear, trained abilities, talents) instead of bare new heroes; GRIDGAME_ABILITY_GEAR=bare restores the old way.
+    gear = os.environ.get("GRIDGAME_ABILITY_GEAR", "campaign")
+    for label, extra in (("greedy", {}), ("casual", {"GRIDGAME_ABILITY_BOT": "casual", "GRIDGAME_ABILITY_PER_STAGE": str(per_stage),
+                                                     "GRIDGAME_ABILITY_GEAR": gear})):
         d = os.path.join(out, "records", label)
         os.makedirs(d, exist_ok=True)
         subprocess.run(["dotnet", "test", proj, "--filter", "FullyQualifiedName~AbilityUsageSoak"], cwd=ROOT,
-                       env={**os.environ, "GAIDEN_ABILITY_RECORDS": d, "GAIDEN_ABILITY_PARTY": "campaign", **extra,
-                            **({"GAIDEN_DIFFICULTY": str(difficulty)} if difficulty else {})})
+                       env={**os.environ, "GRIDGAME_ABILITY_RECORDS": d, "GRIDGAME_ABILITY_PARTY": "campaign", **extra,
+                            **({"GRIDGAME_DIFFICULTY": str(difficulty)} if difficulty else {})})
         dirs.append(d)
     return dirs
 
@@ -375,7 +375,7 @@ def economy(tally, out, difficulty=None):
     proj = os.path.join(ROOT, "Tests", "Core.Tests", "Core.Tests.csproj")
     path = os.path.join(out, "economy.json")
     subprocess.run(["dotnet", "test", proj, "--filter", "FullyQualifiedName~BalanceReport.Economy_ledger"], cwd=ROOT,
-                   env={**os.environ, "GAIDEN_ECONOMY_OUT": path, **({"GAIDEN_DIFFICULTY": str(difficulty)} if difficulty else {})})
+                   env={**os.environ, "GRIDGAME_ECONOMY_OUT": path, **({"GRIDGAME_DIFFICULTY": str(difficulty)} if difficulty else {})})
     try:
         data = json.load(open(path, encoding="utf-8"))
     except Exception as e:

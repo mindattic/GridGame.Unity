@@ -56,8 +56,8 @@ namespace GridGame.Tests
         public void New_settings_and_profiles_start_at_ten()
         {
             Assert.That(new SettingsSave().Difficulty.Level, Is.EqualTo(10));
-            Assert.That(GaidenSettings.Read(null).Difficulty.Level, Is.EqualTo(10));
-            Assert.That(GaidenSettings.Read(Fresh()).Difficulty.Level, Is.EqualTo(10));
+            Assert.That(GameSettings.Read(null).Difficulty.Level, Is.EqualTo(10));
+            Assert.That(GameSettings.Read(Fresh()).Difficulty.Level, Is.EqualTo(10));
         }
 
         [TestCase("Easy", 1f, 1f, 5)]
@@ -71,27 +71,27 @@ namespace GridGame.Tests
         public void A_settings_file_with_the_old_preset_migrates_onto_the_dial(string preset, float hp, float dmg, int expected)
         {
             var ps = Fresh();
-            var d = ps.Game.GetOrAddObject(GaidenSettings.Keys.Difficulty);
+            var d = ps.Game.GetOrAddObject(GameSettings.Keys.Difficulty);
             if (preset != null) d.Set("preset", preset);
             d.Set("enemyHp", hp); d.Set("enemyDamage", dmg); d.Set("rewardGold", 1f);
-            var s = GaidenSettings.Read(ps);
+            var s = GameSettings.Read(ps);
             Assert.That(s.Difficulty.Level, Is.EqualTo(expected));
             // Written back as a level; the scaffold's keys are gone.
-            GaidenSettings.Write(ps, s);
-            var back = ps.Game.GetObject(GaidenSettings.Keys.Difficulty);
-            Assert.That(back.GetInt(GaidenSettings.DifficultyLevelKey), Is.EqualTo(expected));
+            GameSettings.Write(ps, s);
+            var back = ps.Game.GetObject(GameSettings.Keys.Difficulty);
+            Assert.That(back.GetInt(GameSettings.DifficultyLevelKey), Is.EqualTo(expected));
             Assert.That(back.ContainsKey("preset") || back.ContainsKey("enemyHp") || back.ContainsKey("rewardGold"), Is.False);
-            Assert.That(GaidenSettings.Read(ps).Difficulty.Level, Is.EqualTo(expected));
+            Assert.That(GameSettings.Read(ps).Difficulty.Level, Is.EqualTo(expected));
         }
 
         [Test]
         public void A_stored_level_round_trips_and_an_out_of_range_one_reads_as_ten()
         {
             var ps = Fresh();
-            GaidenSettings.Write(ps, new SettingsSave { Difficulty = new DifficultySettings { Level = 3 } });
-            Assert.That(GaidenSettings.Read(ps).Difficulty.Level, Is.EqualTo(3));
-            ps.Game.GetObject(GaidenSettings.Keys.Difficulty).Set(GaidenSettings.DifficultyLevelKey, 42);
-            Assert.That(GaidenSettings.Read(ps).Difficulty.Level, Is.EqualTo(10));
+            GameSettings.Write(ps, new SettingsSave { Difficulty = new DifficultySettings { Level = 3 } });
+            Assert.That(GameSettings.Read(ps).Difficulty.Level, Is.EqualTo(3));
+            ps.Game.GetObject(GameSettings.Keys.Difficulty).Set(GameSettings.DifficultyLevelKey, 42);
+            Assert.That(GameSettings.Read(ps).Difficulty.Level, Is.EqualTo(10));
         }
 
         [Test]

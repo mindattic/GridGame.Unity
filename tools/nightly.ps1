@@ -1,4 +1,4 @@
-# GridGame Gaiden nightly run (owner 2026-11-17: "keep coding and building, leave the tests for overnight; a
+# GridGame nightly run (owner 2026-11-17: "keep coding and building, leave the tests for overnight; a
 # MindAttic.Scheduler job that does all the logging and telemetry after 2am every night").
 #
 #   powershell -NoProfile -ExecutionPolicy Bypass -File tools\nightly.ps1 [-SkipBuild] [-Encounters 30] [-NoTickets]
@@ -109,7 +109,7 @@ $polishOut = Get-ChildItem (Join-Path $wt "artifacts") -Recurse -Filter "polish*
 foreach ($f in $polishOut) { Copy-Item $f.FullName (Join-Path $out ("balance-" + $f.Name)) -Force }
 
 # ── 3. build + endless telemetry (shared checkout, only when it is idle) ────────────────────────────────────
-$busy = @(Get-Process Unity, GridGameGaiden -ErrorAction SilentlyContinue).Count -gt 0
+$busy = @(Get-Process Unity, GridGame -ErrorAction SilentlyContinue).Count -gt 0
 if ($busy) {
     Write-Log "play: skipped (Unity or the player is running)"
     $summary["play"] = @{ exit = "skipped"; seconds = 0; log = "Unity or the player was running" }

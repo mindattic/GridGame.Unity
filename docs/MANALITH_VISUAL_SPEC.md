@@ -92,5 +92,5 @@ Burst times are drawn up front from the seed: first at U(8, 12), then each next 
   which are 8.85 + 8.46.
 - Each engine's own RNG decides the positions, sizes and spins, so expect the same counts and the same look, not
   the same pixels. A port that wants the same burst times can copy the two numbers above.
-- Unity re-renders it with `tools/unity.ps1 -Method GridGame.EditorTools.GaidenBuild.ManalithShot` (needs
+- Unity re-renders it with `tools/unity.ps1 -Method GridGame.EditorTools.GridGameBuild.ManalithShot` (needs
   graphics, not `-nographics`). The log prints the burst times and the live counts.

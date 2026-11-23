@@ -1,23 +1,23 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Shuts down any running GridGameGaiden, clears the release build output, rebuilds the Windows
-    Release player from scratch, and publishes a standalone copy to C:\Apps\GridGameGaiden\ — same
+    Shuts down any running GridGame, clears the release build output, rebuilds the Windows
+    Release player from scratch, and publishes a standalone copy to C:\Apps\GridGame\ — same
     process UnityEve/Automata/KdpPublish/IdiotProof use to always have a fresh, independent deployed
     copy instead of a possibly-stale one.
 
 .DESCRIPTION
-    1. Stops any running GridGameGaiden.exe process launched from *this* repo's Build\ output or
-       from the deployed copy at C:\Apps\GridGameGaiden\ — never another git worktree's dev player
+    1. Stops any running GridGame.exe process launched from *this* repo's Build\ output or
+       from the deployed copy at C:\Apps\GridGame\ — never another git worktree's dev player
        (GG-T21: Get-Process only sees the process name, so an unscoped Stop-Process -Force here
        would silently kill a sibling worktree's unrelated long-running session, indistinguishable
        to that session from an unexplained crash).
     2. Removes Build\WindowsRelease — the build OUTPUT only, never Library\ (Unity's asset
        import / script-compile cache, which survives exactly as it does for a normal
        Editor rebuild) — so the player build below is never a stale incremental copy.
-    3. Runs tools\unity.ps1 -Method GridGame.EditorTools.GaidenBuild.BuildWindowsRelease in Unity
-       batch mode (requires the Editor closed) -> Build\WindowsRelease\GridGameGaiden.exe.
-    4. Copies Build\WindowsRelease\* -> C:\Apps\GridGameGaiden\.
+    3. Runs tools\unity.ps1 -Method GridGame.EditorTools.GridGameBuild.BuildWindowsRelease in Unity
+       batch mode (requires the Editor closed) -> Build\WindowsRelease\GridGame.exe.
+    4. Copies Build\WindowsRelease\* -> C:\Apps\GridGame\.
 
     Steps 1-4 are skipped when the deployed commit is up to date, unless -Force. The repo-root
     run.bat (the Desktop shortcut's target) opens a menu first (MAT-T67): 1) Deploy & Run calls
@@ -25,7 +25,7 @@
     script never prompts, so agents and /deploy run it unattended.
 
 .PARAMETER Launch
-    After publishing, immediately run the deployed GridGameGaiden.exe.
+    After publishing, immediately run the deployed GridGame.exe.
 
 .PARAMETER Force
     Rebuild and republish even when the deployed commit is up to date. It skips only that check.
@@ -50,9 +50,9 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$repoDir  = Split-Path $PSScriptRoot   # tools\ -> Unity.GridGame\
-$out      = 'C:\Apps\GridGameGaiden'
-$exeName  = 'GridGameGaiden.exe'
+$repoDir  = Split-Path $PSScriptRoot   # tools\ -> GridGame.Unity\
+$out      = 'C:\Apps\GridGame'
+$exeName  = 'GridGame.exe'
 $buildDir = Join-Path $repoDir 'Build\WindowsRelease'
 $runBat = Join-Path $repoDir 'run.bat'
 $marker    = Join-Path $out '.deploy-commit'
@@ -100,7 +100,7 @@ Write-Host ''
 Write-Host '  Stopping running instance...' -ForegroundColor Yellow
 $repoDirPrefix = $repoDir.TrimEnd('\') + '\'
 $outPrefix     = $out.TrimEnd('\') + '\'
-$procs = Get-Process 'GridGameGaiden' -ErrorAction SilentlyContinue | Where-Object {
+$procs = Get-Process 'GridGame' -ErrorAction SilentlyContinue | Where-Object {
     # Trailing-separator prefix match, not a raw StartsWith: a bare prefix would also match a
     # sibling worktree whose name extends this one's (GG-T7 vs. GG-T70/GG-T71..79) — the exact
     # cross-worktree kill GG-T21 exists to prevent (GG-T153). $_.Path can also throw (access
@@ -129,7 +129,7 @@ if (Test-Path $buildDir) {
 # ── Build ────────────────────────────────────────────────────────────────────
 Write-Host ''
 Write-Host '  Building Windows Release player (Unity batch mode)...' -ForegroundColor Cyan
-& (Join-Path $PSScriptRoot 'unity.ps1') -Method GridGame.EditorTools.GaidenBuild.BuildWindowsRelease -Log deploy-build
+& (Join-Path $PSScriptRoot 'unity.ps1') -Method GridGame.EditorTools.GridGameBuild.BuildWindowsRelease -Log deploy-build
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Build failed (exit $LASTEXITCODE)." -ForegroundColor Red
     exit $LASTEXITCODE
@@ -160,12 +160,12 @@ Set-Content -LiteralPath $marker -Value $head -NoNewline
 
 # ── Desktop shortcut ─────────────────────────────────────────────────────────
 # Points at run.bat (not the exe directly), which asks first: Deploy & Run, or Run (MAT-T67).
-$shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'GridGame Gaiden.lnk'
+$shortcut = Join-Path ([Environment]::GetFolderPath('Desktop')) 'GridGame.lnk'
 $link = (New-Object -ComObject WScript.Shell).CreateShortcut($shortcut)
 $link.TargetPath       = $runBat
 $link.WorkingDirectory = $repoDir
 $link.IconLocation     = "$exe,0"
-$link.Description      = 'GridGame Gaiden: 1) Deploy & Run (pull, rebuild, launch) or 2) Run the published build'
+$link.Description      = 'GridGame: 1) Deploy & Run (pull, rebuild, launch) or 2) Run the published build'
 $link.Save()
 Write-Host "    Shortcut -> $shortcut" -ForegroundColor Gray
 

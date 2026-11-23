@@ -14,11 +14,11 @@ namespace GridGame.Tests
     /// each main campaign theme names its set in campaign.json.</summary>
     public class BackgroundsTests
     {
-        private static string Folder => Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Backgrounds");
+        private static string Folder => Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Backgrounds");
 
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
-            || File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
+            || File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
 
         /// <summary>Theme id → (set, image count, source size). The first five are the GridGame2026 biomes (Moors,
         /// RedThorns, ElectricWasteland, UnderTheBridge, CyberNecropolis less its two byte-identical duplicates).</summary>

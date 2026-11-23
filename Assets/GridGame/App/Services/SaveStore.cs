@@ -138,8 +138,8 @@ namespace GridGame.App
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        [DllImport("__Internal")] private static extern void GaidenSyncFiles();
-        private static void Flush() => GaidenSyncFiles();
+        [DllImport("__Internal")] private static extern void GridGameSyncFiles();
+        private static void Flush() => GridGameSyncFiles();
 #else
         private static void Flush() { }
 #endif

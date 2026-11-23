@@ -185,7 +185,7 @@ namespace GridGame.Core.Battle
 
         // ── Enemy AI (§14.1) ────────────────────────────────────────────────────────
         public const float RetreatHpThreshold = 0.30f;
-        /// <summary>GG-T306 (§14.1.3) tuning, static so a soak can sweep them (GAIDEN_TUNE): a foe's pincer planner takes Setup
+        /// <summary>GG-T306 (§14.1.3) tuning, static so a soak can sweep them (GRIDGAME_TUNE): a foe's pincer planner takes Setup
         /// and Support walks (not only Complete ones), and may swap places with a hero on its walk.</summary>
         public static bool EnemyPincerSetups = true;
         public static bool EnemyPincerSwapsHeroes = true;

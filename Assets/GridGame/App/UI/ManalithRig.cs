@@ -374,7 +374,7 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>The rig camera's bloom (Hidden/Gaiden/ManalithBloom): threshold, four box down/up steps, combine.</summary>
+    /// <summary>The rig camera's bloom (Hidden/GridGame/ManalithBloom): threshold, four box down/up steps, combine.</summary>
     [ExecuteAlways] // the screenshot tool renders the rig from batchmode, outside play mode
     public sealed class ManalithBloom : MonoBehaviour
     {

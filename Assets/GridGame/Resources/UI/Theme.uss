@@ -1,4 +1,4 @@
-/* GridGame Gaiden — UI theme. A nod to the 16-bit Square menus, not a copy: Chrono Trigger gray gradient windows
+/* GridGame — UI theme. A nod to the 16-bit Square menus, not a copy: Chrono Trigger gray gradient windows
    (the default "Chrono" theme, GG-T385) in light bevelled frames, pointing-hand cursor rows, gold numbers, and
    block-outlined text with a hard drop shadow. Every screen is built in C# from these classes. */
 

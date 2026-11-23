@@ -56,16 +56,16 @@ import urllib.parse
 import urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXE = os.path.join(ROOT, "Build", "Windows", "GridGameGaiden.exe")
+EXE = os.path.join(ROOT, "Build", "Windows", "GridGame.exe")
 # GG-T21: this used to default every worktree to the same fixed port (7787), so two agents running
-# harness.py in sibling GridGameGaiden worktrees at once would collide — the second one's launch()
+# harness.py in sibling GridGame worktrees at once would collide — the second one's launch()
 # sees the first's player already listening and calls quit on it, silently ending an unrelated
 # agent's run mid-battle with no crash/exception trail (confirmed live: a 5h stress run here died
 # after ~5 minutes with a clean Application.Quit() shutdown sequence in Player.log that this script
 # never requested). Deriving the default from the worktree's own path keeps every worktree's harness
-# on its own port automatically; GAIDEN_PORT still overrides it for anyone who wants a fixed value.
+# on its own port automatically; GRIDGAME_PORT still overrides it for anyone who wants a fixed value.
 _DEFAULT_PORT = 20000 + (int(hashlib.sha1(ROOT.encode()).hexdigest(), 16) % 20000)
-PORT = int(os.environ.get("GAIDEN_PORT", str(_DEFAULT_PORT)))
+PORT = int(os.environ.get("GRIDGAME_PORT", str(_DEFAULT_PORT)))
 BASE = f"http://127.0.0.1:{PORT}"
 
 # GG-T314: set from __main__ when --headless is anywhere in argv (stripped before each subcommand's
@@ -208,7 +208,7 @@ def vfxsheet(run="vfxsheet", limit=0, extra=(), frames=48, every=4):
     of each, and composes artifacts/<run>/strips/<ability>.png plus one grid per element in artifacts/<run>/ (a row per
     ability), so 'same element = same family look, different elements = distinguishable' can be judged at a glance."""
     from PIL import Image
-    content = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
+    content = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content")
     abilities = [a for a in json.load(open(os.path.join(content, "abilities.json"), encoding="utf-8"))
                  if a.get("Kind") != "Passive"]
     if limit:
@@ -272,7 +272,7 @@ def vfxprefabs(run="vfxprefabs", ids=None, extra=(), frames=36, every=3):
     fixed-step strip of each, and composes artifacts/<run>/prefabs.png (a row per effect, its id burned in) so sizes
     and looks can be normalized by eye."""
     from PIL import Image, ImageDraw
-    effects = json.load(open(os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "vfx.json"), encoding="utf-8"))["Effects"]
+    effects = json.load(open(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "vfx.json"), encoding="utf-8"))["Effects"]
     if ids:
         effects = [e for e in effects if e["Id"] in ids]
     launch(run, extra=extra, fresh=True)
@@ -1957,7 +1957,7 @@ def _drain_story(seen, tag, limit=30):
 _ANNOUNCE = ("wandering", "ignores", "rises", "joins the fight")
 
 
-_TEXT_DIR = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "Text")
+_TEXT_DIR = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "Text")
 _prose_texts = None
 
 
@@ -2216,7 +2216,7 @@ def battle_clips(run="clips", count=10, speed=3, timeout=240, capture=True, rela
     for rule-triggered recording, only -capture-config is). So this passes -capture-config pointing at the
     built player's own copy of capture.json, which still needs "enabled": true to actually record — set
     that before calling this, and back to false afterward, then rebuild so the committed state matches."""
-    extra = ("-capture-config", os.path.join(os.path.dirname(EXE), "GridGameGaiden_Data",
+    extra = ("-capture-config", os.path.join(os.path.dirname(EXE), "GridGame_Data",
                                               "StreamingAssets", "capture.json")) if capture else ()
     if relaunch:
         launch(run, extra=extra)
@@ -2720,8 +2720,8 @@ def _report_death(art, returncode, n, extra_note=""):
     lines = [f"process died after {n} clips (returncode={returncode}) at {time.strftime('%Y-%m-%d %H:%M:%S')}", extra_note]
     dumps_dir = os.path.join(os.environ.get("LOCALAPPDATA", ""), "CrashDumps")
     try:
-        names = [f for f in os.listdir(dumps_dir) if "GridGameGaiden" in f]
-        lines.append(f"CrashDumps matching GridGameGaiden: {names or 'none'}")
+        names = [f for f in os.listdir(dumps_dir) if "GridGame" in f]
+        lines.append(f"CrashDumps matching GridGame: {names or 'none'}")
     except Exception as e:
         lines.append(f"could not list CrashDumps: {e}")
     try:
@@ -2860,7 +2860,7 @@ def endless(count, seed=None, capture=False, run="endless", speed=None,
 
     extra = []
     if capture:
-        src = os.path.join(os.path.dirname(EXE), "GridGameGaiden_Data", "StreamingAssets", "capture.json")
+        src = os.path.join(os.path.dirname(EXE), "GridGame_Data", "StreamingAssets", "capture.json")
         if not os.path.exists(src):
             src = os.path.join(ROOT, "Assets", "StreamingAssets", "capture.json")
         with open(src, encoding="utf-8") as f:

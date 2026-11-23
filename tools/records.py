@@ -182,7 +182,7 @@ def ability_usage(recs, known=None):
 
 
 def known_buffs():
-    path = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "buffs.json")
+    path = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "buffs.json")
     with open(path, encoding="utf-8-sig") as fh:
         data = json.load(fh)
     items = data if isinstance(data, list) else next(iter(data.values()))
@@ -306,7 +306,7 @@ def print_abilities(recs, known):
 
 
 def known_abilities():
-    path = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "abilities.json")
+    path = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "abilities.json")
     with open(path, encoding="utf-8-sig") as fh:
         data = json.load(fh)
     items = data if isinstance(data, list) else data.get("Abilities", data.get("abilities", []))

@@ -7,7 +7,7 @@
 **Effective date:** [date of first release]
 **Developer:** MindAttic ("we", "us")
 **Contact:** [privacy contact email]
-**App:** GridGame Gaiden (Android package `com.mindattic.gridgamegaiden`; iOS bundle id [to be set])
+**App:** GridGame Gaiden (Android package `com.mindattic.gridgame`; iOS bundle id [to be set])
 
 ## The short version
 

@@ -16,7 +16,7 @@ namespace GridGame.Tests
     /// effects (§1.2.3): plays the campaign with bots and tabulates average turn time used, Guard frequency, mana from
     /// Guard vs pincers (and the other sources), support heal / buff / haste / cleanse totals and win rate per stage,
     /// plus an all-stages row. Every tuning number it reports on lives in <see cref="BattleConfig"/>. Asserts only that
-    /// nothing stalls. GG-T595: with GAIDEN_SOAK_OUT set to a folder, each bot's table is also written there as
+    /// nothing stalls. GG-T595: with GRIDGAME_SOAK_OUT set to a folder, each bot's table is also written there as
     /// <c>held-turn-&lt;label&gt;.json</c> (raw sums and derived rates) for the GG-T596 tuning pass.
     /// </summary>
     public class HeldTurnSoakReport
@@ -131,7 +131,7 @@ namespace GridGame.Tests
             sb.AppendLine(Line("ALL", all));
             TestContext.Out.WriteLine(sb.ToString());
 
-            var outDir = System.Environment.GetEnvironmentVariable("GAIDEN_SOAK_OUT");
+            var outDir = System.Environment.GetEnvironmentVariable("GRIDGAME_SOAK_OUT");
             if (!string.IsNullOrEmpty(outDir))
             {
                 System.IO.Directory.CreateDirectory(outDir);

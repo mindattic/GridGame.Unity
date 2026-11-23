@@ -14,7 +14,7 @@ using static GridGame.Tests.TestKit;
 namespace GridGame.Tests
 {
     /// <summary>
-    /// GG-T246: a measurement soak, not a gate. With GAIDEN_ABILITY_RECORDS=&lt;dir&gt; it plays every hero class (in
+    /// GG-T246: a measurement soak, not a gate. With GRIDGAME_ABILITY_RECORDS=&lt;dir&gt; it plays every hero class (in
     /// rotating parties of five, default bars, at each stage's recommended level) across the main campaign and writes
     /// one battle record per fight; `python tools/records.py --abilities &lt;dir&gt;` turns them into the per-ability
     /// usefulness table (docs/research/AbilityUsage.md). Unset, it does nothing.
@@ -24,28 +24,28 @@ namespace GridGame.Tests
         [Test]
         public void Ability_usage_soak_across_every_hero_class()
         {
-            var dir = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_RECORDS");
-            if (string.IsNullOrEmpty(dir)) { TestContext.Out.WriteLine("GAIDEN_ABILITY_RECORDS not set — nothing written"); return; }
-            int rounds = int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_ABILITY_ROUNDS"), out var n) ? n : 2;
-            // GG-T255: GAIDEN_ABILITY_BOT=casual plays the casual bot (randomness 0.5), and GAIDEN_ABILITY_PER_STAGE=N
+            var dir = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_RECORDS");
+            if (string.IsNullOrEmpty(dir)) { TestContext.Out.WriteLine("GRIDGAME_ABILITY_RECORDS not set — nothing written"); return; }
+            int rounds = int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_ROUNDS"), out var n) ? n : 2;
+            // GG-T255: GRIDGAME_ABILITY_BOT=casual plays the casual bot (randomness 0.5), and GRIDGAME_ABILITY_PER_STAGE=N
             // fights every stage N times with rotating parties, so POL-G1/G2/G7 get per-stage win rates.
-            bool casual = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_BOT") == "casual";
-            int perStage = int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_ABILITY_PER_STAGE"), out var ps) ? ps : 0;
+            bool casual = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_BOT") == "casual";
+            int perStage = int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_PER_STAGE"), out var ps) ? ps : 0;
             string source = casual ? "bot:casual" : "bot:greedy";
-            // GG-T292: GAIDEN_TUNE="PincerPushbackSeconds=0.5;PushbackMaxSeconds=2" overrides BattleConfig's static tuning
+            // GG-T292: GRIDGAME_TUNE="PincerPushbackSeconds=0.5;PushbackMaxSeconds=2" overrides BattleConfig's static tuning
             // fields for this soak only (a tuning sweep without a rebuild per value); restored when it ends.
             var restore = new List<(System.Reflection.FieldInfo f, object v)>();
-            foreach (var kv in (Environment.GetEnvironmentVariable("GAIDEN_TUNE") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries))
+            foreach (var kv in (Environment.GetEnvironmentVariable("GRIDGAME_TUNE") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = kv.Split('=');
                 var f = typeof(BattleConfig).GetField(parts[0].Trim(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-                Assert.That(f != null && !f.IsLiteral && !f.IsInitOnly, $"GAIDEN_TUNE: {parts[0]} is not a tunable BattleConfig field");
+                Assert.That(f != null && !f.IsLiteral && !f.IsInitOnly, $"GRIDGAME_TUNE: {parts[0]} is not a tunable BattleConfig field");
                 restore.Add((f, f.GetValue(null)));
                 f.SetValue(null, Convert.ChangeType(parts[1].Trim(), f.FieldType, System.Globalization.CultureInfo.InvariantCulture));
             }
-            // GAIDEN_PUSHBACK_SCALE=1.5 scales every ability's Pushback seconds (capped at PushbackMaxSeconds) for this soak.
+            // GRIDGAME_PUSHBACK_SCALE=1.5 scales every ability's Pushback seconds (capped at PushbackMaxSeconds) for this soak.
             var pushes = Real.Abilities.Values.Where(a => a.Pushback > 0f).ToDictionary(a => a, a => a.Pushback);
-            if (float.TryParse(Environment.GetEnvironmentVariable("GAIDEN_PUSHBACK_SCALE"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var scale))
+            if (float.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_PUSHBACK_SCALE"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var scale))
                 foreach (var a in pushes.Keys) a.Pushback = Math.Min(BattleConfig.PushbackMaxSeconds, a.Pushback * scale);
             try { Soak(dir, rounds, casual, perStage, source); }
             finally
@@ -115,14 +115,14 @@ namespace GridGame.Tests
         /// <summary>GG-T276: <see cref="CampaignSnapshots"/> frozen on disk (artifacts/balance-snapshots/d&lt;difficulty&gt;,
         /// git-ignored), so a tune to one stage changes only that stage's fights and every later stage is judged against
         /// the same party (regenerated, any upstream change reshuffles the campaign's loot and so every later stage's
-        /// gear). GAIDEN_ABILITY_SNAPSHOT=regen rebuilds them, to see a landed tune's knock-on once; the manifest records
+        /// gear). GRIDGAME_ABILITY_SNAPSHOT=regen rebuilds them, to see a landed tune's knock-on once; the manifest records
         /// when and from which content they were made, and a content mismatch only warns.</summary>
         internal static Dictionary<string, SaveData> FrozenSnapshots(ContentDb c, List<StageDef> stages, int difficulty)
         {
             var dir = Path.Combine(RepoRoot, "artifacts", "balance-snapshots", $"d{difficulty}");
             var manifestPath = Path.Combine(dir, "manifest.json");
             string hash = ContentHash();
-            bool regen = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_SNAPSHOT") == "regen";
+            bool regen = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_SNAPSHOT") == "regen";
             if (!regen && File.Exists(manifestPath))
             {
                 var manifest = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(manifestPath));
@@ -130,7 +130,7 @@ namespace GridGame.Tests
                 if (stages.All(st => covers.Contains(st.Id)))
                 {
                     if ((string)manifest["contentHash"] != hash)
-                        TestContext.Out.WriteLine($"balance snapshots ({manifest["createdUtc"]}) predate the current content; GAIDEN_ABILITY_SNAPSHOT=regen rebuilds them");
+                        TestContext.Out.WriteLine($"balance snapshots ({manifest["createdUtc"]}) predate the current content; GRIDGAME_ABILITY_SNAPSHOT=regen rebuilds them");
                     var loaded = new Dictionary<string, SaveData>();
                     foreach (var st in stages)
                     {
@@ -189,26 +189,26 @@ namespace GridGame.Tests
             var heroes = c.Classes.Values.Where(k => k.Team == Team.Hero).Select(k => k.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
             var stages = MainStages(c);
             var plan = new List<(List<string> party, StageDef stage)>();
-            // GG-T276: GAIDEN_ABILITY_GEAR=campaign (with GAIDEN_ABILITY_PARTY=campaign) fights each per-stage battle from
+            // GG-T276: GRIDGAME_ABILITY_GEAR=campaign (with GRIDGAME_ABILITY_PARTY=campaign) fights each per-stage battle from
             // the save a camp-managing campaign arrives with, instead of bare new heroes (polish.py's default since 20c776fc),
             // frozen on disk between runs (FrozenSnapshots).
             Dictionary<string, SaveData> snaps = null;
             if (perStage > 0)
             {
-                // GG-T292: GAIDEN_ABILITY_PARTY=campaign fields the party the campaign has at that stage (the starting three,
+                // GG-T292: GRIDGAME_ABILITY_PARTY=campaign fields the party the campaign has at that stage (the starting three,
                 // plus a rotating hero for each story-beat join before it, up to the cap of six) instead of a flat five.
-                bool campaignParty = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_PARTY") == "campaign";
-                if (campaignParty && Environment.GetEnvironmentVariable("GAIDEN_ABILITY_GEAR") == "campaign")
+                bool campaignParty = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_PARTY") == "campaign";
+                if (campaignParty && Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_GEAR") == "campaign")
                 {
-                    var only = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    var only = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     int last = only == null ? stages.Count - 1 : stages.FindLastIndex(st => only.Contains(st.Id));
                     snaps = FrozenSnapshots(c, stages.Take(last + 1).ToList(), BotDifficulty.FromEnv());
                 }
-                // GG-T333: GAIDEN_ABILITY_WITH=<hero> fields that hero in every campaign party in place of
-                // GAIDEN_ABILITY_REPLACE (default the starting Cleric); the rotation never draws it, so the same seeds and
+                // GG-T333: GRIDGAME_ABILITY_WITH=<hero> fields that hero in every campaign party in place of
+                // GRIDGAME_ABILITY_REPLACE (default the starting Cleric); the rotation never draws it, so the same seeds and
                 // joiners compare one hero against another of its role.
-                var with = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_WITH");
-                var replace = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_REPLACE") ?? "cleric";
+                var with = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_WITH");
+                var replace = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_REPLACE") ?? "cleric";
                 for (int si = 0; si < stages.Count; si++)
                     for (int k = 0; k < perStage; k++)
                     {
@@ -232,28 +232,28 @@ namespace GridGame.Tests
                     for (int start = 0; start < heroes.Count; start += 5, b++)
                         plan.Add((Enumerable.Range(0, 5).Select(i => heroes[(start + i + round * 2) % heroes.Count]).Distinct().ToList(), stages[b % stages.Count]));
             }
-            // GAIDEN_ABILITY_STAGE=<id>[,<id>...] fights only those stages (GG-T344: a comma list).
-            var onlyStages = Environment.GetEnvironmentVariable("GAIDEN_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-            int difficulty = BotDifficulty.FromEnv(); // GG-T309: GAIDEN_DIFFICULTY=1..10 (default 10, the designed game)
+            // GRIDGAME_ABILITY_STAGE=<id>[,<id>...] fights only those stages (GG-T344: a comma list).
+            var onlyStages = Environment.GetEnvironmentVariable("GRIDGAME_ABILITY_STAGE")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            int difficulty = BotDifficulty.FromEnv(); // GG-T309: GRIDGAME_DIFFICULTY=1..10 (default 10, the designed game)
             int battle = 0;
             foreach (var (party, stage) in plan)
                 {
-                    // GAIDEN_ABILITY_STAGE=<id> fights only that stage, with the same parties and seeds as the full run (GG-T274).
+                    // GRIDGAME_ABILITY_STAGE=<id> fights only that stage, with the same parties and seeds as the full run (GG-T274).
                     if (onlyStages != null && !onlyStages.Contains(stage.Id)) { battle++; continue; }
                     int seed = 1000 + battle;
                     var save = snaps != null && snaps.TryGetValue(stage.Id, out var snap) ? FromSnapshot(c, snap, party) : Progression.NewGame(c, "Usage", party);
-                    // GG-T292: GAIDEN_LEVEL_OFFSET=-3 fights under-levelled, a stress test that shows how much skill matters.
-                    int level = Math.Max(1, Progression.StageRecommendedLevel(c, save, stage) + (int.TryParse(Environment.GetEnvironmentVariable("GAIDEN_LEVEL_OFFSET"), out var lo) ? lo : 0));
+                    // GG-T292: GRIDGAME_LEVEL_OFFSET=-3 fights under-levelled, a stress test that shows how much skill matters.
+                    int level = Math.Max(1, Progression.StageRecommendedLevel(c, save, stage) + (int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_LEVEL_OFFSET"), out var lo) ? lo : 0));
                     // A campaign hero keeps a higher level it earned; everyone else is set to the stage's level.
                     foreach (var h in save.Roster) h.TotalXp = snaps != null ? Math.Max(h.TotalXp, Formulas.TotalXpForLevel(level)) : Formulas.TotalXpForLevel(level);
                     var setup = BattleFactory.Build(c, save, stage.Id, seed, difficulty);
                     var opening = new List<BattleEvent>();
                     var s = BattleEngine.Create(c, setup, opening);
                     var rec = new BattleRecorder(s, setup, source, opening);
-                    var bot = new HeroBot(seed, casual ? 0.5f : 0f) { IgnoreBar = Environment.GetEnvironmentVariable("GAIDEN_BOT_BAR") == "off" };
-                    // GG-T311: GAIDEN_BOT_THINK=<seconds> and GAIDEN_BOT_QUICK=<factor> sweep the bot's human drag model.
-                    if (float.TryParse(Environment.GetEnvironmentVariable("GAIDEN_BOT_THINK"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var think)) bot.ThinkSeconds = think;
-                    if (float.TryParse(Environment.GetEnvironmentVariable("GAIDEN_BOT_QUICK"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var quick)) bot.QuickThinkFactor = quick;
+                    var bot = new HeroBot(seed, casual ? 0.5f : 0f) { IgnoreBar = Environment.GetEnvironmentVariable("GRIDGAME_BOT_BAR") == "off" };
+                    // GG-T311: GRIDGAME_BOT_THINK=<seconds> and GRIDGAME_BOT_QUICK=<factor> sweep the bot's human drag model.
+                    if (float.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_BOT_THINK"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var think)) bot.ThinkSeconds = think;
+                    if (float.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_BOT_QUICK"), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var quick)) bot.QuickThinkFactor = quick;
                     int refused = 0;
                     for (int i = 0; i < 3000 && !s.IsOver; i++) // GG-T308: a command is one hero action now, several a window
                     {

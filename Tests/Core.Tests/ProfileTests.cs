@@ -18,7 +18,7 @@ namespace GridGame.Tests
         [SetUp]
         public void SetUp()
         {
-            data = Path.Combine(Path.GetTempPath(), "GaidenProfileTests_" + Guid.NewGuid().ToString("N"));
+            data = Path.Combine(Path.GetTempPath(), "GridGameProfileTests_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(data);
             store = ProfileStore.ForDataPath(data);
         }
@@ -88,12 +88,12 @@ namespace GridGame.Tests
             Assert.That(ps.Common.SfxVolume, Is.EqualTo(0.25f).Within(1e-4));
             Assert.That(ps.Common.MuteSfx, Is.True);
             Assert.That(ps.Common.ReduceMotion, Is.True);
-            // ...and the Gaiden-only ones live under game.
-            Assert.That(ps.Game.GetFloat(GaidenSettings.Keys.BattleSpeed), Is.EqualTo(3f));
-            Assert.That(ps.Game.GetString(GaidenSettings.Keys.MenuTheme), Is.EqualTo("Slate"));
-            Assert.That(ps.Game.GetBool(GaidenSettings.Keys.ColorblindMode), Is.True);
-            Assert.That(ps.Game.GetObject(GaidenSettings.Keys.Difficulty).GetInt(GaidenSettings.DifficultyLevelKey), Is.EqualTo(4));
-            var back = GaidenSettings.Read(ps);
+            // ...and the GridGame-only ones live under game.
+            Assert.That(ps.Game.GetFloat(GameSettings.Keys.BattleSpeed), Is.EqualTo(3f));
+            Assert.That(ps.Game.GetString(GameSettings.Keys.MenuTheme), Is.EqualTo("Slate"));
+            Assert.That(ps.Game.GetBool(GameSettings.Keys.ColorblindMode), Is.True);
+            Assert.That(ps.Game.GetObject(GameSettings.Keys.Difficulty).GetInt(GameSettings.DifficultyLevelKey), Is.EqualTo(4));
+            var back = GameSettings.Read(ps);
             Assert.That(back.DragTimer, Is.True);
             Assert.That(back.PincerCutIns, Is.False);
             Assert.That(back.ConfirmActions, Is.False);
@@ -161,7 +161,7 @@ namespace GridGame.Tests
             session.Settings.BattleSpeed = 2f;
             session.SaveSettings();
 
-            var alice = GaidenSettings.Read(ProfileSettings.Load(store.Get("Alice").SettingsPath));
+            var alice = GameSettings.Read(ProfileSettings.Load(store.Get("Alice").SettingsPath));
             Assert.That(alice.MusicVolume, Is.EqualTo(0.2f).Within(1e-4));
             Assert.That(alice.BattleSpeed, Is.EqualTo(1f), "Bob's change never reaches Alice's settings.json");
         }
@@ -221,7 +221,7 @@ namespace GridGame.Tests
             {
                 Profiles.SessionMuted = true;
                 session.Switch("Alice");
-                Assert.That(session.Settings.MusicVolume, Is.EqualTo(0.8f).Within(1e-4), "Gaiden reads the stored volume; the CLI mute is SessionAudio's job");
+                Assert.That(session.Settings.MusicVolume, Is.EqualTo(0.8f).Within(1e-4), "GridGame reads the stored volume; the CLI mute is SessionAudio's job");
                 session.SaveSettings();
             }
             finally { Profiles.SessionMuted = false; }

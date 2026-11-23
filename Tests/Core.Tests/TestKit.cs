@@ -16,20 +16,20 @@ namespace GridGame.Tests
             get
             {
                 var dir = new DirectoryInfo(AppContext.BaseDirectory);
-                while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Assets", "Gaiden"))) dir = dir.Parent;
+                while (dir != null && !Directory.Exists(Path.Combine(dir.FullName, "Assets", "GridGame"))) dir = dir.Parent;
                 if (dir == null) throw new DirectoryNotFoundException("Repo root not found");
                 return dir.FullName;
             }
         }
 
-        public static string ContentDir => Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Content");
+        public static string ContentDir => Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Content");
 
         private static ContentDb real;
         public static ContentDb Real => real ??= ContentLoader.Load(name =>
         {
-            // GG-T276: a balance experiment can point GAIDEN_CONTENT_OVERRIDE_DIR at scratch copies of some content files
+            // GG-T276: a balance experiment can point GRIDGAME_CONTENT_OVERRIDE_DIR at scratch copies of some content files
             // (e.g. an abilities.json with other costs); any file there wins over the repo's, the rest load as usual.
-            var o = Environment.GetEnvironmentVariable("GAIDEN_CONTENT_OVERRIDE_DIR");
+            var o = Environment.GetEnvironmentVariable("GRIDGAME_CONTENT_OVERRIDE_DIR");
             var op = string.IsNullOrEmpty(o) ? null : Path.Combine(o, name + ".json");
             if (op != null && File.Exists(op)) return File.ReadAllText(op);
             var p = Path.Combine(ContentDir, name + ".json");

@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw, ImageFilter
 from scipy import ndimage
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Sky")
+OUT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Sky")
 ART = os.path.join(ROOT, "Art")
 SOMNOLITH_SRC = os.path.join(ART, "Sky", "somnolith-source.png")
 MOON_SRC = "bloom-02"
@@ -78,7 +78,7 @@ def shards(som, n=SHARDS, seed=576):
 def moon():
     src = os.path.join(ART, "Backgrounds", MOON_SRC + ".jpg")
     if not os.path.exists(src):
-        src = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Backgrounds", MOON_SRC + ".jpg")
+        src = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Backgrounds", MOON_SRC + ".jpg")
     im = Image.open(src).convert("RGB")
     w = im.width
     gx, gy, gr = (int(v * w) for v in MOON_GUESS)

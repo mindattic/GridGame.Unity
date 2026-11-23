@@ -55,12 +55,12 @@ git clone https://github.com/mindattic/Unity.GridGame.git
 cd Unity.GridGame
 pwsh tools/test.ps1
 pwsh tools/build.ps1
-.\Build\Windows\GridGameGaiden.exe
+.\Build\Windows\GridGame.exe
 ```
 
 You should see the title screen. Choose New Game, pick a slot and you land at the Camp menu; Adventure starts the first stage. The window letterboxes to portrait and never stretches. Mouse acts as your finger, and Esc is back or pause.
 
-To publish a Release build to `C:\Apps\GridGameGaiden` instead, run `run.bat` (what the Desktop shortcut runs). It asks first: 1) Deploy & Run rebuilds, publishes and launches it; 2) Run launches the build already published. Unattended, run `tools\run.ps1` (add `-Launch` to start it afterwards, `-Force` to rebuild even when up to date).
+To publish a Release build to `C:\Apps\GridGame` instead, run `run.bat` (what the Desktop shortcut runs). It asks first: 1) Deploy & Run rebuilds, publishes and launches it; 2) Run launches the build already published. Unattended, run `tools\run.ps1` (add `-Launch` to start it afterwards, `-Force` to rebuild even when up to date).
 
 ## Commands
 
@@ -72,7 +72,7 @@ pwsh tools/build.ps1             # Windows development player -> Build/Windows
 pwsh tools/build.ps1 -Release    # Windows Release player
 pwsh tools/build.ps1 -Target Android                          # APK -> Build/Android
 pwsh tools/build.ps1 -Target WebGL; node tools/webcheck.mjs   # browser build + Playwright check
-run.bat                          # menu: 1) Deploy & Run (rebuild Release, publish to C:\Apps\GridGameGaiden, launch) 2) Run
+run.bat                          # menu: 1) Deploy & Run (rebuild Release, publish to C:\Apps\GridGame, launch) 2) Run
 pwsh tools/run.ps1 [-Launch] [-Force]   # the same deploy, no menu
 tools\launch.bat                 # deploy, then pick Normal Play or Demo + Capture (muted by default)
 pwsh tools/make-desktop-shortcut.ps1   # Desktop shortcut to run.bat (the menu)
@@ -99,7 +99,7 @@ python tools/telemetry_report.py RUN   # endless-run telemetry report (win rates
                                        #   -> artifacts/endless/RUN/report.md + report.html
 ```
 
-Each worktree's harness gets its own port derived from its path; set `GAIDEN_PORT` to override. Screenshots land in `artifacts/<run>/`.
+Each worktree's harness gets its own port derived from its path; set `GRIDGAME_PORT` to override. Screenshots land in `artifacts/<run>/`.
 
 Content and art tools: the art, audio and content authoring scripts (portraits, icons, tiles, sound effects, music,
 lesson images, the weapon and counter-item generators, vendor tiers, lorem placeholders, the Midjourney male-variant
@@ -154,7 +154,7 @@ python tools/check_glyphs.py     # verify every UI glyph exists in the bundled f
 | Content | `Assets/GridGame/Resources/Content` | 15 JSON files: every class, ability, buff, item, recipe, drop table, stage, campaign theme, trap and caravan upgrade. |
 | App | `Assets/GridGame/App` | Unity presentation. One empty scene; `GameApp` builds everything in code with UI Toolkit and `Theme.uss`. |
 | Automation | `Assets/GridGame/App/Automation` | Development-build HTTP endpoint for scripted play, input injection, screenshots and layout audits. |
-| Build | `Assets/GridGame/Editor/GaidenBuild.cs` | Batchmode build and compile-check entry points used by `tools/unity.ps1`. |
+| Build | `Assets/GridGame/Editor/GridGameBuild.cs` | Batchmode build and compile-check entry points used by `tools/unity.ps1`. |
 
 No prefabs, no hand-built scenes, no Inspector wiring.
 
@@ -177,8 +177,8 @@ normal launch still has sound. Pass `-Sound` to `tools/launch.ps1` to opt back i
 play; the two switches work on their own against a built exe too:
 
 ```powershell
-.\Build\Windows\GridGameGaiden.exe -muted
-$env:MINDATTIC_CLI_MUTED = '1'; .\Build\Windows\GridGameGaiden.exe
+.\Build\Windows\GridGame.exe -muted
+$env:MINDATTIC_CLI_MUTED = '1'; .\Build\Windows\GridGame.exe
 ```
 
 GridGame's own music/SFX volume (`Assets/GridGame/App/Services/Audio.cs`, driven by `Meta.SettingsSave`)

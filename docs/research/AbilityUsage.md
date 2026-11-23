@@ -2,7 +2,7 @@
 
 Owner: "the Abilities need to be utilized in the gameplay demos, to see if they are useful or not."
 
-**How it was measured.** `AbilityUsageSoak` (`GAIDEN_ABILITY_RECORDS=<dir>`, 2 rounds) plays every hero class with its default bar, in rotating parties of five, across Green Valley I to Veshker Ruins III at each stage's recommended level. That's 26 battles with the greedy `HeroBot`. `python tools/records.py --abilities <dir>` credits each resolution with what followed it, up to the next action, turn, pincer, attack or wave.
+**How it was measured.** `AbilityUsageSoak` (`GRIDGAME_ABILITY_RECORDS=<dir>`, 2 rounds) plays every hero class with its default bar, in rotating parties of five, across Green Valley I to Veshker Ruins III at each stage's recommended level. That's 26 battles with the greedy `HeroBot`. `python tools/records.py --abilities <dir>` credits each resolution with what followed it, up to the next action, turn, pincer, attack or wave.
 
 - **impact/use** = damage + healing + 15 per kill + 40 per revive + 6 per status, tempo or movement effect.
 - It's a rough yardstick and doesn't credit damage *prevented*, so taunts and wards read low by construction.
@@ -67,4 +67,4 @@ Owner: "the Abilities need to be utilized in the gameplay demos, to see if they 
 - **Even with the bot spending freely, 58% of minted mana overflows.** The bank fills faster than a five-hero party can spend it, which confirms the owner's "the bar is full almost every battle". The gain side has to come down, not just the bot's habits.
 - **Mana Siphon** (`deathguard_mana_siphon`, 8.2 casts per battle) is a free, spammable mana source. Check it first.
 - **Cheap spells are underpowered for their cost.** If mana becomes scarcer, the 1–2 orb spells above need more punch, or they'll stay unused.
-- Re-run this soak after tuning to compare: `GAIDEN_ABILITY_RECORDS=<dir> dotnet test Tests/Core.Tests/Core.Tests.csproj --filter Ability_usage_soak`, then `python tools/records.py --abilities <dir>`.
+- Re-run this soak after tuning to compare: `GRIDGAME_ABILITY_RECORDS=<dir> dotnet test Tests/Core.Tests/Core.Tests.csproj --filter Ability_usage_soak`, then `python tools/records.py --abilities <dir>`.

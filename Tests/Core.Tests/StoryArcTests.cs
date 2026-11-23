@@ -14,7 +14,7 @@ namespace GridGame.Tests
         private static ContentDb Real => TestKit.Real;
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(TestKit.RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(TestKit.RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         private static readonly string[] Finales = { "greenvalley-03", "lanternroad-03", "desert-03", "swamp-03", "cave-03", "still-03", "cityruins-03", "cathedral-03" };
 

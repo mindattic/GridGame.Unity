@@ -13,4 +13,4 @@ Brackeys VFX Bundle, are in `docs/research/VfxAssetPacks.md`. Record each new pa
 - removed the old `VisualEffectInstance` script and AudioSources (sound comes from cues)
 - set particle systems to Hierarchy scaling
 - moved 59 materials that used URP-only shaders to the legacy particle shaders
-- gave renderers with no material `Materials/GaidenDefaultParticle.mat`
+- gave renderers with no material `Materials/GridGameDefaultParticle.mat`

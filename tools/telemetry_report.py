@@ -19,7 +19,7 @@ artifacts/endless/<session>/report.md and report.html:
     lost encounters (crash / stall / hang, no session written) are listed as stalled;
   * a session file or a folder of session files (searched recursively);
   * a telemetry session id or any part of a session folder name (e.g. a date "2026-11-02"), matched under
-    the telemetry roots (R:\\Telemetry\\GridGameGaiden, then Documents\\MindAttic\\Telemetry\\GridGameGaiden).
+    the telemetry roots (R:\\Telemetry\\GridGame, then Documents\\MindAttic\\Telemetry\\GridGame).
 
 Only endless stages (stage id "endless-*") are counted unless --all-stages is passed or <session> is an
 explicit file/folder. Stdlib only.
@@ -34,8 +34,8 @@ import statistics
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-APP = "GridGameGaiden"
-CONTENT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
+APP = "GridGame"
+CONTENT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content")
 BASIC_KEYS = {"attack", "support-attack", "other", "shatter"}
 WIN = "victory"
 STALL_OUTCOMES = {"stalled", "unrecorded", "crash", "stall", "hang"}

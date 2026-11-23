@@ -1,7 +1,7 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Creates (or refreshes) the "GridGame Gaiden" Desktop shortcut, pointing at run.bat, whose
+    Creates (or refreshes) the "GridGame" Desktop shortcut, pointing at run.bat, whose
     menu asks first: 1) Deploy & Run (pull, rebuild if changed, launch) or 2) Run the published build.
 
 .DESCRIPTION
@@ -13,17 +13,17 @@
 #>
 $ErrorActionPreference = 'Stop'
 
-$repoDir = Split-Path $PSScriptRoot   # tools\ -> Unity.GridGame\
+$repoDir = Split-Path $PSScriptRoot   # tools\ -> GridGame.Unity\
 $runBat = Join-Path $repoDir 'run.bat'
-$exe = 'C:\Apps\GridGameGaiden\GridGameGaiden.exe'
-$lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'GridGame Gaiden.lnk'
+$exe = 'C:\Apps\GridGame\GridGame.exe'
+$lnk = Join-Path ([Environment]::GetFolderPath('Desktop')) 'GridGame.lnk'
 
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut($lnk)
 $shortcut.TargetPath = $runBat
 $shortcut.WorkingDirectory = $repoDir
 if (Test-Path $exe) { $shortcut.IconLocation = "$exe,0" }
-$shortcut.Description = 'GridGame Gaiden: 1) Deploy & Run (pull, rebuild, launch) or 2) Run the published build'
+$shortcut.Description = 'GridGame: 1) Deploy & Run (pull, rebuild, launch) or 2) Run the published build'
 $shortcut.Save()
 
 Write-Host "Shortcut created: $lnk -> $runBat" -ForegroundColor Green

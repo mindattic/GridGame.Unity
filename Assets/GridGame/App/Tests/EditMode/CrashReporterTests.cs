@@ -8,8 +8,8 @@ namespace GridGame.App.Tests
         [Test]
         public void Scrub_RemovesTheDataFolder()
         {
-            var s = CrashReporter.Scrub("IOException: C:/Users/Ann/AppData/LocalLow/MindAttic/Gaiden/x.json locked",
-                "C:/Users/Ann/AppData/LocalLow/MindAttic/Gaiden");
+            var s = CrashReporter.Scrub("IOException: C:/Users/Ann/AppData/LocalLow/MindAttic/GridGame/x.json locked",
+                "C:/Users/Ann/AppData/LocalLow/MindAttic/GridGame");
             Assert.AreEqual("IOException: <data>/x.json locked", s);
         }
 

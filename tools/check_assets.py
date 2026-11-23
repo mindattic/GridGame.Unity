@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import asset_names  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RESD = os.path.join(ROOT, "Assets", "Gaiden", "Resources")
+RESD = os.path.join(ROOT, "Assets", "GridGame", "Resources")
 SFX = os.path.join(RESD, "Audio", "Sfx")
 MUSIC = os.path.join(RESD, "Audio", "Music")
 # Cue key -> file, as App/Services/Audio.Cue resolves it (GG-T254, GG-T562): the key's words joined by hyphens plus
@@ -111,7 +111,7 @@ def art_findings():
 
 
 def main():
-    code = "".join(open(p, encoding="utf-8").read() for p in glob.glob(os.path.join(ROOT, "Assets", "Gaiden", "App", "**", "*.cs"), recursive=True))
+    code = "".join(open(p, encoding="utf-8").read() for p in glob.glob(os.path.join(ROOT, "Assets", "GridGame", "App", "**", "*.cs"), recursive=True))
     cues = set(re.findall(r'Sfx\("([^"]+)"', code))
     # (NB: a bare "A and B or []" here would silently evaluate to [] whenever A itself found nothing,
     # even though B is the pattern that actually matters — never leave that construct for the next edit.)

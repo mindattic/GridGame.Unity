@@ -17,7 +17,7 @@ namespace GridGame.Tests
     public class PortraitCanvasTests
     {
         private const int Canvas = 1024;
-        private static string PortraitDir => Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits");
+        private static string PortraitDir => Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits");
 
         [Test]
         public void Every_portrait_is_a_1024_square_RGBA_canvas_with_a_transparent_background()

@@ -34,7 +34,7 @@ namespace GridGame.Tests
             foreach (var (label, randomness) in new[] { ("greedy", 0f), ("casual", 0.5f) })
             {
                 var t = new Tally();
-                int seeds = int.TryParse(System.Environment.GetEnvironmentVariable("GAIDEN_MANA_SEEDS"), out var ns) ? ns : 3;
+                int seeds = int.TryParse(System.Environment.GetEnvironmentVariable("GRIDGAME_MANA_SEEDS"), out var ns) ? ns : 3;
                 for (int seed = 1; seed <= seeds; seed++) PlayCampaign(c, randomness, seed, t);
                 int n = System.Math.Max(1, t.Turns), b = System.Math.Max(1, t.Battles);
                 sb.AppendLine($"── {label}: {t.Battles} battles, {t.Wins} won, every stage played once per seed, {t.Turns} player turns");

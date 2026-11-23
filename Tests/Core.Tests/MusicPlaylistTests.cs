@@ -63,7 +63,7 @@ namespace GridGame.Tests
             var db = TestKit.Real;
             var names = db.Campaign.HubMusic.Concat(db.Campaign.Themes.SelectMany(t => t.Music.Concat(t.MusicBorrow))).Distinct();
             Assert.That(names.Count(), Is.GreaterThan(0), "campaign.json lists no music");
-            string dir = System.IO.Path.Combine(TestKit.RepoRoot, "Assets", "Gaiden", "Resources", "Audio", "Music");
+            string dir = System.IO.Path.Combine(TestKit.RepoRoot, "Assets", "GridGame", "Resources", "Audio", "Music");
             foreach (var n in names)
                 Assert.That(System.IO.File.Exists(System.IO.Path.Combine(dir, n + ".ogg")), $"{n}.ogg missing");
             foreach (var th in db.Campaign.Themes)
@@ -88,7 +88,7 @@ namespace GridGame.Tests
         public void EveryMomentKeyIsKnown_AndItsTracksShip()
         {
             var db = TestKit.Real;
-            string dir = System.IO.Path.Combine(TestKit.RepoRoot, "Assets", "Gaiden", "Resources", "Audio", "Music");
+            string dir = System.IO.Path.Combine(TestKit.RepoRoot, "Assets", "GridGame", "Resources", "Audio", "Music");
             foreach (var kv in db.Campaign.MomentMusic)
             {
                 Assert.That(MusicPlaylist.MomentKeys, Does.Contain(kv.Key), $"unknown MomentMusic key '{kv.Key}'");

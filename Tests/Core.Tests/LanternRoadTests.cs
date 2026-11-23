@@ -14,10 +14,10 @@ namespace GridGame.Tests
     public class LanternRoadTests
     {
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         /// <summary>Drop tables of the road's foes: the oni, the Wild of the gorges, and the militia/Redline chasing the caravan.</summary>
         private static readonly HashSet<string> RoadFoes = new HashSet<string> { "oni", "wolf", "werewolf00", "bat", "desertflyer", "steppinrazor", "soldier", "ganger" };
@@ -82,7 +82,7 @@ namespace GridGame.Tests
             Assert.That(set.Count, Is.EqualTo(4), "lantern-road-00 .. lantern-road-03");
             Assert.That(Backdrops.SetOf(Real, "lanternroad"), Is.EqualTo("lantern-road"));
             Assert.That(Backdrops.Resolve("lanternroad", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/lantern-road-01"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "lanternroad-00.png")), "the road's board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Tiles", "lanternroad-00.png")), "the road's board tile");
         }
 
         [Test]

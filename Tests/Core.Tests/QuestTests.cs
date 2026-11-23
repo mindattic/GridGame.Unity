@@ -14,7 +14,7 @@ namespace GridGame.Tests
     public class QuestTests
     {
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         private static SaveData NewSave() => Progression.NewGame(Real, "Quests");
 

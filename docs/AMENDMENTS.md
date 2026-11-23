@@ -1,6 +1,6 @@
 ---
 codex: 1
-project: GridGameGaiden
+project: GridGame
 code: GG
 layer: amendments
 status: living
@@ -181,7 +181,7 @@ updated: 2026-10-09
 - **Battle end is checked after every action**, not only after kills/turns (robustness).
 - **UI**: mute toggles; distinct projectile curves; long-press ability card; radial buff timers with
   >3-buff rotation; idle hint also suggests spells/GUARD.
-- **WebGL build** (§11.4): uncompressed Minimal template; saves flush to IndexedDB via `GaidenSync.jslib`
+- **WebGL build** (§11.4): uncompressed Minimal template; saves flush to IndexedDB via `GridGameSync.jslib`
   (`FS.syncfs`), and `SaveStore` falls back from `File.Replace` where unsupported.
 - **Bosses are tagged `Boss`** (cyclops, naga, vampire) so their frame and timeline icon read purple
   (heroes never take boss styling).
@@ -330,7 +330,7 @@ updated: 2026-10-09
   join the starting party (§25.14).
 - Call the owner may overrule: **a defeat keeps its XP** (§22.2) — without it a learning player could never get past a
   20-wave first battle.
-- Harness: `tools/harness.py` now uses port 7787 (`GAIDEN_PORT`); GridGameCaravan's player also listens on 7777.
+- Harness: `tools/harness.py` now uses port 7787 (`GRIDGAME_PORT`); GridGameCaravan's player also listens on 7777.
 
 ## 2026-10-11 — armor plates and corpses (owner)
 
@@ -899,7 +899,7 @@ Owner: "This is a difficulty question, and the higher the difficulty the greater
   - `DifficultyTable` (validated, monotonic) scales enemy HP and plates ×0.55→×1.0, enemy damage to heroes ×0.60→×1.0 and enemy level −2→0 from 1 to 10. Level 10 is the designed game: its enemy side is exactly as authored, so every balance number still holds there.
   - Rewards rise with the dial: coins, XP and drop chance ×0.6 at 1 → ×1.0 at 5 → **×1.5 at 10**. *Effect on the default game:* a player at 10 now earns 1.5× the gold, XP and drops the economy paid before; the curve is one table row per level if that needs retuning.
   - Old settings migrate: Easy → 5, a below-×1 Custom → the nearest level, everything else → 10.
-  - Soaks fight at `GAIDEN_DIFFICULTY` (default 10); `polish.py --balance --difficulty N`.
+  - Soaks fight at `GRIDGAME_DIFFICULTY` (default 10); `polish.py --balance --difficulty N`.
 - *(Tests: `DifficultyTests`.)*
 
 ## 2026-11-06 — Defenders evade: Evasion from AGI and Luck, dodge synergies (owner, GG-T297)
@@ -1153,7 +1153,7 @@ Owner, with ten landscapes of a colossal moon over cracked plains with floating 
 Owner: *"the Game handles gameplay, and Prose handles narrative"*; *"everything will be assigned guids and retrieved at compile time … pulled from a dedicated literary system."*
 
 - **Was:** story text authored in this repo (docs/STORY.md as the source, text inside classes/dialogues/campaign/quests/glossary JSON).
-- **Now:** Prose (universe `gridgame`, Prose RFC 0017) is the only store of story; this repo keeps gameplay. Phase 1 adds the conduit: `Data/Prose/prose.config.json`, the mapper `tools/prose_map.py` (1697 game entities with travel geography), the applier `tools/prose_apply.py` (Content/Text/<kind>.json keyed by key, with the Prose GUID slot), the shared key scheme `tools/prose_keys.py`, the seed `tools/prose_seed.py` (today's 1976 texts drafted into Prose, none approved: RFC 0009), and a build-time pull (`tools/prose-sync.ps1`, `tools/build.ps1 -SkipProse`, `GaidenBuild.SyncProse`) that never fails a build when Prose is down. The owner's War in Heaven canon is Prose-authored entities tagged DECIDED/PROPOSED/RETIRED. Details: [PROSE.md](PROSE.md).
+- **Now:** Prose (universe `gridgame`, Prose RFC 0017) is the only store of story; this repo keeps gameplay. Phase 1 adds the conduit: `Data/Prose/prose.config.json`, the mapper `tools/prose_map.py` (1697 game entities with travel geography), the applier `tools/prose_apply.py` (Content/Text/<kind>.json keyed by key, with the Prose GUID slot), the shared key scheme `tools/prose_keys.py`, the seed `tools/prose_seed.py` (today's 1976 texts drafted into Prose, none approved: RFC 0009), and a build-time pull (`tools/prose-sync.ps1`, `tools/build.ps1 -SkipProse`, `GridGameBuild.SyncProse`) that never fails a build when Prose is down. The owner's War in Heaven canon is Prose-authored entities tagged DECIDED/PROPOSED/RETIRED. Details: [PROSE.md](PROSE.md).
 - **Not yet:** the game still reads text from gameplay JSON. Phase 2 strips it out, applies the approved text and adds the ContentLoader join and its tests.
 
 ## 2026-11-07 — Story text leaves the gameplay JSON: the game reads every story string from Prose (owner, GG-T355 Phase 2)
@@ -1651,7 +1651,7 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   into the party's totals.
 - **Now:** support healing is a heal whose source is the supporter of the last Heal support action (until the next
   support action or pincer); support counts and heal totals are hero-side only. The table gains average held seconds
-  per move and an `ALL` row. With `GAIDEN_SOAK_OUT` set to a folder, each bot (greedy, casual) also writes
+  per move and an `ALL` row. With `GRIDGAME_SOAK_OUT` set to a folder, each bot (greedy, casual) also writes
   `held-turn-<label>.json`: raw sums plus winPct, turnUsedPct, avgHeldSeconds, guardPct, forcedPct, mana by reason,
   support heal/buff/haste/cleanse, per stage and overall. No gameplay or `BattleConfig` value changed.
 - *Why:* GG-T596 tunes against agreed targets and needs numbers it can read, overall and per stage, that measure the

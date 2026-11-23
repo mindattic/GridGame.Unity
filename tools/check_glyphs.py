@@ -6,14 +6,14 @@ itself. Prevents missing-glyph boxes."""
 import glob, os, sys
 from fontTools.ttLib import TTFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONTS = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Fonts")
+FONTS = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Fonts")
 cover = set()
 for f in ("NotoSans", "NotoSansSymbols2", "Outfit"):
     cover |= set(TTFont(os.path.join(FONTS, f + ".ttf")).getBestCmap().keys())
-files = glob.glob(os.path.join(ROOT, "Assets", "Gaiden", "App", "**", "*.cs"), recursive=True)
-files += glob.glob(os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "*.json"))
-files += glob.glob(os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content", "Text", "*.json"))  # story text from Prose (GG-T355)
-files += [os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Credits.txt")]
+files = glob.glob(os.path.join(ROOT, "Assets", "GridGame", "App", "**", "*.cs"), recursive=True)
+files += glob.glob(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "*.json"))
+files += glob.glob(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "Text", "*.json"))  # story text from Prose (GG-T355)
+files += [os.path.join(ROOT, "Assets", "GridGame", "Resources", "Credits.txt")]
 bad = {}
 for p in files:
     text = open(p, encoding="utf-8").read()

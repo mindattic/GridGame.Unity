@@ -276,9 +276,9 @@ namespace GridGame.Tests
                 // A class whose art isn't made yet declares the mannequin placeholder (GG-T351/GG-T350: the Hierarch):
                 // It draws the mannequin's file (Portrait "mannequin", GG-T557), so the class carries the mannequin's own framing.
                 bool placeholder = cls.Portrait == "mannequin" && cls.Id != "mannequin";
-                Assert.That(System.IO.File.Exists(System.IO.Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", cls.PortraitFile() + ".png")), Is.True, $"missing portrait {cls.PortraitFile()} for {cls.Id}");
+                Assert.That(System.IO.File.Exists(System.IO.Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", cls.PortraitFile() + ".png")), Is.True, $"missing portrait {cls.PortraitFile()} for {cls.Id}");
                 if (cls.HasMalePortrait)
-                    Assert.That(System.IO.File.Exists(System.IO.Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", cls.PortraitFile(true) + ".png")), Is.True, $"missing male portrait {cls.PortraitFile(true)} for {cls.Id}");
+                    Assert.That(System.IO.File.Exists(System.IO.Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", cls.PortraitFile(true) + ".png")), Is.True, $"missing male portrait {cls.PortraitFile(true)} for {cls.Id}");
                 if (placeholder)
                 {
                     var m = Real.Classes["mannequin"];

@@ -20,8 +20,8 @@ import numpy as np
 from scipy.signal import lfilter, resample_poly
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SFX_DIR = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Audio", "Sfx")
-MUSIC_DIR = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Audio", "Music")
+SFX_DIR = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Audio", "Sfx")
+MUSIC_DIR = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Audio", "Music")
 
 SFX_TARGET, MUSIC_TARGET, TOLERANCE = -16.0, -18.0, 2.0
 SFX_PEAK_CEILING, MUSIC_PEAK_CEILING = -1.0, -1.0

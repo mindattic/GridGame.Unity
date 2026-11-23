@@ -15,7 +15,7 @@ namespace GridGame.App.Tests
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "GaidenSaveStoreTests_" + Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "GridGameSaveStoreTests_" + Guid.NewGuid().ToString("N"));
             store = new SaveStore(root);
         }
 

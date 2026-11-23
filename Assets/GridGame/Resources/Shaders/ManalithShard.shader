@@ -1,7 +1,7 @@
 // GG-T679/GG-T680: a debris shard shed by the Manalith (mesh particles). Lit by the rig's key and rim lights passed in as
 // properties, glowing where the particle colour flags it, faded by the particle's alpha, and softened near the frame edge so a falling shard never cuts off hard.
 // Writes premultiplied colour and straight alpha coverage; ManalithBloom un-premultiplies for UI Toolkit.
-Shader "Gaiden/ManalithShard"
+Shader "GridGame/ManalithShard"
 {
     Properties
     {

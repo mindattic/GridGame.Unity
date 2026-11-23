@@ -15,10 +15,10 @@ namespace GridGame.Tests
     public class CathedralTests
     {
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         /// <summary>The Choir (cultist01-03) and the Concord: the Bulwark, the Kiln Guard, the Red Seal and its Chromed Hollow.</summary>
         private static bool CathedralFoe(string cls) =>
@@ -129,7 +129,7 @@ namespace GridGame.Tests
             Assert.That(set.Count, Is.EqualTo(4), "cathedral-00 .. cathedral-03");
             Assert.That(Backdrops.SetOf(Real, "cathedral"), Is.EqualTo("cathedral"));
             Assert.That(Backdrops.Resolve("cathedral", 5, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/cathedral-01"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "cathedral-00.png")), "the cathedral's board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Tiles", "cathedral-00.png")), "the cathedral's board tile");
         }
 
         [Test]

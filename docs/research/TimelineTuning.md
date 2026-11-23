@@ -2,7 +2,7 @@
 
 Measured with `Tests/Core.Tests/TimelineTuningSoak.cs`: the first 15 campaign stages, 4 battles per stage per bot,
 smart (`HeroBot`, randomness 0) and casual (randomness 0.5), heroes at each stage's recommended level. Each row covers
-60 battles per bot. To reproduce: set `GAIDEN_TIMELINE_SOAK=<out.md>` (plus the knobs in the soak's header) and run
+60 battles per bot. To reproduce: set `GRIDGAME_TIMELINE_SOAK=<out.md>` (plus the knobs in the soak's header) and run
 `--filter Name=Timeline_tuning_soak`.
 
 **Columns:**

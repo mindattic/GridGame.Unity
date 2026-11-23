@@ -20,7 +20,7 @@ namespace GridGame.App
     /// </summary>
     public static class GameTelemetry
     {
-        public const string GameId = "GridGameGaiden";
+        public const string GameId = "GridGame";
         /// <summary>Session folders kept on a device; older ones are deleted when a new session starts.</summary>
         public const int MobileKeepSessions = 20;
 

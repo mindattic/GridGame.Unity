@@ -16,8 +16,8 @@ import sys
 from collections import Counter, defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-APP = os.path.join(ROOT, "Assets", "Gaiden", "App")
-USS = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "UI", "Theme.uss")
+APP = os.path.join(ROOT, "Assets", "GridGame", "App")
+USS = os.path.join(ROOT, "Assets", "GridGame", "Resources", "UI", "Theme.uss")
 TOKEN_FILES = {os.path.join(APP, "UI", "Tokens.cs")}
 SKIP_DIRS = {os.path.join(APP, "Automation")}  # dev-only tooling, never shipped
 
@@ -124,7 +124,7 @@ def lint():
     return out
 
 
-CONTENT = os.path.join(ROOT, "Assets", "Gaiden", "Resources", "Content")
+CONTENT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content")
 VFX_FILES = [os.path.join(APP, "Battle", f) for f in
              ("BattleScreen.Fx.cs", "BattleScreen.Playback.cs", "BattleScreen.VfxLibrary.cs", "BattleScreen.VfxStyle.cs")]
 
@@ -133,7 +133,7 @@ def vfx_rules():
     """POL-E4: every element and status has a vfxstyle.json look, and the battle VFX code has no per-element or
     per-status switch of its own (GG-T253). POL-E5: three tiers that scale count, shake and hit-stop upward, read by the
     hit playback."""
-    models = open(os.path.join(ROOT, "Assets", "Gaiden", "Core", "Content", "ContentModels.cs"), encoding="utf-8").read()
+    models = open(os.path.join(ROOT, "Assets", "GridGame", "Core", "Content", "ContentModels.cs"), encoding="utf-8").read()
     elements = re.search(r"enum DamageType\s*\{([^}]*)\}", models).group(1).replace(" ", "").split(",")
     buffs = [b["Id"] for b in json.load(open(os.path.join(CONTENT, "buffs.json"), encoding="utf-8"))]
     path = os.path.join(CONTENT, "vfxstyle.json")

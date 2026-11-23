@@ -17,11 +17,11 @@ namespace GridGame.Tests
         private static readonly string[] Stages = { "morrowsshadow-01", "morrowsshadow-02", "morrowsshadow-03" };
 
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
-            || File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
+            || File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         /// <summary>Void Sentinels, the Ember and the moon-changed Wild.</summary>
         private static bool ShadowFoe(string cls) =>
@@ -139,7 +139,7 @@ namespace GridGame.Tests
             var set = Backdrops.Probe("morrows-shadow", OnDisk);
             Assert.That(set.Count, Is.EqualTo(10), "morrows-shadow-00 .. morrows-shadow-09");
             Assert.That(Backdrops.Resolve("morrowsshadow", 13, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/morrows-shadow-03"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "morrowsshadow-00.png")), "its board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Tiles", "morrowsshadow-00.png")), "its board tile");
         }
     }
 }

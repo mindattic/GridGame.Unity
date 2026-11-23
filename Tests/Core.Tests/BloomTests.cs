@@ -17,10 +17,10 @@ namespace GridGame.Tests
         private static readonly string[] Stages = { "bloom-01", "bloom-02", "bloom-03" };
 
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
 
         private static bool PortraitOnDisk(string id) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Portraits", id + ".png"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
 
         /// <summary>Redline harvesters, Pale Concord holdouts (the Red Seal, the Bulwark), moss golems and moon-changed Wild.</summary>
         private static bool BloomFoe(string cls) =>
@@ -89,7 +89,7 @@ namespace GridGame.Tests
             var set = Backdrops.Probe("bloom", OnDisk);
             Assert.That(set.Count, Is.EqualTo(8), "bloom-00 .. bloom-07");
             Assert.That(Backdrops.Resolve("bloom", 9, s => Backdrops.Probe(s, OnDisk), t => Backdrops.SetOf(Real, t)), Is.EqualTo("Backgrounds/bloom-01"));
-            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "Gaiden", "Resources", "Tiles", "bloom-00.png")), "the Bloom's board tile");
+            Assert.That(File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Tiles", "bloom-00.png")), "the Bloom's board tile");
         }
 
         [Test]

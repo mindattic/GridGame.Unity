@@ -1,15 +1,15 @@
 @echo off
 rem The Desktop shortcut runs this. It asks first (MAT-T67):
 rem   1) Deploy & Run: tools\run.ps1 -Force -Launch pulls latest, rebuilds Release, publishes to
-rem      C:\Apps\GridGameGaiden, refreshes the Desktop shortcut and launches it.
-rem   2) Run: launches the published C:\Apps\GridGameGaiden\GridGameGaiden.exe without deploying (deploys if missing).
+rem      C:\Apps\GridGame, refreshes the Desktop shortcut and launches it.
+rem   2) Run: launches the published C:\Apps\GridGame\GridGame.exe without deploying (deploys if missing).
 rem Agents and /deploy call tools\run.ps1 directly; it never prompts.
 rem No goto/labels on purpose: this file is LF, and cmd's label search is unreliable in LF files.
 setlocal
-set "APP_DIR=C:\Apps\GridGameGaiden"
-set "APP_EXE=%APP_DIR%\GridGameGaiden.exe"
+set "APP_DIR=C:\Apps\GridGame"
+set "APP_EXE=%APP_DIR%\GridGame.exe"
 echo.
-echo   GridGame Gaiden
+echo   GridGame
 echo     1^) Deploy ^& Run
 echo     2^) Run
 echo.
