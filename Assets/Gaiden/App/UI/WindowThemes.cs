@@ -588,7 +588,12 @@ namespace GridGame.App
             layer.style.backgroundSize = new BackgroundSize(size, size);
             layer.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Left);
             layer.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Top);
-            layer.style.opacity = opacity;
+            // The texture's strength is its tint alpha, not the layer's opacity, so the GG-T678 lab hardware hung inside
+            // the layer draws at full strength.
+            layer.style.opacity = 1f;
+            var tint = Palette.White; tint.a = opacity;
+            layer.style.unityBackgroundImageTintColor = tint;
+            LabHardware(layer, theme?.Frame?.Style == "manapunk");
             SyncRadius(layer);
             layer.schedule.Execute(() => SyncRadius(layer)).ExecuteLater(1);
         }
@@ -603,6 +608,104 @@ namespace GridGame.App
             layer.style.borderTopRightRadius = Mathf.Max(0f, s.borderTopRightRadius - Mathf.Max(s.borderTopWidth, s.borderRightWidth));
             layer.style.borderBottomLeftRadius = Mathf.Max(0f, s.borderBottomLeftRadius - Mathf.Max(s.borderBottomWidth, s.borderLeftWidth));
             layer.style.borderBottomRightRadius = Mathf.Max(0f, s.borderBottomRightRadius - Mathf.Max(s.borderBottomWidth, s.borderRightWidth));
+        }
+
+        // ── Manapunk lab hardware (GG-T678) ─────────────────────────────────────────
+
+        /// <summary>The Manapunk hardware's container class. It lives inside the texture layer, so it never counts as a
+        /// window child (the billboard's "empty" check and every refill skip <see cref="OverlayClass"/>).</summary>
+        public const string LabClass = "window-lab";
+
+        private static bool ReduceMotion => GameApp.I?.Settings?.ReduceMotion ?? false;
+
+        /// <summary>Owner 2026-11-22, Manapunk: "the Halcyon technology used to contain mana, so alchemy glassware, pumps,
+        /// laboratory equipment... like a high tech facility but also old and abandoned". Four pewter clamp brackets hold
+        /// the pane at its corners, and a glass conduit down its left edge carries a slow pulse of contained mana. All of
+        /// it sits in the frame's padding band, never behind text, and ignores picking.</summary>
+        private static void LabHardware(VisualElement layer, bool on)
+        {
+            VisualElement lab = null;
+            foreach (var c in layer.Children()) if (c.ClassListContains(LabClass)) { lab = c; break; }
+            if (!on) { lab?.RemoveFromHierarchy(); return; }
+            if (lab != null) return;
+            lab = Piece(layer, null);
+            lab.AddToClassList(LabClass);
+            lab.style.left = lab.style.top = lab.style.right = lab.style.bottom = Space.S0;
+            foreach (var (left, top) in new[] { (true, true), (false, true), (true, false), (false, false) }) Clamp(lab, left, top);
+            Conduit(lab);
+        }
+
+        private static VisualElement Piece(VisualElement parent, Color? c)
+        {
+            var e = new VisualElement { pickingMode = PickingMode.Ignore };
+            e.style.position = Position.Absolute;
+            if (c.HasValue) e.style.backgroundColor = c.Value;
+            parent.Add(e);
+            return e;
+        }
+
+        private static void Pin(VisualElement e, bool left, bool top, float inset)
+        {
+            if (left) e.style.left = inset; else e.style.right = inset;
+            if (top) e.style.top = inset; else e.style.bottom = inset;
+        }
+
+        /// <summary>An L-shaped pewter bracket at one corner: two bars along the frame and a bolt head where they meet.</summary>
+        private static void Clamp(VisualElement lab, bool left, bool top)
+        {
+            var across = Piece(lab, Palette.Pewter);
+            Pin(across, left, top, Space.S4);
+            across.style.width = Size.ClampArm; across.style.height = Size.ClampBar;
+            across.style.borderBottomWidth = Size.Underline / 2f; across.style.borderBottomColor = Palette.PewterDark;
+            var down = Piece(lab, Palette.Pewter);
+            Pin(down, left, top, Space.S4);
+            down.style.width = Size.ClampBar; down.style.height = Size.ClampArm;
+            if (left) { down.style.borderRightWidth = Size.Underline / 2f; down.style.borderRightColor = Palette.PewterDark; }
+            else { down.style.borderLeftWidth = Size.Underline / 2f; down.style.borderLeftColor = Palette.PewterDark; }
+            var bolt = Piece(lab, Palette.PewterLight);
+            Pin(bolt, left, top, Space.S4 - (Size.ClampBolt - Size.ClampBar) / 2f);
+            bolt.style.width = bolt.style.height = Size.ClampBolt;
+            float r = Size.ClampBolt / 2f;
+            bolt.style.borderTopLeftRadius = bolt.style.borderTopRightRadius = bolt.style.borderBottomLeftRadius = bolt.style.borderBottomRightRadius = r;
+            bolt.style.borderBottomWidth = Size.Underline / 2f; bolt.style.borderBottomColor = Palette.PewterDark;
+        }
+
+        /// <summary>A glass tube down the window's left edge, between the clamps, with valve collars at both ends and a
+        /// slow pulse of mana flowing down it (a steady glow under Reduce Motion). Hidden on windows too short to hold it.</summary>
+        private static void Conduit(VisualElement lab)
+        {
+            float edge = Space.S4 + Size.ClampArm + Space.S8;
+            var tube = Piece(lab, Palette.ConduitGlass);
+            tube.style.left = Space.S8; tube.style.top = edge; tube.style.bottom = edge;
+            tube.style.width = Size.Conduit;
+            tube.style.overflow = Overflow.Hidden;
+            float tr = Size.Conduit / 2f;
+            tube.style.borderTopLeftRadius = tube.style.borderTopRightRadius = tube.style.borderBottomLeftRadius = tube.style.borderBottomRightRadius = tr;
+            tube.style.borderLeftWidth = tube.style.borderRightWidth = Size.Underline / 2f;
+            tube.style.borderLeftColor = tube.style.borderRightColor = Palette.Pewter;
+            foreach (bool atTop in new[] { true, false })
+            {
+                var valve = Piece(lab, Palette.Pewter);
+                valve.style.left = Space.S8 - (Size.ClampBolt - Size.Conduit) / 2f;
+                if (atTop) valve.style.top = edge - Size.ClampBar / 2f; else valve.style.bottom = edge - Size.ClampBar / 2f;
+                valve.style.width = Size.ClampBolt; valve.style.height = Size.ClampBar;
+                valve.style.borderBottomWidth = Size.Underline / 2f; valve.style.borderBottomColor = Palette.PewterDark;
+            }
+            var glow = Piece(tube, Palette.ConduitMana);
+            glow.style.left = glow.style.right = Space.S0;
+            glow.style.height = Size.ConduitGlow;
+            glow.style.borderTopLeftRadius = glow.style.borderTopRightRadius = glow.style.borderBottomLeftRadius = glow.style.borderBottomRightRadius = tr;
+            lab.RegisterCallback<GeometryChangedEvent>(_ =>
+                tube.style.display = lab.resolvedStyle.height >= Size.ConduitMinHeight ? DisplayStyle.Flex : DisplayStyle.None);
+            float start = Time.realtimeSinceStartup;
+            glow.schedule.Execute(() =>
+            {
+                float h = tube.resolvedStyle.height;
+                if (float.IsNaN(h) || h <= 0f) return;
+                if (ReduceMotion) { glow.style.top = (h - Size.ConduitGlow) / 2f; return; }
+                float k = ((Time.realtimeSinceStartup - start) % Timing.ConduitFlow) / Timing.ConduitFlow;
+                glow.style.top = Mathf.Lerp(-Size.ConduitGlow, h, k);
+            }).Every(33);
         }
 
         /// <summary>Dresses every <c>.window</c> under <paramref name="root"/>.</summary>

@@ -50,6 +50,13 @@ namespace GridGame.App
         public static readonly Color OrbGlass = new Color(0x22 / 255f, 0x20 / 255f, 0x3A / 255f);
         public static readonly Color OrbLit = new Color(0x75 / 255f, 0x90 / 255f, 0xC8 / 255f);
         public static readonly Color OrbLitHighlight = new Color(0xAC / 255f, 0xA5 / 255f, 0xD3 / 255f);
+        // GG-T678: Manapunk lab hardware on every window (BIBLE §11.5): pewter clamp brackets with a worn dark underside, a
+        // lighter bolt head, and a glass conduit carrying contained mana.
+        public static readonly Color Pewter = new Color(0x60 / 255f, 0x64 / 255f, 0x6F / 255f);
+        public static readonly Color PewterDark = new Color(0x34 / 255f, 0x36 / 255f, 0x3F / 255f);
+        public static readonly Color PewterLight = new Color(0x8C / 255f, 0x90 / 255f, 0x9C / 255f);
+        public static readonly Color ConduitGlass = new Color(0x10 / 255f, 0x0F / 255f, 0x1C / 255f, 0.85f);
+        public static readonly Color ConduitMana = new Color(0x75 / 255f, 0x90 / 255f, 0xC8 / 255f, 0.7f);
 
         // Teams
         public static readonly Color Hero = new Color(0.47f, 0.67f, 1f);
@@ -269,6 +276,9 @@ namespace GridGame.App
         // GG-T688: OrbRow is the row's height and the largest an orb gets (owning 1-5 they're big bulbs); OrbMin is the
         // smallest it may shrink to at 20; OrbGap the equal gap between orbs; OrbLabel the "MANA" label's width.
         public const float OrbRow = 88, OrbMin = 36, OrbGap = 12, OrbLabel = 96, OrbBloom = 26, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
+        // GG-T678: Manapunk window hardware. A corner clamp's arm length and bar thickness and its bolt head; the edge
+        // conduit's tube width, its flowing light's length, and the shortest window that gets a conduit at all.
+        public const float ClampArm = 30, ClampBar = 4, ClampBolt = 10, Conduit = 6, ConduitGlow = 110, ConduitMinHeight = 220;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
@@ -367,6 +377,8 @@ namespace GridGame.App
         /// <summary>GG-T673: a lit orb's bloom breathes on this period; a mana trail drops a spark every TrailSparkEvery
         /// seconds, each living TrailSparkLife.</summary>
         public const float OrbBreathe = 2.4f, TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
+        /// <summary>GG-T678: one pass of contained mana flowing down a Manapunk window's edge conduit.</summary>
+        public const float ConduitFlow = 3.6f;
     }
 
     /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops

@@ -760,7 +760,8 @@
     color: rgb(230, 230, 238);
 }
 .theme-manapunk .btn:hover { background-color: rgb(52, 50, 78); border-color: rgb(117, 144, 200); border-bottom-color: rgb(14, 14, 24); }
-.theme-manapunk .btn--primary { background-color: rgb(117, 144, 200); border-color: rgb(172, 165, 211); border-bottom-color: rgb(65, 56, 111); color: rgb(12, 12, 22); }
+/* GG-T678: the primary action is a charged mana cell: a bright lit top edge over the blue body. */
+.theme-manapunk .btn--primary { background-color: rgb(117, 144, 200); border-color: rgb(172, 165, 211); border-top-color: rgb(214, 210, 240); border-bottom-color: rgb(65, 56, 111); color: rgb(12, 12, 22); }
 .theme-manapunk .btn--primary:hover { background-color: rgb(140, 164, 214); border-color: rgb(200, 196, 230); border-bottom-color: rgb(65, 56, 111); }
 .theme-manapunk .btn--danger { background-color: rgb(60, 26, 38); border-color: rgb(150, 54, 89); border-bottom-color: rgb(30, 12, 18); color: rgb(255, 176, 184); }
 .theme-manapunk .btn--danger:hover { background-color: rgb(80, 32, 48); border-color: rgb(193, 112, 140); border-bottom-color: rgb(30, 12, 18); }
@@ -785,7 +786,8 @@
 }
 .theme-manapunk .tab--active { background-color: rgb(42, 40, 64); color: rgb(230, 230, 238); border-top-color: rgb(117, 144, 200); border-top-width: 4px; }
 
-.theme-manapunk .gauge { background-color: rgb(12, 12, 22); border-color: rgb(96, 100, 111); }
+/* GG-T678: every meter is a glass tube in a pewter sleeve: lit pewter on top, worn dark below, near-black glass inside. */
+.theme-manapunk .gauge { background-color: rgb(16, 15, 28); border-color: rgb(96, 100, 111); border-top-color: rgb(140, 144, 156); border-bottom-color: rgb(52, 54, 63); }
 
 .theme-manapunk .toast { background-color: rgba(26, 25, 48, 0.97); border-width: 2px; border-radius: 10px; border-color: rgb(96, 100, 111); border-top-color: rgb(117, 144, 200); color: rgb(230, 230, 238); }
 .theme-manapunk .veil { background-color: rgba(5, 5, 12, 0.72); }
