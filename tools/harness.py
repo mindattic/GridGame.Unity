@@ -84,6 +84,15 @@ def tile(x, y):
     return (BOARD_LEFT + TILE * x + TILE // 2, BOARD_TOP + TILE * y + TILE // 2)
 
 
+def enter_stage(text, confirm_wait=0.8):
+    """GG-T726: a stage row opens StageConfirmScreen (GG-T723); tap the row, then its Enter button (stage-enter) to start the battle."""
+    r = call("clicktext", text=text)
+    time.sleep(confirm_wait)
+    if call("names", prefix="stage-enter"):
+        call("click", name="stage-enter")
+    return r
+
+
 def call(endpoint, timeout=130, **params):
     q = urllib.parse.urlencode({k: v for k, v in params.items() if v is not None})
     url = f"{BASE}/{endpoint}" + (f"?{q}" if q else "")
@@ -428,7 +437,7 @@ def smoke(run="smoke"):
     files.append(shot("02-hub"))
     call("clicktext", text="Adventure"); time.sleep(0.8)
     files.append(shot("03-stages"))
-    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+    enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story(files)
     files.append(shot("05-battle"))
     call("autoplay", on=1)
@@ -506,7 +515,7 @@ def aspects(run="aspects", height=1200, shapes=None):
         call("newgame", slot=0); time.sleep(1.2)
         shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
         call("clicktext", text="Adventure"); time.sleep(0.8)
-        call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+        enter_stage("The Tithe Moors I"); time.sleep(1.5)
         through_story(wait=1.2)
         if _wait_screen("battle", 8):
             time.sleep(2.0)
@@ -674,7 +683,7 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
     time.sleep(1)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="The Tithe Moors I"); time.sleep(1.2)
+    enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     results = []
     for n in range(stages):
@@ -785,7 +794,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
 
     # Fights: Adventure -> first stage, story beats, then `battles` battles in a row.
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="The Tithe Moors I"); time.sleep(1.2)
+    enter_stage("The Tithe Moors I"); time.sleep(1.2)
     through_story(wait=1.2)
     for n in range(battles):
         outcome, st = _play_battle(f"02-battle{n}-mid")
@@ -1115,7 +1124,7 @@ def coach(run="coach", camp=False, capture=True):
         if call("state")["screen"] != "hub":
             call("goto", screen="hub"); time.sleep(1.0)
         call("clicktext", text="Adventure"); time.sleep(0.8)
-        call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+        enter_stage("The Tithe Moors I"); time.sleep(1.5)
         through_story()
         if not _wait_screen("battle", 10):
             fails.append("never reached the tutorial battle")
@@ -1899,7 +1908,7 @@ def story_recruits(run="recruits", speed=3):
     ok["starts_with_three"] = party0 == ["warden", *STARTING_PARTY]  # the fixed lead first (GG-T533)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+    enter_stage("The Tithe Moors I"); time.sleep(1.5)
     through_story()
     outcome, st = _play_battle("03-gv1-mid")
     time.sleep(1.2)
@@ -2050,7 +2059,7 @@ def storyarc(run="storyarc", capture=True):
     call("devrested", limit=1, points=5)
     call("devwanderer")
     call("clicktext", text="Adventure"); time.sleep(0.8)
-    call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+    enter_stage("The Tithe Moors I"); time.sleep(1.5)
     _drain_story(seen, "04-gv1")
     ok["gv1_in_battle"] = _wait_screen("battle", 8)
     ok["rested_spent_on_launch"] = save().get("rested") == 4

@@ -55,6 +55,9 @@ await tapDesign(585, 1434);  // Continue
 await page.waitForTimeout(1200);
 await tapDesign(230, 522);   // Adventure (camp menu, below the 2-column party grid)
 await tapDesign(350, 334);   // Green Valley I (first battle under the expedition header)
+// GG-T723/T726: the stage row opens the stage confirm screen; its Enter button (stage-enter) is the primary button at the
+// footer's bottom-right. The WebGL build has no automation endpoint to look it up by name, so tap by design coords.
+await tapDesign(960, 2440);  // Enter
 await page.waitForTimeout(1500);
 await tapDesign(1090, 2440); // Skip crawl (no-op if none)
 await page.waitForTimeout(2500);

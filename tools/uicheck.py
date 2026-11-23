@@ -164,7 +164,7 @@ def main():
         # with its gate reason (MetaServices.CanLaunch), so check that instead of the no-longer-reachable teaser.
         check("locked stages in the open region are listed individually with their gate reason",
               any("Expeditions start at battle 1" in x for x in t), str(t))
-        h.call("clicktext", text="The Tithe Moors I"); time.sleep(1.5)
+        h.enter_stage("The Tithe Moors I"); time.sleep(1.5)
         if h.call("state")["screen"] == "crawl":
             check("story crawl plays on first entry", True)
             h.call("clicktext", text="Skip"); time.sleep(1.5)
