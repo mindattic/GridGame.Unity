@@ -3615,58 +3615,6 @@
         ]
       }
     },
-    "dialogue:talk_quiz_aetherist": {
-      "key": "dialogue:talk_quiz_aetherist",
-      "id": "conversation-talk-quiz-aetherist",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:4bf3481d808d2d8c2d831356b1945bdc343b9a86f697815f828774cd444b61ed",
-      "about": [
-        "class-aetherist"
-      ],
-      "speakers": [
-        "$with"
-      ],
-      "payload": {
-        "title": "Advice",
-        "start": "ask",
-        "nodes": [
-          {
-            "id": "ask",
-            "speaker": "$with",
-            "line": "Fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt. In culpa qui officia deserunt mollit anim id est. Laborum sed ut perspiciatis unde omnis.",
-            "choices": [
-              {
-                "text": "A · Quasi architecto beatae vitae",
-                "next": "wrong"
-              },
-              {
-                "text": "B · Dicta sunt explicabo nemo enim",
-                "next": "right",
-                "tags": [
-                  "right-answer"
-                ]
-              },
-              {
-                "text": "C · Voluptatem accusantium doloremque laudantium totam",
-                "next": "wrong"
-              }
-            ]
-          },
-          {
-            "id": "right",
-            "speaker": "$with",
-            "line": "Nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui. Officia deserunt mollit anim."
-          },
-          {
-            "id": "wrong",
-            "speaker": "$with",
-            "line": "Excepteur sint occaecat cupidatat non proident sunt."
-          }
-        ]
-      }
-    },
     "dialogue:talk_quiz_alchemist": {
       "key": "dialogue:talk_quiz_alchemist",
       "id": "conversation-talk-quiz-alchemist",

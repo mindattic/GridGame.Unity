@@ -407,22 +407,6 @@
         "short": "The caravan's outriders, who keeps the Scouts wagon."
       }
     },
-    "class:aetherist": {
-      "key": "class:aetherist",
-      "id": "description-class-aetherist",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:23359ccc78c47063043588f279f03129c787d289500fd4694ddfe0d1f785721a",
-      "about": [
-        "class-aetherist"
-      ],
-      "speakers": [],
-      "payload": {
-        "short": "A Choir runaway who pours mana into the party instead of singing it out of them.",
-        "long": "Learned the hymn backwards. The Choir wants this one back very badly."
-      }
-    },
     "class:alchemist": {
       "key": "class:alchemist",
       "id": "description-class-alchemist",
