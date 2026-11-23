@@ -24079,7 +24079,7 @@
       ],
       "speakers": [],
       "payload": {
-        "short": "Grey-green moss country, cut by stone walls older than the Concord and dotted with the white domes of the Stills. Over it hang the two moons: the old Moon, round and familiar, and beside it the Manalith, lumpy and strange, a little larger than anyone's grandparents remember."
+        "short": "Grey-green moss country, cut by old stone walls and dotted with the white domes of the Tithe Moors' collection houses. Over it hangs the Manalith, lumpy and strange, a little larger than anyone's grandparents remember."
       }
     },
     "place:greenvalley-01": {
@@ -24133,13 +24133,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4ea3e1e36e4c349af7ad67edd24703d18b482effb4434585e4545eab41a6bb38",
+      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
       "about": [
         "place-greenvalley-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Moors Beyond the Stills."
+        "short": "A battlefield of The Tithe Moors."
       }
     },
     "place:greenvalley-05": {
@@ -24148,13 +24148,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4ea3e1e36e4c349af7ad67edd24703d18b482effb4434585e4545eab41a6bb38",
+      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
       "about": [
         "place-greenvalley-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Moors Beyond the Stills."
+        "short": "A battlefield of The Tithe Moors."
       }
     },
     "place:greenvalley2": {
