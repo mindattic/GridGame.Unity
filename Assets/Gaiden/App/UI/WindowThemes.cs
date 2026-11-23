@@ -657,6 +657,7 @@ namespace GridGame.App
             Pin(across, left, top, Space.S4);
             across.style.width = Size.ClampArm; across.style.height = Size.ClampBar;
             across.style.borderBottomWidth = Size.Underline / 2f; across.style.borderBottomColor = Palette.PewterDark;
+            across.style.borderTopWidth = Size.Underline / 2f; across.style.borderTopColor = Palette.PewterLight;
             var down = Piece(lab, Palette.Pewter);
             Pin(down, left, top, Space.S4);
             down.style.width = Size.ClampBar; down.style.height = Size.ClampArm;

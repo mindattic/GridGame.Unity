@@ -55,8 +55,9 @@ namespace GridGame.App
         public static readonly Color Pewter = new Color(0x60 / 255f, 0x64 / 255f, 0x6F / 255f);
         public static readonly Color PewterDark = new Color(0x34 / 255f, 0x36 / 255f, 0x3F / 255f);
         public static readonly Color PewterLight = new Color(0x8C / 255f, 0x90 / 255f, 0x9C / 255f);
-        public static readonly Color ConduitGlass = new Color(0x10 / 255f, 0x0F / 255f, 0x1C / 255f, 0.85f);
-        public static readonly Color ConduitMana = new Color(0x75 / 255f, 0x90 / 255f, 0xC8 / 255f, 0.7f);
+        // The conduit's glass always holds a dim charge of mana (it reads as a mana line even between pulses).
+        public static readonly Color ConduitGlass = new Color(0x2D / 255f, 0x34 / 255f, 0x6C / 255f, 0.9f);
+        public static readonly Color ConduitMana = new Color(0x9C / 255f, 0xB2 / 255f, 0xE2 / 255f, 0.95f);
 
         // Teams
         public static readonly Color Hero = new Color(0.47f, 0.67f, 1f);
@@ -278,7 +279,7 @@ namespace GridGame.App
         public const float OrbRow = 88, OrbMin = 36, OrbGap = 12, OrbLabel = 96, OrbBloom = 26, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
         // GG-T678: Manapunk window hardware. A corner clamp's arm length and bar thickness and its bolt head; the edge
         // conduit's tube width, its flowing light's length, and the shortest window that gets a conduit at all.
-        public const float ClampArm = 30, ClampBar = 4, ClampBolt = 10, Conduit = 6, ConduitGlow = 110, ConduitMinHeight = 220;
+        public const float ClampArm = 44, ClampBar = 6, ClampBolt = 14, Conduit = 8, ConduitGlow = 160, ConduitMinHeight = 220;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
