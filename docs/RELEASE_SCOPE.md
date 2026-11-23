@@ -168,6 +168,16 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   the early spend and nothing wore enough to need repair yet. The run did not go further: the harness lost the player
   mid-run (socket TimeoutError) and the idle-time reaper killed an earlier unchunked run, so the rest of the campaign
   (stages 6-40, where the economy and postgame changes actually bite) is not yet measured; see the follow-up tickets.
+  **GG-T704 resumed that save (2026-11-23, 3-battle `--resume --keep` chunks; stages 6-10, 5/5 won first try, no retries):**
+  gold at the camp before each stage / Rested left / roster: Lantern Road III 789 g / 6 / 4 heroes Lv 8; Desert I 811 g / 5 /
+  4 (Lv 9); II 578 g / 4 / 5 (Engineer joined); III 970 g / 4 / 6 (Dervish, party Lv 8-10); Swamp I 1,559 g / 3 / 7
+  (Sellsword, Lv 9-11); Swamp II 1,498 g / 2. Rested drains about one point a stage (10 -> 2 after 14 camps) and the gold
+  refill price climbs 15 g a camp (100 -> 250 g), so a player who never rests will meet the refill gate around stage 15;
+  gold income per stage (~400-1,000 g) still outruns spend, ending the chunk near 1,500 g. Barbarian's weapon is the
+  most worn (133/180) and Redmage/Cleric drop to low HP at stage end but nobody was KO'd out of the battle.
+  **The player crashed (native UnityPlayer access violation, no managed exception) at the start of Swamp II's battle**
+  (stage 11 of 40; crash report in R:/Temp/MindAttic/GridGame/Crashes, log not kept); the run stopped there on the owner's
+  instruction not to launch more players. Stages 11-40 remain unmeasured; see GG-T704's split tickets.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
