@@ -51,16 +51,22 @@ namespace GridGame.App
             var c = rect.center;
             var p = ctx.painter2D;
 
-            Disc(p, c, r, Palette.ManaDeep.WithA(0.92f));
-            Ring(p, c, r - 1f, Mathf.Max(1.5f, r * 0.08f), Palette.ManaBloom.WithA(0.35f));
+            // GG-T688: a Manapunk glass bulb (BIBLE §11.5). Pewter collar, then dark glass that still reads when empty
+            // (a lighter rim and a specular highlight), filled with mana blue as it lights.
+            float collar = Mathf.Max(2f, r * 0.12f);
+            float glass = r - collar;
+            Disc(p, c, r, Palette.OrbCollar);
+            Disc(p, c, glass, Palette.OrbGlass.WithA(0.96f));
+            Ring(p, c, glass - 0.5f, Mathf.Max(1f, r * 0.05f), Palette.OrbLitHighlight.WithA(0.45f));
             if (fill > 0.01f)
             {
-                float g = r * 0.82f * fill;
-                Disc(p, c, g, Palette.ManaIndigo);
-                Disc(p, c + new Vector2(0f, 0.12f) * g, g * 0.62f, Color.Lerp(Palette.ManaIndigo, Palette.ManaBloom, 0.6f));
-                Disc(p, c + new Vector2(0.28f, 0.30f) * g, g * 0.22f, Palette.ManaGlint.WithA(0.55f * fill));
-                Disc(p, c + new Vector2(-0.32f, -0.36f) * g, g * 0.16f, Palette.White.WithA(0.75f * fill));
+                float g = glass * 0.94f * fill;
+                Disc(p, c, g, Palette.OrbLit);
+                Disc(p, c + new Vector2(0f, 0.14f) * g, g * 0.6f, Color.Lerp(Palette.OrbLit, Palette.OrbLitHighlight, 0.55f));
+                Disc(p, c + new Vector2(0.28f, 0.30f) * g, g * 0.2f, Palette.ManaGlint.WithA(0.5f * fill));
             }
+            // The glass's own highlight, lit or not, so an empty bulb is never just a dark hole.
+            Disc(p, c + new Vector2(-0.34f, -0.38f) * glass, glass * 0.2f, Palette.White.WithA(fill > 0.01f ? 0.8f : 0.35f));
             if (flash > 0.02f) Disc(p, c, r, Palette.White.WithA(0.5f * flash));
             if (Preview && fill > 0.5f)
             {
@@ -71,7 +77,7 @@ namespace GridGame.App
             if (Charge > 0.005f && !Filled)
             {
                 p.lineCap = LineCap.Round;
-                p.strokeColor = Palette.ManaBloom;
+                p.strokeColor = Palette.OrbLit;
                 p.lineWidth = Mathf.Max(2f, r * 0.16f);
                 p.BeginPath();
                 p.Arc(c, r - p.lineWidth / 2f, Angle.Degrees(-90f), Angle.Degrees(-90f + 360f * Mathf.Clamp01(Charge)));

@@ -45,6 +45,11 @@ namespace GridGame.App
         public static readonly Color ManaIndigo = new Color(0x4B / 255f, 0x44 / 255f, 0x7D / 255f);
         public static readonly Color ManaBloom = new Color(0x7A / 255f, 0x74 / 255f, 0xAB / 255f);
         public static readonly Color ManaGlint = new Color(0xB4 / 255f, 0x51 / 255f, 0x6C / 255f);
+        // GG-T688: the orb as a Manapunk glass bulb (BIBLE §11.5): pewter collar, dark glass empty, mana blue lit.
+        public static readonly Color OrbCollar = new Color(0x60 / 255f, 0x64 / 255f, 0x6F / 255f);
+        public static readonly Color OrbGlass = new Color(0x22 / 255f, 0x20 / 255f, 0x3A / 255f);
+        public static readonly Color OrbLit = new Color(0x75 / 255f, 0x90 / 255f, 0xC8 / 255f);
+        public static readonly Color OrbLitHighlight = new Color(0xAC / 255f, 0xA5 / 255f, 0xD3 / 255f);
 
         // Teams
         public static readonly Color Hero = new Color(0.47f, 0.67f, 1f);
@@ -261,7 +266,9 @@ namespace GridGame.App
             ArtW = 420, ArtH = 620;
         // GG-T673: the mana orbs row (one orb per bank slot) and the trails that fly into it. OrbBloom is how far an orb's
         // bloom spills past it; TrailSwing/TrailLift bound the bezier control point's random sideways and upward offset.
-        public const float OrbRow = 56, OrbBloom = 18, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
+        // GG-T688: OrbRow is the row's height and the largest an orb gets (owning 1-5 they're big bulbs); OrbMin is the
+        // smallest it may shrink to at 20; OrbGap the equal gap between orbs; OrbLabel the "MANA" label's width.
+        public const float OrbRow = 88, OrbMin = 36, OrbGap = 12, OrbLabel = 96, OrbBloom = 26, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;

@@ -86,6 +86,7 @@ namespace GridGame.App
         /// shows the mana charge round its rim; an aimed spell marks the orbs it would spend.</summary>
         private VisualElement pool;
         private readonly List<ManaOrbView> orbViews = new List<ManaOrbView>();
+        private Label orbLabel;
         private readonly List<VisualElement> orbBlooms = new List<VisualElement>();
         /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
         /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
@@ -211,7 +212,7 @@ namespace GridGame.App
             bool firstBuild = State == null;
             slotViews.Clear();
             pool = null;
-            orbViews.Clear(); orbBlooms.Clear();
+            orbViews.Clear(); orbBlooms.Clear(); orbLabel = null;
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -506,6 +507,15 @@ namespace GridGame.App
             pool.RegisterCallback<GeometryChangedEvent>(_ => LayoutOrbs());
             pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
             InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
+            // GG-T688: a "MANA" label leads the row, so even a single orb reads as the casting resource.
+            orbLabel = Ui.Text("MANA", "small shadow", pool);
+            orbLabel.name = "orbs-label";
+            orbLabel.pickingMode = PickingMode.Ignore;
+            orbLabel.style.width = Size.OrbLabel;
+            orbLabel.style.flexShrink = 0;
+            orbLabel.style.marginRight = Size.OrbGap;
+            orbLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
+            orbLabel.style.color = Palette.OrbLitHighlight;
             int cap = Mathf.Max(1, State?.Bank?.Capacity ?? BattleConfig.ManaBankCapacity);
             for (int i = 0; i < cap; i++)
             {
@@ -517,7 +527,7 @@ namespace GridGame.App
                 var bloom = new VisualElement { name = "bloom", pickingMode = PickingMode.Ignore };
                 bloom.style.position = Position.Absolute;
                 bloom.style.backgroundImage = new StyleBackground(Art.Glow);
-                bloom.style.unityBackgroundImageTintColor = Palette.ManaBloom;
+                bloom.style.unityBackgroundImageTintColor = Palette.OrbLit;
                 bloom.style.opacity = 0f;
                 cell.Add(bloom);
                 var orb = new ManaOrbView { ReduceMotion = ReduceMotion };
@@ -536,12 +546,13 @@ namespace GridGame.App
         private void LayoutOrbs()
         {
             if (pool == null || orbViews.Count == 0) return;
-            float avail = pool.contentRect.width;
+            float avail = pool.contentRect.width - (orbLabel != null ? Size.OrbLabel + Size.OrbGap : 0f);
             if (float.IsNaN(avail) || avail <= 0f) return;
             int n = orbViews.Count;
-            float gap = Space.S8;
-            float size = Mathf.Min(Size.OrbRow, (avail - gap * (n - 1)) / n);
-            size = Mathf.Max(1f, size);
+            float gap = Size.OrbGap;
+            // GG-T688: big bulbs while you own few (1 to 2 doubles your casting, so each one must read), shrinking only as
+            // the count needs, never below OrbMin.
+            float size = Mathf.Clamp((avail - gap * (n - 1)) / n, Size.OrbMin, Size.OrbRow);
             for (int i = 0; i < n; i++)
             {
                 var cell = orbViews[i].parent;
