@@ -346,6 +346,10 @@ def launch_stage(sid, decisions):
             call("click", name=f"expedition-{theme}")
             time.sleep(0.6)
     tap_row(f"stage-{sid}")
+    time.sleep(0.8)
+    # GG-T723: the stage row opens the confirm screen (stage + who goes into battle); Enter starts the battle.
+    if call("names", prefix="stage-enter"):
+        call("click", name="stage-enter")
     time.sleep(1.0)
     texts = call("texts")
     if any("Refill Rested" in t for t in texts):
