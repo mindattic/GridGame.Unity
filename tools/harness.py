@@ -3,7 +3,7 @@ Self-play harness: launches the development player with the automation endpoint 
 
     python tools/harness.py smoke            # title → new game → hub → battle (autoplay) → results
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
-    python tools/harness.py aspects          # GG-T169/T398: title/hub/battle; 9:23..3:4 fill, 9:25 and 1:1 framed
+    python tools/harness.py aspects          # GG-T169/T706: title/hub/battle; 9:23..9:16 fill, 10:16/2:3/3:4, 9:25 and 1:1 framed
     python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
@@ -468,15 +468,15 @@ def sweep(run="sweep", theme=None):
 
 # GG-T169/GG-T398 device fit: (label, aspect w/h). Every shape from 9:23 to 3:4 must fill the window edge to edge;
 # shapes outside that range (ultra-tall 9:25, square 1:1) are framed.
-ASPECT_MIN, ASPECT_MAX = 9 / 23, 3 / 4
+ASPECT_MIN, ASPECT_MAX = 9 / 23, 9 / 16  # GG-T706: tablets are letterboxed in the mystic fog
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
-           ("9x16", 9 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
+           ("9x16", 9 / 16), ("10x16-tablet", 10 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
 
 def aspects(run="aspects", height=1200):
     """GG-T169: launches the player at every supported phone ratio plus tablet/ultra-tall shapes; shoots the
     title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x2990, fills the
-    window (no frame) from 9:23 to 3:4 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
+    window (no frame) from 9:23 to 9:16 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
     failures, report = [], {}
     for label, a in ASPECTS:
         w = int(round(height * a))

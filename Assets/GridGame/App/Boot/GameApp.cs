@@ -25,9 +25,10 @@ namespace GridGame.App
         /// <summary>The minimum stage: every screen is laid out to fit at least this (19.5:9 portrait).</summary>
         public const int DesignWidth = 1170;
         public const int DesignHeight = 2532;
-        /// <summary>The widest (3:4, 2532*3/4) and tallest (9:23, 1170*23/9) shape the stage grows to fill edge to edge
-        /// (owner 2026-11-05, GG-T398); beyond them it is framed.</summary>
-        public const int MaxStageWidth = 1899;
+        /// <summary>The widest (9:16, 2532*9/16) and tallest (9:23, 1170*23/9) shape the stage grows to fill edge to edge;
+        /// beyond them (tablets, opened foldables, desktop windows) it is letterboxed at the nearest valid shape inside the
+        /// blue mystic fog (GG-T706, owner 2026-11-23, bible §26.3; GG-T398's 3:4 fill is withdrawn).</summary>
+        public const int MaxStageWidth = 1424;
         public const int MaxStageHeight = 2990;
         /// <summary>Design-pixel margin around a framed stage, so its outline is fully on screen.</summary>
         private const float FramePad = 36f;
@@ -76,6 +77,7 @@ namespace GridGame.App
 
         private VisualElement letterbox;
         private VisualElement stageFrame;
+        private MysticFog fog;
         private Vector2 lastScreen;
         private Rect lastSafe;
         private float lastDpi; // GG-T551: a density change alone (Android display size) moves the type floor
@@ -207,6 +209,9 @@ namespace GridGame.App
             letterbox.AddToClassList("letterbox");
             root.Add(letterbox);
 
+            fog = new MysticFog(); // GG-T706: fills the out-of-bounds area while the stage is letterboxed
+            letterbox.Add(fog);
+
             stageFrame = new VisualElement { name = "stage-frame", pickingMode = PickingMode.Ignore };
             stageFrame.AddToClassList("stage-frame");
             letterbox.Add(stageFrame);
@@ -246,7 +251,7 @@ namespace GridGame.App
         }
 
         /// <summary>Size of the stage for a screen aspect (width/height): never below the design size, grows the
-        /// spare axis up to the widest (3:4) / tallest (9:23) supported shape, never scales non-uniformly (bible §26.3).</summary>
+        /// spare axis up to the widest (9:16) / tallest (9:23) supported shape, never scales non-uniformly (bible §26.3).</summary>
         public static Vector2 StageSizeFor(float screenAspect)
         {
             const float designAspect = DesignWidth / (float)DesignHeight;
@@ -255,8 +260,8 @@ namespace GridGame.App
             return new Vector2(DesignWidth, Mathf.Clamp(Mathf.Round(DesignWidth / screenAspect), DesignHeight, MaxStageHeight));
         }
 
-        /// <summary>Fit the stage inside the screen: every shape from 9:23 to 3:4 fills it edge to edge; shapes outside
-        /// that range get the nearest supported stage, centered and framed. Never stretched.</summary>
+        /// <summary>Fit the stage inside the screen: every shape from 9:23 to 9:16 fills it edge to edge; shapes outside
+        /// that range get the nearest supported stage, centered and framed in the mystic fog (GG-T706). Never stretched.</summary>
         private void FitStage()
         {
             var screen = new Vector2(Screen.width, Screen.height);
@@ -290,6 +295,7 @@ namespace GridGame.App
             Stage.style.top = (logicalH - size.y) / 2f;
 
             stageFrame.EnableInClassList("hidden", !framed);
+            fog.SetActive(framed);
             const float gap = 10f;
             stageFrame.style.left = (logicalW - size.x) / 2f - gap;
             stageFrame.style.top = (logicalH - size.y) / 2f - gap;
