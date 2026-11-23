@@ -160,6 +160,14 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   four times running. Hunting the Bloom III (the game's intended answer) paid about one level per three hunts, so the
   gap is roughly 20+ hunts; each costs a Rested point, and the gold refill had grown to 505 G. That is the grind the
   Diamond/Rested hooks sit on; whether it is the right length is the owner's call (options in the section below).
+  **GG-T476 fourth playthrough (2026-11-23, partial: fresh save, first 5 of 40 stages, 5/5 battles won first try, no
+  retries, through the real UI, after the repair-threshold GG-T540 / Dust GG-T569 / GG-T276-T215 balance changes):**
+  ledger (gold at the camp before each stage; Rested left): start 200 g, Rested 10; Green Valley I won, 375 g (party Lv 4,
+  3 heroes); II won, 494 g (Lv 5, Redmage joined); III won, 1,070 g; Lantern Road I won, 991 g after 300 g of facility/gear
+  spend; II won, 789 g. Rested drained 10 -> 6 over the five camps. Gold income (~120-575 g per stage) comfortably outpaces
+  the early spend and nothing wore enough to need repair yet. The run did not go further: the harness lost the player
+  mid-run (socket TimeoutError) and the idle-time reaper killed an earlier unchunked run, so the rest of the campaign
+  (stages 6-40, where the economy and postgame changes actually bite) is not yet measured; see the follow-up tickets.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
