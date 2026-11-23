@@ -50,8 +50,9 @@ namespace GridGame.Tests
             string endingStage = c.Campaign.Ending?.Stage;
             finished = endingStage == null;
             int battleSeed = seed * 1000;
-            foreach (var stage in stages)
+            for (int si = 0; si < stages.Count; si++)
             {
+                var stage = stages[si];
                 bool cleared = false;
                 for (int attempt = 0; attempt < maxAttemptsPerStage && !cleared; attempt++)
                 {
@@ -59,7 +60,9 @@ namespace GridGame.Tests
                     var visit = new Dictionary<string, int>();
                     if (manageCamp)
                     {
-                        var camp = CampRoutine.Run(c, s, visit);
+                        // GG-T276: a seeded Masterwork roll per campaign seed, stage and try. Unseeded, the forge rolled off the
+                        // clock, so the same content gave a different ledger (1/4 vs 3/4 finished) every run.
+                        var camp = CampRoutine.Run(c, s, visit, new GridGame.Core.Rng(unchecked(seed * 100003 + si * 16 + attempt)));
                         // GG-T540: how often the routine reaches for the Blacksmith, not just what it paid him.
                         Add(visit, "#repairs", camp.Count(m => m.StartsWith("Repaired ")));
                         Add(visit, "#salvages", camp.Count(m => m.StartsWith("Salvaged ")));
@@ -171,12 +174,16 @@ namespace GridGame.Tests
         private static readonly int OrbsOverride =
             int.TryParse(System.Environment.GetEnvironmentVariable("GAIDEN_ORBS_OVERRIDE"), out var n) ? n : 0;
 
+        /// <summary>GG-T276: campaign seeds per economy row (GAIDEN_ECONOMY_SEEDS, default 4); more seeds average out a single seed's luck.</summary>
+        private static readonly int EconomySeeds =
+            int.TryParse(System.Environment.GetEnvironmentVariable("GAIDEN_ECONOMY_SEEDS"), out var es) && es > 0 ? es : 4;
+
         [Test]
         public void Economy_ledger()
         {
             var outPath = System.Environment.GetEnvironmentVariable("GAIDEN_ECONOMY_OUT");
             if (string.IsNullOrEmpty(outPath)) Assert.Ignore("set GAIDEN_ECONOMY_OUT (tools/polish.py --balance does)");
-            const int seeds = 4;
+            int seeds = EconomySeeds;
             var json = new StringBuilder("{");
             string Obj(Dictionary<string, int> d) => "{" + string.Join(",", d.Select(kv => $"\"{kv.Key}\":{kv.Value / (float)seeds:F1}")) + "}";
             var rows = new[] { (0.0f, "greedy+camp"), (0.5f, "casual+camp") };
