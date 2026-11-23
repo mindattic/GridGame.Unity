@@ -1,0 +1,193 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using GridGame.Meta;
+using UnityEngine;
+
+namespace GridGame.App
+{
+    /// <summary>A platform's cloud save store: it only moves snapshot bytes and metadata; every decision is
+    /// <see cref="CloudSave"/>'s. Callbacks arrive on the main thread, exactly once each.</summary>
+    public interface ICloudSaveBackend
+    {
+        bool SignedIn { get; }
+        /// <summary>Signs in; <c>true</c> when signed in. <paramref name="interactive"/> may show the platform's own
+        /// sign-in prompt (a player tapping Restore from cloud); otherwise it is silent (boot).</summary>
+        void SignIn(bool interactive, Action<bool> done);
+        /// <summary>The snapshot's metadata, or null when it can't be reached (offline, signed out).</summary>
+        void ReadInfo(string name, Action<CloudSnapshotInfo> done);
+        /// <summary>The snapshot's bytes, or null on any failure.</summary>
+        void Read(string name, Action<byte[]> done);
+        void Write(string name, byte[] data, string description, TimeSpan playTime, Action<bool> done);
+    }
+
+    /// <summary>
+    /// Cloud save (§15.2, GG-T608): after each <c>Persist</c> the slot is uploaded (debounced to one upload a minute, and
+    /// flushed on pause/quit); before a save is played, a newer cloud copy is offered — "Use the cloud save from &lt;date&gt;,
+    /// &lt;play time&gt;?" — never merged; on a new device, Load Game's <b>Restore from cloud</b> fills empty slots from the
+    /// cloud. With no backend (every platform but an Android build with Play Games compiled in, see
+    /// <see cref="PlatformBackend"/>) every call is a no-op and loading goes straight on.
+    /// </summary>
+    public sealed class CloudSaves
+    {
+        /// <summary>How long a load waits on the cloud before playing the local save anyway.</summary>
+        public const float LoadWaitSeconds = 8f;
+
+        private readonly ICloudSaveBackend backend;
+        private readonly CloudUploadThrottle throttle = new CloudUploadThrottle();
+        private string pendingName;
+        private SaveData pending;
+        private bool uploading;
+
+        public CloudSaves(ICloudSaveBackend backend) { this.backend = backend; }
+
+        public static CloudSaves Create() => new CloudSaves(PlatformBackend());
+
+        /// <summary>Play Games Saved Games in an Android player built with the <c>GG_PLAY_GAMES</c> define (set once the
+        /// Play Games plugin and the Play Console app id are in, GG-T608); nothing anywhere else.</summary>
+        private static ICloudSaveBackend PlatformBackend()
+        {
+#if GG_PLAY_GAMES && UNITY_ANDROID && !UNITY_EDITOR
+            return new PlayGamesCloudBackend();
+#else
+            return null;
+#endif
+        }
+
+        /// <summary>A platform cloud exists in this build (signed in or not).</summary>
+        public bool Available => backend != null;
+        public bool Active => backend != null && backend.SignedIn;
+
+        /// <summary>Silent sign-in at boot; uploads anything that waited for it.</summary>
+        public void Start()
+        {
+            if (backend == null) return;
+            backend.SignIn(false, ok =>
+            {
+                Debug.Log($"[Cloud] sign-in {(ok ? "ok" : "unavailable")}");
+                if (ok) Pump(true);
+            });
+        }
+
+        /// <summary>The slot was written to disk (<c>GameApp.Persist</c>). <paramref name="flush"/> (pause, quit) uploads
+        /// now instead of waiting out the minute.</summary>
+        public void Saved(string profile, int slot, SaveData s, bool flush = false)
+        {
+            if (backend == null || s == null || slot < 0) return;
+            var name = CloudSave.SnapshotName(profile, slot);
+            // Another slot or profile still waiting: it goes up now, before this one takes its place.
+            if (pending != null && pendingName != name && throttle.Dirty) Upload(pendingName, pending);
+            pendingName = name;
+            pending = s;
+            throttle.MarkDirty();
+            Pump(flush);
+        }
+
+        /// <summary>Pause or quit: whatever is waiting goes up now.</summary>
+        public void Flush() => Pump(true);
+
+        private void Pump(bool flush)
+        {
+            if (!Active || pending == null || uploading) return;
+            var now = DateTime.UtcNow;
+            if (!throttle.Due(now, flush)) return;
+            throttle.Started(now);
+            Upload(pendingName, pending);
+        }
+
+        private void Upload(string name, SaveData s)
+        {
+            if (!Active) { throttle.Failed(); return; }
+            byte[] data;
+            try { data = CloudSave.Encode(s); }
+            catch (Exception e) { Debug.LogError("[Cloud] couldn't pack the save: " + e.Message); return; }
+            if (data.Length > CloudSave.MaxSnapshotBytes) { Debug.LogError($"[Cloud] {name} is {data.Length} bytes, over the snapshot limit"); return; }
+            uploading = true;
+            backend.Write(name, data, CloudSave.Description(s), TimeSpan.FromSeconds(Math.Max(0, s.PlaySeconds)), ok =>
+            {
+                uploading = false;
+                if (ok) Debug.Log($"[Cloud] uploaded {name} ({data.Length} bytes)");
+                else { Debug.LogWarning($"[Cloud] upload of {name} failed; retrying at the next save"); if (name == pendingName) throttle.Failed(); }
+            });
+        }
+
+        /// <summary>Before slot <paramref name="slot"/> is played: a newer cloud copy is offered, and <paramref name="play"/>
+        /// gets the save chosen (the cloud one is written to the slot first). Without a signed-in cloud, or when the cloud
+        /// doesn't answer within <see cref="LoadWaitSeconds"/>, <paramref name="play"/> gets <paramref name="local"/> at once.</summary>
+        public void BeforeLoad(GameApp app, int slot, SaveData local, Action<SaveData> play)
+        {
+            if (!Active || app?.Profile == null) { play(local); return; }
+            bool settled = false;
+            void Settle(SaveData s) { if (settled) return; settled = true; play(s); }
+            app.StartCoroutine(Timeout(() => { if (!settled) Debug.LogWarning("[Cloud] no answer; playing the local save"); Settle(local); }));
+
+            var name = CloudSave.SnapshotName(app.Profile.Name, slot);
+            backend.ReadInfo(name, info =>
+            {
+                if (settled) return;
+                var choice = CloudSave.Decide(local, info);
+                Debug.Log($"[Cloud] {name}: {choice}");
+                if (choice != CloudChoice.OfferCloud) { Settle(local); return; }
+                backend.Read(name, data =>
+                {
+                    if (settled) return;
+                    if (!CloudSave.TryDecode(data, app.Content, out var cloud, out var why))
+                    {
+                        Debug.LogWarning($"[Cloud] {name} unreadable: {why}");
+                        Settle(local);
+                        return;
+                    }
+                    settled = true; // the player answers now; the timeout no longer applies
+                    Confirm.Show(CloudSave.OfferQuestion(info, info.UpdatedUtc.ToLocalTime(), local), "Use cloud save",
+                        () =>
+                        {
+                            if (!app.Saves.Write(slot, cloud)) app.Toast("Couldn't save!");
+                            play(cloud);
+                        },
+                        () => play(local));
+                });
+            });
+        }
+
+        private static IEnumerator Timeout(Action onTimeout)
+        {
+            yield return new WaitForSecondsRealtime(LoadWaitSeconds);
+            onTimeout();
+        }
+
+        /// <summary>A new device: every empty slot of the active profile that has a save in the cloud gets it. A slot
+        /// with a save on this device is never touched here. <paramref name="done"/> gets how many were restored.</summary>
+        public void RestoreEmptySlots(GameApp app, Action<int> done)
+        {
+            if (backend == null || app?.Profile == null || app.Saves == null) { done(0); return; }
+            if (!backend.SignedIn)
+            {
+                backend.SignIn(true, ok => { if (ok) RestoreEmptySlots(app, done); else done(0); });
+                return;
+            }
+            var empty = new Queue<int>();
+            for (int i = 0; i < SaveStore.Slots; i++) if (!app.Saves.Exists(i)) empty.Enqueue(i);
+            int restored = 0;
+            void Next()
+            {
+                if (empty.Count == 0) { done(restored); return; }
+                int slot = empty.Dequeue();
+                var name = CloudSave.SnapshotName(app.Profile.Name, slot);
+                backend.ReadInfo(name, info =>
+                {
+                    if (info == null || !info.HasData) { Next(); return; }
+                    backend.Read(name, data =>
+                    {
+                        if (CloudSave.TryDecode(data, app.Content, out var save, out var why))
+                        {
+                            if (app.Saves.Write(slot, save)) restored++;
+                        }
+                        else Debug.LogWarning($"[Cloud] {name} unreadable: {why}");
+                        Next();
+                    });
+                });
+            }
+            Next();
+        }
+    }
+}

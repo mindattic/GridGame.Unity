@@ -101,7 +101,7 @@ namespace GridGame.App
             Debug.Log($"[Title] most recent save slot: {recent}");
             if (recent >= 0) Ui.MenuRow("Continue", "", () => Continue(recent), menu);
             Ui.MenuRow("New Game", "", () => App.Router.Push(new SaveSlotScreen(true)), menu);
-            Ui.MenuRow("Load Game", "", () => App.Router.Push(new SaveSlotScreen(false)), menu, null, recent >= 0);
+            Ui.MenuRow("Load Game", "", () => App.Router.Push(new SaveSlotScreen(false)), menu, null, recent >= 0 || App.Cloud.Available); // GG-T608: a new device restores from the cloud there
             // GG-T99 (§15.4): the player profile owns the settings and these three slots; switch / create / rename / delete here.
             var profile = Ui.MenuRow("Profile", App.Profile?.Name ?? "", () => App.Router.Push(new ProfileSelectScreen()), menu);
             profile.name = "title-profile";
@@ -120,9 +120,13 @@ namespace GridGame.App
             Debug.Log($"[Title] continue slot {slot}");
             var s = App.Saves.Load(slot, App.Content);
             if (s == null) { App.Toast("That save is damaged"); return; }
-            App.Save = s; App.Slot = slot;
-            App.ApplySettings();
-            App.Router.ResetTo(new HubScreen());
+            // GG-T608: a newer cloud copy of this slot is offered first (no-op without a signed-in cloud).
+            App.Cloud.BeforeLoad(App, slot, s, chosen =>
+            {
+                App.Save = chosen; App.Slot = slot;
+                App.ApplySettings();
+                App.Router.ResetTo(new HubScreen());
+            });
         }
     }
 
@@ -155,6 +159,22 @@ namespace GridGame.App
                     Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():yyyy-MM-dd HH:mm}", w); // GG-T566: explicit under the invariant culture
                 }
             }
+            // GG-T608: on a new device (or after a reinstall) the empty slots fill from the Play Games cloud.
+            if (!newGame && App.Cloud.Available)
+            {
+                var restore = Ui.MenuRow("Restore from cloud", "", RestoreFromCloud, w);
+                restore.name = "load-cloud-restore";
+            }
+        }
+
+        private void RestoreFromCloud()
+        {
+            App.Toast("Checking the cloud…");
+            App.Cloud.RestoreEmptySlots(App, restored =>
+            {
+                App.Toast(restored == 0 ? "No cloud saves for the empty slots" : restored == 1 ? "Restored 1 save from the cloud" : $"Restored {restored} saves from the cloud");
+                if (restored > 0) App.Router.Replace(new SaveSlotScreen(false));
+            });
         }
 
         private void Pick(int slot, SaveData existing, bool damaged)
@@ -162,9 +182,12 @@ namespace GridGame.App
             if (!newGame)
             {
                 if (existing == null) return;
-                App.Save = existing; App.Slot = slot;
-                App.ApplySettings();
-                App.Router.ResetTo(new HubScreen());
+                App.Cloud.BeforeLoad(App, slot, existing, chosen =>
+                {
+                    App.Save = chosen; App.Slot = slot;
+                    App.ApplySettings();
+                    App.Router.ResetTo(new HubScreen());
+                });
                 return;
             }
             if (existing != null)

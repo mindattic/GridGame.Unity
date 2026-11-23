@@ -46,6 +46,8 @@ namespace GridGame.App
         public ContentDb Content { get; private set; }
         /// <summary>The active player profile's save slots (Profiles/&lt;Name&gt;/Saves, GG-T99).</summary>
         public SaveStore Saves { get; private set; }
+        /// <summary>Cloud save (§15.2, GG-T608): Play Games Saved Games on Android; a no-op everywhere else.</summary>
+        public CloudSaves Cloud { get; private set; } = new CloudSaves(null);
         /// <summary>The active player profile and its settings (bible §15.4, GG-T99).</summary>
         public ProfileSession Profile { get; private set; }
         /// <summary>The active profile's settings — the same whichever save slot is loaded, and on the title screen.</summary>
@@ -119,6 +121,8 @@ namespace GridGame.App
             Content = LoadContent();
             Art.IndexSpells(Content.Abilities.Keys);
             OpenProfiles();
+            Cloud = CloudSaves.Create();
+            Cloud.Start();
             Audio = Audio.Create(transform);
 
             if (CommandLine.Has("-allfeatures")) GridGame.Meta.Features.EnableAll(); // GG-T392: every hidden system back on
@@ -404,11 +408,11 @@ namespace GridGame.App
             else ResumeFromBackground();
         }
 
-        private void OnApplicationQuit() => Persist();
+        private void OnApplicationQuit() { Persist(); Cloud?.Flush(); }
 
         private void Suspend(bool flushSave)
         {
-            if (flushSave && Save != null) { Save.PlaySeconds += playClock; playClock = 0f; Persist(); }
+            if (flushSave && Save != null) { Save.PlaySeconds += playClock; playClock = 0f; Persist(); Cloud?.Flush(); }
             if (!PausesInBackground || suspended || Router == null) return;
             suspended = true;
             Router.Current?.OnAppSuspended();
@@ -429,7 +433,8 @@ namespace GridGame.App
         {
             if (Save == null || Slot < 0) return;
             // SaveStore.Write never throws — it logs and reports failure via its return value (GG-T146).
-            if (!Saves.Write(Slot, Save)) Toast("Couldn't save!");
+            if (!Saves.Write(Slot, Save)) { Toast("Couldn't save!"); return; }
+            Cloud?.Saved(Profile?.Name, Slot, Save); // GG-T608: uploaded at most once a minute, and on pause/quit
         }
 
         public void Toast(string text, float seconds = 1.8f)

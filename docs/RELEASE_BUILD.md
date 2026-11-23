@@ -167,6 +167,31 @@ GridGame (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time.
    `diamonds_2500` "2,500 Aetherite Shards"; description "Mana Shards for GridGame: a random summon, an
    instant Rested refill or a lucky craft." Use the same titles on App Store Connect.
 
+### Cloud save: Play Games Saved Games (GG-T608)
+
+The game side is built and inert (BIBLE §15.2): `Meta/CloudSave` (names, snapshot body, which copy wins, the upload
+debounce), `App/Services/CloudSaves` (upload after `Persist`, the "Use the cloud save from …?" offer before a load,
+Load Game's **Restore from cloud**) and `App/Services/PlayGamesCloudBackend` (compiled only with the `GG_PLAY_GAMES`
+define in an Android player). Turning it on needs, in order:
+
+1. **The owner, Play Console:** the app exists (above) → *Grow > Play Games Services > Setup and management >
+   Configuration*: create the Play Games Services project for the app, add an **Android OAuth credential** for
+   package `com.mindattic.gridgame` with the SHA-1 of the **app signing key** (Play App Signing page) and a second one
+   with the **upload key**'s SHA-1 (for sideloaded test builds), turn on **Saved Games** (*Configuration > Properties*),
+   add the testers under *Testers*, and publish the Play Games configuration. Send the agent the **application id**
+   (the 12-digit number shown at the top of that page) — nothing else is secret or needed.
+2. **An agent, with that id:** add the Google Play Games plugin for Unity (v11 or newer, the
+   `com.google.play.games` package from github.com/playgameservices/play-games-plugin-for-unity) to
+   `Packages/manifest.json`; write the id into the plugin's Android setup (`GooglePlayGames/.../GameInfo.cs` and
+   `Assets/Plugins/Android/GooglePlayGamesManifest.androidlib`, which the plugin's setup step generates from the id —
+   do it from a script, not the Editor window); add the plugin's runtime assembly to `GridGame.App.asmdef`
+   `references`; add `GG_PLAY_GAMES` to the Android scripting define symbols in `ProjectSettings/ProjectSettings.asset`;
+   then build the Android bundle and confirm `PlayGamesCloudBackend` compiles against the installed plugin version
+   (it was written against the v11 `ISavedGameClient` API without the package present).
+3. **Check on a phone** signed into a tester account: play a minute, background the app, reinstall (or a second phone),
+   Load Game > **Restore from cloud** brings the slot back; then play further on one phone and Continue on the other
+   offers the newer cloud save.
+
 ## Crash and error reporting (GG-T484)
 
 What a release build does today, and what is still the owner's call:
