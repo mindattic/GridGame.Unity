@@ -31,6 +31,10 @@ namespace GridGame.Meta
         /// <summary>Store transaction id (Google Play's purchase token, Apple's transaction id) → what it granted.</summary>
         public Dictionary<string, PurchaseRecord> Granted = new Dictionary<string, PurchaseRecord>(StringComparer.Ordinal);
 
+        /// <summary>GG-T621: save identity (<see cref="WalletMigration.IdentityOf"/>) → what was carried in from that save,
+        /// so a save, a copy of it or an older backup of it never pays its Diamonds into the wallet twice.</summary>
+        public Dictionary<string, CarriedSave> Migrated = new Dictionary<string, CarriedSave>(StringComparer.Ordinal);
+
         public DateTime UpdatedUtc;
 
         /// <summary>Fills in anything an older or hand-edited file left out.</summary>
@@ -40,6 +44,10 @@ namespace GridGame.Meta
             if (Granted.Comparer != StringComparer.Ordinal)
                 Granted = new Dictionary<string, PurchaseRecord>(Granted, StringComparer.Ordinal);
             foreach (var k in Granted.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Granted.Remove(k);
+            Migrated ??= new Dictionary<string, CarriedSave>(StringComparer.Ordinal);
+            if (Migrated.Comparer != StringComparer.Ordinal)
+                Migrated = new Dictionary<string, CarriedSave>(Migrated, StringComparer.Ordinal);
+            foreach (var k in Migrated.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Migrated.Remove(k);
             if (Diamonds < 0) Diamonds = 0;
             if (Version < CurrentVersion) Version = CurrentVersion;
             return this;
