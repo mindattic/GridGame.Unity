@@ -4738,6 +4738,27 @@ Owner: "measure things in agnostic units" and "all overflow should be avoided wh
 
 **Type has four sizes and one rule:** title 60, heading 48, body 40, caption 30. Anything that wraps is body (`Ui.Para`, POL-A2, the same rule `Typography.Paragraphs` already enforced for long text, now for every sentence); a single line of meta is caption (`Ui.Caption`). The 24-px badge size is gone from menus except the title's version tag. Screens that stay bespoke: the Title, story crawls and credits roll, dialogue, the Level Up and results celebrations and the character select (art-led), the talent graph's node cards and the battle bar's slots (fixed-size cells), the Bestiary grid (`EvenGrid`), and the window editor's live preview (it shows the theme's sample styles).
 
+**Amended 2026-11-23 (owner, GG-T712: "every item or place or selectable must be prefixed with a icon so the user knows what they are pressing").** Every tappable row, card, button and list entry leads with a **kind icon**, so a tap target never reads as plain text (entering a stage used to look like a random line in a wall of text). One call does it: `row.KindIcon(RowKind, Texture2D)` or `row.KindIcon(RowKind, string id)` (`App/UI/RowIcon.cs`, GG-T714). The icon is the kit's `.menu-icon` (class `kind-icon` too), **64 design px** (`Size.Icon`), put right after the row's `.menu-cursor` (first child when it has none), replacing any icon already there. It is **fixed**: `flex-shrink 0`, it never shrinks, and the label shrink-to-fits the width left over (GG-T711). Art goes through `RowIcon.ArtFor(kind, id)`; where a kind has no art the row gets that kind's **emblem** (`KindEmblem`), so a row is never bare. `RowIcon.Badge(icon, RowKind.Cleared | New | Locked)` adds a small corner mark for a stage's state. Emblems are drawn with `Painter2D` as a Manalith-blue (**#7590C8**) disc, pewter rim and pale mark, crisp at any size; **never font glyphs** (GG-LAW-11).
+
+| Kind (`RowKind`) | Icon: art, else emblem |
+|---|---|
+| Place, Stage | the region's board tile `Tiles/<theme>-00` (`Art.BoardTile`); else place pin (Place) or Enter arrow (Stage) |
+| Item | `ItemIcons/<id>-00`; else pouch |
+| Ability | `AbilityIcons/<id>-00` (or legacy icon); else bolt |
+| Status | `StatusIcons/<id>-00`; else aura ring |
+| Hero, Npc, Keeper | the portrait through its Thumbnail framing (swap point `RowIcon.ActorThumb`, GG-T713); else bust |
+| Bounty | the bounty skull (`BountySkull`, §22.4) |
+| Enter | Enter arrow |
+| Back, Close, Confirm | left arrow, cross, check |
+| Locked, Cleared, New | padlock, check, four-point sparkle (usually as badges) |
+| Menu, Quest, Shop, Station | three bars, exclamation, coin, roof over a door |
+| Settings, Save, Quit, Talk | gear, save disk, power, speech bubble |
+| Bestiary, NewGamePlus, Crucible, Diamond | open book, loop, chalice, cut gem |
+
+**Entering a stage (owner, GG-T715):** it goes through a confirm step that shows who is going into battle, not straight from the stage row.
+
+**Art to-do (owner):** every kind in the table whose icon is an emblem is a stand-in for real art, to be drawn: place marker, cleared / new / locked badges, Enter arrow, back and close, confirm, quest, station markers, Bestiary, Settings, save and quit, NG+, Crucible, Talk, Diamond Store; plus **own board tiles for the five post-game regions**, which have none of their own yet.
+
 ### 26.8 App lifecycle on phones (GG-T480)
 
 - **Leaving the app** (home button, app switcher, an incoming call: `OnApplicationPause(true)`) writes the save first, because Android may kill a backgrounded app without warning. The battle itself is not saved: a battle the OS kills is lost and the save is where it was before the stage (the battle only commits on victory, defeat or retreat).
