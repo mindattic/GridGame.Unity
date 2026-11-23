@@ -510,6 +510,7 @@ namespace GridGame.App
                 if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); ic.style.marginRight = Space.S0; }
                 var t = Ui.Caption(label ?? "Empty", cell, label == null ? "dim" : null);
                 t.style.unityTextAlign = TextAnchor.MiddleCenter; t.style.whiteSpace = WhiteSpace.Normal;
+                t.style.maxWidth = Length.Percent(100); t.style.minWidth = 0; t.style.flexShrink = 1;
                 cell.AddToClassList("card-tap");
                 InspectCard.Attach(cell, b => InspectEntry(b, entry));
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
@@ -696,7 +697,7 @@ namespace GridGame.App
         private string EntryName(string entry)
         {
             if (entry == null) return null;
-            if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name} ×{S.Count(it.Id)}"; }
+            if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name}\n×{S.Count(it.Id)}"; }  // GG-T701: the count drops under the name so a narrow bar cell never clips it (POL-C5)
             if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w == null ? null : $"⭾ {w.Name}"; }
             return C.TryAbility(entry)?.Name;
         }
