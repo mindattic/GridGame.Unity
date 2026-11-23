@@ -760,7 +760,13 @@ namespace GridGame.App
             if (hunting.Count > 0)
             {
                 var b = Ui.Panel(body, null, false, "bounty-strip");
-                foreach (var h in hunting) Ui.Para($"☠ {h.Name}: {Bounties.Clue(C, h)}", b, "gold");
+                foreach (var h in hunting)
+                {
+                    var line = Ui.El("row", b);
+                    line.style.alignItems = Align.Center;
+                    Ui.Para($"{h.Name}: {Bounties.Clue(C, h)}", line, "gold").style.flexShrink = 1;
+                    line.KindIcon(RowKind.Bounty); // the bounty skull leads each hunted target's clue (GG-T715)
+                }
             }
             var list = Ui.ListPanel(body, null, out var scroll, "stage-list");
             var stages = C.CampaignStages();
@@ -800,11 +806,13 @@ namespace GridGame.App
                 string status = onIt ? $"▶ Battle {S.Expedition.Next + 1}/{theme.Stages.Count}"
                     : cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
                 if (Features.Bounties && theme.Stages.Any(id => Bounties.OnStage(C, S, id).Count > 0)) status = "☠ " + status; // a hunted target roams here (GG-T431)
-                var row = Ui.MenuRow((cleared == theme.Stages.Count ? "★ " : "☆ ") + theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
+                var row = Ui.MenuRow(theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
                 row.name = "expedition-" + theme.Id;
+                // GG-T715: the region's board tile leads the row, badged Cleared (every stage won) or New (one still to win).
+                RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
                 if (onIt || cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
             }
-            if (locked > 0) Ui.MenuRow($"◇ {locked} more stage{(locked == 1 ? "" : "s")} ahead…", "", null, list, null, false);
+            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead…", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
         }
 
         /// <summary>Step two: one region's stages, each Cleared or New. A new region is fought in order as an expedition;
@@ -813,13 +821,16 @@ namespace GridGame.App
         {
             if (canGoBack)
             {
-                var back = Ui.MenuRow("‹ All regions", "", () => { region = null; Refresh(); }, list);
+                var back = Ui.MenuRow("All regions", "", () => { region = null; Refresh(); }, list);
                 back.name = "regions-back";
+                back.KindIcon(RowKind.Back);
             }
             bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
             bool done = theme.Stages.All(id => S.ClearedStages.Contains(id));
-            string status = onIt ? $"Battle {S.Expedition.Next + 1}/{theme.Stages.Count} · {S.Expedition.CarriedOrbs} orbs carried" : done ? "★ Completed" : $"{theme.Stages.Count} battles";
-            var head = Ui.MenuRow((onIt ? "▶ " : "") + theme.Name + " Expedition", status, null, list, null, true);
+            string status = onIt ? $"Battle {S.Expedition.Next + 1}/{theme.Stages.Count} · {S.Expedition.CarriedOrbs} orbs carried" : done ? "Completed" : $"{theme.Stages.Count} battles";
+            var head = Ui.MenuRow(theme.Name + " Expedition", status, null, list, null, true);
+            var headIcon = head.KindIcon(RowKind.Place, theme.Id);
+            if (done) RowIcon.Badge(headIcon, RowKind.Cleared);
             head.Q<Label>("label").AddToClassList("gold");
             head.name = "region-head-" + theme.Id;
             // GG-T374: the region's description (Prose "place:<theme>"), under its header.
@@ -835,14 +846,17 @@ namespace GridGame.App
                 int index = stages.FindIndex(x => x.Id == st.Id);
                 bool cleared = S.ClearedStages.Contains(st.Id);
                 bool can = Expeditions.CanLaunch(C, S, st.Id, out var why) && Progression.IsStageUnlocked(S, index);
-                string label = (cleared ? "★ " : can ? "☆ " : "◇ ") + st.Name;
                 // Same level BattleFactory.Build actually fights it at: the postgame bonus stages carry a
                 // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
                 int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
                 string state = cleared ? (k > 0 && Expeditions.IsHunt(S, st.Id) ? "Cleared · hunt" : "Cleared") : "New";
                 if (Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0) state = "☠ " + state; // a hunted target roams here (GG-T431)
-                var row = Ui.MenuRow(label, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
+                var row = Ui.MenuRow(st.Name, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
                 row.name = "stage-" + st.Id;
+                // GG-T715: the region's tile leads every stage, badged Cleared / New / Locked (was a star, open star or
+                // diamond in the text); an enterable stage ends in the Enter arrow so it reads as a way in, not a line of text.
+                RowIcon.Badge(row.KindIcon(RowKind.Stage, theme.Id), cleared ? RowKind.Cleared : can ? RowKind.New : RowKind.Locked);
+                if (can) EnterMark(row);
                 if (!cleared && can) row.Q<Label>("value")?.AddToClassList("gold");
                 if (CaravanUpgrades.Level(S, "scouts") > 0)
                 {
@@ -855,7 +869,19 @@ namespace GridGame.App
                     Ui.Note($"Drops: {drops}", list);
                 }
             }
-            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list);
+            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list).KindIcon(RowKind.Close);
+        }
+
+        /// <summary>The Enter arrow at the right end of an enterable stage row (GG-T715), after its value.</summary>
+        private static void EnterMark(VisualElement row)
+        {
+            var go = new KindEmblem(RowKind.Enter) { name = "enter-mark" };
+            go.AddToClassList(RowIcon.Class);
+            go.style.width = go.style.height = Size.IconS;
+            go.style.flexShrink = 0f;
+            go.style.marginLeft = Space.S16;
+            go.style.alignSelf = Align.Center;
+            row.Add(go);
         }
 
         private string DropsHint(StageDef st)
