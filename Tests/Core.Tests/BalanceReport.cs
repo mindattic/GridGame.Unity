@@ -66,6 +66,7 @@ namespace GridGame.Tests
                     }
                     else if (CampNpcs.Joined(s, CampNpcs.Innkeeper) && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Inn.Rest(c, s);
                     var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, BotDifficulty.FromEnv()); // GG-T309
+                    if (OrbsOverride > 0) setup.OrbCapacity = OrbsOverride; // GG-T276 experiment: GAIDEN_ORBS_OVERRIDE pins orb capacity
                     var st = BotRunner.Play(c, setup, new HeroBot(battleSeed, randomness), 3000); // the first battle is a 20-wave gauntlet; GG-T311: forced Guards count
                     if (!rows.TryGetValue(stage.Id, out var row)) rows[stage.Id] = row = new Row();
                     row.Runs++;
@@ -165,6 +166,10 @@ namespace GridGame.Tests
         /// (greedy and casual, trio start with story recruits, 4 seeds each) and writes where the main campaign's gold went —
         /// battle pay against each camp phase, per run and per theme, plus repair/salvage/break counts — as JSON to
         /// GAIDEN_ECONOMY_OUT. Ignored without that variable, so the regular suite doesn't play these campaigns twice.</summary>
+        /// <summary>GG-T276: soak-only orb capacity for every campaign battle (GAIDEN_ORBS_OVERRIDE=n); unset or 0 keeps the save's own.</summary>
+        private static readonly int OrbsOverride =
+            int.TryParse(System.Environment.GetEnvironmentVariable("GAIDEN_ORBS_OVERRIDE"), out var n) ? n : 0;
+
         [Test]
         public void Economy_ledger()
         {
