@@ -232,6 +232,18 @@ namespace GridGame.App
         /// <summary>The live floor in design px (0 = none); set by <see cref="Apply"/>.</summary>
         public static int Current { get; private set; }
 
+        /// <summary>GG-T711: the smallest font size, in design px, that shrink-to-fit (<see cref="TextFit"/>) may take a
+        /// label down to on this screen: the larger of the badge size (the smallest the type scale draws) and the size that
+        /// lands at <see cref="MinPx"/> screen px / <see cref="MinDp"/> dp. Set by <see cref="Apply"/>.</summary>
+        public static float ShrinkFloor { get; private set; } = TypeScale.Badge;
+
+        /// <summary>The design size that draws at the floor (12 screen px / 9 dp) on this screen.</summary>
+        public static float NeedFor(float screenPxPerDesignPx, float dpi)
+        {
+            if (screenPxPerDesignPx <= 0f) return 0f;
+            return Mathf.Max(MinPx, MinDp * (dpi > 0f ? dpi : 160f) / 160f) / screenPxPerDesignPx;
+        }
+
         /// <summary>The floor step (design px, 0 = none) for a stage drawn at <paramref name="screenPxPerDesignPx"/> on a
         /// screen of <paramref name="dpi"/> (0 = unknown, read as 160).</summary>
         public static int StepFor(float screenPxPerDesignPx, float dpi)
@@ -249,6 +261,7 @@ namespace GridGame.App
         {
             if (root == null) return;
             Current = StepFor(screenPxPerDesignPx, dpi);
+            ShrinkFloor = Mathf.Max(TypeScale.Badge, NeedFor(screenPxPerDesignPx, dpi));
             foreach (var s in Steps) root.EnableInClassList("type-floor-" + s, s == Current);
         }
     }

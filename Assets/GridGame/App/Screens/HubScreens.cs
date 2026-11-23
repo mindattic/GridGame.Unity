@@ -711,7 +711,7 @@ namespace GridGame.App
         private string EntryName(string entry)
         {
             if (entry == null) return null;
-            if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name}\n×{S.Count(it.Id)}"; }  // GG-T701: the count drops under the name so a narrow bar cell never clips it (POL-C5)
+            if (entry.StartsWith("item:")) { var it = C.TryItem(entry.Substring(5)); return it == null ? null : $"{it.Name} ×{S.Count(it.Id)}"; }  // GG-T711: one line, shrunk to fit the bar cell by TextFit; it wraps (GG-T701) only below the type floor
             if (entry.StartsWith("weapon:")) { var w = C.TryItem(entry.Substring(7)); return w == null ? null : $"⭾ {w.Name}"; }
             return C.TryAbility(entry)?.Name;
         }
