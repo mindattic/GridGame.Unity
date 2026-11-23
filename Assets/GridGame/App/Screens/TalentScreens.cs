@@ -322,10 +322,21 @@ namespace GridGame.App
                 string name = C.TryClass(hero.ClassId)?.Name ?? hero.ClassId;
                 string value = spent == 0 ? "No talents bought" : $"{spent} pts · {Ui.Gold(cost)}";
                 bool ok = closed == null && spent > 0 && S.Gold >= cost;
-                var row = Ui.MenuRow($"{name}  Lv {Progression.Level(hero)}", value, () => Ask(C, hero,
-                    $"Pay {Ui.Gold(cost)} to unlearn {name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?",
-                    r => Done(r), () => Talents.Respec(C, S, hero), () => Talents.Respec(C, S, hero, true)), list, null, ok);
-                row.name = "respec-" + hero.ClassId;
+                // GG-T698: a card (portrait, name, level, status and the class blurb) rather than a bare menu row, so a short
+                // roster's cards carry enough to fill the panel without a dead band between them (POL-C9).
+                var card = Ui.Card(list, hero.ClassId, null, out var col, "respec-" + hero.ClassId);
+                Ui.Name($"{name}  Lv {Progression.Level(hero)}", col);
+                Ui.Caption(value, col);
+                GlossaryText.Create(C.TryClass(hero.ClassId)?.Card ?? "", "kit-text dim", col);
+                card.AddToClassList("card-tap");
+                if (!ok) card.style.opacity = 0.55f;
+                Ui.Tappable(card, () =>
+                {
+                    if (!ok) { GameApp.I?.Audio?.Sfx("ui.error"); return; }
+                    Ask(C, hero,
+                        $"Pay {Ui.Gold(cost)} to unlearn {name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?",
+                        r => Done(r), () => Talents.Respec(C, S, hero), () => Talents.Respec(C, S, hero, true));
+                }, "ui.select");
             }
         }
 
