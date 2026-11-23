@@ -54,7 +54,10 @@ namespace GridGame.Meta
         {
             var lines = new List<string>();
             if (Abilities.Learnable(c, h).Contains(a))
-                lines.Add($"Trainer (Abilities › Learn) · {Abilities.Price(c, s, h, a)} G");
+            {
+                string needs = Abilities.NeedsText(Abilities.Unmet(c, s, h, a)); // GG-T592: locked until the stat points are in
+                lines.Add($"Trainer (Abilities › Learn) · {Abilities.Price(c, s, h, a)} G" + (needs != null ? $" · {needs}" : ""));
+            }
             foreach (var t in c.SkillTrees.Values)
                 foreach (var n in t.Nodes)
                 {

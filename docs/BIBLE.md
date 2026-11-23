@@ -4326,8 +4326,12 @@ Owner: heroes get passive/reactive abilities from class kits, skill-tree nodes, 
 
 - **Scale.** Thresholds count the **stat points the hero has spent on level-ups** (GG-T591's one free point a level, `HeroSave.StatPicks`), not its effective stats, so they read on the same 0-up scale for every class. They are whole points from 1 to 10.
 - **Authoring.** A pure ability needs one stat, scaled by its power proxy (a spell's orb cost, a skill's `CooldownTurns`): cheap moves 2–3, mid-tier 5–6, capstones 8–10. A hybrid needs two smaller ones, split by flavor (blade-and-spell fangs AGI + INT, holy warding VIT + WIS, tempo spells INT + SPD). GG-T168's worked trail is authored as drawn: Cleave STR 3, Reckless STR 5, Last Man Swinging STR 8, Fireball INT 8.
-- **Reading it.** `AbilityDef.HasRequires`, `RequiredStats()` (label, stat, minimum, in the usual STR VIT AGI SPD STA INT WIS LCK order), `RequiresMet(points)` and `UnmetRequires(points)` (what a locked entry says it needs). Nothing gates on it yet: the Learn screen's locked state is GG-T592 and the bots' stat spending GG-T593.
+- **Reading it.** `AbilityDef.HasRequires`, `RequiredStats()` (label, stat, minimum, in the usual STR VIT AGI SPD STA INT WIS LCK order), `RequiresMet(points)` and `UnmetRequires(points)` (what a locked entry says it needs). The bots' stat spending is GG-T593.
 - *(Tests: `AbilityRequiresTests`.)*
+
+**Amended 2026-11-23 (GG-T592): the Learn screen gates on it.** An ability becomes purchasable in the gold Learn tab the moment the hero's spent stat points (`StatPoints.Picks`, from `HeroSave.StatPicks`) meet its `Requires`. Until then it is listed after the purchasable ones as a disabled row reading **"Locked · needs INT 8 (have 3)"** (every short stat, `Abilities.Unmet` / `NeedsText`), still readable on a tap. `Abilities.Learn` refuses a locked one ("Locked: needs …"), the Locked tab's trainer line carries the same "needs" note, and the camp routine's `BestLearnable` only considers unlocked abilities.
+
+*Decision: a hero's own kit is exempt* (`Abilities.RequiresWaived`). Its `Progression.KitAbilities` moves (GG-T388: what the class was built to do, sold at the 100 G kit price and re-granted by `TrainTo` as it levels) ignore `Requires`, and so does the guided first skill (GG-T180), which the onboarding chain must always be able to finish. Otherwise a fresh Red Mage would find its own Fireball locked at INT 8 and a hero joining at Lv 1 could not rebuild its own default bar. `Requires` still gates the same ability for every other class, so it keeps meaning "this is how far a stranger has to build toward it".
 
 ### 25.7 Shared Camp utilities
 

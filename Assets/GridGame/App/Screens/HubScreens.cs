@@ -562,13 +562,27 @@ namespace GridGame.App
             else if (tab == 2)
             {
                 if (plan != null && plan.Hero == h) GuidedLesson(plan, list);
-                foreach (var a in Abilities.Learnable(C, h))
+                // GG-T592 (§25.6.5): what the hero's spent stat points unlock first, then the locked ones with what they need.
+                var learnable = Abilities.Learnable(C, h).Select(a => (a, needs: Abilities.NeedsText(Abilities.Unmet(C, S, h, a))))
+                    .OrderBy(x => x.needs != null).ToList();
+                foreach (var (a, needs) in learnable)
                 {
                     var ab = a;
                     int price = Abilities.Price(C, S, h, a);
-                    var row = Ui.MenuRow(a.Name, price == 0 ? "Free" : Ui.Gold(price), () => Confirm.Show($"Teach {C.Class(h.ClassId).Name} {ab.Name} for {(price == 0 ? "free" : Ui.Gold(price))}?", "Learn", () => LearnDone(Abilities.Learn(C, S, h, ab.Id), h, ab.Id)), list, Art.AbilityIcon(a), S.Gold >= price);
+                    VisualElement row;
+                    if (needs != null)
+                    {
+                        row = Ui.MenuRow(a.Name, $"Locked · {needs}", null, list, Art.AbilityIcon(a), false);
+                        row.Q<Label>("value")?.AddToClassList("bad");
+                        row.AddToClassList("learn-locked");
+                        InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // a locked row still reads on a tap
+                    }
+                    else
+                    {
+                        row = Ui.MenuRow(a.Name, price == 0 ? "Free" : Ui.Gold(price), () => Confirm.Show($"Teach {C.Class(h.ClassId).Name} {ab.Name} for {(price == 0 ? "free" : Ui.Gold(price))}?", "Learn", () => LearnDone(Abilities.Learn(C, S, h, ab.Id), h, ab.Id)), list, Art.AbilityIcon(a), S.Gold >= price);
+                        InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
+                    }
                     row.name = Training.LearnRowPrefix + a.Id;
-                    InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
                     Describe(a, list);
                 }
             }

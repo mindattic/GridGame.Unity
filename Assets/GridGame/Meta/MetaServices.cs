@@ -2434,10 +2434,31 @@ namespace GridGame.Meta
             a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.SwapsPlaces ||
             a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes; // GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
 
+        /// <summary>GG-T592 (§25.6.5): is <paramref name="a"/> waived from its <see cref="AbilityDef.Requires"/> for this hero?
+        /// A hero's own kit moves are (what its class was built to do: a fresh Red Mage is never locked out of its own
+        /// Fireball), and so is the guided first skill (GG-T180), which the onboarding chain must always be able to finish.</summary>
+        public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
+            IsKitMove(c, h, a) || Training.Guides(s, a);
+
+        /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> at the Learn screen, measured against
+        /// its spent level-up stat points (<see cref="StatPoints.Picks"/>). Empty when it can be bought now (met or waived).</summary>
+        public static List<(string Abbrev, string Stat, float Min, float Have)> Unmet(ContentDb c, SaveData s, HeroSave h, AbilityDef a)
+        {
+            if (a == null || h == null || !a.HasRequires || RequiresWaived(c, s, h, a)) return new List<(string, string, float, float)>();
+            return a.UnmetRequires(StatPoints.Picks(h));
+        }
+
+        /// <summary>A locked Learn entry's reason: "needs INT 8 (have 3)", or "needs VIT 5, WIS 4 (have 2, 0)". Null when met.</summary>
+        public static string NeedsText(List<(string Abbrev, string Stat, float Min, float Have)> unmet) =>
+            unmet == null || unmet.Count == 0 ? null
+                : $"needs {string.Join(", ", unmet.Select(u => $"{u.Abbrev} {u.Min:0}"))} (have {string.Join(", ", unmet.Select(u => $"{u.Have:0}"))})";
+
         public static Result Learn(ContentDb c, SaveData s, HeroSave h, string abilityId)
         {
             var a = c.TryAbility(abilityId);
             if (a == null || !Learnable(c, h).Contains(a)) return Result.Fail("Can't learn that");
+            var unmet = Unmet(c, s, h, a);
+            if (unmet.Count > 0) return Result.Fail($"Locked: {NeedsText(unmet)}");
             int price = Price(c, s, h, a);
             if (s.Gold < price) return Result.Fail("Not enough gold");
             bool guided = Training.Guides(s, a);

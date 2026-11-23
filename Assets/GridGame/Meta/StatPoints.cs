@@ -41,6 +41,18 @@ namespace GridGame.Meta
             return Result.Success($"+{Formulas.StatPointValue} {stat}");
         }
 
+        /// <summary>The picks as points per stat (not stat amount): what <see cref="AbilityDef.Requires"/> is measured against
+        /// (GG-T592, §25.6.5). Unknown keys (a hand-edited save) are ignored.</summary>
+        public static Stats Picks(HeroSave h)
+        {
+            var s = new Stats();
+            if (h?.StatPicks == null) return s;
+            foreach (var kv in h.StatPicks)
+                if (kv.Value > 0 && StatGrantDef.IsStatName(kv.Key))
+                    s = s + new StatGrantDef { Stat = kv.Key, Amount = kv.Value }.ToStats();
+            return s;
+        }
+
         /// <summary>Every pick as one <see cref="Stats"/> block, added to the hero's level stats in battle
         /// (<see cref="Core.Battle.HeroSpec.StatBonus"/>). Unknown keys (a hand-edited save) are ignored.</summary>
         public static Stats Bonus(HeroSave h)

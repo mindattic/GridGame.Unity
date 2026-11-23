@@ -260,7 +260,8 @@ namespace GridGame.Meta
         /// affordable cheaper choice.</summary>
         public static AbilityDef BestLearnable(ContentDb c, HeroSave h, int gold)
         {
-            var learnable = Abilities.Learnable(c, h);
+            // GG-T592: only what the hero's spent stat points already unlock (kit moves are waived); a bot's stat spending is GG-T593.
+            var learnable = Abilities.Learnable(c, h).Where(a => Abilities.Unmet(c, null, h, a).Count == 0).ToList();
             var classList = c.TryClass(h.ClassId)?.Abilities ?? new List<string>();
             // GG-T388: a hero starts with two moves; the rest of its own default kit comes back first, at the kit price.
             var kit = learnable.Where(a => Abilities.IsKitMove(c, h, a) && Abilities.KitPrice <= gold).ToList();
