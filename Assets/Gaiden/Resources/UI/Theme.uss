@@ -386,6 +386,9 @@
 .list--fill .unity-scroll-view__content-container > .pressable,
 .list--fill .unity-scroll-view__content-container > .menu-row,
 .list--fill .unity-scroll-view__content-container > .card { flex-grow: 1; max-height: var(--row-fill-max); }
+/* An empty list's message takes the spare height and sits centred in it, so an empty board reads as a deliberate
+   message rather than a line over a dead band (GG-T654: Bounties/Quests on a save with none). */
+.list--fill .unity-scroll-view__content-container > .kit-empty { flex-grow: 1; }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {
