@@ -388,7 +388,8 @@ def economy(tally, out, difficulty=None):
         shares = ", ".join(f"{k} {v / total:.0%}" for k, v in sorted(spent.items(), key=lambda kv: -kv[1]))
         return (f"  {name:<14} earned {d.get('earned', 0):>7.0f}  spent {total:>7.0f}  loot {-d.get('loot', 0):>5.0f}  "
                 f"repairs x{d.get('#repairs', 0):.0f} salvages x{d.get('#salvages', 0):.0f} breaks x{d.get('#breaks', 0):.0f} "
-                f"battles {d.get('#battles', 0):.0f} mana dust {d.get('#dust', 0):.0f} ({d.get('#orbdust', 0):.0f} from orbs) "
+                f"battles {d.get('#battles', 0):.0f} orbs {d.get('#orbcap', 0) / (d.get('#battles', 0) or 1):.1f} "
+                f"mana dust {d.get('#dust', 0):.0f} ({d.get('#orbdust', 0):.0f} from orbs) "
                 f"| {shares}"), spent.get("repair", 0) / total
 
     print("\n=== economy: main campaign gold per run (shares of all camp spend) ===")

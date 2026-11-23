@@ -79,6 +79,7 @@ namespace GridGame.Tests
                     var report = BattleFactory.Commit(c, s, st);
                     Add(visit, "earned", s.Gold - goldBefore);
                     Add(visit, "#battles", 1);
+                    Add(visit, "#orbcap", setup.OrbCapacity); // GG-T686: owned orbs fought with (avg = #orbcap / #battles)
                     Add(visit, "#dust", report.DustEarned); // GG-T676: all Mana Dust, of which #orbdust came from unspent orbs
                     Add(visit, "#orbdust", report.OrbDust);
                     foreach (var kv in visit)
