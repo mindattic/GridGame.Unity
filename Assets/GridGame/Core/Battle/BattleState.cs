@@ -37,6 +37,8 @@ namespace GridGame.Core.Battle
         public List<string> Passives = new List<string>();
         /// <summary>A domesticated monster (GG-T303): fights for the party on its own AI with its own timeline icon.</summary>
         public bool Domesticated;
+        /// <summary>The hero's level-up stat picks (GG-T591), added to its level stats. Null = none.</summary>
+        public Stats StatBonus;
     }
 
     /// <summary>One equipped armor piece carried from the save into a battle (§24.2, GG-T89).</summary>

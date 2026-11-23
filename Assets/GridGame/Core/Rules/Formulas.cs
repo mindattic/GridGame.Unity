@@ -321,6 +321,15 @@ namespace GridGame.Core.Rules
             return total;
         }
 
+        /// <summary>Stat points earned per level past 1 (GG-T591, from GG-T168): a free point the player puts into any of the
+        /// 8 stats. Its own pool, apart from skill points (BIBLE §15.1 GG-T591 amendment); no milestone bonus.</summary>
+        public const int StatPointsPerLevel = 1;
+        /// <summary>How much one stat point adds to the stat it goes into.</summary>
+        public const int StatPointValue = 1;
+
+        /// <summary>Stat points a hero at <paramref name="level"/> has earned in all (GG-T591).</summary>
+        public static int StatPointsForLevel(int level) => Math.Max(0, level - 1) * StatPointsPerLevel;
+
         /// <summary>Per-action chance that a Power Amplifier appears, from the living party's combined Luck (§1.2.6).</summary>
         public static float AmplifierChance(float partyLuck) =>
             Clamp(BattleConfig.AmplifierBaseChance + partyLuck * BattleConfig.AmplifierChancePerLuck, 0f, BattleConfig.AmplifierMaxChance);

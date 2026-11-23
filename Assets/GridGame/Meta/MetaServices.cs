@@ -678,6 +678,7 @@ namespace GridGame.Meta
             // GG-T301: only the ones switched on, up to the hero's passive slots (PassiveLoadout); class-kit ones are innate.
             spec.Passives.AddRange(PassiveLoadout.Active(c, h));
             spec.Domesticated = h.Domesticated; // fights on its own AI (GG-T303)
+            if (StatPoints.Spent(h) > 0) spec.StatBonus = StatPoints.Bonus(h); // level-up stat picks (GG-T591)
             return spec;
         }
 
@@ -2289,7 +2290,7 @@ namespace GridGame.Meta
             var now = Progression.Preview(c, h).Effective;
             var copy = new HeroSave
             {
-                ClassId = h.ClassId, TotalXp = h.TotalXp,
+                ClassId = h.ClassId, TotalXp = h.TotalXp, StatPicks = h.StatPicks, // stat picks: same base on both sides (GG-T591)
                 WeaponId = h.WeaponId, WeaponMastery = h.WeaponMastery,
                 Armor = h.Armor.ToDictionary(kv => kv.Key, kv => new EquippedArmor { ItemId = kv.Value.ItemId, Mastery = kv.Value.Mastery }),
                 Jewelry = new Dictionary<EquipmentSlot, string>(h.Jewelry),
