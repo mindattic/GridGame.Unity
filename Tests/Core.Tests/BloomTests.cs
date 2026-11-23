@@ -17,7 +17,8 @@ namespace GridGame.Tests
         private static readonly string[] Stages = { "bloom-01", "bloom-02", "bloom-03" };
 
         private static bool OnDisk(string resourceKey) =>
-            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"));
+            File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".jpg"))
+            || File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", resourceKey.Replace('/', Path.DirectorySeparatorChar) + ".png"));
 
         private static bool PortraitOnDisk(string id) =>
             File.Exists(Path.Combine(RepoRoot, "Assets", "GridGame", "Resources", "Portraits", id + ".png"));
