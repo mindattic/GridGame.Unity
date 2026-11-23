@@ -16,14 +16,14 @@ pulling the latest from Prose first.
 
 ## Android (Google Play)
 
-**What the bundle is.** Package `com.mindattic.gridgame`, min SDK 26 (Android 8), target SDK = the highest
+**What the bundle is.** Package `com.mindattic.gridgame`, min SDK 31 (Android 12; the dev APK stays at 26), target SDK = the highest
 platform installed with Unity (36 with Unity 6000.4.3f1; Play's minimum target rises every August), IL2CPP with
 "optimize speed" code generation, ARM64 only (every Play device since 2019; x86_64 is only for the emulator APK),
 Unity's default graphics APIs (Vulkan with a GLES3 fallback), portrait.
 
 **Target devices (GG-T724, BIBLE §26.3).** Flagship iPhone, Samsung Galaxy (S, Z Fold, Z Flip) and Google Pixel
 phones from 2021 on: a Snapdragon 8 Gen 1 / Exynos 2200 / Tensor G1 or newer. The chosen Android floor is **API 31
-(Android 12)** for the release bundle; `BuildAndroidRelease` still sets 26 until the follow-up changes it there (the
+(Android 12)** for the release bundle; `BuildAndroidRelease` sets 31 (GG-T725; the
 development APK keeps 26 for BlueStacks 5 and the emulator suite). Restricting who can install it is a **Play Console
 device catalog** job (Release > Device catalog): include only Samsung and Google, exclude Galaxy A/M/F if wanted, RAM
 < 6 GB, chips older than the floor, tablets and Chromebooks.

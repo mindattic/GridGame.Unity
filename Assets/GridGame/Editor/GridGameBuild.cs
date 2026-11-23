@@ -138,7 +138,8 @@ namespace GridGame.EditorTools
             PlayerSettings.SetScriptingBackend(nt, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetIl2CppCodeGeneration(nt, UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
-            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            // GG-T725: Play release floor is Android 12 (BIBLE 26.3); the dev APK (BuildAndroid) stays at 26 for BlueStacks 5.
+            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel31;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, true);
             int oldCode = PlayerSettings.Android.bundleVersionCode;
