@@ -596,13 +596,34 @@
         "definition": "A hero interrupts a foe's charge in its final half second before it lands: a [Clutch]."
       }
     },
+    "glossary:combo": {
+      "key": "glossary:combo",
+      "id": "glossary-combo",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a39808ba2d57e36a610c18e60d0d68057366e63db5d324c1a2412e5cdf85f701",
+      "about": [
+        "concept-combo"
+      ],
+      "speakers": [],
+      "payload": {
+        "term": "Combo",
+        "definition": "Everything the party does in one turn builds a combo: each [Pincer], chain link, [Supporter] action, follow-up, status and kill adds points. The meter on the board's top-right corner ranks it D, C, B, A, S, SS, SSS; new heroes and new tricks score the most. For glory and the battle's stats only.",
+        "aliases": [
+          "Combo meter",
+          "Combo rank",
+          "Combos"
+        ]
+      }
+    },
     "glossary:combo_finishes": {
       "key": "glossary:combo_finishes",
       "id": "glossary-combo-finishes",
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b7c43ae0849b36503833ae5e1d5885eb4c68a56a522870e2951335fd11ab798",
+      "hash": "sha256:ad9cf473e8c610daf07afe6e259f90aa886da3615d83f28818836e0783c45c2d",
       "about": [
         "concept-combo-finishes"
       ],
@@ -611,8 +632,7 @@
         "term": "Combo finishes",
         "definition": "Follow-up blows that hit hardest after an opener.",
         "aliases": [
-          "Combo finish",
-          "Combo"
+          "Combo finish"
         ]
       }
     },

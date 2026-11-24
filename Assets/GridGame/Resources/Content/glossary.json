@@ -499,8 +499,16 @@
     "Id": "combo_finishes",
     "Term": "Combo finishes",
     "Aliases": [
-      "Combo finish",
-      "Combo"
+      "Combo finish"
+    ]
+  },
+  {
+    "Id": "combo",
+    "Term": "Combo",
+    "Aliases": [
+      "Combo meter",
+      "Combo rank",
+      "Combos"
     ]
   },
   {
