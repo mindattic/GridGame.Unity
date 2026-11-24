@@ -423,6 +423,22 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
+    "class:ironbarkgolem": {
+      "key": "class:ironbarkgolem",
+      "id": "description-class-ironbarkgolem",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:26eb27c2bb101b45c760add99d07e0df15a889b374664185fde0044f139127da",
+      "about": [
+        "class-ironbarkgolem"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A tree golem bound in riveted iron plate, too heavy for any heave.",
+        "long": "The Arks' wardens plated their old golems against the flood. The flood left; the plate stayed."
+      }
+    },
     "class:anchorhulk": {
       "key": "class:anchorhulk",
       "id": "description-class-anchorhulk",

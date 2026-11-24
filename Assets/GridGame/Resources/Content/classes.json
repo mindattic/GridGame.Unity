@@ -21390,6 +21390,142 @@
     "Brain": "Sluggish"
   },
   {
+    "Id": "ironbarkgolem",
+    "Heavy": true,
+    "Name": "Ironbark Golem",
+    "Team": "Enemy",
+    "Tags": [
+      "PlantBased",
+      "Mechanical",
+      "Construct"
+    ],
+    "Card": "Immovable plated [guardian]. Lift it with [Floating] to set up a [pincer]; [Shredded] bites its plate.",
+    "Portrait": "tree-golem",
+    "PortraitVariant": 5,
+    "ArtSource": "TreeGolem06",
+    "Thumbnail": {
+      "Zoom": 0.9676,
+      "X": 0.5075,
+      "Y": 0.5029
+    },
+    "Figure": {
+      "X": 0.0166,
+      "Y": 0.0049,
+      "W": 0.9834,
+      "H": 0.9951
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "Support": {
+      "Effect": "Buff",
+      "Target": "Attacker",
+      "Range": 1,
+      "Buff": "protection",
+      "Label": "Bark Bulwark",
+      "Projectile": "BlueGlow",
+      "Motion": "Straight",
+      "Sfx": "battle.clang"
+    },
+    "BaseStats": {
+      "Strength": 20,
+      "Vitality": 18,
+      "Agility": 10,
+      "Speed": 8,
+      "Stamina": 17,
+      "Intelligence": 6,
+      "Wisdom": 8,
+      "Luck": 8
+    },
+    "Growth": {
+      "Strength": 0.95,
+      "Vitality": 0.75,
+      "Agility": 0.9,
+      "Speed": 0.85,
+      "Stamina": 0.85,
+      "Intelligence": 0.4,
+      "Wisdom": 0.4,
+      "Luck": 0.55
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.33,
+          "Vitality": 0.26,
+          "Agility": 0.32,
+          "Speed": 0.3,
+          "Stamina": 0.3,
+          "Intelligence": 0.14,
+          "Wisdom": 0.14,
+          "Luck": 0.19
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.43,
+          "Vitality": 0.34,
+          "Agility": 0.41,
+          "Speed": 0.38,
+          "Stamina": 0.38,
+          "Intelligence": 0.18,
+          "Wisdom": 0.18,
+          "Luck": 0.25
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.57,
+          "Vitality": 0.45,
+          "Agility": 0.54,
+          "Speed": 0.51,
+          "Stamina": 0.51,
+          "Intelligence": 0.24,
+          "Wisdom": 0.24,
+          "Luck": 0.33
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.76,
+          "Vitality": 0.6,
+          "Agility": 0.72,
+          "Speed": 0.68,
+          "Stamina": 0.68,
+          "Intelligence": 0.32,
+          "Wisdom": 0.32,
+          "Luck": 0.44
+        }
+      }
+    ],
+    "Resistances": {
+      "Poison": 0.0
+    },
+    "Abilities": [
+      "counter_attack"
+    ],
+    "DefaultLoadout": [],
+    "DropTable": "treegolem",
+    "MoveRange": 1,
+    "Targeting": "Closest",
+    "XpReward": 14,
+    "BossPhases": [],
+    "ChargeAbility": null,
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "ImmuneBuffs": [
+      "poisoned",
+      "sleep"
+    ],
+    "Brain": "Relentless",
+    "ArmorPlate": 30
+  },
+  {
     "Id": "undead00",
     "Name": "Undead",
     "Team": "Enemy",
