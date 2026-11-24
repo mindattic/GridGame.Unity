@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Skill Hexagon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Skill Hexagon</h1>
+    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Visualization only.</p>
+  </header>
+  <div class="controls">
+    <label for="hero">Hero <select id="hero"></select></label>
+    <button class="btn" id="undo" type="button">Undo last path</button>
+    <button class="btn" id="reset" type="button">Reset to starting path</button>
+    <label><input type="checkbox" id="names" checked> Hero signatures</label>
+  </div>
+  <div class="main">
+    <div class="board"><svg id="hex" viewBox="-600 -600 1200 1200" role="img" aria-label="Skill hexagon"></svg></div>
+    <aside>
+      <div><h2 id="ptitle">Build</h2><p id="pbody"></p></div>
+      <div class="sum" id="sum"></div>
+      <div><h2>Stats from passives</h2><div class="stats" id="stats"></div></div>
+      <div><h2>Abilities owned</h2><div class="kit" id="kit"></div></div>
+      <div id="detail"></div>
+    </aside>
+  </div>
+</div>
+<div id="tip" hidden></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

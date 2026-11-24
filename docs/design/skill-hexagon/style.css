@@ -1,0 +1,54 @@
+/* Layout: the hexagon board on the left, a reading panel on the right that stacks under it on phones. Single dark look. */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14; --panel: #151821; --line: #2a2f3d; --fg: #e6e8ee; --muted: #9097a8; --accent: #7fd1ff; --hot: #ffcf6b;
+  --s-WIS: #f1e3a6; --s-VIT: #5b8def; --s-STR: #e0784a; --s-AGI: #a07cf0; --s-SPD: #6fd6c4; --s-INT: #d35fb0;
+  --display: "Chakra Petch", "Rajdhani", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+html, body { background: var(--bg); color: var(--fg); margin: 0; }
+body { font-family: var(--body); font-size: 14px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 18px; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 3.2vw, 32px); letter-spacing: .04em; margin: 0; text-transform: uppercase; }
+h2 { font-family: var(--display); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; margin: 0; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 78ch; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 18px; align-items: start; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.board { min-width: 0; }
+svg { width: 100%; height: auto; display: block; }
+aside { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 16px; min-width: 0; }
+aside p { margin: 4px 0 0; color: var(--muted); }
+.controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; color: var(--muted); font-size: 13px; }
+input[type="checkbox"] { accent-color: var(--accent); }
+.fams { display: grid; gap: 8px; font-size: 13px; }
+.fams b { font-family: var(--display); letter-spacing: .04em; }
+.fams span { color: var(--muted); }
+table.pairs { border-collapse: collapse; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+table.pairs th, table.pairs td { width: 38px; height: 28px; text-align: center; border: 1px solid var(--line); }
+table.pairs th { font-weight: 500; color: var(--muted); }
+table.pairs td.d { background: #11141b; color: var(--line); }
+.drops div { font-size: 13px; }
+.drops .m, .m { color: var(--muted); }
+#tip { position: fixed; z-index: 20; pointer-events: none; max-width: 320px; background: #1c2030; border: 1px solid #3a4157; border-radius: 8px; padding: 10px 12px; box-shadow: 0 8px 28px rgba(0,0,0,.5); font-size: 13px; }
+#tip h3 { margin: 0 0 2px; font-family: var(--display); font-size: 15px; letter-spacing: .04em; }
+#tip .k { color: var(--muted); font-family: var(--mono); font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; }
+#tip p { margin: 6px 0 0; }
+.recipe { font-family: var(--mono); font-size: 12.5px; }
+.hero { cursor: pointer; }
+.hero:focus-visible { outline: none; stroke: var(--hot); stroke-width: 3; }
+#detail:empty { display: none; }
+#detail { border-top: 1px solid var(--line); padding-top: 12px; font-size: 13px; }
+#detail h3 { margin: 0; font-family: var(--display); font-size: 16px; }
+select, button.btn { font: inherit; font-size: 13px; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+button.btn { cursor: pointer; }
+select:focus-visible, button.btn:focus-visible { outline: 2px solid var(--hot); outline-offset: 2px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.stats div { background: #11141b; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; display: flex; justify-content: space-between; }
+.kit { display: grid; gap: 4px; font-size: 13px; }
+.kit div { display: flex; gap: 8px; align-items: baseline; }
+.kit .tag { font-family: var(--mono); font-size: 10.5px; color: var(--bg); border-radius: 3px; padding: 0 5px; }
+.sum { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.node { cursor: pointer; }
