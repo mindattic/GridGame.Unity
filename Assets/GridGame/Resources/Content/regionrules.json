@@ -252,6 +252,7 @@
         "Element": "Fire",
         "LifeSeconds": 12,
         "Affects": "Any",
+        "Gadget": true,
         "Color": "#ff4a12",
         "Glyph": "♨"
       }
@@ -347,6 +348,7 @@
         "LifeSeconds": 40,
         "VisibleSeconds": 2,
         "Affects": "Any",
+        "Gadget": true,
         "Color": "#b08a3c",
         "Glyph": "◈"
       },
@@ -506,6 +508,7 @@
         "Blocks": true,
         "Threshold": 3,
         "LifeSeconds": 20,
+        "Gadget": true,
         "Color": "#7a8794",
         "Glyph": "▦"
       }

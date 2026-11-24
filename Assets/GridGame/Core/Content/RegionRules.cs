@@ -82,6 +82,11 @@ namespace GridGame.Core.Content
         /// <summary>GG-T901: the event's burrowed source surfaces on the event's tile (the nearest free tile when someone
         /// stands there) and strikes whoever stands there with the ability that sent it under.</summary>
         Surface,
+        /// <summary>GG-T903 (§14.23, the tech gremlin's Sabotage): each mark on the area that is a gadget of the other side
+        /// (<see cref="TileStateDef.Gadget"/>, painted by a team other than the subject's; only State when set) turns the
+        /// subject's: its owner becomes the subject's team and unit, so whatever reads the painter (Affects, who sees a
+        /// hidden mark, a crit bonus, smoke) now reads the saboteur's side. Each one is a <see cref="Battle.TileSabotagedEvent"/>.</summary>
+        Sabotage,
     }
 
     /// <summary>Which tiles a rule effect works on.</summary>
@@ -258,6 +263,10 @@ namespace GridGame.Core.Content
         /// <summary>A ritual circle (GG-T902, BIBLE §14.17: the Choir's runes): when <see cref="RuneCircleDef.Size"/> units
         /// of the painters' side stand on marks of this state at once, the circle completes. Null = a plain mark.</summary>
         public RuneCircleDef Circle;
+        /// <summary>A gadget (GG-T903, §14.23: the Engineer's buried charge, the Machinist's barricade, a firewall): a
+        /// <see cref="RuleEffectKind.Sabotage"/> (the tech gremlin's) beside a mark of this state painted by the other side
+        /// turns it to the saboteur's side. A mark the board painted (no owner) is nobody's gadget.</summary>
+        public bool Gadget;
     }
 
     /// <summary>

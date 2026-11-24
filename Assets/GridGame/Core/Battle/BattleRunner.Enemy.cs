@@ -79,6 +79,7 @@ namespace GridGame.Core.Battle
                 return;
             }
 
+            if (TrySabotage(enemy)) return; // GG-T903: a tech gremlin turns a hero's gadget, or closes on one it can see
             if (TryBury(enemy)) { EndEnemyTurn(enemy); return; } // GG-T900: a sapper plants a buried charge on the party's way
             if (TryRune(enemy)) return; // GG-T902: a Choir singer paints, walks to or holds its rune circle
             if (TryBurrow(enemy)) { EndEnemyTurn(enemy); return; } // GG-T901: a scorpion goes under and ambushes the nearest hero
@@ -379,6 +380,34 @@ namespace GridGame.Core.Battle
             if (a.CooldownTurns > 0) enemy.Cooldowns[a.Id] = a.CooldownTurns;
             Announce($"{a.Name}!", enemy.Id);
             ResolveAbility(enemy, a, at, null);
+            return true;
+        }
+
+        /// <summary>GG-T903 (§14.23): the tech gremlin's sabotage turn (<see cref="EnemyPlanner.PlanSabotage"/>): beside a
+        /// gadget of the party's it turns it (the ability resolves on it at once and starts its cooldown); otherwise it walks
+        /// toward one it can see (re-planning each step, up to MoveRange) and turns it if it gets there, else a walker still
+        /// strikes an adjacent hero. True = the turn is done.</summary>
+        private bool TrySabotage(Unit enemy)
+        {
+            var plan = EnemyPlanner.PlanSabotage(S, enemy);
+            if (plan == null) return false;
+            int steps = Math.Max(1, enemy.Def.MoveRange);
+            for (int i = 0; i < steps && plan != null && plan.Kind == SabotagePlanKind.Walk && enemy.Alive && !S.IsOver; i++)
+            {
+                if (!StepEnemy(enemy, plan.At)) break;
+                plan = EnemyPlanner.PlanSabotage(S, enemy);
+            }
+            if (!enemy.Alive || S.IsOver) return true;
+            if (plan != null && plan.Kind == SabotagePlanKind.Sabotage)
+            {
+                var a = plan.Ability;
+                if (a.CooldownTurns > 0) enemy.Cooldowns[a.Id] = a.CooldownTurns;
+                Announce($"{enemy.Name}: {a.Name}!", enemy.Id);
+                ResolveAbility(enemy, a, plan.At, null);
+            }
+            else EnemyAttack(enemy);
+            if (CheckEnd()) return true;
+            EndEnemyTurn(enemy);
             return true;
         }
 

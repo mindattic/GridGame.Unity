@@ -290,6 +290,7 @@ namespace GridGame.Core.Battle
                 case RuleEffectKind.Burrow: Burrow(e, ctx); break; // GG-T901: the scorpion's burrow ambush
                 case RuleEffectKind.Unburrow: Unburrow(ctx); break;
                 case RuleEffectKind.Surface: SurfaceAmbush(ctx); break;
+                case RuleEffectKind.Sabotage: Sabotage(e, ctx); break; // GG-T903: the tech gremlin turns a hero's gadget
                 case RuleEffectKind.GrantCharge: // GG-T894: once, however many heroes the area holds
                 {
                     Unit hero = null;
@@ -700,6 +701,24 @@ namespace GridGame.Core.Battle
                 var m = S.Region.At(c);
                 if (m != null && m.Hidden && StateMatches(m, e.State)) RevealMark(c, m, "revealed");
                 else if (m != null && StateMatches(m, e.State)) ForceUpFrom(c, m); // GG-T901: a burrow still in sight is found out too
+            }
+        }
+
+        /// <summary>GG-T903 (§14.23): every gadget of another side on the area (<see cref="Rules.EnemyPlanner.IsGadgetOf"/>)
+        /// turns the subject's: owner team and unit become the saboteur's. A hidden one stays hidden, now from its old side
+        /// (the party loses its buried charge; the foes know it). The mark keeps its counter, life and sight.</summary>
+        private void Sabotage(RuleEffectDef e, RuleCtx ctx)
+        {
+            var u = ctx.Subject;
+            if (u == null || !u.Alive) return;
+            foreach (var c in AreaOf(e, ctx))
+            {
+                var m = S.Region.At(c);
+                if (!StateMatches(m, e.State) || !GridGame.Core.Rules.EnemyPlanner.IsGadgetOf(S, m, u.Team)) continue;
+                var from = m.OwnerTeam;
+                m.OwnerTeam = u.Team;
+                m.OwnerId = u.Id;
+                Emit(new TileSabotagedEvent { UnitId = u.Id, At = c, State = m.State, RuleId = m.Rule, FromTeam = from, ToTeam = u.Team, Hidden = m.Hidden });
             }
         }
 

@@ -18879,7 +18879,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "shock_plating"
+      "shock_plating",
+      "gremlin_sabotage"
     ],
     "DefaultLoadout": [],
     "DropTable": "techgremlin",
@@ -19007,7 +19008,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "shock_plating"
+      "shock_plating",
+      "gremlin_sabotage"
     ],
     "DefaultLoadout": [],
     "DropTable": "techgremlin",
@@ -19136,7 +19138,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "shock_plating"
+      "shock_plating",
+      "gremlin_sabotage"
     ],
     "DefaultLoadout": [],
     "DropTable": "techgremlin",

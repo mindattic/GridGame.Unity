@@ -3448,6 +3448,29 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   an egg or multi-tile), holds no charge and its tile is unmarked. The bots read the ambush tile as any queued
   hazard's. Not yet: the view's dive and burst (the sprite stays on its tile while under, the ambush shows as a
   hazard) and Prose text for the `burrows` rule. *(Tests: `BurrowAmbushTests`.)*
+- **The tech gremlin's Sabotage (GG-T903).** Hero gadgets are not free: a tech gremlin beside one turns it to the foes'
+  side. `TileStateDef.Gadget` (new) marks a state as a gadget: `buriedmine` (the Engineer's Buried Charge), `firewall`
+  and `machinist_barricade` (the Machinist's barricade); `armedmine` is not (it is already going off). A mark is a
+  gadget of a side when its state is one and another side painted it (`EnemyPlanner.IsGadgetOf`; a board-painted mark
+  is nobody's). `RuleEffectKind.Sabotage` (new; only `State` when set) turns every such mark on its area the subject's:
+  `OwnerTeam` and `OwnerId` become the saboteur's, counter, life and sight unchanged, one `TileSabotagedEvent` each
+  (`FromTeam`, `ToTeam`, `Hidden`). Whatever reads the painter now reads the foes: a buried charge stays hidden, now
+  from the party (it loses track of its own mine; the foes know it and the hero bot reads no danger there); a state
+  that works on foes of its owner (`Affects`) works on the party; a crit bonus or smoke helps the foes. The real
+  `firewall` (`Affects` Any) and the barricades burn and block everyone as before, so turning them changes only whose
+  they are (and who the view draws them for). Content: `gremlin_sabotage` ("Sabotage", Skill, cooldown 2 turns,
+  PickTile on the gadget, `RuleEffects` Sabotage on its Target) in the `techgremlin00`-`02` kits, so the Shardfall's
+  gremlins use it, and Halcyon I (`cityruins-01`), where the Machinist fights beside the party as a guest, has a tech
+  gremlin in wave 4 in place of a second cyber zombie. `EnemyPlanner.PlanSabotage` (tried after a charge, before a
+  bury, `TrySabotage`): a foe with Sabotage in its kit, off cooldown, not silenced (the Technician's EMP Pulse silences
+  Tech foes, so a pulsed gremlin can't tamper), immobile, remains, an egg, multi-tile or burrowed, and with no hero
+  adjacent (then it strikes). Beside a gadget (a cardinal neighbour, or under it) it sabotages it: tech senses tech, so a
+  hidden charge beside it counts. Otherwise it walks toward one its side can see within `SabotageReach` 4, one cardinal
+  step at a time onto a free, safe tile, up to its MoveRange, and turns it if it gets there (else strikes an adjacent
+  hero). `SabotageValue`: 6 for a hidden one (a buried charge), 4 another hazard (a firewall), 3 a wall, else 2, +1 for
+  each hero within 2 of it; beside it picks the most valuable, from afar best value less distance. Not yet: the view
+  (a spark of tampering and the mark's edge turning to the foes' colour; split to its own ticket) and the hero bot
+  guarding its gadgets. *(Tests: `TacticalTileTests`, the gremlin section, written, not run.)*
 - Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles, and
   timeline events from team-owned tiles carry no owner; an enemy ability's element doesn't reveal a hidden mark.
 - *(Tests: `TacticalTileTests`, written, not run.)*

@@ -749,6 +749,16 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"TileRevealed {State} at {At} ({Cause})";
     }
 
+    /// <summary>GG-T903 (§14.23): a tech gremlin's Sabotage turned another side's gadget (a buried charge, a barricade, a
+    /// firewall) into its own side's: the mark at At now belongs to ToTeam and to the saboteur (UnitId).</summary>
+    public sealed class TileSabotagedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public string State; public string RuleId; public Team FromTeam; public Team ToTeam;
+        /// <summary>The mark was hidden from the saboteur's new foes when it turned (a buried charge: the party loses it).</summary>
+        public bool Hidden;
+        public override string ToString() => $"TileSabotaged {State} at {At} ({FromTeam} -> {ToTeam})";
+    }
+
     /// <summary>A named rule anchor was placed (From null) or moved.</summary>
     public sealed class RegionAnchorEvent : BattleEvent
     {
