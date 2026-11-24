@@ -3381,6 +3381,31 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   a hero, not lit already, 1.5. The view: the flare arcs from the caster with a sputtering spark trail, fizzes alight
   (the ability's `battle.fizzle` Sfx, pitched up), the lit tiles flash warm, a gold flourish and a swelling glow ring to
   its radius (Reduce Motion: no swell), then the tiles wash amber. *(Tests: `FlareShotTests`, written, not run.)*
+- **The scorpion's burrow ambush (GG-T901).** A scorpion with no hero beside it dives into the ground and comes up
+  under the nearest hero a moment later; dig it out first. `RuleEffectKind.Burrow` (new; `State` the mark, `Event` the
+  ambush, `Seconds` 0 = the event's own): the subject (the caster) goes under its own tile: it paints `State` there as
+  its side (never over another mark: no burrow then), leaves the board (`Unit.Burrowed` new, `OnBoard` false, so it is
+  not `Alive`: untargetable, on no tile, its turn and any cast off the bar; `Pos` stays the burrow tile) and queues
+  `Event` on the tile of the foe nearest it (footprint Manhattan, ties by id) as an ordinary telegraphed hazard whose
+  source it is (`BurrowedEvent`). `RuleEffectKind.Surface` (new, the ambush's effect): its burrowed source comes up on
+  the event's tile, or, someone standing there, the nearest free tile (`SpawnLanding`), its burrow mark clearing; it
+  rejoins the timeline at its Speed's entry (spaced, as a reinforcement), reads its landing tile (`RegionEnter`), and
+  strikes whoever stands on the ambush tile with the ability that sent it under (`Unit.BurrowAbility`; damage, crit,
+  plate and its `ApplyBuff` as any skill). `SurfacedEvent` (and a `TeleportedEvent`, so the sprite moves). Forced up:
+  `RuleEffectKind.Unburrow` (new; the mark's burrowed owner) and any reveal of the mark (`RevealMark`: a hook it
+  triggers, an element's hit; `RevealTiles` too while the mark is still in its seen window) bring it up at once on its
+  burrow tile (the nearest free one), the ambush called off (`HazardRetimedEvent` Cancelled), no strike; a burrow's
+  ambush cancelled by an `AdjustEvents` brings it up the same way, so none is stranded. A burrowed foe holds its wave
+  open (`CheckEnd`, `AnyFoeOnBoard`). Content: `scorpion_burrow` ("Burrow Ambush", Skill, cooldown 3 turns, 10
+  Physical and Poisoned, `RuleEffects` Burrow `burrow_mark` / `burrow_ambush`) in the `scorpion` kit, so every stage
+  scorpions fight in uses it. Rule `burrows`: `burrow_mark` (not a hazard, not blocking, `VisibleSeconds` 0.5: the
+  party sees it go under, then loses it), `burrow_ambush` (1.5 s, hazard, effect Surface) and an EnterTile hook (Team
+  Hero, state `burrow_mark`: Unburrow), so a hero who steps on the burrow digs it out. `EnemyPlanner.PlanBurrow` finds
+  a Burrow ability in the kit and uses it (`TryBurrow`: "Burrow Ambush!", its cooldown starts) before a lob, a trap or
+  a step, when no hero is adjacent, it is off cooldown, free to move (not rooted, immobile, silenced, a snake, remains,
+  an egg or multi-tile), holds no charge and its tile is unmarked. The bots read the ambush tile as any queued
+  hazard's. Not yet: the view's dive and burst (the sprite stays on its tile while under, the ambush shows as a
+  hazard) and Prose text for the `burrows` rule. *(Tests: `BurrowAmbushTests`.)*
 - Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles, and
   timeline events from team-owned tiles carry no owner; an enemy ability's element doesn't reveal a hidden mark.
 - *(Tests: `TacticalTileTests`, written, not run.)*

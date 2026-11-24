@@ -723,6 +723,23 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Squished {State} at {At} by {UnitId}";
     }
 
+    /// <summary>GG-T901 (§14.23): a unit went under the board at <see cref="At"/> (its burrow mark's tile), untargetable, and
+    /// will surface on <see cref="Ambush"/> (its queued ambush, entry <see cref="EntryId"/>) beneath <see cref="TargetId"/>.</summary>
+    public sealed class BurrowedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public Coord Ambush; public int TargetId = -1; public int EntryId = -1;
+        public override string ToString() => $"Burrowed {UnitId} at {At}, ambush on {Ambush}";
+    }
+
+    /// <summary>GG-T901: a burrowed unit came back up, from its burrow <see cref="From"/> to <see cref="To"/>: its ambush
+    /// landing (<see cref="Forced"/> false; <see cref="VictimId"/> the unit it strikes, -1 none), or forced up early by a
+    /// hero stepping on its burrow or the burrow being revealed (<see cref="Forced"/> true, no strike).</summary>
+    public sealed class SurfacedEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To; public bool Forced; public int VictimId = -1;
+        public override string ToString() => $"Surfaced {UnitId} {From}->{To}{(Forced ? " (forced)" : "")}";
+    }
+
     /// <summary>A rule event reached the left edge and resolves on its tiles (its effects follow as their own events).</summary>
     public sealed class HazardLandedEvent : BattleEvent
     {

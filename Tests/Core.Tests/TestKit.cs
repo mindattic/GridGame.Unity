@@ -213,7 +213,9 @@ namespace GridGame.Tests
                 // A reinforcement queued for the current wave (§14.8) legitimately holds the battle open with
                 // the board clear — mirrors the same check BattleRunner.CheckEnd makes before ending a wave.
                 bool reinforcementPending = s.PendingSpawns.Any(p => !p.Consumed && p.Wave == s.Wave);
-                Assert.That(s.Units.Any(u => u.Alive && !u.IsHero) || reinforcementPending, Is.True, "No enemies but battle not over");
+                // GG-T901: a foe burrowed under the board (off it, alive) holds the wave open too.
+                bool burrowed = s.Units.Any(u => u.Burrowed && u.Hp > 0 && u.Team == Team.Enemy);
+                Assert.That(s.Units.Any(u => u.Alive && !u.IsHero) || reinforcementPending || burrowed, Is.True, "No enemies but battle not over");
             }
         }
     }

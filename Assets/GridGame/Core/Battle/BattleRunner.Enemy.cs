@@ -80,6 +80,7 @@ namespace GridGame.Core.Battle
 
             if (TryBury(enemy)) { EndEnemyTurn(enemy); return; } // GG-T900: a sapper plants a buried charge on the party's way
             if (TryRune(enemy)) return; // GG-T902: a Choir singer paints, walks to or holds its rune circle
+            if (TryBurrow(enemy)) { EndEnemyTurn(enemy); return; } // GG-T901: a scorpion goes under and ambushes the nearest hero
             if (TryLob(enemy)) { EndEnemyTurn(enemy); return; } // GG-T894: a slime vomits a glob instead of closing in
             if (TryLayTrap(enemy)) { EndEnemyTurn(enemy); return; }
             if (pincerPlan != null) { FollowPincerPlan(enemy, pincerPlan); return; } // set up an end or join as a supporter

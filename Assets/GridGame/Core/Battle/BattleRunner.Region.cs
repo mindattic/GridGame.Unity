@@ -180,7 +180,7 @@ namespace GridGame.Core.Battle
             Emit(new HazardLandedEvent { EntryId = e.Id, EventId = e.RuleEvent, RuleId = e.RuleId, Tiles = new List<Coord>(e.HazardTiles ?? new List<Coord>()), Rearmed = rearm });
             if (def == null || PreviewOnly) return;
             var source = e.SourceUnitId >= 0 ? S.UnitById(e.SourceUnitId) : null;
-            if (source != null && !source.Alive) source = null;
+            if (source != null && !source.Alive && !source.Burrowed) source = null; // GG-T901: a burrower surfaces from under the board
             RunRuleEffects(def.Effects, new RuleCtx
             {
                 Rule = e.RuleId ?? (C.RuleEventRule.TryGetValue(def.Id, out var owner) ? owner : null),
@@ -285,6 +285,9 @@ namespace GridGame.Core.Battle
                 }
                 case RuleEffectKind.MoveAnchor: MoveAnchor(e, ctx); break;
                 case RuleEffectKind.SpawnUnit: SpawnRuleUnits(e, ctx); break;
+                case RuleEffectKind.Burrow: Burrow(e, ctx); break; // GG-T901: the scorpion's burrow ambush
+                case RuleEffectKind.Unburrow: Unburrow(ctx); break;
+                case RuleEffectKind.Surface: SurfaceAmbush(ctx); break;
                 case RuleEffectKind.GrantCharge: // GG-T894: once, however many heroes the area holds
                 {
                     Unit hero = null;
@@ -649,9 +652,12 @@ namespace GridGame.Core.Battle
         {
             if (m == null) return;
             m.SightTicks = 0;
-            if (!m.Hidden) return;
-            m.Hidden = false;
-            Emit(new TileRevealedEvent { At = c, State = m.State, RuleId = m.Rule, OwnerTeam = m.OwnerTeam, OwnerId = m.OwnerId, Cause = cause });
+            if (m.Hidden)
+            {
+                m.Hidden = false;
+                Emit(new TileRevealedEvent { At = c, State = m.State, RuleId = m.Rule, OwnerTeam = m.OwnerTeam, OwnerId = m.OwnerId, Cause = cause });
+            }
+            ForceUpFrom(c, m); // GG-T901: a burrow found out (stepped on, revealed, hit) forces its scorpion up
         }
 
         /// <summary>RevealTiles: the area's hidden marks (only e.State when set) show to everyone for good.</summary>
@@ -661,6 +667,7 @@ namespace GridGame.Core.Battle
             {
                 var m = S.Region.At(c);
                 if (m != null && m.Hidden && StateMatches(m, e.State)) RevealMark(c, m, "revealed");
+                else if (m != null && StateMatches(m, e.State)) ForceUpFrom(c, m); // GG-T901: a burrow still in sight is found out too
             }
         }
 
@@ -930,6 +937,7 @@ namespace GridGame.Core.Battle
                 {
                     S.Timeline.Remove(x);
                     Emit(new HazardRetimedEvent { EntryId = x.Id, EventId = x.RuleEvent, Cancelled = true });
+                    AmbushCancelled(x); // GG-T901: a called-off ambush never strands its burrower under the board
                     continue;
                 }
                 // Never sooner than the next tick: a hazard always shows on the bar before it lands.

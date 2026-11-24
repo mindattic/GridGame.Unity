@@ -469,6 +469,7 @@ namespace GridGame.Core.Battle
             bool heroesAlive = false, enemiesAlive = false;
             foreach (var u in S.Units)
             {
+                if (u.Burrowed && u.Hp > 0 && u.Team == Team.Enemy) { enemiesAlive = true; continue; } // GG-T901: under the board, still in the fight
                 if (!u.Alive) continue;
                 // A tamed or domesticated monster alone doesn't keep the party in the fight (GG-T303).
                 if (u.Team == Team.Hero) { if (!u.IsIndependent) heroesAlive = true; } else if (u.Team == Team.Enemy && !u.IsCorpse) enemiesAlive = true; // bodies (and neutrals, GG-T132) don't hold up a wave

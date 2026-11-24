@@ -144,6 +144,34 @@
     ]
   },
   {
+    "Id": "burrows",
+    "TileStates": [
+      {
+        "Id": "burrow_mark",
+        "VisibleSeconds": 0.5,
+        "Color": "#a0703a",
+        "Glyph": "◌"
+      }
+    ],
+    "Events": [
+      {
+        "Id": "burrow_ambush",
+        "Seconds": 1.5,
+        "Glyph": "⚠",
+        "Color": "#d9a441",
+        "Effects": [ { "Kind": "Surface", "Area": "EventTiles" } ]
+      }
+    ],
+    "Hooks": [
+      {
+        "On": "EnterTile",
+        "Team": "Hero",
+        "State": "burrow_mark",
+        "Effects": [ { "Kind": "Unburrow", "Area": "Self" } ]
+      }
+    ]
+  },
+  {
     "Id": "slimeglobs",
     "TileStates": [
       {

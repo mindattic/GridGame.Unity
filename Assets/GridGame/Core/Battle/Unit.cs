@@ -78,6 +78,12 @@ namespace GridGame.Core.Battle
         public int W = 1;
         public int H = 1;
         public bool OnBoard = true;
+        /// <summary>GG-T901 (§14.23): gone under the board in a burrow ambush. <see cref="OnBoard"/> is false meanwhile (so it
+        /// is not <see cref="Alive"/>: untargetable, on no tile, its timeline icon off the bar), but it lives and holds its
+        /// wave open; <see cref="Pos"/> is its burrow mark's tile. It surfaces when its queued ambush lands or is forced up.</summary>
+        public bool Burrowed;
+        /// <summary>GG-T901: the ability that sent it under, the blow it strikes as it surfaces.</summary>
+        public string BurrowAbility;
 
         public List<BuffInstance> Buffs = new List<BuffInstance>();
         public Dictionary<string, int> Cooldowns = new Dictionary<string, int>();

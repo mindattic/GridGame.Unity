@@ -364,7 +364,7 @@ namespace GridGame.Core.Battle
         /// <summary>True while a living foe (not a body, not a neutral) is on the board: the same test that holds a wave open.</summary>
         private bool AnyFoeOnBoard()
         {
-            foreach (var u in S.Units) if (u.Alive && u.Team == Team.Enemy && !u.IsCorpse) return true;
+            foreach (var u in S.Units) if ((u.Alive || (u.Burrowed && u.Hp > 0)) && u.Team == Team.Enemy && !u.IsCorpse) return true; // GG-T901
             return false;
         }
 

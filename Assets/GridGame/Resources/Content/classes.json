@@ -14883,7 +14883,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "counter_attack"
+      "counter_attack",
+      "scorpion_burrow"
     ],
     "DefaultLoadout": [],
     "DropTable": "scorpion",

@@ -684,6 +684,35 @@ namespace GridGame.Core.Rules
             return best.HasValue ? (bury, best.Value) : ((AbilityDef, Coord)?)null;
         }
 
+        /// <summary>
+        /// GG-T901 (BIBLE §14.23, the scorpion's burrow ambush): a burrow is an ability in the foe's class kit with a
+        /// <see cref="RuleEffectKind.Burrow"/> rule effect. The foe goes under in place of a step and a strike when no hero
+        /// is adjacent, it is off cooldown, it is free to move (not rooted, immobile, silenced, a snake, remains, an egg or
+        /// more than one tile), holds no charge, and its tile bears no other mark. Null = no burrow this turn. Pure.
+        /// </summary>
+        public static AbilityDef PlanBurrow(BattleState s, Unit enemy)
+        {
+            if (enemy?.Def?.Abilities == null || !enemy.Alive || enemy.Burrowed) return null;
+            if (enemy.IsImmobile || enemy.IsRooted || enemy.IsSilenced || enemy.IsRemains || enemy.IsEgg || enemy.IsCorpse || enemy.IsMultiTile || enemy.IsSnakeMember) return null;
+            AbilityDef burrow = null;
+            foreach (var id in enemy.Def.Abilities)
+            {
+                var a = s.Content.TryAbility(id);
+                if (a != null && a.RuleEffects.Exists(e => e.Kind == RuleEffectKind.Burrow)) { burrow = a; break; }
+            }
+            if (burrow == null) return null;
+            if (enemy.Cooldowns.TryGetValue(burrow.Id, out var cd) && cd > 0) return null;
+            if (s.CastEntryOf(enemy.Id) != null || s.Region.At(enemy.Pos) != null) return null;
+            bool anyHero = false;
+            foreach (var h in s.Living(Team.Hero))
+            {
+                if (h.IsCorpse || h.IsRemains || h.IsEgg) continue;
+                if (enemy.IsAdjacentTo(h)) return null;
+                anyHero = true;
+            }
+            return anyHero ? burrow : null;
+        }
+
         /// <summary>Cardinal line from beside the caster to the board edge along the dominant axis toward the target (X on ties).</summary>
         public static List<Coord> LineToward(Unit caster, Unit target, BattleState state = null)
         {

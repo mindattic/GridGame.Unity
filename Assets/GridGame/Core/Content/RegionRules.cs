@@ -71,6 +71,17 @@ namespace GridGame.Core.Content
         /// <summary>Add Amount to the party's mana meter (charge, <see cref="Battle.BattleConfig.ManaChargePerOrb"/> to an orb)
         /// once, when a hero is among the units (GG-T894: a hero squishing a slime glob banks a little charge).</summary>
         GrantCharge,
+        /// <summary>GG-T901 (§14.23, the scorpion's burrow ambush): the subject (the caster) goes under: it leaves the board
+        /// (untargetable, off every tile, still holding its wave open) under a <see cref="RuleEffectDef.State"/> mark on its
+        /// tile, and <see cref="RuleEffectDef.Event"/> is queued on the tile of its nearest foe (Seconds, 0 = the event's
+        /// own), where it will surface. The ability that sent it under is the blow it surfaces with.</summary>
+        Burrow,
+        /// <summary>GG-T901: the burrowed owner of the mark (a hero stepping on its burrow) is forced up at once beside it,
+        /// its queued ambush called off. Revealing the mark (RevealTiles, an element) does the same.</summary>
+        Unburrow,
+        /// <summary>GG-T901: the event's burrowed source surfaces on the event's tile (the nearest free tile when someone
+        /// stands there) and strikes whoever stands there with the ability that sent it under.</summary>
+        Surface,
     }
 
     /// <summary>Which tiles a rule effect works on.</summary>
@@ -446,6 +457,10 @@ namespace GridGame.Core.Content
                 switch (e.Kind)
                 {
                     case RuleEffectKind.MarkTiles: if (e.State == null) p.Add($"{w}: needs a State"); break;
+                    case RuleEffectKind.Burrow: // GG-T901
+                        if (e.State == null) p.Add($"{w}: needs a State (the burrow mark)");
+                        if (e.Event == null) p.Add($"{w}: needs an Event (the ambush)");
+                        break;
                     case RuleEffectKind.Damage:
                     case RuleEffectKind.Heal:
                     case RuleEffectKind.GrantOrbs:
