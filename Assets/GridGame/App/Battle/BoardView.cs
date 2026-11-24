@@ -1047,9 +1047,13 @@ namespace GridGame.App
 
         /// <summary>A bare floating text label (not animated, the caller moves it) in a combat text kind's face and
         /// outline (GG-T826: built through <see cref="CombatText.Build"/>). Prefer <see cref="CombatText.Show(UnitView, CombatTextKind, string, float, Color?)"/>,
-        /// which also animates and stacks; this stays for the few callers that drive the label themselves (the damage tally).</summary>
-        public Label Float(string text, Vector2 at, Color color, float size = 64, CombatTextKind kind = CombatTextKind.Support) =>
-            CombatText.Build(this, text, at - new Vector2(0f, 60f - size * 0.75f), CombatText.StyleOf(kind), color, size);
+        /// which also animates and stacks; this stays for the few callers that drive the label themselves (the damage tally).
+        /// GG-T829: <paramref name="size"/> defaults to <see cref="TypeScale.Base"/>; a literal size here fails POL-A1.</summary>
+        public Label Float(string text, Vector2 at, Color color, float? size = null, CombatTextKind kind = CombatTextKind.Support)
+        {
+            float s = size ?? TypeScale.Base;
+            return CombatText.Build(this, text, at - new Vector2(0f, 60f - s * 0.75f), CombatText.StyleOf(kind), color, s);
+        }
     }
 
     /// <summary>Radial countdown ring drawn around a buff pip: the arc shrinks clockwise as the buff runs out.</summary>

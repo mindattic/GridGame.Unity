@@ -2331,24 +2331,18 @@ namespace GridGame.App
 
         /// <summary>GG-T828: floats a combat text over a unit (the board centre when it has no view) and waits
         /// <paramref name="hold"/>. The kind's style token picks the face, colour, motion and size; <paramref name="magnitude"/>
-        /// (0..1) only says how big the moment is. Every Playback float comes through here.</summary>
-        private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f)
+        /// (0..1) only says how big the moment is; <paramref name="tint"/> recolours it for a mechanic with its own colour
+        /// (tame, wanderer, rule breaker, bounty). Every BattleScreen unit float comes through here: no call passes a size
+        /// (GG-T829, POL-A1 in tools/polish_lint.py).</summary>
+        private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f, Color? tint = null)
         {
-            Text.Show(FloatAt(unitId), kind, text, magnitude);
+            Text.Show(FloatAt(unitId), kind, text, magnitude, tint);
             yield return Tween.Wait(hold);
         }
 
         /// <summary>Where a unit's float sits: its view's centre, else the board centre.</summary>
         private Vector2 FloatAt(int unitId) =>
             State.UnitById(unitId) != null && board.Units.TryGetValue(unitId, out var v) ? BoardView.CenterOf(v.Tile, v.W, v.H) : new Vector2(BoardView.Tile * 3, BoardView.Tile * 4);
-
-        /// <summary>The older call shape, still used by the other BattleScreen partials: a size (70+ reads as a Callout,
-        /// anything else as Support) and a tint. <paramref name="size"/> only sets the magnitude: the kind's style sizes the text.</summary>
-        private IEnumerator FloatText(int unitId, string text, Color c, float hold, float size = 60, CombatTextKind? kind = null)
-        {
-            Text.Show(FloatAt(unitId), kind ?? (size >= 70 ? CombatTextKind.Callout : CombatTextKind.Support), text, Mathf.Clamp01((size - 60f) / 30f), c);
-            yield return Tween.Wait(hold);
-        }
 
         /// <summary>A status's pip glyph (its Letter, else its name's first letter), as its pip on the unit shows it.</summary>
         private static string StatusGlyph(BuffDef def) => string.IsNullOrEmpty(def.Letter) ? def.Name.Substring(0, 1) : def.Letter;

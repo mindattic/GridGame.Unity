@@ -18,7 +18,7 @@ namespace GridGame.App
             {
                 App.Audio.Sfx("battle.warcry");
                 App.StartCoroutine(Tween.Shake(shake, 24f * Fx, Timing.Emphasis));
-                yield return FloatText(rb.UnitId, "RULE BREAKER", RuleBreakColor, 1.1f, 84);
+                yield return FloatText(rb.UnitId, CombatTextKind.Callout, "RULE BREAKER", 1.1f, 0.8f, RuleBreakColor);
                 yield break;
             }
             switch (rb.Rule)
@@ -29,7 +29,7 @@ namespace GridGame.App
                 case RuleBreak.GravityStamp: App.Audio.Sfx("battle.explosion"); App.StartCoroutine(Tween.Shake(shake, 30f * Fx, Timing.Emphasis)); break;
                 case RuleBreak.Undying: App.Audio.Sfx("battle.powerup"); RefreshUnit(rb.UnitId); break;
             }
-            yield return FloatText(rb.UnitId, RuleBreaks.Label(rb.Rule), RuleBreakColor, 0.6f, 72);
+            yield return FloatText(rb.UnitId, CombatTextKind.Callout, RuleBreaks.Label(rb.Rule), 0.6f, 0.4f, RuleBreakColor);
         }
     }
 }

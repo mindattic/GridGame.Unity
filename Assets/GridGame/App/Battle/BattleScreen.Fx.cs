@@ -415,7 +415,7 @@ namespace GridGame.App
                     }));
                 }
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Standard));
-            yield return FloatText(u.Id, "ARMOR BROKEN!", new Color(1f, 0.85f, 0.5f), 0.3f, 64, CombatTextKind.Debuff);
+            yield return FloatText(u.Id, CombatTextKind.Debuff, "ARMOR BROKEN!", 0.3f, 0.15f, new Color(1f, 0.85f, 0.5f));
         }
 
         // ── Pickups (§13.3.1) ──
@@ -461,7 +461,7 @@ namespace GridGame.App
                 // max HP…"), which is exactly the kind of message the announcement box was never meant to fit — a
                 // hold/tap on the pickup icon itself still reads the description (GG-T450).
                 Billboard($"{hero.Name} grabs {def?.Name ?? "Pickup"}!", Art.UiIcon(def?.Icon), c);
-                yield return FloatText(hero.Id, def?.Name ?? "Pickup", c, 0.2f, 56);
+                yield return FloatText(hero.Id, CombatTextKind.Support, def?.Name ?? "Pickup", 0.2f, 0f, c);
             }
         }
 
