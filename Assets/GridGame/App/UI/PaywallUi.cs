@@ -143,7 +143,7 @@ namespace GridGame.App
             Ui.Text($"+1 in {(int)next.TotalMinutes}:{next.Seconds:00}", "small dim", w);
             // The price has its own line: the side window is too narrow for "Refill · price" on one button (GG-T400).
             Ui.Text(Paywall.Tag(PaywallKind.RestedRefill, s), "small dim", w).style.marginTop = Space.S8;
-            var b = Ui.Button("Refill", () => Refill(refresh), "btn--small", w);
+            var b = RowIcon.IconButton("Refill", RowKind.Shop, () => Refill(refresh), "btn--small", w);
             b.name = "rested-refill";
             b.style.marginTop = Space.S8;
             Ui.SetEnabled(b, s.Gold >= Paywall.Cost(PaywallKind.RestedRefill, s));
@@ -155,7 +155,7 @@ namespace GridGame.App
             dp.name = "rested-refill-diamond-price";
             dp.style.whiteSpace = WhiteSpace.Normal;
             dp.style.marginTop = Space.S16;
-            var db = Ui.Button("Refill", () => DiamondRefill(refresh), "btn--small", w);
+            var db = RowIcon.IconButton("Refill", RowKind.Diamond, () => DiamondRefill(refresh), "btn--small", w);
             db.name = "rested-refill-diamond";
             db.style.marginTop = Space.S8;
         }

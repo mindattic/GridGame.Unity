@@ -61,7 +61,7 @@ namespace GridGame.App
             {
                 string id = h.ClassId, name = c.TryClass(id)?.Name ?? id;
                 string why = Tomes.WhyNot(c, s, tome.Id, id);
-                var b = Ui.Button(name, () =>
+                var b = RowIcon.IconButton(name, RowKind.Hero, () => // GG-T754 (§26.7)
                 {
                     var r = Tomes.Teach(c, s, tome.Id, id);
                     App.Toast(r.Message, 2.4f);
@@ -80,7 +80,7 @@ namespace GridGame.App
         /// <summary>A Chest's "Open" button: rolls it, toasts the haul, and calls <paramref name="opened"/> with what came out.</summary>
         public static Button OpenButton(VisualElement parent, ItemDef chest, Action<Result, Chests.Haul> opened)
         {
-            var b = Ui.Button(App.Save.Count(chest.Id) > 1 ? $"Open ({App.Save.Count(chest.Id)})" : "Open", () =>
+            var b = RowIcon.IconButton(App.Save.Count(chest.Id) > 1 ? $"Open ({App.Save.Count(chest.Id)})" : "Open", RowKind.Item, () =>
             {
                 var r = Chests.Open(App.Content, App.Save, chest.Id, out var haul);
                 App.Toast(r.Message, 2.8f);

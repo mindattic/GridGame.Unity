@@ -146,7 +146,11 @@ namespace GridGame.App
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)
-                    Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking…" : "", () => Restore(store), packs, null, open).name = "diamond-restore";
+                {
+                    var restore = Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking…" : "", () => Restore(store), packs, null, open);
+                    restore.KindIcon(RowKind.NewGamePlus); // GG-T754 (§26.7)
+                    restore.name = "diamond-restore";
+                }
                 Ui.Note(localized ? $"Prices are set by the store in your currency. Every pack is the same price per {ShardText.Short}."
                     : $"A flat rate: every pack is the same price per {ShardText.Short}.", packs);
             }

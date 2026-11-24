@@ -328,7 +328,7 @@ namespace GridGame.App
             var bar = Ui.El("row", root);
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = Space.S32; bar.style.height = TopBarHeight;
-            Ui.Button("II", OpenMenu, "btn--small btn--icon", bar).name = "menu";
+            RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
             var mid = Ui.El("col grow", bar);
             mid.style.alignItems = Align.Center;
             Ui.Text(State.Stage.Name, "h2 shadow", mid);

@@ -190,7 +190,7 @@ namespace GridGame.App
                 var foot = Ui.El("kit-footer", w);
                 foot.style.justifyContent = Justify.FlexEnd;
                 foot.style.marginTop = Space.S16;
-                Ui.Button("Cancel", () =>
+                RowIcon.IconButton("Cancel", RowKind.Close, () =>
                 {
                     if (picked) return;
                     picked = true;

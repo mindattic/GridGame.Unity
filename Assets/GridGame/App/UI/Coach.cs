@@ -240,8 +240,8 @@ namespace GridGame.App
             var row = Ui.El("kit-footer", card);
             row.style.justifyContent = Justify.SpaceBetween;
             row.style.marginTop = Space.S24;
-            Ui.Button("Skip tutorial", AskTurnOff, "btn--small", row).name = "coach-skip";
-            Ui.Button("Next", BeginSteps, "btn--primary", row).name = lesson.NextName;
+            RowIcon.IconButton("Skip tutorial", RowKind.Close, AskTurnOff, "btn--small", row).name = "coach-skip"; // GG-T754 (§26.7)
+            RowIcon.IconButton("Next", RowKind.Enter, BeginSteps, "btn--primary", row).name = lesson.NextName;
             // The first box shows under the popup already, so the popup reads as "this, here".
             PreviewFirstBox();
             GameApp.I.Audio?.Sfx("ui.select", 0.7f);
@@ -324,7 +324,7 @@ namespace GridGame.App
             captionText.name = "coach-caption-text";
             captionText.style.whiteSpace = WhiteSpace.Normal;
             captionText.style.flexGrow = 1; captionText.style.flexShrink = 1;
-            var skip = Ui.Button("Skip tutorial", AskTurnOff, "btn--small", row);
+            var skip = RowIcon.IconButton("Skip tutorial", RowKind.Close, AskTurnOff, "btn--small", row);
             skip.name = "coach-skip";
             skip.style.flexShrink = 0;
             skip.style.marginLeft = Space.S16;
