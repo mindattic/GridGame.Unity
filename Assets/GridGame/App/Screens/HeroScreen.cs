@@ -97,12 +97,13 @@ namespace GridGame.App
             // on the scrolled row, not the window, so the row's own box shows it and scrolled cards reach the window edge.
             w.style.paddingLeft = w.style.paddingRight = Space.S0;
             w.style.paddingTop = w.style.paddingBottom = Space.S8;
-            var strip = new ScrollView(ScrollViewMode.Horizontal) { name = "hero-strip" };
+            var strip = new ScrollView(ScrollViewMode.Vertical) { name = "hero-strip" };  // GG-T760: wraps to more rows instead of scrolling sideways
             strip.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             strip.verticalScrollerVisibility = ScrollerVisibility.Hidden;
             w.Add(strip);
             var row = strip.contentContainer;
             row.style.flexDirection = FlexDirection.Row;
+            row.style.flexWrap = Wrap.Wrap;
             row.style.minWidth = Length.Percent(100);
             row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
 
@@ -116,7 +117,7 @@ namespace GridGame.App
                 bool sel = id == HeroId;
                 var card = Ui.El("card" + (sel ? " card--selected" : ""), row);
                 card.name = "hero-pick-" + id;
-                card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = Size.Card;
+                card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = Length.Percent(26); // three to a row, more wrap below (GG-T760)
                 card.style.marginTop = card.style.marginBottom = card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
                 card.style.paddingTop = card.style.paddingBottom = card.style.paddingLeft = card.style.paddingRight = Space.S8;
                 var bw = sel ? 4f : 0f;
@@ -144,7 +145,7 @@ namespace GridGame.App
                 }, "ui.select");
                 if (sel) picked = card;
             }
-            // Keep the picked hero in view when the roster runs wider than the strip.
+            // Keep the picked hero in view when the roster runs taller than the strip.
             if (picked != null) strip.schedule.Execute(() => strip.ScrollTo(picked)).ExecuteLater(30);
         }
     }

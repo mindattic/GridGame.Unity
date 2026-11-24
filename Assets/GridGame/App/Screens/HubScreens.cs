@@ -374,6 +374,7 @@ namespace GridGame.App
                     bool mastery = MasteryFor(sl);
                     bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
                     var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, slotList.contentContainer);
+                    row.AddToClassList("menu-row--compact"); // GG-T760: the Equip list's own shorter rows, smaller text
                     row.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
                     row.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
                     if (it != null) row.Q<Label>("value").AddToClassList(Ui.RarityClass(it.Rarity));

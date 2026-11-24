@@ -225,6 +225,12 @@
 .menu-label { flex-grow: 1; font-size: var(--type-body); flex-shrink: 1; min-width: 0; white-space: normal; }
 /* A long value (a locked station's "Opens after …" hint) wraps rather than clipping or squeezing the label. */
 .menu-value { font-size: var(--type-body); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
+/* GG-T760: the Equip slot list's shorter rows. Text takes --type-small (so Text size and the TypeFloor still apply); the
+   tap target stays above 88px. Only rows carrying this class change. */
+.menu-row--compact { min-height: 96px; margin: var(--space-4) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.menu-row--compact .menu-label, .menu-row--compact .menu-value { font-size: var(--type-small); }
+.menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
+.menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
