@@ -186,7 +186,7 @@ namespace GridGame.Core.Battle
             {
                 if (!S.Walkable(c)) return false;
                 var occ = S.UnitAt(c);
-                return occ == null || (occ != u && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains);
+                return occ == null || (occ != u && !occ.WontBudge);
             }
             if (Goal(u.Pos)) return path;
             var prev = new Dictionary<Coord, Coord> { [u.Pos] = u.Pos };

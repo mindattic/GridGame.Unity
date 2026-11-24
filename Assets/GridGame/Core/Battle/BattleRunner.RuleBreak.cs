@@ -104,7 +104,7 @@ namespace GridGame.Core.Battle
         /// <summary>MireSwap: cornered (a hero beside it), it trades tiles with the ally standing farthest from any hero.</summary>
         private void MireSwap(Unit boss)
         {
-            if (!Budges(boss) || !HeroBeside(boss)) return;
+            if (!MovesItself(boss) || !HeroBeside(boss)) return;
             Unit best = null; int bestD = -1;
             foreach (var e in S.Living(Team.Enemy))
             {

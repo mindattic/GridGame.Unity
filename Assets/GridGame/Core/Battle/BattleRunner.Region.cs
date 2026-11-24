@@ -515,7 +515,7 @@ namespace GridGame.Core.Battle
             Unit best = null; int bestD = int.MaxValue;
             foreach (var o in S.Units)
             {
-                if (o == u || !o.Alive || !o.OnBoard || o.IsMultiTile || o.IsSnakeMember || o.IsRemains || o.IsCorpse || o.IsEgg) continue;
+                if (o == u || !o.Alive || !o.OnBoard || o.WontBudge || o.IsCorpse || o.IsEgg) continue;
                 int d = o.Pos.Manhattan(hole);
                 if (d < bestD || (d == bestD && best != null && o.Id < best.Id)) { bestD = d; best = o; }
             }
@@ -607,7 +607,7 @@ namespace GridGame.Core.Battle
             Coord? point = S.Region.Anchor(e.Anchor) ?? (area.Count > 0 ? area[0] : ctx.Target);
             foreach (var u in RuleUnitsOf(e, ctx))
             {
-                if (!u.Alive || u.IsMultiTile || u.IsSnakeMember || u.IsRemains || u.IsCorpse) continue;
+                if (!u.Alive || u.WontBudge || u.IsCorpse) continue; // GG-T891: Heavy too
                 for (int step = 0; step < e.Amount && u.Alive && !S.IsOver; step++)
                 {
                     var dir = Direction(e.Move, u.Pos, point);

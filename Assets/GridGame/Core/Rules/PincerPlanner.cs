@@ -111,7 +111,7 @@ namespace GridGame.Core.Rules
         /// <summary>The occupant of a tile a walk may enter by swapping: one tile big, alive, not a snake member, remains,
         /// corpse or neutral (§1.1: the same units a hero drag slides through, minus the ones a foe has no business moving).</summary>
         public static bool Swappable(Unit occ, Unit mover) =>
-            occ != null && occ != mover && occ.Alive && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains && !occ.IsCorpse && !occ.IsNeutral;
+            occ != null && occ != mover && occ.Alive && !occ.WontBudge && !occ.IsCorpse && !occ.IsNeutral; // GG-T891: never a Heavy one
 
         /// <summary>Scores the board as it stands (the mover already on its candidate tile).</summary>
         public static (PincerPlanKind kind, float score) Evaluate(BattleState s, Unit mover, int trappedBefore)
