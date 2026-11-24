@@ -123,6 +123,15 @@ namespace GridGame.Core.Battle
         /// <summary>A hero the player commands (drags, bar, the window): every hero-team unit except an <see cref="IsIndependent"/> one.</summary>
         public bool IsCommandable => Team == Team.Hero && !IsIndependent;
         public bool IsMultiTile => W > 1 || H > 1;
+        /// <summary>GG-T891 (§1.1.3, §14.2): a Heavy class (<see cref="ClassDef.Heavy"/>) is never displaced by anyone
+        /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.</summary>
+        public bool IsHeavy => Def != null && Def.Heavy && !IsFloating;
+        /// <summary>The buff id that lifts a unit off the ground (GG-T859 authors it): a floating Heavy unit can be moved.</summary>
+        public const string FloatingBuffId = "floating";
+        /// <summary>Hovers (GG-T859's Floating buff): Heavy no longer anchors it.</summary>
+        public bool IsFloating => HasBuff(FloatingBuffId);
+        /// <summary>Nothing but its own legs ever moves it: a 2×2 boss, a snake member, remains, or a Heavy unit (GG-T891).</summary>
+        public bool WontBudge => IsMultiTile || IsSnakeMember || IsRemains || IsHeavy;
         /// <summary>A grave marker left by an undead (§14.5): solid, never acts except to raise its owner.</summary>
         public bool IsRemains => Def != null && Def.HasTag("Remains");
         /// <summary>An egg laid mid-battle (§14.8): solid, never acts except to hatch.</summary>

@@ -141,7 +141,7 @@ namespace GridGame.Core.Battle
         public static float ShoveFloorValue(BattleState s, Unit u, Coord dir, int tiles, Unit stopBeside = null)
         {
             if (s.Region.Tiles.Count == 0 && !s.Timeline.Exists(x => x.Kind == TimelineKind.Hazard)) return 0f;
-            if (u == null || u.IsMultiTile || u.IsSnakeMember || u.IsRemains || (dir.X == 0 && dir.Y == 0)) return 0f;
+            if (u == null || u.WontBudge || (dir.X == 0 && dir.Y == 0)) return 0f;
             var c = u.Pos;
             for (int i = 0; i < tiles; i++)
             {

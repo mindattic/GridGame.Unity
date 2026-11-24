@@ -453,6 +453,9 @@ namespace GridGame.Core.Content
         public List<string> DefaultLoadout = new List<string>();
         public string DropTable;
         public int MoveRange = 1;
+        /// <summary>GG-T891 (§1.1.3, §14.2): too heavy to be moved by anyone else - drag steps into it are refused, shoves,
+        /// pulls, swaps and rule drags fizzle - unless it is Floating (Unit.IsHeavy).</summary>
+        public bool Heavy;
         /// <summary>Trap id left on every tile this enemy steps off (slime trail, mire, quicksand — §14.4).</summary>
         public string Trail;
         /// <summary>Buff a landed enemy attack may inflict (venom, frost, blinding dirt — §14.4)…</summary>

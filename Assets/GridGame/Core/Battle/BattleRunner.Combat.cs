@@ -101,6 +101,11 @@ namespace GridGame.Core.Battle
                     return false;
                 }
                 var occ = S.UnitAt(next);
+                if (occ != null && occ.IsHeavy && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains) // GG-T891
+                {
+                    Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "heavy" });
+                    return false;
+                }
                 if (occ != null && (occ.IsMultiTile || occ.IsSnakeMember || occ.IsRemains))
                 {
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "immovable" });
@@ -428,6 +433,7 @@ namespace GridGame.Core.Battle
         private void Knockback(Unit caster, Unit t, int tiles, int baseDamage)
         {
             if (!t.Alive || t.IsMultiTile || t.IsSnakeMember || t.IsRemains) return;
+            if (t.IsHeavy) { Announce("Too heavy!", t.Id); return; } // GG-T891
             var d = new Coord(t.Pos.X - caster.Pos.X, t.Pos.Y - caster.Pos.Y);
             var dir = Math.Abs(d.X) >= Math.Abs(d.Y) ? new Coord(Math.Sign(d.X), 0) : new Coord(0, Math.Sign(d.Y));
             if (dir.X == 0 && dir.Y == 0) return;
