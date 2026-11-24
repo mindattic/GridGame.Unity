@@ -450,6 +450,15 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"DebuffsRedirected {FromId} -> {ToId} [{string.Join(",", BuffIds)}]";
     }
 
+    /// <summary>GG-T866 (§7): the Thief's Swipe Boon (<see cref="CasterId"/>) lifted boon <see cref="BuffId"/>, with
+    /// <see cref="Remaining"/> left on it, off foe <see cref="FromId"/>; its BuffRemoved "stolen" and the Thief's BuffApplied
+    /// follow. The view runs the snatch and a "Stolen" callout naming the boon.</summary>
+    public sealed class BoonStolenEvent : BattleEvent
+    {
+        public int CasterId = -1; public int FromId; public string BuffId; public int Remaining;
+        public override string ToString() => $"BoonStolen {FromId} -> {CasterId} {BuffId} {Remaining}";
+    }
+
     public sealed class AnnounceEvent : BattleEvent
     {
         public string Text; public int UnitId = -1;

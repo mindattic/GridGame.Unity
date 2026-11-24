@@ -50,7 +50,7 @@ namespace GridGame.Core.Battle
         /// <summary>Does this ability do anything to the units it reaches? (A tool that only works on tiles does not.)</summary>
         public static bool TouchesUnits(AbilityDef a) =>
             a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.RemovesDebuffs || a.RemovesBuff != null || a.Knockback > 0
-            || a.Pull > 0 || a.SwapsPlaces || a.HastenU > 0f || a.Pushback > 0f || a.StealsMana || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs;
+            || a.Pull > 0 || a.SwapsPlaces || a.HastenU > 0f || a.Pushback > 0f || a.StealsMana || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs || a.StealsBoon;
     }
 
     internal sealed partial class BattleRunner

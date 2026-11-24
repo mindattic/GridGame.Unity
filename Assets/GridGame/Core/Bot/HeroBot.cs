@@ -465,6 +465,7 @@ namespace GridGame.Core.Bot
                 return sc - 2f;
             }
             if (a.RedirectsDebuffs) return RedirectFlow.Value(s, caster, s.UnitAt(anchor)); // GG-T887: lift a harmful debuff onto a foe in reach
+            if (a.StealsBoon) return SwipeBoon.Value(s, caster, s.UnitAt(anchor)); // GG-T866: only a foe wearing a boon is worth robbing
             if (EmpPulse.Is(a)) return EmpPulse.Value(s, caster, a, anchor); // GG-T879: jam a charging tech foe, set off the mines
             var targets = TargetResolver.Collect(s, a, caster, anchor);
             float score = 0f;

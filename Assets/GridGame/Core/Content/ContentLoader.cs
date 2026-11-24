@@ -225,6 +225,10 @@ namespace GridGame.Core.Content
                 if (a.RedirectsDebuffs && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.AllyOnly
                                            || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Redirect Flow (RedirectsDebuffs) is a Skill or Spell that picks one ally (SingleActor, PickActor, AllyOnly)");
+                // GG-T866: a Swipe Boon picks the one foe it robs.
+                if (a.StealsBoon && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.EnemyOnly
+                                     || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
+                    p.Add($"ability {a.Id}: a Swipe Boon (StealsBoon) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

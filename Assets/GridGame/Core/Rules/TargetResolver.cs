@@ -98,6 +98,7 @@ namespace GridGame.Core.Rules
             }
             if (a.AdjacentOnly && (occ == null || !caster.IsAdjacentTo(occ))) return false;
             if (a.RedirectsDebuffs && !RedirectFlow.Can(s, caster, occ)) return false; // GG-T887: an ally with a debuff, a foe to take it
+            if (a.StealsBoon && !SwipeBoon.Can(s, caster, occ)) return false; // GG-T866: a foe beside the Thief wearing a boon
             // A tame (GG-T303) only ever picks a tameable monster: never a Sentient foe, a boss or remains.
             if (a.Tame > 0f && a.Mode == TargetMode.PickActor && !Taming.Tameable(occ)) return false;
             if (a.Mode == TargetMode.PickActor) return occ != null && Passes(a.Filter, caster, occ);
