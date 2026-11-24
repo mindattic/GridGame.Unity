@@ -30,7 +30,7 @@ namespace GridGame.Core.Content
         public AttackTypeSheet AttackTypes = new AttackTypeSheet();
         /// <summary>vfx.json (GG-T269): the effect prefabs vfxstyle.json points at.</summary>
         public VfxCatalog VfxPrefabs = new VfxCatalog();
-        /// <summary>sky.json (GG-T576): the living backdrop's Moon, Somnolith (per region), shards and parallax.</summary>
+        /// <summary>sky.json (GG-T576): the living backdrop's Moon, Manalith (per region), shards and parallax.</summary>
         public SkyDef Sky = new SkyDef();
         /// <summary>backdroplayers.json (GG-T576, tools/split_backdrops.py): which backdrops are split into sky and
         /// foreground plates, keyed by file stem (<c>halcyon-00</c>).</summary>
