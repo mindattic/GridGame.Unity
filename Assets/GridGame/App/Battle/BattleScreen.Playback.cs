@@ -74,6 +74,9 @@ namespace GridGame.App
                 // GG-T556: an ability's hits may carry its own attack type; a new action or a weapon strike clears it.
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent || events[i] is PincerFormedEvent || events[i] is AttackEvent) hitAbility = null;
                 else if (events[i] is AbilityResolvedEvent rae) hitAbility = rae.AbilityId;
+                // GG-T836: a new action's pincers start at normal tempo; a pincer picks its beat tempo before its cut-in.
+                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) ResetPincerBeats();
+                else if (events[i] is PincerFormedEvent pfe) BeginPincerBeats(pfe);
                 IEnumerator anim = null;
                 try { anim = Animate(events[i]); }
                 catch (System.Exception e) { Debug.LogException(e); }
@@ -89,6 +92,7 @@ namespace GridGame.App
                 bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent));
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
+            ResetPincerBeats(); // GG-T836: battle speed is the setting's again
             board.Lines.ClearLines();
             PruneGhosts();
             unplayedCasts.Clear();
@@ -153,6 +157,7 @@ namespace GridGame.App
                 case TeleportedEvent t: return TeleportAnim(t);
 
                 case PincerFormedEvent p: FlushTallies(); return PincerAnim(p);
+                case PincerPhaseEvent pph: return PincerPhaseAnim(pph); // GG-T836
                 case RespiteEvent rs: return RespiteAnim(rs);
                 case AttackEvent at: return AttackAnim(at);
                 case SupportActionEvent sa: return SupportAnim(sa);
@@ -637,6 +642,9 @@ namespace GridGame.App
             Feed(what == null ? $"✦ {sup.Name}: {label}" : $"✦ {sup.Name}: {label} — {what}", color);
             App.Audio.Sfx(SupportCue(sup, sa.Effect), 0.7f, 1.2f);
             App.StartCoroutine(Tween.Pop(sv.Root, 1.12f, 0.18f));
+            // GG-T836: inside a pincer the effect flies — Prep to the attacker it helps, Follow-up to the trapped foes.
+            if (pincerBeatPhase == PincerPhase.Prep && PrepFlies(sa.Effect)) { yield return PrepBeat(sup, sa, label, what, color); yield break; }
+            if (pincerBeatPhase == PincerPhase.FollowUp && FollowUpFlies(sa.Effect)) { yield return FollowUpBeat(sup, sa, label, what, color); yield break; }
             var at = BoardView.CenterOf(sv.Tile, sv.W, sv.H);
             Text.Show(at, CombatTextKind.Support, what == null ? label + "!" : $"{label}! {what}", 0f, color);
             yield return Tween.Wait(ReduceMotion ? 0.08f : 0.2f);

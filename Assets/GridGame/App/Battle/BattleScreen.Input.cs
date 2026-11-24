@@ -28,6 +28,7 @@ namespace GridGame.App
 
         private void OnPointerDown(PointerDownEvent evt)
         {
+            if (TapSkipsPincerBeats()) return; // GG-T836: a tap during a pincer skips its beats ahead
             ClearHint();
             if (!CanCommand() || pressing) return;
             activePointerId = evt.pointerId;
