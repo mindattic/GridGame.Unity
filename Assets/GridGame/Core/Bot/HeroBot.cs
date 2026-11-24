@@ -495,6 +495,7 @@ namespace GridGame.Core.Bot
                     var curse = s.Content.TryBuff(a.ApplyBuff);
                     if (curse != null && curse.Links) score += CurseLink.Value(s, t); // GG-T873: link a pincer target to a foe out of reach
                     else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
+                    if (curse != null) score += ShredValue(t, curse) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T864: Flay a plated or tough foe
                     if (a.StealsMana) score += s.Bank.IsFull ? 0f : 3f;
                     if (a.HastenU > 0) score -= 5f;
                     if (!ReadsBar) { if (a.Pushback > 0f) score += 3f; } // GG-T183: shoving a foe back on the timeline buys the party a turn
@@ -932,6 +933,27 @@ namespace GridGame.Core.Bot
             foreach (var ally in s.LivingList(Team.Hero))
                 foreach (var e in s.LivingList(Team.Enemy)) if (e.DistanceTo(ally) <= 2) return true;
             return false;
+        }
+
+        /// <summary>GG-T864: what a Shredded-style debuff (plate chip, extra Physical damage taken) is worth on this foe.
+        /// The plate bite counts from any side (more when it breaks the plate off); a fresh stack counts by how tough the
+        /// foe is (VIT, Heavy) and how much of it is left to hit. Nothing on a soft, nearly dead or fully stacked foe
+        /// without a plate, so the bot keeps Flay for the plated and Heavy foes it answers.</summary>
+        public static float ShredValue(Unit t, BuffDef d)
+        {
+            if (t == null || d == null || d.Kind != BuffKind.Debuff || (d.PlateChip <= 0 && d.PhysicalDamageTakenBonus <= 0f)) return 0f;
+            float v = 0f;
+            if (d.PlateChip > 0 && t.HasPlate)
+                v += Math.Min(d.PlateChip, t.PlateHp) * 0.75f + (t.PlateHp <= d.PlateChip ? 6f : 2f);
+            int stacks = 0;
+            foreach (var b in t.Buffs) if (b.Def.Id == d.Id) stacks++;
+            bool fresh = stacks == 0 || (d.Stacking == BuffStacking.Stack && (d.MaxStacks <= 0 || stacks < d.MaxStacks));
+            if (fresh && d.PhysicalDamageTakenBonus > 0f)
+            {
+                float tough = Math.Max(0.5f, Math.Min(3f, t.Effective.Vitality / 15f)) + (t.IsHeavy ? 1f : 0f);
+                v += d.PhysicalDamageTakenBonus * 30f * tough * t.HpFraction;
+            }
+            return v;
         }
 
         /// <summary>GG-T246: a debuff on a foe, valued by what it actually does rather than a flat +3.</summary>

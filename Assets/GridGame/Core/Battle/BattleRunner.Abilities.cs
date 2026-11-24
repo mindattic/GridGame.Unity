@@ -265,7 +265,15 @@ namespace GridGame.Core.Battle
                     bool crit = dmg > 0 && S.Rng.Chance(spellCrit);
                     if (crit) dmg = (int)Math.Round(dmg * BattleConfig.SpellCritMultiplier);
                     // Physical skills (Cleave, Shield Bash) meet the plate like any blow; spells go around it (§13.5).
-                    if (a.DamageType == DamageType.Physical && PlateAbsorbs(t, caster, dmg)) continue;
+                    if (a.DamageType == DamageType.Physical && PlateAbsorbs(t, caster, dmg))
+                    {
+                        // GG-T864: a rending skill (the Ripper's Flay) still lays its plate-chipping debuff on a blow the
+                        // plate took head-on: Shredded bites the plate from any side, so the front is no refuge.
+                        var rend = C.TryBuff(a.ApplyBuff);
+                        if (rend != null && rend.Kind == BuffKind.Debuff && rend.PlateChip > 0 && t.Alive && S.Rng.Chance(a.ApplyBuffChance <= 0f ? 1f : a.ApplyBuffChance))
+                            ApplyBuff(t, rend, rend.Duration, caster.Id);
+                        continue;
+                    }
                     Damage(t, dmg, caster, crit ? HitKind.Critical : HitKind.Normal, a.DamageType, wet ? "Shock!" : null);
                     // GG-T673: a hero's skill striking a foe earns mana (spells don't, so mana never feeds itself).
                     if (dmg > 0 && caster.IsHero && t.Team == Team.Enemy && a.Kind == AbilityKind.Skill && BattleConfig.StrikeCharge > 0)
