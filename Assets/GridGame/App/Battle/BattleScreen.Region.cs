@@ -25,6 +25,7 @@ namespace GridGame.App
         private IEnumerator RegionTilesAnim(RegionTilesEvent rt)
         {
             TrackGlobs(rt); // GG-T895
+            if (WallHit(rt)) { yield return WallHitAnim(rt); yield break; } // GG-T935
             board.SyncRegion(State);
             if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
             if (rt.Change == "marked" && RuneState(rt.State) is TileStateDef rune) { yield return RunePaintAnim(rt, rune); yield break; } // GG-T939: a Choir rune's paint puff
@@ -466,6 +467,88 @@ namespace GridGame.App
             board.SyncRegion(State);
             yield return Tween.Wait(Timing.Quick);
             board.ClearMarks();
+        }
+
+        // ── GG-T935 (§7, §14.23): the Machinist's barricade ──────────────────────────────────────
+
+        /// <summary>Set by the "Blocked!" a line charge announces when it runs into a wall; the wall's hit that follows (its
+        /// RegionTilesEvent) shows it on the wall's tile instead of a banner.</summary>
+        private bool wallBlocked;
+
+        /// <summary>The state a wall-raising ability paints on its picked tile (a MarkTiles Target of a blocking state that is
+        /// neither a hole nor a hazard), or null.</summary>
+        private TileStateDef WallRaisedBy(AbilityDef a)
+        {
+            if (a == null) return null;
+            foreach (var fx in a.RuleEffects)
+                if (fx != null && fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Target
+                    && App.Content?.TryTileState(fx.State) is TileStateDef d && d.Blocks && !d.Pit && !d.Hazard)
+                    return d;
+            return null;
+        }
+
+        /// <summary>The barricade drops in: a Shapes crate falls onto the tile, lands with a clank, a dust kick and a short
+        /// shake (Reduce Motion: it is simply there, with the clank). The "marked" region event that follows draws it.</summary>
+        private IEnumerator BarricadeDropAnim(GridGame.Core.Coord at)
+        {
+            var crate = board.CrateDrop(at);
+            var c = BoardView.CenterOf(at);
+            if (!ReduceMotion)
+            {
+                App.Audio.Sfx("battle.whoosh", 0.4f, 1.3f);
+                yield return Tween.Run(Timing.Quick, k =>
+                {
+                    crate.style.translate = new Translate(0f, -BoardView.Tile * 1.6f * (1f - k * k));
+                    crate.style.opacity = Mathf.Clamp01(0.4f + k);
+                });
+            }
+            crate.style.translate = new Translate(0f, 0f);
+            WallClank(0.9f);
+            NamedImpactFlourish("DustKick", c, StyleOf(DamageType.Physical));
+            Emit(StyleOf(DamageType.Physical), c + new Vector2(0f, BoardView.Tile * 0.3f), 0.45f, quiet: true);
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
+            board.SyncRegion(State);
+            crate.RemoveFromHierarchy();
+            yield return Tween.Wait(Timing.Quick);
+        }
+
+        /// <summary>The clank of wood and iron (cue <c>battle.clank</c>, a placeholder until its file exists: docs/SFX.md),
+        /// played over its stand-in, a high <c>battle.shatter</c>.</summary>
+        private void WallClank(float volume)
+        {
+            App.Audio.Sfx("battle.clank", volume);
+            App.Audio.Sfx("battle.shatter", volume * 0.6f, 1.6f);
+        }
+
+        /// <summary>A wall the party raised takes a hit ("changed": a foe ended its turn beside it, or a charge ran into it), or
+        /// one with no rubble to become comes down ("cleared").</summary>
+        private bool WallHit(RegionTilesEvent rt)
+        {
+            if (rt.Tiles.Count == 0 || State == null) return false;
+            var def = App.Content?.TryTileState(rt.State);
+            if (def == null || !def.Blocks || def.Pit || def.Hazard) return false;
+            if (rt.Change == "changed") return BoardView.IsPartyWall(def, State.Region.At(rt.Tiles[0])) || wallBlocked;
+            return rt.Change == "cleared" && def.Becomes == null && def.Threshold > 0;
+        }
+
+        /// <summary>The hit: a clank and grit off the wall, "Blocked!" (a Callout) when a charge just ran into it, else
+        /// "Bashed!" (Resist: steel, a clang); its fall: a dust kick and "Down!" (Expire).</summary>
+        private IEnumerator WallHitAnim(RegionTilesEvent rt)
+        {
+            bool blocked = wallBlocked;
+            wallBlocked = false;
+            board.SyncRegion(State);
+            foreach (var t in rt.Tiles)
+            {
+                var c = BoardView.CenterOf(t);
+                WallClank(rt.Change == "cleared" ? 1f : 0.75f);
+                NamedImpactFlourish("DustKick", c, StyleOf(DamageType.Physical));
+                if (blocked) Text?.Show(t, CombatTextKind.Callout, "Blocked!", 0.4f, TileMarkFx.Wood);
+                else if (rt.Change == "changed") Text?.Show(t, CombatTextKind.Resist, "Bashed!", 0.2f);
+                else Text?.Show(t, CombatTextKind.Expire, "Down!", 0.2f);
+            }
+            if (blocked && !ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 6f, Timing.Quick));
+            yield return Tween.Wait(blocked ? Timing.Standard : Timing.Quick);
         }
 
         // ── GG-T895 (§14.23): slime glob visuals ─────────────────────────────────────────────────

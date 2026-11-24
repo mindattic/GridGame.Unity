@@ -218,6 +218,7 @@ namespace GridGame.App
                 case BuffAppliedEvent ba: return InflictAnim(ba);
                 case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, CombatTextKind.Weak, "Steam!", 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
+                case AnnounceEvent an when an.Text == "Blocked!": wallBlocked = true; return null; // GG-T935: shown on the wall by its hit
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
@@ -2000,6 +2001,7 @@ namespace GridGame.App
                 board.Lines.ClearLines();
                 foreach (var t in targets) NamedImpactFlourish(a.ImpactVfx, ViewCenter(t), abilityStyle);
             }
+            else if (caster != null && WallRaisedBy(a) != null) yield return BarricadeDropAnim(ar.Anchor); // GG-T935
             else if (caster != null && GlobPainted(a) is TileStateDef glob) yield return GlobLobAnim(caster, glob, ar.Anchor); // GG-T895
             else if (caster != null && FissurePainted(a) is TileStateDef crack) yield return FissureAnim(caster, a, crack, ar.Anchor); // GG-T869
             else if (caster != null && a != null && targets.Count == 0 && FlareRadius(a) >= 0)

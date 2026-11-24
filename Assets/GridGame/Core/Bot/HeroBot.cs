@@ -68,6 +68,9 @@ namespace GridGame.Core.Bot
         /// <summary>GG-T306: windows in a row without drawing blood after which the smart bot drags with no think time.</summary>
         public const int StallHurry = 4;
         private bool lockedOut;
+        /// <summary>GG-T935: the foes' pincer-closing end tiles for this decision (<see cref="EnemyPincerEnds"/>), worked
+        /// out once per Decide on first need; null until then.</summary>
+        private Dictionary<Coord, float> pincerEnds;
 
         public HeroBot(int seed, float randomness = 0f)
         {
@@ -117,6 +120,7 @@ namespace GridGame.Core.Bot
         private BattleCommand Decide(BattleState s, bool movesOnly)
         {
             if (!movesOnly) lockedOut = false;
+            pincerEnds = null; // GG-T935: worked out afresh for this board
             // GG-T308: a stall is counted per party turn (the party now takes several actions in one); §2.13 the mode says who acted.
             bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && TurnRules.HasActed(s, u));
             if (TimelineAware && freshWindow && !movesOnly) CountStall(s);
@@ -456,6 +460,12 @@ namespace GridGame.Core.Bot
                 return ScoreAbility(s, caster, copy, plan.Value.Anchor) - 1f;
             }
             if (a.Magnetizes > 0) return Magnetize.Value(s, caster, a, anchor); // GG-T878: only when two or more metal foes would line up
+            if (WallRaised(s, a) != null)
+            {
+                // GG-T935: a barricade only where it stops a charge short of a hero, or (the smart bot) shuts a foe's pincer end.
+                if (TimelineAware && pincerEnds == null) pincerEnds = EnemyPincerEnds(s);
+                return BarricadeValue(s, anchor, TimelineAware ? pincerEnds : null);
+            }
             if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861: slip a threat, or roll for a pincer landing
             if (a.Vaults) return PoleVault.Value(s, caster, anchor); // GG-T868: vault out of a box or onto a pincer square
             if (a.IsTeleport)
@@ -611,6 +621,76 @@ namespace GridGame.Core.Bot
             }
             if (a.Kind == AbilityKind.Item) score -= lone ? 1f : 4f;
             return score;
+        }
+
+        /// <summary>GG-T935 (§7, §14.23): the standing wall <paramref name="a"/> raises on its picked tile (a MarkTiles on the
+        /// Target of a state that blocks, isn't a hole and isn't a hazard: the Machinist's barricade), or null.</summary>
+        public static TileStateDef WallRaised(BattleState s, AbilityDef a)
+        {
+            if (a == null || a.RuleEffects.Count == 0 || s?.Content == null) return null;
+            foreach (var fx in a.RuleEffects)
+                if (fx != null && fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Target
+                    && s.Content.TryTileState(fx.State) is TileStateDef d && d.Blocks && !d.Pit && !d.Hazard)
+                    return d;
+            return null;
+        }
+
+        /// <summary>
+        /// GG-T935 (§7, §14.23): what raising a barricade (<see cref="WallRaised"/>) on the empty tile <paramref name="anchor"/>
+        /// is worth. Situational only, so it is never raised for its own sake:
+        /// <list type="bullet">
+        /// <item><b>A charge stopped.</b> A foe's pending line charge (its cast's locked <c>LineTiles</c>, in the order it runs)
+        /// crosses the tile with a hero beyond it: a wall there stops it short (<see cref="RegionBoard.StopsCharge"/>), so each
+        /// hero beyond is worth 4 plus the trample spared (0.6 per HP it would take, +8 when it would fall). A line already
+        /// stopped before the tile spares nothing more.</item>
+        /// <item><b>A pincer shut</b> (smart bot only: <paramref name="pincerEnds"/> non-null): the tile is where a foe's planned
+        /// walk ends to close a pincer on a hero (<see cref="EnemyPincerEnds"/>); a wall there is worth 6 plus half that plan's
+        /// score.</item>
+        /// </list>
+        /// Otherwise 0.
+        /// </summary>
+        public static float BarricadeValue(BattleState s, Coord anchor, Dictionary<Coord, float> pincerEnds = null)
+        {
+            if (!BattleState.InBounds(anchor) || s.IsBlock(anchor) || s.UnitAt(anchor) != null || s.Region.At(anchor) != null) return 0f;
+            float value = 0f;
+            foreach (var cast in s.Timeline)
+            {
+                if (cast.Kind != TimelineKind.Cast || cast.CasterTeam != Team.Enemy || cast.ChargeShape != ChargeShape.Line || cast.LineTiles == null) continue;
+                var caster = s.UnitById(cast.OwnerId);
+                var charge = s.Content.TryAbility(cast.AbilityId);
+                if (caster == null || !caster.Alive || charge == null) continue;
+                bool past = false;
+                foreach (var tile in cast.LineTiles)
+                {
+                    if (!past)
+                    {
+                        if (RegionBoard.StopsCharge(s, tile)) break; // already walled short of here
+                        if (tile == anchor) past = true;
+                        continue;
+                    }
+                    if (RegionBoard.StopsCharge(s, tile)) break;
+                    var h = s.UnitAt(tile);
+                    if (h == null || !h.IsHero || !h.Alive) continue;
+                    int dmg = (int)Math.Round(Formulas.SpellDamage(charge, h, false) * Formulas.CasterPower(charge, caster));
+                    value += 4f + Math.Min(h.Hp, Math.Max(0, dmg)) * 0.6f + (dmg >= h.Hp ? 8f : 0f);
+                }
+            }
+            if (pincerEnds != null && pincerEnds.TryGetValue(anchor, out var shut)) value += 6f + 0.5f * shut;
+            return value;
+        }
+
+        /// <summary>GG-T935: every tile a foe's planned walk ends on to close a pincer on a hero (<see cref="EnemyPlanner.PlanPincer"/>
+        /// of kind Complete), with the best such plan's score. Pure: the planner only looks.</summary>
+        public static Dictionary<Coord, float> EnemyPincerEnds(BattleState s)
+        {
+            var ends = new Dictionary<Coord, float>();
+            foreach (var e in s.LivingList(Team.Enemy))
+            {
+                var plan = EnemyPlanner.PlanPincer(s, e);
+                if (plan == null || plan.Kind != PincerPlanKind.Complete || plan.Path.Count == 0 || plan.End == e.Pos) continue;
+                if (!ends.TryGetValue(plan.End, out var was) || plan.Score > was) ends[plan.End] = plan.Score;
+            }
+            return ends;
         }
 
         /// <summary>

@@ -3359,6 +3359,15 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   beyond it are spared, the resolved tiles end there, and the wall announces "Blocked!" and takes one hit
   (`ModifyTiles` +1). A hole is no wall: a charge runs over it as before. Not yet: an ability `Range` (the skill picks
   any empty tile) and a Machinist skill-tree node. *(Tests: `BarricadeTests`.)*
+  **Bot and view (GG-T935).** `HeroBot.BarricadeValue` raises it only where it matters: on a foe's pending line
+  charge (its locked `LineTiles`, in run order) short of a hero, worth 4 per hero beyond plus the trample spared (0.6
+  per HP, +8 for a kill), nothing once the line is already walled earlier; and, for the smart bot only, on the tile a
+  foe's `EnemyPlanner.PlanPincer` walk ends on to close a pincer (6 plus half the plan's score). Anywhere else 0, so it
+  is never raised for its own sake. The view drops a Shapes crate (wood body, ink outline, cross brace, §11.6) onto
+  the tile with a clank (`battle.clank`, a placeholder in SFX.md over a high `battle.shatter`), a `DustKick` and a
+  short shake; the standing wall is drawn as that crate (`TileMarkFx.Crate`), its brace splitting at half its hits; a
+  hit shows "Bashed!" (Resist), a charge run into it "Blocked!" (Callout) on the wall instead of a banner, and its fall
+  "Down!" (Expire). *(Tests: `BarricadeBotTests`.)*
 - **The Red Mage's Firewall (GG-T931).** Owner: *"a firewall that causes burning debuff if actors enter the tile"*.
   `TargetShape.Wall` (new): a line of 2 × `Radius` + 1 tiles through the anchor, square across the line from the caster
   (`TargetResolver.Tiles`' new optional `from`, the caster's tile: |dx| > |dy| a column, else a row; no `from` a row).

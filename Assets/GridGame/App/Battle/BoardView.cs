@@ -878,6 +878,13 @@ namespace GridGame.App
                 float life = def != null && def.LifeSeconds > 0f && kv.Value.LifeTicks > 0
                     ? Mathf.Clamp01(kv.Value.LifeTicks / (def.LifeSeconds * BattleConfig.TicksPerSecond)) : -1f;
                 var fx = new TileMarkFx(edge, col, faint);
+                // GG-T935: the party's standing wall (the Machinist's barricade) is a braced crate, its brace splitting as it is bashed.
+                if (IsPartyWall(def, kv.Value))
+                {
+                    fx.Crate = true;
+                    fx.Wear = def.Threshold > 0 ? Mathf.Clamp01(kv.Value.Counter / (float)def.Threshold) : 0f;
+                    foreach (var c in e.Children()) if (c is Label) c.style.opacity = 0f; // the crate is its glyph
+                }
                 e.Add(fx);
                 // GG-T895: a hatching mark (a slime glob) is a wobbling blob, redrawn every frame so it jiggles.
                 if (Hatches(def))
@@ -1007,6 +1014,24 @@ namespace GridGame.App
 
         /// <summary>GG-T846: the drawn cell of the painted mark on <paramref name="at"/> (null when none is drawn).</summary>
         public VisualElement RegionCellAt(Coord at) => regionCellAt.TryGetValue(at, out var e) ? e : null;
+
+        /// <summary>GG-T935: a standing wall the party raised (a blocking mark that is neither a hole nor a hazard, owned by
+        /// the party: the Machinist's barricade), drawn as a crate.</summary>
+        public static bool IsPartyWall(TileStateDef def, TileMark m) =>
+            def != null && m != null && def.Blocks && !def.Pit && !def.Hazard && m.OwnerTeam == Team.Hero;
+
+        /// <summary>GG-T935: a loose crate on the mark layer over <paramref name="at"/> (Shapes-drawn, ink outline) for the
+        /// barricade's drop; the caller moves it with <c>style.translate</c> and removes it.</summary>
+        public VisualElement CrateDrop(Coord at)
+        {
+            var e = new VisualElement { pickingMode = PickingMode.Ignore };
+            e.style.position = Position.Absolute;
+            e.style.left = at.X * Tile; e.style.top = at.Y * Tile;
+            e.style.width = Tile; e.style.height = Tile;
+            e.generateVisualContent += ctx => TileMarkFx.DrawCrate(ctx.painter2D, e.contentRect, 0f);
+            MarkLayer.Add(e);
+            return e;
+        }
 
         /// <summary>GG-T846: a squished mark bursts into a splat of its colour (Reduce Motion: a plain fade, no burst).</summary>
         public void Splat(Coord at, Color col)
