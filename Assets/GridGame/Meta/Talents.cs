@@ -8,8 +8,9 @@ namespace GridGame.Meta
     /// <summary>Where a skill-tree node stands for one hero (§25.6.3, GG-T53).</summary>
     public enum TalentState
     {
-        /// <summary>Already in the hero's kit without a point spent on it (starting loadout or gold-Learned):
-        /// counts toward the tree's points like any unlocked node, but Respec can't refund it.</summary>
+        /// <summary>Already in the hero's kit without a point spent on it (starting loadout or gold-Learned; GG-T978: or one
+        /// of its class's family-tree <see cref="ClassDef.StartNodes"/>, stat nodes included): counts toward the tree's
+        /// points like any unlocked node, but Respec can't refund it.</summary>
         Innate,
         /// <summary>Bought with skill points (<see cref="HeroSave.TreeNodes"/>); Respec refunds it.</summary>
         Purchased,
@@ -61,6 +62,17 @@ namespace GridGame.Meta
         public static bool Opened(ContentDb c, HeroSave h, SkillTreeDef t) =>
             IsHome(c, h, t) || (t != null && t.Nodes.Any(n => Bought(h, t, n)));
 
+        /// <summary>GG-T978: is <paramref name="n"/> one of the nodes the hero's class starts with on its family tree
+        /// (<see cref="Progression.StartNodes"/>)? Such a node is <see cref="TalentState.Innate"/> from creation, even a stat
+        /// node with no grant, and never refunded.</summary>
+        public static bool IsStartNode(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
+        {
+            if (c == null || h == null || t == null || n == null) return false;
+            var def = c.TryClass(h.ClassId);
+            if (def == null || def.StartNodes == null || def.StartNodes.Count == 0 || Progression.FamilyTree(c, def) != t) return false;
+            return def.StartNodes.Any(id => string.Equals(id, n.Id, StringComparison.OrdinalIgnoreCase));
+        }
+
         /// <summary>Off-trees the hero has opened (bought a node in), by name.</summary>
         public static List<SkillTreeDef> OpenedOffTrees(ContentDb c, HeroSave h) =>
             c.SkillTrees.Values.Where(t => !IsHome(c, h, t) && Opened(c, h, t))
@@ -71,7 +83,7 @@ namespace GridGame.Meta
         {
             var home = HomeTree(c, h);
             if (home == null) return 0;
-            int pts = PointsIn(h, home);
+            int pts = PointsIn(c, h, home);
             return TalentConfig.OpenTreeAt.Count(at => pts >= at);
         }
 
@@ -104,7 +116,7 @@ namespace GridGame.Meta
                 return $"Already specialized in {opened} other tree{(opened == 1 ? "" : "s")}";
             int need = TalentConfig.OpenTreeAt[opened];
             string which = opened == 0 ? "a second tree" : opened == 1 ? "a third tree" : "another tree";
-            return $"Opening {which} needs {need} pts in {home.Name} ({PointsIn(h, home)} now)";
+            return $"Opening {which} needs {need} pts in {home.Name} ({PointsIn(c, h, home)} now)";
         }
 
         /// <summary>Skill points this node costs this hero: its <see cref="SkillNodeDef.Cost"/>, plus the off-tree premium.</summary>
@@ -128,10 +140,17 @@ namespace GridGame.Meta
 
         public static bool Unlocked(HeroSave h, SkillTreeDef t, SkillNodeDef n) => Bought(h, t, n) || Innate(h, n);
 
+        /// <summary>GG-T978: <see cref="Unlocked(HeroSave, SkillTreeDef, SkillNodeDef)"/>, plus the class's family-tree start
+        /// nodes (<see cref="IsStartNode"/>).</summary>
+        public static bool Unlocked(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n) => Unlocked(h, t, n) || IsStartNode(c, h, t, n);
+
         private static bool Innate(HeroSave h, SkillNodeDef n) => !string.IsNullOrEmpty(n.Grants) && h.Known.Contains(n.Grants);
 
         /// <summary>Points the tree counts toward a node's <see cref="SkillNodeDef.RequiredPointsInTree"/>: every unlocked node's cost.</summary>
         public static int PointsIn(HeroSave h, SkillTreeDef t) => t.Nodes.Where(n => Unlocked(h, t, n)).Sum(n => n.Cost);
+
+        /// <summary>GG-T978: <see cref="PointsIn(HeroSave, SkillTreeDef)"/> with the class's family-tree start nodes counted.</summary>
+        public static int PointsIn(ContentDb c, HeroSave h, SkillTreeDef t) => t.Nodes.Where(n => Unlocked(c, h, t, n)).Sum(n => n.Cost);
 
         /// <summary>Points actually spent (refundable by Respec) across every tree, off-tree premiums included.</summary>
         public static int PointsSpent(ContentDb c, HeroSave h)
@@ -155,7 +174,7 @@ namespace GridGame.Meta
             var list = new List<SkillTreeDef>();
             if (home != null) list.Add(home);
             var others = c.SkillTrees.Values.Where(t => t != home).OrderBy(t => t.Name, StringComparer.OrdinalIgnoreCase).ToList();
-            list.AddRange(others.Where(t => t.Nodes.Any(n => Unlocked(h, t, n))));
+            list.AddRange(others.Where(t => t.Nodes.Any(n => Unlocked(c, h, t, n))));
             if (OpenedOffTrees(c, h).Count < OffTreeSlots(c, h))
                 list.AddRange(others.Where(t => !list.Contains(t)));
             return list;
@@ -166,7 +185,7 @@ namespace GridGame.Meta
         public static List<SkillTreeDef> HeldTrees(ContentDb c, HeroSave h)
         {
             var home = HomeTree(c, h);
-            return Trees(c, h).Where(t => t == home || t.Nodes.Any(n => Unlocked(h, t, n))).ToList();
+            return Trees(c, h).Where(t => t == home || t.Nodes.Any(n => Unlocked(c, h, t, n))).ToList();
         }
 
         /// <summary>A node's state using only the tree's own gates (prerequisites and <see cref="SkillNodeDef.RequiredPointsInTree"/>):
@@ -182,27 +201,28 @@ namespace GridGame.Meta
         public static TalentState State(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
         {
             if (Bought(h, t, n)) return TalentState.Purchased;
-            if (Innate(h, n)) return TalentState.Innate;
+            if (Innate(h, n) || IsStartNode(c, h, t, n)) return TalentState.Innate; // GG-T978: a start node, stat nodes too
             return WhyLocked(c, h, t, n) == null ? TalentState.Available : TalentState.Locked;
         }
 
         /// <summary>What still blocks a node by the tree's own gates (missing prerequisites, then points in the tree), or null.
         /// Home-tree rules; see <see cref="WhyLocked(ContentDb, HeroSave, SkillTreeDef, SkillNodeDef)"/> for any tree.</summary>
-        public static string WhyLocked(HeroSave h, SkillTreeDef t, SkillNodeDef n) => Gates(h, t, n, n.RequiredPointsInTree);
+        public static string WhyLocked(HeroSave h, SkillTreeDef t, SkillNodeDef n) => Gates(null, h, t, n, n.RequiredPointsInTree);
 
         /// <summary>What still blocks a node for this hero: a closed off-tree first (no free slot), then missing prerequisites,
         /// then points in the tree (scaled up in an off-tree) — or null when every gate is met.</summary>
         public static string WhyLocked(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n) =>
-            WhyClosed(c, h, t) ?? Gates(h, t, n, Required(c, h, t, n));
+            WhyClosed(c, h, t) ?? Gates(c, h, t, n, Required(c, h, t, n));
 
-        private static string Gates(HeroSave h, SkillTreeDef t, SkillNodeDef n, int required)
+        /// <summary>The tree's own gates; with content (<paramref name="c"/> not null) the class's start nodes count as unlocked (GG-T978).</summary>
+        private static string Gates(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n, int required)
         {
             var missing = n.Prerequisites
                 .Select(id => t.Nodes.FirstOrDefault(x => x.Id == id))
-                .Where(p => p != null && !Unlocked(h, t, p))
+                .Where(p => p != null && !Unlocked(c, h, t, p))
                 .Select(p => p.Name ?? p.Id).ToList();
             if (missing.Count > 0) return "Needs " + string.Join(" + ", missing);
-            int have = PointsIn(h, t);
+            int have = PointsIn(c, h, t);
             if (have < required) return $"Needs {required} pts in {t.Name} ({have} now)";
             return null;
         }
@@ -274,13 +294,15 @@ namespace GridGame.Meta
                 (stowed > 0 ? $" · {stowed} piece{(stowed == 1 ? "" : "s")} of gear moved to the bag" : ""));
         }
 
-        /// <summary>The abilities a respec would forget: everything a bought (non-innate) node granted.</summary>
+        /// <summary>The abilities a respec would forget: everything a bought (non-innate) node granted. GG-T978: never what
+        /// the class's family-tree start nodes grant, even if another tree's node granting the same move was bought.</summary>
         private static HashSet<string> RespecForgets(ContentDb c, HeroSave h)
         {
             var forget = new HashSet<string>();
             foreach (var t in c.SkillTrees.Values)
                 foreach (var n in t.Nodes)
                     if (Bought(h, t, n) && !string.IsNullOrEmpty(n.Grants)) forget.Add(n.Grants);
+            forget.ExceptWith(Progression.StartGrants(c, c.TryClass(h.ClassId)));
             return forget;
         }
 
