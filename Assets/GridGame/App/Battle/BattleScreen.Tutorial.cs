@@ -30,6 +30,9 @@ namespace GridGame.App
             /// <summary>The lesson image (Resources/Tutorial/&lt;Id&gt;.png) and its save flag.</summary>
             public string Id;
             public string Title, Text, Example;
+            /// <summary>GG-T788 (§2.13.1): the lesson's text when the party's turn is one hero's one action
+            /// (<see cref="TurnRules.OneHeroPerTurn"/>), for a lesson whose <see cref="Text"/> assumes every hero acts each turn.</summary>
+            public string TextOneHero;
             /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board.</summary>
@@ -86,6 +89,7 @@ namespace GridGame.App
             new Lesson { Id = "hold", Title = "The hold timer", Patience = 3, Waits = true,
                 Short = "Lifting a hero starts the clock. Changed your mind? Drop it off the board, or back on its own tile, to cancel for free.",
                 Text = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each hero acts once before that enemy does, sharing the time — what one hero leaves, the next can use, and pushing the enemy back buys more. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
+                TextOneHero = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn; pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 Example = "Example: lift a hero, then drag it off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
@@ -213,6 +217,9 @@ namespace GridGame.App
 
         private void NextLesson() => AdvanceTutorial(TutorialStep + 1);
 
+        /// <summary>GG-T788 (§2.13.1): a lesson's full text for this battle's turn mode, as <see cref="TurnRules"/> says it is.</summary>
+        private string LessonText(Lesson l) => l.TextOneHero != null && TurnRules.OneHeroPerTurn(State) ? l.TextOneHero : l.Text;
+
         private void TutorialAfterCommit(BattleCommand cmd, List<BattleEvent> events)
         {
             commitCount++;
@@ -268,7 +275,7 @@ namespace GridGame.App
             }
             else
             {
-                var t = Ui.Text(l.Text, "tiny", col);
+                var t = Ui.Text(LessonText(l), "tiny", col);
                 t.name = "tutorial-text";
                 t.style.whiteSpace = WhiteSpace.Normal;
                 var ex = Ui.Text(l.Example, "tiny", col);
@@ -370,7 +377,7 @@ namespace GridGame.App
                 Id = "battle-" + l.Id,
                 Kicker = $"Lesson {step + 1} of {Lessons.Length}",
                 Title = l.Title,
-                Text = l.Short ?? l.Text,
+                Text = l.Short ?? LessonText(l),
                 Image = "Tutorial/" + l.Id,
                 Steps = marks,
                 SkipPopup = popupDone,

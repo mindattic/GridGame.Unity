@@ -1259,6 +1259,11 @@ Each party turn **exactly one** hero acts: any able hero, the same one again if 
 - **Selection.** It stays on the hero who acted last, since the same hero may go again; only if that hero fell or can't act does it move to the first hero who can.
 - **The pickers.** `TurnModes.Available` lists `AnyHeroEveryTurn` after PartyWindow, so Settings and New Game offer it; its name and explanation are `glossary:turn_mode_any_hero_every_turn` ("Any hero every turn").
 
+**Tutorial and automation (✅ GG-T788).** Both ask `TurnRules`, never `TurnMode`.
+- **Tutorial.** Every lesson's scripted move is one hero's one drop (the chain lesson's two pincers come from a single drag), so the steps work as they are. The one lesson whose copy assumed every hero acts each turn, *The hold timer*, has a one-hero variant (`Lesson.TextOneHero`, picked by `LessonText` when `TurnRules.OneHeroPerTurn`): "Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn".
+- **Automation.** `/state` reports `one_hero_per_turn` (the seam's answer), `to_act` (`HeroesLeftToAct`) and per hero `acted` and `may_act` (`TurnRules.MayAct`, time aside), so the harness sees who may act now in either mode.
+- Still to come: post-battle stats (turns and actions) and the Crucible's mode (GG-T943).
+
 #### 2.13.2 Any hero who hasn't moved this round (`UnmovedThisRound`) — ⬜ Not yet built (GG-T792)
 
 One hero acts per party turn, but **only a hero who hasn't acted this round**. When every able hero has acted, the round resets. Open questions: every topic in the table. On top of those: what counts as a round when a hero falls, joins or is revived mid-round; whether Guard uses up a hero's place in the round; and how the round shows on the HUD.
