@@ -2435,8 +2435,8 @@
  },
  {
   "Id": "choir_rune",
-  "Name": "Concord Rune",
-  "Description": "Paints a violet rune of the hymn on a free tile beside it. When three of the Choir stand on runes at once the circle closes: it sings up a Hollow while the Concord is thin, or Empowers the singers. A hero who steps on a rune scuffs it out.",
+  "Name": "Choir Rune",
+  "Description": "Paints a violet rune of the hymn on a free tile beside it. When three of the Choir stand on runes at once the circle closes: it sings up a Hollow while the Choir is thin, or Empowers the singers. A hero who steps on a rune scuffs it out.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
