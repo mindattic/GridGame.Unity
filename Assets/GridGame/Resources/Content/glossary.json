@@ -780,6 +780,12 @@
     "LinkId": "guarded"
   },
   {
+    "Id": "linked",
+    "Term": "Linked",
+    "LinkKind": "Buff",
+    "LinkId": "linked"
+  },
+  {
     "Id": "clutch",
     "Term": "Clutch",
     "Aliases": [

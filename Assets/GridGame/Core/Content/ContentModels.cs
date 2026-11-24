@@ -733,6 +733,10 @@ namespace GridGame.Core.Content
         /// ability that lands on it is taken by whoever applied the buff (<c>BuffInstance.SourceId</c>) instead, if that
         /// guardian is alive, free to move and within <c>BattleConfig.GuardReach</c> tiles. The buff is spent on that blow.</summary>
         public bool Intercepts;
+        /// <summary>Linked (GG-T873, the Hexer's Curse Link): lands on two foes at once, each instance naming the other
+        /// (<c>BuffInstance.LinkedTo</c>). While both still carry it, damage dealt to one echoes
+        /// <c>BattleConfig.LinkEchoFraction</c> of itself to the other; the echo never echoes back.</summary>
+        public bool Links;
         /// <summary>Damage the bearer deals is scaled by this (War Cry / Might pickup → Empowered).</summary>
         public float OutgoingDamageMultiplier = 1f;
         public string OnExpireApply;

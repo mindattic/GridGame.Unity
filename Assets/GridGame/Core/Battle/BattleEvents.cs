@@ -415,6 +415,22 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Triggered {UnitId} {AbilityId} ({On} → {Effect})";
     }
 
+    /// <summary>GG-T873 (§8.1): a Curse Link bound two foes for <see cref="Turns"/> turns (each now carries Linked); the
+    /// view draws a tether between them.</summary>
+    public sealed class UnitsLinkedEvent : BattleEvent
+    {
+        public int CasterId = -1; public int AId; public int BId; public int Turns;
+        public override string ToString() => $"UnitsLinked {AId} <-> {BId} for {Turns}";
+    }
+
+    /// <summary>GG-T873: a blow on a Linked unit echoes to its partner; the echo's own <see cref="DamagedEvent"/> (Note
+    /// "Echo") follows. An echo never echoes back.</summary>
+    public sealed class LinkEchoEvent : BattleEvent
+    {
+        public int FromId; public int ToId; public int Amount;
+        public override string ToString() => $"LinkEcho {FromId} -> {ToId} {Amount}";
+    }
+
     public sealed class AnnounceEvent : BattleEvent
     {
         public string Text; public int UnitId = -1;

@@ -1311,6 +1311,22 @@
         "definition": "Likely: about 75% (63% and up)."
       }
     },
+    "glossary:linked": {
+      "key": "glossary:linked",
+      "id": "glossary-linked",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5c2caf5d402a0f6e834ff143348d594a89e7e76a56f88f9746e437687b86ef10",
+      "about": [
+        "concept-linked"
+      ],
+      "speakers": [],
+      "payload": {
+        "term": "Linked",
+        "definition": "Bound to another foe by a Curse Link for 2 turns: half of any harm dealt to one echoes to the other. The echo never echoes back, and the link breaks when either falls."
+      }
+    },
     "glossary:magic": {
       "key": "glossary:magic",
       "id": "glossary-magic",

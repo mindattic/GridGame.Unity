@@ -13,6 +13,8 @@ namespace GridGame.Core.Battle
         public bool Fresh;
         /// <summary>The unit that applied it, or -1 (GG-T533: the guardian an Intercepts buff hands the blow to).</summary>
         public int SourceId = -1;
+        /// <summary>GG-T873: a Links buff's partner (the other foe of a Curse Link), or -1.</summary>
+        public int LinkedTo = -1;
 
         public BuffInstance Clone() => (BuffInstance)MemberwiseClone();
     }

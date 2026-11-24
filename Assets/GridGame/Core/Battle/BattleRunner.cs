@@ -580,7 +580,9 @@ namespace GridGame.Core.Battle
             }
             if (hit != HitKind.Miss && amount > 0)
                 RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
+            int hpBeforeBlow = target.Hp;
             target.Hp = Math.Max(0, target.Hp - amount);
+            var echoTo = LinkEchoTarget(target, hpBeforeBlow - target.Hp, hit); // GG-T873: Curse Link, read before a Kill clears it
             Emit(new DamagedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note });
             if (source != null && source.IsHero && target.Team == Team.Enemy) source.DamageDealt += amount;
             // Damage triggers (GG-T296), before WearArmor: the blow that breaks an enchanted piece still pricks (Thorns).
@@ -593,6 +595,7 @@ namespace GridGame.Core.Battle
             if (source != null && hit != HitKind.Miss && amount > 0 && target.IsHero && source.Team == Team.Enemy)
                 WearArmor(target);
 
+            if (echoTo != null) EchoLink(target, echoTo, hpBeforeBlow - target.Hp, source, type); // GG-T873
             if (target.Hp <= 0) { Kill(target, source); ResolveDeathBursts(); return; }
             if (source == null || hit == HitKind.Miss) return;
 
@@ -654,6 +657,7 @@ namespace GridGame.Core.Battle
             u.OnBoard = false;
             var tempoBuffs = u.IsHero ? u.Buffs.FindAll(b => b.Def.Tempo != 0) : null;
             u.Buffs.Clear();
+            BreakLinksTo(u); // GG-T873: its Curse Link partner loses Linked too
             // A fallen hero no longer carries its Slow: lift that party tempo unless another living hero still has it (GG-T275).
             if (tempoBuffs != null) foreach (var b in tempoBuffs) DropBuffTempo(b.Def.Id);
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);

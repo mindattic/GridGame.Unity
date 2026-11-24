@@ -300,6 +300,7 @@ namespace GridGame.Core.Battle
                 {
                     if (!selfGift && caster.Alive) { selfGift = true; ApplyBuff(caster, buff, buff.Duration); }
                 }
+                else if (buff != null && buff.Links) { if (t.Alive && !friend) LinkFoes(caster, t, buff); } // GG-T873: Curse Link binds a pair
                 else if (buff != null && t.Alive && S.Rng.Chance(a.ApplyBuffChance <= 0f ? 1f : a.ApplyBuffChance))
                 {
                     int dur = buff.Duration;

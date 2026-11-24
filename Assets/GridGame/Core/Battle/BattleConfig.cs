@@ -104,6 +104,8 @@ namespace GridGame.Core.Battle
         public static float PushbackMaxSeconds = 2f;
         /// <summary>GG-T533: how far (tiles, Manhattan) a guardian may stand from the ally it guards and still take the blow.</summary>
         public static int GuardReach = 2;
+        /// <summary>GG-T873: the share of a blow on a Linked foe (Curse Link) that echoes to its partner (min 1).</summary>
+        public static float LinkEchoFraction = 0.5f;
 
         // ── Buffs (§8.3) ────────────────────────────────────────────────────────────
         public const int BuffTickInterval = 10;            // one tick-unit step per 1.0 s of timeline

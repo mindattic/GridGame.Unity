@@ -212,6 +212,8 @@ namespace GridGame.App
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
+                case UnitsLinkedEvent ul: return LinkedAnim(ul); // GG-T873: Curse Link's tether
+                case LinkEchoEvent le: return LinkEchoAnim(le);
                 case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, "Snare!", Palette.Boss, 0.3f, kind: CombatTextKind.Debuff);
                 case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, "Trap!", Palette.Boss, 0.25f, kind: CombatTextKind.Debuff);
                 case TrapClearedEvent tc: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tc.ById, tc.Into == null ? "Cleared!" : "Changed!", Palette.Boss, 0.25f); // GG-T371

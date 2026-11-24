@@ -493,7 +493,8 @@ namespace GridGame.Core.Bot
                         kills = t.Hp <= dmg;
                     }
                     var curse = s.Content.TryBuff(a.ApplyBuff);
-                    if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
+                    if (curse != null && curse.Links) score += CurseLink.Value(s, t); // GG-T873: link a pincer target to a foe out of reach
+                    else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
                     if (a.StealsMana) score += s.Bank.IsFull ? 0f : 3f;
                     if (a.HastenU > 0) score -= 5f;
                     if (!ReadsBar) { if (a.Pushback > 0f) score += 3f; } // GG-T183: shoving a foe back on the timeline buys the party a turn
