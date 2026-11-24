@@ -4652,6 +4652,110 @@
         "long": "Morrow Holds. In Morrow's Shadow the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold."
       }
     },
+    "codex:story/dialogue/boss_intro_cathedral": {
+      "key": "codex:story/dialogue/boss_intro_cathedral",
+      "id": "description-codex-story-dialogue-boss-intro-cathedral",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2a87462ea474965e7099a442418f23c176be4589162c77668e58206988018b42",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Hierarch. At the top of Halcyon's spire, in the Choir's Cathedral, the Hierarch, the Choir's leader, faces the runaways who came up in the white tithe wagon. Behind the Hierarch stands the organ that holds the skim. While the Choir sings, the Hierarch does not stay down, so the party silences the Choir first."
+      }
+    },
+    "codex:story/dialogue/boss_intro_cave": {
+      "key": "codex:story/dialogue/boss_intro_cave",
+      "id": "description-codex-story-dialogue-boss-intro-cave",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:62c8ff70163f2059903afad5a17790485cfdcef412510ca8df226ba54719f505",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Keeper of the Great Anchor. In the Anchor Wastes a many-eyed white cyclops keeps the great arch and lets no one near it. When it stamps, it drags whoever is close in beside it, so the party gets clear or stands ready to start the first pincer."
+      }
+    },
+    "codex:story/dialogue/boss_intro_cityruins": {
+      "key": "codex:story/dialogue/boss_intro_cityruins",
+      "id": "description-codex-story-dialogue-boss-intro-cityruins",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7352e9d45baa59161c9b9aece01d7d44cf7d2a7c23ee736dd3087e78a79c8360",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Kiln Guard on the Stair. In the ruins of Halcyon a porcelain knight of the Kiln Guard, the Hollow soldiers the Hierarch keeps as an honour guard, bars the stair to the Cathedral. Side blows only scratch its glaze, so the party strikes top to bottom and keeps cracking until the porcelain gives."
+      }
+    },
+    "codex:story/dialogue/boss_intro_desert": {
+      "key": "codex:story/dialogue/boss_intro_desert",
+      "id": "description-codex-story-dialogue-boss-intro-desert",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:018f178df360f7a92d8eb9ce0aa8ef5a93ac9a615d8905a29f5904541db39943",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Walker at the Dig. In the Shardfall the Choir mines what fell from the Manalith's shell, and a walker in mecha armour, driven for the Red Seal, guards the dig. Side blows glance off its shield wall, so the party pincers it top to bottom or keeps cracking it until the shield breaks."
+      }
+    },
+    "codex:story/dialogue/boss_intro_greenvalley": {
+      "key": "codex:story/dialogue/boss_intro_greenvalley",
+      "id": "description-codex-story-dialogue-boss-intro-greenvalley",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f1d9bd27ddeba1715d853db204d46cd845d3ff384faa1a89c08e65ee3f41e734",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Captain's Field. At the end of the Tithe Moors the Captain, the Free Holds' militia captain who sold the holds' tithe to the Choir, catches up with the runaways who stole the Choir's white tithe caravan. Left alone on the field, the Captain strikes twice, so the party keeps someone beside the Captain every turn."
+      }
+    },
+    "codex:story/dialogue/boss_intro_lanternroad": {
+      "key": "codex:story/dialogue/boss_intro_lanternroad",
+      "id": "description-codex-story-dialogue-boss-intro-lanternroad",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:4fc68568c05a91cc7dce6c1ec93f17d8e5d86fe650263a38905f7c6050b24421",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Mask on the Pass. On the Lantern Road a masked brute and its raiders hold the pass and demand the white wagon as their toll. The mask gets back up while its raiders still stand, so the party cuts them down first."
+      }
+    },
+    "codex:story/dialogue/boss_intro_still": {
+      "key": "codex:story/dialogue/boss_intro_still",
+      "id": "description-codex-story-dialogue-boss-intro-still",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:cc38b6fe4f79275a7469f9dfaea2512d9377bb6a131dc2991f10714fd664354a",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Keeper of the Clocks. In the Still, the vault where the Warden slept, the Choir's keeper minds the tanks that hold the tithe on its way up to the Cathedral. Given room, the keeper takes two turns, so the party closes in and keeps someone beside the keeper every turn."
+      }
+    },
+    "codex:story/dialogue/boss_intro_swamp": {
+      "key": "codex:story/dialogue/boss_intro_swamp",
+      "id": "description-codex-story-dialogue-boss-intro-swamp",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7ec0ac03f9a025b84065f31bd7c03c622f3831f89cfd62e8641ef017a6a78836",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Mistress of the Arkgrave. Among Halcyon's Arks, thrown inland by the tides the night Halcyon fell, a swamp mistress claims a grounded hull as her own and holds the mire with her coven. Struck at, she trades places with one of her coven, so the party cuts the coven down first."
+      }
+    },
     "codex:story/dialogue/interlude_level10_motives": {
       "key": "codex:story/dialogue/interlude_level10_motives",
       "id": "description-codex-story-dialogue-interlude-level10-motives",
