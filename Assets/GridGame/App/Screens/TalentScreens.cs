@@ -48,6 +48,7 @@ namespace GridGame.App
             Ui.Caption("One a level · put each into any stat · picks are permanent", panel, "dim");
             var row = Ui.El("row", panel);
             row.style.flexWrap = Wrap.Wrap;
+            row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap; // button margin (12) + 12 = the 24 px edge gap that matches the 24 px between buttons (GG-T708)
             for (int i = 0; i < StatGrantDef.Names.Length; i++)
             {
                 string stat = StatGrantDef.Names[i];
