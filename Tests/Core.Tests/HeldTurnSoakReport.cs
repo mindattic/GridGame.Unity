@@ -22,7 +22,10 @@ namespace GridGame.Tests
     /// turn-mode comparison metrics of docs/TURN_MODES.md (battle length, decisions per player turn, hero actions per enemy
     /// turn, downtime, pincers and chains, forced vs chosen Guards, slot uses by kind, bot refusals, combo results) for
     /// the mode GRIDGAME_TURN_MODE names (<see cref="TestKit.SoakTurnMode"/>), also written as
-    /// <c>turn-mode-&lt;mode&gt;-&lt;label&gt;.json</c>.
+    /// <c>turn-mode-&lt;mode&gt;-&lt;label&gt;.json</c>. GG-T778 (tools/turn_modes.py): GRIDGAME_SOAK_STAGES=<id>[,<id>...] tallies
+    /// only those stages (the campaign is still played in order up to the last of them, so each is met at its campaign
+    /// level), GRIDGAME_SOAK_SEEDS=<n>[,<n>...] replaces the default seeds 1..3, and GRIDGAME_DIFFICULTY=1..10 plays that
+    /// difficulty (unset keeps the raw, neutral rules this report always used).
     /// </summary>
     public class HeldTurnSoakReport
     {
@@ -249,21 +252,31 @@ namespace GridGame.Tests
         {
             var c = Real;
             var rows = new Dictionary<string, Row>();
-            const int seeds = 3;
-            for (int seed = 1; seed <= seeds; seed++)
+            var seedList = SoakSeeds();
+            int seeds = seedList.Count;
+            var onlyStages = SoakStages();
+            var difficultyEnv = System.Environment.GetEnvironmentVariable("GRIDGAME_DIFFICULTY");
+            int difficulty = string.IsNullOrWhiteSpace(difficultyEnv) ? DifficultyTable.Neutral : BotDifficulty.FromEnv(); // GG-T778
+            foreach (int seed in seedList)
             {
                 var s = Progression.NewGame(c, "Soak", Progression.StartingRoster);
                 CampNpcs.JoinAll(s);
                 int battleSeed = seed * 1000;
-                foreach (var stage in c.CampaignStages())
+                var campaign = c.CampaignStages();
+                int lastWanted = onlyStages == null ? campaign.Count - 1 : campaign.FindLastIndex(st => onlyStages.Contains(st.Id));
+                for (int si = 0; si <= lastWanted; si++)
                 {
+                    var stage = campaign[si];
+                    bool tally = onlyStages == null || onlyStages.Contains(stage.Id);
                     bool cleared = false;
                     for (int attempt = 0; attempt < 4 && !cleared; attempt++)
                     {
                         DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
                         CampRoutine.Run(c, s);
-                        var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, profileTurnMode: SoakTurnMode); // GG-T777: GRIDGAME_TURN_MODE
-                        if (!rows.TryGetValue(stage.Id, out var row)) rows[stage.Id] = row = new Row();
+                        var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, difficulty, SoakTurnMode); // GG-T777: GRIDGAME_TURN_MODE
+                        Row row;
+                        if (!tally) row = new Row(); // GG-T778: played to reach the listed stages, not reported
+                        else if (!rows.TryGetValue(stage.Id, out row)) rows[stage.Id] = row = new Row();
                         row.Runs++;
                         float window = -1f;
                         var tracker = new ModeTracker();
@@ -285,7 +298,7 @@ namespace GridGame.Tests
             foreach (var r in rows.Values) all.Add(r);
 
             var sb = new StringBuilder();
-            sb.AppendLine($"=== held-turn soak, {label} bot (randomness {randomness}), {seeds} seeds ===");
+            sb.AppendLine($"=== held-turn soak, {label} bot (randomness {randomness}), {seeds} seeds, difficulty {difficulty} ===");
             sb.AppendLine("stage                  win%  turn-used%  held-s  guard%  forced%  mana(guard/pincer/other)  heal(sup/all)  buffs haste cleanse");
             foreach (var kv in rows) sb.AppendLine(Line(kv.Key, kv.Value));
             sb.AppendLine(Line("ALL", all));
@@ -305,11 +318,33 @@ namespace GridGame.Tests
                 json.Append(string.Join(",", rows.Select(kv => $"\"{kv.Key}\":{Json(kv.Value)}"))).Append("}}");
                 System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, $"held-turn-{label}.json"), json.ToString());
                 var modeJson = new StringBuilder("{");
-                modeJson.Append($"\"mode\":\"{mode}\",\"label\":\"{label}\",\"randomness\":{F(randomness)},\"seeds\":{seeds},\"all\":{ModeJson(all)},\"stages\":{{");
+                modeJson.Append($"\"mode\":\"{mode}\",\"label\":\"{label}\",\"randomness\":{F(randomness)},\"seeds\":{seeds},\"seedList\":[{string.Join(",", seedList)}],\"difficulty\":{difficulty},\"all\":{ModeJson(all)},\"stages\":{{");
                 modeJson.Append(string.Join(",", rows.Select(kv => $"\"{kv.Key}\":{ModeJson(kv.Value)}"))).Append("}}");
                 System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, $"turn-mode-{mode}-{label}.json"), modeJson.ToString());
             }
             Assert.That(rows, Is.Not.Empty);
+        }
+
+        /// <summary>GG-T778: GRIDGAME_SOAK_SEEDS=<n>[,<n>...] (default 1,2,3).</summary>
+        private static List<int> SoakSeeds()
+        {
+            var v = System.Environment.GetEnvironmentVariable("GRIDGAME_SOAK_SEEDS");
+            if (string.IsNullOrWhiteSpace(v)) return new List<int> { 1, 2, 3 };
+            return v.Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries)
+                .Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToList();
+        }
+
+        /// <summary>GG-T778: GRIDGAME_SOAK_STAGES=<id>[,<id>...], or null for every campaign stage. An id that is not a
+        /// campaign stage throws, so a typo never silently measures nothing.</summary>
+        private static HashSet<string> SoakStages()
+        {
+            var v = System.Environment.GetEnvironmentVariable("GRIDGAME_SOAK_STAGES");
+            if (string.IsNullOrWhiteSpace(v)) return null;
+            var set = new HashSet<string>(v.Split(',', System.StringSplitOptions.RemoveEmptyEntries | System.StringSplitOptions.TrimEntries));
+            var known = new HashSet<string>(Real.CampaignStages().Select(st => st.Id));
+            var bad = set.Where(id => !known.Contains(id)).ToList();
+            if (bad.Count > 0) throw new System.ArgumentException("GRIDGAME_SOAK_STAGES: not campaign stages: " + string.Join(", ", bad));
+            return set;
         }
 
         private static string Line(string name, Row r) =>
