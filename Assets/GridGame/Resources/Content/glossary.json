@@ -863,5 +863,12 @@
   {
     "Id": "turn_mode_party_window",
     "Term": "Party window"
+  },
+  {
+    "Id": "rooted",
+    "Term": "Rooted",
+    "Aliases": ["Root", "Roots"],
+    "LinkKind": "Buff",
+    "LinkId": "rooted"
   }
 ]

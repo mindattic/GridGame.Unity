@@ -204,6 +204,7 @@ namespace GridGame.Core.Rules
         /// <summary>The tile that best breaks contact: farthest from every hero (Skirmisher after a strike).</summary>
         public static Coord PlanRetreat(BattleState s, Unit enemy)
         {
+            if (enemy.IsRooted) return enemy.Pos; // GG-T920: held to its tile
             var best = enemy.Pos; int bestD = NearestHeroDistance(s, enemy);
             var original = enemy.Pos;
             foreach (var d in Coord.Cardinals)
@@ -221,7 +222,7 @@ namespace GridGame.Core.Rules
         /// <summary>The single best next tile for this enemy (its anchor for a multi-tile actor).</summary>
         public static Coord PlanStep(BattleState s, Unit enemy)
         {
-            if (enemy.IsImmobile || enemy.IsSnakeSegment) return enemy.Pos;
+            if (enemy.IsImmobile || enemy.IsRooted || enemy.IsSnakeSegment) return enemy.Pos; // GG-T920: Rooted holds it
             var target = PickTarget(s, enemy);
             if (target == null) return enemy.Pos;
             var brain = EffectiveBrain(s, enemy);
@@ -306,7 +307,7 @@ namespace GridGame.Core.Rules
             var brain = EffectiveBrain(s, e);
             if (e.HpFraction < RetreatThreshold(e) && !LoneHero(s)) return null; // wounded: it retreats (PlanStep)
             int steps = Math.Max(0, e.Def.MoveRange);
-            if (brain == Brain.Sentinel) steps = 0;
+            if (brain == Brain.Sentinel || e.IsRooted) steps = 0; // GG-T920: a rooted foe pincers from where it stands
             if (brain == Brain.Ambusher && NearestHeroDistance(s, e) > 2 && e.TurnsTaken < BattleConfig.AmbushPatienceTurns) steps = 0;
             if (brain == Brain.Sluggish && e.TurnsTaken % 2 == 0) steps = 0;
             var plan = PincerPlanner.Plan(s, e, steps);
@@ -414,6 +415,7 @@ namespace GridGame.Core.Rules
             var plan = new ChargePlan { Target = target, Ability = ability, Shape = enemy.Def.ChargeShape };
             if (plan.Shape == ChargeShape.Line)
             {
+                if (enemy.IsRooted) return null; // GG-T920: a line charge carries the caster; rooted, it can't
                 plan.Line = LineToward(enemy, target, s);
                 if (plan.Line.Count == 0) plan.Shape = ChargeShape.Single; // edge-pinned: fall back
             }

@@ -1944,6 +1944,7 @@ POLISH G4/G5 ("every ability earns its slot", "no dead or dominant abilities") r
 | `slowed` | Debuff | 2 Turns | timeline rate ×0.5; on a hero, party Tempo −1 ([§2.11](#211-party-tempo-gg-t268)) | — |
 | `silenced` | Debuff | 2 Turns | blocks spell slots | — |
 | `blinded` | Debuff | 2 Turns | hit chance ×0.5 | — |
+| `rooted` | Debuff | 2 Turns | `Roots`: held to its tile — no step, leap or blink, and no drag, shove, knockback, pull, swap or rule move shifts it (StepBlocked "rooted"); still acts, strikes and casts; planners and the hero bot never count on moving it (GG-T856, GG-T912, GG-T920) | — |
 | `shredded` | Debuff | 3 Turns | **stacks to 3**; each stack +10% incoming **Physical** damage (`PhysicalDamageTakenBonus` 0.1, summed: 3 stacks ×1.3; other elements unaffected, `Formulas.TakenMultiplier`); each application chips the bearer's armor plate (§13.5) by `PlateChip` 4 **whatever side it faces** (`PlateHitEvent`, breaks it at 0) — GG-T857, owner: "shred armor" *(Tests: `KeywordStatusTests`)* | — |
 
 ### 8.2 Cross-effect multipliers

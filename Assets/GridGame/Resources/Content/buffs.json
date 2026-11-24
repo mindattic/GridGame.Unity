@@ -335,5 +335,16 @@
     "Letter": "G",
     "Color": "#5FE6F2",
     "Intercepts": true
+  },
+  {
+    "Id": "rooted",
+    "Name": "Rooted",
+    "Kind": "Debuff",
+    "Unit": "Turns",
+    "Duration": 2,
+    "Stacking": "Refresh",
+    "Roots": true,
+    "Letter": "H",
+    "Color": "#9C7A45"
   }
 ]

@@ -1729,6 +1729,24 @@
         ]
       }
     },
+    "glossary:rooted": {
+      "key": "glossary:rooted",
+      "id": "glossary-rooted",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5f8761ac318dc9018e6237319c89404dd3d79ef5909501cd2cc30b7e374f23d7",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Rooted",
+        "definition": "Held to its tile: it can't step, leap or blink, and no drag, shove, pull, swap or knockback moves it. Unlike a [Stun], it still attacks and casts.",
+        "aliases": [
+          "Root",
+          "Roots"
+        ]
+      }
+    },
     "glossary:rot": {
       "key": "glossary:rot",
       "id": "glossary-rot",
