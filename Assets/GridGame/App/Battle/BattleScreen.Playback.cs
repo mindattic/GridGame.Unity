@@ -628,12 +628,13 @@ namespace GridGame.App
             if (sup == null || !board.Units.TryGetValue(sup.Id, out var sv)) yield break;
             string label = string.IsNullOrEmpty(sa.Label) ? sa.Effect.ToString() : sa.Label;
             SupporterPop(sup, sup.Team, label.ToUpperInvariant());
-            if (sa.Effect == SupportEffect.Strike) yield break; // the support strikes animate themselves
+            // The support strikes, and Volley's thrown hits (GG-T915), animate themselves.
+            if (sa.Effect == SupportEffect.Strike || sa.Effect == SupportEffect.Volley) yield break;
             var color = SupportColor(sa.Effect);
             // GG-T298: the float names the edge it brings ("+20% Crit", "Fireball", "Poisoned", "Pushback +0.5 s").
             string what = GridGame.Core.Rules.SupportText.Short(App.Content, sa.Effect, sa.Amount, sa.AbilityId, sa.BuffId);
             Feed(what == null ? $"✦ {sup.Name}: {label}" : $"✦ {sup.Name}: {label} — {what}", color);
-            App.Audio.Sfx(SupportSfx(sa.Effect), 0.7f, 1.2f);
+            App.Audio.Sfx(SupportCue(sup, sa.Effect), 0.7f, 1.2f);
             App.StartCoroutine(Tween.Pop(sv.Root, 1.12f, 0.18f));
             var at = BoardView.CenterOf(sv.Tile, sv.W, sv.H);
             Text.Show(at, CombatTextKind.Support, what == null ? label + "!" : $"{label}! {what}", 0f, color);
@@ -650,6 +651,7 @@ namespace GridGame.App
                 case SupportEffect.Crit: return "battle.crit";
                 case SupportEffect.Status: return "status.debuff";
                 case SupportEffect.Pushback: return "battle.whoosh";
+                case SupportEffect.Volley: return "battle.whoosh";
                 case SupportEffect.Buff: return "battle.powerup";
                 default: return "battle.cast";
             }
@@ -668,14 +670,23 @@ namespace GridGame.App
                 case SupportEffect.Cast: return Palette.CastHero;
                 case SupportEffect.Status: return Palette.Bad;
                 case SupportEffect.Pushback: return Palette.Warn;
+                case SupportEffect.Volley: return Palette.PewterLight;
                 default: return Palette.Info;
             }
+        }
+
+        /// <summary>GG-T915: the supporter's own <c>SupportDef.Sfx</c> when its class sets one, else the effect's cue.</summary>
+        private static string SupportCue(Unit sup, SupportEffect e)
+        {
+            string own = GridGame.Core.Rules.PincerDetector.SupportOf(sup).Sfx;
+            return string.IsNullOrEmpty(own) ? SupportSfx(e) : own;
         }
 
         private IEnumerator AttackAnim(AttackEvent at)
         {
             var a = State.UnitById(at.AttackerId); var t = State.UnitById(at.TargetId);
             if (a == null || t == null || !board.Units.TryGetValue(a.Id, out var av)) yield break;
+            if (at.IsThrown) { yield return ThrownAnim(a, t); yield break; }
             Vector2 dir = (ViewCenter(t) - ViewCenter(a)).normalized;
             if (at.IsRanged)
             {
@@ -690,6 +701,60 @@ namespace GridGame.App
             float lunge = (at.IsSupport ? 18f : 34f) * Fx + 6f;
             yield return Tween.Run(Timing.Instant, k => av.Root.style.translate = new Translate(dir.x * lunge * k, dir.y * lunge * k));
             App.StartCoroutine(Tween.Run(Timing.Quick, k => av.Root.style.translate = new Translate(dir.x * lunge * (1 - k), dir.y * lunge * (1 - k))));
+        }
+
+        /// <summary>Volley projectiles in flight as looping prefabs (GG-T915); TickPrefabFx keeps their loops alive.</summary>
+        private readonly HashSet<string> thrownLoops = new HashSet<string>();
+        private int thrownSeq;
+
+        /// <summary>
+        /// GG-T915 (§1.2.3): a Volley hit (<c>AttackEvent.IsThrown</c>) is thrown from the supporter to the target, as its
+        /// class's <c>SupportDef</c> says: a Loop <c>Projectile</c> prefab flies the path (a Once one bursts at impact, and
+        /// none draws a dot), <c>Motion</c> Arc curves it, Straight and Spin fly flat, Spin with a spinning cross, and
+        /// <c>Sfx</c> (else battle.whoosh) sounds the throw. Reduce Motion flattens every throw and keeps it code-drawn.
+        /// </summary>
+        private IEnumerator ThrownAnim(Unit a, Unit t)
+        {
+            var def = GridGame.Core.Rules.PincerDetector.SupportOf(a);
+            var c = SupportColor(SupportEffect.Volley);
+            Vector2 from = ViewCenter(a), to = ViewCenter(t);
+            App.Audio.Sfx(SupportCue(a, SupportEffect.Volley), 0.7f, 1.2f);
+            var fx = prefabFx != null && !ReduceMotion && !string.IsNullOrEmpty(def.Projectile) ? App.Content.VfxPrefabs.Find(def.Projectile) : null;
+            string key = null;
+            if (fx != null && fx.Mode == VfxMode.Loop)
+            {
+                key = "throw:" + a.Id + ":" + t.Id + ":" + (++thrownSeq);
+                if (prefabFx.Play(fx, from, null, key)) thrownLoops.Add(key);
+                else key = null;
+            }
+            var motion = ReduceMotion ? SupportMotion.Straight : def.Motion;
+            float travel = ReduceMotion ? 0.14f : Mathf.Clamp(Vector2.Distance(from, to) / 1800f, 0.18f, 0.32f);
+            float arm = BoardView.Tile * 0.22f;
+            yield return Tween.Run(travel, k =>
+            {
+                Vector2 p = motion == SupportMotion.Arc
+                    ? Vector2.Lerp(from, to, k) + Vector2.up * (-140f * Ease.Arc(k))
+                    : Vector2.Lerp(from, to, k);
+                board.Lines.ClearLines();
+                if (key != null) { prefabFx.MoveLoop(key, p); return; }
+                if (motion == SupportMotion.Spin)
+                {
+                    float ang = k * Mathf.PI * 8f;
+                    var u = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * arm;
+                    var v = new Vector2(-u.y, u.x);
+                    board.Lines.Add(p - u, p + u, c, 9f);
+                    board.Lines.Add(p - v, p + v, c, 9f);
+                    board.Lines.Dot(p, 7f, Palette.White);
+                }
+                else
+                {
+                    board.Lines.Dot(p, 18f, c);
+                    board.Lines.Dot(Vector2.Lerp(from, to, Mathf.Max(0f, k - 0.1f)), 11f, new Color(c.r, c.g, c.b, 0.5f));
+                }
+            });
+            board.Lines.ClearLines();
+            if (key != null) thrownLoops.Remove(key); // TickPrefabFx ends the loop next frame
+            if (fx != null && fx.Mode == VfxMode.Once) prefabFx.Play(fx, to);
         }
 
         /// <summary>The ability whose hits are playing (GG-T556), or null for weapon strikes.</summary>

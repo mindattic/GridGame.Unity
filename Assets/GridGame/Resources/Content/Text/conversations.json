@@ -4713,7 +4713,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ec4a1fb8bf872fb864aac8d5a86ba4675d9b03541c99bd7b0225ee28deb1760b",
+      "hash": "sha256:a16532e0f4b64f8f4146779885792fd03e147a47a903db47af1a1c68d8316496",
       "about": [
         "class-greenninja"
       ],
@@ -4727,7 +4727,7 @@
           {
             "id": "ask",
             "speaker": "$with",
-            "line": "My Venom Dart can poison what my ally strikes. Who's the best target?",
+            "line": "My Poison Dagger can poison what my ally strikes. Who's the best target?",
             "choices": [
               {
                 "text": "A foe already about to fall.",

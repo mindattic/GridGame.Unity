@@ -71,6 +71,7 @@ namespace GridGame.App
                 }
             }
             if (devLoop != null) loopKeep.Add(devLoop);
+            loopKeep.UnionWith(thrownLoops); // GG-T915: Volley projectiles in flight
             prefabFx.StopLoopsExcept(loopKeep);
             prefabFx.Tick();
         }
