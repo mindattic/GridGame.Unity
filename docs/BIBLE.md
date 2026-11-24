@@ -268,6 +268,10 @@ Owner: *"we are aiming for a polished, releasable game once the story has been e
 - **Support action** (`SupportDef`) — a class's effect as a supporter: Effect, Magnitude, Target (Attacker / Chain / Party / Self), Range along the chain. Enemies and classes without one strike at 50% from beside the attacker. ([§1.2.3](#123-supporters))
 - **Action** — one committed command (move, slot use, shield); it ends the player's turn: the clock runs to the next enemy arrival (`BattleConfig.ActionTicks` = 20 ticks only when no enemy icon can arrive). ([§2.0](#20-the-held-turn), GG-T188)
 - **Held turn** — the real-time window from picking a hero up until the next enemy icon reaches the left edge; when it runs out the hero is dropped where it is (forced drop). ([§2.0](#20-the-held-turn))
+- **Turn mode** (`TurnMode`, GG-T762) — the rule for which heroes may act and when. **PartyWindow** (the default, today's rule): every able hero acts once per window. ⬜ **Any hero every turn**: one hero per party turn, any hero. ⬜ **Any hero who hasn't moved this round**: one hero per party turn, each once per round. ⬜ **Heroes on the timeline**: each hero has its own icon on the bar. It is a profile setting that New Game can lock on the save. ([§2.13](#213-turn-modes-gg-t762))
+- **Window / party turn** — under PartyWindow, the time until the next enemy icon reaches the left edge, shared by the whole party, in which each able hero acts once (`ActedThisWindow`). ([§2.0](#20-the-held-turn))
+- **Round** — ⬜ under Any hero who hasn't moved this round: the run of party turns in which every able hero acts once before the round resets. ([§2.13.2](#213-turn-modes-gg-t762))
+- **TurnRules** — the one Core seam where a turn mode decides who may act, what an action spends and ends, what Guard gives up and banks, and what a turn boundary resets; nothing else reads `TurnMode`. ([§2.13](#213-turn-modes-gg-t762))
 - **Tick / IP** — the clock unit (10 per second); turn icons load Initiative Points 0..1000 internally, but every icon is drawn at `u = secondsUntilAct / BarSeconds` (10 s; 0 = the left edge, acting now). ([§2](#2-the-timeline))
 - ~~**Pushback Zone**~~ — retired 2026-11-06 (GG-T286). **Pushback** — an ability/item keyword in seconds (and 1 s on every foe a hero pincer hits): the foe acts that much later, anywhere on the bar, at most 2 s and once per action. ([§2.3](#23-pushback-a-keyword-in-seconds))
 - **Hasten / Quicken** — the inverse: slide an icon forward toward the left edge. ([§2.7.1](#271-hasten--quicken--the-inverse))
@@ -1145,6 +1149,63 @@ and convert the remaining time into a portion of mana orb." The cluster fallback
 ### 2.10 Countdown badge
 
 **Amended 2026-10-09 (new, Terra Battle–style):** every enemy shows a number on its tile — `BattleEngine.ActionsUntilTurn` = `(TicksUntilTurn − 1) / 20`: the actions you get before it acts (**0** = it acts during your next action, drawn red). **Amended 2026-10-21 (GG-T188):** a turn now ends at each enemy arrival, so the number counts the distinct arrival ticks of the *other* enemies (each re-loading from IP 0) before this one's — the turns you get before it acts (**0** = it acts at the end of your next turn). Since GG-T308 a "turn" is the party's window (every hero acts once in it), so the number counts windows, not hero actions. **GG-T318:** each other foe's next lap is estimated as base recovery plus the trip from its entry, not a reload from IP 0. `TicksUntilTurn` simulates its icon with stun at its one linear rate (no Zone crawl since GG-T286) but no future pushback/hasten; Frozen enemies show no number. The actor panel says "Acts in N moves", "Acts after your next move!", "Frozen in time" or "Charging X!".
+
+### 2.13 Turn modes (GG-T762)
+
+**Added 2026-11-23 (owner, GG-T762/GG-T765). ⬜ Not yet built: this section is the skeleton the turn-mode epic fills in.** Owner: "I want to be able to try the 'any hero every turn', 'any hero who hasn't moved this round', and the 'Heroes on the timeline' modes; I want all of them created and implemented separately and sequentially and tested headlessly and figure out which works better for what and why … I can see all of them being viable game modes so each one needs to be built in carefully and organically to the entire game."
+
+Who on the party may act, and when, is a **turn mode**. There are four. **PartyWindow** is today's rule and stays the default; the other three are separate, complete game modes, not debug switches. The enemy side, the bar, pincers, mana and content stay the same in every mode. Each mode changes only what [§2.0](#20-the-held-turn) decides for the heroes, and then whatever has to follow from that.
+
+- **The setting** (⬜, GG-T767/GG-T773/GG-T774/GG-T775). `TurnMode` (`Core/Battle/TurnMode.cs`): `PartyWindow` (default), `AnyHeroEveryTurn`, `UnmovedThisRound`, `HeroTimeline`. `BattleSetup.TurnMode` is copied to `BattleState.TurnMode`, kept by the state clone (like Difficulty) and recorded by `BattleRecorder`/`CommandCodec`, so a replay reproduces its mode.
+  - The player picks it as a profile setting, `turnMode` in `settings.json` (`GameSettings`, default `PartyWindow`), in Settings. New Game can **lock** it on the save (`SaveData`; a `SaveMigrations` bump loads old saves as `PartyWindow`).
+  - Tools pick it on the command line (GG-T775), through the harness, or with `GRIDGAME_TURN_MODE` for the headless soaks.
+- **The resolver** (⬜, GG-T773). One function picks a battle's mode: the save's lock if it has one, else the profile setting. It feeds `BattleSetup.TurnMode` at **every** battle start: campaign and stage battles, endless, the Crucible, wanderers, bounties, test mode, the tutorial and `BattleScreen`. No battle may pick its mode any other way.
+- **The `TurnRules` seam** (⬜, GG-T768/GG-T769). `Core/Battle/TurnRules.cs` is the **one** place a mode answers five questions:
+  1. who may act now;
+  2. whether an action ends the party's turn;
+  3. what an action spends;
+  4. what Guard gives up and banks;
+  5. what a turn boundary resets.
+
+  `BattleEngine` (`CanMove`, `HeroesLeftToAct`, `TooLittleTime`, `CommandTicks`, `TurnTicks`), `BattleRunner` (window end, `ReturnControl`, `PlayerControlEvent.NewWindow`, Guard), the `ActedThisWindow` reads (Tame, Wanderer, Recruitment), `HeroBot` and the battle view all ask the seam. None of them switches on `TurnMode` itself. A mode that isn't built yet throws `NotSupportedException`.
+- **Comparison.** Every mode is soaked headlessly on equal terms and compared in [`TURN_MODES.md`](TURN_MODES.md). Numbers that only make sense in one mode live in per-mode `BattleConfig` constants. Content and general balance stay with the continuous balance loop (GG-T276).
+
+#### 2.13.0 PartyWindow (today, the default)
+
+The party's turn is the **window** until the next enemy icon reaches the left edge, and **every able hero acts once** in it. This is exactly the GG-T308/GG-T311 rule of [§2.0](#20-the-held-turn): `ActedThisWindow`, the shared window budget, minimum action time, forced Guard, Rally, and turn boundaries counted in windows. Through the seam it must **replay identically** (`Party_window_replays_identically_through_the_seam`). It is the comparison baseline.
+
+#### What each new mode must answer
+
+Each mode below records its final rule in its own subsection when its core-rules feature lands, and answers every one of these. "Same as PartyWindow" is a valid answer, but it has to be written down.
+
+| Topic | The question |
+|---|---|
+| **Who may act** | Which heroes can be picked up or use their bar now; what greys out and why (`SlotStatus`); what ends the party's turn. |
+| **Guard** | What Guard gives up, what it banks as mana charge ([§2.5](#25-auto-skip--shield)), and whether forced Guard and Rally still apply ([§2.0](#20-the-held-turn)). |
+| **Mana income** | Whether orbs and charge per enemy turn stay in the band when the party takes fewer or more actions per enemy turn ([§3.1](#31-mana-the-orb-economy)). |
+| **Turns buffs** | What "1 Turn" means for hero buffs, Protection, tempo effects, Frozen on foes and Regenerate ([§8.3](#83-ticking), [§2.11](#211-party-tempo-gg-t268)). |
+| **Cooldowns** | What a skill cooldown counts: party turns, that hero's own actions, or rounds ([§4.1.1](#411-skill-cooldowns)). |
+| **Status ticks** | When DOTs, Stun, Asleep and the TurnStart/TurnEnd/ActionEnd triggers fire. |
+| **Pincers** | Whether one action still sets up a pincer that a second hero closes in the same turn; supporters and chains ([§1.2](#12-pincer-attacks)). |
+| **Region rules** | Every region rule that counts turns or actions ([§14.20](#1420-region-rules-added-2026-11-08-owner-direction-gg-t359)). |
+| **Tutorial** | Whether the tutorial's scripted steps and copy still read correctly, or need a per-mode variant. |
+| **Post-battle stats** | What results, records and achievements count (turns, actions, "no hero acted twice"…). |
+| **Crucible** | Leaderboards and seeds: per mode, or the mode locked ([§22.10](#2210-the-crucible-added-2026-10-19-owner-direction-gg-t95)). |
+| **Automation** | What `/state` reports (who may act, round, hero icons) and what the harness drives. |
+| **UI** | Banners, the ✓ acted marks, the hold lane, the countdown badge ([§2.10](#210-countdown-badge)), and the settings/New Game copy. |
+| **Soak** | The bots (`HeroBot`, `CampRoutine`) play it well. The soak reports it on equal terms with the baseline ([`TURN_MODES.md`](TURN_MODES.md)). |
+
+#### 2.13.1 Any hero every turn (`AnyHeroEveryTurn`) — ⬜ Not yet built (GG-T779)
+
+Each party turn **exactly one** hero acts: any able hero, the same one again if you like (Terra Battle style, close to the pre-GG-T308 rule). That action ends the party's turn. Open questions: every topic in the table, and especially mana income and cooldowns, since there is one action per enemy turn instead of several.
+
+#### 2.13.2 Any hero who hasn't moved this round (`UnmovedThisRound`) — ⬜ Not yet built (GG-T792)
+
+One hero acts per party turn, but **only a hero who hasn't acted this round**. When every able hero has acted, the round resets. Open questions: every topic in the table. On top of those: what counts as a round when a hero falls, joins or is revived mid-round; whether Guard uses up a hero's place in the round; and how the round shows on the HUD.
+
+#### 2.13.3 Heroes on the timeline (`HeroTimeline`) — ⬜ Not yet built (GG-T805)
+
+Every hero has **its own turn icon** on the shared bar with the foes (Grandia style; this lifts "heroes have no icons here", [§2](#2-the-timeline)). When a hero's icon reaches the left edge, that hero acts. Open questions: every topic in the table. On top of those: how a hero's Speed sets its entry and recovery ([§2.1](#21-speed-and-pace), [§2.12](#212-recovery-and-spacing-gg-t318)); what pushback, Hasten, Slow and party tempo do to hero icons; whether the clock runs or stops while a hero is held; and how the ACT-zone question in [§2](#2-the-timeline) changes once heroes have icons.
 
 ---
 
