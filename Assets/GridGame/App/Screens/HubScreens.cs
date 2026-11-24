@@ -954,6 +954,7 @@ namespace GridGame.App
             {
                 var build = Ui.MenuRow($"Build {nextFacility.Name}", Ui.Gold(nextFacility.Cost), () => ConfirmFacility(c, s, station, page), list);
                 build.name = "facility-build";
+                build.KindIcon(RowKind.Station); // GG-T746 (§26.7)
             }
             // GG-T538: the station's next rank, in forges or brews ("Journeyman at 150 XP: 40/150, about 8 more brews").
             if (VendorTiers.Gated(recipes.FirstOrDefault()) && VendorTiers.NextRankLine(s, Crafting.StationFor(station)) is string rankLine)
@@ -1248,6 +1249,7 @@ namespace GridGame.App
                     () => Done(piece.Slot == EquipmentSlot.Weapon ? Repair.RepairWeapon(C, S, piece.Hero) : Repair.RepairArmor(C, S, piece.Hero, piece.Slot), cue: "camp.repair"),
                     list, null, cost > 0);
                 row.name = p.RowName;
+                row.KindIcon(RowKind.Item, Art.ItemIcon(p.Item.Id)); // GG-T746 (§26.7): the worn piece's icon, else the Item emblem
                 if (bad) row.Q<Label>("value").AddToClassList("warn");
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
@@ -1276,6 +1278,7 @@ namespace GridGame.App
             var row = Ui.MenuRow("Salvage instead", y, () =>
                 Confirm.Show($"Repair costs {Ui.Gold(repairCost)}. Scrap the {item.Name} instead for {y}? This destroys it.", "Salvage",
                     () => Done(Crafting.SalvageEquipped(C, S, hero, slot))), list);
+            row.KindIcon(RowKind.Item, Art.ItemIcon(item.Id)); // GG-T746 (§26.7): the piece it scraps
             row.AddToClassList("kit-note"); // a sub-row of the repair above, indented under its label
             row.Q<Label>("value").AddToClassList("dim");
         }
@@ -1368,7 +1371,8 @@ namespace GridGame.App
                 bool can = !locked && ArmorEnchanting.HasInputs(S, e) && ArmorEnchanting.CanAfford(C, S, e);
                 var passive = C.TryAbility(e.Passive);
                 var row = Ui.MenuRow(e.Name, locked ? $"🔒 {StationProgress.TierName(e.Tier)}" : Ui.Gold(ArmorEnchanting.Gold(C, S, e)),
-                    () => { enchant = ench; Refresh(); }, elist, passive != null ? Art.AbilityIcon(passive) : null);
+                    () => { enchant = ench; Refresh(); }, elist);
+                row.KindIcon(RowKind.Ability, passive != null ? Art.AbilityIcon(passive) : null); // GG-T746 (§26.7), else the Ability emblem
                 row.name = ArmorEnchanting.EnchantRowPrefix + e.Id;
                 if (!can) row.style.opacity = 0.55f;
                 if (enchant == e) Ui.Select(row);
@@ -1422,10 +1426,9 @@ namespace GridGame.App
                 int lv = CaravanUpgrades.Level(S, d.Id);
                 var next = CaravanUpgrades.NextLevel(C, S, d.Id);
                 var card = Ui.Card(list, null, null, out var col, "caravan-" + d.Id);
-                var ic = Ui.El("thumb", null);
-                card.Insert(0, ic);
+                // GG-T746 (§26.7): the upgrade's pixel icon, else the Station emblem, leads the card.
+                var ic = card.KindIcon(RowKind.Station, Art.ItemIcon(d.Icon));
                 ic.style.width = ic.style.height = Kit.Thumb;
-                ic.style.backgroundImage = new StyleBackground(Art.ItemIcon(d.Icon) ?? Art.Orb);
                 ic.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
                 var top = Ui.El("row", col);
                 Ui.Name(d.Name, top, "grow");
