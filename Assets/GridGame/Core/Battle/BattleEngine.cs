@@ -44,6 +44,7 @@ namespace GridGame.Core.Battle
                 RecommendedLevel = setup.RecommendedLevel,
                 NewGamePlus = setup.NewGamePlus,
                 Difficulty = setup.Difficulty,
+                TurnMode = setup.TurnMode,
                 PartySize = setup.Party.Count,
                 Rng = new Rng(setup.Seed),
                 Blocks = new HashSet<Coord>(setup.Stage?.Blocks ?? new List<Coord>()),

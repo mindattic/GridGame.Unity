@@ -19,8 +19,10 @@ namespace GridGame.Core.Battle
     {
         /// <summary>v2 (2026-10-12): added optional per-turn "skillLevel"/"perfectCommand" (BotSkillProfile demo mode).
         /// v3 (2026-10-19, GG-T98): PincerFormed events carry formation-time footprints ("Attacker1At", "Attacker2At",
-        /// "OpponentsAt", "SupportersAt"); WaveStarted/ReinforcementsArrived carry "SpawnedAt".</summary>
-        public const int SchemaVersion = 3;
+        /// "OpponentsAt", "SupportersAt"); WaveStarted/ReinforcementsArrived carry "SpawnedAt".
+        /// v4 (2026-11-23, GG-T767): top-level "turnMode" (§2.13; <see cref="CommandCodec.ReadTurnMode"/> reads a record
+        /// without it as PartyWindow).</summary>
+        public const int SchemaVersion = 4;
 
         private static readonly JsonSerializer Json = JsonSerializer.Create(new JsonSerializerSettings
         {
@@ -48,6 +50,7 @@ namespace GridGame.Core.Battle
                 ["recommendedLevel"] = setup?.RecommendedLevel ?? 0,
                 ["newGamePlus"] = setup?.NewGamePlus ?? 0,
                 ["difficulty"] = setup?.Difficulty ?? 0, // the dial (GG-T309); 0 = unscaled
+                [CommandCodec.TurnModeKey] = CommandCodec.EncodeTurnMode(s.TurnMode), // §2.13 (GG-T767): a replay reproduces it
                 ["startOrbs"] = setup?.StartOrbs ?? 0,
                 ["party"] = new JArray(s.Units.Where(u => u.IsHero).Select(u => new JObject
                 {

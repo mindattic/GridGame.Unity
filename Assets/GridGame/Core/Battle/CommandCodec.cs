@@ -77,5 +77,32 @@ namespace GridGame.Core.Battle
             cmd.Player = new PlayerId((int?)o["player"] ?? 0);
             return cmd;
         }
+
+        // ── Turn mode (§2.13, GG-T767) ───────────────────────────────────────────
+        // A battle's mode is part of its setup, not of any one command, but a command log replays a different battle under
+        // a different mode, so whatever stores the log (BattleRecorder's document, a replay header) stores the mode with it.
+
+        /// <summary>The key a battle record or replay header keeps its <see cref="TurnMode"/> under.</summary>
+        public const string TurnModeKey = "turnMode";
+
+        /// <summary>The mode by name (stable when values are added), e.g. "PartyWindow".</summary>
+        public static string EncodeTurnMode(TurnMode mode) => mode.ToString();
+
+        /// <summary>The mode stored under <see cref="TurnModeKey"/> in <paramref name="o"/>. A record from before GG-T767
+        /// (no key) is <see cref="TurnMode.PartyWindow"/>, the only rule that existed; an unknown name throws.</summary>
+        public static TurnMode ReadTurnMode(JObject o)
+        {
+            var name = (string)o?[TurnModeKey];
+            if (string.IsNullOrEmpty(name)) return TurnMode.PartyWindow;
+            if (Enum.TryParse(name, false, out TurnMode mode) && Enum.IsDefined(typeof(TurnMode), mode) && !int.TryParse(name, out _)) return mode;
+            throw new NotSupportedException("Unknown turn mode " + name);
+        }
+
+        /// <summary>Stores <paramref name="mode"/> in <paramref name="o"/> under <see cref="TurnModeKey"/>.</summary>
+        public static JObject WriteTurnMode(JObject o, TurnMode mode)
+        {
+            o[TurnModeKey] = EncodeTurnMode(mode);
+            return o;
+        }
     }
 }

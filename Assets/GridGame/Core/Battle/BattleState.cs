@@ -67,6 +67,8 @@ namespace GridGame.Core.Battle
         /// <summary>The difficulty dial 1..10 (§22.9, GG-T309; <see cref="DifficultyTable"/>): enemy HP/damage/level at spawn
         /// and coins/XP/drop chance per kill. 0 = <see cref="DifficultyTable.Neutral"/>, the raw rules (tests, hand-built setups).</summary>
         public int Difficulty = DifficultyTable.Neutral;
+        /// <summary>The turn mode (§2.13, GG-T767): who on the party may act, and when. Default <see cref="TurnMode.PartyWindow"/>.</summary>
+        public TurnMode TurnMode = TurnMode.PartyWindow;
         /// <summary>Orbs carried over from the previous battle of an expedition (§22.5).</summary>
         public int StartOrbs;
         /// <summary>Guest classes that must not appear (already recruited, or — only with permadeath on — lost).</summary>
@@ -185,6 +187,8 @@ namespace GridGame.Core.Battle
         public int NewGamePlus;
         /// <summary>The difficulty dial (GG-T309), copied from <see cref="BattleSetup.Difficulty"/>.</summary>
         public int Difficulty;
+        /// <summary>The turn mode (§2.13, GG-T767), copied from <see cref="BattleSetup.TurnMode"/>; Clone()'s shallow copy keeps it.</summary>
+        public TurnMode TurnMode;
         /// <summary>GG-T321: heroes the party fielded (<see cref="BattleSetup.Party"/>); enemy strength scales with it
         /// (<see cref="BattleEngine.PartyScale"/>).</summary>
         public int PartySize;
