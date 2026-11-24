@@ -178,6 +178,14 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   **The player crashed (native UnityPlayer access violation, no managed exception) at the start of Swamp II's battle**
   (stage 11 of 40; crash report in R:/Temp/MindAttic/GridGame/Crashes, log not kept); the run stopped there on the owner's
   instruction not to launch more players. Stages 11-40 remain unmeasured; see GG-T704's split tickets.
+  **GG-T710 resumed again (2026-11-23, one player, 3-battle `--resume --keep` chunks, `-rested` build of main):** the Swamp II
+  crash did NOT reproduce: Swamp II (stage 11) won first try (camp 1,048 g after a 250 g Rested refill, Rested 2 -> 10), Swamp III
+  (12) won (1,323 g, Rested 9), Cave I (13) won (1,904 g, Rested 8), all 0 retries; gold at the camp before each stage 1,048 /
+  1,323 / 1,904, ending the chunk near 2,355 g. The next chunk lost the player at the start of **Cave II (stage 14)**: native
+  UnityPlayer access violation inside `Resources.Load` called from `Audio.Clip` <- `Audio.Music` <- `ScreenRouter.MountTop`
+  (Audio.cs:74/90, ScreenRouter.cs:177) while the battle screen mounted; the harness then hit its socket TimeoutError. Same
+  signature as the Swamp II crash (native, at battle start), so it is an intermittent music-clip load crash, not a Swamp II
+  stage bug. Stages 14-40 remain unmeasured; the crash is filed as its own ticket.
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
