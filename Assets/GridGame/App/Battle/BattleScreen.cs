@@ -1461,7 +1461,7 @@ namespace GridGame.App
             var hits = TargetResolver.Collect(State, a, hero, at);
             if (a.Mode == TargetMode.Auto || a.Shape == TargetShape.Self || a.Shape == TargetShape.AllAllies || a.Shape == TargetShape.AllEnemies)
                 foreach (var u in hits) foreach (var t in u.Tiles()) board.Mark(t, color, 0.42f);
-            else foreach (var t in TargetResolver.Tiles(at, a.Shape, a.Radius)) board.Mark(t, color, 0.42f);
+            else foreach (var t in TargetResolver.Tiles(at, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.42f); // GG-T933: Wall oriented from the caster
             foreach (var u in hits)
                 if (board.Units.TryGetValue(u.Id, out var v)) { v.SetGlow(color, 0.9f); targetGlows.Add(u.Id); }
         }

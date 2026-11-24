@@ -69,6 +69,7 @@ namespace GridGame.App
                         else prefabFx.Play(def, at, CoreOf(StatusStyle(b.Def.Id)), key);
                     }
                 }
+                FireTileLoops(loopKeep); // GG-T933: flames on firewall tiles
             }
             if (devLoop != null) loopKeep.Add(devLoop);
             loopKeep.UnionWith(thrownLoops); // GG-T915: Volley projectiles in flight

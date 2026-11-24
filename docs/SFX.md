@@ -37,6 +37,7 @@ sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
 |---|---|---|---|
 | `slime.vomit` | a wet retching heave and a gloopy launch | a slime lobs its Vomit Glob (GG-T895, §14.23) | `element.water` low |
 | `slime.squish` | a juicy squelch underfoot | a hero squishes a slime glob (SquishedEvent, GG-T895) | `battle.slide` low |
+| `element.crackle` | a dry crackle of flames catching | a firewall (or fire trail) is painted, and each burn it deals on entering or ending a turn on it (GG-T933, §7) | `element.fire` low |
 
 ## Battle events (`Core/Battle` events → `App/Battle/BattleScreen.*`)
 

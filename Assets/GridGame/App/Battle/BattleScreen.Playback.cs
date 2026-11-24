@@ -824,7 +824,8 @@ namespace GridGame.App
             var src = State.UnitById(d.SourceId);
             string cue = d.SourceId < 0 ? "status.debuff" : crit ? "battle.crit" : style.Cue;
             if (cue == "battle.hit") cue = AttackHitCue(src, d.Note);
-            App.Audio.Sfx(cue);
+            var burn = d.Amount > 0 ? FireTileBurn(d, v.Tile) : null; // GG-T933: scorched by a firewall
+            if (burn != null) FireCrackle(0.9f); else App.Audio.Sfx(cue);
             Feed($"{(d.SourceId < 0 ? "☠" : "†")} {(src != null ? src.Name + " → " : "")}{t.Name}: {d.Amount}{(crit ? " CRIT" : "")}{(d.Note != null ? " (" + d.Note + ")" : "")}", t.IsHero ? new Color(1f, 0.65f, 0.6f) : Palette.White.WithA(0.9f));
             // Anticipation (POL-E6): the target braces for a beat before the hit lands.
             if (!ReduceMotion) yield return Tween.Run(Timing.Instant, k => v.Root.style.scale = new Scale(Vector2.one * (1f - 0.06f * Ease.Out(k))));
@@ -846,7 +847,10 @@ namespace GridGame.App
                     : d.HpAfter <= 0 ? CombatTextKind.Overkill : crit ? CombatTextKind.Crit : CombatTextKind.Damage;
                 // GG-T830: a damage-over-time tick names its status: small, its pip glyph and its colour.
                 var dot = kind == CombatTextKind.StatusTick && d.Note != null ? t.Buffs.Find(b => b.Def.Name == d.Note)?.Def : null;
-                if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
+                // GG-T933: a firewall's burn ticks with the mark's own glyph and colour.
+                if (burn != null && kind == CombatTextKind.StatusTick)
+                    Text.Tick(at, string.IsNullOrEmpty(burn.Glyph) ? "♨" : burn.Glyph, text, Art.HexColor(burn.Color, Palette.Bad), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
+                else if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
                 else if (kind == CombatTextKind.Immune || kind == CombatTextKind.StatusTick)
                     Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Immune ? color : (Color?)null);
                 // GG-T827: a hit's number reads by its share of max HP in four sizes (chip, solid, heavy, massive), tagged

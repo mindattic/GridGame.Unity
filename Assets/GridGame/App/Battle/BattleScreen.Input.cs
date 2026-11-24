@@ -635,7 +635,7 @@ namespace GridGame.App
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
             var color = harmful ? new Color(1f, 0.3f, 0.25f) : new Color(0.4f, 0.9f, 0.5f);
             if (a.IsTeleport) { board.Mark(tile, Palette.Mana, 0.6f); return; }
-            foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius)) board.Mark(t, color, 0.38f);
+            foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.38f); // GG-T933: a Wall lies across the caster's line
         }
     }
 }

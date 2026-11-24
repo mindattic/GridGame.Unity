@@ -28,7 +28,8 @@ namespace GridGame.App
             board.SyncRegion(State);
             if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
             if (rt.Change == "marked" && RuneState(rt.State) is TileStateDef rune) { yield return RunePaintAnim(rt, rune); yield break; } // GG-T939: a Choir rune's paint puff
-            App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
+            if (rt.Change == "marked" && FireTile(App.Content.TryTileState(rt.State))) FireCrackle(0.8f); // GG-T933: the wall catches
+            else App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
             yield return Tween.Wait(rt.Change == "changed" ? Timing.Quick : Timing.Standard);
         }
 
@@ -367,6 +368,55 @@ namespace GridGame.App
             else if (def?.Circle != null) RuneScuffed(sq, def); // GG-T939: a hero scuffs a Choir rune out
             if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
             yield return Tween.Wait(Timing.Quick);
+        }
+
+        // ── GG-T933 (§7, §14.23): firewall visuals ──────────────────────────────────────────────
+
+        /// <summary>The vfx.json loop that burns on a fire hazard mark (a firewall, a fire trail) while it lasts.</summary>
+        private const string FireTileLoop = "Flame.Loop";
+
+        /// <summary>A mark that burns: a hazard state carrying Fire (the Red Mage's firewall, a fire trail).</summary>
+        private static bool FireTile(TileStateDef def) => def != null && def.Hazard && def.Element == DamageType.Fire;
+
+        /// <summary>The crackle of flames: <c>element.crackle</c> is a placeholder cue (docs/SFX.md), so the fire cue
+        /// plays low beneath it as its stand-in until it has a file.</summary>
+        private void FireCrackle(float volume)
+        {
+            App.Audio.Sfx("element.crackle", volume);
+            App.Audio.Sfx("element.fire", volume * 0.7f, 0.7f);
+        }
+
+        /// <summary>Called from <see cref="TickPrefabFx"/>: a looping flame (vfx.json <see cref="FireTileLoop"/>) stands on
+        /// every fire hazard mark the party can see, kept while the mark lasts (Reduce Motion: none; the wash and glyph
+        /// still show it).</summary>
+        private void FireTileLoops(System.Collections.Generic.HashSet<string> keep)
+        {
+            if (State?.Region == null || State.Region.Tiles.Count == 0) return;
+            var def = App.Content.VfxPrefabs.Find(FireTileLoop);
+            if (def == null || def.Mode != VfxMode.Loop) return;
+            foreach (var kv in State.Region.Tiles)
+            {
+                var st = App.Content.TryTileState(kv.Value.State);
+                if (!FireTile(st) || !RegionBoard.Sees(kv.Value, Team.Hero) || kv.Value.Hidden) continue;
+                string key = "tile:" + kv.Key + ":" + st.Id;
+                keep.Add(key);
+                if (!prefabFx.HasLoop(key)) prefabFx.Play(def, BoardView.CenterOf(kv.Key), Art.HexColor(st.Color, Palette.Bad), key);
+            }
+        }
+
+        /// <summary>A rule's hook damage is a burn from a fire mark: the hit is Fire with no source, and the unit stands on a
+        /// fire mark, or the hit names a rule that paints one (the mark may be gone by the time the beat plays).</summary>
+        private TileStateDef FireTileBurn(DamagedEvent d, GridGame.Core.Coord at)
+        {
+            if (d.SourceId >= 0 || d.Type != DamageType.Fire) return null;
+            var here = State?.Region?.At(at);
+            var st = here == null ? null : App.Content.TryTileState(here.State);
+            if (FireTile(st)) return st;
+            if (d.Note == null) return null;
+            foreach (var r in App.Content.RegionRules.Values)
+                if (r.Name == d.Note || r.Id == d.Note)
+                    foreach (var s in r.TileStates) if (FireTile(s)) return s;
+            return null;
         }
 
         // ── GG-T869 (§7, §14.21): the Barbarian's Earthsplitter ─────────────────────────────────
