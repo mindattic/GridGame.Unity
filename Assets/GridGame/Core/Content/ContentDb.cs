@@ -57,6 +57,10 @@ namespace GridGame.Core.Content
         /// <summary>True when <see cref="ContentLoader.Load"/> found no families.json; a hand-built ContentDb has none and
         /// simply skips the family checks.</summary>
         public bool FamiliesFileMissing;
+        /// <summary>skillhex.json (GG-T1022, docs/design/skill-hexagon/PLAN.md): the skill hexagon board. Optional: null
+        /// when the file is absent (test fixtures, tools), and then its checks are skipped. Nothing in the game reads it
+        /// yet (GG-T1023).</summary>
+        public SkillHexDef SkillHex;
         public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
         /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
         public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);

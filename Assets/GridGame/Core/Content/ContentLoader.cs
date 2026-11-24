@@ -74,6 +74,7 @@ namespace GridGame.Core.Content
             var families = readText("families"); // GG-T971: only a missing file is reported, not a hand-built ContentDb
             db.FamiliesFileMissing = string.IsNullOrWhiteSpace(families);
             db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
+            db.SkillHex = ReadOne<SkillHexDef>(readText, "skillhex"); // GG-T1022: optional; null skips its checks
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
             AddAll(db.Pickups, ReadList<PickupDef>(readText, "pickups"), x => x.Id);
             AddAll(db.SkillTrees, ReadList<SkillTreeDef>(readText, "skilltrees"), x => x.Id);
@@ -173,6 +174,14 @@ namespace GridGame.Core.Content
                 NoAlias(i.TeachesAbility, $"item {i.Id} tome");
             }
         }
+
+        /// <summary>GG-T1022: reads skillhex.json text the way <see cref="Load"/> does (null for empty text); a file that
+        /// doesn't parse throws <see cref="FormatException"/>.</summary>
+        public static SkillHexDef ParseSkillHex(string text) => ReadOne<SkillHexDef>(_ => text, "skillhex");
+
+        /// <summary>GG-T1022: <see cref="ContentDb.SkillHex"/> against tools/skillhex/validate.py's rules
+        /// (<see cref="SkillHexContent.Validate"/>); skipped when the board is absent.</summary>
+        public static void ValidateSkillHex(ContentDb db, List<string> p) => SkillHexContent.Validate(db, db.SkillHex, p);
 
         private static List<T> ReadList<T>(Func<string, string> readText, string name)
         {
@@ -621,6 +630,7 @@ namespace GridGame.Core.Content
             FamilyContent.Validate(db, p); // GG-T971
             ValidateFamilyTrees(db, p); // GG-T977
             ValidateAbilityAliases(db, p); // GG-T973
+            ValidateSkillHex(db, p); // GG-T1022
             QuestCatalog.Validate(db, p);
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);
