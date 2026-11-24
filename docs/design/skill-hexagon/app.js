@@ -220,6 +220,26 @@ svg.addEventListener('pointermove', e => {
 svg.addEventListener('pointerleave', () => { tip.hidden = true; if (preview.length) { preview = []; hoverN = -1; render(); } });
 svg.addEventListener('click', e => { const t = e.target.closest('[data-tip]'); if (!t) return; const n = +t.getAttribute('data-tip').slice(2); document.getElementById('detail').innerHTML = tipHtml(n); addPath(n); tip.hidden = true; });
 
+
+// Export the board in the skill-hex schema (docs/design/skill-hexagon/skillhex.schema.json).
+window.SkillHexExport = () => ({
+  "$schema": "./skillhex.schema.json",
+  Version: 1,
+  Radius: N,
+  Stats: STATS.map(s => ({ Id: s, Color: sc(s) })),
+  Families: FAMS.map((f, k) => ({ Id: f.toLowerCase(), Name: f, From: STATS[k], To: STATS[(k + 1) % 6] })),
+  Costs: { Passive: 1, Ability: 1, PlannerPassThroughAbility: 4 },
+  Nodes: pts.map(p => p.ab
+    ? (p.a ? { Q: p.q, R: p.r, Kind: 'Ability', Ability: p.a.id } : { Q: p.q, R: p.r, Kind: 'Open' })
+    : { Q: p.q, R: p.r, Kind: 'Passive', Stats: p.pas }),
+  Heroes: D.classes.map(c => {
+    const h = HEROES.find(x => x.id === c.Id), recipe = Object.entries(HERO_RECIPE).find(([, n]) => n === c.Name);
+    const rec = recipe ? Object.fromEntries(recipe[0].split(' ').map(t => [t.slice(0, 3), +t.slice(3)])) : null;
+    return { Class: c.Id, Name: c.Name, Recipe: rec, Status: rec ? 'Placed' : 'Cut', Signature: h ? h.sig : null,
+      Start: h ? startPath(h).map(i => [pts[i].q, pts[i].r]) : [] };
+  })
+});
+
 // Example on load: a Warden walking to White Ninja's signature.
 setHero(hero);
 const wn = HEROES.find(h => h.id === 'whiteninja'); if (wn && hero.id === 'warden') addPath(ABI[wn.sig].node);

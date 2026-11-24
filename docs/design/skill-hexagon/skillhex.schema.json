@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "skillhex.schema.json",
+  "title": "GridGame skill hexagon (skill-hex)",
+  "description": "The one board every hero is built on: six stat corners, six family wedges, a hexagonal lattice of ability slots each ringed by stat passives, and every hero as a starting path. Read by docs/design/skill-hexagon (the page) and by the game (ContentLoader). Hand-editable: one node or hero per line.",
+  "type": "object",
+  "required": ["Version", "Radius", "Stats", "Families", "Costs", "Nodes", "Heroes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "Version": { "type": "integer", "minimum": 1, "description": "Bumped whenever a change needs a save migration (moved or removed nodes)." },
+    "Radius": { "type": "integer", "minimum": 2, "description": "Lattice radius N in axial coordinates: every point with |Q|, |R| and |Q+R| at most N exists. N=16 gives 817 points." },
+    "Stats": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "description": "The six identity stats, clockwise from the top corner.",
+      "items": { "type": "object", "required": ["Id", "Color"], "additionalProperties": false,
+        "properties": { "Id": { "$ref": "#/$defs/stat" }, "Color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" } } }
+    },
+    "Families": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "description": "Family k is the wedge from corner k (From) to corner k+1 (To).",
+      "items": { "type": "object", "required": ["Id", "Name", "From", "To"], "additionalProperties": false,
+        "properties": { "Id": { "type": "string" }, "Name": { "type": "string" }, "From": { "$ref": "#/$defs/stat" }, "To": { "$ref": "#/$defs/stat" } } }
+    },
+    "Costs": {
+      "type": "object", "required": ["Passive", "Ability"], "additionalProperties": false,
+      "properties": {
+        "Passive": { "type": "integer", "minimum": 0, "description": "Skill points to take a passive node." },
+        "Ability": { "type": "integer", "minimum": 0, "description": "Skill points to take an ability node." },
+        "PlannerPassThroughAbility": { "type": "integer", "minimum": 1, "description": "Route weight the planner and bots give to walking through an ability you did not aim for, so routes prefer passives." }
+      }
+    },
+    "Nodes": {
+      "type": "array",
+      "description": "Every lattice point exactly once. Ability slots are the points where (Q - R) mod 3 = 0; every other point is a passive, so each ability is ringed by six passives.",
+      "items": {
+        "type": "object", "required": ["Q", "R", "Kind"],
+        "properties": {
+          "Q": { "type": "integer" }, "R": { "type": "integer" },
+          "Kind": { "enum": ["Ability", "Passive", "Open"] },
+          "Ability": { "type": "string", "description": "abilities.json id. Kind Ability only." },
+          "Stats": { "type": "object", "description": "Passive bonus, e.g. {\"VIT\": 2} or {\"VIT\": 1, \"STR\": 1}. Kind Passive only.",
+            "propertyNames": { "$ref": "#/$defs/stat" }, "additionalProperties": { "type": "integer", "minimum": 1 } },
+          "Note": { "type": "string", "description": "Designer note, e.g. what an Open slot is reserved for (future content or DLC)." }
+        },
+        "allOf": [
+          { "if": { "properties": { "Kind": { "const": "Ability" } } }, "then": { "required": ["Ability"] } },
+          { "if": { "properties": { "Kind": { "const": "Passive" } } }, "then": { "required": ["Stats"] } }
+        ]
+      }
+    },
+    "Heroes": {
+      "type": "array",
+      "description": "Every hero class: its place on the stat hexagon, its signature move and the path of nodes it joins the party with.",
+      "items": {
+        "type": "object", "required": ["Class", "Name", "Status"],
+        "properties": {
+          "Class": { "type": ["string", "null"], "description": "classes.json id; null for a planned hero that does not exist yet." },
+          "Name": { "type": "string" },
+          "Recipe": { "type": ["object", "null"], "description": "4-point stat recipe that places the hero on the stat hexagon, e.g. {\"INT\": 2, \"VIT\": 2} for Paladin.",
+            "propertyNames": { "$ref": "#/$defs/stat" }, "additionalProperties": { "type": "integer", "minimum": 1, "maximum": 4 } },
+          "Status": { "enum": ["Placed", "Cut", "New"], "description": "Cut: leaves the roster (saves convert it). New: a slot waiting for a hero." },
+          "Signature": { "type": ["string", "null"], "description": "abilities.json id of the move only this hero starts with; reaching it on the board is reaching this hero's identity." },
+          "Start": { "type": "array", "description": "Lattice points [Q, R] this hero owns when it joins: a connected path or tree through its starting moves and passives.",
+            "items": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 } },
+          "Note": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": { "stat": { "enum": ["VIT", "STR", "AGI", "SPD", "WIS", "INT"] } }
+}
