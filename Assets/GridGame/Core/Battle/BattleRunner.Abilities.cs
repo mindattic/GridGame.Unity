@@ -710,6 +710,9 @@ namespace GridGame.Core.Battle
                     Fire(TriggerOn.OnDodge, v, new TriggerContext { Attacker = caster, Type = a.DamageType });
                 var buff = C.TryBuff(a.ApplyBuff);
                 if (buff != null && v.Alive && roll.Hit != HitKind.Miss) ApplyBuff(v, buff, buff.Duration);
+                // GG-T997: a hook (Hook Line) hauls its victim toward the caster like any Pull: Pull() honours Rooted, braced (HeldFast),
+                // Heavy ("Too heavy!") and Floating (crosses a hole), so a direct charge no longer just damages.
+                if (a.Pull > 0 && v.Alive && v != caster && roll.Hit != HitKind.Miss) Pull(caster, v, a.Pull);
             }
             if (landed && a.DrainsOrbs > 0) DrainOrbs(caster, a); // GG-T332: the Bulwark's siphon
         }
