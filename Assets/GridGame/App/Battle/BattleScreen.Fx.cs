@@ -162,8 +162,9 @@ namespace GridGame.App
             App.StartCoroutine(Tween.Pop(v.Buffs, 1.6f, 0.28f));
             var aura = AuraFor(u);
             if (aura.a > 0f && u.Id != SelectedHeroId && !ReduceMotion) v.SetGlow(aura, 0.45f);
-            // Floated higher than damage numbers so the status name never sits on top of the hit that caused it.
-            App.StartCoroutine(FloatAway(board.Float(def.Name + "!", at + new Vector2(0, -120), Color.Lerp(color, Palette.White, 0.25f), TypeScale.Base), 0.8f));
+            // Lifted above damage numbers (the Buff/Debuff style's lift) and stacked by CombatText, so the status name never
+            // sits on top of the hit that caused it (GG-T826).
+            Text.Show(at, def.Kind == BuffKind.Buff ? CombatTextKind.Buff : CombatTextKind.Debuff, def.Name + "!", 0f, Color.Lerp(color, Palette.White, 0.25f));
             yield return Tween.Wait(Timing.Quick);
         }
 
@@ -382,7 +383,7 @@ namespace GridGame.App
             v.SetPlate(u.Facing, e.Left > 0 ? e.Left : 1, e.Max);
             v.Plate.style.backgroundColor = Palette.White;
             App.StartCoroutine(Tween.Shake(v.Plate, 8f * Fx, Timing.Quick));
-            App.StartCoroutine(FloatAway(board.Float($"CLANG! −{e.Amount}", at + new Vector2(0, -30), Palette.Info, TypeScale.Base), 0.7f));
+            Text.Show(at + new Vector2(0, -30), CombatTextKind.Resist, $"CLANG! −{e.Amount}", 0f, Palette.Info);
             yield return Tween.Wait(Timing.Quick);
             v.Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
             v.SetPlate(u.Facing, e.Left, e.Max);
@@ -413,7 +414,7 @@ namespace GridGame.App
                     }));
                 }
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Standard));
-            yield return FloatText(u.Id, "ARMOR BROKEN!", new Color(1f, 0.85f, 0.5f), 0.3f, 64);
+            yield return FloatText(u.Id, "ARMOR BROKEN!", new Color(1f, 0.85f, 0.5f), 0.3f, 64, CombatTextKind.Debuff);
         }
 
         // ── Pickups (§13.3.1) ──

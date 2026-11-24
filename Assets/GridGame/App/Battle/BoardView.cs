@@ -907,22 +907,11 @@ namespace GridGame.App
             return e;
         }
 
-        /// <summary>Floating combat text (damage numbers etc.), rising and fading.</summary>
-        public Label Float(string text, Vector2 at, Color color, float size = 64)
-        {
-            var l = new Label(text) { pickingMode = PickingMode.Ignore };
-            l.AddToClassList("shadow");
-            l.style.position = Position.Absolute;
-            // GG-T317: keep the label's box on the board so a unit in the edge column can't push it off-stage at ultratall aspects.
-            l.style.left = Mathf.Clamp(at.x - Size.Card / 2f, 0f, Tile * BattleConfig.Cols - Size.Card); l.style.top = at.y - 60;
-            l.style.width = Size.Card;
-            l.style.unityTextAlign = TextAnchor.MiddleCenter;
-            l.style.fontSize = size;
-            Fonts.UseHeavy(l);
-            l.style.color = color;
-            FxLayer.Add(l);
-            return l;
-        }
+        /// <summary>A bare floating text label (not animated, the caller moves it) in a combat text kind's face and
+        /// outline (GG-T826: built through <see cref="CombatText.Build"/>). Prefer <see cref="CombatText.Show(UnitView, CombatTextKind, string, float, Color?)"/>,
+        /// which also animates and stacks; this stays for the few callers that drive the label themselves (the damage tally).</summary>
+        public Label Float(string text, Vector2 at, Color color, float size = 64, CombatTextKind kind = CombatTextKind.Support) =>
+            CombatText.Build(this, text, at - new Vector2(0f, 60f - size * 0.75f), CombatText.StyleOf(kind), color, size);
     }
 
     /// <summary>Radial countdown ring drawn around a buff pip: the arc shrinks clockwise as the buff runs out.</summary>
