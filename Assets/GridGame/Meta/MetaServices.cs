@@ -682,12 +682,16 @@ namespace GridGame.Meta
             return spec;
         }
 
-        public static BattleSetup Build(ContentDb c, SaveData s, string stageId, int seed, int difficulty = DifficultyTable.Neutral) =>
-            Build(c, s, c.Stage(stageId), seed, difficulty);
+        public static BattleSetup Build(ContentDb c, SaveData s, string stageId, int seed, int difficulty = DifficultyTable.Neutral,
+            TurnMode profileTurnMode = TurnMode.PartyWindow) =>
+            Build(c, s, c.Stage(stageId), seed, difficulty, profileTurnMode);
 
         /// <summary>A battle for this save. <paramref name="difficulty"/> is the profile's dial 1..10 (GG-T309; the app passes
-        /// <c>Settings.Difficulty.Level</c>, the soaks GRIDGAME_DIFFICULTY); the default <see cref="DifficultyTable.Neutral"/> is unscaled.</summary>
-        public static BattleSetup Build(ContentDb c, SaveData s, StageDef stage, int seed, int difficulty = DifficultyTable.Neutral)
+        /// <c>Settings.Difficulty.Level</c>, the soaks GRIDGAME_DIFFICULTY); the default <see cref="DifficultyTable.Neutral"/> is unscaled.
+        /// <paramref name="profileTurnMode"/> is the profile's turn mode (§2.13, GG-T773; the app passes <c>Settings.TurnMode</c>);
+        /// the save's lock wins over it (<see cref="TurnModeSetting.Resolve"/>).</summary>
+        public static BattleSetup Build(ContentDb c, SaveData s, StageDef stage, int seed, int difficulty = DifficultyTable.Neutral,
+            TurnMode profileTurnMode = TurnMode.PartyWindow)
         {
             Mercenaries.Settle(c, s); // a spent contract never fights an unpaid battle (GG-T233)
             bool crucible = Crucible.IsStage(stage.Id);
@@ -703,6 +707,7 @@ namespace GridGame.Meta
                 Difficulty = difficulty <= DifficultyTable.Neutral ? DifficultyTable.Neutral : DifficultyTable.Clamp(difficulty),
                 StartOrbs = Expeditions.StartOrbs(c, s, stage.Id) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
                 OrbCapacity = ManaOrbs.Owned(c, s), // GG-T677: owned Mana Orbs are how many the row can fill
+                TurnMode = TurnModeSetting.Resolve(s, profileTurnMode), // §2.13 (GG-T773): the save's lock, else the profile's
             };
             foreach (var h in s.Roster) setup.ExcludedGuests.Add(h.ClassId);
             foreach (var g in s.LostGuests) if (Permadeath.IsLost(s, g)) setup.ExcludedGuests.Add(g);

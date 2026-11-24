@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Meta;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace GridGame.Tests
@@ -139,6 +141,62 @@ namespace GridGame.Tests
             Assert.That(s.Hero("paladin"), Is.SameAs(s.Roster[0]));
             Assert.That(s.Hero("PALADIN"), Is.SameAs(s.Roster[0]));
             Assert.That(s.Hero("cleric"), Is.Null);
+        }
+
+        /// <summary>GG-T773 (§2.13): a save from before turn-mode locks (v14, no TurnModeLock field) loads unlocked, so its
+        /// battles play the profile's mode: PartyWindow by default, the only rule it was ever played under.</summary>
+        [Test]
+        public void A_v14_save_without_a_turn_mode_loads_unlocked_as_PartyWindow()
+        {
+            var json = JObject.Parse(SaveFiles.Serialize(NewSave()));
+            json.Remove(nameof(SaveData.TurnModeLock));
+            json[nameof(SaveData.Version)] = 14;
+            var back = SaveMigrations.Migrate(SaveFiles.Deserialize(json.ToString()));
+            Assert.That(back.Version, Is.EqualTo(SaveData.CurrentVersion));
+            Assert.That(back.TurnModeLock, Is.Null);
+            Assert.That(TurnModeSetting.Resolve(back, new SettingsSave()), Is.EqualTo(TurnMode.PartyWindow));
+        }
+
+        /// <summary>GG-T773: New Game's lock survives a save round trip, and Lock(null) unlocks.</summary>
+        [Test]
+        public void A_turn_mode_lock_round_trips_and_can_be_cleared()
+        {
+            var s = NewSave();
+            TurnModeSetting.Lock(s, TurnMode.UnmovedThisRound);
+            var back = SaveMigrations.Migrate(SaveFiles.Deserialize(SaveFiles.Serialize(s)));
+            Assert.That(back.TurnModeLock, Is.EqualTo(TurnMode.UnmovedThisRound));
+            TurnModeSetting.Lock(back, null);
+            Assert.That(back.TurnModeLock, Is.Null);
+            TurnModeSetting.Lock(back, (TurnMode)99);
+            Assert.That(back.TurnModeLock, Is.Null, "a mode the enum doesn't know never locks a save");
+        }
+
+        /// <summary>GG-T773: the one resolver: the save's lock wins, else the profile's setting, and BattleFactory.Build
+        /// feeds it to BattleSetup.TurnMode.</summary>
+        [Test]
+        public void The_save_lock_wins_over_the_profile_setting_and_reaches_the_battle_setup()
+        {
+            var unlocked = NewSave();
+            Assert.That(TurnModeSetting.Resolve(unlocked, TurnMode.HeroTimeline), Is.EqualTo(TurnMode.HeroTimeline));
+            Assert.That(TurnModeSetting.Resolve(null, TurnMode.AnyHeroEveryTurn), Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+            Assert.That(TurnModeSetting.Resolve(unlocked, (SettingsSave)null), Is.EqualTo(TurnMode.PartyWindow));
+            var locked = NewSave();
+            TurnModeSetting.Lock(locked, TurnMode.AnyHeroEveryTurn);
+            Assert.That(TurnModeSetting.Resolve(locked, TurnMode.HeroTimeline), Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+
+            var c = TestKit.Real;
+            var stage = c.CampaignStages()[0].Id;
+            var save = Progression.NewGame(c, "Turns");
+            Assert.That(BattleFactory.Build(c, save, stage, 1).TurnMode, Is.EqualTo(TurnMode.PartyWindow));
+            Assert.That(BattleFactory.Build(c, save, stage, 1, profileTurnMode: TurnMode.HeroTimeline).TurnMode, Is.EqualTo(TurnMode.HeroTimeline));
+            TurnModeSetting.Lock(save, TurnMode.UnmovedThisRound);
+            Assert.That(BattleFactory.Build(c, save, stage, 1, profileTurnMode: TurnMode.HeroTimeline).TurnMode, Is.EqualTo(TurnMode.UnmovedThisRound));
+            try
+            {
+                Assert.That(EndlessEncounter.Build(c, 1).TurnMode, Is.EqualTo(TurnMode.PartyWindow));
+                Assert.That(EndlessEncounter.Build(c, 1, TurnModeSetting.Resolve(null, TurnMode.HeroTimeline)).TurnMode, Is.EqualTo(TurnMode.HeroTimeline));
+            }
+            finally { EndlessEncounter.Prune(c); }
         }
 
         [Test]

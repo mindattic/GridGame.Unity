@@ -36,7 +36,9 @@ namespace GridGame.Meta
         /// registers it in <paramref name="db"/> (the engine looks stages up by id; the caller prunes it when done),
         /// and returns its setup with a level-appropriate geared party. Same content + same seed = same setup.
         /// </summary>
-        public static BattleSetup Build(ContentDb db, int seed)
+        /// <remarks><paramref name="turnMode"/> (§2.13, GG-T773) is the mode the caller resolved (<see cref="TurnModeSetting.Resolve"/>;
+        /// an endless encounter's throwaway save never locks one), PartyWindow by default so a seed replays as before.</remarks>
+        public static BattleSetup Build(ContentDb db, int seed, TurnMode turnMode = TurnMode.PartyWindow)
         {
             Prune(db);
             var stage = EncounterGenerator.Generate(db, seed);
@@ -50,6 +52,7 @@ namespace GridGame.Meta
                 UnlockedSlots = Progression.UnlockedSlots(Progression.NewGame(db, "Endless")),
                 RecommendedLevel = 1, // waves keep their own rising levels (GG-T55); no campaign floor
                 Party = EncounterParty.Generate(db, seed, level),
+                TurnMode = turnMode,
             };
         }
 

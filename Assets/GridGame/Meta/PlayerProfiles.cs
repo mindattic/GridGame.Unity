@@ -40,6 +40,8 @@ namespace GridGame.Meta
             public const string Difficulty = "difficulty";
             /// <summary>Settings → Text size (GG-T495): 100, 115 or 130 (percent).</summary>
             public const string TextScale = "textScale";
+            /// <summary>The turn mode (§2.13, GG-T773): a <see cref="GridGame.Core.Battle.TurnMode"/> name, default PartyWindow.</summary>
+            public const string TurnMode = "turnMode";
         }
 
         /// <summary>A text size the game offers (GG-T495), or 100 for anything else in the file.</summary>
@@ -97,6 +99,7 @@ namespace GridGame.Meta
             d.TextScale = ClampTextScale(g.GetInt(Keys.TextScale, d.TextScale));
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             d.ThemeTones = ReadThemeTones(g.GetObject(Keys.ThemeTones));
+            d.TurnMode = TurnModeSetting.Parse(g.GetString(Keys.TurnMode, null)); // GG-T773: missing/unknown = PartyWindow
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -130,6 +133,7 @@ namespace GridGame.Meta
             g.Set(Keys.LookVersion, CurrentLookVersion);
             g.Set(Keys.Hyphenate, s.Hyphenate);
             g.Set(Keys.TextScale, ClampTextScale(s.TextScale));
+            g.Set(Keys.TurnMode, TurnModeSetting.Parse(s.TurnMode.ToString()).ToString());
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));

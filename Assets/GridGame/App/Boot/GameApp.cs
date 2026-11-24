@@ -827,7 +827,7 @@ namespace GridGame.App
             // GG-T64: the same pure seed -> encounter build a headless Core replay uses (EndlessEncounter.Replay), so
             // `-demo -endless -seed S -count 1` reproduces exactly the encounter a record/report flagged with seed S.
             // Build prunes the previous encounter's stage first — safe now: its results screen reads name/theme from the report.
-            var setup = EndlessEncounter.Build(c, seed);
+            var setup = EndlessEncounter.Build(c, seed, TurnModeSetting.Resolve(null, app.Settings)); // §2.13 (GG-T773): the profile's mode
             var stage = setup.Stage;
 
             // A fresh throwaway save per encounter: BattleFactory.Commit has somewhere to land (so the results screen

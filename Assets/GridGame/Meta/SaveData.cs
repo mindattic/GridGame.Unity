@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 14;
+        public const int CurrentVersion = 15;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -94,6 +94,10 @@ namespace GridGame.Meta
         public bool TestMode;
         /// <summary>New Game+ cycle (0 = first run). Unlocked by clearing the last campaign stage (US-332).</summary>
         public int NewGamePlus;
+        /// <summary>The turn mode this save is locked to (§2.13, GG-T773), chosen at New Game; null = unlocked, every battle
+        /// plays the profile's <see cref="SettingsSave.TurnMode"/>. <see cref="TurnModeSetting.Resolve"/> picks between them.
+        /// Save v15: an older save loads unlocked (and every profile defaults to PartyWindow, the only rule it knew).</summary>
+        public TurnMode? TurnModeLock;
 
         /// <summary>The expedition under way (null = at the caravan between expeditions) — §22.5.</summary>
         public ExpeditionSave Expedition;
@@ -437,6 +441,43 @@ namespace GridGame.Meta
         public int TextScale = 100;
         /// <summary>The difficulty dial 1..10 (§22.9, GG-T309), 10 by default; applies from the next battle.</summary>
         public DifficultySettings Difficulty = new DifficultySettings();
+        /// <summary>The turn mode (§2.13, GG-T773): <c>turnMode</c> in settings.json, <see cref="TurnMode.PartyWindow"/> by
+        /// default. A save's <see cref="SaveData.TurnModeLock"/> overrides it (<see cref="TurnModeSetting.Resolve"/>).</summary>
+        public TurnMode TurnMode = TurnMode.PartyWindow;
+    }
+
+    /// <summary>
+    /// The one place a battle's turn mode is picked (§2.13, GG-T773): the save's lock if it has one, else the profile's
+    /// setting. <see cref="BattleFactory.Build"/> (campaign, stage, Crucible, bounty, wanderer, test-mode and tutorial
+    /// battles), <see cref="EndlessEncounter.Build"/> and the app's battle screen all set <see cref="BattleSetup.TurnMode"/>
+    /// from it; no battle picks its mode any other way.
+    /// </summary>
+    public static class TurnModeSetting
+    {
+        /// <summary>The mode a battle on <paramref name="save"/> plays: its lock, else <paramref name="profile"/>.
+        /// A value the enum doesn't know (a hand edit) reads as <see cref="TurnMode.PartyWindow"/>.</summary>
+        public static TurnMode Resolve(SaveData save, TurnMode profile)
+        {
+            var mode = save?.TurnModeLock ?? profile;
+            return Enum.IsDefined(typeof(TurnMode), mode) ? mode : TurnMode.PartyWindow;
+        }
+
+        /// <summary>The mode a battle on <paramref name="save"/> plays under <paramref name="settings"/> (null = the defaults).</summary>
+        public static TurnMode Resolve(SaveData save, SettingsSave settings) =>
+            Resolve(save, settings?.TurnMode ?? TurnMode.PartyWindow);
+
+        /// <summary>New Game's choice (GG-T773): locks <paramref name="save"/> to <paramref name="mode"/>, or unlocks it
+        /// (null) so it follows the profile setting.</summary>
+        public static void Lock(SaveData save, TurnMode? mode)
+        {
+            if (save == null) return;
+            save.TurnModeLock = mode is TurnMode m && Enum.IsDefined(typeof(TurnMode), m) ? m : (TurnMode?)null;
+        }
+
+        /// <summary>The mode a settings.json value names; missing or unknown reads as <see cref="TurnMode.PartyWindow"/>.</summary>
+        public static TurnMode Parse(string name) =>
+            !string.IsNullOrEmpty(name) && !int.TryParse(name, out _) && Enum.TryParse(name, false, out TurnMode m) && Enum.IsDefined(typeof(TurnMode), m)
+                ? m : TurnMode.PartyWindow;
     }
 
     /// <summary>
@@ -675,6 +716,15 @@ namespace GridGame.Meta
                 }
                 s.Version = 14;
             }
+            if (s.Version < 15)
+            {
+                // GG-T773: saves can lock a turn mode (§2.13). Every older save was played under PartyWindow, the only rule
+                // there was, and stays unlocked: it follows the profile setting, whose default is PartyWindow.
+                s.TurnModeLock = null;
+                s.Version = 15;
+            }
+            // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
+            if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
             foreach (var h in s.Roster)
                 if (h != null && h.Variant != HeroVariant.Female && h.Variant != HeroVariant.Male) h.Variant = HeroVariant.Female;

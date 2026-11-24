@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using GridGame.Core.Battle;
 using GridGame.Meta;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -228,6 +229,24 @@ namespace GridGame.Tests
             var stored = ProfileSettings.Load(store.Get("Alice").SettingsPath);
             Assert.That(stored.Common.MusicVolume, Is.EqualTo(0.8f).Within(1e-4));
             Assert.That(stored.Common.MuteMusic, Is.False);
+        }
+
+        /// <summary>GG-T773 (§2.13): turnMode in settings.json, PartyWindow when missing or unknown, written by name.</summary>
+        [Test]
+        public void Turn_mode_is_a_profile_setting_defaulting_to_PartyWindow()
+        {
+            var session = new ProfileSession(store, "Alice");
+            Assert.That(session.Settings.TurnMode, Is.EqualTo(TurnMode.PartyWindow), "a new profile plays the default");
+            session.Settings.TurnMode = TurnMode.AnyHeroEveryTurn;
+            session.SaveSettings();
+            var ps = ProfileSettings.Load(store.Get("Alice").SettingsPath);
+            Assert.That(ps.Game.GetString(GameSettings.Keys.TurnMode), Is.EqualTo("AnyHeroEveryTurn"));
+            Assert.That(GameSettings.Read(ps).TurnMode, Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+
+            ps.Game.Set(GameSettings.Keys.TurnMode, "NoSuchMode");
+            Assert.That(GameSettings.Read(ps).TurnMode, Is.EqualTo(TurnMode.PartyWindow), "an unknown name reads as the default");
+            ps.Game.Remove(GameSettings.Keys.TurnMode);
+            Assert.That(GameSettings.Read(ps).TurnMode, Is.EqualTo(TurnMode.PartyWindow), "a settings.json from before GG-T773");
         }
 
         [Test]
