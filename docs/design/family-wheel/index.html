@@ -2,53 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>GridGame Family Wheel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-
 <div class="wrap">
   <header>
     <div>
       <h1>Family Wheel</h1>
-      <p class="sub">Every hero ability on one board. Each class starts on the rim of its family's wedge, angled toward the neighbour it plays most like. Anything on the wheel can be learned; the further round from your start, the more it costs.</p>
-    </div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="Wheel shape">
-        <button id="b8" type="button" aria-pressed="true">Octagon · 8</button>
-        <button id="b6" type="button" aria-pressed="false">Hexagon · 6</button>
-      </div>
-      <label class="pick" for="cls">Spec from
-        <select id="cls"><option value="">no class</option></select>
-      </label>
-      <button class="reset" id="clear" type="button">Clear</button>
+      <p class="sub">One ring of all 69 heroes, ordered so neighbours play alike, cut into equal families. A hero standing on a cut belongs to both families. Move round the rim to pick up stat passives and step sideways into a neighbour family; move inward to go deeper into your own. Every move is reachable by every hero; each family border you cross adds to its price.</p>
     </div>
   </header>
 
+  <section class="compare">
+    <h2>Which shape fits</h2>
+    <p class="note">Equal families need the ring to divide evenly, so each shape either adds open slots for new heroes or drops a few. Fit is the share of heroes who land in a family led by the family they have today.</p>
+    <div class="tablewrap"><table id="cmp"><thead><tr><th>Shape</th><th>Change</th><th class="n">Heroes per family</th><th class="n">Fit</th><th>Families</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Number of families" id="segN"></div>
+    <div class="seg" role="group" aria-label="Add or drop heroes" id="segP"></div>
+    <label class="pick" for="cls">Spec from
+      <select id="cls"><option value="">no hero</option></select>
+    </label>
+    <label class="pick"><input type="checkbox" id="pas" checked> Stat passives</label>
+    <button class="reset" id="clear" type="button">Clear</button>
+  </div>
+
   <div class="main">
-    <div class="board"><svg id="wheel" viewBox="-560 -560 1120 1120" role="img" aria-label="Family skill wheel"></svg></div>
+    <div class="board"><svg id="wheel" viewBox="-600 -600 1200 1200" role="img" aria-label="Family skill wheel"></svg></div>
     <aside>
       <div>
-        <h2 id="ptitle">How the wheel prices a move</h2>
-        <p id="pbody">Pick a class (or click its diamond on the rim) to shade every ability by what it costs that class. Hover any wedge, diamond or node for details.</p>
+        <h2 id="ptitle">Reading the wheel</h2>
+        <p id="pbody"></p>
       </div>
       <div class="legend" id="legend"></div>
       <div class="bars" id="bars"></div>
       <div id="detail"></div>
       <div>
-        <h2>Wedges</h2>
-        <table><thead><tr><th>Family</th><th>Opposite</th><th class="n">Classes</th><th class="n">Moves</th></tr></thead><tbody id="tbl"></tbody></table>
+        <h2>Families on this shape</h2>
+        <div id="arcs" class="arcs"></div>
+      </div>
+      <div>
+        <h2>Changes</h2>
+        <div id="changes" class="changes"></div>
       </div>
     </aside>
   </div>
 </div>
 <div id="tip" hidden></div>
-
 <script src="data.js"></script>
+<script src="model.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
