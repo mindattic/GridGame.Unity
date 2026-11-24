@@ -2047,6 +2047,17 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
 - Tile highlights and pincer lines draw **over** the units so previews stay readable.
 - Long banner text steps its font down (48 → 38 → 32) so it never runs off the stage.
 
+### 9.1 Combat text (GG-T826, epic GG-T823)
+
+**Owner 2026-11-24:** "action packed and bombastic like Devil May Cry": combat text varies by damage, health, debuff, buff and timer, with one cohesive feel. Battle text may use its own faces and sizes, the allowed exception to the one GUI text size (§26.6, GG-T770).
+
+- **One entry point.** `CombatText` (`App/Battle/CombatText.cs`, one per board, `BattleScreen.Text`) shows every floating battle text: `Show(unit | tile | point, kind, text, magnitude, tint?)`. `BattleScreen.FloatText` delegates to it (an explicit kind, else size 70+ reads as Callout and anything smaller as Support); `BoardView.Float` builds its bare label through `CombatText.Build` for the few callers that animate a label themselves (the pincer damage tally).
+- **Kinds.** `CombatTextKind`: Damage, Crit, Overkill (the hit that takes the target to 0 HP), Heal, Buff, Debuff, StatusTick (damage-over-time ticks, sleep), Timer (casting, charging, pushback, stagger, interrupted), Miss (miss, dodge), Immune (armored), Weak, Resist (clang, steady, resisted), Combo (pincer and chain shouts), Callout (big named moments), Support (everything else).
+- **Style table.** `CombatText.StyleOf(kind)` gives each kind a face (Heavy rounded cut for impact kinds, the Display face for Callout, Body for Timer), a colour from `Palette`, an outline width and colour (dark ink, or a hot dark edge for Crit, Overkill, Weak and Combo), the drop shadow, a motion, a duration and a lift above the anchor. Sizes are style tokens, multiples of `TypeScale.Base`: Damage 1.5, Crit 2.0, Overkill 2.3, Combo 1.6, Callout 1.5, Heal 1.3, Weak 1.2, Miss/Immune 1.1, Buff/Debuff 1.05, Resist/Support 1.0, Timer 0.95, StatusTick 0.9; each kind also grows by its share of magnitude (0..1: damage or heal as twice its share of max HP, a chain's length over 4).
+- **Motions.** Slam (falls onto the target, squashes, settles, holds, drops: Damage, Crit, Overkill, Combo; GG-T668's strike), Pop (swells in and holds: Buff, Weak, Callout), Rise (Heal, Support), Arc (hops aside: Miss, Resist), Shake (jitters while it holds: Debuff, Immune), Drift (slow rise with a sway: StatusTick, Timer).
+- **Stacking.** Texts anchored on the same half-tile cell while another is still up take the lowest free slot: each slot steps up about a line and alternates sides, so simultaneous texts never overlap. A slot frees when its text ends.
+- **Reduce Motion and Battle speed.** Under Reduce Motion (`Tween.Calm`) every text still shows: travel, swell, hop and jitter shrink or stop. Every duration runs through `Tween`, so Battle speed scales it.
+
 ---
 
 ## 10. Equipment (summary — see §24)
