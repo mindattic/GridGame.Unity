@@ -153,7 +153,7 @@ GG-PEOPLES, GG-ARC), written with `prose --set-canon-section` (no approval step)
 the Watch, the Infernalists, the tithe, the Hollow, the Anchors, the Arks, the reservoir, the Bloom, the Hierarch (the
 Choir's human leader, the villain), the party ("the Crew") and Saltmoss were created in Prose with its own authoring
 tools, not the interchange file, so a pruning push never retires them. They are tagged `DECIDED`; the Hierarch
-`appears-as` `class-hierarch`. GG-T577 archived the old-premise entities (the Pale Concord, the Bright Host, the
+`appears-as` `class-hierarch`. GG-T577 archived the old-premise entities (the old white order, the Bright Host, the
 celestials, the Herald as the Host's messenger, the breaches, the falls, the old ending, the v1 to v3 premises), tagged
 `RETIRED`; the hero Herald is `class-herald`.
 
