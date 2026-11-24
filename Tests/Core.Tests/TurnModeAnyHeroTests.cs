@@ -648,5 +648,79 @@ namespace GridGame.Tests
             Assert.That(a, Is.Not.Empty);
             Assert.That(b, Is.EqualTo(a), "the bot is deterministic for a seed");
         }
+
+        // GG-T944: party turns, counted at the turn boundary, beside ActionsTaken (every accepted command).
+
+        [Test]
+        public void Party_turns_equal_actions_when_each_action_is_a_turn()
+        {
+            var (s, _) = Trio();
+            Assert.That(s.Results.PartyTurns, Is.EqualTo(0), "no turn played yet");
+            Assert.That(NewTurn(Step(s, Hero(s, "knight"), -1)), Is.True);
+            Assert.That(NewTurn(Step(s, Hero(s, "knight"), -1)), Is.True);
+            Assert.That(NewTurn(Step(s, Hero(s, "cleric"), -1)), Is.True);
+            Assert.That(s.Results.ActionsTaken, Is.EqualTo(3));
+            Assert.That(s.Results.TurnsEnded, Is.EqualTo(3));
+            Assert.That(s.Results.ActionsAtTurnEnd, Is.EqualTo(3));
+            Assert.That(s.Results.PartyTurns, Is.EqualTo(s.Results.ActionsTaken));
+        }
+
+        [Test]
+        public void Party_turns_are_fewer_than_actions_when_two_heroes_share_a_party_window()
+        {
+            // HeroWindowTests' set-up: a wolf 30 ticks (3 s) out, so both heroes' drags fit one window.
+            var (s, _) = TestKit.Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 3, 7));
+            Assert.That(s.TurnMode, Is.EqualTo(TurnMode.PartyWindow));
+            var wolf = s.Units.First(u => u.Def.Id == "wolf");
+            s.TurnEntryOf(wolf.Id).Ip = BattleConfig.BarLength - BattleEngine.TurnRatePerTick(s, wolf) * 30;
+            List<BattleEvent> Drag(Unit h, float held) =>
+                BattleEngine.Apply(s, new MoveCommand { HeroId = h.Id, Path = new List<Coord> { new Coord(h.Pos.X, 6) }, HeldSeconds = held });
+
+            Assert.That(NewTurn(Drag(Hero(s, "knight"), 1f)), Is.False, "the knight's drag leaves the window open");
+            Assert.That(s.Results.PartyTurns, Is.EqualTo(1), "the turn in progress counts");
+            Assert.That(NewTurn(Drag(Hero(s, "cleric"), 0.5f)), Is.True, "the last hero to act ends the window");
+            Assert.That(s.Results.ActionsTaken, Is.EqualTo(2));
+            Assert.That(s.Results.TurnsEnded, Is.EqualTo(1));
+            Assert.That(s.Results.PartyTurns, Is.EqualTo(1), "both actions were one party turn");
+            Assert.That(s.Results.PartyTurns, Is.LessThan(s.Results.ActionsTaken));
+        }
+
+        [Test]
+        public void The_turn_the_battle_ends_in_counts_and_clone_carries_the_counters()
+        {
+            var r = new BattleResults { ActionsTaken = 5, TurnsEnded = 2, ActionsAtTurnEnd = 4 };
+            Assert.That(r.PartyTurns, Is.EqualTo(3), "an action after the last boundary is a turn of its own");
+            r.ActionsAtTurnEnd = 5;
+            Assert.That(r.PartyTurns, Is.EqualTo(2), "nothing acted since the last boundary");
+            var copy = r.Clone();
+            Assert.That((copy.TurnsEnded, copy.ActionsAtTurnEnd, copy.PartyTurns), Is.EqualTo((2, 5, 2)));
+        }
+
+        [Test]
+        public void The_results_row_names_turns_and_actions_only_when_they_differ()
+        {
+            Assert.That(new GridGame.Meta.BattleReport().TurnsLabel(), Is.EqualTo(""));
+            Assert.That(new GridGame.Meta.BattleReport { PartyTurns = 1, Actions = 1 }.TurnsLabel(), Is.EqualTo("1 turn"));
+            Assert.That(new GridGame.Meta.BattleReport { PartyTurns = 7, Actions = 7 }.TurnsLabel(), Is.EqualTo("7 turns"));
+            Assert.That(new GridGame.Meta.BattleReport { PartyTurns = 4, Actions = 11 }.TurnsLabel(), Is.EqualTo("4 turns, 11 actions"));
+        }
+
+        [Test]
+        public void The_encounter_record_carries_party_turns()
+        {
+            var db = Mini();
+            var setup = new BattleSetup { Stage = Stage(("goblin", 5, 0)), Seed = 7, UnlockedSlots = 5, TurnMode = TurnMode.AnyHeroEveryTurn };
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(0, 6) });
+            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(2, 6) });
+            var initial = new List<BattleEvent>();
+            var s = BattleEngine.Create(db, setup, initial);
+            var telemetry = new EncounterTelemetry(db, setup, s, initial, null, 0);
+            telemetry.Observe(Step(s, Hero(s, "knight"), -1), s, 1);
+            telemetry.Observe(Step(s, Hero(s, "knight"), -1), s, 2);
+            var record = telemetry.Build(s, 3);
+            Assert.That(record.PartyTurns, Is.EqualTo(2));
+            Assert.That(record.Actions, Is.EqualTo(2));
+            Assert.That(record.Turns, Is.EqualTo(2), "Turns stays the count of observed commands");
+        }
     }
 }

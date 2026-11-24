@@ -72,6 +72,10 @@ namespace GridGame.App
         Fade,
     }
 
+    /// <summary>How hard a blow read against its target (GG-T827): its share of the target's max HP, in four tiers that
+    /// size the number (chip under 10%, solid under 25%, heavy under 50%, massive from half up).</summary>
+    public enum DamageTier { Chip, Solid, Heavy, Massive }
+
     /// <summary>Which face a combat text draws in. Impact kinds use the heavy rounded cut; callouts use the Display
     /// face; chatter uses the body face.</summary>
     public enum CombatFace { Heavy, Display, Body }
@@ -121,9 +125,9 @@ namespace GridGame.App
         {
             switch (kind)
             {
-                case CombatTextKind.Damage: return new CombatTextStyle(CombatFace.Heavy, Palette.White, 1.5f, 0.5f, 4f, Edge, true, CombatMotion.Slam, 0.75f, 0f);
-                case CombatTextKind.Crit: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.85f, 0.2f), 2f, 0.5f, 5f, new Color(0.35f, 0.1f, 0f), true, CombatMotion.Slam, 0.95f, 0f);
-                case CombatTextKind.Overkill: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.42f, 0.18f), 2.3f, 0.4f, 6f, new Color(0.3f, 0f, 0f), true, CombatMotion.Slam, 1.05f, 0f);
+                case CombatTextKind.Damage: return new CombatTextStyle(CombatFace.Heavy, Palette.White, 1.35f, 1f, 4f, Edge, true, CombatMotion.Slam, 0.75f, 0f);
+                case CombatTextKind.Crit: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.85f, 0.2f), 1.9f, 0.9f, 5f, new Color(0.35f, 0.1f, 0f), true, CombatMotion.Slam, 0.95f, 0f);
+                case CombatTextKind.Overkill: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.42f, 0.18f), 2.1f, 0.8f, 6f, new Color(0.3f, 0f, 0f), true, CombatMotion.Slam, 1.05f, 0f);
                 case CombatTextKind.Heal: return new CombatTextStyle(CombatFace.Heavy, Palette.Good, 1.3f, 0.4f, 3f, Edge, true, CombatMotion.Rise, 0.8f, 0.1f);
                 case CombatTextKind.Buff: return new CombatTextStyle(CombatFace.Heavy, Palette.Buff, 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Rise, 0.85f, 0.3f);
                 case CombatTextKind.Debuff: return new CombatTextStyle(CombatFace.Heavy, new Color(0.86f, 0.45f, 1f), 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Drop, 0.85f, 0.3f);
@@ -177,6 +181,46 @@ namespace GridGame.App
             l.AddToClassList("combat-text");
             l.AddToClassList("combat-text--" + kind.ToString().ToLowerInvariant());
             host.StartCoroutine(Animate(l, s, () => { used.Remove(slot); if (used.Count == 0) slots.Remove(cell); }));
+            return l;
+        }
+
+        /// <summary>GG-T827: a crit's extra hit-stop (seconds held on the impact frame, on top of the tier's own).</summary>
+        public const float CritHitStop = 0.08f;
+
+        /// <summary>GG-T827: the tier a blow of <paramref name="amount"/> reads as against a target of <paramref name="maxHp"/>.</summary>
+        public static DamageTier TierOf(int amount, int maxHp)
+        {
+            if (maxHp <= 0 || amount <= 0) return DamageTier.Chip;
+            float share = (float)amount / maxHp;
+            return share < 0.1f ? DamageTier.Chip : share < 0.25f ? DamageTier.Solid : share < 0.5f ? DamageTier.Heavy : DamageTier.Massive;
+        }
+
+        /// <summary>GG-T827: the magnitude (0..1) a tier sizes its number at: chip 0, solid 1/3, heavy 2/3, massive 1.</summary>
+        public static float MagnitudeOf(DamageTier tier) => (int)tier / 3f;
+
+        /// <summary>GG-T827: the tag an elemental read puts beside the number (null for a normal hit).</summary>
+        public static string TagOf(HitEffectiveness e) =>
+            e == HitEffectiveness.Weak ? "WEAK" : e == HitEffectiveness.Resist ? "RESIST" : e == HitEffectiveness.Immune ? "IMMUNE" : null;
+
+        /// <summary>
+        /// GG-T827: a damage number read by magnitude. <paramref name="kind"/> (Damage, Crit, Overkill, Combo for a pincer
+        /// tally) picks the look; the blow's share of <paramref name="maxHp"/> picks one of four sizes
+        /// (<see cref="TierOf"/>); a weakness, resistance or immunity tags it (WEAK / RESIST / IMMUNE in their own kinds,
+        /// on the next stacking slot); a kill with damage to spare (<paramref name="overkill"/> above 0) prints OVERKILL.
+        /// </summary>
+        public Label Damage(Vector2 at, CombatTextKind kind, string text, int amount, int maxHp, HitEffectiveness effect = HitEffectiveness.Normal, int overkill = 0, Color? tint = null)
+        {
+            var tier = TierOf(amount, maxHp);
+            var l = Show(at, kind, text, MagnitudeOf(tier), tint);
+            l.AddToClassList("combat-text--" + tier.ToString().ToLowerInvariant());
+            var tag = TagOf(effect);
+            if (tag != null)
+            {
+                var tagKind = effect == HitEffectiveness.Weak ? CombatTextKind.Weak : effect == HitEffectiveness.Resist ? CombatTextKind.Resist : CombatTextKind.Immune;
+                Show(at, tagKind, tag, effect == HitEffectiveness.Weak ? MagnitudeOf(tier) : 0f);
+            }
+            if (overkill > 0)
+                Show(at, CombatTextKind.Callout, "OVERKILL", maxHp > 0 ? Mathf.Clamp01((float)overkill / maxHp) : 0.5f, StyleOf(CombatTextKind.Overkill).Color);
             return l;
         }
 

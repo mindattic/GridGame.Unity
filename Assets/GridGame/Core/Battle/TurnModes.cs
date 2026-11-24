@@ -12,7 +12,7 @@ namespace GridGame.Core.Battle
     public static class TurnModes
     {
         /// <summary>The modes that are built, in the order the pickers cycle them. PartyWindow first (the default).</summary>
-        public static readonly IReadOnlyList<TurnMode> Available = new[] { TurnMode.PartyWindow };
+        public static readonly IReadOnlyList<TurnMode> Available = new[] { TurnMode.PartyWindow, TurnMode.AnyHeroEveryTurn }; // GG-T787: §2.13.1
 
         /// <summary>Whether <paramref name="mode"/> can be played and picked (the one check the pickers use).</summary>
         public static bool IsBuilt(TurnMode mode)

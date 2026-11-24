@@ -50,7 +50,7 @@ and 18 status icons.
   full-body painterly anime concept art with loose ink linework, soft flat shading and a muted palette with one strong
   accent colour. Each figure stands alone on a plain light background, which `GridGame.Studio/tools/remove_bg.py` makes transparent,
   and `GridGame.Studio/tools/import_art.py` puts on the 1024×1024 transparent canvas (POL-H1). Faction colours follow STORY_OUTLINE §3.
-  The Pale Concord is white with cyan, the Ember is red and black, the Street wears neon streetwear, the Free Holds wear
+  The Hierarch's soldiers are white with cyan, the Ember is red and black, the Street wears neon streetwear, the Free Holds wear
   greens and whites, plate and furs, the Lantern Road wears indigo and black with red sashes, and the marsh is dark blue.
   **Every character prompt ends `--niji 5`** (never `--v 7`).
 - **Backdrops** match the existing sets (for example `arkgrave-00.jpg`). They are vertical cinematic matte paintings,
@@ -92,12 +92,12 @@ so a boss look needs either its own class id or a portrait-override field (code 
 | # | Asset id | Where it shows | Now | Prompt |
 |---|---|---|---|---|
 | 3 | `oni02` boss | Stage 6, Lantern Road III finale (`Undying`) | Same art as the `oni02` filler in stages 4-5 | `oni warlord who will not die, towering masked demon in torn crimson and black kimono, cracked red oni mask, paper prayer charms burning on his arms, crouched with a great odachi, lantern light, {…}` |
-| 4 | `mechaarmor01` boss | Stage 9, Shardfall III finale (`AxisWard`) | Same art as a filler in stage 35 | `shield-walker commander, white power armour with a tower shield on each arm locked into a wall, cyan aether core in the chest, red earth dust, Concord insignia, {…}` |
+| 4 | `mechaarmor01` boss | Stage 9, Shardfall III finale (`AxisWard`) | Same art as a filler in stage 35 | `shield-walker commander, white power armour with a tower shield on each arm locked into a wall, cyan mana core in the chest, red earth dust, Choir insignia, {…}` |
 | 5 | `swampmistress00` boss | Stage 12, Arkgrave III finale (`MireSwap`) | Same art as a filler in stage 33 | `Swamp Mistress queen, veiled marsh witch rising from black water, crown of green tendrils and lotus, dark blue gown dripping, glowing green eyes, {…}` |
 | 6 | `cyclops02` boss | Stage 15, Anchor Wastes III finale (`GravityStamp`) | Same art as a filler in stages 14 and 37 | `vat-giant patriarch, colossal one-eyed giant of white flesh with a single red eye, steel vat clamps and cyan tubes in its back, stamping the ground, pink snow, {…}` |
 | 7 | `chronomancer` boss | Stage 18, The Still III finale (`TwinTurn`) | Same art as a filler in stage 14 | `Chronomancer ascendant, white-robed time mage surrounded by floating brass clock wheels and cyan dials, two overlapping afterimages of himself, {…}` |
 | 8 | `ceramicknight06` boss | Stage 21, Halcyon III finale (`AxisWard`) | Same art as a filler in stage 24 | `Kiln Guard champion, porcelain knight in a long white cape with red glyphs, cracked golden kintsugi seams across its armour, great porcelain kite shield and longsword, {…}` |
-| 9 | `captain` boss | Stage 3, Tithe Moors III finale (`TwinTurn`) | Same art as a foe in stages 1, 9, 29, 34, 35. **Partly by design** (the recurring villain), so low priority | `the Captain, hold officer in dark plate under a white Concord tabard, scarred, cloak torn by moor wind, drawn sword and raised gauntlet giving an order, {…}` |
+| 9 | `captain` boss | Stage 3, Tithe Moors III finale (`TwinTurn`) | Same art as a foe in stages 1, 9, 29, 34, 35. **Partly by design** (the recurring villain), so low priority | `the Captain, hold officer in dark plate under a white Choir tabard, scarred, cloak torn by moor wind, drawn sword and raised gauntlet giving an order, {…}` |
 
 ### 1.3 Shared portraits
 

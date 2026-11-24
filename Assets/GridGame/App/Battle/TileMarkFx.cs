@@ -16,6 +16,10 @@ namespace GridGame.App
         /// state's colour that swells, and wobbles harder and quicker, as <see cref="Life"/> drains. <see cref="Calm"/>
         /// (Reduce Motion) holds it still, swelling only.</summary>
         public bool Glob, Calm;
+        /// <summary>GG-T935: the mark is the party's standing wall (the Machinist's barricade): drawn as a braced crate,
+        /// <see cref="Wear"/> (0..1, hits taken of its threshold) splitting its planks.</summary>
+        public bool Crate;
+        public float Wear;
         private readonly Color owner, state;
         private readonly bool hidden;
 
@@ -51,12 +55,41 @@ namespace GridGame.App
                 var shine = c + new Vector2(-radius * 0.35f, -radius * (0.4f + 0.5f * wobble * Mathf.Sin(phase)));
                 Shapes.Dot(p, shine, radius * 0.18f, ShapeStyle.Small.Tint(Color.white.WithA(0.7f)).Outlined(Color.clear, 0f));
             }
+            if (Crate && !hidden) DrawCrate(p, r, Wear);
             if (Life >= 0f)
             {
                 var st = ShapeStyle.Small.Thick(6f);
                 float radius = Mathf.Min(r.width, r.height) * 0.38f;
                 Shapes.Ring(p, r.center, radius, st.Tint(ShapeStyle.Ink.WithA(0.35f)));
                 if (Life > 0f) Shapes.Ring(p, r.center, radius, st.Tint(Color.Lerp(state, Color.white, 0.25f).WithA(hidden ? 0.5f : 0.95f)), -90f, 360f * Life);
+            }
+        }
+
+        /// <summary>The crate wood (GG-T935).</summary>
+        public static readonly Color Wood = new Color(0.62f, 0.45f, 0.26f, 1f);
+
+        /// <summary>GG-T935 (Shapes §11.6): a braced crate filling most of <paramref name="r"/>: a wood body with the ink
+        /// outline, an inner frame and a cross brace (each a Shapes bar, ink-outlined); <paramref name="wear"/> (0..1) darkens
+        /// the wood and splits the brace, so a wall about to give reads as one.</summary>
+        public static void DrawCrate(Painter2D p, Rect r, float wear)
+        {
+            float pad = Mathf.Min(r.width, r.height) * 0.16f;
+            var box = new Rect(r.x + pad, r.y + pad, r.width - 2f * pad, r.height - 2f * pad);
+            var wood = Color.Lerp(Wood, new Color(0.3f, 0.2f, 0.12f, 1f), Mathf.Clamp01(wear) * 0.6f);
+            var plank = Color.Lerp(wood, Color.white, 0.25f);
+            Shapes.RoundedRect(p, box, 8f, ShapeStyle.Small.Tint(wood).Outlined(ShapeStyle.Ink, 3f), filled: true);
+            var inner = new Rect(box.x + 9f, box.y + 9f, box.width - 18f, box.height - 18f);
+            Shapes.RoundedRect(p, inner, 4f, ShapeStyle.Small.Tint(plank).Thick(5f).Outlined(ShapeStyle.Ink, 2f));
+            var brace = ShapeStyle.Small.Tint(plank).Thick(7f).Outlined(ShapeStyle.Ink, 2f);
+            var a = new Vector2(inner.xMin + 4f, inner.yMax - 4f);
+            var b = new Vector2(inner.xMax - 4f, inner.yMin + 4f);
+            if (wear < 0.5f) Shapes.Bar(p, a, b, brace);
+            else
+            {
+                // Split: the brace snaps in the middle, each half sagging.
+                var mid = (a + b) * 0.5f;
+                Shapes.Bar(p, a, mid + new Vector2(-6f, 8f), brace);
+                Shapes.Bar(p, mid + new Vector2(6f, -2f), b, brace);
             }
         }
     }

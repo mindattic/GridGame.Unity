@@ -38,7 +38,7 @@ namespace GridGame.App
         /// <summary>A tappable glossary [term] (GG-T300): the same light blue class cards always marked keywords with.</summary>
         public static readonly Color Term = new Color(0.61f, 0.78f, 1f);
         public static readonly Color Mana = Art.Mana;
-        // GG-T673: the battle's mana orbs, their bloom and their trails, sampled from the blue Somnolith art (GG-T674,
+        // GG-T673: the battle's mana orbs, their bloom and their trails, sampled from the blue Manalith art (GG-T674,
         // owner: "it's blue like mana is expected to be"): near-black navy glass, indigo liquid, a lighter violet bloom and
         // the art's red-pink glint.
         public static readonly Color ManaDeep = new Color(0x20 / 255f, 0x19 / 255f, 0x3C / 255f);

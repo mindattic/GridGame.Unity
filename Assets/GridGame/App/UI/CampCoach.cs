@@ -79,8 +79,24 @@ namespace GridGame.App
                 return;
             }
             if (Coach.Pending(s, "equip") && EquipPlan(GameApp.I.Content, s) is (HeroSave h, EquipmentSlot slot, ItemDef item))
+            {
                 Coach.Run(EquipLesson(GameApp.I.Content, s, h, slot, item));
+                return;
+            }
+            // GG-T926: once a stage is cleared and the Codex holds an unread entry, one lesson points at its row.
+            if (Coach.Pending(s, CodexLesson) && s.ClearedStages != null && s.ClearedStages.Count > 0
+                && Codex.UnreadCount(GameApp.I.Content, s) > 0 && CampTipOverlay.Find("camp-codex") != null)
+                Coach.Run(new CoachLesson
+                {
+                    Id = CodexLesson, Kicker = "Camp", Title = "The Codex",
+                    Text = "Places, people, foes and story beats you meet are written into the Codex. A New badge marks the entries you haven't read yet.",
+                    Image = "Tutorial/" + CodexLesson,
+                    Steps = { new CoachStep { Caption = "Tap Codex.", Element = () => CampTipOverlay.Find("camp-codex") } },
+                });
         }
+
+        /// <summary>GG-T926: the Codex lesson's id (its save flag is "lesson:hub-codex").</summary>
+        public const string CodexLesson = "hub-codex";
 
         private static string Label(string row) =>
             row == "camp-summon-circle" ? "Summon Circle" : char.ToUpperInvariant(row[5]) + row.Substring(6);

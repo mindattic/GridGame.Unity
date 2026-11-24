@@ -72,6 +72,10 @@ namespace GridGame.Core.Battle
             // hold is a share of the window as it stood at pickup).
             int spend = BattleEngine.CommandTicks(S, cmd);
             bool forcedGuard = TurnRules.IsForcedGuard(S, cmd); // GG-T311: a sacrifice, not a choice
+            // GG-T882: a stance worn until the bearer's next action (Anchor Stance) lifts as that action starts, so a
+            // planted Warden walks again; a command that is then refused puts it back.
+            var stanceBearer = S.UnitById(BattleEngine.CommandHeroId(cmd));
+            var stances = LiftStances(stanceBearer);
             bool acted;
             switch (cmd)
             {
@@ -81,7 +85,7 @@ namespace GridGame.Core.Battle
                 case TalkCommand t: acted = DoTalk(t); break;
                 default: acted = false; break;
             }
-            if (!acted) return;
+            if (!acted) { RestoreStances(stanceBearer, stances); return; }
             // GG-T311 (§2.0): a forced Guard (no action fitted the gap) rallies the party — enemy icons slow a tempo step,
             // stacking to RallyMaxStacks — so a run of too-short gaps always opens; any hero action resets it.
             if (forcedGuard) S.Rally = Math.Min(BattleConfig.RallyMaxStacks, S.Rally + 1);
@@ -112,7 +116,14 @@ namespace GridGame.Core.Battle
             }
             if (!S.IsOver) CheckEnd();
             bool newWindow = TurnRules.IsTurnBoundary(S, windowOver, S.Wave != waveBefore);
-            if (newWindow) { CloseCombo(); TurnRules.ResetTurn(S); } // §1.2.8: the combo window is the party's turn
+            if (newWindow)
+            {
+                CloseCombo(); // §1.2.8: the combo window is the party's turn
+                TurnRules.ResetTurn(S);
+                // GG-T944: count the party turn for the results (pure counters, read by nothing in the rules).
+                S.Results.TurnsEnded++;
+                S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;
+            }
             if (!S.IsOver) ReturnControl(newWindow);
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
@@ -136,7 +147,7 @@ namespace GridGame.Core.Battle
                 for (int dx = 0; dx < u.W; dx++)
                 {
                     var t = new Coord(anchor.X + dx, anchor.Y + dy);
-                    if (!S.Walkable(t)) return false;
+                    if (!S.WalkableFor(t, u)) return false; // GG-T859: a floater may hover over a hole
                     foreach (var o in S.Units)
                         if (o != u && o.Alive && o.Occupies(t) && (yields == null || !yields(o))) return false;
                     if (!movablesYield && S.MovableAt(t) != null) return false;
@@ -284,7 +295,7 @@ namespace GridGame.Core.Battle
                 if (!u.Alive) continue;
                 foreach (var t in u.Tiles())
                 {
-                    if (!S.Walkable(t)) return (u, null, null, null, t);
+                    if (!S.WalkableFor(t, u)) return (u, null, null, null, t); // GG-T859: a floater over a hole is no conflict
                     if (!seen.TryGetValue(t, out var other)) { seen[t] = u; continue; }
                     var mover = u.Id > other.Id ? u : other;
                     return (mover, mover == u ? other : u, null, null, t);
@@ -450,6 +461,7 @@ namespace GridGame.Core.Battle
             // since a halted icon never reaches its own turn boundary.
             foreach (var e in S.LivingList(Team.Enemy)) TickTurnBuffs(e, true);
             TickTempo();
+            FadeAfterimages(); // GG-T867: each afterimage lasts until its Speedster's next turn
             // The party's new turn begins: hero trigger cooldowns tick, TurnStart and OnSurrounded fire (GG-T296).
             foreach (var h in S.LivingList(Team.Hero))
                 if (!S.IsOver && h.Alive && !h.IsIndependent) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359
@@ -580,12 +592,19 @@ namespace GridGame.Core.Battle
                 float reduction = BestAdjacentGuardianReduction(target);
                 if (reduction > 0f) amount = Math.Max(1, (int)Math.Round(amount * (1f - reduction)));
             }
+            // GG-T862 Substitution: a foe's blow that would KO the owner strikes its decoy instead (OnLethalBlow → Substitute).
+            if (hit != HitKind.Miss && amount > 0 && amount >= target.Hp && source != null && Triggers.Foes(source, target)
+                && Substitutes(target, source, amount, type)) return;
             if (hit != HitKind.Miss && amount > 0)
                 RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
             int hpBeforeBlow = target.Hp;
             target.Hp = Math.Max(0, target.Hp - amount);
             var echoTo = LinkEchoTarget(target, hpBeforeBlow - target.Hp, hit); // GG-T873: Curse Link, read before a Kill clears it
-            Emit(new DamagedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note });
+            Emit(new DamagedEvent
+            {
+                TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note,
+                Overkill = HitRead.Overkill(amount, hpBeforeBlow), Effectiveness = hit == HitKind.Miss ? HitEffectiveness.Normal : HitRead.Of(target, type), // GG-T827
+            });
             if (source != null && source.IsHero && target.Team == Team.Enemy) source.DamageDealt += amount;
             // Damage triggers (GG-T296), before WearArmor: the blow that breaks an enchanted piece still pricks (Thorns).
             if (hit != HitKind.Miss && amount > 0)
@@ -831,6 +850,7 @@ namespace GridGame.Core.Battle
             if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
             if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
             if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
+            if (def.Roots && u.IsFloating) { Announce("Floating!", u.Id); return; } // GG-T859: roots find no ground to grip
             if (def.Frightens) // GG-T916: bosses and Heavy units don't scare; the rest remember what they fear
             {
                 if (IsBossLike(u) || u.IsHeavy) { Announce("Immune!", u.Id); return; }
@@ -838,6 +858,7 @@ namespace GridGame.Core.Battle
                 if (src == null || !src.Alive || !src.OnBoard) src = NearestFoeOf(u);
                 sourceId = src?.Id ?? -1;
             }
+            if (def.Rages && u.IsFrightened) RemoveBuffsWhere(u, b => b.Def.Frightens, "raging"); // GG-T897: rage drowns the fear
             if (def.Cancels != null && def.Cancels.Count > 0) // GG-T667: the newest of a mutually exclusive pair wins
                 RemoveBuffsWhere(u, b => def.Cancels.Exists(c => string.Equals(c, b.Def.Id, StringComparison.OrdinalIgnoreCase)), "cancelled by " + def.Id);
             var existing = u.Buffs.Find(b => b.Def.Id == def.Id);
@@ -862,10 +883,22 @@ namespace GridGame.Core.Battle
             u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
             if (def.PlateChip > 0) ChipPlate(u, def.PlateChip, sourceId); // GG-T857: Shredded bites the plate from any side
+            if (def.Roots) SnapLineCharge(u); // GG-T881: a Line charge carries the caster down its lane; rooted, it can't
             ComboStatus(u, def, sourceId); // §1.2.8
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
+        }
+
+        /// <summary>GG-T881 (§7 Bramble Snare): roots landing on a unit winding up a Line charge snap the charge off
+        /// (<see cref="CastCancelledEvent"/> reason "rooted"; the view calls "Snared!"). A Single charge, a bolt from
+        /// where it stands, goes on.</summary>
+        private void SnapLineCharge(Unit u)
+        {
+            var cast = BrambleSnare.LineCharge(S, u);
+            if (cast == null) return;
+            S.Timeline.Remove(cast);
+            Emit(new CastCancelledEvent { EntryId = cast.Id, CasterId = u.Id, AbilityId = cast.AbilityId, Reason = "rooted" });
         }
 
         /// <summary>Same test as <see cref="Taming.WhyNot"/>'s "Too mighty": a Boss tag, a rule break, or boss phases.</summary>
@@ -947,6 +980,7 @@ namespace GridGame.Core.Battle
                 Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = def.Id, Reason = reason });
                 if (u.IsHero && def.Tempo != 0) DropBuffTempo(def.Id);
             }
+            LandFromFloat(u); // GG-T859
         }
 
         /// <summary>Cleansing a tempo buff (Slow) off the last hero carrying it lifts its party tempo too (GG-T275).</summary>
@@ -956,12 +990,37 @@ namespace GridGame.Core.Battle
             if (S.Tempo.RemoveAll(t => t.Source == "buff:" + buffId) > 0) EmitTempo("cleansed");
         }
 
+        /// <summary>GG-T882: takes every <see cref="BuffDef.EndsOnAction"/> buff off <paramref name="u"/> (a BuffRemoved
+        /// "acted" each) and returns them, or null when it wore none.</summary>
+        private List<BuffInstance> LiftStances(Unit u)
+        {
+            if (u == null || !u.Alive) return null;
+            var lifted = u.Buffs.FindAll(b => b.Def.EndsOnAction);
+            if (lifted.Count == 0) return null;
+            RemoveBuffsWhere(u, b => b.Def.EndsOnAction, "acted");
+            return lifted;
+        }
+
+        /// <summary>GG-T882: the bearer's command was refused, so it hasn't acted: the stances <see cref="LiftStances"/>
+        /// took come back as they were.</summary>
+        private void RestoreStances(Unit u, List<BuffInstance> lifted)
+        {
+            if (u == null || lifted == null || !u.Alive) return;
+            foreach (var b in lifted)
+            {
+                if (u.HasBuff(b.Def.Id)) continue;
+                u.Buffs.Add(b);
+                Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = b.Def.Id, Duration = b.Remaining });
+            }
+        }
+
         private void Expire(Unit u, BuffInstance b)
         {
             u.Buffs.Remove(b);
             Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = b.Def.Id, Reason = "expired" });
             var chain = C.TryBuff(b.Def.OnExpireApply);
             if (chain != null && u.Alive) ApplyBuff(u, chain, chain.Duration);
+            if (b.Def.Id == Unit.FloatingBuffId) LandFromFloat(u); // GG-T859
         }
 
         /// <summary>Removes a buff as if it expired (runs its expire chain) — e.g. Fire melting Frozen.</summary>
@@ -982,6 +1041,7 @@ namespace GridGame.Core.Battle
             {
                 if (!u.Buffs.Contains(b)) continue;
                 if (b.Def.Unit != DurationUnit.Turns) continue;
+                if (b.Def.EndsOnAction) continue; // GG-T882: it lasts until the bearer's next action, not a turn count
                 if (haltingOnly != b.Def.HaltsTimeline) continue;
                 if (b.Def.HaltsTimeline && b.Fresh) { b.Fresh = false; continue; }
                 b.Remaining--;

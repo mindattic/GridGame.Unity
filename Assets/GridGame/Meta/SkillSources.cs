@@ -11,6 +11,9 @@ namespace GridGame.Meta
     /// ever use is bought (the trainer at Abilities › Learn, the skill tree at Talents) or discovered (Tomes from quests,
     /// bounties, theme clears, drops and chests). This reads all of it off the content so the Abilities screen's
     /// <b>Locked</b> tab can say, for each skill the hero lacks, exactly where to get it.
+    /// GG-T978: a class on a family tree starts specced from its start nodes (<see cref="Progression.IsFamilySpec"/>); a
+    /// skill it lacks that a family-tree node grants is named by that node ("Talents › Shadow family: Smoke Step · 1 SP"),
+    /// with the sibling whose corner it sits in when it is another class's signature.
     /// </summary>
     public static class SkillSources
     {
@@ -37,7 +40,8 @@ namespace GridGame.Meta
                 if (a == null || h.Known.Contains(a.Id) || PassiveLoadout.IsInnate(c, h, a.Id) || !seen.Add(a.Id)) return;
                 result.Add(new Locked { Ability = a, Kit = kit, Sources = Of(c, s, h, a) });
             }
-            foreach (var id in Progression.KitAbilities(def)) Add(id, true);
+            foreach (var id in Progression.KitAbilities(c, def)) Add(id, true);
+            foreach (var id in Progression.SignatureGrants(c, def)) Add(id, true); // GG-T978: its own corner of the family tree
             foreach (var id in def.Abilities) Add(id, false);
             var home = Talents.HomeTree(c, h);
             if (home != null) foreach (var n in home.Nodes) if (!string.IsNullOrEmpty(n.Grants)) Add(n.Grants, false);
@@ -63,7 +67,11 @@ namespace GridGame.Meta
                 {
                     if (!string.Equals(n.Grants, a.Id, StringComparison.OrdinalIgnoreCase)) continue;
                     string gate = n.RequiredPointsInTree > 0 ? $", {Talents.Required(c, h, t, n)} pts in the tree first" : "";
-                    lines.Add($"Talents › {t.Name}{(Talents.IsHome(c, h, t) ? "" : " (off-tree)")}: {n.Name ?? n.Id} · {Talents.Cost(c, h, t, n)} SP{gate}");
+                    var family = c.TryFamily(t.Id); // GG-T978: a family tree names itself and whose corner the node is in
+                    string tree = family != null ? $"{family.Name ?? t.Name} family" : t.Name;
+                    string corner = family != null && !string.IsNullOrEmpty(n.SignatureOf) && !string.Equals(n.SignatureOf, h.ClassId, StringComparison.OrdinalIgnoreCase)
+                        ? $" ({c.TryClass(n.SignatureOf)?.Name ?? n.SignatureOf}'s corner)" : "";
+                    lines.Add($"Talents › {tree}{(Talents.IsHome(c, h, t) ? "" : " (off-tree)")}: {n.Name ?? n.Id}{corner} · {Talents.Cost(c, h, t, n)} SP{gate}");
                 }
             foreach (var tome in c.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
                 lines.Add($"{tome.Name}: {string.Join(", ", WhereFound(c, tome.Id).DefaultIfEmpty("not found anywhere yet"))}");

@@ -2201,7 +2201,7 @@
             "Y": -1
           },
           {
-            "Class": "cyberzombie02",
+            "Class": "techgremlin00",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -2787,6 +2787,14 @@
             "Level": 1,
             "X": -1,
             "Y": -1
+          }
+        ],
+        "Guests": [
+          {
+            "Class": "ripper",
+            "Level": 1,
+            "X": 2,
+            "Y": 5
           }
         ]
       },
@@ -3892,7 +3900,7 @@
       {
         "Enemies": [
           {
-            "Class": "treegolem02",
+            "Class": "ironbarkgolem",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -3957,7 +3965,7 @@
             "Y": -1
           },
           {
-            "Class": "bloatdrowner",
+            "Class": "ironbarkgolem",
             "Level": 1,
             "X": -1,
             "Y": -1
@@ -4177,7 +4185,7 @@
             "Y": -1
           },
           {
-            "Class": "mountaintroll",
+            "Class": "ironbarkgolem",
             "Level": 1,
             "X": -1,
             "Y": -1

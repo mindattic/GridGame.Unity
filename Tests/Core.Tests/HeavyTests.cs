@@ -16,7 +16,7 @@ namespace GridGame.Tests
         private static readonly string[] HeavyIds =
         {
             "heavytrooper02", "mechaarmor00", "mechaarmor01", "mechaarmor02", "mountaintroll", "crystalbrute",
-            "anchorhulk", "minotaur02", "treegolem00", "treegolem01", "treegolem02", "treegolem03", "treegolem04", "treegolem06",
+            "anchorhulk", "ironbarkgolem", "minotaur02", "treegolem00", "treegolem01", "treegolem02", "treegolem03", "treegolem04", "treegolem06",
         };
 
         private static ContentDb HeavyDb()

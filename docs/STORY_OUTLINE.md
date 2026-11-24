@@ -10,7 +10,7 @@ reads is written and approved in Prose (BIBLE §27.2, [PROSE.md](PROSE.md)); the
 **Why a new outline.** The owner (2026-11-16): the moon story, then the fallen-angel story ("A War in Heaven", v4 in
 Prose), "doesn't cover what is actually there". Looking at the art as a whole, almost nothing in it is angelic (two
 winged figures: the black-winged Murder, who are street kids, and the Herald, a flower-winged Wild girl). What the art
-does show, over and over, is below. The names (the Pale Concord, Morrow, the Anchors, the Still, the regions) are kept
+does show, over and over, is below. The names (the Hierarch's soldiers, Morrow, the Anchors, the Still, the regions) are kept
 because they are already game data and fit the pictures; the writer may rename anything in Prose.
 
 ## 1. What the art says, in one paragraph
@@ -23,7 +23,7 @@ them, giants of white flesh. Everyone who fights it wears **colour**: neon stree
 indigo and red on the lantern road, the black and blue of the fen witches. The Ember wears **red and black** and wants
 the moon to come down. Where the white order has fallen, **red blossom** grows over its broken pillars.
 
-**The thesis for the writer:** colour is life (the mana, the "tithe"); the Concord drains it, stores it and burns it
+**The thesis for the writer:** colour is life (the mana, the "tithe"); the Hierarch's Choir drains it, stores it and burns it
 to keep the moon up; the crew are runaways in a stolen white caravan who learn what the white is made of.
 
 ## 2. The world, region by region (campaign order; what each backdrop set shows)
@@ -36,7 +36,7 @@ to keep the moon up; the crew are runaways in a stolen white caravan who learn w
 | 4 | The Arkgrave (`swamp`) | 10-12 | wrecked ship hulls and masts in a gold-hazed marsh | ships built to leave, grounded |
 | 5 | The Anchor Wastes (`cave`) | 13-15 | colossal blue stone arches over pink-lit snow | the Anchors: arches that hold the moon off |
 | 6 | The Still (`still`) | 16-18 | white dome, cyan tanks, moon in the oculus, catwalks | where the tithe is stored |
-| 7 | Halcyon (`cityruins`) | 19-21 | ruined tech city, pink-red sky, towers and cables | the Concord's city, gone to ruin under the spire |
+| 7 | Halcyon (`cityruins`) | 19-21 | ruined tech city, pink-red sky, towers and cables | the Hierarch's city, gone to ruin under the spire |
 | 8 | The Choir's Cathedral (`cathedral`) | 22-24 | cyan organ of pipes, rose windows, moon in the vault | the top of the spire; the organ is the reservoir |
 | 9 | The Bloom (`bloom`) | 25-27 | red blossom and moss over broken white pillars, pale moon | what grows where the stored colour came down |
 | 10 | The Free Holds (`greenvalley2`) | 28-29 | walled hill-forts over gold grass, pale moon | the holds, walled up and trading |
@@ -57,7 +57,7 @@ plus a numeral ("The Tithe Moors I", "Deep Shardfall II").
 | Faction | Look | Role in the story |
 |---|---|---|
 | **The Street** (24 heroes) | oversized jackets and hoodies in orange, pink, neon green and yellow; cargo pants, platform sneakers, chrome limbs, big blades and bats | the young of the Underspire; couriers, fighters, thieves, engineers; loud colour as defiance |
-| **The Free Holds** (11) | plate and kite shields, greens and whites, furs, warhammers, axes | the hill-fort folk the Concord tithes; knights and barbarians |
+| **The Free Holds** (11) | plate and kite shields, greens and whites, furs, warhammers, axes | the hill-fort folk the Choir tithes; knights and barbarians |
 | **The Lantern Road** (15) | indigo and black, red sashes, masks, katana and odachi, a straw kasa, a monk, a sage with a starry staff | pilgrims and road-wardens of the mountain road |
 | **The Fen-dark** (14) | black and deep blue robes, witch hats, plague-doctor and nun habits, a lab coat, a white-ice manasmith | the marsh's witches, healers and hex-hunters; the ones who know what mana is |
 | **The Ember** (1) | black with a red sword and red cape | a deserter from the Ember (the Dark Templar) |
@@ -65,12 +65,12 @@ plus a numeral ("The Tithe Moors I", "Deep Shardfall II").
 
 ### The powers they fight (enemy families, grouped by what the art shares)
 
-- **The Pale Concord (all white).** The Kiln Guard (`ceramicknight`, porcelain knights in white capes), the Red Seal
+- **The Hierarch's soldiers and the Choir (all white).** The Kiln Guard (`ceramicknight`, porcelain knights in white capes), the Red Seal
   (`templar`, white robes with red crosses), the Bulwark (`heavytrooper`, white power armour, siege rifles, an mana pack
   each), the Choir (`cultist`, faceless white-and-violet ponchos printed with glyphs), shield-walkers (`mechaarmor`, white
   tower shields), vat-giants (`cyclops`, white flesh, one red eye), the Chronomancer (white, clock wheels), the Hierarch
   (no portrait yet). The **Hollow** (`undead`, white-hooded crowds with empty faces) and the **Chromed Hollow**
-  (`cyberzombie`, grey-green husks with chrome) are what is left of people the Concord has drained.
+  (`cyberzombie`, grey-green husks with chrome) are what is left of people the Choir has drained.
 - **What leaks from the Anchors.** The Anchor Watch (`wraithknight`, grey plate, cloaks of old fire, kept alive by the
   arches) and the Void Sentinel (smoke around a cyan heart).
 - **The Ember (red and black).** Infernalists (black armour, long red capes), Hellspawn (red scale, manes of blood-light),
@@ -85,7 +85,7 @@ plus a numeral ("The Tithe Moors I", "Deep Shardfall II").
   made, not born. With them the Captain's hold militia (`soldier`, helmets and green cloaks).
 - **The Wild under the moon.** Wolves, a werewolf, bats, vultures, a flying monkey, scorpions, the sand maw, the yeti,
   the ice mauler, the mountain troll; moss-golems (`treegolem`, skeletons grown over with moss) in the marsh and the Bloom.
-- **The Captain.** Dark plate under a white tabard: a hold officer in Concord colours. He is the one recurring human
+- **The Captain.** Dark plate under a white tabard: a hold officer in the Hierarch's white. He is the one recurring human
   villain (Tithe Moors I and III, the Shardfall, the Free Holds, Deep Shardfall).
 - **Placeholders.** The region-rule foes (holdwrights, rams and marksmen; spire burrowers, pit lurkers, floorbreakers;
   tidestriders, stormcallers, drowners; shard skitters, shardcallers, crystal brutes; chain wardens, hookthrowers,
@@ -116,7 +116,7 @@ are `crawl:prologue`, `crawl:chapter/<id>`, `crawl:ending`; titles are in `campa
 - **Who:** the white collectors arrive with the Captain's hold militia; the crew are young people from three or four
   factions who were in town for the tithe.
 - **Conflict:** the tithe takes the colour out of people (the Hollow walk behind the collectors' caravan). The crew steal
-  the Concord's own white caravan and run.
+  the Hierarch's own white caravan and run.
 - **Ahead:** the moors' wild things, Redline and their hired Herd and Murder on the roads, the Captain's militia; the
   Captain himself at Tithe Moors III; then the Lantern Road.
 
@@ -128,15 +128,15 @@ are `crawl:prologue`, `crawl:chapter/<id>`, `crawl:ending`; titles are in `campa
 - **Conflict:** the oni chief holds the top of the pass; beyond it the road drops into red country.
 - **Boss:** the oni chief (Lantern Road III, Undying). Then the first sight of the Shardfall: horns of fallen moon in red
   earth.
-- **Ahead:** the Shardfall's Ember zealots and hellspawn, the Concord's dig (shield-walkers, purple prototypes, gremlins)
+- **Ahead:** the Shardfall's Ember zealots and hellspawn, the Hierarch's dig (shield-walkers, purple prototypes, gremlins)
   guarded by the Captain again (shield-walker boss, Shardfall III); the Lich at the Arkgrave's edge.
 
 ### ch02: The Grounded Arks
-- **Closes:** what the Shardfall showed: the moon is shedding, the Concord mines what falls, and the Ember drinks the red
+- **Closes:** what the Shardfall showed: the moon is shedding, the Hierarch's soldiers mine what falls, and the Ember drinks the red
   rivers and welcomes the fall. The Dark Templar may desert to the crew here.
 - **Who:** the Fen-dark witches and healers of the marsh; hags, shamblers, lurkers, the naga; the Lich (the Ark captain
   who would not let his ship die).
-- **Conflict:** the Arks were built to leave and were grounded. Who grounded them, and why the Concord wants no one to go.
+- **Conflict:** the Arks were built to leave and were grounded. Who grounded them, and why the Hierarch wants no one to go.
 - **Boss:** the Swamp Mistress, the drowned Ark's pilot (Arkgrave III). Then the arches on the horizon.
 - **Ahead:** the Anchor Wastes: the Anchor Watch, the Kiln Guard, vat-giants, the Void Sentinel where an Anchor leaks, a
   first look at the Chronomancer; the vat-giant keeping the great Anchor (Anchor Wastes III).
@@ -163,7 +163,7 @@ are `crawl:prologue`, `crawl:chapter/<id>`, `crawl:ending`; titles are in `campa
   (the Anchors still hold), but it hangs as low as ever. The crew are still here. Credits; the postgame opens.
 
 ### ch05: What Came Down
-- **Closes:** the Bloom: red blossom over the Concord's broken pillars, where the reservoir came down.
+- **Closes:** the Bloom: red blossom over the Hierarch's broken pillars, where the reservoir came down.
 - **Who:** Redline harvesting the Bloom, the Red Seal's last wardens and Bulwark holdouts burning it, moss-golems
   guarding it; the Free Holds walled up and trading in it.
 - **Conflict:** with the Hierarch gone, everyone wants what came down. The holds are selling it; the Captain is behind it.

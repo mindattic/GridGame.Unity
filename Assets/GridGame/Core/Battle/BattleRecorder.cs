@@ -113,6 +113,7 @@ namespace GridGame.Core.Battle
                 ["phase"] = s.Phase.ToString(),
                 ["waveReached"] = s.Wave + 1,
                 ["actions"] = r.ActionsTaken,
+                ["turns"] = r.PartyTurns,
                 ["ticks"] = r.TicksElapsed,
                 ["coins"] = r.Coins,
                 ["xp"] = r.Xp,

@@ -153,6 +153,10 @@ namespace GridGame.Core.Rules
             return n == 1;
         }
 
+        /// <summary>GG-T881: wounded below its brain's retreat threshold, so its next step breaks contact (PlanStep), unless
+        /// one hero is left (no foe flees a lone hero).</summary>
+        public static bool Retreats(BattleState s, Unit e) => e.HpFraction < RetreatThreshold(e) && !LoneHero(s);
+
         private static float RetreatThreshold(Unit e)
         {
             switch (e.Def.Brain)
@@ -299,6 +303,8 @@ namespace GridGame.Core.Rules
         /// as a supporter. Null when it can't plan (mindless, multi-tile, immobile, wounded and retreating) or nothing
         /// is worth it; an evasive brain (Kiter, Commander, Trapper, Medic) only takes a walk that completes a pincer, a
         /// Sentinel never moves, an Ambusher still lying in wait or a Sluggish foe on its rest turn only pincers in place.
+        /// GG-T904: of two set-ups it prefers the one on a Rooted hero (<see cref="PincerPlanner.PinnedOpponentBonus"/>) - the
+        /// hero a tree golem's Root Grasp pinned can't be dragged out before an ally closes the far end.
         /// </summary>
         public static PincerPlan PlanPincer(BattleState s, Unit e)
         {
@@ -713,6 +719,92 @@ namespace GridGame.Core.Rules
             return anyHero ? burrow : null;
         }
 
+        /// <summary>GG-T903: how far (Manhattan) a tech gremlin goes out of its way for a gadget it can see.</summary>
+        public const int SabotageReach = 4;
+
+        /// <summary>GG-T903 (§14.23): is <paramref name="m"/> a gadget <paramref name="team"/> can sabotage: a mark of a
+        /// <see cref="TileStateDef.Gadget"/> state painted by another side (never the board's own)?</summary>
+        public static bool IsGadgetOf(BattleState s, TileMark m, Team team) =>
+            m != null && m.OwnerTeam != Team.Neutral && m.OwnerTeam != team && (s.Content?.TryTileState(m.State)?.Gadget ?? false);
+
+        /// <summary>GG-T903: the first ability in <paramref name="def"/>'s kit with a <see cref="RuleEffectKind.Sabotage"/>
+        /// rule effect (the tech gremlin's Sabotage), or null.</summary>
+        public static AbilityDef SabotageAbility(ContentDb c, ClassDef def)
+        {
+            if (def?.Abilities == null || c == null) return null;
+            foreach (var id in def.Abilities)
+            {
+                var a = c.TryAbility(id);
+                if (a != null && a.RuleEffects.Exists(e => e.Kind == RuleEffectKind.Sabotage)) return a;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// GG-T903: what turning the gadget <paramref name="m"/> is worth to the saboteur's side: 6 for one hidden from that
+        /// side's foes once turned (a buried charge the party loses track of), 4 for any other hazard (a firewall), 3 for a
+        /// wall (a barricade), else 2; plus 1 for each hero within 2 tiles of it (it is guarding someone now).
+        /// </summary>
+        public static float SabotageValue(BattleState s, Coord at, TileMark m)
+        {
+            if (m == null) return 0f;
+            float v = m.Hidden || (s.Content?.TryTileState(m.State)?.VisibleSeconds ?? 0f) > 0f ? 6f : m.Hazard ? 4f : m.Blocks ? 3f : 2f;
+            foreach (var h in s.Living(Team.Hero)) if (h.Pos.Manhattan(at) <= 2) v += 1f;
+            return v;
+        }
+
+        /// <summary>
+        /// GG-T903 (BIBLE §14.23, the tech gremlin's Sabotage): a foe with a Sabotage ability in its kit, off cooldown, not
+        /// silenced (the EMP Pulse jams it), immobile, remains, an egg or more than one tile, and with no hero adjacent (then
+        /// it strikes) goes for the other side's gadgets (<see cref="IsGadgetOf"/>). Beside one (a cardinal neighbour, or
+        /// under it) it <see cref="SabotagePlanKind.Sabotage"/>s it: tech senses tech, so a hidden charge beside it counts;
+        /// the most valuable (<see cref="SabotageValue"/>) first, then row-major. Otherwise, free to move, it picks a gadget
+        /// its side can see (<see cref="RegionBoard.Sees"/>) within <see cref="SabotageReach"/>, best value less distance
+        /// (ties: nearer, then row-major), and <see cref="SabotagePlanKind.Walk"/>s one cardinal step closer onto a free,
+        /// safe tile (never onto the gadget). Null = no sabotage this turn (or the way is blocked). Pure: reads, never commits.
+        /// </summary>
+        public static SabotagePlan PlanSabotage(BattleState s, Unit enemy)
+        {
+            if (enemy?.Def == null || !enemy.Alive || !enemy.OnBoard || s.Region.Tiles.Count == 0) return null;
+            if (enemy.IsImmobile || enemy.IsSilenced || enemy.IsRemains || enemy.IsEgg || enemy.IsCorpse || enemy.IsMultiTile || enemy.Burrowed) return null;
+            var a = SabotageAbility(s.Content, enemy.Def);
+            if (a == null) return null;
+            if (enemy.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) return null;
+            foreach (var h in s.Living(Team.Hero)) if (!h.IsCorpse && enemy.IsAdjacentTo(h)) return null;
+
+            Coord? beside = null; float besideV = 0f;
+            Coord? goal = null; float goalScore = float.MinValue; int goalDist = int.MaxValue;
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    var m = s.Region.At(c);
+                    if (!IsGadgetOf(s, m, enemy.Team)) continue;
+                    int d = c.Manhattan(enemy.Pos);
+                    float v = SabotageValue(s, c, m);
+                    if (d <= 1)
+                    {
+                        if (v > besideV) { beside = c; besideV = v; }
+                        continue;
+                    }
+                    if (d > SabotageReach || !RegionBoard.Sees(m, enemy.Team)) continue;
+                    float score = v - d;
+                    if (score > goalScore || (score == goalScore && d < goalDist)) { goal = c; goalScore = score; goalDist = d; }
+                }
+            if (beside.HasValue) return new SabotagePlan { Kind = SabotagePlanKind.Sabotage, Ability = a, At = beside.Value, Gadget = beside.Value };
+            if (!goal.HasValue || enemy.Def.MoveRange <= 0 || enemy.IsRooted) return null;
+            var to = goal.Value;
+            int dx = to.X - enemy.Pos.X, dy = to.Y - enemy.Pos.Y;
+            var xs = new Coord(enemy.Pos.X + Math.Sign(dx), enemy.Pos.Y);
+            var ys = new Coord(enemy.Pos.X, enemy.Pos.Y + Math.Sign(dy));
+            var first = Math.Abs(dx) >= Math.Abs(dy) ? xs : ys;
+            var second = first == xs ? ys : xs;
+            foreach (var n in new[] { first, second })
+                if (n != enemy.Pos && n != to && s.Walkable(n) && s.UnitAt(n) == null && s.TrapAt(n) == null && RegionBoard.DangerAt(s, n, enemy) <= 0f)
+                    return new SabotagePlan { Kind = SabotagePlanKind.Walk, Ability = a, At = n, Gadget = to };
+            return null; // the way is blocked: the turn goes on as usual
+        }
+
         /// <summary>Cardinal line from beside the caster to the board edge along the dominant axis toward the target (X on ties).</summary>
         public static List<Coord> LineToward(Unit caster, Unit target, BattleState state = null)
         {
@@ -789,6 +881,18 @@ namespace GridGame.Core.Rules
     }
 
     /// <summary>GG-T902: what a Choir singer does with its turn (<see cref="EnemyPlanner.PlanRune"/>).</summary>
+    public enum SabotagePlanKind { Sabotage, Walk }
+
+    /// <summary>GG-T903: a tech gremlin's sabotage turn: Sabotage the gadget on <see cref="At"/>, or Walk one step to
+    /// <see cref="At"/> on the way to <see cref="Gadget"/>.</summary>
+    public sealed class SabotagePlan
+    {
+        public SabotagePlanKind Kind;
+        public AbilityDef Ability;
+        public Coord At;
+        public Coord Gadget;
+    }
+
     public enum RunePlanKind { Paint, Walk, Hold }
 
     /// <summary>GG-T902: a singer's ritual turn: Paint the rune ability on <see cref="At"/>, Walk one step to <see cref="At"/>

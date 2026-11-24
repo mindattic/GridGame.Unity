@@ -20,7 +20,7 @@ namespace GridGame.App
             // GG-T448: trimmed from "{u.Name} is tamed! It fights for you on its own for N of its turns (P% chance)." --
             // same information, reads faster in the banner and leans less on the runtime shrink-to-fit.
             Billboard($"{u.Name} tamed! Fights for you {e.Turns} turns ({Mathf.RoundToInt(e.Chance * 100)}%).", null, Palette.Tamed);
-            App.StartCoroutine(FloatText(u.Id, "Tamed!", Palette.Tamed, 0f, 64));
+            App.StartCoroutine(FloatText(u.Id, CombatTextKind.Buff, "Tamed!", 0f, 0.15f, Palette.Tamed));
             yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.6f ? 1f + k / 0.6f * 0.18f : 1.18f - 0.18f * (k - 0.6f) / 0.4f)));
             v.Root.style.scale = new Scale(Vector2.one);
         }
@@ -28,7 +28,7 @@ namespace GridGame.App
         private IEnumerator TameFailedAnim(TameFailedEvent e)
         {
             App.Audio.Sfx("battle.miss");
-            return FloatText(e.UnitId, $"Resisted ({Mathf.RoundToInt(e.Chance * 100)}%)", new Color(1f, 0.6f, 0.4f), 0.4f, 52);
+            return FloatText(e.UnitId, CombatTextKind.Resist, $"Resisted ({Mathf.RoundToInt(e.Chance * 100)}%)", 0.4f);
         }
 
         private IEnumerator BondAnim(BondGrewEvent e)
@@ -36,7 +36,7 @@ namespace GridGame.App
             RefreshUnit(e.UnitId);
             App.Audio.Sfx(e.Full ? "battle.warcry" : "ui.select", e.Full ? 0.7f : 0.5f);
             string text = e.Full ? "Bonded!" : $"Bond {e.Bond}/{e.BondNeeded}";
-            return FloatText(e.UnitId, text, Palette.Tamed, e.Full ? 0.5f : 0.25f, e.Full ? 60 : 44);
+            return FloatText(e.UnitId, e.Full ? CombatTextKind.Buff : CombatTextKind.Support, text, e.Full ? 0.5f : 0.25f, 0f, Palette.Tamed);
         }
 
         private IEnumerator TameEndedAnim(TameEndedEvent e)
@@ -46,7 +46,7 @@ namespace GridGame.App
             v.SetTeamLook(u, false);
             SyncTimeline(null);
             App.Audio.Sfx("status.debuff", 0.8f);
-            yield return FloatText(u.Id, "Breaks free!", Palette.Enemy, 0.4f, 56);
+            yield return FloatText(u.Id, CombatTextKind.Debuff, "Breaks free!", 0.4f, 0f, Palette.Enemy);
         }
     }
 }
