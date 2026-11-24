@@ -49,12 +49,16 @@ namespace GridGame.App
             Root.style.width = tile * u.W;
             Root.style.height = tile * u.H;
 
+            // Rounded-square outline matching the tile frame (GG-T732); SetGlow tints it, a beat pulses it.
             Glow = new VisualElement { pickingMode = PickingMode.Ignore };
             Glow.style.position = Position.Absolute;
-            Glow.style.left = Glow.style.top = -tile * 0.18f;
-            Glow.style.right = Glow.style.bottom = -tile * 0.18f;
-            Glow.style.backgroundImage = new StyleBackground(App.Art.Glow);
+            Glow.style.left = Glow.style.top = Glow.style.right = Glow.style.bottom = -5f;
+            float gr = tile * 0.4f + 5f;
+            Glow.style.borderTopLeftRadius = Glow.style.borderTopRightRadius = Glow.style.borderBottomLeftRadius = Glow.style.borderBottomRightRadius = gr;
+            Glow.style.borderTopWidth = Glow.style.borderBottomWidth = Glow.style.borderLeftWidth = Glow.style.borderRightWidth = 5f;
             Glow.style.opacity = 0f;
+            glowColor = Color.white;
+            Glow.schedule.Execute(PulseGlow).Every(33);
             Root.Add(Glow);
 
             // Same frame as every menu portrait (.thumb): white rounded border over the window gradient.
@@ -426,8 +430,21 @@ namespace GridGame.App
 
         public void SetGlow(Color c, float alpha)
         {
-            Glow.style.unityBackgroundImageTintColor = c;
+            glowColor = c;
+            glowAlpha = alpha;
+            Glow.style.borderTopColor = Glow.style.borderBottomColor = Glow.style.borderLeftColor = Glow.style.borderRightColor = c;
+            Glow.style.backgroundColor = new Color(c.r, c.g, c.b, 0.12f);
             Glow.style.opacity = alpha;
+        }
+
+        private Color glowColor;
+        private float glowAlpha;
+
+        // Rhythmic intensity; static under Reduce Motion.
+        private void PulseGlow()
+        {
+            if (glowAlpha <= 0f || GameApp.I?.Settings?.ReduceMotion == true) return;
+            Glow.style.opacity = glowAlpha * (0.6f + 0.4f * Mathf.Sin(Tween.Clock * 4f));
         }
     }
 
