@@ -594,12 +594,22 @@ namespace GridGame.App
             menu.style.flexGrow = 1;
             var list = Ui.List(menu);
             VisualElement Item(string label, Func<GameScreen> screen, string value = "") => Ui.MenuRow(label, value, () => App.Router.Push(screen()), list.contentContainer);
+            // GG-T716 (§26.7): each Camp row leads with its destination's kind icon; a station with a keeper shows the
+            // keeper's face (their Portraits/ file), else the station emblem; a locked one the padlock.
+            VisualElement Keeper(VisualElement row, string npc) => row.KindIcon(RowKind.Keeper, npc + "-00");
             // Stations open one at a time (GG-T174, §25.0.3): a closed one is a dimmed row saying when it arrives.
-            void Station(string label, bool open, string hint, Func<GameScreen> screen, string value = "")
+            void Station(string label, bool open, string hint, Func<GameScreen> screen, string value = "", RowKind kind = RowKind.Station, string npc = null)
             {
                 // An open station's row is named for the Camp lesson that points at it when its keeper joins (GG-T539).
-                if (open) { Item(label, screen, value).name = "camp-" + label.ToLowerInvariant().Replace(' ', '-'); return; }
+                if (open)
+                {
+                    var item = Item(label, screen, value);
+                    item.name = "camp-" + label.ToLowerInvariant().Replace(' ', '-');
+                    if (npc != null) Keeper(item, npc); else item.KindIcon(kind);
+                    return;
+                }
                 var row = Ui.MenuRow(label, "", null, list.contentContainer, null, false);
+                row.KindIcon(RowKind.Locked);
                 row.name = "locked-" + label.ToLowerInvariant().Replace(' ', '-');
                 Subline(row, hint);
             }
@@ -618,7 +628,7 @@ namespace GridGame.App
                 sub.name = "hint";
                 sub.style.whiteSpace = WhiteSpace.Normal;
             }
-            Item("Adventure", () => new StageSelectScreen(), $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}");
+            Item("Adventure", () => new StageSelectScreen(), $"Stage {Math.Min(s.HighestClearedStage + 2, c.CampaignStages().Count)}").KindIcon(RowKind.Place, ThemeFor(c, s));
             // The Crucible (§22.10): endless waves for XP and loot. Closed mid-expedition — the row says why.
             // Hidden while Features.Crucible is off (GG-T392, docs/RELEASE_SCOPE.md): hunts on Adventure are the grind.
             if (Features.Crucible && CampUnlocks.CrucibleOpen(s))
@@ -626,10 +636,11 @@ namespace GridGame.App
                 bool crucibleOpen = Crucible.CanLaunch(c, s, out var crucibleWhy);
                 var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
                 crucible.name = "camp-crucible";
+                crucible.KindIcon(RowKind.Crucible);
                 if (!crucibleOpen) Subline(crucible, crucibleWhy); // "Closed on an expedition", whole (GG-T518)
             }
             else if (Features.Crucible) Station("Crucible", false, CampUnlocks.MilestoneHint(c, CampUnlocks.CrucibleAfter), null);
-            Item("Items", () => new ItemsScreen());
+            Item("Items", () => new ItemsScreen()).KindIcon(RowKind.Item);
             // GG-T435 (§25.0): one Heroes row for Status / Equip / Abilities (+ Talents) / Party, the tabs of one screen.
             // GG-T180 (§25.0.9): while onboarding step 7 is ahead it reads "Train a skill!" and opens on Abilities (Learn);
             // otherwise it shows the party's unspent skill points (GG-T53) and opens on Status.
@@ -638,53 +649,58 @@ namespace GridGame.App
             var heroes = Ui.MenuRow("Heroes", training ? "Train a skill!" : partyPoints > 0 ? $"{partyPoints} pts" : "",
                 () => App.Router.Push(training ? new AbilitiesScreen(s.Party.FirstOrDefault()) : (GameScreen)new StatusScreen(s.Party.FirstOrDefault())), list.contentContainer);
             heroes.name = "camp-heroes";
+            heroes.KindIcon(RowKind.Hero, s.Party.FirstOrDefault());
             // Talk (§27.1, GG-T117): chat with party members and joined Camp NPCs.
             int newTalks = DialogueRunner.TalkPartners(s).Count(p => { var t = DialogueRunner.TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); });
-            Item("Talk", () => new TalkScreen(), newTalks > 0 ? $"{newTalks} new" : "");
+            Item("Talk", () => new TalkScreen(), newTalks > 0 ? $"{newTalks} new" : "").KindIcon(RowKind.Talk);
             // Camp NPCs (GG-T119): each station opens once its keeper has joined the caravan at a story beat (GG-T537: a stage clear).
-            Station("Merchant", CampUnlocks.NpcOpen(s, CampNpcs.Merchant), CampUnlocks.JoinHint(c, CampNpcs.Merchant), () => new ShopScreen());
+            Station("Merchant", CampUnlocks.NpcOpen(s, CampNpcs.Merchant), CampUnlocks.JoinHint(c, CampNpcs.Merchant), () => new ShopScreen(), npc: CampNpcs.Merchant);
             if (CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
             {
-                if (Expeditions.InnOpen(s)) Ui.MenuRow(s.Expedition != null ? "Inn (Medic Wagon)" : "Inn", Inn.Cost(c, s) > 0 ? Ui.Gold(Inn.Cost(c, s)) : "Rested", Rest, list.contentContainer);
-                else Ui.MenuRow("Inn", "On the road", null, list.contentContainer, null, false);
+                if (Expeditions.InnOpen(s)) Keeper(Ui.MenuRow(s.Expedition != null ? "Inn (Medic Wagon)" : "Inn", Inn.Cost(c, s) > 0 ? Ui.Gold(Inn.Cost(c, s)) : "Rested", Rest, list.contentContainer), CampNpcs.Innkeeper);
+                else Ui.MenuRow("Inn", "On the road", null, list.contentContainer, null, false).KindIcon(RowKind.Locked);
                 // GG-T53 (§25.6.3): the Innkeeper also sells a Respec that refunds every talent point.
                 // GG-T392: off by default — the Talents screen's per-hero Respec button does the same job.
-                if (Features.InnRespecRow && Expeditions.InnOpen(s)) Item("Inn: Respec", () => new RespecScreen());
+                if (Features.InnRespecRow && Expeditions.InnOpen(s)) Keeper(Item("Inn: Respec", () => new RespecScreen()), CampNpcs.Innkeeper);
             }
             else Station("Inn", false, CampUnlocks.JoinHint(c, CampNpcs.Innkeeper), null);
-            Station("Blacksmith", CampUnlocks.NpcOpen(s, CampNpcs.Blacksmith), CampUnlocks.JoinHint(c, CampNpcs.Blacksmith), () => new BlacksmithScreen());
-            Station("Alchemist", CampUnlocks.NpcOpen(s, CampNpcs.Alchemist), CampUnlocks.JoinHint(c, CampNpcs.Alchemist), () => new AlchemistScreen());
+            Station("Blacksmith", CampUnlocks.NpcOpen(s, CampNpcs.Blacksmith), CampUnlocks.JoinHint(c, CampNpcs.Blacksmith), () => new BlacksmithScreen(), npc: CampNpcs.Blacksmith);
+            Station("Alchemist", CampUnlocks.NpcOpen(s, CampNpcs.Alchemist), CampUnlocks.JoinHint(c, CampNpcs.Alchemist), () => new AlchemistScreen(), npc: CampNpcs.Alchemist);
             if (Features.Enchanter)
-                Station("Enchantress", CampUnlocks.NpcOpen(s, CampNpcs.Enchantress), CampUnlocks.JoinHint(c, CampNpcs.Enchantress), () => new EnchantressScreen());
+                Station("Enchantress", CampUnlocks.NpcOpen(s, CampNpcs.Enchantress), CampUnlocks.JoinHint(c, CampNpcs.Enchantress), () => new EnchantressScreen(), npc: CampNpcs.Enchantress);
             // GG-T570/624: the Aetherist refines Dust into Shards once they've joined (after The Shardfall II).
-            Station("Manasmith", CampUnlocks.NpcOpen(s, CampNpcs.Aetherist), CampUnlocks.JoinHint(c, CampNpcs.Aetherist), () => new AetheristScreen());
+            Station("Manasmith", CampUnlocks.NpcOpen(s, CampNpcs.Aetherist), CampUnlocks.JoinHint(c, CampNpcs.Aetherist), () => new AetheristScreen(), npc: CampNpcs.Aetherist);
             if (Features.Bounties)
                 Station("Bounties", CampUnlocks.BountiesOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new BountyScreen(),
-                    s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : ""); // GG-T431
+                    s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : "", RowKind.Bounty); // GG-T431
             // Optional side quests (§22.11, GG-T237): the journal, with a "!" when one is ready to hand in.
             int questsReady = Quests.ReadyCount(c, s);
             if (c.QuestOrder.Any(q => Quests.State(c, s, q) != QuestState.Locked))
-                Item("Quests", () => new QuestScreen(), questsReady > 0 ? $"! {questsReady} to hand in" : $"{s.Quests.Active.Count} under way");
+                Item("Quests", () => new QuestScreen(), questsReady > 0 ? $"! {questsReady} to hand in" : $"{s.Quests.Active.Count} under way").KindIcon(RowKind.Quest);
             Station("Summon Circle", CampUnlocks.SummonOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), () => new SummonScreen());
             // The Diamond Store (§25.18.1, GG-T455): the gold exchange and the real-money packs.
             // GG-T537: the Diamond Store's row opens with the Summon Circle (a Diamond's first use is a summon).
             if (Features.DiamondStore && CampUnlocks.DiamondStoreOpen(s))
-                Ui.MenuRow(ShardText.Store, $"{Ui.Count(DiamondExchange.Have(s))} {ShardText.ShortPlural}", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer).name = "camp-diamonds";
+            {
+                var store = Ui.MenuRow(ShardText.Store, $"{Ui.Count(DiamondExchange.Have(s))} {ShardText.ShortPlural}", () => App.Router.Push(new DiamondStoreScreen()), list.contentContainer);
+                store.name = "camp-diamonds";
+                store.KindIcon(RowKind.Diamond);
+            }
             else if (Features.DiamondStore) Station(ShardText.Store, false, CampUnlocks.MilestoneHint(c, CampUnlocks.SummonAfter), null);
             Station("Mercenaries", Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter), () => new MercenaryScreen(),
-                s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
+                s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "", RowKind.Hero);
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));
-            if (Features.Caravan) Station("Caravan", CampUnlocks.CaravanOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.CaravanAfter), () => new CaravanScreen(), caravanLevels > 0 ? $"{caravanLevels} upgrades" : "");
-            Item("Bestiary", () => new BestiaryScreen());
-            Item("Settings", () => new SettingsScreen());
+            if (Features.Caravan) Station("Caravan", CampUnlocks.CaravanOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.CaravanAfter), () => new CaravanScreen(), caravanLevels > 0 ? $"{caravanLevels} upgrades" : "", RowKind.Station);
+            Item("Bestiary", () => new BestiaryScreen()).KindIcon(RowKind.Bestiary);
+            Item("Settings", () => new SettingsScreen()).KindIcon(RowKind.Settings);
             if (Progression.CanStartNewGamePlus(c, s))
                 Ui.MenuRow($"New Game+ {s.NewGamePlus + 1}", "", () => Confirm.Show("Start New Game+? Keep your heroes, gear and gold; the campaign restarts with enemies 10 levels stronger.", "Begin", () =>
                 {
                     var r = Progression.StartNewGamePlus(App.Content, App.Save);
                     App.Toast(r.Message);
                     if (r.Ok) { App.Persist(); Refresh(); }
-                }), list.contentContainer).Q<Label>("label").AddToClassList("gold");
-            Ui.MenuRow("Save & Quit", "", () => { App.Persist(); App.Save = null; App.Slot = -1; App.Router.ResetTo(new TitleScreen()); }, list.contentContainer);
+                }), list.contentContainer).KindIcon(RowKind.NewGamePlus).parent.Q<Label>("label").AddToClassList("gold");
+            Ui.MenuRow("Save & Quit", "", () => { App.Persist(); App.Save = null; App.Slot = -1; App.Router.ResetTo(new TitleScreen()); }, list.contentContainer).KindIcon(RowKind.Quit);
             Ui.Select(list.contentContainer[0]);
 
             var side = Ui.El("col", lower);
