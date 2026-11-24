@@ -22,6 +22,25 @@ namespace GridGame.Meta
             return s.Codex.Add(Key(kind, id));
         }
 
+        /// <summary>GG-T929: the place a battle was fought: its campaign stage (a test stage or a generated Crucible arena
+        /// has no entry) and the theme the stage belongs to.</summary>
+        public static void UnlockStage(ContentDb c, SaveData s, string stageId)
+        {
+            if (c == null || s == null || string.IsNullOrWhiteSpace(stageId)) return;
+            var st = c.TryStage(stageId);
+            if (st != null && !st.IsTest) Unlock(s, CodexKinds.Place, st.Id);
+            var theme = c.ThemeOf(stageId);
+            if (theme?.Id != null) Unlock(s, CodexKinds.Place, theme.Id);
+        }
+
+        /// <summary>GG-T929: a hero who joins the roster: its character entry and every ability it arrives knowing.</summary>
+        public static void UnlockHero(SaveData s, HeroSave h)
+        {
+            if (s == null || h?.ClassId == null) return;
+            Unlock(s, CodexKinds.Character, h.ClassId);
+            if (h.Known != null) foreach (var a in h.Known) Unlock(s, CodexKinds.Ability, a);
+        }
+
         public static bool IsUnlocked(SaveData s, string kind, string id) =>
             s?.Codex != null && !string.IsNullOrWhiteSpace(id) && s.Codex.Contains(Key(kind, id));
 

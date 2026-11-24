@@ -223,6 +223,9 @@ namespace GridGame.Meta
             if (rep.Gold > s.Crucible.BestGold) s.Crucible.BestGold = rep.Gold;
 
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
+            // GG-T929: the arena's theme (a generated stage has no entry of its own), then what the run showed.
+            Codex.UnlockStage(c, s, battle.Stage.Id);
+            Codex.Sync(c, s);
             s.UpdatedUtc = DateTime.UtcNow;
             return rep;
         }

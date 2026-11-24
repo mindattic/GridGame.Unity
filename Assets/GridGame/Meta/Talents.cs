@@ -224,7 +224,7 @@ namespace GridGame.Meta
             h.TreeNodes.Add(Key(t, n));
             if (h.TreeNodeCosts == null) h.TreeNodeCosts = new Dictionary<string, int>();
             h.TreeNodeCosts[Key(t, n)] = cost;
-            if (!string.IsNullOrEmpty(n.Grants) && !h.Known.Contains(n.Grants)) { h.Known.Add(n.Grants); PassiveLoadout.OnLearned(c, h, n.Grants); }
+            if (!string.IsNullOrEmpty(n.Grants) && !h.Known.Contains(n.Grants)) { h.Known.Add(n.Grants); PassiveLoadout.OnLearned(c, h, n.Grants); Codex.Unlock(s, CodexKinds.Ability, n.Grants); }
             var a = c.TryAbility(n.Grants);
             return Result.Success($"Learned {a?.Name ?? n.Name ?? n.Id}");
         }

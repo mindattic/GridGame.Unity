@@ -79,6 +79,7 @@ namespace GridGame.Meta
             foreach (var h in s.Roster)
                 foreach (var e in h.Bar)
                     if (e != null && e.StartsWith("item:")) s.AddItem(e.Substring(5), Math.Max(1, c.TryItem(e.Substring(5))?.MaxStack ?? 3));
+            foreach (var h in s.Roster) Codex.UnlockHero(s, h); // GG-T929: the starting party and its starter kits
             return s;
         }
 
@@ -891,6 +892,9 @@ namespace GridGame.Meta
             }
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             s.LastStage = battle.Stage.Id;
+            // GG-T929: the place fought in, then everything else the battle showed (foes seen, loot, joiners, kits).
+            Codex.UnlockStage(c, s, battle.Stage.Id);
+            Codex.Sync(c, s);
             s.UpdatedUtc = DateTime.UtcNow;
             return rep;
         }
@@ -906,6 +910,7 @@ namespace GridGame.Meta
             Progression.TrainTo(c, h); // a hero met on the road arrives trained to their level (GG-T388)
             h.Hp = hp >= maxHp ? 0 : hp;
             s.Roster.Add(h);
+            Codex.UnlockHero(s, h); // GG-T929
             bool party = s.Party.Count < Progression.MaxPartySize;
             if (party) s.Party.Add(h.ClassId);
             return party;
@@ -2502,6 +2507,7 @@ namespace GridGame.Meta
             bool guided = Training.Guides(s, a);
             s.Gold -= price;
             h.Known.Add(a.Id);
+            Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
             if (!guided) return Result.Success($"Learned {a.Name}");
             // GG-T180 (§25.0.9): the guided first skill goes straight onto the battle bar and ends the onboarding chain.
             int slot = Training.SlotFor(s, h);
@@ -2718,6 +2724,7 @@ namespace GridGame.Meta
             h.SkillPoints += Formulas.SkillPointsForLevelUp(1, Progression.Level(h));
             Progression.TrainTo(c, h); // trained to the level they arrive at (GG-T388)
             s.Roster.Add(h);
+            Codex.UnlockHero(s, h); // GG-T929
             if (s.Party.Count < Progression.MaxPartySize) s.Party.Add(h.ClassId);
             return h;
         }

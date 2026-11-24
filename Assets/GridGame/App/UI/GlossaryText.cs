@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using GridGame.Core.Content;
+using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -75,6 +76,8 @@ namespace GridGame.App
                     if (run.IsTerm)
                     {
                         var entry = db?.TryTerm(run.Text);
+                        // GG-T929: a keyword read in the game's own text unlocks its Codex entry.
+                        if (entry?.Id != null) Codex.Unlock(GameApp.I?.Save, CodexKinds.Keyword, entry.Id);
                         last = Term(run.Text, entry, classes, host, tappable && entry != null);
                     }
                     else
