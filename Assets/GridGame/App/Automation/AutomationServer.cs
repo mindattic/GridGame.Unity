@@ -232,12 +232,19 @@ namespace GridGame.App.Automation
                     StartCoroutine(Record(SafeName(q["name"], "rec"), (int)F(q["frames"], 60), Math.Max(1, (int)F(q["every"], 1)), F(q["step"], 1f / 30f), reply));
                     return Pending;
                 case "screenshot":
-                    StartCoroutine(Screenshot(SafeName(q["name"], DateTime.Now.ToString("HHmmss")), reply, Mathf.Max(1, (int)F(q["super"], 1))));
+                {
+                    var shot = SafeName(q["name"], DateTime.Now.ToString("HHmmss"));
+                    CaptureMarker("shot " + shot); // GG-T1005: a recording chapter per harness screenshot
+                    StartCoroutine(Screenshot(shot, reply, Mathf.Max(1, (int)F(q["super"], 1))));
                     return Pending;
+                }
+                case "capture": return CaptureOp(q, reply); // GG-T1005
                 case "tap":
+                    StepMarker(q, $"tap {q["x"]},{q["y"]}");
                     StartCoroutine(Tap(F(q["x"]), F(q["y"]), reply));
                     return Pending;
                 case "drag":
+                    StepMarker(q, "drag");
                     holdDrag = q["hold"] == "1";
                     StartCoroutine(Drag(ParsePoints(q["path"]), F(q["step"], 0.03f), reply));
                     return Pending;
@@ -250,6 +257,7 @@ namespace GridGame.App.Automation
                     if (e == null || e.resolvedStyle.display == DisplayStyle.None || e.worldBound.width <= 0 || !Opaque(e))
                         return new { error = $"no visible element named '{q["name"]}'" };
                     var c = DesignPoint(e.worldBound.center);
+                    StepMarker(q, "click " + q["name"]);
                     StartCoroutine(Tap(c.x, c.y, reply));
                     return Pending;
                 }
