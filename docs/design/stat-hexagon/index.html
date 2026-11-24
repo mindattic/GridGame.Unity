@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Stat Hexagon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Stat Hexagon</h1>
+    <p class="sub">Six stats on the corners: VIT at the top, then STR, AGI, SPD, WIS and INT clockwise. Stamina and Luck are gone from hero identity. Each family is one side of the hexagon, running from one stat to the next, and shares its corner passives with the family next door. Every hero is a 4-point recipe: two neighbouring stats, sometimes with one point pulled from the far side, so every pair of stats has heroes. 66 slots, one hero each. Visualization only; nothing in the game has changed.</p>
+  </header>
+  <div class="controls">
+    <label><input type="checkbox" id="pas" checked> Stat passives</label>
+    <label><input type="checkbox" id="lab" checked> Hero names</label>
+  </div>
+  <div class="main">
+    <div class="board"><svg id="hex" viewBox="-560 -540 1120 1080" role="img" aria-label="Stat hexagon"></svg></div>
+    <aside>
+      <div><h2 id="ptitle">How to read it</h2><p id="pbody">Corners are pure heroes (4 in one stat). Along each side the recipe slides from one stat to the next; the middle hero is the perfect hybrid. The inner row adds one point from the far side. The short spurs by each corner, and the hero on each spoke, mix a corner stat with the far side. Squares are passives. Hover anything.</p></div>
+      <div id="detail"></div>
+      <div><h2>Families</h2><div class="fams" id="fams"></div></div>
+      <div><h2>Every stat pair covered</h2><p>Heroes whose recipe holds both stats. Neighbours on the hexagon, stats two apart and opposites all have heroes.</p><div style="overflow-x:auto"><table class="pairs" id="pairs"></table></div></div>
+      <div class="drops"><h2>Roster changes</h2><div id="drops"></div></div>
+    </aside>
+  </div>
+</div>
+<div id="tip" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
