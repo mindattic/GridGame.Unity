@@ -5574,7 +5574,8 @@
       "fieldcaster_wardgrid",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "chill_aura"
+      "chill_aura",
+      "drifter_float"
     ],
     "DefaultLoadout": [
       "drifter_frostnova",

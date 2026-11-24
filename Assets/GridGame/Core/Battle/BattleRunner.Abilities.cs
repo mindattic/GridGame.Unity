@@ -355,7 +355,7 @@ namespace GridGame.Core.Battle
                 if (a.SwapsTurns && t.Alive && !friend) DoCountermarch(t); // GG-T336: the Tactician reorders the foes' turns
 
                 var buff = C.TryBuff(a.ApplyBuff);
-                if (buff != null && buff.Kind == BuffKind.Buff && !friend)
+                if (buff != null && buff.Kind == BuffKind.Buff && !friend && !FloatSpell.Is(a)) // GG-T872: Float lifts the foe itself
                 {
                     if (!selfGift && caster.Alive) { selfGift = true; ApplyBuff(caster, buff, buff.Duration); }
                 }

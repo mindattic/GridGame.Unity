@@ -482,6 +482,12 @@ namespace GridGame.Core.Bot
             if (a.StealsBoon) return SwipeBoon.Value(s, caster, s.UnitAt(anchor)); // GG-T866: only a foe wearing a boon is worth robbing
             if (Intimidate.Is(s.Content, a)) return Intimidate.Value(s, a, caster, anchor); // GG-T884: a roar, scored on the tiles the frightened foes back into
             if (EmpPulse.Is(a)) return EmpPulse.Value(s, caster, a, anchor); // GG-T879: jam a charging tech foe, set off the mines
+            if (FloatSpell.Is(a))
+            {
+                // GG-T872: float a Heavy foe a mover can then set into a pincer, or a hero whose way in crosses ground hazards.
+                float fv = FloatSpell.Value(s, caster, s.UnitAt(anchor));
+                return fv > 0f ? fv - a.Cost * OrbPenalty(s, false) : 0f;
+            }
             if (AnchorStance.Is(s, a)) return AnchorStance.Value(s, caster); // GG-T882: only when a foe's shove or hook is queued at the Warden or an ally beside it
             var targets = TargetResolver.Collect(s, a, caster, anchor);
             float score = 0f;
