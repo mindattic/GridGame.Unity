@@ -2189,6 +2189,20 @@
         "definition": "A [Wanderer]'s gauge (full at 6): +2 for each hero pincer they're part of, as an end or a flanker, and +1 each time a hero heals them. After the battle they join only if your companion says what they want to hear, and they trust you fully, or half, with a companion from their own faction."
       }
     },
+    "glossary:turn_mode_party_window": {
+      "key": "glossary:turn_mode_party_window",
+      "id": "glossary-turn-mode-party-window",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:354eaf645137c500362d86197b4c8285123e46bd47226b82425b460130532de5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Party window",
+        "definition": "Every hero acts once each turn, in any order, before the next foe moves."
+      }
+    },
     "glossary:turrets": {
       "key": "glossary:turrets",
       "id": "glossary-turrets",

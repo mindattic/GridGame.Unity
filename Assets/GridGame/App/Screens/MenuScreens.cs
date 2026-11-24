@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Meta;
 using UnityEngine;
@@ -138,7 +139,10 @@ namespace GridGame.App
     public sealed class SaveSlotScreen : GameScreen
     {
         private readonly bool newGame;
-        public SaveSlotScreen(bool newGame) { this.newGame = newGame; }
+        /// <summary>New Game's turn-mode choice (§2.13, GG-T774): null follows the profile setting, a mode locks the save
+        /// to it (<see cref="TurnModeSetting.Lock"/>). Only <see cref="TurnModes.Available"/> modes are offered.</summary>
+        private readonly TurnMode? turnModeLock;
+        public SaveSlotScreen(bool newGame, TurnMode? turnModeLock = null) { this.newGame = newGame; this.turnModeLock = turnModeLock; }
         public override string Id => newGame ? "newgame" : "load";
 
         protected override void Build(VisualElement root)
@@ -165,6 +169,7 @@ namespace GridGame.App
                     Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():yyyy-MM-dd HH:mm}", w); // GG-T566: explicit under the invariant culture
                 }
             }
+            if (newGame) TurnModeChoice(w);
             // GG-T608: on a new device (or after a reinstall) the empty slots fill from the Play Games cloud.
             if (!newGame && App.Cloud.Available)
             {
@@ -172,6 +177,27 @@ namespace GridGame.App
                 restore.name = "load-cloud-restore";
                 restore.KindIcon(RowKind.Save);
             }
+        }
+
+        /// <summary>New Game's turn mode (§2.13, GG-T774): "Settings" (the save follows Settings → Turn mode) or one
+        /// built mode the save keeps for good. Tapping cycles Settings, then each of <see cref="TurnModes.Available"/>.</summary>
+        private void TurnModeChoice(VisualElement w)
+        {
+            var c = App.Content;
+            var profile = App.Settings?.TurnMode ?? TurnMode.PartyWindow;
+            if (!TurnModes.IsBuilt(profile)) profile = TurnModes.Available[0];
+            TurnMode? locked = turnModeLock is TurnMode m && TurnModes.IsBuilt(m) ? m : (TurnMode?)null;
+            TurnMode? next = locked == null ? TurnModes.Available[0]
+                : TurnModes.Next(locked.Value) == TurnModes.Available[0] ? (TurnMode?)null : TurnModes.Next(locked.Value);
+            string value = locked == null ? $"Settings ({TurnModes.Name(c, profile)})" : TurnModes.Name(c, locked.Value);
+            var row = Ui.MenuRow("Turn mode", value, () => App.Router.Replace(new SaveSlotScreen(true, next)), w);
+            row.name = "newgame-turn-mode";
+            row.KindIcon(RowKind.Settings);
+            var shown = locked ?? profile;
+            var note = Ui.Note(TurnModes.Describe(c, shown) + (locked == null
+                ? " Follows your Settings; change it there any time."
+                : " Locked: this save always plays it."), w);
+            note.name = "newgame-turn-mode-text";
         }
 
         private void RestoreFromCloud()
@@ -216,6 +242,7 @@ namespace GridGame.App
             App.Router.Push(new CharacterSelectScreen(party =>
             {
                 App.Save = Progression.NewGame(App.Content, "Player", party);
+                TurnModeSetting.Lock(App.Save, turnModeLock is TurnMode m && TurnModes.IsBuilt(m) ? m : (TurnMode?)null); // §2.13 (GG-T774)
                 App.Slot = slot;
                 App.MoveToWallet(-1, App.Save); // GG-T702: a new game spends from the account wallet from its first Shard
                 App.ApplySettings();

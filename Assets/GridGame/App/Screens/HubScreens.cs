@@ -1946,6 +1946,23 @@ namespace GridGame.App
             Ui.Note(DifficultyTable.Describe(level) + " Applies from the next battle.", parent).name = "difficulty-text";
         }
 
+        /// <summary>The turn mode (§2.13, GG-T774): the profile's <see cref="SettingsSave.TurnMode"/>, cycled like Battle
+        /// speed through <see cref="TurnModes.Available"/> (only modes that are built), then one line explaining it. A save
+        /// New Game locked to a mode keeps playing that one, and the line says so.</summary>
+        private void TurnModeControl(SettingsSave st, VisualElement parent)
+        {
+            var c = App.Content;
+            var mode = TurnModes.IsBuilt(st.TurnMode) ? st.TurnMode : TurnModes.Available[0];
+            var row = Ui.MenuRow("Turn mode", TurnModes.Name(c, mode),
+                () => { st.TurnMode = TurnModes.Next(mode); App.SaveSettings(); Refresh(); }, parent);
+            row.name = "settings-turn-mode";
+            row.KindIcon(RowKind.Settings);
+            string text = TurnModes.Describe(c, mode);
+            if (App.Save?.TurnModeLock is TurnMode locked)
+                text += $" This save is locked to {TurnModes.Name(c, locked)}.";
+            Ui.Note(text, parent).name = "settings-turn-mode-text";
+        }
+
         protected override void BuildBody(VisualElement body)
         {
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
@@ -1992,6 +2009,7 @@ namespace GridGame.App
             Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
             Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
+            TurnModeControl(st, w); // GG-T774 (§2.13)
             Toggle("Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
             Toggle("Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
             Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);

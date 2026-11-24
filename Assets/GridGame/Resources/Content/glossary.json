@@ -849,5 +849,9 @@
     "Id": "mana_orb",
     "Term": "Mana Orb",
     "Aliases": ["Mana Orbs"]
+  },
+  {
+    "Id": "turn_mode_party_window",
+    "Term": "Party window"
   }
 ]
