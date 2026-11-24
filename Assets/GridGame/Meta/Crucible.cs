@@ -183,6 +183,8 @@ namespace GridGame.Meta
                 StageName = battle.Stage.Name,
                 StageTheme = battle.Stage.Theme,
                 Crucible = true,
+                PartyTurns = r.PartyTurns,
+                Actions = r.ActionsTaken,
             };
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);

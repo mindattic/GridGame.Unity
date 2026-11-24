@@ -121,6 +121,7 @@ namespace GridGame.Core.Battle
             record.Seconds = Round(elapsed);
             record.Ticks = state.Results?.TicksElapsed ?? 0;
             record.Actions = state.Results?.ActionsTaken ?? 0;
+            record.PartyTurns = state.Results?.PartyTurns ?? 0;
             foreach (var h in heroes.Values)
             {
                 var u = state.UnitById(h.UnitId);
@@ -309,8 +310,12 @@ namespace GridGame.Core.Battle
         public int TotalWaves;
         public int WavesCleared;
         public int WaveReached;
+        /// <summary>Commands observed (one per <see cref="EncounterTelemetry.Observe"/> call), not party turns: see <see cref="PartyTurns"/>.</summary>
         public int Turns;
+        /// <summary><see cref="BattleResults.ActionsTaken"/>: every accepted command, Guards included.</summary>
         public int Actions;
+        /// <summary>GG-T944: <see cref="BattleResults.PartyTurns"/>, the party turns the battle took in either turn mode.</summary>
+        public int PartyTurns;
         public int Ticks;
         public float Seconds;
         public List<WaveTally> Waves = new List<WaveTally>();

@@ -1262,7 +1262,9 @@ Each party turn **exactly one** hero acts: any able hero, the same one again if 
 **Tutorial and automation (✅ GG-T788).** Both ask `TurnRules`, never `TurnMode`.
 - **Tutorial.** Every lesson's scripted move is one hero's one drop (the chain lesson's two pincers come from a single drag), so the steps work as they are. The one lesson whose copy assumed every hero acts each turn, *The hold timer*, has a one-hero variant (`Lesson.TextOneHero`, picked by `LessonText` when `TurnRules.OneHeroPerTurn`): "Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn".
 - **Automation.** `/state` reports `one_hero_per_turn` (the seam's answer), `to_act` (`HeroesLeftToAct`) and per hero `acted` and `may_act` (`TurnRules.MayAct`, time aside), so the harness sees who may act now in either mode.
-- Still to come: post-battle stats (turns and actions) and the Crucible's mode (GG-T943).
+
+**Post-battle turns and actions (✅ GG-T944).** `BattleResults.ActionsTaken` counts every accepted command, Guards included, and `EncounterRecord.Turns` counts commands observed, so neither is a party-turn count in PartyWindow. `BattleResults.TurnsEnded` and `ActionsAtTurnEnd` are bumped at the one turn boundary (beside `TurnRules.ResetTurn`), and `PartyTurns` = `TurnsEnded` + 1 when an action was taken after the last boundary (a winning action ends the battle before any boundary fires, so the turn it ended in still counts). They are pure counters that no rule reads, so PartyWindow replays identically. `PartyTurns` is carried into `EncounterRecord.PartyTurns`, the recording's outcome (`turns`), `BattleReport.PartyTurns`/`Actions` (both commits, campaign and Crucible) and one results row, **Battle length**, on victory, defeat and the Crucible: "N turns", or "N turns, M actions" when the two differ (several heroes acted in a turn). The view never reads `TurnMode`. In this mode the two are equal.
+- Still to come: the Crucible's mode (GG-T943).
 
 #### 2.13.2 Any hero who hasn't moved this round (`UnmovedThisRound`) — ⬜ Not yet built (GG-T792)
 

@@ -112,7 +112,14 @@ namespace GridGame.Core.Battle
             }
             if (!S.IsOver) CheckEnd();
             bool newWindow = TurnRules.IsTurnBoundary(S, windowOver, S.Wave != waveBefore);
-            if (newWindow) { CloseCombo(); TurnRules.ResetTurn(S); } // §1.2.8: the combo window is the party's turn
+            if (newWindow)
+            {
+                CloseCombo(); // §1.2.8: the combo window is the party's turn
+                TurnRules.ResetTurn(S);
+                // GG-T944: count the party turn for the results (pure counters, read by nothing in the rules).
+                S.Results.TurnsEnded++;
+                S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;
+            }
             if (!S.IsOver) ReturnControl(newWindow);
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
