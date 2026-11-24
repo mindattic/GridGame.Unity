@@ -66,12 +66,12 @@ namespace GridGame.App
             var foot = Ui.Footer(body, "window-actions-bar");
             foot.name = "window-actions";
             foot.style.justifyContent = Justify.FlexEnd;
-            var save = Ui.Button("Save", Save, "btn--primary", foot);
+            var save = RowIcon.IconButton("Save", RowKind.Save, Save, "btn--primary", foot); // GG-T751 (§26.7)
             save.name = "window-save";
-            var reset = Ui.Button("Reset", Reset, null, foot);
+            var reset = RowIcon.IconButton("Reset", RowKind.NewGamePlus, Reset, null, foot);
             reset.name = "window-reset";
             Ui.SetEnabled(reset, dirty);
-            var del = Ui.Button("Delete", Delete, "btn--danger", foot);
+            var del = RowIcon.IconButton("Delete", RowKind.Close, Delete, "btn--danger", foot);
             del.name = "window-delete";
             Ui.SetEnabled(del, BaseIsCustom);
         }
@@ -132,8 +132,8 @@ namespace GridGame.App
             var row = Ui.El("row", w);
             row.style.justifyContent = Justify.FlexEnd;
             row.style.marginTop = Space.S8;
-            Ui.Button("Cancel", null, null, row);
-            Ui.Button("Confirm", null, "btn--primary", row);
+            RowIcon.IconButton("Cancel", RowKind.Close, null, null, row); // the sample dialog wears the real one's icons (GG-T751)
+            RowIcon.IconButton("Confirm", RowKind.Confirm, null, "btn--primary", row);
         }
 
         // ── Presets ─────────────────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ namespace GridGame.App
                 input.style.paddingLeft = input.style.paddingRight = Space.S16;
             }
             row.Add(nameField);
-            Ui.Button("Save as new", () => SaveAsNew(nameField.value), null, row).name = "window-save-new";
+            RowIcon.IconButton("Save as new", RowKind.Save, () => SaveAsNew(nameField.value), null, row).name = "window-save-new";
         }
 
         /// <summary>A wrapping grid of theme tiles: each shows its gradient, texture and frame, named over it.</summary>
@@ -304,10 +304,13 @@ namespace GridGame.App
 
         // ── Colors ──────────────────────────────────────────────────────────────────
 
+        /// <summary>An option row (one that cycles a setting): named for automation, led by the Settings emblem (GG-T751, §26.7).</summary>
+        private static void Option(VisualElement row, string name) { row.name = name; row.KindIcon(RowKind.Settings); }
+
         private void BuildColors(VisualElement c)
         {
             var g = draft.Gradient;
-            Ui.MenuRow("Gradient", ModeLabel(g.Mode), () => { CycleMode(); ChangedAndRebuild(); }, c).name = "window-mode";
+            Option(Ui.MenuRow("Gradient", ModeLabel(g.Mode), () => { CycleMode(); ChangedAndRebuild(); }, c), "window-mode");
             if (g.Mode == WindowThemeCatalog.Corners)
             {
                 // Four chips laid out like the corners they colour (FF7's window config).
@@ -332,7 +335,7 @@ namespace GridGame.App
                     Slider(c, "Center X", "window-center-x", 0, 100, Mathf.RoundToInt(g.Center[0] * 100), v => $"{v}%", v => { g.Center[0] = v / 100f; Changed(); });
                     Slider(c, "Center Y", "window-center-y", 0, 100, Mathf.RoundToInt(g.Center[1] * 100), v => $"{v}%", v => { g.Center[1] = v / 100f; Changed(); });
                 }
-                Ui.MenuRow("Stops", g.Stops.Count.ToString(), () => { CycleStops(); ChangedAndRebuild(); }, c).name = "window-stops";
+                Option(Ui.MenuRow("Stops", g.Stops.Count.ToString(), () => { CycleStops(); ChangedAndRebuild(); }, c), "window-stops");
                 var row = Ui.El("row", c);
                 row.style.flexWrap = Wrap.Wrap;
                 row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
@@ -436,12 +439,12 @@ namespace GridGame.App
             }
             if (x == null) return;
             Slider(c, "Opacity", "window-tex-opacity", 0, 100, Mathf.RoundToInt(x.Opacity * 100), v => $"{v}%", v => { x.Opacity = v / 100f; Changed(); });
-            Ui.MenuRow("Blend", BlendLabel(x.Blend), () =>
+            Option(Ui.MenuRow("Blend", BlendLabel(x.Blend), () =>
             {
                 int i = Array.IndexOf(WindowThemeCatalog.Blends, x.Blend);
                 x.Blend = WindowThemeCatalog.Blends[(i + 1) % WindowThemeCatalog.Blends.Length];
                 ChangedAndRebuild();
-            }, c).name = "window-tex-blend";
+            }, c), "window-tex-blend");
             Slider(c, "Scale", "window-tex-scale", 25, 400, Mathf.RoundToInt(x.Scale * 100), v => $"{v}%", v => { x.Scale = v / 100f; Changed(); });
         }
 
@@ -458,29 +461,29 @@ namespace GridGame.App
         private void BuildFrame(VisualElement c)
         {
             var f = draft.Frame ??= new WindowFrameDef();
-            Ui.MenuRow("Frame style", StyleLabel(f.Style), () =>
+            Option(Ui.MenuRow("Frame style", StyleLabel(f.Style), () =>
             {
                 int i = Array.IndexOf(WindowThemeCatalog.FrameStyles, f.Style);
                 f.Style = WindowThemeCatalog.FrameStyles[(i + 1) % WindowThemeCatalog.FrameStyles.Length];
                 ChangedAndRebuild();
-            }, c).name = "window-frame-style";
+            }, c), "window-frame-style");
             int n = f.Colors?.Length ?? 0;
-            Ui.MenuRow("Frame colours", n == 0 ? "Style's own" : n == 1 ? "Solid" : n == 2 ? "Bevel" : "Bevel, 3 tones", () =>
+            Option(Ui.MenuRow("Frame colours", n == 0 ? "Style's own" : n == 1 ? "Solid" : n == 2 ? "Bevel" : "Bevel, 3 tones", () =>
             {
                 f.Colors = n == 0 ? new[] { "#FFFFFF" } : n == 1 ? new[] { "#F2F2F6", "#6A6A72" } : n == 2 ? new[] { f.Colors[0], "#B0B0B8", f.Colors[1] } : null;
                 frameSel = 0;
                 ChangedAndRebuild();
-            }, c).name = "window-frame-colors";
-            Ui.MenuRow("Accent", draft.Accent == null ? "From the gradient" : "Custom", () =>
+            }, c), "window-frame-colors");
+            Option(Ui.MenuRow("Accent", draft.Accent == null ? "From the gradient" : "Custom", () =>
             {
                 draft.Accent = draft.Accent == null ? WindowThemes.HexOf(WindowThemes.DerivedAccent(draft)) : null;
                 ChangedAndRebuild();
-            }, c).name = "window-accent";
-            Ui.MenuRow("Text colour", draft.Text == null ? "Default" : "Custom", () =>
+            }, c), "window-accent");
+            Option(Ui.MenuRow("Text colour", draft.Text == null ? "Default" : "Custom", () =>
             {
                 draft.Text = draft.Text == null ? "#FFFFFF" : null;
                 ChangedAndRebuild();
-            }, c).name = "window-text";
+            }, c), "window-text");
 
             // The colours this frame has, as chips; the selected one goes on the sliders.
             var targets = new List<(string label, Func<string> get, Action<string> set)>();
@@ -525,7 +528,7 @@ namespace GridGame.App
             row.style.justifyContent = Justify.FlexEnd;
             row.style.marginTop = Space.S8;
             row.style.paddingRight = Space.S16;
-            var reset = Ui.Button("Reset", () => { SetTone(WindowTone.Neutral, WindowTone.Neutral, WindowTone.Neutral); Rebuild(); }, null, row);
+            var reset = RowIcon.IconButton("Reset", RowKind.NewGamePlus, () => { SetTone(WindowTone.Neutral, WindowTone.Neutral, WindowTone.Neutral); Rebuild(); }, null, row);
             reset.name = "window-tone-reset";
             void ShowReset() => Ui.SetEnabled(reset, !draft.Tone.IsNeutral);
             ShowReset();

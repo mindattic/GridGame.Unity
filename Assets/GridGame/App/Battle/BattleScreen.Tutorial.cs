@@ -281,10 +281,10 @@ namespace GridGame.App
             btns.style.paddingTop = Space.S16;
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
-            if (last) (first = Ui.Button("Got it", FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
-            else if (!LessonWaiting) (first = Ui.Button("Next", NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
+            if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
+            else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
             if (first != null) first.style.marginBottom = Space.S24;
-            Ui.Button("Skip", FinishTutorial, "btn--small", btns).name = "tutorial-skip";
+            RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";
         }
 
         /// <summary>When a wave starts, a lesson that was waiting for it comes on stage.</summary>

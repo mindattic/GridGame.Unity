@@ -37,7 +37,7 @@ namespace GridGame.App
             var topic = Npc != null && CampNpcs.Joined(S, Npc) ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + Npc) : null;
             if (topic != null)
             {
-                var talk = Ui.Button(S.SeenDialogues.Contains(topic.Id) ? "Talk" : "Talk!", () => App.Router.Push(new DialogueScreen(topic, (string)null, (GameScreen)null)), "btn--small", null);
+                var talk = RowIcon.IconButton(S.SeenDialogues.Contains(topic.Id) ? "Talk" : "Talk!", RowKind.Talk, () => App.Router.Push(new DialogueScreen(topic, (string)null, (GameScreen)null)), "btn--small", null);
                 talk.name = "npc-talk";
                 header.Insert(header.IndexOf(GoldLabel), talk);
             }
@@ -299,7 +299,7 @@ namespace GridGame.App
             revealPanel.style.minHeight = 420;
             Fit.Center(revealPanel);
 
-            lockBtn = Ui.Button("Lock In", LockInHighlighted, "btn--primary", col);
+            lockBtn = RowIcon.IconButton("Lock In", RowKind.Confirm, LockInHighlighted, "btn--primary", col);
             lockBtn.style.alignSelf = Align.Center;
             lockBtn.style.width = Size.Card;
             lockBtn.style.marginBottom = Space.S8;
@@ -983,7 +983,7 @@ namespace GridGame.App
                 Ui.Caption($"Lv {u.Level}  HP {hp}/{u.MaxHp}", meta, hp < u.MaxHp ? "warn" : "dim").style.marginLeft = Space.S8;
             }
             if (S.Party.Count == 0) Ui.Empty("No one is in the party.", party);
-            Ui.Button("Change party", () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(party)).name = "stage-party-change";
+            RowIcon.IconButton("Change party", RowKind.Hero, () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(party)).name = "stage-party-change";
 
             bool can = Expeditions.CanLaunch(C, S, stageId, out var why) && (index < 0 || Progression.IsStageUnlocked(S, index));
             if (!can && why == null) why = "Locked";
@@ -1096,7 +1096,7 @@ namespace GridGame.App
             body.style.unityTextAlign = TextAnchor.UpperCenter;
             y = GameApp.StageHeight;
             text.style.top = y;
-            var skip = Ui.Button("Skip ›", Finish, "btn--small", root);
+            var skip = RowIcon.IconButton("Skip", RowKind.Enter, Finish, "btn--small", root);
             skip.style.position = Position.Absolute; skip.style.right = Space.S32; skip.style.bottom = Space.S48;
             root.RegisterCallback<ClickEvent>(_ => Finish());
             if (DemoMode.Active || TestMode.Active) root.schedule.Execute(Finish).ExecuteLater(600);
@@ -1188,7 +1188,7 @@ namespace GridGame.App
             root.RegisterCallback<PointerDownEvent>(_ => fast = true);
             root.RegisterCallback<PointerUpEvent>(_ => fast = false);
             root.RegisterCallback<PointerLeaveEvent>(_ => fast = false);
-            var skip = Ui.Button("Skip ›", EndRoll, "btn--small", root);
+            var skip = RowIcon.IconButton("Skip", RowKind.Enter, EndRoll, "btn--small", root);
             skip.name = "credits-skip";
             skip.style.position = Position.Absolute; skip.style.right = Space.S32; skip.style.bottom = Space.S48;
             App.Audio.Sfx("ui.confirm");

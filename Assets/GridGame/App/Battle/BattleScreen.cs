@@ -995,9 +995,9 @@ namespace GridGame.App
             btns.style.flexShrink = 0;
             btns.style.marginLeft = Space.S16;
             string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-            var ok = Ui.Button(verb, ConfirmPending, "btn--primary", btns);
+            var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
             ok.name = "confirm-action";
-            var cancel = Ui.Button("Cancel", CancelByPlayer, "btn--small", btns);
+            var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
             cancel.name = "confirm-cancel";
         }
 
@@ -1558,16 +1558,16 @@ namespace GridGame.App
             w.style.width = Length.Percent(72);
             void Close() { veil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
             closePause = Close;
-            Ui.MenuRow("Resume", "", Close, w);
-            Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w);
-            Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w);
+            Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
+            Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
+            Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
                 Ui.MenuRow("Leave the Crucible", "(keep all)", () => { Close();
-                    Confirm.Show($"Leave the Crucible after {State.Wave} wave{(State.Wave == 1 ? "" : "s")}? You keep every coin, item and point of experience earned so far.", "Leave", Retreat); }, w);
+                    Confirm.Show($"Leave the Crucible after {State.Wave} wave{(State.Wave == 1 ? "" : "s")}? You keep every coin, item and point of experience earned so far.", "Leave", Retreat); }, w).KindIcon(RowKind.Quit);
             else
                 Ui.MenuRow("Retreat", $"(keep {retreatPct}%)", () => { Close();
-                    Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w);
+                    Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w).KindIcon(RowKind.Back);
             Ui.Select(w[1]);
         }
 

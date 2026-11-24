@@ -38,9 +38,9 @@ namespace GridGame.App
                 if (active) row.Q<Label>("label").AddToClassList("gold");
                 var actions = Ui.Actions(list);
                 actions.AddToClassList("kit-note"); // under the row's label
-                var rename = Ui.Button("Rename", () => App.Router.Push(new ProfileNameScreen(n)), "btn--small", actions);
+                var rename = RowIcon.IconButton("Rename", RowKind.Settings, () => App.Router.Push(new ProfileNameScreen(n)), "btn--small", actions);
                 rename.name = "rename-" + n;
-                var delete = Ui.Button("Delete", () => AskDelete(n), "btn--small", actions);
+                var delete = RowIcon.IconButton("Delete", RowKind.Close, () => AskDelete(n), "btn--small", actions);
                 delete.name = "delete-" + n;
             }
             var create = Ui.MenuRow("+ New profile", "", () => App.Router.Push(new ProfileNameScreen(null)), list);
@@ -115,8 +115,8 @@ namespace GridGame.App
 
             var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
-            Ui.Button("Cancel", () => App.Router.Back(), null, row);
-            ok = Ui.Button(renaming == null ? "Create" : "Rename", Submit, "btn--primary", row);
+            RowIcon.IconButton("Cancel", RowKind.Close, () => App.Router.Back(), null, row);
+            ok = RowIcon.IconButton(renaming == null ? "Create" : "Rename", RowKind.Confirm, Submit, "btn--primary", row);
             ok.name = "profile-name-ok";
             Validate();
             field.schedule.Execute(() => field.Focus()).ExecuteLater(200);
@@ -230,7 +230,7 @@ namespace GridGame.App
             for (int i = 0; i < SaveFiles.Slots; i++)
             {
                 int n = i;
-                var b = Ui.Button($"Slot {n + 1}", () => { slot = n; Refresh(); }, n == slot ? "btn--small btn--primary" : "btn--small", pick);
+                var b = RowIcon.IconButton($"Slot {n + 1}", RowKind.Save, () => { slot = n; Refresh(); }, n == slot ? "btn--small btn--primary" : "btn--small", pick);
                 b.name = $"save-export-slot-{n + 1}";
                 Ui.SetEnabled(b, App.Saves != null && App.Saves.Exists(n));
             }
@@ -248,7 +248,7 @@ namespace GridGame.App
             SaveTransferUi.CodeField("save-export-code", code, true, w);
             var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
-            Ui.Button("Copy code", () => { GUIUtility.systemCopyBuffer = code; App.Audio.Sfx("ui.confirm"); App.Toast("Save code copied"); }, "btn--primary", row).name = "save-export-copy";
+            RowIcon.IconButton("Copy code", RowKind.Save, () => { GUIUtility.systemCopyBuffer = code; App.Audio.Sfx("ui.confirm"); App.Toast("Save code copied"); }, "btn--primary", row).name = "save-export-copy";
         }
     }
 
@@ -268,7 +268,7 @@ namespace GridGame.App
             Ui.Note("Copy the code on the other device (Settings › Transfer save), paste it here and pick an empty slot.", w);
             field = SaveTransferUi.CodeField("save-import-code", field?.value, false, w);
             var paste = Ui.Actions(w);
-            Ui.Button("Paste", () => { field.value = GUIUtility.systemCopyBuffer ?? ""; problem.text = ""; }, "btn--small", paste).name = "save-import-paste";
+            RowIcon.IconButton("Paste", RowKind.Save, () => { field.value = GUIUtility.systemCopyBuffer ?? ""; problem.text = ""; }, "btn--small", paste).name = "save-import-paste";
 
             Ui.Section("Into slot", w);
             var pick = Ui.Actions(w);
@@ -279,7 +279,7 @@ namespace GridGame.App
                 bool empty = App.Saves != null && !App.Saves.Exists(n);
                 anyEmpty |= empty;
                 if (!empty && slot == n) slot = -1;
-                var b = Ui.Button(empty ? $"Slot {n + 1} (empty)" : $"Slot {n + 1} (in use)", () => { slot = n; Refresh(); },
+                var b = RowIcon.IconButton(empty ? $"Slot {n + 1} (empty)" : $"Slot {n + 1} (in use)", RowKind.Save, () => { slot = n; Refresh(); },
                     n == slot ? "btn--small btn--primary" : "btn--small", pick);
                 b.name = $"save-import-slot-{n + 1}";
                 Ui.SetEnabled(b, empty);
@@ -290,8 +290,8 @@ namespace GridGame.App
 
             var row = Ui.El("kit-footer", w);
             row.style.justifyContent = Justify.FlexEnd;
-            Ui.Button("Cancel", () => App.Router.Back(), null, row);
-            var ok = Ui.Button("Import", Submit, "btn--primary", row);
+            RowIcon.IconButton("Cancel", RowKind.Close, () => App.Router.Back(), null, row);
+            var ok = RowIcon.IconButton("Import", RowKind.Confirm, Submit, "btn--primary", row);
             ok.name = "save-import-ok";
             Ui.SetEnabled(ok, anyEmpty && slot >= 0);
         }
