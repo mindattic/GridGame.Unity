@@ -100,7 +100,9 @@ namespace GridGame.Core.Battle
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "occupied" });
                     return false;
                 }
+                if (RootsHold(hero, next)) return false; // GG-T912: a rooted walker can't take a step
                 var occ = S.UnitAt(next);
+                if (occ != null && RootsHold(occ, next, hero)) return false; // GG-T912: nor drag a rooted occupant off its tile
                 if (occ != null && occ.IsHeavy && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains) // GG-T891
                 {
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "heavy" });
@@ -135,6 +137,16 @@ namespace GridGame.Core.Battle
                 if (!PreviewOnly && hero.Pos != next) return false; // fell through the floor (GG-T368) or was moved: the walk ends
 
             }
+            return true;
+        }
+
+        /// <summary>GG-T912 (§8.1): a Rooted unit (<see cref="Unit.IsRooted"/>) is held to its tile - it can't step, leap or
+        /// blink, and no drag, shove, pull, swap or rule drag moves it. True (with a StepBlocked "rooted") when <paramref name="u"/>
+        /// is rooted; <paramref name="by"/> is the mover a rooted occupant stops, when that is not the rooted unit itself.</summary>
+        private bool RootsHold(Unit u, Coord at, Unit by = null)
+        {
+            if (u == null || !u.IsRooted) return false;
+            Emit(new StepBlockedEvent { UnitId = (by ?? u).Id, At = at, Reason = "rooted" });
             return true;
         }
 
@@ -433,6 +445,7 @@ namespace GridGame.Core.Battle
         private void Knockback(Unit caster, Unit t, int tiles, int baseDamage)
         {
             if (!t.Alive || t.IsMultiTile || t.IsSnakeMember || t.IsRemains) return;
+            if (RootsHold(t, t.Pos)) return; // GG-T912
             if (t.IsHeavy) { Announce("Too heavy!", t.Id); return; } // GG-T891
             var d = new Coord(t.Pos.X - caster.Pos.X, t.Pos.Y - caster.Pos.Y);
             var dir = Math.Abs(d.X) >= Math.Abs(d.Y) ? new Coord(Math.Sign(d.X), 0) : new Coord(0, Math.Sign(d.Y));

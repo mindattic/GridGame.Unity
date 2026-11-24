@@ -105,10 +105,11 @@ namespace GridGame.Core.Battle
         private void MireSwap(Unit boss)
         {
             if (!MovesItself(boss) || !HeroBeside(boss)) return;
+            if (RootsHold(boss, boss.Pos)) return; // GG-T912
             Unit best = null; int bestD = -1;
             foreach (var e in S.Living(Team.Enemy))
             {
-                if (e == boss || e.IsCorpse || e.IsEgg || !Budges(e) || HeroBeside(e)) continue;
+                if (e == boss || e.IsRooted || e.IsCorpse || e.IsEgg || !Budges(e) || HeroBeside(e)) continue;
                 int d = int.MaxValue;
                 foreach (var h in S.Living(Team.Hero)) d = Math.Min(d, e.DistanceTo(h));
                 if (d > bestD) { bestD = d; best = e; }

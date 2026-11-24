@@ -183,6 +183,7 @@ namespace GridGame.Core.Battle
             {
                 // The whole footprint must land on open tiles — never onto a unit, a movable, a block or off the board.
                 var from = caster.Pos;
+                if (RootsHold(caster, anchor)) return; // GG-T912: rooted, it can't blink away
                 if (!FootprintOpen(caster, anchor) || !Relocate(caster, anchor)) { Announce("Blocked", caster.Id); return; }
                 Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = anchor, Tiles = { anchor } });
                 Emit(new TeleportedEvent { UnitId = caster.Id, From = from, To = anchor });
@@ -403,6 +404,7 @@ namespace GridGame.Core.Battle
         /// <summary>Pull (GG-T183): drag <paramref name="t"/> toward the caster a tile at a time onto free ground, stopping beside it.</summary>
         private void Pull(Unit caster, Unit t, int tiles)
         {
+            if (RootsHold(t, t.Pos)) return; // GG-T912
             if (!Budges(t)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
             for (int i = 0; i < tiles && t.Alive && !S.IsOver; i++)
             {
@@ -424,6 +426,7 @@ namespace GridGame.Core.Battle
         /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.</summary>
         private void SwapPlaces(Unit caster, Unit t)
         {
+            if (RootsHold(t, t.Pos) || RootsHold(caster, caster.Pos)) return; // GG-T912: neither half of a swap is uprooted
             if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
             Coord a = caster.Pos, b = t.Pos;
             caster.Pos = b;
@@ -437,6 +440,7 @@ namespace GridGame.Core.Battle
         /// <summary>Step back (GG-T183): the caster backs straight away from the nearest foe onto free, trap-free ground.</summary>
         private void StepAway(Unit u, int tiles)
         {
+            if (RootsHold(u, u.Pos)) return; // GG-T912
             if (!MovesItself(u)) return;
             Unit nearest = null; int best = int.MaxValue;
             foreach (var o in S.Units)

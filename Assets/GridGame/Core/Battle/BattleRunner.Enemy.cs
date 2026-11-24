@@ -125,6 +125,7 @@ namespace GridGame.Core.Battle
                 var target = EnemyPlanner.PickTarget(S, enemy);
                 var spot = target == null ? null : EnemyPlanner.SurfaceBeside(S, enemy, target);
                 if (spot == null) return false;
+                if (RootsHold(enemy, spot.Value)) return false; // GG-T912: rooted, no blink or burrow
                 var from = enemy.Pos;
                 if (!Relocate(enemy, spot.Value)) return false;
                 Emit(new TeleportedEvent { UnitId = enemy.Id, From = from, To = spot.Value });
@@ -160,6 +161,7 @@ namespace GridGame.Core.Battle
         {
             var occ = S.UnitAt(next);
             if (occ == null) return StepEnemy(enemy, next);
+            if (RootsHold(enemy, next) || RootsHold(occ, next, enemy)) return false; // GG-T912
             if (enemy.IsMultiTile || !enemy.Pos.IsCardinalNeighbor(next) || !PincerPlanner.Swappable(occ, enemy)) return false;
             var from = enemy.Pos;
             if (!Relocate(enemy, next, o => o == occ)) return false;
@@ -180,6 +182,7 @@ namespace GridGame.Core.Battle
         private bool LeapEnemy(Unit enemy, Coord dest)
         {
             var from = enemy.Pos;
+            if (RootsHold(enemy, dest)) return false; // GG-T912: no leap off a rooted tile
             if (from.Manhattan(dest) != 2 || enemy.IsMultiTile || !FootprintOpen(enemy, dest)) return false; // never onto a unit or a movable
             if (!Relocate(enemy, dest)) return false;
             Emit(new SteppedEvent { UnitId = enemy.Id, From = from, To = dest });
@@ -331,6 +334,7 @@ namespace GridGame.Core.Battle
         {
             var delta = dest - enemy.Pos;
             if (Math.Abs(delta.X) + Math.Abs(delta.Y) != 1) return false;
+            if (RootsHold(enemy, dest)) return false; // GG-T912
             var from = enemy.Pos;
 
             if (enemy.IsMultiTile)
@@ -346,6 +350,7 @@ namespace GridGame.Core.Battle
                         var occ = S.UnitAt(entered);
                         if (occ == null) continue;
                         if (!occ.IsHero) return false;
+                        if (RootsHold(occ, entered, enemy)) return false; // GG-T912: a rooted hero holds the body off
                         shoves.Add((occ, VacatedTile(enemy, from, delta, entered)));
                     }
                 // Each shoved hero (and movable) takes the tile the body vacates on its own lane: one entered tile per

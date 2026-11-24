@@ -562,6 +562,7 @@ namespace GridGame.Core.Battle
             foreach (var o in S.Units)
             {
                 if (o == u || !o.Alive || !o.OnBoard || o.WontBudge || o.IsCorpse || o.IsEgg) continue;
+                if (o.IsRooted) continue; // GG-T912: a rooted unit won't trade places with a faller
                 int d = o.Pos.Manhattan(hole);
                 if (d < bestD || (d == bestD && best != null && o.Id < best.Id)) { bestD = d; best = o; }
             }
@@ -654,6 +655,7 @@ namespace GridGame.Core.Battle
             foreach (var u in RuleUnitsOf(e, ctx))
             {
                 if (!u.Alive || u.WontBudge || u.IsCorpse) continue; // GG-T891: Heavy too
+                if (RootsHold(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose
                 for (int step = 0; step < e.Amount && u.Alive && !S.IsOver; step++)
                 {
                     var dir = Direction(e.Move, u.Pos, point);
