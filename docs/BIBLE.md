@@ -591,6 +591,22 @@ Current layering (verified against both fixes, `BattleScreen.cs`'s board-build c
 
 No change was needed in `PincerDetector`/`PincerGeometry`/`BoardView.GroupRect`: the shape rule they enforce (one tile thick, widened only by a multi-tile opponent) is correct and tested; the ~2×3 box this ticket reported was these two now-fixed view bugs.
 
+#### 1.2.8 Combo (GG-T849, tests GG-T911)
+
+The hero **combo** is a display-and-stats meter, Devil May Cry style: it builds while the party acts and shows a rank. It has **no reward** - nothing in the battle reads it. `ComboTracker` (`Core/Battle/Combo.cs`) lives on `BattleState.Combo`, is cloned with the state and is deterministic (no Rng).
+
+**What credits it (`ComboKind`).** Each credit goes to one hero: `Pincer` (both attackers of a hero pincer), `ChainLink` (both attackers of chain link 2 and later), `Support` (a `SupportActionEvent` - the supporter earns it, not the attackers), `FollowUp` (a supporter or attacker's follow-up in the follow-up phase), `Status` (a hero inflicted a debuff on a foe), `Kill` (a hero's blow killed a foe) and `TileKill` (a foe a hero shoved died to a tile hazard - credited to the shover). A hero acting inside a pincer it is not one of the two attackers of counts as a *supporter* (`ComboShare.SupporterPoints`); pincer and chain credits are *attacker* points.
+
+**Points** are `BattleConfig.Combo*Points` (Pincer 10, ChainLink 15, Support 8, FollowUp 10, Status 6, Kill 12, TileKill 18 - first-pass, balance GG-T276). **Variety:** a contributor, kind or kind+effect new to the window adds `ComboNewContributorBonus` (6), `ComboNewKindBonus` (4) and `ComboNewEffectBonus` (3); the window's opening credit earns none. **Halving:** the same unit repeating the same kind and effect earns half the base each time (10, 5, 2, ... never below 1). **Ranks** D, C, B, A, S, SS, SSS are reached at `BattleConfig.ComboRankThresholds` = 10, 30, 60, 100, 150, 220, 300.
+
+**Window.** One combo is one party turn as `TurnRules` defines it: it closes at `TurnRules.IsTurnBoundary` (every `TurnModes.Available` mode - the window running out, or a wave clearing) and at `BattleEndedEvent`. Closing emits `ComboEndedEvent` (final rank, score, hits, per-unit attacker/supporter `Breakdown`) and resets the tracker; a window with no credit emits nothing. `ComboChangedEvent` fires on every credit (points, new score and rank, `RankUp`).
+
+**Results.** `BattleResults.BestComboRank` / `BestComboScore` keep the highest-scoring window; `ComboAttackerPoints` and `ComboSupporterPoints` total each hero class's points across the battle.
+
+**Decision (GG-T911): enemy chains get no combo.** Only `Team.Hero` units can be credited, and an enemy pincer or chain emits no `ComboChangedEvent`/`ComboEndedEvent`: the enemy side has no meter or callout of its own, because its pincer floats already show the chain.
+
+*(Tests: `ComboTests` - supporter credit, variety vs halving, bonuses, rank thresholds, foes never credited, enemy pincer silent, window close in every available turn mode and at battle end, results stats.)*
+
 <a id="13-humanoid-restriction"></a>
 
 ### 1.3 Sentient restriction
