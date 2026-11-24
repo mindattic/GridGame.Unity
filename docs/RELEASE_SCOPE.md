@@ -268,6 +268,30 @@ What the numbers say:
 - Catch-up (5b) gives nothing to a party that is already level, so its close-every-gap total stays 202; it rewards the
   straight-through player rather than the hunter.
 
+### Decision brief for the owner (GG-T474, open until you pick)
+
+The question: Free Holds I (foe level 28) needs about 67 replays of the previous stage for a straight-through party
+(level 16), and the gap keeps growing. Pick one; nothing below is applied.
+
+| Pick | What it is | Gap, Bloom I to the finale | Hunts to close every gap | Cost |
+|---|---|---|---|---|
+| Keep (now) | Grind the postgame by hunting | 10 growing to 20 | 202 | Free; the soak says 0-12% bot wins at Drowned Arks II and Deep Shardfall I |
+| 1a | Late kill XP scales up past level 24 | 10 growing to 15 | 109 | Keeps both pinned curves; gap still passes the ~10 the bots can win |
+| 5b | Catch-up: +50% kill XP per level behind, max x4, past 24 | 10-13 (held) | 202 (no help to a party already level) | Keeps both pinned curves; rewards falling behind, so it must be tuned so it cannot be farmed |
+| 5a | Flat x2 kill XP past 24 | 10 growing to 17 | 117 | Simplest; slows the wall, does not hold it |
+| 2b | Postgame levels step +1 a region, finale 34 | 10-12 | 122 | Breaks GG-T357 (one level a stage); finale is 6 levels lower |
+| 1b, 2a, 3 | Scaled kill XP, steps to 40, bent curve | 17-20 | 130 / 199 / 189 | Little or no gain; 3 also breaks GridGame2026 parity |
+
+Recommendation: **5b**, with 1a as the second choice. It is the only option that holds the gap in the range the bots
+already win (10-13) without touching the two pinned curves, and a player who hunts is not penalised (hunting only
+closes the gap faster, same as today). Two caveats to decide with it: (a) the gap opens in the main campaign (15
+against 25 at Bloom I), so a catch-up that starts at level 24 begins 10 levels down; starting it earlier (for
+example from level 10) is a question for you and is not yet measured; (b) 5b alone leaves the 202-hunt total, so
+pair it with 1a if you also want less grinding for the player who falls behind anyway. If you prefer the least change,
+choose Keep and accept the soak's 0% stages as the intended wall.
+
+Reply with the pick (and the catch-up start level if 5b) and the implementation ticket follows.
+
 ## Owner answers (2026-11-19)
 
 1. **Crucible, bounty board, caravan upgrades:** keep, and build them out. The Crucible is the "toilet play" horde
