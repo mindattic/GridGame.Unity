@@ -3481,9 +3481,11 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   hidden charge beside it counts. Otherwise it walks toward one its side can see within `SabotageReach` 4, one cardinal
   step at a time onto a free, safe tile, up to its MoveRange, and turns it if it gets there (else strikes an adjacent
   hero). `SabotageValue`: 6 for a hidden one (a buried charge), 4 another hazard (a firewall), 3 a wall, else 2, +1 for
-  each hero within 2 of it; beside it picks the most valuable, from afar best value less distance. Not yet: the view
-  (a spark of tampering and the mark's edge turning to the foes' colour; split to its own ticket) and the hero bot
-  guarding its gadgets. *(Tests: `TacticalTileTests`, the gremlin section, written, not run.)*
+  each hero within 2 of it; beside it picks the most valuable, from afar best value less distance. The view (GG-T948,
+  `BattleScreen.Sabotage`): a jagged cyan spark crackles from the gremlin to the gadget's tile (`element.lightning`), it
+  bites with a clank and a burst of sparks, the mark's team edge turns from its old side's colour to the saboteur's, a
+  hidden charge the party knew of fades from its view instead, and a "Sabotaged!" callout rises over the tile; a mark
+  the party never saw plays nothing. Not yet: the hero bot guarding its gadgets. *(Tests: `TacticalTileTests`, the gremlin section, written, not run.)*
 - Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles, and
   timeline events from team-owned tiles carry no owner; an enemy ability's element doesn't reveal a hidden mark.
 - *(Tests: `TacticalTileTests`, written, not run.)*
