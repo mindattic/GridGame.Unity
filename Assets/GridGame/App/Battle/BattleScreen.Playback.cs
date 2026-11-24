@@ -231,6 +231,8 @@ namespace GridGame.App
                 case BossPhaseEvent bp: return BossAnim(bp);
                 case RuleBrokenEvent rb: return RuleBreakAnim(rb);
                 case BountyTargetEvent bte: return BountyAnim(bte); // GG-T431
+                case ComboChangedEvent cce: return ComboChangedAnim(cce); // GG-T851: the combo meter, off the beat
+                case ComboEndedEvent cen: return ComboEndedAnim(cen);
                 case WaveStartedEvent wv: TutorialWaveStarted(); return WaveAnim(wv);
                 case ReinforcementsArrivedEvent ra: return ReinforcementsAnim(ra);
                 case EggLaidEvent el: return EggLaidAnim(el);
