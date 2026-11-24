@@ -690,6 +690,9 @@ namespace GridGame.Core.Content
         public int DamagePerTick;
         public int HealPerTick;
         public bool Immobile;
+        /// <summary>Rooted (GG-T856): the bearer can't step or be displaced (drag swaps, shoves, knockback, pull, swap, rule
+        /// moves all stop at it) but still acts, strikes and casts. Unlike <see cref="Immobile"/> it never skips a turn.</summary>
+        public bool Roots;
         public bool HaltsTimeline;
         public bool BreaksOnDamage;
         public bool BreaksOnMove;

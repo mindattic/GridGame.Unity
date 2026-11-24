@@ -262,6 +262,12 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.Immobile) return true; return false; }
         }
 
+        /// <summary>Carries a Roots buff (GG-T856): held to its tile, but free to act.</summary>
+        public bool IsRooted
+        {
+            get { foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
+        }
+
         public bool IsTimelineHalted
         {
             get { foreach (var b in Buffs) if (b.Def.HaltsTimeline) return true; return false; }
