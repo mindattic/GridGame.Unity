@@ -88,6 +88,13 @@ namespace GridGame.App
                 Example = "Example: lift a hero, then drag it off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
+            // GG-T731: what an orb is, before Mana teaches how to earn one (the orbs as GG-T730 draws them).
+            new Lesson { Id = "orbs", Title = "Mana orbs", Patience = 2,
+                Short = "These glass orbs hold your mana. Mana dust flows in and fills them with glowing light; a full orb breathes, ready to spend on an ability.",
+                Text = "The row of glass orbs under your abilities is your mana. An empty orb is clear glass. As your heroes earn mana, glowing mana dust flows into the next orb and fills it with light from the bottom up. A full orb glows and gently breathes: it is ready to spend. Abilities cost whole orbs, and casting one drains them back to empty glass.",
+                Example = "Example: watch the next orb fill as your pincers land.",
+                Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent),
+                Marks = b => b.OrbMarks() },
             new Lesson { Id = "mana", Title = "Mana",
                 Short = "Pincers fill the mana globe. Every 100 mana makes an orb, and spells spend orbs.",
                 Text = "Pincers fill the mana bubble at the end of your orb row; at 100 it becomes an orb. Lean pincers earn the most: every extra hero divides the mana, every chain link multiplies it.",
@@ -602,6 +609,19 @@ namespace GridGame.App
                 new CoachStep { Caption = $"Tap the {foe.Name} to read its card.", Area = () => UnitRect(id),
                     Done = () => InspectCard.IsOpen, Valid = () => State.UnitById(id) is Unit u && u.Alive },
             };
+        }
+
+        /// <summary>GG-T731: the orb row (empty glass that mana dust fills), then one orb (full, it breathes and is ready).</summary>
+        private List<CoachStep> OrbMarks()
+        {
+            if (pool == null) return null;
+            var marks = new List<CoachStep>
+            {
+                new CoachStep { Caption = "Each glass orb holds mana. Empty orbs are clear glass; mana dust flows in and fills them with glowing light.", Element = () => pool, Info = true },
+            };
+            if (pool.Q("orb0") != null)
+                marks.Add(new CoachStep { Caption = "A full orb glows and breathes: it's ready to spend on an ability.", Element = () => pool?.Q("orb0"), Info = true });
+            return marks;
         }
 
         private List<CoachStep> ManaMarks()

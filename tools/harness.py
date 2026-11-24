@@ -920,7 +920,7 @@ _COACH_SEEN = []
 _COACH_SHOTS = []
 
 # The guided first battle's lessons, in order (App/Battle/BattleScreen.Tutorial.cs).
-BATTLE_LESSONS = ("move", "pincer", "read", "shove", "hold", "mana", "chain", "support", "spell", "buffs", "timeline",
+BATTLE_LESSONS = ("move", "pincer", "read", "shove", "hold", "orbs", "mana", "chain", "support", "spell", "buffs", "timeline",
                   "taunt", "guard", "pickup", "interrupt", "plate", "ready")
 
 
