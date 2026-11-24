@@ -8,9 +8,14 @@ namespace GridGame.Core.Rules
     /// <summary>Shape × mode × filter targeting (bible §5, GG-LAW-5).</summary>
     public static class TargetResolver
     {
-        public static List<Coord> Tiles(Coord anchor, TargetShape shape, int radius)
+        /// <param name="from">Where the ability comes from (the caster's tile): orients a <see cref="TargetShape.Wall"/>, a line
+        /// of 2 × <paramref name="radius"/> + 1 through the anchor across the line from it (|dx| &gt; |dy|: a column, else a
+        /// row; no <paramref name="from"/>: a row). Every other shape ignores it.</param>
+        public static List<Coord> Tiles(Coord anchor, TargetShape shape, int radius, Coord? from = null)
         {
             var list = new List<Coord>();
+            bool wallColumn = shape == TargetShape.Wall && from.HasValue
+                && Math.Abs(anchor.X - from.Value.X) > Math.Abs(anchor.Y - from.Value.Y);
             for (int y = 0; y < BattleConfig.Rows; y++)
                 for (int x = 0; x < BattleConfig.Cols; x++)
                 {
@@ -28,6 +33,7 @@ namespace GridGame.Core.Rules
                         case TargetShape.Plus: hit = dx == 0 || dy == 0; break;
                         case TargetShape.Row: hit = dy == 0; break;
                         case TargetShape.Column: hit = dx == 0; break;
+                        case TargetShape.Wall: hit = wallColumn ? dx == 0 && dy <= radius : dy == 0 && dx <= radius; break;
                         default: hit = false; break;
                     }
                     if (hit) list.Add(c);
@@ -64,7 +70,7 @@ namespace GridGame.Core.Rules
                 if (caster.Alive) result.Add(caster);
                 return result;
             }
-            foreach (var c in Tiles(anchor, a.Shape, a.Radius))
+            foreach (var c in Tiles(anchor, a.Shape, a.Radius, caster?.Pos))
             {
                 var u = s.UnitAt(c);
                 if (u != null && !result.Contains(u) && Passes(a.Filter, caster, u)) result.Add(u);

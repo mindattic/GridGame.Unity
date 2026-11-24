@@ -112,7 +112,12 @@ namespace GridGame.Core.Battle
         {
             if (!RegionActive || a == null || a.RuleEffects.Count == 0 || caster == null) return;
             // GG-T842: what it paints is the caster's side's (a hero's firewall is the party's, and never announces a rule).
-            RunRuleEffects(a.RuleEffects, new RuleCtx { Ability = a.Id, Subject = caster, At = caster.Pos, Target = anchor, Owner = caster.Team, OwnerId = caster.Id });
+            // GG-T931: EventTiles is the ability's own area (a Wall's line, oriented from the caster), for a MarkTiles over it.
+            RunRuleEffects(a.RuleEffects, new RuleCtx
+            {
+                Ability = a.Id, Subject = caster, At = caster.Pos, Target = anchor, Owner = caster.Team, OwnerId = caster.Id,
+                EventTiles = TileReactions.Area(a, anchor, caster.Pos),
+            });
         }
 
         /// <summary>Runs every matching hook of every rule in play for <paramref name="on"/>.</summary>

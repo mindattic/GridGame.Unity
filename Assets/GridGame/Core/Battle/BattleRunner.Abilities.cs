@@ -218,7 +218,7 @@ namespace GridGame.Core.Battle
             var targets = TargetResolver.Collect(S, a, caster, anchor);
             var resolved = new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = anchor };
             if (a.Shape != TargetShape.AllAllies && a.Shape != TargetShape.AllEnemies && a.Shape != TargetShape.Self)
-                resolved.Tiles.AddRange(TargetResolver.Tiles(anchor, a.Shape, a.Radius));
+                resolved.Tiles.AddRange(TargetResolver.Tiles(anchor, a.Shape, a.Radius, caster.Pos));
             foreach (var t in targets) resolved.Targets.Add(t.Id);
             Emit(resolved);
             if (targets.Count == 0) { if (a.RuleEffects.Count == 0) Announce("Missed!", caster.Id); return; } // a board-only ability (GG-T359) misses nobody

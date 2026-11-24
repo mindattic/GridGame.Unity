@@ -185,6 +185,56 @@
     ]
   },
   {
+    "Id": "firewalls",
+    "TileStates": [
+      {
+        "Id": "firewall",
+        "Hazard": true,
+        "Element": "Fire",
+        "LifeSeconds": 12,
+        "Affects": "Any",
+        "Color": "#ff4a12",
+        "Glyph": "♨"
+      }
+    ],
+    "Hooks": [
+      {
+        "On": "EnterTile",
+        "State": "firewall",
+        "Effects": [
+          {
+            "Kind": "Damage",
+            "Units": "Subject",
+            "Amount": 6,
+            "DamageType": "Fire"
+          },
+          {
+            "Kind": "ApplyBuff",
+            "Units": "Subject",
+            "Buff": "burning"
+          }
+        ]
+      },
+      {
+        "On": "TurnEnd",
+        "State": "firewall",
+        "Effects": [
+          {
+            "Kind": "Damage",
+            "Units": "Subject",
+            "Amount": 4,
+            "DamageType": "Fire"
+          },
+          {
+            "Kind": "ApplyBuff",
+            "Units": "Subject",
+            "Buff": "burning"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "Id": "icetrail",
     "TileStates": [
       {

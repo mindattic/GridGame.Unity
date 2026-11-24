@@ -17,10 +17,11 @@ namespace GridGame.Core.Battle
     /// <summary>Which tiles an ability's tile reactions reach (GG-T371). Pure: the targeting check and the runner share it.</summary>
     public static class TileReactions
     {
-        /// <summary>The tiles a resolving ability covers (none for whole-team and self shapes).</summary>
-        public static List<Coord> Area(AbilityDef a, Coord anchor) =>
+        /// <summary>The tiles a resolving ability covers (none for whole-team and self shapes). <paramref name="from"/>, the
+        /// caster's tile, orients a Wall (GG-T931).</summary>
+        public static List<Coord> Area(AbilityDef a, Coord anchor, Coord? from = null) =>
             a.Shape == TargetShape.AllAllies || a.Shape == TargetShape.AllEnemies || a.Shape == TargetShape.Self
-                ? new List<Coord>() : TargetResolver.Tiles(anchor, a.Shape, a.Radius);
+                ? new List<Coord>() : TargetResolver.Tiles(anchor, a.Shape, a.Radius, from);
 
         /// <summary>Would this hero ability, anchored here, clear or change at least one trap? (A tile pick with no unit in
         /// reach is still a fair pick then: throw the Disarm Kit at the mine, the fire flask at the slime trail.)</summary>
@@ -29,7 +30,7 @@ namespace GridGame.Core.Battle
             if (s?.Content == null || caster == null || !caster.IsHero || (s.Traps.Count == 0 && s.Region.Tiles.Count == 0)) return false;
             var reactions = ElementCounters.ReactionsOf(s.Content, a);
             if (reactions.Count == 0) return false;
-            foreach (var c in Area(a, anchor))
+            foreach (var c in Area(a, anchor, caster.Pos))
             {
                 if (s.TrapAt(c) is Trap t && Usable(s.Content, ElementCounters.Match(reactions, t.TrapId))) return true;
                 if (s.Region.At(c) is TileMark m && UsableOnMark(s.Content, ElementCounters.Match(reactions, m.State))) return true; // GG-T370
@@ -62,7 +63,7 @@ namespace GridGame.Core.Battle
             if (caster == null || !caster.IsHero || a.IsTeleport || a.Escape || a.Revives) return false;
             var reactions = ElementCounters.ReactionsOf(C, a);
             if (reactions.Count == 0 || (S.Traps.Count == 0 && S.Region.Tiles.Count == 0)) return false;
-            var area = TileReactions.Area(a, anchor);
+            var area = TileReactions.Area(a, anchor, caster.Pos);
             // GG-T843: the element or tool covering a hidden mark shows it to everyone (a fire bolt over the foe's mine).
             if (S.Region.Tiles.Count > 0)
                 foreach (var tile in area)

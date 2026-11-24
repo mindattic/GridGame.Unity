@@ -171,7 +171,9 @@ namespace GridGame.Core.Content
         public List<string> Statuses = new List<string>();
     }
 
-    public enum TargetShape { Self, SingleActor, SingleTile, Square, Diamond, Cross, Plus, Row, Column, AllEnemies, AllAllies }
+    /// <summary>Wall (GG-T931): a line of 2 × Radius + 1 tiles through the anchor, square across the caster's line to it
+    /// (<see cref="Rules.TargetResolver.Tiles"/>): a firewall painted in front of the caster.</summary>
+    public enum TargetShape { Self, SingleActor, SingleTile, Square, Diamond, Cross, Plus, Row, Column, AllEnemies, AllAllies, Wall }
 
     public enum TargetMode { Auto, PickActor, PickTile }
 

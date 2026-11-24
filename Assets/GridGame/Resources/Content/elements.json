@@ -39,6 +39,7 @@
         { "On": "mire", "Kind": "Clear" },
         { "On": "quicksand", "Kind": "Clear" },
         { "On": "fire", "Kind": "Clear" },
+        { "On": "firewall", "Kind": "Clear" },
         { "On": "floodwater", "Kind": "Becomes", "Into": "ice" },
         { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
         { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
@@ -122,6 +123,7 @@
         { "On": "miasma", "Kind": "Clear" },
         { "On": "slime", "Kind": "Clear" },
         { "On": "fire", "Kind": "Clear" },
+        { "On": "firewall", "Kind": "Clear" },
         { "On": "ice", "Kind": "Clear" }
       ]
     }

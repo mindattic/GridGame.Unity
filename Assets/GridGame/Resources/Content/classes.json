@@ -13854,7 +13854,8 @@
       "spellblade_quickstrike",
       "spellblade_overchannel",
       "spellblade_followthrough",
-      "arcane_harvest"
+      "arcane_harvest",
+      "firewall"
     ],
     "DefaultLoadout": [
       "fireball",
