@@ -9,6 +9,7 @@ in batchmode through `Assets/GridGame/Editor/GridGameBuild.cs`. The Unity Editor
 | `pwsh tools/build.ps1 -Release` | `Build/WindowsRelease/GridGame.exe` | Windows release player |
 | `pwsh tools/build.ps1 -Platform Android` | `Build/AndroidRelease/GridGame.aab` | **Google Play bundle**: IL2CPP, ARM64 only, release, signed with the upload key |
 | `pwsh tools/build.ps1 -Platform Android -Dev` | `Build/Android/GridGame.apk` | Emulator/test APK: ARM64 + x86_64, development, debug-signed (`tools/androidcheck.py`) |
+| `pwsh tools/build.ps1 -Platform iOS` | `Build/iOS` | **Xcode project** for the App Store: IL2CPP, iPhone only, iOS 17+, release (`-Dev`: development); signed and archived in Xcode on a Mac |
 | `pwsh tools/build.ps1 -Platform WebGL` | `Build/WebGL` | WebGL |
 
 `-Platform` and `-Target` are the same switch. Add `-SkipProse` to build with the committed story text instead of
@@ -246,22 +247,74 @@ What a release build does today, and what is still the owner's call:
   string). Whichever is picked, `CrashReporter.Record` is the one place to forward from, and the Play data-safety form
   (GG-T472) must then declare "crash logs" and "diagnostics", collected, not shared, not linked to the user.
 
-## iOS (GG-T479, needs a Mac — the owner)
+## iOS (GG-T479; the Xcode steps need a Mac and an Apple account, the owner)
 
-Unity on Windows can export the iOS player (the iOSSupport module is installed) but only Xcode on a Mac can compile,
-sign and upload it. What the owner needs:
+**The export (any machine, Windows included).** `pwsh tools/build.ps1 -Platform iOS` (or the Editor menu **GridGame >
+Export iOS Xcode Project**) runs `GridGameBuild.BuildIOS` and writes an **Xcode project folder**, `Build/iOS`
+(`Unity-iPhone.xcodeproj` inside). Windows can export it (the iOSSupport module is installed with Unity 6000.4.3f1);
+only Xcode on a Mac can compile, sign, archive and upload it. What the export sets:
 
-1. A Mac with the current Xcode (from the Mac App Store) and Unity 6000.4.3f1 with iOS Build Support, or just Xcode if
-   the Xcode project is exported on Windows and copied over.
-2. An Apple Developer Program membership (US$99/year), then in App Store Connect: the app record with bundle id
-   `com.mindattic.gridgame`, and the `diamonds_*` in-app purchases (GG-T471).
-3. Export: a `BuildIOS` entry in `GridGameBuild.cs` (IL2CPP is the only backend, ARM64, minimum iOS version, the bundle
-   id) writes an Xcode project folder; not written yet because nothing can verify it without a Mac.
-4. In Xcode: open `Unity-iPhone.xcodeproj`, Signing & Capabilities > Team = your account, "Automatically manage
-   signing", add the In-App Purchase capability, Product > Archive, then Distribute App > App Store Connect >
-   Upload. TestFlight makes it installable on your iPhone within minutes of processing.
-5. App Store review needs the privacy "nutrition label" answers and screenshots for 6.7" and 6.5" iPhones.
-6. **Target devices (GG-T724, BIBLE §26.3):** iPhone 13 (A15) and newer flagships; minimum **iOS 17.0**
-   (`iOSTargetOSVersionString`, so the exported Xcode project carries it). Make the export iPhone-only (`targetDevice`
-   0; the project is 2, iPhone + iPad) when `BuildIOS` is written. App Store Connect can't exclude models, so the
-   iPhone SE and 12/13 mini are "not designed for" rather than blocked.
+| Setting | Value | Why |
+|---|---|---|
+| Bundle id | `com.mindattic.gridgame` (`GridGameBuild.IosBundleId`, the same as the Play package) | the App Store Connect record must match |
+| Scripting backend | IL2CPP, "optimize speed" code generation | iOS's only backend; ARM64 is the only iOS architecture |
+| Devices | iPhone only (`targetDevice` set to iPhone only by the build) | GG-T724: iPads would only letterbox |
+| Minimum iOS | **17.0** (`GridGameBuild.IosMinimumVersion`) | GG-T724, BIBLE §26.3: iPhone 13 (A15) and newer flagships |
+| Orientation | portrait, full screen, status bar hidden | the stage is portrait-only |
+| Version | `CFBundleShortVersionString` = `version.txt`; `CFBundleVersion` (build number) = the commit count, like the Play version code | App Store Connect refuses an upload whose build number isn't higher than the last one for that version; `GG_IOS_BUILD_NUMBER=<n>` forces one (shallow clones stop the build, as on Android) |
+| Signing | automatic signing for `GG_IOS_TEAM_ID` when that environment variable is set; otherwise none (pick the team in Xcode) | the team id is not a secret, but the build puts the project's own signing settings and build number back afterwards so `ProjectSettings.asset` never records a team |
+| Release / development | release; `-Dev` (or `GG_IOS_DEV=1`) exports a development build | |
+
+The first export is slow (the project switches to iOS and re-imports textures; IL2CPP converts the game to C++), as
+with Android; the next Windows build switches back.
+
+**Not checked from Windows (2026-11-24).** No Mac or Apple account was available when `BuildIOS` was written, so the
+exported project has never been compiled, signed or run on an iPhone. The first Mac build is the real test; file what
+breaks against GG-T479's epic (GG-T477).
+
+### Owner checklist (one time)
+
+1. **Apple Developer Program** (US$99/year), enrolled as an individual or as an organisation (an organisation needs a
+   D-U-N-S number and shows the company as the seller). Note your **Team ID** (developer.apple.com > Account >
+   Membership details; 10 characters).
+2. **A Mac with the current Xcode** from the Mac App Store (open it once to install its components). Unity isn't
+   needed on the Mac if the export is made on Windows and copied over; copy it as a zip so file permissions survive,
+   and if Xcode reports a "Permission denied" build phase script, run `chmod +x` on the scripts it names in the
+   exported folder.
+3. **App Store Connect** (appstoreconnect.apple.com) > Apps > New App: platform iOS, name, primary language, bundle
+   id `com.mindattic.gridgame` (register it first under Certificates, Identifiers & Profiles > Identifiers if it isn't
+   offered; enable the **In-App Purchase** capability there), SKU (any unique string, e.g. `gridgame`).
+4. **Agreements, Tax and Banking**: accept the Paid Apps agreement and fill in banking and tax; in-app purchases can't
+   be sold (or even tested in the sandbox reliably) until it is active.
+5. **In-app purchases** (GG-T471): Monetization > In-App Purchases, four **consumables** with product ids
+   `diamonds_100`, `diamonds_500`, `diamonds_1000`, `diamonds_2500` and the display titles listed in the Play
+   Console section above, prices matching $0.99/$4.99/$9.99/$24.99 tiers (BIBLE: $1/$5/$10/$25), a review screenshot
+   each. Add a **sandbox tester** (Users and Access > Sandbox) for purchase tests.
+
+### Signing, archiving and uploading (each release)
+
+1. Export: on Windows `pwsh tools/build.ps1 -Platform iOS`, optionally with `$env:GG_IOS_TEAM_ID = "<Team ID>"` set
+   first so the project already has automatic signing for your team. Copy `Build/iOS` to the Mac.
+2. Open `Unity-iPhone.xcodeproj` in Xcode. Select the **Unity-iPhone** target > **Signing & Capabilities**: tick
+   **Automatically manage signing**, pick your **Team** (skip if `GG_IOS_TEAM_ID` was set). Xcode creates the
+   distribution certificate and App Store provisioning profile itself. Do the same Team pick for the
+   **UnityFramework** target if Xcode flags it.
+3. Still in Signing & Capabilities, add **+ Capability > In-App Purchase** if it isn't listed (Unity IAP usually adds
+   it). Leave Game Center, iCloud and Push off until a feature needs them (iCloud saves are a later ticket, BIBLE
+   §15.2).
+4. Scheme destination **Any iOS Device (arm64)**, then **Product > Archive**. The Organizer opens with the archive.
+5. **Distribute App > App Store Connect > Upload** (keep "Upload your app's symbols" on so crash reports in Xcode's
+   Organizer and App Store Connect are readable). Processing takes 5-30 minutes; you get an email.
+6. **TestFlight**: the build appears under the app's TestFlight tab. Answer the export-compliance question (the game
+   uses only Apple's standard HTTPS: "None of the algorithms mentioned above"), add yourself as an internal tester, and
+   install through the TestFlight app on the iPhone. Test a sandbox purchase there.
+7. **App Store submission**: App Privacy answers (the "nutrition label": declare what the game actually sends; today
+   the error log stays on the device, so revisit this if a crash service is added (GG-T484), and keep it consistent
+   with the Play data-safety form, GG-T472), age
+   rating questionnaire, screenshots for the largest iPhone size App Store Connect asks for (currently 6.9-inch, 1320 x
+   2868 portrait), description, keywords, support and privacy
+   policy URLs, then pick the build and **Submit for Review**.
+
+**Target devices (GG-T724, BIBLE §26.3).** iPhone 13 (A15) and newer flagships. App Store Connect can't exclude
+models, so the iPhone SE and 12/13 mini are "not designed for" rather than blocked; the iOS 17.0 floor already drops
+anything older than the iPhone XS/XR.

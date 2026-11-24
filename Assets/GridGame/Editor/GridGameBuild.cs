@@ -248,6 +248,66 @@ namespace GridGame.EditorTools
             catch (Exception e) { Debug.LogWarning($"[Build] git {args} failed ({e.Message})"); return ""; }
         }
 
+        /// <summary>The App Store bundle id; the same id as the Play package.</summary>
+        public const string IosBundleId = AndroidPackage;
+
+        /// <summary>Minimum iOS (GG-T724, BIBLE 26.3: iPhone 13 / A15 and newer flagships).</summary>
+        public const string IosMinimumVersion = "17.0";
+
+        /// <summary>
+        /// GG-T479: exports the iOS player as an Xcode project folder (Build/iOS, Unity-iPhone.xcodeproj). Windows can
+        /// export it; only Xcode on a Mac compiles, signs, archives and uploads it (docs/RELEASE_BUILD.md, "iOS").
+        /// Bundle id <see cref="IosBundleId"/>, IL2CPP (iOS's only backend; ARM64 is the only iOS architecture),
+        /// iPhone only, minimum iOS <see cref="IosMinimumVersion"/>, portrait, release unless -dev or GG_IOS_DEV=1.
+        /// CFBundleVersion (the build number App Store Connect requires to rise) is the commit count, like the Play
+        /// version code (<see cref="AndroidVersionCode"/>; GG_IOS_BUILD_NUMBER overrides). GG_IOS_TEAM_ID (the
+        /// 10-character Apple Developer Team ID) turns on automatic signing for that team in the exported project;
+        /// without it Xcode asks for the team. The project's own build number and signing settings are put back
+        /// afterwards, so ProjectSettings never records a team. <c>tools/build.ps1 -Platform iOS</c>.
+        /// </summary>
+        [MenuItem("GridGame/Export iOS Xcode Project")]
+        public static void BuildIOS()
+        {
+            var nt = UnityEditor.Build.NamedBuildTarget.iOS;
+            PlayerSettings.SetApplicationIdentifier(nt, IosBundleId);
+            PlayerSettings.SetScriptingBackend(nt, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetIl2CppCodeGeneration(nt, UnityEditor.Build.Il2CppCodeGeneration.OptimizeSpeed);
+            PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneOnly;
+            PlayerSettings.iOS.targetOSVersionString = IosMinimumVersion;
+            PlayerSettings.iOS.requiresFullScreen = true;
+            PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+
+            string oldBuild = PlayerSettings.iOS.buildNumber;
+            string oldTeam = PlayerSettings.iOS.appleDeveloperTeamID;
+            bool oldAuto = PlayerSettings.iOS.appleEnableAutomaticSigning;
+            bool dev = CommandLine("-dev") || Environment.GetEnvironmentVariable("GG_IOS_DEV") == "1";
+            try
+            {
+                var forced = Environment.GetEnvironmentVariable("GG_IOS_BUILD_NUMBER");
+                PlayerSettings.iOS.buildNumber = int.TryParse(forced, out var n) && n > 0
+                    ? n.ToString()
+                    : AndroidVersionCode().ToString();
+                var team = Environment.GetEnvironmentVariable("GG_IOS_TEAM_ID");
+                if (!string.IsNullOrEmpty(team))
+                {
+                    PlayerSettings.iOS.appleDeveloperTeamID = team.Trim();
+                    PlayerSettings.iOS.appleEnableAutomaticSigning = true;
+                    Debug.Log($"[Build] iOS: automatic signing for team {team.Trim()}");
+                }
+                else Debug.Log("[Build] iOS: no GG_IOS_TEAM_ID; pick the team in Xcode (Signing & Capabilities)");
+                Debug.Log($"[Build] iOS: {IosBundleId} version {PlayerSettings.bundleVersion} ({PlayerSettings.iOS.buildNumber}), iOS {IosMinimumVersion}+, iPhone only");
+                Build(BuildTarget.iOS, "Build/iOS", dev, exitWhenDone: false);
+            }
+            finally
+            {
+                PlayerSettings.iOS.buildNumber = oldBuild;
+                PlayerSettings.iOS.appleDeveloperTeamID = oldTeam;
+                PlayerSettings.iOS.appleEnableAutomaticSigning = oldAuto;
+                AssetDatabase.SaveAssets();
+            }
+            if (Application.isBatchMode) EditorApplication.Exit(lastResult == BuildResult.Succeeded ? 0 : 1);
+        }
+
         public static void BuildWebGL()
         {
             // Uncompressed so any static file server (and Playwright) can serve it without special headers.
