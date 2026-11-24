@@ -1768,7 +1768,15 @@ namespace GridGame.App
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
 
-        protected override void BuildBody(VisualElement body)
+        /// <summary>The creature the detail shows (GG-T925: the Codex opens a linked foe here).</summary>
+        internal string Selected { get => selected; set => selected = value; }
+
+        protected override void BuildBody(VisualElement body) => BuildGrid(body);
+
+        /// <summary>The grid and detail into <paramref name="body"/>: this screen's own body, and the Codex's Foes tab
+        /// (GG-T925), which embeds it rather than copying it. <paramref name="onPick"/> hears each creature opened;
+        /// <paramref name="isNew"/> puts the New badge on a seen creature's card until it is opened.</summary>
+        internal void BuildGrid(VisualElement body, Action<string> onPick = null, Func<string, bool> isNew = null)
         {
             var enemies = C.Classes.Values.Where(c => c.Team == Team.Enemy).OrderBy(c => c.Name).ToList();
             int seen = enemies.Count(e => S.Bestiary.TryGetValue(e.Id, out var b) && b.Seen);
@@ -1783,8 +1791,9 @@ namespace GridGame.App
                 var t = Ui.Thumb(e.Id, grid, 160);
                 t.name = "beast-" + e.Id;
                 if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
+                else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
                 t.AddToClassList("card-tap");
-                Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); });
+                Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
             }
             grid.style.flexDirection = FlexDirection.Column;
             grid.style.flexWrap = Wrap.NoWrap;
@@ -1797,7 +1806,7 @@ namespace GridGame.App
                 // The content viewport (inside the ScrollView's border, padding and scroller) is what the rows really get.
                 laidCols = EvenGrid(grid, cells, scroll.contentViewport.layout.width, 160f, Space.S24, laidCols);
             });
-            if (selected != null) Show(detail, C.Class(selected), S.Bestiary.TryGetValue(selected, out var se) ? se : null);
+            if (selected != null && C.TryClass(selected) is ClassDef sel) { Show(detail, sel, S.Bestiary.TryGetValue(selected, out var se) ? se : null); onPick?.Invoke(selected); }
             else Ui.Empty("Tap a creature.", detail);
         }
 

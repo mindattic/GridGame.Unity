@@ -67,6 +67,12 @@ namespace GridGame.App
         Crucible,
         /// <summary>The Diamond Store / Diamonds: the diamond emblem.</summary>
         Diamond,
+        /// <summary>The Codex and its Keywords tab (GG-T925): a closed tome with a bookmark.</summary>
+        Codex,
+        /// <summary>A Codex story entry (GG-T925): a scroll.</summary>
+        Lore,
+        /// <summary>A faction (GG-T925): a banner on a pole.</summary>
+        Faction,
     }
 
     /// <summary>
@@ -144,6 +150,9 @@ namespace GridGame.App
             icon.Add(b);
             return b;
         }
+
+        /// <summary>Takes the corner badge off a kind icon (an entry read, GG-T925); nothing when it has none.</summary>
+        public static void ClearBadge(VisualElement icon) => icon?.Q(className: BadgeClass)?.RemoveFromHierarchy();
 
         /// <summary>The art <paramref name="kind"/> shows for <paramref name="id"/>, or null (the emblem then).</summary>
         public static Texture2D ArtFor(RowKind kind, string id)
@@ -392,6 +401,28 @@ namespace GridGame.App
                     break;
                 case RowKind.Diamond: // a cut gem
                     Poly(p, P(-0.9f, -0.3f), P(-0.45f, -0.8f), P(0.45f, -0.8f), P(0.9f, -0.3f), P(0f, 0.95f));
+                    break;
+                case RowKind.Codex: // a closed tome: the cover, its spine, a bookmark ribbon hanging out the top
+                    Rect(p, P(-0.65f, -0.85f), P(0.7f, 0.85f));
+                    Rect(p, P(-0.45f, -0.85f), P(-0.35f, 0.85f), Disc);
+                    Rect(p, P(0.15f, -1f), P(0.4f, -0.85f));
+                    p.fillColor = Disc;
+                    Poly(p, P(0.15f, -0.85f), P(0.4f, -0.85f), P(0.4f, -0.2f), P(0.275f, -0.35f), P(0.15f, -0.2f));
+                    p.fillColor = Mark;
+                    break;
+                case RowKind.Lore: // a scroll: a sheet between two rolls, lines of text on it
+                    Rect(p, P(-0.6f, -0.7f), P(0.6f, 0.7f));
+                    p.lineWidth = w * 1.6f;
+                    Line(p, P(-0.85f, -0.75f), P(0.85f, -0.75f));
+                    Line(p, P(-0.85f, 0.75f), P(0.85f, 0.75f));
+                    p.lineWidth = w;
+                    Rect(p, P(-0.4f, -0.35f), P(0.4f, -0.25f), Disc);
+                    Rect(p, P(-0.4f, -0.05f), P(0.4f, 0.05f), Disc);
+                    Rect(p, P(-0.4f, 0.25f), P(0.15f, 0.35f), Disc);
+                    break;
+                case RowKind.Faction: // a banner on a pole, its fly cut into a swallowtail
+                    Line(p, P(-0.7f, -0.95f), P(-0.7f, 0.95f));
+                    Poly(p, P(-0.7f, -0.85f), P(0.85f, -0.85f), P(0.45f, -0.35f), P(0.85f, 0.15f), P(-0.7f, 0.15f));
                     break;
                 default: // Menu: three bars
                     Line(p, P(-0.7f, -0.55f), P(0.7f, -0.55f));
