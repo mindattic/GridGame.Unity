@@ -233,6 +233,19 @@ namespace GridGame.App
                 if (weaponGlow) WeaponCrack.style.opacity = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(Tween.Clock * 3f));
             }).Every(33);
 
+            // GG-T951: the Floating buff's drop shadow, under everything else on the tile; the card itself lifts off it.
+            FloatShadow = new VisualElement { name = "floatshadow-" + u.Id, pickingMode = PickingMode.Ignore };
+            FloatShadow.style.position = Position.Absolute;
+            FloatShadow.style.left = FloatShadow.style.right = tile * u.W * 0.16f;
+            FloatShadow.style.bottom = -Space.S4; FloatShadow.style.height = tile * 0.2f;
+            FloatShadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
+            FloatShadow.style.borderTopLeftRadius = FloatShadow.style.borderTopRightRadius =
+                FloatShadow.style.borderBottomLeftRadius = FloatShadow.style.borderBottomRightRadius = tile * 0.1f;
+            FloatShadow.style.display = DisplayStyle.None;
+            Root.Insert(0, FloatShadow);
+            floatPhase = u.Id * 1.37f; // floaters bob out of step with each other
+            Root.schedule.Execute(StepFloat).Every(33);
+
             if (u.IsSnakeSegment)
             {
                 Frame.style.borderTopLeftRadius = Frame.style.borderTopRightRadius = Frame.style.borderBottomLeftRadius = Frame.style.borderBottomRightRadius = tile * 0.4f;
@@ -308,6 +321,56 @@ namespace GridGame.App
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
+        /// <summary>GG-T951: the soft shadow a Floating unit casts on its tile.</summary>
+        public readonly VisualElement FloatShadow;
+        private bool floating;
+        private float floatPhase, settleStart = -1f;
+        private const float FloatLift = 16f, FloatBob = 4f, FloatWobble = 1.2f, SettleTime = 0.35f;
+
+        /// <summary>
+        /// GG-T951 (owner 2026-11-24): a Floating unit's card hovers a little above its tile over a soft shadow, bobbing
+        /// and wobbling ever so slightly like a Final Fantasy float; it settles back with a small bump when the buff ends.
+        /// Reduce Motion keeps only the static lift and shadow (and drops straight back).
+        /// </summary>
+        public void SetFloating(bool on)
+        {
+            if (on == floating) return;
+            floating = on;
+            if (on) { settleStart = -1f; FloatShadow.style.display = DisplayStyle.Flex; }
+            else settleStart = Tween.Clock;
+            StepFloat();
+        }
+
+        private void StepFloat()
+        {
+            if (!floating && settleStart < 0f) return;
+            bool calm = GameApp.I?.Settings?.ReduceMotion == true;
+            float y, tilt = 0f, shadow = 1f;
+            if (floating)
+            {
+                float bob = calm ? 0f : Mathf.Sin(Tween.Clock * 2.4f + floatPhase);
+                y = -FloatLift - FloatBob * (bob * 0.5f + 0.5f);
+                if (!calm) tilt = FloatWobble * Mathf.Sin(Tween.Clock * 1.6f + floatPhase * 0.7f);
+                shadow = 1f - 0.12f * (bob * 0.5f + 0.5f); // higher up, smaller shadow
+            }
+            else
+            {
+                float k = calm ? 1f : Mathf.Clamp01((Tween.Clock - settleStart) / SettleTime);
+                // Drop to the tile (ease in), dip a hair past it, then come to rest: the small bump of landing.
+                y = k < 0.7f ? -FloatLift * (1f - (k / 0.7f) * (k / 0.7f)) : 3f * Mathf.Sin((k - 0.7f) / 0.3f * Mathf.PI);
+                shadow = 1f - k;
+                if (k >= 1f) { settleStart = -1f; y = 0f; FloatShadow.style.display = DisplayStyle.None; }
+            }
+            FloatShadow.style.opacity = Mathf.Clamp01(shadow);
+            FloatShadow.style.scale = new Scale(new Vector2(shadow, 1f));
+            foreach (var child in Root.Children())
+            {
+                if (child == FloatShadow) continue;
+                child.style.translate = new Translate(0, y);
+                if (child == Frame || child == Glow) child.style.rotate = new Rotate(tilt);
+            }
+        }
+
         /// <summary>
         /// One status slot per unit (owner direction 2026-10-10): it flashes through every buff, debuff and stun on
         /// the 1.2 s beat; the selected unit's card explains each one.
@@ -321,6 +384,7 @@ namespace GridGame.App
                     App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
                     Mathf.Clamp01(b.Remaining / (float)Mathf.Max(1, b.Def.Duration))));
             ShowStatus();
+            SetFloating(u.IsFloating && u.Alive);
         }
 
         public void NextStatus()
