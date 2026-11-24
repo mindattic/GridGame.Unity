@@ -803,15 +803,21 @@ namespace GridGame.App
                 if (!live.Contains(id)) { PickupViews[id].RemoveFromHierarchy(); PickupViews.Remove(id); }
         }
 
+        /// <summary>GG-T839: while a playback runs, the trap tiles as of the beat now playing (later beats rewound out of
+        /// the end state); null, or a null result, draws the state's own.</summary>
+        public System.Func<IEnumerable<Coord>> TrapsShown;
+
         public void SyncTraps(BattleState s)
         {
             foreach (var t in trapMarks) t.RemoveFromHierarchy();
             trapMarks.Clear();
-            foreach (var trap in s.Traps)
+            var shown = TrapsShown?.Invoke();
+            if (shown == null) { var own = new List<Coord>(); foreach (var trap in s.Traps) own.Add(trap.At); shown = own; }
+            foreach (var at in shown)
             {
                 var e = new Label("☠") { pickingMode = PickingMode.Ignore };
                 e.style.position = Position.Absolute;
-                e.style.left = trap.At.X * Tile; e.style.top = trap.At.Y * Tile;
+                e.style.left = at.X * Tile; e.style.top = at.Y * Tile;
                 e.style.width = Tile; e.style.height = Tile;
                 e.style.unityTextAlign = TextAnchor.MiddleCenter;
                 e.style.fontSize = TileGlyphFont;
@@ -830,6 +836,16 @@ namespace GridGame.App
         /// hazard telegraphs as a pulsing warning in its event's colour (it shows from the moment it is queued until it
         /// lands), and every rule anchor. A mark that wasn't drawn last sync fades in.
         /// </summary>
+        /// <summary>GG-T839: while a playback runs, the queued hazards as of the beat now playing (a later beat's queue not
+        /// up yet, a later beat's landing still up); null, or a null result, draws the state's timeline.</summary>
+        public System.Func<IEnumerable<(int Id, string RuleEvent, List<Coord> Tiles)>> HazardsShown;
+
+        private static IEnumerable<(int Id, string RuleEvent, List<Coord> Tiles)> HazardsOf(BattleState s)
+        {
+            foreach (var t in s.Timeline)
+                if (t.Kind == TimelineKind.Hazard && t.HazardTiles != null) yield return (t.Id, t.RuleEvent, t.HazardTiles);
+        }
+
         public void SyncRegion(BattleState s)
         {
             foreach (var m in regionMarks) m.RemoveFromHierarchy();
@@ -920,14 +936,14 @@ namespace GridGame.App
                     e.Add(n);
                 }
             }
-            foreach (var t in s.Timeline)
+            foreach (var (hid, ruleEvent, hazardTiles) in HazardsShown?.Invoke() ?? HazardsOf(s))
             {
-                if (t.Kind != TimelineKind.Hazard || t.HazardTiles == null) continue;
-                var ev = s.Content?.TryRuleEvent(t.RuleEvent);
+                if (hazardTiles == null) continue;
+                var ev = s.Content?.TryRuleEvent(ruleEvent);
                 var col = Art.HexColor(ev?.Color, Palette.CastEnemy);
-                foreach (var c in t.HazardTiles)
+                foreach (var c in hazardTiles)
                 {
-                    string key = "h" + t.Id + c;
+                    string key = "h" + hid + c;
                     seen.Add(key);
                     var w = RegionCell(c, col.WithA(ev == null || ev.Hazard ? 0.22f : 0.1f), col, string.IsNullOrEmpty(ev?.Glyph) ? "⚠" : ev.Glyph, 5f, !regionSeen.Contains(key));
                     // GG-T846: a queued blast keeps its telegraph over any mark (drawn above them); Reduce Motion holds it steady.

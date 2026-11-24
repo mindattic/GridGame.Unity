@@ -33,6 +33,7 @@ namespace GridGame.App
             // A cast queued in this action is already in the final state; it joins the bar only when its beat plays.
             unplayedCasts.Clear();
             foreach (var ev in events) if (ev is CastQueuedEvent q) unplayedCasts.Add(q.EntryId);
+            BeginEnemyBeats(events); // GG-T839: traps and hazards drawn as of the beat now playing
             int i = 0;
             // The drag already showed the hero's walk live: the hero follows the finger and ApplyPreview slid every
             // displaced actor to where the whole walk leaves it. So the walk's own moves (the hero's steps, actors it
@@ -77,6 +78,11 @@ namespace GridGame.App
                 // GG-T836: a new action's pincers start at normal tempo; a pincer picks its beat tempo before its cut-in.
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) ResetPincerBeats();
                 else if (events[i] is PincerFormedEvent pfe) BeginPincerBeats(pfe);
+                // GG-T839: a foe's action plays as beats: its intent as its turn starts (TurnAnim), the wind-up before the act.
+                IEnumerator windUp = null;
+                try { windUp = EnemyBeatBefore(events, i); }
+                catch (System.Exception ex) { Debug.LogException(ex); }
+                if (windUp != null) yield return Safe(windUp);
                 IEnumerator anim = null;
                 try { anim = Animate(events[i]); }
                 catch (System.Exception e) { Debug.LogException(e); }
@@ -93,6 +99,7 @@ namespace GridGame.App
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
             ResetPincerBeats(); // GG-T836: battle speed is the setting's again
+            EndEnemyBeats(); // GG-T839: the board draws the state's own traps and hazards again
             board.Lines.ClearLines();
             PruneGhosts();
             unplayedCasts.Clear();
@@ -642,6 +649,7 @@ namespace GridGame.App
             // The support strikes, and Volley's thrown hits (GG-T915), animate themselves.
             if (sa.Effect == SupportEffect.Strike || sa.Effect == SupportEffect.Volley) yield break;
             var color = SupportColor(sa.Effect);
+            if (sa.Effect == SupportEffect.Cast && !sup.IsHero) color = Palette.CastEnemy; // GG-T839: a foe supporter's spell echo reads as theirs
             // GG-T298: the float names the edge it brings ("+20% Crit", "Fireball", "Poisoned", "Pushback +0.5 s").
             string what = GridGame.Core.Rules.SupportText.Short(App.Content, sa.Effect, sa.Amount, sa.AbilityId, sa.BuffId);
             Feed(what == null ? $"✦ {sup.Name}: {label}" : $"✦ {sup.Name}: {label} — {what}", color);
@@ -1867,6 +1875,8 @@ namespace GridGame.App
                 yield return Tween.Pop(v.Root, 1.1f, 0.2f);
                 v.SetGlow(Palette.White, 0f);
             }
+            // GG-T839: a foe's intent: focus, callout and its card from the right (its wind-up waits for the act).
+            if (enemyBeat != null && enemyBeat.ActorId == ts.UnitId && !enemyBeat.IntentShown) yield return EnemyIntent(enemyBeat);
         }
 
         private IEnumerator CastQueuedAnim(CastQueuedEvent cq)

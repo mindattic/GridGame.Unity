@@ -221,6 +221,43 @@ namespace GridGame.App
             yield return LiftVeil(veil);
         }
 
+        /// <summary>
+        /// GG-T839: a foe's intent. Its bust slides in from the right edge on its red band with the callout on the tag
+        /// ("Gorer: Bull Rush"), lands with a flash and a jolt, holds a beat and slides back out the way it came. A named
+        /// ability gets the bigger card, a lighter veil and a longer hold; a plain strike a smaller, quicker one.
+        /// </summary>
+        private IEnumerator IntentSlide(Unit foe, string callout, bool major)
+        {
+            CutInsShown++;
+            float h = major ? 420f : 320f;
+            var card = ActionCard(foe, h, Team.Enemy, callout, major ? Palette.GoldLight : new Color(1f, 0.82f, 0.78f), out var portrait);
+            float w = card.style.width.value.value;
+            float y = BoardTop + (major ? 470f : 410f);
+            float rest = GameApp.StageWidth - w * 0.8f, off = GameApp.StageWidth + w * 0.75f;
+            void Put(float x) { card.style.left = x - w / 2f; card.style.top = y - h / 2f; }
+            Put(off);
+            var veil = major ? CutInVeil(0.25f) : null;
+            card.BringToFront();
+            App.Audio.Sfx("battle.dash", 0.7f, major ? 0.8f : 0.95f);
+            float hold = major ? 0.35f : 0.18f;
+            App.Audio.DuckFor(Timing.Quick * 2f + hold);
+            yield return Tween.Run(Timing.Quick * 1.3f, k =>
+            {
+                Put(Mathf.LerpUnclamped(off, rest, Tween.Back(k)));
+                card.style.opacity = Mathf.Min(1f, k * 3f);
+                portrait.style.unityBackgroundImageTintColor = Color.Lerp(new Color(3f, 2.4f, 2.4f), new Color(1f, 0.88f, 0.88f), k);
+            });
+            App.StartCoroutine(Tween.Shake(card, 10f * Fx, Timing.Quick));
+            yield return Tween.Run(hold, k => card.style.scale = new Scale(Vector2.one * (1f + 0.03f * k)));
+            if (veil != null) App.StartCoroutine(LiftVeil(veil));
+            yield return Tween.Run(Timing.Quick, k =>
+            {
+                Put(Mathf.Lerp(rest, off, k * k));
+                card.style.opacity = 1f - k;
+            });
+            card.RemoveFromHierarchy();
+        }
+
         /// <summary>Debug/automation: the spell cut-in on the first hero, then every other hero popping in as a supporter.</summary>
         public void DemoCaster()
         {
