@@ -576,6 +576,7 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
             // A lone hero's bar is its only way to hurt anything (no pincers with one hero): spend mana and items on
             // damage freely rather than hoarding them for a pincer that can never come (GG-T123).
             // GG-T333: an essence heal costs the caster HP. Never bleed below 40% for it; otherwise price the HP given.
@@ -625,6 +626,70 @@ namespace GridGame.Core.Bot
                 if (best == int.MaxValue || toAnchor + anchor.Manhattan(goal) != best) continue; // not on its way
                 value += value == 0f ? 6f : 2f;
                 value += 4 - toAnchor; // sooner is likelier
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// GG-T888 (§14.23, §14.20.6): what a flare (an ability whose MarkTiles paints a <see cref="TileStateDef.Lights"/>
+        /// state over a radius, the Hexstalker's Flare Shot) on <paramref name="anchor"/> is worth, read only from what the
+        /// party knows. Over a suspected mine: each hidden mark in reach the party doesn't see (it glimpsed every one before
+        /// it hid) is worth 6 (a hazard) or 3, +2 when a hero stands within 2 of it; a hidden mark of the party's own is
+        /// -2 (the flare shows it to the foes too). Into darkness: while foes hide in the dark (the timeline's "?" icons
+        /// count them), each dark tile in reach within 4 of a hero is worth 0.5 per hidden foe (up to 2). And each seen foe
+        /// in reach beside a hero, not lit already, is worth 1.5 (its crits come easier). Nothing new to light: 0.
+        /// </summary>
+        public static float FlareValue(BattleState s, AbilityDef a, Coord anchor)
+        {
+            if (a.RuleEffects.Count == 0) return 0f;
+            int radius = -1, revealRadius = -1;
+            string state = null;
+            foreach (var fx in a.RuleEffects)
+            {
+                if (fx.Kind == RuleEffectKind.MarkTiles && fx.State != null && s.Content.TryTileState(fx.State) is TileStateDef st && st.Lights && fx.Radius > radius) { radius = fx.Radius; state = st.Id; }
+                if (fx.Kind == RuleEffectKind.RevealTiles && fx.Radius > revealRadius) revealRadius = fx.Radius;
+            }
+            if (radius < 0) return 0f;
+            var heroes = s.LivingList(Team.Hero);
+            float value = 0f;
+            if (revealRadius >= 0)
+                foreach (var kv in s.Region.Tiles)
+                {
+                    var m = kv.Value;
+                    if (!m.Hidden || kv.Key.Manhattan(anchor) > revealRadius) continue;
+                    if (RegionBoard.Sees(m, Team.Hero)) { value -= 2f; continue; }
+                    value += m.Hazard ? 6f : 3f;
+                    foreach (var h in heroes) if (h.Pos.Manhattan(kv.Key) <= 2) { value += 2f; break; }
+                }
+            bool Lit(Coord c) => s.Content.TryTileState(s.Region.At(c)?.State)?.Lights == true;
+            if (s.Region.HasFlag(RuleFlags.Darkness))
+            {
+                int hidden = 0;
+                foreach (var e in s.LivingList(Team.Enemy)) if (RegionBoard.Hidden(s, e)) hidden++;
+                if (hidden > 0)
+                {
+                    int dark = 0;
+                    for (int dy = -radius; dy <= radius; dy++)
+                        for (int dx = -radius; dx <= radius; dx++)
+                        {
+                            var c = new Coord(anchor.X + dx, anchor.Y + dy);
+                            if (Math.Abs(dx) + Math.Abs(dy) > radius || !BattleState.InBounds(c) || Lit(c)) continue;
+                            bool seen = false, near = false;
+                            foreach (var h in heroes)
+                            {
+                                int d = h.Pos.Manhattan(c);
+                                if (d <= RegionBoard.DarkSight) seen = true;
+                                if (d <= 4) near = true;
+                            }
+                            if (!seen && near) dark++;
+                        }
+                    value += dark * 0.5f * Math.Min(hidden, 2);
+                }
+            }
+            foreach (var e in s.LivingList(Team.Enemy))
+            {
+                if (RegionBoard.Hidden(s, e) || e.Pos.Manhattan(anchor) > radius || string.Equals(s.Region.At(e.Pos)?.State, state, StringComparison.OrdinalIgnoreCase)) continue;
+                foreach (var h in heroes) if (h.IsAdjacentTo(e)) { value += 1.5f; break; }
             }
             return value;
         }

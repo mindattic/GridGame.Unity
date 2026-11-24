@@ -211,6 +211,10 @@ namespace GridGame.Core.Content
         public DamageType? Element;
         /// <summary>A light (GG-T365): under <see cref="RuleFlags.Darkness"/> a unit standing on it is never hidden.</summary>
         public bool Lights;
+        /// <summary>Crit chance (0.15 = +15 points) a striker gains against a foe of its side standing on this state, when the
+        /// mark is its own side's (a board-painted mark: any hero's), on weapon blows and spells alike (GG-T888: the
+        /// Hexstalker's flare light). Several tiles under a big foe don't add up; the highest counts.</summary>
+        public float CritTakenBonus;
         /// <summary>Whom a mark of this state works on, read against the team that painted it (GG-T842): its hooks that
         /// read the subject's tile (EnterTile, TurnEnd...) skip an unaffected subject, its OnMark and hook effects skip
         /// unaffected units, and <see cref="Battle.RegionBoard.DangerAt"/> reads no danger for them. Ignored on a mark the
@@ -342,6 +346,7 @@ namespace GridGame.Core.Content
                     if (t.Becomes != null && t.Threshold <= 0) p.Add($"{w} state {t.Id}: Becomes needs a Threshold");
                     if (!(t.LifeSeconds >= 0f)) p.Add($"{w} state {t.Id}: LifeSeconds can't be negative");
                     if (!(t.VisibleSeconds >= 0f)) p.Add($"{w} state {t.Id}: VisibleSeconds can't be negative"); // GG-T843
+                    if (!(t.CritTakenBonus >= 0f && t.CritTakenBonus <= 1f)) p.Add($"{w} state {t.Id}: CritTakenBonus outside 0..1"); // GG-T888
                     if (t.Pit && !t.Blocks) p.Add($"{w} state {t.Id}: a Pit must also Block (nothing stands in a hole)");
                     if (t.Pit && !(t.FallDamage >= 0f && t.FallDamage <= 1f)) p.Add($"{w} state {t.Id}: FallDamage outside 0..1");
                     ValidateEffects(db, t.OnMark, $"{w} state {t.Id} OnMark", p);

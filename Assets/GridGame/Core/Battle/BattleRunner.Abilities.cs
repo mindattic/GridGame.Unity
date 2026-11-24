@@ -262,6 +262,7 @@ namespace GridGame.Core.Battle
                     if (a.BonusVsTag != null && t.Def.HasTag(a.BonusVsTag)) dmg = (int)Math.Round(dmg * a.BonusMultiplier);
                     // Blind cuts the crit chance with the accuracy, as for a blow (GG-T566); same single draw.
                     float spellCrit = Formulas.CritPercent(caster.Effective) / 100f * BattleConfig.SpellCritFraction;
+                    spellCrit += RegionBoard.CritTakenBonus(S, caster, t); // GG-T888: a foe in the party's flare light
                     if (caster.IsBlinded) spellCrit *= caster.AccuracyMultiplier;
                     bool crit = dmg > 0 && S.Rng.Chance(spellCrit);
                     if (crit) dmg = (int)Math.Round(dmg * BattleConfig.SpellCritMultiplier);

@@ -366,7 +366,12 @@ namespace GridGame.Core.Battle
         {
             bool landed = false;
             Emit(new AttackEvent { AttackerId = attacker.Id, TargetId = target.Id, IsSupport = kind == BlowKind.Support, IsMelee = kind == BlowKind.Melee, IsRanged = kind == BlowKind.Ranged, IsThrown = thrown });
+            // GG-T888 (§14.23): a foe standing in the party's flare light is easier to crit; the edge rides the roll's
+            // support crit for this one blow (same draw count), then the lent value comes back exactly.
+            float lent = attacker.SupportCritBonus, lit = RegionBoard.CritTakenBonus(S, attacker, target);
+            if (lit > 0f) attacker.SupportCritBonus = lent + lit;
             var roll = Formulas.Physical(attacker, target, S.Rng, mult * KitDamageMultiplier(attacker, target) * attacker.OutgoingDamageMultiplier, Dodgeable(kind));
+            attacker.SupportCritBonus = lent;
             if (!(roll.Hit != HitKind.Miss && PlateAbsorbs(target, attacker, roll.Damage)))
             {
                 int before = target.Hp;

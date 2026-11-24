@@ -56,6 +56,65 @@ namespace GridGame.App
             board.ClearMarks();
         }
 
+        /// <summary>GG-T888: how far a board ability's light reaches (its MarkTiles of a Lights state, the Hexstalker's
+        /// Flare Shot), or -1 when it lights nothing.</summary>
+        private int FlareRadius(AbilityDef a)
+        {
+            int r = -1;
+            foreach (var fx in a.RuleEffects)
+                if (fx.Kind == RuleEffectKind.MarkTiles && App.Content.TryTileState(fx.State)?.Lights == true) r = Mathf.Max(r, fx.Radius);
+            return r;
+        }
+
+        /// <summary>
+        /// GG-T888 (§14.23): a flare arcs from the caster to its tile with a sputtering spark trail, then fizzes alight: a
+        /// warm glow swells out to its radius, a soft gold burst, and its lit tiles wash in (the RegionTilesEvent that
+        /// follows draws them). Reduce Motion flies it straight and skips the swell.
+        /// </summary>
+        private IEnumerator FlareShotVfx(Unit caster, AbilityDef a, Coord anchor, int radius, VfxStyleDef style)
+        {
+            var glow = new Color(1f, 0.78f, 0.38f);
+            Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(anchor);
+            App.Audio.Sfx("battle.cast", 0.6f, 1.3f);
+            yield return Tween.Run(0.42f, k =>
+            {
+                board.Lines.ClearLines();
+                board.Lines.Dot(ProjectilePoint(ProjectileMotion.Bezier, from, to, k), 20f, glow);
+                for (int i = 1; i <= 3; i++)
+                {
+                    float back = Mathf.Max(0f, k - 0.06f * i);
+                    board.Lines.Dot(ProjectilePoint(ProjectileMotion.Bezier, from, to, back), 14f - 3f * i, new Color(1f, 0.9f, 0.6f, 0.55f - 0.15f * i));
+                }
+            });
+            board.Lines.ClearLines();
+            App.Audio.Sfx(a.Sfx ?? "battle.fizzle", 0.85f, 1.25f); // the fizz as it catches
+            foreach (var t in FlareTiles(anchor, radius)) board.Mark(t, glow, 0.35f);
+            NamedImpactFlourish(a.ImpactVfx, to, style);
+            Emit(StyleOf(DamageType.Holy), to, 0.5f, quiet: true);
+            if (!ReduceMotion)
+            {
+                float reach = (radius + 0.5f) * BoardView.Tile;
+                yield return Tween.Run(Timing.Emphasis, k =>
+                {
+                    board.Lines.Rings.Clear();
+                    board.Lines.Ring(to, 30f + reach * Ease.Out(k), new Color(glow.r, glow.g, glow.b, 0.9f * (1f - k)), 10f);
+                    board.Lines.Ring(to, 18f + 0.5f * reach * k, new Color(1f, 0.95f, 0.75f, 0.6f * (1f - k)), 6f);
+                });
+                board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
+            }
+            else yield return Tween.Wait(Timing.Quick);
+        }
+
+        private static System.Collections.Generic.IEnumerable<Coord> FlareTiles(Coord at, int radius)
+        {
+            for (int dy = -radius; dy <= radius; dy++)
+                for (int dx = -radius; dx <= radius; dx++)
+                {
+                    var c = new Coord(at.X + dx, at.Y + dy);
+                    if (Mathf.Abs(dx) + Mathf.Abs(dy) <= radius && BattleState.InBounds(c)) yield return c;
+                }
+        }
+
         private IEnumerator RegionAnchorAnim(RegionAnchorEvent ra)
         {
             board.SyncRegion(State);

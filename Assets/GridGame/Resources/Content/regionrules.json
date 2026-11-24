@@ -788,6 +788,14 @@
         "LifeSeconds": 12,
         "Color": "#FFF1B8",
         "Glyph": "+"
+      },
+      {
+        "Id": "flare-light",
+        "Lights": true,
+        "LifeSeconds": 10,
+        "CritTakenBonus": 0.15,
+        "Color": "#FFC46B",
+        "Glyph": "*"
       }
     ],
     "Hooks": [

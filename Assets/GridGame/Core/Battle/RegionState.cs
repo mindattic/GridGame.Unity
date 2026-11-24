@@ -217,5 +217,28 @@ namespace GridGame.Core.Battle
             }
             return true;
         }
+
+        /// <summary>
+        /// Crit chance (0.15 = +15 points) <paramref name="attacker"/> gains striking <paramref name="target"/> from the tile
+        /// states under it (GG-T888, §14.23: the Hexstalker's flare light): a state's <see cref="TileStateDef.CritTakenBonus"/>
+        /// counts when the target is the attacker's foe and the mark is the attacker's side's (a board-painted mark: a hero
+        /// striking a foe). A foe over several such tiles takes the highest, not the sum. 0 for a neutral or a friend.
+        /// </summary>
+        public static float CritTakenBonus(BattleState s, Unit attacker, Unit target)
+        {
+            if (s?.Content == null || attacker == null || target == null || s.Region.Tiles.Count == 0) return 0f;
+            if (attacker.Team == target.Team || target.IsNeutral || attacker.IsNeutral) return 0f;
+            float best = 0f;
+            foreach (var t in target.Tiles())
+            {
+                var m = s.Region.At(t);
+                if (m == null) continue;
+                var st = s.Content.TryTileState(m.State);
+                if (st == null || !(st.CritTakenBonus > 0f)) continue;
+                bool ours = m.OwnerTeam == Team.Neutral ? attacker.IsHero : m.OwnerTeam == attacker.Team;
+                if (ours && st.CritTakenBonus > best) best = st.CritTakenBonus;
+            }
+            return best;
+        }
     }
 }

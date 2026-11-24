@@ -24027,6 +24027,7 @@
       "ranged_calledshot",
       "ranged_suppressingfire",
       "hexstalker_fadingshot",
+      "hexstalker_flare_shot",
       "skirmisher_covering_volley",
       "skirmisher_retreat_shot",
       "skirmisher_rapid_barrage",

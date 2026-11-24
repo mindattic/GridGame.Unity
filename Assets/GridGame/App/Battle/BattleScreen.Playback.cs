@@ -1974,6 +1974,8 @@ namespace GridGame.App
                 foreach (var t in targets) NamedImpactFlourish(a.ImpactVfx, ViewCenter(t), abilityStyle);
             }
             else if (caster != null && GlobPainted(a) is TileStateDef glob) yield return GlobLobAnim(caster, glob, ar.Anchor); // GG-T895
+            else if (caster != null && a != null && targets.Count == 0 && FlareRadius(a) >= 0)
+                yield return FlareShotVfx(caster, a, ar.Anchor, FlareRadius(a), abilityStyle); // GG-T888
             else yield return Tween.Wait(Timing.Quick);
             App.StartCoroutine(ClearMarksLater(0.35f));
         }
