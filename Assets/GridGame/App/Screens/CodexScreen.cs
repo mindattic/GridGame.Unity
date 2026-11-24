@@ -284,4 +284,57 @@ namespace GridGame.App
             }
         }
     }
+
+    /// <summary>
+    /// GG-T926: a "New Codex entry" toast whenever the story kinds (places, factions, characters, foes, story) gain an
+    /// entry, in battle or in the hub. Unlocks are gathered for a frame and shown as one toast ("New Codex entry: The
+    /// Tithe Moors", or "3 new Codex entries"), so a battle's end or a joining hero doesn't stack a pile of them. Items,
+    /// abilities and keywords stay quiet (they unlock with every pickup and glossary tap); a back-fill read straight
+    /// away, a bot save and a save that is no longer the one being played show nothing.
+    /// </summary>
+    public static class CodexNotice
+    {
+        private static readonly List<(SaveData Save, string Kind, string Id)> pending = new List<(SaveData, string, string)>();
+        private static bool scheduled;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void Hook()
+        {
+            pending.Clear();
+            scheduled = false;
+            Codex.EntryUnlocked -= OnUnlocked; // no double subscription when domain reload is off
+            Codex.EntryUnlocked += OnUnlocked;
+        }
+
+        /// <summary>The kinds whose unlock is worth a toast.</summary>
+        public static bool Announces(string kind) =>
+            kind == CodexKinds.Place || kind == CodexKinds.Faction || kind == CodexKinds.Character || kind == CodexKinds.Foe || kind == CodexKinds.Story;
+
+        private static void OnUnlocked(SaveData s, string kind, string id)
+        {
+            var app = GameApp.I;
+            if (app == null || s == null || s.TestMode || !Announces(kind)) return;
+            pending.Add((s, kind, id));
+            if (scheduled) return;
+            scheduled = true;
+            app.StartCoroutine(Flush());
+        }
+
+        private static System.Collections.IEnumerator Flush()
+        {
+            yield return null; // a back-fill marks its entries read in the same call; let it finish first
+            scheduled = false;
+            var app = GameApp.I;
+            var c = app != null ? app.Content : null;
+            var fresh = new List<(string Kind, string Id)>();
+            foreach (var p in pending)
+                if (app != null && p.Save == app.Save && Codex.IsNew(p.Save, p.Kind, p.Id) && (c == null || c.CodexRecordExists(p.Kind, p.Id))
+                    && !fresh.Contains((p.Kind, p.Id)))
+                    fresh.Add((p.Kind, p.Id));
+            pending.Clear();
+            if (app == null || fresh.Count == 0) yield break;
+            string title = fresh.Count == 1 && c != null ? c.CodexEntry(fresh[0].Kind, fresh[0].Id).Title : null;
+            app.Toast(fresh.Count > 1 ? $"{fresh.Count} new Codex entries" : string.IsNullOrWhiteSpace(title) ? "New Codex entry" : $"New Codex entry: {title}", 2.4f);
+        }
+    }
 }

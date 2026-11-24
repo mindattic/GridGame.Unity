@@ -14,12 +14,19 @@ namespace GridGame.Meta
         /// <summary>"&lt;kind&gt;:&lt;id&gt;"; the kinds are Core <see cref="CodexKinds"/> (GG-T936 moved them there for codex.json).</summary>
         public static string Key(string kind, string id) => CodexKinds.Key(kind, id);
 
+        /// <summary>GG-T926: raised (save, kind, id) each time an entry is newly unlocked, so the App can toast it. A
+        /// back-fill (<see cref="Sync"/> with markRead) raises it too and reads the entry straight after, so a listener
+        /// that waits a frame and keeps only <see cref="IsNew"/> entries sees none of those.</summary>
+        public static event Action<SaveData, string, string> EntryUnlocked;
+
         /// <summary>Unlocks one entry; true when it is newly unlocked.</summary>
         public static bool Unlock(SaveData s, string kind, string id)
         {
             if (s == null || string.IsNullOrWhiteSpace(kind) || string.IsNullOrWhiteSpace(id)) return false;
             s.Codex ??= new HashSet<string>();
-            return s.Codex.Add(Key(kind, id));
+            if (!s.Codex.Add(Key(kind, id))) return false;
+            EntryUnlocked?.Invoke(s, kind, id);
+            return true;
         }
 
         /// <summary>GG-T929: the place a battle was fought: its campaign stage (a test stage or a generated Crucible arena
@@ -77,6 +84,20 @@ namespace GridGame.Meta
             int n = 0;
             foreach (var k in s.Codex)
                 if ((kind == null || k.StartsWith(kind + ":", StringComparison.Ordinal)) && !(s.CodexRead?.Contains(k) ?? false)) n++;
+            return n;
+        }
+
+        /// <summary>GG-T926: unlocked, unread entries the Codex screen can actually show (their record exists in
+        /// <paramref name="c"/>): the Camp row's "N new" count and badge.</summary>
+        public static int UnreadCount(ContentDb c, SaveData s)
+        {
+            if (s?.Codex == null) return 0;
+            int n = 0;
+            foreach (var k in s.Codex)
+            {
+                if (s.CodexRead?.Contains(k) ?? false) continue;
+                if (c == null || (CodexKinds.TrySplit(k, out var kind, out var id) && c.CodexRecordExists(kind, id))) n++;
+            }
             return n;
         }
 
