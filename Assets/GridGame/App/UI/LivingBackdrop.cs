@@ -70,6 +70,15 @@ namespace GridGame.App
             public bool Speck;
         }
 
+        /// <summary>GG-T734: one fine grit streak pouring off the Manalith: a thin rounded bar laid along the wake, its
+        /// length the trail it leaves. U0 is where it starts along the wake, Across its offset across it, Jitter its
+        /// size wobble, Speed its share of the base drift rate.</summary>
+        private sealed class Grit
+        {
+            public VisualElement El;
+            public float U0, Across, Jitter, Speed, Opacity, Width, Height;
+        }
+
         /// <summary>One falling glint of the Aetherain (GG-T670).</summary>
         private sealed class Mote
         {
@@ -81,6 +90,9 @@ namespace GridGame.App
         private readonly List<Shard> shards = new List<Shard>();
         private readonly List<Debris> debris = new List<Debris>();
         private readonly List<Mote> motes = new List<Mote>();
+        private readonly List<Grit> grit = new List<Grit>();
+        /// <summary>GG-T734: how close the Manalith is here (0 far off, 1 at its fullest), from story progress.</summary>
+        private readonly float approach;
         /// <summary>Round pieces (specks, motes) are coloured, not textured, so the backdrop tint is applied to them by hand.</summary>
         private readonly List<(VisualElement el, Color c)> tinted = new List<(VisualElement, Color)>();
         private readonly DebrisDef wake;
@@ -124,12 +136,19 @@ namespace GridGame.App
             else moonAspect = 1f;
             var rnd = new System.Random(); // cosmetic: a fresh wake and a fresh roll for the Aetherain every time
             wake = def.DebrisFor(region);
+            approach = def.ApproachFor(region);
             BuildDebris(rnd); // behind the body: it sits in front of its own wake
+            BuildGrit(rnd);
             // GG-T679: the Manalith is the live 3D satellite (ManalithRig) when its model loads, else the flat art.
             if (!string.IsNullOrEmpty(def.Somnolith?.Model))
             {
                 som = Layer(null);
-                if (ManalithRig.Attach(som)) live = true;
+                if (ManalithRig.Attach(som))
+                {
+                    live = true;
+                    // GG-T734: the closer it has come, the harder it sheds, its fine dust streaming off along the wake.
+                    ManalithRig.SetApproach(approach, wake?.Angle ?? new DebrisDef().Angle);
+                }
                 else { bg.Remove(som); som = null; }
             }
             if (som == null)
@@ -244,6 +263,30 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>GG-T734: the fine grit streaming off the Manalith, many more and much smaller than the wake's pieces,
+        /// each a streak whose trail grows as the Manalith closes in.</summary>
+        private void BuildGrit(System.Random rnd)
+        {
+            var d = wake;
+            if (d == null || d.Grit <= 0) return;
+            int count = Mathf.Min(d.Grit, DebrisDef.MaxGrit);
+            for (int i = 0; i < count; i++)
+            {
+                var g = new Grit
+                {
+                    El = Dot(PickColor(d.GritColors, rnd, ManalithRig.ManaBlue)),
+                    // Leaned toward the body, like the wake: densest where it pours off.
+                    U0 = Mathf.Pow((float)rnd.NextDouble(), 1.3f),
+                    Across = (float)(rnd.NextDouble() + rnd.NextDouble() - 1.0),
+                    Jitter = 0.6f + 0.8f * (float)rnd.NextDouble(),
+                    Speed = 0.7f + 0.6f * (float)rnd.NextDouble(),
+                    Opacity = d.Opacity * (0.5f + 0.5f * (float)rnd.NextDouble()),
+                };
+                g.El.style.opacity = 0f;
+                grit.Add(g);
+            }
+        }
+
         private void BuildAetherain(System.Random rnd)
         {
             int n = Mathf.Min(rain.Motes, AetherainDef.MaxMotes);
@@ -306,6 +349,16 @@ namespace GridGame.App
                     p.El.style.width = pw; p.El.style.height = pw * p.Aspect;
                     p.El.style.left = Space.S0; p.El.style.top = Space.S0;
                 }
+                // GG-T734: each grit streak is laid along the wake at its full trail and scaled in TickGrit.
+                float trail = wake.GritTrail * Mathf.Lerp(1f / 3f, 1f, approach);
+                foreach (var g in grit)
+                {
+                    g.Width = Mathf.Max(wake.GritSize, trail) * g.Jitter * refW;
+                    g.Height = wake.GritSize * g.Jitter * refW;
+                    g.El.style.width = g.Width; g.El.style.height = g.Height;
+                    g.El.style.left = Space.S0; g.El.style.top = Space.S0;
+                    g.El.style.rotate = new Rotate(wake.Angle);
+                }
             }
             rainTop = Mathf.Max(0f, somY - somR);
             foreach (var m in motes)
@@ -344,6 +397,7 @@ namespace GridGame.App
             var somShift = shift * depth.Manalith + new Vector2(0f, bob);
             if (som != null) som.style.translate = new Translate(somShift.x, somShift.y);
             TickWake(t, somShift.x, somShift.y);
+            TickGrit(t, somShift.x, somShift.y);
             TickAetherain(t, shift * depth.Foreground);
             foreach (var sh in shards)
             {
@@ -393,6 +447,32 @@ namespace GridGame.App
                 if (!p.Speck) p.El.style.rotate = new Rotate(p.Angle0 + t * p.Spin);
                 float fadeIn = Mathf.Clamp01(u / 0.04f), fadeOut = Mathf.Pow(1f - u, 0.8f);
                 p.El.style.opacity = p.Opacity * fadeIn * fadeOut;
+            }
+        }
+
+        /// <summary>GG-T734: the grit pours off the body's rim and streams down the wake faster than the bigger pieces, its
+        /// trail stretching out as it goes and its streak thinning and fading toward the far end. Reduce Motion holds it.</summary>
+        private void TickGrit(float t, float followX, float followY)
+        {
+            if (wake == null || grit.Count == 0) return;
+            float length = wake.Length * w, spread = wake.Spread * w;
+            float baseX = somX + followX, baseY = somY + followY;
+            float rate = 1f / Mathf.Max(1f, wake.GritDriftSeconds);
+            foreach (var g in grit)
+            {
+                float u = still ? g.U0 : Mathf.Repeat(g.U0 + t * rate * g.Speed, 1f);
+                // Starts just inside the irregular rim and spreads wider than the wake's core as it goes.
+                float dist = somR * 0.7f + u * length;
+                float across = g.Across * spread * (0.15f + 1.05f * u);
+                float x = baseX + wakeDir.x * dist + wakeAcross.x * across;
+                float y = baseY + wakeDir.y * dist + wakeAcross.y * across;
+                g.El.style.translate = new Translate(x - g.Width / 2f, y - g.Height / 2f);
+                // A short fleck at the rim, drawn out into its full trail, then thinning toward the far end.
+                float stretch = Mathf.Lerp(0.35f, 1f, Mathf.Clamp01(u / 0.3f));
+                float thin = Mathf.Lerp(1f, 0.45f, u);
+                g.El.style.scale = new Scale(new Vector2(stretch, thin));
+                float fadeIn = Mathf.Clamp01(u / 0.03f), fadeOut = Mathf.Pow(1f - u, 1.2f);
+                g.El.style.opacity = g.Opacity * fadeIn * fadeOut;
             }
         }
 

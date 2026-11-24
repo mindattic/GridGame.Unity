@@ -358,6 +358,17 @@ namespace GridGame.App
             Pose();
         }
 
+        /// <summary>GG-T734: how close the Manalith has come (0 far off .. 1 at its fullest, from story progress): the closer,
+        /// the harder it sheds (up to 2.5x the steady shard rate). <paramref name="wakeAngle"/> is the backdrop's wake
+        /// direction (screen degrees clockwise from right), kept for streaming the fine dust along it.</summary>
+        public static void SetApproach(float approach, float wakeAngle)
+        {
+            var rig = Ensure();
+            if (rig == null) return;
+            var em = rig.debris.emission;
+            em.rateOverTime = ShardsPerSecond * Mathf.Lerp(1f, 2.5f, Mathf.Clamp01(approach));
+        }
+
         /// <summary>GG-T684: at runtime the particle systems play on their own (unscaled) clock, paused while no layer shows
         /// the rig or Reduce Motion holds the sky still.</summary>
         private void Run(bool on)

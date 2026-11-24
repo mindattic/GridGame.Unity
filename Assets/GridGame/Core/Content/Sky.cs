@@ -50,8 +50,20 @@ namespace GridGame.Core.Content
             float k = d.FullAtSize > 0f ? Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / d.FullAtSize)) : 1f;
             var scaled = d.Clone();
             scaled.Count = Math.Max(d.MinCount, (int)Math.Round(d.Count * k));
+            // GG-T734: the fine grit thickens and the wake stretches further across the sky as the Manalith closes in.
+            scaled.Grit = Math.Max(d.GritMinCount, (int)Math.Round(d.Grit * k));
+            scaled.Length = d.Length * (d.FarLengthShare + (1f - d.FarLengthShare) * k);
             if (r != null && r.DebrisAngle >= 0f) scaled.Angle = r.DebrisAngle;
             return scaled;
+        }
+
+        /// <summary>GG-T734: how close the Manalith has come in region <paramref name="r"/>, 0 (far off) to 1 (at
+        /// <see cref="DebrisDef.FullAtSize"/> or larger): its size there, which grows with story progress. Drives how hard
+        /// it is visibly disintegrating (the 3D rig's shedding, the wake's grit and trail length).</summary>
+        public float ApproachFor(SkyRegionDef r)
+        {
+            float full = Debris?.FullAtSize > 0f ? Debris.FullAtSize : 1f;
+            return Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / full));
         }
 
         /// <summary>The chance (0-1) that a backdrop in region <paramref name="r"/> shows a dust fall: the region's own
@@ -203,6 +215,27 @@ namespace GridGame.Core.Content
         /// <summary>Seconds a piece takes to drift from the body to the far end of the wake.</summary>
         public float DriftSeconds = 140f;
         public float Opacity = 0.85f;
+        /// <summary>GG-T734: the wake's length while the Manalith is far off, as a share of <see cref="Length"/>; it reaches
+        /// the full Length at <see cref="FullAtSize"/> (default wake only; a region's own wake is used as written).</summary>
+        public float FarLengthShare = 0.6f;
+
+        /// <summary>GG-T734: upper bound on grit streaks, to keep the backdrop cheap on phones.</summary>
+        public const int MaxGrit = 140;
+        /// <summary>GG-T734: fine grit streaming off the Manalith, each a thin streak trailing behind it so the body reads as
+        /// disintegrating: this many at <see cref="FullAtSize"/> or larger (fewer while it is far off).</summary>
+        public int Grit = 90;
+        /// <summary>Fewest grit streaks even where the Manalith is far off.</summary>
+        public int GritMinCount = 14;
+        /// <summary>A grit streak's thickness, as a share of the screen width (it thins as it drifts away).</summary>
+        public float GritSize = 0.0032f;
+        /// <summary>A grit streak's trail length at full approach, as a share of the screen width; a far-off Manalith's
+        /// streaks are a third as long.</summary>
+        public float GritTrail = 0.045f;
+        /// <summary>Seconds a grit streak takes to stream from the body to the far end of the wake (faster than the
+        /// bigger pieces, so the fine stuff visibly pours off).</summary>
+        public float GritDriftSeconds = 55f;
+        /// <summary>Grit colours: the wake's own speck colours plus the Manalith's glowing blue.</summary>
+        public List<string> GritColors = new List<string> { "#46508E", "#46508E", "#6D6EA9", "#7590C8", "#7590C8", "#A096C7", "#974B72" };
 
         public DebrisDef Clone() => (DebrisDef)MemberwiseClone();
 
@@ -217,6 +250,12 @@ namespace GridGame.Core.Content
             if (DriftSeconds <= 0f) p.Add($"{w} DriftSeconds must be > 0");
             if (Opacity < 0f || Opacity > 1f) p.Add($"{w} Opacity {Opacity} must be in [0, 1]");
             SkyDef.ValidateColors(SpeckColors, $"{w} SpeckColors", p);
+            if (FarLengthShare <= 0f || FarLengthShare > 1f) p.Add($"{w} FarLengthShare {FarLengthShare} must be in (0, 1]");
+            if (Grit < 0 || Grit > MaxGrit) p.Add($"{w} Grit {Grit} must be in [0, {MaxGrit}]");
+            if (GritMinCount < 0 || (Grit > 0 && GritMinCount > Grit)) p.Add($"{w} GritMinCount {GritMinCount} must be in [0, Grit]");
+            if (GritSize <= 0f || GritTrail < GritSize) p.Add($"{w} GritSize must be > 0 and GritTrail >= GritSize");
+            if (GritDriftSeconds <= 0f) p.Add($"{w} GritDriftSeconds must be > 0");
+            if (Grit > 0) SkyDef.ValidateColors(GritColors, $"{w} GritColors", p);
             if (SpeckShare < 1f && Count > 0 && (s.Shards?.Images == null || s.Shards.Images.Count == 0))
                 p.Add($"{w}: shard pieces need sky Shards Images");
         }
