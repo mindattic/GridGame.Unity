@@ -322,7 +322,18 @@ namespace GridGame.Core.Battle
         /// </summary>
         public static int ActionsUntilTurn(BattleState s, int unitId)
         {
-            int t = TicksUntilTurn(s, unitId);
+            return ActionsUntilTicks(s, unitId, TicksUntilTurn(s, unitId));
+        }
+
+        /// <summary>GG-T918: like <see cref="ActionsUntilTurn"/> for the unit's pending cast landing (-1 with no cast or Frozen).</summary>
+        public static int ActionsUntilCast(BattleState s, int unitId)
+        {
+            var c = s.CastEntryOf(unitId);
+            return c == null ? -1 : ActionsUntilTicks(s, unitId, TicksUntilAct(s, c));
+        }
+
+        private static int ActionsUntilTicks(BattleState s, int unitId, int t)
+        {
             if (t < 0) return -1;
             var earlier = new HashSet<int>();
             foreach (var e in s.Timeline)

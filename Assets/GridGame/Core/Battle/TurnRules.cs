@@ -21,6 +21,17 @@ namespace GridGame.Core.Battle
                 throw new NotSupportedException($"Turn mode {s.TurnMode} is not built yet (bible §2.13)");
         }
 
+        // ── Countdown badge (GG-T918, §2.10) ───────────────────────────────────────────────────────
+
+        /// <summary>The countdown the badge shows for a foe: party turns until its pending cast lands, else until its turn
+        /// (0 = at the end of your next turn); -1 with neither or Frozen. Counted in the party's own turns, so the same
+        /// seam answers in every mode (it never reads who may act, only when the enemy side arrives).</summary>
+        public static int CountdownLeft(BattleState s, int unitId)
+        {
+            int n = BattleEngine.ActionsUntilCast(s, unitId);
+            return n >= 0 || s.CastEntryOf(unitId) != null ? n : BattleEngine.ActionsUntilTurn(s, unitId);
+        }
+
         // ── 1. Who may act now ─────────────────────────────────────────────────────────────────────
 
         /// <summary>Has <paramref name="hero"/> used its action for the party's current turn? PartyWindow: it acted in this

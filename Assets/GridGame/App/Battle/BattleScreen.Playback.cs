@@ -240,7 +240,7 @@ namespace GridGame.App
                 case WaveClearedEvent wc: FlushTallies(); return WaveClearedAnim(wc);
                 case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
                 case RevivedEvent rv: return ReviveAnim(rv);
-                case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); WindowContinues(pc.NewWindow); return null;
+                case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); CastCountdownTexts(); WindowContinues(pc.NewWindow); return null;
                 case TileConflictEvent tc:
                     // The engine's last-resort net fired (GG-T97): a root-cause bug. Loud in every build's log; in a
                     // dev build also on screen, and counted in /state so the harness fails on it.
@@ -2325,6 +2325,23 @@ namespace GridGame.App
             if (bt.Remaining != 1 || !board.Units.TryGetValue(bt.UnitId, out var v) || v.Dead) return;
             var def = App.Content.TryBuff(bt.BuffId);
             if (def != null) Text.Countdown(BoardView.CenterOf(v.Tile, v.W, v.H), bt.Remaining, StatusColor(def), StatusGlyph(def));
+        }
+
+        private readonly Dictionary<int, int> lastCountdown = new Dictionary<int, int>();
+
+        /// <summary>GG-T918 (§2.10): when a foe's countdown (its turn, or its pending cast landing) reaches 3, 2, 1 or 0 it
+        /// floats once over it, Timer digits then a TimerEnd flash. Read through <see cref="TurnRules.CountdownLeft"/>.</summary>
+        private void CastCountdownTexts()
+        {
+            foreach (var u in State.Units)
+            {
+                if (u.IsHero || !u.Alive || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) { lastCountdown.Remove(u.Id); continue; }
+                int n = TurnRules.CountdownLeft(State, u.Id);
+                if (n < 0 || n > 3) { lastCountdown.Remove(u.Id); continue; }
+                if (lastCountdown.TryGetValue(u.Id, out int was) && was == n) continue;
+                lastCountdown[u.Id] = n;
+                Text.Countdown(BoardView.CenterOf(v.Tile, v.W, v.H), n);
+            }
         }
 
         /// <summary>GG-T830: a status running out, cleansed, cured or broken fades out struck through over its bearer.</summary>
