@@ -109,6 +109,10 @@ namespace GridGame.Core.Content
         WithState,
         /// <summary>The whole board.</summary>
         All,
+        /// <summary>GG-T869: <see cref="RuleEffectDef.Count"/> tiles in a straight line from the subject toward the Target,
+        /// starting at the tile next to the subject (the Target's dominant axis; a diagonal pick leans to its longer leg).
+        /// The Barbarian's Earthsplitter cracks the row ahead of it this way.</summary>
+        Line,
     }
 
     /// <summary>Which units a unit effect (Damage, Heal, ApplyBuff, MoveUnits) reaches; <see cref="RuleEffectDef.Team"/> filters them.</summary>
@@ -215,6 +219,10 @@ namespace GridGame.Core.Content
         /// <summary>A hole (GG-T368; needs <see cref="Blocks"/>): a unit caught on the tile as it opens, or knocked or pulled
         /// into it, falls: it loses <see cref="FallDamage"/> of its max HP and climbs out on the nearest free tile.</summary>
         public bool Pit;
+        /// <summary>GG-T869 (§14.21): a Heavy unit (<see cref="ClassDef.Heavy"/>, not floating) on a mark of this state, as it
+        /// is painted or as the unit enters it, breaks through at once: the tile becomes this state (a hole) and the unit
+        /// falls (<see cref="Battle.BrokeThroughEvent"/>, then its fall). Null = a Heavy unit treads it like anyone.</summary>
+        public string HeavyBecomes;
         /// <summary>The share of max HP a fall into this <see cref="Pit"/> costs (environmental, at least 1).</summary>
         public float FallDamage = 0.15f;
         /// <summary>Effects run on each tile as it takes this state (painted, or a counter turning into it): Self is that
@@ -296,6 +304,9 @@ namespace GridGame.Core.Content
         /// <summary>Runs every Nth time it matches (1 = every time).</summary>
         public int Every = 1;
         public float Chance = 1f;
+        /// <summary>GG-T869: runs only when the rule is the stage's own (its theme's or stage's list), not one an ability or a
+        /// trail brought into play by painting its state, so a hero's cracks never turn every wave into a cracking floor.</summary>
+        public bool StageOnly;
         public List<RuleEffectDef> Effects = new List<RuleEffectDef>();
     }
 
@@ -314,6 +325,30 @@ namespace GridGame.Core.Content
 
     public static class RegionRuleCatalog
     {
+        /// <summary>GG-T869 (<see cref="RuleArea.Line"/>): the one-tile step from <paramref name="from"/> toward
+        /// <paramref name="to"/> along the longer axis (a tie goes across); (0, 0) when they are the same tile.</summary>
+        public static (int dx, int dy) LineStep(Coord from, Coord to)
+        {
+            int dx = to.X - from.X, dy = to.Y - from.Y;
+            if (dx == 0 && dy == 0) return (0, 0);
+            return Math.Abs(dx) >= Math.Abs(dy) ? (Math.Sign(dx), 0) : (0, Math.Sign(dy));
+        }
+
+        /// <summary>GG-T869: the <paramref name="count"/> tiles straight ahead of <paramref name="from"/> toward
+        /// <paramref name="to"/>, nearest first, the first next to <paramref name="from"/>; off-board ones dropped.</summary>
+        public static List<Coord> LineTiles(Coord from, Coord to, int count)
+        {
+            var list = new List<Coord>();
+            var (dx, dy) = LineStep(from, to);
+            if (dx == 0 && dy == 0) return list;
+            for (int i = 1; i <= Math.Max(1, count); i++)
+            {
+                var c = new Coord(from.X + dx * i, from.Y + dy * i);
+                if (Battle.BattleState.InBounds(c)) list.Add(c);
+            }
+            return list;
+        }
+
         /// <summary>The rules a stage plays under: its theme's (campaign.json), then its own (stages.json), each once.</summary>
         public static List<RegionRuleDef> ActiveFor(ContentDb db, StageDef stage)
         {
@@ -359,6 +394,7 @@ namespace GridGame.Core.Content
                     if (t.Threshold < 0) p.Add($"{w} state {t.Id}: Threshold can't be negative");
                     if (t.Becomes != null && db.TryTileState(t.Becomes) == null) p.Add($"{w} state {t.Id}: unknown Becomes state '{t.Becomes}'");
                     if (t.Becomes != null && t.Threshold <= 0) p.Add($"{w} state {t.Id}: Becomes needs a Threshold");
+                    if (t.HeavyBecomes != null && !(db.TryTileState(t.HeavyBecomes) is TileStateDef hb && hb.Pit)) p.Add($"{w} state {t.Id}: HeavyBecomes must name a Pit state");
                     if (!(t.LifeSeconds >= 0f)) p.Add($"{w} state {t.Id}: LifeSeconds can't be negative");
                     if (!(t.VisibleSeconds >= 0f)) p.Add($"{w} state {t.Id}: VisibleSeconds can't be negative"); // GG-T843
                     if (!(t.CritTakenBonus >= 0f && t.CritTakenBonus <= 1f)) p.Add($"{w} state {t.Id}: CritTakenBonus outside 0..1"); // GG-T888

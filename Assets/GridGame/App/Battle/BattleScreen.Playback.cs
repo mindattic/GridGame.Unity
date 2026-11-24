@@ -236,6 +236,7 @@ namespace GridGame.App
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);
                 case HazardRetimedEvent hzr: return HazardRetimedAnim(hzr);
                 case HazardLandedEvent hzl: return HazardLandedAnim(hzl);
+                case BrokeThroughEvent btk: return BrokeThroughAnim(btk); // GG-T869
                 case HazardMovedEvent hzm: HazardMoved(hzm); return null; // GG-T874: a Time Bomb rides its carrier
                 case FellEvent fel: return FellAnim(fel); // GG-T368
                 case WeaponWornEvent _: return null;
@@ -1978,6 +1979,7 @@ namespace GridGame.App
                 foreach (var t in targets) NamedImpactFlourish(a.ImpactVfx, ViewCenter(t), abilityStyle);
             }
             else if (caster != null && GlobPainted(a) is TileStateDef glob) yield return GlobLobAnim(caster, glob, ar.Anchor); // GG-T895
+            else if (caster != null && FissurePainted(a) is TileStateDef crack) yield return FissureAnim(caster, a, crack, ar.Anchor); // GG-T869
             else if (caster != null && a != null && targets.Count == 0 && FlareRadius(a) >= 0)
                 yield return FlareShotVfx(caster, a, ar.Anchor, FlareRadius(a), abilityStyle); // GG-T888
             else yield return Tween.Wait(Timing.Quick);

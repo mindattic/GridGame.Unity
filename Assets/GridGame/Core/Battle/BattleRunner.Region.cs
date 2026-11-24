@@ -68,6 +68,7 @@ namespace GridGame.Core.Battle
             if (PreviewOnly) return;
             if (S.Region.Tiles.Count > 0) Squish(u); // GG-T844: a glob underfoot is squished before the tile's hooks read it
             if (S.Region.Tiles.Count > 0 && u.Alive) RuneCircle(u); // GG-T902: the Choir's circle completes as its third singer steps in
+            if (S.Region.Tiles.Count > 0 && u.Alive && BreakThrough(u)) return; // GG-T869: a Heavy unit falls through a crack
             if (S.Region.Rules.Count == 0 || !u.Alive) return;
             RegionHooks(RuleHook.EnterTile, u);
         }
@@ -138,6 +139,7 @@ namespace GridGame.Core.Battle
                     var h = rule.Hooks[i];
                     if (h.On != on || !TeamMatches(h.Team, subject)) continue;
                     if (h.Wave >= 0 && S.Wave != h.Wave) continue;
+                    if (h.StageOnly && !RegionRuleCatalog.ActiveFor(C, S.Stage).Contains(rule)) continue; // GG-T869
                     if (subject != null && RegionBoard.Immune(subject, rule.Id)) continue;
                     TileMark mark = null;
                     if (h.State != null)
@@ -444,6 +446,9 @@ namespace GridGame.Core.Battle
             if (falls != null)
                 foreach (var (u, at) in falls)
                     if (u.Alive && !S.IsOver) Fall(u, at, u.Pos, def, rule);
+            if (def.HeavyBecomes != null) // GG-T869: a crack painted under a Heavy unit gives at once
+                foreach (var c in tiles.ToArray())
+                    if (!S.IsOver && S.UnitAt(c) is Unit heavy && heavy.Pos == c && StateMatches(S.Region.At(c), def.Id)) BreakThrough(heavy);
             if (def.OnMark.Count == 0) return;
             foreach (var c in tiles.ToArray())
             {
@@ -461,6 +466,33 @@ namespace GridGame.Core.Battle
         }
 
         // ── Holes (GG-T368, §14.21) ──────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// GG-T869 (§14.21): <paramref name="u"/>, Heavy and able to fall, stands on a mark whose state has a
+        /// <see cref="TileStateDef.HeavyBecomes"/> (a crack): its weight breaks it at once. The tile becomes that pit (a
+        /// <see cref="BrokeThroughEvent"/>, then the "marked" tiles event) and the unit falls through. A floating Heavy unit,
+        /// a multi-tile one (a boss never falls) and one immune to the mark tread it like anyone. True when it broke.
+        /// </summary>
+        private bool BreakThrough(Unit u)
+        {
+            if (!RegionActive || u == null || !u.IsHeavy || !u.OnBoard) return false;
+            var c = u.Pos;
+            var m = S.Region.At(c);
+            var def = m == null ? null : C.TryTileState(m.State);
+            var next = def?.HeavyBecomes == null ? null : C.TryTileState(def.HeavyBecomes);
+            if (next == null || !next.Pit || !CanFall(u, m.Rule, m.State) || !RegionBoard.Affects(S, m, u)) return false;
+            string rule = C.TileStateRule.TryGetValue(next.Id, out var owner) ? owner : m.Rule;
+            var faller = HoleFaller(next, rule, c, out bool hold);
+            if (hold || faller != u) return false;
+            S.Region.Tiles[c] = NewMark(next, rule, 0, m.OwnerTeam, m.OwnerId);
+            EnsureRuleInPlay(rule, m.OwnerTeam);
+            Emit(new BrokeThroughEvent { UnitId = u.Id, At = c, From = m.State, Into = next.Id, RuleId = rule });
+            var marked = new RegionTilesEvent { RuleId = rule, State = next.Id, Change = "marked" };
+            marked.Tiles.Add(c);
+            Emit(marked);
+            AfterMarked(next, rule, marked.Tiles, new List<(Unit, Coord)> { (u, c) });
+            return true;
+        }
 
         /// <summary>Only a one-tile, living, ordinary unit falls (bosses, snakes, remains, corpses and eggs don't), and
         /// never one immune to the hole's rule or state.</summary>
@@ -980,6 +1012,11 @@ namespace GridGame.Core.Battle
                 case RuleArea.All:
                     for (int y = 0; y < BattleConfig.Rows; y++) for (int x = 0; x < BattleConfig.Cols; x++) Add(new Coord(x, y));
                     break;
+                case RuleArea.Line: // GG-T869: Count tiles straight ahead of the subject, toward the Target
+                {
+                    if (ctx.At.HasValue && ctx.Target.HasValue) foreach (var c in RegionRuleCatalog.LineTiles(ctx.At.Value, ctx.Target.Value, e.Count)) Add(c);
+                    break;
+                }
                 case RuleArea.RandomFree:
                 {
                     var pool = new List<Coord>();

@@ -366,6 +366,55 @@ namespace GridGame.App
             yield return Tween.Wait(Timing.Quick);
         }
 
+        // ── GG-T869 (§7, §14.21): the Barbarian's Earthsplitter ─────────────────────────────────
+
+        /// <summary>The cracking state an ability paints along a line ahead of its caster (Earthsplitter's cracked), or null.</summary>
+        private TileStateDef FissurePainted(AbilityDef a)
+        {
+            if (a?.RuleEffects == null) return null;
+            foreach (var e in a.RuleEffects)
+                if (e != null && e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Line && App.Content.TryTileState(e.State) is TileStateDef def)
+                    return def;
+            return null;
+        }
+
+        /// <summary>The slam: a low rumble under a board shake, then the fissure runs out from the caster tile by tile, each
+        /// one flashing the crack's colour with a burst of grit and a stone crack (the "marked" region event that follows
+        /// draws the cracks). Reduce Motion: no shake, one quick pass.</summary>
+        private IEnumerator FissureAnim(Unit caster, AbilityDef a, TileStateDef crack, GridGame.Core.Coord anchor)
+        {
+            int count = 3;
+            foreach (var e in a.RuleEffects) if (e != null && e.Area == RuleArea.Line) { count = e.Count; break; }
+            var line = RegionRuleCatalog.LineTiles(caster.Pos, anchor, count);
+            var col = Art.HexColor(crack.Color, Palette.Gold);
+            App.Audio.Sfx("battle.explosion", 0.55f, 0.45f); // the rumble
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 7f, Timing.Standard));
+            float beat = ReduceMotion ? Timing.Quick * 0.3f : Timing.Quick * 0.6f;
+            foreach (var t in line)
+            {
+                board.Mark(t, col, 0.7f);
+                Emit(StyleOf(DamageType.Physical), BoardView.CenterOf(t), 0.5f, quiet: true);
+                App.Audio.Sfx("battle.shatter", 0.45f, 0.55f);
+                yield return Tween.Wait(beat);
+            }
+            board.SyncRegion(State);
+        }
+
+        /// <summary>A Heavy unit breaks through a crack (GG-T869): the tile flashes dark under a deep rumble and a hard shake,
+        /// "Broke through!" over it, then its <see cref="FellEvent"/> plays the fall.</summary>
+        private IEnumerator BrokeThroughAnim(BrokeThroughEvent bt)
+        {
+            board.Mark(bt.At, new Color(0.25f, 0.18f, 0.12f), 0.85f);
+            Emit(StyleOf(DamageType.Physical), BoardView.CenterOf(bt.At), 0.8f, quiet: true);
+            App.Audio.Sfx("battle.explosion", 0.8f, 0.35f);
+            App.Audio.Sfx("battle.shatter", 0.7f, 0.5f);
+            Text?.Show(bt.At, CombatTextKind.Callout, "Broke through!", 0.3f, new Color(0.85f, 0.65f, 0.4f));
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 10f, Timing.Standard));
+            board.SyncRegion(State);
+            yield return Tween.Wait(Timing.Quick);
+            board.ClearMarks();
+        }
+
         // ── GG-T895 (§14.23): slime glob visuals ─────────────────────────────────────────────────
 
         /// <summary>Hatching marks (slime globs) on the board, by tile: their state id, kept from the region events so a

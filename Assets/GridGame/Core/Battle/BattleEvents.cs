@@ -724,6 +724,14 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Fell {UnitId} into {Hole} -> {To}{(SwappedId >= 0 ? $" swapping {SwappedId}" : "")}";
     }
 
+    /// <summary>GG-T869 (§14.21): a Heavy unit's weight broke a cracked tile (<see cref="Content.TileStateDef.HeavyBecomes"/>)
+    /// at <see cref="At"/>: <see cref="From"/> became <see cref="Into"/> (a hole) under it; its <see cref="FellEvent"/> follows.</summary>
+    public sealed class BrokeThroughEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public string From; public string Into; public string RuleId;
+        public override string ToString() => $"Broke through {From} at {At} under {UnitId}";
+    }
+
     /// <summary>A unit of the state's <see cref="Content.TileStateDef.SquishedBy"/> team stepped on a mark and squished it
     /// (GG-T844, §14.23): the mark is gone (a "cleared" RegionTilesEvent follows), then the state's OnSquish runs.</summary>
     public sealed class SquishedEvent : BattleEvent

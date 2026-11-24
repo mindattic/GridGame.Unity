@@ -6,6 +6,7 @@
         "Id": "cracked",
         "Threshold": 3,
         "Becomes": "crumbling",
+        "HeavyBecomes": "hole",
         "Color": "#b39b72",
         "Glyph": "⁂"
       },
@@ -54,6 +55,7 @@
     "Hooks": [
       {
         "On": "WaveSpawn",
+        "StageOnly": true,
         "Effects": [
           {
             "Kind": "MarkTiles",

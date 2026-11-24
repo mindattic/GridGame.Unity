@@ -578,6 +578,7 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += EarthsplitValue(s, a, caster, anchor); // GG-T869: cracks under a Heavy foe or across a foe's way in
             score += WallValue(s, a, caster, anchor); // GG-T932: a Firewall across a foe's way in, never over the party
             score += GravityWell.Value(s, a, anchor); // GG-T883: a Gravity Well only when it grows the next pincer's catch
             score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
@@ -788,6 +789,57 @@ namespace GridGame.Core.Bot
                 }
             }
             return gain > 0f ? gain - cost : 0f;
+        }
+
+        /// <summary>
+        /// GG-T869 (§7, §14.21): what an Earthsplitter-style slam (a MarkTiles <see cref="RuleArea.Line"/> of a state that a
+        /// Heavy unit breaks through, <see cref="TileStateDef.HeavyBecomes"/>) aimed at <paramref name="anchor"/> is worth:
+        /// a Heavy foe that can fall standing on a fresh crack falls at once (worth 8 plus half the HP the fall costs it);
+        /// a crack on a foe's shortest walk to its nearest hero, within 4 steps, is a chokepoint it must crack further or go
+        /// around (3 for the first such foe, +1 each further, +4 when that foe is Heavy and would break through on it). A
+        /// hero standing on a crack costs 1. Nothing when it would crack no foe's tile and no foe's way: never superfluous.
+        /// </summary>
+        public static float EarthsplitValue(BattleState s, AbilityDef a, Unit caster, Coord anchor)
+        {
+            if (caster == null || a.RuleEffects.Count == 0) return 0f;
+            RuleEffectDef line = null;
+            TileStateDef st = null;
+            foreach (var fx in a.RuleEffects)
+                if (fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Line && s.Content.TryTileState(fx.State) is TileStateDef d && d.HeavyBecomes != null) { line = fx; st = d; break; }
+            if (line == null) return 0f;
+            var pit = s.Content.TryTileState(st.HeavyBecomes);
+            var heroes = s.LivingList(Team.Hero);
+            var foes = s.LivingList(Team.Enemy);
+            float value = 0f, costs = 0f;
+            var counted = new HashSet<int>();
+            int onTheWay = 0;
+            foreach (var c in RegionRuleCatalog.LineTiles(caster.Pos, anchor, line.Count))
+            {
+                if (s.IsBlock(c)) continue;
+                if (s.Region.At(c) != null) continue; // KeepMarks: a marked tile stays as it is
+                var occ = s.UnitAt(c);
+                if (occ != null && occ.IsHero) { costs += 1f; continue; }
+                if (occ != null && occ.Team == Team.Enemy && occ.IsHeavy && !occ.IsMultiTile && occ.Pos == c && !RegionBoard.Immune(occ, st.Id))
+                {
+                    value += 8f + (pit != null ? pit.FallDamage * occ.MaxHp * 0.5f : 0f);
+                    counted.Add(occ.Id);
+                    continue;
+                }
+                foreach (var e in foes)
+                {
+                    if (counted.Contains(e.Id) || e.IsMultiTile || e.IsCorpse || e.IsRemains || e.IsEgg) continue;
+                    int toTile = e.Pos.Manhattan(c);
+                    if (toTile == 0 || toTile > 4) continue;
+                    int best = int.MaxValue;
+                    Coord goal = default;
+                    foreach (var h in heroes) { int d = e.Pos.Manhattan(h.Pos); if (d < best) { best = d; goal = h.Pos; } }
+                    if (best == int.MaxValue || toTile + c.Manhattan(goal) != best) continue; // not on its way in
+                    counted.Add(e.Id);
+                    value += ++onTheWay == 1 ? 3f : 1f;
+                    if (e.IsHeavy) value += 4f;
+                }
+            }
+            return value <= 0f ? 0f : value - costs;
         }
 
         // ── GG-T292: reading the bar (the smart bot) ────────────────────────────────────────────────────────────

@@ -191,7 +191,7 @@ namespace GridGame.Core.Battle
         {
             if (plan.Swapped.Count > 0) Announce($"{enemy.Name} maneuvers!", enemy.Id);
             foreach (var next in plan.Path)
-                if (!enemy.Alive || S.IsOver || !SwapStepEnemy(enemy, next)) break;
+                if (!enemy.Alive || S.IsOver || !SwapStepEnemy(enemy, next) || enemy.Pos != next) break; // GG-T869: a fall ends the walk
             if (!enemy.Alive || S.IsOver) return;
             EnemyAttack(enemy);
             if (CheckEnd()) return;
