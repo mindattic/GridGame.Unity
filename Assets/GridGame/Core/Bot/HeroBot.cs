@@ -577,6 +577,7 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += WallValue(s, a, caster, anchor); // GG-T932: a Firewall across a foe's way in, never over the party
             score += GravityWell.Value(s, a, anchor); // GG-T883: a Gravity Well only when it grows the next pincer's catch
             score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
             score += TimeBombValue(s, a, anchor); // GG-T874: a Time Bomb on a foe beside (or a shove from) its friends
@@ -725,6 +726,67 @@ namespace GridGame.Core.Bot
             if (value <= 0f) return 0f;
             foreach (var h in s.LivingList(Team.Hero)) if (h.DistanceTo(carrier) <= reach) value -= 4f;
             return Math.Max(0f, value);
+        }
+
+        /// <summary>
+        /// GG-T932 (BIBLE 14.23): what painting a visible hazard (a MarkTiles of a <see cref="TileStateDef.Hazard"/> state on
+        /// the ability's anchor or shape, the Firewall) aimed at <paramref name="anchor"/> is worth, tile by tile: -8 for a hero
+        /// standing on it when the state burns everyone (Affects Any); +3 for each foe whose shortest walk to its nearest hero
+        /// crosses the tile within its reach (dist(foe,t) + dist(t,hero) == dist(foe,hero), dist(foe,t) &lt;= MoveRange + 1);
+        /// +5 for the tile directly behind a foe beside a hero while some hero has a ready Knockback or Pull (the shove's own
+        /// <see cref="RegionBoard.ShoveFloorValue"/> then prices it); +3 for a foe already on it. Nothing when no foe gives it
+        /// a reason, so it is never cast superfluously. A hidden hazard is <see cref="BuryValue"/>'s.
+        /// </summary>
+        public static float WallValue(BattleState s, AbilityDef a, Unit caster, Coord anchor)
+        {
+            if (a.RuleEffects.Count == 0) return 0f;
+            RuleEffectDef mark = null;
+            TileStateDef st = null;
+            foreach (var fx in a.RuleEffects)
+                if (fx.Kind == RuleEffectKind.MarkTiles && (fx.Area == RuleArea.EventTiles || fx.Area == RuleArea.Target)
+                    && s.Content.TryTileState(fx.State) is TileStateDef d && d.Hazard && d.VisibleSeconds <= 0f && d.Affects != TileAffects.AlliesOfOwner)
+                { mark = fx; st = d; break; }
+            if (mark == null) return 0f;
+            var tiles = mark.Area == RuleArea.Target ? new List<Coord> { anchor } : TargetResolver.Tiles(anchor, a.Shape, a.Radius, caster?.Pos);
+            var heroes = s.LivingList(Team.Hero);
+            var foes = s.LivingList(Team.Enemy).FindAll(e => !e.IsCorpse && !e.IsRemains && !e.IsEgg && !RegionBoard.Immune(e, st.Id));
+            if (heroes.Count == 0 || foes.Count == 0) return 0f;
+            bool shoveReady = false;
+            foreach (var h in heroes)
+                for (int slot = 0; slot < h.Bar.Count && !shoveReady; slot++)
+                {
+                    if (BattleEngine.GetSlotStatus(s, h.Id, slot) != SlotStatus.Ready) continue;
+                    var sa = BattleEngine.SlotAbility(s, h, slot);
+                    if (sa != null && (sa.Knockback > 0 || sa.Pull > 0)) shoveReady = true;
+                }
+            var behind = new HashSet<Coord>();
+            if (shoveReady)
+                foreach (var e in foes)
+                {
+                    if (e.WontBudge || e.IsRooted) continue;
+                    foreach (var h in heroes)
+                        if (h.Pos.IsCardinalNeighbor(e.Pos)) behind.Add(new Coord(2 * e.Pos.X - h.Pos.X, 2 * e.Pos.Y - h.Pos.Y));
+                }
+            float gain = 0f, cost = 0f;
+            foreach (var c in tiles)
+            {
+                if (!BattleState.InBounds(c) || s.IsBlock(c)) continue;
+                var occ = s.UnitAt(c);
+                if (occ != null && occ.IsHero) { if (st.Affects == TileAffects.Any) cost += 8f; continue; }
+                if (occ != null && foes.Contains(occ)) gain += 3f;
+                if (behind.Contains(c)) gain += 5f;
+                foreach (var e in foes)
+                {
+                    if (e.Occupies(c)) continue;
+                    int toTile = e.Pos.Manhattan(c);
+                    if (toTile > Math.Max(0, e.Def.MoveRange) + 1) continue;
+                    int best = int.MaxValue;
+                    Coord goal = default;
+                    foreach (var h in heroes) { int dh = e.Pos.Manhattan(h.Pos); if (dh < best) { best = dh; goal = h.Pos; } }
+                    if (toTile + c.Manhattan(goal) == best) gain += 3f; // on its way in
+                }
+            }
+            return gain > 0f ? gain - cost : 0f;
         }
 
         // ── GG-T292: reading the bar (the smart bot) ────────────────────────────────────────────────────────────
