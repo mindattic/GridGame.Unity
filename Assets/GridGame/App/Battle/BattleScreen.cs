@@ -280,6 +280,7 @@ namespace GridGame.App
             boardHost.style.position = Position.Absolute;
             boardHost.style.top = BoardTop;
             board = new BoardView(boardHost, State.Stage.Theme);
+            board.TileCountdown = (at, secs, col) => Text?.Countdown(at, secs, Color.Lerp(col, Palette.White, 0.2f)); // GG-T846
             board.SetScrim(App.Content.Sky?.RegionFor(State.Stage.Theme)?.BoardScrim ?? 0f); // GG-T665
             CreatePrefabFx();
             board.Root.pickingMode = PickingMode.Position;

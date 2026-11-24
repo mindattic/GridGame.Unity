@@ -36,6 +36,7 @@ namespace GridGame.App
             board.Mark(tr.At, Palette.Gold, 0.6f);
             App.Audio.Sfx("battle.trap", 0.8f, 1.15f);
             board.SyncRegion(State);
+            RevealPop(tr.At); // GG-T846
             yield return Tween.Wait(Timing.Standard);
             board.ClearMarks();
         }
@@ -228,6 +229,27 @@ namespace GridGame.App
             return InspectCard.Hazard(body, rule?.Name ?? "Hazard", rule?.Description,
                 $"Lands in {secs:0.#}s{(tiles > 0 ? $" on {tiles} marked tile{(tiles == 1 ? "" : "s")}" : "")} — step off before it reaches the left edge.",
                 HazardColor(e));
+        }
+
+        /// <summary>GG-T846: a revealed mark pops on its tile with a short board shake (Reduce Motion: neither; the gold
+        /// flash still shows it).</summary>
+        private void RevealPop(GridGame.Core.Coord at)
+        {
+            if (ReduceMotion) return;
+            var cell = board.RegionCellAt(at);
+            if (cell != null) App.StartCoroutine(Tween.Pop(cell, 1.25f, Timing.Quick));
+            App.StartCoroutine(Tween.Shake(shake, 6f, Timing.Quick));
+        }
+
+        /// <summary>GG-T846 (§14.23): a unit squishes a mark (a slime glob): a splat of the mark's colour bursts from the
+        /// tile with a wet slap, then the "cleared" RegionTilesEvent that follows redraws the board without it.</summary>
+        private IEnumerator SquishedAnim(SquishedEvent sq)
+        {
+            var def = App.Content.TryTileState(sq.State);
+            board.Splat(sq.At, Art.HexColor(def?.Color, Palette.Info));
+            App.Audio.Sfx("battle.slide", 0.8f, 0.6f);
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
+            yield return Tween.Wait(Timing.Quick);
         }
     }
 }

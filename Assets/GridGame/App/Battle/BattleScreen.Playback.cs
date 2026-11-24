@@ -220,6 +220,7 @@ namespace GridGame.App
                 case RegionRuleEvent rgr: return RegionRuleAnim(rgr); // GG-T359
                 case RegionTilesEvent rgt: return RegionTilesAnim(rgt);
                 case TileRevealedEvent trv: return TileRevealedAnim(trv); // GG-T843
+                case SquishedEvent sqe: return SquishedAnim(sqe); // GG-T846
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);

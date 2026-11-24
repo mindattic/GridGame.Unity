@@ -836,19 +836,74 @@ namespace GridGame.App
             regionMarks.Clear();
             if (s?.Region == null) return;
             var seen = new HashSet<string>();
+            regionCellAt.Clear();
+            bool calm = GameApp.I?.Settings?.ReduceMotion == true;
             foreach (var kv in s.Region.Tiles)
             {
-                // GG-T843: a hidden mark is drawn only when the party sees it (its own, faint); a foe's is not drawn at all.
-                if (!RegionBoard.Sees(kv.Value, Team.Hero)) continue;
-                bool faint = kv.Value.Hidden;
                 var def = s.Content?.TryTileState(kv.Value.State);
                 var col = Art.HexColor(def?.Color, kv.Value.Hazard ? Palette.Bad : Palette.Info);
                 string key = "m" + kv.Key + kv.Value.State;
+                // GG-T843: a hidden mark is drawn only when the party sees it (its own, faint); a foe's is not drawn at all.
+                // GG-T846: one that was in plain sight last sync fades out over 0.5 s instead of blinking off.
+                if (!RegionBoard.Sees(kv.Value, Team.Hero))
+                {
+                    if (kv.Value.Hidden && regionSeen.Contains(key) && !regionFaint.Contains(key) && !calm) FadeOutCell(kv.Key, col, def?.Glyph);
+                    continue;
+                }
+                bool faint = kv.Value.Hidden;
                 seen.Add(key);
+                // GG-T846: an owned mark's edge wears its painter's team colour (the party blue, a foe red).
+                var edge = kv.Value.OwnerTeam == Team.Hero ? TeamHero : kv.Value.OwnerTeam == Team.Enemy ? Palette.TeamFoe : col;
                 // A hole (GG-T368) is a near-black pit with its rim in the state's colour; other blocks a heavy wash.
                 var fill = def != null && def.Pit ? new Color(0.03f, 0.02f, 0.02f, 0.92f) : col.WithA(kv.Value.Blocks ? 0.55f : 0.3f);
-                var e = RegionCell(kv.Key, fill, col, def?.Glyph, kv.Value.Blocks ? 6f : 3f, !faint && !regionSeen.Contains(key));
-                if (faint) e.style.opacity = 0.35f;
+                var e = RegionCell(kv.Key, fill, edge, def?.Glyph, kv.Value.Blocks ? 6f : 3f, !faint && !regionSeen.Contains(key));
+                regionCellAt[kv.Key] = e;
+                // GG-T846: life ring, hidden outline, hatch pulse and the last-3-seconds countdown.
+                float life = def != null && def.LifeSeconds > 0f && kv.Value.LifeTicks > 0
+                    ? Mathf.Clamp01(kv.Value.LifeTicks / (def.LifeSeconds * BattleConfig.TicksPerSecond)) : -1f;
+                var fx = new TileMarkFx(edge, col, faint);
+                e.Add(fx);
+                if (faint)
+                {
+                    // The party's own hidden mark: its wash fades out over 0.5 s (from when it hid), the dotted owner outline stays.
+                    if (!regionFaint.Contains(key)) regionHidAt[key] = Tween.Clock;
+                    float hidAt = regionHidAt.TryGetValue(key, out var h) ? h : Tween.Clock - 1f;
+                    void Faint()
+                    {
+                        float k = calm ? 1f : Mathf.Clamp01((Tween.Clock - hidAt) / 0.5f);
+                        e.style.backgroundColor = fill.WithA(Mathf.Lerp(fill.a, fill.a * 0.15f, k));
+                        float bw = Mathf.Lerp(kv.Value.Blocks ? 6f : 3f, 0f, k);
+                        e.style.borderTopWidth = e.style.borderBottomWidth = e.style.borderLeftWidth = e.style.borderRightWidth = bw;
+                        foreach (var c in e.Children()) if (c is Label) c.style.opacity = Mathf.Lerp(1f, 0.35f, k);
+                    }
+                    Faint();
+                    if (!calm) e.schedule.Execute(Faint).Every(16).Until(() => Tween.Clock - hidAt >= 0.5f);
+                }
+                else regionHidAt.Remove(key);
+                if (life >= 0f)
+                {
+                    float from = regionLife.TryGetValue(key, out var was) && was >= life ? was : life;
+                    regionLife[key] = life;
+                    if (!calm && from > life)
+                    {
+                        float t0 = Tween.Clock;
+                        fx.schedule.Execute(() => { fx.Life = Mathf.Lerp(from, life, Mathf.Clamp01((Tween.Clock - t0) / 0.3f)); fx.MarkDirtyRepaint(); })
+                            .Every(16).Until(() => Tween.Clock - t0 >= 0.3f);
+                    }
+                    fx.Life = calm ? life : from;
+                    int secs = Mathf.CeilToInt(kv.Value.LifeTicks / (float)BattleConfig.TicksPerSecond);
+                    if (secs <= 3 && !faint && (!regionLifeSecs.TryGetValue(key, out var shown) || shown != secs))
+                        TileCountdown?.Invoke(CenterOf(kv.Key), secs, col);
+                    regionLifeSecs[key] = secs;
+                    // A mark that hatches when its life runs out (a slime glob's OnExpire SpawnUnit) swells in a pulse that
+                    // grows stronger and quicker as it nears the end. Reduce Motion: no pulse, the ring still drains.
+                    if (!calm && Hatches(def))
+                    {
+                        float amp = 0.03f + 0.09f * (1f - life), speed = 3f + 6f * (1f - life);
+                        e.schedule.Execute(() => e.style.scale = new Scale(Vector3.one * (1f + amp * Mathf.Abs(Mathf.Sin(Tween.Clock * speed))))).Every(16);
+                    }
+                }
+                if (faint) regionFaint.Add(key); else regionFaint.Remove(key);
                 if (kv.Value.Counter > 0 && def != null && def.Threshold > 0)
                 {
                     var n = new Label($"{kv.Value.Counter}/{def.Threshold}") { pickingMode = PickingMode.Ignore };
@@ -869,7 +924,8 @@ namespace GridGame.App
                     string key = "h" + t.Id + c;
                     seen.Add(key);
                     var w = RegionCell(c, col.WithA(ev == null || ev.Hazard ? 0.22f : 0.1f), col, string.IsNullOrEmpty(ev?.Glyph) ? "⚠" : ev.Glyph, 5f, !regionSeen.Contains(key));
-                    w.schedule.Execute(() => w.style.opacity = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(Tween.Clock * 4f))).Every(50);
+                    // GG-T846: a queued blast keeps its telegraph over any mark (drawn above them); Reduce Motion holds it steady.
+                    if (!calm) w.schedule.Execute(() => w.style.opacity = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(Tween.Clock * 4f))).Every(50);
                 }
             }
             foreach (var a in s.Region.Anchors)
@@ -880,6 +936,61 @@ namespace GridGame.App
             }
             regionSeen.Clear();
             regionSeen.UnionWith(seen);
+            regionFaint.IntersectWith(seen);
+            Prune(regionLife, seen); Prune(regionLifeSecs, seen); Prune(regionHidAt, seen);
+        }
+
+        // GG-T846: per-mark view memory across syncs (marks are rebuilt each sync).
+        private readonly HashSet<string> regionFaint = new HashSet<string>();
+        private readonly Dictionary<string, float> regionLife = new Dictionary<string, float>();
+        private readonly Dictionary<string, int> regionLifeSecs = new Dictionary<string, int>();
+        private readonly Dictionary<string, float> regionHidAt = new Dictionary<string, float>();
+        private readonly Dictionary<Coord, VisualElement> regionCellAt = new Dictionary<Coord, VisualElement>();
+
+        /// <summary>GG-T846: a painted mark's life is in its last seconds: (tile centre, whole seconds left, state colour).
+        /// The battle screen floats it as a CombatText Timer.</summary>
+        public System.Action<Vector2, int, Color> TileCountdown;
+
+        private static Color TeamHero => Palette.Colorblind ? Palette.CbHero : Palette.Hero;
+
+        private static bool Hatches(TileStateDef def)
+        {
+            if (def?.OnExpire == null) return false;
+            foreach (var fx in def.OnExpire) if (fx != null && fx.Kind == RuleEffectKind.SpawnUnit) return true;
+            return false;
+        }
+
+        private static void Prune<T>(Dictionary<string, T> d, HashSet<string> keep)
+        {
+            if (d.Count == 0) return;
+            var drop = new List<string>();
+            foreach (var k in d.Keys) if (!keep.Contains(k)) drop.Add(k);
+            foreach (var k in drop) d.Remove(k);
+        }
+
+        /// <summary>GG-T846: a mark the party just lost sight of fades out over 0.5 s, then is gone.</summary>
+        private void FadeOutCell(Coord at, Color col, string glyph)
+        {
+            var e = RegionCell(at, col.WithA(0.3f), col, glyph, 3f, false);
+            regionMarks.Remove(e); // not part of the synced set: it removes itself
+            float t0 = Tween.Clock;
+            e.schedule.Execute(() =>
+            {
+                float k = Mathf.Clamp01((Tween.Clock - t0) / 0.5f);
+                e.style.opacity = 1f - k;
+                if (k >= 1f) e.RemoveFromHierarchy();
+            }).Every(16).Until(() => e.parent == null);
+        }
+
+        /// <summary>GG-T846: the drawn cell of the painted mark on <paramref name="at"/> (null when none is drawn).</summary>
+        public VisualElement RegionCellAt(Coord at) => regionCellAt.TryGetValue(at, out var e) ? e : null;
+
+        /// <summary>GG-T846: a squished mark bursts into a splat of its colour (Reduce Motion: a plain fade, no burst).</summary>
+        public void Splat(Coord at, Color col)
+        {
+            var e = new TileSplat(col, GameApp.I?.Settings?.ReduceMotion == true);
+            e.style.left = at.X * Tile; e.style.top = at.Y * Tile;
+            MarkLayer.Add(e);
         }
 
         private VisualElement RegionCell(Coord at, Color fill, Color border, string glyph, float borderWidth, bool fadeIn)
