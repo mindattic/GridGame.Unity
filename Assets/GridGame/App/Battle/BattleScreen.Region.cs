@@ -23,6 +23,7 @@ namespace GridGame.App
 
         private IEnumerator RegionTilesAnim(RegionTilesEvent rt)
         {
+            TrackGlobs(rt); // GG-T895
             board.SyncRegion(State);
             if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
             App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
@@ -246,10 +247,121 @@ namespace GridGame.App
         private IEnumerator SquishedAnim(SquishedEvent sq)
         {
             var def = App.Content.TryTileState(sq.State);
-            board.Splat(sq.At, Art.HexColor(def?.Color, Palette.Info));
+            var col = Art.HexColor(def?.Color, Palette.Info);
+            board.Splat(sq.At, col);
             App.Audio.Sfx("battle.slide", 0.8f, 0.6f);
+            if (BoardView.Hatches(def)) // GG-T895: a slime glob squelches with its own cue and a callout
+            {
+                globTiles.Remove(sq.At);
+                App.Audio.Sfx("slime.squish", 0.9f);
+                Text?.Show(sq.At, CombatTextKind.Callout, "Squish!", 0.3f, Color.Lerp(col, Palette.White, 0.25f));
+            }
             if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
             yield return Tween.Wait(Timing.Quick);
+        }
+
+        // ── GG-T895 (§14.23): slime glob visuals ─────────────────────────────────────────────────
+
+        /// <summary>Hatching marks (slime globs) on the board, by tile: their state id, kept from the region events so a
+        /// rule spawn landing on one plays the hatch pop instead of the generic entrance.</summary>
+        private readonly System.Collections.Generic.Dictionary<GridGame.Core.Coord, string> globTiles = new System.Collections.Generic.Dictionary<GridGame.Core.Coord, string>();
+
+        private void TrackGlobs(RegionTilesEvent rt)
+        {
+            if (rt.Change == "cleared" || rt.Change == "changed") foreach (var t in rt.Tiles) globTiles.Remove(t);
+            if (rt.Change == "marked" && BoardView.Hatches(App.Content.TryTileState(rt.State))) foreach (var t in rt.Tiles) globTiles[t] = rt.State;
+        }
+
+        /// <summary>The hatching state an ability paints (Vomit Glob's slime_glob), or null.</summary>
+        private TileStateDef GlobPainted(AbilityDef a)
+        {
+            if (a?.RuleEffects == null) return null;
+            foreach (var e in a.RuleEffects)
+            {
+                if (e == null || e.Kind != RuleEffectKind.MarkTiles) continue;
+                var def = App.Content.TryTileState(e.State);
+                if (BoardView.Hatches(def)) return def;
+            }
+            return null;
+        }
+
+        /// <summary>A slime vomits its glob: it squashes down and heaves, a gooey blob arcs high onto the tile trailing
+        /// drips, and lands with a wet splat (the "marked" region event that follows draws the wobbling glob there).
+        /// Reduce Motion: a short straight toss, no squash or drips.</summary>
+        private IEnumerator GlobLobAnim(Unit caster, TileStateDef glob, GridGame.Core.Coord at)
+        {
+            var col = Art.HexColor(glob.Color, Palette.Good);
+            bool calm = ReduceMotion;
+            Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(at);
+            board.Units.TryGetValue(caster.Id, out var cv);
+            // The heave: squash wide and low, then spring back up as the glob leaves.
+            if (cv != null && !calm)
+            {
+                yield return Tween.Run(Timing.Quick * 0.8f, k => cv.Root.style.scale = new Scale(new Vector3(1f + 0.18f * k, 1f - 0.22f * k, 1f)));
+                App.StartCoroutine(Tween.Run(Timing.Quick, k => cv.Root.style.scale = new Scale(new Vector3(1.18f - 0.18f * k, 0.78f + 0.22f * k, 1f))));
+            }
+            App.Audio.Sfx("slime.vomit", 0.9f);
+            App.Audio.Sfx("element.water", 0.7f, 0.6f); // stand-in until slime.vomit has its own sound
+            float dist = Vector2.Distance(from, to);
+            float travel = calm ? 0.2f : Mathf.Clamp(dist / 1400f, 0.32f, 0.55f);
+            float height = Mathf.Max(220f, dist * 0.55f);
+            var drip = col.WithA(0.55f);
+            Vector2 P(float kk) => Vector2.Lerp(from, to, kk) + (calm ? Vector2.zero : Vector2.up * (-height * 4f * kk * (1f - kk)));
+            yield return Tween.Run(travel, k =>
+            {
+                board.Lines.ClearLines();
+                float wob = calm ? 0f : Mathf.Sin(k * Mathf.PI * 5f) * 4f; // the goo jiggles in flight
+                board.Lines.Dot(P(k), 30f + wob, col);
+                board.Lines.Dot(P(k) + new Vector2(-8f, -9f), 8f, Palette.White.WithA(0.6f));
+                if (!calm)
+                    for (int i = 1; i <= 3; i++) board.Lines.Dot(P(Mathf.Max(0f, k - 0.06f * i)) + Vector2.up * (10f * i), 14f - 3f * i, drip);
+            });
+            board.Lines.ClearLines();
+            if (cv != null) cv.Root.style.scale = new Scale(Vector3.one);
+            board.Splat(at, col);
+            if (!calm) App.StartCoroutine(Tween.Shake(shake, 3f, Timing.Quick));
+            App.Audio.Sfx("battle.slide", 0.7f, 0.5f);
+        }
+
+        /// <summary>A glob hatches (its OnExpire SpawnUnit): the blob bursts in a splat and the slime pops out of it with an
+        /// overshoot and a "Hatched!" callout. False when the spawn didn't land on a tracked glob of a state that spawns its
+        /// class (the caller then plays the usual entrance).</summary>
+        private bool TryHatchPop(UnitView v, Unit u, GridGame.Core.Coord at)
+        {
+            if (!globTiles.TryGetValue(at, out var state)) return false;
+            var def = App.Content.TryTileState(state);
+            bool spawnsIt = false;
+            if (def?.OnExpire != null)
+                foreach (var e in def.OnExpire) if (e != null && e.Kind == RuleEffectKind.SpawnUnit && e.Class == u.Def?.Id) spawnsIt = true;
+            if (!spawnsIt) return false;
+            globTiles.Remove(at);
+            App.StartCoroutine(HatchPop(v, at, Art.HexColor(def.Color, Palette.Good)));
+            return true;
+        }
+
+        /// <summary>The hatch pop. Reduce Motion: the slime fades in, no shake or overshoot.</summary>
+        private IEnumerator HatchPop(UnitView v, GridGame.Core.Coord at, Color col)
+        {
+            board.Splat(at, col);
+            App.Audio.Sfx("battle.crit", 0.7f, 1.4f);
+            App.Audio.Sfx("element.water", 0.6f, 0.8f);
+            Text?.Show(at, CombatTextKind.Callout, "Hatched!", 0.4f, Color.Lerp(col, Palette.White, 0.25f));
+            if (ReduceMotion)
+            {
+                v.Root.style.opacity = 0f;
+                yield return Tween.Run(Timing.Quick, k => v.Root.style.opacity = k);
+                v.Root.style.opacity = 1f;
+                yield break;
+            }
+            App.StartCoroutine(Tween.Shake(shake, 5f, Timing.Quick));
+            v.Root.style.scale = new Scale(Vector3.zero);
+            // Out of the goo with a springy overshoot: 0, up to 1.25, back to 0.92, settling at 1.
+            yield return Tween.Run(Timing.Standard, k =>
+            {
+                float s = k < 0.5f ? Mathf.Lerp(0f, 1.25f, k / 0.5f) : k < 0.8f ? Mathf.Lerp(1.25f, 0.92f, (k - 0.5f) / 0.3f) : Mathf.Lerp(0.92f, 1f, (k - 0.8f) / 0.2f);
+                v.Root.style.scale = new Scale(new Vector3(s, s * (1f + 0.1f * Mathf.Sin(k * Mathf.PI * 3f)), 1f));
+            });
+            v.Root.style.scale = new Scale(Vector3.one);
         }
     }
 }
