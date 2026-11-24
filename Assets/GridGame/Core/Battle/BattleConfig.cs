@@ -170,6 +170,10 @@ namespace GridGame.Core.Battle
         public const float DragTimerSeconds = 4f;
         public const float SecondsPerTimeBankOrb = 1.25f;
         public const int MaxTimeBankOrbs = 3;
+        /// <summary>GG-T782 (§2.13.1): the time bank's cap under AnyHeroEveryTurn. There every drop is the turn's only
+        /// action and is always followed by an enemy turn, so each one would mint the full <see cref="MaxTimeBankOrbs"/>;
+        /// PartyWindow mints that once per window, shared by every hero's action in it (about one orb per action).</summary>
+        public const int AnyHeroMaxTimeBankOrbs = 1;
 
         // ── Guard bank (§2.5 / §3.1.9, GG-T189, owner 2026-10-21): Guard ends the turn early and the turn time it
         //    gives up fills the forming mana bubble (charge toward the next orb), proportional to the time left ──

@@ -14,7 +14,9 @@ namespace GridGame.Tests
     /// GG-T781 (bible §2.13.1): <see cref="TurnMode.AnyHeroEveryTurn"/> through the <see cref="TurnRules"/> seam. Each
     /// party turn exactly one hero acts — any able hero, the same one again if you like — and that action ends the turn:
     /// the clock runs on to the next enemy arrival and the seconds it left are lost (only Guard banks time). The minimum
-    /// action gap, forced Guard and Rally still apply, and a battle replays identically from its commands.
+    /// action gap, forced Guard and Rally still apply, and a battle replays identically from its commands. GG-T782: the
+    /// per-turn systems (cooldowns, Turns buffs, tempo, Protection, Frozen) count party turns, and the drag-timer time bank
+    /// mints at most <see cref="BattleConfig.AnyHeroMaxTimeBankOrbs"/> per drop.
     /// </summary>
     public class TurnModeAnyHeroTests
     {
@@ -160,6 +162,89 @@ namespace GridGame.Tests
             Assert.That(NewTurn(ev), Is.True, "clearing a wave opens a fresh turn");
             Assert.That(BattleEngine.HeroesLeftToAct(s).Count, Is.EqualTo(2));
             Assert.That(BattleEngine.ActionFits(s, BattleEngine.MinDragSeconds), Is.True, "the new wave opens with room to act");
+        }
+
+        // ── GG-T782: per-turn systems under one action per turn ──────────────────────────────────
+
+        [Test]
+        public void A_drop_banks_at_most_one_time_bank_orb()
+        {
+            // AiAndSystemsTests' PartyWindow case mints 3 for the same drop; here every drop is the turn's only action and
+            // an enemy turn always follows, so the cap is the per-action share (§2.13.1, AnyHeroMaxTimeBankOrbs).
+            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
+            var wolf = s.Units.First(u => u.Def.Id == "wolf");
+            s.TurnEntryOf(wolf.Id).Ip = BattleConfig.BarLength - BattleEngine.TurnRatePerTick(s, wolf) * 10; // a 1 s gap, room for a drag
+            Assert.That(TurnRules.MaxTimeBankOrbs(s), Is.EqualTo(BattleConfig.AnyHeroMaxTimeBankOrbs));
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "knight").Id, Path = P((5, 6)), TimeLeftSeconds = 3.9f, HeldSeconds = BattleEngine.MinDragSeconds });
+            Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty);
+            Assert.That(ev.OfType<OrbMintedEvent>().Count(o => o.Reason == "time bank"), Is.EqualTo(BattleConfig.AnyHeroMaxTimeBankOrbs));
+            Assert.That(s.PendingTimeBankSeconds, Is.EqualTo(0f), "the remainder is used up at the handoff");
+        }
+
+        [Test]
+        public void The_party_window_time_bank_cap_is_unchanged()
+        {
+            var (s, _) = TestKit.Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7));
+            Assert.That(s.TurnMode, Is.EqualTo(TurnMode.PartyWindow));
+            Assert.That(TurnRules.MaxTimeBankOrbs(s), Is.EqualTo(BattleConfig.MaxTimeBankOrbs));
+        }
+
+        [Test]
+        public void Cooldowns_count_party_turns_even_for_a_hero_who_did_not_act()
+        {
+            var (s, _) = Trio();
+            var knight = Hero(s, "knight");
+            var cleric = Hero(s, "cleric");
+            knight.Cooldowns["shield_bash"] = 2;
+            Assert.That(NewTurn(Step(s, cleric, -1)), Is.True);
+            Assert.That(knight.Cooldowns["shield_bash"], Is.EqualTo(1), "one party turn passed");
+            Assert.That(NewTurn(Step(s, cleric, -1)), Is.True);
+            Assert.That(knight.Cooldowns["shield_bash"], Is.EqualTo(0), "two party turns: ready again");
+        }
+
+        [Test]
+        public void Turns_buffs_and_tempo_count_party_turns()
+        {
+            var (s, _) = Trio();
+            var knight = Hero(s, "knight");
+            var mage = Hero(s, "mage");
+            var ward = new BuffDef { Id = "test_ward", Name = "Ward", Kind = BuffKind.Buff, Unit = DurationUnit.Turns, Duration = 2 };
+            mage.Buffs.Add(new BuffInstance { Def = ward, Remaining = 2 });
+            s.Tempo.Add(new TempoEffect { Source = "test", Amount = 1, TurnsLeft = 2, Fresh = false });
+
+            Assert.That(NewTurn(Step(s, knight, -1)), Is.True);
+            Assert.That(mage.Buffs.Single(b => b.Def.Id == "test_ward").Remaining, Is.EqualTo(1), "a bystander's buff ticks once per party turn");
+            Assert.That(s.Tempo.Single(t => t.Source == "test").TurnsLeft, Is.EqualTo(1));
+
+            Assert.That(NewTurn(Step(s, knight, -1)), Is.True);
+            Assert.That(mage.HasBuff("test_ward"), Is.False, "2 Turns = two party turns");
+            Assert.That(s.Tempo.Any(t => t.Source == "test"), Is.False);
+        }
+
+        [Test]
+        public void Guard_protection_covers_the_enemy_turn_it_skips_and_then_expires()
+        {
+            var (s, _) = Trio();
+            var goblin = s.Units.First(u => u.Def.Id == "goblin");
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(ev.OfType<BuffAppliedEvent>().Count(b => b.BuffId == "protection"), Is.EqualTo(3), "every hero is protected");
+            int turn = ev.FindIndex(e => e is TurnStartedEvent t && t.UnitId == goblin.Id);
+            int expired = ev.FindIndex(e => e is BuffRemovedEvent r && r.BuffId == "protection" && r.Reason == "expired");
+            Assert.That(turn, Is.GreaterThanOrEqualTo(0), "the enemy acted");
+            Assert.That(expired, Is.GreaterThan(turn), "Protection held through the enemy turn and fell away at the boundary");
+            Assert.That(s.Units.Where(u => u.IsHero).Any(h => h.HasBuff("protection")), Is.False);
+        }
+
+        [Test]
+        public void A_frozen_foe_thaws_after_one_party_turn()
+        {
+            var (s, _) = Trio();
+            var goblin = s.Units.First(u => u.Def.Id == "goblin");
+            goblin.Buffs.Add(new BuffInstance { Def = s.Content.Buff("frozen"), Remaining = 1, Fresh = false });
+            Assert.That(goblin.IsTimelineHalted, Is.True);
+            Assert.That(NewTurn(Step(s, Hero(s, "knight"), -1)), Is.True);
+            Assert.That(goblin.HasBuff("frozen"), Is.False, "Frozen 1 Turn = one party turn");
+            Assert.That(goblin.HasBuff("wet"), Is.True, "and thaws into Wet as in PartyWindow");
         }
 
         [Test]

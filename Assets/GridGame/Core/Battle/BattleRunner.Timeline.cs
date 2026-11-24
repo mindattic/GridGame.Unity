@@ -206,7 +206,7 @@ namespace GridGame.Core.Battle
         private void MintTimeBank()
         {
             if (S.PendingTimeBankSeconds <= 0f) return;
-            int n = Math.Min(BattleConfig.MaxTimeBankOrbs, (int)(S.PendingTimeBankSeconds / BattleConfig.SecondsPerTimeBankOrb));
+            int n = Math.Min(TurnRules.MaxTimeBankOrbs(S), (int)(S.PendingTimeBankSeconds / BattleConfig.SecondsPerTimeBankOrb)); // §2.13: the mode's cap
             S.PendingTimeBankSeconds = 0f;
             if (n <= 0) return;
             for (int i = 0; i < n; i++) MintOrb(-1, "time bank");

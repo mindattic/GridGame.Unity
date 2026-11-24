@@ -421,7 +421,8 @@ namespace GridGame.Core.Battle
         }
 
         /// <param name="newWindow">GG-T308: false when control returns mid-window (heroes still to act): no turn
-        /// boundary — buffs, cooldowns, tempo, pickups and corpses count party turns, which are windows.</param>
+        /// boundary — buffs, cooldowns, tempo, pickups and corpses count party turns, which are windows. GG-T782 (§2.13.1):
+        /// in every turn mode they count party turns (one per enemy arrival), never hero actions.</param>
         private void ReturnControl(bool newWindow = true)
         {
             if (!newWindow) { Emit(new PlayerControlEvent { NewWindow = false }); return; }

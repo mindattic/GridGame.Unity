@@ -12,6 +12,11 @@ namespace GridGame.Core.Battle
     /// <see cref="TurnMode.PartyWindow"/> is today's GG-T308/GG-T311 rule exactly (§2.0, §2.13.0) and must replay
     /// identically. <see cref="TurnMode.AnyHeroEveryTurn"/> (§2.13.1, GG-T781): one action by any able hero ends the
     /// party's turn. A mode whose feature hasn't landed throws <see cref="NotSupportedException"/>.
+    /// <para>GG-T782 (§2.13.1): what counts turns keeps counting <b>party turns</b> in every mode — one per enemy arrival
+    /// (or cleared wave), the same span of enemy time whoever acts in it — so Turns buffs and Protection, skill cooldowns,
+    /// Frozen/Sleep and the other Turns statuses, party tempo, Rally, TurnStart/TurnEnd and the enemy support extra turn
+    /// all run unchanged off <see cref="ResetTurn"/>'s boundary. Mana is spent and earned per action (a spell, a pincer),
+    /// so only income measured per turn rather than per action needs a mode answer: <see cref="MaxTimeBankOrbs"/>.</para>
     /// </summary>
     public static class TurnRules
     {
@@ -186,6 +191,20 @@ namespace GridGame.Core.Battle
             float w = BattleEngine.TurnWindowSeconds(s);
             if (w < 0f) w = BattleConfig.ActionTicks / (float)BattleConfig.TicksPerSecond;
             return BattleEngine.GuardChargeFor(w - Math.Max(0f, heldSeconds));
+        }
+
+        /// <summary>
+        /// Time bank (§3.1.8): the most whole orbs a drop's drag-timer remainder mints at the enemy handoff. PartyWindow:
+        /// <see cref="BattleConfig.MaxTimeBankOrbs"/> (3), at most once per window, so shared by every hero's action in it.
+        /// AnyHeroEveryTurn (GG-T782): every drop is the turn's only action and an enemy turn always follows it, so the
+        /// same cap would pay 3 orbs on every action. It mints at most <see cref="BattleConfig.AnyHeroMaxTimeBankOrbs"/>
+        /// (1), about PartyWindow's per-action share. Pincer, Guard and regen charge stay as they are: pincer charge and
+        /// spells are both per action, Guard's cap already bounds the one turn it gives up, and regen follows the clock.
+        /// </summary>
+        public static int MaxTimeBankOrbs(BattleState s)
+        {
+            Require(s);
+            return OneActionPerTurn(s) ? BattleConfig.AnyHeroMaxTimeBankOrbs : BattleConfig.MaxTimeBankOrbs;
         }
 
         // ── 5. What a turn boundary resets ─────────────────────────────────────────────────────────
