@@ -26760,7 +26760,8 @@
       "Dark": 1.5
     },
     "Abilities": [
-      "charge_tithe_hymn"
+      "charge_tithe_hymn",
+      "choir_rune"
     ],
     "DefaultLoadout": [],
     "DropTable": "choir",
@@ -26888,7 +26889,8 @@
       "Dark": 1.5
     },
     "Abilities": [
-      "charge_psalm_of_certainty"
+      "charge_psalm_of_certainty",
+      "choir_rune"
     ],
     "DefaultLoadout": [],
     "DropTable": "choir",
@@ -27015,7 +27017,8 @@
       "Dark": 1.5
     },
     "Abilities": [
-      "charge_absolution"
+      "charge_absolution",
+      "choir_rune"
     ],
     "DefaultLoadout": [],
     "DropTable": "choir",

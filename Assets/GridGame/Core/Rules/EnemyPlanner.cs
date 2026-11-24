@@ -444,7 +444,8 @@ namespace GridGame.Core.Rules
                 var a = s.Content.TryAbility(id);
                 if (a == null || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly) continue;
                 foreach (var e in a.RuleEffects)
-                    if (e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Target && e.State != null) { lob = a; state = e.State; break; }
+                    if (e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Target && e.State != null
+                        && s.Content.TryTileState(e.State)?.Circle == null) { lob = a; state = e.State; break; } // GG-T902: a rune is no lob
                 if (lob != null) break;
             }
             if (lob == null) return null;
@@ -470,6 +471,133 @@ namespace GridGame.Core.Rules
                     if (near < bestHero || (near == bestHero && self < bestSelf)) { best = c; bestHero = near; bestSelf = self; }
                 }
             return best.HasValue ? (lob, best.Value) : ((AbilityDef, Coord)?)null;
+        }
+
+        // GG-T902 (BIBLE §14.17): the Choir's rune circle.
+
+        /// <summary>GG-T902: how far (Manhattan) a singer paints a rune from where it stands (the nearest ring first).</summary>
+        public const int RuneRange = 2;
+
+        /// <summary>GG-T902: the rune ability in a class kit, and the circle state it paints: a PickTile, EmptyOnly ability
+        /// with a MarkTiles rule effect on its Target whose tile state has a <see cref="TileStateDef.Circle"/>. Null = none.</summary>
+        public static AbilityDef RuneAbility(ContentDb c, ClassDef def, out TileStateDef state)
+        {
+            state = null;
+            if (c == null || def?.Abilities == null) return null;
+            foreach (var id in def.Abilities)
+            {
+                var a = c.TryAbility(id);
+                if (a == null || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly) continue;
+                foreach (var e in a.RuleEffects)
+                {
+                    if (e.Kind != RuleEffectKind.MarkTiles || e.Area != RuleArea.Target) continue;
+                    var st = c.TryTileState(e.State);
+                    if (st?.Circle != null) { state = st; return a; }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>GG-T902: a mark of <paramref name="state"/> that counts for <paramref name="team"/>'s circle (its own, or the board's).</summary>
+        public static bool IsRuneOf(TileMark m, string state, Team team) =>
+            m != null && string.Equals(m.State, state, StringComparison.OrdinalIgnoreCase) && (m.OwnerTeam == team || m.OwnerTeam == Team.Neutral);
+
+        /// <summary>GG-T902: the living units of <paramref name="team"/> standing on its runes of <paramref name="state"/>, in id order.</summary>
+        public static List<Unit> RuneSingers(BattleState s, Team team, string state)
+        {
+            var list = new List<Unit>();
+            foreach (var u in s.Units)
+                if (u.Alive && u.OnBoard && u.Team == team && !u.IsCorpse && !u.IsRemains && !u.IsEgg && IsRuneOf(s.Region.At(u.Pos), state, team))
+                    list.Add(u);
+            list.Sort((a, b) => a.Id.CompareTo(b.Id));
+            return list;
+        }
+
+        /// <summary>
+        /// GG-T902 (BIBLE §14.17): a Choir singer's ritual turn, or null when there is none (the turn goes on as usual).
+        /// Only while at least the circle's Size of its side carry a rune ability for the same state (fewer can never close
+        /// it). A singer already on a rune <see cref="RunePlanKind.Hold"/>s there. The free runes (no unit on them) go to the
+        /// singers not on one, nearest pair first (ties by unit id, then row-major): a singer with a rune
+        /// <see cref="RunePlanKind.Walk"/>s one cardinal step closer onto open floor. A singer with none, while its side's
+        /// runes number fewer than Size, the rune is off cooldown, it isn't silenced and no hero is adjacent,
+        /// <see cref="RunePlanKind.Paint"/>s one on a free tile (no unit, item, trap or mark) within <see cref="RuneRange"/>,
+        /// the nearest ring first, then farthest from the party (so a hero has to cross the board to scuff it), then row-major.
+        /// Pure: reads state, never commits.
+        /// </summary>
+        public static RunePlan PlanRune(BattleState s, Unit enemy)
+        {
+            if (enemy?.Def == null || enemy.IsImmobile || enemy.IsRemains || enemy.IsEgg || enemy.IsCorpse || enemy.IsMultiTile) return null;
+            var rune = RuneAbility(s.Content, enemy.Def, out var state);
+            if (rune == null) return null;
+            var heroes = s.LivingList(Team.Hero);
+            if (heroes.Count == 0) return null;
+            var painters = new List<Unit>();
+            foreach (var u in s.Units)
+                if (u.Alive && u.OnBoard && u.Team == enemy.Team && !u.IsCorpse && !u.IsRemains && !u.IsEgg && !u.IsMultiTile
+                    && RuneAbility(s.Content, u.Def, out var st) != null && st == state) painters.Add(u);
+            if (painters.Count < state.Circle.Size) return null;
+            if (IsRuneOf(s.Region.At(enemy.Pos), state.Id, enemy.Team)) return new RunePlan { Kind = RunePlanKind.Hold, Ability = rune, At = enemy.Pos, Rune = enemy.Pos };
+
+            // The free runes go to the singers not yet on one, nearest pair first.
+            int runes = 0;
+            var free = new List<Coord>();
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    if (!IsRuneOf(s.Region.At(c), state.Id, enemy.Team)) continue;
+                    runes++;
+                    if (s.UnitAt(c) == null) free.Add(c);
+                }
+            var pairs = new List<(int d, int id, int idx)>();
+            foreach (var u in painters)
+            {
+                if (IsRuneOf(s.Region.At(u.Pos), state.Id, enemy.Team)) continue;
+                for (int i = 0; i < free.Count; i++) pairs.Add((free[i].Manhattan(u.Pos), u.Id, i));
+            }
+            pairs.Sort((a, b) => a.d != b.d ? a.d.CompareTo(b.d) : a.id != b.id ? a.id.CompareTo(b.id) : a.idx.CompareTo(b.idx));
+            var takenUnit = new HashSet<int>();
+            var takenRune = new HashSet<int>();
+            Coord? mine = null;
+            foreach (var p in pairs)
+            {
+                if (takenUnit.Contains(p.id) || takenRune.Contains(p.idx)) continue;
+                takenUnit.Add(p.id);
+                takenRune.Add(p.idx);
+                if (p.id == enemy.Id) { mine = free[p.idx]; break; }
+            }
+            if (mine.HasValue)
+            {
+                if (enemy.Def.MoveRange <= 0 || enemy.IsRooted) return null;
+                var to = mine.Value;
+                int dx = to.X - enemy.Pos.X, dy = to.Y - enemy.Pos.Y;
+                var xs = new Coord(enemy.Pos.X + Math.Sign(dx), enemy.Pos.Y);
+                var ys = new Coord(enemy.Pos.X, enemy.Pos.Y + Math.Sign(dy));
+                var first = Math.Abs(dx) >= Math.Abs(dy) ? xs : ys;
+                var second = first == xs ? ys : xs;
+                foreach (var n in new[] { first, second })
+                    if (n != enemy.Pos && s.Walkable(n) && s.UnitAt(n) == null && s.TrapAt(n) == null)
+                        return new RunePlan { Kind = RunePlanKind.Walk, Ability = rune, At = n, Rune = to };
+                return null; // the way is blocked: the turn goes on as usual
+            }
+
+            if (runes >= state.Circle.Size || enemy.IsSilenced) return null;
+            if (enemy.Cooldowns.TryGetValue(rune.Id, out var cd) && cd > 0) return null;
+            foreach (var h in heroes) if (enemy.IsAdjacentTo(h)) return null;
+            Coord? best = null;
+            int bestSelf = int.MaxValue, bestHero = -1;
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    int self = c.Manhattan(enemy.Pos);
+                    if (self == 0 || self > RuneRange) continue;
+                    if (!s.FreeForSpawn(c) || s.TrapAt(c) != null || s.Region.At(c) != null) continue;
+                    int near = int.MaxValue;
+                    foreach (var h in heroes) foreach (var t in h.Tiles()) near = Math.Min(near, c.Manhattan(t));
+                    if (self < bestSelf || (self == bestSelf && near > bestHero)) { best = c; bestSelf = self; bestHero = near; }
+                }
+            return best.HasValue ? new RunePlan { Kind = RunePlanKind.Paint, Ability = rune, At = best.Value, Rune = best.Value } : null;
         }
 
         /// <summary>Cardinal line from beside the caster to the board edge along the dominant axis toward the target (X on ties).</summary>
@@ -545,5 +673,18 @@ namespace GridGame.Core.Rules
             }
             return false;
         }
+    }
+
+    /// <summary>GG-T902: what a Choir singer does with its turn (<see cref="EnemyPlanner.PlanRune"/>).</summary>
+    public enum RunePlanKind { Paint, Walk, Hold }
+
+    /// <summary>GG-T902: a singer's ritual turn: Paint the rune ability on <see cref="At"/>, Walk one step to <see cref="At"/>
+    /// on the way to <see cref="Rune"/>, or Hold its rune.</summary>
+    public sealed class RunePlan
+    {
+        public RunePlanKind Kind;
+        public AbilityDef Ability;
+        public Coord At;
+        public Coord Rune;
     }
 }

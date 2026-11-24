@@ -224,6 +224,26 @@ namespace GridGame.Core.Content
         public RuleTeam? SquishedBy;
         /// <summary>Effects run as a unit squishes the mark (Self is the tile, the squisher the subject).</summary>
         public List<RuleEffectDef> OnSquish = new List<RuleEffectDef>();
+        /// <summary>A ritual circle (GG-T902, BIBLE §14.17: the Choir's runes): when <see cref="RuneCircleDef.Size"/> units
+        /// of the painters' side stand on marks of this state at once, the circle completes. Null = a plain mark.</summary>
+        public RuneCircleDef Circle;
+    }
+
+    /// <summary>
+    /// GG-T902 (BIBLE §14.17): what completes a circle of rune marks and what it does. A unit entering a mark of the state
+    /// (its own side's, or the board's) counts the living units of its side standing on such marks; at <see cref="Size"/>
+    /// the circle completes: <see cref="OnSummon"/> runs while fewer than <see cref="SummonBelow"/> of that side stand,
+    /// <see cref="OnEmpower"/> otherwise (Self is the completing unit's tile, it the subject and the owner; the runes are
+    /// still on the board, so a WithState area reaches the singers on them), then every rune of the state clears.
+    /// </summary>
+    public sealed class RuneCircleDef
+    {
+        /// <summary>How many units must stand on runes at once.</summary>
+        public int Size = 3;
+        /// <summary>The circle summons while fewer than this many of its side are alive (0 = never summons).</summary>
+        public int SummonBelow;
+        public List<RuleEffectDef> OnSummon = new List<RuleEffectDef>();
+        public List<RuleEffectDef> OnEmpower = new List<RuleEffectDef>();
     }
 
     /// <summary>A telegraphed event a rule puts on the timeline: its own icon rides the bar like a cast and resolves its Effects on arrival.</summary>
@@ -330,6 +350,15 @@ namespace GridGame.Core.Content
                     if (t.OnExpire.Count > 0 && !(t.LifeSeconds > 0f)) p.Add($"{w} state {t.Id}: OnExpire needs LifeSeconds (it never runs out)");
                     if (t.OnSquish.Count > 0 && t.SquishedBy == null) p.Add($"{w} state {t.Id}: OnSquish needs SquishedBy");
                     if (t.SquishedBy != null && t.Blocks) p.Add($"{w} state {t.Id}: a blocking state can't be squished (nobody enters it)");
+                    if (t.Circle != null) // GG-T902
+                    {
+                        if (t.Circle.Size < 2) p.Add($"{w} state {t.Id}: a Circle needs a Size of at least 2");
+                        if (t.Blocks) p.Add($"{w} state {t.Id}: a Circle's runes are stood on, so they can't Block");
+                        if (t.Circle.OnSummon.Count == 0 && t.Circle.OnEmpower.Count == 0) p.Add($"{w} state {t.Id}: a Circle does nothing (no OnSummon or OnEmpower)");
+                        if (t.Circle.SummonBelow > 0 && t.Circle.OnSummon.Count == 0) p.Add($"{w} state {t.Id}: Circle SummonBelow needs OnSummon");
+                        ValidateEffects(db, t.Circle.OnSummon, $"{w} state {t.Id} Circle OnSummon", p);
+                        ValidateEffects(db, t.Circle.OnEmpower, $"{w} state {t.Id} Circle OnEmpower", p);
+                    }
                 }
                 foreach (var e in r.Events)
                 {

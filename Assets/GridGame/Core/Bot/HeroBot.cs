@@ -393,7 +393,8 @@ namespace GridGame.Core.Bot
                 if (def?.SquishedBy == null || def.SquishedBy == RuleTeam.Enemy) continue;
                 if (RegionBoard.Immune(hero, m.Rule, m.State)) continue;
                 if (!(seen ??= new HashSet<Coord>()).Add(step)) continue;
-                bool hatches = def.OnExpire.Exists(e => e.Kind == RuleEffectKind.SpawnUnit);
+                // GG-T902: a Choir rune is worth a glob: scuffed, the circle can't close on it.
+                bool hatches = def.OnExpire.Exists(e => e.Kind == RuleEffectKind.SpawnUnit) || def.Circle != null;
                 int life = Formulas.SecondsToTicks(def.LifeSeconds);
                 float urgency = life > 0 && m.LifeTicks > 0 ? 1f - Math.Min(1f, (float)m.LifeTicks / life) : 0f;
                 v += hatches ? 4f + 3f * urgency : 1f;

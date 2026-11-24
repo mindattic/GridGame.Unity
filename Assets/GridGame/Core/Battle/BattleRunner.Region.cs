@@ -65,6 +65,7 @@ namespace GridGame.Core.Battle
         {
             if (u == null || !u.Alive || PreviewOnly) return;
             if (S.Region.Tiles.Count > 0) Squish(u); // GG-T844: a glob underfoot is squished before the tile's hooks read it
+            if (S.Region.Tiles.Count > 0 && u.Alive) RuneCircle(u); // GG-T902: the Choir's circle completes as its third singer steps in
             if (S.Region.Rules.Count == 0 || !u.Alive) return;
             RegionHooks(RuleHook.EnterTile, u);
         }

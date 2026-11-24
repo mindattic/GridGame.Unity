@@ -127,6 +127,23 @@
     ]
   },
   {
+    "Id": "choirrunes",
+    "TileStates": [
+      {
+        "Id": "choir_rune",
+        "Color": "#8a5cd6",
+        "Glyph": "◇",
+        "SquishedBy": "Hero",
+        "Circle": {
+          "Size": 3,
+          "SummonBelow": 5,
+          "OnSummon": [ { "Kind": "SpawnUnit", "Area": "Self", "Class": "cyberzombie00", "Level": 0, "FromOwnerLevel": true } ],
+          "OnEmpower": [ { "Kind": "ApplyBuff", "Area": "WithState", "State": "choir_rune", "Team": "Enemy", "Buff": "empowered" } ]
+        }
+      }
+    ]
+  },
+  {
     "Id": "slimeglobs",
     "TileStates": [
       {

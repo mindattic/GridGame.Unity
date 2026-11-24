@@ -2861,7 +2861,7 @@ bar and interrupt. Their own song is mana, so they resist Arcane (×0.5); they a
 | `cultist02` Choir Psalmist | the buffer | 15 / Kiter / Squishy | **Psalm of Certainty** (`charge_psalm_of_certainty`): 2 s charge, [Empowered] on every ally within 2 tiles; rests a turn, recovers 0.5 s | Empower its attacker, reach 2 (*Certainty*) |
 | `cultist03` Choir Confessor | the absolver | 11 / Medic / Threat | **Absolution** (`charge_absolution`): 2 s charge on its most wounded ally (below 70%): heals 15, [Cleanses] every debuff, gives [Ward]; rests a turn, recovers 0.5 s | Cleanse the chain (*Absolve*) |
 
-- **No engine code.** An AllEnemies charge with a buff chance, an AllyOnly area buff and a single-ally heal that also
+- **No engine code** for the songs. An AllEnemies charge with a buff chance, an AllyOnly area buff and a single-ally heal that also
   cleanses and wards are all existing dispatcher data.
 - **Counterplay** (their cards): cast your spells before the hymn lands, interrupt it, or cleanse the Silence after;
   pull the Concord away from the Psalmist or interrupt the psalm; kill the Confessor first, or interrupt the absolution.
@@ -2870,6 +2870,21 @@ bar and interrupt. Their own song is mana, so they resist Arcane (×0.5); they a
   with the stage as it stood (the Bulwark's Siege Gunner already in wave 2; 18/24 before either); smart bot 24/24 both.
   The stage got no harder: the three frail singers stand in for a cyber-zombie pair whose death bursts (14 to every
   adjacent hero) hurt more than a hymn, and the casual bot reached wave 5 in 23 of 24 runs.
+- **The rune circle** (amended 2026-11-24, GG-T902). Every Choir role also carries **Concord Rune** (`choir_rune`,
+  Skill, cooldown 2 turns): when it has no song to sing it paints a violet rune (regionrules `choirrunes`, state
+  `choir_rune`: no lifetime, no harm, the Choir's own mark) on a free tile beside it (within 2, the nearest ring first,
+  then the tile farthest from the party), walks onto it, and holds it. `EnemyPlanner.PlanRune` deals the free runes to
+  the singers not yet on one, nearest pair first, so no two chase the same rune; a singer with none paints one while the
+  Choir's runes number fewer than three, it isn't Silenced and no hero is at its side. A singer on its rune, or on its
+  way, still strikes a hero beside it. Fewer than three singers never start a circle (they fight instead), and the
+  slimes' lob logic never throws a rune.
+  - **The circle closes** the moment the third singer steps onto a rune while the other two hold theirs
+    (`TileStateDef.Circle`: `Size` 3). While fewer than 5 of the Concord stand (`SummonBelow`) it sings up a Cyber Zombie
+    (`cyberzombie00`, at the closing singer's level) beside it; with 5 or more it instead **Empowers** the three singers
+    on the runes. Then every rune clears (`RuneCircleEvent`, then a "cleared" tiles event), and they start again.
+  - **Counterplay: position.** A hero who steps on a rune scuffs it (`SquishedBy: Hero`; the HeroBot weighs scuffing a
+    rune like squishing a hatching glob), and a hero standing on a rune's tile, or in a singer's way, stops the circle
+    closing. Kill one singer and the circle can't close at all; Silence a singer and it can't paint.
 - *(Tests: `ChoirTests`.)*
 
 ### 14.18 The Herd — minotaurs (added 2026-11-07, owner art, GG-T339)
