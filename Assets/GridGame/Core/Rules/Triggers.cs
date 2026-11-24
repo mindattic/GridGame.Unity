@@ -111,6 +111,7 @@ namespace GridGame.Core.Rules
             if (c.OtherTag != null && (ctx?.Other == null || !ctx.Other.Def.HasTag(c.OtherTag))) return false;
             if (c.OtherHasStatus != null && (ctx?.Other == null || !ctx.Other.HasBuff(c.OtherHasStatus))) return false;
             if (c.OtherHpBelow > 0f && (ctx?.Other == null || !(ctx.Other.HpFraction < c.OtherHpBelow))) return false;
+            if (c.FallenFamily != null && (ctx?.Target?.Def == null || ctx.Target.Def.DropTable != c.FallenFamily)) return false; // GG-T897
             if (c.DamageType.HasValue && (ctx?.Type == null || ctx.Type.Value != c.DamageType.Value)) return false;
             return true;
         }
@@ -155,6 +156,44 @@ namespace GridGame.Core.Rules
                     foreach (var e in a.Trigger.Effects)
                         if (e.Kind == TriggerEffectKind.Immunity && e.Statuses != null && e.Statuses.Contains(buffId)) return a;
             return null;
+        }
+
+        /// <summary>GG-T862: where a Substitution may put <paramref name="owner"/> — every free tile (walkable, nobody, no
+        /// trap, pickup or movable, no danger the owner's side can see) beside a living ally, never its own tile, unique,
+        /// row-major so the battle Rng's pick is deterministic.</summary>
+        public static List<Coord> SubstituteSpots(BattleState s, Unit owner)
+        {
+            var spots = new List<Coord>();
+            if (s == null || owner == null) return spots;
+            foreach (var ally in s.Units)
+            {
+                if (ally == owner || !ally.Alive || !ally.OnBoard || ally.Team != owner.Team || ally.IsCorpse || ally.IsRemains || ally.IsEgg) continue;
+                foreach (var t in ally.Tiles())
+                    foreach (var d in Coord.Cardinals)
+                    {
+                        var c = t + d;
+                        if (c == owner.Pos || spots.Contains(c) || !s.FreeForItem(c)) continue;
+                        if (RegionBoard.DangerAt(s, c, owner) > 0f) continue;
+                        spots.Add(c);
+                    }
+            }
+            spots.Sort((x, y) => x.Y != y.Y ? x.Y.CompareTo(y.Y) : x.X.CompareTo(y.X));
+            return spots;
+        }
+
+        /// <summary>GG-T862: <paramref name="u"/> still holds an unspent Substitution (an OnLethalBlow Substitute it hasn't
+        /// used this battle) and has somewhere to go — a blow that would KO it now strikes a log instead.</summary>
+        public static bool SubstituteReady(BattleState s, Unit u)
+        {
+            if (s?.Content == null || u == null || !u.Alive || !u.OnBoard || u.IsMultiTile || u.IsRooted) return false;
+            foreach (var a in Sources(s.Content, u))
+            {
+                if (a.Trigger.On != TriggerOn.OnLethalBlow) continue;
+                if (!a.Trigger.Effects.Exists(e => e.Kind == TriggerEffectKind.Substitute)) continue;
+                if (u.TriggerCooldowns.TryGetValue(a.Id, out var cd) && cd > 0) continue;
+                return SubstituteSpots(s, u).Count > 0;
+            }
+            return false;
         }
 
         /// <summary>Scales an amount by a fraction, flooring with a hair of slack so float fractions (0.06f, 0.7f) land on

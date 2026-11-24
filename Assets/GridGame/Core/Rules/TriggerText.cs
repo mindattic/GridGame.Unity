@@ -31,6 +31,7 @@ namespace GridGame.Core.Rules
             else sb.Append(cond == null ? $"{when}: {what}" : $"{when}, if {cond}: {what}");
             var extras = new List<string>();
             if (t.OncePerAction) extras.Add("once per action");
+            if (t.OncePerBattle) extras.Add("once per battle");
             if (t.Cooldown > 0) extras.Add($"then rests {t.Cooldown} turn{(t.Cooldown == 1 ? "" : "s")}");
             if (extras.Count > 0) sb.Append(" (").Append(string.Join(", ", extras)).Append(')');
             sb.Append('.');
@@ -58,6 +59,7 @@ namespace GridGame.Core.Rules
                 case TriggerOn.TurnStart: return "At the start of its turn";
                 case TriggerOn.TurnEnd: return "At the end of its turn";
                 case TriggerOn.ActionEnd: return "After each of its actions";
+                case TriggerOn.OnLethalBlow: return "When a foe's blow would KO it"; // GG-T862
                 default: return t.On.ToString();
             }
         }
@@ -78,6 +80,7 @@ namespace GridGame.Core.Rules
                 case TriggerEffectKind.Pushback: return FormattableString.Invariant($"[Pushback] {Who(e, "the attacker")} {e.Amount:0.#}s");
                 case TriggerEffectKind.DamageMultiplier: return FormattableString.Invariant($"its blows hit ×{e.Amount:0.##}");
                 case TriggerEffectKind.ReductionMultiplier: return e.Amount <= 0f ? "it takes no damage" : FormattableString.Invariant($"it takes ×{e.Amount:0.##} damage");
+                case TriggerEffectKind.Substitute: return "the blow strikes a log decoy instead, and it reappears beside an ally"; // GG-T862
                 case TriggerEffectKind.Immunity:
                     var names = new List<string>();
                     if (e.Statuses != null) foreach (var s in e.Statuses) names.Add($"[{BuffName(c, s)}]");
@@ -98,6 +101,7 @@ namespace GridGame.Core.Rules
             if (k.OtherTag != null) parts.Add($"the foe is [{k.OtherTag}]");
             if (k.OtherHasStatus != null) parts.Add($"the foe has [{BuffName(c, k.OtherHasStatus)}]");
             if (k.OtherHpBelow > 0f) parts.Add($"the foe is below {Pct(k.OtherHpBelow)} HP");
+            if (k.FallenFamily != null) parts.Add($"it was one of the {k.FallenFamily}"); // GG-T897: "...of the herd"
             if (k.DamageType.HasValue) parts.Add($"the damage is [{k.DamageType.Value}]");
             return parts.Count == 0 ? null : string.Join(" and ", parts);
         }

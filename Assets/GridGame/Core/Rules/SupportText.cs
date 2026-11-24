@@ -46,7 +46,7 @@ namespace GridGame.Core.Rules
                 case SupportEffect.Pushback: return $"adds {Sec(d.Magnitude)} of [Pushback] to each trapped foe";
                 case SupportEffect.Volley:
                 {
-                    string hit = $"throws at each trapped foe for {Pct(d.Magnitude)} power";
+                    string hit = $"throws at each trapped foe for {Pct(d.Magnitude)} power ({Term(c, "Volley")})"; // GG-T907
                     if (string.IsNullOrEmpty(d.Buff) || !(d.Chance > 0f)) return hit;
                     return d.Chance >= 1f
                         ? $"{hit}, inflicting {Term(c, BuffName(c, d.Buff))} where it lands"

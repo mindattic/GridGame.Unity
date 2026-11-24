@@ -108,6 +108,7 @@ namespace GridGame.Meta
             var h = s.Hero(heroId);
             s.AddItem(itemId, -1);
             h.Known.Add(a.Id);
+            Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
             PassiveLoadout.OnLearned(c, h, a.Id);
             string hero = c.TryClass(heroId)?.Name ?? heroId;
             bool on = PassiveLoadout.IsActive(c, h, a.Id);

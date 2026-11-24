@@ -104,7 +104,7 @@ namespace GridGame.App
                 offNote = $" · off-tree ({away}): +{Talents.Premium(C, h, tree)} pt a node, deeper tiers need more";
                 if (!Talents.Opened(C, h, tree)) offNote += " · " + (Talents.WhyClosed(C, h, tree) ?? "buying a node opens it");
             }
-            var list = Ui.ListPanel(body, $"{tree.Name} — {Talents.PointsIn(h, tree)} pts in tree{offNote}", "talent-tree");
+            var list = Ui.ListPanel(body, $"{tree.Name} — {Talents.PointsIn(C, h, tree)} pts in tree{offNote}", "talent-tree");
             if (!string.IsNullOrEmpty(tree.Description)) GlossaryText.Create(tree.Description, "kit-text dim", list);
             var cards = Graph(tree, h, list);
 
@@ -162,7 +162,7 @@ namespace GridGame.App
             foreach (var n in tree.Nodes)
                 foreach (var pre in n.Prerequisites)
                     if (cards.TryGetValue(pre, out var from) && cards.TryGetValue(n.Id, out var to))
-                        links.Links.Add((from, to, Talents.Unlocked(h, tree, n) ? PurchasedColor : Talents.State(C, h, tree, n) == TalentState.Available ? AvailableColor : LockedColor));
+                        links.Links.Add((from, to, Talents.Unlocked(C, h, tree, n) ? PurchasedColor : Talents.State(C, h, tree, n) == TalentState.Available ? AvailableColor : LockedColor));
             graph.RegisterCallback<GeometryChangedEvent>(_ => links.MarkDirtyRepaint());
             return cards;
         }

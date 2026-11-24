@@ -54,7 +54,7 @@ namespace GridGame.App
             foreach (var line in e.Lines) yield return SurpriseAnnounce(line.SpeakerClassId, line.Text);
             var u = State.UnitById(e.UnitId);
             ShowBanner($"{u?.Name} wants: {string.Join(", ", e.Wants)}");
-            yield return FloatText(e.UnitId, "?", RecruitAmber, 0.35f, 80);
+            yield return FloatText(e.UnitId, CombatTextKind.Callout, "?", 0.35f, 0.65f, RecruitAmber);
         }
 
         /// <summary>Talked round: its join line, the gold handed over, and its frame turns guest-green as it joins.</summary>
@@ -65,7 +65,7 @@ namespace GridGame.App
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             v.SetTeamLook(u);
             App.Audio.Sfx("battle.victory", 0.6f);
-            if (e.GoldPaid > 0) App.StartCoroutine(FloatText(e.UnitId, $"-{e.GoldPaid} G", Palette.Gold, 0.6f, 52));
+            if (e.GoldPaid > 0) App.StartCoroutine(FloatText(e.UnitId, CombatTextKind.Support, $"-{e.GoldPaid} G", 0.6f, 0f, Palette.Gold));
             Billboard($"{u.Name} joins the fight! Keep them standing to recruit them.", null, new Color(0.6f, 1f, 0.75f));
             yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.7f ? 1f + k / 0.7f * 0.15f : 1.15f - 0.15f * (k - 0.7f) / 0.3f)));
             v.Root.style.scale = new Scale(Vector2.one);

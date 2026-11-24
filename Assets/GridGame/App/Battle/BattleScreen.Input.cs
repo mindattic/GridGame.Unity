@@ -62,7 +62,7 @@ namespace GridGame.App
                 {
                     bool acted = TurnRules.HasActed(State, unit); // §2.13: the turn mode says who has acted
                     if (!acted && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
-                    ShowBanner(acted ? $"{unit.Name} has acted this turn" : $"{unit.Name} can't move");
+                    ShowBanner(acted ? (TurnRules.OneHeroPerTurn(State) ? "The party has acted this turn" : $"{unit.Name} has acted this turn") : $"{unit.Name} can't move"); // GG-T787
                     return;
                 }
                 pressing = true;
@@ -261,6 +261,7 @@ namespace GridGame.App
             SyncGuardCall();
             if (State.IsOver) return;
             if (BattleEngine.TooLittleTime(State)) { TooLittleTimeCue(); return; } // GG-T311: the gap fits no action
+            if (TurnRules.OneHeroPerTurn(State)) { AnyHeroTurn(); return; } // GG-T787 (§2.13.1): every control return is a new one-action turn
             if (newWindow) return;
             var left = BattleEngine.HeroesLeftToAct(State);
             if (left.Count == 0) return;
@@ -273,6 +274,19 @@ namespace GridGame.App
         }
 
         /// <summary>
+        /// GG-T787 (§2.13.1): a party turn of one action by any hero. The selection stays on the hero who acted last (the
+        /// same hero may go again), unless it fell or can't act; the banner says so with the seconds the gap runs.
+        /// </summary>
+        private void AnyHeroTurn()
+        {
+            var left = BattleEngine.HeroesLeftToAct(State);
+            if (left.Count == 0) return;
+            if (!left.Exists(h => h.Id == SelectedHeroId)) SelectHero(left[0].Id);
+            float w = BattleEngine.TurnTicks(State) / (float)BattleConfig.TicksPerSecond;
+            ShowBanner(w > 0f ? $"Move any hero · {w:0.0}s left" : "Move any hero");
+        }
+
+        /// <summary>
         /// GG-T311 (§2.0): the gap until the next enemy reaches the left is shorter than any hero's action (a minimum drag,
         /// a skill's use time) — say so plainly with the gap's seconds; GUARD is the lit choice (<see cref="SyncGuardCall"/>).
         /// </summary>
@@ -280,7 +294,8 @@ namespace GridGame.App
         {
             float gap = BattleEngine.TurnTicks(State) / (float)BattleConfig.TicksPerSecond;
             string rally = State.Rally > 0 ? $" · Rally {State.Rally}: foes slowed" : "";
-            ShowBanner($"Too little time — Guard ({gap:0.0}s gap, a move needs {BattleEngine.MinDragSeconds:0.0#}s){rally}");
+            string anyone = TurnRules.OneHeroPerTurn(State) ? " for any hero" : ""; // GG-T787: the one action fits nobody
+            ShowBanner($"Too little time{anyone} — Guard ({gap:0.0}s gap, a move needs {BattleEngine.MinDragSeconds:0.0#}s){rally}");
             App.Audio.Sfx("ui.error", 0.5f);
             SyncGuardCall();
         }
@@ -431,7 +446,8 @@ namespace GridGame.App
                 var pv = BattleEngine.PreviewMove(State, dragHeroId, candidate);
                 if (pv.StepsTaken.Count < candidate.Count)
                 {
-                    // Blocked (edge / boss / snake): try the other axis once, else hold position.
+                    // Blocked (edge / boss / snake / Heavy): try the other axis once, else hold position.
+                    var blocked = step;
                     if (dx != 0 && dy != 0)
                     {
                         Coord alt = Math.Abs(dx) >= Math.Abs(dy)
@@ -439,10 +455,10 @@ namespace GridGame.App
                             : new Coord(dragTile.X + Math.Sign(dx), dragTile.Y);
                         candidate[candidate.Count - 1] = alt;
                         pv = BattleEngine.PreviewMove(State, dragHeroId, candidate);
-                        if (pv.StepsTaken.Count < candidate.Count) return;
+                        if (pv.StepsTaken.Count < candidate.Count) { BumpHeavy(blocked, dragPath); return; }
                         step = alt;
                     }
-                    else return;
+                    else { BumpHeavy(blocked, dragPath); return; }
                 }
                 dragPath.Add(step);
                 dragTile = step;
@@ -450,6 +466,31 @@ namespace GridGame.App
                 App.Audio.Sfx("battle.move", 0.5f);
                 ApplyPreview(pv, dragHeroId);
             }
+        }
+
+        private Coord? heavyBumpAt;
+        private float heavyBumpTime = -10f;
+
+        /// <summary>
+        /// GG-T892 (§1.1.3): the drag ran into a Heavy unit (it stands on <paramref name="blocked"/> once the walk so far,
+        /// <paramref name="path"/>, has moved everyone it moves): the step is refused with a thud and "Too heavy!" over it.
+        /// Played once per push against that tile, not on every pointer move while the finger keeps pressing.
+        /// </summary>
+        private void BumpHeavy(Coord blocked, List<Coord> path)
+        {
+            var at = path.Count > 0 ? BattleEngine.PreviewMove(State, dragHeroId, path).Positions : null;
+            Unit occ = null;
+            foreach (var u in State.Units)
+            {
+                if (!u.Alive || u.Id == dragHeroId) continue;
+                var pos = at != null && at.TryGetValue(u.Id, out var p) ? p : u.Pos;
+                if (pos == blocked) { occ = u; break; }
+            }
+            if (occ == null || !occ.IsHeavy) return;
+            if (heavyBumpAt == blocked && Time.unscaledTime - heavyBumpTime < 0.8f) { heavyBumpTime = Time.unscaledTime; return; }
+            heavyBumpAt = blocked; heavyBumpTime = Time.unscaledTime;
+            board.Units.TryGetValue(occ.Id, out var v);
+            HeavyThud(v, blocked);
         }
 
         private static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f), EnemyTrail = Palette.Bad;
@@ -620,7 +661,7 @@ namespace GridGame.App
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
             var color = harmful ? new Color(1f, 0.3f, 0.25f) : new Color(0.4f, 0.9f, 0.5f);
             if (a.IsTeleport) { board.Mark(tile, Palette.Mana, 0.6f); return; }
-            foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius)) board.Mark(t, color, 0.38f);
+            foreach (var t in TargetResolver.Tiles(tile, a.Shape, a.Radius, hero.Pos)) board.Mark(t, color, 0.38f); // GG-T933: a Wall lies across the caster's line
         }
     }
 }

@@ -280,7 +280,9 @@ namespace GridGame.App
             }
             if (a.Pushback > 0) facts.Add(FormattableString.Invariant($"Pushback {a.Pushback:0.##}s: the foe acts later"));
             if (a.RemovesDebuffs) facts.Add("Cleanses debuffs");
+            if (a.Vaults) facts.Add("Leaps over a unit beside the user to the free tile beyond, crossing what lies under it"); // GG-T868
             if (a.RedirectsDebuffs) facts.Add("Moves an adjacent ally's debuffs onto a foe beside the user"); // GG-T887
+            if (a.Afterimage > 0) facts.Add($"Dashes up to {a.Afterimage} tiles in a line; the afterimage left behind closes pincers this action and draws foes' attacks until the user's next turn"); // GG-T867
             if (a.StealsBoon) facts.Add("Steals one boon from an adjacent foe, with the time it has left"); // GG-T866
             if (a.GrantsOrbs > 0) facts.Add($"Grants {a.GrantsOrbs} orbs");
             var factBox = Ui.El("col", body);
@@ -391,6 +393,14 @@ namespace GridGame.App
                 }
                 if (u.HasPlate) Line(body, $"Armor plate {u.PlateHp}/{u.PlateMax} — strike from the sides, or break it head-on", "t-caption", Palette.Info);
             }
+            // GG-T892 (§1.1.3, §14.2): the Heavy keyword and its counters; while it floats, that it can be moved after all.
+            bool weighty = u.Def != null && (u.Def.Heavy || u.IsRaging) || u.HasHeavyBuff;
+            if (weighty && !u.IsCorpse && !u.IsMultiTile)
+            {
+                var hv = GlossaryText.Create(u.IsFloating ? HeavyFloatingLine : HeavyLine, "t-caption", body, false);
+                hv.name = "inspect-heavy";
+                hv.style.marginTop = Space.S8;
+            }
             foreach (var b in u.Buffs)
             {
                 var r = Ui.El("row", body);
@@ -403,6 +413,11 @@ namespace GridGame.App
             }
             return true;
         }
+
+        /// <summary>GG-T892: the Heavy keyword line (§1.1.3, §14.2) the unit card and the Bestiary show, with its counters.</summary>
+        public const string HeavyLine = GridGame.Core.Rules.KeywordText.HeavyLine; // GG-T907: [Heavy] is a glossary term
+        /// <summary>GG-T892: a Heavy unit while it is <see cref="GridGame.Core.Battle.Unit.IsFloating"/>.</summary>
+        public const string HeavyFloatingLine = GridGame.Core.Rules.KeywordText.HeavyFloatingLine;
 
         /// <summary>A tamed monster's bond meter (GG-T303): bond so far out of what it needs, the turns its tame has left,
         /// and what a full bond means. A domesticated monster just says it is the party's for good.</summary>

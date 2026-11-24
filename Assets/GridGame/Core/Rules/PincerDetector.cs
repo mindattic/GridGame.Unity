@@ -17,6 +17,15 @@ namespace GridGame.Core.Rules
         /// way to that attacker (the attacker itself when adjacent, otherwise the next ally along the chain).</summary>
         public Dictionary<Unit, Unit> LinksA = new Dictionary<Unit, Unit>();
         public Dictionary<Unit, Unit> LinksB = new Dictionary<Unit, Unit>();
+        /// <summary>Afterimage ends (GG-T867): set when that end is <see cref="A"/>'s / <see cref="B"/>'s afterimage on this
+        /// tile rather than the unit itself. The unit still strikes (from its afterimage), and still earns the credit.</summary>
+        public Coord? AAfterimage;
+        public Coord? BAfterimage;
+        /// <summary>Where each end stands: the unit's tile, or its afterimage's.</summary>
+        public Coord APos => AAfterimage ?? A.Pos;
+        public Coord BPos => BAfterimage ?? B.Pos;
+        /// <summary>Is <paramref name="end"/> (A or B) an afterimage end?</summary>
+        public bool IsAfterimageEnd(bool endA) => endA ? AAfterimage.HasValue : BAfterimage.HasValue;
 
         /// <summary>The attacker a supporter is chained to (A when it supports both).</summary>
         public Unit AttackerOf(Unit supporter) => SupportersA.Contains(supporter) || !SupportersB.Contains(supporter) ? A : B;
@@ -50,6 +59,7 @@ namespace GridGame.Core.Rules
             var t = A; A = B; B = t;
             var ts = SupportersA; SupportersA = SupportersB; SupportersB = ts;
             var tl = LinksA; LinksA = LinksB; LinksB = tl;
+            var ti = AAfterimage; AAfterimage = BAfterimage; BAfterimage = ti;
             Opponents.Reverse();
         }
     }
@@ -63,23 +73,33 @@ namespace GridGame.Core.Rules
     {
         public static List<Pincer> Detect(BattleState s, Team team, Unit dropped)
         {
-            var members = new List<Unit>();
+            var members = new List<(Unit U, Coord? Ghost)>();
             foreach (var u in s.Units)
-                if (u.Alive && u.Team == team && !u.IsMultiTile && u.CanPincer) members.Add(u);
+                if (u.Alive && u.Team == team && !u.IsMultiTile && u.CanPincer) members.Add((u, null));
+            // GG-T867: for the rest of its dash's action a Speedster's afterimage is a pincer end of its own, on a tile
+            // nothing has since taken.
+            var ghosts = new List<(Unit U, Coord? Ghost)>();
+            foreach (var m in members)
+                if (m.U.AfterimagePincers && m.U.AfterimageAt is Coord at && at != m.U.Pos && s.UnitAt(at) == null) ghosts.Add((m.U, at));
+            members.AddRange(ghosts);
 
             var pairs = new List<Pincer>();
             for (int i = 0; i < members.Count; i++)
                 for (int j = i + 1; j < members.Count; j++)
                 {
-                    var p = TryPair(s, members[i], members[j], team);
+                    var p = TryPair(s, members[i].U, members[i].Ghost, members[j].U, members[j].Ghost, team);
                     if (p != null) pairs.Add(p);
                 }
             return Order(pairs, dropped);
         }
 
-        public static Pincer TryPair(BattleState s, Unit a, Unit b, Team team)
+        public static Pincer TryPair(BattleState s, Unit a, Unit b, Team team) => TryPair(s, a, null, b, null, team);
+
+        /// <summary>A pair of ends, either of which may be a unit's afterimage (<paramref name="ghostA"/>/<paramref name="ghostB"/>,
+        /// GG-T867). An afterimage brings no supporters: it is no link in anyone's chain.</summary>
+        public static Pincer TryPair(BattleState s, Unit a, Coord? ghostA, Unit b, Coord? ghostB, Team team)
         {
-            var pa = a.Pos; var pb = b.Pos;
+            var pa = ghostA ?? a.Pos; var pb = ghostB ?? b.Pos;
             if (pa.X != pb.X && pa.Y != pb.Y) return null;
             if (pa.Manhattan(pb) < 2) return null;
             // Orient A→B
@@ -92,9 +112,9 @@ namespace GridGame.Core.Rules
                 if (!opponents.Contains(occ)) opponents.Add(occ);
             }
             if (opponents.Count == 0) return null;
-            var p = new Pincer { A = a, B = b, Opponents = opponents };
-            p.SupportersA = FindSupporters(s, a, b, p.LinksA);
-            p.SupportersB = FindSupporters(s, b, a, p.LinksB);
+            var p = new Pincer { A = a, B = b, Opponents = opponents, AAfterimage = ghostA, BAfterimage = ghostB };
+            if (ghostA == null) p.SupportersA = FindSupporters(s, a, b, p.LinksA);
+            if (ghostB == null) p.SupportersB = FindSupporters(s, b, a, p.LinksB);
             return p;
         }
 
@@ -161,7 +181,7 @@ namespace GridGame.Core.Rules
                         int best = int.MaxValue;
                         foreach (var p in remaining)
                         {
-                            int d = Math.Min(p.A.Pos.Manhattan(origin), p.B.Pos.Manhattan(origin));
+                            int d = Math.Min(p.APos.Manhattan(origin), p.BPos.Manhattan(origin));
                             if (d < best) { best = d; next = p; }
                         }
                     }
@@ -172,7 +192,7 @@ namespace GridGame.Core.Rules
                 ordered.Add(next);
                 remaining.Remove(next);
                 chainEnd = next.B;
-                origin = next.B.Pos;
+                origin = next.BPos;
             }
             return ordered;
         }

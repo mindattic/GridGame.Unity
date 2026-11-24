@@ -1,16 +1,16 @@
 """
-The sky pieces of the staged backdrop (GG-T576): the one canonical Somnolith, the shards that drift across the sky,
+The sky pieces of the staged backdrop (GG-T576): the one canonical Manalith, the shards that drift across the sky,
 and the ordinary Moon.
 
     python tools/make_sky_assets.py                       # rebuild all three from their sources
-    python tools/make_sky_assets.py --somnolith art.png   # a new Somnolith (the shards follow it)
+    python tools/make_sky_assets.py --manalith art.png    # a new Manalith (the shards follow it)
 
 Writes Resources/Sky/:
-  somnolith-00.png        the Somnolith, the owner's official art (2026-11-21; the blue, mana-coloured version
+  manalith-00.png         the Manalith, the owner's official art (2026-11-21; the blue, mana-coloured version
                           2026-11-22, GG-T674) trimmed to its alpha bounds with a small margin; never repainted. The
-                          source is kept at Art/Sky/somnolith-source.png.
-  somnolith-shard-00..05  fragments cut from that same image (seeded irregular polygons inside its silhouette), so the
-                          drifting shards are visibly pieces of the one Somnolith.
+                          source is kept at Art/Sky/manalith-source.png.
+  manalith-shard-00..05   fragments cut from that same image (seeded irregular polygons inside its silhouette), so the
+                          drifting shards are visibly pieces of the one Manalith.
   moon-00.png             the ordinary Moon: the full moon painted in Backgrounds bloom-02 (source in Art/Backgrounds),
                           cut on a circle with a soft rim. Fixed size in every sky (Content/sky.json).
 """
@@ -27,7 +27,7 @@ from scipy import ndimage
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Sky")
 ART = os.path.join(ROOT, "Art")
-SOMNOLITH_SRC = os.path.join(ART, "Sky", "somnolith-source.png")
+MANALITH_SRC = os.path.join(ART, "Sky", "manalith-source.png")
 MOON_SRC = "bloom-02"
 MOON_GUESS = (0.48, 0.40, 0.2)  # centre x, y and search radius, as fractions of the backdrop's width
 SHARDS = 6
@@ -41,7 +41,7 @@ def trim(im, margin=8):
     return out
 
 
-def somnolith(src):
+def manalith(src):
     im = Image.open(src).convert("RGBA")
     a = np.array(im)
     a[a[..., 3] <= 2] = 0  # stray near-zero alpha only; colour and silhouette untouched
@@ -49,7 +49,7 @@ def somnolith(src):
 
 
 def shards(som, n=SHARDS, seed=576):
-    """Irregular fragments of the Somnolith: a random convex-ish polygon placed where the art is solid."""
+    """Irregular fragments of the Manalith: a random convex-ish polygon placed where the art is solid."""
     rnd = random.Random(seed)
     a = np.array(som)[..., 3]
     ys, xs = np.nonzero(a > 250)
@@ -111,17 +111,17 @@ def moon():
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("--somnolith", help="a new Somnolith source image (transparent PNG)")
+    ap.add_argument("--manalith", help="a new Manalith source image (transparent PNG)")
     args = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
-    if args.somnolith:
-        os.makedirs(os.path.dirname(SOMNOLITH_SRC), exist_ok=True)
-        shutil.copyfile(args.somnolith, SOMNOLITH_SRC)
-    som = somnolith(SOMNOLITH_SRC)
-    som.save(os.path.join(OUT, "somnolith-00.png"), optimize=True)
-    print("somnolith", som.size)
+    if args.manalith:
+        os.makedirs(os.path.dirname(MANALITH_SRC), exist_ok=True)
+        shutil.copyfile(args.manalith, MANALITH_SRC)
+    som = manalith(MANALITH_SRC)
+    som.save(os.path.join(OUT, "manalith-00.png"), optimize=True)
+    print("manalith", som.size)
     for i, s in enumerate(shards(som)):
-        s.save(os.path.join(OUT, f"somnolith-shard-{i:02d}.png"), optimize=True)
+        s.save(os.path.join(OUT, f"manalith-shard-{i:02d}.png"), optimize=True)
         print("shard", i, s.size)
     m = moon()
     m.save(os.path.join(OUT, "moon-00.png"), optimize=True)

@@ -2,7 +2,7 @@
 
 **In one line:** an ancient thing hangs in the sky beside the Moon. Long ago it was stopped and left there, orbiting the world, and now it is coming closer. Everyone calls it **the Manalith**. Its **mana** is also the life in every person. The Choir keeps it asleep with **the Lullaby**, a rite that takes people's mana to quiet it and keeps a share for the Choir's leader, **the Hierarch**. **The Warden**, the Last Sleeper, wakes 1,200 years too late and must fix what Halcyon left broken, with present-day people who join along the road. The tone is bittersweet, and the player chooses the ending.
 
-**The sky.** There is one Moon, and there is the Somnolith:
+**The sky.** There is one Moon, and there is the Manalith:
 - **The Moon** is the ordinary one: round, pale and familiar, always the same size in the sky. Nothing in the story happens to it.
 - **The Manalith is not a moon.** It is an ancient thing that was stopped on its way in and left hanging in the sky, where it orbits the world. It is a lumpy, potato-shaped mass of crusted, grown-looking stone, clustered blade-like crystals and bubbled deep blue and violet lumps flushed with red, with a faint light seeping out between them. Beside the constant Moon it is visibly larger in every chapter, because it is coming closer. The player measures time running out by how much of the sky it fills.
 

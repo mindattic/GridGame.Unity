@@ -138,7 +138,7 @@ namespace GridGame.Core.Battle
             if (team != Team.Hero) return;
             foreach (var o in p.Opponents)
             {
-                if (!o.Alive || !RuleBreakRules.WardsPincer(o, p.A.Pos, p.B.Pos)) continue;
+                if (!o.Alive || !RuleBreakRules.WardsPincer(o, p.APos, p.BPos)) continue;
                 wardedThisPincer.Add(o);
                 o.RuleBreakCount++;
                 int left = RuleBreakRules.AxisWardCracks - o.RuleBreakCount;

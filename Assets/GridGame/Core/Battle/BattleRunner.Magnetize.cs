@@ -27,7 +27,7 @@ namespace GridGame.Core.Battle
             {
                 if (S.IsOver) return;
                 if (!t.Alive || !t.OnBoard) continue;
-                if (RootsHold(t, t.Pos)) { } // GG-T912: rooted, it holds (the plate still turns)
+                if (HeldFast(t, t.Pos, caster)) { } // GG-T912: rooted (GG-T882: or braced), it holds (the plate still turns)
                 else if (t.IsHeavy) Announce("Too heavy!", t.Id); // GG-T891: unless it floats
                 else if (!t.WontBudge)
                     for (int i = 0; i < a.Magnetizes && t.Alive && !S.IsOver; i++)

@@ -129,5 +129,73 @@ namespace GridGame.Tests
                 Assert.That(summary, Does.StartWith(cls.Name + " ·"));
             }
         }
+
+        // ── Family trees (GG-T979) ──────────────────────────────────────────────────────────────
+
+        /// <summary>A Shadow-family thief (starts on t_root + t_steal) whose HomeTree still names the role tree "rogue",
+        /// plus a Vanguard family tree to cross into.</summary>
+        private static ContentDb FamilyDb()
+        {
+            var db = TreeDb();
+            db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", Primary = "Agility", Secondary = "Speed", Ring = 1 });
+            db.Families.Add(new FamilyDef { Id = "vanguard", Name = "Vanguard", Theme = "t", Primary = "Vitality", Secondary = "Stamina", Ring = 2 });
+            foreach (var id in new[] { "steal", "smoke", "guard_up", "pickpocket" })
+                db.Abilities[id] = new AbilityDef { Id = id, Name = id, Kind = AbilityKind.Skill };
+            db.SkillTrees["shadow"] = new SkillTreeDef
+            {
+                Id = "shadow",
+                Name = "Shadow",
+                Nodes =
+                {
+                    new SkillNodeDef { Id = "t_root", Cost = 1, GrantsStat = new StatGrantDef { Stat = "Agility", Amount = 1 }, SignatureOf = "thief" },
+                    new SkillNodeDef { Id = "t_steal", Cost = 1, Grants = "steal", SignatureOf = "thief", Prerequisites = { "t_root" } },
+                    new SkillNodeDef { Id = "t_smoke", Cost = 2, Grants = "smoke", SignatureOf = "thief", Prerequisites = { "t_steal" } },
+                },
+            };
+            db.SkillTrees["vanguard"] = new SkillTreeDef { Id = "vanguard", Name = "Vanguard", Nodes = { new SkillNodeDef { Id = "v_guard", Cost = 3, Grants = "guard_up" } } };
+            db.SkillTrees["rogue"] = new SkillTreeDef { Id = "rogue", Name = "Rogue", Nodes = { new SkillNodeDef { Id = "r_pick", Cost = 3, Grants = "pickpocket" } } };
+            db.Classes["thief"] = new ClassDef { Id = "thief", Name = "Thief", Team = Team.Hero, Role = "Striker", Family = "shadow",
+                HomeTree = "rogue", DefaultLoadout = { "steal" }, StartNodes = { "t_root", "t_steal" } };
+            return db;
+        }
+
+        [Test]
+        public void TreeInvestment_names_a_family_tree_and_counts_its_start_nodes()
+        {
+            var c = FamilyDb();
+            var h = Progression.NewHero(c, "thief");
+            var trees = Progression.TreeInvestment(c, h);
+            Assert.That(trees.Count, Is.EqualTo(1));
+            Assert.That(trees[0].TreeId, Is.EqualTo("shadow"));
+            Assert.That(trees[0].TreeName, Is.EqualTo("Shadow family"));
+            Assert.That(trees[0].Points, Is.EqualTo(2), "the stat start node counts too");
+            Assert.That(Progression.TreeLabel(c, c.SkillTrees["guardian"]), Is.EqualTo("Guardian"), "a role tree keeps its own name");
+        }
+
+        [Test]
+        public void BuildSummary_names_the_family_and_reads_its_tail_off_the_family_home()
+        {
+            var c = FamilyDb();
+            var h = Progression.NewHero(c, "thief");
+            Assert.That(Progression.BuildSummary(c, h), Is.EqualTo("Thief · Shadow family 2 — a striker"));
+
+            h.Known.Add("smoke");
+            h.Known.Add("guard_up");
+            var summary = Progression.BuildSummary(c, h);
+            Assert.That(summary, Does.StartWith("Thief · Shadow family 4 / Vanguard family 3"));
+            Assert.That(summary, Does.EndWith("a striker who holds the line"), "another family's verb");
+        }
+
+        [Test]
+        public void BuildSummary_treats_the_old_role_HomeTree_as_a_cross_tree_once_the_family_is_home()
+        {
+            var c = FamilyDb();
+            var h = Progression.NewHero(c, "thief");
+            h.Known.Add("smoke");
+            h.Known.Add("pickpocket");
+            var summary = Progression.BuildSummary(c, h);
+            Assert.That(summary, Does.Contain("Shadow family 4 / Rogue 3"));
+            Assert.That(summary, Does.EndWith("a striker who skirmishes"), "rogue is not home any more, so it earns the tail");
+        }
     }
 }

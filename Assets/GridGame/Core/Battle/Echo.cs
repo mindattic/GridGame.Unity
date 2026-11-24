@@ -25,7 +25,7 @@ namespace GridGame.Core.Battle
         /// <summary>Can <paramref name="a"/> ever be copied? Skills and spells only, never another Echo, an escape, a
         /// teleport (the tile it needs is the copier's own), a tame or an enemy-only boss move.</summary>
         public static bool Copyable(AbilityDef a) =>
-            a != null && (a.Kind == AbilityKind.Skill || a.Kind == AbilityKind.Spell) && !a.Echoes && !a.Escape && !a.IsTeleport && a.Tame <= 0f;
+            a != null && (a.Kind == AbilityKind.Skill || a.Kind == AbilityKind.Spell) && !a.Echoes && !a.Escape && !a.IsTeleport && !a.Vanishes && a.Tame <= 0f;
 
         /// <summary>What <paramref name="caster"/> would cast by echoing <paramref name="source"/>, or null when there is
         /// nothing to echo (no move yet, an uncopyable one, nobody to revive, or no legal target).</summary>

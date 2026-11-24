@@ -15,12 +15,12 @@ namespace GridGame.App
                 ShowBanner($"☠ Bounty: {e.Title}");
                 App.Audio.Sfx("battle.warcry");
                 if (board.Units.TryGetValue(e.UnitId, out var v)) App.StartCoroutine(Tween.Pop(v.Root, 1.15f, Timing.Emphasis));
-                yield return FloatText(e.UnitId, "BOUNTY", Palette.Bad, 0.9f, 84);
+                yield return FloatText(e.UnitId, CombatTextKind.Callout, "BOUNTY", 0.9f, 0.8f, Palette.Bad);
                 yield break;
             }
             App.Audio.Sfx("battle.pickup");
             ShowBanner($"☠ {e.Title} slain! Collect at the bounty board");
-            yield return FloatText(e.UnitId, "BOUNTY SLAIN", Palette.Gold, 0.9f, 84);
+            yield return FloatText(e.UnitId, CombatTextKind.Callout, "BOUNTY SLAIN", 0.9f, 0.8f, Palette.Gold);
         }
     }
 }
