@@ -142,6 +142,14 @@ namespace GridGame.App
             TextFit.Install(Document.rootVisualElement); // GG-T305: every wrapped line and every overflowing one-liner
             ApplySettings(); // the profile's settings hold on the title screen too, before any save is loaded
 
+            // GG-T775: `-turnMode <name>` plays that mode this run (in memory; settings.json is untouched). A save's New Game lock still wins.
+            var turnModeArg = CommandLine.Value("-turnMode");
+            if (turnModeArg != null)
+            {
+                if (TurnModeSetting.TryParseBuilt(turnModeArg, out var launchMode, out var turnModeError)) Settings.TurnMode = launchMode;
+                else Debug.LogError($"[CommandLine] -turnMode ignored: {turnModeError}");
+            }
+
             if (CommandLine.Has("-noDiagonalSlip")) BattleConfig.DiagonalSlipEnabled = false;
             var skill = CommandLine.Value("-skill");
             if (skill != null && float.TryParse(skill, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var skillLevel)) BotSkillProfile.Level = skillLevel;

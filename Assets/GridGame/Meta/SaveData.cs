@@ -474,6 +474,34 @@ namespace GridGame.Meta
             save.TurnModeLock = mode is TurnMode m && Enum.IsDefined(typeof(TurnMode), m) ? m : (TurnMode?)null;
         }
 
+        /// <summary>The mode a command-line flag or harness call names (GG-T775): any <see cref="TurnMode"/> name, any case.
+        /// False with a one-line <paramref name="error"/> when the name is unknown or the mode isn't built yet
+        /// (<see cref="TurnModes.IsBuilt"/>), so a typo never silently plays PartyWindow.</summary>
+        public static bool TryParseBuilt(string name, out TurnMode mode, out string error)
+        {
+            mode = TurnMode.PartyWindow;
+            error = null;
+            if (string.IsNullOrWhiteSpace(name) || int.TryParse(name, out _) || !Enum.TryParse(name.Trim(), true, out TurnMode m) || !Enum.IsDefined(typeof(TurnMode), m))
+            {
+                error = $"unknown turn mode '{name}' (modes: {string.Join(", ", Enum.GetNames(typeof(TurnMode)))}; built: {BuiltNames()})";
+                return false;
+            }
+            if (!TurnModes.IsBuilt(m))
+            {
+                error = $"turn mode {m} is not built yet (built: {BuiltNames()})";
+                return false;
+            }
+            mode = m;
+            return true;
+        }
+
+        private static string BuiltNames()
+        {
+            var names = new List<string>();
+            foreach (var m in TurnModes.Available) names.Add(m.ToString());
+            return string.Join(", ", names);
+        }
+
         /// <summary>The mode a settings.json value names; missing or unknown reads as <see cref="TurnMode.PartyWindow"/>.</summary>
         public static TurnMode Parse(string name) =>
             !string.IsNullOrEmpty(name) && !int.TryParse(name, out _) && Enum.TryParse(name, false, out TurnMode m) && Enum.IsDefined(typeof(TurnMode), m)

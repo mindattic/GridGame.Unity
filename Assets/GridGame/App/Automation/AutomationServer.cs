@@ -497,6 +497,15 @@ namespace GridGame.App.Automation
                     Tween.Speed = F(q["x"], 1);
                     app.Settings.BattleSpeed = Tween.Speed;
                     return new { ok = true, Tween.Speed };
+                case "turnmode": // GG-T775: mode=<TurnMode name> sets the profile's mode in memory (never saved); no mode reads it back
+                {
+                    if (!string.IsNullOrEmpty(q["mode"]))
+                    {
+                        if (!TurnModeSetting.TryParseBuilt(q["mode"], out var tm, out var tmError)) return new { error = tmError };
+                        app.Settings.TurnMode = tm;
+                    }
+                    return new { ok = true, turn_mode = app.Settings.TurnMode.ToString(), built = TurnModes.Available.Select(m => m.ToString()).ToList(), save_lock = app.Save?.TurnModeLock?.ToString() };
+                }
                 case "cmd":
                 {
                     if (!(app.Router.Current is BattleScreen b)) return new { error = "not in battle" };

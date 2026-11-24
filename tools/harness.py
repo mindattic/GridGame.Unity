@@ -22,7 +22,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py crucible [WAVES [RUN]]  # GG-T95: camp -> Crucible -> Auto -> leave after WAVES (99 = fight to a wipe) -> results -> camp
     python tools/harness.py storyarc [RUN] [--nocapture]  # GG-T241: title -> prologue -> camp systems -> boss -> ending -> credits, recorded
     python tools/harness.py stress HOURS     # unattended soak test (GG-T21); default 4h
-    python tools/harness.py endless N [--seed S] [--capture] [--speed X]  # GG-T62: -demo -endless run of N encounters, auto-relaunching on crash/hang
+    python tools/harness.py endless N [--seed S] [--capture] [--speed X] [--turn-mode M]  # GG-T62: -demo -endless run of N encounters, auto-relaunching on crash/hang
     python tools/harness.py testmode N       # GG-T93: -testmode self-play, N full battle→results→camp cycles
     python tools/harness.py profiles         # GG-T99: profile picker / new profile / Settings shots; settings follow the profile
     python tools/harness.py shot NAME        # screenshot the running player
@@ -2851,7 +2851,7 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
     return clips
 
 
-def endless(count, seed=None, capture=False, run="endless", speed=None,
+def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mode=None,
             stall_secs=90, encounter_timeout=1200, unresponsive_secs=120, max_dead_launches=3):
     """GG-T62: endless-run driver. Launches the player with `-demo -endless -seed S -count N` (GG-T57) and babysits
     it: tails each launch's Player.log for the "[EndlessDemo]" progress lines (encounter start "encounter K seed X:",
@@ -2878,6 +2878,8 @@ def endless(count, seed=None, capture=False, run="endless", speed=None,
         seed = int(time.time()) % 1_000_000_000  # picked here, not by the player's clock, so a relaunch can resume it
 
     extra = []
+    if turn_mode:  # GG-T775: -turnMode <name>; the player rejects (and logs) a mode that isn't built yet
+        extra += ["-turnMode", turn_mode]
     if capture:
         src = os.path.join(os.path.dirname(EXE), "GridGame_Data", "StreamingAssets", "capture.json")
         if not os.path.exists(src):
@@ -3262,9 +3264,10 @@ if __name__ == "__main__":
         ap.add_argument("--seed", type=int, default=None)
         ap.add_argument("--capture", action="store_true")
         ap.add_argument("--speed", type=float, default=None)
+        ap.add_argument("--turn-mode", default=None, help="TurnMode name (GG-T775), e.g. PartyWindow; unbuilt modes are rejected")
         ap.add_argument("--run", default="endless")
         a = ap.parse_args(sys.argv[2:])
-        s = endless(a.count, seed=a.seed, capture=a.capture, run=a.run, speed=a.speed)
+        s = endless(a.count, seed=a.seed, capture=a.capture, run=a.run, speed=a.speed, turn_mode=a.turn_mode)
         sys.exit(0 if s["completed"] == a.count and not s["crashes"] and not s["stalls"] and not s["hangs"] else 1)
     elif cmd == "recruits":
         sys.exit(0 if story_recruits() else 1)

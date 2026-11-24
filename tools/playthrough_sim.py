@@ -42,6 +42,9 @@ CAPTURE = "--nocapture" not in sys.argv
 # reaper never stops the way it stops a single hour-long background run (GG-T448).
 RESUME = "--resume" in sys.argv
 KEEP = "--keep" in sys.argv
+TURN_MODE = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--turn-mode=")), None)  # GG-T775: --turn-mode=<TurnMode name>
+if TURN_MODE is None and "--turn-mode" in sys.argv[:-1]:
+    TURN_MODE = sys.argv[sys.argv.index("--turn-mode") + 1]
 ROOT = H.ROOT
 LOG = os.path.join(ROOT, "artifacts", RUN, "play.jsonl")
 CONTENT = os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content")
@@ -372,7 +375,7 @@ def main():
             print("--resume: no player answering on this port")
             sys.exit(1)
     else:
-        H.launch(RUN, fresh=True, extra=(("-capture", "video", "hq") if CAPTURE else ()) + ("-rested",))
+        H.launch(RUN, fresh=True, extra=(("-capture", "video", "hq") if CAPTURE else ()) + ("-rested",) + (("-turnMode", TURN_MODE) if TURN_MODE else ()))
         open(LOG, "w").close()
         H._wait_screen("title", 20)
         time.sleep(0.8)
