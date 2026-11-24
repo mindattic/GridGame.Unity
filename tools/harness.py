@@ -30,6 +30,12 @@ Self-play harness: launches the development player with the automation endpoint 
 
     --record anywhere in the args (GG-T542): every launch also records with -capture video hq.
 
+    --preview [TICKET] anywhere in the args (GG-T1007): when the command ends, pass or fail, the PNGs it wrote under
+    artifacts/<run>/ (name order, caption = file name) and, with --record, the session video become a preview set
+    (MindAttic.Media.Capture's `capture set new/add/show`, under R:\\MindAttic\\Preview) opened in
+    MindAttic.Media.Viewer. The agent is %LOCALAPPDATA%\\MindAttic\\Capture\\bin\\capture.exe (MINDATTIC_CAPTURE_AGENT
+    overrides); without it the run only warns. e.g. python tools/harness.py sweep --preview
+
     --headless anywhere in the args (GG-T314): no popup window. Passes Unity's native -batchmode
     -nographics to the launched player instead of a real window, for bot-driven runs that are never
     watched (endless, testmode, boardaudit, stress, clips, durability, campaign, crucible, fullloop,
@@ -76,6 +82,9 @@ BASE = f"http://127.0.0.1:{PORT}"
 HEADLESS = False
 # GG-T542: --record anywhere in argv adds -capture video hq to every launch (verification runs are recorded).
 RECORD = False
+# GG-T1007: --preview [TICKET] anywhere in argv publishes the run's new screenshots (and its recording) as a preview set.
+PREVIEW_TICKET = None
+_STARTED = time.time()
 
 BOARD_LEFT, BOARD_TOP, TILE = 45, 450, 180
 
@@ -3169,8 +3178,80 @@ def _row_texts():
     return [f"{a} {b}" for a, b in zip(t, t[1:])]
 
 
+def _capture_agent():
+    return os.environ.get("MINDATTIC_CAPTURE_AGENT") or os.path.join(
+        os.environ.get("LOCALAPPDATA", ""), "MindAttic", "Capture", "bin", "capture.exe")
+
+
+def _new_files(top, ext, skip=("saves",)):
+    """Files under top ending in ext written since this harness started, as full paths."""
+    found = []
+    for d, dirs, files in os.walk(top):
+        dirs[:] = [x for x in dirs if x not in skip]
+        for f in files:
+            p = os.path.join(d, f)
+            if f.lower().endswith(ext):
+                try:
+                    if os.path.getmtime(p) >= _STARTED:
+                        found.append(p)
+                except OSError:
+                    pass
+    return found
+
+
+def _session_video(timeout=30.0):
+    """GG-T1007: the --record session video (MindAttic.Media.Capture finalizes it after the player quits)."""
+    roots = [os.path.join(ROOT, "artifacts"), r"R:\MindAttic\Capture\GridGame.Unity"]
+    deadline = time.time() + timeout
+    while True:
+        vids = [v for r in roots for v in _new_files(r, ".mp4")]
+        if vids or time.time() >= deadline:
+            return max(vids, key=os.path.getmtime) if vids else None
+        time.sleep(1.0)
+
+
+def _publish_preview():
+    """GG-T1007: the run's new artifacts/<run>/ PNGs (and --record video) as a preview set, opened in Media.Viewer."""
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "smoke"
+    agent = _capture_agent()
+    if not os.path.isfile(agent):
+        print(f"[preview] warning: no capture agent at {agent} (set MINDATTIC_CAPTURE_AGENT); no preview set made")
+        return
+    try:
+        art = os.path.join(ROOT, "artifacts")
+        pngs = sorted(_new_files(art, ".png"), key=lambda p: os.path.relpath(p, art).lower())
+        runs = sorted({os.path.relpath(p, art).split(os.sep)[0] for p in pngs})
+        video = _session_video() if RECORD and not HEADLESS else None
+        if not pngs and not video:
+            print("[preview] the run wrote no screenshots or video; no preview set made")
+            return
+        title = " ".join([cmd, *runs])
+        new = [agent, "set", "new", "--title", title, "--repo", "GridGame.Unity"]
+        if PREVIEW_TICKET:
+            new += ["--ticket", PREVIEW_TICKET]
+        out = subprocess.run(new, capture_output=True, text=True, check=True).stdout
+        set_dir = out.strip().splitlines()[-1]
+        for p in pngs:
+            caption = os.path.relpath(p, art).split(os.sep, 1)[-1].replace(os.sep, "/")
+            subprocess.run([agent, "set", "add", set_dir, p, "--caption", caption], capture_output=True, check=True)
+        if video:
+            subprocess.run([agent, "set", "add", set_dir, video, "--caption", "session video"], capture_output=True, check=True)
+        subprocess.run([agent, "set", "show", set_dir], check=False)
+        print(f"[preview] {len(pngs)} screenshot(s){' + video' if video else ''} -> {set_dir}")
+    except (OSError, subprocess.CalledProcessError) as e:
+        detail = getattr(e, "stderr", None)
+        print(f"[preview] warning: preview set failed: {e}{(' ' + detail.strip()) if isinstance(detail, str) and detail.strip() else ''}")
+
+
 if __name__ == "__main__":
     import atexit
+    if "--preview" in sys.argv:
+        i = sys.argv.index("--preview")
+        if i + 1 < len(sys.argv) and re.fullmatch(r"[A-Z][A-Z0-9.]*-T\d+", sys.argv[i + 1]):
+            PREVIEW_TICKET = sys.argv.pop(i + 1)
+        sys.argv.pop(i)
+        # Registered before _quit_launched so it runs after the player has quit (atexit runs last-in, first-out).
+        atexit.register(_publish_preview)
     atexit.register(_quit_launched)
     if "--headless" in sys.argv:
         HEADLESS = True
@@ -3282,3 +3363,6 @@ if __name__ == "__main__":
     elif cmd == "call":
         kv = dict(a.split("=", 1) for a in sys.argv[3:])
         print(json.dumps(call(sys.argv[2], **kv), indent=1))
+    else:
+        print(__doc__)
+        sys.exit(2)
