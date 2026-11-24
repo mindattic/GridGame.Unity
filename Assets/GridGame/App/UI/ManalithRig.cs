@@ -34,6 +34,11 @@ namespace GridGame.App
         private const float Speed = 0.02f, SpeedSpread = 0.5f, Fall = 0.05f, SpinMin = 30f, SpinMax = 180f;
         private const float Life = 6f, FadeSeconds = 1.5f, BurstMin = 8f, BurstMax = 12f;
         private const int BurstCount = 5;
+        /// <summary>GG-T743: the fine dust: tiny shards on their own seed, shed faster and pushed harder down the wake
+        /// the closer the Manalith comes (rate DustRateMin..DustRateMax/s, push DustPushMin..DustPushMax D/s^2).</summary>
+        private const float DustMin = 0.002f, DustMax = 0.006f, DustRateMin = 15f, DustRateMax = 70f;
+        private const float DustPushMin = 0.01f, DustPushMax = 0.08f;
+        private const int DustSeed = 7331, DustMaxParticles = 512;
         /// <summary>The particle systems' loop. The chunk bursts are drawn once over it (8-12 s apart) and repeat with it;
         /// GG-T684: a 600 s loop of ~60 burst entries, stepped by hand, crashed the player inside ParticleSystem.Simulate.</summary>
         private const float LoopSeconds = 120f;
@@ -49,7 +54,7 @@ namespace GridGame.App
         private Transform pivot;
         private Camera cam;
         private RenderTexture rt;
-        private ParticleSystem debris, chunks;
+        private ParticleSystem debris, chunks, dust;
         private float t;
         private bool started;
 
@@ -137,6 +142,7 @@ namespace GridGame.App
             var rocks = RockMeshes(4);
             debris = SteadyDebris(shardMat, rocks);
             chunks = Chunks(shardMat, rocks);
+            dust = Dust(shardMat, rocks);
             Pose();
         }
 
@@ -208,6 +214,32 @@ namespace GridGame.App
                 bursts.Add(new ParticleSystem.Burst(at, (short)BurstCount));
             em.SetBursts(bursts.ToArray());
             return ps;
+        }
+
+        /// <summary>GG-T743: the fine dust, tiny unglowing shards on their own seed; <see cref="SetApproach"/> scales its
+        /// rate and its push along the wake (it starts as if far off, still in the wake's default direction).</summary>
+        private ParticleSystem Dust(Material mat, Mesh[] rocks)
+        {
+            var ps = Shards("Dust", mat, rocks, DustMin, DustMax, new ParticleSystem.MinMaxGradient(Color.black));
+            ps.randomSeed = DustSeed;
+            var main = ps.main;
+            main.maxParticles = DustMaxParticles;
+            ApplyDust(ps, 0f, new GridGame.Core.Content.DebrisDef().Angle);
+            return ps;
+        }
+
+        /// <summary>Sets the dust's rate and its wake push for <paramref name="approach"/>; the wake's screen angle a
+        /// (degrees clockwise from right) is the world direction (cos a, -sin a, 0) seen by this camera.</summary>
+        private static void ApplyDust(ParticleSystem ps, float approach, float wakeAngle)
+        {
+            approach = Mathf.Clamp01(approach);
+            var em = ps.emission;
+            em.rateOverTime = Mathf.Lerp(DustRateMin, DustRateMax, approach);
+            float a = wakeAngle * Mathf.Deg2Rad, push = Mathf.Lerp(DustPushMin, DustPushMax, approach);
+            var force = ps.forceOverLifetime;
+            force.x = Mathf.Cos(a) * push;
+            force.y = -Mathf.Sin(a) * push - Fall;
+            force.z = 0f;
         }
 
         private ParticleSystem Shards(string name, Material mat, Mesh[] rocks, float minSize, float maxSize, ParticleSystem.MinMaxGradient color)
@@ -318,6 +350,7 @@ namespace GridGame.App
             Pose();
             debris.Simulate(dt, true, !started, false);
             chunks.Simulate(dt, true, !started, false);
+            dust.Simulate(dt, true, !started, false);
             started = true;
         }
 
@@ -334,7 +367,7 @@ namespace GridGame.App
                 if (rig.chunks.particleCount > prev) Debug.Log($"[Build] Manalith chunk burst at t={rig.t:0.00}s");
                 prev = rig.chunks.particleCount;
             }
-            Debug.Log($"[Build] Manalith t={rig.t:0.00}s: {rig.debris.particleCount} shards, {rig.chunks.particleCount} chunks alive");
+            Debug.Log($"[Build] Manalith t={rig.t:0.00}s: {rig.debris.particleCount} shards, {rig.chunks.particleCount} chunks, {rig.dust.particleCount} dust alive");
             rig.cam.backgroundColor = background;
             rig.cam.Render();
             rig.cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
@@ -360,13 +393,14 @@ namespace GridGame.App
 
         /// <summary>GG-T734: how close the Manalith has come (0 far off .. 1 at its fullest, from story progress): the closer,
         /// the harder it sheds (up to 2.5x the steady shard rate). <paramref name="wakeAngle"/> is the backdrop's wake
-        /// direction (screen degrees clockwise from right), kept for streaming the fine dust along it.</summary>
+        /// direction (screen degrees clockwise from right): GG-T743 streams the fine dust along it, faster and denser as it nears.</summary>
         public static void SetApproach(float approach, float wakeAngle)
         {
             var rig = Ensure();
             if (rig == null) return;
             var em = rig.debris.emission;
             em.rateOverTime = ShardsPerSecond * Mathf.Lerp(1f, 2.5f, Mathf.Clamp01(approach));
+            ApplyDust(rig.dust, approach, wakeAngle);
         }
 
         /// <summary>GG-T684: at runtime the particle systems play on their own (unscaled) clock, paused while no layer shows
@@ -374,8 +408,8 @@ namespace GridGame.App
         private void Run(bool on)
         {
             if (on == debris.isPlaying) return;
-            if (on) { debris.Play(true); chunks.Play(true); }
-            else { debris.Pause(true); chunks.Pause(true); }
+            if (on) { debris.Play(true); chunks.Play(true); dust.Play(true); }
+            else { debris.Pause(true); chunks.Pause(true); dust.Pause(true); }
         }
 
         private void OnDestroy()
