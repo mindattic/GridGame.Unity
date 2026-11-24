@@ -113,5 +113,15 @@
   {"Key": "story:chapter/ch06", "Related": ["place:cityruins2"]},
   {"Key": "story:chapter/ch07", "Related": ["place:desert"]},
   {"Key": "story:chapter/ch08", "Related": ["place:morrowsshadow"]},
-  {"Key": "story:ending", "Related": []}
+  {"Key": "story:ending", "Related": []},
+  {"Key": "story:prologue", "Related": ["place:greenvalley"]},
+  {"Key": "story:dialogue/interlude_level10_motives", "Related": ["story:prologue"]},
+  {"Key": "story:dialogue/boss_intro_greenvalley", "Related": ["place:greenvalley", "foe:captain"]},
+  {"Key": "story:dialogue/boss_intro_lanternroad", "Related": ["place:lanternroad", "foe:oni02"]},
+  {"Key": "story:dialogue/boss_intro_desert", "Related": ["place:desert", "foe:mechaarmor01"]},
+  {"Key": "story:dialogue/boss_intro_swamp", "Related": ["place:swamp", "foe:swampmistress00"]},
+  {"Key": "story:dialogue/boss_intro_cave", "Related": ["place:cave", "foe:cyclops02"]},
+  {"Key": "story:dialogue/boss_intro_still", "Related": ["place:still", "foe:chronomancer"]},
+  {"Key": "story:dialogue/boss_intro_cityruins", "Related": ["place:cityruins", "foe:ceramicknight06"]},
+  {"Key": "story:dialogue/boss_intro_cathedral", "Related": ["place:cathedral", "foe:hierarch"]}
 ]

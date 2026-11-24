@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Meta;
 using Newtonsoft.Json.Linq;
@@ -7,7 +8,7 @@ using NUnit.Framework;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T923: Codex unlock tracking (SaveData.Codex / CodexRead, save v16).</summary>
+    /// <summary>GG-T923: Codex unlock tracking (SaveData.Codex / CodexRead, save v16); GG-T929: its live hooks.</summary>
     public class CodexTests
     {
         [Test]
@@ -147,6 +148,95 @@ namespace GridGame.Tests
             Assert.That(unknown.Exists, Is.False);
             Assert.That(unknown.Body, Does.StartWith("(missing text: codex:foe/no-such-foe"));
             Assert.That(c.CodexRecordExists("nonsense", "slime01"), Is.False);
+        }
+
+        // ── GG-T929: the live unlock hooks ──
+
+        [Test]
+        public void A_new_game_unlocks_its_party_and_their_starter_kits()
+        {
+            var c = TestKit.Real;
+            var s = Progression.NewGame(c, "Codex");
+            Assert.That(s.Roster, Is.Not.Empty);
+            foreach (var h in s.Roster)
+            {
+                Assert.That(Codex.IsUnlocked(s, CodexKinds.Character, h.ClassId), Is.True, h.ClassId);
+                foreach (var a in h.Known) Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, a), Is.True, $"{h.ClassId}: {a}");
+            }
+        }
+
+        [Test]
+        public void A_hero_who_joins_unlocks_with_everything_it_knows()
+        {
+            var c = TestKit.Real;
+            var s = Progression.NewGame(c, "Codex");
+            var cls = c.Classes.Values.OrderBy(d => d.Id, System.StringComparer.Ordinal)
+                .First(d => d.Team == Team.Hero && s.Hero(d.Id) == null && Progression.StarterKit(d).Count > 0);
+            var h = Summon.Join(c, s, cls.Id);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Character, cls.Id), Is.True);
+            foreach (var a in h.Known) Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, a), Is.True, a);
+        }
+
+        [Test]
+        public void Learning_an_ability_at_the_trainer_unlocks_it()
+        {
+            var c = TestKit.Real;
+            var s = Progression.NewGame(c, "Codex");
+            s.Gold = 1000000;
+            var h = s.Roster.First(x => Abilities.Learnable(c, x).Any(a => !Codex.IsUnlocked(s, CodexKinds.Ability, a.Id) && Abilities.Unmet(c, s, x, a).Count == 0));
+            var learn = Abilities.Learnable(c, h).First(a => !Codex.IsUnlocked(s, CodexKinds.Ability, a.Id) && Abilities.Unmet(c, s, h, a).Count == 0);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, learn.Id), Is.False);
+            Assert.That(Abilities.Learn(c, s, h, learn.Id).Ok, Is.True);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, learn.Id), Is.True);
+            Assert.That(Codex.IsNew(s, CodexKinds.Ability, learn.Id), Is.True, "a live unlock is new until read");
+        }
+
+        [Test]
+        public void A_battle_fought_unlocks_its_place_and_its_foes_win_or_lose()
+        {
+            var c = TestKit.Real;
+            var s = Progression.NewGame(c, "Codex");
+            var stage = c.CampaignStages().First(st => !st.IsTest);
+            var b = BattleEngine.Create(c, BattleFactory.Build(c, s, stage.Id, 11), new List<BattleEvent>());
+            var foe = b.Units.First(u => !u.IsHero).Def.Id;
+            b.Results.Seen.Add(foe);
+            b.Phase = BattlePhase.Defeat;
+            BattleFactory.Commit(c, s, b);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Place, stage.Id), Is.True, "the stage fought, even lost");
+            var theme = c.ThemeOf(stage.Id);
+            if (theme != null) Assert.That(Codex.IsUnlocked(s, CodexKinds.Place, theme.Id), Is.True);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Foe, foe), Is.True, "a foe seen in the battle");
+            var later = c.CampaignStages().Last();
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Place, later.Id), Is.False, "a stage not fought stays locked");
+        }
+
+        [Test]
+        public void Story_crawls_and_the_ending_unlock_their_entries()
+        {
+            var c = TestKit.Real;
+            var s = new SaveData();
+            var chapters = c.Campaign.Chapters.Where(ch => ch?.Id != null).ToList();
+            Assert.That(chapters, Is.Not.Empty);
+            var at = chapters[chapters.Count > 1 ? chapters.Count - 2 : 0];
+            Story.MarkChapterSeen(c, s, at);
+            foreach (var ch in chapters)
+            {
+                bool played = chapters.IndexOf(ch) <= chapters.IndexOf(at);
+                Assert.That(Codex.IsUnlocked(s, CodexKinds.Story, "chapter/" + ch.Id), Is.EqualTo(played), ch.Id);
+            }
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Story, "ending"), Is.False);
+            Story.MarkEndingSeen(s);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Story, "ending"), Is.True);
+        }
+
+        [Test]
+        public void A_dialogue_played_to_its_end_unlocks_its_entry()
+        {
+            var c = TestKit.Real;
+            var s = Progression.NewGame(c, "Codex");
+            var d = c.DialogueOrder.First(x => x?.Id != null);
+            DialogueRunner.PlayHeadless(c, s, d);
+            Assert.That(Codex.IsUnlocked(s, CodexKinds.Story, "dialogue/" + d.Id), Is.True);
         }
     }
 }

@@ -79,6 +79,7 @@ namespace GridGame.Meta
             foreach (var h in s.Roster)
                 foreach (var e in h.Bar)
                     if (e != null && e.StartsWith("item:")) s.AddItem(e.Substring(5), Math.Max(1, c.TryItem(e.Substring(5))?.MaxStack ?? 3));
+            foreach (var h in s.Roster) Codex.UnlockHero(s, h); // GG-T929: the starting party and its starter kits
             return s;
         }
 
@@ -96,6 +97,22 @@ namespace GridGame.Meta
             // waits for the player's female/male pick; the app asks at its next quiet moment (VariantPicker).
             var h = new HeroSave { ClassId = def.Id, VariantPending = true };
             int i = 0;
+            if (IsFamilySpec(c, def))
+            {
+                // GG-T978: starts specced from its family tree. Every start grant is Known; the bar is the default loadout
+                // in its authored order (items may repeat, moves don't), then any further start grant while a slot is free.
+                foreach (var id in StarterKit(c, def))
+                    if (!h.Known.Contains(id)) h.Known.Add(id);
+                foreach (var entry in def.DefaultLoadout)
+                {
+                    if (string.IsNullOrEmpty(entry) || i >= MaxBarSlots) continue;
+                    if (!entry.StartsWith("item:") && h.Bar.Take(i).Contains(entry)) continue;
+                    h.Bar[i++] = entry;
+                }
+                foreach (var id in h.Known)
+                    if (i < MaxBarSlots && !h.Bar.Take(i).Contains(id)) h.Bar[i++] = id;
+                return h;
+            }
             foreach (var id in StarterKit(def))
             {
                 h.Known.Add(id);
@@ -106,9 +123,81 @@ namespace GridGame.Meta
             return h;
         }
 
+        /// <summary>GG-T978/GG-T979: the class's family tree: the skill tree named by its <see cref="ClassDef.Family"/> when
+        /// that is a families.json family with a tree (GG-T977, the tree <see cref="ContentLoader.ValidateFamilyTrees"/>
+        /// checks <see cref="ClassDef.StartNodes"/> against), else its <see cref="ClassDef.HomeTree"/> when that is a family
+        /// tree, else null (a role tree, or none). It is the hero's home tree (<see cref="Talents.HomeTree"/>) whenever set.</summary>
+        public static SkillTreeDef FamilyTree(ContentDb c, ClassDef def)
+        {
+            if (c == null || def == null) return null;
+            foreach (var id in new[] { def.Family, def.HomeTree })
+            {
+                var t = string.IsNullOrEmpty(id) ? null : c.TrySkillTree(id);
+                if (t != null && c.TryFamily(t.Id) != null) return t;
+            }
+            return null;
+        }
+
+        /// <summary>GG-T979: how the Build screen names a tree: a family tree as "Shadow family", a role tree by its name.</summary>
+        public static string TreeLabel(ContentDb c, SkillTreeDef t)
+        {
+            if (t == null) return "";
+            var family = c?.TryFamily(t.Id);
+            return family != null ? $"{family.Name ?? t.Name ?? t.Id} family" : t.Name ?? t.Id;
+        }
+
+        /// <summary>GG-T978: the <see cref="ClassDef.StartNodes"/> that resolve in the class's <see cref="FamilyTree"/>, in
+        /// listed order; empty when the class is not on a family tree (the DefaultLoadout / role-tree rules apply).</summary>
+        public static List<SkillNodeDef> StartNodes(ContentDb c, ClassDef def)
+        {
+            var list = new List<SkillNodeDef>();
+            var t = FamilyTree(c, def);
+            if (t == null || def.StartNodes == null) return list;
+            foreach (var id in def.StartNodes)
+            {
+                var n = t.Nodes.FirstOrDefault(x => x != null && string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+                if (n != null && !list.Contains(n)) list.Add(n);
+            }
+            return list;
+        }
+
+        /// <summary>GG-T978: does a new hero of this class start specced from its family tree's start nodes?</summary>
+        public static bool IsFamilySpec(ContentDb c, ClassDef def) => StartNodes(c, def).Count > 0;
+
+        /// <summary>GG-T978: the abilities the class's start nodes grant, in start-node order (a stat node grants none).</summary>
+        public static List<string> StartGrants(ContentDb c, ClassDef def) =>
+            StartNodes(c, def).Where(n => !string.IsNullOrEmpty(n.Grants)).Select(n => n.Grants).Distinct().ToList();
+
+        /// <summary>GG-T978: the abilities on the class's own corner of its family tree (nodes whose
+        /// <see cref="SkillNodeDef.SignatureOf"/> is this class), start nodes or not. Empty off a family tree.</summary>
+        public static List<string> SignatureGrants(ContentDb c, ClassDef def)
+        {
+            var t = FamilyTree(c, def);
+            if (t == null) return new List<string>();
+            return t.Nodes.Where(n => n != null && !string.IsNullOrEmpty(n.Grants) &&
+                                      string.Equals(n.SignatureOf, def.Id, StringComparison.OrdinalIgnoreCase))
+                .Select(n => n.Grants).Distinct().ToList();
+        }
+
         /// <summary>The abilities of a class's default loadout, in bar order (items left out).</summary>
         public static List<string> KitAbilities(ClassDef def) =>
             def == null ? new List<string>() : def.DefaultLoadout.Where(e => e != null && !e.StartsWith("item:")).Distinct().ToList();
+
+        /// <summary>The class's kit with content in hand (GG-T978): on a family tree, the default loadout's abilities and then
+        /// every further start-node grant; otherwise <see cref="KitAbilities(ClassDef)"/>.</summary>
+        public static List<string> KitAbilities(ContentDb c, ClassDef def)
+        {
+            var kit = KitAbilities(def);
+            if (!IsFamilySpec(c, def)) return kit;
+            foreach (var id in StartGrants(c, def)) if (!kit.Contains(id)) kit.Add(id);
+            return kit;
+        }
+
+        /// <summary>What a new hero knows with content in hand (GG-T978): on a family tree, its whole
+        /// <see cref="KitAbilities(ContentDb, ClassDef)"/> (every start grant, plus any Universal loadout move no node
+        /// grants); otherwise <see cref="StarterKit(ClassDef)"/>.</summary>
+        public static List<string> StarterKit(ContentDb c, ClassDef def) =>
+            IsFamilySpec(c, def) ? KitAbilities(c, def) : StarterKit(def);
 
         /// <summary>What a new hero knows (GG-T388): the kit's first ability (the role's baseline: Cleave, Taunt, Heal …) and
         /// its third, the class's own signature (§23.2.2's slot 3: Reckless Swing, Bulwark, Lifegift …). A kit of two or
@@ -131,8 +220,8 @@ namespace GridGame.Meta
         {
             var def = c.TryClass(h?.ClassId);
             if (def == null || h.Domesticated) return;
-            var starter = StarterKit(def);
-            var rest = KitAbilities(def).Where(id => !starter.Contains(id)).ToList();
+            var starter = StarterKit(c, def);
+            var rest = KitAbilities(c, def).Where(id => !starter.Contains(id)).ToList(); // GG-T978: none on a family tree
             int level = Level(h);
             while (h.Bar.Count < MaxBarSlots) h.Bar.Add(null);
             for (int k = 0; k < rest.Count && k < VeteranKitLevels.Length; k++)
@@ -228,8 +317,8 @@ namespace GridGame.Meta
             var result = new List<(string, string, int)>();
             foreach (var t in c.SkillTrees.Values)
             {
-                int points = t.Nodes.Where(n => h.Known.Contains(n.Grants)).Sum(n => n.Cost);
-                if (points > 0) result.Add((t.Id, t.Name, points));
+                int points = t.Nodes.Where(n => h.Known.Contains(n.Grants) || Talents.IsStartNode(c, h, t, n)).Sum(n => n.Cost); // GG-T978
+                if (points > 0) result.Add((t.Id, TreeLabel(c, t), points)); // GG-T979: a family tree reads "Shadow family"
             }
             return result.OrderByDescending(x => x.Item3).ThenBy(x => x.Item2, StringComparer.OrdinalIgnoreCase).ToList();
         }
@@ -267,7 +356,8 @@ namespace GridGame.Meta
         }
 
         /// <summary>A one-line "what this hero is becoming" summary for the Build screen, e.g.
-        /// "Knight · Guardian 7 / Cleric 3 — a tank who heals". Built only from the class name, its
+        /// "Knight · Guardian 7 / Cleric 3 — a tank who heals" (GG-T979: on a family tree, "Thief · Shadow family 4 /
+        /// Vanguard family 3 — a striker who holds the line"). Built only from the class name, its
         /// <see cref="TreeInvestment"/> and its <see cref="ClassDef.Role"/> — never an authored string that
         /// could drift from the numbers behind it.</summary>
         public static string BuildSummary(ContentDb c, HeroSave h)
@@ -277,7 +367,8 @@ namespace GridGame.Meta
             string treePart = trees.Count == 0 ? "no tree investment yet" : string.Join(" / ", trees.Take(3).Select(t => $"{t.TreeName} {t.Points}"));
             string tail = RoleWord(def.Role);
             const int crossTreeFlavorThreshold = 3;
-            var cross = trees.FirstOrDefault(t => !string.Equals(t.TreeId, def.HomeTree, StringComparison.OrdinalIgnoreCase));
+            string home = Talents.HomeTree(c, h)?.Id ?? def.HomeTree; // GG-T979: the family tree when the class has one
+            var cross = trees.FirstOrDefault(t => !string.Equals(t.TreeId, home, StringComparison.OrdinalIgnoreCase));
             if (cross.TreeId != null && cross.Points >= crossTreeFlavorThreshold)
             {
                 string verb = TreeVerb(cross.TreeId);
@@ -313,6 +404,16 @@ namespace GridGame.Meta
                 case "mage": return "casts";
                 case "cleric": return "heals";
                 case "alchemist": return "supports";
+                // GG-T979: the families (families.json), each by what every member does
+                case "vanguard": return "holds the line";
+                case "blade": return "duels";
+                case "brawn": return "brawls";
+                case "shadow": return "skirmishes";
+                case "wild": return "hunts";
+                case "machina": return "builds";
+                case "arcane": return "casts";
+                case "occult": return "curses";
+                case "grace": return "mends";
                 default: return null;
             }
         }
@@ -392,15 +493,33 @@ namespace GridGame.Meta
         public bool Crucible;
         /// <summary>Waves fully cleared before the party fell or left.</summary>
         public int CrucibleWaves;
-        /// <summary>The save's best waves-survived after this run.</summary>
+        /// <summary>The save's best waves-survived after this run, in this run's turn mode (GG-T945).</summary>
         public int CrucibleBest;
         public bool CrucibleNewBest;
+        /// <summary>The save's best haul after this run, in this run's turn mode (GG-T945).</summary>
+        public int CrucibleBestGold;
+        /// <summary>The turn mode this run's record is kept under (GG-T945, <see cref="TurnRules.RecordMode"/>).</summary>
+        public TurnMode CrucibleMode;
         /// <summary>The battle's best combo window (§1.2.8, GG-T852): its rank (None when no combo ran) and score.</summary>
         public ComboRank BestComboRank;
         public int BestComboScore;
         /// <summary>The hero class with the most combo points earned as a supporter this battle (null when none), and its points.</summary>
         public string TopSupporter;
         public int TopSupporterPoints;
+        /// <summary>GG-T944 (§2.13.1): the party turns the battle took (<see cref="BattleResults.PartyTurns"/>) and the
+        /// commands it took (<see cref="BattleResults.ActionsTaken"/>, Guards included).</summary>
+        public int PartyTurns;
+        public int Actions;
+
+        /// <summary>The results row's value: "N turns", or "N turns, M actions" when several heroes acted in a turn
+        /// (the two differ). Empty when no turn was played.</summary>
+        public string TurnsLabel()
+        {
+            if (PartyTurns <= 0 && Actions <= 0) return "";
+            string turns = PartyTurns == 1 ? "1 turn" : $"{PartyTurns} turns";
+            if (Actions == PartyTurns) return turns;
+            return turns + (Actions == 1 ? ", 1 action" : $", {Actions} actions");
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -754,6 +873,8 @@ namespace GridGame.Meta
                 OrbsLeft = battle.Bank?.Count ?? 0,
                 BestComboRank = r.BestComboRank,
                 BestComboScore = r.BestComboScore,
+                PartyTurns = r.PartyTurns,
+                Actions = r.ActionsTaken,
             };
             // GG-T852: the top supporter, ties to the lower class id so it is deterministic.
             foreach (var kv in r.ComboSupporterPoints.OrderBy(kv => kv.Key, StringComparer.Ordinal))
@@ -875,6 +996,9 @@ namespace GridGame.Meta
             }
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             s.LastStage = battle.Stage.Id;
+            // GG-T929: the place fought in, then everything else the battle showed (foes seen, loot, joiners, kits).
+            Codex.UnlockStage(c, s, battle.Stage.Id);
+            Codex.Sync(c, s);
             s.UpdatedUtc = DateTime.UtcNow;
             return rep;
         }
@@ -890,6 +1014,7 @@ namespace GridGame.Meta
             Progression.TrainTo(c, h); // a hero met on the road arrives trained to their level (GG-T388)
             h.Hp = hp >= maxHp ? 0 : hp;
             s.Roster.Add(h);
+            Codex.UnlockHero(s, h); // GG-T929
             bool party = s.Party.Count < Progression.MaxPartySize;
             if (party) s.Party.Add(h.ClassId);
             return party;
@@ -2337,25 +2462,48 @@ namespace GridGame.Meta
 
     public static class Abilities
     {
-        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only).</summary>
+        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only).
+        /// GG-T980: a class on a family tree (<see cref="Progression.FamilyTree"/>) has no separate class list: its gold list
+        /// is its kit (<see cref="Progression.KitAbilities(ContentDb, ClassDef)"/>: loadout and start grants) and its own
+        /// signature grants (<see cref="Progression.SignatureGrants"/>), all at <see cref="KitPrice"/>, plus the general
+        /// catalog less every family move (<see cref="FamilyMoves"/>): a sibling's corner, or a shared family node, comes only
+        /// through the tree. A role-tree class keeps its <see cref="ClassDef.Abilities"/> list and the whole catalog.</summary>
         public static List<AbilityDef> Learnable(ContentDb c, HeroSave h)
         {
             var def = c.TryClass(h.ClassId);
             var set = new List<AbilityDef>();
             if (h.Domesticated) return set; // a tamed monster fights with its own instincts, never a trainer's skills (GG-T303)
-            if (def != null)
-                foreach (var id in def.Abilities)
-                {
-                    var a = c.TryAbility(id);
-                    if (a != null && IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a)) set.Add(a);
-                }
+            bool family = Progression.FamilyTree(c, def) != null;
+            var own = def == null ? new List<string>()
+                : family ? Progression.KitAbilities(c, def).Concat(Progression.SignatureGrants(c, def)).ToList()
+                : def.Abilities;
+            foreach (var id in own)
+            {
+                var a = c.TryAbility(id);
+                if (a != null && IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a)) set.Add(a);
+            }
+            var familyMoves = family ? FamilyMoves(c) : null;
             foreach (var a in c.Abilities.Values)
                 if (IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a) &&
-                    (a.Kind == AbilityKind.Spell || a.Universal))
+                    (a.Kind == AbilityKind.Spell || a.Universal) && (familyMoves == null || !familyMoves.Contains(a.Id)))
                     set.Add(a);
             // GG-T388: the hero's own kit moves first (the cheapest, and what it was built to do), then by price.
-            var kit = Progression.KitAbilities(def);
+            var kit = Progression.KitAbilities(c, def); // GG-T978: start grants too on a family tree
+            kit.AddRange(Progression.SignatureGrants(c, def)); // GG-T980: and its own signature grants, as IsKitMove
             return set.OrderBy(a => kit.Contains(a.Id) ? 0 : 1).ThenBy(a => Price(a)).ThenBy(a => a.Name).ToList();
+        }
+
+        /// <summary>GG-T980: every ability some family tree's node grants (a skill tree whose id is a families.json family).
+        /// A hero on a family tree buys these only with skill points, except its own start and signature grants.</summary>
+        public static HashSet<string> FamilyMoves(ContentDb c)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (c == null) return set;
+            foreach (var t in c.SkillTrees.Values)
+                if (t != null && c.TryFamily(t.Id) != null)
+                    foreach (var n in t.Nodes)
+                        if (n != null && !string.IsNullOrEmpty(n.Grants)) set.Add(n.Grants);
+            return set;
         }
 
         /// <summary>Boss-phase abilities only an enemy fires (an <c>OnEnterAbility</c>): free, so never learnable.</summary>
@@ -2375,9 +2523,15 @@ namespace GridGame.Meta
         /// it doesn't know yet — a third of a stranger's skill, so a fresh party can fill its bars from early battle gold.</summary>
         public const int KitPrice = 100;
 
-        /// <summary>Is <paramref name="a"/> one of this hero's own kit moves (its class's default loadout)?</summary>
-        public static bool IsKitMove(ContentDb c, HeroSave h, AbilityDef a) =>
-            a != null && h != null && Progression.KitAbilities(c.TryClass(h.ClassId)).Contains(a.Id);
+        /// <summary>Is <paramref name="a"/> one of this hero's own kit moves (its class's default loadout)? GG-T978: on a family
+        /// tree also anything its start nodes grant and anything on its own signature nodes (<see cref="SkillNodeDef.SignatureOf"/>),
+        /// so those are trainer-priced at <see cref="KitPrice"/> and waived from their Requires (<see cref="RequiresWaived"/>).</summary>
+        public static bool IsKitMove(ContentDb c, HeroSave h, AbilityDef a)
+        {
+            if (a == null || h == null) return false;
+            var def = c.TryClass(h.ClassId);
+            return Progression.KitAbilities(c, def).Contains(a.Id) || Progression.SignatureGrants(c, def).Contains(a.Id);
+        }
 
         /// <summary>The trainer's price for this hero: <see cref="KitPrice"/> for its own kit moves, else <see cref="Price(AbilityDef)"/>,
         /// and nothing for the guided first skill (GG-T180).</summary>
@@ -2390,7 +2544,14 @@ namespace GridGame.Meta
         {
             var onHeroLists = new HashSet<string>();
             foreach (var cls in c.Classes.Values)
-                if (cls.Team == Team.Hero) foreach (var id in cls.Abilities) onHeroLists.Add(id);
+                if (cls.Team == Team.Hero)
+                {
+                    // GG-T980: a family-tree class's gold list is its kit and signature grants, not ClassDef.Abilities.
+                    var ids = Progression.FamilyTree(c, cls) != null
+                        ? Progression.KitAbilities(c, cls).Concat(Progression.SignatureGrants(c, cls))
+                        : cls.Abilities;
+                    foreach (var id in ids) onHeroLists.Add(id);
+                }
             return c.Abilities.Values
                 .Where(a => IsHeroUsable(a) && (a.Kind == AbilityKind.Spell || a.Universal || onHeroLists.Contains(a.Id)))
                 .OrderBy(a => a.Id).ToList();
@@ -2432,10 +2593,12 @@ namespace GridGame.Meta
             if (a.Revives) k.Add("revive");
             if (a.Escape) k.Add("escape");
             if (a.BonusVsTag != null) k.Add("vs:" + a.BonusVsTag);
-            if (a.IsTeleport) k.Add("teleport");
+            if (a.Vaults) k.Add("vault"); // GG-T868
+            else if (a.IsTeleport) k.Add("teleport");
             if (a.Knockback > 0) k.Add("knockback");
             if (a.Pull > 0) k.Add("pull");
             if (a.Magnetizes > 0) k.Add("magnetize"); // GG-T878
+            if (a.Vanishes) k.Add("vanish"); // GG-T861
             if (a.SwapsPlaces) k.Add("swap");
             if (a.StepBack > 0) k.Add("stepback");
             if (a.HastenU > 0f) k.Add("hasten");
@@ -2443,6 +2606,7 @@ namespace GridGame.Meta
             if (a.SwapsTurns) k.Add("countermarch"); // GG-T336
             if (a.Echoes) k.Add("echo"); // GG-T388
             if (a.RedirectsDebuffs) k.Add("redirect"); // GG-T887
+            if (a.Afterimage > 0) k.Add("afterimage"); // GG-T867
             if (a.StealsBoon) k.Add("swipeboon"); // GG-T866
             return string.Join("|", k);
         }
@@ -2450,12 +2614,13 @@ namespace GridGame.Meta
         /// <summary>Does the ability do anything at all when it resolves? (GG-T183 found four that did nothing.)</summary>
         public static bool HasEffect(AbilityDef a) =>
             a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.RemovesDebuffs || a.RemovesBuff != null || a.StealsMana || a.DrainsOrbs > 0 ||
-            a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.Magnetizes > 0 || a.SwapsPlaces ||
-            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs || a.StealsBoon; // GG-T866: a Swipe Boon steals a boon; GG-T887: a Redirect Flow moves debuffs; GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
+            a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.Magnetizes > 0 || a.Vanishes || a.SwapsPlaces ||
+            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs || a.StealsBoon || a.Afterimage > 0; // GG-T867: an Afterimage dashes; GG-T866: a Swipe Boon steals a boon; GG-T887: a Redirect Flow moves debuffs; GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
 
         /// <summary>GG-T592 (§25.6.5): is <paramref name="a"/> waived from its <see cref="AbilityDef.Requires"/> for this hero?
         /// A hero's own kit moves are (what its class was built to do: a fresh Red Mage is never locked out of its own
-        /// Fireball), and so is the guided first skill (GG-T180), which the onboarding chain must always be able to finish.</summary>
+        /// Fireball; GG-T978: on a family tree that takes in its start-node grants and its SignatureOf nodes), and so is the guided first skill
+        /// (GG-T180), which the onboarding chain must always be able to finish.</summary>
         public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
             IsKitMove(c, h, a) || Training.Guides(s, a);
 
@@ -2483,6 +2648,7 @@ namespace GridGame.Meta
             bool guided = Training.Guides(s, a);
             s.Gold -= price;
             h.Known.Add(a.Id);
+            Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
             if (!guided) return Result.Success($"Learned {a.Name}");
             // GG-T180 (§25.0.9): the guided first skill goes straight onto the battle bar and ends the onboarding chain.
             int slot = Training.SlotFor(s, h);
@@ -2699,6 +2865,7 @@ namespace GridGame.Meta
             h.SkillPoints += Formulas.SkillPointsForLevelUp(1, Progression.Level(h));
             Progression.TrainTo(c, h); // trained to the level they arrive at (GG-T388)
             s.Roster.Add(h);
+            Codex.UnlockHero(s, h); // GG-T929
             if (s.Party.Count < Progression.MaxPartySize) s.Party.Add(h.ClassId);
             return h;
         }

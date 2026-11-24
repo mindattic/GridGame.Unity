@@ -68,6 +68,9 @@ namespace GridGame.Core.Bot
         /// <summary>GG-T306: windows in a row without drawing blood after which the smart bot drags with no think time.</summary>
         public const int StallHurry = 4;
         private bool lockedOut;
+        /// <summary>GG-T935: the foes' pincer-closing end tiles for this decision (<see cref="EnemyPincerEnds"/>), worked
+        /// out once per Decide on first need; null until then.</summary>
+        private Dictionary<Coord, float> pincerEnds;
 
         public HeroBot(int seed, float randomness = 0f)
         {
@@ -117,6 +120,7 @@ namespace GridGame.Core.Bot
         private BattleCommand Decide(BattleState s, bool movesOnly)
         {
             if (!movesOnly) lockedOut = false;
+            pincerEnds = null; // GG-T935: worked out afresh for this board
             // GG-T308: a stall is counted per party turn (the party now takes several actions in one); §2.13 the mode says who acted.
             bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && TurnRules.HasActed(s, u));
             if (TimelineAware && freshWindow && !movesOnly) CountStall(s);
@@ -339,11 +343,12 @@ namespace GridGame.Core.Bot
             // Mild preference for staying out of melee range of soon-acting enemies when nothing else is on offer.
             if (pv.Positions.TryGetValue(hero.Id, out var at))
             {
+                bool? decoy = null; // GG-T862: a ninja with Substitution up is hard to lose (asked only when it matters)
                 foreach (var e in s.LivingList(Team.Enemy))
                 {
                     if (!pv.Positions.TryGetValue(e.Id, out var ep)) continue;
                     int d = Math.Abs(ep.X - at.X) + Math.Abs(ep.Y - at.Y);
-                    if (d == 1 && hero.HpFraction < 0.35f) score -= 3f;
+                    if (d == 1 && hero.HpFraction < 0.35f) score -= (decoy ??= Triggers.SubstituteReady(s, hero)) == true ? 1f : 3f;
                     score += (lone ? 0.15f : 0.05f) * (8 - Math.Min(8, d)); // a lone hero closes in to bring its bar to bear
                 }
                 if (TimelineAware && pv.Pincers.Count == 0)
@@ -455,6 +460,14 @@ namespace GridGame.Core.Bot
                 return ScoreAbility(s, caster, copy, plan.Value.Anchor) - 1f;
             }
             if (a.Magnetizes > 0) return Magnetize.Value(s, caster, a, anchor); // GG-T878: only when two or more metal foes would line up
+            if (WallRaised(s, a) != null)
+            {
+                // GG-T935: a barricade only where it stops a charge short of a hero, or (the smart bot) shuts a foe's pincer end.
+                if (TimelineAware && pincerEnds == null) pincerEnds = EnemyPincerEnds(s);
+                return BarricadeValue(s, anchor, TimelineAware ? pincerEnds : null);
+            }
+            if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861: slip a threat, or roll for a pincer landing
+            if (a.Vaults) return PoleVault.Value(s, caster, anchor); // GG-T868: vault out of a box or onto a pincer square
             if (a.IsTeleport)
             {
                 var copy = s.Clone();
@@ -465,8 +478,17 @@ namespace GridGame.Core.Bot
                 return sc - 2f;
             }
             if (a.RedirectsDebuffs) return RedirectFlow.Value(s, caster, s.UnitAt(anchor)); // GG-T887: lift a harmful debuff onto a foe in reach
+            if (a.Afterimage > 0) return Afterimage.Value(s, caster, anchor); // GG-T867: only a dash whose afterimage closes a pincer
             if (a.StealsBoon) return SwipeBoon.Value(s, caster, s.UnitAt(anchor)); // GG-T866: only a foe wearing a boon is worth robbing
+            if (Intimidate.Is(s.Content, a)) return Intimidate.Value(s, a, caster, anchor); // GG-T884: a roar, scored on the tiles the frightened foes back into
             if (EmpPulse.Is(a)) return EmpPulse.Value(s, caster, a, anchor); // GG-T879: jam a charging tech foe, set off the mines
+            if (FloatSpell.Is(a))
+            {
+                // GG-T872: float a Heavy foe a mover can then set into a pincer, or a hero whose way in crosses ground hazards.
+                float fv = FloatSpell.Value(s, caster, s.UnitAt(anchor));
+                return fv > 0f ? fv - a.Cost * OrbPenalty(s, false) : 0f;
+            }
+            if (AnchorStance.Is(s, a)) return AnchorStance.Value(s, caster); // GG-T882: only when a foe's shove or hook is queued at the Warden or an ally beside it
             var targets = TargetResolver.Collect(s, a, caster, anchor);
             float score = 0f;
             bool close = FightIsClose(s);
@@ -499,6 +521,7 @@ namespace GridGame.Core.Bot
                     }
                     var curse = s.Content.TryBuff(a.ApplyBuff);
                     if (curse != null && curse.Links) score += CurseLink.Value(s, t); // GG-T873: link a pincer target to a foe out of reach
+                    else if (curse != null && curse.Roots) score += BrambleSnare.Value(s, t) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T881: root a Kiter, a fleeing foe, a Line charger or a hooker
                     else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
                     if (curse != null) score += ShredValue(t, curse) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T864: Flay a plated or tough foe
                     if (a.StealsMana) score += s.Bank.IsFull ? 0f : 3f;
@@ -538,7 +561,9 @@ namespace GridGame.Core.Bot
                         var pdir = Math.Abs(px) >= Math.Abs(py) ? new Coord(Math.Sign(px), 0) : new Coord(0, Math.Sign(py));
                         score += 12f * RegionBoard.ShoveFloorValue(s, t, pdir, a.Pull, caster); // GG-T368: drag a foe into a hole
                     }
-                    if (a.SwapsPlaces) score += t.IsHeavy || t.IsRooted ? -5f : 2f; // GG-T891/GG-T920: a Heavy or Rooted foe won't trade places
+                    // GG-T891/GG-T920: a Heavy or Rooted foe won't trade places. GG-T865: a swap is worth the hazard or pincer
+                    // it drops the foe into (Shadow Swap does nothing else, so it's never cast for its own sake).
+                    if (a.SwapsPlaces) score += SwapValue(s, caster, t) + (a.BaseDamage > 0 && !t.WontBudge && !t.IsRooted ? 3f : 0f);
                 }
                 else
                 {
@@ -578,7 +603,9 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += EarthsplitValue(s, a, caster, anchor); // GG-T869: cracks under a Heavy foe or across a foe's way in
             score += WallValue(s, a, caster, anchor); // GG-T932: a Firewall across a foe's way in, never over the party
+            score += OilFlask.Value(s, a, caster, anchor); // GG-T886: oil where a Fire ally can light it under foes
             score += GravityWell.Value(s, a, anchor); // GG-T883: a Gravity Well only when it grows the next pincer's catch
             score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
             score += TimeBombValue(s, a, anchor); // GG-T874: a Time Bomb on a foe beside (or a shove from) its friends
@@ -604,6 +631,76 @@ namespace GridGame.Core.Bot
             }
             if (a.Kind == AbilityKind.Item) score -= lone ? 1f : 4f;
             return score;
+        }
+
+        /// <summary>GG-T935 (§7, §14.23): the standing wall <paramref name="a"/> raises on its picked tile (a MarkTiles on the
+        /// Target of a state that blocks, isn't a hole and isn't a hazard: the Machinist's barricade), or null.</summary>
+        public static TileStateDef WallRaised(BattleState s, AbilityDef a)
+        {
+            if (a == null || a.RuleEffects.Count == 0 || s?.Content == null) return null;
+            foreach (var fx in a.RuleEffects)
+                if (fx != null && fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Target
+                    && s.Content.TryTileState(fx.State) is TileStateDef d && d.Blocks && !d.Pit && !d.Hazard)
+                    return d;
+            return null;
+        }
+
+        /// <summary>
+        /// GG-T935 (§7, §14.23): what raising a barricade (<see cref="WallRaised"/>) on the empty tile <paramref name="anchor"/>
+        /// is worth. Situational only, so it is never raised for its own sake:
+        /// <list type="bullet">
+        /// <item><b>A charge stopped.</b> A foe's pending line charge (its cast's locked <c>LineTiles</c>, in the order it runs)
+        /// crosses the tile with a hero beyond it: a wall there stops it short (<see cref="RegionBoard.StopsCharge"/>), so each
+        /// hero beyond is worth 4 plus the trample spared (0.6 per HP it would take, +8 when it would fall). A line already
+        /// stopped before the tile spares nothing more.</item>
+        /// <item><b>A pincer shut</b> (smart bot only: <paramref name="pincerEnds"/> non-null): the tile is where a foe's planned
+        /// walk ends to close a pincer on a hero (<see cref="EnemyPincerEnds"/>); a wall there is worth 6 plus half that plan's
+        /// score.</item>
+        /// </list>
+        /// Otherwise 0.
+        /// </summary>
+        public static float BarricadeValue(BattleState s, Coord anchor, Dictionary<Coord, float> pincerEnds = null)
+        {
+            if (!BattleState.InBounds(anchor) || s.IsBlock(anchor) || s.UnitAt(anchor) != null || s.Region.At(anchor) != null) return 0f;
+            float value = 0f;
+            foreach (var cast in s.Timeline)
+            {
+                if (cast.Kind != TimelineKind.Cast || cast.CasterTeam != Team.Enemy || cast.ChargeShape != ChargeShape.Line || cast.LineTiles == null) continue;
+                var caster = s.UnitById(cast.OwnerId);
+                var charge = s.Content.TryAbility(cast.AbilityId);
+                if (caster == null || !caster.Alive || charge == null) continue;
+                bool past = false;
+                foreach (var tile in cast.LineTiles)
+                {
+                    if (!past)
+                    {
+                        if (RegionBoard.StopsCharge(s, tile)) break; // already walled short of here
+                        if (tile == anchor) past = true;
+                        continue;
+                    }
+                    if (RegionBoard.StopsCharge(s, tile)) break;
+                    var h = s.UnitAt(tile);
+                    if (h == null || !h.IsHero || !h.Alive) continue;
+                    int dmg = (int)Math.Round(Formulas.SpellDamage(charge, h, false) * Formulas.CasterPower(charge, caster));
+                    value += 4f + Math.Min(h.Hp, Math.Max(0, dmg)) * 0.6f + (dmg >= h.Hp ? 8f : 0f);
+                }
+            }
+            if (pincerEnds != null && pincerEnds.TryGetValue(anchor, out var shut)) value += 6f + 0.5f * shut;
+            return value;
+        }
+
+        /// <summary>GG-T935: every tile a foe's planned walk ends on to close a pincer on a hero (<see cref="EnemyPlanner.PlanPincer"/>
+        /// of kind Complete), with the best such plan's score. Pure: the planner only looks.</summary>
+        public static Dictionary<Coord, float> EnemyPincerEnds(BattleState s)
+        {
+            var ends = new Dictionary<Coord, float>();
+            foreach (var e in s.LivingList(Team.Enemy))
+            {
+                var plan = EnemyPlanner.PlanPincer(s, e);
+                if (plan == null || plan.Kind != PincerPlanKind.Complete || plan.Path.Count == 0 || plan.End == e.Pos) continue;
+                if (!ends.TryGetValue(plan.End, out var was) || plan.Score > was) ends[plan.End] = plan.Score;
+            }
+            return ends;
         }
 
         /// <summary>
@@ -790,6 +887,57 @@ namespace GridGame.Core.Bot
             return gain > 0f ? gain - cost : 0f;
         }
 
+        /// <summary>
+        /// GG-T869 (§7, §14.21): what an Earthsplitter-style slam (a MarkTiles <see cref="RuleArea.Line"/> of a state that a
+        /// Heavy unit breaks through, <see cref="TileStateDef.HeavyBecomes"/>) aimed at <paramref name="anchor"/> is worth:
+        /// a Heavy foe that can fall standing on a fresh crack falls at once (worth 8 plus half the HP the fall costs it);
+        /// a crack on a foe's shortest walk to its nearest hero, within 4 steps, is a chokepoint it must crack further or go
+        /// around (3 for the first such foe, +1 each further, +4 when that foe is Heavy and would break through on it). A
+        /// hero standing on a crack costs 1. Nothing when it would crack no foe's tile and no foe's way: never superfluous.
+        /// </summary>
+        public static float EarthsplitValue(BattleState s, AbilityDef a, Unit caster, Coord anchor)
+        {
+            if (caster == null || a.RuleEffects.Count == 0) return 0f;
+            RuleEffectDef line = null;
+            TileStateDef st = null;
+            foreach (var fx in a.RuleEffects)
+                if (fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Line && s.Content.TryTileState(fx.State) is TileStateDef d && d.HeavyBecomes != null) { line = fx; st = d; break; }
+            if (line == null) return 0f;
+            var pit = s.Content.TryTileState(st.HeavyBecomes);
+            var heroes = s.LivingList(Team.Hero);
+            var foes = s.LivingList(Team.Enemy);
+            float value = 0f, costs = 0f;
+            var counted = new HashSet<int>();
+            int onTheWay = 0;
+            foreach (var c in RegionRuleCatalog.LineTiles(caster.Pos, anchor, line.Count))
+            {
+                if (s.IsBlock(c)) continue;
+                if (s.Region.At(c) != null) continue; // KeepMarks: a marked tile stays as it is
+                var occ = s.UnitAt(c);
+                if (occ != null && occ.IsHero) { costs += 1f; continue; }
+                if (occ != null && occ.Team == Team.Enemy && occ.IsHeavy && !occ.IsMultiTile && occ.Pos == c && !RegionBoard.Immune(occ, st.Id))
+                {
+                    value += 8f + (pit != null ? pit.FallDamage * occ.MaxHp * 0.5f : 0f);
+                    counted.Add(occ.Id);
+                    continue;
+                }
+                foreach (var e in foes)
+                {
+                    if (counted.Contains(e.Id) || e.IsMultiTile || e.IsCorpse || e.IsRemains || e.IsEgg) continue;
+                    int toTile = e.Pos.Manhattan(c);
+                    if (toTile == 0 || toTile > 4) continue;
+                    int best = int.MaxValue;
+                    Coord goal = default;
+                    foreach (var h in heroes) { int d = e.Pos.Manhattan(h.Pos); if (d < best) { best = d; goal = h.Pos; } }
+                    if (best == int.MaxValue || toTile + c.Manhattan(goal) != best) continue; // not on its way in
+                    counted.Add(e.Id);
+                    value += ++onTheWay == 1 ? 3f : 1f;
+                    if (e.IsHeavy) value += 4f;
+                }
+            }
+            return value <= 0f ? 0f : value - costs;
+        }
+
         // ── GG-T292: reading the bar (the smart bot) ────────────────────────────────────────────────────────────
 
         /// <summary>Clock ticks until this foe next acts: its charge landing if it holds one, else its turn icon; -1 never.</summary>
@@ -873,19 +1021,24 @@ namespace GridGame.Core.Bot
             {
                 var charge = EnemyPlanner.PlanCast(s, f, false);
                 if (charge != null)
-                    return charge.Target != null && charge.Target.IsHero ? 0.7f * BlowHarm(Formulas.ExpectedCharge(charge.Ability, f, charge.Target), charge.Target) : 0f;
+                    return charge.Target != null && charge.Target.IsHero ? 0.7f * BlowHarm(s, Formulas.ExpectedCharge(charge.Ability, f, charge.Target), charge.Target) : 0f;
             }
             float worst = 0f;
             foreach (var h in s.LivingList(Team.Hero))
             {
                 if (!Threatens(s, f, h)) continue;
                 float dmg = Formulas.ExpectedPhysical(f, h, f.OutgoingDamageMultiplier) * (completes ? 2f : 1f);
-                worst = Math.Max(worst, BlowHarm(dmg, h));
+                worst = Math.Max(worst, BlowHarm(s, dmg, h));
             }
             return worst > 0f && completes ? worst + 4f : worst;
         }
 
-        private static float BlowHarm(float dmg, Unit h) => 10f * Math.Min(1f, dmg / Math.Max(1, h.Hp)) + (dmg >= h.Hp ? 12f : 0f);
+        private static float BlowHarm(BattleState s, float dmg, Unit h) =>
+            10f * Math.Min(1f, dmg / Math.Max(1, h.Hp)) + (dmg >= h.Hp ? KoHarm(s, h) : 0f);
+
+        /// <summary>The extra harm of a blow that would KO <paramref name="h"/>: 12, but only 3 for a hero still holding its
+        /// Substitution (GG-T862) — the blow strikes a log and the ninja reappears beside an ally, so it is harder to lose.</summary>
+        internal static float KoHarm(BattleState s, Unit h) => Triggers.SubstituteReady(s, h) ? 3f : 12f;
 
         /// <summary>The same for a Slow (turn-icon rate × <paramref name="mult"/>): a charge isn't slowed, and a stun isn't.</summary>
         internal static float SlowValue(BattleState s, Unit f, float mult)
@@ -1125,6 +1278,37 @@ namespace GridGame.Core.Bot
             foreach (var ally in s.LivingList(Team.Hero))
                 foreach (var e in s.LivingList(Team.Enemy)) if (e.DistanceTo(ally) <= 2) return true;
             return false;
+        }
+
+        /// <summary>
+        /// GG-T865: what trading places with foe <paramref name="t"/> is worth: the foe lands where the caster stands, so a
+        /// dangerous tile there (a firewall, the party's mine, a telegraphed strike) counts, as does each open hole beside it
+        /// (a pit edge for the next shove); a pincer the swap closes at once, and each extra foe the party's next pincer
+        /// would trap from the new lines, count too. Less what the caster's new tile threatens it with. A swap that gains
+        /// nothing reads -1, and one a Heavy (not Floating) or Rooted foe refuses reads -5. Pure: it moves the two units'
+        /// <c>Pos</c> to look and puts them back.
+        /// </summary>
+        public static float SwapValue(BattleState s, Unit caster, Unit t)
+        {
+            if (s == null || caster == null || t == null || !t.Alive || t.WontBudge || t.IsRooted
+                || caster.IsRooted || caster.IsMultiTile || caster.IsSnakeMember) return -5f;
+            Coord mine = caster.Pos, theirs = t.Pos;
+            float v = 6f * Math.Min(2f, RegionBoard.DangerAt(s, mine, t, Team.Hero));
+            int edges = 0;
+            foreach (var d in Coord.Cardinals) if (RegionBoard.IsPitFor(s, mine + d, t)) edges++;
+            v += 2.5f * Math.Min(2, edges);
+            v -= 5f * Math.Min(2f, RegionBoard.DangerAt(s, theirs, caster));
+            int before = GravityWell.NextPincerTrapped(s), after;
+            caster.Pos = theirs; t.Pos = mine;
+            try
+            {
+                foreach (var p in PincerDetector.Detect(s, Team.Hero, caster))
+                    if (p.Opponents.Contains(t) && PincerPlanner.PincerValue(s, p) > 0f) { v += 8f; break; }
+                after = GravityWell.NextPincerTrapped(s);
+            }
+            finally { caster.Pos = mine; t.Pos = theirs; }
+            v += 0.5f * GravityWell.TrappedValue * Math.Max(0, after - before);
+            return v > 0f ? v : -1f;
         }
 
         /// <summary>GG-T864: what a Shredded-style debuff (plate chip, extra Physical damage taken) is worth on this foe.

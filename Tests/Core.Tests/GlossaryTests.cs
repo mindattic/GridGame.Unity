@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GridGame.Core.Content;
+using GridGame.Core.Rules;
 using NUnit.Framework;
 
 namespace GridGame.Tests
@@ -97,6 +98,77 @@ namespace GridGame.Tests
             Assert.That(Glossary.ChanceWord(0.75f), Is.EqualTo("[likely]"));
             Assert.That(Glossary.ChanceWord(1f), Is.EqualTo("[likely]"));
             Assert.That(Glossary.ChanceWord(0f), Is.Null);
+        }
+
+        // ── GG-T907: keyword text on cards ─────────────────────────────────────
+
+        [Test]
+        public void Every_battle_keyword_has_an_entry()
+        {
+            var db = TestKit.Real;
+            foreach (var k in KeywordText.Keywords) Assert.That(db.TryTerm(k), Is.Not.Null, k);
+            Assert.That(db.TryTerm("Heavy")?.Id, Is.EqualTo("heavy"));
+            Assert.That(db.TryTerm("buried charge")?.Id, Is.EqualTo("mine"));
+            Assert.That(db.TryTerm("Glob")?.Id, Is.EqualTo("slime_glob"));
+            Assert.That(db.TryTerm("oil slick")?.Id, Is.EqualTo("oil"));
+            Assert.That(db.TryTerm("Firewalls")?.Id, Is.EqualTo("firewall"));
+            foreach (var line in new[] { KeywordText.HeavyLine, KeywordText.HeavyFloatingLine })
+                foreach (var t in Glossary.Terms(line)) Assert.That(db.TryTerm(t), Is.Not.Null, t);
+            Assert.That(Glossary.Terms(KeywordText.HeavyLine), Does.Contain("Heavy"));
+        }
+
+        /// <summary>Each new ability's card brackets the keywords it plays on, so a tap explains them.</summary>
+        [TestCase("ripper_flay", "shredded", "heavy")]
+        [TestCase("blackwitch_curselink", "linked")]
+        [TestCase("bluelion_intimidate", "frightened", "firewall", "mine", "heavy")]
+        [TestCase("drifter_float", "floating", "heavy", "mine")]
+        [TestCase("darktemplar_gravitywell", "heavy", "floating", "rooted")]
+        [TestCase("tinkerer_magnetize", "heavy", "floating")]
+        [TestCase("assassain_shadow_swap", "firewall", "mine", "heavy", "floating", "rooted")]
+        [TestCase("wildchild_bramblesnare", "rooted")]
+        [TestCase("warden_anchorstance", "rooted", "heavy")]
+        [TestCase("engineer_buried_charge", "mine", "hidden")]
+        [TestCase("technician_emp", "hidden", "mine")]
+        [TestCase("hexstalker_flare_shot", "hidden", "mine")]
+        [TestCase("firewall", "firewall", "burning")]
+        [TestCase("alchemist_oilflask", "oil", "firewall", "slowed")]
+        [TestCase("charge_slime_glob", "slime_glob")]
+        [TestCase("gremlin_sabotage", "mine", "firewall", "hidden")]
+        public void New_ability_cards_bracket_their_keywords(string ability, params string[] glossaryIds)
+        {
+            var db = TestKit.Real;
+            var a = db.TryAbility(ability);
+            Assert.That(a, Is.Not.Null, ability);
+            var ids = Glossary.Terms(TriggerText.Describe(db, a)).Select(t => db.TryTerm(t)?.Id).ToList();
+            Assert.That(ids, Has.None.Null, a.Description);
+            Assert.That(ids, Is.SupersetOf(glossaryIds), a.Description);
+        }
+
+        [Test]
+        public void Keyword_statuses_say_what_they_do_in_plain_words()
+        {
+            var db = TestKit.Real;
+            string Of(string id) => KeywordText.Buff(db.TryBuff(id));
+            Assert.That(Of("rooted"), Does.Contain("can't move or be moved"));
+            Assert.That(Of("floating"), Does.Contain("can be moved even if Heavy"));
+            Assert.That(Of("shredded"), Does.Contain("more physical damage per stack"));
+            Assert.That(Of("frightened"), Does.Contain("flees what scared it"));
+            Assert.That(Of("linked"), Does.Contain("echoes to its linked partner"));
+            Assert.That(Of("raging"), Does.Contain("counts as Heavy"));
+            Assert.That(Of("guarded"), Does.Contain("falls on its guardian"));
+            Assert.That(Of("anchored"), Does.Contain("Heavy"));
+            foreach (var b in db.Buffs.Values) Assert.That(KeywordText.Buff(b), Does.Not.Contain("["), b.Id); // plain labels print it as is
+        }
+
+        [Test]
+        public void A_volley_support_names_its_keyword()
+        {
+            var db = TestKit.Real;
+            var v = new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Buff = "poisoned", Chance = 0.5f };
+            string s = SupportText.Describe(db, v);
+            Assert.That(s, Does.Contain("[Volley]"));
+            foreach (var t in Glossary.Terms(s)) Assert.That(db.TryTerm(t), Is.Not.Null, t);
+            Assert.That(SupportText.Describe(null, v), Does.Not.Contain("["), "no glossary, no brackets for Volley");
         }
     }
 }

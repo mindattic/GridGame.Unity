@@ -25,7 +25,8 @@ NUM = r"-?\d+(?:\.\d+)?f?"
 
 # rule -> (kind, literal regexes, token regexes)
 CS_RULES = {
-    "POL-A1": ("token", [rf"\bfontSize\s*=\s*{NUM}\b", rf"\bFloat\([^;]*?,\s*{NUM}\s*\)"], [r"\bTypeScale\.\w+"]),
+    # a literal size passed to FloatText( or board.Float( is counted by float_size_literals below (GG-T829)
+    "POL-A1": ("token", [rf"\bfontSize\s*=\s*{NUM}\b"], [r"\bTypeScale\.\w+"]),
     "POL-B1": ("token", [r"\bnew\s+Color32?\s*\(", r"\bColor\.(?:white|black|red|green|blue|yellow|cyan|magenta|gray|grey)\b"],
                [r"\bPalette\.\w+"]),
     "POL-C1": ("token", [rf"\bstyle\.(?:margin|padding)\w*\s*=\s*{NUM}\b", rf"\bstyle\.(?:width|height|left|right|top|bottom)\s*=\s*{NUM}\b"],
@@ -49,6 +50,60 @@ CUE_OK = re.compile(r"^(ui|battle|element|status|story)\.")
 def strip_comments(text):
     text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
     return re.sub(r"//[^\n]*", "", text)
+
+
+FLOAT_CALL = re.compile(r"\b(FloatText|Float)\(")
+# a bare number, or a conditional choosing between two numbers ("e.Full ? 60 : 44")
+LITERAL_SIZE = re.compile(rf"^(?:[^?]+\?\s*)?({NUM})(?:\s*:\s*({NUM}))?$")
+
+
+def call_args(text, start):
+    """The top-level arguments of the call whose "(" ends just before text[start], split on commas outside brackets
+    and string literals."""
+    args, cur, depth, quote, i = [], [], 0, None, start
+    while i < len(text):
+        ch = text[i]
+        cur.append(ch)
+        if quote:
+            if ch == "\\":
+                cur.append(text[i + 1:i + 2]); i += 1
+            elif ch == quote:
+                quote = None
+        elif ch in "\"'":
+            quote = ch
+        elif ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            if depth == 0:
+                cur.pop()
+                args.append("".join(cur).strip())
+                return [a for a in args if a]
+            depth -= 1
+        elif ch == "," and depth == 0:
+            cur.pop()
+            args.append("".join(cur).strip()); cur = []
+        i += 1
+    return []
+
+
+def literal_size(arg, floor=0.0):
+    """True when arg is a literal number (or a conditional between two) of at least floor."""
+    m = LITERAL_SIZE.match(arg.strip())
+    return bool(m) and any(abs(float(v.rstrip("f"))) >= floor for v in m.groups() if v)
+
+
+def float_size_literals(text):
+    """POL-A1 (GG-T829): literal font sizes passed to FloatText( or board.Float(. A CombatText kind sizes the text, so
+    BattleScreen.FloatText takes only a hold and a 0..1 magnitude (a literal of 4 or more there is a size), and
+    BoardView.Float's fourth argument is its size, which must come from TypeScale."""
+    n = 0
+    for m in FLOAT_CALL.finditer(text):
+        args = call_args(text, m.end())
+        if m.group(1) == "FloatText":
+            n += sum(literal_size(a, 4.0) for a in args[1:])
+        elif len(args) >= 4 and literal_size(args[3]):
+            n += 1
+    return n
 
 
 def uss_without_root(text):
@@ -84,6 +139,9 @@ def lint():
                 n = len(re.findall(rx, text))
                 if n:
                     tok[rule][rel] += n
+        n = float_size_literals(text)
+        if n:
+            lit["POL-A1"][rel] += n
         cues.update(CUE.findall(text))
     rel = os.path.relpath(USS, ROOT).replace("\\", "/")
     subjects_files.append(rel)

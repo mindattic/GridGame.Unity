@@ -130,6 +130,7 @@ namespace GridGame.Meta
             {
                 Node = null;
                 s.SeenDialogues.Add(Def.Id);
+                Codex.Sync(c, s); // GG-T929: the dialogue told, and whoever and whatever it brought
                 return;
             }
             Node = n;
@@ -162,6 +163,7 @@ namespace GridGame.Meta
             for (int guard = 0; !r.Finished && guard < 500; guard++)
                 if (!r.Advance()) r.Choose(0);
             if (!r.Finished) s.SeenDialogues.Add(def.Id); // a loop no first choice escapes — count it as told
+            Codex.Sync(c, s); // GG-T929
             return r.Log;
         }
 

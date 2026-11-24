@@ -668,7 +668,7 @@ namespace GridGame.App
             if (Features.Crucible && CampUnlocks.CrucibleOpen(s))
             {
                 bool crucibleOpen = Crucible.CanLaunch(c, s, out var crucibleWhy);
-                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
+                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s, TurnModeSetting.Resolve(s, App.Settings)) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
                 crucible.name = "camp-crucible";
                 crucible.KindIcon(RowKind.Crucible);
                 if (!crucibleOpen) Subline(crucible, crucibleWhy); // "Closed on an expedition", whole (GG-T518)
@@ -726,6 +726,13 @@ namespace GridGame.App
             int caravanLevels = c.Caravan.Keys.Sum(k => CaravanUpgrades.Level(s, k));
             if (Features.Caravan) Station("Caravan", CampUnlocks.CaravanOpen(s), CampUnlocks.MilestoneHint(c, CampUnlocks.CaravanAfter), () => new CaravanScreen(), caravanLevels > 0 ? $"{caravanLevels} upgrades" : "", RowKind.Station);
             Item("Bestiary", () => new BestiaryScreen()).KindIcon(RowKind.Bestiary);
+            // GG-T926: the Codex (GG-T922) beside the Bestiary, with how many unlocked entries are still unread ("3 new")
+            // and the New badge on its tome; its first lesson points here (CampCoach).
+            int codexNew = Codex.UnreadCount(c, s);
+            var codex = Item("Codex", () => new CodexScreen(), codexNew > 0 ? $"{codexNew} new" : "");
+            codex.name = "camp-codex";
+            var codexIcon = codex.KindIcon(RowKind.Codex);
+            if (codexNew > 0) RowIcon.Badge(codexIcon, RowKind.New);
             Item("Settings", () => new SettingsScreen()).KindIcon(RowKind.Settings);
             if (Progression.CanStartNewGamePlus(c, s))
                 Ui.MenuRow($"New Game+ {s.NewGamePlus + 1}", "", () => Confirm.Show("Start New Game+? Keep your heroes, gear and gold; the campaign restarts with enemies 10 levels stronger.", "Begin", () =>

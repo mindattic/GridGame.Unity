@@ -233,6 +233,19 @@ namespace GridGame.App
                 if (weaponGlow) WeaponCrack.style.opacity = 0.55f + 0.45f * Mathf.Abs(Mathf.Sin(Tween.Clock * 3f));
             }).Every(33);
 
+            // GG-T951: the Floating buff's drop shadow, under everything else on the tile; the card itself lifts off it.
+            FloatShadow = new VisualElement { name = "floatshadow-" + u.Id, pickingMode = PickingMode.Ignore };
+            FloatShadow.style.position = Position.Absolute;
+            FloatShadow.style.left = FloatShadow.style.right = tile * u.W * 0.16f;
+            FloatShadow.style.bottom = -Space.S4; FloatShadow.style.height = tile * 0.2f;
+            FloatShadow.style.backgroundColor = new Color(0f, 0f, 0f, 0.4f);
+            FloatShadow.style.borderTopLeftRadius = FloatShadow.style.borderTopRightRadius =
+                FloatShadow.style.borderBottomLeftRadius = FloatShadow.style.borderBottomRightRadius = tile * 0.1f;
+            FloatShadow.style.display = DisplayStyle.None;
+            Root.Insert(0, FloatShadow);
+            floatPhase = u.Id * 1.37f; // floaters bob out of step with each other
+            Root.schedule.Execute(StepFloat).Every(33);
+
             if (u.IsSnakeSegment)
             {
                 Frame.style.borderTopLeftRadius = Frame.style.borderTopRightRadius = Frame.style.borderBottomLeftRadius = Frame.style.borderBottomRightRadius = tile * 0.4f;
@@ -308,12 +321,86 @@ namespace GridGame.App
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
+        private WeightBadge weightBadge;
+
+        /// <summary>
+        /// GG-T892 (§1.1.3, §14.2): a Heavy unit (<see cref="Unit.IsHeavy"/>: a Heavy class, Raging, Anchored) wears a
+        /// small iron weight in its lower-right corner, above the HP bar, so it reads at a glance as one no drag, shove,
+        /// pull or swap will move. It goes while the unit is Floating (Heavy no longer anchors it) and comes back when it lands.
+        /// </summary>
+        public void SetHeavy(bool on)
+        {
+            if (weightBadge == null)
+            {
+                if (!on) return;
+                weightBadge = new WeightBadge { name = "heavy-" + Id, pickingMode = PickingMode.Ignore };
+                weightBadge.style.right = Space.S8; weightBadge.style.bottom = Size.HpBar + Space.S8;
+                weightBadge.style.width = weightBadge.style.height = Size.Pip;
+                Root.Add(weightBadge);
+            }
+            weightBadge.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        /// <summary>The Heavy weight badge, when the unit wears one (a refused drag or a fizzled shove pops it).</summary>
+        public VisualElement HeavyBadge => weightBadge != null && weightBadge.style.display != DisplayStyle.None ? weightBadge : null;
+
+        /// <summary>GG-T951: the soft shadow a Floating unit casts on its tile.</summary>
+        public readonly VisualElement FloatShadow;
+        private bool floating;
+        private float floatPhase, settleStart = -1f;
+        private const float FloatLift = 16f, FloatBob = 4f, FloatWobble = 1.2f, SettleTime = 0.35f;
+
+        /// <summary>
+        /// GG-T951 (owner 2026-11-24): a Floating unit's card hovers a little above its tile over a soft shadow, bobbing
+        /// and wobbling ever so slightly like a Final Fantasy float; it settles back with a small bump when the buff ends.
+        /// Reduce Motion keeps only the static lift and shadow (and drops straight back).
+        /// </summary>
+        public void SetFloating(bool on)
+        {
+            if (on == floating) return;
+            floating = on;
+            if (on) { settleStart = -1f; FloatShadow.style.display = DisplayStyle.Flex; }
+            else settleStart = Tween.Clock;
+            StepFloat();
+        }
+
+        private void StepFloat()
+        {
+            if (!floating && settleStart < 0f) return;
+            bool calm = GameApp.I?.Settings?.ReduceMotion == true;
+            float y, tilt = 0f, shadow = 1f;
+            if (floating)
+            {
+                float bob = calm ? 0f : Mathf.Sin(Tween.Clock * 2.4f + floatPhase);
+                y = -FloatLift - FloatBob * (bob * 0.5f + 0.5f);
+                if (!calm) tilt = FloatWobble * Mathf.Sin(Tween.Clock * 1.6f + floatPhase * 0.7f);
+                shadow = 1f - 0.12f * (bob * 0.5f + 0.5f); // higher up, smaller shadow
+            }
+            else
+            {
+                float k = calm ? 1f : Mathf.Clamp01((Tween.Clock - settleStart) / SettleTime);
+                // Drop to the tile (ease in), dip a hair past it, then come to rest: the small bump of landing.
+                y = k < 0.7f ? -FloatLift * (1f - (k / 0.7f) * (k / 0.7f)) : 3f * Mathf.Sin((k - 0.7f) / 0.3f * Mathf.PI);
+                shadow = 1f - k;
+                if (k >= 1f) { settleStart = -1f; y = 0f; FloatShadow.style.display = DisplayStyle.None; }
+            }
+            FloatShadow.style.opacity = Mathf.Clamp01(shadow);
+            FloatShadow.style.scale = new Scale(new Vector2(shadow, 1f));
+            foreach (var child in Root.Children())
+            {
+                if (child == FloatShadow) continue;
+                child.style.translate = new Translate(0, y);
+                if (child == Frame || child == Glow) child.style.rotate = new Rotate(tilt);
+            }
+        }
+
         /// <summary>
         /// One status slot per unit (owner direction 2026-10-10): it flashes through every buff, debuff and stun on
         /// the 1.2 s beat; the selected unit's card explains each one.
         /// </summary>
         public void SetBuffs(Unit u, bool colorblind, bool stunned = false)
         {
+            SetHeavy(u.IsHeavy && !u.IsCorpse && !u.IsMultiTile); // GG-T892: buffs make and lift Heavy (Raging, Anchored, Floating)
             statuses.Clear();
             if (stunned) statuses.Add(("stunned", "!", Palette.Gold, 1f)); // pushback stun isn't a buff, but it's why it isn't moving
             foreach (var b in u.Buffs)
@@ -321,6 +408,7 @@ namespace GridGame.App
                     App.Art.HexColor(b.Def.Color, b.Def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f)),
                     Mathf.Clamp01(b.Remaining / (float)Mathf.Max(1, b.Def.Duration))));
             ShowStatus();
+            SetFloating(u.IsFloating && u.Alive);
         }
 
         public void NextStatus()
@@ -878,6 +966,13 @@ namespace GridGame.App
                 float life = def != null && def.LifeSeconds > 0f && kv.Value.LifeTicks > 0
                     ? Mathf.Clamp01(kv.Value.LifeTicks / (def.LifeSeconds * BattleConfig.TicksPerSecond)) : -1f;
                 var fx = new TileMarkFx(edge, col, faint);
+                // GG-T935: the party's standing wall (the Machinist's barricade) is a braced crate, its brace splitting as it is bashed.
+                if (IsPartyWall(def, kv.Value))
+                {
+                    fx.Crate = true;
+                    fx.Wear = def.Threshold > 0 ? Mathf.Clamp01(kv.Value.Counter / (float)def.Threshold) : 0f;
+                    foreach (var c in e.Children()) if (c is Label) c.style.opacity = 0f; // the crate is its glyph
+                }
                 e.Add(fx);
                 // GG-T895: a hatching mark (a slime glob) is a wobbling blob, redrawn every frame so it jiggles.
                 if (Hatches(def))
@@ -1008,6 +1103,24 @@ namespace GridGame.App
         /// <summary>GG-T846: the drawn cell of the painted mark on <paramref name="at"/> (null when none is drawn).</summary>
         public VisualElement RegionCellAt(Coord at) => regionCellAt.TryGetValue(at, out var e) ? e : null;
 
+        /// <summary>GG-T935: a standing wall the party raised (a blocking mark that is neither a hole nor a hazard, owned by
+        /// the party: the Machinist's barricade), drawn as a crate.</summary>
+        public static bool IsPartyWall(TileStateDef def, TileMark m) =>
+            def != null && m != null && def.Blocks && !def.Pit && !def.Hazard && m.OwnerTeam == Team.Hero;
+
+        /// <summary>GG-T935: a loose crate on the mark layer over <paramref name="at"/> (Shapes-drawn, ink outline) for the
+        /// barricade's drop; the caller moves it with <c>style.translate</c> and removes it.</summary>
+        public VisualElement CrateDrop(Coord at)
+        {
+            var e = new VisualElement { pickingMode = PickingMode.Ignore };
+            e.style.position = Position.Absolute;
+            e.style.left = at.X * Tile; e.style.top = at.Y * Tile;
+            e.style.width = Tile; e.style.height = Tile;
+            e.generateVisualContent += ctx => TileMarkFx.DrawCrate(ctx.painter2D, e.contentRect, 0f);
+            MarkLayer.Add(e);
+            return e;
+        }
+
         /// <summary>GG-T846: a squished mark bursts into a splat of its colour (Reduce Motion: a plain fade, no burst).</summary>
         public void Splat(Coord at, Color col)
         {
@@ -1047,9 +1160,13 @@ namespace GridGame.App
 
         /// <summary>A bare floating text label (not animated, the caller moves it) in a combat text kind's face and
         /// outline (GG-T826: built through <see cref="CombatText.Build"/>). Prefer <see cref="CombatText.Show(UnitView, CombatTextKind, string, float, Color?)"/>,
-        /// which also animates and stacks; this stays for the few callers that drive the label themselves (the damage tally).</summary>
-        public Label Float(string text, Vector2 at, Color color, float size = 64, CombatTextKind kind = CombatTextKind.Support) =>
-            CombatText.Build(this, text, at - new Vector2(0f, 60f - size * 0.75f), CombatText.StyleOf(kind), color, size);
+        /// which also animates and stacks; this stays for the few callers that drive the label themselves (the damage tally).
+        /// GG-T829: <paramref name="size"/> defaults to <see cref="TypeScale.Base"/>; a literal size here fails POL-A1.</summary>
+        public Label Float(string text, Vector2 at, Color color, float? size = null, CombatTextKind kind = CombatTextKind.Support)
+        {
+            float s = size ?? TypeScale.Base;
+            return CombatText.Build(this, text, at - new Vector2(0f, 60f - s * 0.75f), CombatText.StyleOf(kind), color, s);
+        }
     }
 
     /// <summary>Radial countdown ring drawn around a buff pip: the arc shrinks clockwise as the buff runs out.</summary>
@@ -1069,6 +1186,33 @@ namespace GridGame.App
                 float radius = Mathf.Min(r.width, r.height) / 2f - st.Width / 2f - st.Outline;
                 if (this.frac <= 0f || radius <= 0f) return;
                 Shapes.Ring(ctx.painter2D, r.center, radius, st, -90f, 360f * this.frac);
+            };
+        }
+    }
+
+    /// <summary>GG-T892: the Heavy badge (Shapes, GG-T735): an ink disc holding an iron kettlebell, its handle a ring arc
+    /// over a round steel body with a lighter sheen, so it reads as weight at pip size.</summary>
+    public sealed class WeightBadge : VisualElement
+    {
+        private static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f), Sheen = new Color(0.86f, 0.89f, 0.95f);
+
+        public WeightBadge()
+        {
+            style.position = Position.Absolute;
+            generateVisualContent += ctx =>
+            {
+                var r = contentRect;
+                float size = Mathf.Min(r.width, r.height);
+                if (size <= 0f) return;
+                var p = ctx.painter2D;
+                var c = r.center;
+                var small = ShapeStyle.Small;
+                Shapes.Dot(p, c, size * 0.5f - small.Outline, small.Tint(Palette.Ink.WithA(0.85f)));
+                var body = c + new Vector2(0f, size * 0.1f);
+                float br = size * 0.24f;
+                Shapes.Ring(p, c - new Vector2(0f, size * 0.08f), size * 0.16f, small.Thick(Mathf.Max(3f, size * 0.09f)).Tint(Iron), 180f, 180f);
+                Shapes.Dot(p, body, br, small.Tint(Iron));
+                Shapes.Dot(p, body + new Vector2(-br * 0.35f, -br * 0.35f), br * 0.28f, small.Tint(Sheen).Outlined(Sheen, 0f));
             };
         }
     }

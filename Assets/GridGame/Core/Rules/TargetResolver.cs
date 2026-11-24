@@ -89,14 +89,17 @@ namespace GridGame.Core.Rules
             if (!BattleState.InBounds(target)) return false;
             var occ = s.UnitAt(target);
             if (a.Mode == TargetMode.Auto) return true;
+            if (a.Afterimage > 0) return Afterimage.CanDash(s, caster, target, a.Afterimage); // GG-T867: a straight dash to an empty tile
             if (a.Filter == TargetFilter.EmptyOnly)
             {
                 if (occ != null || s.TrapAt(target) != null) return false;
+                if (a.Vaults) return PoleVault.Over(s, caster, target) != null; // GG-T868: the free tile beyond a unit beside the caster
                 if (!a.AdjacentOnly) return true;
                 foreach (var t in caster.Tiles()) if (t.IsCardinalNeighbor(target)) return true;
                 return false;
             }
             if (a.AdjacentOnly && (occ == null || !caster.IsAdjacentTo(occ))) return false;
+            if (a.MaxRange > 0 && a.Mode == TargetMode.PickActor && (occ == null || caster.DistanceTo(occ) > a.MaxRange)) return false; // GG-T865
             if (a.RedirectsDebuffs && !RedirectFlow.Can(s, caster, occ)) return false; // GG-T887: an ally with a debuff, a foe to take it
             if (a.StealsBoon && !SwipeBoon.Can(s, caster, occ)) return false; // GG-T866: a foe beside the Thief wearing a boon
             // A tame (GG-T303) only ever picks a tameable monster: never a Sentient foe, a boss or remains.

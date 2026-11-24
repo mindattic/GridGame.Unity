@@ -52,7 +52,7 @@
     "minotaur01": "blunt", "minotaur02": "blunt", "minotaur03": "pierce", "minotaur04": "slam",
     "hellspawn01": "claw", "hellspawn02": "bite", "hellspawn03": "claw", "hellspawn04": "claw",
     "holdwright": "blunt", "holdram": "slam", "holdmarksman": "projectile", "shardcaller": "magic", "crystalbrute": "slam",
-    "shardskitter": "claw", "chainwarden": "lash", "anchorhulk": "slam", "hookthrower": "pierce", "tidestrider": "pierce",
+    "shardskitter": "claw", "chainwarden": "lash", "anchorhulk": "slam", "ironbarkgolem": "slam", "hookthrower": "pierce", "tidestrider": "pierce",
     "stormcaller": "magic", "bloatdrowner": "slam", "spireburrower": "claw", "pitlurker": "bite", "spireshover": "slam",
     "lampsnuffer": "magic", "duskstalker": "claw", "gloommender": "magic", "duskmimic": "claw", "mockingecho": "slam"
   },

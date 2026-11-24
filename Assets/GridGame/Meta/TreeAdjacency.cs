@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core.Content;
 
 namespace GridGame.Meta
 {
@@ -15,6 +16,12 @@ namespace GridGame.Meta
     /// from the <b>nearest tree the hero already holds</b>, so opening a stepping-stone tree brings the next one closer:
     /// a Warrior can't open Mage directly (3 steps), but Warrior → Guardian (plate, 1 step) puts Mage 2 steps away
     /// (via Cleric) — the fireball-casting barbarian in plate — and Warrior → Guardian → Cleric puts it 1 step away.</para>
+    ///
+    /// <para>GG-T979: a hero on a family tree plays on the family board instead: <see cref="FamilyRing"/>, the families of
+    /// families.json in their <see cref="FamilyDef.Ring"/> order (Vanguard - Blade - Brawn - Shadow - Wild - Machina - Arcane -
+    /// Occult - Grace - back to Vanguard). Every walk takes the board as an optional <c>ring</c> (null = the role
+    /// <see cref="Ring"/>); <see cref="ExtraEdges"/>, <see cref="MaxOpenDistance"/> and <see cref="PremiumPerExtraStep"/>
+    /// apply on either board. <see cref="Talents"/> picks the board with <see cref="BoardFor"/>.</para>
     ///
     /// <para>Static fields rather than consts, like <see cref="TalentConfig"/>, so a balance pass or a test can retune them.</para>
     /// </summary>
@@ -37,11 +44,24 @@ namespace GridGame.Meta
         /// <summary>Distance returned for a tree that isn't on the board, or isn't connected to any held tree.</summary>
         public const int Unreachable = int.MaxValue;
 
-        /// <summary>The trees one step from <paramref name="treeId"/>.</summary>
-        public static IEnumerable<string> Neighbours(string treeId)
+        /// <summary>GG-T979: the family board, built from families.json: every family id in <see cref="FamilyDef.Ring"/>
+        /// order (ties by id). Empty when the content has no families.</summary>
+        public static string[] FamilyRing(ContentDb c) =>
+            c?.Families == null ? Array.Empty<string>()
+                : c.Families.Where(f => f != null && !string.IsNullOrEmpty(f.Id))
+                    .OrderBy(f => f.Ring).ThenBy(f => f.Id, StringComparer.OrdinalIgnoreCase)
+                    .Select(f => f.Id).ToArray();
+
+        /// <summary>GG-T979: the board a hero whose home tree is <paramref name="homeTreeId"/> plays on: the
+        /// <see cref="FamilyRing"/> when that tree is a family's, else the role <see cref="Ring"/>.</summary>
+        public static string[] BoardFor(ContentDb c, string homeTreeId) =>
+            c != null && !string.IsNullOrEmpty(homeTreeId) && c.TryFamily(homeTreeId) != null ? FamilyRing(c) : Ring;
+
+        /// <summary>The trees one step from <paramref name="treeId"/> on <paramref name="ring"/> (null = <see cref="Ring"/>).</summary>
+        public static IEnumerable<string> Neighbours(string treeId, string[] ring = null)
         {
             if (string.IsNullOrEmpty(treeId)) yield break;
-            var ring = Ring ?? Array.Empty<string>();
+            ring = ring ?? Ring ?? Array.Empty<string>();
             int i = Array.FindIndex(ring, r => Same(r, treeId));
             if (i >= 0 && ring.Length > 1)
             {
@@ -55,14 +75,14 @@ namespace GridGame.Meta
             }
         }
 
-        public static bool Adjacent(string a, string b) => !Same(a, b) && Neighbours(a).Any(n => Same(n, b));
+        public static bool Adjacent(string a, string b, string[] ring = null) => !Same(a, b) && Neighbours(a, ring).Any(n => Same(n, b));
 
         /// <summary>Fewest steps from <paramref name="from"/> to <paramref name="to"/> (0 for the same tree), or <see cref="Unreachable"/>.</summary>
-        public static int Distance(string from, string to) => DistanceFrom(new[] { from }, to);
+        public static int Distance(string from, string to, string[] ring = null) => DistanceFrom(new[] { from }, to, ring);
 
         /// <summary>Fewest steps from the nearest of <paramref name="held"/> to <paramref name="target"/> (a breadth-first walk
         /// that may pass through trees the hero doesn't hold), or <see cref="Unreachable"/>. 0 when the target is itself held.</summary>
-        public static int DistanceFrom(IEnumerable<string> held, string target)
+        public static int DistanceFrom(IEnumerable<string> held, string target, string[] ring = null)
         {
             if (string.IsNullOrEmpty(target) || held == null) return Unreachable;
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -74,7 +94,7 @@ namespace GridGame.Meta
                 if (frontier.Any(f => Same(f, target))) return d;
                 var next = new List<string>();
                 foreach (var f in frontier)
-                    foreach (var n in Neighbours(f))
+                    foreach (var n in Neighbours(f, ring))
                         if (seen.Add(n)) next.Add(n);
                 frontier = next;
             }
@@ -88,37 +108,37 @@ namespace GridGame.Meta
 
         /// <summary>The distance surcharge for a node in <paramref name="target"/>, measured from the nearest <i>other</i>
         /// tree in <paramref name="held"/> (so an already-opened target is priced by its link to the rest, not 0).</summary>
-        public static int ExtraPremium(IEnumerable<string> held, string target)
+        public static int ExtraPremium(IEnumerable<string> held, string target, string[] ring = null)
         {
-            int d = DistanceFrom((held ?? Enumerable.Empty<string>()).Where(h => !Same(h, target)), target);
+            int d = DistanceFrom((held ?? Enumerable.Empty<string>()).Where(h => !Same(h, target)), target, ring);
             return ExtraPremium(d);
         }
 
         /// <summary>Why <paramref name="target"/> can't be opened from the held trees because it's too far — naming the
         /// tree(s) to route through — or null when it's within <see cref="MaxOpenDistance"/> (or held already, or not on the
         /// board at all: an unknown tree is left to GG-T51's slot rule rather than locked out here).</summary>
-        public static string WhyTooFar(IEnumerable<string> held, string target, Func<string, string> name = null)
+        public static string WhyTooFar(IEnumerable<string> held, string target, Func<string, string> name = null, string[] ring = null)
         {
             var heldList = (held ?? Enumerable.Empty<string>()).Where(h => !string.IsNullOrEmpty(h)).ToList();
             if (heldList.Count == 0 || string.IsNullOrEmpty(target)) return null;
-            int d = DistanceFrom(heldList, target);
+            int d = DistanceFrom(heldList, target, ring);
             if (d == Unreachable || d <= MaxOpenDistance) return null;
             name ??= id => id;
-            var via = Stepping(heldList, target).Select(name).ToList();
+            var via = Stepping(heldList, target, ring).Select(name).ToList();
             string route = via.Count == 0 ? "a tree in between" : string.Join(" or ", via);
             return $"{name(target)} is {d} steps away: open {route} first";
         }
 
         /// <summary>The unheld trees one step from a held tree that bring <paramref name="target"/> closer — where to route.</summary>
-        public static List<string> Stepping(IEnumerable<string> held, string target)
+        public static List<string> Stepping(IEnumerable<string> held, string target, string[] ring = null)
         {
             var heldList = (held ?? Enumerable.Empty<string>()).ToList();
-            int d = DistanceFrom(heldList, target);
+            int d = DistanceFrom(heldList, target, ring);
             if (d == Unreachable || d <= 1) return new List<string>();
-            return heldList.SelectMany(Neighbours)
+            return heldList.SelectMany(h => Neighbours(h, ring))
                 .Where(n => !heldList.Any(h => Same(h, n)))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Where(n => Distance(n, target) < d)
+                .Where(n => Distance(n, target, ring) < d)
                 .ToList();
         }
 

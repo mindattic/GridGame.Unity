@@ -234,9 +234,9 @@ namespace GridGame.App
                 img.style.unityBackgroundScaleMode = ScaleMode.ScaleToFit;
                 card.Add(img);
             }
-            var text = Ui.Para(lesson.Text ?? "", card);
+            // GG-T908: a [bracketed] glossary term in the lesson's words is a tap tooltip (GG-T300); plain text stays one Label.
+            var text = GlossaryText.Create(lesson.Text ?? "", "kit-text", card);
             text.name = "coach-text";
-            text.style.whiteSpace = WhiteSpace.Normal;
             var row = Ui.El("kit-footer", card);
             row.style.justifyContent = Justify.SpaceBetween;
             row.style.marginTop = Space.S24;

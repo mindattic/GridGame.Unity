@@ -12,6 +12,7 @@ updated: 2026-10-09
 > **GG-T694 (2026-11-23):** the working title dropped "Gaiden" — this log says GridGame throughout;
 > entries below that use "Gaiden" as a historical nickname for a specific past decision are left as written.
 >
+> **Retired lore (GG-T946):** entries below that name the Pale Concord, the Somnolith or aether are historical and superseded by GG-T577 (no Concord) and GG-T675 (the Manalith, mana). They are kept as written, not rewritten.
 > Every deliberate deviation of GridGame from the GridGame2026 `docs/BIBLE.md`, one bullet
 > each, with rationale. The [BIBLE](BIBLE.md) marks each inline as **Amended 2026-10-09:**. Items
 > the new code simply has not built yet are not amendments; they stay as spec marked ⬜ in the bible
@@ -1007,7 +1008,7 @@ Owner: "you decide how difficulty 10 gets its challenge back (GG-T321)."
 
 ## 2026-11-07 — The Still: a sixth main theme between the Anchor Wastes and Halcyon (owner, GG-T344)
 
-Owner, with six new landscapes of a white Concord dome: *"I will generate more landscapes from which you can extrapolate more story, settings levels, etc"*.
+Owner, with six new landscapes of a white Concord dome: *"I will generate more landscapes from which you can extrapolate more story, settings levels, etc"*. *(Historical, superseded by GG-T577 and GG-T675: no Concord, the Somnolith is now the Manalith, aether is mana.)*
 
 - **Was:** five main themes (Tithe Moors, Shardfall, Arkgrave, Anchor Wastes, Halcyon), 15 main stages, Halcyon at levels 13–15; every theme had exactly four backgrounds and `Art.Background` wrapped any index at 4.
 - **Now:** **The Still** (`still`, three stages) sits between the Anchor Wastes and Halcyon ([BIBLE §22.3.1](BIBLE.md), [STORY.md](STORY.md) §5.5): the great Still at the foot of Halcyon's spire, where the tanks hold the tithe — and the Hollow, stored. The Still runs at 13–15 and Halcyon moves to 16–18.
@@ -1020,7 +1021,7 @@ Owner, with six new landscapes of a white Concord dome: *"I will generate more l
 
 Owner: *"flush out all story in the entire game … completely reinvent the story based on the characters and artwork of the world that exist in the repo; it's distinctive enough that all these different groups and their styles means there is a story already built into the artwork and different clothing and environments."*
 
-- **Deviation:** the GG-T120 story (the walking spider-town, its soured ground and its oath) is retired in full. [`STORY.md`](STORY.md) is the new single source: Saltmoss runaways in a stolen Concord caravan, under a moon (Morrow) that hangs too low, against a Pale Concord whose aether tithe feeds the Hierarch.
+- **Deviation:** the GG-T120 story (the walking spider-town, its soured ground and its oath) is retired in full. [`STORY.md`](STORY.md) is the new single source: Saltmoss runaways in a stolen Concord caravan, under a moon (Morrow) that hangs too low, against a Pale Concord whose aether tithe feeds the Hierarch. *(Historical, superseded by GG-T577 and GG-T675: no Concord, the Somnolith is now the Manalith, aether is mana.)*
 - **Phase 1 (this change):** `campaign.json` (prologue "Tithe Day", ending "Still Here", every theme's name and crawl), all 111 `dialogues.json` dialogues (join scenes, party talks, boss intros, the Lv 10 "Why We Ran" interlude, quest offers, Camp chats, and every Advice quiz with a fresh faction voice and blind spot), quest, bounty, mercenary and caravan-bark text, the credits coda, and the Frostmaw armor set's display name (now Anchorwatch). Ids, triggers, conditions, effects, flags and node graphs are unchanged; the Merchant's speaker name is now "Lantern Merchant".
 - **Retired docs:** `docs/story-draft-spider-town.md`, `docs/ppp-universe/` and `docs/design-draft-overworld-and-dialogue.md` are deleted (git keeps them).
 - **Still to come (phase 2):** stage display names, unit `Description`/`Lore`, and a separate `hierarch` boss class (the finale still fields the hero class `vampire`).
@@ -1043,7 +1044,7 @@ Owner 2026-11-07: the Herald, Aetherist and Tactician from the owner's art are r
 - **Now:** these heroes have no other way in, so they are only met as wanderers ([BIBLE §25.11.2.1](BIBLE.md)) or drawn for a Diamond. The Herald belongs to the Bloom, which has no heroes of its own in `factions.json`, so she is filed with **the Wild**, the closest faction.
 - **Essence (new mechanic):** the Herald's Lifegift is the first heal paid in the caster's own HP instead of mana or a cooldown alone (`AbilityDef.LifeCost`); it never takes her last HP.
 - **Orbs that ride a heal (GG-T337):** an orb grant used to be a whole ability on its own (Meditate, ethers). The Aetherist's Aether Pour heals an ally and then pours one orb into the bank (`AbilityDef.PoursOrbs`); she is filed with the Fen-dark, where the Choir's runaways go.
-- **Countermarch, a trade on the timeline (GG-T336):** every timeline tool so far pushed foes back (capped at 2 s) or hastened the party. The Tactician's Countermarch swaps one foe's time to act with the furthest-off foe's, so it is not bound by the Pushback cap: nothing is gained on the bar, only who acts next. The Concord has no hero faction, so the ex-Concord officer is filed with the Free Holds.
+- **Countermarch, a trade on the timeline (GG-T336):** every timeline tool so far pushed foes back (capped at 2 s) or hastened the party. The Tactician's Countermarch swaps one foe's time to act with the furthest-off foe's, so it is not bound by the Pushback cap: nothing is gained on the bar, only who acts next. The Concord has no hero faction, so the ex-Concord officer is filed with the Free Holds. *(Historical, superseded by GG-T577 and GG-T675: no Concord, the Somnolith is now the Manalith, aether is mana.)*
 - *(Tests: `WandererHeroesTests`.)*
 
 ## 2026-11-07 — A random summon for Diamonds (owner, GG-T343)
@@ -1584,7 +1585,7 @@ gender, same with summoning ... no change to story or mechanics makes everything
   the shared `BattleConfig.ClutchCharge` (20 mana charge). No extra Rng draws. More kinds: GG-T571.
 - *Why:* owner decisions on the /bughunt findings, 2026-11-21.
 
-## 2026-11-21 — Two moons: the Moon stays, the Somnolith is a second, misshapen moon (owner, GG-T575)
+## 2026-11-21 — Two moons: the Moon stays, the Somnolith is a second, misshapen moon (owner, GG-T575) *(superseded: now the Manalith, GG-T675)*
 
 Owner: *"maybe the moon doesn't have to be a perfect sphere ... a normal moon to balance things ... and then an oddly
 shaped 'weird' moon ... the Moon is always the same size but this 'weird moon' is getting closer as the game progresses"*;
@@ -1630,7 +1631,7 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   "Aetherite Shard" with a new Prose description, and a `glossary:aetherite_shard` entry is the currency's wiki text
   (seed, drafted to Prose as batch `gg-t568`). Internal ids, product ids, save fields and class names keep the old word,
   so saves and purchases still work. The item icon is still a cut diamond; new art is in docs/ART_GAPS.md.
-- *Why:* the currency now belongs to the world: aetherite is the Somnolith's crystal.
+- *Why:* the currency now belongs to the world: aetherite is the Somnolith's crystal. *(Historical, superseded by GG-T577 and GG-T675: no Concord, the Somnolith is now the Manalith, aether is mana.)*
 
 ## 2026-11-22 — The Merchant's Buy list in sections, with who each piece fits (GG-T520)
 
