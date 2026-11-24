@@ -566,6 +566,9 @@ namespace GridGame.Core.Content
         public int Knockback;
         /// <summary>The pick must be cardinally adjacent to the caster (melee skills).</summary>
         public bool AdjacentOnly;
+        /// <summary>Redirect Flow (GG-T887, the Monk): every debuff on the picked adjacent ally moves, with its remaining
+        /// duration, onto the foe beside the caster (<c>Battle.RedirectFlow</c>). A Skill or Spell that picks one ally.</summary>
+        public bool RedirectsDebuffs;
         /// <summary>The Pushback keyword (§2.3, GG-T286), in seconds: each foe it reaches acts this much later, wherever its
         /// icon sits on the bar (a held cast slips instead; never cancelled). Capped per action at
         /// <see cref="Battle.BattleConfig.PushbackMaxSeconds"/>, one push per foe per action. Plain hits never push.</summary>

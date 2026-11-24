@@ -463,6 +463,7 @@ namespace GridGame.Core.Bot
                 foreach (var p in PincerDetector.Detect(copy, Team.Hero, cu)) sc += 10f * p.Opponents.Count;
                 return sc - 2f;
             }
+            if (a.RedirectsDebuffs) return RedirectFlow.Value(s, caster, s.UnitAt(anchor)); // GG-T887: lift a harmful debuff onto a foe in reach
             var targets = TargetResolver.Collect(s, a, caster, anchor);
             float score = 0f;
             bool close = FightIsClose(s);

@@ -280,6 +280,7 @@ namespace GridGame.App
             }
             if (a.Pushback > 0) facts.Add(FormattableString.Invariant($"Pushback {a.Pushback:0.##}s: the foe acts later"));
             if (a.RemovesDebuffs) facts.Add("Cleanses debuffs");
+            if (a.RedirectsDebuffs) facts.Add("Moves an adjacent ally's debuffs onto a foe beside the user"); // GG-T887
             if (a.GrantsOrbs > 0) facts.Add($"Grants {a.GrantsOrbs} orbs");
             var factBox = Ui.El("col", body);
             factBox.style.marginTop = Space.S16;

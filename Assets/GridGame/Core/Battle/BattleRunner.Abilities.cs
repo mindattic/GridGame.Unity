@@ -179,6 +179,7 @@ namespace GridGame.Core.Battle
         {
             NoteRecover(caster, a);
             if (a.Echoes) { ResolveEcho(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; }
+            if (a.RedirectsDebuffs) { ResolveRedirect(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T887: the Monk's Redirect Flow
             if (a.IsTeleport)
             {
                 // The whole footprint must land on open tiles — never onto a unit, a movable, a block or off the board.
