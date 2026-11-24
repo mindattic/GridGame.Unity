@@ -566,5 +566,87 @@ namespace GridGame.Tests
                 Act(w, Hero(w, "knight"), i % 2 == 0 ? -1 : 1);
             }
         }
+
+        // ── GG-T785: the smart and casual bots under one action per turn ────────────────────────
+
+        [Test]
+        public void The_bot_planning_seam_counts_one_action_per_turn()
+        {
+            var (a, _) = Trio();
+            var knight = Hero(a, "knight");
+            var cleric = Hero(a, "cleric");
+            Assert.That(BattleEngine.HeroesLeftToAct(a).Count, Is.EqualTo(3), "anyone may take the turn");
+            Assert.That(TurnRules.HeroesLeftAfter(a, knight.Id), Is.EqualTo(0), "but nobody acts after the one who does");
+            Assert.That(TurnRules.ActsLaterThisTurn(a, cleric), Is.False, "a set-up spans turns");
+
+            var db = Mini();
+            var w = Create(db, Setup(Stage(("goblin", 5, 0)), TurnMode.PartyWindow, ("knight", 0, 6, null), ("cleric", 2, 6, null), ("mage", 4, 6, null)));
+            Assert.That(TurnRules.HeroesLeftAfter(w, Hero(w, "knight").Id), Is.EqualTo(2), "PartyWindow keeps its shared window");
+            Assert.That(TurnRules.ActsLaterThisTurn(w, Hero(w, "cleric")), Is.True);
+        }
+
+        /// <summary>A campaign battle on the first stage, Gentle dial, in <paramref name="mode"/>.</summary>
+        private static BattleSetup CampaignSetup(ContentDb db, int seed, TurnMode mode)
+        {
+            var save = GridGame.Meta.Progression.NewGame(db, "ModeA");
+            return GridGame.Meta.BattleFactory.Build(db, save, db.CampaignStages()[0].Id, seed, 1, mode);
+        }
+
+        /// <summary>Plays <paramref name="setup"/> with <paramref name="bot"/>, checks every accepted command was the whole
+        /// party turn, then replays its commands on a fresh battle and checks the events match.</summary>
+        private static BattleState PlayAndReplay(ContentDb db, BattleSetup setup, HeroBot bot)
+        {
+            var commands = new List<BattleCommand>();
+            var played = new StringBuilder();
+            var final = BotRunner.Play(db, setup, bot, 3000, (cmd, ev, st) =>
+            {
+                if (cmd != null) commands.Add(cmd);
+                foreach (var e in ev) played.AppendLine(e.ToString());
+                if (cmd == null || st.IsOver || ev.OfType<AbilityRefusedEvent>().Any()) return;
+                Assert.That(ev.OfType<PlayerControlEvent>().All(p => p.NewWindow), Is.True, $"{cmd} ended the party turn");
+            });
+            Assert.That(final.TurnMode, Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+            Assert.That(final.IsOver, Is.True, "the bot finished the stage (no soft-lock)");
+
+            var opening = new List<BattleEvent>();
+            var s = BattleEngine.Create(db, setup, opening);
+            var replayed = new StringBuilder();
+            foreach (var e in opening) replayed.AppendLine(e.ToString());
+            foreach (var cmd in commands) foreach (var e in BattleEngine.Apply(s, cmd)) replayed.AppendLine(e.ToString());
+            Assert.That(replayed.ToString(), Is.EqualTo(played.ToString()), "the battle replays identically");
+            Assert.That(s.Phase, Is.EqualTo(final.Phase));
+            Assert.That(s.Clock, Is.EqualTo(final.Clock));
+            return final;
+        }
+
+        [Test]
+        public void The_smart_bot_wins_a_stage_and_it_replays_identically()
+        {
+            var db = Real;
+            var final = PlayAndReplay(db, CampaignSetup(db, 11, TurnMode.AnyHeroEveryTurn), new HeroBot(11));
+            Assert.That(final.Phase, Is.EqualTo(BattlePhase.Victory));
+        }
+
+        [Test]
+        public void The_casual_bot_finishes_a_stage_and_it_replays_identically()
+        {
+            var db = Real;
+            var bot = new HeroBot(13, randomness: 0.5f);
+            Assert.That(bot.TimelineAware, Is.False);
+            PlayAndReplay(db, CampaignSetup(db, 13, TurnMode.AnyHeroEveryTurn), bot);
+        }
+
+        [Test]
+        public void The_smart_bot_takes_one_action_per_turn_and_the_same_seed_decides_the_same()
+        {
+            var db = Real;
+            var setup = CampaignSetup(db, 17, TurnMode.AnyHeroEveryTurn);
+            var a = new List<string>();
+            var b = new List<string>();
+            BotRunner.Play(db, setup, new HeroBot(17), 200, (cmd, ev, st) => { if (cmd != null) a.Add(cmd.ToString()); });
+            BotRunner.Play(db, setup, new HeroBot(17), 200, (cmd, ev, st) => { if (cmd != null) b.Add(cmd.ToString()); });
+            Assert.That(a, Is.Not.Empty);
+            Assert.That(b, Is.EqualTo(a), "the bot is deterministic for a seed");
+        }
     }
 }

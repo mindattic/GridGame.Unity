@@ -89,6 +89,27 @@ namespace GridGame.Core.Battle
             return list;
         }
 
+        /// <summary>GG-T785 (bot planning): heroes other than <paramref name="actorId"/> who may still act in the party's
+        /// current turn once that hero has acted. PartyWindow: the rest of <see cref="HeroesLeftToAct"/>.
+        /// AnyHeroEveryTurn: none — the actor's action is the whole turn, so a bot values a turn as one action.</summary>
+        public static int HeroesLeftAfter(BattleState s, int actorId)
+        {
+            Require(s);
+            if (OneActionPerTurn(s)) return 0;
+            int n = 0;
+            foreach (var h in HeroesLeftToAct(s)) if (h.Id != actorId) n++;
+            return n;
+        }
+
+        /// <summary>GG-T785 (bot planning): can <paramref name="ally"/> still act before the foes move, after another hero's
+        /// action this turn? PartyWindow: it has not acted yet this window (an ally still to act can close a set-up).
+        /// AnyHeroEveryTurn: never — a set-up spans turns; the ally answers it next turn at the earliest.</summary>
+        public static bool ActsLaterThisTurn(BattleState s, Unit ally)
+        {
+            Require(s);
+            return !OneActionPerTurn(s) && !HasActed(s, ally);
+        }
+
         // ── 2. Whether an action ends the party's turn ─────────────────────────────────────────────
 
         /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window;

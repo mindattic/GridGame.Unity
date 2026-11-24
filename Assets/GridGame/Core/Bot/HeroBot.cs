@@ -960,13 +960,10 @@ namespace GridGame.Core.Bot
         /// <summary>What one more hero action in this window is worth to the smart bot (in score points).</summary>
         private const float ActionWorth = 4f;
 
-        /// <summary>Heroes other than <paramref name="actor"/> who may still act in this window.</summary>
-        private static int OthersLeft(BattleState s, int actor)
-        {
-            int n = 0;
-            foreach (var h in BattleEngine.HeroesLeftToAct(s)) if (h.Id != actor) n++;
-            return n;
-        }
+        /// <summary>Heroes other than <paramref name="actor"/> who may still act in this window. §2.13.1 (GG-T785): none
+        /// under AnyHeroEveryTurn, where one action is the whole turn, so <see cref="TimeBalance"/> is 0 there: the seconds
+        /// a hero's action leaves are lost either way, and spending them denies no ally an action.</summary>
+        private static int OthersLeft(BattleState s, int actor) => TurnRules.HeroesLeftAfter(s, actor);
 
         /// <summary>
         /// Clock ticks the window gains when the foes in <paramref name="pushed"/> act <paramref name="ticks"/> later: the
@@ -1064,8 +1061,9 @@ namespace GridGame.Core.Bot
                 foreach (var h in s.LivingList(Team.Hero))
                 {
                     if (h.Id == mover.Id || !pv.Positions.TryGetValue(h.Id, out var hp)) continue;
-                    // GG-T308: an ally still to act this window can close it before the foes move.
-                    if (Math.Abs(hp.X - far.X) + Math.Abs(hp.Y - far.Y) <= reach) { best = Math.Max(best, (e.HpFraction < 0.4f ? 4f : 3f) + (TurnRules.HasActed(s, h) ? 0f : 2f)); break; }
+                    // GG-T308: an ally still to act this window can close it before the foes move. §2.13.1 (GG-T785): under
+                    // AnyHeroEveryTurn no ally acts again before the foes, so the set-up spans turns and earns only its base.
+                    if (Math.Abs(hp.X - far.X) + Math.Abs(hp.Y - far.Y) <= reach) { best = Math.Max(best, (e.HpFraction < 0.4f ? 4f : 3f) + (TurnRules.ActsLaterThisTurn(s, h) ? 2f : 0f)); break; }
                 }
             }
             return best;
