@@ -53,7 +53,7 @@ namespace GridGame.App
             {
                 string stat = StatGrantDef.Names[i];
                 int n = StatPoints.In(h, stat);
-                var b = Ui.Button($"+ {StatShort[i]}{(n > 0 ? $" ({n})" : "")}", () => Done(StatPoints.Spend(h, stat)), "btn--small", row);
+                var b = RowIcon.IconButton($"+ {StatShort[i]}{(n > 0 ? $" ({n})" : "")}", RowKind.Confirm, () => Done(StatPoints.Spend(h, stat)), "btn--small", row);
                 b.name = "stat-point-" + stat.ToLowerInvariant();
                 Ui.SetEnabled(b, unspent > 0);
             }

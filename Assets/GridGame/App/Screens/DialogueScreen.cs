@@ -128,7 +128,7 @@ namespace GridGame.App
             var title = Ui.Text(def.Title ?? "", "small dim shadow", root);
             title.style.position = Position.Absolute; title.style.left = Fit.Inset + Space.S32; title.style.top = Space.S48;
 
-            var skip = Ui.Button("Skip ›", SkipAhead, "btn--small", root);
+            var skip = RowIcon.IconButton("Skip", RowKind.Enter, SkipAhead, "btn--small", root);
             skip.name = "dlg-skip";
             skip.style.position = Position.Absolute; skip.style.right = Space.S24; skip.style.top = Space.S24;
 
@@ -400,7 +400,7 @@ namespace GridGame.App
                 for (int i = 0; i < choices.Count; i++)
                 {
                     int idx = i;
-                    var b = Ui.Button(choices[i].Label, () => Choose(idx), i == 0 ? "btn--primary" : null, controls);
+                    var b = RowIcon.IconButton(choices[i].Label, RowKind.Talk, () => Choose(idx), i == 0 ? "btn--primary" : null, controls);
                     b.name = "choice-" + i;
                     b.style.marginTop = Space.S8;
                     b.style.opacity = 0f;
@@ -409,7 +409,7 @@ namespace GridGame.App
             }
             else
             {
-                var b = Ui.Button(run.Node.Next == null ? "Done ›" : "Next ›", Advance, "btn--primary btn--small", controls);
+                var b = RowIcon.IconButton(run.Node.Next == null ? "Done" : "Next", RowKind.Enter, Advance, "btn--primary btn--small", controls);
                 b.name = "dlg-next";
                 b.style.alignSelf = Align.FlexEnd; b.style.width = Size.Card;
                 b.style.opacity = 0f;
@@ -577,24 +577,11 @@ namespace GridGame.App
                 string value = topic == null ? "Nothing to say" : S.SeenDialogues.Contains(topic.Id) ? topic.Title ?? "" : "New!";
                 var row = Ui.MenuRow(name, value, () => App.Router.Push(new DialogueScreen(topic, npc ? null : who, null)),
                     list, null, topic != null);
-                var ic = Ui.El("menu-icon");
-                if (npc)
-                {
-                    // An NPC: the thumbnail of the topic's first speaker with art (GG-T225), like every other small actor
-                    // image (GG-T720, BIBLE §12.1.1); the whole figure stands only in the conversation itself.
-                    string art = topic?.Speakers.Select(sp => sp.Portrait ?? sp.Class).FirstOrDefault(DialogueScreen.HasPortrait);
-                    if (art != null)
-                    {
-                        row.Insert(1, ic); // after the cursor, where MenuRow puts an icon
-                        Ui.PortraitThumb(ic, art);
-                    }
-                }
-                else if (DialogueScreen.HasPortrait(who))
-                {
-                    // A hero: its baked thumbnail, like every other hero list (§12.1.1, GG-T720).
-                    row.Insert(1, ic);
-                    Ui.PortraitThumb(ic, who);
-                }
+                // GG-T748: every partner leads with its kind icon (BIBLE §26.7). An NPC: the thumbnail of the topic's first
+                // speaker with art (GG-T225), else the bust emblem; a hero: its baked thumbnail (§12.1.1, GG-T720). The whole
+                // figure stands only in the conversation itself.
+                if (npc) row.KindIcon(RowKind.Npc, topic?.Speakers.Select(sp => sp.Portrait ?? sp.Class).FirstOrDefault(DialogueScreen.HasPortrait));
+                else row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(who) ? who : null);
                 row.name = "talk-" + (npc ? npcId : who);
                 if (topic != null && !S.SeenDialogues.Contains(topic.Id)) row.Q<Label>("value").AddToClassList("gold");
             }

@@ -31,15 +31,15 @@ namespace GridGame.App
             var all = C.QuestOrder;
             Section("Ready to hand in!", all.Where(q => Quests.State(C, S, q) == QuestState.Ready), (q, card) =>
             {
-                var b = Ui.Button("Hand in", () => TurnIn(q), "btn--primary btn--small", card);
+                var b = RowIcon.IconButton("Hand in", RowKind.Quest, () => TurnIn(q), "btn--primary btn--small", card);
                 b.name = "quest-turnin-" + q.Id;
             });
             Section("Under way", all.Where(q => Quests.State(C, S, q) == QuestState.Active), (q, card) =>
-                Ui.Button("Set aside", () => Confirm.Show($"Set \"{q.Name}\" aside? Progress is lost, but you can take it up again.", "Set aside", () => Done(Quests.Abandon(C, S, q.Id))), "btn--danger btn--small", card));
+                RowIcon.IconButton("Set aside", RowKind.Close, () => Confirm.Show($"Set \"{q.Name}\" aside? Progress is lost, but you can take it up again.", "Set aside", () => Done(Quests.Abandon(C, S, q.Id))), "btn--danger btn--small", card));
             var heard = Quests.Heard(C, S);
             Section("Heard of", heard, (q, card) =>
             {
-                var b = Ui.Button("Accept", () => Accept(q), "btn--small", card);
+                var b = RowIcon.IconButton("Accept", RowKind.Quest, () => Accept(q), "btn--small", card);
                 b.name = "quest-accept-" + q.Id;
             });
             Section("Ask around", all.Where(q => Quests.State(C, S, q) == QuestState.Available && !heard.Contains(q)), null);

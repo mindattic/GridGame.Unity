@@ -91,7 +91,7 @@ namespace GridGame.App
             // A tap on the Skip button's own ClickEvent also bubbles up to root — without the Button filter one
             // tap on "Skip ›" ran Skip() twice and jumped past the next hero's fanfare too (GG-T70).
             if (!skipHandlerBound) { root.RegisterCallback<ClickEvent>(e => { if (!(e.target is Button)) Skip(); }); skipHandlerBound = true; }
-            var skip = Ui.Button("Skip ›", Skip, "btn--small", root);
+            var skip = RowIcon.IconButton("Skip", RowKind.Enter, Skip, "btn--small", root);
             skip.style.position = Position.Absolute; skip.style.right = Space.S32; skip.style.bottom = Space.S48;
 
             // A rebuild mid-fanfare (a resize) restarts this hero's fanfare: stop the one already playing, or two ran at

@@ -64,7 +64,7 @@ namespace GridGame.App
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
-                    var b = Ui.Button($"{term} battles · {Ui.Gold(price)}", () => Confirm.Show(
+                    var b = RowIcon.IconButton($"{term} battles · {Ui.Gold(price)}", RowKind.Confirm, () => Confirm.Show(
                         $"Hire {def.Name} for {term} battles at {Ui.Gold(price)}, paid now? The contract runs down every battle, used or not.", "Hire",
                         () =>
                         {
@@ -76,7 +76,7 @@ namespace GridGame.App
                     b.style.marginTop = Space.TargetHalfGap; b.style.marginBottom = Space.TargetHalfGap; b.style.marginLeft = Space.TargetHalfGap; b.style.marginRight = Space.TargetHalfGap; // GG-T700: 24 px to the next target, wrapped or not
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
-                var haggle = Ui.Button(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
+                var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
                 haggle.name = "merc-haggle-" + m.Class;
                 haggle.style.marginTop = Space.TargetHalfGap; haggle.style.marginBottom = Space.TargetHalfGap; haggle.style.marginLeft = Space.TargetHalfGap; haggle.style.marginRight = Space.TargetHalfGap;
                 Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
@@ -201,14 +201,14 @@ namespace GridGame.App
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.RenewalPrice(C, S, classId, t);
-                    var b = Ui.Button($"Renew {term} more battles · {Ui.Gold(price)}", () => Answer(Mercenaries.Renew(C, S, classId, term)), null, choices);
+                    var b = RowIcon.IconButton($"Renew {term} more battles · {Ui.Gold(price)}", RowKind.Confirm, () => Answer(Mercenaries.Renew(C, S, classId, term)), null, choices);
                     b.name = $"merc-renew-{term}";
                     Ui.SetEnabled(b, S.Gold >= price);
                 }
             }
-            var finish = Ui.Button("Finish the contract (1 battle left)", () => { Mercenaries.FinishContract(S, classId); Answer(Result.Success($"{def.Name} will see out the last battle")); }, null, choices);
+            var finish = RowIcon.IconButton("Finish the contract (1 battle left)", RowKind.Confirm, () => { Mercenaries.FinishContract(S, classId); Answer(Result.Success($"{def.Name} will see out the last battle")); }, null, choices);
             finish.name = "merc-finish";
-            var part = Ui.Button("Part ways now", () => Answer(Mercenaries.PartWays(C, S, classId)), null, choices);
+            var part = RowIcon.IconButton("Part ways now", RowKind.Close, () => Answer(Mercenaries.PartWays(C, S, classId)), null, choices);
             part.name = "merc-part";
 
             // The merc steps in, the line types out, then the answers rise (law 5: every beat plays over time).
