@@ -214,7 +214,9 @@ namespace GridGame.App
             foreach (var id in S.Party)
             {
                 var hero = id;
-                var b = Ui.Button(C.TryClass(id)?.Name ?? id, () => { selected = it; Done(Camp.Use(C, S, it.Id, hero)); }, "btn--small", row);
+                var b = RowIcon.IconButton(C.TryClass(id)?.Name ?? id, RowKind.Hero, () => { selected = it; Done(Camp.Use(C, S, it.Id, hero)); }, "btn--small", row);
+                var face = b.KindIcon(RowKind.Hero, id); // GG-T750 (§26.7): the hero's own thumbnail, else the Hero emblem
+                face.style.width = face.style.height = Size.IconS; face.style.marginRight = Space.S8;
                 b.style.flexGrow = 1; b.style.flexShrink = 1; b.style.flexBasis = Length.Percent(25); b.style.minWidth = 0;
                 b.name = "use-on-" + id;
             }
@@ -509,6 +511,7 @@ namespace GridGame.App
                 var label = EntryName(entry);
                 var icon = EntryIcon(entry);
                 if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); ic.style.marginRight = Space.S0; }
+                else cell.KindIcon(RowKind.Ability).style.marginRight = Space.S0; // GG-T750 (§26.7): an empty slot shows the Ability emblem
                 var t = Ui.Caption(label ?? "Empty", cell, label == null ? "dim" : null);
                 t.style.unityTextAlign = TextAnchor.MiddleCenter; t.style.whiteSpace = WhiteSpace.Normal;
                 t.style.maxWidth = Length.Percent(100); t.style.minWidth = 0; t.style.flexShrink = 1;
@@ -836,6 +839,7 @@ namespace GridGame.App
                 // The next stock tier, signposted at the foot of the list: "More stock after The Lantern Road III · +14 items".
                 string when = VendorTiers.OpensHint(C, next.tier);
                 var more = Ui.MenuRow($"More stock {when}", $"+{next.count} items", () => { App.Toast($"The Merchant restocks {when}"); }, list, null, false);
+                more.KindIcon(RowKind.Locked); // GG-T750 (§26.7): stock not open yet
                 more.name = "shop-next";
             }
             var fr = Ui.Footer(body, "shop-footer");
@@ -1527,7 +1531,7 @@ namespace GridGame.App
             if (diamonds < DiamondSummon.Price)
             {
                 Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate. {ShardText.Plural} also pay for a lucky craft or an instant Rested refill.", w, "dim");
-                Ui.Button(ShardText.Store, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store";
+                RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
             }
         }
 
@@ -1563,11 +1567,11 @@ namespace GridGame.App
             }
             Ui.Caption("Every hero listed is equally likely. Heroes you already have never come.", list, "dim");
             Button toggle = null;
-            toggle = Ui.Button("Odds", () =>
+            toggle = RowIcon.IconButton("Odds", RowKind.Menu, () =>
             {
                 bool open = list.style.display == DisplayStyle.None;
                 list.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
-                toggle.text = open ? "Hide odds" : "Odds";
+                toggle.Q<Label>().text = open ? "Hide odds" : "Odds"; // GG-T750: the IconButton's label, not Button.text
             }, "btn--small", row);
             toggle.name = "summon-odds-btn";
         }
@@ -1666,7 +1670,7 @@ namespace GridGame.App
                 Ui.Thumb(id, cell, Kit.Avatar).style.marginRight = Space.S0;
                 Ui.Caption($"Lv {Progression.Level(h)}", cell);
             }
-            Ui.Button("Change team", () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(team)).name = "crucible-team-change";
+            RowIcon.IconButton("Change team", RowKind.Hero, () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(team)).name = "crucible-team-change"; // GG-T750
 
             bool can = Crucible.CanLaunch(C, S, out var why);
             var foot = Ui.Footer(body, "crucible-footer");
@@ -1727,7 +1731,7 @@ namespace GridGame.App
             var acts = Ui.Actions(col);
             if (slain)
             {
-                var claim = Ui.Button("Claim", () =>
+                var claim = RowIcon.IconButton("Claim", RowKind.Confirm, () => // GG-T750 (§26.7)
                 {
                     claimedTome = reward?.Type == ItemType.Tome ? reward.Id : null;
                     var r = Bounties.Claim(C, S, bounty.Id);
@@ -1738,12 +1742,12 @@ namespace GridGame.App
             }
             else if (hunting)
             {
-                var stop = Ui.Button("Hunting", () => Confirm.Show($"Stop hunting {bounty.Name}?", "Stop", () => Done(Bounties.Abandon(C, S, bounty.Id))), "btn--small", acts);
+                var stop = RowIcon.IconButton("Hunting", RowKind.Close, () => Confirm.Show($"Stop hunting {bounty.Name}?", "Stop", () => Done(Bounties.Abandon(C, S, bounty.Id))), "btn--small", acts);
                 stop.name = "bounty-abandon-" + b.Id;
             }
             else
             {
-                var take = Ui.Button("Take", () => Done(Bounties.Take(C, S, bounty.Id)), "btn--small", acts);
+                var take = RowIcon.IconButton("Take", RowKind.Confirm, () => Done(Bounties.Take(C, S, bounty.Id)), "btn--small", acts);
                 take.name = "bounty-" + b.Id;
             }
         }
@@ -1926,6 +1930,7 @@ namespace GridGame.App
             row.style.alignItems = Align.Center;
             row.style.minHeight = Kit.Row;
             row.style.paddingLeft = Kit.Indent; // the label lines up with the menu rows' labels
+            row.KindIcon(RowKind.Settings); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
             var minus = Ui.Button("−", () => Set(level - 1), "btn--small btn--icon", row);
             minus.name = "difficulty-down";
@@ -1946,11 +1951,12 @@ namespace GridGame.App
             var st = App.Settings;
             // GG-T454: one scrolling list (the rows, then How to play), so the last rows are never cut off a short phone.
             var w = Ui.ListPanel(body, null, "settings-list");
-            void Toggle(string label, bool value, Action<bool> set) => Ui.MenuRow(label, value ? "ON" : "OFF", () => { set(!value); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
+            // GG-T750 (§26.7): every setting row leads with the Settings gear, the save rows with the Save disk.
+            void Toggle(string label, bool value, Action<bool> set) => Ui.MenuRow(label, value ? "ON" : "OFF", () => { set(!value); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
             void Cycle(string label, float value, float[] opts, string fmt, Action<float> set)
             {
                 int i = Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f);
-                Ui.MenuRow(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
+                Ui.MenuRow(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
             }
             void CycleFont()
             {
@@ -1964,15 +1970,21 @@ namespace GridGame.App
             if (Features.LookPresets)
             {
                 // GG-T407: every window theme (presets, the player's own, and the editor for gradient, texture and frame).
-                Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w).name = "settings-windows";
-                Ui.MenuRow("Font", st.FontName, CycleFont, w);
+                var windows = Ui.MenuRow("Windows", Art.ThemeName, () => App.Router.Push(new WindowEditorScreen()), w);
+                windows.name = "settings-windows";
+                windows.KindIcon(RowKind.Settings);
+                Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Settings);
                 // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-                Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
-                    () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-wrap";
+                var wrap = Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
+                    () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
+                wrap.name = "settings-text-wrap";
+                wrap.KindIcon(RowKind.Settings);
             }
             // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
-            Ui.MenuRow("Text size", $"{TextSize.Clamp(st.TextScale)}%",
-                () => { st.TextScale = TextSize.Next(st.TextScale); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).name = "settings-text-size";
+            var size = Ui.MenuRow("Text size", $"{TextSize.Clamp(st.TextScale)}%",
+                () => { st.TextScale = TextSize.Next(st.TextScale); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
+            size.name = "settings-text-size";
+            size.KindIcon(RowKind.Settings);
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
             Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
             Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
@@ -1985,8 +1997,12 @@ namespace GridGame.App
             Toggle("Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
             Toggle("Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
             // GG-T607 (§15.2): move a slot to another device as a copyable code, no cloud account needed.
-            Ui.MenuRow("Transfer save", "Copy code", () => App.Router.Push(new SaveExportScreen(App.Slot >= 0 ? App.Slot : Math.Max(0, App.Saves?.Root == null ? 0 : SaveFiles.MostRecent(App.Saves.Root)))), w).name = "settings-transfer-save";
-            Ui.MenuRow("Import save", "Paste code", () => App.Router.Push(new SaveImportScreen()), w).name = "settings-import-save";
+            var transfer = Ui.MenuRow("Transfer save", "Copy code", () => App.Router.Push(new SaveExportScreen(App.Slot >= 0 ? App.Slot : Math.Max(0, App.Saves?.Root == null ? 0 : SaveFiles.MostRecent(App.Saves.Root)))), w);
+            transfer.name = "settings-transfer-save";
+            transfer.KindIcon(RowKind.Save);
+            var importRow = Ui.MenuRow("Import save", "Paste code", () => App.Router.Push(new SaveImportScreen()), w);
+            importRow.name = "settings-import-save";
+            importRow.KindIcon(RowKind.Save);
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
@@ -2005,7 +2021,7 @@ namespace GridGame.App
             {
                 // GG-T539: one button brings back every lesson: the first battle's (on The Tithe Moors I), each battle system's
                 // the next time it comes up, and every Camp and vendor lesson. It also turns lessons back on after Skip tutorial.
-                var replay = Ui.Button("Replay tutorials", () => { Coach.ResetAll(S); Done(Result.Success("Every lesson will show again")); }, "btn--small", Ui.Actions(help));
+                var replay = RowIcon.IconButton("Replay tutorials", RowKind.NewGamePlus, () => { Coach.ResetAll(S); Done(Result.Success("Every lesson will show again")); }, "btn--small", Ui.Actions(help));
                 replay.name = "replay-camp-tips";
             }
         }
