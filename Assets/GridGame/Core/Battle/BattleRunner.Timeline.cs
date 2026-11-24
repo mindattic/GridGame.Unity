@@ -94,7 +94,6 @@ namespace GridGame.Core.Battle
 
             TickTimedBuffs(1);
             if (S.IsOver) return;
-            FollowCarriers(); // GG-T874: a carried bomb keeps up with however its carrier moved since
             if (S.Region.Tiles.Count > 0) TickTileSight(); // GG-T843: fresh marks with VisibleSeconds hide from the other side
             if (S.Region.Tiles.Count > 0) TickRegionTiles(); // GG-T359: painted tiles with a lifetime fade
             if (S.IsOver) return;

@@ -35,9 +35,6 @@
     bark          bark:surprise/<stageId>/<wave>   bark-surprise-<stageId>-<wave>       stages.json Waves[wave].SurpriseLine
     bark          bark:shop/<npcId>/<occasion>     bark-shop-<npcId>-<occasion>         SHOP_BARKS (GG-T570: the Aetherist's
                                                                                         refinery; DialogueDef.ShopBarks)
-    description   codex:<kind>/<id>                description-codex-<kind>-<id>        codex.json Key "<kind>:<id>" (GG-T936: a
-                                                                                        Codex entry's body, payload "long"; OPTIONAL,
-                                                                                        the entry falls back to its record's words)
 
 Stays in the game (UI and mechanics, not story): names (class, item, ability, theme, stage, quest-board labels;
 Prose holds them as entity names, the game owns the id), ability Description and Trigger.Callout (mechanical floats),
@@ -84,21 +81,6 @@ TAGS = ("right-answer", "conditional")
 _SLUG_BAD = re.compile(r"[^a-z0-9]+")
 
 
-# GG-T936: keys whose text may not exist yet (a Codex body falls back to its record's own words). Mirrors the game's
-# ProseText.IsOptional: game_keys lists them (so an applied text is not an orphan), but a missing one is not reported.
-OPTIONAL_PREFIXES = ("codex:",)
-
-
-def is_optional(key: str) -> bool:
-    return key.startswith(OPTIONAL_PREFIXES)
-
-
-def codex_text_key(codex_key: str) -> str:
-    """codex.json Key '<kind>:<id>' -> its body's text key 'codex:<kind>/<id>' (CodexDef.TextKey)."""
-    kind, _, rest = codex_key.strip().partition(":")
-    return f"codex:{kind}/{rest}" if rest else "codex:" + codex_key.strip()
-
-
 def slug(s: str) -> str:
     """A stable id piece: lowercase, every run of other characters one '-', no edge dashes."""
     return _SLUG_BAD.sub("-", (s or "").lower()).strip("-")
@@ -114,7 +96,7 @@ def load_content(content_dir: str = CONTENT_DIR) -> dict:
     (campaign: an empty object), so a partial fixture still loads."""
     out = {}
     for name in ("classes", "factions", "campaign", "stages", "dialogues", "quests", "glossary", "caravan",
-                 "mercenaries", "items", "armorsets", "skilltrees", "regionrules", "codex"):
+                 "mercenaries", "items", "armorsets", "skilltrees", "regionrules"):
         path = os.path.join(content_dir, name + ".json")
         if os.path.isfile(path):
             out[name] = load(path)
@@ -225,9 +207,6 @@ def game_keys(content: dict) -> dict:
         if m.get("Class"):
             keys[f"bark:merc/{m['Class']}/pitch"] = "bark"
             keys[f"bark:merc/{m['Class']}/renewal"] = "bark"
-    for e in content.get("codex") or []:  # GG-T936: optional Codex bodies
-        if isinstance(e, dict) and (e.get("Key") or "").strip():
-            keys[codex_text_key(e["Key"])] = "description"
     return keys
 
 

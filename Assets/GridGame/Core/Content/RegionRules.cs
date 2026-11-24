@@ -158,10 +158,6 @@ namespace GridGame.Core.Content
         /// <summary>SpawnUnit (GG-T894): the spawn's level is its painter's level (the mark's owner, already dialled for the
         /// wave) plus <see cref="Level"/>, at least 1; no owner = the stage's level. A slime's glob hatches a slime a level below it.</summary>
         public bool FromOwnerLevel;
-        /// <summary>Schedule (GG-T874): the queued event rides the unit standing on the area's tile (the ability's
-        /// Target, else Self): its telegraphed tiles are that carrier's footprint grown by <see cref="Radius"/> and follow it
-        /// as it moves, shoved or walking, until it lands; a carrier that falls drops it where it fell. No unit there, no event.</summary>
-        public bool Follow;
     }
 
     /// <summary>Whom a team-owned tile state works on (GG-T842, BIBLE §14.23): a mark records the team that painted it, and
@@ -454,7 +450,6 @@ namespace GridGame.Core.Content
                     case RuleEffectKind.Schedule:
                         if (e.Event == null) p.Add($"{w}: needs an Event");
                         if (e.Seconds < 0f) p.Add($"{w}: Seconds can't be negative");
-                        if (e.Follow && e.Area != RuleArea.Target && e.Area != RuleArea.Self) p.Add($"{w}: Follow needs a Target or Self area (its carrier's tile)");
                         break;
                     case RuleEffectKind.AdjustEvents: if (!e.Cancel && e.Seconds == 0f) p.Add($"{w}: needs Seconds or Cancel"); break;
                     case RuleEffectKind.PlaceAnchor: if (string.IsNullOrEmpty(e.Anchor)) p.Add($"{w}: needs an Anchor"); break;

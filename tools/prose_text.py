@@ -223,10 +223,6 @@ def hydrate(content: dict, texts: dict) -> dict:
         p = pay("rule:" + r.get("Id", "")) if isinstance(r, dict) else None
         if p is not None:
             r["Name"], r["Description"] = p.get("name"), p.get("short")
-    for e in content.get("codex") or []:  # GG-T936: a Codex body is optional; no text leaves Body unset
-        p = pay(K.codex_text_key(e.get("Key") or "")) if isinstance(e, dict) and e.get("Key") else None
-        if p is not None:
-            e["Body"] = p.get("long") or p.get("short")
     return content
 
 
@@ -512,7 +508,7 @@ def cmd_check(args) -> int:
     content = K.load_content(args.content)
     keys = K.game_keys(content)
     texts = load_texts(args.out)
-    missing = sorted(k for k in keys if k not in texts and not K.is_optional(k))  # GG-T936: Codex bodies are optional
+    missing = sorted(k for k in keys if k not in texts)
     wrong = sorted(k for k in keys if k in texts and texts[k].get("id") != K.text_id(keys[k], k))
     orphans = sorted(k for k in texts if k not in keys)
     import prose_map  # noqa: E402  (imports this module)
@@ -541,7 +537,7 @@ def cmd_seed_missing(args) -> int:
     universe = os.path.join("Data", "Prose", "gridgame.universe.json")
     known = {e["id"] for e in K.load(universe).get("entities") or []} if os.path.isfile(universe) else set()
     docs = [d for d in prose_seed.build(content, known) if d["key"] in keys and d["key"] not in held]
-    no_seed = sorted(k for k in keys if k not in held and not K.is_optional(k) and k not in {d["key"] for d in docs})
+    no_seed = sorted(k for k in keys if k not in held and k not in {d["key"] for d in docs})
     if args.dry_run:
         print(f"prose_text seed-missing (dry run): {len(docs)} keys to seed; {len(no_seed)} missing keys have no seed words")
         return 0

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using GridGame.Core.Content;
 using GridGame.Meta;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -102,51 +101,6 @@ namespace GridGame.Tests
             back.Bestiary["slime01"] = new BestiaryEntry { Seen = true };
             back = SaveMigrations.Migrate(back, TestKit.Real);
             Assert.That(Codex.IsNew(back, CodexKinds.Foe, "slime01"), Is.True, "only the v16 back-fill marks read");
-        }
-
-        [Test]
-        public void Codex_content_resolves()
-        {
-            // GG-T936: every codex.json Key and Related key names a known kind and an existing record; each entry has a
-            // title and a body (its record's words while Prose has no text) and its links resolve; no codex problems.
-            var c = TestKit.Real;
-            Assert.That(c.CodexOrder, Is.Not.Empty, "codex.json ships entries");
-            var problems = ContentLoader.Validate(c).Where(p => p.StartsWith("codex")).ToList();
-            Assert.That(problems, Is.Empty, string.Join("\n", problems.Take(40)));
-            Assert.That(c.TextProblems.Where(p => p.Contains(ProseText.CodexKey)), Is.Empty, "a Codex body is optional");
-            foreach (var e in c.CodexOrder)
-            {
-                Assert.That(CodexKinds.TrySplit(e.Key, out var kind, out var id), Is.True, e.Key);
-                Assert.That(CodexKinds.All, Does.Contain(kind), e.Key);
-                var v = c.CodexEntry(kind, id);
-                Assert.That(v.Exists, Is.True, e.Key);
-                Assert.That(v.Key, Is.EqualTo(e.Key));
-                Assert.That(v.Title, Is.Not.Null.And.Not.Empty, e.Key);
-                Assert.That(v.Body, Is.Not.Null.And.Not.Empty, e.Key);
-                Assert.That(v.Related.Count, Is.EqualTo(e.Related.Count), $"{e.Key}: every related key resolves");
-                Assert.That(ProseText.Keys(c).ContainsKey(CodexDef.TextKey(e.Key)), Is.True, $"{e.Key}: its body key is a Prose key");
-            }
-        }
-
-        [Test]
-        public void Codex_entries_fall_back_to_the_records_own_words()
-        {
-            var c = TestKit.Real;
-            var foe = c.CodexEntry(CodexKinds.Foe, "slime01");
-            Assert.That(foe.Exists, Is.True);
-            Assert.That(foe.Title, Is.EqualTo(c.Class("slime01").Name));
-            Assert.That(foe.Body, Is.EqualTo(c.Class("slime01").Lore));
-            var g = c.GlossaryOrder.First();
-            var kw = c.CodexEntry(CodexKinds.Keyword, g.Id);
-            Assert.That(kw.Title, Is.EqualTo(g.Term));
-            Assert.That(kw.Body, Is.EqualTo(g.Text));
-            var npc = c.CodexEntry(CodexKinds.Character, "merchant");
-            Assert.That(npc.Title, Is.EqualTo("Lantern Merchant"), "codex.json's Title wins");
-            Assert.That(npc.Body, Is.EqualTo(c.NpcBlurbs["merchant"]));
-            var unknown = c.CodexEntry(CodexKinds.Foe, "no-such-foe");
-            Assert.That(unknown.Exists, Is.False);
-            Assert.That(unknown.Body, Does.StartWith("(missing text: codex:foe/no-such-foe"));
-            Assert.That(c.CodexRecordExists("nonsense", "slime01"), Is.False);
         }
     }
 }

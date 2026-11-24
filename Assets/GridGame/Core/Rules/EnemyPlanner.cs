@@ -445,7 +445,8 @@ namespace GridGame.Core.Rules
                 if (a == null || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly) continue;
                 foreach (var e in a.RuleEffects)
                     if (e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Target && e.State != null
-                        && s.Content.TryTileState(e.State)?.Circle == null) { lob = a; state = e.State; break; } // GG-T902: a rune is no lob
+                        && s.Content.TryTileState(e.State)?.Circle == null // GG-T902: a rune is no lob
+                        && !Buries(s, e.State)) { lob = a; state = e.State; break; } // GG-T900: a buried charge is planted, not lobbed
                 if (lob != null) break;
             }
             if (lob == null) return null;
@@ -598,6 +599,89 @@ namespace GridGame.Core.Rules
                     if (self < bestSelf || (self == bestSelf && near > bestHero)) { best = c; bestSelf = self; bestHero = near; }
                 }
             return best.HasValue ? new RunePlan { Kind = RunePlanKind.Paint, Ability = rune, At = best.Value, Rune = best.Value } : null;
+        }
+
+        /// <summary>GG-T900: how far (Manhattan) a sapper plants a buried charge from where it stands.</summary>
+        public const int BuryRange = 3;
+        /// <summary>GG-T900: no sapper plants while its side already has this many of that charge in the ground.</summary>
+        public const int BuryCap = 2;
+        /// <summary>GG-T900: how far along a hero's approach (steps from the hero) a planted charge still counts as in its way.</summary>
+        public const int BuryLaneReach = 4;
+
+        /// <summary>GG-T900: is <paramref name="state"/> a buried hazard: a hazard that hides from the other side
+        /// (<see cref="TileStateDef.VisibleSeconds"/>), the <c>buriedmine</c> of §14.23?</summary>
+        public static bool Buries(BattleState s, string state) =>
+            state != null && s.Content.TryTileState(state) is TileStateDef st && st.Hazard && st.VisibleSeconds > 0f;
+
+        /// <summary>
+        /// GG-T900 (BIBLE §14.23, the Spire Burrower's Buried Charge): a sapper's bury is a PickTile, EmptyOnly ability in
+        /// its class kit whose MarkTiles rule effect paints a buried hazard (<see cref="Buries"/>) on its Target. It is
+        /// planted in place of a step and a strike when no hero is adjacent, it is off cooldown, and fewer than
+        /// <see cref="BuryCap"/> marks of that state painted by the foe's side are on the board. The tile is a free one (no
+        /// unit, item, trap, block or mark) within <see cref="BuryRange"/> of the sapper, no foe on or beside it (the blast
+        /// hits everyone), on a hero's approach lane: on one of that hero's shortest walks to its nearest foe, 1 to
+        /// <see cref="BuryLaneReach"/> steps from the hero. Each hero whose lane crosses it is worth 6 for the first and 2
+        /// for each further, plus (reach - steps) for the nearer (sooner) ones; the best tile wins (ties: nearer the sapper,
+        /// then row-major). Null = no bury this turn. Pure: reads state, never commits.
+        /// </summary>
+        public static (AbilityDef Ability, Coord At)? PlanBury(BattleState s, Unit enemy)
+        {
+            if (enemy?.Def?.Abilities == null || enemy.IsImmobile || enemy.IsSilenced || enemy.IsRemains || enemy.IsEgg || enemy.IsMultiTile) return null;
+            AbilityDef bury = null; string state = null;
+            foreach (var id in enemy.Def.Abilities)
+            {
+                var a = s.Content.TryAbility(id);
+                if (a == null || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly) continue;
+                foreach (var e in a.RuleEffects)
+                    if (e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Target && Buries(s, e.State)) { bury = a; state = e.State; break; }
+                if (bury != null) break;
+            }
+            if (bury == null) return null;
+            if (enemy.Cooldowns.TryGetValue(bury.Id, out var cd) && cd > 0) return null;
+            var heroes = s.LivingList(Team.Hero);
+            if (heroes.Count == 0) return null;
+            foreach (var h in heroes) if (enemy.IsAdjacentTo(h)) return null;
+            int planted = 0;
+            foreach (var m in s.Region.Tiles.Values) if (m.State == state && m.OwnerTeam == enemy.Team) planted++;
+            if (planted >= BuryCap) return null;
+            var foes = new List<Unit>();
+            foreach (var u in s.LivingList(enemy.Team)) if (!u.IsCorpse && u.OnBoard) foes.Add(u);
+            // Each hero's approach: its nearest foe (ties: lower id) is where it is headed.
+            var goals = new List<(Coord from, Coord to)>();
+            foreach (var h in heroes)
+            {
+                Unit goal = null; int gd = int.MaxValue;
+                foreach (var f in foes)
+                {
+                    if (f.IsRemains || f.IsEgg) continue;
+                    int d = h.Pos.Manhattan(f.Pos);
+                    if (d < gd || (d == gd && goal != null && f.Id < goal.Id)) { gd = d; goal = f; }
+                }
+                if (goal != null) goals.Add((h.Pos, goal.Pos));
+            }
+            Coord? best = null; float bestScore = 0f; int bestSelf = int.MaxValue;
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    int self = c.Manhattan(enemy.Pos);
+                    if (self == 0 || self > BuryRange) continue;
+                    if (!s.FreeForSpawn(c) || s.TrapAt(c) != null || s.Region.At(c) != null) continue;
+                    bool nearFoe = false;
+                    foreach (var f in foes) { foreach (var t in f.Tiles()) if (t.Chebyshev(c) <= 1) { nearFoe = true; break; } if (nearFoe) break; }
+                    if (nearFoe) continue;
+                    float score = 0f;
+                    foreach (var (from, to) in goals)
+                    {
+                        int toHero = from.Manhattan(c);
+                        if (toHero < 1 || toHero > BuryLaneReach || toHero + c.Manhattan(to) != from.Manhattan(to)) continue;
+                        score += score == 0f ? 6f : 2f;
+                        score += BuryLaneReach - toHero;
+                    }
+                    if (score <= 0f) continue;
+                    if (score > bestScore || (score == bestScore && self < bestSelf)) { best = c; bestScore = score; bestSelf = self; }
+                }
+            return best.HasValue ? (bury, best.Value) : ((AbilityDef, Coord)?)null;
         }
 
         /// <summary>Cardinal line from beside the caster to the board edge along the dominant axis toward the target (X on ties).</summary>

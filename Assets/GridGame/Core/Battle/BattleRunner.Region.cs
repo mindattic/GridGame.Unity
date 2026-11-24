@@ -63,9 +63,7 @@ namespace GridGame.Core.Battle
         /// <summary>A unit moved into a tile (its anchor tile is the one the hooks read).</summary>
         private void RegionEnter(Unit u)
         {
-            if (u == null || !u.Alive) return;
-            FollowCarriers(u); // GG-T874: a bomb it carries comes along
-            if (PreviewOnly) return;
+            if (u == null || !u.Alive || PreviewOnly) return;
             if (S.Region.Tiles.Count > 0) Squish(u); // GG-T844: a glob underfoot is squished before the tile's hooks read it
             if (S.Region.Tiles.Count > 0 && u.Alive) RuneCircle(u); // GG-T902: the Choir's circle completes as its third singer steps in
             if (S.Region.Rules.Count == 0 || !u.Alive) return;
@@ -104,7 +102,6 @@ namespace GridGame.Core.Battle
         /// <summary>A unit fell at <paramref name="at"/>: its class's OnDeathRule, then the UnitDeath hooks.</summary>
         private void RegionDeath(Unit u, Coord at)
         {
-            if (u != null) DropCarried(u); // GG-T874: a bomb it carried stays where it fell
             if (!RegionActive || u?.Def == null) return;
             if (u.Def.OnDeathRule.Count > 0)
                 RunRuleEffects(u.Def.OnDeathRule, new RuleCtx { Subject = u, At = at, Owner = u.Team, OwnerId = u.Id });
@@ -172,7 +169,6 @@ namespace GridGame.Core.Battle
         /// <summary>A queued rule event reached the left edge: it lands on its tiles, then re-arms (Repeat) or leaves the bar.</summary>
         private void ResolveHazard(TimelineEntry e)
         {
-            if (e.CarrierId >= 0) FollowCarriers(S.UnitById(e.CarrierId)); // GG-T874: it blows where its carrier stands now
             var def = C.TryRuleEvent(e.RuleEvent);
             bool rearm = def != null && def.Repeat && e.TotalCastTicks > 0;
             if (rearm) e.RemainingTicks = e.TotalCastTicks;
@@ -848,74 +844,16 @@ namespace GridGame.Core.Battle
             if (def == null) return;
             float secs = e.Seconds > 0f ? e.Seconds : def.Seconds;
             int ticks = Math.Max(1, (int)Math.Round(secs * BattleConfig.TicksPerSecond));
-            Unit carrier = null;
-            if (e.Follow) // GG-T874: it rides the unit on its tile (the Time Bomb's foe), or there is nothing to plant it on
-            {
-                var on = e.Area == RuleArea.Target ? (ctx.Target ?? ctx.At) : ctx.At;
-                carrier = on.HasValue ? S.UnitAt(on.Value) : null;
-                if (carrier == null || !carrier.OnBoard || carrier.IsCorpse || carrier.IsEgg || carrier.IsRemains) return;
-            }
-            var tiles = carrier != null ? CarriedTiles(carrier, e.Radius) : AreaOf(e, ctx);
+            var tiles = AreaOf(e, ctx);
             string rule = ctx.Rule ?? (C.RuleEventRule.TryGetValue(def.Id, out var owner) ? owner : null);
             var entry = new TimelineEntry
             {
                 Id = S.NextEntryId++, Kind = TimelineKind.Hazard, OwnerId = 0, CasterTeam = Team.Neutral,
                 RuleEvent = def.Id, RuleId = rule, HazardTiles = new List<Coord>(tiles),
                 TotalCastTicks = ticks, RemainingTicks = ticks, SourceUnitId = ctx.Subject?.Id ?? -1,
-                CarrierId = carrier?.Id ?? -1, CarrierRadius = carrier != null ? e.Radius : 0,
             };
             S.Timeline.Add(entry);
-            Emit(new HazardQueuedEvent
-            {
-                EntryId = entry.Id, EventId = def.Id, RuleId = rule, Tiles = new List<Coord>(tiles),
-                Seconds = ticks / (float)BattleConfig.TicksPerSecond, CarrierId = entry.CarrierId,
-            });
-        }
-
-        /// <summary>GG-T874: the tiles a carried hazard covers: its carrier's footprint grown by <paramref name="radius"/>
-        /// (Manhattan, as an area's Radius), on the board, row-major.</summary>
-        internal static List<Coord> CarriedTiles(Unit u, int radius)
-        {
-            var set = new HashSet<Coord>();
-            foreach (var c in u.Tiles())
-                for (int dy = -radius; dy <= radius; dy++)
-                    for (int dx = -radius; dx <= radius; dx++)
-                    {
-                        var t = new Coord(c.X + dx, c.Y + dy);
-                        if (Math.Abs(dx) + Math.Abs(dy) <= radius && BattleState.InBounds(t)) set.Add(t);
-                    }
-            var list = new List<Coord>(set);
-            list.Sort((a, b) => a.Y != b.Y ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X));
-            return list;
-        }
-
-        /// <summary>GG-T874: every queued hazard riding <paramref name="only"/> (every carrier when null) re-centres on its
-        /// carrier where it stands now (a <see cref="HazardMovedEvent"/> when its tiles changed); a carrier no longer on the
-        /// board drops it.</summary>
-        private void FollowCarriers(Unit only = null)
-        {
-            foreach (var x in S.Timeline)
-            {
-                if (x.Kind != TimelineKind.Hazard || x.CarrierId < 0 || (only != null && x.CarrierId != only.Id)) continue;
-                var u = S.UnitById(x.CarrierId);
-                if (u == null || !u.Alive || !u.OnBoard) { x.CarrierId = -1; continue; }
-                var tiles = CarriedTiles(u, x.CarrierRadius);
-                if (x.HazardTiles != null && tiles.Count == x.HazardTiles.Count && tiles.TrueForAll(x.HazardTiles.Contains)) continue;
-                x.HazardTiles = tiles;
-                Emit(new HazardMovedEvent { EntryId = x.Id, EventId = x.RuleEvent, CarrierId = u.Id, Tiles = new List<Coord>(tiles) });
-            }
-        }
-
-        /// <summary>GG-T874: <paramref name="u"/> fell: each hazard it carried stays on the tiles round where it fell.</summary>
-        private void DropCarried(Unit u)
-        {
-            foreach (var x in S.Timeline)
-            {
-                if (x.Kind != TimelineKind.Hazard || x.CarrierId != u.Id) continue;
-                x.HazardTiles = CarriedTiles(u, x.CarrierRadius);
-                x.CarrierId = -1;
-                Emit(new HazardMovedEvent { EntryId = x.Id, EventId = x.RuleEvent, CarrierId = u.Id, Tiles = new List<Coord>(x.HazardTiles), Dropped = true });
-            }
+            Emit(new HazardQueuedEvent { EntryId = entry.Id, EventId = def.Id, RuleId = rule, Tiles = new List<Coord>(tiles), Seconds = ticks / (float)BattleConfig.TicksPerSecond });
         }
 
         /// <summary>Retimes (or calls off) every queued rule event of e.Event (all of them when null).</summary>

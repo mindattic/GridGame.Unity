@@ -3,6 +3,7 @@ using System.Linq;
 using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
+using GridGame.Core.Rules;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
 
@@ -375,6 +376,121 @@ namespace GridGame.Tests
             Assert.That(p.Any(x => x.Contains("unknown class 'nope'")), Is.True);
             Assert.That(p.Any(x => x.Contains("OnExpire needs LifeSeconds")), Is.True);
             Assert.That(p.Any(x => x.Contains("state glob")), Is.False, "the glob itself is well formed");
+        }
+
+        // ── The sapper's buried charge (GG-T900, §14.23) ─────────────────────────────────────────
+
+        private static readonly Coord Lane = new Coord(2, 4);
+
+        /// <summary>Mini content plus the real landmines rule, element table and the sapper's Buried Charge, a "sapper" foe
+        /// that stands still with it in its kit (the Spire Burrower's kit in stand-in form), and a hero "yank" that drags
+        /// the units on its tile two tiles down (to walk a foe over the mine).</summary>
+        private static ContentDb SapperDb()
+        {
+            var db = Mini();
+            db.Elements = Real.Elements;
+            db.Abilities["sapper_buried_charge"] = Real.TryAbility("sapper_buried_charge");
+            var st = new Stats { Strength = 5, Vitality = 2, Agility = 10, Speed = 10, Intelligence = 5 };
+            db.Classes["sapper"] = new ClassDef { Id = "sapper", Name = "Sapper", Team = Team.Enemy, Tags = { "Beast" }, BaseStats = st, MoveRange = 0, Abilities = { "sapper_buried_charge" } };
+            RegionRuleCatalog.Index(db, new List<RegionRuleDef> { Real.TryRegionRule("landmines") });
+            db.Abilities["yank"] = new AbilityDef
+            {
+                Id = "yank", Name = "yank", Kind = AbilityKind.Skill, Shape = TargetShape.SingleTile, Mode = TargetMode.PickTile, Filter = TargetFilter.Any,
+                RuleEffects = { new RuleEffectDef { Kind = RuleEffectKind.MoveUnits, Area = RuleArea.Target, Move = RuleMove.Down, Amount = 2 } },
+            };
+            return db;
+        }
+
+        /// <summary>The sapper on (2,2), the knight on (2,5) (its approach to the sapper runs down column 2, so (2,4) is the
+        /// one lane tile in the sapper's reach not beside it), the cleric off to the side on (5,7).</summary>
+        private static BattleState Sapper(string knightBar = null) =>
+            Setup(SapperDb(), Stage(("sapper", 2, 2)), new[] { ("knight", 2, 5, knightBar), ("cleric", 5, 7, (string)null) });
+
+        private static Unit SapperOf(BattleState s) => s.Units.First(u => u.Def.Id == "sapper");
+
+        [Test]
+        public void The_sapper_content_loads_validates_and_the_spire_burrower_carries_it_on_the_underspire()
+        {
+            var problems = ContentLoader.Validate(Real).Where(p => p.Contains("sapper_buried_charge") || p.Contains("spireburrower")).ToList();
+            Assert.That(problems, Is.Empty, string.Join("\n", problems));
+            var a = Real.TryAbility("sapper_buried_charge");
+            Assert.That(a, Is.Not.Null);
+            Assert.That(a.Mode, Is.EqualTo(TargetMode.PickTile));
+            Assert.That(a.Filter, Is.EqualTo(TargetFilter.EmptyOnly));
+            Assert.That(a.RuleEffects.Any(fx => fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Target && fx.State == "buriedmine"), Is.True, "the Engineer's buriedmine");
+            Assert.That(Real.Classes["spireburrower"].Abilities, Does.Contain("sapper_buried_charge"));
+            var underspire = Real.Stages.Values.Where(st => st.Name != null && st.Name.Contains("Underspire")).ToList();
+            Assert.That(underspire, Is.Not.Empty);
+            Assert.That(underspire.Any(st => st.Waves.Any(w => w.Enemies.Any(e => e.Class == "spireburrower"))), Is.True, "a sapper fights on an Underspire stage");
+        }
+
+        [Test]
+        public void The_planner_buries_on_the_heroes_approach_lane()
+        {
+            var s = Sapper();
+            var sapper = SapperOf(s);
+            var plan = EnemyPlanner.PlanBury(s, sapper);
+            Assert.That(plan, Is.Not.Null);
+            Assert.That(plan.Value.Ability.Id, Is.EqualTo("sapper_buried_charge"));
+            Assert.That(plan.Value.At, Is.EqualTo(Lane), "on the knight's way to it, in reach, not beside the sapper");
+            Assert.That(EnemyPlanner.PlanLob(s, sapper), Is.Null, "a buried charge is planted, never lobbed");
+            sapper.Cooldowns["sapper_buried_charge"] = 2;
+            Assert.That(EnemyPlanner.PlanBury(s, sapper), Is.Null, "resting");
+        }
+
+        [Test]
+        public void The_sapper_buries_a_charge_owned_by_the_foes_that_then_hides_from_the_party()
+        {
+            var s = Sapper();
+            var sapper = SapperOf(s);
+            var knight = Hero(s, "knight");
+            GuardUntil(s, () => s.Region.At(Lane) != null);
+            var m = s.Region.At(Lane);
+            Assert.That(m?.State, Is.EqualTo("buriedmine"));
+            Assert.That(m.OwnerTeam, Is.EqualTo(Team.Enemy));
+            Assert.That(m.OwnerId, Is.EqualTo(sapper.Id));
+            Assert.That(sapper.Cooldowns.TryGetValue("sapper_buried_charge", out var cd) && cd > 0, Is.True, "and it rests");
+            Assert.That(m.Hidden, Is.False, "seen by all for its first 2 s");
+            GuardUntil(s, () => s.Region.At(Lane)?.Hidden == true);
+            Assert.That(m.Hidden, Is.True);
+            Assert.That(RegionBoard.Sees(m, Team.Hero), Is.False, "the party loses sight of it");
+            Assert.That(RegionBoard.Sees(m, Team.Enemy), Is.True, "the foes still know");
+            Assert.That(RegionBoard.DangerAt(s, Lane, knight), Is.EqualTo(0f), "the hero bot reads no danger it can't see");
+            Assert.That(RegionBoard.DangerAt(s, Lane, sapper), Is.GreaterThan(0f), "the foes steer round their own charge");
+            sapper.Cooldowns.Clear();
+            Assert.That(EnemyPlanner.PlanBury(s, sapper), Is.Null, "the lane already holds one; no other tile is on it");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_hero_stepping_on_the_sappers_hidden_charge_pops_it_and_is_caught()
+        {
+            var s = Sapper();
+            var knight = Hero(s, "knight");
+            GuardUntil(s, () => s.Region.At(Lane)?.Hidden == true);
+            int hp = knight.Hp;
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((2, 4)) });
+            Assert.That(ev.OfType<TileRevealedEvent>().Any(r => r.At == Lane && r.State == "buriedmine" && r.Cause == "triggered" && r.OwnerTeam == Team.Enemy), Is.True, "it pops out");
+            Assert.That(s.Region.At(Lane)?.State, Is.EqualTo("armedmine"));
+            var later = GuardUntil(s, () => s.Region.At(Lane) == null);
+            Assert.That(later.OfType<HazardLandedEvent>().Any(l => l.EventId == "mineblast" && l.Tiles.Contains(Lane)), Is.True, "it blows");
+            Assert.That(!knight.Alive || knight.Hp < hp, Is.True, "the hero on it is caught");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_foe_dragged_over_the_sappers_charge_sets_it_off_too()
+        {
+            var s = Sapper("yank");
+            var sapper = SapperOf(s);
+            GuardUntil(s, () => s.Region.At(Lane)?.Hidden == true);
+            Assert.That(RegionBoard.Affects(s, s.Region.At(Lane), sapper), Is.True, "Affects Any: its own side too");
+            int hp = sapper.Hp;
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "knight").Id, Slot = 0, Target = sapper.Pos });
+            Assert.That(sapper.Pos, Is.EqualTo(Lane), "dragged two tiles down onto it");
+            Assert.That(ev.OfType<TileRevealedEvent>().Any(r => r.At == Lane && r.Cause == "triggered"), Is.True, "it pops out under the foe");
+            GuardUntil(s, () => s.Region.At(Lane) == null);
+            Assert.That(!sapper.Alive || sapper.Hp < hp, Is.True, "and the blast catches it");
         }
     }
 }

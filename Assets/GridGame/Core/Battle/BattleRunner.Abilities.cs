@@ -179,7 +179,6 @@ namespace GridGame.Core.Battle
         {
             NoteRecover(caster, a);
             if (a.Echoes) { ResolveEcho(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; }
-            if (a.Magnetizes > 0) { ResolveMagnetize(caster, a, anchor); return; } // GG-T878: the Tinkerer's Magnetize
             if (a.RedirectsDebuffs) { ResolveRedirect(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T887: the Monk's Redirect Flow
             if (a.IsTeleport)
             {

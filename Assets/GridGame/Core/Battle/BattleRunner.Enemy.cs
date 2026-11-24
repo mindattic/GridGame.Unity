@@ -78,6 +78,7 @@ namespace GridGame.Core.Battle
                 return;
             }
 
+            if (TryBury(enemy)) { EndEnemyTurn(enemy); return; } // GG-T900: a sapper plants a buried charge on the party's way
             if (TryRune(enemy)) return; // GG-T902: a Choir singer paints, walks to or holds its rune circle
             if (TryLob(enemy)) { EndEnemyTurn(enemy); return; } // GG-T894: a slime vomits a glob instead of closing in
             if (TryLayTrap(enemy)) { EndEnemyTurn(enemy); return; }
@@ -357,6 +358,20 @@ namespace GridGame.Core.Battle
         private bool TryLob(Unit enemy)
         {
             var plan = EnemyPlanner.PlanLob(S, enemy);
+            if (plan == null) return false;
+            var (a, at) = plan.Value;
+            if (a.CooldownTurns > 0) enemy.Cooldowns[a.Id] = a.CooldownTurns;
+            Announce($"{a.Name}!", enemy.Id);
+            ResolveAbility(enemy, a, at, null);
+            return true;
+        }
+
+        /// <summary>GG-T900 (§14.23): the sapper plants its buried charge (<see cref="EnemyPlanner.PlanBury"/>) on a hero's
+        /// approach lane: the ability resolves there at once (its rule effects paint the mark, owned by the foes' side, seen
+        /// by all for its VisibleSeconds and then by the foes only) and starts its cooldown.</summary>
+        private bool TryBury(Unit enemy)
+        {
+            var plan = EnemyPlanner.PlanBury(S, enemy);
             if (plan == null) return false;
             var (a, at) = plan.Value;
             if (a.CooldownTurns > 0) enemy.Cooldowns[a.Id] = a.CooldownTurns;

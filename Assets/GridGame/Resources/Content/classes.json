@@ -12097,8 +12097,7 @@
       "fieldcaster_wardgrid",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "shock_plating",
-      "operative_timebomb"
+      "shock_plating"
     ],
     "DefaultLoadout": [
       "poison",
@@ -19881,7 +19880,6 @@
       "frost",
       "antidote",
       "tinkerer_juryrig",
-      "tinkerer_magnetize",
       "fieldeng_mine",
       "fieldeng_patch",
       "fieldeng_overdrive",
@@ -29639,7 +29637,7 @@
     "Tags": [
       "Beast"
     ],
-    "Card": "Tunnelling [brawler]. Leaves cracked floor wherever it goes.",
+    "Card": "Tunnelling [brawler]. Leaves cracked floor wherever it goes, and buries charges on the party's way.",
     "Portrait": "mannequin",
     "ArtSource": "mannequin",
     "Thumbnail": {
@@ -29740,7 +29738,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "counter_attack"
+      "counter_attack",
+      "sapper_buried_charge"
     ],
     "DefaultLoadout": [],
     "DropTable": "soldier",
