@@ -49,6 +49,9 @@ namespace GridGame.App
             SyncTimeline(null);
             App.Audio.Sfx("battle.channel", 0.7f);
             ShowBanner($"{HazardName(hq.EventId, hq.RuleId)} lands in {hq.Seconds:0.#}s");
+            // GG-T830: the hazard's countdown ticks over its area (seconds of timeline time), flashing when it lands.
+            hazardTiles[hq.EntryId] = hq.Tiles;
+            Text.Countdown(HazardCenter(hq.Tiles), Mathf.CeilToInt(hq.Seconds), HazardTint(hq.EventId));
             yield return Tween.Wait(Timing.Emphasis);
         }
 
@@ -57,20 +60,6 @@ namespace GridGame.App
             board.SyncRegion(State);
             SyncTimeline(null);
             App.Audio.Sfx("battle.slide", 0.5f, hr.Cancelled ? 0.8f : 1.2f);
-            yield return Tween.Wait(Timing.Quick);
-        }
-
-            // GG-T830: the hazard's countdown ticks over its area (seconds of timeline time), flashing when it lands.
-            hazardTiles[hq.EntryId] = hq.Tiles;
-            Text.Countdown(HazardCenter(hq.Tiles), Mathf.CeilToInt(hq.Seconds), HazardTint(hq.EventId));
-        private IEnumerator HazardLandedAnim(HazardLandedEvent hl)
-        {
-            foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
-            App.Audio.Sfx("battle.shatter", 0.7f);
-            yield return Tween.Wait(Timing.Standard);
-            board.ClearMarks();
-            board.SyncRegion(State);
-            SyncTimeline(null);
             var entry = State.Timeline.Find(x => x.Id == hr.EntryId);
             // A called-off hazard has left the timeline: its tiles are the ones it was queued with.
             var tiles = entry?.HazardTiles ?? (hazardTiles.TryGetValue(hr.EntryId, out var q) ? q : null);
@@ -80,14 +69,25 @@ namespace GridGame.App
                 if (hr.Cancelled) Text.Expired(HazardCenter(tiles), HazardName(hr.EventId, entry?.RuleId), HazardTint(hr.EventId));
                 else Text.Countdown(HazardCenter(tiles), Mathf.CeilToInt(hr.TicksLeft / (float)BattleConfig.TicksPerSecond), HazardTint(hr.EventId));
             }
+            yield return Tween.Wait(Timing.Quick);
+        }
+
+        private IEnumerator HazardLandedAnim(HazardLandedEvent hl)
+        {
+            foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
+            if (!hl.Rearmed) hazardTiles.Remove(hl.EntryId);
+            if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
+            App.Audio.Sfx("battle.shatter", 0.7f);
+            yield return Tween.Wait(Timing.Standard);
+            board.ClearMarks();
+            board.SyncRegion(State);
+            SyncTimeline(null);
         }
 
         /// <summary>
         /// A unit falls into a hole (GG-T368, §14.21): carried to the hole if it was shoved or pulled in, it shrinks and fades
         /// into the dark, a full board's swap partner steps onto the filled hole, then it climbs out on its landing tile
         /// (the fall's damage is its own beat after this one).
-            if (!hl.Rearmed) hazardTiles.Remove(hl.EntryId);
-            if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
         /// </summary>
         private IEnumerator FellAnim(FellEvent f)
         {
@@ -143,17 +143,6 @@ namespace GridGame.App
         private string HazardName(string eventId, string ruleId) =>
             App.Content.TryRegionRule(ruleId)?.Name ?? App.Content.TryRegionRule(App.Content.RuleEventRule.TryGetValue(eventId ?? "", out var r) ? r : null)?.Name ?? "Hazard";
 
-        /// <summary>A rule event's colour on the timeline and the board.</summary>
-        private static Color HazardColor(TimelineEntry e) =>
-            Art.HexColor(GameApp.I?.Content?.TryRuleEvent(e.RuleEvent)?.Color, Palette.CastEnemy);
-
-        /// <summary>The timeline diamond's art for a rule event: its UI icon when it names one, else its glyph.</summary>
-        private void HazardArt(VisualElement art, TimelineEntry e)
-        {
-            var def = App.Content.TryRuleEvent(e.RuleEvent);
-            art.style.backgroundColor = HazardColor(e).WithA(0.3f);
-            var tex = string.IsNullOrEmpty(def?.Icon) ? null : Art.UiIcon(def.Icon);
-            if (tex != null)
         /// <summary>GG-T830: each queued hazard's tiles by timeline entry, for its countdown once it leaves the bar.</summary>
         private readonly System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<GridGame.Core.Coord>> hazardTiles = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<GridGame.Core.Coord>>();
 
@@ -169,6 +158,17 @@ namespace GridGame.App
         private static Color HazardTint(string eventId) =>
             Color.Lerp(Art.HexColor(GameApp.I?.Content?.TryRuleEvent(eventId)?.Color, Palette.CastEnemy), Palette.White, 0.2f);
 
+        /// <summary>A rule event's colour on the timeline and the board.</summary>
+        private static Color HazardColor(TimelineEntry e) =>
+            Art.HexColor(GameApp.I?.Content?.TryRuleEvent(e.RuleEvent)?.Color, Palette.CastEnemy);
+
+        /// <summary>The timeline diamond's art for a rule event: its UI icon when it names one, else its glyph.</summary>
+        private void HazardArt(VisualElement art, TimelineEntry e)
+        {
+            var def = App.Content.TryRuleEvent(e.RuleEvent);
+            art.style.backgroundColor = HazardColor(e).WithA(0.3f);
+            var tex = string.IsNullOrEmpty(def?.Icon) ? null : Art.UiIcon(def.Icon);
+            if (tex != null)
             {
                 var ic = new VisualElement { name = "tl-ability", pickingMode = PickingMode.Ignore };
                 ic.style.position = Position.Absolute;

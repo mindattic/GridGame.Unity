@@ -2237,7 +2237,6 @@ namespace GridGame.App
             yield return Tween.Wait(hold);
         }
 
-        private IEnumerator FloatAway(Label l, float seconds)
         /// <summary>A status's pip glyph (its Letter, else its name's first letter), as its pip on the unit shows it.</summary>
         private static string StatusGlyph(BuffDef def) => string.IsNullOrEmpty(def.Letter) ? def.Name.Substring(0, 1) : def.Letter;
 
@@ -2261,6 +2260,7 @@ namespace GridGame.App
             if (def != null) Text.Expired(BoardView.CenterOf(v.Tile, v.W, v.H), def.Name, StatusColor(def));
         }
 
+        private IEnumerator FloatAway(Label l, float seconds)
         {
             float top = l.resolvedStyle.top;
             if (float.IsNaN(top)) top = 0;
