@@ -2605,12 +2605,6 @@
   ]
  },
  "ui": {
-  "cursor": [
-   "lorc/pointing",
-   "glove",
-   "rot:-135",
-   "flop"
-  ],
   "pk_potion": [
    "lorc/heart-bottle",
    "crimson"

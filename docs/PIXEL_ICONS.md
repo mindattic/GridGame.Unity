@@ -17,7 +17,7 @@ Owner, 2026-10-10:
   - `status`: buff ids and `stunned`.
   - `ability`: every ability id.
   - `item`: overrides for consumables and materials.
-  - `ui`: the glove `cursor`, rotated −45° so it points right.
+  - `ui`: the field pickups (`pk_*`). The menu `cursor` is no longer generated (GG-T772): `Resources/UI/cursor-00.png` is "Hand cursor" by andreyin (CC0, https://opengameart.org/node/89568), a 32×32 Chrono Trigger-style hand stored ×4 nearest-neighbour at 128×128 and credited on the Credits screen. Don't add a `cursor` entry back, or a full rebuild overwrites it.
 
   Equipment needs no manifest entry. A rule picks the silhouette from the weapon type or the name (ring, amulet, helm, boots, robe…), and the palette from the material (rusty, iron, steel, bronze, gold…) or the enchant suffix (Flame, Frost, Spark, Shadow).
 - **Pipeline.**
@@ -27,7 +27,7 @@ Owner, 2026-10-10:
   4. Reduce to 8 colours, no dithering.
   5. Add a 1 px dark outline, centre it on 22×22, then scale ×4 nearest-neighbour.
   6. Write a point-filter `.meta`.
-- **Output.** `Resources/StatusIcons`, `AbilityIcons`, `ItemIcons` and `UI`. `Art.StatusIcon`, `Art.AbilityIcon`, `Art.ItemIcon` and `Art.Cursor` load them; `Ui.StatusPip` draws a status icon on a dark disc ringed in the status colour.
+- **Output.** `Resources/StatusIcons`, `AbilityIcons`, `ItemIcons` and `UI`. `Art.StatusIcon`, `Art.AbilityIcon`, `Art.ItemIcon` and `Art.UiIcon` load them (`Art.Cursor` loads the hand above); `Ui.StatusPip` draws a status icon on a dark disc ringed in the status colour.
 - **Gates.**
   - `python ../GridGame.Studio/tools/make_icons.py --check` fails if any ability, item or status has no mapping.
   - `tools/check_assets.py` fails if any icon PNG is missing.
