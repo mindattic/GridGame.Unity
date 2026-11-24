@@ -393,6 +393,14 @@ namespace GridGame.App
                 }
                 if (u.HasPlate) Line(body, $"Armor plate {u.PlateHp}/{u.PlateMax} — strike from the sides, or break it head-on", "t-caption", Palette.Info);
             }
+            // GG-T892 (§1.1.3, §14.2): the Heavy keyword and its counters; while it floats, that it can be moved after all.
+            bool weighty = u.Def != null && (u.Def.Heavy || u.IsRaging) || u.HasHeavyBuff;
+            if (weighty && !u.IsCorpse && !u.IsMultiTile)
+            {
+                var hv = GlossaryText.Create(u.IsFloating ? HeavyFloatingLine : HeavyLine, "t-caption", body, false);
+                hv.name = "inspect-heavy";
+                hv.style.marginTop = Space.S8;
+            }
             foreach (var b in u.Buffs)
             {
                 var r = Ui.El("row", body);
@@ -405,6 +413,11 @@ namespace GridGame.App
             }
             return true;
         }
+
+        /// <summary>GG-T892: the Heavy keyword line (§1.1.3, §14.2) the unit card and the Bestiary show, with its counters.</summary>
+        public const string HeavyLine = "Heavy: no drag, shove, pull or swap moves it. Counters: [Floating] lifts it so it can be moved; [Rooted] stops its own legs; a barricade walls it out; Earthsplitter's cracks break under it and it falls.";
+        /// <summary>GG-T892: a Heavy unit while it is <see cref="GridGame.Core.Battle.Unit.IsFloating"/>.</summary>
+        public const string HeavyFloatingLine = "Heavy, but [Floating]: while it hovers it can be dragged, shoved, pulled or swapped like anyone else.";
 
         /// <summary>A tamed monster's bond meter (GG-T303): bond so far out of what it needs, the turns its tame has left,
         /// and what a full bond means. A domesticated monster just says it is the party's for good.</summary>

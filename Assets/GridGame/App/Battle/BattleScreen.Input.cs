@@ -446,7 +446,8 @@ namespace GridGame.App
                 var pv = BattleEngine.PreviewMove(State, dragHeroId, candidate);
                 if (pv.StepsTaken.Count < candidate.Count)
                 {
-                    // Blocked (edge / boss / snake): try the other axis once, else hold position.
+                    // Blocked (edge / boss / snake / Heavy): try the other axis once, else hold position.
+                    var blocked = step;
                     if (dx != 0 && dy != 0)
                     {
                         Coord alt = Math.Abs(dx) >= Math.Abs(dy)
@@ -454,10 +455,10 @@ namespace GridGame.App
                             : new Coord(dragTile.X + Math.Sign(dx), dragTile.Y);
                         candidate[candidate.Count - 1] = alt;
                         pv = BattleEngine.PreviewMove(State, dragHeroId, candidate);
-                        if (pv.StepsTaken.Count < candidate.Count) return;
+                        if (pv.StepsTaken.Count < candidate.Count) { BumpHeavy(blocked, dragPath); return; }
                         step = alt;
                     }
-                    else return;
+                    else { BumpHeavy(blocked, dragPath); return; }
                 }
                 dragPath.Add(step);
                 dragTile = step;
@@ -465,6 +466,31 @@ namespace GridGame.App
                 App.Audio.Sfx("battle.move", 0.5f);
                 ApplyPreview(pv, dragHeroId);
             }
+        }
+
+        private Coord? heavyBumpAt;
+        private float heavyBumpTime = -10f;
+
+        /// <summary>
+        /// GG-T892 (§1.1.3): the drag ran into a Heavy unit (it stands on <paramref name="blocked"/> once the walk so far,
+        /// <paramref name="path"/>, has moved everyone it moves): the step is refused with a thud and "Too heavy!" over it.
+        /// Played once per push against that tile, not on every pointer move while the finger keeps pressing.
+        /// </summary>
+        private void BumpHeavy(Coord blocked, List<Coord> path)
+        {
+            var at = path.Count > 0 ? BattleEngine.PreviewMove(State, dragHeroId, path).Positions : null;
+            Unit occ = null;
+            foreach (var u in State.Units)
+            {
+                if (!u.Alive || u.Id == dragHeroId) continue;
+                var pos = at != null && at.TryGetValue(u.Id, out var p) ? p : u.Pos;
+                if (pos == blocked) { occ = u; break; }
+            }
+            if (occ == null || !occ.IsHeavy) return;
+            if (heavyBumpAt == blocked && Time.unscaledTime - heavyBumpTime < 0.8f) { heavyBumpTime = Time.unscaledTime; return; }
+            heavyBumpAt = blocked; heavyBumpTime = Time.unscaledTime;
+            board.Units.TryGetValue(occ.Id, out var v);
+            HeavyThud(v, blocked);
         }
 
         private static readonly Color HeroTrail = new Color(1f, 0.9f, 0.45f), EnemyTrail = Palette.Bad;

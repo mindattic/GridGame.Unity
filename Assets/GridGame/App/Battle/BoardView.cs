@@ -321,6 +321,29 @@ namespace GridGame.App
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
+        private WeightBadge weightBadge;
+
+        /// <summary>
+        /// GG-T892 (§1.1.3, §14.2): a Heavy unit (<see cref="Unit.IsHeavy"/>: a Heavy class, Raging, Anchored) wears a
+        /// small iron weight in its lower-right corner, above the HP bar, so it reads at a glance as one no drag, shove,
+        /// pull or swap will move. It goes while the unit is Floating (Heavy no longer anchors it) and comes back when it lands.
+        /// </summary>
+        public void SetHeavy(bool on)
+        {
+            if (weightBadge == null)
+            {
+                if (!on) return;
+                weightBadge = new WeightBadge { name = "heavy-" + Id, pickingMode = PickingMode.Ignore };
+                weightBadge.style.right = Space.S8; weightBadge.style.bottom = Size.HpBar + Space.S8;
+                weightBadge.style.width = weightBadge.style.height = Size.Pip;
+                Root.Add(weightBadge);
+            }
+            weightBadge.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        /// <summary>The Heavy weight badge, when the unit wears one (a refused drag or a fizzled shove pops it).</summary>
+        public VisualElement HeavyBadge => weightBadge != null && weightBadge.style.display != DisplayStyle.None ? weightBadge : null;
+
         /// <summary>GG-T951: the soft shadow a Floating unit casts on its tile.</summary>
         public readonly VisualElement FloatShadow;
         private bool floating;
@@ -377,6 +400,7 @@ namespace GridGame.App
         /// </summary>
         public void SetBuffs(Unit u, bool colorblind, bool stunned = false)
         {
+            SetHeavy(u.IsHeavy && !u.IsCorpse && !u.IsMultiTile); // GG-T892: buffs make and lift Heavy (Raging, Anchored, Floating)
             statuses.Clear();
             if (stunned) statuses.Add(("stunned", "!", Palette.Gold, 1f)); // pushback stun isn't a buff, but it's why it isn't moving
             foreach (var b in u.Buffs)
@@ -1162,6 +1186,33 @@ namespace GridGame.App
                 float radius = Mathf.Min(r.width, r.height) / 2f - st.Width / 2f - st.Outline;
                 if (this.frac <= 0f || radius <= 0f) return;
                 Shapes.Ring(ctx.painter2D, r.center, radius, st, -90f, 360f * this.frac);
+            };
+        }
+    }
+
+    /// <summary>GG-T892: the Heavy badge (Shapes, GG-T735): an ink disc holding an iron kettlebell, its handle a ring arc
+    /// over a round steel body with a lighter sheen, so it reads as weight at pip size.</summary>
+    public sealed class WeightBadge : VisualElement
+    {
+        private static readonly Color Iron = new Color(0.62f, 0.66f, 0.74f), Sheen = new Color(0.86f, 0.89f, 0.95f);
+
+        public WeightBadge()
+        {
+            style.position = Position.Absolute;
+            generateVisualContent += ctx =>
+            {
+                var r = contentRect;
+                float size = Mathf.Min(r.width, r.height);
+                if (size <= 0f) return;
+                var p = ctx.painter2D;
+                var c = r.center;
+                var small = ShapeStyle.Small;
+                Shapes.Dot(p, c, size * 0.5f - small.Outline, small.Tint(Palette.Ink.WithA(0.85f)));
+                var body = c + new Vector2(0f, size * 0.1f);
+                float br = size * 0.24f;
+                Shapes.Ring(p, c - new Vector2(0f, size * 0.08f), size * 0.16f, small.Thick(Mathf.Max(3f, size * 0.09f)).Tint(Iron), 180f, 180f);
+                Shapes.Dot(p, body, br, small.Tint(Iron));
+                Shapes.Dot(p, body + new Vector2(-br * 0.35f, -br * 0.35f), br * 0.28f, small.Tint(Sheen).Outlined(Sheen, 0f));
             };
         }
     }

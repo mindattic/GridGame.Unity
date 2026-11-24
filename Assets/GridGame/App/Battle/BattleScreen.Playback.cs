@@ -223,6 +223,8 @@ namespace GridGame.App
                 case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, CombatTextKind.Weak, "Steam!", 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
                 case AnnounceEvent an when an.Text == "Blocked!": wallBlocked = true; return null; // GG-T935: shown on the wall by its hit
+                case AnnounceEvent an when an.Text == TooHeavyText: return TooHeavyAnim(an.UnitId, null); // GG-T892: a fizzled shove, pull or swap
+                case StepBlockedEvent sbh when sbh.Reason == "heavy": return TooHeavyAnim(-1, sbh.At); // GG-T892: a bot's drag step refused
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
@@ -2364,6 +2366,38 @@ namespace GridGame.App
         /// (0..1) only says how big the moment is; <paramref name="tint"/> recolours it for a mechanic with its own colour
         /// (tame, wanderer, rule breaker, bounty). Every BattleScreen unit float comes through here: no call passes a size
         /// (GG-T829, POL-A1 in tools/polish_lint.py).</summary>
+        /// <summary>GG-T892: the callout Core announces when a Heavy unit won't be shoved, pulled or swapped (GG-T891).</summary>
+        private const string TooHeavyText = "Too heavy!";
+        /// <summary>GG-T892: the "Too heavy!" callout's iron grey.</summary>
+        private static readonly Color HeavyTint = new Color(0.72f, 0.76f, 0.84f);
+
+        /// <summary>
+        /// GG-T892 (§1.1.3, §14.2): a Heavy unit refuses to move - a fizzled knockback, pull or swap (its unit id) or a drag
+        /// step into it (its tile): a low thud, a short shake of its token and a pop of its weight badge, and "Too heavy!"
+        /// over it as a CombatText callout (not a banner). Reduce Motion keeps the sound and the callout.
+        /// </summary>
+        private IEnumerator TooHeavyAnim(int unitId, Coord? at)
+        {
+            UnitView v = null;
+            if (unitId >= 0) board.Units.TryGetValue(unitId, out v);
+            else if (at.HasValue && State.UnitAt(at.Value) is Unit occ) board.Units.TryGetValue(occ.Id, out v);
+            HeavyThud(v, at ?? v?.Tile);
+            yield return Tween.Wait(Timing.Standard);
+        }
+
+        /// <summary>GG-T892: the thud, shake, badge pop and "Too heavy!" callout of a Heavy unit that wouldn't budge (the drag
+        /// plays it live, playback for a shove, pull, swap or a bot's step).</summary>
+        private void HeavyThud(UnitView v, Coord? tile)
+        {
+            App.Audio.Sfx("battle.clang", 0.55f, 0.45f);
+            App.Audio.Sfx("battle.hit", 0.7f, 0.5f);
+            var at = v != null && !v.Dead ? BoardView.CenterOf(v.Tile, v.W, v.H) : tile.HasValue ? BoardView.CenterOf(tile.Value) : (Vector2?)null;
+            if (at.HasValue) Text?.Show(at.Value, CombatTextKind.Callout, TooHeavyText, 0.3f, HeavyTint);
+            if (v == null || v.Dead || ReduceMotion) return;
+            App.StartCoroutine(Tween.Shake(v.Root, 5f * Fx, Timing.Quick));
+            if (v.HeavyBadge != null) App.StartCoroutine(Tween.Pop(v.HeavyBadge, 1.35f, Timing.Standard));
+        }
+
         private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f, Color? tint = null)
         {
             Text.Show(FloatAt(unitId), kind, text, magnitude, tint);
