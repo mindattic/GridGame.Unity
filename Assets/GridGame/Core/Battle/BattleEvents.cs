@@ -431,6 +431,15 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"LinkEcho {FromId} -> {ToId} {Amount}";
     }
 
+    /// <summary>GG-T887 (§7): the Monk's Redirect Flow carried these debuffs (<see cref="BuffIds"/>, one per instance, in
+    /// order) off ally <see cref="FromId"/> onto foe <see cref="ToId"/>; each move's BuffRemoved/BuffApplied follows. The
+    /// view runs a chi stream from the ally to the foe.</summary>
+    public sealed class DebuffsRedirectedEvent : BattleEvent
+    {
+        public int CasterId = -1; public int FromId; public int ToId; public List<string> BuffIds = new List<string>();
+        public override string ToString() => $"DebuffsRedirected {FromId} -> {ToId} [{string.Join(",", BuffIds)}]";
+    }
+
     public sealed class AnnounceEvent : BattleEvent
     {
         public string Text; public int UnitId = -1;
