@@ -317,5 +317,16 @@ namespace GridGame.Tests
             Assert.That(twins, Is.Empty);
             Assert.That(ContentLoader.Validate(TestKit.Real).Where(p => p.Contains("Projectile") || p.Contains("Sfx")), Is.Empty);
         }
+
+        /// <summary>GG-T838: every enemy class's support names its family's projectile, motion and sound (BIBLE 1.2.3
+        /// enemy supports), all of them ids that exist.</summary>
+        [Test]
+        public void Every_enemy_support_has_a_presentation()
+        {
+            var enemies = TestKit.Real.Classes.Values.Where(c => c.Team == Team.Enemy).ToList();
+            Assert.That(enemies, Is.Not.Empty);
+            var bare = enemies.Where(c => c.Support == null || string.IsNullOrEmpty(c.Support.Projectile) || string.IsNullOrEmpty(c.Support.Sfx)).Select(c => c.Id);
+            Assert.That(bare, Is.Empty);
+        }
     }
 }
