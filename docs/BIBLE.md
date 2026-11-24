@@ -418,12 +418,12 @@ A refused write moves nothing (release) or throws (`BattleEngine.StrictTiles`). 
 
 | Path | How the footprint is guaranteed free | When there's no room |
 |---|---|---|
-| Hero drag step (`WalkPath`) | Enters an empty tile, or swaps: the occupant (or movable) takes the tile the hero just left — the one tile the step frees. Multi-tile, snake and remains occupants refuse the step ("immovable"); a diagonal slip only enters open space. | Step refused (`StepBlockedEvent`), rest of the path dropped. |
+| Hero drag step (`WalkPath`) | Enters an empty tile, or swaps: the occupant (or movable) takes the tile the hero just left — the one tile the step frees. Multi-tile, snake and remains occupants refuse the step ("immovable"), and so does a **Heavy** one (`StepBlockedEvent` reason "heavy", GG-T891; a Floating Heavy unit swaps like any other, §14.2); a diagonal slip only enters open space. | Step refused (`StepBlockedEvent`), rest of the path dropped. |
 | Enemy 1×1 step (`StepEnemy`) / skirmisher retreat | Destination must hold no unit; a movable there is shoved into the tile just left. | No step. |
 | Hopper leap (`LeapEnemy`) | Landing tile must be fully open (no unit, **no movable**). | No leap. |
 | 2×2 step + `VacatedTile` shoves | `FootprintStepLegal` refuses any entered tile with an enemy (incl. corpses/remains/eggs); each hero/movable on an entered tile goes to the tile vacated **on its own lane** — one entered and one vacated tile per lane, so two shoves can never meet. | No step. |
 | Snake chain (`FollowSnake`) | Each segment slides into the tile the one ahead just left; a movable the head walked onto goes behind the **tail** (it used to land under segment 1 — fixed in GG-T97). | The chain stops at the first segment that can't follow. |
-| Knockback (`Knockback`) | Each tile of the push must be walkable and unit-free; a movable ahead is pushed on only if the tile beyond it is free; a pickup it lands on is shoved back to the tile it left (GG-T228). | Crash (unit / movable that can't move) or Slam (edge / block): damage, no move. |
+| Knockback (`Knockback`) | Each tile of the push must be walkable and unit-free; a movable ahead is pushed on only if the tile beyond it is free; a pickup it lands on is shoved back to the tile it left (GG-T228). A **Heavy** target fizzles ("Too heavy!", GG-T891). | Crash (unit / movable that can't move) or Slam (edge / block): damage, no move. |
 | Teleport ability, delayed or instant | Landing footprint must be open at resolution time. | "Blocked", caster stays. |
 | Blink / burrow (`SurfaceBeside`) | Only a free, trap-free tile beside the prey. | Normal turn instead. |
 | Movable shoves (`ShoveMovable`, hero swaps included) | Only onto a walkable tile nobody stands on that holds no pickup and no other movable (GG-T129). | Nearest open, item-free tile (`NearestMovableSpot`); never left under a unit or on a pickup. |
@@ -2529,6 +2529,7 @@ Added 2026-10-11 (owner: "a tank should be able to taunt enemies"). While any he
 | Line caster | as Caster | `ChargeShape: Line` | 🟡 built in Core, no enemy authored ([§13.4](#134-the-interrupt-path)) |
 | Trap-layer | varies | `Trap` | `scorpion` lays `venom_snare` (6 Poison + Poisoned) |
 | Segmented snake | boss | `SnakeSegments` | `naga00` (3 segments) — see below |
+| Heavy | VIT | `ClassDef.Heavy` | **GG-T891 / GG-T914:** never displaced by anyone else: a hero drag step into it is refused (`StepBlockedEvent` "heavy"); knockback, pull and swap fizzle ("Too heavy!"); a rule `MoveUnits` and a hole swap skip it; `PincerPlanner.Swappable` and the hero bot's shove/pull/swap scoring respect it. A unit carrying the buff id `floating` (GG-T859) is movable again (`Unit.IsHeavy`, `Unit.WontBudge`). All one tile: `heavytrooper02` (Bulwark Shieldbearer), `mechaarmor00`, `mechaarmor01`, `mechaarmor02`, `mountaintroll`, `crystalbrute`, `anchorhulk`, `minotaur02` (Herd Bouncer), `treegolem00`-`treegolem04`, `treegolem06`. *(Tests: `HeavyTests`.)* |
 
 **Traps** (`BattleState.Traps`, `traps.json`) — **Amended 2026-10-09:** visible tiles armed by a trap-layer; triggered by a **hero** entering the tile in any way — stepping, being displaced by a slide, being shoved by a boss, or teleporting — once, then removed (damage is environmental; buff applied). Enemies never trigger traps. Trap tiles are excluded from Teleport, Revive and spawn.
 

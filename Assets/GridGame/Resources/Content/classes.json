@@ -10368,6 +10368,7 @@
   },
   {
     "Id": "mechaarmor00",
+    "Heavy": true,
     "Name": "Mecha Armor",
     "Team": "Enemy",
     "Tags": [
@@ -10494,6 +10495,7 @@
   },
   {
     "Id": "mechaarmor01",
+    "Heavy": true,
     "Name": "Mecha Armor",
     "Team": "Enemy",
     "Tags": [
@@ -10621,6 +10623,7 @@
   },
   {
     "Id": "mechaarmor02",
+    "Heavy": true,
     "Name": "Mecha Armor",
     "Team": "Enemy",
     "Tags": [
@@ -10897,6 +10900,7 @@
   },
   {
     "Id": "mountaintroll",
+    "Heavy": true,
     "Name": "Mountain Troll",
     "Team": "Enemy",
     "Tags": [
@@ -20027,6 +20031,7 @@
   },
   {
     "Id": "treegolem00",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -20156,6 +20161,7 @@
   },
   {
     "Id": "treegolem01",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -20286,6 +20292,7 @@
   },
   {
     "Id": "treegolem02",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -20416,6 +20423,7 @@
   },
   {
     "Id": "treegolem03",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -20546,6 +20554,7 @@
   },
   {
     "Id": "treegolem04",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -20676,6 +20685,7 @@
   },
   {
     "Id": "treegolem06",
+    "Heavy": true,
     "Name": "Tree Golem",
     "Team": "Enemy",
     "Tags": [
@@ -25853,6 +25863,7 @@
   },
   {
     "Id": "heavytrooper02",
+    "Heavy": true,
     "Name": "Bulwark Shieldbearer",
     "Team": "Enemy",
     "Tags": [
@@ -27143,6 +27154,7 @@
   },
   {
     "Id": "minotaur02",
+    "Heavy": true,
     "Name": "Herd Bouncer",
     "Team": "Enemy",
     "Tags": [
@@ -28558,6 +28570,7 @@
   },
   {
     "Id": "crystalbrute",
+    "Heavy": true,
     "Name": "Crystal Brute",
     "Team": "Enemy",
     "Tags": [
@@ -28951,6 +28964,7 @@
   },
   {
     "Id": "anchorhulk",
+    "Heavy": true,
     "Name": "Anchor Hulk",
     "Team": "Enemy",
     "Tags": [
