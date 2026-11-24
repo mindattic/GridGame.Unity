@@ -389,9 +389,7 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>Movers an ability may shove about: one-tile, living, not a snake segment or remains.</summary>
-        private static bool Budges(Unit u) => u.Alive && !u.WontBudge;
-        /// <summary>A one-tile mover moving itself (step back, its own half of a swap): Heavy does not stop its own legs (GG-T891).</summary>
-        private static bool MovesItself(Unit u) => u.Alive && !u.IsMultiTile && !u.IsSnakeMember && !u.IsRemains;
+        private static bool Budges(Unit u) => u.Alive && !u.IsMultiTile && !u.IsSnakeMember && !u.IsRemains;
 
         /// <summary>Unit-direction (one axis) from <paramref name="from"/> toward <paramref name="to"/>, the longer axis first.</summary>
         private static Coord AxisToward(Coord from, Coord to)
@@ -403,7 +401,7 @@ namespace GridGame.Core.Battle
         /// <summary>Pull (GG-T183): drag <paramref name="t"/> toward the caster a tile at a time onto free ground, stopping beside it.</summary>
         private void Pull(Unit caster, Unit t, int tiles)
         {
-            if (!Budges(t)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
+            if (!Budges(t)) { Announce("Won't budge", t.Id); return; }
             for (int i = 0; i < tiles && t.Alive && !S.IsOver; i++)
             {
                 if (caster.IsAdjacentTo(t)) return;
@@ -424,7 +422,7 @@ namespace GridGame.Core.Battle
         /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.</summary>
         private void SwapPlaces(Unit caster, Unit t)
         {
-            if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
+            if (!Budges(t) || !Budges(caster)) { Announce("Won't budge", t.Id); return; }
             Coord a = caster.Pos, b = t.Pos;
             caster.Pos = b;
             t.Pos = a;
@@ -437,7 +435,7 @@ namespace GridGame.Core.Battle
         /// <summary>Step back (GG-T183): the caster backs straight away from the nearest foe onto free, trap-free ground.</summary>
         private void StepAway(Unit u, int tiles)
         {
-            if (!MovesItself(u)) return;
+            if (!Budges(u)) return;
             Unit nearest = null; int best = int.MaxValue;
             foreach (var o in S.Units)
             {

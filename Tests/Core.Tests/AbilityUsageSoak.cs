@@ -102,7 +102,7 @@ namespace GridGame.Tests
                     // same content gave a different snapshot (and win rate) every run.
                     CampRoutine.Run(c, s, rng: new Rng(9000 + si * 4 + attempt));
                     if (attempt == 0) snaps[stage.Id] = SaveFiles.Deserialize(SaveFiles.Serialize(s));
-                    var setup = BattleFactory.Build(c, s, stage.Id, seed++, difficulty, TestKit.SoakTurnMode);
+                    var setup = BattleFactory.Build(c, s, stage.Id, seed++, difficulty);
                     var st = BotRunner.Play(c, setup, new HeroBot(seed, 0f), 3000);
                     cleared = st.Phase == BattlePhase.Victory;
                     BattleFactory.Commit(c, s, st);
@@ -246,7 +246,7 @@ namespace GridGame.Tests
                     int level = Math.Max(1, Progression.StageRecommendedLevel(c, save, stage) + (int.TryParse(Environment.GetEnvironmentVariable("GRIDGAME_LEVEL_OFFSET"), out var lo) ? lo : 0));
                     // A campaign hero keeps a higher level it earned; everyone else is set to the stage's level.
                     foreach (var h in save.Roster) h.TotalXp = snaps != null ? Math.Max(h.TotalXp, Formulas.TotalXpForLevel(level)) : Formulas.TotalXpForLevel(level);
-                    var setup = BattleFactory.Build(c, save, stage.Id, seed, difficulty, TestKit.SoakTurnMode);
+                    var setup = BattleFactory.Build(c, save, stage.Id, seed, difficulty);
                     var opening = new List<BattleEvent>();
                     var s = BattleEngine.Create(c, setup, opening);
                     var rec = new BattleRecorder(s, setup, source, opening);

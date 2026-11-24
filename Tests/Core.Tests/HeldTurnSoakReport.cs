@@ -106,7 +106,7 @@ namespace GridGame.Tests
                     {
                         DialogueRunner.PlayPendingBeatsHeadless(c, s, stage.Id);
                         CampRoutine.Run(c, s);
-                        var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, profileTurnMode: SoakTurnMode); // GG-T777: GRIDGAME_TURN_MODE
+                        var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++);
                         if (!rows.TryGetValue(stage.Id, out var row)) rows[stage.Id] = row = new Row();
                         row.Runs++;
                         float window = -1f;

@@ -87,7 +87,7 @@ namespace GridGame.Core.Battle
             var ev = new SupportActionEvent
             {
                 SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel,
-                AbilityId = spell?.Id, BuffId = def.Effect == SupportEffect.Status ? def.Buff : null, Amount = def.Magnitude,
+                AbilityId = spell?.Id, BuffId = def.Effect == SupportEffect.Status || def.Effect == SupportEffect.Volley ? def.Buff : null, Amount = def.Magnitude,
             };
             foreach (var t in targets) ev.Targets.Add(t.Id);
             Emit(ev);
@@ -133,6 +133,16 @@ namespace GridGame.Core.Battle
                     foreach (var t in targets)
                         if (t.Alive && (chance >= 1f || S.Rng.Chance(chance))) ApplyBuff(t, status, status.Duration);
                     break;
+                case SupportEffect.Volley:
+                    var rider = C.TryBuff(def.Buff);
+                    float odds = Math.Min(1f, Math.Max(0f, def.Chance));
+                    foreach (var t in targets)
+                    {
+                        if (!sup.Alive || !t.Alive || S.IsOver) continue;
+                        bool landed = Strike(sup, t, def.Magnitude, BlowKind.Support, thrown: true);
+                        if (landed && rider != null && odds > 0f && t.Alive && (odds >= 1f || S.Rng.Chance(odds))) ApplyBuff(t, rider, rider.Duration);
+                    }
+                    break;
                 case SupportEffect.Pushback:
                     foreach (var t in targets)
                     {
@@ -145,7 +155,8 @@ namespace GridGame.Core.Battle
 
         /// <summary>Effects aimed at the trapped opponents rather than at allies.</summary>
         public static bool HitsTrapped(SupportEffect e) =>
-            e == SupportEffect.Strike || e == SupportEffect.Cast || e == SupportEffect.Status || e == SupportEffect.Pushback;
+            e == SupportEffect.Strike || e == SupportEffect.Cast || e == SupportEffect.Status || e == SupportEffect.Pushback
+            || e == SupportEffect.Volley;
 
         /// <summary>
         /// The supporter's damaging spells — its class kit, then (heroes) its battle bar, in that order, each once: Spell

@@ -236,6 +236,34 @@ namespace GridGame.Tests
             Assert.That(status, Is.InRange(followOpen, followClose), "the status supporter acts in the Follow-up phase");
         }
 
+        // ── Volley (GG-T834) ──
+
+        [Test]
+        public void A_volley_supporter_throws_a_real_hit_then_rolls_its_status_in_the_follow_up()
+        {
+            void Poison(ContentDb db) => db.Buffs["poisoned"] = new BuffDef { Id = "poisoned", Name = "Poisoned", Kind = BuffKind.Debuff, Unit = DurationUnit.Ticks, Duration = 6, DamagePerTick = 1 };
+            var dagger = new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Chance = 1f, Buff = "poisoned", Range = 1, Label = "Poison Dagger", Projectile = "RotaryKnife", Motion = SupportMotion.Straight };
+            var (s, ev) = Pincer(dagger, tweak: Poison);
+            var act = ev.OfType<SupportActionEvent>().Single(a => a.Effect == SupportEffect.Volley);
+            Assert.That(act.Targets, Is.EqualTo(new[] { Tank(s).Id }));
+            Assert.That(act.BuffId, Is.EqualTo("poisoned"));
+            int thrown = ev.FindIndex(e => e is AttackEvent a && a.IsThrown && a.AttackerId == act.SupporterId && a.TargetId == Tank(s).Id);
+            Assert.That(thrown, Is.GreaterThan(ev.FindLastIndex(e => e is AttackEvent a && !a.IsSupport)), Trace(ev));
+            Assert.That(ev.Skip(thrown).Any(e => e is DamagedEvent d && d.SourceId == act.SupporterId && d.TargetId == Tank(s).Id), Is.True, "a real hit");
+            int status = ev.FindIndex(e => e is BuffAppliedEvent b && b.UnitId == Tank(s).Id && b.BuffId == "poisoned");
+            Assert.That(status, Is.GreaterThan(thrown), "the status rides the landed hit");
+            int followOpen = ev.FindIndex(e => e is PincerPhaseEvent p && p.Phase == PincerPhase.FollowUp && !p.End);
+            int followClose = ev.FindIndex(e => e is PincerPhaseEvent p && p.Phase == PincerPhase.FollowUp && p.End);
+            Assert.That(thrown, Is.InRange(followOpen, followClose), "the volley flies in the Follow-up phase");
+            Assert.That(Trace(Pincer(dagger, tweak: Poison).ev), Is.EqualTo(Trace(ev)), "deterministic");
+
+            var plain = new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Range = 1, Label = "Shuriken" };
+            var (s2, ev2) = Pincer(plain, tweak: Poison);
+            Assert.That(ev2.Any(e => e is AttackEvent a && a.IsThrown), Is.True);
+            Assert.That(ev2.Any(e => e is BuffAppliedEvent b && b.UnitId == Tank(s2).Id), Is.False, "no Buff, no rider");
+            Assert.That(SupportText.Describe(null, dagger), Does.Contain("throws at each trapped foe for 30% power"));
+        }
+
         // ── Content ──
 
         [Test]
@@ -245,7 +273,7 @@ namespace GridGame.Tests
             var problems = ContentLoader.Validate(db).Where(p => p.Contains("support")).ToList();
             Assert.That(problems, Is.Empty, string.Join("\n", problems));
             var heroes = db.Classes.Values.Where(c => c.Team == Team.Hero && c.Support != null).ToList();
-            foreach (var e in new[] { SupportEffect.Crit, SupportEffect.Cast, SupportEffect.Status, SupportEffect.Pushback })
+            foreach (var e in new[] { SupportEffect.Crit, SupportEffect.Cast, SupportEffect.Status, SupportEffect.Pushback, SupportEffect.Volley })
                 Assert.That(heroes.Any(c => c.Support.Effect == e), Is.True, $"some hero class supports with {e}");
             foreach (var c in heroes)
             {
@@ -274,6 +302,15 @@ namespace GridGame.Tests
             Assert.That(Check(new SupportDef { Effect = SupportEffect.Pushback, Magnitude = 5f }), Does.Contain("Pushback"));
             Assert.That(Check(new SupportDef { Effect = SupportEffect.Haste, Magnitude = 25f }), Does.Contain("seconds"));
             Assert.That(Check(new SupportDef { Effect = SupportEffect.Cast, Magnitude = 3f }), Does.Contain("Cast power"));
+            // GG-T834: Volley's damage, rider and presentation fields.
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 2f }), Does.Contain("Volley damage"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Buff = "poisoned" }), Does.Contain("Volley chance"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Chance = 0.5f }), Does.Contain("needs a Buff"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Chance = 0.5f, Buff = "regen" }), Does.Contain("not a debuff"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Projectile = "NoSuchVfx" }), Does.Contain("not in vfx.json"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Sfx = "boom" }), Does.Contain("sound taxonomy"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Strike, Chance = 0.5f }), Does.Contain("only read by a Volley"));
+            Assert.That(Check(new SupportDef { Effect = SupportEffect.Volley, Magnitude = 0.3f, Chance = 0.5f, Buff = "poisoned", Projectile = "Shuriken", Motion = SupportMotion.Spin, Sfx = "battle.whoosh" }), Is.Empty);
         }
     }
 }

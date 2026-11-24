@@ -7949,12 +7949,16 @@
     "SnakeSegments": 0,
     "Role": "Striker",
     "Support": {
-      "Effect": "Status",
-      "Magnitude": 0.5,
+      "Effect": "Volley",
+      "Magnitude": 0.3,
       "Target": "Attacker",
       "Range": 1,
       "Buff": "poisoned",
-      "Label": "Venom Dart"
+      "Label": "Poison Dagger",
+      "Chance": 0.5,
+      "Projectile": "RotaryKnife",
+      "Motion": "Straight",
+      "Sfx": "battle.whoosh"
     },
     "HomeTree": "rogue",
     "WeaponProficiencies": [
@@ -14011,12 +14015,16 @@
     "SnakeSegments": 0,
     "Role": "Striker",
     "Support": {
-      "Effect": "Status",
-      "Magnitude": 0.4,
+      "Effect": "Volley",
+      "Magnitude": 0.3,
       "Target": "Attacker",
       "Range": 1,
       "Buff": "burning",
-      "Label": "Fire Shuriken"
+      "Label": "Fire Shuriken",
+      "Chance": 0.4,
+      "Projectile": "Shuriken",
+      "Motion": "Spin",
+      "Sfx": "battle.whoosh"
     },
     "HomeTree": "rogue",
     "WeaponProficiencies": [

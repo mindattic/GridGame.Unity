@@ -488,7 +488,7 @@ namespace GridGame.Core.Bot
                     if (a.SwapsTurns) score += ReadsBar ? CountermarchValue(s, t) : (Countermarch.Partner(s, t) != null && Threatens(s, t) ? 3f : -5f);
                     if ((a.BaseDamage > 0 || a.Pushback > 0f) && ChargesTempoDrain(s, t)) score += 5f; // GG-T275: stagger a Temporal Drag
                     if (a.BaseHeal > 0 && a.Filter == TargetFilter.EnemyOnly) score += Math.Min(caster.MaxHp - caster.Hp, a.BaseHeal) * 0.3f; // drain
-                    if (a.Knockback > 0 && !t.IsHeavy) // GG-T891: a Heavy foe fizzles the shove
+                    if (a.Knockback > 0)
                     {
                         // Peeling a foe off a hurt hero is worth more than shoving it for its own sake.
                         bool peel = false;
@@ -499,14 +499,14 @@ namespace GridGame.Core.Bot
                         var dir = Math.Abs(d.X) >= Math.Abs(d.Y) ? new Coord(Math.Sign(d.X), 0) : new Coord(0, Math.Sign(d.Y));
                         score += 12f * RegionBoard.ShoveFloorValue(s, t, dir, a.Knockback);
                     }
-                    if (a.Pull > 0 && !t.IsHeavy)
+                    if (a.Pull > 0)
                     {
                         score += 2.5f;
                         int px = caster.Pos.X - t.Pos.X, py = caster.Pos.Y - t.Pos.Y;
                         var pdir = Math.Abs(px) >= Math.Abs(py) ? new Coord(Math.Sign(px), 0) : new Coord(0, Math.Sign(py));
                         score += 12f * RegionBoard.ShoveFloorValue(s, t, pdir, a.Pull, caster); // GG-T368: drag a foe into a hole
                     }
-                    if (a.SwapsPlaces) score += t.IsHeavy ? -5f : 2f; // GG-T891: a Heavy foe won't trade places
+                    if (a.SwapsPlaces) score += 2f;
                 }
                 else
                 {

@@ -484,6 +484,17 @@ namespace GridGame.Core.Content
                     else if (db.TryBuff(s.Buff) is BuffDef b) { if (b.Kind != BuffKind.Debuff) p.Add($"{w}: Status {s.Buff} is not a debuff"); }
                     else p.Add($"{w}: unknown status {s.Buff}");
                     break;
+                case SupportEffect.Volley:
+                    // GG-T834: a thrown hit, plus an optional status rider that only rolls where the hit lands.
+                    if (!(m > 0f && m <= 1f)) p.Add($"{w}: Volley damage {m} outside (0, 1]");
+                    if (string.IsNullOrEmpty(s.Buff)) { if (s.Chance != 0f) p.Add($"{w}: a Volley Chance needs a Buff id"); }
+                    else
+                    {
+                        if (!(s.Chance > 0f && s.Chance <= 1f)) p.Add($"{w}: Volley chance {s.Chance} outside (0, 1]");
+                        if (db.TryBuff(s.Buff) is BuffDef vb) { if (vb.Kind != BuffKind.Debuff) p.Add($"{w}: Volley status {s.Buff} is not a debuff"); }
+                        else p.Add($"{w}: unknown status {s.Buff}");
+                    }
+                    break;
                 case SupportEffect.Pushback:
                     if (!(m > 0f && m <= Battle.BattleConfig.PushbackMaxSeconds)) p.Add($"{w}: Pushback {m}s outside (0, {Battle.BattleConfig.PushbackMaxSeconds}]s");
                     break;
@@ -492,6 +503,11 @@ namespace GridGame.Core.Content
                     if (c.Team != Team.Hero) p.Add($"{w}: a Mana support is hero-only (enemy {c.Id} would do nothing)");
                     break;
             }
+            if (s.Chance != 0f && s.Effect != SupportEffect.Volley) p.Add($"{w}: Chance is only read by a Volley support");
+            if (s.Projectile != null && db.VfxPrefabs != null && db.VfxPrefabs.Find(s.Projectile) == null)
+                p.Add($"{w}: Projectile '{s.Projectile}' is not in vfx.json");
+            if (s.Sfx != null && !(s.Sfx.StartsWith("element.") || s.Sfx.StartsWith("status.") || s.Sfx.StartsWith("battle.")))
+                p.Add($"{w}: Sfx '{s.Sfx}' is off the sound taxonomy");
             if (db.GlossaryIndex.Count > 0)
                 foreach (var t in Glossary.Terms(Rules.SupportText.Describe(db, s)))
                     if (db.TryTerm(t) == null) p.Add($"{w}: unknown glossary term [{t}] in its supporter sentence");

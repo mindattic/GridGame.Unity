@@ -5,7 +5,6 @@ using System.Linq;
 using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
-using GridGame.Meta;
 using NUnit.Framework;
 
 namespace GridGame.Tests
@@ -36,22 +35,6 @@ namespace GridGame.Tests
             var p = Path.Combine(ContentDir, name + ".json");
             return File.Exists(p) ? File.ReadAllText(p) : null;
         });
-
-        /// <summary>
-        /// GG-T777 (bible §2.13): the turn mode every bot soak plays — GRIDGAME_TURN_MODE names a <see cref="TurnMode"/>
-        /// (any case); unset is <see cref="TurnMode.PartyWindow"/>, today's rule. An unknown or not-yet-built mode throws
-        /// (<see cref="TurnModeSetting.TryParseBuilt"/>) so a typo never silently measures PartyWindow.
-        /// </summary>
-        public static TurnMode SoakTurnMode
-        {
-            get
-            {
-                var v = Environment.GetEnvironmentVariable("GRIDGAME_TURN_MODE");
-                if (string.IsNullOrWhiteSpace(v)) return TurnMode.PartyWindow;
-                if (!TurnModeSetting.TryParseBuilt(v, out var mode, out var error)) throw new ArgumentException("GRIDGAME_TURN_MODE: " + error);
-                return mode;
-            }
-        }
 
         /// <summary>A tiny, fully controlled content set for rules tests (stats chosen so outcomes are predictable).</summary>
         public static ContentDb Mini()

@@ -44,6 +44,14 @@ namespace GridGame.Core.Rules
                         ? $"inflicts {Term(c, BuffName(c, d.Buff))} on each trapped foe"
                         : $"{Glossary.ChanceWord(d.Magnitude)} chance ({Pct(d.Magnitude)}) to inflict {Term(c, BuffName(c, d.Buff))} on each trapped foe";
                 case SupportEffect.Pushback: return $"adds {Sec(d.Magnitude)} of [Pushback] to each trapped foe";
+                case SupportEffect.Volley:
+                {
+                    string hit = $"throws at each trapped foe for {Pct(d.Magnitude)} power";
+                    if (string.IsNullOrEmpty(d.Buff) || !(d.Chance > 0f)) return hit;
+                    return d.Chance >= 1f
+                        ? $"{hit}, inflicting {Term(c, BuffName(c, d.Buff))} where it lands"
+                        : $"{hit}, with a {Glossary.ChanceWord(d.Chance)} chance ({Pct(d.Chance)}) to inflict {Term(c, BuffName(c, d.Buff))} where it lands";
+                }
                 default: return d.Effect.ToString().ToLowerInvariant();
             }
         }
@@ -56,6 +64,7 @@ namespace GridGame.Core.Rules
                 case SupportEffect.Crit: return $"+{Pct(amount)} Crit";
                 case SupportEffect.Cast: return c?.TryAbility(abilityId)?.Name ?? "Spell";
                 case SupportEffect.Status: return BuffName(c, buffId);
+                case SupportEffect.Volley: return buffId == null ? null : BuffName(c, buffId);
                 case SupportEffect.Pushback: return $"Pushback +{Sec(amount)}";
                 case SupportEffect.Haste: return $"Haste {Sec(amount)}";
                 default: return null;

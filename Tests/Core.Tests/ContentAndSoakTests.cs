@@ -92,7 +92,7 @@ namespace GridGame.Tests
                 for (int seed = 1; seed <= 12; seed++)
                 {
                     int level = stage.IsTest ? 5 : System.Math.Max(1, index);
-                    var setup = new BattleSetup { Stage = stage, Seed = seed * 7919 + index, UnlockedSlots = 5, RecommendedLevel = stage.IsTest ? 1 : index, Party = StarterParty(db, level), TurnMode = SoakTurnMode }; // GG-T777
+                    var setup = new BattleSetup { Stage = stage, Seed = seed * 7919 + index, UnlockedSlots = 5, RecommendedLevel = stage.IsTest ? 1 : index, Party = StarterParty(db, level) };
                     var bot = new HeroBot(seed, randomness);
                     var s = BotRunner.Play(db, setup, bot, 300, (cmd, ev, st) =>
                     {

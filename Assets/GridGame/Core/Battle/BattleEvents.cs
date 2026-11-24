@@ -172,6 +172,8 @@ namespace GridGame.Core.Battle
     public sealed class AttackEvent : BattleEvent
     {
         public int AttackerId; public int TargetId; public bool IsSupport; public bool IsMelee; public bool IsRanged;
+        /// <summary>GG-T834: a Volley supporter's thrown hit (playback flies its SupportDef projectile, not a lunge).</summary>
+        public bool IsThrown;
         public override string ToString() => $"Attack {AttackerId}->{TargetId}{(IsSupport ? " (support)" : "")}{(IsMelee ? " (melee)" : "")}";
     }
 

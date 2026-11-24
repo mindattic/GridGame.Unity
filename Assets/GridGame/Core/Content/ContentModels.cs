@@ -353,7 +353,14 @@ namespace GridGame.Core.Content
         /// <summary>GG-T298: <see cref="SupportDef.Magnitude"/> extra seconds of Pushback on every trapped opponent, folded
         /// into the pincer's own push (one push per foe per action, capped at PushbackMaxSeconds).</summary>
         Pushback,
+        /// <summary>GG-T834: a thrown follow-up (shuriken, poison dagger): a real hit on every trapped opponent at
+        /// <see cref="SupportDef.Magnitude"/> x damage that, where it lands, inflicts <see cref="SupportDef.Buff"/> with
+        /// chance <see cref="SupportDef.Chance"/>. Resolves in the Follow-up phase.</summary>
+        Volley,
     }
+
+    /// <summary>GG-T834: how a support's thrown projectile travels in playback.</summary>
+    public enum SupportMotion { Arc, Straight, Spin }
 
     /// <summary>Who a supporter's effect lands on (§1.2.3, GG-T187). Strike, Cast, Status and Pushback always hit the
     /// trapped opponents; Crit always goes to the attacker the supporter is chained to.</summary>
@@ -384,6 +391,13 @@ namespace GridGame.Core.Content
         public string Buff;
         /// <summary>Short name shown on the cut-in and float text ("Mend", "Guard", "Haste"…); defaults to the effect.</summary>
         public string Label;
+        /// <summary>GG-T834: Volley's chance (0..1) to inflict <see cref="Buff"/> on each foe its hit lands on.</summary>
+        public float Chance;
+        /// <summary>GG-T834 presentation: the vfx.json effect the thrown projectile shows (null = code-drawn), how it
+        /// travels, and the sound it plays (null = the effect's default cue).</summary>
+        public string Projectile;
+        public SupportMotion Motion = SupportMotion.Arc;
+        public string Sfx;
 
         public static readonly SupportDef Default = new SupportDef();
 
@@ -439,9 +453,6 @@ namespace GridGame.Core.Content
         public List<string> DefaultLoadout = new List<string>();
         public string DropTable;
         public int MoveRange = 1;
-        /// <summary>GG-T891 (§1.1.3, §14.2): too heavy to be moved by anyone else - drag steps into it are refused, shoves,
-        /// pulls, swaps and rule drags fizzle - unless it is Floating (Unit.IsHeavy).</summary>
-        public bool Heavy;
         /// <summary>Trap id left on every tile this enemy steps off (slime trail, mire, quicksand — §14.4).</summary>
         public string Trail;
         /// <summary>Buff a landed enemy attack may inflict (venom, frost, blinding dirt — §14.4)…</summary>

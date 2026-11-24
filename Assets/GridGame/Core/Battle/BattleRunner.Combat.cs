@@ -101,11 +101,6 @@ namespace GridGame.Core.Battle
                     return false;
                 }
                 var occ = S.UnitAt(next);
-                if (occ != null && occ.IsHeavy && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains) // GG-T891
-                {
-                    Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "heavy" });
-                    return false;
-                }
                 if (occ != null && (occ.IsMultiTile || occ.IsSnakeMember || occ.IsRemains))
                 {
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "immovable" });
@@ -341,9 +336,11 @@ namespace GridGame.Core.Battle
         /// a weapon's lifesteal), the class on-hit buff, then OnAttackedDirect for an adjacent victim (Counter Attack);
         /// a primary blow then fires OnAttack (Double Attack's follow-up).
         /// </summary>
-        private void Strike(Unit attacker, Unit target, float mult, BlowKind kind, bool followUp = false)
+        /// <returns>GG-T834: true when the blow landed on the body (not a miss, a dodge or a plate).</returns>
+        private bool Strike(Unit attacker, Unit target, float mult, BlowKind kind, bool followUp = false, bool thrown = false)
         {
-            Emit(new AttackEvent { AttackerId = attacker.Id, TargetId = target.Id, IsSupport = kind == BlowKind.Support, IsMelee = kind == BlowKind.Melee, IsRanged = kind == BlowKind.Ranged });
+            bool landed = false;
+            Emit(new AttackEvent { AttackerId = attacker.Id, TargetId = target.Id, IsSupport = kind == BlowKind.Support, IsMelee = kind == BlowKind.Melee, IsRanged = kind == BlowKind.Ranged, IsThrown = thrown });
             var roll = Formulas.Physical(attacker, target, S.Rng, mult * KitDamageMultiplier(attacker, target) * attacker.OutgoingDamageMultiplier, Dodgeable(kind));
             if (!(roll.Hit != HitKind.Miss && PlateAbsorbs(target, attacker, roll.Damage)))
             {
@@ -359,6 +356,7 @@ namespace GridGame.Core.Battle
                 }
                 else
                 {
+                    landed = !roll.Dodged;
                     int dealt = before - target.Hp;
                     if (attacker.Alive) Fire(TriggerOn.OnLandedHit, attacker, new TriggerContext { Target = target, Damage = dealt, Blow = kind, StrikeMultiplier = mult, Type = DamageType.Physical });
                     AfterLandedHit(attacker, target);
@@ -370,6 +368,7 @@ namespace GridGame.Core.Battle
                 pincerFollowUps.Add(new PincerFollowUp { Attacker = attacker, Target = target, Mult = mult }); // GG-T833: after the blows
             else if (!followUp && (kind == BlowKind.Pincer || kind == BlowKind.Melee) && attacker.Alive && target.Alive)
                 Fire(TriggerOn.OnAttack, attacker, new TriggerContext { Target = target, Blow = kind, StrikeMultiplier = mult, Type = DamageType.Physical });
+            return landed;
         }
 
         // ── Armor plates (§13.5) ──
@@ -429,7 +428,6 @@ namespace GridGame.Core.Battle
         private void Knockback(Unit caster, Unit t, int tiles, int baseDamage)
         {
             if (!t.Alive || t.IsMultiTile || t.IsSnakeMember || t.IsRemains) return;
-            if (t.IsHeavy) { Announce("Too heavy!", t.Id); return; } // GG-T891
             var d = new Coord(t.Pos.X - caster.Pos.X, t.Pos.Y - caster.Pos.Y);
             var dir = Math.Abs(d.X) >= Math.Abs(d.Y) ? new Coord(Math.Sign(d.X), 0) : new Coord(0, Math.Sign(d.Y));
             if (dir.X == 0 && dir.Y == 0) return;
