@@ -339,11 +339,12 @@ namespace GridGame.Core.Bot
             // Mild preference for staying out of melee range of soon-acting enemies when nothing else is on offer.
             if (pv.Positions.TryGetValue(hero.Id, out var at))
             {
+                bool? decoy = null; // GG-T862: a ninja with Substitution up is hard to lose (asked only when it matters)
                 foreach (var e in s.LivingList(Team.Enemy))
                 {
                     if (!pv.Positions.TryGetValue(e.Id, out var ep)) continue;
                     int d = Math.Abs(ep.X - at.X) + Math.Abs(ep.Y - at.Y);
-                    if (d == 1 && hero.HpFraction < 0.35f) score -= 3f;
+                    if (d == 1 && hero.HpFraction < 0.35f) score -= (decoy ??= Triggers.SubstituteReady(s, hero)) == true ? 1f : 3f;
                     score += (lone ? 0.15f : 0.05f) * (8 - Math.Min(8, d)); // a lone hero closes in to bring its bar to bear
                 }
                 if (TimelineAware && pv.Pincers.Count == 0)
@@ -927,19 +928,24 @@ namespace GridGame.Core.Bot
             {
                 var charge = EnemyPlanner.PlanCast(s, f, false);
                 if (charge != null)
-                    return charge.Target != null && charge.Target.IsHero ? 0.7f * BlowHarm(Formulas.ExpectedCharge(charge.Ability, f, charge.Target), charge.Target) : 0f;
+                    return charge.Target != null && charge.Target.IsHero ? 0.7f * BlowHarm(s, Formulas.ExpectedCharge(charge.Ability, f, charge.Target), charge.Target) : 0f;
             }
             float worst = 0f;
             foreach (var h in s.LivingList(Team.Hero))
             {
                 if (!Threatens(s, f, h)) continue;
                 float dmg = Formulas.ExpectedPhysical(f, h, f.OutgoingDamageMultiplier) * (completes ? 2f : 1f);
-                worst = Math.Max(worst, BlowHarm(dmg, h));
+                worst = Math.Max(worst, BlowHarm(s, dmg, h));
             }
             return worst > 0f && completes ? worst + 4f : worst;
         }
 
-        private static float BlowHarm(float dmg, Unit h) => 10f * Math.Min(1f, dmg / Math.Max(1, h.Hp)) + (dmg >= h.Hp ? 12f : 0f);
+        private static float BlowHarm(BattleState s, float dmg, Unit h) =>
+            10f * Math.Min(1f, dmg / Math.Max(1, h.Hp)) + (dmg >= h.Hp ? KoHarm(s, h) : 0f);
+
+        /// <summary>The extra harm of a blow that would KO <paramref name="h"/>: 12, but only 3 for a hero still holding its
+        /// Substitution (GG-T862) — the blow strikes a log and the ninja reappears beside an ally, so it is harder to lose.</summary>
+        internal static float KoHarm(BattleState s, Unit h) => Triggers.SubstituteReady(s, h) ? 3f : 12f;
 
         /// <summary>The same for a Slow (turn-icon rate × <paramref name="mult"/>): a charge isn't slowed, and a stun isn't.</summary>
         internal static float SlowValue(BattleState s, Unit f, float mult)

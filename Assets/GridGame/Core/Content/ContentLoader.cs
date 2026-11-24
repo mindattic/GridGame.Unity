@@ -628,6 +628,7 @@ namespace GridGame.Core.Content
             if (!(t.Chance > 0f && t.Chance <= 1f)) p.Add($"{w}: Chance {t.Chance} outside (0, 1]");
             if (t.ChancePerLuck < 0f || t.ChancePerLuck > 0.1f) p.Add($"{w}: ChancePerLuck {t.ChancePerLuck} outside 0..0.1");
             if (t.Cooldown < 0) p.Add($"{w}: Cooldown can't be negative");
+            if (t.OncePerBattle && t.Cooldown > 0) p.Add($"{w}: OncePerBattle already outlasts any Cooldown"); // GG-T862
             if (t.On == TriggerOn.OnSurrounded && (t.Count < 1 || t.Count > 4)) p.Add($"{w}: OnSurrounded needs Count 1..4");
             if (t.On != TriggerOn.OnSurrounded && t.Count != 0) p.Add($"{w}: Count is only for OnSurrounded");
             if (t.On == TriggerOn.OnLowHp && !(t.Threshold > 0f && t.Threshold < 1f)) p.Add($"{w}: OnLowHp needs Threshold in (0, 1)");
@@ -687,7 +688,14 @@ namespace GridGame.Core.Content
                         if (!db.Abilities.TryGetValue(e.Ability ?? "", out var cast)) p.Add($"{we}: unknown ability '{e.Ability}'");
                         else if (cast.Kind == AbilityKind.Passive || cast.Kind == AbilityKind.Reactive) p.Add($"{we}: '{e.Ability}' must be an Active ability");
                         break;
+                    case TriggerEffectKind.Substitute: // GG-T862
+                        if (t.On != TriggerOn.OnLethalBlow) p.Add($"{we}: Substitute answers OnLethalBlow only");
+                        if (e.State == null) p.Add($"{we}: needs a State (the decoy left behind)");
+                        else if (!(db.TryTileState(e.State) is TileStateDef st)) p.Add($"{we}: unknown tile state '{e.State}'");
+                        else if (!st.Blocks || st.Pit) p.Add($"{we}: the decoy state '{e.State}' must Block (an obstacle, not a hole)");
+                        break;
                 }
+                if (e.Kind != TriggerEffectKind.Substitute && e.State != null) p.Add($"{we}: State is only for Substitute");
                 if (e.Kind != TriggerEffectKind.ApplyBuff && e.Buff != null) p.Add($"{we}: Buff is only for ApplyBuff");
                 if (e.Kind != TriggerEffectKind.CastAbility && e.Ability != null) p.Add($"{we}: Ability is only for CastAbility");
                 if (e.Kind != TriggerEffectKind.Immunity && e.Statuses != null && e.Statuses.Count > 0) p.Add($"{we}: Statuses are only for Immunity");

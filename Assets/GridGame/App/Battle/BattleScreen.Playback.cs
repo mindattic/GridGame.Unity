@@ -162,6 +162,7 @@ namespace GridGame.App
                 case SteppedEvent s: return StepAnim(s.UnitId, s.To, 0.16f, "battle.move");
                 case DisplacedEvent d: return StepAnim(d.UnitId, d.To, 0.14f, "battle.slide");
                 case TeleportedEvent t: return TeleportAnim(t);
+                case SubstitutedEvent sb: return SubstitutionAnim(sb); // GG-T862: the White Ninja's log and smoke
 
                 case PincerFormedEvent p: FlushTallies(); return PincerAnim(p);
                 case PincerPhaseEvent pph: return PincerPhaseAnim(pph); // GG-T836
@@ -2294,6 +2295,7 @@ namespace GridGame.App
         private IEnumerator TriggeredAnim(TriggeredEvent tr)
         {
             RefreshUnit(tr.UnitId);
+            if (tr.Effect == TriggerEffectKind.Substitute) return null; // GG-T862: SubstitutionAnim calls it out over the log
             string sfx = tr.Effect == TriggerEffectKind.Counterstrike || tr.Effect == TriggerEffectKind.Reflect ? "battle.clang"
                 : tr.Effect == TriggerEffectKind.CastAbility ? "battle.warcry" : "battle.powerup";
             App.Audio.Sfx(sfx, tr.Kind == AbilityKind.Reactive ? 0.8f : 0.5f);

@@ -67,6 +67,16 @@ namespace GridGame.Core.Battle
         public TileConflictException(string message) : base(message) { }
     }
 
+    /// <summary>GG-T862: Substitution — a blow that would have KO'd <see cref="UnitId"/> struck a log decoy at
+    /// <see cref="From"/> instead (<see cref="Blocked"/> damage it never took); the unit vanished in a puff of smoke and
+    /// reappeared at <see cref="To"/>, beside an ally. The log is tile state <see cref="State"/> (a RegionTilesEvent
+    /// marks it next).</summary>
+    public sealed class SubstitutedEvent : BattleEvent
+    {
+        public int UnitId; public int AttackerId = -1; public Coord From; public Coord To; public string State; public int Blocked;
+        public override string ToString() => $"Substituted {UnitId} {From}->{To} ({Blocked} blocked by {State})";
+    }
+
     public sealed class TeleportedEvent : BattleEvent
     {
         public int UnitId; public Coord From; public Coord To;

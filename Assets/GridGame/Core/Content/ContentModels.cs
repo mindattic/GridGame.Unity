@@ -69,6 +69,10 @@ namespace GridGame.Core.Content
         TurnEnd,
         /// <summary>The owner just finished an action (the hero whose command it was; an enemy at the end of its turn).</summary>
         ActionEnd,
+        /// <summary>GG-T862: a foe's blow (not a miss) is about to drop the owner to 0 HP, before it lands. Context: Attacker,
+        /// Damage. A <see cref="TriggerEffectKind.Substitute"/> answering it takes the blow off the owner; it also fires
+        /// from inside another Reactive's effects (a counter that would KO still meets the decoy).</summary>
+        OnLethalBlow,
     }
 
     /// <summary>What a fired trigger does (§4.1, GG-T296).</summary>
@@ -101,6 +105,10 @@ namespace GridGame.Core.Content
         ReductionMultiplier,
         /// <summary>Always-on: the owner can't gain any of <see cref="TriggerEffect.Statuses"/>.</summary>
         Immunity,
+        /// <summary>GG-T862 (OnLethalBlow only): the blow strikes a decoy instead. The owner vanishes in a puff and reappears
+        /// on a random free tile beside a living ally (the battle Rng, row-major candidates), leaving tile state
+        /// <see cref="TriggerEffect.State"/> (the log) where it stood. No free tile beside an ally: it doesn't fire.</summary>
+        Substitute,
     }
 
     /// <summary>Whom an effect lands on. Default picks the effect kind's natural target (see <see cref="TriggerEffectKind"/>).</summary>
@@ -131,6 +139,8 @@ namespace GridGame.Core.Content
         public int Cooldown;
         /// <summary>Fires at most once per action (a command, or one enemy turn).</summary>
         public bool OncePerAction;
+        /// <summary>GG-T862: fires at most once per battle (the White Ninja's Substitution).</summary>
+        public bool OncePerBattle;
         /// <summary>The float shown when it fires; empty = the ability's name.</summary>
         public string Callout;
     }
@@ -169,6 +179,8 @@ namespace GridGame.Core.Content
         public string Ability;
         /// <summary>Immunity: the buff ids warded off.</summary>
         public List<string> Statuses = new List<string>();
+        /// <summary>Substitute: the tile state (a regionrules.json TileStates id) left on the owner's old tile.</summary>
+        public string State;
     }
 
     /// <summary>Wall (GG-T931): a line of 2 × Radius + 1 tiles through the anchor, square across the caster's line to it

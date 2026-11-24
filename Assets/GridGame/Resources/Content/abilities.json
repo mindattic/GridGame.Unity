@@ -3976,6 +3976,46 @@
   "Sfx": null
  },
  {
+  "Id": "whiteninja_substitution",
+  "Name": "Substitution",
+  "Description": "A ninja's trick: the blow that would have felled you strikes a log instead, and you reappear beside an ally in a puff of smoke. Once per battle.",
+  "Kind": "Reactive",
+  "Cost": 0,
+  "CastTime": 0.0,
+  "CooldownTurns": 0,
+  "Shape": "Self",
+  "Radius": 0,
+  "Mode": "Auto",
+  "Filter": "Any",
+  "Motion": "None",
+  "DamageType": "Physical",
+  "BaseDamage": 0,
+  "BaseHeal": 0,
+  "ApplyBuff": null,
+  "ApplyBuffChance": 1.0,
+  "RemovesDebuffs": false,
+  "StealsMana": false,
+  "HastenU": 0.0,
+  "IsTeleport": false,
+  "Icon": null,
+  "CastVfx": null,
+  "ProjectileVfx": null,
+  "ImpactVfx": null,
+  "LingerVfx": null,
+  "Sfx": null,
+  "Trigger": {
+   "On": "OnLethalBlow",
+   "OncePerBattle": true,
+   "Effects": [
+    {
+     "Kind": "Substitute",
+     "State": "substitution_log"
+    }
+   ],
+   "Callout": "Substitution!"
+  }
+ },
+ {
   "Id": "whitewitch_ward",
   "Name": "Arcane Ward",
   "Description": "Warding magic that shields and mends in a single weave.",

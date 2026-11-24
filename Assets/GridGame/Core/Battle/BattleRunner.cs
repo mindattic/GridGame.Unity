@@ -580,6 +580,9 @@ namespace GridGame.Core.Battle
                 float reduction = BestAdjacentGuardianReduction(target);
                 if (reduction > 0f) amount = Math.Max(1, (int)Math.Round(amount * (1f - reduction)));
             }
+            // GG-T862 Substitution: a foe's blow that would KO the owner strikes its decoy instead (OnLethalBlow → Substitute).
+            if (hit != HitKind.Miss && amount > 0 && amount >= target.Hp && source != null && Triggers.Foes(source, target)
+                && Substitutes(target, source, amount, type)) return;
             if (hit != HitKind.Miss && amount > 0)
                 RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
             int hpBeforeBlow = target.Hp;

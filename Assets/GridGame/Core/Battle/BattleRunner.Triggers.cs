@@ -36,9 +36,10 @@ namespace GridGame.Core.Battle
                 var t = a.Trigger;
                 if (t.On != on || S.IsOver) continue;
                 bool reactive = a.Kind == AbilityKind.Reactive;
-                if (reactive && reactiveDepth > 0) continue;
+                // GG-T862: a lethal blow is met even inside a reaction (Substitution answers a counter that would KO).
+                if (reactive && reactiveDepth > 0 && on != TriggerOn.OnLethalBlow) continue;
                 if (firingAbilities.Contains(a.Id)) continue;
-                if (t.Cooldown > 0 && owner.TriggerCooldowns.TryGetValue(a.Id, out var cd) && cd > 0) continue;
+                if ((t.Cooldown > 0 || t.OncePerBattle) && owner.TriggerCooldowns.TryGetValue(a.Id, out var cd) && cd > 0) continue;
                 string key = owner.Id + ":" + a.Id;
                 if (t.OncePerAction && firedThisAction.Contains(key)) continue;
                 if (!Triggers.Matches(S, t, owner, ctx)) continue;
@@ -64,6 +65,7 @@ namespace GridGame.Core.Battle
                 }
                 if (first == null) continue;
                 if (t.Cooldown > 0) owner.TriggerCooldowns[a.Id] = t.Cooldown;
+                if (t.OncePerBattle) owner.TriggerCooldowns[a.Id] = int.MaxValue; // GG-T862: never rests back to 0 in a battle
                 if (t.OncePerAction) firedThisAction.Add(key);
                 // The cue goes ahead of the effects it caused (the float reads "Counter!" before the counter blow).
                 if (!PreviewOnly)
@@ -73,6 +75,45 @@ namespace GridGame.Core.Battle
                         Callout = string.IsNullOrEmpty(t.Callout) ? a.Name : t.Callout,
                     });
             }
+        }
+
+        // ── GG-T862: Substitution (the White Ninja) ─────────────────────────────────────────────────
+
+        /// <summary>Set by a <see cref="TriggerEffectKind.Substitute"/> that fired, read back by <see cref="Substitutes"/>.</summary>
+        private bool substituted;
+
+        /// <summary>A foe's blow of <paramref name="amount"/> would KO <paramref name="target"/>: fires its OnLethalBlow
+        /// triggers and reports whether a decoy took the blow (the owner is gone from the tile, unharmed).</summary>
+        private bool Substitutes(Unit target, Unit source, int amount, DamageType type)
+        {
+            if (!target.Alive || !target.OnBoard || target.Def == null) return false;
+            substituted = false;
+            Fire(TriggerOn.OnLethalBlow, target, new TriggerContext { Attacker = source, Damage = amount, Type = type });
+            bool took = substituted;
+            substituted = false;
+            return took;
+        }
+
+        /// <summary>The ninja vanishes and reappears on a random free tile beside a living ally, a log left where it stood.</summary>
+        private bool Substitute(TriggerEffect e, Unit owner, TriggerContext ctx)
+        {
+            if (!owner.Alive || !owner.OnBoard || owner.IsMultiTile || owner.IsSnakeMember || owner.IsRooted) return false;
+            var spots = Triggers.SubstituteSpots(S, owner);
+            if (spots.Count == 0) return false;
+            var to = spots.Count == 1 ? spots[0] : spots[S.Rng.Range(0, spots.Count)];
+            var from = owner.Pos;
+            if (!Relocate(owner, to)) return false;
+            substituted = true;
+            Emit(new SubstitutedEvent { UnitId = owner.Id, AttackerId = ctx.Attacker?.Id ?? -1, From = from, To = to, State = e.State, Blocked = ctx.Damage });
+            var def = C.TryTileState(e.State);
+            if (def != null && S.Walkable(from) && S.UnitAt(from) == null)
+            {
+                string rule = C.TileStateRule.TryGetValue(def.Id, out var r) ? r : null;
+                S.Region.Tiles[from] = NewMark(def, rule, 0, owner.Team, owner.Id);
+                EnsureRuleInPlay(rule, owner.Team);
+                Emit(new RegionTilesEvent { RuleId = rule, State = def.Id, Change = "marked", Tiles = { from } });
+            }
+            return true;
         }
 
         /// <summary>Fires <paramref name="on"/> for every living unit <paramref name="who"/> accepts, in unit-id order.</summary>
@@ -98,6 +139,8 @@ namespace GridGame.Core.Battle
         {
             switch (e.Kind)
             {
+                case TriggerEffectKind.Substitute:
+                    return Substitute(e, owner, ctx);
                 case TriggerEffectKind.Heal:
                 {
                     var who = Who(e.Who, owner, ctx, owner);
