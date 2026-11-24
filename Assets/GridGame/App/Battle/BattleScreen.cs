@@ -86,7 +86,6 @@ namespace GridGame.App
         /// shows the mana charge round its rim; an aimed spell marks the orbs it would spend.</summary>
         private VisualElement pool;
         private readonly List<ManaOrbView> orbViews = new List<ManaOrbView>();
-        private Label orbLabel;
         private readonly List<VisualElement> orbBlooms = new List<VisualElement>();
         /// <summary>How many orbs the pool currently shows (GG-T366). Mid-playback it lags State.Bank, which already
         /// holds the action's final count: each mint ticks it up as its orb lands and each spend ticks it down, so the
@@ -204,7 +203,7 @@ namespace GridGame.App
             bool firstBuild = State == null;
             slotViews.Clear();
             pool = null;
-            orbViews.Clear(); orbBlooms.Clear(); orbLabel = null;
+            orbViews.Clear(); orbBlooms.Clear();
             timelineIconViews.Clear();
             shownCoins = -1;
             if (!firstBuild)
@@ -426,6 +425,9 @@ namespace GridGame.App
                 // One line in the fixed-height slot: a name too wide for a narrow stage (9:23) scrolls as the shared
                 // marquee instead of wrapping into a second line the slot cuts off (GG-T659, POL-C5).
                 var name = Ui.Marquee(Ui.Text("", "tiny", slot), grow: false); name.name = "name"; name.style.unityTextAlign = TextAnchor.MiddleCenter; name.style.maxWidth = Length.Percent(94);
+                // GG-T728: at a narrow stage (9:23.5) the name scrolled and a screenshot caught 'and Guard'; it now shrinks to
+                // the floor and then ends in an ellipsis, so it is never a clipped left edge.
+                name.AddToClassList(TextFit.EllipsisClass); name.style.overflow = Overflow.Hidden; name.style.textOverflow = TextOverflow.Ellipsis;
                 var cost = Ui.El("row", slot); cost.name = "cost"; cost.style.height = Size.Pip;
                 slotViews.Add(slot);
             }
@@ -463,15 +465,7 @@ namespace GridGame.App
             pool.RegisterCallback<GeometryChangedEvent>(_ => LayoutOrbs());
             pool.pickingMode = PickingMode.Position; // hold to read what it is and what fills it
             InspectCard.Attach(pool, ManaPoolCard, tap: true); // GG-T450: its tap does nothing else, so it reads
-            // GG-T688: a "MANA" label leads the row, so even a single orb reads as the casting resource.
-            orbLabel = Ui.Text("MANA", "small shadow", pool);
-            orbLabel.name = "orbs-label";
-            orbLabel.pickingMode = PickingMode.Ignore;
-            orbLabel.style.width = Size.OrbLabel;
-            orbLabel.style.flexShrink = 0;
-            orbLabel.style.marginRight = Size.OrbGap;
-            orbLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
-            orbLabel.style.color = Palette.OrbLitHighlight;
+            // GG-T729: no label leads the row (the orbs speak for themselves).
             int cap = Mathf.Max(1, State?.Bank?.Capacity ?? BattleConfig.ManaBankCapacity);
             for (int i = 0; i < cap; i++)
             {
@@ -502,7 +496,7 @@ namespace GridGame.App
         private void LayoutOrbs()
         {
             if (pool == null || orbViews.Count == 0) return;
-            float avail = pool.contentRect.width - (orbLabel != null ? Size.OrbLabel + Size.OrbGap : 0f);
+            float avail = pool.contentRect.width;
             if (float.IsNaN(avail) || avail <= 0f) return;
             int n = orbViews.Count;
             float gap = Size.OrbGap;
