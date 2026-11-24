@@ -47,6 +47,11 @@ namespace GridGame.Core.Rules
             SupportJoinFactor = 0.6f, TrappedSelfPenalty = 40f, TrappedAllyPenalty = 12f, StepCost = 0.25f, SwapCost = 0.25f,
             TrapStepPenalty = 8f;
 
+        /// <summary>GG-T904 (§14.24): a foe's set-up is worth this much more per Rooted, unarmored hero in the line - a pinned
+        /// hero can't be dragged out before an ally closes the far end. Kept below the gap to a Complete pincer (10 vs 6 + 1 + 2.5)
+        /// so a pincer it can close now still wins over a single pinned set-up.</summary>
+        public const float PinnedOpponentBonus = 2.5f;
+
         /// <summary>The best walk for <paramref name="mover"/> of at most <paramref name="maxSteps"/> steps (capped at
         /// <see cref="MaxSearchSteps"/>); the empty walk is always a candidate. Kind None when nothing is worth it.</summary>
         public static PincerPlan Plan(BattleState s, Unit mover, int maxSteps)
@@ -179,21 +184,27 @@ namespace GridGame.Core.Rules
 
         /// <summary>
         /// Setup: the mover stands at one end of an unbroken line of opponents whose far end is an open tile (empty, or held
-        /// by a one-tile unit a pincer-capable ally could swap out) that such an ally can reach on its next action.
+        /// by a one-tile unit a pincer-capable ally could swap out) that such an ally can reach on its next action. A foe's
+        /// set-up gains <see cref="PinnedOpponentBonus"/> per Rooted hero in the line (GG-T904).
         /// </summary>
         public static float SetupValue(BattleState s, Unit mover)
         {
             float best = 0f;
+            bool pinFoe = mover.Team == Team.Enemy; // GG-T904: foes prefer the hero a tree golem has rooted
             foreach (var d in Coord.Cardinals)
             {
-                int n = 0; bool real = false;
+                int n = 0, pinned = 0; bool real = false;
                 var c = mover.Pos + d;
                 while (BattleState.InBounds(c))
                 {
                     var occ = s.UnitAt(c);
                     if (occ == null || occ.IsNeutral || occ.Team == mover.Team) break;
                     n++;
-                    if (!occ.IsCorpse && !BattleEngine.IsArmored(s, occ)) real = true;
+                    if (!occ.IsCorpse && !BattleEngine.IsArmored(s, occ))
+                    {
+                        real = true;
+                        if (pinFoe && occ.IsRooted) pinned++; // GG-T904: a Rooted hero stays put for the ally to close on
+                    }
                     c = c + d;
                 }
                 if (n == 0 || !real || !s.Walkable(c)) continue;
@@ -205,7 +216,7 @@ namespace GridGame.Core.Rules
                     if (!ally.Alive || ally == mover || ally == at || ally.Team != mover.Team || !ally.CanPincer || ally.IsMultiTile) continue;
                     int reach = NextReach(s, ally);
                     if (reach <= 0 || ally.Pos.Manhattan(c) > reach) continue;
-                    best = Math.Max(best, SetupBase + SetupPerOpponent * n);
+                    best = Math.Max(best, SetupBase + SetupPerOpponent * n + PinnedOpponentBonus * pinned);
                     break;
                 }
             }

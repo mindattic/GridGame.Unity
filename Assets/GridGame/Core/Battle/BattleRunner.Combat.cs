@@ -523,12 +523,12 @@ namespace GridGame.Core.Battle
         private float KitDamageMultiplier(Unit attacker, Unit target) =>
             (attacker.IsHero ? 1f : BattleConfig.EnemyStrikeMultiplier * BattleEngine.PartyScale(S) * (skirmishing ? 0.8f : 1f)) * Triggers.OutgoingMultiplier(S, attacker, target);
 
-        /// <summary>After an enemy's attack lands: its class on-hit buff may stick.</summary>
+        /// <summary>After an enemy's attack lands: its class on-hit buff may stick, for <see cref="ClassDef.OnHitTurns"/> when set.</summary>
         private void AfterLandedHit(Unit attacker, Unit target)
         {
             if (attacker.IsHero || !attacker.Alive) return;
             var buff = C.TryBuff(attacker.Def.OnHitBuff);
-            if (buff != null && target.Alive && S.Rng.Chance(attacker.Def.OnHitChance)) ApplyBuff(target, buff, buff.Duration);
+            if (buff != null && target.Alive && S.Rng.Chance(attacker.Def.OnHitChance)) ApplyBuff(target, buff, attacker.Def.OnHitTurns > 0 ? attacker.Def.OnHitTurns : buff.Duration); // GG-T904
         }
 
         /// <summary>Every equipped armor piece loses one durability per landing enemy hit; each breaks (and its

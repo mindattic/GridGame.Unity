@@ -520,7 +520,8 @@ Each supporter then performs its class's **`SupportDef`** (`classes.json` → `S
 | Bats, vultures, flying monkey, sand maw | **Status** blinded 30–40 % (*Screech*, *Eye Peck*, *Flung Grit*, *Sandblast*); bat01 **Heal** 8 % (*Blood Share*) |
 | Wolves, werewolf | **Crit** +20–25 % (*Pack Instinct*), +30 % (*Blood Frenzy*) |
 | Frogs, toad, naga | **Status** poisoned 40–50 % (*Toxic Skin*, *Wart Venom*) or **Pushback** 0.5 s (*Tongue Lash*); Naga (boss) poisons every trapped hero, reach 2 (*Coil Venom*) |
-| Slimes, marsh shamblers, ice mauler, tree golem 06 | **Status** slowed 35–50 % (*Ooze*, *Bog Grip*, *Rime Grip*, *Root Snare*) |
+| Slimes, marsh shamblers, ice mauler | **Status** slowed 35–50 % (*Ooze*, *Bog Grip*, *Rime Grip*) |
+| Tree golem 06 | **Status** rooted 40 % (*Root Snare*, GG-T904; was slowed) |
 | Scorpion, skelepedes, corpse | **Status** poisoned 30–40 % (*Venom Sting*, *Rot Bite*, *Rot Miasma*) |
 | Soldiers, ceramic knights, captain | **Buff** protection (*Close Ranks*, *Shield Wall*), ward (*Kiln Ward*), empowered (*Press the Attack*); Captain empowers the whole chain, reach 2 (*Battle Cry*) |
 | Templars | **Heal** 12 % (*Battle Hymn*) or **Cleanse** the chain (*Purify*) |
@@ -2554,7 +2555,7 @@ Constants live in `EnemyPlanner` and `BattleConfig.RetreatHpThreshold`.
 | Outcome | Kind | Worth |
 |---|---|---|
 | The mover is an end of a pincer with live opponents (a commanded hero: any hero pincer, since its drop resolves them all) | **Complete** | `OpponentValue` 10 per live, unarmored opponent, +3 for one below 40% HP, plus each supporter's `SupportWorth` (so an ally swapped into the chain counts) |
-| No pincer, but it stands at one end of an unbroken opponent line whose far tile is open (empty, or a non-pincer ally that can be swapped out) and a pincer-capable ally can reach that tile on its next action (a foe or tamed beast: its `MoveRange`; a commanded hero: the drag that fits the window) | **Setup** | `SetupBase` 6 + 1 per opponent in the line |
+| No pincer, but it stands at one end of an unbroken opponent line whose far tile is open (empty, or a non-pincer ally that can be swapped out) and a pincer-capable ally can reach that tile on its next action (a foe or tamed beast: its `MoveRange`; a commanded hero: the drag that fits the window) | **Setup** | `SetupBase` 6 + 1 per opponent in the line; a foe's set-up +`PinnedOpponentBonus` 2.5 per Rooted, unarmored hero in it ([§14.24](#1424-root-grasp--tree-golems-gg-t904)) |
 | It joins the chain of an ally pincer already on the board | **Support** | 0.6 × its `SupportWorth` (added to the other kinds too) |
 | Each ally newly trapped in an opponent pincer | — | −12; the mover itself trapped −40 (a Berserker or Bomber foe ignores the −40) |
 | Each step / each swap | — | −0.25 / −0.25 |
@@ -2618,14 +2619,14 @@ Generic, data-driven mechanics (`ClassDef`), so each family's kit is content, no
 | Mechanic | Field | Effect |
 |---|---|---|
 | Trail | `Trail` (trap id) | the tile it steps off becomes that trap (max 3 per enemy, oldest removed) |
-| On-hit | `OnHitBuff`, `OnHitChance` | a landed attack (melee, ranged, pincer) may inflict the buff |
+| On-hit | `OnHitBuff`, `OnHitChance`, `OnHitTurns` | a landed attack (melee, ranged, pincer) may inflict the buff, for `OnHitTurns` turns when set (0 = the buff's own Duration, GG-T904) |
 | Death burst | `DeathBurst` | on death, damages every adjacent hero ("self-destructs!") |
 | Passives | `Abilities` | `lifesteal` (heals a quarter of the damage dealt, the row's `Lifesteal` Amount 0.25; it was half before GG-T282), `tough_hide` (physical blows land at 70%), `berserk` (+35% damage below half HP), `regenerate` (6% MaxHP at the end of its turn), `double_attack`, `counter_attack`; **GG-T302** adds signature rows per family ([§4.1.2](#412-signature-passives-gg-t302-added-2026-11-06)) |
 | Support charges | `ChargeAbility` with `Filter: AllyOnly` | Howl (allies in 2 tiles hasten 0.25u — only when another ally in range is already at a hero, GG-T123), Rally (allies gain Protection), Mend (heal the most wounded ally 30 — only when one is below 70%) |
 | Area charge | `ChargeAbility` with an area `Shape` | Poison Cloud: 3×3, 6 poison + Poisoned |
 | Traps | `Trap` | Poison Cloud (miasma), Shock Mine (10 lightning + Slowed), Caltrops (8), plus the trail traps Slime Trail / Mire (Slowed) and Quicksand (4 + Slowed) |
 
-Family kits: slimes leave a Slime Trail · bats move 2, lifesteal · wolves Howl · werewolf moves 2, berserk, lifesteal · vulture & lurkers move 2 (lurkers' bites poison) · flying monkey moves 2, blinds · frogs/toad/skelepedes/scorpion/naga poison on hit · hags cast Poison Cloud and lay it as a trap · swamp mistress Mends · marsh shamblers leave Mire, tough hide · undead & reaper lifesteal · cyber-zombies self-destruct (14) · ceramic knights, templars (Smite), mecha armor (Thunder) and cyclopes have tough hide · tree golems regenerate · purple prototypes & oni go berserk · tech gremlins lay Shock Mines · gangers blind · steppin' razors move 2 and strike twice · goblin thug lays Caltrops · soldiers & mannequin counter · the captain Rallies · demon lord casts Fireball, lifesteals · phantom moves 2, silences · ghost slows · ice mauler & yeti may freeze · mountain troll regenerates and goes berserk · sandmaw leaves Quicksand, berserk. The enemy card and the bestiary list each kit (`Ui.KitTraits`).
+Family kits: slimes leave a Slime Trail · bats move 2, lifesteal · wolves Howl · werewolf moves 2, berserk, lifesteal · vulture & lurkers move 2 (lurkers' bites poison) · flying monkey moves 2, blinds · frogs/toad/skelepedes/scorpion/naga poison on hit · hags cast Poison Cloud and lay it as a trap · swamp mistress Mends · marsh shamblers leave Mire, tough hide · undead & reaper lifesteal · cyber-zombies self-destruct (14) · ceramic knights, templars (Smite), mecha armor (Thunder) and cyclopes have tough hide · tree golems regenerate and root what they hit (*Root Grasp*, [§14.24](#1424-root-grasp--tree-golems-gg-t904)) · purple prototypes & oni go berserk · tech gremlins lay Shock Mines · gangers blind · steppin' razors move 2 and strike twice · goblin thug lays Caltrops · soldiers & mannequin counter · the captain Rallies · demon lord casts Fireball, lifesteals · phantom moves 2, silences · ghost slows · ice mauler & yeti may freeze · mountain troll regenerates and goes berserk · sandmaw leaves Quicksand, berserk. The enemy card and the bestiary list each kit (`Ui.KitTraits`).
 
 ### 14.5 Remains — gravestones and bone piles (added 2026-10-10, owner direction)
 
@@ -3491,6 +3492,13 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
 - Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles, and
   timeline events from team-owned tiles carry no owner; an enemy ability's element doesn't reveal a hidden mark.
 - *(Tests: `TacticalTileTests`, written, not run.)*
+
+### 14.24 Root Grasp — tree golems (GG-T904)
+
+**Added 2026-11-24.** A tree golem's landed blow roots the hero ([Rooted](#8-buffs-and-debuffs), held to its tile for **1 turn**: `treegolem00`–`treegolem04` and `treegolem06` carry `OnHitBuff` `rooted`, `OnHitChance` 1, `OnHitTurns` 1, so the hit's root lasts one turn rather than the buff's own two). Tree golem 06's support *Root Snare* rolls a 40% **Rooted** on each trapped hero instead of Slowed (it keeps the buff's 2 turns). Tree golems are mindless and never pincer themselves ([§14.1.3](#1413-pincer-planning-gg-t306)); the threat is the Sentient foes beside them: a careless hero left next to a golem is pinned for the next enemy pincer, because a Rooted hero can't be dragged out of a set-up line.
+- **Planning.** `PincerPlanner.SetupValue` adds `PinnedOpponentBonus` **2.5** per Rooted, unarmored hero in the line when the mover is a foe (`EnemyPlanner.PlanPincer`), so of two set-ups a foe lines up on the pinned hero. 6 + 1 + 2.5 stays below a Complete pincer's 10, so a pincer it can close now still wins. Hero and tamed-monster planning is unchanged.
+- **Content check.** `ContentLoader.Validate` rejects a negative `OnHitTurns`, or one without an `OnHitBuff`.
+- *(Tests: `RootGraspTests` — `Every_tree_golem_roots_on_hit_for_one_turn_and_root_snare_rolls_rooted`, `On_hit_turns_must_name_a_buff_and_never_go_negative`, `A_landed_blow_roots_the_hero_for_its_on_hit_turns`, `A_foe_prefers_the_set_up_that_pins_a_rooted_hero`, `A_pinned_set_up_never_outbids_a_pincer_it_can_close_now`, `A_hero_planner_gets_no_pin_bonus`; written, not run.)*
 
 ## 15. Save
 

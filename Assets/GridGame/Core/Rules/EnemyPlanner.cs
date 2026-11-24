@@ -299,6 +299,8 @@ namespace GridGame.Core.Rules
         /// as a supporter. Null when it can't plan (mindless, multi-tile, immobile, wounded and retreating) or nothing
         /// is worth it; an evasive brain (Kiter, Commander, Trapper, Medic) only takes a walk that completes a pincer, a
         /// Sentinel never moves, an Ambusher still lying in wait or a Sluggish foe on its rest turn only pincers in place.
+        /// GG-T904: of two set-ups it prefers the one on a Rooted hero (<see cref="PincerPlanner.PinnedOpponentBonus"/>) - the
+        /// hero a tree golem's Root Grasp pinned can't be dragged out before an ally closes the far end.
         /// </summary>
         public static PincerPlan PlanPincer(BattleState s, Unit e)
         {

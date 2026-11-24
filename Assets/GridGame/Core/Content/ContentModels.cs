@@ -476,6 +476,8 @@ namespace GridGame.Core.Content
         public string OnHitBuff;
         /// <summary>…with this chance per landed hit.</summary>
         public float OnHitChance;
+        /// <summary>GG-T904: turns the on-hit buff lasts; 0 = the buff's own Duration (a tree golem's Root Grasp roots for 1).</summary>
+        public int OnHitTurns;
         /// <summary>Class id of the remains this enemy leaves (gravestone, bone pile — §14.5). Destroy them or it rises again.</summary>
         public string Remains;
         /// <summary>Class id of the egg this enemy lays periodically (§14.8). Optional.</summary>

@@ -20636,6 +20636,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"
@@ -20770,6 +20773,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"
@@ -20904,6 +20910,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"
@@ -21038,6 +21047,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"
@@ -21172,6 +21184,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"
@@ -21211,7 +21226,7 @@
       "Magnitude": 0.4,
       "Target": "Attacker",
       "Range": 1,
-      "Buff": "slowed",
+      "Buff": "rooted",
       "Label": "Root Snare",
       "Projectile": "SlowShimmer",
       "Motion": "Straight",
@@ -21307,6 +21322,9 @@
     "ChargeShape": "Single",
     "Trap": null,
     "SnakeSegments": 0,
+    "OnHitBuff": "rooted",
+    "OnHitChance": 1.0,
+    "OnHitTurns": 1,
     "ImmuneBuffs": [
       "poisoned",
       "sleep"

@@ -174,6 +174,7 @@ namespace GridGame.Core.Content
                 if (c.Trap != null && !db.Traps.ContainsKey(c.Trap)) p.Add($"class {c.Id}: unknown trap '{c.Trap}'");
                 if (c.Trail != null && !db.Traps.ContainsKey(c.Trail)) p.Add($"class {c.Id}: unknown trail '{c.Trail}'");
                 NeedBuff(c.OnHitBuff, $"class {c.Id} on-hit buff");
+                if (c.OnHitTurns < 0 || (c.OnHitTurns > 0 && string.IsNullOrEmpty(c.OnHitBuff))) p.Add($"class {c.Id}: OnHitTurns {c.OnHitTurns} needs an OnHitBuff and can't be negative (GG-T904)");
                 NeedClass(c.Remains, $"class {c.Id} remains");
                 NeedClass(c.LaysEgg, $"class {c.Id} egg");
                 if (c.TameBond < 0) p.Add($"class {c.Id}: TameBond can't be negative (GG-T303)");
