@@ -661,6 +661,14 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Fell {UnitId} into {Hole} -> {To}{(SwappedId >= 0 ? $" swapping {SwappedId}" : "")}";
     }
 
+    /// <summary>A unit of the state's <see cref="Content.TileStateDef.SquishedBy"/> team stepped on a mark and squished it
+    /// (GG-T844, §14.23): the mark is gone (a "cleared" RegionTilesEvent follows), then the state's OnSquish runs.</summary>
+    public sealed class SquishedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public string State; public string RuleId; public Team OwnerTeam; public int OwnerId = -1;
+        public override string ToString() => $"Squished {State} at {At} by {UnitId}";
+    }
+
     /// <summary>A rule event reached the left edge and resolves on its tiles (its effects follow as their own events).</summary>
     public sealed class HazardLandedEvent : BattleEvent
     {

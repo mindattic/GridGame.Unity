@@ -3184,6 +3184,20 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   and the hero bot's `ShoveFloorValue` scores shoving a foe into it.
 - **No announcement.** A hero-laid state brings its rule's hooks into play silently (`EnsureRuleInPlay`): the party's
   own firewall is no region rule. A monster-laid state is announced as ever (§14.22).
+- **Hatch or squish (GG-T844).** A slime vomits a glob somewhere free; left alone it grows into a slime, stepped on
+  it's gone. `TileStateDef.OnExpire` (new) runs when a mark's `LifeSeconds` run out, before the mark clears (Self is
+  the tile; if those effects already cleared or repainted it, it isn't cleared again). `RuleEffectKind.SpawnUnit`
+  (new; `Class`, `Level`, 0 = the stage's level) puts a foe on each tile of the area, or, that tile taken, on the
+  nearest tile its footprint may appear on (ring by ring, row-major within a ring; `FreeForSpawn` and no trap, so
+  never on an occupied tile; no room anywhere = it doesn't come). It joins the current wave as a reinforcement does:
+  the wave's level dial, a timeline entry at its Speed's entry (spaced), a snake's segments, a
+  `ReinforcementsArrivedEvent`, and no action spent (`TurnRules.ClearActed`, the §2.13 seam).
+  `TileStateDef.SquishedBy` (new, a team; null = nothing squishes it): a unit of that team entering the tile (a step, a
+  shove, a fall's landing: the `RegionEnter` funnel, any tile of its footprint) clears the mark with a `SquishedEvent`
+  and a "cleared" tiles event, then the state's `OnSquish` effects run with the squisher as subject, all before the
+  tile's EnterTile hooks. Bodies, eggs, remains and units immune to the state or its rule squish nothing. `Validate`
+  wants a known `Class`, `LifeSeconds` for an `OnExpire`, `SquishedBy` for an `OnSquish`, and no `SquishedBy` on a
+  blocking state.
 - Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles.
 - *(Tests: `TacticalTileTests`, written, not run.)*
 

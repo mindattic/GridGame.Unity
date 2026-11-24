@@ -61,6 +61,10 @@ namespace GridGame.Core.Content
         ClearFlag,
         /// <summary>Mint Amount mana orbs into the party's bank for each hero among the units (GG-T376).</summary>
         GrantOrbs,
+        /// <summary>Put a foe of <see cref="RuleEffectDef.Class"/> (at <see cref="RuleEffectDef.Level"/>, 0 = the stage's level)
+        /// on each tile of the area, or the nearest free tile when it is taken; it joins the current wave like a
+        /// reinforcement (GG-T844: a slime glob nobody squished hatches into a slime).</summary>
+        SpawnUnit,
     }
 
     /// <summary>Which tiles a rule effect works on.</summary>
@@ -140,6 +144,10 @@ namespace GridGame.Core.Content
         public bool KeepMarks;
         /// <summary>MoveUnits: a unit stopped by another unit in its way takes this much damage, and so does that unit (GG-T378).</summary>
         public int CollideDamage;
+        /// <summary>SpawnUnit: the class id of the foe it puts on the board (GG-T844).</summary>
+        public string Class;
+        /// <summary>SpawnUnit: its level before the wave's dial (a reinforcement's rule); 0 = the stage's recommended level.</summary>
+        public int Level;
     }
 
     /// <summary>Whom a team-owned tile state works on (GG-T842, BIBLE §14.23): a mark records the team that painted it, and
@@ -192,6 +200,14 @@ namespace GridGame.Core.Content
         /// unaffected units, and <see cref="Battle.RegionBoard.DangerAt"/> reads no danger for them. Ignored on a mark the
         /// board painted (no owner).</summary>
         public TileAffects Affects = TileAffects.Any;
+        /// <summary>Effects run on each mark whose <see cref="LifeSeconds"/> run out, before it clears (GG-T844): Self is the
+        /// tile, the unit standing there (if the mark works on it) the subject. A slime glob hatches a slime this way.</summary>
+        public List<RuleEffectDef> OnExpire = new List<RuleEffectDef>();
+        /// <summary>A unit of this team entering the tile squishes the mark (GG-T844): it clears with a
+        /// <see cref="Battle.SquishedEvent"/>, then <see cref="OnSquish"/> runs. Null = nothing squishes it.</summary>
+        public RuleTeam? SquishedBy;
+        /// <summary>Effects run as a unit squishes the mark (Self is the tile, the squisher the subject).</summary>
+        public List<RuleEffectDef> OnSquish = new List<RuleEffectDef>();
     }
 
     /// <summary>A telegraphed event a rule puts on the timeline: its own icon rides the bar like a cast and resolves its Effects on arrival.</summary>
@@ -292,6 +308,11 @@ namespace GridGame.Core.Content
                     if (t.Pit && !t.Blocks) p.Add($"{w} state {t.Id}: a Pit must also Block (nothing stands in a hole)");
                     if (t.Pit && !(t.FallDamage >= 0f && t.FallDamage <= 1f)) p.Add($"{w} state {t.Id}: FallDamage outside 0..1");
                     ValidateEffects(db, t.OnMark, $"{w} state {t.Id} OnMark", p);
+                    ValidateEffects(db, t.OnExpire, $"{w} state {t.Id} OnExpire", p);
+                    ValidateEffects(db, t.OnSquish, $"{w} state {t.Id} OnSquish", p);
+                    if (t.OnExpire.Count > 0 && !(t.LifeSeconds > 0f)) p.Add($"{w} state {t.Id}: OnExpire needs LifeSeconds (it never runs out)");
+                    if (t.OnSquish.Count > 0 && t.SquishedBy == null) p.Add($"{w} state {t.Id}: OnSquish needs SquishedBy");
+                    if (t.SquishedBy != null && t.Blocks) p.Add($"{w} state {t.Id}: a blocking state can't be squished (nobody enters it)");
                 }
                 foreach (var e in r.Events)
                 {
@@ -387,6 +408,11 @@ namespace GridGame.Core.Content
                     case RuleEffectKind.PlaceAnchor: if (string.IsNullOrEmpty(e.Anchor)) p.Add($"{w}: needs an Anchor"); break;
                     case RuleEffectKind.SetFlag:
                     case RuleEffectKind.ClearFlag: if (string.IsNullOrEmpty(e.Flag)) p.Add($"{w}: needs a Flag"); break;
+                    case RuleEffectKind.SpawnUnit:
+                        if (string.IsNullOrEmpty(e.Class)) p.Add($"{w}: needs a Class");
+                        else if (db.TryClass(e.Class) == null) p.Add($"{w}: unknown class '{e.Class}'");
+                        if (e.Level < 0) p.Add($"{w}: Level can't be negative");
+                        break;
                 }
             }
         }

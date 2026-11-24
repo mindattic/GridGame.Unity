@@ -63,8 +63,39 @@ namespace GridGame.Core.Battle
         /// <summary>A unit moved into a tile (its anchor tile is the one the hooks read).</summary>
         private void RegionEnter(Unit u)
         {
-            if (S.Region.Rules.Count == 0 || u == null || !u.Alive || PreviewOnly) return;
+            if (u == null || !u.Alive || PreviewOnly) return;
+            if (S.Region.Tiles.Count > 0) Squish(u); // GG-T844: a glob underfoot is squished before the tile's hooks read it
+            if (S.Region.Rules.Count == 0 || !u.Alive) return;
             RegionHooks(RuleHook.EnterTile, u);
+        }
+
+        /// <summary>
+        /// GG-T844 (§14.23): <paramref name="u"/> entered a tile; each mark under its footprint whose state is
+        /// <see cref="TileStateDef.SquishedBy"/> its team clears (a <see cref="SquishedEvent"/>, then the "cleared" tiles
+        /// event), then the state's <see cref="TileStateDef.OnSquish"/> runs with the squisher as subject. A unit immune
+        /// to the state or its rule, and a body, an egg or remains, squish nothing.
+        /// </summary>
+        private void Squish(Unit u)
+        {
+            if (!RegionActive || u.IsCorpse || u.IsRemains || u.IsEgg || !u.OnBoard) return;
+            foreach (var c in new List<Coord>(u.Tiles()))
+            {
+                if (S.IsOver || !u.Alive) return;
+                var m = S.Region.At(c);
+                if (m == null) continue;
+                var def = C.TryTileState(m.State);
+                if (def?.SquishedBy == null || !TeamMatches(def.SquishedBy.Value, u)) continue;
+                if (RegionBoard.Immune(u, m.Rule, m.State)) continue;
+                S.Region.Tiles.Remove(c);
+                Emit(new SquishedEvent { UnitId = u.Id, At = c, State = m.State, RuleId = m.Rule, OwnerTeam = m.OwnerTeam, OwnerId = m.OwnerId });
+                var cleared = new RegionTilesEvent { RuleId = m.Rule, State = m.State, Change = "cleared" };
+                cleared.Tiles.Add(c);
+                Emit(cleared);
+                RunRuleEffects(def.OnSquish, new RuleCtx
+                {
+                    Rule = m.Rule, State = m.State, Subject = u, At = c, Owner = m.OwnerTeam, OwnerId = m.OwnerId, Mark = m,
+                });
+            }
         }
 
         /// <summary>A unit fell at <paramref name="at"/>: its class's OnDeathRule, then the UnitDeath hooks.</summary>
@@ -147,7 +178,9 @@ namespace GridGame.Core.Battle
             CheckEnd();
         }
 
-        /// <summary>Painted tiles with a lifetime fade as the clock runs.</summary>
+        /// <summary>Painted tiles with a lifetime fade as the clock runs. A mark that runs out first runs its state's
+        /// <see cref="TileStateDef.OnExpire"/> (GG-T844: a glob nobody squished hatches), then clears, unless those effects
+        /// already changed the tile.</summary>
         private void TickRegionTiles()
         {
             List<Coord> gone = null;
@@ -162,7 +195,19 @@ namespace GridGame.Core.Battle
             var byState = new Dictionary<string, RegionTilesEvent>();
             foreach (var c in gone)
             {
-                var m = S.Region.Tiles[c];
+                var m = S.Region.At(c);
+                if (m == null) continue;
+                var def = C.TryTileState(m.State);
+                if (def != null && def.OnExpire.Count > 0 && RegionActive)
+                {
+                    var who = S.UnitAt(c);
+                    RunRuleEffects(def.OnExpire, new RuleCtx
+                    {
+                        Rule = m.Rule, State = m.State, Subject = who != null && RegionBoard.Affects(S, m, who) ? who : null, At = c,
+                        Owner = m.OwnerTeam, OwnerId = m.OwnerId, Mark = m,
+                    });
+                    if (S.Region.At(c) != m) continue; // its effects cleared or repainted the tile
+                }
                 S.Region.Tiles.Remove(c);
                 if (!byState.TryGetValue(m.State, out var ev0)) byState[m.State] = ev0 = new RegionTilesEvent { RuleId = m.Rule, State = m.State, Change = "cleared" };
                 ev0.Tiles.Add(c);
@@ -227,6 +272,7 @@ namespace GridGame.Core.Battle
                     break;
                 }
                 case RuleEffectKind.MoveAnchor: MoveAnchor(e, ctx); break;
+                case RuleEffectKind.SpawnUnit: SpawnRuleUnits(e, ctx); break;
                 case RuleEffectKind.SetFlag:
                 case RuleEffectKind.ClearFlag:
                 {
@@ -635,6 +681,56 @@ namespace GridGame.Core.Battle
                     TriggerTrap(u);
                 }
             }
+        }
+
+        /// <summary>
+        /// GG-T844 (§14.23): a foe of e.Class on each tile of the area, or (that tile taken) the nearest tile its footprint
+        /// may appear on (<see cref="SpawnLanding"/>); with no room anywhere it doesn't come. It joins the current wave as
+        /// a reinforcement does: the wave's level dial, a timeline entry at its Speed's entry (spaced), a snake's segments,
+        /// a <see cref="ReinforcementsArrivedEvent"/>, and no action spent (<see cref="TurnRules.ClearActed"/>).
+        /// </summary>
+        private void SpawnRuleUnits(RuleEffectDef e, RuleCtx ctx)
+        {
+            var def = C.TryClass(e.Class);
+            if (def == null || PreviewOnly) return;
+            int w = Math.Max(1, def.Footprint?.W ?? 1), h = Math.Max(1, def.Footprint?.H ?? 1);
+            int authored = e.Level > 0 ? e.Level : Math.Max(1, S.RecommendedLevel);
+            int level = S.Stage == null || S.Stage.IsTest ? authored
+                : Math.Max(authored, S.RecommendedLevel) + S.NewGamePlus * BattleConfig.NgPlusLevelStep + DifficultyTable.At(S.Difficulty).EnemyLevelOffset;
+            List<int> spawned = null;
+            foreach (var c in AreaOf(e, ctx))
+            {
+                if (S.IsOver) break;
+                var at = SpawnLanding(c, w, h);
+                if (!at.HasValue) continue;
+                var u = SpawnEnemy(def, level, at.Value.X, at.Value.Y);
+                if (u == null) continue;
+                TurnRules.ClearActed(S, u);
+                spawned ??= new List<int>();
+                spawned.Add(u.Id);
+                if (def.SnakeSegments > 0) GrowSnake(u, def.SnakeSegments, spawned);
+            }
+            if (spawned == null) return;
+            var arrived = new ReinforcementsArrivedEvent { Wave = S.Wave, Spawned = spawned };
+            foreach (var id in spawned) if (S.UnitById(id) is Unit su) arrived.SpawnedAt.Add(UnitFootprint.Of(su));
+            Emit(arrived);
+            CheckTilesStrict("rule spawn");
+        }
+
+        /// <summary>Where a rule's spawn appears (GG-T844): ring by ring outward from <paramref name="from"/> (the tile
+        /// itself first), the first anchor whose whole footprint is free for something to appear (no unit, block, item
+        /// or trap), row-major within a ring, so it never lands on an occupied tile. Null on a board with no room.</summary>
+        private Coord? SpawnLanding(Coord from, int w, int h)
+        {
+            int maxRing = BattleConfig.Cols + BattleConfig.Rows;
+            for (int d = 0; d <= maxRing; d++)
+                for (int y = 0; y < BattleConfig.Rows; y++)
+                    for (int x = 0; x < BattleConfig.Cols; x++)
+                    {
+                        var c = new Coord(x, y);
+                        if (c.Manhattan(from) == d && FootprintFree(c, w, h)) return c;
+                    }
+            return null;
         }
 
         /// <summary>One step's direction: a fixed board direction, or toward/away from <paramref name="point"/> along the

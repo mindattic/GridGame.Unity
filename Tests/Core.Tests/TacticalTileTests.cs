@@ -29,6 +29,13 @@ namespace GridGame.Tests
                         Id = "burst", Affects = TileAffects.FoesOfOwner,
                         OnMark = { new RuleEffectDef { Kind = RuleEffectKind.Damage, Area = RuleArea.Self, Amount = 3, DamageType = DamageType.Fire } },
                     },
+                    // GG-T844: a slime glob hatches a goblin when it runs out, unless a hero squishes it first.
+                    new TileStateDef
+                    {
+                        Id = "glob", LifeSeconds = 2f, SquishedBy = RuleTeam.Hero,
+                        OnExpire = { new RuleEffectDef { Kind = RuleEffectKind.SpawnUnit, Area = RuleArea.Self, Class = "goblin", Level = 1 } },
+                        OnSquish = { new RuleEffectDef { Kind = RuleEffectKind.SetFlag, Flag = "squished" } },
+                    },
                 },
                 Hooks =
                 {
@@ -172,6 +179,93 @@ namespace GridGame.Tests
             Assert.That(m.OwnerId, Is.EqualTo(gob.Id));
             Assert.That(ev.OfType<RegionRuleEvent>().Any(r => r.RuleId == "tactics"), Is.True, "announced as ever");
             Assert.That(RegionBoard.DangerAt(s, at, Hero(s, "knight")), Is.GreaterThan(0f), "a foe-laid firewall burns the party");
+        }
+
+        // ── Hatching and squishing (GG-T844) ──────────────────────────────────────────────────────
+
+        private static BattleState GlobAt(Coord at, (string cls, int x, int y, string bar)[] heroes)
+        {
+            var paint = new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { at }, State = "glob" };
+            var st = Stage(("tank", 5, 0));
+            st.Rules.Add("tactics");
+            return Setup(Db(paint), st, heroes);
+        }
+
+        private static List<BattleEvent> GuardUntil(BattleState s, System.Func<bool> done, int max = 40)
+        {
+            var all = new List<BattleEvent>();
+            for (int i = 0; i < max && !s.IsOver && !done(); i++)
+            {
+                all.AddRange(BattleEngine.Apply(s, new ShieldCommand()));
+                AssertInvariants(s);
+            }
+            return all;
+        }
+
+        [Test]
+        public void A_glob_nobody_squishes_hatches_on_its_tile_and_joins_the_wave()
+        {
+            var s = GlobAt(new Coord(2, 4), new[] { ("knight", 0, 7, (string)null), ("cleric", 4, 7, (string)null) });
+            Assert.That(s.Region.At(new Coord(2, 4))?.State, Is.EqualTo("glob"));
+            var ev = GuardUntil(s, () => s.Region.At(new Coord(2, 4)) == null);
+            var arrived = ev.OfType<ReinforcementsArrivedEvent>().Single();
+            var gob = s.UnitById(arrived.Spawned.Single());
+            Assert.That(gob.Def.Id, Is.EqualTo("goblin"));
+            Assert.That(gob.Team, Is.EqualTo(Team.Enemy), "it fights for the wave");
+            Assert.That(arrived.SpawnedAt.Single().At, Is.EqualTo(new Coord(2, 4)), "it hatches on the glob's own tile");
+            Assert.That(s.Timeline.Any(t => t.Kind == TimelineKind.Turn && t.OwnerId == gob.Id), Is.True, "and takes its place on the timeline");
+            int hatched = ev.IndexOf(arrived);
+            int cleared = ev.FindIndex(x => x is RegionTilesEvent t && t.State == "glob" && t.Change == "cleared");
+            Assert.That(cleared, Is.GreaterThan(hatched), "OnExpire runs before the mark clears");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_glob_under_someone_hatches_on_the_nearest_free_tile()
+        {
+            var s = GlobAt(new Coord(1, 7), new[] { ("knight", 1, 7, (string)null), ("cleric", 4, 7, (string)null) });
+            var knight = Hero(s, "knight");
+            Assert.That(s.Region.At(knight.Pos)?.State, Is.EqualTo("glob"), "painted under the knight, who never stepped on it");
+            var ev = GuardUntil(s, () => s.Region.At(new Coord(1, 7)) == null);
+            var at = ev.OfType<ReinforcementsArrivedEvent>().Single().SpawnedAt.Single().At;
+            Assert.That(at, Is.Not.EqualTo(new Coord(1, 7)), "never on an occupied tile");
+            Assert.That(at.Manhattan(new Coord(1, 7)), Is.EqualTo(1), "but right beside it");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_hero_stepping_on_a_glob_squishes_it_and_nothing_hatches()
+        {
+            var s = GlobAt(new Coord(1, 6), new[] { ("knight", 1, 7, (string)null), ("cleric", 4, 7, (string)null) });
+            var knight = Hero(s, "knight");
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6)) });
+            var sq = ev.OfType<SquishedEvent>().Single();
+            Assert.That(sq.UnitId, Is.EqualTo(knight.Id));
+            Assert.That(sq.At, Is.EqualTo(new Coord(1, 6)));
+            Assert.That(s.Region.At(new Coord(1, 6)), Is.Null, "the glob is gone");
+            Assert.That(ev.OfType<RegionTilesEvent>().Any(t => t.State == "glob" && t.Change == "cleared"), Is.True);
+            Assert.That(s.Region.Flags, Does.Contain("squished"), "its OnSquish ran");
+            var later = GuardUntil(s, () => false, 12);
+            Assert.That(later.OfType<ReinforcementsArrivedEvent>().Any(), Is.False, "a squished glob never hatches");
+            Assert.That(s.Units.Any(u => u.Def.Id == "goblin"), Is.False);
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void Validation_reports_a_spawn_with_no_known_class_and_an_OnExpire_that_never_runs()
+        {
+            var db = Db();
+            var rule = db.TryRegionRule("tactics");
+            rule.TileStates.Add(new TileStateDef
+            {
+                Id = "dud", OnExpire = { new RuleEffectDef { Kind = RuleEffectKind.SpawnUnit, Area = RuleArea.Self, Class = "nope" } },
+            });
+            db.TileStates["dud"] = rule.TileStates.Last();
+            var p = new List<string>();
+            RegionRuleCatalog.Validate(db, p);
+            Assert.That(p.Any(x => x.Contains("unknown class 'nope'")), Is.True);
+            Assert.That(p.Any(x => x.Contains("OnExpire needs LifeSeconds")), Is.True);
+            Assert.That(p.Any(x => x.Contains("state glob")), Is.False, "the glob itself is well formed");
         }
     }
 }
