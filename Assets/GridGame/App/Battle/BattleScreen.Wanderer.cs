@@ -32,7 +32,7 @@ namespace GridGame.App
             RefreshUnit(e.UnitId);
             App.Audio.Sfx(e.Full ? "battle.warcry" : "ui.select", e.Full ? 0.7f : 0.5f);
             string text = e.Full ? "Trusts you!" : $"Trust {e.Trust}/{e.TrustNeeded}";
-            return FloatText(e.UnitId, text, Palette.Wanderer, e.Full ? 0.5f : 0.25f, e.Full ? 60 : 44);
+            return FloatText(e.UnitId, e.Full ? CombatTextKind.Buff : CombatTextKind.Support, text, e.Full ? 0.5f : 0.25f, 0f, Palette.Wanderer);
         }
     }
 }

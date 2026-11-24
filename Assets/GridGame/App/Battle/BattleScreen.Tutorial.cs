@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GridGame.Core;
@@ -29,6 +30,9 @@ namespace GridGame.App
             /// <summary>The lesson image (Resources/Tutorial/&lt;Id&gt;.png) and its save flag.</summary>
             public string Id;
             public string Title, Text, Example;
+            /// <summary>GG-T788 (§2.13.1): the lesson's text when the party's turn is one hero's one action
+            /// (<see cref="TurnRules.OneHeroPerTurn"/>), for a lesson whose <see cref="Text"/> assumes every hero acts each turn.</summary>
+            public string TextOneHero;
             /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board.</summary>
@@ -85,6 +89,7 @@ namespace GridGame.App
             new Lesson { Id = "hold", Title = "The hold timer", Patience = 3, Waits = true,
                 Short = "Lifting a hero starts the clock. Changed your mind? Drop it off the board, or back on its own tile, to cancel for free.",
                 Text = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each hero acts once before that enemy does, sharing the time — what one hero leaves, the next can use, and pushing the enemy back buys more. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
+                TextOneHero = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn; pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 Example = "Example: lift a hero, then drag it off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
@@ -108,8 +113,8 @@ namespace GridGame.App
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.ChainIndex >= 1),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Count(p => p.A.IsHero) >= 2), "Drag the {0} along the dotted line: the drop closes two pincers at once.") },
             new Lesson { Id = "support", Title = "Supporters", Wave = 1, Waits = true, Patience = 4, Scene = "support",
-                Short = "A hero touching an attacker joins the pincer as a supporter, linked in blue, and adds its class's support.",
-                Text = "Heroes linked to a pincer's attacker by an unbroken line of allies join in as supporters: the blue links in the drag preview. Each adds its class's support action — a Cleric heals, a Barbarian adds a blow.",
+                Short = "A hero touching an attacker joins the pincer as a supporter, linked in blue, adds its class's support and earns its own share on the combo meter.",
+                Text = "Heroes linked to a pincer's attacker by an unbroken line of allies join in as supporters: the blue links in the drag preview. Each adds its class's support action — a Cleric heals, a Barbarian adds a blow — and its own points on the combo meter at the board's top right, in mana blue.",
                 Example = "Example: pincer with a third hero standing next to one of the attackers.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.Supporters.Count > 0),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.SupportersA.Count + p.SupportersB.Count > 0)), "Drag the {0} along the dotted line: the third hero joins in as a supporter.") },
@@ -212,13 +217,16 @@ namespace GridGame.App
 
         private void NextLesson() => AdvanceTutorial(TutorialStep + 1);
 
+        /// <summary>GG-T788 (§2.13.1): a lesson's full text for this battle's turn mode, as <see cref="TurnRules"/> says it is.</summary>
+        private string LessonText(Lesson l) => l.TextOneHero != null && TurnRules.OneHeroPerTurn(State) ? l.TextOneHero : l.Text;
+
         private void TutorialAfterCommit(BattleCommand cmd, List<BattleEvent> events)
         {
             commitCount++;
             if (cmd is TutorialSceneCommand) return; // a lesson's set-up is nobody's action
             if (Coach.InSteps) coachCommitted = true;
             if (events.Exists(x => x is ReinforcementsArrivedEvent)) reinforcementsArrived = events.OfType<ReinforcementsArrivedEvent>().SelectMany(r => r.Spawned).ToList();
-            if (!TutorialActive) return;
+            if (!TutorialActive) { NoteComboRank(events); return; }
             var l = CurrentLesson;
             if (LessonWaiting) return;
             // With coach marks, a lesson moves on when its marks are done; the old completion (the player did it, a few
@@ -267,7 +275,7 @@ namespace GridGame.App
             }
             else
             {
-                var t = Ui.Text(l.Text, "tiny", col);
+                var t = Ui.Text(LessonText(l), "tiny", col);
                 t.name = "tutorial-text";
                 t.style.whiteSpace = WhiteSpace.Normal;
                 var ex = Ui.Text(l.Example, "tiny", col);
@@ -312,6 +320,8 @@ namespace GridGame.App
         private List<Coord> coachPath;
         private bool coachMoveDone, coachCancelStep, coachCancelDone, coachCommitted;
         private List<int> reinforcementsArrived;
+        /// <summary>GG-T853: the best combo rank of B or better that landed since the Combo lesson last looked.</summary>
+        private ComboRank comboLanded;
         /// <summary>The hero <see cref="FindMove"/> is trying (read by a lesson's preview test).</summary>
         private int findHero = -1;
 
@@ -321,7 +331,7 @@ namespace GridGame.App
         private bool CoachBlocksDrag => Coach.InSteps && coachHeroId < 0 && !coachCancelStep;
 
         /// <summary>Called every frame: when the player has control and nothing is teaching, the current lesson (or a
-        /// battle system met for the first time: Guard, potions, reinforcements) opens.</summary>
+        /// battle system met for the first time: Guard, potions, reinforcements, Heavy foes, tactical tiles, hidden mines) opens.</summary>
         private void TickCoach()
         {
             if (Coach.Active)
@@ -367,7 +377,7 @@ namespace GridGame.App
                 Id = "battle-" + l.Id,
                 Kicker = $"Lesson {step + 1} of {Lessons.Length}",
                 Title = l.Title,
-                Text = l.Short ?? l.Text,
+                Text = l.Short ?? LessonText(l),
                 Image = "Tutorial/" + l.Id,
                 Steps = marks,
                 SkipPopup = popupDone,
@@ -419,13 +429,120 @@ namespace GridGame.App
                 RunSystem("battle-potion", "Potions", "A potion on a hero's bar acts at once and costs no orbs. Drink one before a hurt hero falls.", CastMarks(hero, slot));
                 return;
             }
+            if (comboLanded >= ComboRank.B)
+            {
+                // GG-T853: the first B-or-better combo opens the Combo lesson on the meter that showed it.
+                var rank = comboLanded;
+                comboLanded = ComboRank.None;
+                if (Coach.Pending(s, "battle-combo"))
+                {
+                    RunSystem("battle-combo", "Combo", $"A {rank} combo! Every pincer, chain link, supporter action, follow-up, status and kill in one turn builds the meter. New heroes and new tricks climb highest, up to SSS.", ComboMarks(rank));
+                    return;
+                }
+            }
             if (reinforcementsArrived != null && reinforcementsArrived.Count > 0)
             {
                 var ids = reinforcementsArrived;
                 reinforcementsArrived = null;
                 if (Coach.Pending(s, "battle-reinforce"))
                     RunSystem("battle-reinforce", "Reinforcements", "More foes can walk on mid-wave. Each joins the timeline where its speed puts it, so read the bar again.", ReinforceMarks(ids));
+                if (Coach.Active) return;
             }
+            // GG-T908: the bombastic-battle systems, each the first time it is on the board (a lesson whose situation is
+            // gone by the time the player has control simply waits for the next one).
+            if (Coach.Pending(s, "battle-heavy") && HeavyFoe() is Unit heavy)
+            {
+                RunSystem("battle-heavy", "Heavy foes", "A [Heavy] foe won't be dragged, shoved, pulled or swapped. Make it [Floating] to move it, [Rooted] to hold it still, or wall it out with a barricade.", HeavyMarks(heavy));
+                return;
+            }
+            if (Coach.Pending(s, "battle-tactical") && TacticalTile() is Coord laid)
+            {
+                RunSystem("battle-tactical", "Tactical tiles", "Heroes lay tiles too: a [Firewall] burns the foes who cross it, a [Mine] goes off under the first foe to step on it. The ring around the tile drains as its time runs out.", TacticalMarks(laid));
+                return;
+            }
+            if (Coach.Pending(s, "battle-hidden") && HiddenMine() is Coord mine)
+                RunSystem("battle-hidden", "Hidden mines", "A buried [Mine] shows for a moment, then fades: it is [Hidden]. Foes can't see yours and you can't see theirs, until someone steps on it and it pops.", HiddenMarks(mine));
+        }
+
+        // ── GG-T908: Heavy foes, tactical tiles, hidden mines ──
+
+        /// <summary>A foe on the board that is Heavy now (not Floating), in plain sight (not a hidden mimic).</summary>
+        private Unit HeavyFoe() => State.Units.FirstOrDefault(u => u.Alive && !u.IsHero && u.Team == Team.Enemy && u.IsHeavy && !RegionBoard.Hidden(State, u));
+
+        private List<CoachStep> HeavyMarks(Unit u)
+        {
+            int id = u.Id;
+            return new List<CoachStep>
+            {
+                new CoachStep
+                {
+                    Caption = $"The {u.Name} is Heavy: shoves and pulls won't move it (tap it).", Area = () => UnitRect(id), Info = true,
+                    Valid = () => State.UnitById(id) is Unit x && x.Alive,
+                },
+            };
+        }
+
+        /// <summary>A timed harmful tile the party laid (a hero's firewall or mine), drawn with its life ring.</summary>
+        private Coord? TacticalTile()
+        {
+            foreach (var kv in State.Region.Tiles)
+            {
+                var m = kv.Value;
+                if (m.OwnerTeam != Team.Hero || !m.Hazard || m.LifeTicks <= 0 || !RegionBoard.Sees(m, Team.Hero)) continue;
+                if ((State.Content?.TryTileState(m.State)?.LifeSeconds ?? 0f) > 0f) return kv.Key;
+            }
+            return null;
+        }
+
+        private List<CoachStep> TacticalMarks(Coord c)
+        {
+            var m = State.Region.At(c);
+            if (m == null) return null;
+            string state = m.State;
+            return new List<CoachStep>
+            {
+                new CoachStep { Caption = $"Your {MarkWord(state)} holds this tile until its ring runs out (tap it).", Area = () => TileRect(c), Info = true, Valid = () => MarkStillAt(c, state) },
+            };
+        }
+
+        /// <summary>A mark the party can see that fades from sight: still in its seen-by-all window, or the party's own
+        /// already hidden (drawn faint for its own side).</summary>
+        private Coord? HiddenMine()
+        {
+            foreach (var kv in State.Region.Tiles)
+            {
+                var m = kv.Value;
+                if ((m.SightTicks > 0 || m.Hidden) && RegionBoard.Sees(m, Team.Hero)) return kv.Key;
+            }
+            return null;
+        }
+
+        private List<CoachStep> HiddenMarks(Coord c)
+        {
+            var m = State.Region.At(c);
+            if (m == null) return null;
+            string state = m.State, word = MarkWord(state);
+            string caption = m.Hidden ? $"Your {word} has faded: only your side sees it (tap it)."
+                : m.OwnerTeam == Team.Hero ? $"Your {word} fades from sight soon. Foes won't see it (tap it)."
+                : $"This {word} fades from sight soon. Remember where it was (tap it).";
+            return new List<CoachStep>
+            {
+                new CoachStep { Caption = caption, Area = () => TileRect(c), Info = true, Valid = () => MarkStillAt(c, state) },
+            };
+        }
+
+        /// <summary>The marks' step stays only while the party still sees that mark on that tile (never a soft-lock).</summary>
+        private bool MarkStillAt(Coord c, string state) =>
+            State?.Region?.At(c) is TileMark m && string.Equals(m.State, state, StringComparison.OrdinalIgnoreCase) && RegionBoard.Sees(m, Team.Hero);
+
+        /// <summary>A tile state's id as a word for a caption ("firewall", "mine", "buried mine").</summary>
+        private static string MarkWord(string state)
+        {
+            if (string.IsNullOrEmpty(state)) return "tile";
+            var w = state.ToLowerInvariant();
+            if (w.Contains("firewall")) return "firewall";
+            if (w.Contains("mine")) return "mine";
+            return w.Replace('_', ' ').Replace('-', ' ');
         }
 
         private void RunSystem(string id, string title, string text, List<CoachStep> marks)
@@ -438,6 +555,65 @@ namespace GridGame.App
                 Id = id, Kicker = "New", Title = title, Text = text, Image = "Tutorial/" + id.Substring("battle-".Length),
                 Steps = marks, Hold = CoachHold, Finished = how => { DisarmCoach(); if (how == CoachEnd.TurnedOff) FinishTutorial(); },
             });
+        }
+
+        /// <summary>GG-T853: keeps the best combo rank of B or better a command's playback showed (outside the first battle).</summary>
+        private void NoteComboRank(List<BattleEvent> events)
+        {
+            foreach (var x in events)
+            {
+                var r = x is ComboChangedEvent cc ? cc.Rank : x is ComboEndedEvent ce ? ce.Rank : ComboRank.None;
+                if (r >= ComboRank.B && r > comboLanded) comboLanded = r;
+            }
+        }
+
+        /// <summary>GG-T853: one mark on the combo meter, held up at the rank that landed while the lesson points at it, then
+        /// let go to fade as a closing summary does (unless a combo is still running).</summary>
+        private List<CoachStep> ComboMarks(ComboRank rank)
+        {
+            EnsureComboMeter();
+            if (comboFrame == null) return null;
+            return new List<CoachStep>
+            {
+                new CoachStep
+                {
+                    Caption = "The combo meter ranks your turn, D up to SSS. Supporters earn their own share, in blue; the bar drains between hits (tap it).",
+                    Element = () => comboFrame, Info = true,
+                    Valid = () => comboFrame != null && comboFrame.panel != null,
+                    Enter = () => HoldComboMeter(rank), Exit = ReleaseComboMeter,
+                },
+            };
+        }
+
+        private void HoldComboMeter(ComboRank rank)
+        {
+            if (comboRoot == null || comboRoot.panel == null) return;
+            comboClosing = false; // a closing summary's fade stops while the lesson points at the meter
+            comboRoot.style.opacity = 1f;
+            if (comboShownRank == ComboRank.None)
+            {
+                comboShownRank = rank;
+                App.StartCoroutine(ComboRankSlam(rank, false));
+            }
+            comboFrame.MarkDirtyRepaint();
+        }
+
+        private void ReleaseComboMeter()
+        {
+            if (comboRoot == null || comboRoot.panel == null || State?.Combo?.Active == true) return;
+            comboClosing = true;
+            App.StartCoroutine(ComboLessonFade());
+        }
+
+        private IEnumerator ComboLessonFade()
+        {
+            float from = comboRoot.style.opacity.value;
+            yield return Tween.Run(Timing.Standard, k => { if (comboClosing && comboRoot != null) comboRoot.style.opacity = from * (1f - k); });
+            if (!comboClosing || comboRoot == null) yield break; // a new combo started meanwhile
+            comboChips.Clear();
+            comboShownRank = ComboRank.None;
+            comboRankLabel.text = comboWordLabel.text = comboScoreLabel.text = "";
+            comboFrame.MarkDirtyRepaint();
         }
 
         /// <summary>A hero with a ready item (a potion) on its bar while someone in the party is hurt.</summary>

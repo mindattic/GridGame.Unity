@@ -216,7 +216,10 @@ namespace GridGame.App
             gapLane.style.left = XOfU(0f);
             gapLane.style.width = w;
             gapLane.style.backgroundColor = c.WithA(0.45f);
-            gapLabel.text = $"{secs:0.0}s · " + (skill && drag ? "move or skill" : drag ? "move only" : skill ? "skill only" : "Guard");
+            string fits = skill && drag ? "move or skill" : drag ? "move only" : skill ? "skill only" : "Guard";
+            if (TurnRules.OneHeroPerTurn(State) && (skill || drag)) // GG-T787 (§2.13.1): the gap holds one hero's one action
+                fits = "one hero: " + (skill && drag ? "move or skill" : drag ? "move" : "skill");
+            gapLabel.text = $"{secs:0.0}s · {fits}";
             gapLabel.style.color = c;
             gapLabel.style.left = XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f);
         }

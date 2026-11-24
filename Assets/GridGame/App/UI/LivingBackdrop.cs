@@ -8,12 +8,12 @@ namespace GridGame.App
     /// <summary>
     /// The staged, living backdrop (GG-T576; owner: "the Somnolith needs to be the same in every picture ... a living
     /// backdrop (imagine slowly moving shards of Somnolith being dragged across the sky)"). Back to front: the backdrop's
-    /// sky plate (Resources/Skies), the ordinary Moon, the one canonical Somnolith (sized and placed per region from
+    /// sky plate (Resources/Skies), the ordinary Moon, the one canonical Manalith (sized and placed per region from
     /// Content/sky.json, growing as the campaign goes on), its shards drifting across the sky, then the foreground plate
     /// (the backdrop with its sky cut out, under the backdrop's own resource key). A gentle idle sway moves the near layers
     /// more than the far ones. Reduce Motion keeps every layer still.
     ///
-    /// GG-T670: behind the Somnolith runs the wake of debris it drags across the sky (<see cref="DebrisDef"/>), and now
+    /// GG-T670: behind the Manalith runs the wake of debris it drags across the sky (<see cref="DebrisDef"/>), and now
     /// and then the Aetherain falls from it, glints of aether dust drifting down over the landscape
     /// (<see cref="AetherainDef"/>). Reduce Motion holds the wake still and skips the Aetherain.
     ///
@@ -23,7 +23,7 @@ namespace GridGame.App
     ///
     /// The plates cover the screen at the art's own aspect (cropping, never stretching, so 9:23 to 3:4 all fill), with a
     /// small margin so the sway never shows an edge. The bodies are placed in screen terms (see <see cref="SkyDef"/>), so
-    /// the Somnolith stays in the visible sky at every aspect. A backdrop that isn't split (an interior, a rejected split)
+    /// the Manalith stays in the visible sky at every aspect. A backdrop that isn't split (an interior, a rejected split)
     /// is drawn flat exactly as before.
     /// </summary>
     public sealed class LivingBackdrop
@@ -60,7 +60,7 @@ namespace GridGame.App
             public float X0, Y, Size, Speed, Spin, Angle0, Opacity, Aspect;
         }
 
-        /// <summary>One piece of the Somnolith's wake (GG-T670). U0 is where it starts along the wake (0 at the body, 1 at
+        /// <summary>One piece of the Manalith's wake (GG-T670). U0 is where it starts along the wake (0 at the body, 1 at
         /// the far end), Across its offset across the wake (-1..1), Jitter its size wobble; it is sized once at its largest
         /// and scaled down as it drifts away.</summary>
         private sealed class Debris
@@ -140,7 +140,7 @@ namespace GridGame.App
             BuildDebris(rnd); // behind the body: it sits in front of its own wake
             BuildGrit(rnd);
             // GG-T679: the Manalith is the live 3D satellite (ManalithRig) when its model loads, else the flat art.
-            if (!string.IsNullOrEmpty(def.Somnolith?.Model))
+            if (!string.IsNullOrEmpty(def.Manalith?.Model))
             {
                 som = Layer(null);
                 if (ManalithRig.Attach(som))
@@ -153,13 +153,13 @@ namespace GridGame.App
             }
             if (som == null)
             {
-                var somTex = Load(def.Somnolith?.Image);
+                var somTex = Load(def.Manalith?.Image);
                 som = somTex != null ? Layer(somTex) : null;
                 somAspect = somTex != null ? (float)somTex.height / somTex.width : 1f;
             }
             else somAspect = 1f;
             if (moon != null) moon.style.opacity = def.Moon.Opacity;
-            if (som != null) som.style.opacity = def.Somnolith.Opacity;
+            if (som != null) som.style.opacity = def.Manalith.Opacity;
             BuildShards();
             fg = Layer(fgTex);
             // The Aetherain falls in front of the landscape (still inside this backdrop, so behind every screen's content).
@@ -225,12 +225,12 @@ namespace GridGame.App
         private static Color ParseColor(string hex, Color fallback) =>
             !string.IsNullOrEmpty(hex) && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
 
-        /// <summary>GG-T674: one colour from a palette sampled from the Somnolith art (repeats weight it).</summary>
+        /// <summary>GG-T674: one colour from a palette sampled from the Manalith art (repeats weight it).</summary>
         private static Color PickColor(System.Collections.Generic.List<string> palette, System.Random rnd, Color fallback) =>
             palette == null || palette.Count == 0 ? fallback : ParseColor(palette[rnd.Next(palette.Count)], fallback);
 
-        /// <summary>The Somnolith art's deep blue (GG-T674), for a palette that is missing.</summary>
-        private static readonly Color SomnolithBlue = new Color(0.365f, 0.392f, 0.639f);
+        /// <summary>The Manalith art's deep blue (GG-T674), for a palette that is missing.</summary>
+        private static readonly Color ManalithBlue = new Color(0.365f, 0.392f, 0.639f);
 
         private void BuildDebris(System.Random rnd)
         {
@@ -244,11 +244,11 @@ namespace GridGame.App
                 Texture2D tex = speck ? null : Load(images[rnd.Next(images.Count)]);
                 if (!speck && tex == null) speck = true;
                 // Two uniform draws averaged lean the offset toward the wake's centre line; the power leans pieces
-                // toward the body, so the wake is densest where it leaves the Somnolith.
+                // toward the body, so the wake is densest where it leaves the Manalith.
                 float across = (float)(rnd.NextDouble() + rnd.NextDouble() - 1.0);
                 var piece = new Debris
                 {
-                    El = speck ? Dot(PickColor(d.SpeckColors, rnd, SomnolithBlue)) : Layer(tex),
+                    El = speck ? Dot(PickColor(d.SpeckColors, rnd, ManalithBlue)) : Layer(tex),
                     U0 = Mathf.Pow((float)rnd.NextDouble(), 1.6f),
                     Across = across,
                     Jitter = 0.6f + 0.6f * (float)rnd.NextDouble(),
@@ -294,7 +294,7 @@ namespace GridGame.App
             {
                 var m = new Mote
                 {
-                    El = Dot(PickColor(rain.Colors, rnd, SomnolithBlue)),
+                    El = Dot(PickColor(rain.Colors, rnd, ManalithBlue)),
                     X0 = (float)rnd.NextDouble(),
                     Phase = (float)rnd.NextDouble(),
                     Speed = (0.8f + 0.4f * (float)rnd.NextDouble()) / Mathf.Max(1f, rain.FallSeconds),
@@ -336,7 +336,7 @@ namespace GridGame.App
                 sh.El.style.width = sw; sh.El.style.height = sw * sh.Aspect;
                 sh.El.style.left = Space.S0; sh.El.style.top = sh.Y * skyBottom - sw * sh.Aspect / 2f;
             }
-            // The wake leaves the Somnolith's centre along Angle; each piece is sized once at its largest and scaled in Tick.
+            // The wake leaves the Manalith's centre along Angle; each piece is sized once at its largest and scaled in Tick.
             somX = region.X * w; somY = region.Y * skyBottom; somR = region.Size * refW / 2f;
             if (wake != null)
             {
@@ -424,7 +424,7 @@ namespace GridGame.App
         /// <summary>The most a depth-1 layer can move, as a share of the width (the plates are enlarged to hide edges).</summary>
         private float MaxShift() => def.Parallax.Amplitude + def.Parallax.TiltAmplitude;
 
-        /// <summary>The wake follows the Somnolith (its sway and bob); each piece drifts from the body to the far end and
+        /// <summary>The wake follows the Manalith (its sway and bob); each piece drifts from the body to the far end and
         /// starts again near the body, shrinking and fading as it goes. Reduce Motion holds every piece where it began.</summary>
         private void TickWake(float t, float followX, float followY)
         {

@@ -177,8 +177,9 @@ namespace GridGame.Core.Battle
                     if (!c.InHeroPincer) return;
                     var kind = pf.ChainIndex > 0 ? ComboKind.ChainLink : ComboKind.Pincer;
                     string label = pf.ChainIndex > 0 ? "Chain " + (pf.ChainIndex + 1) : "Pincer";
-                    EmitCombo(c.Credit(S.UnitById(pf.Attacker1), kind, pf.ChainIndex.ToString(), label));
-                    EmitCombo(c.Credit(S.UnitById(pf.Attacker2), kind, pf.ChainIndex.ToString(), label));
+                    // GG-T867: an afterimage end is its Speedster's, credited apart from the Speedster's own end.
+                    EmitCombo(c.Credit(S.UnitById(pf.Attacker1), kind, pf.ChainIndex + (pf.Afterimage1 ? ":afterimage" : ""), pf.Afterimage1 ? "Afterimage" : label));
+                    EmitCombo(c.Credit(S.UnitById(pf.Attacker2), kind, pf.ChainIndex + (pf.Afterimage2 ? ":afterimage" : ""), pf.Afterimage2 ? "Afterimage" : label));
                     break;
                 case PincerPhaseEvent ph:
                     c.Phase = ph.End ? (PincerPhase?)null : ph.Phase;

@@ -76,7 +76,7 @@ namespace GridGame.App
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent || events[i] is PincerFormedEvent || events[i] is AttackEvent) hitAbility = null;
                 else if (events[i] is AbilityResolvedEvent rae) hitAbility = rae.AbilityId;
                 // GG-T836: a new action's pincers start at normal tempo; a pincer picks its beat tempo before its cut-in.
-                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) ResetPincerBeats();
+                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) { ResetPincerBeats(); ResetRampage(); }
                 else if (events[i] is PincerFormedEvent pfe) BeginPincerBeats(pfe);
                 // GG-T839: a foe's action plays as beats: its intent as its turn starts (TurnAnim), the wind-up before the act.
                 IEnumerator windUp = null;
@@ -95,10 +95,11 @@ namespace GridGame.App
                 // GG-T228: a unit token may sit on a pickup token only while the step that shoves the pickup is still
                 // playing out (a snake's segments follow before its head's pickup goes behind the tail, a 2×2's lanes
                 // shove in turn), so the unit-on-pickup check waits until no move beat is next.
-                bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent));
+                bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent || events[i + 1] is VaultedEvent));
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
             ResetPincerBeats(); // GG-T836: battle speed is the setting's again
+            ResetRampage(); // GG-T898: no raging run outlives its playback
             EndEnemyBeats(); // GG-T839: the board draws the state's own traps and hazards again
             board.Lines.ClearLines();
             PruneGhosts();
@@ -159,9 +160,13 @@ namespace GridGame.App
                     App.Audio.Sfx("battle.cast");
                     return Tween.Wait(Timing.Standard);
 
+                case SteppedEvent s when s.UnitId == rampageUnit && rampageStepsLeft > 0: return RampageStep(s); // GG-T898: the raging dash
+                case RampagedEvent rp: return RampageAnim(rp); // GG-T898: the steam-train whistle
                 case SteppedEvent s: return StepAnim(s.UnitId, s.To, 0.16f, "battle.move");
                 case DisplacedEvent d: return StepAnim(d.UnitId, d.To, 0.14f, "battle.slide");
                 case TeleportedEvent t: return TeleportAnim(t);
+                case VaultedEvent vt: return VaultAnim(vt); // GG-T868: the Lancer's Pole Vault arc
+                case SubstitutedEvent sb: return SubstitutionAnim(sb); // GG-T862: the White Ninja's log and smoke
 
                 case PincerFormedEvent p: FlushTallies(); return PincerAnim(p);
                 case PincerPhaseEvent pph: return PincerPhaseAnim(pph); // GG-T836
@@ -201,7 +206,7 @@ namespace GridGame.App
 
                 case CastQueuedEvent cq: return CastQueuedAnim(cq);
                 case CastStaggeredEvent cs: return StaggerAnim(cs);
-                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", 0.35f);
+                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" || cc.Reason == "rooted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : cc.Reason == "rooted" ? "Snared!" : "Fizzled", 0.35f); // GG-T881: roots snap a Line charge
                 case ClutchEvent cl: return ClutchAnim(cl);
                 case AbilityResolvedEvent ar: FlushTallies(); return AbilityAnim(ar);
                 case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); return null;
@@ -213,9 +218,13 @@ namespace GridGame.App
                 case PickupCollectedEvent pc: return PickupCollectAnim(pc);
                 case PickupExpiredEvent pe: return PickupExpiredAnim(pe);
 
+                case BuffAppliedEvent ba when ba.BuffId == "raging": return RageAnim(ba); // GG-T898: steam from the ears, RAGE
                 case BuffAppliedEvent ba: return InflictAnim(ba);
                 case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, CombatTextKind.Weak, "Steam!", 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
+                case AnnounceEvent an when an.Text == "Blocked!": wallBlocked = true; return null; // GG-T935: shown on the wall by its hit
+                case AnnounceEvent an when an.Text == TooHeavyText: return TooHeavyAnim(an.UnitId, null); // GG-T892: a fizzled shove, pull or swap
+                case StepBlockedEvent sbh when sbh.Reason == "heavy": return TooHeavyAnim(-1, sbh.At); // GG-T892: a bot's drag step refused
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
@@ -223,6 +232,8 @@ namespace GridGame.App
                 case LinkEchoEvent le: return LinkEchoAnim(le);
                 case MagnetizedEvent mz: return MagnetizedAnim(mz); // GG-T878: Magnetize's arcs and hum
                 case DebuffsRedirectedEvent dr: return RedirectAnim(dr); // GG-T887: Redirect Flow's chi stream
+                case AfterimageLeftEvent al: return AfterimageLeftAnim(al); // GG-T867: the Speedster's dash and its afterimage
+                case AfterimageFadedEvent af: return AfterimageFadedAnim(af);
                 case BoonStolenEvent bs: return SwipeAnim(bs); // GG-T866: Swipe Boon's snatch
                 case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, CombatTextKind.Debuff, "Snare!", 0.3f);
                 case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, CombatTextKind.Debuff, "Trap!", 0.25f);
@@ -230,12 +241,16 @@ namespace GridGame.App
                 case RegionRuleEvent rgr: return RegionRuleAnim(rgr); // GG-T359
                 case RegionTilesEvent rgt: return RegionTilesAnim(rgt);
                 case TileRevealedEvent trv: return TileRevealedAnim(trv); // GG-T843
+                case TileSabotagedEvent tsb: return SabotageAnim(tsb); // GG-T948: the tech gremlin turns a gadget
                 case SquishedEvent sqe: return SquishedAnim(sqe); // GG-T846
+                case RuneCircleEvent rce: return RuneCircleAnim(rce); // GG-T939: the Choir's circle closes
+                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861: Smoke Vanish's puff, callout and reappear flash
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);
                 case HazardRetimedEvent hzr: return HazardRetimedAnim(hzr);
                 case HazardLandedEvent hzl: return HazardLandedAnim(hzl);
+                case BrokeThroughEvent btk: return BrokeThroughAnim(btk); // GG-T869
                 case HazardMovedEvent hzm: HazardMoved(hzm); return null; // GG-T874: a Time Bomb rides its carrier
                 case FellEvent fel: return FellAnim(fel); // GG-T368
                 case WeaponWornEvent _: return null;
@@ -817,7 +832,8 @@ namespace GridGame.App
             var src = State.UnitById(d.SourceId);
             string cue = d.SourceId < 0 ? "status.debuff" : crit ? "battle.crit" : style.Cue;
             if (cue == "battle.hit") cue = AttackHitCue(src, d.Note);
-            App.Audio.Sfx(cue);
+            var burn = d.Amount > 0 ? FireTileBurn(d, v.Tile) : null; // GG-T933: scorched by a firewall
+            if (burn != null) FireCrackle(0.9f); else App.Audio.Sfx(cue);
             Feed($"{(d.SourceId < 0 ? "☠" : "†")} {(src != null ? src.Name + " → " : "")}{t.Name}: {d.Amount}{(crit ? " CRIT" : "")}{(d.Note != null ? " (" + d.Note + ")" : "")}", t.IsHero ? new Color(1f, 0.65f, 0.6f) : Palette.White.WithA(0.9f));
             // Anticipation (POL-E6): the target braces for a beat before the hit lands.
             if (!ReduceMotion) yield return Tween.Run(Timing.Instant, k => v.Root.style.scale = new Scale(Vector2.one * (1f - 0.06f * Ease.Out(k))));
@@ -830,7 +846,7 @@ namespace GridGame.App
             // GG-T495: an elemental hit names its element under Colorblind palette, since its burst says it only in colour.
             if (Colorblind && d.Note != "Armored!" && d.Type != DamageType.Physical) text += " " + d.Type;
             var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
-            if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note);
+            if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note, d.Effectiveness, d.Overkill);
             else
             {
                 // GG-T826: the hit's kind (armored, damage-over-time tick, killing blow, crit, plain hit) picks its
@@ -839,17 +855,26 @@ namespace GridGame.App
                     : d.HpAfter <= 0 ? CombatTextKind.Overkill : crit ? CombatTextKind.Crit : CombatTextKind.Damage;
                 // GG-T830: a damage-over-time tick names its status: small, its pip glyph and its colour.
                 var dot = kind == CombatTextKind.StatusTick && d.Note != null ? t.Buffs.Find(b => b.Def.Name == d.Note)?.Def : null;
-                if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
-                else Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Damage || kind == CombatTextKind.Immune ? color : (Color?)null);
+                // GG-T933: a firewall's burn ticks with the mark's own glyph and colour.
+                if (burn != null && kind == CombatTextKind.StatusTick)
+                    Text.Tick(at, string.IsNullOrEmpty(burn.Glyph) ? "♨" : burn.Glyph, text, Art.HexColor(burn.Color, Palette.Bad), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
+                else if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
+                else if (kind == CombatTextKind.Immune || kind == CombatTextKind.StatusTick)
+                    Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Immune ? color : (Color?)null);
+                // GG-T827: a hit's number reads by its share of max HP in four sizes (chip, solid, heavy, massive), tagged
+                // WEAK / RESIST / IMMUNE by the target's elemental multiplier, with OVERKILL over a kill that overshot.
+                else Text.Damage(at, kind, text, d.Amount, t.MaxHp, d.Effectiveness, d.Overkill, kind == CombatTextKind.Damage ? color : (Color?)null);
             }
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
             v.Art.style.unityBackgroundImageTintColor = new Color(1f, 0.55f, 0.55f);
             App.StartCoroutine(Tween.Shake(v.Root, (crit ? Impact.CritTileShake : Impact.HitTileShake) * Fx, crit ? Timing.Standard : Timing.Quick));
+            if (crit) App.StartCoroutine(Tween.Shake(shake, Impact.CritIconShake * Fx, Timing.Quick)); // GG-T827: a crit jolts the screen
             if (crit) ShakeTurnIcon(t.Id); // GG-T668: a crit jolts the target's timeline icon too
             if (tier.Shake > 0f) App.StartCoroutine(Tween.Shake(shake, tier.Shake * Fx, Timing.Standard));
             // Impact: the hit-stop holds the frame, longer for heavier tiers (POL-E5/E6); Reduce Motion skips it.
-            yield return Tween.Wait(Timing.Instant + (ReduceMotion ? 0f : tier.HitStop));
+            // GG-T827: a crit slams: it holds the frame a beat longer than its tier alone would.
+            yield return Tween.Wait(Timing.Instant + (ReduceMotion ? 0f : tier.HitStop + (crit ? CombatText.CritHitStop : 0f)));
             // Follow-through: the target recoils back past rest and settles.
             if (!ReduceMotion) App.StartCoroutine(Tween.Run(Timing.Quick, k => v.Root.style.scale = new Scale(Vector2.one * Mathf.LerpUnclamped(0.94f, 1f, Ease.Back(k)))));
             v.Art.style.unityBackgroundImageTintColor = Palette.White;
@@ -1198,12 +1223,16 @@ namespace GridGame.App
 
         // ── Damage tally (owner direction 2026-10-10): hits within a pincer stack up, then explode into the total ──
 
-        private sealed class Tally { public Label El; public List<string> Terms = new List<string>(); public int Total; public bool Crit; public Vector2 At; public int UnitId; }
+        private sealed class Tally
+        {
+            public Label El; public List<string> Terms = new List<string>(); public int Total; public bool Crit; public Vector2 At; public int UnitId;
+            public HitEffectiveness Effect; public int Overkill; // GG-T827: the burst carries the hits' elemental read and overshoot
+        }
         private readonly Dictionary<int, Tally> tallies = new Dictionary<int, Tally>();
         private bool tallying, ampTally;
         public int TalliesBurst { get; private set; }
 
-        private void AddToTally(Unit t, Vector2 at, int amount, bool crit, string note)
+        private void AddToTally(Unit t, Vector2 at, int amount, bool crit, string note, HitEffectiveness effect = HitEffectiveness.Normal, int overkill = 0)
         {
             if (!tallies.TryGetValue(t.Id, out var tl))
             {
@@ -1214,7 +1243,8 @@ namespace GridGame.App
             }
             tl.Terms.Add(crit ? amount + "!" : amount.ToString());
             if (ampTally && tl.Terms.Count == 1) tl.Terms.Add("AMP");
-            tl.Total += amount; tl.Crit |= crit;
+            tl.Total += amount; tl.Crit |= crit; tl.Overkill += overkill;
+            if (tl.Effect == HitEffectiveness.Normal) tl.Effect = effect;
             // Each hit lands on its own line below the last, stacking downward like a fighting-game combo list.
             tl.El.text = string.Join("\n+ ", tl.Terms).Replace("+ AMP", "×AMP");
             tl.El.style.color = tl.Crit ? Palette.Gold : Palette.White;
@@ -1242,7 +1272,9 @@ namespace GridGame.App
             TalliesBurst++;
             yield return Tween.Run(Timing.Quick, k => { tl.El.style.scale = new Scale(Vector2.one * (1f - 0.5f * k)); tl.El.style.opacity = 1f - 0.6f * k; });
             tl.El.RemoveFromHierarchy();
-            var total = board.Float(tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.At, tl.Crit ? new Color(1f, 0.85f, 0.2f) : new Color(1f, 0.95f, 0.8f), TypeScale.Base);
+            // GG-T827: the total bursts in the damage style: sized by its share of the target's max HP, tagged, OVERKILL on a spill.
+            int maxHp = State.UnitById(tl.UnitId)?.MaxHp ?? 0;
+            var total = Text.Damage(tl.At, tl.Crit ? CombatTextKind.Crit : CombatTextKind.Combo, tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.Total, maxHp, tl.Effect, tl.Overkill);
             total.name = "tally-total";
             App.Audio.Sfx("battle.crit", 0.7f, 0.9f);
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Quick));
@@ -1251,7 +1283,6 @@ namespace GridGame.App
                 if (board.Units.TryGetValue(tl.UnitId, out var tv)) App.StartCoroutine(Tween.Shake(tv.Root, Impact.CritTileShake * Fx, Timing.Standard));
                 ShakeTurnIcon(tl.UnitId);
             }
-            yield return StrikeIn(total, tl.Crit);
         }
 
         /// <summary>GG-T668: a damage number strikes. It starts big above the target, falls onto it accelerating like a
@@ -1948,8 +1979,11 @@ namespace GridGame.App
             pendingItemUser = -1; pendingItemId = null;
             if (itemUse && caster != null && a != null)
                 yield return ItemVfx(caster, targets, a, itemId);
+            else if (caster != null && FloatSpell.Is(a)) yield return FloatVfx(ar); // GG-T872: the updraft and the lift, then Floating
             else if (caster != null && GravityWell.Is(a)) yield return GravityWellVfx(ar); // GG-T883: the vortex, then the pull's slides
+            else if (caster != null && AnchorStance.Is(State, a)) yield return AnchorStanceVfx(caster); // GG-T882: the planted shield and its brace lines
             else if (EmpPulse.Is(a)) yield return EmpPulseVfx(ar); // GG-T879: the static ring, before the jams and the mines
+            else if (caster != null && Intimidate.Is(App.Content, a)) yield return IntimidateVfx(caster, ar); // GG-T884: the roar's shockwaves, then each Frightened
             else if (caster != null && a != null && a.Kind == AbilityKind.Spell && targets.Count > 0)
             {
                 yield return SpellVfx(caster, targets, a, c);
@@ -1977,7 +2011,10 @@ namespace GridGame.App
                 board.Lines.ClearLines();
                 foreach (var t in targets) NamedImpactFlourish(a.ImpactVfx, ViewCenter(t), abilityStyle);
             }
+            else if (caster != null && WallRaisedBy(a) != null) yield return BarricadeDropAnim(ar.Anchor); // GG-T935
+            else if (caster != null && a != null && OilFlask.Kindling(App.Content, a) is var oil && oil != null) yield return OilFlaskAnim(caster, oil.Value.State, ar); // GG-T886
             else if (caster != null && GlobPainted(a) is TileStateDef glob) yield return GlobLobAnim(caster, glob, ar.Anchor); // GG-T895
+            else if (caster != null && FissurePainted(a) is TileStateDef crack) yield return FissureAnim(caster, a, crack, ar.Anchor); // GG-T869
             else if (caster != null && a != null && targets.Count == 0 && FlareRadius(a) >= 0)
                 yield return FlareShotVfx(caster, a, ar.Anchor, FlareRadius(a), abilityStyle); // GG-T888
             else yield return Tween.Wait(Timing.Quick);
@@ -2292,6 +2329,7 @@ namespace GridGame.App
         private IEnumerator TriggeredAnim(TriggeredEvent tr)
         {
             RefreshUnit(tr.UnitId);
+            if (tr.Effect == TriggerEffectKind.Substitute) return null; // GG-T862: SubstitutionAnim calls it out over the log
             string sfx = tr.Effect == TriggerEffectKind.Counterstrike || tr.Effect == TriggerEffectKind.Reflect ? "battle.clang"
                 : tr.Effect == TriggerEffectKind.CastAbility ? "battle.warcry" : "battle.powerup";
             App.Audio.Sfx(sfx, tr.Kind == AbilityKind.Reactive ? 0.8f : 0.5f);
@@ -2326,24 +2364,50 @@ namespace GridGame.App
 
         /// <summary>GG-T828: floats a combat text over a unit (the board centre when it has no view) and waits
         /// <paramref name="hold"/>. The kind's style token picks the face, colour, motion and size; <paramref name="magnitude"/>
-        /// (0..1) only says how big the moment is. Every Playback float comes through here.</summary>
-        private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f)
+        /// (0..1) only says how big the moment is; <paramref name="tint"/> recolours it for a mechanic with its own colour
+        /// (tame, wanderer, rule breaker, bounty). Every BattleScreen unit float comes through here: no call passes a size
+        /// (GG-T829, POL-A1 in tools/polish_lint.py).</summary>
+        /// <summary>GG-T892: the callout Core announces when a Heavy unit won't be shoved, pulled or swapped (GG-T891).</summary>
+        private const string TooHeavyText = "Too heavy!";
+        /// <summary>GG-T892: the "Too heavy!" callout's iron grey.</summary>
+        private static readonly Color HeavyTint = new Color(0.72f, 0.76f, 0.84f);
+
+        /// <summary>
+        /// GG-T892 (§1.1.3, §14.2): a Heavy unit refuses to move - a fizzled knockback, pull or swap (its unit id) or a drag
+        /// step into it (its tile): a low thud, a short shake of its token and a pop of its weight badge, and "Too heavy!"
+        /// over it as a CombatText callout (not a banner). Reduce Motion keeps the sound and the callout.
+        /// </summary>
+        private IEnumerator TooHeavyAnim(int unitId, Coord? at)
         {
-            Text.Show(FloatAt(unitId), kind, text, magnitude);
+            UnitView v = null;
+            if (unitId >= 0) board.Units.TryGetValue(unitId, out v);
+            else if (at.HasValue && State.UnitAt(at.Value) is Unit occ) board.Units.TryGetValue(occ.Id, out v);
+            HeavyThud(v, at ?? v?.Tile);
+            yield return Tween.Wait(Timing.Standard);
+        }
+
+        /// <summary>GG-T892: the thud, shake, badge pop and "Too heavy!" callout of a Heavy unit that wouldn't budge (the drag
+        /// plays it live, playback for a shove, pull, swap or a bot's step).</summary>
+        private void HeavyThud(UnitView v, Coord? tile)
+        {
+            App.Audio.Sfx("battle.clang", 0.55f, 0.45f);
+            App.Audio.Sfx("battle.hit", 0.7f, 0.5f);
+            var at = v != null && !v.Dead ? BoardView.CenterOf(v.Tile, v.W, v.H) : tile.HasValue ? BoardView.CenterOf(tile.Value) : (Vector2?)null;
+            if (at.HasValue) Text?.Show(at.Value, CombatTextKind.Callout, TooHeavyText, 0.3f, HeavyTint);
+            if (v == null || v.Dead || ReduceMotion) return;
+            App.StartCoroutine(Tween.Shake(v.Root, 5f * Fx, Timing.Quick));
+            if (v.HeavyBadge != null) App.StartCoroutine(Tween.Pop(v.HeavyBadge, 1.35f, Timing.Standard));
+        }
+
+        private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f, Color? tint = null)
+        {
+            Text.Show(FloatAt(unitId), kind, text, magnitude, tint);
             yield return Tween.Wait(hold);
         }
 
         /// <summary>Where a unit's float sits: its view's centre, else the board centre.</summary>
         private Vector2 FloatAt(int unitId) =>
             State.UnitById(unitId) != null && board.Units.TryGetValue(unitId, out var v) ? BoardView.CenterOf(v.Tile, v.W, v.H) : new Vector2(BoardView.Tile * 3, BoardView.Tile * 4);
-
-        /// <summary>The older call shape, still used by the other BattleScreen partials: a size (70+ reads as a Callout,
-        /// anything else as Support) and a tint. <paramref name="size"/> only sets the magnitude: the kind's style sizes the text.</summary>
-        private IEnumerator FloatText(int unitId, string text, Color c, float hold, float size = 60, CombatTextKind? kind = null)
-        {
-            Text.Show(FloatAt(unitId), kind ?? (size >= 70 ? CombatTextKind.Callout : CombatTextKind.Support), text, Mathf.Clamp01((size - 60f) / 30f), c);
-            yield return Tween.Wait(hold);
-        }
 
         /// <summary>A status's pip glyph (its Letter, else its name's first letter), as its pip on the unit shows it.</summary>
         private static string StatusGlyph(BuffDef def) => string.IsNullOrEmpty(def.Letter) ? def.Name.Substring(0, 1) : def.Letter;

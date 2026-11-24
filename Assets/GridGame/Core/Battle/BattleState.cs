@@ -111,8 +111,17 @@ namespace GridGame.Core.Battle
         public Dictionary<string, List<string>> BrokenWeapons = new Dictionary<string, List<string>>();
         /// <summary>Hero class → armor item ids that broke during this battle (GG-T41).</summary>
         public Dictionary<string, List<string>> BrokenArmors = new Dictionary<string, List<string>>();
+        /// <summary>Every accepted command, Guards included. Under AnyHeroEveryTurn each one is a whole party turn; under
+        /// PartyWindow several heroes act in one turn, so this is not a turn count (see <see cref="PartyTurns"/>).</summary>
         public int ActionsTaken;
         public int TicksElapsed;
+        /// <summary>GG-T944 (§2.13.1): party-turn boundaries passed (an enemy arrival or a cleared wave), bumped beside
+        /// <c>TurnRules.ResetTurn</c>, and <see cref="ActionsTaken"/> as it stood at the last one. Pure counters: no rule reads them.</summary>
+        public int TurnsEnded;
+        public int ActionsAtTurnEnd;
+        /// <summary>Party turns the battle took: every boundary passed, plus the turn it ended in when an action was taken
+        /// after the last boundary (a winning action ends the battle before any boundary fires).</summary>
+        public int PartyTurns => TurnsEnded + (ActionsTaken > ActionsAtTurnEnd ? 1 : 0);
         /// <summary>Banked gold paid out mid-battle (a recruitable's PayGold, GG-T132): the meta layer deducts it whatever the outcome.</summary>
         public int CoinsSpent;
         /// <summary>§1.2.8 (GG-T849): the best combo this battle (display and stats only).</summary>
@@ -141,6 +150,7 @@ namespace GridGame.Core.Battle
             return new BattleResults
             {
                 Coins = Coins, Xp = Xp, ActionsTaken = ActionsTaken, TicksElapsed = TicksElapsed, CoinsSpent = CoinsSpent,
+                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd,
                 BestComboRank = BestComboRank, BestComboScore = BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
                 ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),
@@ -330,6 +340,16 @@ namespace GridGame.Core.Battle
         /// <summary>The collider check: on the board, not a physical block and not a blocking region tile (GG-T359). Every
         /// enter/land/displace/spawn goes through it.</summary>
         public bool Walkable(Coord c) => InBounds(c) && !Blocks.Contains(c) && !Region.BlocksAt(c);
+
+        /// <summary><see cref="Walkable"/> for <paramref name="u"/>: a one-tile Floating unit (GG-T859) may also hover over an
+        /// open hole (a <see cref="TileStateDef.Pit"/> mark) - it passes over it and never falls while it floats.</summary>
+        public bool WalkableFor(Coord c, Unit u)
+        {
+            if (Walkable(c)) return true;
+            if (u == null || !u.IsFloating || u.IsMultiTile || !InBounds(c) || Blocks.Contains(c)) return false;
+            var m = Region.At(c);
+            return m != null && (Content?.TryTileState(m.State)?.Pit ?? false);
+        }
 
         public IEnumerable<Unit> Living(Team team)
         {
