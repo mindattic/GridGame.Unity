@@ -89,7 +89,7 @@ namespace GridGame.Tests
                         var save = Progression.NewGame(c, "Soak", party);
                         int level = Math.Max(1, Progression.StageRecommendedLevel(c, save, stage));
                         foreach (var h in save.Roster) h.TotalXp = Formulas.TotalXpForLevel(level);
-                        var s = BattleEngine.Create(c, BattleFactory.Build(c, save, stage.Id, seed, difficulty), new List<BattleEvent>());
+                        var s = BattleEngine.Create(c, BattleFactory.Build(c, save, stage.Id, seed, difficulty, TestKit.SoakTurnMode), new List<BattleEvent>());
                         var bot = botName == "skilled" ? new HeroBot(seed) { SkillLevel = skilledLevel, ThinkSeconds = skilledThink }
                             : new HeroBot(seed, botName == "casual" ? 0.5f : 0f);
                         Play(s, bot, t);
