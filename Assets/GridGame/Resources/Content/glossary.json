@@ -879,6 +879,10 @@
     "Term": "Party window"
   },
   {
+    "Id": "turn_mode_any_hero_every_turn",
+    "Term": "Any hero every turn"
+  },
+  {
     "Id": "rooted",
     "Term": "Rooted",
     "Aliases": ["Root", "Roots"],

@@ -62,7 +62,7 @@ namespace GridGame.App
                 {
                     bool acted = TurnRules.HasActed(State, unit); // §2.13: the turn mode says who has acted
                     if (!acted && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
-                    ShowBanner(acted ? $"{unit.Name} has acted this turn" : $"{unit.Name} can't move");
+                    ShowBanner(acted ? (TurnRules.OneHeroPerTurn(State) ? "The party has acted this turn" : $"{unit.Name} has acted this turn") : $"{unit.Name} can't move"); // GG-T787
                     return;
                 }
                 pressing = true;
@@ -261,6 +261,7 @@ namespace GridGame.App
             SyncGuardCall();
             if (State.IsOver) return;
             if (BattleEngine.TooLittleTime(State)) { TooLittleTimeCue(); return; } // GG-T311: the gap fits no action
+            if (TurnRules.OneHeroPerTurn(State)) { AnyHeroTurn(); return; } // GG-T787 (§2.13.1): every control return is a new one-action turn
             if (newWindow) return;
             var left = BattleEngine.HeroesLeftToAct(State);
             if (left.Count == 0) return;
@@ -273,6 +274,19 @@ namespace GridGame.App
         }
 
         /// <summary>
+        /// GG-T787 (§2.13.1): a party turn of one action by any hero. The selection stays on the hero who acted last (the
+        /// same hero may go again), unless it fell or can't act; the banner says so with the seconds the gap runs.
+        /// </summary>
+        private void AnyHeroTurn()
+        {
+            var left = BattleEngine.HeroesLeftToAct(State);
+            if (left.Count == 0) return;
+            if (!left.Exists(h => h.Id == SelectedHeroId)) SelectHero(left[0].Id);
+            float w = BattleEngine.TurnTicks(State) / (float)BattleConfig.TicksPerSecond;
+            ShowBanner(w > 0f ? $"Move any hero · {w:0.0}s left" : "Move any hero");
+        }
+
+        /// <summary>
         /// GG-T311 (§2.0): the gap until the next enemy reaches the left is shorter than any hero's action (a minimum drag,
         /// a skill's use time) — say so plainly with the gap's seconds; GUARD is the lit choice (<see cref="SyncGuardCall"/>).
         /// </summary>
@@ -280,7 +294,8 @@ namespace GridGame.App
         {
             float gap = BattleEngine.TurnTicks(State) / (float)BattleConfig.TicksPerSecond;
             string rally = State.Rally > 0 ? $" · Rally {State.Rally}: foes slowed" : "";
-            ShowBanner($"Too little time — Guard ({gap:0.0}s gap, a move needs {BattleEngine.MinDragSeconds:0.0#}s){rally}");
+            string anyone = TurnRules.OneHeroPerTurn(State) ? " for any hero" : ""; // GG-T787: the one action fits nobody
+            ShowBanner($"Too little time{anyone} — Guard ({gap:0.0}s gap, a move needs {BattleEngine.MinDragSeconds:0.0#}s){rally}");
             App.Audio.Sfx("ui.error", 0.5f);
             SyncGuardCall();
         }

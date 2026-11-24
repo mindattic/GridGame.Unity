@@ -110,6 +110,16 @@ namespace GridGame.Core.Battle
             return !OneActionPerTurn(s) && !HasActed(s, ally);
         }
 
+        /// <summary>GG-T787 (the battle view): is the party's turn one action by any one hero? PartyWindow: no — each
+        /// hero wears a ✓ once it has acted and the banner names who is still to act. AnyHeroEveryTurn: yes — no ✓ marks
+        /// (the turn is one action, not one per hero), the banner reads "Move any hero" with the seconds left, the gap
+        /// lane and Guard call speak of that one action, and the selection stays on the hero who acted last.</summary>
+        public static bool OneHeroPerTurn(BattleState s)
+        {
+            Require(s);
+            return OneActionPerTurn(s);
+        }
+
         // ── 2. Whether an action ends the party's turn ─────────────────────────────────────────────
 
         /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window;
