@@ -145,6 +145,7 @@ namespace GridGame.Core.Battle
                     S.Region.HookCounts[key] = ++n;
                     if (n % Math.Max(1, h.Every) != 0) continue;
                     if (h.Chance < 1f && !S.Rng.Chance(h.Chance)) continue;
+                    if (mark != null) RevealMark(where.Value, mark, "triggered"); // GG-T843: a hidden mine that goes off shows
                     RunRuleEffects(h.Effects, new RuleCtx
                     {
                         Rule = rule.Id, State = h.State, Subject = subject, At = where,
@@ -239,6 +240,7 @@ namespace GridGame.Core.Battle
                 case RuleEffectKind.MarkTiles: MarkTiles(e, ctx); break;
                 case RuleEffectKind.ClearTiles: ClearTiles(e, ctx); break;
                 case RuleEffectKind.ModifyTiles: ModifyTiles(e, ctx); break;
+                case RuleEffectKind.RevealTiles: RevealTiles(e, ctx); break; // GG-T843
                 case RuleEffectKind.Damage:
                     hazardDamageDepth++; // GG-T571: region danger, for a HazardKill
                     foreach (var u in RuleUnitsOf(e, ctx)) if (u.Alive) Damage(u, e.Amount, null, HitKind.Normal, e.DamageType, RuleLabel(ctx));
@@ -303,6 +305,7 @@ namespace GridGame.Core.Battle
                 var had = S.Region.At(c);
                 if (had != null && !StateMatches(had, def.Id))
                 {
+                    if (def.Element != null) RevealMark(c, had, "element"); // GG-T843: an element's hit shows a hidden mark
                     var react = ElementReaction(def, had);
                     if (react != null) { (reactions ??= new List<(Coord, TileMark, TileReactionDef)>()).Add((c, had, react)); continue; }
                     if (e.KeepMarks) continue;
@@ -590,10 +593,59 @@ namespace GridGame.Core.Battle
         {
             State = def.Id, Rule = rule, Counter = counter, Blocks = def.Blocks, Hazard = def.Hazard, OwnerTeam = owner, OwnerId = ownerId,
             LifeTicks = def.LifeSeconds > 0f ? Math.Max(1, (int)Math.Round(def.LifeSeconds * BattleConfig.TicksPerSecond)) : 0,
+            SightTicks = def.VisibleSeconds > 0f ? Math.Max(1, (int)Math.Round(def.VisibleSeconds * BattleConfig.TicksPerSecond)) : 0, // GG-T843
         };
 
         private bool StateMatches(TileMark m, string state) =>
             m != null && (state == null || string.Equals(m.State, state, StringComparison.OrdinalIgnoreCase));
+
+        // ── Hidden marks (GG-T843, §14.23) ───────────────────────────────────────────────────────
+
+        /// <summary>The clock counts down each fresh mark's <see cref="TileMark.SightTicks"/>; at 0 it hides from all but its
+        /// painter's side (a "hidden" RegionTilesEvent per state, row-major). No Rng: replays hide the same marks on the same tick.</summary>
+        private void TickTileSight()
+        {
+            List<Coord> hid = null;
+            foreach (var kv in S.Region.Tiles)
+            {
+                var m = kv.Value;
+                if (m.SightTicks <= 0 || --m.SightTicks > 0) continue;
+                m.Hidden = true;
+                (hid ??= new List<Coord>()).Add(kv.Key);
+            }
+            if (hid == null) return;
+            hid.Sort((a, b) => a.Y != b.Y ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X));
+            var byState = new Dictionary<string, RegionTilesEvent>();
+            var order = new List<RegionTilesEvent>();
+            foreach (var c in hid)
+            {
+                var m = S.Region.Tiles[c];
+                if (!byState.TryGetValue(m.State, out var ev0)) { byState[m.State] = ev0 = new RegionTilesEvent { RuleId = m.Rule, State = m.State, Change = "hidden" }; order.Add(ev0); }
+                ev0.Tiles.Add(c);
+            }
+            foreach (var x in order) Emit(x);
+        }
+
+        /// <summary>Mark <paramref name="m"/> on <paramref name="c"/> is known to everyone from now on: a hidden one shows again
+        /// (a <see cref="TileRevealedEvent"/>), and one still in its seen-by-all window never hides.</summary>
+        private void RevealMark(Coord c, TileMark m, string cause)
+        {
+            if (m == null) return;
+            m.SightTicks = 0;
+            if (!m.Hidden) return;
+            m.Hidden = false;
+            Emit(new TileRevealedEvent { At = c, State = m.State, RuleId = m.Rule, OwnerTeam = m.OwnerTeam, OwnerId = m.OwnerId, Cause = cause });
+        }
+
+        /// <summary>RevealTiles: the area's hidden marks (only e.State when set) show to everyone for good.</summary>
+        private void RevealTiles(RuleEffectDef e, RuleCtx ctx)
+        {
+            foreach (var c in AreaOf(e, ctx))
+            {
+                var m = S.Region.At(c);
+                if (m != null && m.Hidden && StateMatches(m, e.State)) RevealMark(c, m, "revealed");
+            }
+        }
 
         private void ClearTiles(RuleEffectDef e, RuleCtx ctx)
         {

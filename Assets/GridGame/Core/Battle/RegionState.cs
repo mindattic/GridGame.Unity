@@ -21,6 +21,12 @@ namespace GridGame.Core.Battle
         public Team OwnerTeam = Team.Neutral;
         /// <summary>The unit that painted it, or -1.</summary>
         public int OwnerId = -1;
+        /// <summary>Clock ticks it is still seen by everyone (GG-T843): its state's VisibleSeconds at paint time, counted
+        /// down by the clock; at 0 it hides (<see cref="Hidden"/>). 0 from the start = never hides.</summary>
+        public int SightTicks;
+        /// <summary>Hidden (GG-T843, §14.23): only its painter's side sees it now (nobody, for a board-painted mark); see
+        /// <see cref="RegionBoard.Sees"/>. A trigger, a RevealTiles effect or an element's hit shows it again for good.</summary>
+        public bool Hidden;
         public TileMark Clone() => (TileMark)MemberwiseClone();
     }
 
@@ -86,6 +92,15 @@ namespace GridGame.Core.Battle
             }
         }
 
+        /// <summary>
+        /// Does <paramref name="viewer"/>'s side know mark <paramref name="m"/> is there (GG-T843, BIBLE §14.23)? Every side
+        /// sees a mark that isn't <see cref="TileMark.Hidden"/>; a hidden one only its painter's side does (a board-painted
+        /// hidden mark: nobody). The bot and the planners read danger only from marks their side sees, so neither side
+        /// cheats; the view draws only what the party sees (the party's own hidden marks faint).
+        /// </summary>
+        public static bool Sees(TileMark m, Team viewer) =>
+            m != null && (!m.Hidden || (m.OwnerTeam != Team.Neutral && m.OwnerTeam == viewer));
+
         /// <summary>Is <paramref name="e"/> a queued rule event whose tiles are dangerous?</summary>
         public static bool IsHazardEntry(BattleState s, TimelineEntry e) =>
             e.Kind == TimelineKind.Hazard && (s.Content?.TryRuleEvent(e.RuleEvent)?.Hazard ?? true);
@@ -95,12 +110,15 @@ namespace GridGame.Core.Battle
         /// counts 1, a telegraphed hazard landing there counts 2 (more the sooner it lands). Immune units read 0, and so
         /// does a unit a team-owned mark doesn't work on (GG-T842: a hero's firewall is danger to foes only, so the enemy
         /// planner steers round it and the hero bot values shoving a foe into it). The bot and the planners steer by it.
+        /// A hidden mark counts only when <paramref name="viewer"/>'s side (default: <paramref name="u"/>'s own) sees it
+        /// (GG-T843: a foe walks onto the party's hidden mine none the wiser; the hero bot still knows it is there).
         /// </summary>
-        public static float DangerAt(BattleState s, Coord c, Unit u)
+        public static float DangerAt(BattleState s, Coord c, Unit u, Team? viewer = null)
         {
             float d = 0f;
             var m = s.Region.At(c);
             if (m != null && !Affects(s, m, u)) m = null;
+            if (m != null && m.Hidden && !Sees(m, viewer ?? u?.Team ?? Team.Neutral)) m = null; // GG-T843: no cheating
             if (m != null && m.Hazard && !Immune(u, m.Rule, m.State)) d += 1f;
             else if (m != null && AboutToGive(s, m) && !Immune(u, m.Rule, m.State)) d += 0.5f; // GG-T368: one more crack and it gives
             foreach (var e in s.Timeline)
@@ -136,9 +154,10 @@ namespace GridGame.Core.Battle
         /// What shoving <paramref name="u"/> up to <paramref name="tiles"/> tiles along <paramref name="dir"/> does with the
         /// floor (GG-T368, for the bot): 1 when it would go into an open hole, 0.5 when it would end on a dangerous tile (a
         /// crumbling floor, a crack about to give, a telegraphed strike), else 0. A <paramref name="stopBeside"/> unit ends
-        /// the shove beside it (a pull stops next to the puller).
+        /// the shove beside it (a pull stops next to the puller). It reads the floor as <paramref name="viewer"/>'s side
+        /// knows it (GG-T843: the hero bot, the default, counts the party's hidden mine; a foe's hidden one it can't see).
         /// </summary>
-        public static float ShoveFloorValue(BattleState s, Unit u, Coord dir, int tiles, Unit stopBeside = null)
+        public static float ShoveFloorValue(BattleState s, Unit u, Coord dir, int tiles, Unit stopBeside = null, Team viewer = Team.Hero)
         {
             if (s.Region.Tiles.Count == 0 && !s.Timeline.Exists(x => x.Kind == TimelineKind.Hazard)) return 0f;
             if (u == null || u.WontBudge || (dir.X == 0 && dir.Y == 0)) return 0f;
@@ -151,7 +170,7 @@ namespace GridGame.Core.Battle
                 if (!s.FreeToEnter(next)) break;
                 c = next;
             }
-            return c != u.Pos && DangerAt(s, c, u) > 0f ? 0.5f : 0f;
+            return c != u.Pos && DangerAt(s, c, u, viewer) > 0f ? 0.5f : 0f;
         }
 
         /// <summary>True when the timeline should mask enemy turn icons (a rule raised <see cref="RuleFlags.MaskTimeline"/>).</summary>

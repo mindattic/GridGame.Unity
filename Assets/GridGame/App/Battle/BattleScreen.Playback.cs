@@ -212,6 +212,7 @@ namespace GridGame.App
                 case TrapClearedEvent tc: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tc.ById, tc.Into == null ? "Cleared!" : "Changed!", Palette.Boss, 0.25f); // GG-T371
                 case RegionRuleEvent rgr: return RegionRuleAnim(rgr); // GG-T359
                 case RegionTilesEvent rgt: return RegionTilesAnim(rgt);
+                case TileRevealedEvent trv: return TileRevealedAnim(trv); // GG-T843
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);

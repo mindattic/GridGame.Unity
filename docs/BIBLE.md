@@ -3217,7 +3217,22 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   tile's EnterTile hooks. Bodies, eggs, remains and units immune to the state or its rule squish nothing. `Validate`
   wants a known `Class`, `LifeSeconds` for an `OnExpire`, `SquishedBy` for an `OnSquish`, and no `SquishedBy` on a
   blocking state.
-- Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles.
+- **Hidden marks (GG-T843).** A buried mine shows for a moment, fades from sight, then pops out and goes off.
+  `TileStateDef.VisibleSeconds` (new; 0 = always seen): a fresh mark is seen by everyone that long
+  (`TileMark.SightTicks`, counted down by the clock before lifetimes), then hides (`TileMark.Hidden`, a "hidden"
+  `RegionTilesEvent`). A hidden mark is seen only by its painter's side (`RegionBoard.Sees(mark, team)`; a
+  board-painted one by nobody); the view draws only what the party sees, the party's own hidden marks faint. It shows
+  again, to everyone, for good (`TileRevealedEvent` with `Cause`) when it triggers ("triggered": one of its
+  state-filtered hooks runs, before its effects), when `RuleEffectKind.RevealTiles` (new; the area, only `State` when
+  set) uncovers it ("revealed"), or when an element hits it ("element": a state carrying an `Element` painted onto
+  it, or a hero ability's element or tool covering it, the GG-T370 reaction paths). A mark that triggers or is
+  revealed inside its seen window never hides. **No cheating:** `RegionBoard.DangerAt` takes an optional viewer team
+  (default the unit's own) and reads no danger from a hidden mark that side can't see, so a foe's `EnemyPlanner` walks
+  onto the party's hidden mine and the party's planners onto a foe's; `ShoveFloorValue` reads the floor as the party
+  knows it (the hero bot still values shoving a foe onto the party's hidden mine). No Rng: replays hide and reveal the
+  same marks on the same tick. `Validate` wants `VisibleSeconds` non-negative.
+- Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles, and
+  timeline events from team-owned tiles carry no owner; an enemy ability's element doesn't reveal a hidden mark.
 - *(Tests: `TacticalTileTests`, written, not run.)*
 
 ## 15. Save

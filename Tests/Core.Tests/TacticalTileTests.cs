@@ -10,7 +10,8 @@ namespace GridGame.Tests
 {
     /// <summary>Tactical tiles (GG-T842, BIBLE §14.23): a painted mark records the team and unit that painted it, and a
     /// state's <see cref="TileStateDef.Affects"/> decides whom its hooks and OnMark effects reach. A hero's firewall burns
-    /// foes, never the party; foes steer round it and can be shoved into it; it never announces a region rule.</summary>
+    /// foes, never the party; foes steer round it and can be shoved into it; it never announces a region rule. A state with VisibleSeconds hides
+    /// from the other side once they run out (GG-T843) until it goes off, is revealed or an element hits it.</summary>
     public class TacticalTileTests
     {
         /// <summary>Mini content plus a "tactics" rule: a hero-side firewall (hazard, foes of its painter only, 5 Fire on
@@ -24,6 +25,9 @@ namespace GridGame.Tests
                 TileStates =
                 {
                     new TileStateDef { Id = "firewall", Hazard = true, Affects = TileAffects.FoesOfOwner },
+                    // GG-T843: a mine seen by all for half a second, then hidden from the other side; a flame carries fire.
+                    new TileStateDef { Id = "mine", Hazard = true, Affects = TileAffects.FoesOfOwner, VisibleSeconds = 0.5f },
+                    new TileStateDef { Id = "flame", Element = DamageType.Fire },
                     new TileStateDef
                     {
                         Id = "burst", Affects = TileAffects.FoesOfOwner,
@@ -44,6 +48,11 @@ namespace GridGame.Tests
                         On = RuleHook.EnterTile, State = "firewall",
                         Effects = { new RuleEffectDef { Kind = RuleEffectKind.Damage, Units = RuleUnits.Subject, Amount = 5, DamageType = DamageType.Fire } },
                     },
+                    new RuleHookDef
+                    {
+                        On = RuleHook.EnterTile, State = "mine",
+                        Effects = { new RuleEffectDef { Kind = RuleEffectKind.Damage, Units = RuleUnits.Subject, Amount = 4, DamageType = DamageType.Fire } },
+                    },
                 },
             };
             if (atStart.Length > 0) rule.Hooks.Add(new RuleHookDef { On = RuleHook.BattleStart, Effects = atStart.ToList() });
@@ -51,6 +60,13 @@ namespace GridGame.Tests
             db.Abilities["firewall"] = Layer("firewall", "firewall", 0);
             db.Abilities["firewall_wide"] = Layer("firewall_wide", "firewall", 1);
             db.Abilities["burst_toss"] = Layer("burst_toss", "burst", 1);
+            db.Abilities["mine_lay"] = Layer("mine_lay", "mine", 0);
+            db.Abilities["flame_toss"] = Layer("flame_toss", "flame", 0);
+            db.Abilities["flare"] = new AbilityDef
+            {
+                Id = "flare", Name = "flare", Kind = AbilityKind.Skill, Shape = TargetShape.SingleTile, Mode = TargetMode.PickTile, Filter = TargetFilter.EmptyOnly,
+                RuleEffects = { new RuleEffectDef { Kind = RuleEffectKind.RevealTiles, Area = RuleArea.Target, Radius = 1 } },
+            };
             return db;
         }
 
@@ -73,6 +89,15 @@ namespace GridGame.Tests
         }
 
         private static bool HookRan(BattleState s) => s.Region.HookCounts.TryGetValue("tactics#0", out int n) && n > 0;
+
+        /// <summary>A stage whose BattleStart paints a board-owned mine on (1,6) (GG-T843: hidden from both sides once it hides).</summary>
+        private static BattleState BoardMine(string knightBar)
+        {
+            var paint = new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(1, 6) }, State = "mine" };
+            var st = Stage(("tank", 5, 0));
+            st.Rules.Add("tactics");
+            return Setup(Db(paint), st, new[] { ("knight", 1, 7, knightBar), ("cleric", 4, 7, (string)null) });
+        }
 
         [Test]
         public void A_hero_ability_paints_as_the_party_and_announces_no_rule()
@@ -179,6 +204,90 @@ namespace GridGame.Tests
             Assert.That(m.OwnerId, Is.EqualTo(gob.Id));
             Assert.That(ev.OfType<RegionRuleEvent>().Any(r => r.RuleId == "tactics"), Is.True, "announced as ever");
             Assert.That(RegionBoard.DangerAt(s, at, Hero(s, "knight")), Is.GreaterThan(0f), "a foe-laid firewall burns the party");
+        }
+
+        // -- Hidden marks (GG-T843) --
+
+        [Test]
+        public void A_hero_mine_hides_from_foes_after_its_visible_seconds_and_the_party_still_knows()
+        {
+            var s = Setup(Db(), Stage(("wolf", 5, 0)), new[] { ("knight", 0, 6, "mine_lay"), ("cleric", 4, 7, (string)null) });
+            var knight = Hero(s, "knight");
+            var wolf = s.Units.Single(u => u.Def.Id == "wolf");
+            var c = new Coord(2, 4);
+            BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = c });
+            var m = s.Region.At(c);
+            Assert.That(m?.State, Is.EqualTo("mine"));
+            Assert.That(m.Hidden, Is.False, "seen by all at first");
+            Assert.That(RegionBoard.Sees(m, Team.Enemy), Is.True);
+            Assert.That(RegionBoard.DangerAt(s, c, wolf), Is.GreaterThan(0f), "while it shows, foes steer round it");
+            var ev = GuardUntil(s, () => s.Region.At(c)?.Hidden == true);
+            Assert.That(s.Region.At(c)?.Hidden, Is.True, "its VisibleSeconds ran out");
+            Assert.That(ev.OfType<RegionTilesEvent>().Any(t => t.Change == "hidden" && t.State == "mine" && t.Tiles.Contains(c)), Is.True);
+            Assert.That(RegionBoard.Sees(m, Team.Hero), Is.True, "the party keeps a faint view of its own mine");
+            Assert.That(RegionBoard.Sees(m, Team.Enemy), Is.False, "foes don't");
+            Assert.That(RegionBoard.DangerAt(s, c, wolf), Is.EqualTo(0f), "no cheating: the foe's planner reads no danger it can't see");
+            Assert.That(RegionBoard.DangerAt(s, c, wolf, Team.Hero), Is.GreaterThan(0f), "the hero bot still knows the foe would get hurt there");
+        }
+
+        [Test]
+        public void A_board_mine_hides_from_both_sides_and_shows_when_it_goes_off()
+        {
+            var s = BoardMine(null);
+            var knight = Hero(s, "knight");
+            var c = new Coord(1, 6);
+            Assert.That(RegionBoard.DangerAt(s, c, knight), Is.GreaterThan(0f), "seen at first");
+            GuardUntil(s, () => s.Region.At(c)?.Hidden == true);
+            var m = s.Region.At(c);
+            Assert.That(m?.Hidden, Is.True);
+            Assert.That(RegionBoard.Sees(m, Team.Hero) || RegionBoard.Sees(m, Team.Enemy), Is.False, "a board-painted hidden mark: nobody sees it");
+            Assert.That(RegionBoard.DangerAt(s, c, knight), Is.EqualTo(0f), "so the party's planners walk on in");
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6)) });
+            var rev = ev.OfType<TileRevealedEvent>().SingleOrDefault();
+            Assert.That(rev, Is.Not.Null, "it goes off and shows");
+            Assert.That(rev.Cause, Is.EqualTo("triggered"));
+            Assert.That(rev.At, Is.EqualTo(c));
+            Assert.That(ev.IndexOf(rev), Is.LessThan(ev.FindIndex(x => x is DamagedEvent d && d.TargetId == knight.Id)), "shown before its blow lands");
+            Assert.That(m.Hidden, Is.False);
+            Assert.That(RegionBoard.Sees(m, Team.Enemy), Is.True, "for everyone, for good");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_reveal_effect_uncovers_a_hidden_mark()
+        {
+            var s = BoardMine("flare");
+            var c = new Coord(1, 6);
+            GuardUntil(s, () => s.Region.At(c)?.Hidden == true);
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "knight").Id, Slot = 0, Target = c });
+            Assert.That(ev.OfType<TileRevealedEvent>().Any(r => r.At == c && r.Cause == "revealed"), Is.True);
+            Assert.That(s.Region.At(c).Hidden, Is.False);
+            Assert.That(RegionBoard.Sees(s.Region.At(c), Team.Hero), Is.True);
+            GuardUntil(s, () => false, 6);
+            Assert.That(s.Region.At(c)?.Hidden, Is.False, "a revealed mark never hides again");
+        }
+
+        [Test]
+        public void An_element_painted_on_a_hidden_mark_shows_it()
+        {
+            var s = BoardMine("flame_toss");
+            var c = new Coord(1, 6);
+            GuardUntil(s, () => s.Region.At(c)?.Hidden == true);
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "knight").Id, Slot = 0, Target = c });
+            Assert.That(ev.OfType<TileRevealedEvent>().Any(r => r.At == c && r.Cause == "element" && r.State == "mine"), Is.True);
+        }
+
+        [Test]
+        public void Hiding_is_replay_deterministic()
+        {
+            string Run()
+            {
+                var s = BoardMine(null);
+                var ev = GuardUntil(s, () => s.Region.At(new Coord(1, 6))?.Hidden == true);
+                ev.AddRange(BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "knight").Id, Path = P((1, 6)) }));
+                return string.Join("|", ev.Select(x => x.ToString()));
+            }
+            Assert.That(Run(), Is.EqualTo(Run()));
         }
 
         // ── Hatching and squishing (GG-T844) ──────────────────────────────────────────────────────

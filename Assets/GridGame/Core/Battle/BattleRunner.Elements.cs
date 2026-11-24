@@ -63,6 +63,10 @@ namespace GridGame.Core.Battle
             var reactions = ElementCounters.ReactionsOf(C, a);
             if (reactions.Count == 0 || (S.Traps.Count == 0 && S.Region.Tiles.Count == 0)) return false;
             var area = TileReactions.Area(a, anchor);
+            // GG-T843: the element or tool covering a hidden mark shows it to everyone (a fire bolt over the foe's mine).
+            if (S.Region.Tiles.Count > 0)
+                foreach (var tile in area)
+                    if (S.Region.At(tile) is TileMark hm && hm.Hidden) RevealMark(tile, hm, "element");
             var hits = new List<(Trap Trap, TileReactionDef Reaction)>();
             foreach (var tile in area)
                 if (S.TrapAt(tile) is Trap t && ElementCounters.Match(reactions, t.TrapId) is TileReactionDef r && TileReactions.Usable(C, r))

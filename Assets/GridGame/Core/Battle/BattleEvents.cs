@@ -613,11 +613,20 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"RegionRule {RuleId}";
     }
 
-    /// <summary>Painted tiles changed: Change is "marked", "cleared" or "changed" (a counter or a Becomes).</summary>
+    /// <summary>Painted tiles changed: Change is "marked", "cleared" or "changed" (a counter or a Becomes), or "hidden"
+    /// (GG-T843: their VisibleSeconds ran out; only the painter's side sees them now, <see cref="RegionBoard.Sees"/>).</summary>
     public sealed class RegionTilesEvent : BattleEvent
     {
         public string RuleId; public string State; public string Change; public List<Coord> Tiles = new List<Coord>();
         public override string ToString() => $"RegionTiles {Change} {State} x{Tiles.Count}";
+    }
+
+    /// <summary>A hidden mark shows again, to everyone, for good (GG-T843, §14.23). Cause is "triggered" (one of its hooks
+    /// ran: a foe stepped on the party's mine), "revealed" (a RevealTiles effect) or "element" (an element hit it).</summary>
+    public sealed class TileRevealedEvent : BattleEvent
+    {
+        public Coord At; public string State; public string RuleId; public Team OwnerTeam; public int OwnerId = -1; public string Cause;
+        public override string ToString() => $"TileRevealed {State} at {At} ({Cause})";
     }
 
     /// <summary>A named rule anchor was placed (From null) or moved.</summary>

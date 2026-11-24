@@ -24,8 +24,19 @@ namespace GridGame.App
         private IEnumerator RegionTilesAnim(RegionTilesEvent rt)
         {
             board.SyncRegion(State);
+            if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
             App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
             yield return Tween.Wait(rt.Change == "changed" ? Timing.Quick : Timing.Standard);
+        }
+
+        /// <summary>A hidden mark shows again (GG-T843, §14.23): a flash on its tile, then it is drawn for everyone.</summary>
+        private IEnumerator TileRevealedAnim(TileRevealedEvent tr)
+        {
+            board.Mark(tr.At, Palette.Gold, 0.6f);
+            App.Audio.Sfx("battle.trap", 0.8f, 1.15f);
+            board.SyncRegion(State);
+            yield return Tween.Wait(Timing.Standard);
+            board.ClearMarks();
         }
 
         private IEnumerator RegionAnchorAnim(RegionAnchorEvent ra)

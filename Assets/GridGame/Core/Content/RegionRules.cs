@@ -39,6 +39,9 @@ namespace GridGame.Core.Content
         ClearTiles,
         /// <summary>Add Amount to the counter of the area's marks (only State when set); at the state's Threshold it becomes its Becomes state.</summary>
         ModifyTiles,
+        /// <summary>Reveal the area's hidden marks (only State when set) to everyone for good (GG-T843, §14.23: a hidden
+        /// mine a scout's flare or a sensing ability uncovers); each one revealed is a <see cref="Battle.TileRevealedEvent"/>.</summary>
+        RevealTiles,
         /// <summary>Amount damage of DamageType to the units (environmental: no stagger, no attacker).</summary>
         Damage,
         /// <summary>Heal the units by Amount.</summary>
@@ -177,6 +180,12 @@ namespace GridGame.Core.Content
         public string Becomes;
         /// <summary>Clock seconds the mark lasts (0 = until cleared).</summary>
         public float LifeSeconds;
+        /// <summary>Clock seconds a fresh mark is seen by everyone before it hides (GG-T843, §14.23; 0 = always seen): then
+        /// only its painter's side still sees it (the view draws it faint for the party's own), and a board-painted mark
+        /// hides from both. It shows again, for good, when it triggers (one of its hooks runs), a RevealTiles effect
+        /// uncovers it, or an element hits it (painted onto it, or a hero's element or tool covering it, GG-T370). The bot
+        /// and the planners of a side that can't see a mark read no danger from it (<see cref="Battle.RegionBoard.Sees"/>).</summary>
+        public float VisibleSeconds;
         /// <summary>Hex colour of the tile wash.</summary>
         public string Color;
         /// <summary>A short glyph drawn on the tile.</summary>
@@ -305,6 +314,7 @@ namespace GridGame.Core.Content
                     if (t.Becomes != null && db.TryTileState(t.Becomes) == null) p.Add($"{w} state {t.Id}: unknown Becomes state '{t.Becomes}'");
                     if (t.Becomes != null && t.Threshold <= 0) p.Add($"{w} state {t.Id}: Becomes needs a Threshold");
                     if (!(t.LifeSeconds >= 0f)) p.Add($"{w} state {t.Id}: LifeSeconds can't be negative");
+                    if (!(t.VisibleSeconds >= 0f)) p.Add($"{w} state {t.Id}: VisibleSeconds can't be negative"); // GG-T843
                     if (t.Pit && !t.Blocks) p.Add($"{w} state {t.Id}: a Pit must also Block (nothing stands in a hole)");
                     if (t.Pit && !(t.FallDamage >= 0f && t.FallDamage <= 1f)) p.Add($"{w} state {t.Id}: FallDamage outside 0..1");
                     ValidateEffects(db, t.OnMark, $"{w} state {t.Id} OnMark", p);
