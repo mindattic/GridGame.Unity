@@ -331,7 +331,7 @@ namespace GridGame.App
         private bool CoachBlocksDrag => Coach.InSteps && coachHeroId < 0 && !coachCancelStep;
 
         /// <summary>Called every frame: when the player has control and nothing is teaching, the current lesson (or a
-        /// battle system met for the first time: Guard, potions, reinforcements) opens.</summary>
+        /// battle system met for the first time: Guard, potions, reinforcements, Heavy foes, tactical tiles, hidden mines) opens.</summary>
         private void TickCoach()
         {
             if (Coach.Active)
@@ -446,7 +446,103 @@ namespace GridGame.App
                 reinforcementsArrived = null;
                 if (Coach.Pending(s, "battle-reinforce"))
                     RunSystem("battle-reinforce", "Reinforcements", "More foes can walk on mid-wave. Each joins the timeline where its speed puts it, so read the bar again.", ReinforceMarks(ids));
+                if (Coach.Active) return;
             }
+            // GG-T908: the bombastic-battle systems, each the first time it is on the board (a lesson whose situation is
+            // gone by the time the player has control simply waits for the next one).
+            if (Coach.Pending(s, "battle-heavy") && HeavyFoe() is Unit heavy)
+            {
+                RunSystem("battle-heavy", "Heavy foes", "A [Heavy] foe won't be dragged, shoved, pulled or swapped. Make it [Floating] to move it, [Rooted] to hold it still, or wall it out with a barricade.", HeavyMarks(heavy));
+                return;
+            }
+            if (Coach.Pending(s, "battle-tactical") && TacticalTile() is Coord laid)
+            {
+                RunSystem("battle-tactical", "Tactical tiles", "Heroes lay tiles too: a [Firewall] burns the foes who cross it, a [Mine] goes off under the first foe to step on it. The ring around the tile drains as its time runs out.", TacticalMarks(laid));
+                return;
+            }
+            if (Coach.Pending(s, "battle-hidden") && HiddenMine() is Coord mine)
+                RunSystem("battle-hidden", "Hidden mines", "A buried [Mine] shows for a moment, then fades: it is [Hidden]. Foes can't see yours and you can't see theirs, until someone steps on it and it pops.", HiddenMarks(mine));
+        }
+
+        // ── GG-T908: Heavy foes, tactical tiles, hidden mines ──
+
+        /// <summary>A foe on the board that is Heavy now (not Floating), in plain sight (not a hidden mimic).</summary>
+        private Unit HeavyFoe() => State.Units.FirstOrDefault(u => u.Alive && !u.IsHero && u.Team == Team.Enemy && u.IsHeavy && !RegionBoard.Hidden(State, u));
+
+        private List<CoachStep> HeavyMarks(Unit u)
+        {
+            int id = u.Id;
+            return new List<CoachStep>
+            {
+                new CoachStep
+                {
+                    Caption = $"The {u.Name} is Heavy: shoves and pulls won't move it (tap it).", Area = () => UnitRect(id), Info = true,
+                    Valid = () => State.UnitById(id) is Unit x && x.Alive,
+                },
+            };
+        }
+
+        /// <summary>A timed harmful tile the party laid (a hero's firewall or mine), drawn with its life ring.</summary>
+        private Coord? TacticalTile()
+        {
+            foreach (var kv in State.Region.Tiles)
+            {
+                var m = kv.Value;
+                if (m.OwnerTeam != Team.Hero || !m.Hazard || m.LifeTicks <= 0 || !RegionBoard.Sees(m, Team.Hero)) continue;
+                if ((State.Content?.TryTileState(m.State)?.LifeSeconds ?? 0f) > 0f) return kv.Key;
+            }
+            return null;
+        }
+
+        private List<CoachStep> TacticalMarks(Coord c)
+        {
+            var m = State.Region.At(c);
+            if (m == null) return null;
+            string state = m.State;
+            return new List<CoachStep>
+            {
+                new CoachStep { Caption = $"Your {MarkWord(state)} holds this tile until its ring runs out (tap it).", Area = () => TileRect(c), Info = true, Valid = () => MarkStillAt(c, state) },
+            };
+        }
+
+        /// <summary>A mark the party can see that fades from sight: still in its seen-by-all window, or the party's own
+        /// already hidden (drawn faint for its own side).</summary>
+        private Coord? HiddenMine()
+        {
+            foreach (var kv in State.Region.Tiles)
+            {
+                var m = kv.Value;
+                if ((m.SightTicks > 0 || m.Hidden) && RegionBoard.Sees(m, Team.Hero)) return kv.Key;
+            }
+            return null;
+        }
+
+        private List<CoachStep> HiddenMarks(Coord c)
+        {
+            var m = State.Region.At(c);
+            if (m == null) return null;
+            string state = m.State, word = MarkWord(state);
+            string caption = m.Hidden ? $"Your {word} has faded: only your side sees it (tap it)."
+                : m.OwnerTeam == Team.Hero ? $"Your {word} fades from sight soon. Foes won't see it (tap it)."
+                : $"This {word} fades from sight soon. Remember where it was (tap it).";
+            return new List<CoachStep>
+            {
+                new CoachStep { Caption = caption, Area = () => TileRect(c), Info = true, Valid = () => MarkStillAt(c, state) },
+            };
+        }
+
+        /// <summary>The marks' step stays only while the party still sees that mark on that tile (never a soft-lock).</summary>
+        private bool MarkStillAt(Coord c, string state) =>
+            State?.Region?.At(c) is TileMark m && string.Equals(m.State, state, StringComparison.OrdinalIgnoreCase) && RegionBoard.Sees(m, Team.Hero);
+
+        /// <summary>A tile state's id as a word for a caption ("firewall", "mine", "buried mine").</summary>
+        private static string MarkWord(string state)
+        {
+            if (string.IsNullOrEmpty(state)) return "tile";
+            var w = state.ToLowerInvariant();
+            if (w.Contains("firewall")) return "firewall";
+            if (w.Contains("mine")) return "mine";
+            return w.Replace('_', ' ').Replace('-', ' ');
         }
 
         private void RunSystem(string id, string title, string text, List<CoachStep> marks)
