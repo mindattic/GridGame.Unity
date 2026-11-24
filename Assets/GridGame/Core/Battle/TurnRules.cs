@@ -10,15 +10,28 @@ namespace GridGame.Core.Battle
     /// up and banks, and (5) what a turn boundary resets. <see cref="BattleEngine"/>, <see cref="BattleRunner"/>,
     /// <see cref="Recruitment"/> and the tame/wanderer joins ask it; nothing else reads <see cref="BattleState.TurnMode"/>.
     /// <see cref="TurnMode.PartyWindow"/> is today's GG-T308/GG-T311 rule exactly (§2.0, §2.13.0) and must replay
-    /// identically; a mode whose feature hasn't landed throws <see cref="NotSupportedException"/>.
+    /// identically. <see cref="TurnMode.AnyHeroEveryTurn"/> (§2.13.1, GG-T781): one action by any able hero ends the
+    /// party's turn. A mode whose feature hasn't landed throws <see cref="NotSupportedException"/>.
     /// </summary>
     public static class TurnRules
     {
-        /// <summary>Throws for a mode that isn't built yet (§2.13.1–§2.13.3 land with their own features).</summary>
+        /// <summary>Throws for a mode that isn't built yet (§2.13.2–§2.13.3 land with their own features).</summary>
         private static void Require(BattleState s)
         {
-            if (s.TurnMode != TurnMode.PartyWindow)
+            if (s.TurnMode != TurnMode.PartyWindow && s.TurnMode != TurnMode.AnyHeroEveryTurn)
                 throw new NotSupportedException($"Turn mode {s.TurnMode} is not built yet (bible §2.13)");
+        }
+
+        /// <summary>§2.13.1 (GG-T781): is this an any-hero-every-turn battle — one hero action per party turn?</summary>
+        private static bool OneActionPerTurn(BattleState s) => s.TurnMode == TurnMode.AnyHeroEveryTurn;
+
+        /// <summary>§2.13.1: has any unit taken the party's one action this turn? The mark is the same per-unit
+        /// <see cref="Unit.ActedThisWindow"/> PartyWindow uses (cleared at the turn boundary by <see cref="ResetTurn"/>),
+        /// so no new state is kept or cloned and a replay reproduces it.</summary>
+        private static bool PartyHasActed(BattleState s)
+        {
+            foreach (var u in s.Units) if (u.ActedThisWindow) return true;
+            return false;
         }
 
         // ── Countdown badge (GG-T918, §2.10) ───────────────────────────────────────────────────────
@@ -35,27 +48,31 @@ namespace GridGame.Core.Battle
         // ── 1. Who may act now ─────────────────────────────────────────────────────────────────────
 
         /// <summary>Has <paramref name="hero"/> used its action for the party's current turn? PartyWindow: it acted in this
-        /// window (GG-T308, one action per hero per window).</summary>
+        /// window (GG-T308, one action per hero per window). AnyHeroEveryTurn: the party's one action is taken, by this
+        /// hero or any other, so every hero reads as acted (greyed, refused "Already acted") until the next turn.</summary>
         public static bool HasActed(BattleState s, Unit hero)
         {
             Require(s);
-            return hero.ActedThisWindow;
+            return OneActionPerTurn(s) ? PartyHasActed(s) : hero.ActedThisWindow;
         }
 
         /// <summary>May this hero be picked up or use its bar now, time aside? PartyWindow: alive, commanded, not
-        /// Immobile and not yet acted this window. (The phase and the gap are the caller's, as before.)</summary>
+        /// Immobile and not yet acted this window. AnyHeroEveryTurn: alive, commanded, not Immobile, and nobody has
+        /// acted yet this turn — the same hero as last turn is fine. (The phase and the gap are the caller's, as before.)</summary>
         public static bool MayAct(BattleState s, Unit hero)
         {
             Require(s);
-            return hero.Alive && hero.IsCommandable && !hero.IsImmobile && !hero.ActedThisWindow;
+            return hero.Alive && hero.IsCommandable && !hero.IsImmobile && !HasActed(s, hero);
         }
 
         /// <summary>Heroes on the board who may still act in the party's turn. Empty = the turn is spent. PartyWindow:
-        /// living, able heroes (not Immobile) who have not acted yet in this window.</summary>
+        /// living, able heroes (not Immobile) who have not acted yet in this window. AnyHeroEveryTurn: every living, able
+        /// hero until one of them acts, then nobody.</summary>
         public static List<Unit> HeroesLeftToAct(BattleState s)
         {
             Require(s);
             var list = new List<Unit>();
+            if (OneActionPerTurn(s) && PartyHasActed(s)) return list;
             foreach (var u in s.Units)
                 if (u.Alive && u.IsCommandable && u.OnBoard && !u.IsImmobile && !u.ActedThisWindow) list.Add(u);
             return list;
@@ -63,7 +80,8 @@ namespace GridGame.Core.Battle
 
         // ── 2. Whether an action ends the party's turn ─────────────────────────────────────────────
 
-        /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window).</summary>
+        /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window;
+        /// AnyHeroEveryTurn: it took the party's one action this turn).</summary>
         public static void MarkActed(BattleState s, Unit hero)
         {
             Require(s);
@@ -71,11 +89,14 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>After <paramref name="cmd"/> resolved (and its hero was marked), is the party's turn spent — the clock
-        /// runs on to the next enemy turn? PartyWindow: Guard gives the window up, or every able hero has acted.</summary>
+        /// runs on to the next enemy turn? PartyWindow: Guard gives the window up, or every able hero has acted.
+        /// AnyHeroEveryTurn: always — Guard or any one hero's action is the whole turn. The seconds a hero's action leaves
+        /// in the gap are <b>lost</b>, not banked (§2.13.1): the same as the last hero's leftover in PartyWindow, so only
+        /// Guard turns unused time into mana charge (<see cref="GuardCharge"/>) and stays a real choice.</summary>
         public static bool EndsPartyTurn(BattleState s, BattleCommand cmd)
         {
             Require(s);
-            return cmd is ShieldCommand || HeroesLeftToAct(s).Count == 0;
+            return OneActionPerTurn(s) || cmd is ShieldCommand || HeroesLeftToAct(s).Count == 0;
         }
 
         // ── 3. What an action spends ───────────────────────────────────────────────────────────────
