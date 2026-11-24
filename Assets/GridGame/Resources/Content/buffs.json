@@ -366,5 +366,16 @@
     "Roots": true,
     "Letter": "H",
     "Color": "#9C7A45"
+  },
+  {
+    "Id": "frightened",
+    "Name": "Frightened",
+    "Kind": "Debuff",
+    "Unit": "Turns",
+    "Duration": 2,
+    "Stacking": "Refresh",
+    "Frightens": true,
+    "Letter": "?",
+    "Color": "#B07CE8"
   }
 ]

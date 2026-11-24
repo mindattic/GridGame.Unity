@@ -888,5 +888,12 @@
     "Aliases": ["Root", "Roots"],
     "LinkKind": "Buff",
     "LinkId": "rooted"
+  },
+  {
+    "Id": "frightened",
+    "Term": "Frightened",
+    "Aliases": ["Frighten", "Frightens"],
+    "LinkKind": "Buff",
+    "LinkId": "frightened"
   }
 ]

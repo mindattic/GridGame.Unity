@@ -1026,6 +1026,24 @@
         "definition": "Moving well: repositioning to set up pincers and avoid harm."
       }
     },
+    "glossary:frightened": {
+      "key": "glossary:frightened",
+      "id": "glossary-frightened",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0709d0684b16671e1cf7806d5a19e9e3c90b477de0a1b277abd4717d5936bb7a",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Frightened",
+        "definition": "Gripped by fear of what scared it. A frightened foe spends its next turn running straight away from it, as far as it can move, without attacking (even across a hazard), and the fear is spent. A frightened hero won't end a drag beside it. Bosses and Heavy foes are never frightened.",
+        "aliases": [
+          "Frighten",
+          "Frightens"
+        ]
+      }
+    },
     "glossary:frozen": {
       "key": "glossary:frozen",
       "id": "glossary-frozen",

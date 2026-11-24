@@ -488,5 +488,141 @@ namespace GridGame.Tests
             float rooted = BotScore(s, k, a, wolf.Pos);
             Assert.That(rooted, Is.LessThan(free), $"free {free}, rooted {rooted}");
         }
+
+        // ── Frightened (GG-T916 engine, GG-T917 content) ──
+
+        private static ContentDb WithFear()
+        {
+            var db = Mini();
+            db.Buffs["frightened"] = Real.Buffs["frightened"];
+            db.Abilities["scare"] = new AbilityDef { Id = "scare", Name = "Scare", Kind = AbilityKind.Spell, Cost = 1, ApplyBuff = "frightened", Shape = TargetShape.SingleActor, Mode = TargetMode.PickActor, Filter = TargetFilter.EnemyOnly };
+            return db;
+        }
+
+        private static void Frighten(Unit u, Unit source) =>
+            u.Buffs.Add(new BuffInstance { Def = Real.Buffs["frightened"], Remaining = 2, SourceId = source.Id });
+
+        private static System.Collections.Generic.List<BattleEvent> Scare(BattleState s, Unit caster, Unit target)
+        {
+            s.Bank.Add(1);
+            caster.ActedThisWindow = false;
+            caster.Bar[0] = new AbilitySlot { AbilityId = "scare" };
+            return BattleEngine.Apply(s, new UseSlotCommand { HeroId = caster.Id, Slot = 0, Target = target.Pos });
+        }
+
+        private static bool Immune(System.Collections.Generic.List<BattleEvent> ev, Unit u) =>
+            ev.OfType<AnnounceEvent>().Any(a => a.Text == "Immune!" && a.UnitId == u.Id);
+
+        [Test]
+        public void Frightened_is_a_two_turn_debuff_with_a_glossary_entry()
+        {
+            var d = Real.Buffs["frightened"];
+            Assert.That(d.Frightens, Is.True);
+            Assert.That(d.Kind, Is.EqualTo(BuffKind.Debuff));
+            Assert.That(d.Unit, Is.EqualTo(DurationUnit.Turns));
+            Assert.That(d.Duration, Is.EqualTo(2));
+            Assert.That(d.Immobile, Is.False, "it runs, it isn't frozen");
+            Assert.That(Real.TryTerm("Frightened"), Is.Not.Null);
+            Assert.That(Real.TryTerm("Frighten"), Is.Not.Null);
+            Assert.That(ContentLoader.Validate(Real).Where(p => p.Contains("frightened")), Is.Empty);
+        }
+
+        [Test]
+        public void Validate_rejects_a_frightens_buff_that_is_not_a_debuff()
+        {
+            var db = Mini();
+            db.Buffs["brave_fear"] = new BuffDef { Id = "brave_fear", Name = "Brave Fear", Kind = BuffKind.Buff, Unit = DurationUnit.Turns, Duration = 2, Frightens = true };
+            var problems = string.Join("\n", ContentLoader.Validate(db));
+            Assert.That(problems, Does.Contain("buff brave_fear: Frightens must be a Debuff"));
+        }
+
+        [Test]
+        public void A_frightened_foe_flees_its_move_range_directly_away_then_the_fear_is_spent()
+        {
+            var db = WithFear();
+            db.Classes["wolf"].MoveRange = 2;
+            var (s, _) = Battle(db, Stage(("wolf", 2, 2)), ("knight", 2, 4), ("cleric", 5, 7));
+            var wolf = Enemy(s, "wolf");
+            var k = Hero(s, "knight");
+            Frighten(wolf, k);
+            Assert.That(wolf.IsFrightened, Is.True);
+            Assert.That(wolf.FearSourceId, Is.EqualTo(k.Id));
+            int hp = k.Hp;
+            s.TurnEntryOf(wolf.Id).Ip = BattleConfig.BarLength - 1;
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+
+            Assert.That(wolf.Pos, Is.EqualTo(new Coord(2, 0)), "two steps straight up, away from the knight below");
+            Assert.That(ev.OfType<SteppedEvent>().Count(e => e.UnitId == wolf.Id), Is.EqualTo(2));
+            Assert.That(ev.OfType<AnnounceEvent>().Any(a => a.Text == "Wolf flees!"), Is.True);
+            Assert.That(wolf.IsFrightened, Is.False, "the fear is spent on the flight");
+            Assert.That(k.Hp, Is.EqualTo(hp), "a fleeing foe doesn't attack");
+        }
+
+        [Test]
+        public void A_fleeing_foe_runs_straight_across_a_hazard()
+        {
+            var db = WithFear();
+            db.Elements = Real.Elements;
+            RegionRuleCatalog.Index(db, new System.Collections.Generic.List<RegionRuleDef> { Real.TryRegionRule("firewalls") });
+            db.Classes["wolf"].MoveRange = 2;
+            db.Classes["wolf"].BaseStats.Vitality = 60;
+            var (s, _) = Battle(db, Stage(("wolf", 2, 2)), ("knight", 2, 4), ("cleric", 5, 7));
+            s.Region.Rules.Add("firewalls");
+            s.Region.Tiles[new Coord(2, 1)] = new TileMark { State = "firewall", Rule = "firewalls", Hazard = true, OwnerTeam = Team.Hero };
+            var wolf = Enemy(s, "wolf");
+            Frighten(wolf, Hero(s, "knight"));
+            int hp = wolf.Hp;
+            s.TurnEntryOf(wolf.Id).Ip = BattleConfig.BarLength - 1;
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+
+            Assert.That(ev.OfType<SteppedEvent>().Any(e => e.UnitId == wolf.Id && e.To == new Coord(2, 1)), Is.True, "panic doesn't pick its footing");
+            Assert.That(wolf.Hp, Is.LessThan(hp), "and the fire bites");
+            Assert.That(wolf.Pos, Is.EqualTo(new Coord(2, 0)));
+        }
+
+        [Test]
+        public void Bosses_and_heavy_foes_are_immune_to_fear()
+        {
+            var (s, _) = Battle(WithFear(), Stage(("boss", 2, 1)), ("knight", 2, 5), ("mage", 4, 7));
+            var boss = Enemy(s, "boss");
+            var ev = Scare(s, Hero(s, "mage"), boss);
+            Assert.That(Immune(ev, boss), Is.True);
+            Assert.That(boss.IsFrightened, Is.False);
+
+            var db = WithFear();
+            db.Classes["tank"].Heavy = true;
+            var (s2, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 2, 5), ("mage", 4, 7));
+            var tank = Enemy(s2, "tank");
+            Assert.That(tank.IsHeavy, Is.True);
+            ev = Scare(s2, Hero(s2, "mage"), tank);
+            Assert.That(Immune(ev, tank), Is.True);
+            Assert.That(tank.IsFrightened, Is.False);
+
+            var (s3, _) = Battle(WithFear(), Stage(("tank", 2, 2)), ("knight", 2, 5), ("mage", 4, 7));
+            var plain = Enemy(s3, "tank");
+            var m = Hero(s3, "mage");
+            ev = Scare(s3, m, plain);
+            Assert.That(Immune(ev, plain), Is.False);
+            Assert.That(plain.IsFrightened, Is.True, "an ordinary foe scares");
+            Assert.That(plain.FearSourceId, Is.EqualTo(m.Id), "and fears its caster");
+        }
+
+        [Test]
+        public void A_frightened_hero_cannot_end_a_drag_beside_what_it_fears()
+        {
+            var (s, _) = Battle(WithFear(), Stage(("goblin", 2, 2)), ("knight", 2, 5), ("cleric", 5, 7));
+            var k = Hero(s, "knight");
+            var gob = Enemy(s, "goblin");
+            Frighten(k, gob);
+            Assert.That(k.IsFrightened, Is.True);
+
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = k.Id, Path = P((2, 4), (2, 3)) });
+            Assert.That(ev.OfType<AbilityRefusedEvent>().Any(r => r.CasterId == k.Id && r.Reason == "Too frightened"), Is.True);
+            Assert.That(k.Pos, Is.EqualTo(new Coord(2, 5)), "it won't go up beside the goblin");
+
+            ev = BattleEngine.Apply(s, new MoveCommand { HeroId = k.Id, Path = P((2, 4)) });
+            Assert.That(ev.OfType<AbilityRefusedEvent>().Any(r => r.Reason == "Too frightened"), Is.False);
+            Assert.That(k.Pos, Is.EqualTo(new Coord(2, 4)), "a drag that stops short of it is fine");
+        }
     }
 }
