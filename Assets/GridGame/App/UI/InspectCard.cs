@@ -282,6 +282,7 @@ namespace GridGame.App
             if (a.RemovesDebuffs) facts.Add("Cleanses debuffs");
             if (a.Vaults) facts.Add("Leaps over a unit beside the user to the free tile beyond, crossing what lies under it"); // GG-T868
             if (a.RedirectsDebuffs) facts.Add("Moves an adjacent ally's debuffs onto a foe beside the user"); // GG-T887
+            if (a.Afterimage > 0) facts.Add($"Dashes up to {a.Afterimage} tiles in a line; the afterimage left behind closes pincers this action and draws foes' attacks until the user's next turn"); // GG-T867
             if (a.StealsBoon) facts.Add("Steals one boon from an adjacent foe, with the time it has left"); // GG-T866
             if (a.GrantsOrbs > 0) facts.Add($"Grants {a.GrantsOrbs} orbs");
             var factBox = Ui.El("col", body);

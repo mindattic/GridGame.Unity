@@ -239,6 +239,9 @@ namespace GridGame.Core.Content
                 if (a.Vaults && (!a.IsTeleport || a.Shape != TargetShape.SingleTile || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Pole Vault (Vaults) is an IsTeleport Skill or Spell that picks an empty tile (SingleTile, PickTile, EmptyOnly)");
+                // GG-T867: an Afterimage dash picks the empty tile it lands on.
+                if (a.Afterimage < 0 || (a.Afterimage > 0 && (a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly || a.Kind != AbilityKind.Skill || a.IsTeleport)))
+                    p.Add($"ability {a.Id}: an Afterimage dash is a Skill that picks an empty tile (PickTile, EmptyOnly), not a Teleport");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

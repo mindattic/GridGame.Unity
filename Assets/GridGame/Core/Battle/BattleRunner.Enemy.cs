@@ -68,6 +68,7 @@ namespace GridGame.Core.Battle
             // GG-T306 (§14.1.3): a pincer-capable foe engineers pincers — a walk that completes one now beats a charge.
             var pincerPlan = EnemyPlanner.PlanPincer(S, enemy);
             if (pincerPlan != null && pincerPlan.Kind == PincerPlanKind.Complete) { FollowPincerPlan(enemy, pincerPlan); return; }
+            if (TryStrikeAfterimage(enemy)) return; // GG-T867: a Speedster's afterimage in reach draws the attack (Taunting)
 
             bool alreadyCasting = S.CastEntryOf(enemy.Id) != null;
             var charge = alreadyCasting ? null : EnemyPlanner.PlanCast(S, enemy, phase?.PrefersCharge ?? false);

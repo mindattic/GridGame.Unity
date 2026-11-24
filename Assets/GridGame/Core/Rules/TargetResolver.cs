@@ -89,6 +89,7 @@ namespace GridGame.Core.Rules
             if (!BattleState.InBounds(target)) return false;
             var occ = s.UnitAt(target);
             if (a.Mode == TargetMode.Auto) return true;
+            if (a.Afterimage > 0) return Afterimage.CanDash(s, caster, target, a.Afterimage); // GG-T867: a straight dash to an empty tile
             if (a.Filter == TargetFilter.EmptyOnly)
             {
                 if (occ != null || s.TrapAt(target) != null) return false;

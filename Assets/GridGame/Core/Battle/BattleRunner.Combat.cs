@@ -230,6 +230,9 @@ namespace GridGame.Core.Battle
             // Snapshot the geometry now: by the time the view plays this back the state is the end of the whole
             // command, and any member may have moved since (enemy turns, knockback, a later chain link — GG-T98).
             formed.Attacker1At = UnitFootprint.Of(p.A); formed.Attacker2At = UnitFootprint.Of(p.B);
+            // GG-T867: an afterimage end stands on its own tile; the view draws the pincer from there.
+            if (p.AAfterimage is Coord ga) { formed.Attacker1At.At = ga; formed.Afterimage1 = true; }
+            if (p.BAfterimage is Coord gb) { formed.Attacker2At.At = gb; formed.Afterimage2 = true; }
             foreach (var o in p.Opponents) { formed.Opponents.Add(o.Id); formed.OpponentsAt.Add(UnitFootprint.Of(o)); }
             foreach (var su in supporters) { formed.Supporters.Add(su.Id); formed.SupportersAt.Add(UnitFootprint.Of(su)); formed.SupporterLinks.Add(p.LinkOf(su)?.Id ?? p.AttackerOf(su).Id); }
             Emit(formed);
@@ -264,9 +267,13 @@ namespace GridGame.Core.Battle
             pincerFollowUps = followUps;
             try
             {
-                foreach (var attacker in new[] { p.A, p.B })
+                for (int end = 0; end < 2; end++)
                 {
+                    var attacker = end == 0 ? p.A : p.B;
                     if (!attacker.Alive) continue;
+                    // GG-T867: the Speedster strikes from its afterimage too (its plate side is the afterimage's), and its
+                    // weapon wears once however many ends it holds.
+                    strikeFromAfterimage = p.IsAfterimageEnd(end == 0) ? (end == 0 ? p.AAfterimage : p.BAfterimage) : null;
                     float mult = 1f + attacker.PincerDamageBonus;
                     if (attacker == amplified) mult *= BattleConfig.AmplifierDamageMultiplier;
                     bool shatters = attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability == 1;
@@ -277,10 +284,11 @@ namespace GridGame.Core.Battle
                         Strike(attacker, target, mult, BlowKind.Pincer); // its OnAttack (Double Attack) is queued in followUps
                         if (target.Alive) TryWeaponPincerBuff(attacker, target);
                     }
+                    if (end == 1 && p.A == p.B) continue;
                     if (attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability > 0) WearWeapon(attacker);
                 }
             }
-            finally { pincerFollowUps = null; }
+            finally { pincerFollowUps = null; strikeFromAfterimage = null; }
             p.A.SupportCritBonus = p.B.SupportCritBonus = 0f;
             PincerPhaseEnd(PincerPhase.Blows, chainIndex);
 
@@ -290,7 +298,7 @@ namespace GridGame.Core.Battle
             foreach (var f in followUps)
                 if (!S.IsOver && f.Attacker.Alive && f.Target.Alive)
                     Fire(TriggerOn.OnAttack, f.Attacker, new TriggerContext { Target = f.Target, Blow = BlowKind.Pincer, StrikeMultiplier = f.Mult, Type = DamageType.Physical });
-            foreach (var attacker in new[] { p.A, p.B })
+            foreach (var attacker in p.A == p.B ? new[] { p.A } : new[] { p.A, p.B }) // GG-T867: one Speedster, one trigger
                 if (attacker.Alive && !S.IsOver)
                 {
                     Unit trapped = null;
@@ -329,6 +337,9 @@ namespace GridGame.Core.Battle
 
         /// <summary>A pincer blow's held-back OnAttack (Double Attack), fired in the Follow-up phase (GG-T833).</summary>
         private struct PincerFollowUp { public Unit Attacker; public Unit Target; public float Mult; }
+
+        /// <summary>GG-T867: set while a pincer blow comes from an afterimage end - the tile the blow meets the plate from.</summary>
+        private Coord? strikeFromAfterimage;
 
         /// <summary>Non-null while a pincer's Blows phase runs: <see cref="Strike"/> queues each pincer blow's OnAttack here.</summary>
         private List<PincerFollowUp> pincerFollowUps;
@@ -406,10 +417,15 @@ namespace GridGame.Core.Battle
         // ── Armor plates (§13.5) ──
 
         /// <summary>The side of <paramref name="u"/> that <paramref name="from"/> stands on (dominant axis; ties go to the facing axis).</summary>
-        public static Coord SideOf(Unit u, Unit from)
+        public static Coord SideOf(Unit u, Unit from) =>
+            SideOf(u, from.Pos.X + (from.W - 1) / 2f, from.Pos.Y + (from.H - 1) / 2f);
+
+        /// <summary>The side of <paramref name="u"/> a one-tile blow from <paramref name="from"/> lands on (GG-T867: an afterimage).</summary>
+        public static Coord SideOf(Unit u, Coord from) => SideOf(u, from.X, from.Y);
+
+        private static Coord SideOf(Unit u, float fx, float fy)
         {
             float cx = u.Pos.X + (u.W - 1) / 2f, cy = u.Pos.Y + (u.H - 1) / 2f;
-            float fx = from.Pos.X + (from.W - 1) / 2f, fy = from.Pos.Y + (from.H - 1) / 2f;
             float dx = fx - cx, dy = fy - cy;
             if (Math.Abs(dx) > Math.Abs(dy) || (Math.Abs(dx) == Math.Abs(dy) && u.Facing.X != 0))
                 return new Coord(Math.Sign(dx), 0);
@@ -420,7 +436,8 @@ namespace GridGame.Core.Battle
         private bool PlateAbsorbs(Unit target, Unit attacker, int amount)
         {
             if (!target.HasPlate || attacker == null || attacker.Team == target.Team || amount <= 0) return false;
-            if (SideOf(target, attacker) != target.Facing) return false;
+            var side = strikeFromAfterimage is Coord ghost ? SideOf(target, ghost) : SideOf(target, attacker); // GG-T867
+            if (side != target.Facing) return false;
             target.PlateHp = Math.Max(0, target.PlateHp - amount);
             Emit(new PlateHitEvent { UnitId = target.Id, AttackerId = attacker.Id, Amount = amount, Left = target.PlateHp, Max = target.PlateMax });
             if (target.PlateHp == 0)

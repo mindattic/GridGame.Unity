@@ -450,6 +450,7 @@ namespace GridGame.Core.Battle
             // since a halted icon never reaches its own turn boundary.
             foreach (var e in S.LivingList(Team.Enemy)) TickTurnBuffs(e, true);
             TickTempo();
+            FadeAfterimages(); // GG-T867: each afterimage lasts until its Speedster's next turn
             // The party's new turn begins: hero trigger cooldowns tick, TurnStart and OnSurrounded fire (GG-T296).
             foreach (var h in S.LivingList(Team.Hero))
                 if (!S.IsOver && h.Alive && !h.IsIndependent) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359

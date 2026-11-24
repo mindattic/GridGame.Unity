@@ -585,6 +585,11 @@ namespace GridGame.Core.Content
         /// <summary>Redirect Flow (GG-T887, the Monk): every debuff on the picked adjacent ally moves, with its remaining
         /// duration, onto the foe beside the caster (<c>Battle.RedirectFlow</c>). A Skill or Spell that picks one ally.</summary>
         public bool RedirectsDebuffs;
+        /// <summary>Afterimage (GG-T867, the Speedster): a dash of up to this many tiles in a straight cardinal line to an empty
+        /// tile, past anything in between, leaving an afterimage on the tile left (<c>Battle.Afterimage</c>). For the rest of
+        /// that action the afterimage is a pincer end of the dasher's own (pincers from one hero); until the dasher's next turn
+        /// it draws foes' attacks (Taunting), then fades. 0 = not a dash. A PickTile / EmptyOnly Skill.</summary>
+        public int Afterimage;
         /// <summary>Swipe Boon (GG-T866, the Thief): one boon (Empowered, Ward, Protection, Blurred or Regen) leaves the picked
         /// adjacent foe and the caster wears it with its remaining duration (<c>Battle.SwipeBoon</c>). A Skill or Spell that
         /// picks one foe.</summary>

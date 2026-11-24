@@ -307,6 +307,14 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.BlocksSpells) return true; return false; }
         }
 
+        /// <summary>Afterimage (GG-T867, the Speedster): the tile its last dash left an afterimage on, until its next turn
+        /// (null = none). The afterimage draws foes' attacks (Taunting) and fades when struck or when the turn comes round.</summary>
+        public Coord? AfterimageAt;
+
+        /// <summary>GG-T867: true only for the rest of the dash's own action, while <see cref="AfterimageAt"/> stands in as a
+        /// pincer end of this unit's (<c>PincerDetector</c>).</summary>
+        public bool AfterimagePincers;
+
         /// <summary>Carries a taunt buff: enemies must come for this hero (§14.1.1).</summary>
         public bool IsTaunting
         {

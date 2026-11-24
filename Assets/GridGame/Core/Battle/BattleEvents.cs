@@ -123,6 +123,8 @@ namespace GridGame.Core.Battle
     public sealed class PincerFormedEvent : BattleEvent
     {
         public Team Team; public int Attacker1; public int Attacker2;
+        /// <summary>GG-T867: that end is the attacker's afterimage (at <see cref="Attacker1At"/>/<see cref="Attacker2At"/>), not the unit.</summary>
+        public bool Afterimage1, Afterimage2;
         public List<int> Opponents = new List<int>();
         public List<int> Supporters = new List<int>();
         public int ChainIndex;
@@ -492,6 +494,23 @@ namespace GridGame.Core.Battle
     {
         public int CasterId = -1; public int FromId; public string BuffId; public int Remaining;
         public override string ToString() => $"BoonStolen {FromId} -> {CasterId} {BuffId} {Remaining}";
+    }
+
+    /// <summary>GG-T867 (§7): the Speedster's Afterimage dash carried <see cref="UnitId"/> from <see cref="From"/> to
+    /// <see cref="To"/> in a straight line and left an afterimage on <see cref="From"/>. The view streaks a ghost trail
+    /// along the line, leaves a translucent copy on <see cref="From"/> and calls "Afterimage".</summary>
+    public sealed class AfterimageLeftEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To;
+        public override string ToString() => $"AfterimageLeft {UnitId} {From}->{To}";
+    }
+
+    /// <summary>GG-T867: <see cref="UnitId"/>'s afterimage on <see cref="At"/> fades: its owner's turn came round ("faded"), a
+    /// foe's attack it drew struck it (<see cref="ById"/>, "struck"), its owner fell ("owner"), or a new dash replaced it.</summary>
+    public sealed class AfterimageFadedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public int ById = -1; public string Reason;
+        public override string ToString() => $"AfterimageFaded {UnitId}@{At} {Reason}";
     }
 
     public sealed class AnnounceEvent : BattleEvent
