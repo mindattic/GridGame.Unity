@@ -130,6 +130,25 @@ java -jar bundletool.jar install-apks --apks=gg.apks
 
 For day-to-day testing the `-Dev` APK is simpler: `adb install -r Build\Android\GridGame.apk`.
 
+### Profiling on a real phone (GG-T481, the owner)
+
+Targets are flagship iPhone, Galaxy and Pixel ([BIBLE 26.3](BIBLE.md#263-adaptive-stage-gg-t169)). Static finding: the
+backdrop memory item is already handled by the Android ASTC import above (81 backdrops, 30 MB, not 4.5 MB each); no
+oversized textures found. What needs a device (install the `-Dev` APK, `adb devices` must list the phone):
+
+1. Frame time in a big battle: start a late-stage battle with 4 heroes and many foes, then
+   `adb shell dumpsys gfxinfo com.mindattic.gridgame framestats` (reset first with `... reset`) after a minute of play;
+   read 50th/90th/99th percentile frame time and janky-frame %. Target: 90th percentile under the display refresh
+   interval (16.7 ms at 60 Hz). The in-game `fps` value is also on the automation endpoint (`state`).
+2. Memory: `adb shell dumpsys meminfo com.mindattic.gridgame` at title, hub, and after 10 battles in a row (watch
+   Graphics, Native, TOTAL PSS for growth); note the peak.
+3. Load times: `adb shell am start -W -n <package>/<activity>` gives cold-start TotalTime; time hub to battle by eye
+   or screen recording.
+4. Battery: `adb shell dumpsys batterystats --reset`, play 30 minutes, then `dumpsys batterystats` and note the
+   app's mAh and screen-on drain per hour.
+5. For hot spots, attach the Unity Profiler over USB to a development build (Autoconnect Profiler), or capture a
+   Perfetto trace. File each finding as its own fix ticket with the numbers.
+
 ### Playing on emulated devices: Android Emulator Suite (GG-T547)
 
 To play the whole game with the mouse as it looks on a given phone or tablet, use the **Android Emulator Suite**
