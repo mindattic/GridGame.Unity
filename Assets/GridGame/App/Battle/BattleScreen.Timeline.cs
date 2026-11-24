@@ -853,21 +853,14 @@ namespace GridGame.App
             var c = r.center;
             float h = r.width / 2f + 7f; // just outside the diamond's tips (thick: it is read at tray scale)
             var v = new[] { c + new Vector2(0f, -h), c + new Vector2(h, 0f), c + new Vector2(0f, h), c + new Vector2(-h, 0f) };
-            p.lineJoin = LineJoin.Round;
-            p.lineCap = LineCap.Round;
-            p.lineWidth = 15f;
-            p.strokeColor = Palette.Ink.WithA(0.8f);
-            p.BeginPath();
-            p.MoveTo(v[0]); p.LineTo(v[1]); p.LineTo(v[2]); p.LineTo(v[3]); p.ClosePath();
-            p.Stroke();
+            // GG-T737: Shapes strokes, ink-outlined: a dark closed track of the whole diamond, the lit run over it.
+            var track = ShapeStyle.Indicator.Thick(10f).Tint(Palette.Ink.WithA(0.8f));
+            Shapes.Line(p, v, track, closed: true);
             if (frac <= 0f) return;
-            p.lineWidth = 10f;
-            p.strokeColor = color;
-            p.BeginPath();
-            p.MoveTo(v[0]);
+            var run = new List<Vector2> { v[0] };
             float rem = frac * 4f;
-            for (int i = 0; i < 4 && rem > 0f; i++, rem -= 1f) p.LineTo(Vector2.Lerp(v[i], v[(i + 1) % 4], Mathf.Min(1f, rem)));
-            p.Stroke();
+            for (int i = 0; i < 4 && rem > 0f; i++, rem -= 1f) run.Add(Vector2.Lerp(v[i], v[(i + 1) % 4], Mathf.Min(1f, rem)));
+            Shapes.Line(p, run, ShapeStyle.Indicator.Thick(10f).Tint(color));
         }
     }
 }

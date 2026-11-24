@@ -155,6 +155,26 @@ namespace GridGame.App
         public static void Bar(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s) =>
             Paint(p, s, Band(new List<Vector2> { from, to }, s.Width * 0.5f));
 
+        /// <summary>
+        /// A round-capped stroke along a polyline with mitred corners (GG-T737): a connector, a progress trace. With
+        /// <paramref name="closed"/> the polyline is a loop: no caps, every corner mitred, a hole in the middle.
+        /// </summary>
+        public static void Line(Painter2D p, IList<Vector2> path, ShapeStyle s, bool closed = false)
+        {
+            var pts = Clean(path);
+            if (closed && pts.Count > 2 && (pts[0] - pts[pts.Count - 1]).sqrMagnitude <= 0.01f) pts.RemoveAt(pts.Count - 1);
+            if (!closed || pts.Count < 3) { if (pts.Count > 0) Paint(p, s, Band(pts, s.Width * 0.5f)); return; }
+            // Offset the loop with its wrap-around neighbours so every vertex, the first included, is mitred.
+            var wrap = new List<Vector2>(pts.Count + 2) { pts[pts.Count - 1] };
+            wrap.AddRange(pts);
+            wrap.Add(pts[0]);
+            var (left, right) = Offsets(wrap, s.Width * 0.5f);
+            var outer = left.GetRange(1, pts.Count);
+            var inner = right.GetRange(1, pts.Count);
+            inner.Reverse();
+            Paint(p, s, new List<List<Vector2>> { outer, inner }, FillRule.OddEven);
+        }
+
         /// <summary>A filled dot (outlined disc) of <paramref name="radius"/>.</summary>
         public static void Dot(Painter2D p, Vector2 center, float radius, ShapeStyle s) => Paint(p, s, Circle(center, radius));
 

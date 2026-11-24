@@ -2045,6 +2045,35 @@ Final victory (first time, §27.0): PostBattle → Continue → StoryCrawl (Endi
 
 One Final Fantasy–style language (`Resources/UI/Theme.uss`): deep blue gradient windows (`Art.Window`, generated) with white rounded frames, pointing-cursor menu rows (`Ui.MenuRow`, selected row highlighted), gold numbers, rarity-colored item names, gauges, tabs, primary/danger buttons, toasts on the overlay. **Amended 2026-10-10 (owner):** battle units wear the same frame as menu portraits (`.thumb` → `.unit-frame`: white 4 px rounded border over the window gradient); team reads from a thin inner keyline (hero blue, foe red, boss purple `.unit-keyline--*`). Fonts (`App/Services/Fonts.cs`): **Outfit** body, **Cinzel** display (titles), both with Noto Sans → Noto Sans Symbols 2 fallbacks ([GG-LAW-11](#GG-LAW-11)). **Amended 2026-10-09:** replaces HubTheme / UiFonts / UiKit (Attic + Outfit).
 
+### 11.6 Vector shapes — the Shapes standard (GG-T735, GG-T736, GG-T737)
+
+Every arrow, connector, ring, progress trace and box drawn in a `generateVisualContent` callback goes through one API, `App/UI/Shapes.cs`. Nothing draws a line by calling `Painter2D.Stroke()` twice (a wide dark stroke under a narrow coloured one): that "double stroke" left mismatched caps and joins, and its outline cut across overlapping pieces. GG-T737 retired the last ones (the cast trace `CastRing` and buff timer `RingTimer` in `BoardView.cs`, the timeline's recovery diamond `RecoverRing`, the talent tree's `TalentLinks`).
+
+**How a shape is built.** Each shape is math, not strokes: closed polygons (a shaft is its centreline offset by half the width with mitred joins, the mitre clamped at 4×; ends are round caps; an arrowhead is part of the same outline), painted in two passes: the outline (stroked at twice `ShapeStyle.Outline`, so the body covers its inner half and the outline sits wholly outside), then one body fill over every piece. Pieces of one shape (dashes, ring loops) share both passes, so their outlines never cut across each other's bodies.
+
+**The API** (`Shapes.*`, each takes the `Painter2D` and a `ShapeStyle`):
+- `Arrow(from, to)`, `PathArrow(path)` — a solid arrow, round tail, along a straight line or a polyline.
+- `DashedArrow(from, to | path, phase)` — round-capped dashes up to a solid head; `phase` (px) marches them toward the tip.
+- `CurvedArrow(from, control, to)` (quadratic) and `CurvedArrow(from, c1, c2, to)` (bezier), solid or `dashed`.
+- `Line(path, closed)` — a round-capped stroke along a polyline (a connector, a progress trace); `closed` makes it a mitred loop with no caps.
+- `Bar(from, to)` — a straight round-capped link (an arrow with no head).
+- `Chevron(center, dir, size)`, `Dot(center, radius)`.
+- `Ring(center, radius, startDeg, sweepDeg)` — a full band, or an arc sweeping clockwise (screen space) from `startDeg` (0 = right, −90 = 12 o'clock) with round ends.
+- `RoundedRect(rect, radius, filled, dashed, start, portion)` — a filled outlined body, or a frame centred on the rect's edge; `dashed` breaks it into dashes; `portion` < 1 draws that fraction of the perimeter clockwise from `start` (a fraction from the top edge's left end): a progress frame.
+- `PointAt(path, d)` — the point `d` px along a polyline, for placing things on a route.
+
+**ShapeStyle presets.** Start from a preset so every shape on screen shares stroke and head proportions, then adjust it with `Tint(color)`, `Thick(width)`, `Outlined(color, width)`, `Dashes(dash, gap)`, `Head(length, width)`:
+
+| Preset | Body | Outline | Head (len × width) | Dash / gap | For |
+|---|---|---|---|---|---|
+| `Indicator` | 8 | 3 | 34 × 42 | 18 / 12 | on-board pointers, target and shove arrows, hint routes, the cast trace, the timeline's recovery diamond |
+| `Tutorial` | 10 | 3 | 46 × 58 | 22 / 14 | coach marks: the caption's pointer, a move's route, the goal box |
+| `Small` | 4 | 2 | 14 × 16 | 8 / 6 | glyph-sized marks: row chevrons, the buff timer ring, talent links |
+
+**White body, black outline.** A shape's body is white (`Fill`, the presets' default) and its outline is near-black ink (`ShapeStyle.Ink`, 90 % alpha), so it reads over any tile, art or window gradient. Tint the body (`Tint`) only when the colour carries meaning: a team, an element, a cast's school, a talent link's progress, a pickup's gold. The outline stays ink; never drop it, never make it coloured, and never draw a coloured shape without one. A dark "track" under a lit run (the recovery diamond) is a body tinted ink at reduced alpha, still with the ink outline.
+
+**Dashed vs solid.** Solid means *this is, or will happen*: the move or shove that will resolve, a link that exists, a timer's remaining span, a pointer at something already there. Dashed means *this could, or is suggested*: a tentative or preview route, a coach mark's proposed move and its goal box, a range or region not yet committed. A dashed route may march (`phase` advancing with time) to show direction; under Reduce Motion it holds still. Don't mix the two on one shape.
+
 ---
 
 ## 12. Asset Pipeline

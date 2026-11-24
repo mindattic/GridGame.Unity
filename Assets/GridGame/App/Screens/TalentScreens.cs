@@ -270,10 +270,10 @@ namespace GridGame.App
             generateVisualContent += Draw;
         }
 
+        /// <summary>Each link is one <see cref="Shapes.Line"/> elbow (GG-T737): a body in the link's colour, ink-outlined.</summary>
         private void Draw(MeshGenerationContext ctx)
         {
             var p = ctx.painter2D;
-            p.lineCap = LineCap.Round; p.lineJoin = LineJoin.Round;
             foreach (var (from, to, color) in Links)
             {
                 var fb = from.worldBound; var tb = to.worldBound;
@@ -281,21 +281,8 @@ namespace GridGame.App
                 var a = this.WorldToLocal(new Vector2(fb.center.x, fb.yMax));
                 var b = this.WorldToLocal(new Vector2(tb.center.x, tb.yMin));
                 float midY = (a.y + b.y) / 2f;
-                p.strokeColor = new Color(0f, 0f, 0f, 0.5f); p.lineWidth = 10f;
-                Path(p, a, b, midY);
-                p.strokeColor = color; p.lineWidth = 5f;
-                Path(p, a, b, midY);
+                Shapes.Line(p, new[] { a, new Vector2(a.x, midY), new Vector2(b.x, midY), b }, ShapeStyle.Small.Thick(5f).Tint(color).Outlined(ShapeStyle.Ink, 2.5f));
             }
-        }
-
-        private static void Path(Painter2D p, Vector2 a, Vector2 b, float midY)
-        {
-            p.BeginPath();
-            p.MoveTo(a);
-            p.LineTo(new Vector2(a.x, midY));
-            p.LineTo(new Vector2(b.x, midY));
-            p.LineTo(b);
-            p.Stroke();
         }
     }
 

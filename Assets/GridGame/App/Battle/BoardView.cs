@@ -932,16 +932,12 @@ namespace GridGame.App
             style.left = style.top = style.right = style.bottom = -Space.S4;
             generateVisualContent += ctx =>
             {
-                var p = ctx.painter2D;
+                // GG-T737: a gold Shapes arc (ink outline) shrinking clockwise from 12 o'clock.
                 var r = contentRect;
-                var c = r.center;
-                float radius = Mathf.Min(r.width, r.height) / 2f - 2f;
-                p.lineWidth = 4f;
-                p.strokeColor = Palette.Gold.WithA(0.95f);
-                p.lineCap = LineCap.Round;
-                p.BeginPath();
-                p.Arc(c, radius, Angle.Degrees(-90f), Angle.Degrees(-90f + 360f * this.frac));
-                p.Stroke();
+                var st = ShapeStyle.Small.Tint(Palette.Gold.WithA(0.95f));
+                float radius = Mathf.Min(r.width, r.height) / 2f - st.Width / 2f - st.Outline;
+                if (this.frac <= 0f || radius <= 0f) return;
+                Shapes.Ring(ctx.painter2D, r.center, radius, st, -90f, 360f * this.frac);
             };
         }
     }
@@ -970,49 +966,26 @@ namespace GridGame.App
             MarkDirtyRepaint();
         }
 
+        /// <summary>The lit trace: a <see cref="Shapes"/> partial rounded-rect stroke (tinted body, ink outline, GG-T737),
+        /// from the frame's top-centre clockwise over the fraction still to run.</summary>
         private void Draw(MeshGenerationContext ctx)
         {
             var r = contentRect;
             if (r.width <= 0 || left <= 0f) return;
-            var pts = Perimeter(r, 22f, left);
-            var p = ctx.painter2D;
-            p.lineJoin = LineJoin.Round; p.lineCap = LineCap.Round;
-            p.strokeColor = new Color(0f, 0f, 0f, 0.55f); p.lineWidth = 13f;
-            Stroke(p, pts);
-            p.strokeColor = color; p.lineWidth = 8f;
-            Stroke(p, pts);
+            const float inset = 5f;
+            var frame = new Rect(r.xMin + inset, r.yMin + inset, r.width - inset * 2f, r.height - inset * 2f);
+            float rad = Mathf.Min(22f, frame.width / 2f, frame.height / 2f);
+            Shapes.RoundedRect(ctx.painter2D, frame, rad, ShapeStyle.Indicator.Tint(color).Thick(8f), start: TopCentre(frame, rad), portion: left);
         }
 
-        private static void Stroke(Painter2D p, List<Vector2> pts)
+        /// <summary>Where the top edge's centre sits along <see cref="Shapes.RoundedRect"/>'s perimeter (which starts at the
+        /// top edge's left end), as a fraction of the whole: its corners are six-segment polygons, measured as drawn.</summary>
+        private static float TopCentre(Rect r, float rad)
         {
-            if (pts.Count < 2) return;
-            p.BeginPath(); p.MoveTo(pts[0]);
-            for (int i = 1; i < pts.Count; i++) p.LineTo(pts[i]);
-            p.Stroke();
-        }
-
-        /// <summary>Points along a rounded rect's border from top-centre clockwise, covering fraction <paramref name="f"/> of it.</summary>
-        public static List<Vector2> Perimeter(Rect r, float rad, float f)
-        {
-            float inset = 5f;
-            float x0 = r.xMin + inset, y0 = r.yMin + inset, x1 = r.xMax - inset, y1 = r.yMax - inset;
-            rad = Mathf.Min(rad, (x1 - x0) / 2f, (y1 - y0) / 2f);
-            var full = new List<Vector2>();
-            void Line(Vector2 a, Vector2 b, int n) { for (int i = 0; i < n; i++) full.Add(Vector2.Lerp(a, b, i / (float)n)); }
-            void Arc(Vector2 c, float a0, int n) { for (int i = 0; i < n; i++) { float a = (a0 + 90f * i / n) * Mathf.Deg2Rad; full.Add(c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * rad); } }
-            float cx = (x0 + x1) / 2f;
-            Line(new Vector2(cx, y0), new Vector2(x1 - rad, y0), 12);
-            Arc(new Vector2(x1 - rad, y0 + rad), -90f, 8);
-            Line(new Vector2(x1, y0 + rad), new Vector2(x1, y1 - rad), 24);
-            Arc(new Vector2(x1 - rad, y1 - rad), 0f, 8);
-            Line(new Vector2(x1 - rad, y1), new Vector2(x0 + rad, y1), 24);
-            Arc(new Vector2(x0 + rad, y1 - rad), 90f, 8);
-            Line(new Vector2(x0, y1 - rad), new Vector2(x0, y0 + rad), 24);
-            Arc(new Vector2(x0 + rad, y0 + rad), 180f, 8);
-            Line(new Vector2(x0 + rad, y0), new Vector2(cx, y0), 12);
-            full.Add(new Vector2(cx, y0));
-            int keep = Mathf.Clamp(Mathf.CeilToInt(full.Count * f), 2, full.Count);
-            return full.GetRange(0, keep);
+            float corner = 12f * rad * Mathf.Sin(7.5f * Mathf.Deg2Rad);
+            float w = Mathf.Max(0f, r.width - rad * 2f), h = Mathf.Max(0f, r.height - rad * 2f);
+            float total = 2f * (w + h) + 4f * corner;
+            return total <= 0f ? 0f : w * 0.5f / total;
         }
     }
 
