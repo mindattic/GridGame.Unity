@@ -125,3 +125,34 @@ Battle input: press `ui.click`, drag start `battle.pickup`, path steps `battle.m
 | Crucible entered | `battle.crucible_enter` | |
 | Claimed timed job (purse) | `battle.pickup` | |
 | Window theme editor save | `ui.confirm` / `ui.error` | |
+
+## Library choice (GG-T463, research 2026-11-24; OWNER MUST BUY)
+
+**Recommendation: Universal Sound FX by Imphenzia** (Unity Asset Store, package 17256). An agent cannot buy it;
+the owner purchases it, then GG-T464 imports it.
+
+| Fact | Finding (Asset Store page, checked 2026-11-24) |
+|---|---|
+| Price | $24.97 at the current 50% sale (list $49.95), plus tax at checkout |
+| Licence | Standard Unity Asset Store EULA, Extension Asset. Royalty-free use in commercial games, mobile included; the sounds may not be redistributed as a standalone sound library. Pick **Single Entity** (individuals and small businesses) |
+| Size | 1.4 GB download; import only the groups the mapping list needs, and ship ogg, so the build is not affected |
+| Version | 1.6 (2025-02-28), requires Unity 2021.3+ |
+| Reviews | ~1,070 ratings, ~5,900 favourites. Recent reviews (v1.6) positive on selection and quality |
+| Tags | Fantasy, UI, power-up, sci-fi, 8-bit, voice, loops |
+
+Coverage against the Wants column above: strong for UI, pickups, power-ups, whooshes, casts and magic; fantasy tags
+fit the game. Weaker or unconfirmed: weapon-specific hits (sword, axe, bow, claw), per-family death cries, footsteps
+by terrain, shell crack and egg squelch. The page states no file count or category list for these, so check the
+package contents (Asset Store preview or after purchase) before relying on them. Anything missing stays on the
+current synthesized `make_sfx.py` cue, as GG-T464 already plans.
+
+Risks from the reviews: one reviewer reports mono files, abrupt cut-off endings and a muffled sound; others
+disagree, and no recent review repeats it. A few note too many whooshes (over 30). Mitigation: audition the
+candidates for the Wants rows before committing, trim tails and apply the -16 LUFS normalisation on import, and
+refund is available under the Unity refund policy if the pack fails the audition.
+
+Alternatives considered (not researched in depth, cheaper or narrower): generic $20-25 "Universal Sound Effects" and
+"Universal Audio FX" packs (different publishers, smaller). Not recommended as the single source.
+
+**Owner action:** buy Universal Sound FX (Single Entity licence) from the Asset Store, then unblock GG-T464.
+GG-T463 stays open until the purchase is made.
