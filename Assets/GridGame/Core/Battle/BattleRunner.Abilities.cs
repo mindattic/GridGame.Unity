@@ -601,10 +601,14 @@ namespace GridGame.Core.Battle
         private void ResolveDirectCharge(Unit caster, AbilityDef a, TimelineEntry cast)
         {
             var victims = new List<Unit>();
+            Coord? wall = null;
             if (cast.ChargeShape == ChargeShape.Line && cast.LineTiles != null)
             {
                 foreach (var tile in cast.LineTiles)
                 {
+                    // GG-T934 (§14.23): a wall raised on the line since it was marked (the Machinist's barricade) stops
+                    // the charge there; whoever stands beyond it is spared.
+                    if (RegionBoard.StopsCharge(S, tile)) { wall = tile; break; }
                     var u = S.UnitAt(tile);
                     if (u != null && u.IsHero && !victims.Contains(u)) victims.Add(u);
                 }
@@ -615,10 +619,12 @@ namespace GridGame.Core.Battle
                 if (t != null && t.Alive) victims.Add(t);
             }
             var resolved = new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = cast.TargetTile };
-            if (cast.LineTiles != null) resolved.Tiles.AddRange(cast.LineTiles);
+            if (cast.LineTiles != null)
+                foreach (var tile in cast.LineTiles) { if (wall == tile) break; resolved.Tiles.Add(tile); }
             foreach (var v in victims) resolved.Targets.Add(v.Id);
             Emit(resolved);
-            if (victims.Count == 0) { Announce("Dodged!", caster.Id); return; }
+            if (wall.HasValue) BashWall(wall.Value, caster);
+            if (victims.Count == 0) { if (!wall.HasValue) Announce("Dodged!", caster.Id); return; }
             bool landed = false;
             foreach (var v in victims)
             {
@@ -640,6 +646,18 @@ namespace GridGame.Core.Battle
                 if (buff != null && v.Alive && roll.Hit != HitKind.Miss) ApplyBuff(v, buff, buff.Duration);
             }
             if (landed && a.DrainsOrbs > 0) DrainOrbs(caster, a); // GG-T332: the Bulwark's siphon
+        }
+
+        /// <summary>GG-T934 (§14.23): a line charge runs into the wall at <paramref name="at"/>: "Blocked!", and the wall
+        /// takes one hit on its counter (a ModifyTiles +1, so a barricade with Threshold 3 gives after three).</summary>
+        private void BashWall(Coord at, Unit caster)
+        {
+            var m = S.Region.At(at);
+            if (m == null) return;
+            Announce("Blocked!", caster.Id);
+            var hit = new RuleEffectDef { Kind = RuleEffectKind.ModifyTiles, Area = RuleArea.Tiles, State = m.State, Amount = 1 };
+            hit.Tiles.Add(at);
+            ModifyTiles(hit, new RuleCtx { Rule = m.Rule, State = m.State, Subject = caster, At = at, Owner = m.OwnerTeam, OwnerId = m.OwnerId, Mark = m });
         }
     }
 }

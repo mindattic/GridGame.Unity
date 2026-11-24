@@ -483,7 +483,8 @@ namespace GridGame.Core.Rules
             Coord start = caster.Pos;
             if (dir.X > 0) start = new Coord(caster.Pos.X + caster.W - 1, caster.Pos.Y);
             if (dir.Y > 0) start = new Coord(caster.Pos.X, caster.Pos.Y + caster.H - 1);
-            for (var c = start + dir; BattleState.InBounds(c) && !(state?.IsBlock(c) ?? false); c = c + dir) list.Add(c); // a block stops the charge
+            // A block stops the charge, and so does a standing wall someone painted (GG-T934: the Machinist's barricade).
+            for (var c = start + dir; BattleState.InBounds(c) && !(state?.IsBlock(c) ?? false) && !(state != null && RegionBoard.StopsCharge(state, c)); c = c + dir) list.Add(c);
             return list;
         }
 

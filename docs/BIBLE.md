@@ -1848,6 +1848,7 @@ All entries in `abilities.json`. Every spell has base cast time **1.5 s** (scale
 | **Teleport** (Skill, CD 3) | free | SingleTile / PickTile / EmptyOnly | None | relocate + pincer scan | mobility |
 | **Curse Link** (Hexer, GG-T873) | 2 | SingleActor / PickActor / EnemyOnly | Twist | [Linked] on the picked foe **and its farthest living teammate** (ties: more HP, then lower id; `CurseLink.Partner`) for 2 turns: damage dealt to one echoes `BattleConfig.LinkEchoFraction` 50% (min 1) to the other as an "Echo" hit of the same element from the same source (`LinkEchoEvent`, then its `DamagedEvent`); the echo never echoes back. Fizzles on a lone foe. The view draws a violet tether on the link (`UnitsLinkedEvent`) and pulses it on each echo. HeroBot links a foe a hero already stands beside (a pincer target) to one no hero is within 2 tiles of (`CurseLink.Value`) *(Tests: `CurseLinkTests`)* | hit the boss behind its adds, or a spread-out pair, with one pincer |
 | **Buried Charge** (Engineer Skill `engineer_buried_charge`, CD 3, INT 4, GG-T876) | free | SingleTile / PickTile / EmptyOnly | Bezier | buries a `buriedmine` ([§14.23](#1423-tactical-tiles-added-2026-11-24-battle-feel-epic-gg-t823-gg-t842)): seen by all for 2 s, then only the party sees it (faintly); whoever steps on it (a hero too) pops it out and it blows 1.5 s later, 14 Fire on its tile and neighbours | ambush |
+| **Barricade** (Machinist Skill `machinist_barricade`, CD 3, INT 4, GG-T934) | free | SingleTile / PickTile / EmptyOnly | Bezier | raises a `machinist_barricade` ([§14.23](#1423-tactical-tiles-added-2026-11-24-battle-feel-epic-gg-t823-gg-t842)) for 20 s: nothing walks through it, a line charge stops at it ("Blocked!") and spares whoever is behind; each foe ending its turn beside it, and each charge into it, is one of the 3 hits that knock it down | wall off a flank, shield a hero from a charge |
 | **Firewall** (Red Mage Spell `firewall`, CD 2, INT 6, GG-T931) | 2 | Wall(1) / PickTile / EmptyOnly | Straight | raises a `firewall` ([§14.23](#1423-tactical-tiles-added-2026-11-24-battle-feel-epic-gg-t823-gg-t842)) three tiles wide across the caster's line to the picked tile, for 12 s: whoever steps in (a hero too) takes 6 Fire and Burning, ending a turn in it 4 Fire and Burning; Ice douses it | area denial |
 
 Enemy-only entries: `charge_fireball` (Fire), `charge_ice` (Ice), `charge_thunder` (Lightning), `charge_smite` (Holy) — 2.5 s charges with base 0 (damage comes from the INT-vs-WIS roll, [§13.4](#134-the-interrupt-path)); `enrage` (self Hasten 0.35, Cyclops phase 2). **Amended 2026-11-05 (GG-T283):** an enemy charge with `CooldownTurns` > 0 rests that many of the caster's own turns (counted at each turn start) before it can be charged again; `charge_smite` has 2, so a templar charges every other turn and closes in between. **Amended 2026-11-21 (GG-T566):** the count ran down at turn start, before the charge was planned, so `CooldownTurns` N rested only N−1 turns (1 did nothing). It now counts down **after** each of the caster's turns (`BattleRunner.RunEnemyTurn`; a cooldown set during the turn doesn't tick that turn), so N rests N full turns: `charge_smite`'s 2 means a templar charges, rests two turns, then may charge again.
@@ -3287,6 +3288,18 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   hazard (GG-T830), and the boom plays an explosion with a fire burst. The blast still lands on everyone on its
   tiles by design (`Affects` Any), so the gap below doesn't touch it.
   *(Tests: `BuriedChargeTests`.)*
+- **The Machinist's Barricade (GG-T934).** `machinist_barricade` ("Barricade", Machinist Skill, cooldown 3 turns, INT
+  4; PickTile, EmptyOnly, `RuleEffects` paint `machinist_barricade` on its Target) raises a wall as the party, its rule
+  (regionrules.json `machinist-barricade`) coming into play silently. The state `Blocks` (no unit walks, lands or
+  spawns there: `S.Walkable`, so the enemy step, `FootprintStepLegal` and the pincer planner route round it, and a
+  pincer line through its empty tile is broken), lasts `LifeSeconds` 20 and has `Threshold` 3 with no `Becomes`, so
+  its third hit clears it. Hits: the rule's TurnEnd hook (Team Enemy) adds 1 to every barricade orthogonally beside a
+  foe that ends its turn (`ModifyTiles`, Area Self, Radius 1); and a line charge runs into it. `RegionBoard.StopsCharge`
+  (a blocking mark that isn't a `Pit`; a hold's barricade too) ends `EnemyPlanner.LineToward` before it, and when one
+  rises on a line already marked, `ResolveDirectCharge` walks the locked line in order and stops at it: the heroes
+  beyond it are spared, the resolved tiles end there, and the wall announces "Blocked!" and takes one hit
+  (`ModifyTiles` +1). A hole is no wall: a charge runs over it as before. Not yet: an ability `Range` (the skill picks
+  any empty tile) and a Machinist skill-tree node. *(Tests: `BarricadeTests`.)*
 - **The Red Mage's Firewall (GG-T931).** Owner: *"a firewall that causes burning debuff if actors enter the tile"*.
   `TargetShape.Wall` (new): a line of 2 × `Radius` + 1 tiles through the anchor, square across the line from the caster
   (`TargetResolver.Tiles`' new optional `from`, the caster's tile: |dx| > |dy| a column, else a row; no `from` a row).

@@ -420,6 +420,34 @@
     ]
   },
   {
+    "Id": "machinist-barricade",
+    "TileStates": [
+      {
+        "Id": "machinist_barricade",
+        "Blocks": true,
+        "Threshold": 3,
+        "LifeSeconds": 20,
+        "Color": "#7a8794",
+        "Glyph": "▦"
+      }
+    ],
+    "Hooks": [
+      {
+        "On": "TurnEnd",
+        "Team": "Enemy",
+        "Effects": [
+          {
+            "Kind": "ModifyTiles",
+            "Area": "Self",
+            "Radius": 1,
+            "State": "machinist_barricade",
+            "Amount": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
     "Id": "shardfall-strikes",
     "TileStates": [
       {

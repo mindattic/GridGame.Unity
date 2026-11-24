@@ -142,6 +142,17 @@ namespace GridGame.Core.Battle
             return next != null && (next.Hazard || next.Pit || next.OnMark.Any(e => e.Kind == RuleEffectKind.Schedule));
         }
 
+        /// <summary>
+        /// GG-T934 (BIBLE §14.23): is <paramref name="c"/> a standing wall a line charge runs into (a blocking painted
+        /// mark that isn't a hole: the Machinist's barricade, a hold's barricade)? A charge stops there and spares whoever
+        /// is beyond it; a hole it runs over.
+        /// </summary>
+        public static bool StopsCharge(BattleState s, Coord c)
+        {
+            var m = s.Region.At(c);
+            return m != null && m.Blocks && !(s.Content?.TryTileState(m.State)?.Pit ?? false);
+        }
+
         /// <summary>Is <paramref name="c"/> an open hole <paramref name="u"/> would fall into (GG-T368)?</summary>
         public static bool IsPitFor(BattleState s, Coord c, Unit u)
         {
