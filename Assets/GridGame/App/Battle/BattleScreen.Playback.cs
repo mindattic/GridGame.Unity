@@ -190,11 +190,11 @@ namespace GridGame.App
                 case HastenedEvent hs: return HastenAnim(hs);
                 case TempoChangedEvent tc: return TempoAnim(tc);
                 case TurnStartedEvent ts: FlushTallies(); return TurnAnim(ts);
-                case TurnSkippedEvent sk: App.Audio.Sfx(sk.Reason == "asleep" ? "status.sleep" : "ui.cancel", sk.Reason == "asleep" ? 0.8f : 0.5f); return FloatText(sk.UnitId, sk.Reason == "asleep" ? "Zzz…" : "…", new Color(0.7f, 0.8f, 1f), 0.35f, kind: CombatTextKind.StatusTick);
+                case TurnSkippedEvent sk: App.Audio.Sfx(sk.Reason == "asleep" ? "status.sleep" : "ui.cancel", sk.Reason == "asleep" ? 0.8f : 0.5f); return FloatText(sk.UnitId, CombatTextKind.StatusTick, sk.Reason == "asleep" ? "Zzz…" : "…", 0.35f);
 
                 case CastQueuedEvent cq: return CastQueuedAnim(cq);
                 case CastStaggeredEvent cs: return StaggerAnim(cs);
-                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", new Color(1f, 0.6f, 0.3f), 0.35f, kind: CombatTextKind.Timer);
+                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", 0.35f);
                 case ClutchEvent cl: return ClutchAnim(cl);
                 case AbilityResolvedEvent ar: FlushTallies(); return AbilityAnim(ar);
                 case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); return null;
@@ -207,16 +207,16 @@ namespace GridGame.App
                 case PickupExpiredEvent pe: return PickupExpiredAnim(pe);
 
                 case BuffAppliedEvent ba: return InflictAnim(ba);
-                case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, "Steam!", Palette.White, 0.25f) : null;
+                case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, CombatTextKind.Weak, "Steam!", 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
                 case UnitsLinkedEvent ul: return LinkedAnim(ul); // GG-T873: Curse Link's tether
                 case LinkEchoEvent le: return LinkEchoAnim(le);
-                case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, "Snare!", Palette.Boss, 0.3f, kind: CombatTextKind.Debuff);
-                case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, "Trap!", Palette.Boss, 0.25f, kind: CombatTextKind.Debuff);
-                case TrapClearedEvent tc: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tc.ById, tc.Into == null ? "Cleared!" : "Changed!", Palette.Boss, 0.25f); // GG-T371
+                case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, CombatTextKind.Debuff, "Snare!", 0.3f);
+                case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, CombatTextKind.Debuff, "Trap!", 0.25f);
+                case TrapClearedEvent tc: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tc.ById, CombatTextKind.Support, tc.Into == null ? "Cleared!" : "Changed!", 0.25f); // GG-T371
                 case RegionRuleEvent rgr: return RegionRuleAnim(rgr); // GG-T359
                 case RegionTilesEvent rgt: return RegionTilesAnim(rgt);
                 case TileRevealedEvent trv: return TileRevealedAnim(trv); // GG-T843
@@ -228,9 +228,9 @@ namespace GridGame.App
                 case HazardLandedEvent hzl: return HazardLandedAnim(hzl);
                 case FellEvent fel: return FellAnim(fel); // GG-T368
                 case WeaponWornEvent _: return null;
-                case WeaponShatteredEvent ws: App.Audio.Sfx("battle.shatter"); return FloatText(ws.UnitId, "SHATTER!", Palette.Buff, 0.5f, 80, CombatTextKind.Debuff);
-                case ArmorBrokenEvent ab: App.Audio.Sfx("battle.shatter", 0.7f); return FloatText(ab.UnitId, "Armor broken!", new Color(1f, 0.6f, 0.4f), 0.4f, 64, CombatTextKind.Debuff);
-                case WeaponSwappedEvent sw: App.Audio.Sfx("battle.dash"); SyncBar(); return FloatText(sw.UnitId, "⭾ " + (App.Content.TryItem(sw.ToWeapon)?.Name ?? "Swap"), Palette.Info, 0.3f, 54);
+                case WeaponShatteredEvent ws: App.Audio.Sfx("battle.shatter"); return FloatText(ws.UnitId, CombatTextKind.Debuff, "SHATTER!", 0.5f, 1f);
+                case ArmorBrokenEvent ab: App.Audio.Sfx("battle.shatter", 0.7f); return FloatText(ab.UnitId, CombatTextKind.Debuff, "Armor broken!", 0.4f, 0.5f);
+                case WeaponSwappedEvent sw: App.Audio.Sfx("battle.dash"); SyncBar(); return FloatText(sw.UnitId, CombatTextKind.Support, "⭾ " + (App.Content.TryItem(sw.ToWeapon)?.Name ?? "Swap"), 0.3f);
                 case BossPhaseEvent bp: return BossAnim(bp);
                 case RuleBrokenEvent rb: return RuleBreakAnim(rb);
                 case BountyTargetEvent bte: return BountyAnim(bte); // GG-T431
@@ -628,7 +628,7 @@ namespace GridGame.App
                 if (board.Units.TryGetValue(id, out var v))
                     App.StartCoroutine(Tween.Run(Timing.Emphasis, k => v.Root.style.rotate = new Rotate(k >= 1f ? 0f : 360f * Tween.EaseInOut(k))));
             App.Audio.Sfx("battle.whoosh", 0.7f, 1.2f); // GG-T465: the spin was silent
-            yield return FloatText(rs.Attacker1, "Respite", new Color(0.8f, 0.95f, 1f), 0.45f, 56, CombatTextKind.Buff);
+            yield return FloatText(rs.Attacker1, CombatTextKind.Buff, "Respite", 0.45f);
         }
 
         /// <summary>GG-T187 (§1.2.3): a supporter performs its class's support action — its cut-in card carries the action's
@@ -1180,7 +1180,7 @@ namespace GridGame.App
             yield return Tween.Run(Timing.Standard, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 40f + 160f * k, new Color(1f, 0.8f, 0.3f, 1f - k), 12f); });
             board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             board.SyncAmplifier(null);
-            yield return FloatText(e.HeroId, "AMPLIFIED!", Palette.Gold, 0.2f, 70, CombatTextKind.Buff);
+            yield return FloatText(e.HeroId, CombatTextKind.Buff, "AMPLIFIED!", 0.2f, 0.6f);
         }
 
         // ── Damage tally (owner direction 2026-10-10): hits within a pincer stack up, then explode into the total ──
@@ -1797,7 +1797,7 @@ namespace GridGame.App
                     : Mathf.Max(1, Mathf.RoundToInt((pb.ToU - pb.FromU) * BattleConfig.BarSeconds * BattleConfig.TicksPerSecond))));
             else if (entry != null && timelineIconViews.ContainsKey(entry.Id))
                 App.StartCoroutine(TossOne(entry.Id, pb.FromU, pb.ToU, 0.38f));
-            yield return FloatText(pb.UnitId, "Pushback!", Palette.Info, 0.12f, 46, CombatTextKind.Timer);
+            yield return FloatText(pb.UnitId, CombatTextKind.Timer, "Pushback!", 0.12f);
         }
 
         /// <summary>GG-T367: Pushback tosses the icon back down the bar: it travels linearly along the track (never off
@@ -1830,14 +1830,14 @@ namespace GridGame.App
                 App.Audio.Sfx("battle.slide", 0.7f, 1.15f);
                 App.StartCoroutine(GlideOne(cs.EntryId, from, Mathf.Clamp01(from + CastSpanU(cs.DelayTicks)), 0.3f));
             }
-            yield return FloatText(cs.CasterId, cs.Resisted ? "Steady!" : "Stagger!", Palette.Gold, 0.25f, kind: cs.Resisted ? CombatTextKind.Resist : CombatTextKind.Timer);
+            yield return FloatText(cs.CasterId, cs.Resisted ? CombatTextKind.Resist : CombatTextKind.Timer, cs.Resisted ? "Steady!" : "Stagger!", 0.25f, 0.4f);
         }
 
         private IEnumerator HastenAnim(HastenedEvent h)
         {
             if (timelineIconViews.ContainsKey(h.EntryId))
                 App.StartCoroutine(GlideOne(h.EntryId, h.FromU, h.ToU, 0.3f));
-            yield return FloatText(h.UnitId, "Haste!", Palette.Gold, 0.2f, 50, CombatTextKind.Buff);
+            yield return FloatText(h.UnitId, CombatTextKind.Buff, "Haste!", 0.2f);
         }
 
         private IEnumerator TurnAnim(TurnStartedEvent ts)
@@ -1889,7 +1889,7 @@ namespace GridGame.App
             if (caster != null) yield return Gather(caster, castColor);
             if (caster != null) { StartChannel(caster.Id, castColor); App.Audio.Sfx("battle.channel", 0.7f); }
             SyncTimeline(null);
-            yield return FloatText(cq.CasterId, cq.IsCharge ? "Charging…" : "Casting…", new Color(0.6f, 0.85f, 1f), 0.3f, 50, CombatTextKind.Timer);
+            yield return FloatText(cq.CasterId, CombatTextKind.Timer, cq.IsCharge ? "Charging…" : "Casting…", 0.3f);
         }
 
         private IEnumerator ClutchAnim(ClutchEvent c)
@@ -1900,12 +1900,12 @@ namespace GridGame.App
             App.Audio.Sfx("battle.heal");
             yield return Tween.Fade(flash, 0.9f * Mathf.Max(0.3f, Fx), 0f, 0.35f);
             flash.RemoveFromHierarchy();
-            yield return FloatText(c.CasterId, "CLUTCH!", Palette.GoldLight, 0.3f, 90);
+            yield return FloatText(c.CasterId, CombatTextKind.Callout, "CLUTCH!", 0.3f, 1f);
             // GG-T571: what earned it, small under the float: the kind's glossary headword, "Clutch: " dropped.
             if (App.Content.GlossaryIndex.TryGetValue(ClutchKinds.GlossaryId(c.Kind), out var g) && !string.IsNullOrEmpty(g.Term))
             {
                 string name = g.Term.StartsWith("Clutch: ", System.StringComparison.Ordinal) ? g.Term.Substring(8) : g.Term;
-                yield return FloatText(c.CasterId, name, Palette.GoldLight, 0.2f, 40);
+                yield return FloatText(c.CasterId, CombatTextKind.Support, name, 0.2f);
             }
         }
 
@@ -2119,7 +2119,7 @@ namespace GridGame.App
         {
             App.Audio.Sfx("battle.explosion");
             App.StartCoroutine(Tween.Shake(shake, 20f * Fx, Timing.Emphasis));
-            yield return FloatText(bp.UnitId, string.IsNullOrEmpty(bp.Text) ? "ENRAGED!" : bp.Text, new Color(1f, 0.3f, 0.6f), 0.6f, 80);
+            yield return FloatText(bp.UnitId, CombatTextKind.Callout, string.IsNullOrEmpty(bp.Text) ? "ENRAGED!" : bp.Text, 0.6f, 0.7f);
         }
 
         private IEnumerator WaveAnim(WaveStartedEvent wv)
@@ -2168,7 +2168,7 @@ namespace GridGame.App
             v.SetHp(rv.Hp, u.MaxHp);
             App.Audio.Sfx("battle.heal");
             yield return Tween.Run(Timing.Emphasis, k => { v.Root.style.opacity = k; v.Root.style.scale = new Scale(Vector2.one * (0.6f + 0.4f * k)); });
-            yield return FloatText(u.Id, "Revived!", Palette.GoldLight, 0.2f, 70, CombatTextKind.Heal);
+            yield return FloatText(u.Id, CombatTextKind.Heal, "Revived!", 0.2f, 0.6f);
         }
 
         private VisualElement Particle(float size, Color c)
@@ -2276,7 +2276,7 @@ namespace GridGame.App
                 : tr.Effect == TriggerEffectKind.CastAbility ? "battle.warcry" : "battle.powerup";
             App.Audio.Sfx(sfx, tr.Kind == AbilityKind.Reactive ? 0.8f : 0.5f);
             string text = string.IsNullOrEmpty(tr.Callout) ? "!" : tr.Callout.EndsWith("!") ? tr.Callout : tr.Callout + "!";
-            return FloatText(tr.UnitId, text, tr.Kind == AbilityKind.Reactive ? Palette.Gold : Palette.Info, tr.Kind == AbilityKind.Reactive ? 0.2f : 0.1f, tr.Kind == AbilityKind.Reactive ? 56 : 44);
+            return FloatText(tr.UnitId, tr.Kind == AbilityKind.Reactive ? CombatTextKind.Buff : CombatTextKind.Support, text, tr.Kind == AbilityKind.Reactive ? 0.2f : 0.1f);
         }
 
         /// <summary>Evasion slipped a blow (GG-T297, POL-D4): the defender sidesteps away from the attacker and back with
@@ -2297,22 +2297,31 @@ namespace GridGame.App
                     v.Root.style.translate = new Translate(side.x * d * s, side.y * d * s);
                 }));
             }
-            return FloatText(dg.UnitId, "Dodge!", Palette.Info, 0.3f, 64, CombatTextKind.Miss);
+            return FloatText(dg.UnitId, CombatTextKind.Miss, "Dodge!", 0.3f);
         }
 
         /// <summary>GG-T826: the battle's floating texts, one per board (bible §9.1).</summary>
         private CombatText combatText;
         private CombatText Text => combatText != null && combatText.Board == board ? combatText : combatText = new CombatText(board, App);
 
-        /// <summary>Floats a combat text over a unit (the board centre when it has no view) and waits
-        /// <paramref name="hold"/>. Delegates to <see cref="CombatText.Show(Vector2, CombatTextKind, string, float, Color?)"/>;
-        /// with no <paramref name="kind"/> a big size (70+) reads as a Callout, anything else as Support.
-        /// <paramref name="size"/> only sets the magnitude now: the kind's style token sizes the text.</summary>
+        /// <summary>GG-T828: floats a combat text over a unit (the board centre when it has no view) and waits
+        /// <paramref name="hold"/>. The kind's style token picks the face, colour, motion and size; <paramref name="magnitude"/>
+        /// (0..1) only says how big the moment is. Every Playback float comes through here.</summary>
+        private IEnumerator FloatText(int unitId, CombatTextKind kind, string text, float hold, float magnitude = 0f)
+        {
+            Text.Show(FloatAt(unitId), kind, text, magnitude);
+            yield return Tween.Wait(hold);
+        }
+
+        /// <summary>Where a unit's float sits: its view's centre, else the board centre.</summary>
+        private Vector2 FloatAt(int unitId) =>
+            State.UnitById(unitId) != null && board.Units.TryGetValue(unitId, out var v) ? BoardView.CenterOf(v.Tile, v.W, v.H) : new Vector2(BoardView.Tile * 3, BoardView.Tile * 4);
+
+        /// <summary>The older call shape, still used by the other BattleScreen partials: a size (70+ reads as a Callout,
+        /// anything else as Support) and a tint. <paramref name="size"/> only sets the magnitude: the kind's style sizes the text.</summary>
         private IEnumerator FloatText(int unitId, string text, Color c, float hold, float size = 60, CombatTextKind? kind = null)
         {
-            var u = State.UnitById(unitId);
-            Vector2 at = u != null && board.Units.TryGetValue(unitId, out var v) ? BoardView.CenterOf(v.Tile, v.W, v.H) : new Vector2(BoardView.Tile * 3, BoardView.Tile * 4);
-            Text.Show(at, kind ?? (size >= 70 ? CombatTextKind.Callout : CombatTextKind.Support), text, Mathf.Clamp01((size - 60f) / 30f), c);
+            Text.Show(FloatAt(unitId), kind ?? (size >= 70 ? CombatTextKind.Callout : CombatTextKind.Support), text, Mathf.Clamp01((size - 60f) / 30f), c);
             yield return Tween.Wait(hold);
         }
 
