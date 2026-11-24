@@ -32,8 +32,23 @@ namespace GridGame.App
         /// <summary>A hidden mark shows again (GG-T843, §14.23): a flash on its tile, then it is drawn for everyone.</summary>
         private IEnumerator TileRevealedAnim(TileRevealedEvent tr)
         {
+            if (tr.State == "buriedmine") { yield return BuriedChargePop(tr); yield break; }
             board.Mark(tr.At, Palette.Gold, 0.6f);
             App.Audio.Sfx("battle.trap", 0.8f, 1.15f);
+            board.SyncRegion(State);
+            yield return Tween.Wait(Timing.Standard);
+            board.ClearMarks();
+        }
+
+        /// <summary>GG-T876 (§14.23): a Buried Charge pops out of the ground with a click, its fuse about to run (the
+        /// mineblast's own Timer countdown follows from its HazardQueuedEvent, and its boom from HazardLandedAnim).</summary>
+        private IEnumerator BuriedChargePop(TileRevealedEvent tr)
+        {
+            var at = BoardView.CenterOf(tr.At);
+            board.Mark(tr.At, new Color(1f, 0.3f, 0.2f), 0.75f);
+            Emit(StyleOf(DamageType.Physical), at, 0.6f, quiet: true);
+            App.Audio.Sfx("battle.trap", 0.9f, 1.7f); // the click
+            Text.Countdown(at, 0, new Color(1f, 0.45f, 0.3f), zero: "Click!");
             board.SyncRegion(State);
             yield return Tween.Wait(Timing.Standard);
             board.ClearMarks();
@@ -88,7 +103,12 @@ namespace GridGame.App
             foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
             if (!hl.Rearmed) hazardTiles.Remove(hl.EntryId);
             if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
-            App.Audio.Sfx("battle.shatter", 0.7f);
+            if (hl.EventId == "mineblast" && hl.Tiles.Count > 0) // GG-T876: the boom after the click
+            {
+                App.Audio.Sfx("battle.explosion", 0.9f);
+                Emit(StyleOf(DamageType.Fire), HazardCenter(hl.Tiles));
+            }
+            else App.Audio.Sfx("battle.shatter", 0.7f);
             yield return Tween.Wait(Timing.Standard);
             board.ClearMarks();
             board.SyncRegion(State);

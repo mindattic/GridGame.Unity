@@ -8,7 +8,8 @@
       "Breaks": [],
       "Exploits": [],
       "Tiles": [
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -24,7 +25,8 @@
         { "On": "slime", "Kind": "Clear" },
         { "On": "slime_glob", "Kind": "Clear" },
         { "On": "ice", "Kind": "Clear" },
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -38,7 +40,8 @@
         { "On": "quicksand", "Kind": "Clear" },
         { "On": "fire", "Kind": "Clear" },
         { "On": "floodwater", "Kind": "Becomes", "Into": "ice" },
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -49,7 +52,8 @@
       "Exploits": ["wet"],
       "Tiles": [
         { "On": "shock_mine", "Kind": "Clear" },
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -59,7 +63,8 @@
       "Breaks": [],
       "Exploits": [],
       "Tiles": [
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -70,7 +75,8 @@
       "Exploits": [],
       "Tiles": [
         { "On": "miasma", "Kind": "Clear" },
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -80,7 +86,8 @@
       "Breaks": [],
       "Exploits": [],
       "Tiles": [
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     },
     {
@@ -90,7 +97,8 @@
       "Breaks": [],
       "Exploits": [],
       "Tiles": [
-        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" }
       ]
     }
   ],
@@ -101,7 +109,8 @@
         { "On": "venom_snare", "Kind": "Clear" },
         { "On": "shock_mine", "Kind": "Clear" },
         { "On": "caltrops", "Kind": "Clear" },
-        { "On": "mine", "Kind": "Clear" }
+        { "On": "mine", "Kind": "Clear" },
+        { "On": "buriedmine", "Kind": "Clear" }
       ]
     },
     {

@@ -233,6 +233,15 @@
         "Glyph": "◈"
       },
       {
+        "Id": "buriedmine",
+        "Hazard": true,
+        "LifeSeconds": 40,
+        "VisibleSeconds": 2,
+        "Affects": "Any",
+        "Color": "#b08a3c",
+        "Glyph": "◈"
+      },
+      {
         "Id": "armedmine",
         "LifeSeconds": 6,
         "Color": "#ff3b30",
@@ -272,6 +281,17 @@
       {
         "On": "EnterTile",
         "State": "mine",
+        "Effects": [
+          {
+            "Kind": "MarkTiles",
+            "Area": "Self",
+            "State": "armedmine"
+          }
+        ]
+      },
+      {
+        "On": "EnterTile",
+        "State": "buriedmine",
         "Effects": [
           {
             "Kind": "MarkTiles",

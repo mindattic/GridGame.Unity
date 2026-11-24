@@ -572,6 +572,7 @@ namespace GridGame.Core.Bot
                     if ((a.BaseDamage > 0 && a.BaseHeal <= 0) || (a.ApplyBuff != null && s.Content.TryBuff(a.ApplyBuff)?.Kind == BuffKind.Debuff)) score -= 20f; // harm+heal spares friends (GG-T183)
                 }
             }
+            score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
             // A lone hero's bar is its only way to hurt anything (no pincers with one hero): spend mana and items on
             // damage freely rather than hoarding them for a pincer that can never come (GG-T123).
             // GG-T333: an essence heal costs the caster HP. Never bleed below 40% for it; otherwise price the HP given.
@@ -594,6 +595,35 @@ namespace GridGame.Core.Bot
             }
             if (a.Kind == AbilityKind.Item) score -= lone ? 1f : 4f;
             return score;
+        }
+
+        /// <summary>
+        /// GG-T876 (§14.23): what burying a hidden hazard (a tile state with VisibleSeconds, the Engineer's Buried Charge)
+        /// on <paramref name="anchor"/> is worth: each living foe whose shortest walk to its nearest hero crosses the tile,
+        /// within a few steps of it, is a likely victim. A tile beside a hero is worth nothing: the blast hits everyone.
+        /// </summary>
+        public static float BuryValue(BattleState s, AbilityDef a, Coord anchor)
+        {
+            if (a.RuleEffects.Count == 0 || s.Region.At(anchor) != null) return 0f;
+            bool buries = false;
+            foreach (var fx in a.RuleEffects)
+                if (fx.Kind == RuleEffectKind.MarkTiles && fx.State != null && s.Content.TryTileState(fx.State) is TileStateDef st && st.Hazard && st.VisibleSeconds > 0f) { buries = true; break; }
+            if (!buries) return 0f;
+            var heroes = s.LivingList(Team.Hero);
+            foreach (var h in heroes) if (h.Pos.Chebyshev(anchor) <= 1) return 0f;
+            float value = 0f;
+            foreach (var e in s.LivingList(Team.Enemy))
+            {
+                int toAnchor = e.Pos.Manhattan(anchor);
+                if (toAnchor == 0 || toAnchor > 4) continue;
+                int best = int.MaxValue;
+                Coord goal = default;
+                foreach (var h in heroes) { int d = e.Pos.Manhattan(h.Pos); if (d < best) { best = d; goal = h.Pos; } }
+                if (best == int.MaxValue || toAnchor + anchor.Manhattan(goal) != best) continue; // not on its way
+                value += value == 0f ? 6f : 2f;
+                value += 4 - toAnchor; // sooner is likelier
+            }
+            return value;
         }
 
         // ── GG-T292: reading the bar (the smart bot) ────────────────────────────────────────────────────────────
