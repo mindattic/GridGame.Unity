@@ -113,5 +113,7 @@
   {"Key": "story:chapter/ch06", "Related": ["place:cityruins2"]},
   {"Key": "story:chapter/ch07", "Related": ["place:desert"]},
   {"Key": "story:chapter/ch08", "Related": ["place:morrowsshadow"]},
-  {"Key": "story:ending", "Related": []}
+  {"Key": "story:ending", "Related": []},
+  {"Key": "story:prologue", "Related": ["place:greenvalley"]},
+  {"Key": "story:dialogue/interlude_level10_motives", "Related": ["story:prologue"]}
 ]

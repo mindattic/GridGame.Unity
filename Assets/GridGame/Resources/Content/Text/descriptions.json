@@ -4119,6 +4119,578 @@
         "long": "Yetis of the frozen passes over the Anchor Wastes, white as the snow they sleep under, and as quiet until they move."
       }
     },
+    "codex:character/aetherist": {
+      "key": "codex:character/aetherist",
+      "id": "description-codex-character-aetherist",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c3033ca372280b670003405f93e03a86804a848895b77af897774dd4ab8d5b45",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Manasmith refines Mana Dust, the raw mana that settles out of the sky and drifts apart if nothing holds it, into Mana Shards: crystal that keeps its mana instead of losing it. That is why Shards are worth so much."
+      }
+    },
+    "codex:character/blacksmith": {
+      "key": "codex:character/blacksmith",
+      "id": "description-codex-character-blacksmith",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a4fb2a2c20f85958fe4b10d59cff981d2596deca4d2ef3de4c0eb006ef50cc36",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "A smith met on the Tithe Moors who travels with the caravan and keeps its forge: repairs, upgrades and new gear for the party."
+      }
+    },
+    "codex:character/brannoc": {
+      "key": "codex:character/brannoc",
+      "id": "description-codex-character-brannoc",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2ca279f52cbc68041cd3ad9183637545d5030fb1e2f3770e5baed0846e7006e5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Brannoc keeps the caravan's Mana Casks wagon, so every battle starts with mana already to hand."
+      }
+    },
+    "codex:character/enchantress": {
+      "key": "codex:character/enchantress",
+      "id": "description-codex-character-enchantress",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:dda34730b971e6b13e443a98929c395313c0d83e9aa50cdbc40db808d7e49cca",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Met in the fog of the Arkgrave, the Enchantress travels with the caravan and works enchantments into the party's armour."
+      }
+    },
+    "codex:character/innkeeper": {
+      "key": "codex:character/innkeeper",
+      "id": "description-codex-character-innkeeper",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fc63ad6f5c77e355bd181f142d88e9b949b8ef5d4f8c1f22a48659da3acac8d3",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The innkeeper keeps the inn where the party rests and recovers between expeditions."
+      }
+    },
+    "codex:character/lio": {
+      "key": "codex:character/lio",
+      "id": "description-codex-character-lio",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3f0d95600dc2ba42977fa37aa63312b522af641ded0125e2ab639d1f43d42dd2",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Lio keeps the Enchanter's Wagon, a rune-loft for the Enchantress's work, which makes armour enchantments cheaper."
+      }
+    },
+    "codex:character/merchant": {
+      "key": "codex:character/merchant",
+      "id": "description-codex-character-merchant",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a63c9feac7f0226b54d6c9445509c5acc3b0bc1fbb66176acd256f6717fe891e",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "A trader met on the road out of the Tithe Moors, who follows the caravan and sells to the party along the way."
+      }
+    },
+    "codex:character/old-hask": {
+      "key": "codex:character/old-hask",
+      "id": "description-codex-character-old-hask",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:29ad7f5de829e849fef12f8da9a69357a5b958ad73828d93aa8406e91273dba7",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Old Hask keeps the caravan's Armory Wagon, a travelling forge that makes repairs on the road cost less."
+      }
+    },
+    "codex:character/osk": {
+      "key": "codex:character/osk",
+      "id": "description-codex-character-osk",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:df5149b3345676b7aa770f3ac02d94f5e1043ade196f2218d65fea88309dc9dd",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Osk keeps the caravan's Quartermaster's Ledger. Every scrap is written down and nothing is wasted, so salvage returns more materials."
+      }
+    },
+    "codex:character/penny-tallow": {
+      "key": "codex:character/penny-tallow",
+      "id": "description-codex-character-penny-tallow",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bb4f5b7ec1713db4478f9e47cbe4101f06fef2b3e1da80a16f622e3394e9725b",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Penny Tallow keeps the caravan's Strongbox and sees that the party takes a bigger cut of the spoils when an expedition is done."
+      }
+    },
+    "codex:character/sister-ilsabet": {
+      "key": "codex:character/sister-ilsabet",
+      "id": "description-codex-character-sister-ilsabet",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:942b58edce755cba558fe3a8f8f5a928d5833ec69e7a98cd8a8f912ffe937ffd",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Sister Ilsabet keeps the caravan's Medic Wagon: the inn carried out onto the road, for a price, when an expedition cannot wait to get home."
+      }
+    },
+    "codex:character/wren-and-dace": {
+      "key": "codex:character/wren-and-dace",
+      "id": "description-codex-character-wren-and-dace",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5c7efdca154f06118da8adc4560db5bcf7059a9a14f4603037ca75a5ffba40c5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Wren and Dace are the caravan's outriders. They scout ahead and report what each battle holds before the party walks into it."
+      }
+    },
+    "codex:faction/ember": {
+      "key": "codex:faction/ember",
+      "id": "description-codex-faction-ember",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:aad825da8ca0975d30b23e81fc8e01839dc8b4088c2e2cf64fe607ea62e42486",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Red-and-black knights of the Shardfall who drink from its red rivers. Most of them want the Manalith down; a few don't."
+      }
+    },
+    "codex:faction/fendark": {
+      "key": "codex:faction/fendark",
+      "id": "description-codex-faction-fendark",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0aa97eeaa789701da6ce2705030117014ff8e9a8b1823d81bfda8583e0213533",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Witches, healers and Choir runaways living among the grounded Arks. They know more about mana than they say."
+      }
+    },
+    "codex:faction/holds": {
+      "key": "codex:faction/holds",
+      "id": "description-codex-faction-holds",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7a1e3c5ee081496518a00470815d4d3f1b509d847682ee6af1b87db4cd78bd54",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The moor and hill holds: knights and militia bound by old oaths, who pay the Choir's tithe every year and hate it."
+      }
+    },
+    "codex:faction/lantern": {
+      "key": "codex:faction/lantern",
+      "id": "description-codex-faction-lantern",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2f260b94579c42ac940773d97ab9112bfeae9d4516caac41f6102af3d7b0f285",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The pilgrim road through the gorges: its sword-schools, monks and ninja keep the lanterns lit and ask no questions."
+      }
+    },
+    "codex:faction/street": {
+      "key": "codex:faction/street",
+      "id": "description-codex-faction-street",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7d55d77d847972c69c3122b70a5f7c46cd0712f46c64ed8a572370076ea2b1d0",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Underspire's own: couriers, fighters, thieves and techwear runners who have dodged the Choir's tithe under Halcyon's ruins for generations. Their city runs its neon on Halcyon's old taps."
+      }
+    },
+    "codex:faction/wild": {
+      "key": "codex:faction/wild",
+      "id": "description-codex-faction-wild",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:cab098fadcafe19ebdeb52509eab54821e91cdfd5acb2ecd25109b85bdfe4a0c",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Wild children, beast tamers and things the Bloom has touched, living out where the Manalith's fallen substance takes root."
+      }
+    },
+    "codex:place/bloom": {
+      "key": "codex:place/bloom",
+      "id": "description-codex-place-bloom",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:26fc7771956432f9fbb20f53dbe3d17cb0f930226c6aa5e05656a750c428b455",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Where pieces of the Manalith fell and took root: red life in a white ruin, the first sign that what is coming is not only death. The wild children and beast tamers of the Wild live out here."
+      }
+    },
+    "codex:place/cathedral": {
+      "key": "codex:place/cathedral",
+      "id": "description-codex-place-cathedral",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5301553bedc974dec43ff1afc87e315de68d3f8dafbce06b2cccd22627dbffb9",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Choir's seat at the top of Halcyon's spire, where the tithe is sung up to keep the Manalith asleep. The Lullaby takes more mana than the Manalith needs, and the surplus fills the Cathedral organ's pipes: the reservoir the Hierarch drinks from."
+      }
+    },
+    "codex:place/cave": {
+      "key": "codex:place/cave",
+      "id": "description-codex-place-cave",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7a860a7e972d9f7cd88e825f389599124d71df7b7a0c407df0209df83fc63e9d",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "A waste crossed by Halcyon's great arches, the Anchors. The Watch, Halcyon's Anchor guard, still stands at every arch, long after it should have died."
+      }
+    },
+    "codex:place/cave2": {
+      "key": "codex:place/cave2",
+      "id": "description-codex-place-cave2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9eed0fa587d93aaea6ea5d1493d5465d080c93dd21242cc9c9baea95d1332946",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Beneath Halcyon's arches, where the Anchors draw on the Manalith. The Ember mean to open every tap and drag it down."
+      }
+    },
+    "codex:place/cityruins": {
+      "key": "codex:place/cityruins",
+      "id": "description-codex-place-cityruins",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:83653f343be58d0a7a29b5821cb9ebd6c7bce3bbc239eac735ca6db0b00ac930",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The dead towers of Halcyon under a sky gone pink. Halcyon stopped the Manalith, sang the first Lullaby, and fell 1,200 years ago. Its archives ran on mana, so when the city went dark its memory went dark with it."
+      }
+    },
+    "codex:place/cityruins2": {
+      "key": "codex:place/cityruins2",
+      "id": "description-codex-place-cityruins2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f14fc6a0e05d54411c5aa09756ac61a46fbb85894f61583f7df34688147b3423",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The neon city under Halcyon's ruins, home of the Street and of gangs like Redline. It keeps its lights on with mana drawn off Halcyon's old taps, and so keeps pulling the Manalith closer."
+      }
+    },
+    "codex:place/desert": {
+      "key": "codex:place/desert",
+      "id": "description-codex-place-desert",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:777e3718669b4c4ece476609d9496edcfbf80d6b54d033973083bfec9cbe0c02",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The waste where the first great pieces of the Manalith's shell came down. The Choir mines it. The Ember drink from its red rivers, and want the rest of the Manalith down."
+      }
+    },
+    "codex:place/desert2": {
+      "key": "codex:place/desert2",
+      "id": "description-codex-place-desert2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f6a73075858a686527e5b4459314b933175185122df4c08f76071e708b0bc201",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The deep Shardfall, where the Manalith's shed shell lies thickest and the Ember march on the Anchors."
+      }
+    },
+    "codex:place/greenvalley": {
+      "key": "codex:place/greenvalley",
+      "id": "description-codex-place-greenvalley",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:16232d33aab8a99198267e643462dccff82d92615f70810caf5f1dd8f5a2a4e5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Moor and hill country of the Free Holds, where the Choir's white collectors come once a year to take the tithe of mana. In Saltmoss, on tithe day, a handful of present-day people stole the Choir's white tithe caravan and ran. The Warden, just woken from a sleep of 1,200 years, ran with them."
+      }
+    },
+    "codex:place/greenvalley2": {
+      "key": "codex:place/greenvalley2",
+      "id": "description-codex-place-greenvalley2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f4cf3b7ee34629f67277e7a62585e33c42742c80769ca8145215e281bf355754",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Free Holds themselves: castles, keeps and villages that pay the Choir's tithe and live under a Manalith they worship and fear without understanding it. The Captain is still collecting."
+      }
+    },
+    "codex:place/lanternroad": {
+      "key": "codex:place/lanternroad",
+      "id": "description-codex-place-lanternroad",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a6c8f6879ca5572dfd0bed5530f3c4be39e35c621c6e0cc79db47929ecb4a60c",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The pilgrim road through the gorges, lit by lanterns that the sword-schools, monks and ninja of the road keep burning. Its shrines hold old murals of the night sky."
+      }
+    },
+    "codex:place/morrowsshadow": {
+      "key": "codex:place/morrowsshadow",
+      "id": "description-codex-place-morrowsshadow",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:462cacc860b8fb833a67647ede49d3ba9ed7e6a61b303ba37b5ac64671f1baf8",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The region named for tomorrow's shadow. Here the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it."
+      }
+    },
+    "codex:place/still": {
+      "key": "codex:place/still",
+      "id": "description-codex-place-still",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c3040f95d6dee3d4820f6bf7e507c37d4da6b2e02685d9ebd33073cb9badf6f6",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Halcyon's sleep-vault at the foot of the spire, under an oculus that frames the Manalith. The Warden slept here through the night Halcyon fell, and no one else came out. The Choir holds it now and fills its tanks with the tithe on its way up to the Cathedral."
+      }
+    },
+    "codex:place/swamp": {
+      "key": "codex:place/swamp",
+      "id": "description-codex-place-swamp",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ddcf5beecbf85e0da50cc918fee4fa0ae265ea9b0484489c749fa98cebd4e02d",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "A fen where Halcyon's Arks lie grounded, far inland. They were ships, built to escape the Manalith's pull, and the tides threw them here the night Halcyon fell. The witches and healers of the Fen-dark live among the wrecks."
+      }
+    },
+    "codex:place/swamp2": {
+      "key": "codex:place/swamp2",
+      "id": "description-codex-place-swamp2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8bd2a53676ad95f2fcf51925af682347da2519187adf08b39a7a09df8bf502ee",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "More of Halcyon's Arks, the ships it built to escape the Manalith's pull, lying drowned where the tides left them the night Halcyon fell."
+      }
+    },
+    "codex:story/chapter/ch01": {
+      "key": "codex:story/chapter/ch01",
+      "id": "description-codex-story-chapter-ch01",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2ffa4d1d9511b92451cfaeeb585ba9f529d1208779ce243af8e3915bf954c66a",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Over the Pass. The caravan climbs the Lantern Road, through gorges where the lanterns are kept lit and pilgrims ask no questions. A shrine mural shows a night sky with the Moon alone."
+      }
+    },
+    "codex:story/chapter/ch02": {
+      "key": "codex:story/chapter/ch02",
+      "id": "description-codex-story-chapter-ch02",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:310ae81bc33c3821713216a943652ee39902398b7e0eae739b6b90174b68b7e8",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Grounded Arks. In the fens lie Halcyon's Arks, ships built to escape the Manalith's pull and thrown inland by the tides the night Halcyon fell. Halcyon tried to run."
+      }
+    },
+    "codex:story/chapter/ch03": {
+      "key": "codex:story/chapter/ch03",
+      "id": "description-codex-story-chapter-ch03",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:12f2ebfa853c6be29fe8a4da840b4ad813afadc1db0a5a1afe2b437bc49d38bd",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Where the Beams Go. Across the Anchor Wastes the party follows Halcyon's great arches to find out what they were built to do."
+      }
+    },
+    "codex:story/chapter/ch04": {
+      "key": "codex:story/chapter/ch04",
+      "id": "description-codex-story-chapter-ch04",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9dea880820bdbb5787b011af2b1e4552fc5b79eeea371640e5d3afdcf423dd06",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The Spire Stair. The climb through Halcyon's dead towers toward the Choir's Cathedral at the top of the spire, past a dead archive that wakes for a moment when mana touches it."
+      }
+    },
+    "codex:story/chapter/ch05": {
+      "key": "codex:story/chapter/ch05",
+      "id": "description-codex-story-chapter-ch05",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:73644eb486f5228f40633e47f5f19f86fd5493a1d8b4e19c8f11f2e98d6c538d",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "What Came Down. In the Bloom, where pieces of the Manalith fell and took root, red life grows in a white ruin. What is coming is not only death."
+      }
+    },
+    "codex:story/chapter/ch06": {
+      "key": "codex:story/chapter/ch06",
+      "id": "description-codex-story-chapter-ch06",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:504dd07c58abb043ed42699b2d1af5f87b46c306581a999a8e7344bc7ae20591",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Claimants to the Spire. Everyone wants the empty spire. The Underspire is still drawing mana off Halcyon's taps, and the Captain is still collecting."
+      }
+    },
+    "codex:story/chapter/ch07": {
+      "key": "codex:story/chapter/ch07",
+      "id": "description-codex-story-chapter-ch07",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fee5440a0932c492d1e3f88642b0c00f3118f656e9d49801f8982149c7d54fbe",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "The March on the Anchors. The Ember march out of the deep Shardfall to open every tap and drag the Manalith down."
+      }
+    },
+    "codex:story/chapter/ch08": {
+      "key": "codex:story/chapter/ch08",
+      "id": "description-codex-story-chapter-ch08",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:39a319f6757fcff58df8990cf018598c6bd15eb4d0225ec964b0014a19cf4d29",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Morrow Holds. In Morrow's Shadow the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold."
+      }
+    },
+    "codex:story/dialogue/interlude_level10_motives": {
+      "key": "codex:story/dialogue/interlude_level10_motives",
+      "id": "description-codex-story-dialogue-interlude-level10-motives",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:04b01edcb7e4803a562088b37be0e0a33425f24c727cedf38ff68c83ca01e868",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Why We Ran. A pause on the road to look back at tithe day in Saltmoss, when the party took the Choir's tithe caravan and ran."
+      }
+    },
+    "codex:story/ending": {
+      "key": "codex:story/ending",
+      "id": "description-codex-story-ending",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:60edfc88006cfcd5956a014c43498d64a5288e21a06e4e867b2eaf5f6b15def1",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Still Here. In the Choir's Cathedral the Hierarch falls, and the skim ends. But the Manalith is still in the sky, and it is still coming closer."
+      }
+    },
+    "codex:story/prologue": {
+      "key": "codex:story/prologue",
+      "id": "description-codex-story-prologue",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:abd3208d19d3724f3611187f6e96a79cc8ef63c163902db28db4dabaa1a21fda",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Tithe Day. The Warden, Halcyon's last guard, wakes 1,200 years too late and walks into Saltmoss on the Tithe Moors on the day the Choir comes for the year's mana. A handful of present-day people steal the Choir's white tithe caravan and run, and the Warden goes with them. The Captain, the Free Holds' militia captain who sold the holds' tithe to the Choir, gives chase."
+      }
+    },
     "faction:ember": {
       "key": "faction:ember",
       "id": "description-faction-ember",
