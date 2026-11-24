@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "tapeQuality": "HighQuality",
+  "audio": "App",
+  "replay": { "armed": true, "seconds": 30 },
+  "rules": [
+    { "on": "harness-fail", "action": "replay", "before": "25s", "after": "2s", "tag": "fail" },
+    { "on": "harness-step", "action": "marker" }
+  ]
+}

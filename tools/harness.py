@@ -29,6 +29,9 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py call PATH [k=v]  # raw endpoint call, e.g. call state
 
     --record anywhere in the args (GG-T542): every launch also records with -capture video hq.
+    GG-T1006: it also loads tools/harness.capture.json (-capture-config: a 30 s replay ring and the harness-fail /
+    harness-step rules), so a command that fails (an exception, or exit 1 on a check) leaves a fail replay .mp4 and a
+    fail-COMMAND screenshot in the capture session folder before the harness exits. endless and clips keep their configs.
 
     --preview [TICKET] anywhere in the args (GG-T1007): when the command ends, pass or fail, the PNGs it wrote under
     artifacts/<run>/ (name order, caption = file name) and, with --record, the session video become a preview set
@@ -84,6 +87,9 @@ HEADLESS = False
 RECORD = False
 # GG-T1007: --preview [TICKET] anywhere in argv publishes the run's new screenshots (and its recording) as a preview set.
 PREVIEW_TICKET = None
+# GG-T1006: the --record capture rules (replay ring, harness-fail, harness-step), and the footage a failure left.
+CAPTURE_CONFIG = os.path.join(ROOT, "tools", "harness.capture.json")
+FAIL_FOOTAGE = []
 _STARTED = time.time()
 
 BOARD_LEFT, BOARD_TOP, TILE = 45, 450, 180
@@ -198,8 +204,7 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
     args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
             "-screen-width", str(width), "-screen-height", str(height), "-screen-fullscreen", "0",
             "-logFile", os.path.join(art, "player.log"), *extra]
-    if RECORD and "-capture" not in extra and not HEADLESS:
-        args += ["-capture", "video", "hq"]
+    args += _record_args(extra)
     if muted:
         args.append("-muted")
     if HEADLESS:
@@ -212,6 +217,63 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
     # GG-T424: a player that started but never answered (a busy PC) was left running when this raised.
     proc.kill()
     raise RuntimeError("player did not start")
+
+
+def _record_args(extra=()):
+    """GG-T542/GG-T1006: what --record adds to a launch: the session video and the harness capture rules, unless the
+    command brings its own (-capture, or -capture-config for endless and clips)."""
+    if not RECORD or HEADLESS:
+        return []
+    args = [] if "-capture" in extra else ["-capture", "video", "hq"]
+    if "-capture-config" not in extra:
+        args += ["-capture-config", CAPTURE_CONFIG]
+    return args
+
+
+def capture(op, timeout=60, **params):
+    """GG-T1006: the player's capture endpoint (GG-T1005); {ok:false, error:"capture off"} when not recording."""
+    try:
+        r = call("capture", timeout=timeout, op=op, **params)
+        return r if isinstance(r, dict) else {"ok": False, "error": str(r)}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+
+def _step(name):
+    """GG-T1006: a harness-step chapter marker in a --record run's video."""
+    if RECORD and _launched and not HEADLESS:
+        capture("raise", timeout=5, event="harness-step", step=name)
+
+
+def _capture_failure(cmd, reason, wait=60.0):
+    """GG-T1006: a --record command is failing: fire harness-fail (its rule saves the last 25 s + 2 s as a fail replay),
+    take a fail-COMMAND screenshot, and wait for the replay to be written before the harness exits and quits the player."""
+    if not (RECORD and _launched and not HEADLESS) or not alive():
+        return
+    t0 = time.time() - 1
+    r = capture("raise", timeout=10, event="harness-fail", command=cmd, reason=reason[:300])
+    if not r.get("ok"):
+        print(f"[harness] no failure replay: {r.get('error')}", flush=True)
+        return
+    folder = r.get("folder")
+    s = capture("screenshot", tag=f"fail-{cmd}")
+    if s.get("ok") and s.get("file"):
+        FAIL_FOOTAGE.append(s["file"])
+    replay = None
+    deadline = time.time() + wait
+    while folder and time.time() < deadline:
+        vids = [p for p in _new_files(folder, ".mp4", skip=()) if os.path.getmtime(p) >= t0 and "fail" in os.path.basename(p).lower()]
+        vids = vids or [p for p in _new_files(folder, ".mp4", skip=()) if os.path.getmtime(p) >= t0]
+        if vids:
+            replay = max(vids, key=os.path.getmtime)
+            size = os.path.getsize(replay)
+            time.sleep(1.5)
+            if size and os.path.getsize(replay) == size:
+                break
+        time.sleep(1.0)
+    if replay:
+        FAIL_FOOTAGE.append(replay)
+    print(f"[harness] failure footage ({reason[:120]}): {', '.join(FAIL_FOOTAGE) or 'none written'}", flush=True)
 
 
 def shot(name):
@@ -474,6 +536,7 @@ def sweep(run="sweep", theme=None):
     for screen in ["hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
                    "alchemist", "enchantress", "talk", "summon", "bounties", "crucible", "bestiary", "settings", "credits",
                    "caravan", "mercenaries", "quests", "windows", "newgame", "profiles", "diamonds"]:  # GG-T454: every menu; GG-T455 the Diamond Store
+        _step(f"sweep-{screen}")
         call("goto", screen=screen)
         time.sleep(0.9)
         shot(f"sweep-{screen}")
@@ -970,6 +1033,7 @@ def _coach_shot(c, tag):
 def coach_act(c, tag="coach"):
     """Does what the current popup or mark asks: Next on a popup, a tap in the box, the dotted route as a drag, or a
     lift-and-drop-off-the-board for the hold timer."""
+    _step(f"{tag}-{_coach_key(c)}")
     _coach_shot(c, tag)
     if c["popup"]:
         names = call("names", prefix="coach-next") or call("names", prefix="camp-tip-ok")
@@ -2051,6 +2115,7 @@ def storyarc(run="storyarc", capture=True):
     st = lambda: call("state")
     save = lambda: st().get("save") or {}
     launch(run, fresh=True, extra=("-capture", "video", "hq") if capture else ())
+    _step("storyarc-part1-new-campaign")
     _wait_screen("title", 15); time.sleep(1.5); shot("01-title"); shot("fc_title")
     _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: st()["screen"] == "charselect", tries=4, wait=1.0)
@@ -2109,6 +2174,7 @@ def storyarc(run="storyarc", capture=True):
     call("devwin"); time.sleep(1.5); _skip_levelups(st())
 
     # Part 2: a stocked save with the Blacksmith's workshop open (as tools firstforge sets it up).
+    _step("storyarc-part2-camp-systems")
     call("newgame", slot=1, gold=5000, npcs="merchant,blacksmith,alchemist,innkeeper,enchantress", seen="blacksmith"); time.sleep(1)
     call("devrested", limit=1, points=10)
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1)):
@@ -3204,7 +3270,7 @@ def _session_video(timeout=30.0):
     roots = [os.path.join(ROOT, "artifacts"), r"R:\MindAttic\Capture\GridGame.Unity"]
     deadline = time.time() + timeout
     while True:
-        vids = [v for r in roots for v in _new_files(r, ".mp4")]
+        vids = [v for r in roots for v in _new_files(r, ".mp4") if v not in FAIL_FOOTAGE]
         if vids or time.time() >= deadline:
             return max(vids, key=os.path.getmtime) if vids else None
         time.sleep(1.0)
@@ -3222,7 +3288,8 @@ def _publish_preview():
         pngs = sorted(_new_files(art, ".png"), key=lambda p: os.path.relpath(p, art).lower())
         runs = sorted({os.path.relpath(p, art).split(os.sep)[0] for p in pngs})
         video = _session_video() if RECORD and not HEADLESS else None
-        if not pngs and not video:
+        fail = [p for p in FAIL_FOOTAGE if os.path.isfile(p)]
+        if not pngs and not video and not fail:
             print("[preview] the run wrote no screenshots or video; no preview set made")
             return
         title = " ".join([cmd, *runs])
@@ -3234,32 +3301,19 @@ def _publish_preview():
         for p in pngs:
             caption = os.path.relpath(p, art).split(os.sep, 1)[-1].replace(os.sep, "/")
             subprocess.run([agent, "set", "add", set_dir, p, "--caption", caption], capture_output=True, check=True)
+        for p in fail:
+            caption = "failure replay" if p.lower().endswith(".mp4") else f"failure screenshot ({cmd})"
+            subprocess.run([agent, "set", "add", set_dir, p, "--caption", caption], capture_output=True, check=True)
         if video:
             subprocess.run([agent, "set", "add", set_dir, video, "--caption", "session video"], capture_output=True, check=True)
         subprocess.run([agent, "set", "show", set_dir], check=False)
-        print(f"[preview] {len(pngs)} screenshot(s){' + video' if video else ''} -> {set_dir}")
+        print(f"[preview] {len(pngs)} screenshot(s){f' + {len(fail)} failure file(s)' if fail else ''}{' + video' if video else ''} -> {set_dir}")
     except (OSError, subprocess.CalledProcessError) as e:
         detail = getattr(e, "stderr", None)
         print(f"[preview] warning: preview set failed: {e}{(' ' + detail.strip()) if isinstance(detail, str) and detail.strip() else ''}")
 
 
-if __name__ == "__main__":
-    import atexit
-    if "--preview" in sys.argv:
-        i = sys.argv.index("--preview")
-        if i + 1 < len(sys.argv) and re.fullmatch(r"[A-Z][A-Z0-9.]*-T\d+", sys.argv[i + 1]):
-            PREVIEW_TICKET = sys.argv.pop(i + 1)
-        sys.argv.pop(i)
-        # Registered before _quit_launched so it runs after the player has quit (atexit runs last-in, first-out).
-        atexit.register(_publish_preview)
-    atexit.register(_quit_launched)
-    if "--headless" in sys.argv:
-        HEADLESS = True
-        sys.argv = [a for a in sys.argv if a != "--headless"]
-    if "--record" in sys.argv:
-        RECORD = True
-        sys.argv = [a for a in sys.argv if a != "--record"]
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "smoke"
+def _dispatch(cmd):
     if cmd == "smoke":
         smoke(sys.argv[2] if len(sys.argv) > 2 else "smoke")
     elif cmd == "campaign":
@@ -3366,3 +3420,32 @@ if __name__ == "__main__":
     else:
         print(__doc__)
         sys.exit(2)
+
+
+if __name__ == "__main__":
+    import atexit
+    if "--preview" in sys.argv:
+        i = sys.argv.index("--preview")
+        if i + 1 < len(sys.argv) and re.fullmatch(r"[A-Z][A-Z0-9.]*-T\d+", sys.argv[i + 1]):
+            PREVIEW_TICKET = sys.argv.pop(i + 1)
+        sys.argv.pop(i)
+        # Registered before _quit_launched so it runs after the player has quit (atexit runs last-in, first-out).
+        atexit.register(_publish_preview)
+    atexit.register(_quit_launched)
+    if "--headless" in sys.argv:
+        HEADLESS = True
+        sys.argv = [a for a in sys.argv if a != "--headless"]
+    if "--record" in sys.argv:
+        RECORD = True
+        sys.argv = [a for a in sys.argv if a != "--record"]
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "smoke"
+    # GG-T1006: a failing --record command leaves a fail replay and screenshot before it exits (and the player quits).
+    try:
+        _dispatch(cmd)
+    except SystemExit as e:
+        if e.code not in (None, 0):
+            _capture_failure(cmd, f"exit {e.code}")
+        raise
+    except Exception as e:
+        _capture_failure(cmd, f"{type(e).__name__}: {e}")
+        raise
