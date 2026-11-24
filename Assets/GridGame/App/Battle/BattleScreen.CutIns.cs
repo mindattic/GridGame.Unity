@@ -101,7 +101,7 @@ namespace GridGame.App
                 t.style.position = Position.Absolute;
                 t.style.left = -w * 0.1f; t.style.right = -w * 0.1f; t.style.bottom = -h * 0.02f;
                 t.style.unityTextAlign = TextAnchor.MiddleCenter;
-                t.style.fontSize = Mathf.Clamp(h * 0.13f, 34f, 76f);
+                t.style.fontSize = TypeScale.Base; // GG-T770: the one GUI size; weight and the outline carry it
                 Fonts.UseHeavy(t);
                 t.style.color = tagColor;
                 t.AddToClassList("depth-lg"); // the shared heading outline + hard drop (Theme.uss, GG-T385)

@@ -152,7 +152,7 @@ namespace GridGame.App
             text.name = "dlg-text";
             text.style.whiteSpace = WhiteSpace.Normal;
             text.style.unityFontStyleAndWeight = FontStyle.Normal;
-            text.style.fontSize = TypeScale.H3;
+            text.style.fontSize = TypeScale.Base;
             text.style.flexGrow = 1;
             text.style.minHeight = 230;
             typing = null;
@@ -214,7 +214,7 @@ namespace GridGame.App
             s.GlowNear = Glow(plate, 10, 0.4f);
             s.NameLabel = Ui.Text("", null, plate);
             s.NameLabel.name = "dlg-name-" + tag;
-            s.NameLabel.style.fontSize = TypeScale.H3;
+            s.NameLabel.style.fontSize = TypeScale.Base;
             Fonts.UseHeavy(s.NameLabel);
             s.NameLabel.style.unityTextAlign = TextAnchor.MiddleCenter;
             s.Plate = plate;

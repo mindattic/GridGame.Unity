@@ -163,7 +163,7 @@ namespace GridGame.App
             var aura = AuraFor(u);
             if (aura.a > 0f && u.Id != SelectedHeroId && !ReduceMotion) v.SetGlow(aura, 0.45f);
             // Floated higher than damage numbers so the status name never sits on top of the hit that caused it.
-            App.StartCoroutine(FloatAway(board.Float(def.Name + "!", at + new Vector2(0, -120), Color.Lerp(color, Palette.White, 0.25f), TypeScale.H3), 0.8f));
+            App.StartCoroutine(FloatAway(board.Float(def.Name + "!", at + new Vector2(0, -120), Color.Lerp(color, Palette.White, 0.25f), TypeScale.Base), 0.8f));
             yield return Tween.Wait(Timing.Quick);
         }
 
@@ -382,7 +382,7 @@ namespace GridGame.App
             v.SetPlate(u.Facing, e.Left > 0 ? e.Left : 1, e.Max);
             v.Plate.style.backgroundColor = Palette.White;
             App.StartCoroutine(Tween.Shake(v.Plate, 8f * Fx, Timing.Quick));
-            App.StartCoroutine(FloatAway(board.Float($"CLANG! −{e.Amount}", at + new Vector2(0, -30), Palette.Info, TypeScale.H3), 0.7f));
+            App.StartCoroutine(FloatAway(board.Float($"CLANG! −{e.Amount}", at + new Vector2(0, -30), Palette.Info, TypeScale.Base), 0.7f));
             yield return Tween.Wait(Timing.Quick);
             v.Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
             v.SetPlate(u.Facing, e.Left, e.Max);

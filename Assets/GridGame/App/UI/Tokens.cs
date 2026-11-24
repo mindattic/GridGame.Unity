@@ -182,16 +182,91 @@ namespace GridGame.App
             hex != null && ColorUtility.TryParseHtmlString(hex, out var c) ? c : fallback;
     }
 
-    /// <summary>Type scale ≈1.25 (POL-A1). Body ≥ 40, captions ≥ 30 (POL-A2).</summary>
+    /// <summary>
+    /// GG-T770 (owner: "calculate the right font size based on aspect ratio, dpi and resolution, then use that for all gui
+    /// ... all these different font sizes make it look messy"): every GUI label draws at ONE size, <see cref="Base"/>.
+    /// It replaces the old badge..title scale (POL-A1); a heading, a caption or a badge stands out by weight (bold, the
+    /// Heavy font role), italic, colour, underline or strikethrough, never by size. USS reads it as <c>--type-base</c>.
+    /// Icon glyphs sized to their icon (a pip's number, a skull) are pictures, not text, and keep their own scale.
+    /// </summary>
     public static class TypeScale
     {
-        public const float Badge = 24, Caption = 30, Small = 36, Body = 40, H3 = 48, H2 = 60, H1 = 76, Display = 96, Title = 120;
+        /// <summary>The size on a reference phone (1170 px wide at 460 dpi, scale 1) at Text size 100%.</summary>
+        public const float Nominal = 40;
+
+        /// <summary>The one GUI text size in design px for this screen and Text size; see <see cref="GuiType"/>.</summary>
+        public static float Base => GuiType.Base;
     }
 
-    /// <summary>Settings → Text size (GG-T495): 100, 115 or 130% of the type scale from badge to H2. The root element takes
-    /// <c>text-115</c> / <c>text-130</c>, and Theme.uss redefines the <c>--type-*</c> custom properties under it, so every
-    /// USS-sized label grows at once with no rebuild. The headline sizes (H1, Display, Title) and the battle's fixed-geometry
-    /// labels (board floats, tile badges, set in code) stay as they are: they are already large, and grow they'd break the grid.</summary>
+    /// <summary>
+    /// GG-T770: works out <see cref="TypeScale.Base"/>. The stage is a design-px canvas scaled uniformly to the screen by
+    /// its limiting axis (the aspect ratio picks the axis and the stage width, 9:16..9:23, §26.3), so a design px lands at
+    /// <c>scale</c> screen px; at <c>dpi</c> that is a physical size. The base is the design size that draws
+    /// <see cref="TargetDp"/> dp (body text on a phone held at reading distance), held between <see cref="MinDesign"/>
+    /// and <see cref="MaxDesign"/> so a desktop window or a tablet (lower dpi, further away) never draws smaller than
+    /// the reference phone and a tiny dense screen never blows the layout apart; then times Settings → Text size; then
+    /// at least <see cref="TypeFloor"/>'s legibility floor; then at most the size that still fits
+    /// <see cref="MinLineChars"/> characters across the stage; rounded to <see cref="Step"/> px for the USS bucket. The
+    /// UI root takes the matching <c>type-base-N</c> class (Theme.uss) so every USS-sized label follows with no rebuild;
+    /// sizes set in code read <see cref="TypeScale.Base"/> when their screen builds (the router rebuilds on resize).
+    /// <see cref="TextFit"/> still shrinks a label whose word overflows its box, but only as that fallback.
+    /// </summary>
+    public static class GuiType
+    {
+        /// <summary>Physical size of GUI text in dp (1/160 inch): 40 design px on the reference phone.</summary>
+        public const float TargetDp = 14f;
+        /// <summary>The smallest and largest base in design px before Text size and the floor.</summary>
+        public const float MinDesign = 40f, MaxDesign = 56f;
+        /// <summary>The bucket step and the range Theme.uss has <c>type-base-N</c> classes for.</summary>
+        public const int Step = 2, Lowest = 40, Highest = 72;
+        /// <summary>Fewest characters (at about half an em each) a line across the full stage must hold.</summary>
+        public const float MinLineChars = 28f, GlyphEm = 0.5f;
+
+        private static float scale, dpi, stageWidth = 1170f;
+        private static int pct = 100;
+        private static UnityEngine.UIElements.VisualElement root;
+
+        /// <summary>The live base size in design px; set by <see cref="SetScreen"/> and <see cref="SetTextSize"/>.</summary>
+        public static int Base { get; private set; } = (int)TypeScale.Nominal;
+
+        /// <summary>The base for a stage <paramref name="stageW"/> design px wide drawn at <paramref name="screenPxPerDesignPx"/>
+        /// on a screen of <paramref name="screenDpi"/> (0 = unknown, read as 160), at Text size <paramref name="textPct"/>.</summary>
+        public static int Compute(float screenPxPerDesignPx, float screenDpi, float stageW, int textPct)
+        {
+            float d = screenDpi > 0f ? screenDpi : 160f;
+            float physical = screenPxPerDesignPx > 0f ? TargetDp * d / 160f / screenPxPerDesignPx : TypeScale.Nominal;
+            float size = Mathf.Clamp(physical, MinDesign, MaxDesign) * TextSize.Clamp(textPct) / 100f;
+            size = Mathf.Max(size, TypeFloor.NeedFor(screenPxPerDesignPx, screenDpi));
+            if (stageW > 0f) size = Mathf.Min(size, stageW / (MinLineChars * GlyphEm));
+            return Mathf.Clamp(Mathf.RoundToInt(size / Step) * Step, Lowest, Highest);
+        }
+
+        /// <summary>The screen changed (resize, rotation, dpi): re-derive the base. Called from the stage layout.</summary>
+        public static void SetScreen(UnityEngine.UIElements.VisualElement uiRoot, float screenPxPerDesignPx, float screenDpi, float stageW)
+        {
+            if (uiRoot != null) root = uiRoot;
+            scale = screenPxPerDesignPx; dpi = screenDpi; stageWidth = stageW;
+            TypeFloor.Update(scale, dpi);
+            Apply();
+        }
+
+        /// <summary>Settings → Text size changed: re-derive the base.</summary>
+        public static void SetTextSize(UnityEngine.UIElements.VisualElement uiRoot, int textPct)
+        {
+            if (uiRoot != null) root = uiRoot;
+            pct = TextSize.Clamp(textPct);
+            Apply();
+        }
+
+        private static void Apply()
+        {
+            Base = Compute(scale, dpi, stageWidth, pct);
+            if (root == null) return;
+            for (int s = Lowest; s <= Highest; s += Step) root.EnableInClassList("type-base-" + s, s == Base);
+        }
+    }
+
+    /// <summary>Settings → Text size (GG-T495): 100, 115 or 130% of the one GUI size (<see cref="GuiType"/>).</summary>
     public static class TextSize
     {
         public static readonly int[] Options = { 100, 115, 130 };
@@ -201,23 +276,15 @@ namespace GridGame.App
 
         public static int Next(int pct) => Options[(Array.IndexOf(Options, Clamp(pct)) + 1) % Options.Length];
 
-        /// <summary>Puts the class for <paramref name="pct"/> on the UI root and takes the others off.</summary>
-        public static void Apply(UnityEngine.UIElements.VisualElement root, int pct)
-        {
-            if (root == null) return;
-            pct = Clamp(pct);
-            foreach (var o in Options) if (o != 100) root.EnableInClassList("text-" + o, o == pct);
-        }
+        /// <summary>Applies <paramref name="pct"/> to the UI root's one GUI size.</summary>
+        public static void Apply(UnityEngine.UIElements.VisualElement root, int pct) => GuiType.SetTextSize(root, pct);
     }
 
     /// <summary>
     /// GG-T551: the smallest text a screen may draw. The stage scales uniformly to fit the screen, so on a small low-dpi
-    /// phone (480×800 at 160 dpi) a 30-px caption lands at ~9 screen px, too few pixels to read. The floor is
-    /// <see cref="MinPx"/> screen px, or <see cref="MinDp"/> dp on a dense screen (whichever is larger); when the badge to
-    /// body sizes would land under it, the UI root takes a <c>type-floor-N</c> class and Theme.uss raises those
-    /// <c>--type-*</c> sizes to at least N design px. It composes with Settings → Text size (Theme.uss has a rule for each
-    /// pair, every size the larger of the two), so the setting keeps working. Every mainstream phone and tablet (and the
-    /// harness windows) clear the floor already and see no change.
+    /// phone (480×800 at 160 dpi) a small size lands at too few screen pixels to read. The floor is <see cref="MinPx"/>
+    /// screen px, or <see cref="MinDp"/> dp on a dense screen (whichever is larger). GG-T770: <see cref="GuiType"/> never
+    /// picks a base under it, and it bounds how far <see cref="TextFit"/> may shrink an overflowing label.
     /// </summary>
     public static class TypeFloor
     {
@@ -225,17 +292,16 @@ namespace GridGame.App
         public const float MinPx = 12f;
         /// <summary>Smallest physical size, in dp (1/160 inch), on a screen dense enough that it beats <see cref="MinPx"/>.</summary>
         public const float MinDp = 9f;
-        /// <summary>The floors Theme.uss has classes for, in design px. The largest stops at H3 (48), which is never raised.</summary>
-        public static readonly int[] Steps = { 32, 36, 40, 44, 48 };
-        // A need between the badge (24) and 32 rounds up to the first step.
+        /// <summary>The smallest shrink-to-fit may go in design px whatever the screen: 60% of the nominal size.</summary>
+        public const float ShrinkMin = 24f;
 
-        /// <summary>The live floor in design px (0 = none); set by <see cref="Apply"/>.</summary>
+        /// <summary>The live floor in design px, rounded up (0 = none yet); set by <see cref="Update"/>.</summary>
         public static int Current { get; private set; }
 
         /// <summary>GG-T711: the smallest font size, in design px, that shrink-to-fit (<see cref="TextFit"/>) may take a
-        /// label down to on this screen: the larger of the badge size (the smallest the type scale draws) and the size that
-        /// lands at <see cref="MinPx"/> screen px / <see cref="MinDp"/> dp. Set by <see cref="Apply"/>.</summary>
-        public static float ShrinkFloor { get; private set; } = TypeScale.Badge;
+        /// label down to on this screen: the larger of <see cref="ShrinkMin"/> and the size that lands at
+        /// <see cref="MinPx"/> screen px / <see cref="MinDp"/> dp. Set by <see cref="Update"/>.</summary>
+        public static float ShrinkFloor { get; private set; } = ShrinkMin;
 
         /// <summary>The design size that draws at the floor (12 screen px / 9 dp) on this screen.</summary>
         public static float NeedFor(float screenPxPerDesignPx, float dpi)
@@ -244,25 +310,13 @@ namespace GridGame.App
             return Mathf.Max(MinPx, MinDp * (dpi > 0f ? dpi : 160f) / 160f) / screenPxPerDesignPx;
         }
 
-        /// <summary>The floor step (design px, 0 = none) for a stage drawn at <paramref name="screenPxPerDesignPx"/> on a
-        /// screen of <paramref name="dpi"/> (0 = unknown, read as 160).</summary>
-        public static int StepFor(float screenPxPerDesignPx, float dpi)
+        /// <summary>Re-reads the floor for a stage drawn at <paramref name="screenPxPerDesignPx"/> on a screen of
+        /// <paramref name="dpi"/> (0 = unknown, read as 160). Called by <see cref="GuiType.SetScreen"/>.</summary>
+        public static void Update(float screenPxPerDesignPx, float dpi)
         {
-            if (screenPxPerDesignPx <= 0f) return 0;
-            float floorPx = Mathf.Max(MinPx, MinDp * (dpi > 0f ? dpi : 160f) / 160f);
-            float need = floorPx / screenPxPerDesignPx;
-            if (need <= TypeScale.Badge + 0.5f) return 0;
-            foreach (var s in Steps) if (s >= need - 0.5f) return s;
-            return Steps[Steps.Length - 1];
-        }
-
-        /// <summary>Puts the <c>type-floor-N</c> class for this screen on the UI root and takes the others off.</summary>
-        public static void Apply(UnityEngine.UIElements.VisualElement root, float screenPxPerDesignPx, float dpi)
-        {
-            if (root == null) return;
-            Current = StepFor(screenPxPerDesignPx, dpi);
-            ShrinkFloor = Mathf.Max(TypeScale.Badge, NeedFor(screenPxPerDesignPx, dpi));
-            foreach (var s in Steps) root.EnableInClassList("type-floor-" + s, s == Current);
+            float need = NeedFor(screenPxPerDesignPx, dpi);
+            Current = Mathf.CeilToInt(need);
+            ShrinkFloor = Mathf.Max(ShrinkMin, need);
         }
     }
 
@@ -305,9 +359,8 @@ namespace GridGame.App
     /// repeated over and over and over and utilizes space as efficiently as possible"). Every menu screen is built from the
     /// same few roles (<see cref="Ui"/>'s Header, Tabs, Panel/ListPanel/DetailPanel, Section, MenuRow, Card, Note, Footer,
     /// Empty) and these are their only sizes. Theme.uss's <c>.kit-*</c> classes carry the same values.
-    /// <para>Type: four sizes and one rule — page title 60, heading 48 (a window's or detail pane's title), body 40 (row
-    /// labels and values, card names, buttons, and every wrapped sentence), caption 30 (one-line meta, section headers,
-    /// hints). Anything that wraps is body; anything that is a single line of meta is caption.</para>
+    /// <para>Type: one size (GG-T770, <see cref="TypeScale.Base"/>) for the page title, headings, rows, buttons, captions
+    /// and hints alike; a title or heading stands out by weight and colour, meta by a dimmer colour, never by size.</para>
     /// <para>Space: windows sit <see cref="Gutter"/> from the stage edge and <see cref="Gap"/> apart, padded
     /// <see cref="PadY"/>/<see cref="PadX"/>; every row and card is at least one <see cref="Row"/> tall with 24 px between
     /// them (two 12-px margins, POL-C3); a row's note and a section header start at the row label's left edge
@@ -315,7 +368,8 @@ namespace GridGame.App
     /// </summary>
     public static class Kit
     {
-        public const float Title = TypeScale.H2, Heading = TypeScale.H3, Body = TypeScale.Body, Caption = TypeScale.Caption;
+        /// <summary>GG-T770: every text role (title, heading, body, caption) is the one GUI size.</summary>
+        public static float Text => TypeScale.Base;
         /// <summary>The page header bar's height (USS <c>.header</c>); under a notch it grows by the inset (GG-T483).</summary>
         public const float HeaderHeight = 150f;
         /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>

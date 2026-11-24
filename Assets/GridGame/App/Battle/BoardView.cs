@@ -122,7 +122,7 @@ namespace GridGame.App
             CastChip.style.display = DisplayStyle.None;
             CastChip.Add(new Label { name = "castchip-letter", pickingMode = PickingMode.Ignore });
             CastChip[0].AddToClassList("shadow");
-            CastChip[0].style.fontSize = TypeScale.Caption; Fonts.UseHeavy(CastChip[0]);
+            CastChip[0].style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(CastChip[0]);
             CastChip[0].style.unityTextAlign = TextAnchor.MiddleCenter; CastChip[0].style.flexGrow = 1;
             Root.Add(CastChip);
 
@@ -255,7 +255,7 @@ namespace GridGame.App
             var tag = new Label(u.IsNeutral ? "TALK" : wanderer ? "WANDERER" : tamed ? "TAMED" : "GUEST") { name = "guest-" + u.Id, pickingMode = PickingMode.Ignore };
             tag.AddToClassList("shadow");
             tag.style.position = Position.Absolute; tag.style.left = Space.S8; tag.style.top = Space.S8;
-            tag.style.fontSize = TypeScale.Badge; Fonts.UseHeavy(tag);
+            tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
             tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : new Color(0.6f, 1f, 0.75f);
             Frame.Add(tag);
         }
@@ -290,7 +290,7 @@ namespace GridGame.App
                 actedBadge.style.left = Space.S8; actedBadge.style.bottom = Size.HpBar + Space.S8;
                 actedBadge.style.width = actedBadge.style.height = Size.Pip;
                 actedBadge.style.unityTextAlign = TextAnchor.MiddleCenter;
-                actedBadge.style.fontSize = TypeScale.Badge;
+                actedBadge.style.fontSize = BoardView.TileLabelFont;
                 actedBadge.style.color = Palette.Text;
                 actedBadge.style.backgroundColor = Palette.Ink.WithA(0.85f);
                 actedBadge.style.borderTopLeftRadius = actedBadge.style.borderTopRightRadius =
@@ -344,7 +344,7 @@ namespace GridGame.App
                 var more = new Label((statuses.Count).ToString()) { pickingMode = PickingMode.Ignore };
                 more.AddToClassList("shadow");
                 more.style.position = Position.Absolute; more.style.right = -Space.S8; more.style.bottom = -Space.S8;
-                more.style.fontSize = TypeScale.Badge; Fonts.UseHeavy(more);
+                more.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(more);
                 pip.Add(more);
             }
         }
@@ -452,6 +452,10 @@ namespace GridGame.App
     public sealed class BoardView
     {
         public const float Tile = 180f;
+        /// <summary>GG-T770: marks drawn inside a tile (a GUEST tag, a cast chip's letter, the acted tick, a status count,
+        /// a region counter) and a tile-filling pictogram (a trap's skull, a region glyph) are part of the board's fixed
+        /// geometry, sized to the tile like an icon; every other text uses the one GUI size, <see cref="TypeScale.Base"/>.</summary>
+        public const float TileLabelFont = Size.Pip * 0.75f, TileGlyphFont = Tile * 0.5f;
         public readonly VisualElement Root;
         public readonly VisualElement TileLayer;
         public readonly VisualElement MarkLayer;
@@ -810,7 +814,7 @@ namespace GridGame.App
                 e.style.left = trap.At.X * Tile; e.style.top = trap.At.Y * Tile;
                 e.style.width = Tile; e.style.height = Tile;
                 e.style.unityTextAlign = TextAnchor.MiddleCenter;
-                e.style.fontSize = TypeScale.Display;
+                e.style.fontSize = TileGlyphFont;
                 e.style.color = new Color(0.75f, 0.35f, 1f, 0.85f);
                 e.style.backgroundColor = new Color(0.45f, 0.1f, 0.6f, 0.25f);
                 MarkLayer.Add(e);
@@ -846,7 +850,7 @@ namespace GridGame.App
                     var n = new Label($"{kv.Value.Counter}/{def.Threshold}") { pickingMode = PickingMode.Ignore };
                     n.style.position = Position.Absolute;
                     n.style.right = Space.S8; n.style.bottom = Space.S4;
-                    n.style.fontSize = TypeScale.Small;
+                    n.style.fontSize = TileLabelFont;
                     n.style.color = Palette.Text;
                     e.Add(n);
                 }
@@ -889,7 +893,7 @@ namespace GridGame.App
                 l.style.position = Position.Absolute;
                 l.style.left = l.style.top = l.style.right = l.style.bottom = Space.S0;
                 l.style.unityTextAlign = TextAnchor.MiddleCenter;
-                l.style.fontSize = TypeScale.H1;
+                l.style.fontSize = TileGlyphFont;
                 l.style.color = border.WithA(0.9f);
                 e.Add(l);
             }

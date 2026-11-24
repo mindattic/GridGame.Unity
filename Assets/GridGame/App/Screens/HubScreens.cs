@@ -256,7 +256,7 @@ namespace GridGame.App
             var stats = Ui.El("col grow", top);
             stats.style.marginLeft = Space.S24; stats.style.flexShrink = 1; stats.style.minWidth = 0;
             int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
-            Ui.RoleBadge(Ui.RoleOf(h, def), stats, Kit.Caption).style.alignSelf = Align.FlexStart;
+            Ui.RoleBadge(Ui.RoleOf(h, def), stats).style.alignSelf = Align.FlexStart;
             Ui.Para(Ui.RoleBlurb(Ui.RoleOf(h, def)), stats, "dim");
             GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, def.Support), "kit-text gold", stats).name = "hero-support"; // GG-T298
             Ui.Heading($"HP  {hp} / {u.MaxHp}", stats);
@@ -750,7 +750,7 @@ namespace GridGame.App
                 card.EnableInClassList("card--selected", active);
                 var nameRow = Ui.El("row", col);
                 Ui.Name(C.Class(h.ClassId).Name, nameRow);
-                Ui.RoleBadge(Ui.RoleOf(h, C.Class(h.ClassId)), nameRow, Kit.Caption);
+                Ui.RoleBadge(Ui.RoleOf(h, C.Class(h.ClassId)), nameRow);
                 MercenaryCamp.Tag(S, h.ClassId, nameRow);
                 Ui.Caption($"Lv {u.Level}   HP {u.MaxHp}   {(active ? "<color=#78EC96>Active</color>" : "Reserve")}", col);
                 GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);

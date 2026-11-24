@@ -166,12 +166,8 @@ namespace GridGame.App
 
         private static float EstimateSize(string classes)
         {
-            string c = " " + (classes ?? "") + " ";
-            if (c.Contains(" tiny ")) return TypeScale.Badge;
-            if (c.Contains(" small ") || c.Contains(" t-caption ") || c.Contains(" kit-caption ")) return TypeScale.Caption;
-            if (c.Contains(" t-h3 ") || c.Contains(" kit-heading ")) return TypeScale.H3;
-            if (c.Contains(" h2 ") || c.Contains(" t-h2 ")) return TypeScale.H2;
-            return TypeScale.Body;
+            // GG-T770: every GUI text class draws at the one size.
+            return TypeScale.Base;
         }
 
         /// <summary>For text that stays a plain Label: terms tinted (brackets hidden) but not tappable.</summary>

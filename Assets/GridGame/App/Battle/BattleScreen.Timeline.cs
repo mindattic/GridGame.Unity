@@ -166,7 +166,7 @@ namespace GridGame.App
             guardButton = shield;
             shield.style.position = Position.Absolute;
             shield.style.right = Fit.Edge; shield.style.top = TimelineY - Size.Target / 2f; shield.style.width = shield.style.height = Size.Target;
-            shield.style.fontSize = TypeScale.Caption;
+            shield.style.fontSize = TypeScale.Base;
             LayoutTimelineFrame();
         }
 
@@ -353,7 +353,7 @@ namespace GridGame.App
                     q.style.position = Position.Absolute;
                     q.style.left = q.style.top = q.style.right = q.style.bottom = Space.S0;
                     q.style.unityTextAlign = TextAnchor.MiddleCenter;
-                    q.style.fontSize = TypeScale.H1;
+                    q.style.fontSize = TypeScale.Base;
                     q.style.color = Palette.TextDim;
                     art.Add(q);
                     return;

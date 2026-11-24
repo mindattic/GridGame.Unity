@@ -887,9 +887,9 @@ namespace GridGame.App
             top.style.alignItems = Align.Center;
             var nm = Ui.Text(u.Name, "h2 grow", top);
             nm.style.flexShrink = 1;
-            if (u.IsIndependent && !u.Wanderer) Ui.RoleBadge(Ui.TamedRole, top, 26); // GG-T303
-            else if (u.Wanderer && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top, 26); // a wanderer is a hero class (GG-T342)
-            else if (u.IsHero && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top, 26);
+            if (u.IsIndependent && !u.Wanderer) Ui.RoleBadge(Ui.TamedRole, top); // GG-T303
+            else if (u.Wanderer && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top); // a wanderer is a hero class (GG-T342)
+            else if (u.IsHero && !string.IsNullOrEmpty(u.Def.Role)) Ui.RoleBadge(u.Def.Role, top);
             Ui.Text($"Lv {u.Level}", "h2 gold", top);
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
@@ -1894,9 +1894,8 @@ namespace GridGame.App
 
         /// <summary>
         /// Action/status banner in the band between the timeline frame and the board (GG-T405: it never touches either).
-        /// Text that runs long steps its font down (H3 → Body → Small) while it still fits one line, then wraps at the
-        /// smallest size, and if two lines still don't fit the band it's shown, paused, then slowly scrolled so the whole
-        /// message gets read. It eases in over Timing.Quick.
+        /// It draws at the one GUI size (GG-T770) and wraps when it runs long; if the lines still don't fit the band it's
+        /// shown, paused, then slowly scrolled so the whole message gets read. It eases in over Timing.Quick.
         /// </summary>
         private void ShowBanner(string text)
         {
@@ -1904,24 +1903,17 @@ namespace GridGame.App
             text ??= "";
             banner.text = text;
             NoteShown(text);
-            banner.style.fontSize = BannerSizes[0];
+            banner.style.fontSize = TypeScale.Base;
             banner.style.top = Space.S0;
             if (bannerScrollRoutine != null) { App.StopCoroutine(bannerScrollRoutine); bannerScrollRoutine = null; }
             if (text.Length > 0) bannerScrollRoutine = App.StartCoroutine(FitBanner());
         }
 
-        private static readonly float[] BannerSizes = { TypeScale.H3, TypeScale.Body, TypeScale.Small };
-
         private IEnumerator FitBanner()
         {
             banner.style.opacity = 0f;
-            // Step down while the text wraps past one line; a frame per size so resolvedStyle.height is current.
-            for (int i = 0; i < BannerSizes.Length; i++)
-            {
-                banner.style.fontSize = BannerSizes[i];
-                yield return null;
-                if (banner.resolvedStyle.height < BannerSizes[i] * 1.7f) break; // one line at this size
-            }
+            // A frame so resolvedStyle.height is current.
+            yield return null;
             float content = banner.resolvedStyle.height;
             App.StartCoroutine(Tween.Run(Timing.Quick, k => { if (banner != null) banner.style.opacity = k; }));
             if (content <= BannerViewportHeight)

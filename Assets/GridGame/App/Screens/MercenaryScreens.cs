@@ -51,7 +51,7 @@ namespace GridGame.App
                 var card = Ui.Card(list, m.Class, null, out var col, "merc-offer-" + m.Class);
                 var top = Ui.El("row", col);
                 Ui.Name(def.Name, top);
-                Ui.RoleBadge(def.Role, top, Kit.Caption);
+                Ui.RoleBadge(def.Role, top);
                 Ui.Caption(m.Temperament.ToString(), top, "dim");
                 var pitch = Ui.Para($"\"{m.Pitch}\"", col);
                 pitch.style.flexShrink = 0; pitch.style.minWidth = 0; pitch.style.whiteSpace = WhiteSpace.Normal; // GG-T700: the quote wraps to its full height inside the card, never clipped

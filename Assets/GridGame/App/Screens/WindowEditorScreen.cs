@@ -152,7 +152,7 @@ namespace GridGame.App
             nameField = new TextField { name = "window-name-field", maxLength = WindowThemeCatalog.MaxNameLength, value = typedName ?? NextName() };
             nameField.RegisterValueChangedCallback(e => typedName = e.newValue);
             nameField.style.flexGrow = 1; nameField.style.flexShrink = 1;
-            nameField.style.fontSize = TypeScale.Body;
+            nameField.style.fontSize = TypeScale.Base;
             nameField.style.minHeight = Size.Target;
             nameField.style.marginRight = Space.TargetHalfGap;
             var input = nameField.Q(className: "unity-text-field__input") ?? nameField.Q(className: "unity-base-text-field__input");

@@ -287,8 +287,8 @@ namespace GridGame.App
             Document.panelSettings.match = widthLimits ? 0f : 1f;
             float logicalW = widthLimits ? fit.x : fit.y * screenAspect;
             float logicalH = widthLimits ? fit.x / screenAspect : fit.y;
-            // GG-T551: on a small low-dpi screen the uniform scale shrinks captions below readable; floor the type sizes.
-            TypeFloor.Apply(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi);
+            // GG-T770: the one GUI text size from this scale, dpi and stage width (GG-T551 legibility floor included).
+            GuiType.SetScreen(Document.rootVisualElement, widthLimits ? screen.x / fit.x : screen.y / fit.y, Screen.dpi, size.x);
 
             Stage.style.width = size.x; Stage.style.height = size.y;
             Stage.style.left = (logicalW - size.x) / 2f;
@@ -483,7 +483,7 @@ namespace GridGame.App
             Ui.ApplyMenuTheme(Document?.rootVisualElement);
             Fonts.ApplyFont(presets ? st.FontName : GridGame.Meta.SettingsSave.DefaultFontName);
             TextFit.Configure(presets && st.Hyphenate);
-            // GG-T495 accessibility: text size on the root (USS --type-* overrides), reduce motion for every shared tween.
+            // GG-T495 accessibility: text size scales the one GUI size (GG-T770, --type-base), reduce motion for every shared tween.
             TextSize.Apply(Document?.rootVisualElement, st.TextScale);
             Tween.Calm = st.ReduceMotion;
             // GG-T525: Colorblind palette swaps the team marks to a blue/orange pair: Palette for marks drawn in code

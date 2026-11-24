@@ -610,12 +610,12 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>A small coloured pill naming a hero's role.</summary>
-        public static Label RoleBadge(string role, VisualElement parent, float size = 26)
+        /// <summary>A coloured pill naming a hero's role, at the one GUI size (GG-T770).</summary>
+        public static Label RoleBadge(string role, VisualElement parent)
         {
             var c = RoleColor(role);
             var l = Text((role ?? "").ToUpperInvariant(), "role-badge", parent);
-            l.style.fontSize = size;
+            l.style.fontSize = TypeScale.Base;
             l.style.color = c;
             l.style.borderTopColor = l.style.borderBottomColor = l.style.borderLeftColor = l.style.borderRightColor = c;
             return l;

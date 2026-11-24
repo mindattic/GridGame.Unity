@@ -573,7 +573,7 @@ namespace GridGame.App
                     name.style.flexGrow = 1; name.style.flexShrink = 1; name.style.minWidth = 0;
                     var meta = Ui.El("row", info);
                     meta.style.alignItems = Align.Center;
-                    Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), meta, TypeScale.Caption).style.marginLeft = Space.S0;
+                    Ui.RoleBadge(Ui.RoleOf(h, c.Class(id)), meta).style.marginLeft = Space.S0;
                     Ui.Caption($"Lv {u.Level}", meta, "gold").style.marginLeft = Space.S8;
                     int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
                     Ui.Gauge(hp / (float)u.MaxHp, info, 300).style.marginTop = Space.S8;
@@ -979,7 +979,7 @@ namespace GridGame.App
                 Ui.Card(party, id, def.Name, out var col, "stage-hero-" + id);
                 var meta = Ui.El("row", col);
                 meta.style.alignItems = Align.Center;
-                Ui.RoleBadge(Ui.RoleOf(h, def), meta, TypeScale.Caption).style.marginLeft = Space.S0;
+                Ui.RoleBadge(Ui.RoleOf(h, def), meta).style.marginLeft = Space.S0;
                 Ui.Caption($"Lv {u.Level}  HP {hp}/{u.MaxHp}", meta, hp < u.MaxHp ? "warn" : "dim").style.marginLeft = Space.S8;
             }
             if (S.Party.Count == 0) Ui.Empty("No one is in the party.", party);

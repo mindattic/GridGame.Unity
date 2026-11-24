@@ -94,7 +94,7 @@ namespace GridGame.App
 
             // A resize rebuild keeps what was typed (the old field is still referenced here until replaced).
             field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = field?.value ?? renaming ?? "" };
-            field.style.fontSize = TypeScale.H3;
+            field.style.fontSize = TypeScale.Base;
             field.style.marginTop = Space.S8; field.style.marginBottom = Space.S8;
             field.style.minHeight = 96;
             var input = field.Q(className: "unity-text-field__input") ?? field.Q(className: "unity-base-text-field__input");

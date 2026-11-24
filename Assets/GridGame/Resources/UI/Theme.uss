@@ -49,15 +49,7 @@
     --color-gauge-full: rgb(110, 230, 120);
     --color-gauge-mid: rgb(240, 200, 70);
     --color-gauge-low: rgb(240, 80, 70);
-    --type-badge: 24px;
-    --type-caption: 30px;
-    --type-small: 36px;
-    --type-body: 40px;
-    --type-h3: 48px;
-    --type-h2: 60px;
-    --type-h1: 76px;
-    --type-display: 96px;
-    --type-title: 120px;
+    --type-base: 40px; /* GG-T770: the one GUI text size; the root takes type-base-N (Tokens.cs GuiType) */
     --space-4: 4px;
     --space-8: 8px;
     --space-12: 12px; /* half of the 24-px target gap: two neighbours' margins add up to POL-C3 */
@@ -72,52 +64,35 @@
     --space-96: 96px;
 }
 
-/* Settings → Text size (GG-T495, Tokens.cs TextSize): the UI root takes one of these and every USS-sized label from
-   badge to H2 grows with it. H1, Display and Title stay: they are headlines already. */
-.text-115 {
-    --type-badge: 28px;
-    --type-caption: 35px;
-    --type-small: 41px;
-    --type-body: 46px;
-    --type-h3: 55px;
-    --type-h2: 69px;
-}
-.text-130 {
-    --type-badge: 31px;
-    --type-caption: 39px;
-    --type-small: 47px;
-    --type-body: 52px;
-    --type-h3: 62px;
-    --type-h2: 78px;
-}
+/* GG-T770 (owner: "all these different font sizes make it look messy"): every GUI label draws at ONE size, --type-base.
+   Tokens.cs GuiType works it out from the screen (aspect, dpi, resolution), the legibility floor and Settings -> Text size,
+   and puts one type-base-N class on the UI root. Emphasis is bold, italic, colour, underline or strikethrough, never size. */
+.type-base-40 { --type-base: 40px; }
+.type-base-42 { --type-base: 42px; }
+.type-base-44 { --type-base: 44px; }
+.type-base-46 { --type-base: 46px; }
+.type-base-48 { --type-base: 48px; }
+.type-base-50 { --type-base: 50px; }
+.type-base-52 { --type-base: 52px; }
+.type-base-54 { --type-base: 54px; }
+.type-base-56 { --type-base: 56px; }
+.type-base-58 { --type-base: 58px; }
+.type-base-60 { --type-base: 60px; }
+.type-base-62 { --type-base: 62px; }
+.type-base-64 { --type-base: 64px; }
+.type-base-66 { --type-base: 66px; }
+.type-base-68 { --type-base: 68px; }
+.type-base-70 { --type-base: 70px; }
+.type-base-72 { --type-base: 72px; }
 
-/* GG-T551 (Tokens.cs TypeFloor): on a small low-dpi screen the UI root takes type-floor-N and the badge..body sizes rise
-   to at least N design px so secondary text (badges, captions, tab labels) stays readable. Each Text size pairs with each
-   floor below, every size the larger of the two, so the setting keeps working on top of the floor. H3 and up are never
-   raised. */
-.type-floor-32 { --type-badge: 32px; --type-caption: 32px; }
-.type-floor-36 { --type-badge: 36px; --type-caption: 36px; }
-.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 40px; }
-.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 44px; --type-body: 44px; }
-.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 48px; }
-.text-115.type-floor-32 { --type-badge: 32px; --type-caption: 35px; --type-small: 41px; --type-body: 46px; }
-.text-115.type-floor-36 { --type-badge: 36px; --type-caption: 36px; --type-small: 41px; --type-body: 46px; }
-.text-115.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 41px; --type-body: 46px; }
-.text-115.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 44px; --type-body: 46px; }
-.text-115.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 48px; }
-.text-130.type-floor-32 { --type-badge: 32px; --type-caption: 39px; --type-small: 47px; --type-body: 52px; }
-.text-130.type-floor-36 { --type-badge: 36px; --type-caption: 39px; --type-small: 47px; --type-body: 52px; }
-.text-130.type-floor-40 { --type-badge: 40px; --type-caption: 40px; --type-small: 47px; --type-body: 52px; }
-.text-130.type-floor-44 { --type-badge: 44px; --type-caption: 44px; --type-small: 47px; --type-body: 52px; }
-.text-130.type-floor-48 { --type-badge: 48px; --type-caption: 48px; --type-small: 48px; --type-body: 52px; }
-
-/* Semantic type classes (POL-A1); weight comes from the Heavy font role, applied in Ui.AddClasses. */
-.t-caption { font-size: var(--type-caption); }
-.t-body { font-size: var(--type-body); }
-.t-h3 { font-size: var(--type-h3); }
-.t-h2 { font-size: var(--type-h2); }
-.t-h1 { font-size: var(--type-h1); }
-.t-display { font-size: var(--type-display); }
+/* Semantic type classes (POL-A1): all one size (GG-T770); a heading stands out by weight (the Heavy font role, applied in
+   Ui.AddClasses) and colour, not size. */
+.t-caption { font-size: var(--type-base); }
+.t-body { font-size: var(--type-base); }
+.t-h3 { font-size: var(--type-base); }
+.t-h2 { font-size: var(--type-base); }
+.t-h1 { font-size: var(--type-base); }
+.t-display { font-size: var(--type-base); }
 
 .stage {
     position: absolute;
@@ -126,7 +101,7 @@
     overflow: hidden;
     background-color: rgb(12, 12, 14);
     color: var(--color-text);
-    font-size: var(--type-body);
+    font-size: var(--type-base);
 }
 
 .letterbox { background-color: rgb(6, 6, 8); }
@@ -162,18 +137,18 @@
 .window--scroller { flex-shrink: 1; flex-basis: 0; min-height: 160px; }
 .window--plain { background-color: var(--color-panel); }
 .window-title {
-    font-size: var(--type-h3);
+    font-size: var(--type-base);
     color: var(--color-white);
     margin-bottom: var(--space-8);
 }
-.window-sub { font-size: var(--type-small); color: var(--color-sub); }
+.window-sub { font-size: var(--type-base); color: var(--color-sub); }
 
 /* ── Text ────────────────────────────────────────────────────────────────── */
-.title { font-size: var(--type-title); color: rgb(255, 244, 214); -unity-text-align: middle-center; }
-.h1 { font-size: var(--type-h2); color: var(--color-white); }
-.h2 { font-size: var(--type-h3); color: var(--color-white); }
-.small { font-size: var(--type-caption); }
-.tiny { font-size: var(--type-badge); }
+.title { font-size: var(--type-base); color: rgb(255, 244, 214); -unity-text-align: middle-center; }
+.h1 { font-size: var(--type-base); color: var(--color-white); }
+.h2 { font-size: var(--type-base); color: var(--color-white); }
+.small { font-size: var(--type-base); }
+.tiny { font-size: var(--type-base); }
 .dim { color: var(--color-dim); }
 .gold { color: var(--color-gold); }
 .good { color: var(--color-good); }
@@ -222,13 +197,11 @@
 .menu-row--disabled .marquee { opacity: 0.45; }
 .menu-cursor { width: 56px; height: 56px; margin-right: var(--space-8); opacity: 0; background-size: contain; flex-shrink: 0; }
 .menu-row--selected > .menu-cursor { opacity: 1; }
-.menu-label { flex-grow: 1; font-size: var(--type-body); flex-shrink: 1; min-width: 0; white-space: normal; }
+.menu-label { flex-grow: 1; font-size: var(--type-base); flex-shrink: 1; min-width: 0; white-space: normal; }
 /* A long value (a locked station's "Opens after …" hint) wraps rather than clipping or squeezing the label. */
-.menu-value { font-size: var(--type-body); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
-/* GG-T760: the Equip slot list's shorter rows. Text takes --type-small (so Text size and the TypeFloor still apply); the
-   tap target stays above 88px. Only rows carrying this class change. */
+.menu-value { font-size: var(--type-base); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
+/* GG-T760: the Equip slot list's shorter rows; the tap target stays above 88px. Text keeps the one GUI size (GG-T770). */
 .menu-row--compact { min-height: 96px; margin: var(--space-4) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
-.menu-row--compact .menu-label, .menu-row--compact .menu-value { font-size: var(--type-small); }
 .menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
@@ -247,7 +220,7 @@
     border-bottom-color: rgb(120, 132, 196);
     background-color: rgb(34, 58, 150);
     color: var(--color-white);
-    font-size: var(--type-body);
+    font-size: var(--type-base);
     -unity-text-align: middle-center;
 }
 .btn:hover { background-color: rgb(52, 84, 196); }
@@ -284,7 +257,7 @@
 .slot--targeting { scale: 1.06 1.06; }
 .slot.is-pressed { scale: 0.92 0.92; translate: 0 10px; }
 .btn--disabled { opacity: 0.4; }
-.btn--small { min-height: var(--size-target); font-size: var(--type-small); padding: 0 var(--space-24); border-bottom-width: 9px; }
+.btn--small { min-height: var(--size-target); font-size: var(--type-base); padding: 0 var(--space-24); border-bottom-width: 9px; }
 .btn--small.is-pressed { border-bottom-width: 3px; translate: 0 6px; }
 .btn--icon { width: var(--size-target); padding: 0; }
 
@@ -298,12 +271,12 @@
     border-bottom-width: 4px;
     border-color: var(--color-frame);
 }
-.header-title { flex-grow: 1; font-size: var(--type-h2); -unity-text-align: middle-left; margin-left: var(--space-16); }
+.header-title { flex-grow: 1; font-size: var(--type-base); -unity-text-align: middle-left; margin-left: var(--space-16); }
 /* GG-T454: a page's subtitle (station level, profile) rides in the header under its title instead of a cramped line below it. */
 .header-titles { flex-grow: 1; flex-shrink: 1; min-width: 0; margin-left: var(--space-16); justify-content: center; }
 .header-titles > .header-title { flex-grow: 0; margin-left: 0; }
-.header-sub { font-size: var(--type-caption); color: var(--color-gold); -unity-text-align: middle-left; }
-.header-gold { font-size: var(--type-h3); color: var(--color-gold); -unity-text-align: middle-right; margin-right: var(--space-16); }
+.header-sub { font-size: var(--type-base); color: var(--color-gold); -unity-text-align: middle-left; }
+.header-gold { font-size: var(--type-base); color: var(--color-gold); -unity-text-align: middle-right; margin-right: var(--space-16); }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */
@@ -316,7 +289,7 @@
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     background-color: rgb(18, 28, 84);
-    font-size: var(--type-small);
+    font-size: var(--type-base);
     -unity-text-align: middle-center;
     color: rgb(170, 184, 255);
 }
@@ -337,7 +310,7 @@
     border-width: 4px;
     border-color: var(--color-frame);
     background-color: rgba(12, 18, 60, 0.96);
-    font-size: var(--type-body);
+    font-size: var(--type-base);
     -unity-text-align: middle-center;
     transition-property: opacity, translate;
     transition-duration: 0.18s;
@@ -357,18 +330,18 @@
    One look for every menu: four type sizes (title 60 in the header, heading 48, body 40, caption 30), windows 24 px from
    the edge and 16 apart, 132-px rows 24 apart, notes indented to the row label. Screens use Ui's kit builders, which put
    these classes on; a screen never sets its own font size, padding or margin. */
-.kit-heading { font-size: var(--type-h3); color: var(--color-white); }
-.kit-name { font-size: var(--type-body); color: var(--color-white); }
-.kit-text { font-size: var(--type-body); white-space: normal; }
-.kit-caption { font-size: var(--type-caption); }
-.kit-section { font-size: var(--type-caption); color: var(--color-gold); margin: var(--space-16) 0 var(--space-4) 0; }
+.kit-heading { font-size: var(--type-base); color: var(--color-white); }
+.kit-name { font-size: var(--type-base); color: var(--color-white); }
+.kit-text { font-size: var(--type-base); white-space: normal; }
+.kit-caption { font-size: var(--type-base); }
+.kit-section { font-size: var(--type-base); color: var(--color-gold); margin: var(--space-16) 0 var(--space-4) 0; }
 .kit-section--first { margin-top: 0; }
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
 .kit-field { flex-direction: row; align-items: center; margin: var(--space-4) 0; }
-.kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-caption); color: var(--color-dim); }
-.kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-body); white-space: normal; }
-.kit-empty { font-size: var(--type-body); color: var(--color-dim); white-space: normal; -unity-text-align: middle-center; padding: var(--space-24); }
+.kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-base); color: var(--color-dim); }
+.kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-base); white-space: normal; }
+.kit-empty { font-size: var(--type-base); color: var(--color-dim); white-space: normal; -unity-text-align: middle-center; padding: var(--space-24); }
 /* A list card's portrait and buttons line up with its first line, however tall its text runs. */
 .card.kit-card { align-items: flex-start; }
 .kit-heading, .kit-name { -unity-text-outline-width: 3px; -unity-text-outline-color: var(--color-text-edge); text-shadow: 4px 4px 0 var(--color-text-drop); }
@@ -439,7 +412,7 @@
 .colorblind .unit-keyline--boss { border-color: rgb(191, 77, 5); }
 
 /* ── Orb pips (generic mana) ──────────────────────────────────────────── */
-.pip { width: 34px; height: 34px; border-radius: 17px; margin: 0 var(--space-4); border-width: 2px; border-color: rgba(255,255,255,0.8); font-size: var(--type-badge); -unity-text-align: middle-center; color: var(--color-ink); }
+.pip { width: 34px; height: 34px; border-radius: 17px; margin: 0 var(--space-4); border-width: 2px; border-color: rgba(255,255,255,0.8); font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-ink); }
 .pip--mana { background-color: var(--color-mana); }
 
 /* ── Rarity colors ───────────────────────────────────────────────────────── */
@@ -818,7 +791,7 @@
 /* GG-T524: each tab is a 132-px-tall transparent hit area (.info-tab, POL-C2) holding its 60-px drawn face at the bottom,
    flush on the window; the face keeps the old thin look and takes no clicks itself. */
 .info-tabs .info-tab { flex-grow: 1; flex-basis: 0; height: var(--size-target); margin: 0 var(--space-12); justify-content: flex-end; }
-.info-tabs .tab { height: 60px; font-size: var(--type-small); flex-grow: 0; flex-shrink: 0; margin: 0; }
+.info-tabs .tab { height: 60px; font-size: var(--type-base); flex-grow: 0; flex-shrink: 0; margin: 0; }
 /* The mana pool (GG-T405): the "-N" ghost of an aimed spell and the dimmed count fade rather than snap. */
 .mana-pool .mana-pool__ghost { transition-property: opacity; transition-duration: 0.15s; }
 .mana-pool .mana-pool__count { transition-property: opacity; transition-duration: 0.15s; }
