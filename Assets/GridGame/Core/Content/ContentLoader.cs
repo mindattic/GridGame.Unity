@@ -132,6 +132,67 @@ namespace GridGame.Core.Content
         /// <summary>Cross-reference check; returns human-readable problems (empty = valid).</summary>
         /// <param name="portraitExists">Whether Resources/Portraits/&lt;file&gt; exists (a <see cref="ClassDef.PortraitFile"/>); null skips that
         /// art check (Core can't see the art — the app and the dotnet tests pass their own lookup).</param>
+        /// <summary>GG-T977: family trees (a <see cref="SkillTreeDef"/> whose Id is a families.json id) and each hero's
+        /// <see cref="ClassDef.StartNodes"/>. On a family tree every node's (Col, Row) cell is its own and a
+        /// <see cref="SkillNodeDef.SignatureOf"/> names a member of that family; a role tree may not carry SignatureOf.
+        /// A class's start nodes resolve in its family's tree, each start node's prerequisites are start nodes too, and
+        /// once a class has start nodes every <see cref="ClassDef.DefaultLoadout"/> ability (not "item:", not
+        /// <see cref="AbilityDef.Universal"/>) is granted by one. Node ids unique across all trees is checked with the
+        /// rest of the skill trees in <see cref="Validate"/>.</summary>
+        public static void ValidateFamilyTrees(ContentDb db, List<string> p)
+        {
+            foreach (var t in db.SkillTrees.Values)
+            {
+                bool family = db.TryFamily(t.Id) != null;
+                var cells = new Dictionary<(int, int), string>();
+                foreach (var n in t.Nodes)
+                {
+                    if (n == null || string.IsNullOrEmpty(n.Id)) continue;
+                    var w = $"tree {t.Id} node {n.Id}";
+                    if (!family)
+                    {
+                        if (!string.IsNullOrEmpty(n.SignatureOf)) p.Add($"{w}: SignatureOf is only for a family tree");
+                        continue;
+                    }
+                    if (n.Col < 0 || n.Row < 0) p.Add($"{w}: layout cell ({n.Col}, {n.Row}) can't be negative");
+                    else if (cells.TryGetValue((n.Col, n.Row), out var other)) p.Add($"{w}: layout cell ({n.Col}, {n.Row}) is already node {other}");
+                    else cells[(n.Col, n.Row)] = n.Id;
+                    if (!string.IsNullOrEmpty(n.SignatureOf))
+                    {
+                        var sc = db.TryClass(n.SignatureOf);
+                        if (sc == null || sc.Team != Team.Hero || !string.Equals(sc.Family, t.Id, StringComparison.OrdinalIgnoreCase))
+                            p.Add($"{w}: SignatureOf '{n.SignatureOf}' is not a member of family {t.Id}");
+                    }
+                }
+            }
+            foreach (var c in db.Classes.Values)
+            {
+                if (c.StartNodes == null || c.StartNodes.Count == 0) continue;
+                var w = $"class {c.Id}";
+                if (c.Team != Team.Hero) { p.Add($"{w}: only a hero class has StartNodes"); continue; }
+                var tree = string.IsNullOrEmpty(c.Family) ? null : db.TrySkillTree(c.Family);
+                if (tree == null) { p.Add($"{w}: StartNodes need a family tree '{c.Family}' in skilltrees.json"); continue; }
+                var start = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var grants = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var id in c.StartNodes)
+                    if (!start.Add(id ?? "")) p.Add($"{w}: start node '{id}' listed twice");
+                foreach (var id in start)
+                {
+                    var n = tree.Nodes.Find(x => x != null && string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+                    if (n == null) { p.Add($"{w}: start node '{id}' is not in family tree {tree.Id}"); continue; }
+                    if (!string.IsNullOrEmpty(n.Grants)) grants.Add(n.Grants);
+                    foreach (var req in n.Prerequisites)
+                        if (!start.Contains(req)) p.Add($"{w}: start node '{n.Id}' needs '{req}', which is not a start node");
+                }
+                foreach (var s in c.DefaultLoadout)
+                {
+                    if (string.IsNullOrEmpty(s) || s.StartsWith("item:")) continue;
+                    if (db.TryAbility(s)?.Universal == true) continue;
+                    if (!grants.Contains(s)) p.Add($"{w}: loadout ability '{s}' is not granted by any start node");
+                }
+            }
+        }
+
         public static List<string> Validate(ContentDb db, Func<string, bool> portraitExists = null)
         {
             var p = new List<string>();
@@ -484,6 +545,7 @@ namespace GridGame.Core.Content
             MercenaryContent.Validate(db, p);
             WandererContent.ValidateFactions(db, p);
             FamilyContent.Validate(db, p); // GG-T971
+            ValidateFamilyTrees(db, p); // GG-T977
             QuestCatalog.Validate(db, p);
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);

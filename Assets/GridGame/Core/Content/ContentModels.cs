@@ -520,6 +520,11 @@ namespace GridGame.Core.Content
         /// <summary>Hero family id (families.json, GG-T971, BIBLE §25.6.6): the loose collection of classes this one
         /// shares a fantasy and moves with. Hero-only; required for Team.Hero, left null for Team.Enemy.</summary>
         public string Family;
+        /// <summary>GG-T977: node ids of the class's family tree (the <see cref="SkillTreeDef"/> whose Id is
+        /// <see cref="Family"/>) a new hero of this class starts with learned, so siblings start specced differently.
+        /// Each one's prerequisites are start nodes too, and once set every <see cref="DefaultLoadout"/> ability (not an
+        /// item, not <see cref="AbilityDef.Universal"/>) is granted by one. Empty = not yet on a family tree.</summary>
+        public List<string> StartNodes = new List<string>();
         /// <summary>Weapon classes (GG-T52) this class is trained in from level 1 — no proficiency passive
         /// needed. Every hero can always use <see cref="WeaponClass.Simple"/> regardless of this list; leave
         /// it empty for a class that starts Simple-only (e.g. a healer/support archetype).</summary>
@@ -1271,6 +1276,13 @@ namespace GridGame.Core.Content
         public int Cost = 1;
         public int RequiredPointsInTree;
         public List<string> Prerequisites = new List<string>();
+        /// <summary>GG-T977: the node's cell on a family tree's grid (column, row; 0-based). Each cell holds one node per
+        /// family tree (<see cref="ContentLoader.ValidateFamilyTrees"/>); the 7 role trees ignore it.</summary>
+        public int Col;
+        public int Row;
+        /// <summary>GG-T977: on a family tree, the class id (a member of that family) whose start this node sits by, so
+        /// the screen can draw each sibling's opening corner; null = a shared node.</summary>
+        public string SignatureOf;
 
         public bool IsStatNode => GrantsStat != null;
     }
@@ -1305,7 +1317,10 @@ namespace GridGame.Core.Content
         }
     }
 
-    /// <summary>One archetype's skill tree (§25.6.1, GG-T50): named by a <see cref="ClassDef.HomeTree"/> id.</summary>
+    /// <summary>One archetype's skill tree (§25.6.1, GG-T50): named by a <see cref="ClassDef.HomeTree"/> id. GG-T977: it doubles as a family tree when its <see cref="Id"/> is a families.json id
+    /// (<see cref="ContentDb.TryFamily"/>): every member of that family spends points in it and may converge on the same
+    /// nodes, each class starting from its own <see cref="ClassDef.StartNodes"/>. Family trees sit beside the 7 role
+    /// trees (<see cref="ClassDef.HomeTree"/>) until the cutover.</summary>
     public sealed class SkillTreeDef
     {
         public string Id;
