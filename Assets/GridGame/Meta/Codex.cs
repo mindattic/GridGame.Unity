@@ -4,29 +4,6 @@ using GridGame.Core.Content;
 
 namespace GridGame.Meta
 {
-    /// <summary>GG-T923: the kinds of Codex entry (the in-game Lore / Encyclopedia, GG-T922). A save's entry key is
-    /// "&lt;kind&gt;:&lt;id&gt;" (<see cref="Codex.Key"/>), ids lower-cased.</summary>
-    public static class CodexKinds
-    {
-        /// <summary>A campaign region (theme id) or stage id.</summary>
-        public const string Place = "place";
-        /// <summary>A factions.json faction id.</summary>
-        public const string Faction = "faction";
-        /// <summary>A hero class id, a Camp NPC id (merchant, blacksmith, …) or a caravan crew member's Prose slug.</summary>
-        public const string Character = "character";
-        /// <summary>An enemy class id (its Bestiary entry is Seen).</summary>
-        public const string Foe = "foe";
-        public const string Item = "item";
-        public const string Ability = "ability";
-        /// <summary>A glossary entry id.</summary>
-        public const string Keyword = "keyword";
-        /// <summary>"chapter/&lt;id&gt;" (a chapter crawl played), "dialogue/&lt;id&gt;" (a dialogue played to the end), or the
-        /// rest of a "story:" flag ("ending").</summary>
-        public const string Story = "story";
-
-        public static readonly string[] All = { Place, Faction, Character, Foe, Item, Ability, Keyword, Story };
-    }
-
     /// <summary>GG-T923: which Codex entries this save has unlocked (<see cref="SaveData.Codex"/>) and read
     /// (<see cref="SaveData.CodexRead"/>). An entry unlocks once and never locks again; unlocked and unread is "new" (the
     /// screen's badge). <see cref="Sync"/> derives every entry the save's own state already shows (cleared stages, Bestiary,
@@ -34,7 +11,8 @@ namespace GridGame.Meta
     /// dialogue. Never throws on a partial save.</summary>
     public static class Codex
     {
-        public static string Key(string kind, string id) => kind + ":" + (id ?? "").Trim().ToLowerInvariant();
+        /// <summary>"&lt;kind&gt;:&lt;id&gt;"; the kinds are Core <see cref="CodexKinds"/> (GG-T936 moved them there for codex.json).</summary>
+        public static string Key(string kind, string id) => CodexKinds.Key(kind, id);
 
         /// <summary>Unlocks one entry; true when it is newly unlocked.</summary>
         public static bool Unlock(SaveData s, string kind, string id)

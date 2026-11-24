@@ -119,6 +119,7 @@ namespace GridGame.Core.Content
                 k[$"bark:merc/{m.Class}/pitch"] = "bark";
                 k[$"bark:merc/{m.Class}/renewal"] = "bark";
             }
+            foreach (var e in db.CodexOrder) if (!string.IsNullOrWhiteSpace(e?.Key)) k[CodexDef.TextKey(e.Key.Trim())] = "description"; // GG-T936 (optional)
             return k;
         }
 
@@ -138,6 +139,13 @@ namespace GridGame.Core.Content
 
         /// <summary>Prefix of the GG-T374 description keys (tools/prose_keys.py description_keys).</summary>
         public const string PlaceKey = "place:", FactionKey = "faction:", CharacterKey = "character:";
+
+        /// <summary>GG-T936: prefix of a Codex entry's body key, "codex:&lt;kind&gt;/&lt;id&gt;" (<see cref="CodexDef.TextKey"/>).</summary>
+        public const string CodexKey = "codex:";
+
+        /// <summary>GG-T936: a key whose text may not exist yet (a Codex body, which falls back to the record's own words):
+        /// missing it is not a problem. tools/prose_keys.py is_optional mirrors it.</summary>
+        public static bool IsOptional(string key) => key != null && key.StartsWith(CodexKey, StringComparison.Ordinal);
 
         /// <summary>GG-T374: the description key of every place (campaign region, and each campaign stage that is not a
         /// test stage), hero faction and caravan crew member, keyed "theme:&lt;id&gt;", "stage:&lt;id&gt;", "faction:&lt;id&gt;",
@@ -341,6 +349,22 @@ namespace GridGame.Core.Content
                 if (string.IsNullOrEmpty(u.Crew)) continue;
                 string key = "bark:caravan/" + u.Id;
                 u.Barks = Lines(Get(key, "bark"), key);
+            }
+            foreach (var e in db.CodexOrder)
+            {
+                // GG-T936: a Codex body is optional (no text yet = the record's own words, ContentDb.CodexEntry).
+                if (string.IsNullOrWhiteSpace(e?.Key)) continue;
+                string key = CodexDef.TextKey(e.Key.Trim());
+                Leftover(e.Body, $"codex.json {e.Key} Body");
+                texts.TryGetValue(key, out var te);
+                if (te != null && kindOf[key] != "description") te = null;
+                db.Texts[key] = new TextRef
+                {
+                    Key = key, Kind = "description", Id = te?.Id, Guid = te?.Guid, Version = te?.Version ?? 0,
+                    Source = te == null ? null : te.Source ?? "prose", Hash = te?.Hash, Missing = te == null,
+                };
+                e.Body = te == null ? null : Str(te.Payload, "long") ?? Str(te.Payload, "short");
+                if (te != null && e.Body == null) db.TextProblems.Add($"text {key}: payload has no 'long'");
             }
             foreach (var m in db.Mercenaries)
             {

@@ -1405,3 +1405,79 @@ namespace GridGame.Core.Content
         }
     }
 }
+
+namespace GridGame.Core.Content
+{
+    /// <summary>GG-T923: the kinds of Codex entry (the in-game Lore / Encyclopedia, GG-T922). An entry's key is
+    /// "&lt;kind&gt;:&lt;id&gt;" (<see cref="Key"/>, Meta <c>Codex.Key</c>), ids lower-cased. Lives in Core so the content
+    /// loader can check codex.json (GG-T936).</summary>
+    public static class CodexKinds
+    {
+        /// <summary>A campaign region (theme id) or stage id.</summary>
+        public const string Place = "place";
+        /// <summary>A factions.json faction id.</summary>
+        public const string Faction = "faction";
+        /// <summary>A hero class id, a Camp NPC id (merchant, blacksmith, …) or a caravan crew member's Prose slug.</summary>
+        public const string Character = "character";
+        /// <summary>An enemy class id (its Bestiary entry is Seen).</summary>
+        public const string Foe = "foe";
+        public const string Item = "item";
+        public const string Ability = "ability";
+        /// <summary>A glossary entry id.</summary>
+        public const string Keyword = "keyword";
+        /// <summary>"chapter/&lt;id&gt;" (a chapter crawl played), "dialogue/&lt;id&gt;" (a dialogue played to the end), or the
+        /// rest of a "story:" flag ("ending").</summary>
+        public const string Story = "story";
+
+        public static readonly string[] All = { Place, Faction, Character, Foe, Item, Ability, Keyword, Story };
+
+        public static string Key(string kind, string id) => kind + ":" + (id ?? "").Trim().ToLowerInvariant();
+
+        /// <summary>Splits "&lt;kind&gt;:&lt;id&gt;"; false when there is no colon or either side is empty.</summary>
+        public static bool TrySplit(string key, out string kind, out string id)
+        {
+            kind = id = null;
+            int colon = key?.IndexOf(':') ?? -1;
+            if (colon <= 0 || colon == key.Length - 1) return false;
+            kind = key.Substring(0, colon);
+            id = key.Substring(colon + 1);
+            return true;
+        }
+    }
+
+    /// <summary>GG-T936: one codex.json entry (GG-T924): which Codex entry exists, its title and what it links to. The
+    /// body is Prose (description key "codex:&lt;kind&gt;/&lt;id&gt;", payload "long"), joined into <see cref="Body"/>; with
+    /// no text yet the entry falls back to the record's own words (<see cref="ContentDb.CodexEntry"/>).</summary>
+    public sealed class CodexDef
+    {
+        /// <summary>"&lt;kind&gt;:&lt;id&gt;" (<see cref="CodexKinds.Key"/>).</summary>
+        public string Key;
+        /// <summary>Null = the record's own name.</summary>
+        public string Title;
+        /// <summary>Other entries' keys this one links to.</summary>
+        public List<string> Related = new List<string>();
+        /// <summary>Filled by <see cref="ProseText.Join"/> from the Prose text; null when there is none yet.</summary>
+        public string Body;
+
+        /// <summary>The Prose key of this entry's body: "codex:&lt;kind&gt;/&lt;id&gt;".</summary>
+        public static string TextKey(string key)
+        {
+            if (!CodexKinds.TrySplit(key, out var kind, out var id)) return ProseText.CodexKey + key;
+            return ProseText.CodexKey + kind + "/" + id;
+        }
+    }
+
+    /// <summary>GG-T936: one Codex entry as the screen shows it, resolved by <see cref="ContentDb.CodexEntry"/>.</summary>
+    public sealed class CodexEntryView
+    {
+        public string Kind;
+        public string Id;
+        public string Key;
+        public string Title;
+        public string Body;
+        /// <summary>Related keys that resolve to an entry.</summary>
+        public List<string> Related = new List<string>();
+        /// <summary>True when the kind is known and the record exists.</summary>
+        public bool Exists;
+    }
+}
