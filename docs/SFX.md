@@ -40,6 +40,7 @@ sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
 | `element.crackle` | a dry crackle of flames catching | a firewall (or fire trail) is painted, and each burn it deals on entering or ending a turn on it (GG-T933, §7) | `element.fire` low |
 | `alchemist.slosh` | a glass flask shattering into a thick, glugging slosh of oil | the Alchemist's Oil Flask bursts on its pool (GG-T886, §7) | `element.water` low |
 | `battle.clank` | a wooden crate slammed down, iron bands clanking | the Machinist's barricade drops in, takes a hit or comes down (GG-T935, §14.23) | `battle.shatter` high |
+| `minotaur.steamtrain` | a steam-train whistle into chugging | a minotaur takes Raging (the RAGE card venting steam) and each step of its raging Bull Rush run (RampagedEvent) (GG-T898, §14.18) | `element.steam` (low hiss on rage, high whistle as the run starts, a soft chuff per step) with `battle.warcry` low on rage and `battle.dash` low per step |
 
 ## Battle events (`Core/Battle` events → `App/Battle/BattleScreen.*`)
 

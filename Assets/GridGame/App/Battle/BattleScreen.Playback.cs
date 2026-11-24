@@ -76,7 +76,7 @@ namespace GridGame.App
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent || events[i] is PincerFormedEvent || events[i] is AttackEvent) hitAbility = null;
                 else if (events[i] is AbilityResolvedEvent rae) hitAbility = rae.AbilityId;
                 // GG-T836: a new action's pincers start at normal tempo; a pincer picks its beat tempo before its cut-in.
-                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) ResetPincerBeats();
+                if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) { ResetPincerBeats(); ResetRampage(); }
                 else if (events[i] is PincerFormedEvent pfe) BeginPincerBeats(pfe);
                 // GG-T839: a foe's action plays as beats: its intent as its turn starts (TurnAnim), the wind-up before the act.
                 IEnumerator windUp = null;
@@ -99,6 +99,7 @@ namespace GridGame.App
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
             ResetPincerBeats(); // GG-T836: battle speed is the setting's again
+            ResetRampage(); // GG-T898: no raging run outlives its playback
             EndEnemyBeats(); // GG-T839: the board draws the state's own traps and hazards again
             board.Lines.ClearLines();
             PruneGhosts();
@@ -159,6 +160,8 @@ namespace GridGame.App
                     App.Audio.Sfx("battle.cast");
                     return Tween.Wait(Timing.Standard);
 
+                case SteppedEvent s when s.UnitId == rampageUnit && rampageStepsLeft > 0: return RampageStep(s); // GG-T898: the raging dash
+                case RampagedEvent rp: return RampageAnim(rp); // GG-T898: the steam-train whistle
                 case SteppedEvent s: return StepAnim(s.UnitId, s.To, 0.16f, "battle.move");
                 case DisplacedEvent d: return StepAnim(d.UnitId, d.To, 0.14f, "battle.slide");
                 case TeleportedEvent t: return TeleportAnim(t);
@@ -215,6 +218,7 @@ namespace GridGame.App
                 case PickupCollectedEvent pc: return PickupCollectAnim(pc);
                 case PickupExpiredEvent pe: return PickupExpiredAnim(pe);
 
+                case BuffAppliedEvent ba when ba.BuffId == "raging": return RageAnim(ba); // GG-T898: steam from the ears, RAGE
                 case BuffAppliedEvent ba: return InflictAnim(ba);
                 case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, CombatTextKind.Weak, "Steam!", 0.25f) : null;
                 case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
