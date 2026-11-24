@@ -287,5 +287,35 @@ namespace GridGame.Tests
             tree.Nodes.Add(new SkillNodeDef { Id = "finale", Grants = "slash", Cost = 1, Prerequisites = { "branch_a", "branch_b" } });
             Assert.That(ContentLoader.Validate(db), Is.Empty);
         }
+
+        /// <summary>GG-T837: a support's presentation names a vfx.json effect and a sound cue that exist.</summary>
+        [Test]
+        public void Support_projectile_and_sfx_must_exist()
+        {
+            var db = ValidDb();
+            db.VfxPrefabs.Effects.Add(new VfxPrefabDef { Id = "Shuriken", Mode = VfxMode.Loop });
+            db.Classes["knight"].Support = new SupportDef { Effect = SupportEffect.Heal, Magnitude = 0.2f, Projectile = "Shuriken", Motion = SupportMotion.Spin, Sfx = "battle.heal" };
+            Assert.That(ContentLoader.Validate(db), Is.Empty);
+
+            db.Classes["knight"].Support.Projectile = "NoSuchVfx";
+            Assert.That(OneProblem(db), Does.Contain("Projectile 'NoSuchVfx' is not in vfx.json"));
+
+            db.Classes["knight"].Support.Projectile = "Shuriken";
+            db.Classes["knight"].Support.Sfx = "battle.kaboom"; // on the taxonomy's prefix, but no such cue
+            Assert.That(OneProblem(db), Does.Contain("Sfx 'battle.kaboom'"));
+        }
+
+        /// <summary>GG-T837: every hero class's support reads as its own move — a projectile and a sound authored, and no
+        /// two heroes sharing the same projectile, motion and sound.</summary>
+        [Test]
+        public void Every_hero_support_has_its_own_presentation()
+        {
+            var heroes = TestKit.Real.Classes.Values.Where(c => c.Team == Team.Hero).ToList();
+            var bare = heroes.Where(c => c.Support == null || string.IsNullOrEmpty(c.Support.Projectile) || string.IsNullOrEmpty(c.Support.Sfx)).Select(c => c.Id);
+            Assert.That(bare, Is.Empty);
+            var twins = heroes.GroupBy(c => c.Support.Projectile + "|" + c.Support.Motion + "|" + c.Support.Sfx).Where(g => g.Count() > 1).Select(g => string.Join("+", g.Select(c => c.Id)));
+            Assert.That(twins, Is.Empty);
+            Assert.That(ContentLoader.Validate(TestKit.Real).Where(p => p.Contains("Projectile") || p.Contains("Sfx")), Is.Empty);
+        }
     }
 }

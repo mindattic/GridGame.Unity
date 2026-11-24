@@ -472,6 +472,20 @@ namespace GridGame.Core.Content
             return p;
         }
 
+        /// <summary>GG-T837: the cues a class's <see cref="SupportDef.Sfx"/> may name — every battle/element/status cue that
+        /// has a file under Resources/Audio/Sfx (App Audio maps <c>battle.crucible_wave</c> to <c>battle-crucible-wave-00</c>).
+        /// A new cue goes here once its file is made (GridGame.Studio/tools/make_sfx.py).</summary>
+        public static readonly HashSet<string> SupportSfxCues = new HashSet<string>
+        {
+            "battle.cast", "battle.channel", "battle.clang", "battle.crit", "battle.dash", "battle.explosion",
+            "battle.fizzle", "battle.glass", "battle.glug", "battle.heal", "battle.hit", "battle.miss", "battle.orb",
+            "battle.pickup", "battle.pincer", "battle.powerup", "battle.shatter", "battle.slide", "battle.taunt",
+            "battle.trap", "battle.warcry", "battle.whoosh",
+            "element.arcane", "element.fire", "element.ice", "element.lightning", "element.poison", "element.steam",
+            "element.water",
+            "status.bubble", "status.debuff", "status.sleep",
+        };
+
         /// <summary>GG-T298 (§1.2.3): the widened support effects stay in their sane ranges, and the generated "As a
         /// Supporter" sentence only uses glossary terms.</summary>
         private static void ValidateSupport(ContentDb db, ClassDef c, List<string> p)
@@ -522,8 +536,8 @@ namespace GridGame.Core.Content
             if (s.Chance != 0f && s.Effect != SupportEffect.Volley) p.Add($"{w}: Chance is only read by a Volley support");
             if (s.Projectile != null && db.VfxPrefabs != null && db.VfxPrefabs.Find(s.Projectile) == null)
                 p.Add($"{w}: Projectile '{s.Projectile}' is not in vfx.json");
-            if (s.Sfx != null && !(s.Sfx.StartsWith("element.") || s.Sfx.StartsWith("status.") || s.Sfx.StartsWith("battle.")))
-                p.Add($"{w}: Sfx '{s.Sfx}' is off the sound taxonomy");
+            if (s.Sfx != null && !SupportSfxCues.Contains(s.Sfx))
+                p.Add($"{w}: Sfx '{s.Sfx}' is not a battle/element/status cue in the sound taxonomy (Resources/Audio/Sfx)");
             if (db.GlossaryIndex.Count > 0)
                 foreach (var t in Glossary.Terms(Rules.SupportText.Describe(db, s)))
                     if (db.TryTerm(t) == null) p.Add($"{w}: unknown glossary term [{t}] in its supporter sentence");
