@@ -16,24 +16,45 @@ namespace GridGame.Core.Battle
         private Unit supportTurnOwner;
 
         /// <summary>
-        /// Crit supporters act first (GG-T298): each lends the attacker its chain reaches +Magnitude crit chance for this
-        /// pincer's blows (several stack, the total capped at <see cref="SupportDef.MaxSupportedCritPercent"/>).
-        /// <see cref="ResolvePincer"/> clears the loan once both attackers have struck.
+        /// GG-T833 (§1.2.4): does <paramref name="def"/> help the attacker, so it resolves in the Prep phase before the
+        /// blows (an empowered or healed attacker strikes with it)? Crit, Heal, Haste, Cleanse, Mana and a Buff on anyone
+        /// but the supporter itself do; Strike, Cast, Status, Pushback and a Self buff (a taunt) follow up after.
         /// </summary>
-        private void LendSupportCrits(Pincer p, List<Unit> supporters, Team team)
+        public static bool IsPrepSupport(SupportDef def) =>
+            def.Effect == SupportEffect.Crit || def.Effect == SupportEffect.Heal || def.Effect == SupportEffect.Haste
+            || def.Effect == SupportEffect.Cleanse || def.Effect == SupportEffect.Mana
+            || (def.Effect == SupportEffect.Buff && def.Target != SupportTarget.Self);
+
+        /// <summary>
+        /// Crit supporters (GG-T298) lend the attacker their chain reaches +Magnitude crit chance for this pincer's blows
+        /// (several stack, the total capped at <see cref="SupportDef.MaxSupportedCritPercent"/>). Called from the Prep
+        /// phase; <see cref="ResolvePincer"/> clears the loan once both attackers have struck.
+        /// </summary>
+        private void LendSupportCrit(Pincer p, Unit sup, SupportDef def)
+        {
+            var attacker = p.AttackerOf(sup);
+            if (!attacker.Alive) return;
+            float bonus = Math.Min(SupportDef.MaxCritBonus, Math.Max(0f, def.Magnitude));
+            attacker.SupportCritBonus += bonus;
+            var ev = new SupportActionEvent { SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel, Amount = bonus };
+            ev.Targets.Add(attacker.Id);
+            Emit(ev);
+        }
+
+        /// <summary>
+        /// One pincer phase's supporters (GG-T833): each living supporter whose support belongs to this phase
+        /// (<see cref="IsPrepSupport"/>) performs it, then its OnPincerAsSupporter triggers fire.
+        /// </summary>
+        private void PerformSupports(Pincer p, List<Unit> supporters, Team team, bool prep, Dictionary<Unit, float> push)
         {
             foreach (var sup in supporters)
             {
                 if (!sup.Alive || S.IsOver) continue;
                 var def = PincerDetector.SupportOf(sup);
-                if (def.Effect != SupportEffect.Crit) continue;
-                var attacker = p.AttackerOf(sup);
-                if (!attacker.Alive) continue;
-                float bonus = Math.Min(SupportDef.MaxCritBonus, Math.Max(0f, def.Magnitude));
-                attacker.SupportCritBonus += bonus;
-                var ev = new SupportActionEvent { SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel, Amount = bonus };
-                ev.Targets.Add(attacker.Id);
-                Emit(ev);
+                if (IsPrepSupport(def) != prep) continue;
+                if (def.Effect == SupportEffect.Crit) LendSupportCrit(p, sup, def);
+                else PerformSupport(p, sup, team, push);
+                if (sup.Alive) Fire(TriggerOn.OnPincerAsSupporter, sup, new TriggerContext { Target = p.AttackerOf(sup) });
             }
         }
 
@@ -41,7 +62,7 @@ namespace GridGame.Core.Battle
         /// A supporter's class support action (§1.2.3): the classic strike on every trapped opponent, a heal / buff / haste /
         /// mana / cleanse on the attacker it's chained to, the chain itself, the party or itself, or (GG-T298) a spell from
         /// its kit, a status or a shove on the trapped opponents. Pushback is collected into <paramref name="push"/> so the
-        /// pincer pushes each foe once. Crit is handled up front by <see cref="LendSupportCrits"/>.
+        /// pincer pushes each foe once. Crit is handled by <see cref="LendSupportCrit"/>.
         /// </summary>
         private void PerformSupport(Pincer p, Unit sup, Team team, Dictionary<Unit, float> push)
         {

@@ -226,24 +226,45 @@ namespace GridGame.Core.Battle
 
             var hpBefore = new Dictionary<Unit, int>();
             foreach (var o in p.Opponents) hpBefore[o] = o.Hp;
-            LendSupportCrits(p, supporters, team); // Crit supporters call out their edge before the blows land (GG-T298)
+            // GG-T833 (§1.2.4): three phases. Prep — supporters that help the attacker (a Crit edge, a buff, a heal,
+            // haste, cleanse, mana) act first, so an empowered or healed attacker strikes with it.
+            var supportPush = new Dictionary<Unit, float>();
+            PincerPhaseBegin(PincerPhase.Prep, chainIndex);
+            PerformSupports(p, supporters, team, prep: true, supportPush);
+            PincerPhaseEnd(PincerPhase.Prep, chainIndex);
 
-            foreach (var attacker in new[] { p.A, p.B })
+            // Blows — both attackers strike the line. Double Attack's OnAttack is held back for the Follow-up phase.
+            var followUps = new List<PincerFollowUp>();
+            PincerPhaseBegin(PincerPhase.Blows, chainIndex);
+            pincerFollowUps = followUps;
+            try
             {
-                if (!attacker.Alive) continue;
-                float mult = 1f + attacker.PincerDamageBonus;
-                if (attacker == amplified) mult *= BattleConfig.AmplifierDamageMultiplier;
-                bool shatters = attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability == 1;
-                if (shatters) mult *= BattleConfig.ShatterTargetMultiplier;
-                foreach (var target in p.Opponents)
+                foreach (var attacker in new[] { p.A, p.B })
                 {
-                    if (!target.Alive || !attacker.Alive || wardedThisPincer.Contains(target)) continue;
-                    Strike(attacker, target, mult, BlowKind.Pincer); // Double Attack follows up from inside (OnAttack)
-                    if (target.Alive) TryWeaponPincerBuff(attacker, target);
+                    if (!attacker.Alive) continue;
+                    float mult = 1f + attacker.PincerDamageBonus;
+                    if (attacker == amplified) mult *= BattleConfig.AmplifierDamageMultiplier;
+                    bool shatters = attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability == 1;
+                    if (shatters) mult *= BattleConfig.ShatterTargetMultiplier;
+                    foreach (var target in p.Opponents)
+                    {
+                        if (!target.Alive || !attacker.Alive || wardedThisPincer.Contains(target)) continue;
+                        Strike(attacker, target, mult, BlowKind.Pincer); // its OnAttack (Double Attack) is queued in followUps
+                        if (target.Alive) TryWeaponPincerBuff(attacker, target);
+                    }
+                    if (attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability > 0) WearWeapon(attacker);
                 }
-                if (attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability > 0) WearWeapon(attacker);
             }
+            finally { pincerFollowUps = null; }
             p.A.SupportCritBonus = p.B.SupportCritBonus = 0f;
+            PincerPhaseEnd(PincerPhase.Blows, chainIndex);
+
+            // Follow-up — Double Attack, the attackers' OnPincerAsAttacker triggers, then the supporters that hit the
+            // trapped foes (Strike, Cast, Status, Pushback) and Self buffs.
+            PincerPhaseBegin(PincerPhase.FollowUp, chainIndex);
+            foreach (var f in followUps)
+                if (!S.IsOver && f.Attacker.Alive && f.Target.Alive)
+                    Fire(TriggerOn.OnAttack, f.Attacker, new TriggerContext { Target = f.Target, Blow = BlowKind.Pincer, StrikeMultiplier = f.Mult, Type = DamageType.Physical });
             foreach (var attacker in new[] { p.A, p.B })
                 if (attacker.Alive && !S.IsOver)
                 {
@@ -251,14 +272,8 @@ namespace GridGame.Core.Battle
                     foreach (var o in p.Opponents) if (trapped == null && o.Alive) trapped = o;
                     Fire(TriggerOn.OnPincerAsAttacker, attacker, new TriggerContext { Target = trapped });
                 }
-
-            var supportPush = new Dictionary<Unit, float>();
-            foreach (var sup in supporters)
-                if (sup.Alive && !S.IsOver)
-                {
-                    if (PincerDetector.SupportOf(sup).Effect != SupportEffect.Crit) PerformSupport(p, sup, team, supportPush);
-                    if (sup.Alive) Fire(TriggerOn.OnPincerAsSupporter, sup, new TriggerContext { Target = p.AttackerOf(sup) });
-                }
+            PerformSupports(p, supporters, team, prep: false, supportPush);
+            PincerPhaseEnd(PincerPhase.FollowUp, chainIndex);
 
             // The pincer attack carries Pushback (GG-T286): every trapped foe a hero pincer landed a blow on acts later.
             // A Pushback supporter's shove adds to that one push (GG-T298) — for either team — never a second push.
@@ -286,6 +301,15 @@ namespace GridGame.Core.Battle
             }
             chainBonusDepth = 0;
         }
+
+        /// <summary>A pincer blow's held-back OnAttack (Double Attack), fired in the Follow-up phase (GG-T833).</summary>
+        private struct PincerFollowUp { public Unit Attacker; public Unit Target; public float Mult; }
+
+        /// <summary>Non-null while a pincer's Blows phase runs: <see cref="Strike"/> queues each pincer blow's OnAttack here.</summary>
+        private List<PincerFollowUp> pincerFollowUps;
+
+        private void PincerPhaseBegin(PincerPhase phase, int chainIndex) => Emit(new PincerPhaseEvent { Phase = phase, PincerIndex = chainIndex });
+        private void PincerPhaseEnd(PincerPhase phase, int chainIndex) => Emit(new PincerPhaseEvent { Phase = phase, PincerIndex = chainIndex, End = true });
 
         /// <summary>A passive the unit has makes it immune to <paramref name="buffId"/> (Poison Ward, Steadfast: an Always
         /// Immunity trigger, GG-T296).</summary>
@@ -337,7 +361,9 @@ namespace GridGame.Core.Battle
                         Fire(TriggerOn.OnAttackedDirect, target, new TriggerContext { Attacker = attacker, Damage = dealt, Blow = kind, Type = DamageType.Physical });
                 }
             }
-            if (!followUp && (kind == BlowKind.Pincer || kind == BlowKind.Melee) && attacker.Alive && target.Alive)
+            if (!followUp && kind == BlowKind.Pincer && pincerFollowUps != null && attacker.Alive && target.Alive)
+                pincerFollowUps.Add(new PincerFollowUp { Attacker = attacker, Target = target, Mult = mult }); // GG-T833: after the blows
+            else if (!followUp && (kind == BlowKind.Pincer || kind == BlowKind.Melee) && attacker.Alive && target.Alive)
                 Fire(TriggerOn.OnAttack, attacker, new TriggerContext { Target = target, Blow = kind, StrikeMultiplier = mult, Type = DamageType.Physical });
         }
 

@@ -141,6 +141,27 @@ namespace GridGame.Core.Battle
         }
     }
 
+    /// <summary>The three phases one pincer resolves in (§1.2.4, GG-T833): supporters that help the attacker act, the
+    /// attackers strike, then the follow-ups land.</summary>
+    public enum PincerPhase
+    {
+        /// <summary>Supporters that help the attacker (Crit, Buff on Attacker/Chain/Party, Heal, Haste, Cleanse, Mana).</summary>
+        Prep,
+        /// <summary>Both attackers strike the line.</summary>
+        Blows,
+        /// <summary>Double Attack, OnPincerAsAttacker triggers, then the Strike/Cast/Status/Pushback (and Self Buff) supporters.</summary>
+        FollowUp,
+    }
+
+    /// <summary>Brackets one phase of one pincer (GG-T833): emitted with <see cref="End"/> false as the phase opens and
+    /// true as it closes, so the view can tell "buffed before the blow" from "followed up after it".
+    /// <see cref="PincerIndex"/> is the pincer's <see cref="PincerFormedEvent.ChainIndex"/>.</summary>
+    public sealed class PincerPhaseEvent : BattleEvent
+    {
+        public PincerPhase Phase; public int PincerIndex; public bool End;
+        public override string ToString() => $"PincerPhase {Phase} #{PincerIndex}{(End ? " end" : "")}";
+    }
+
     /// <summary>A chained pincer whose whole line already fell: the attackers spin in triumph (cosmetic, §13.1.1).</summary>
     public sealed class RespiteEvent : BattleEvent
     {

@@ -187,6 +187,55 @@ namespace GridGame.Tests
             Assert.That(tempo, Is.Not.Null, "a hasted hero lifts party tempo");
         }
 
+        // ── Pincer phases (GG-T833, §1.2.4) ──
+
+        private static void Empowered(ContentDb db) =>
+            db.Buffs["empowered"] = new BuffDef { Id = "empowered", Name = "Empowered", Kind = BuffKind.Buff, Unit = DurationUnit.Turns, Duration = 1, OutgoingDamageMultiplier = 1.5f };
+
+        /// <summary>The knight's pincer damage to the tank in one command.</summary>
+        private static int KnightDamage(BattleState s, List<BattleEvent> ev) =>
+            ev.OfType<DamagedEvent>().Where(d => d.SourceId == Hero(s, "knight").Id && d.TargetId == Tank(s).Id).Sum(d => d.Amount);
+
+        [Test]
+        public void A_supporters_empowered_raises_the_same_pincers_damage()
+        {
+            var buff = new SupportDef { Effect = SupportEffect.Buff, Buff = "empowered", Target = SupportTarget.Attacker, Range = 1, Label = "Rally" };
+            var idle = new SupportDef { Effect = SupportEffect.Heal, Magnitude = 0.1f, Range = 1 }; // the knight is at full HP: does nothing
+            int buffed = 0, plain = 0;
+            for (int seed = 1; seed <= 5; seed++)
+            {
+                var (s, ev) = Pincer(buff, seed, Empowered);
+                var applied = ev.FindIndex(e => e is BuffAppliedEvent b && b.UnitId == Hero(s, "knight").Id && b.BuffId == "empowered");
+                Assert.That(applied, Is.GreaterThanOrEqualTo(0), Trace(ev));
+                Assert.That(applied, Is.LessThan(ev.FindIndex(e => e is AttackEvent)), "the buff lands before the blows");
+                buffed += KnightDamage(s, ev);
+                var (s2, ev2) = Pincer(idle, seed, Empowered);
+                plain += KnightDamage(s2, ev2);
+            }
+            Assert.That(buffed, Is.GreaterThan(plain), "an Empowered attacker strikes harder in the pincer it was buffed in");
+        }
+
+        [Test]
+        public void A_follow_up_status_lands_after_the_blows_inside_the_follow_up_phase()
+        {
+            void Poison(ContentDb db) => db.Buffs["poisoned"] = new BuffDef { Id = "poisoned", Name = "Poisoned", Kind = BuffKind.Debuff, Unit = DurationUnit.Ticks, Duration = 6, DamagePerTick = 1 };
+            var (s, ev) = Pincer(new SupportDef { Effect = SupportEffect.Status, Magnitude = 1f, Buff = "poisoned", Range = 1, Label = "Venom Rain" }, tweak: Poison);
+            int status = ev.FindIndex(e => e is BuffAppliedEvent b && b.UnitId == Tank(s).Id && b.BuffId == "poisoned");
+            int lastBlow = ev.FindLastIndex(e => e is AttackEvent a && !a.IsSupport);
+            Assert.That(status, Is.GreaterThan(lastBlow), Trace(ev));
+
+            var phases = ev.OfType<PincerPhaseEvent>().Select(p => (p.Phase, p.End, p.PincerIndex)).ToList();
+            Assert.That(phases, Is.EqualTo(new[]
+            {
+                (PincerPhase.Prep, false, 0), (PincerPhase.Prep, true, 0),
+                (PincerPhase.Blows, false, 0), (PincerPhase.Blows, true, 0),
+                (PincerPhase.FollowUp, false, 0), (PincerPhase.FollowUp, true, 0),
+            }));
+            int followOpen = ev.FindIndex(e => e is PincerPhaseEvent p && p.Phase == PincerPhase.FollowUp && !p.End);
+            int followClose = ev.FindIndex(e => e is PincerPhaseEvent p && p.Phase == PincerPhase.FollowUp && p.End);
+            Assert.That(status, Is.InRange(followOpen, followClose), "the status supporter acts in the Follow-up phase");
+        }
+
         // ── Content ──
 
         [Test]

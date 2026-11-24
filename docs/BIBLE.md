@@ -554,6 +554,14 @@ The Bestiary shows the named sentence at the abilities tier (10 defeats), for ex
 3. Each supporter performs its support action (`SupportActionEvent`, then its effect): a Strike supporter strikes each living opponent at 50%; the others heal, buff, haste, charge mana, cleanse, echo a spell, inflict a status or add Pushback ([§1.2.3](#123-supporters)). **Amended 2026-11-06 (GG-T298):** a **Crit** supporter acts first, between steps 1 and 2 (its `SupportActionEvent` precedes the blows and its loan ends after step 2); the pincer's Pushback (one push per foe: its own seconds plus every Pushback supporter's, capped) lands after step 3.
 4. (Hero team only) each living attacker, then each living supporter, mints one orb.
 
+**Amended 2026-11-24 (owner, GG-T833, battle-feel epic GG-T823): a pincer resolves in three phases.** Owner: *"you must be able to tell a hero was buffed by a supporter before attacking, and a ninja threw a shuriken after the pincer."* Supports that help the attacker used to land after the blows they should have empowered; now steps 2–3 run as:
+
+- **Prep** — each living supporter whose support helps the attacker acts, in supporter order, before any blow: **Crit** (the loan, as before), **Buff** on the Attacker, Chain or Party, **Heal**, **Haste**, **Cleanse** and **Mana**. An Empowered or healed attacker strikes with it in this same pincer.
+- **Blows** — attacker A strikes the line, then attacker B (step 2 unchanged), and the Crit loan ends.
+- **Follow-up** — the **Double Attack** follow-ups (each pincer blow's `OnAttack`, held back until both attackers have struck), each attacker's **OnPincerAsAttacker** triggers, then the supporters that hit the trapped foes — **Strike**, **Cast**, **Status**, **Pushback** — and a **Self** Buff (a taunt). The Pushback push lands after it.
+
+Each supporter's `OnPincerAsSupporter` triggers fire right after its own support, in whichever phase that is. `PincerPhaseEvent { Phase, PincerIndex, End }` brackets each phase (an opening and a closing event, `PincerIndex` = the pincer's `ChainIndex`) so the view can stage them. Enemy pincers use the same phases. Melee, counter and other non-pincer blows still fire `OnAttack` at once. *(Tests: `SupportEffectTests.A_supporters_empowered_raises_the_same_pincers_damage`, `A_follow_up_status_lands_after_the_blows_inside_the_follow_up_phase`.)*
+
 A pair whose opponents are all already dead (killed by an earlier link) is skipped. **Amended 2026-10-09:** the old cosmetic "Respite" spin is not built.
 
 #### 1.2.5 No pincer = legal
