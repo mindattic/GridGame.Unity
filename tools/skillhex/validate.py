@@ -5,8 +5,8 @@ Usage:
     python tools/skillhex/validate.py [SKILLHEX] [--abilities PATH] [--classes PATH] [--schema PATH]
 
 Defaults are relative to the repo root:
-    SKILLHEX     docs/design/skill-hexagon/skillhex.json
-    --schema     skillhex.schema.json next to SKILLHEX
+    SKILLHEX     Assets/GridGame/Resources/Content/skillhex.json
+    --schema     docs/design/skill-hexagon/skillhex.schema.json
     --abilities  Assets/GridGame/Resources/Content/abilities.json
     --classes    Assets/GridGame/Resources/Content/classes.json
 
@@ -34,8 +34,9 @@ import sys
 from collections import Counter, defaultdict
 
 REPO = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..'))
-DEFAULT_HEX = os.path.join(REPO, 'docs', 'design', 'skill-hexagon', 'skillhex.json')
 CONTENT = os.path.join(REPO, 'Assets', 'GridGame', 'Resources', 'Content')
+DEFAULT_HEX = os.path.join(CONTENT, 'skillhex.json')
+DEFAULT_SCHEMA = os.path.join(REPO, 'docs', 'design', 'skill-hexagon', 'skillhex.schema.json')
 STAT_IDS = ['VIT', 'STR', 'AGI', 'SPD', 'WIS', 'INT']
 DIRS = [(1, 0), (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1)]
 RECIPE_POINTS = 4
@@ -343,14 +344,14 @@ def check_heroes(doc, abilities, classes, points, placed, rep):
 def main(argv=None):
     ap = argparse.ArgumentParser(description='Validate the skill hexagon board (skillhex.json).')
     ap.add_argument('skillhex', nargs='?', default=DEFAULT_HEX)
-    ap.add_argument('--schema', default=None, help='default: skillhex.schema.json next to the board file')
+    ap.add_argument('--schema', default=DEFAULT_SCHEMA, help='default: docs/design/skill-hexagon/skillhex.schema.json')
     ap.add_argument('--abilities', default=os.path.join(CONTENT, 'abilities.json'))
     ap.add_argument('--classes', default=os.path.join(CONTENT, 'classes.json'))
     ap.add_argument('--max-sig-distance', type=int, default=MAX_SIG_DISTANCE,
                     help=f"warn when a Signature sits more than this many lattice steps from its hero's spot "
                          f'(default {MAX_SIG_DISTANCE})')
     args = ap.parse_args(argv)
-    schema_path = args.schema or os.path.join(os.path.dirname(os.path.abspath(args.skillhex)), 'skillhex.schema.json')
+    schema_path = args.schema
 
     doc = load_json(args.skillhex, 'skillhex')
     abilities = {a['Id']: a for a in load_json(args.abilities, 'abilities.json') if isinstance(a, dict) and 'Id' in a}

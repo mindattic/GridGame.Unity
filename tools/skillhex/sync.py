@@ -1,6 +1,6 @@
-"""Write docs/design/skill-hexagon/skillhex.js from skillhex.json.
+"""Write docs/design/skill-hexagon/skillhex.js from Assets/GridGame/Resources/Content/skillhex.json.
 
-skillhex.json is the single source of truth for the skill hexagon board. The page draws it from
+skillhex.json (in the game content folder) is the single source of truth for the skill hexagon board. The page draws it from
 skillhex.js (`window.SKILLHEX = <json>;`) so it still opens from file:// with no fetch.
 Run this after every edit to skillhex.json:  python tools/skillhex/sync.py
 """
@@ -9,8 +9,9 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-PAGE = Path(__file__).resolve().parents[2] / "docs" / "design" / "skill-hexagon"
-SRC = PAGE / "skillhex.json"
+REPO = Path(__file__).resolve().parents[2]
+PAGE = REPO / "docs" / "design" / "skill-hexagon"
+SRC = REPO / "Assets" / "GridGame" / "Resources" / "Content" / "skillhex.json"
 OUT = PAGE / "skillhex.js"
 
 

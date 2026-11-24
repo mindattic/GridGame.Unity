@@ -5,7 +5,9 @@ trees and family trees. Heroes are starting paths on one shared board; the board
 character system.
 
 - Page: `docs/design/skill-hexagon/index.html` (artifact https://claude.ai/artifact/PyBk3i2j1t2f9Fo2iFyMJQ)
-- Data: `docs/design/skill-hexagon/skillhex.json`, schema `skillhex.schema.json` (validated)
+- Data: `Assets/GridGame/Resources/Content/skillhex.json` (the one canonical file), schema
+  `docs/design/skill-hexagon/skillhex.schema.json` (validated). The page loads `skillhex.js`, which
+  `python tools/skillhex/sync.py` writes from it.
 - Inspiration kept as is: `docs/design/stat-hexagon/` (heroes as 4-point recipes)
 
 ## The model (what the file says)
@@ -21,8 +23,8 @@ character system.
 | Growth | You own a connected set of nodes. You can take any node next to one you own. Each node costs SP (Passive 1, Ability 1 today). Any hero can reach any ability; distance is the price. |
 | Party | Six heroes, each with a 5-slot bar (abilities, spells or consumables) picked from what that hero owns. |
 
-The file is the single source: the page reads it and edits it, the game loads it from
-`Assets/GridGame/Resources/Content/skillhex.json`. One node or hero per line keeps hand edits and diffs readable.
+The file is the single source, `Assets/GridGame/Resources/Content/skillhex.json`: the page reads it
+(through the generated `skillhex.js`) and edits it, and the game loads it from there. One node or hero per line keeps hand edits and diffs readable.
 
 ## What changes in the game
 

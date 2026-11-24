@@ -1,9 +1,10 @@
 # skill-hex gaps: the Open slots as the future content and DLC list
 
-The board (`skillhex.json`) has 271 ability slots: 249 hold an ability and 22 are `Open`. Every Open
-slot is on the outer rings (14 to 16), so new content lands at the edge of a wedge, as late-game
-reach for the heroes nearby rather than as a starter move. `python tools/skillhex/validate.py`
-prints the live list; this file adds what is around each slot and what should go in it.
+The board (`Assets/GridGame/Resources/Content/skillhex.json`) has 271 ability slots: 249 hold an
+ability and 22 are `Open`. Every Open slot is on the outer rings (14 to 16), so new content lands at
+the edge of a wedge, as late-game reach for the heroes nearby rather than as a starter move.
+`python tools/skillhex/validate.py` prints the live list; this file adds what is around each slot
+and what should go in it.
 
 Plan and model: [PLAN.md](PLAN.md). Page: [index.html](index.html).
 

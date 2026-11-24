@@ -1,5 +1,5 @@
 {
-  "$schema": "./skillhex.schema.json",
+  "$schema": "../../../../docs/design/skill-hexagon/skillhex.schema.json",
   "Version": 1,
   "Radius": 16,
   "Stats": [

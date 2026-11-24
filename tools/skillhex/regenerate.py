@@ -1,7 +1,7 @@
 """Regenerate skillhex.json from content (the "Regenerate from content" tool).
 
 This throws away hand edits to the board: it re-runs the layout generator (docs/design/skill-hexagon/generate.js)
-over data.js in a headless browser and rewrites skillhex.json, then runs sync.py. Heroes with Status New and the
+over data.js in a headless browser and rewrites Assets/GridGame/Resources/Content/skillhex.json, then runs sync.py. Heroes with Status New and the
 Note on any node or hero that still exists are carried over from the current file.
 Normal page loads never run the generator; they draw skillhex.json as it is.
 
@@ -15,8 +15,11 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-PAGE = Path(__file__).resolve().parents[2] / "docs" / "design" / "skill-hexagon"
-SRC = PAGE / "skillhex.json"
+REPO = Path(__file__).resolve().parents[2]
+PAGE = REPO / "docs" / "design" / "skill-hexagon"
+SRC = REPO / "Assets" / "GridGame" / "Resources" / "Content" / "skillhex.json"
+# $schema as seen from the content folder (generate.js writes it relative to the page folder)
+SCHEMA_REF = "../../../../docs/design/skill-hexagon/skillhex.schema.json"
 
 
 def generate():
@@ -66,7 +69,9 @@ def dump(data):
 
 def main():
     old = json.loads(SRC.read_text(encoding="utf-8")) if SRC.exists() else {}
-    text = dump(merge(generate(), old))
+    new = generate()
+    new["$schema"] = SCHEMA_REF
+    text = dump(merge(new, old))
     if "--check" in sys.argv:
         same = SRC.exists() and SRC.read_text(encoding="utf-8") == text
         print("skillhex.json matches the generator" if same else "skillhex.json differs from the generator (hand edits or content changes)")
