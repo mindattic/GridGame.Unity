@@ -73,11 +73,10 @@ namespace GridGame.App
         /// "Result — key inputs" instead of the bare item name, e.g. when two recipes share a result).</summary>
         public static VisualElement Row(ItemDef i, string value, Action onClick, VisualElement parent, bool enabled = true, bool masterwork = false, string nameOverride = null, string rowName = null)
         {
-            var icon = Art.ItemIcon(i.Id);
-            string name = nameOverride ?? i.Name;
-            string label = (icon != null ? name : $"{Glyph(i)}  {name}");
+            string label = nameOverride ?? i.Name;
             if (masterwork) label = "★ " + label;
-            var row = Ui.MenuRow(label, value, onClick, parent, icon, enabled);
+            var row = Ui.MenuRow(label, value, onClick, parent, null, enabled);
+            row.KindIcon(RowKind.Item, Art.ItemIcon(i.Id)); // GG-T717 (§26.7): its pixel icon, else the Item emblem
             if (rowName != null) row.name = rowName; // GG-T448: an automation id for screens (e.g. Equip) that otherwise have none
             row.Q<Label>("label").AddToClassList(Ui.RarityClass(i.Rarity));
             // Hold any item row to read the whole item — stats, set, slot — without selecting it (GG-T252); a row whose
@@ -162,7 +161,8 @@ namespace GridGame.App
             foreach (var (item, n) in broken)
             {
                 var it = item;
-                var row = Ui.MenuRow($"Broken {it.Name}", $"×{n}", () => { selected = it; selectedBroken = true; ShowDetail(detail, it, true); }, list, Art.ItemIcon(it.Id));
+                var row = Ui.MenuRow($"Broken {it.Name}", $"×{n}", () => { selected = it; selectedBroken = true; ShowDetail(detail, it, true); }, list);
+                row.KindIcon(RowKind.Item, Art.ItemIcon(it.Id)); // GG-T717
                 row.Q<Label>("label").AddToClassList("dim");
                 if (selected == it && selectedBroken) Ui.Select(row);
             }
@@ -986,6 +986,7 @@ namespace GridGame.App
                     var missing = RecipeDiscovery.OneAwayMissing(s, r);
                     var missingItem = c.TryItem(missing.Item);
                     row = Ui.MenuRow("???", $"Missing {missingItem?.Name ?? missing.Item}", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list);
+                    row.KindIcon(RowKind.Item); // GG-T717: an undiscovered result shows the Item emblem
                     row.style.opacity = 0.75f;
                 }
                 if (sel == r)
@@ -1208,7 +1209,8 @@ namespace GridGame.App
                 var yield = Crafting.SalvageBrokenPreview(C, S, item.Id);
                 string y = yield.Count == 0 ? "—" : string.Join(", ", yield.Select(ic => $"{C.TryItem(ic.Item)?.Name}×{ic.Count}"));
                 var row = Ui.MenuRow($"Broken {item.Name}", $"×{S.BrokenCount(item.Id)}",
-                    () => Confirm.Show($"Salvage Broken {item.Name} into {y}?", "Salvage", () => Done(Crafting.SalvageBroken(C, S, item.Id))), list, Art.ItemIcon(item.Id), yield.Count > 0);
+                    () => Confirm.Show($"Salvage Broken {item.Name} into {y}?", "Salvage", () => Done(Crafting.SalvageBroken(C, S, item.Id))), list, null, yield.Count > 0);
+                row.KindIcon(RowKind.Item, Art.ItemIcon(item.Id)); // GG-T717
                 row.Q<Label>("label").AddToClassList("dim");
             }
         }
