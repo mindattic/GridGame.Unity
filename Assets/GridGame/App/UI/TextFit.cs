@@ -98,8 +98,12 @@ namespace GridGame.App
                 return;
             }
             if (wrapped) Wrap(t, w, rs.fontSize);
+            else if (t.ClassListContains(EllipsisClass)) { } // GG-T728: shrunk to the floor, then the engine's own ellipsis (no scrolling frame to catch mid-crawl)
             else if (!GlossaryWord(t, glossary)) Marquee.Check(t, w);
         }
+
+        /// <summary>Opt-in class for one-line text that shrinks to the floor and then ends in an ellipsis rather than scrolling.</summary>
+        public const string EllipsisClass = "ellipsis-only";
 
         // ---------------------------------------------------------------------------------------------------------
         // GG-T711 (owner 2026-11-23: "the sheer quantity of devices is mind boggling, the scaling of text to fit boxes is
