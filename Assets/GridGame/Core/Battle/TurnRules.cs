@@ -17,6 +17,12 @@ namespace GridGame.Core.Battle
     /// Frozen/Sleep and the other Turns statuses, party tempo, Rally, TurnStart/TurnEnd and the enemy support extra turn
     /// all run unchanged off <see cref="ResetTurn"/>'s boundary. Mana is spent and earned per action (a spell, a pincer),
     /// so only income measured per turn rather than per action needs a mode answer: <see cref="MaxTimeBankOrbs"/>.</para>
+    /// <para>GG-T783 (§2.13.1): nothing else counts hero actions either, so nothing else asks the mode. Region rules'
+    /// timed events (rising water, the anchor heave) follow the clock; a hero's region TurnStart/TurnEnd hooks and
+    /// TurnStart/TurnEnd triggers fire for every commanded hero at each boundary (ActionEnd only for the actor); rule
+    /// breaks, tames, bonds and a wanderer's turns count that unit's own icon; a recruit joins through Talk, the turn's
+    /// action; the countdown badge counts other icons; pickups and corpses age at the boundary. Joins and partings still
+    /// come through <see cref="ClearActed"/>.</para>
     /// </summary>
     public static class TurnRules
     {

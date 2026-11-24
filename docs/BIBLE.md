@@ -1242,6 +1242,15 @@ Each party turn **exactly one** hero acts: any able hero, the same one again if 
 - **The support extra turn (`supportTurnOwner`, GG-T307).** Unchanged. It is enemy-side: a buff gained during an enemy's own turn gets one more turn.
 - Tests: `TurnModeAnyHeroTests`. They cover the same hero twice in a row, a second action in one turn being refused, Guard banking, forced Guard and Rally, a wave's fresh turn, and a bot battle that replays identically. GG-T782 adds tests for the time-bank cap, cooldowns, Turns buffs and tempo, Guard's Protection and a Frozen foe.
 
+**Turn- and window-counting rules (✅ GG-T783).** Every other system that counts turns or windows was checked against one action per turn. Each one counts either a unit's own timeline turns, the battle clock, or the party-turn boundary at `ReturnControl`. None counts hero actions, so none needed a change, and none reads `TurnMode` outside `TurnRules`.
+- **Region rules (§14.20).** Timed rule events (the Drowned Arks' rising water, the anchor heave Under the Anchors, shard strikes, a tile's `LifeSeconds`) follow the clock. A party turn still runs to the next enemy arrival, so they land after the same party turns as in PartyWindow. A hero's TurnStart/TurnEnd hooks (standing in floodwater slows and wets) run once per hero at each boundary, the heroes who did not act included. An enemy's run on its own turns, and `Every` counts those runs. Darkness and light are read from positions only.
+- **Rule breaks (§14.9).** TwinTurn and GravityStamp count the breaker's own turns (`TurnsTaken`), which the enemy side takes whatever the party does.
+- **Joining units.** A tamed monster, a domesticated one and a wanderer are independent: they act on their own icon, never take or block the party's one action, and their tame countdown, bond and trust count their own turns. A recruit joins through Talk, which is the turn's action, and may act from the next party turn. Every join still clears its acted mark through `ClearActed`.
+- **Triggers.** TurnStart and TurnEnd fire for every commanded hero once per party turn. ActionEnd fires only for the hero who acted.
+- **Countdown badges (§2.10).** `CountdownLeft` counts the other icons due first, so it reads the same in both modes.
+- **Pickups and corpses (§13.3.1, §14.7).** They age one step per party turn at `ReturnControl`, so `PickupLifetimeActions` and `CorpseDecayActions` mean party turns in every mode.
+- Tests: `TurnModeAnyHeroTests` covers all of these.
+
 #### 2.13.2 Any hero who hasn't moved this round (`UnmovedThisRound`) — ⬜ Not yet built (GG-T792)
 
 One hero acts per party turn, but **only a hero who hasn't acted this round**. When every able hero has acted, the round resets. Open questions: every topic in the table. On top of those: what counts as a round when a hero falls, joins or is revived mid-round; whether Guard uses up a hero's place in the round; and how the round shows on the HUD.
