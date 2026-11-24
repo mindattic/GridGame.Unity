@@ -1,4 +1,5 @@
 using System.Collections;
+using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using UnityEngine;
