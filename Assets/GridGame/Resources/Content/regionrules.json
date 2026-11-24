@@ -295,6 +295,32 @@
     ]
   },
   {
+    "Id": "oilslicks",
+    "TileStates": [
+      {
+        "Id": "oil",
+        "Hazard": true,
+        "LifeSeconds": 15,
+        "Affects": "FoesOfOwner",
+        "Color": "#b8862b",
+        "Glyph": "≈"
+      }
+    ],
+    "Hooks": [
+      {
+        "On": "EnterTile",
+        "State": "oil",
+        "Effects": [
+          {
+            "Kind": "ApplyBuff",
+            "Units": "Subject",
+            "Buff": "slowed"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "Id": "icetrail",
     "TileStates": [
       {

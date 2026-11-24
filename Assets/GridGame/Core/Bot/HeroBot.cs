@@ -596,6 +596,7 @@ namespace GridGame.Core.Bot
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
             score += EarthsplitValue(s, a, caster, anchor); // GG-T869: cracks under a Heavy foe or across a foe's way in
             score += WallValue(s, a, caster, anchor); // GG-T932: a Firewall across a foe's way in, never over the party
+            score += OilFlask.Value(s, a, caster, anchor); // GG-T886: oil where a Fire ally can light it under foes
             score += GravityWell.Value(s, a, anchor); // GG-T883: a Gravity Well only when it grows the next pincer's catch
             score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
             score += TimeBombValue(s, a, anchor); // GG-T874: a Time Bomb on a foe beside (or a shove from) its friends

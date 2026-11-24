@@ -551,6 +551,42 @@ namespace GridGame.App
             yield return Tween.Wait(blocked ? Timing.Standard : Timing.Quick);
         }
 
+        // ── GG-T886 (§7, §14.23): the Alchemist's Oil Flask ──────────────────────────────────────
+
+        /// <summary>The oil flask: a corked bottle tumbles in a high arc onto the picked tile and bursts, sloshing a splat of
+        /// oil over every tile of the pool with a wet slosh (cue <c>alchemist.slosh</c>, a placeholder until its file
+        /// exists: docs/SFX.md, over a low <c>element.water</c>). The "marked" region event that follows draws the slick.
+        /// Reduce Motion: a short straight toss, no tumble or shake.</summary>
+        private IEnumerator OilFlaskAnim(Unit caster, TileStateDef oil, AbilityResolvedEvent ar)
+        {
+            var col = Art.HexColor(oil.Color, Palette.Gold);
+            bool calm = ReduceMotion;
+            Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(ar.Anchor);
+            App.Audio.Sfx("battle.whoosh", 0.45f, 1.2f);
+            float dist = Vector2.Distance(from, to);
+            float travel = calm ? 0.2f : Mathf.Clamp(dist / 1400f, 0.3f, 0.5f);
+            float height = Mathf.Max(200f, dist * 0.5f);
+            Vector2 P(float kk) => Vector2.Lerp(from, to, kk) + (calm ? Vector2.zero : Vector2.up * (-height * 4f * kk * (1f - kk)));
+            yield return Tween.Run(travel, k =>
+            {
+                board.Lines.ClearLines();
+                var p = P(k);
+                float spin = calm ? 0f : k * Mathf.PI * 4f; // the flask tumbles end over end
+                var neck = new Vector2(Mathf.Cos(spin), Mathf.Sin(spin)) * 16f;
+                board.Lines.Dot(p, 26f, col);
+                board.Lines.Add(p, p + neck, Palette.White.WithA(0.8f), 7f);
+                board.Lines.Dot(p + new Vector2(-6f, -7f), 7f, Palette.White.WithA(0.6f));
+            });
+            board.Lines.ClearLines();
+            App.Audio.Sfx("alchemist.slosh", 0.9f);
+            App.Audio.Sfx("element.water", 0.75f, 0.55f); // stand-in until alchemist.slosh has its own sound
+            App.Audio.Sfx("battle.shatter", 0.35f, 1.8f); // the glass breaking
+            foreach (var t in ar.Tiles) board.Splat(t, col);
+            Emit(StyleOf(DamageType.Physical), to, 0.4f, quiet: true);
+            if (!calm) App.StartCoroutine(Tween.Shake(shake, 2.5f, Timing.Quick));
+            yield return Tween.Wait(Timing.Quick);
+        }
+
         // ── GG-T895 (§14.23): slime glob visuals ─────────────────────────────────────────────────
 
         /// <summary>Hatching marks (slime globs) on the board, by tile: their state id, kept from the region events so a
