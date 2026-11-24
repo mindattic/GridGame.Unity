@@ -34,7 +34,21 @@ namespace GridGame.App
                 s.playOnAwake = false;
                 a.sfx.Add(s);
             }
+            a.StartCoroutine(a.PreloadMusic());
             return a;
+        }
+
+        /// <summary>GG-T741: loads every music track asynchronously at boot, one per frame, so a battle mount hits the
+        /// cache instead of a synchronous Resources.Load of resources.assets (that read crashed the player natively when
+        /// the data file was replaced under it). Clip() still falls back to a direct load for a track not yet cached.</summary>
+        private System.Collections.IEnumerator PreloadMusic()
+        {
+            var all = Resources.LoadAll<AudioClip>("Audio/Music");
+            foreach (var c in all)
+            {
+                if (c != null) clips.TryAdd("Audio/Music/" + c.name, c);
+                yield return null;
+            }
         }
 
         public void Apply(Meta.SettingsSave s)
@@ -72,7 +86,7 @@ namespace GridGame.App
         {
             if (clips.TryGetValue(path, out var c)) return c;
             c = Resources.Load<AudioClip>(path);
-            clips[path] = c;
+            if (c != null) clips[path] = c; // a failed load is retried next time, never cached as a permanent null
             return c;
         }
 
