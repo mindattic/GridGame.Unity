@@ -60,7 +60,7 @@ namespace GridGame.App
                 if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
                 if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
                 var terms = Ui.Actions(col);
-                terms.style.flexShrink = 0; terms.style.marginTop = 12; // GG-T700: a clear 24 px (12 + the card's gap) above the hire/Haggle row, and the row keeps its height
+                terms.style.flexShrink = 0; terms.style.marginTop = Space.TargetHalfGap; // GG-T700: a clear 24 px (12 + the card's gap) above the hire/Haggle row, and the row keeps its height
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
@@ -73,12 +73,12 @@ namespace GridGame.App
                             Done(Mercenaries.Hire(C, S, merc.Class, term));
                         }), "btn--small", terms);
                     b.name = $"merc-hire-{m.Class}-{term}";
-                    b.style.marginTop = 12; b.style.marginBottom = 12; b.style.marginLeft = 12; b.style.marginRight = 12; // GG-T700: 24 px to the next target, wrapped or not
+                    b.style.marginTop = Space.TargetHalfGap; b.style.marginBottom = Space.TargetHalfGap; b.style.marginLeft = Space.TargetHalfGap; b.style.marginRight = Space.TargetHalfGap; // GG-T700: 24 px to the next target, wrapped or not
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
                 var haggle = Ui.Button(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
                 haggle.name = "merc-haggle-" + m.Class;
-                haggle.style.marginTop = 12; haggle.style.marginBottom = 12; haggle.style.marginLeft = 12; haggle.style.marginRight = 12;
+                haggle.style.marginTop = Space.TargetHalfGap; haggle.style.marginBottom = Space.TargetHalfGap; haggle.style.marginLeft = Space.TargetHalfGap; haggle.style.marginRight = Space.TargetHalfGap;
                 Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
             }
         }
