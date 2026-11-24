@@ -16,6 +16,24 @@ namespace GridGame.Core.Battle
 
     public enum HitKind { Normal, Critical, Miss }
 
+    /// <summary>How the target's elemental multiplier met a blow's damage type (GG-T827, bible 9.1): above 1 is a
+    /// weakness, below 1 a resistance, 0 or less no effect at all. Combat text tags the number with it.</summary>
+    public enum HitEffectiveness { Normal, Weak, Resist, Immune }
+
+    /// <summary>GG-T827: the reads a <see cref="DamagedEvent"/> carries beside its amount.</summary>
+    public static class HitRead
+    {
+        /// <summary>The word for an elemental multiplier: above 1 Weak, 0 or less Immune, below 1 Resist, else Normal.</summary>
+        public static HitEffectiveness Of(float multiplier) =>
+            multiplier <= 0f ? HitEffectiveness.Immune : multiplier > 1.001f ? HitEffectiveness.Weak : multiplier < 0.999f ? HitEffectiveness.Resist : HitEffectiveness.Normal;
+
+        /// <summary>The target's multiplier for <paramref name="type"/> (its class resistances and gear) as a word.</summary>
+        public static HitEffectiveness Of(Unit target, DamageType type) => target == null ? HitEffectiveness.Normal : Of(target.ResistanceMultiplier(type));
+
+        /// <summary>Damage past the HP left: <paramref name="amount"/> beyond <paramref name="hpBefore"/>, never below 0.</summary>
+        public static int Overkill(int amount, int hpBefore) => Math.Max(0, amount - Math.Max(0, hpBefore));
+    }
+
     public sealed class ActionBeganEvent : BattleEvent
     {
         public int ActorId; public string Label;
@@ -231,7 +249,11 @@ namespace GridGame.Core.Battle
     {
         public int TargetId; public int SourceId; public int Amount; public HitKind Hit; public DamageType Type;
         public int HpAfter; public string Note;
-        public override string ToString() => $"Damaged {TargetId} -{Amount} {Hit} {Type} hp={HpAfter}{(Note != null ? " " + Note : "")}";
+        /// <summary>GG-T827: the damage past the HP the target had left (0 unless this blow killed it with some to spare).</summary>
+        public int Overkill;
+        /// <summary>GG-T827: the target's elemental multiplier for <see cref="Type"/> as a word (Normal on a miss).</summary>
+        public HitEffectiveness Effectiveness;
+        public override string ToString() => $"Damaged {TargetId} -{Amount} {Hit} {Type} hp={HpAfter}{(Overkill > 0 ? " overkill=" + Overkill : "")}{(Effectiveness != HitEffectiveness.Normal ? " " + Effectiveness : "")}{(Note != null ? " " + Note : "")}";
     }
 
     /// <summary>The defender's Evasion slipped a blow that would have landed (GG-T297, §13.1.0): no damage, a "Dodge!"

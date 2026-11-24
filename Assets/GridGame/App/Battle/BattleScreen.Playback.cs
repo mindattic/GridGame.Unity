@@ -836,7 +836,7 @@ namespace GridGame.App
             // GG-T495: an elemental hit names its element under Colorblind palette, since its burst says it only in colour.
             if (Colorblind && d.Note != "Armored!" && d.Type != DamageType.Physical) text += " " + d.Type;
             var color = d.Note == "Armored!" ? new Color(0.7f, 0.7f, 0.75f) : crit ? new Color(1f, 0.85f, 0.2f) : t.IsHero ? new Color(1f, 0.5f, 0.45f) : Palette.White;
-            if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note);
+            if (tallying && d.SourceId >= 0 && d.Note != "Armored!") AddToTally(t, at, d.Amount, crit, d.Note, d.Effectiveness, d.Overkill);
             else
             {
                 // GG-T826: the hit's kind (armored, damage-over-time tick, killing blow, crit, plain hit) picks its
@@ -846,16 +846,22 @@ namespace GridGame.App
                 // GG-T830: a damage-over-time tick names its status: small, its pip glyph and its colour.
                 var dot = kind == CombatTextKind.StatusTick && d.Note != null ? t.Buffs.Find(b => b.Def.Name == d.Note)?.Def : null;
                 if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
-                else Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Damage || kind == CombatTextKind.Immune ? color : (Color?)null);
+                else if (kind == CombatTextKind.Immune || kind == CombatTextKind.StatusTick)
+                    Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Immune ? color : (Color?)null);
+                // GG-T827: a hit's number reads by its share of max HP in four sizes (chip, solid, heavy, massive), tagged
+                // WEAK / RESIST / IMMUNE by the target's elemental multiplier, with OVERKILL over a kill that overshot.
+                else Text.Damage(at, kind, text, d.Amount, t.MaxHp, d.Effectiveness, d.Overkill, kind == CombatTextKind.Damage ? color : (Color?)null);
             }
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
             v.Art.style.unityBackgroundImageTintColor = new Color(1f, 0.55f, 0.55f);
             App.StartCoroutine(Tween.Shake(v.Root, (crit ? Impact.CritTileShake : Impact.HitTileShake) * Fx, crit ? Timing.Standard : Timing.Quick));
+            if (crit) App.StartCoroutine(Tween.Shake(shake, Impact.CritIconShake * Fx, Timing.Quick)); // GG-T827: a crit jolts the screen
             if (crit) ShakeTurnIcon(t.Id); // GG-T668: a crit jolts the target's timeline icon too
             if (tier.Shake > 0f) App.StartCoroutine(Tween.Shake(shake, tier.Shake * Fx, Timing.Standard));
             // Impact: the hit-stop holds the frame, longer for heavier tiers (POL-E5/E6); Reduce Motion skips it.
-            yield return Tween.Wait(Timing.Instant + (ReduceMotion ? 0f : tier.HitStop));
+            // GG-T827: a crit slams: it holds the frame a beat longer than its tier alone would.
+            yield return Tween.Wait(Timing.Instant + (ReduceMotion ? 0f : tier.HitStop + (crit ? CombatText.CritHitStop : 0f)));
             // Follow-through: the target recoils back past rest and settles.
             if (!ReduceMotion) App.StartCoroutine(Tween.Run(Timing.Quick, k => v.Root.style.scale = new Scale(Vector2.one * Mathf.LerpUnclamped(0.94f, 1f, Ease.Back(k)))));
             v.Art.style.unityBackgroundImageTintColor = Palette.White;
@@ -1204,12 +1210,16 @@ namespace GridGame.App
 
         // ── Damage tally (owner direction 2026-10-10): hits within a pincer stack up, then explode into the total ──
 
-        private sealed class Tally { public Label El; public List<string> Terms = new List<string>(); public int Total; public bool Crit; public Vector2 At; public int UnitId; }
+        private sealed class Tally
+        {
+            public Label El; public List<string> Terms = new List<string>(); public int Total; public bool Crit; public Vector2 At; public int UnitId;
+            public HitEffectiveness Effect; public int Overkill; // GG-T827: the burst carries the hits' elemental read and overshoot
+        }
         private readonly Dictionary<int, Tally> tallies = new Dictionary<int, Tally>();
         private bool tallying, ampTally;
         public int TalliesBurst { get; private set; }
 
-        private void AddToTally(Unit t, Vector2 at, int amount, bool crit, string note)
+        private void AddToTally(Unit t, Vector2 at, int amount, bool crit, string note, HitEffectiveness effect = HitEffectiveness.Normal, int overkill = 0)
         {
             if (!tallies.TryGetValue(t.Id, out var tl))
             {
@@ -1220,7 +1230,8 @@ namespace GridGame.App
             }
             tl.Terms.Add(crit ? amount + "!" : amount.ToString());
             if (ampTally && tl.Terms.Count == 1) tl.Terms.Add("AMP");
-            tl.Total += amount; tl.Crit |= crit;
+            tl.Total += amount; tl.Crit |= crit; tl.Overkill += overkill;
+            if (tl.Effect == HitEffectiveness.Normal) tl.Effect = effect;
             // Each hit lands on its own line below the last, stacking downward like a fighting-game combo list.
             tl.El.text = string.Join("\n+ ", tl.Terms).Replace("+ AMP", "×AMP");
             tl.El.style.color = tl.Crit ? Palette.Gold : Palette.White;
@@ -1248,7 +1259,9 @@ namespace GridGame.App
             TalliesBurst++;
             yield return Tween.Run(Timing.Quick, k => { tl.El.style.scale = new Scale(Vector2.one * (1f - 0.5f * k)); tl.El.style.opacity = 1f - 0.6f * k; });
             tl.El.RemoveFromHierarchy();
-            var total = board.Float(tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.At, tl.Crit ? new Color(1f, 0.85f, 0.2f) : new Color(1f, 0.95f, 0.8f), TypeScale.Base);
+            // GG-T827: the total bursts in the damage style: sized by its share of the target's max HP, tagged, OVERKILL on a spill.
+            int maxHp = State.UnitById(tl.UnitId)?.MaxHp ?? 0;
+            var total = Text.Damage(tl.At, tl.Crit ? CombatTextKind.Crit : CombatTextKind.Combo, tl.Crit ? tl.Total + "!" : tl.Total.ToString(), tl.Total, maxHp, tl.Effect, tl.Overkill);
             total.name = "tally-total";
             App.Audio.Sfx("battle.crit", 0.7f, 0.9f);
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Quick));
@@ -1257,7 +1270,6 @@ namespace GridGame.App
                 if (board.Units.TryGetValue(tl.UnitId, out var tv)) App.StartCoroutine(Tween.Shake(tv.Root, Impact.CritTileShake * Fx, Timing.Standard));
                 ShakeTurnIcon(tl.UnitId);
             }
-            yield return StrikeIn(total, tl.Crit);
         }
 
         /// <summary>GG-T668: a damage number strikes. It starts big above the target, falls onto it accelerating like a

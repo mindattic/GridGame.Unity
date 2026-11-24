@@ -589,7 +589,11 @@ namespace GridGame.Core.Battle
             int hpBeforeBlow = target.Hp;
             target.Hp = Math.Max(0, target.Hp - amount);
             var echoTo = LinkEchoTarget(target, hpBeforeBlow - target.Hp, hit); // GG-T873: Curse Link, read before a Kill clears it
-            Emit(new DamagedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note });
+            Emit(new DamagedEvent
+            {
+                TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note,
+                Overkill = HitRead.Overkill(amount, hpBeforeBlow), Effectiveness = hit == HitKind.Miss ? HitEffectiveness.Normal : HitRead.Of(target, type), // GG-T827
+            });
             if (source != null && source.IsHero && target.Team == Team.Enemy) source.DamageDealt += amount;
             // Damage triggers (GG-T296), before WearArmor: the blow that breaks an enchanted piece still pricks (Thorns).
             if (hit != HitKind.Miss && amount > 0)
