@@ -137,6 +137,12 @@ namespace GridGame.App
                         Settle(local);
                         return;
                     }
+                    if (SharesPurchasesElsewhere(app, cloud, slot))
+                    {
+                        Debug.LogWarning($"[Cloud] {name} holds purchases already in another slot on this device; not offered");
+                        Settle(local);
+                        return;
+                    }
                     settled = true; // the player answers now; the timeout no longer applies
                     Confirm.Show(CloudSave.OfferQuestion(info, info.UpdatedUtc.ToLocalTime(), local), "Use cloud save",
                         () =>
@@ -147,6 +153,20 @@ namespace GridGame.App
                         () => play(local));
                 });
             });
+        }
+
+        /// <summary>GG-T469, the same rule as Import save (GG-T607): a cloud save whose purchase ledger shares a store
+        /// transaction id with a save file in any <i>other</i> slot on this device (every profile, and each file's .bak) is
+        /// never written here, or one purchase would pay its Shards in two slots. That happens when a transfer code was
+        /// imported on another device and uploaded from a different slot or profile. Slot <paramref name="slot"/>'s own
+        /// file is left out: replacing a slot's save with its own newer copy is the point.</summary>
+        private static bool SharesPurchasesElsewhere(GameApp app, SaveData cloud, int slot)
+        {
+            var own = System.IO.Path.GetFullPath(SaveFiles.PathFor(app.Saves.Root, slot));
+            var others = new List<string>();
+            foreach (var p in SaveTransferUi.AllSlotPaths(app))
+                if (!string.Equals(System.IO.Path.GetFullPath(p), own, StringComparison.OrdinalIgnoreCase)) others.Add(p);
+            return SaveTransfer.SharesPurchasesWith(cloud, others);
         }
 
         private static IEnumerator Timeout(Action onTimeout)
@@ -180,7 +200,9 @@ namespace GridGame.App
                     {
                         if (CloudSave.TryDecode(data, app.Content, out var save, out var why))
                         {
-                            if (app.Saves.Write(slot, save)) restored++;
+                            if (SharesPurchasesElsewhere(app, save, slot))
+                                Debug.LogWarning($"[Cloud] {name} holds purchases already in another slot on this device; not restored");
+                            else if (app.Saves.Write(slot, save)) restored++;
                         }
                         else Debug.LogWarning($"[Cloud] {name} unreadable: {why}");
                         Next();
