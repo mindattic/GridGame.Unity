@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 16;
+        public const int CurrentVersion = 17;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -591,7 +591,6 @@ namespace GridGame.Meta
 
     public static class SaveMigrations
     {
-        /// <summary>Ability ids removed from content; a save still holding one drops it on load.</summary>
         /// <summary>GG-T344: where The Still went into the campaign order, and how many stages it brought (save v5).</summary>
         public const int StillInsertedAt = 12, StillStageCount = 3;
 
@@ -628,7 +627,60 @@ namespace GridGame.Meta
         /// <summary>The save version current when GG-T52's gear-proficiency gate shipped; the grandfather step runs only up to it.</summary>
         public const int GearGateShippedAtVersion = 4;
 
+        /// <summary>Ability ids removed from content with nothing to become; a save still holding one drops it on load. An
+        /// ability merged into another (GG-T973) is not retired: it is an abilities.json alias (<see cref="ContentDb.AbilityAliases"/>)
+        /// and <see cref="ResolveAbilityAliases"/> rewrites it to the survivor instead.</summary>
         public static readonly HashSet<string> RetiredAbilities = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "scan" };
+
+        /// <summary>GG-T973: rewrites every merged ability id a save still holds to the ability it was merged into
+        /// (<paramref name="aliases"/>, alias → survivor; abilities.json's <see cref="AbilityDef.MergedInto"/> rows). Per hero:
+        /// <see cref="HeroSave.Known"/> and <see cref="HeroSave.ActivePassives"/> are rewritten in place and deduped (the first
+        /// occurrence keeps its position); on <see cref="HeroSave.Bar"/> the alias's slot keeps the survivor, unless the survivor
+        /// is already on the bar, when that slot empties ("item:" entries are untouched). Codex "ability:" entries move to the
+        /// survivor, read state kept. Inventory holds item ids only: a Tome's taught ability is content (Validate keeps it off
+        /// aliases). Idempotent; runs on every load so a merge needs no save-version bump. Returns how many ids it rewrote.</summary>
+        public static int ResolveAbilityAliases(SaveData s, IReadOnlyDictionary<string, string> aliases)
+        {
+            if (s == null || aliases == null || aliases.Count == 0) return 0;
+            int rewrites = 0;
+            string To(string id) => id != null && aliases.TryGetValue(id, out var to) && !string.IsNullOrEmpty(to) ? to : null;
+            void RewriteList(List<string> ids)
+            {
+                if (ids == null) return;
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    var to = To(ids[i]);
+                    if (to != null) { ids[i] = to; rewrites++; }
+                    if (ids[i] != null && !seen.Add(ids[i])) ids.RemoveAt(i--);
+                }
+            }
+            foreach (var h in s.Roster)
+            {
+                if (h == null) continue;
+                RewriteList(h.Known);
+                RewriteList(h.ActivePassives);
+                if (h.Bar == null) continue;
+                for (int i = 0; i < h.Bar.Count; i++)
+                {
+                    var to = To(h.Bar[i]);
+                    if (to == null) continue;
+                    rewrites++;
+                    bool onBar = false;
+                    for (int j = 0; j < h.Bar.Count; j++)
+                        if (j != i && string.Equals(h.Bar[j], to, StringComparison.OrdinalIgnoreCase)) onBar = true;
+                    h.Bar[i] = onBar ? null : to;
+                }
+            }
+            foreach (var kv in aliases)
+            {
+                if (string.IsNullOrEmpty(kv.Value)) continue;
+                string from = CodexKinds.Key(CodexKinds.Ability, kv.Key), into = CodexKinds.Key(CodexKinds.Ability, kv.Value);
+                if (s.Codex != null && s.Codex.Remove(from)) { s.Codex.Add(into); rewrites++; }
+                if (s.CodexRead != null && s.CodexRead.Remove(from)) s.CodexRead.Add(into);
+            }
+            return rewrites;
+        }
 
         /// <summary>Upgrades an older save in place. Unknown future versions are rejected. <paramref name="c"/>
         /// is optional (version-shape fixups below don't need content) but drives the GG-T52 proficiency
@@ -803,6 +855,10 @@ namespace GridGame.Meta
             if (s.Version < 16) s.Version = 16;
             s.Codex ??= new HashSet<string>();
             s.CodexRead ??= new HashSet<string>();
+            // GG-T973: merged abilities (abilities.json MergedInto aliases) became their survivors. v17 marks a save written
+            // once aliases existed; the rewrite itself runs on every load (below, once content is at hand), since each later
+            // merge adds an alias without a version bump.
+            if (s.Version < 17) s.Version = 17;
             // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
             if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
@@ -826,6 +882,11 @@ namespace GridGame.Meta
             // Only for saves from before the gate (beforeGearGate): on a newer save it would re-grant, free, a proficiency
             // the Inn's Respec just refunded while the gear stayed on.
             Notes.Clear();
+            if (c != null)
+            {
+                int merged = ResolveAbilityAliases(s, c.AbilityAliases);
+                if (merged > 0) Notes.Add($"{merged} merged ability id(s) rewritten to the abilities they became (GG-T973)");
+            }
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);

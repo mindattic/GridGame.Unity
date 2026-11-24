@@ -8,6 +8,9 @@ namespace GridGame.Core.Content
     {
         public readonly Dictionary<string, ClassDef> Classes = new Dictionary<string, ClassDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, AbilityDef> Abilities = new Dictionary<string, AbilityDef>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>GG-T973: merged ability id → the ability it was merged into (abilities.json rows with
+        /// <see cref="AbilityDef.MergedInto"/>). Never in <see cref="Abilities"/>; a save still naming one is rewritten on load.</summary>
+        public readonly Dictionary<string, string> AbilityAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, BuffDef> Buffs = new Dictionary<string, BuffDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, ItemDef> Items = new Dictionary<string, ItemDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, RecipeDef> Recipes = new Dictionary<string, RecipeDef>(StringComparer.OrdinalIgnoreCase);
@@ -117,6 +120,9 @@ namespace GridGame.Core.Content
         public RecipeDef Recipe(string id) => Get(Recipes, id, "recipe");
 
         public AbilityDef TryAbility(string id) => id != null && Abilities.TryGetValue(id, out var a) ? a : null;
+        /// <summary>GG-T973: the surviving id for <paramref name="id"/>: its <see cref="AbilityAliases"/> target when it is a
+        /// merged ability, else <paramref name="id"/> itself (null stays null).</summary>
+        public string ResolveAbility(string id) => id != null && AbilityAliases.TryGetValue(id, out var to) && !string.IsNullOrEmpty(to) ? to : id;
         public ItemDef TryItem(string id) => id != null && Items.TryGetValue(id, out var a) ? a : null;
         public BuffDef TryBuff(string id) => id != null && Buffs.TryGetValue(id, out var a) ? a : null;
         public ClassDef TryClass(string id) => id != null && Classes.TryGetValue(id, out var a) ? a : null;

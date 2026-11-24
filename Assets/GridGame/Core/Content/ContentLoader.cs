@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace GridGame.Core.Content
 {
@@ -25,7 +26,11 @@ namespace GridGame.Core.Content
         {
             var db = new ContentDb();
             AddAll(db.Classes, ReadList<ClassDef>(readText, "classes"), c => c.Id);
-            AddAll(db.Abilities, ReadList<AbilityDef>(readText, "abilities"), c => c.Id);
+            // GG-T973: a row with MergedInto is an alias stub, not an ability: it goes to AbilityAliases instead.
+            var abilitiesText = readText("abilities");
+            var abilities = ReadList<AbilityDef>(_ => abilitiesText, "abilities");
+            AddAll(db.Abilities, abilities.FindAll(a => a == null || string.IsNullOrEmpty(a.MergedInto)), c => c.Id);
+            IndexAbilityAliases(db, abilities, abilitiesText);
             AddAll(db.Buffs, ReadList<BuffDef>(readText, "buffs"), c => c.Id);
             AddAll(db.Items, ReadList<ItemDef>(readText, "items"), c => c.Id);
             AddAll(db.Recipes, ReadList<RecipeDef>(readText, "recipes"), c => c.Id);
@@ -99,6 +104,74 @@ namespace GridGame.Core.Content
                 foreach (var piece in set.Pieces)
                     if (piece != null && !db.SetByItem.ContainsKey(piece)) db.SetByItem[piece] = set;
             return db;
+        }
+
+        /// <summary>GG-T973: moves abilities.json's alias stubs (<see cref="AbilityDef.MergedInto"/>) into
+        /// <see cref="ContentDb.AbilityAliases"/>. The shape check: an alias row carries only Id and MergedInto, and its id is
+        /// neither a live ability nor another alias. Problems go to <see cref="ContentDb.LoadProblems"/>.</summary>
+        public static void IndexAbilityAliases(ContentDb db, List<AbilityDef> abilities, string abilitiesText)
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null || string.IsNullOrEmpty(a.MergedInto)) continue;
+                if (string.IsNullOrEmpty(a.Id)) throw new FormatException("AbilityDef alias with empty Id");
+                if (db.Abilities.ContainsKey(a.Id)) db.LoadProblems.Add($"ability alias {a.Id}: is also a live ability id (GG-T973)");
+                else if (db.AbilityAliases.ContainsKey(a.Id)) db.LoadProblems.Add($"ability alias {a.Id}: listed twice (GG-T973)");
+                else db.AbilityAliases[a.Id] = a.MergedInto.Trim();
+            }
+            if (string.IsNullOrWhiteSpace(abilitiesText) || db.AbilityAliases.Count == 0) return;
+            JToken root;
+            try { root = JToken.Parse(abilitiesText); }
+            catch (JsonException) { return; } // ReadList has already rejected a file that doesn't parse
+            if (!(root is JArray rows)) return;
+            foreach (var o in rows.Children<JObject>())
+            {
+                var merged = o.Property("MergedInto", StringComparison.OrdinalIgnoreCase);
+                if (merged == null || merged.Value.Type == JTokenType.Null) continue;
+                var extra = new List<string>();
+                foreach (var prop in o.Properties())
+                    if (!string.Equals(prop.Name, "Id", StringComparison.OrdinalIgnoreCase) && !string.Equals(prop.Name, "MergedInto", StringComparison.OrdinalIgnoreCase))
+                        extra.Add(prop.Name);
+                if (extra.Count > 0)
+                    db.LoadProblems.Add($"ability alias {o.Property("Id", StringComparison.OrdinalIgnoreCase)?.Value}: an alias row carries only Id and MergedInto (drop {string.Join(", ", extra)}) (GG-T973)");
+            }
+        }
+
+        /// <summary>GG-T973: every alias names a live ability (no chains, no cycles, not itself), and no class, skill tree
+        /// or item still names an alias (it should name the surviving ability).</summary>
+        public static void ValidateAbilityAliases(ContentDb db, List<string> p)
+        {
+            foreach (var kv in db.AbilityAliases)
+            {
+                var w = $"ability alias {kv.Key}";
+                var to = kv.Value;
+                if (string.IsNullOrEmpty(to)) p.Add($"{w}: MergedInto is empty");
+                else if (string.Equals(to, kv.Key, StringComparison.OrdinalIgnoreCase)) p.Add($"{w}: merged into itself");
+                else if (db.AbilityAliases.ContainsKey(to)) p.Add($"{w}: merged into '{to}', which is itself an alias (no chains or cycles: name the surviving ability)");
+                else if (!db.Abilities.ContainsKey(to)) p.Add($"{w}: merged into unknown ability '{to}'");
+            }
+            if (db.AbilityAliases.Count == 0) return;
+            void NoAlias(string id, string where)
+            {
+                if (id != null && db.AbilityAliases.TryGetValue(id, out var to))
+                    p.Add($"{where}: '{id}' was merged into '{to}'; name '{to}' (GG-T973)");
+            }
+            foreach (var c in db.Classes.Values)
+            {
+                foreach (var a in c.Abilities) NoAlias(a, $"class {c.Id} abilities");
+                foreach (var s in c.DefaultLoadout)
+                    if (s != null && !s.StartsWith("item:")) NoAlias(s, $"class {c.Id} loadout");
+                NoAlias(c.ChargeAbility, $"class {c.Id} charge");
+                foreach (var ph in c.BossPhases) NoAlias(ph?.OnEnterAbility, $"class {c.Id} boss phase");
+            }
+            foreach (var t in db.SkillTrees.Values)
+                foreach (var n in t.Nodes)
+                    if (n != null) NoAlias(n.Grants, $"tree {t.Id} node {n.Id}");
+            foreach (var i in db.Items.Values)
+            {
+                NoAlias(i.OnUseAbility, $"item {i.Id}");
+                NoAlias(i.TeachesAbility, $"item {i.Id} tome");
+            }
         }
 
         private static List<T> ReadList<T>(Func<string, string> readText, string name)
@@ -198,7 +271,8 @@ namespace GridGame.Core.Content
             var p = new List<string>();
             void NeedClass(string id, string where) { if (id != null && !db.Classes.ContainsKey(id)) p.Add($"{where}: unknown class '{id}'"); }
             void NeedItem(string id, string where) { if (id != null && !db.Items.ContainsKey(id)) p.Add($"{where}: unknown item '{id}'"); }
-            void NeedAbility(string id, string where) { if (id != null && !db.Abilities.ContainsKey(id)) p.Add($"{where}: unknown ability '{id}'"); }
+            // An alias (GG-T973) is reported by ValidateAbilityAliases with the id to use instead.
+            void NeedAbility(string id, string where) { if (id != null && !db.Abilities.ContainsKey(id) && !db.AbilityAliases.ContainsKey(id)) p.Add($"{where}: unknown ability '{id}'"); }
             void NeedBuff(string id, string where) { if (id != null && !db.Buffs.ContainsKey(id)) p.Add($"{where}: unknown buff '{id}'"); }
 
             p.AddRange(db.LoadProblems);
@@ -546,6 +620,7 @@ namespace GridGame.Core.Content
             WandererContent.ValidateFactions(db, p);
             FamilyContent.Validate(db, p); // GG-T971
             ValidateFamilyTrees(db, p); // GG-T977
+            ValidateAbilityAliases(db, p); // GG-T973
             QuestCatalog.Validate(db, p);
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);

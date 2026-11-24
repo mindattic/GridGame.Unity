@@ -564,6 +564,11 @@ namespace GridGame.Core.Content
     public sealed class AbilityDef
     {
         public string Id;
+        /// <summary>GG-T973 (BIBLE §25.6.6.1): an alias stub for an ability merged into another. A row with MergedInto
+        /// carries only Id and MergedInto; <see cref="ContentLoader.Load"/> moves it out of <see cref="ContentDb.Abilities"/>
+        /// into <see cref="ContentDb.AbilityAliases"/>, and <c>SaveMigrations.Migrate</c> rewrites the old id in a save to
+        /// the surviving one. The target must be a live ability (no chains, no cycles) and no content may still name the alias.</summary>
+        public string MergedInto;
         public string Name;
         public string Description;
         public AbilityKind Kind;
