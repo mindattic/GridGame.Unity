@@ -7,7 +7,8 @@ file name resolved through tools/asset_names.py (the hyphenated -00 layout, GG-T
   Board tile    Tiles/<theme>-00                    (theme Tiles key, else theme id)              else base theme, Tiles/tile-00
   Icons         AbilityIcons/ (else legacy Icons/<Icon>), ItemIcons/, StatusIcons/ (+ stunned), UI/ (pickups)
 
-Not a build gate and runs no game players. Usage:
+Reports the classes on the mannequin fallback, byte-identical portraits, finale and bounty bosses on reused art, themes
+borrowing a backdrop set or board tile, and missing icons. Not a build gate and runs no game players. Usage:
 
   python -I tools/art_gaps.py [REPO_ROOT] [--json OUT.json]
 
