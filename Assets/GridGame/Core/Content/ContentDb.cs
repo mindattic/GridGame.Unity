@@ -49,6 +49,23 @@ namespace GridGame.Core.Content
         /// <summary>factions.json (GG-T342): the STORY.md factions and the hero classes in each, in file order.</summary>
         public readonly List<FactionDef> Factions = new List<FactionDef>();
         /// <summary>The faction a hero class belongs to, or null.</summary>
+        /// <summary>families.json (GG-T971, BIBLE §25.6.6): the hero families, in file order.</summary>
+        public readonly List<FamilyDef> Families = new List<FamilyDef>();
+        /// <summary>True when <see cref="ContentLoader.Load"/> found no families.json; a hand-built ContentDb has none and
+        /// simply skips the family checks.</summary>
+        public bool FamiliesFileMissing;
+        public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
+        /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
+        public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);
+        /// <summary>Every hero class id in a family, by id.</summary>
+        public List<string> FamilyMembers(string familyId)
+        {
+            var ids = new List<string>();
+            foreach (var c in Classes.Values)
+                if (c.Team == Team.Hero && familyId != null && string.Equals(c.Family, familyId, StringComparison.OrdinalIgnoreCase)) ids.Add(c.Id);
+            ids.Sort(StringComparer.OrdinalIgnoreCase);
+            return ids;
+        }
         public FactionDef FactionOf(string classId) => classId == null ? null : Factions.Find(f => f.Heroes.Exists(h => string.Equals(h, classId, StringComparison.OrdinalIgnoreCase)));
         public readonly Dictionary<string, CaravanUpgradeDef> Caravan = new Dictionary<string, CaravanUpgradeDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, SkillTreeDef> SkillTrees = new Dictionary<string, SkillTreeDef>(StringComparer.OrdinalIgnoreCase);

@@ -66,6 +66,9 @@ namespace GridGame.Core.Content
             db.Elements = elements ?? new ElementTableDef();
             db.Mercenaries.AddRange(ReadList<MercenaryDef>(readText, "mercenaries"));
             db.Factions.AddRange(ReadList<FactionDef>(readText, "factions"));
+            var families = readText("families"); // GG-T971: only a missing file is reported, not a hand-built ContentDb
+            db.FamiliesFileMissing = string.IsNullOrWhiteSpace(families);
+            db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
             AddAll(db.Pickups, ReadList<PickupDef>(readText, "pickups"), x => x.Id);
             AddAll(db.SkillTrees, ReadList<SkillTreeDef>(readText, "skilltrees"), x => x.Id);
@@ -480,6 +483,7 @@ namespace GridGame.Core.Content
             EncounterCatalog.Validate(db, p);
             MercenaryContent.Validate(db, p);
             WandererContent.ValidateFactions(db, p);
+            FamilyContent.Validate(db, p); // GG-T971
             QuestCatalog.Validate(db, p);
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);

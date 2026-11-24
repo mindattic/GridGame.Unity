@@ -517,6 +517,9 @@ namespace GridGame.Core.Content
         /// Hero-only; required for Team.Hero, left null for Team.Enemy. The class's own starting kit
         /// (<see cref="DefaultLoadout"/>) is known from level 1 regardless of what's unlocked in the tree.</summary>
         public string HomeTree;
+        /// <summary>Hero family id (families.json, GG-T971, BIBLE §25.6.6): the loose collection of classes this one
+        /// shares a fantasy and moves with. Hero-only; required for Team.Hero, left null for Team.Enemy.</summary>
+        public string Family;
         /// <summary>Weapon classes (GG-T52) this class is trained in from level 1 — no proficiency passive
         /// needed. Every hero can always use <see cref="WeaponClass.Simple"/> regardless of this list; leave
         /// it empty for a class that starts Simple-only (e.g. a healer/support archetype).</summary>
