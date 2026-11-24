@@ -16,6 +16,11 @@ namespace GridGame.Core.Battle
         /// <summary>Copied from the state at paint time, so <see cref="BattleState.Walkable"/> needs no content lookup.</summary>
         public bool Blocks;
         public bool Hazard;
+        /// <summary>The team that painted it (GG-T842): a hero's ability paints as the party, a monster's ability, trail or
+        /// death as its side; <see cref="Team.Neutral"/> = the board itself (a rule's hook or event).</summary>
+        public Team OwnerTeam = Team.Neutral;
+        /// <summary>The unit that painted it, or -1.</summary>
+        public int OwnerId = -1;
         public TileMark Clone() => (TileMark)MemberwiseClone();
     }
 
@@ -65,19 +70,37 @@ namespace GridGame.Core.Battle
 
         private static bool Same(string x, string y) => y != null && string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Does mark <paramref name="m"/> work on <paramref name="u"/> (GG-T842, BIBLE §14.23)? A board-painted mark (no
+        /// owner) or a state that affects <see cref="TileAffects.Any"/> works on everyone; otherwise the state's
+        /// <see cref="TileStateDef.Affects"/> is read against the team that painted it.
+        /// </summary>
+        public static bool Affects(BattleState s, TileMark m, Unit u)
+        {
+            if (m == null || u == null || m.OwnerTeam == Team.Neutral) return true;
+            switch (s.Content?.TryTileState(m.State)?.Affects ?? TileAffects.Any)
+            {
+                case TileAffects.FoesOfOwner: return u.Team != m.OwnerTeam;
+                case TileAffects.AlliesOfOwner: return u.Team == m.OwnerTeam;
+                default: return true;
+            }
+        }
+
         /// <summary>Is <paramref name="e"/> a queued rule event whose tiles are dangerous?</summary>
         public static bool IsHazardEntry(BattleState s, TimelineEntry e) =>
             e.Kind == TimelineKind.Hazard && (s.Content?.TryRuleEvent(e.RuleEvent)?.Hazard ?? true);
 
         /// <summary>
         /// How dangerous standing on <paramref name="c"/> is for <paramref name="u"/> (0 = safe): a hazardous painted state
-        /// counts 1, a telegraphed hazard landing there counts 2 (more the sooner it lands). Immune units read 0.
-        /// The bot and the hero path planner steer by it.
+        /// counts 1, a telegraphed hazard landing there counts 2 (more the sooner it lands). Immune units read 0, and so
+        /// does a unit a team-owned mark doesn't work on (GG-T842: a hero's firewall is danger to foes only, so the enemy
+        /// planner steers round it and the hero bot values shoving a foe into it). The bot and the planners steer by it.
         /// </summary>
         public static float DangerAt(BattleState s, Coord c, Unit u)
         {
             float d = 0f;
             var m = s.Region.At(c);
+            if (m != null && !Affects(s, m, u)) m = null;
             if (m != null && m.Hazard && !Immune(u, m.Rule, m.State)) d += 1f;
             else if (m != null && AboutToGive(s, m) && !Immune(u, m.Rule, m.State)) d += 0.5f; // GG-T368: one more crack and it gives
             foreach (var e in s.Timeline)

@@ -240,7 +240,7 @@ namespace GridGame.Core.Rules
                     var occ = s.UnitAt(c);
                     if (occ != null && occ != enemy) continue;
                 }
-                if (s.Region.Rules.Count > 0 && RegionBoard.DangerAt(s, c, enemy) > 0f) continue; // GG-T359: foes don't walk into a rule's hazard either
+                if ((s.Region.Rules.Count > 0 || s.Region.Tiles.Count > 0) && RegionBoard.DangerAt(s, c, enemy) > 0f) continue; // GG-T359: foes don't walk into a rule's hazard either (GG-T842: nor a hero-laid one)
                 candidates.Add(c);
             }
             if (brain == Brain.Hopper && !enemy.IsMultiTile)
@@ -248,7 +248,7 @@ namespace GridGame.Core.Rules
                 {
                     var c = enemy.Pos + d + d; // a leap clears whatever is in between
                     if (!s.Walkable(c) || s.UnitAt(c) != null || s.MovableAt(c) != null) continue;
-                    if (s.Region.Rules.Count > 0 && RegionBoard.DangerAt(s, c, enemy) > 0f) continue; // GG-T359: nor leap into one
+                    if ((s.Region.Rules.Count > 0 || s.Region.Tiles.Count > 0) && RegionBoard.DangerAt(s, c, enemy) > 0f) continue; // GG-T359: nor leap into one
                     candidates.Add(c);
                 }
             var ward = brain == Brain.Guardian ? Ward(s, enemy) : null;

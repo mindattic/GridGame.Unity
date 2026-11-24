@@ -31,6 +31,11 @@ namespace GridGame.Core.Battle
             public Coord? Target;
             /// <summary>The resolving event's telegraphed tiles.</summary>
             public List<Coord> EventTiles;
+            /// <summary>Who paints (GG-T842): the team and unit a mark this run paints records; Neutral = the board.</summary>
+            public Team Owner = Team.Neutral;
+            public int OwnerId = -1;
+            /// <summary>The team-owned mark whose hook or OnMark this is: its effects reach only the units it works on.</summary>
+            public TileMark Mark;
         }
 
         private bool RegionActive => !PreviewOnly && !S.IsOver;
@@ -67,7 +72,7 @@ namespace GridGame.Core.Battle
         {
             if (!RegionActive || u?.Def == null) return;
             if (u.Def.OnDeathRule.Count > 0)
-                RunRuleEffects(u.Def.OnDeathRule, new RuleCtx { Subject = u, At = at });
+                RunRuleEffects(u.Def.OnDeathRule, new RuleCtx { Subject = u, At = at, Owner = u.Team, OwnerId = u.Id });
             if (S.Region.Rules.Count > 0) RegionHooks(RuleHook.UnitDeath, u, at);
         }
 
@@ -75,7 +80,8 @@ namespace GridGame.Core.Battle
         private void RegionAbility(Unit caster, AbilityDef a, Coord anchor)
         {
             if (!RegionActive || a == null || a.RuleEffects.Count == 0 || caster == null) return;
-            RunRuleEffects(a.RuleEffects, new RuleCtx { Ability = a.Id, Subject = caster, At = caster.Pos, Target = anchor });
+            // GG-T842: what it paints is the caster's side's (a hero's firewall is the party's, and never announces a rule).
+            RunRuleEffects(a.RuleEffects, new RuleCtx { Ability = a.Id, Subject = caster, At = caster.Pos, Target = anchor, Owner = caster.Team, OwnerId = caster.Id });
         }
 
         /// <summary>Runs every matching hook of every rule in play for <paramref name="on"/>.</summary>
@@ -93,18 +99,26 @@ namespace GridGame.Core.Battle
                     if (h.On != on || !TeamMatches(h.Team, subject)) continue;
                     if (h.Wave >= 0 && S.Wave != h.Wave) continue;
                     if (subject != null && RegionBoard.Immune(subject, rule.Id)) continue;
+                    TileMark mark = null;
                     if (h.State != null)
                     {
-                        var mark = where.HasValue ? S.Region.At(where.Value) : null;
+                        mark = where.HasValue ? S.Region.At(where.Value) : null;
                         if (mark == null || !string.Equals(mark.State, h.State, StringComparison.OrdinalIgnoreCase)) continue;
                         if (subject != null && RegionBoard.Immune(subject, mark.State)) continue;
+                        // GG-T842: a team-owned mark's hooks pass over a subject it doesn't work on (a hero walks
+                        // through the party's own firewall; a foe stepping on the party's mine sets it off).
+                        if (subject != null && !RegionBoard.Affects(S, mark, subject)) continue;
                     }
                     string key = rule.Id + "#" + i;
                     S.Region.HookCounts.TryGetValue(key, out int n);
                     S.Region.HookCounts[key] = ++n;
                     if (n % Math.Max(1, h.Every) != 0) continue;
                     if (h.Chance < 1f && !S.Rng.Chance(h.Chance)) continue;
-                    RunRuleEffects(h.Effects, new RuleCtx { Rule = rule.Id, State = h.State, Subject = subject, At = where });
+                    RunRuleEffects(h.Effects, new RuleCtx
+                    {
+                        Rule = rule.Id, State = h.State, Subject = subject, At = where,
+                        Owner = mark?.OwnerTeam ?? Team.Neutral, OwnerId = mark?.OwnerId ?? -1, Mark = mark,
+                    });
                 }
             }
         }
@@ -252,19 +266,19 @@ namespace GridGame.Core.Battle
                 bool hold = false;
                 var faller = def.Blocks ? HoleFaller(def, rule, c, out hold) : null;
                 if (hold) continue;
-                S.Region.Tiles[c] = NewMark(def, rule, e.Amount);
+                S.Region.Tiles[c] = NewMark(def, rule, e.Amount, ctx.Owner, ctx.OwnerId);
                 ev0.Tiles.Add(c);
                 if (faller != null) (falls ??= new List<(Unit, Coord)>()).Add((faller, c));
             }
             if (ev0.Tiles.Count > 0)
             {
-                EnsureRuleInPlay(rule);
+                EnsureRuleInPlay(rule, ctx.Owner);
                 Emit(ev0);
                 AfterMarked(def, rule, ev0.Tiles, falls);
             }
             if (reactions != null)
                 foreach (var (at, mark, r) in reactions)
-                    if (!S.IsOver) ReactTile(at, mark, r);
+                    if (!S.IsOver) ReactTile(at, mark, r, ctx.Owner, ctx.OwnerId);
         }
 
         // ── Elements on tiles and hazard trails (GG-T370, §14.22) ────────────────────────────────
@@ -282,9 +296,10 @@ namespace GridGame.Core.Battle
         /// <summary>
         /// One tile reaction on a painted tile (an element painted onto it, or a hero's element or tool covering it): Clear
         /// washes the mark off; Becomes turns it into the Into state (a mine into an armed mine, whose OnMark queues its
-        /// blast), which brings that state's rule into play. A blocking Into waits under a unit or item, as ever.
+        /// blast), which brings that state's rule into play. A blocking Into waits under a unit or item, as ever. The new
+        /// mark is <paramref name="owner"/>'s when given (whoever painted the element), else it keeps the old mark's (GG-T842).
         /// </summary>
-        private void ReactTile(Coord c, TileMark m, TileReactionDef r)
+        private void ReactTile(Coord c, TileMark m, TileReactionDef r, Team? owner = null, int ownerId = -1)
         {
             if (S.Region.At(c) != m) return;
             if (r.Kind == TileReactionKind.Clear)
@@ -297,12 +312,13 @@ namespace GridGame.Core.Battle
             }
             var next = C.TryTileState(r.Into);
             if (next == null) return; // an Into that names a trap belongs to the trap system (GG-T371)
-            string rule = C.TileStateRule.TryGetValue(next.Id, out var owner) ? owner : m.Rule;
+            string rule = C.TileStateRule.TryGetValue(next.Id, out var ruleOwner) ? ruleOwner : m.Rule;
             bool hold = false;
             var faller = next.Blocks ? HoleFaller(next, rule, c, out hold) : null;
             if (hold) return;
-            S.Region.Tiles[c] = NewMark(next, rule, 0);
-            EnsureRuleInPlay(rule);
+            var team = owner ?? m.OwnerTeam;
+            S.Region.Tiles[c] = NewMark(next, rule, 0, team, owner.HasValue ? ownerId : m.OwnerId);
+            EnsureRuleInPlay(rule, team);
             var marked = new RegionTilesEvent { RuleId = rule, State = next.Id, Change = "marked" };
             marked.Tiles.Add(c);
             Emit(marked);
@@ -310,11 +326,13 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>A rule whose state reaches the board (a monster's trail, its death, a reaction) comes into play on any
-        /// stage, announced like the stage's own, so its hooks run for the tiles it paints.</summary>
-        private void EnsureRuleInPlay(string ruleId)
+        /// stage, announced like the stage's own, so its hooks run for the tiles it paints. A hero-laid state brings its
+        /// rule's hooks into play silently: the party's own firewall is no region rule to announce (GG-T842).</summary>
+        private void EnsureRuleInPlay(string ruleId, Team painter = Team.Neutral)
         {
             if (ruleId == null || S.Region.Rules.Contains(ruleId) || !(C.TryRegionRule(ruleId) is RegionRuleDef r)) return;
             S.Region.Rules.Add(r.Id);
+            if (painter == Team.Hero) return;
             Emit(new RegionRuleEvent { RuleId = r.Id, Name = r.Name, Description = r.Description });
         }
 
@@ -324,7 +342,7 @@ namespace GridGame.Core.Battle
             if (!RegionActive || u?.Def == null || u.Def.TrailRule.Count == 0 || !u.Alive) return;
             if (++u.TrailSteps < Math.Max(1, u.Def.TrailEvery)) return;
             u.TrailSteps = 0;
-            RunRuleEffects(u.Def.TrailRule, new RuleCtx { Subject = u, At = from });
+            RunRuleEffects(u.Def.TrailRule, new RuleCtx { Subject = u, At = from, Owner = u.Team, OwnerId = u.Id });
         }
 
         /// <summary>The painted tiles in <paramref name="area"/> a hero's reactions work on (GG-T370).</summary>
@@ -361,8 +379,15 @@ namespace GridGame.Core.Battle
             foreach (var c in tiles.ToArray())
             {
                 if (S.IsOver) return;
-                if (!StateMatches(S.Region.At(c), def.Id)) continue;
-                RunRuleEffects(def.OnMark, new RuleCtx { Rule = rule, State = def.Id, Subject = S.UnitAt(c), At = c });
+                var mk = S.Region.At(c);
+                if (!StateMatches(mk, def.Id)) continue;
+                // GG-T842: a team-owned mark's OnMark paints as its owner and reaches only the units it works on.
+                var who = S.UnitAt(c);
+                RunRuleEffects(def.OnMark, new RuleCtx
+                {
+                    Rule = rule, State = def.Id, Subject = who != null && RegionBoard.Affects(S, mk, who) ? who : null, At = c,
+                    Owner = mk.OwnerTeam, OwnerId = mk.OwnerId, Mark = mk,
+                });
             }
         }
 
@@ -514,9 +539,9 @@ namespace GridGame.Core.Battle
             RegionHooks(RuleHook.Hit, u);
         }
 
-        private static TileMark NewMark(TileStateDef def, string rule, int counter) => new TileMark
+        private static TileMark NewMark(TileStateDef def, string rule, int counter, Team owner = Team.Neutral, int ownerId = -1) => new TileMark
         {
-            State = def.Id, Rule = rule, Counter = counter, Blocks = def.Blocks, Hazard = def.Hazard,
+            State = def.Id, Rule = rule, Counter = counter, Blocks = def.Blocks, Hazard = def.Hazard, OwnerTeam = owner, OwnerId = ownerId,
             LifeTicks = def.LifeSeconds > 0f ? Math.Max(1, (int)Math.Round(def.LifeSeconds * BattleConfig.TicksPerSecond)) : 0,
         };
 
@@ -562,7 +587,7 @@ namespace GridGame.Core.Battle
                 bool hold = false;
                 var faller = next.Blocks ? HoleFaller(next, m.Rule, c, out hold) : null;
                 if (hold) { m.Counter = def.Threshold; Note(m.Rule, m.State, "changed", c); continue; }
-                S.Region.Tiles[c] = NewMark(next, m.Rule, 0);
+                S.Region.Tiles[c] = NewMark(next, m.Rule, 0, m.OwnerTeam, m.OwnerId); // GG-T842: it stays its painter's
                 Note(m.Rule, next.Id, "marked", c);
                 turned.Add((next, m.Rule, c, faller));
             }
@@ -743,7 +768,8 @@ namespace GridGame.Core.Battle
             return list;
         }
 
-        /// <summary>The living units a unit effect reaches, in unit-id order, minus any immune to its rule, event, state or ability.</summary>
+        /// <summary>The living units a unit effect reaches, in unit-id order, minus any immune to its rule, event, state or
+        /// ability, and (GG-T842) any the team-owned mark whose hook or OnMark it is doesn't work on.</summary>
         private List<Unit> RuleUnitsOf(RuleEffectDef e, RuleCtx ctx)
         {
             var list = new List<Unit>();
@@ -769,7 +795,8 @@ namespace GridGame.Core.Battle
             list.RemoveAll(u => !u.Alive || !u.OnBoard || u.IsCorpse || u.IsEgg || !TeamMatches(e.Team, u)
                                 || RegionBoard.Immune(u, ctx.Rule, ctx.Event, ctx.Ability)
                                 || (ctx.State != null && RegionBoard.Immune(u, ctx.State))
-                                || (e.State != null && RegionBoard.Immune(u, e.State)));
+                                || (e.State != null && RegionBoard.Immune(u, e.State))
+                                || (ctx.Mark != null && !RegionBoard.Affects(S, ctx.Mark, u))); // GG-T842
             list.Sort((a, b) => a.Id.CompareTo(b.Id));
             return list;
         }

@@ -142,6 +142,19 @@ namespace GridGame.Core.Content
         public int CollideDamage;
     }
 
+    /// <summary>Whom a team-owned tile state works on (GG-T842, BIBLE §14.23): a mark records the team that painted it, and
+    /// its state's EnterTile/TurnEnd hooks and OnMark effects reach only these units. A mark the board itself painted (a
+    /// rule's hook or event, no owner) works on everyone, whatever this says.</summary>
+    public enum TileAffects
+    {
+        /// <summary>Everyone (today's rule, the default).</summary>
+        Any,
+        /// <summary>Only the painter's foes: a hero's firewall burns monsters, never the party.</summary>
+        FoesOfOwner,
+        /// <summary>Only the painter's own side (a ward, a healing glyph).</summary>
+        AlliesOfOwner,
+    }
+
     /// <summary>A persistent tile state a rule paints on the board (drawn on the tile; a mark lives until cleared or its LifeSeconds run out).</summary>
     public sealed class TileStateDef
     {
@@ -174,6 +187,11 @@ namespace GridGame.Core.Content
         public DamageType? Element;
         /// <summary>A light (GG-T365): under <see cref="RuleFlags.Darkness"/> a unit standing on it is never hidden.</summary>
         public bool Lights;
+        /// <summary>Whom a mark of this state works on, read against the team that painted it (GG-T842): its hooks that
+        /// read the subject's tile (EnterTile, TurnEnd...) skip an unaffected subject, its OnMark and hook effects skip
+        /// unaffected units, and <see cref="Battle.RegionBoard.DangerAt"/> reads no danger for them. Ignored on a mark the
+        /// board painted (no owner).</summary>
+        public TileAffects Affects = TileAffects.Any;
     }
 
     /// <summary>A telegraphed event a rule puts on the timeline: its own icon rides the bar like a cast and resolves its Effects on arrival.</summary>

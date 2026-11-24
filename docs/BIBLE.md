@@ -3155,6 +3155,27 @@ the GG-T371 elemental table (`elements.json`, [§3.3.1](#331-there-is-always-a-w
   `rule:landmines` (seeded placeholders).
 - *(Tests: `HazardTrailTests`, written, not run.)*
 
+### 14.23 Tactical tiles (added 2026-11-24, battle-feel epic GG-T823, GG-T842)
+
+Firewalls, landmines and slime globs the party lays need tiles that know which side laid them.
+
+- **A mark records its painter.** `TileMark.OwnerTeam` / `OwnerId` (new): a hero ability's `RuleEffects` paint as the
+  party (the caster's team and id); a monster's ability, `TrailRule` and `OnDeathRule` paint as its side; a rule's own
+  hook or event paints for nobody (`Team.Neutral`, the board). A counter turning a mark into its `Becomes` state keeps
+  the painter; an element reacting with a mark (fire arming a mine) makes the new mark the element's painter's.
+- **`TileStateDef.Affects`** (new: `Any` default, `FoesOfOwner`, `AlliesOfOwner`) is read against the painter
+  (`RegionBoard.Affects`): a hook that reads the subject's tile (`State` filter: EnterTile, TurnEnd, TurnStart, Hit,
+  UnitDeath) passes over a subject the mark doesn't work on (it isn't even counted toward `Every`), and the unit
+  effects of that hook and of the state's `OnMark` skip unaffected units. A board-painted mark works on everyone,
+  whatever its `Affects`, so every existing rule plays exactly as before.
+- **Bots read it.** `RegionBoard.DangerAt` reads no danger from a mark that doesn't work on the unit: the party walks
+  its own firewall, foes (`EnemyPlanner`, which now checks any painted tile even on a rule-less stage) steer round it,
+  and the hero bot's `ShoveFloorValue` scores shoving a foe into it.
+- **No announcement.** A hero-laid state brings its rule's hooks into play silently (`EnsureRuleInPlay`): the party's
+  own firewall is no region rule. A monster-laid state is announced as ever (§14.22).
+- Not yet: a rule event queued by a team-owned mark (a hero mine's blast) still lands on everyone on its tiles.
+- *(Tests: `TacticalTileTests`, written, not run.)*
+
 ## 15. Save
 
 ### 15.1 Data model
