@@ -10,7 +10,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 
 # GG-T159: repair missing sibling-repo package links before Unity ever gets a chance to choke on
-# them. Packages/manifest.json pulls com.mindattic.capture/telemetry via "file:../../<Repo>/..."
+# them. Packages/manifest.json pulls com.mindattic.media.capture/telemetry via "file:../../<Repo>/..."
 # paths, two levels above the project root. In the main checkout that lands on the real sibling
 # repo (<WorkspaceRoot>\<Repo>). In a per-ticket worktree
 # (<WorkspaceRoot>.worktrees\Unity.GridGame\<Ticket>\...) the same climb instead lands on

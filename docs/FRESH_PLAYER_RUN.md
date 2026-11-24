@@ -7,7 +7,7 @@ were driven through real drags, taps and spell casts on the automation endpoint 
 tile by tile), not autoplay.
 
 - **Video:** `R:\MindAttic\Capture\Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame_Video.mp4`
-  (MindAttic.Capture `-capture video hq`, 584x1266, 2.0 GB)
+  (MindAttic.Media.Capture `-capture video hq`, 584x1266, 2.0 GB)
 - **Screenshots:** `artifacts/fresh-player/NN-*.png` (git-ignored, local). After the fixes landed, the rebuilt player
   was checked in `artifacts/verify/v01..v06-*.png`.
 - **Errors:** `Diagnostics/errors.jsonl` never got a record, and the player log has no exceptions. Its only warnings

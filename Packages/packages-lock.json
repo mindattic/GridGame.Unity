@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.mindattic.capture": {
-      "version": "file:../../MindAttic.Capture/unity/com.mindattic.capture",
+    "com.mindattic.media.capture": {
+      "version": "file:../../MindAttic.Media.Capture/unity/com.mindattic.media.capture",
       "depth": 0,
       "source": "local",
       "dependencies": {

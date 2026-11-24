@@ -8,8 +8,8 @@ using GridGame.Core.Bot;
 using GridGame.Core.Content;
 using GridGame.Core.Rules;
 using GridGame.Meta;
-using MindAttic.Capture;
-using MindAttic.Capture.Unity;
+using MindAttic.Media.Capture;
+using MindAttic.Media.Capture.Unity;
 using MindAttic.Telemetry;
 using MindAttic.Telemetry.Unity;
 using UnityEngine;
@@ -146,7 +146,7 @@ namespace GridGame.App
         // diagonal slip gesture tracking (BattleScreen.Input.cs)
         private Vector2 lastPointerPos;
         private float lastPointerTime;
-        // MindAttic.Capture: how the battle ended, set when BattleEndedEvent plays (BattleScreen.Playback.cs)
+        // MindAttic.Media.Capture: how the battle ended, set when BattleEndedEvent plays (BattleScreen.Playback.cs)
         private BattleEndedEvent lastEnded;
 
         public BattleScreen(string stageId) { this.stageId = stageId; }

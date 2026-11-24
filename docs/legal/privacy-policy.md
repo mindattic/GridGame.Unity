@@ -53,7 +53,7 @@ Mana Shards can be bought with real money through **Google Play Billing** (Andro
 - No sign-in, social features, chat or user-generated content shared with others.
 - No location, camera, microphone, contacts or photo access.
 - Our own developer tools are compiled out of, or switched off in, release builds: the automation server exists only in
-  development builds; MindAttic.Telemetry (battle logs) and MindAttic.Capture (screen recording) only run in the editor
+  development builds; MindAttic.Telemetry (battle logs) and MindAttic.Media.Capture (screen recording) only run in the editor
   and development builds, write only to the developer's own computer, and never transmit anything.
 
 ## Children

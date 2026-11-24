@@ -130,7 +130,7 @@ python tools/check_glyphs.py     # verify every UI glyph exists in the bundled f
 | `-profile NAME` | Play as this player profile, creating it if missing (`-demo`/`-testmode` use a throwaway profile) |
 | `-profiles-root DIR` | Unity.Shared's override for the Profiles folder itself; `MINDATTIC_PROFILES_ROOT` does the same |
 | `-noDiagonalSlip` | Turn off diagonal slip |
-| `-capture-config PATH` | Load MindAttic.Capture trigger rules from this file |
+| `-capture-config PATH` | Load MindAttic.Media.Capture trigger rules from this file |
 | `-muted` | Mute all audio for this session only (see Audio mute below); `MINDATTIC_CLI_MUTED=1` does the same |
 
 ## How it works
@@ -164,7 +164,7 @@ No prefabs, no hand-built scenes, no Inspector wiring.
 
 ## Capture
 
-[MindAttic.Capture](https://github.com/mindattic/MindAttic.Capture) auto-starts in Editor Play sessions and development builds, but its trigger rules are only read when the player is launched with `-capture-config PATH`; `Assets/StreamingAssets/capture.json` is never auto-loaded just because it exists. Pass that flag (see `battle_clips()` in `tools/harness.py`) to record a clip from `battle-start` to `battle-end`. Recording is currently disabled project-wide by `"enabled": false` in that file; set it to `true` or remove the key to re-enable it.
+[MindAttic.Media.Capture](https://github.com/mindattic/MindAttic.Media.Capture) auto-starts in Editor Play sessions and development builds, but its trigger rules are only read when the player is launched with `-capture-config PATH`; `Assets/StreamingAssets/capture.json` is never auto-loaded just because it exists. Pass that flag (see `battle_clips()` in `tools/harness.py`) to record a clip from `battle-start` to `battle-end`. Recording is currently disabled project-wide by `"enabled": false` in that file; set it to `true` or remove the key to re-enable it.
 
 ## Audio mute
 
@@ -205,4 +205,4 @@ is a session-only override independent of it, reaching only `AudioListener.volum
 
 No LICENSE file: all rights reserved. Third-party music, fonts and icon sources and their licenses are listed in [Credits.txt](Assets/GridGame/Resources/Credits.txt): music by Kevin MacLeod (CC BY 4.0), fonts under the SIL Open Font License 1.1, and icons derived from game-icons.net (CC BY 3.0).
 
-Part of [MindAttic](https://mindattic.com) — see more projects at [github.com/mindattic](https://github.com/mindattic). Related: [GridGame2026](https://github.com/mindattic/GridGame2026), the design reference this is rebuilt from, and [MindAttic.Capture](https://github.com/mindattic/MindAttic.Capture).
+Part of [MindAttic](https://mindattic.com) — see more projects at [github.com/mindattic](https://github.com/mindattic). Related: [GridGame2026](https://github.com/mindattic/GridGame2026), the design reference this is rebuilt from, and [MindAttic.Media.Capture](https://github.com/mindattic/MindAttic.Media.Capture).

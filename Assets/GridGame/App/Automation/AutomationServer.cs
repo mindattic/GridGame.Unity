@@ -90,7 +90,7 @@ namespace GridGame.App.Automation
 #endif
 
         /// <summary>
-        /// GG-T522: Windows sockets are inheritable by default, and MindAttic.Capture starts its finalizer
+        /// GG-T522: Windows sockets are inheritable by default, and MindAttic.Media.Capture starts its finalizer
         /// (capture.exe / ffmpeg) with handle inheritance when the player quits after a <c>-capture</c> run. The
         /// finalizer then holds this listener's 127.0.0.1:port socket in LISTENING under the dead player's PID
         /// for the whole export, and the next launch on that port fails to bind ("player did not start"). The
@@ -454,7 +454,7 @@ namespace GridGame.App.Automation
                     // BattleFactory.Build path — party, LevelOverride-aware recommended level, everything —
                     // works exactly like a real stage. Launch with -capture-config pointing at
                     // capture.json (its "enabled" still true) to turn each one into its own short
-                    // clip via its battle-start/battle-end rules — MindAttic.Capture only reads that
+                    // clip via its battle-start/battle-end rules — MindAttic.Media.Capture only reads that
                     // file when told to with -capture-config, never just because it sits in
                     // StreamingAssets (see tools/harness.py's battle_clips()).
                     // Earlier calls' throwaway stages must not re-enter the pool — a prior run of this

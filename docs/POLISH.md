@@ -167,7 +167,7 @@ Design px are already resolution-agnostic: the panel scales uniformly from the 1
 Run every test cycle, before any release build:
 
 1. **Build** (`tools/build.ps1`, zero `error CS`).
-2. **Measure:** `python tools/polish.py`. It runs `layout` across `sweep` and `aspects`, `uicheck`, glyph and asset checks, `lint`, `vfxsheet`, `loud` and the `records` soak, all **recorded** with MindAttic.Capture.
+2. **Measure:** `python tools/polish.py`. It runs `layout` across `sweep` and `aspects`, `uicheck`, glyph and asset checks, `lint`, `vfxsheet`, `loud` and the `records` soak, all **recorded** with MindAttic.Media.Capture.
 3. **Review:** fill in the §5 checklist against the recorded clip, then add it to the scorecard.
 4. **Ratchet:** compare with `docs/polish/baseline.json`.
    - Any **dimension score that drops fails the pass.** The regression gets a `fix` ticket and is worked first.

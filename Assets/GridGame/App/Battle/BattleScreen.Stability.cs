@@ -1,6 +1,6 @@
 using GridGame.Meta;
-using MindAttic.Capture;
-using MindAttic.Capture.Unity;
+using MindAttic.Media.Capture;
+using MindAttic.Media.Capture.Unity;
 using MindAttic.Telemetry;
 using MindAttic.Telemetry.Unity;
 using UnityEngine;

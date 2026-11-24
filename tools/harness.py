@@ -39,7 +39,7 @@ Self-play harness: launches the development player with the automation endpoint 
     outline, shot) fails fast with a clear error the moment it tries to, rather than silently.
     Verified live (board_audit, GG-T314): the process opens with MainWindowHandle 0 and still
     completes a real bot battle through the automation endpoint. Don't combine with --capture or
-    endless's own --capture: MindAttic.Capture needs a GPU and logs (non-fatal) "AsyncGPUReadback is
+    endless's own --capture: MindAttic.Media.Capture needs a GPU and logs (non-fatal) "AsyncGPUReadback is
     not supported on Null" under -nographics instead of recording.
 
 Screenshots land in artifacts/<run>/. Design coordinates are 1170x2532 (top-left origin).
@@ -124,7 +124,7 @@ def _port_free(port):
 
 
 def _ensure_port(wait=6.0):
-    """GG-T522: after a -capture run quits, MindAttic.Capture's finalizer (capture.exe/ffmpeg) could inherit the dead
+    """GG-T522: after a -capture run quits, MindAttic.Media.Capture's finalizer (capture.exe/ffmpeg) could inherit the dead
     player's listening socket and hold 127.0.0.1:PORT for the whole export, so the next launch died binding it
     ('player did not start'). Players built since make that socket non-inheritable (AutomationServer
     .DisinheritListenerSockets); for an older build, or anything else squatting the port, wait briefly and then move
@@ -2230,7 +2230,7 @@ def battle_clips(run="clips", count=10, speed=3, timeout=240, capture=True, rela
     whatever screen a prior clip left behind), so this sidesteps the click-reliability concerns (GG-T16,
     root-caused and fixed as the orphaned-Confirm-veil bug in GG-T20) that campaign() has to guard against.
     capture.json's battle-start/battle-end rules are NOT auto-loaded just by sitting in StreamingAssets —
-    MindAttic.Capture only reads a config file when told to with -capture-config (confirmed by reading
+    MindAttic.Media.Capture only reads a config file when told to with -capture-config (confirmed by reading
     CaptureUnity.Boot()/CaptureOptions.Apply() in the package; the literal -capture flag is NOT required
     for rule-triggered recording, only -capture-config is). So this passes -capture-config pointing at the
     built player's own copy of capture.json, which still needs "enabled": true to actually record — set

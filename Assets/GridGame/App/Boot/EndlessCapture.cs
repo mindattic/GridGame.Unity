@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
-using MindAttic.Capture;
-using MindAttic.Capture.Unity;
+using MindAttic.Media.Capture;
+using MindAttic.Media.Capture.Unity;
 using MindAttic.Telemetry;
 using MindAttic.Telemetry.Unity;
 using Newtonsoft.Json;
@@ -18,13 +18,13 @@ using UnityEngine;
 namespace GridGame.App
 {
     /// <summary>
-    /// GG-T58: endless capture. Under `-demo -endless` with MindAttic.Capture running (`-capture-config path.json`),
+    /// GG-T58: endless capture. Under `-demo -endless` with MindAttic.Media.Capture running (`-capture-config path.json`),
     /// every encounter is its own clip — the config's battle-start/battle-end rules cut it, or, when the config has no
     /// rule recording battles, this drives Start/StopRecording itself — and gets a sidecar beside its .mp4,
     /// `{clip}.encounter.json`: seed, location, enemy families per wave, level, party classes/levels, outcome, waves
     /// cleared, duration.
     ///
-    /// It also keeps a 100+ encounter run from silently losing its recording. MindAttic.Capture's ResourceValve stops
+    /// It also keeps a 100+ encounter run from silently losing its recording. MindAttic.Media.Capture's ResourceValve stops
     /// the whole engine for good when a limit trips (low RAM, as in GG-T23); the game would keep playing with every
     /// later clip quietly missing. Here a trip (or the engine going away for any other reason) is logged as an error,
     /// recorded to telemetry, and the run keeps playing; every encounter played while capture is down is logged and
@@ -288,7 +288,7 @@ namespace GridGame.App
             var options = CaptureUnity.Options;
             if (runner == null || options == null)
             {
-                Debug.LogError("[EndlessCapture] !!! can't restart capture: the MindAttic.Capture host is gone. Encounters stay UNRECORDED.");
+                Debug.LogError("[EndlessCapture] !!! can't restart capture: the MindAttic.Media.Capture host is gone. Encounters stay UNRECORDED.");
                 nextRecoveryCheck = Time.unscaledTime + RetryAfterFailureSeconds;
                 return;
             }

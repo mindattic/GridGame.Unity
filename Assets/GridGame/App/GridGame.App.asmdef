@@ -1,12 +1,12 @@
 {
   "name": "GridGame.App",
   "rootNamespace": "GridGame.App",
-  "references": ["GridGame.Core", "GridGame.Meta", "Unity.InputSystem", "MindAttic.Capture.Unity", "MindAttic.Telemetry.Unity", "Unity.Shared.Core", "Unity.Purchasing", "Unity.Purchasing.Stores"],
+  "references": ["GridGame.Core", "GridGame.Meta", "Unity.InputSystem", "MindAttic.Media.Capture.Unity", "MindAttic.Telemetry.Unity", "Unity.Shared.Core", "Unity.Purchasing", "Unity.Purchasing.Stores"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": true,
-  "precompiledReferences": ["Newtonsoft.Json.dll", "MindAttic.Capture.dll", "MindAttic.Telemetry.dll"],
+  "precompiledReferences": ["Newtonsoft.Json.dll", "MindAttic.Media.Capture.dll", "MindAttic.Telemetry.dll"],
   "autoReferenced": true,
   "defineConstraints": [],
   "versionDefines": [
