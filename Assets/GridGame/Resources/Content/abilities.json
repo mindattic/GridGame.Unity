@@ -10395,6 +10395,88 @@
   "Sfx": null
  },
  {
+  "Id": "herd_rage",
+  "Name": "Rage",
+  "Description": "When a hit drops it below half HP, the bull sees red and turns [Raging]: it hits harder, nothing shoves, pulls or frightens it, [Pushback] can't set it back, and its charge carries it.",
+  "Kind": "Reactive",
+  "Cost": 0,
+  "CastTime": 0.0,
+  "CooldownTurns": 0,
+  "Shape": "Self",
+  "Radius": 0,
+  "Mode": "Auto",
+  "Filter": "Any",
+  "Motion": "None",
+  "DamageType": "Physical",
+  "BaseDamage": 0,
+  "BaseHeal": 0,
+  "ApplyBuff": null,
+  "ApplyBuffChance": 1.0,
+  "RemovesDebuffs": false,
+  "StealsMana": false,
+  "HastenU": 0.0,
+  "IsTeleport": false,
+  "Icon": null,
+  "CastVfx": null,
+  "ProjectileVfx": null,
+  "ImpactVfx": null,
+  "LingerVfx": null,
+  "Sfx": null,
+  "Trigger": {
+   "On": "OnLowHp",
+   "Threshold": 0.5,
+   "Effects": [
+    {
+     "Kind": "ApplyBuff",
+     "Buff": "raging"
+    }
+   ],
+   "Callout": "Rage!"
+  }
+ },
+ {
+  "Id": "herd_rage_kin",
+  "Name": "Rage",
+  "Description": "When one of the Herd falls, the bull sees red and turns [Raging]: it hits harder, nothing shoves, pulls or frightens it, [Pushback] can't set it back, and its charge carries it.",
+  "Kind": "Reactive",
+  "Cost": 0,
+  "CastTime": 0.0,
+  "CooldownTurns": 0,
+  "Shape": "Self",
+  "Radius": 0,
+  "Mode": "Auto",
+  "Filter": "Any",
+  "Motion": "None",
+  "DamageType": "Physical",
+  "BaseDamage": 0,
+  "BaseHeal": 0,
+  "ApplyBuff": null,
+  "ApplyBuffChance": 1.0,
+  "RemovesDebuffs": false,
+  "StealsMana": false,
+  "HastenU": 0.0,
+  "IsTeleport": false,
+  "Icon": null,
+  "CastVfx": null,
+  "ProjectileVfx": null,
+  "ImpactVfx": null,
+  "LingerVfx": null,
+  "Sfx": null,
+  "Trigger": {
+   "On": "OnAllyKO",
+   "Condition": {
+    "FallenFamily": "herd"
+   },
+   "Effects": [
+    {
+     "Kind": "ApplyBuff",
+     "Buff": "raging"
+    }
+   ],
+   "Callout": "Rage!"
+  }
+ },
+ {
   "Id": "charge_feed_the_herd",
   "Name": "Feed the Herd",
   "Description": "Charges, then pays the crew: every ally within 2 tiles heals 12 and rushes its next turn. Kill the Boss first, or [Interrupt] it.",
@@ -10427,7 +10509,7 @@
  {
   "Id": "charge_bull_rush",
   "Name": "Bull Rush",
-  "Description": "Charges, then runs straight down a marked line to the board's edge, trampling every hero still on it for 8 Physical and more. Step off the line, or [Interrupt] the charge.",
+  "Description": "Charges, then runs straight down a marked line to the board's edge, trampling every hero still on it for 8 Physical and more. [Raging], the bull itself charges down the line, knocking aside every hero in its path, until a barricade, stone or Heavy unit stops it. Step off the line, or [Interrupt] the charge.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.5,

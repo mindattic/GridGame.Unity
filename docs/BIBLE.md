@@ -2958,6 +2958,22 @@ falls (a bull or the crew that hired it), it casts the free `stampede_rush` on i
   greenvalley-03 8/24 with them vs 10/24 without, cityruins-01 9/24 vs 9/24 (both stages were already below the 55–85%
   band); smart bot 24/24 on both, with and without. In the casual runs the herd stampeded 72 times and the
   Gorer rushed 134 times on greenvalley-03; on cityruins-01 the Boss fed its crew 118 times.
+- **Rage** (amended 2026-11-24, owner: "a minotaur goes rage, steam comes out of their 'ears' ... and a steam train sound
+  plays while they charge linearly", GG-T897; the steam and the whistle are the view's, GG-T898). The Gorer
+  (`minotaur03`) and the Breaker (`minotaur04`) carry two Reactives beside the Stampede: `herd_rage` (`OnLowHp`,
+  Threshold 0.5) and `herd_rage_kin` (`OnAllyKO`, condition `FallenFamily: "herd"`: one of the Herd fell, not a ganger
+  that hired it). Each applies **Raging** (`buffs.json` `raging`, 3 turns, Refresh): outgoing damage ×1.3, and
+  `Rages: true`, which makes the bull **Heavy** while it lasts (`Unit.IsHeavy`: no shove, pull, swap or drag moves it,
+  and Heavy already shrugs Frightened; a fear it carries breaks when the rage lands) and **immune to Pushback** ("Immune!",
+  its icon isn't set back). A Raging Gorer's **Bull Rush** stops being a telegraphed blast and becomes the run itself
+  (`BattleRunner.RagingRush`): the bull charges down its marked line from its own tile, to the board's edge or until it
+  pulls up in front of the first barricade (`RegionBoard.StopsCharge`, which takes its knock as before), stone (a block
+  or unwalkable tile), Heavy or immovable unit, or any non-hero unit. Every hero in its path is trampled (the charge's
+  usual blow) and **knocked aside** one tile off the line (the run's left first, then its right); a hero who can't be
+  knocked aside (Rooted, Heavy, or boxed in) is trampled and stops the bull in front of it. A `RampagedEvent` names the
+  path and the trampled heroes ahead of the steps. A **Rooted** bull can't start the run (it can't even mark a line,
+  GG-T920; rooted after marking, the plain trample resolves and it stays put). Counterplay: kill a bull before it is
+  wounded past half or before its crewmate drops, Root it, put a barricade or a Heavy body on its line, or step off.
 - *(Tests: `HerdTests`.)*
 
 ### 14.19 The Hellspawn (added 2026-11-07, owner art, GG-T340)

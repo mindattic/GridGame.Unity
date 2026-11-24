@@ -111,6 +111,7 @@ namespace GridGame.Core.Rules
             if (c.OtherTag != null && (ctx?.Other == null || !ctx.Other.Def.HasTag(c.OtherTag))) return false;
             if (c.OtherHasStatus != null && (ctx?.Other == null || !ctx.Other.HasBuff(c.OtherHasStatus))) return false;
             if (c.OtherHpBelow > 0f && (ctx?.Other == null || !(ctx.Other.HpFraction < c.OtherHpBelow))) return false;
+            if (c.FallenFamily != null && (ctx?.Target?.Def == null || ctx.Target.Def.DropTable != c.FallenFamily)) return false; // GG-T897
             if (c.DamageType.HasValue && (ctx?.Type == null || ctx.Type.Value != c.DamageType.Value)) return false;
             return true;
         }

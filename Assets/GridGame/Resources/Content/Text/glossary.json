@@ -1663,6 +1663,24 @@
         ]
       }
     },
+    "glossary:raging": {
+      "key": "glossary:raging",
+      "id": "glossary-raging",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:65e7af60dc722cb2346de17d7a8ede9de72ba64a9a5015963c0a2b9e00698294",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Raging",
+        "definition": "Seeing red: it hits harder, counts as Heavy (no shove, pull, swap or drag moves it, and nothing frightens it), and [Pushback] can't set it back. A raging Herd Gorer's [Bull Rush] carries the bull itself down its line, knocking heroes aside.",
+        "aliases": [
+          "Rage",
+          "Rages"
+        ]
+      }
+    },
     "glossary:reactive": {
       "key": "glossary:reactive",
       "id": "glossary-reactive",

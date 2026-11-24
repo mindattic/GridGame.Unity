@@ -95,6 +95,17 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Substituted {UnitId} {From}->{To} ({Blocked} blocked by {State})";
     }
 
+    /// <summary>GG-T897 (§14.18): a raging bull's Bull Rush carried <see cref="UnitId"/> from <see cref="From"/> down
+    /// its marked line through <see cref="Path"/> (the tiles it will step into, in order; its SteppedEvents follow, each
+    /// trampled hero's DisplacedEvent ahead of the step onto its tile). <see cref="Trampled"/> are the heroes it ran down.
+    /// The view plays the steam-and-whistle run (GG-T898).</summary>
+    public sealed class RampagedEvent : BattleEvent
+    {
+        public int UnitId; public string AbilityId; public Coord From;
+        public List<Coord> Path = new List<Coord>(); public List<int> Trampled = new List<int>();
+        public override string ToString() => $"Rampaged {UnitId} from {From} over {Path.Count} tile(s), trampling {Trampled.Count}";
+    }
+
     public sealed class TeleportedEvent : BattleEvent
     {
         public int UnitId; public Coord From; public Coord To;

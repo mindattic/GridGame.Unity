@@ -133,7 +133,12 @@ namespace GridGame.Core.Battle
         public bool IsMultiTile => W > 1 || H > 1;
         /// <summary>GG-T891 (§1.1.3, §14.2): a Heavy class (<see cref="ClassDef.Heavy"/>) is never displaced by anyone
         /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.</summary>
-        public bool IsHeavy => Def != null && Def.Heavy && !IsFloating;
+        public bool IsHeavy => Def != null && (Def.Heavy || IsRaging) && !IsFloating;
+        /// <summary>GG-T897 (§14.18): carries a Rages buff (the Herd's Raging): Heavy, unpushable, unafraid.</summary>
+        public bool IsRaging
+        {
+            get { foreach (var b in Buffs) if (b.Def.Rages) return true; return false; }
+        }
         /// <summary>The buff id that lifts a unit off the ground (GG-T859 authors it): a floating Heavy unit can be moved.</summary>
         public const string FloatingBuffId = "floating";
         /// <summary>Hovers (GG-T859's Floating buff): Heavy no longer anchors it.</summary>

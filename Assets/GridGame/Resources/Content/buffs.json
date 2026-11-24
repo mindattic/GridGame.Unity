@@ -377,5 +377,17 @@
     "Frightens": true,
     "Letter": "?",
     "Color": "#B07CE8"
+  },
+  {
+    "Id": "raging",
+    "Name": "Raging",
+    "Kind": "Buff",
+    "Unit": "Turns",
+    "Duration": 3,
+    "Stacking": "Refresh",
+    "OutgoingDamageMultiplier": 1.3,
+    "Rages": true,
+    "Letter": "R",
+    "Color": "#E0442B"
   }
 ]

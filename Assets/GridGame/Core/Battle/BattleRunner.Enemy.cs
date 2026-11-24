@@ -568,5 +568,94 @@ namespace GridGame.Core.Battle
             // follow-up are its triggers, not code here.
             Strike(enemy, target, 1f, BlowKind.Melee);
         }
+
+        // ── GG-T897 (§14.18): the Herd's rage - a raging Gorer's Bull Rush carries the bull down its line ──
+
+        /// <summary>
+        /// A raging caster (<see cref="Unit.IsRaging"/>) of a marked line charge runs the line itself instead of only
+        /// trampling it: it charges from its tile along the marked tiles to the board's edge, stopping in front of the
+        /// first barricade (<see cref="RegionBoard.StopsCharge"/>, which takes its knock as ever), stone (a block or any
+        /// unwalkable tile), Heavy or immovable unit, or any unit that isn't a hero. Every hero in its path is trampled
+        /// (the charge's ordinary blow) and knocked aside to a free tile beside the line (left of the run first, then
+        /// right); a hero who can't be knocked aside (Rooted, Heavy, or boxed in) is trampled and stops the bull in front
+        /// of it. A Rooted bull can't start the run (the plain trample resolves instead). False (nothing done) when the
+        /// rush doesn't apply, so the caller resolves the charge as usual.
+        /// </summary>
+        private bool RagingRush(Unit caster, AbilityDef a, TimelineEntry cast)
+        {
+            if (cast.ChargeShape != ChargeShape.Line || cast.LineTiles == null || cast.LineTiles.Count == 0) return false;
+            if (!caster.Alive || !caster.IsRaging || caster.IsMultiTile || caster.IsSnakeMember) return false;
+            if (RootsHold(caster, caster.Pos)) return false; // a rooted bull can't start the run
+            var dir = cast.LineTiles[0] - caster.Pos;
+            if (Math.Abs(dir.X) + Math.Abs(dir.Y) != 1) return false; // shoved off its line since it was marked
+            var path = new List<Coord>();
+            var victims = new List<Unit>();
+            Coord? wall = null;
+            var expect = caster.Pos;
+            foreach (var tile in cast.LineTiles)
+            {
+                if (tile != expect + dir) break; // the marked line stops being a straight run from here
+                expect = tile;
+                if (RegionBoard.StopsCharge(S, tile)) { wall = tile; break; }
+                if (S.IsBlock(tile) || !S.Walkable(tile)) break; // stone
+                var u = S.UnitAt(tile);
+                if (u != null)
+                {
+                    if (!u.IsHero || !u.Alive) break; // a Heavy foe, a crewmate, a corpse: it pulls up short
+                    victims.Add(u);
+                    if (RushAside(u, dir) == null) break; // it can't be knocked aside: trampled, and the bull stops
+                }
+                path.Add(tile);
+            }
+            var from = caster.Pos;
+            var resolved = new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = cast.TargetTile };
+            foreach (var t in path) resolved.Tiles.Add(t);
+            foreach (var v in victims) if (!path.Contains(v.Pos)) resolved.Tiles.Add(v.Pos);
+            foreach (var v in victims) resolved.Targets.Add(v.Id);
+            Emit(resolved);
+            Emit(new RampagedEvent { UnitId = caster.Id, AbilityId = a.Id, From = from, Path = new List<Coord>(path), Trampled = victims.ConvertAll(v => v.Id) });
+            Announce("Rampage!", caster.Id);
+            if (wall.HasValue) BashWall(wall.Value, caster);
+            if (victims.Count > 0) TrampleVictims(caster, a, victims);
+            foreach (var tile in path)
+            {
+                if (S.IsOver || !caster.Alive || caster.IsRooted) break;
+                var occ = S.UnitAt(tile);
+                if (occ != null)
+                {
+                    if (!occ.IsHero || !occ.Alive) break;
+                    var aside = RushAside(occ, dir);
+                    if (aside == null) break;
+                    var hf = occ.Pos;
+                    if (!Relocate(occ, aside.Value)) break;
+                    Emit(new DisplacedEvent { UnitId = occ.Id, From = hf, To = aside.Value, ByUnitId = caster.Id });
+                    Announce("Knocked aside!", occ.Id);
+                    NoteShove(caster, occ);
+                    ShovePickupsUnder(occ, hf);
+                    if (BreaksOnMove(occ)) RemoveBuffsWhere(occ, b => b.Def.BreaksOnMove, "moved");
+                    TriggerTrap(occ);
+                    if (S.IsOver || !caster.Alive || S.UnitAt(tile) != null) break;
+                }
+                if (!StepEnemy(caster, tile) || caster.Pos != tile) break;
+            }
+            if (victims.Count == 0 && path.Count == 0 && !wall.HasValue) Announce("Dodged!", caster.Id);
+            return true;
+        }
+
+        /// <summary>GG-T897: the free tile beside a raging bull's line (running along <paramref name="dir"/>) that the
+        /// hero <paramref name="h"/> is knocked aside to - its left first, then its right - or null when it can't be
+        /// moved (Rooted, Heavy, immovable) or both sides are stone, wall, a unit, a movable or a hole.</summary>
+        private Coord? RushAside(Unit h, Coord dir)
+        {
+            if (h == null || !h.Alive || h.WontBudge || h.IsRooted) return null;
+            foreach (var side in new[] { new Coord(-dir.Y, dir.X), new Coord(dir.Y, -dir.X) })
+            {
+                var c = h.Pos + side;
+                var m = S.Region.At(c);
+                if (!S.FreeToEnter(c) || (m != null && m.Blocks)) continue;
+                return c;
+            }
+            return null;
+        }
     }
 }

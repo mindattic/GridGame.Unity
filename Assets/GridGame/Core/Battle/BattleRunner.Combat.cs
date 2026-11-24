@@ -628,6 +628,7 @@ namespace GridGame.Core.Battle
         private void Pushback(Unit target, float seconds)
         {
             if (!(seconds > 0f) || !target.Alive) return;
+            if (target.IsRaging) { Announce("Immune!", target.Id); return; } // GG-T897: a raging bull won't be set back
             if (!pushedThisAction.Add(target.Id)) return;
             int ticks = Math.Max(1, Formulas.SecondsToTicks(Math.Min(seconds, BattleConfig.PushbackMaxSeconds)));
             var entry = S.TurnEntryOf(target.Id);

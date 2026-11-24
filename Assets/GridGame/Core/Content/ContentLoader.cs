@@ -658,6 +658,8 @@ namespace GridGame.Core.Content
                 if (c.OtherTag != null && c.OtherTag.Trim().Length == 0) p.Add($"{w}: condition OtherTag is blank");
                 if (c.OtherHasStatus != null && !KnownStatus(c.OtherHasStatus)) p.Add($"{w}: condition unknown status '{c.OtherHasStatus}'");
                 if (c.OtherHpBelow < 0f || c.OtherHpBelow >= 1f) p.Add($"{w}: condition OtherHpBelow outside 0..1");
+                if (c.FallenFamily != null && t.On != TriggerOn.OnAllyKO) p.Add($"{w}: condition FallenFamily is only for OnAllyKO"); // GG-T897
+                if (c.FallenFamily != null && c.FallenFamily.Trim().Length == 0) p.Add($"{w}: condition FallenFamily is blank");
             }
             if (t.Effects == null || t.Effects.Count == 0) { p.Add($"{w}: needs at least one effect"); return; }
             foreach (var e in t.Effects)

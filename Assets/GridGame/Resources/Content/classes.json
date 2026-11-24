@@ -27964,7 +27964,7 @@
       "Humanoid",
       "Sentient"
     ],
-    "Card": "Charges a [Bull Rush] down a marked line to the board's edge: step off the line or [Interrupt] it. [Stampede]: when an ally falls, its next turn comes sooner.",
+    "Card": "Charges a [Bull Rush] down a marked line to the board's edge: step off the line or [Interrupt] it. Below half HP, or when one of the Herd falls, it turns [Raging] and runs the line itself, knocking heroes aside. [Stampede]: when an ally falls, its next turn comes sooner.",
     "Portrait": "herd-gorer",
     "ArtSource": "minotaur03",
     "Thumbnail": {
@@ -28072,7 +28072,9 @@
     },
     "Abilities": [
       "charge_bull_rush",
-      "herd_stampede"
+      "herd_stampede",
+      "herd_rage",
+      "herd_rage_kin"
     ],
     "DefaultLoadout": [],
     "DropTable": "herd",
@@ -28096,7 +28098,7 @@
       "Humanoid",
       "Sentient"
     ],
-    "Card": "Charges in and never backs off; below half HP it hits harder (Berserk): finish it in one push. [Stampede]: when an ally falls, its next turn comes sooner.",
+    "Card": "Charges in and never backs off; below half HP it hits harder (Berserk) and turns [Raging], as when one of the Herd falls: finish it in one push. [Stampede]: when an ally falls, its next turn comes sooner.",
     "Portrait": "herd-breaker",
     "ArtSource": "minotaur04",
     "Thumbnail": {
@@ -28204,7 +28206,9 @@
     },
     "Abilities": [
       "berserk",
-      "herd_stampede"
+      "herd_stampede",
+      "herd_rage",
+      "herd_rage_kin"
     ],
     "DefaultLoadout": [],
     "DropTable": "herd",

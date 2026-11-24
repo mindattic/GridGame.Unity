@@ -101,6 +101,7 @@ namespace GridGame.Core.Rules
             if (k.OtherTag != null) parts.Add($"the foe is [{k.OtherTag}]");
             if (k.OtherHasStatus != null) parts.Add($"the foe has [{BuffName(c, k.OtherHasStatus)}]");
             if (k.OtherHpBelow > 0f) parts.Add($"the foe is below {Pct(k.OtherHpBelow)} HP");
+            if (k.FallenFamily != null) parts.Add($"it was one of the {k.FallenFamily}"); // GG-T897: "...of the herd"
             if (k.DamageType.HasValue) parts.Add($"the damage is [{k.DamageType.Value}]");
             return parts.Count == 0 ? null : string.Join(" and ", parts);
         }

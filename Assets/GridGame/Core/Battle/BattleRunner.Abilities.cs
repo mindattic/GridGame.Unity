@@ -656,6 +656,7 @@ namespace GridGame.Core.Battle
 
         private void ResolveDirectCharge(Unit caster, AbilityDef a, TimelineEntry cast)
         {
+            if (RagingRush(caster, a, cast)) return; // GG-T897 (§14.18): a raging bull runs its own line
             var victims = new List<Unit>();
             Coord? wall = null;
             if (cast.ChargeShape == ChargeShape.Line && cast.LineTiles != null)
@@ -681,6 +682,13 @@ namespace GridGame.Core.Battle
             Emit(resolved);
             if (wall.HasValue) BashWall(wall.Value, caster);
             if (victims.Count == 0) { if (!wall.HasValue) Announce("Dodged!", caster.Id); return; }
+            TrampleVictims(caster, a, victims);
+        }
+
+        /// <summary>A direct charge's blow on each of <paramref name="victims"/> in turn: a magic roll each (Evasion slips
+        /// it, OnDodge answers), the spell's damage, its buff, and the Bulwark's orb siphon when any blow landed.</summary>
+        private void TrampleVictims(Unit caster, AbilityDef a, List<Unit> victims)
+        {
             bool landed = false;
             foreach (var v in victims)
             {

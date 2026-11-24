@@ -163,6 +163,9 @@ namespace GridGame.Core.Content
         /// <summary>GG-T340: the other unit's HP fraction is strictly below this (0 = unchecked) — the Hellspawn's
         /// Bloodscent, its blows on a hero already bleeding.</summary>
         public float OtherHpBelow;
+        /// <summary>GG-T897: OnAllyKO only - the ally that fell is of this family (its class DropTable row, one per
+        /// family: "herd"). The Herd rages when one of its own goes down, not for the gangers that hired it.</summary>
+        public string FallenFamily;
         /// <summary>The damage in the context is of this type (null = any).</summary>
         public DamageType? DamageType;
     }
@@ -766,6 +769,10 @@ namespace GridGame.Core.Content
         /// directly away (no attack) and the fear is spent; a frightened hero can't end a drag beside the source. Bosses
         /// and Heavy units shrug it off (Immune!).</summary>
         public bool Frightens;
+        /// <summary>Raging (GG-T897, §14.18 the Herd): the bearer counts as Heavy (<see cref="Battle.Unit.IsHeavy"/>: no
+        /// shove, pull, swap or drag moves it, and it shrugs Frightened), Pushback can't set its icon back, a fear it
+        /// carries breaks when the rage lands, and a raging Gorer's Bull Rush carries it down its marked line.</summary>
+        public bool Rages;
         public bool HaltsTimeline;
         public bool BreaksOnDamage;
         public bool BreaksOnMove;

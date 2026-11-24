@@ -895,5 +895,12 @@
     "Aliases": ["Frighten", "Frightens"],
     "LinkKind": "Buff",
     "LinkId": "frightened"
+  },
+  {
+    "Id": "raging",
+    "Term": "Raging",
+    "Aliases": ["Rage", "Rages"],
+    "LinkKind": "Buff",
+    "LinkId": "raging"
   }
 ]

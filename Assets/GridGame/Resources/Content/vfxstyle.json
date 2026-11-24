@@ -28,7 +28,8 @@
     { "Id": "blurred", "Core": "#9AD8F0", "Glow": "#E0F6FF", "Shape": "mote", "Motion": "drift", "Cue": "battle.whoosh", "Count": 8, "Size": 14, "Reach": 120, "Time": "Standard" },
     { "Id": "rooted", "Core": "#5E8C3A", "Glow": "#9C7A45", "Accent": "#B8E08A", "Shape": "shard", "Motion": "rise", "Cue": "battle.slide", "Count": 10, "Size": 15, "Reach": 95, "Time": "Standard", "Ring": true, "Tint": "#D2C29A" },
     { "Id": "shredded", "Core": "#C9D1DE", "Glow": "#FF6A4D", "Accent": "#FFFFFF", "Shape": "shard", "Motion": "burst", "Cue": "battle.shatter", "Count": 11, "Size": 15, "Reach": 140, "Time": "Standard", "Tint": "#FFC2B3" },
-    { "Id": "guarded", "Core": "#5FE6F2", "Glow": "#CFFAFF", "Shape": "rune", "Motion": "pulse", "Cue": "battle.cast", "Count": 6, "Size": 14, "Reach": 110, "Time": "Standard", "Ring": true }
+    { "Id": "guarded", "Core": "#5FE6F2", "Glow": "#CFFAFF", "Shape": "rune", "Motion": "pulse", "Cue": "battle.cast", "Count": 6, "Size": 14, "Reach": 110, "Time": "Standard", "Ring": true },
+    { "Id": "raging", "Core": "#E0442B", "Glow": "#FFB3A1", "Shape": "smoke", "Motion": "rise", "Cue": "battle.cast", "Count": 8, "Size": 30, "Reach": 120, "Time": "Emphasis", "LingerEvery": 1 }
   ],
   "Tiers": [
     { "Tier": "Minor", "Count": 0.75, "Size": 0.9, "Shake": 0, "HitStop": 0, "Prefab": null },

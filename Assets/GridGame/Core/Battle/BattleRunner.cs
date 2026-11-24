@@ -853,6 +853,7 @@ namespace GridGame.Core.Battle
                 if (src == null || !src.Alive || !src.OnBoard) src = NearestFoeOf(u);
                 sourceId = src?.Id ?? -1;
             }
+            if (def.Rages && u.IsFrightened) RemoveBuffsWhere(u, b => b.Def.Frightens, "raging"); // GG-T897: rage drowns the fear
             if (def.Cancels != null && def.Cancels.Count > 0) // GG-T667: the newest of a mutually exclusive pair wins
                 RemoveBuffsWhere(u, b => def.Cancels.Exists(c => string.Equals(c, b.Def.Id, StringComparison.OrdinalIgnoreCase)), "cancelled by " + def.Id);
             var existing = u.Buffs.Find(b => b.Def.Id == def.Id);
