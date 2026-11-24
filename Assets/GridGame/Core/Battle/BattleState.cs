@@ -115,6 +115,12 @@ namespace GridGame.Core.Battle
         public int TicksElapsed;
         /// <summary>Banked gold paid out mid-battle (a recruitable's PayGold, GG-T132): the meta layer deducts it whatever the outcome.</summary>
         public int CoinsSpent;
+        /// <summary>§1.2.8 (GG-T849): the best combo this battle (display and stats only).</summary>
+        public ComboRank BestComboRank;
+        public int BestComboScore;
+        /// <summary>Hero class → combo points earned as a pincer attacker / as a supporter, summed over every combo window.</summary>
+        public Dictionary<string, int> ComboAttackerPoints = new Dictionary<string, int>();
+        public Dictionary<string, int> ComboSupporterPoints = new Dictionary<string, int>();
 
         private static Dictionary<string, List<string>> CloneListMap(Dictionary<string, List<string>> map)
         {
@@ -135,6 +141,9 @@ namespace GridGame.Core.Battle
             return new BattleResults
             {
                 Coins = Coins, Xp = Xp, ActionsTaken = ActionsTaken, TicksElapsed = TicksElapsed, CoinsSpent = CoinsSpent,
+                BestComboRank = BestComboRank, BestComboScore = BestComboScore,
+                ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
+                ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),
                 Items = new Dictionary<string, int>(Items),
                 Kills = new Dictionary<string, int>(Kills),
                 Seen = new HashSet<string>(Seen),
@@ -274,6 +283,8 @@ namespace GridGame.Core.Battle
         /// <summary>Seconds of drag timer left at the last hero drop (time-banked orbs, §3.1.8).</summary>
         public float PendingTimeBankSeconds;
         public BattleResults Results = new BattleResults();
+        /// <summary>The hero combo of the current window (§1.2.8, GG-T849).</summary>
+        public ComboTracker Combo = new ComboTracker();
         /// <summary>Signed party tempo effects (GG-T268, §2.11): hero haste adds, Slow on heroes subtracts; they stack.</summary>
         public List<TempoEffect> Tempo = new List<TempoEffect>();
         /// <summary>GG-T311 (§2.0): forced Guards in a row (no action fitted the gap, or a tight window given up whole). Each slows every enemy
@@ -379,6 +390,7 @@ namespace GridGame.Core.Battle
             s.Bounties = Bounties.ConvertAll(b => b.Clone());
             s.Bank = Bank.Clone();
             s.Results = Results.Clone();
+            s.Combo = Combo.Clone();
             s.Tempo = new List<TempoEffect>(Tempo.Count);
             foreach (var t in Tempo) s.Tempo.Add(t.Clone());
             s.Region = Region.Clone();

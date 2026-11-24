@@ -31,7 +31,10 @@ namespace GridGame.Core.Battle
 
         private void Emit(BattleEvent e)
         {
-            if (!PreviewOnly) ev.Add(e);
+            if (PreviewOnly) return;
+            if (e is BattleEndedEvent) CloseCombo(); // §1.2.8: the combo window closes with the battle
+            ev.Add(e);
+            if (!(e is ComboChangedEvent) && !(e is ComboEndedEvent)) ObserveCombo(e);
         }
 
         private void Announce(string text, int unitId = -1) => Emit(new AnnounceEvent { Text = text, UnitId = unitId });
@@ -109,7 +112,7 @@ namespace GridGame.Core.Battle
             }
             if (!S.IsOver) CheckEnd();
             bool newWindow = TurnRules.IsTurnBoundary(S, windowOver, S.Wave != waveBefore);
-            if (newWindow) TurnRules.ResetTurn(S);
+            if (newWindow) { CloseCombo(); TurnRules.ResetTurn(S); } // §1.2.8: the combo window is the party's turn
             if (!S.IsOver) ReturnControl(newWindow);
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
@@ -656,6 +659,7 @@ namespace GridGame.Core.Battle
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
             Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
             NoteFoeDeathForClutch(u, killer, u.AlreadyLooted); // GG-T571: LastStand, HazardKill, the Finisher candidate
+            ComboKill(u, killer); // §1.2.8
             // GG-T673: felling a real foe earns mana.
             if (BattleConfig.KillCharge > 0 && u.Team == Team.Enemy && killer != null && killer.IsHero
                 && !u.IsCorpse && !u.IsSnakeSegment && !u.IsRemains && !u.IsEgg && !u.AlreadyLooted)
@@ -844,6 +848,7 @@ namespace GridGame.Core.Battle
             }
             u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
+            ComboStatus(u, def, sourceId); // §1.2.8
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });

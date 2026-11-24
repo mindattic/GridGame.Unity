@@ -351,6 +351,21 @@ namespace GridGame.Core.Battle
         /// <summary>A `-demo -endless` encounter that has taken more than this many player actions ends as "stalled"
         /// (one -demo battle needed 412). `-stallTurns N` overrides it for a run.</summary>
         public const int StallActionCap = 600;
+
+        // ── Combo (§1.2.8, GG-T849): display and stats only, first-pass numbers (balance: GG-T276) ─────────
+        public static int ComboPincerPoints = 10;
+        public static int ComboChainLinkPoints = 15;
+        public static int ComboSupportPoints = 8;
+        public static int ComboFollowUpPoints = 10;
+        public static int ComboStatusPoints = 6;
+        public static int ComboKillPoints = 12;
+        public static int ComboTileKillPoints = 18;
+        /// <summary>Variety: a contributor, a kind, or an effect new to the window adds these (not on the first credit).</summary>
+        public static int ComboNewContributorBonus = 6;
+        public static int ComboNewKindBonus = 4;
+        public static int ComboNewEffectBonus = 3;
+        /// <summary>Scores reaching D, C, B, A, S, SS, SSS (a repeat of the same unit/kind/effect halves each time).</summary>
+        public static readonly int[] ComboRankThresholds = { 10, 30, 60, 100, 150, 220, 300 };
         /// <summary>…or that has run longer than this many real seconds (`-stallSeconds S` overrides it).</summary>
         public const float StallRealSecondsCap = 900f;
         /// <summary>…or that has sat this many real seconds with no action taken and nothing animating.</summary>
