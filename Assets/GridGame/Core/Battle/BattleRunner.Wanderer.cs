@@ -33,7 +33,7 @@ namespace GridGame.Core.Battle
             unit.Wanderer = true;
             unit.Trust = 0;
             unit.TrustNeeded = BattleConfig.WandererTrustNeeded;
-            unit.ActedThisWindow = false;
+            TurnRules.ClearActed(S, unit);
             S.Wanderer = def.Id;
             EnsureTurnEntry(unit);
             Emit(new WandererJoinedEvent { UnitId = unit.Id, At = at.Value, TrustNeeded = unit.TrustNeeded });

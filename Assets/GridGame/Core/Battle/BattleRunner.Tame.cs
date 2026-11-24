@@ -35,7 +35,7 @@ namespace GridGame.Core.Battle
             }
             t.Team = Team.Hero;
             t.Tamed = true;
-            t.ActedThisWindow = false;
+            TurnRules.ClearActed(S, t);
             t.TameTurnsLeft = Math.Max(t.TameTurnsLeft, Math.Max(1, a.TameTurns));
             if (t.BondNeeded <= 0) t.BondNeeded = Taming.BondFor(t.Def, t.Level);
             EnsureTurnEntry(t);
@@ -65,7 +65,7 @@ namespace GridGame.Core.Battle
             u.Team = Team.Enemy;
             u.Tamed = false;
             u.TameTurnsLeft = 0;
-            u.ActedThisWindow = false;
+            TurnRules.ClearActed(S, u);
             Emit(new TameEndedEvent { UnitId = u.Id });
             Announce($"{u.Name} breaks free!", u.Id);
         }

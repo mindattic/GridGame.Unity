@@ -58,8 +58,8 @@ namespace GridGame.Core.Battle
 
         /// <summary>Can this hero talk to that unit right now (living hero, living recruitable, cardinally adjacent)?</summary>
         public static bool CanTalk(BattleState s, Unit hero, Unit target) =>
-            s.Phase == BattlePhase.PlayerInput && hero != null && hero.Alive && hero.IsCommandable && !hero.IsImmobile
-            && !hero.ActedThisWindow // GG-T308: talking is that hero's action for the window
+            s.Phase == BattlePhase.PlayerInput && hero != null
+            && TurnRules.MayAct(s, hero) // GG-T308/§2.13: talking is that hero's action for the turn
             && BattleEngine.ActionFits(s, BattleConfig.HeroActionSeconds) // GG-T311: and it needs its use time
             && IsRecruitable(target) && hero.IsAdjacentTo(target);
 

@@ -86,7 +86,7 @@ namespace GridGame.Core.Battle
         public static bool CanMove(BattleState s, int heroId)
         {
             var h = s.UnitById(heroId);
-            return s.Phase == BattlePhase.PlayerInput && h != null && h.Alive && h.IsCommandable && !h.IsImmobile && !h.ActedThisWindow
+            return s.Phase == BattlePhase.PlayerInput && h != null && TurnRules.MayAct(s, h) // §2.13: the mode decides who
                 && ActionFits(s, MinDragSeconds); // GG-T311: no drag starts in a gap too short for one
         }
 
@@ -132,45 +132,19 @@ namespace GridGame.Core.Battle
         /// GG-T311: heroes are left to act but the gap is too short for any of their actions (the cheapest is a minimum
         /// drag or a skill's use time) — the party can only Guard, giving the window up, and the enemy acts.
         /// </summary>
-        public static bool TooLittleTime(BattleState s)
-        {
-            if (s.Phase != BattlePhase.PlayerInput || TurnTicks(s) < 0) return false;
-            if (HeroesLeftToAct(s).Count == 0) return false;
-            return !ActionFits(s, System.Math.Min(MinDragSeconds, BattleConfig.HeroActionSeconds));
-        }
+        public static bool TooLittleTime(BattleState s) => TurnRules.TooLittleTime(s); // §2.13 seam
 
         // ── The party's window (GG-T308, §2.0) ────────────────────────────────────────────────────────
 
         /// <summary>Living, able heroes (not Immobile) who have not acted yet in this window. Empty = the window is spent.</summary>
-        public static List<Unit> HeroesLeftToAct(BattleState s)
-        {
-            var list = new List<Unit>();
-            foreach (var u in s.Units)
-                if (u.Alive && u.IsCommandable && u.OnBoard && !u.IsImmobile && !u.ActedThisWindow) list.Add(u);
-            return list;
-        }
+        public static List<Unit> HeroesLeftToAct(BattleState s) => TurnRules.HeroesLeftToAct(s); // §2.13 seam
 
         /// <summary>
         /// Clock ticks a hero command spends from the window: a drag the share of the window it was held (the view plays
         /// the bar at the same rate; a forced drop spends all of it; never under 1 tick), an Ability/Item/Spell/Talk the
         /// fixed <see cref="BattleConfig.HeroActionSeconds"/>. Guard spends the rest of the window instead (0 here).
         /// </summary>
-        public static int CommandTicks(BattleState s, BattleCommand cmd)
-        {
-            switch (cmd)
-            {
-                case MoveCommand m: // GG-T311: never less than the minimum drag (pickup + a tile), never more than the window
-                {
-                    int t = System.Math.Max(HoldTicks(s, m.HeldSeconds), NeedTicks(MinDragSeconds));
-                    int turn = TurnTicks(s);
-                    return turn > 0 ? System.Math.Min(turn, t) : t;
-                }
-                case UseSlotCommand _:
-                case TalkCommand _:
-                    return System.Math.Max(1, Formulas.SecondsToTicks(BattleConfig.HeroActionSeconds));
-                default: return 0;
-            }
-        }
+        public static int CommandTicks(BattleState s, BattleCommand cmd) => TurnRules.CommandTicks(s, cmd); // §2.13 seam
 
         /// <summary>Clock ticks a hold of <paramref name="heldSeconds"/> real seconds stands for (see <see cref="CommandTicks"/>).</summary>
         public static int HoldTicks(BattleState s, float heldSeconds)
@@ -192,7 +166,7 @@ namespace GridGame.Core.Battle
             if (slot >= h.UnlockedSlots) return SlotStatus.Locked;
             if (slot >= h.Bar.Count || h.Bar[slot].IsEmpty) return SlotStatus.Empty;
             if (h.IsImmobile || h.IsIndependent) return SlotStatus.CannotAct; // a tamed ally acts on its own (GG-T303)
-            if (h.ActedThisWindow) return SlotStatus.Acted; // GG-T308: one action per hero per window
+            if (TurnRules.HasActed(s, h)) return SlotStatus.Acted; // GG-T308: one action per hero per window
             if (!ActionFits(s, BattleConfig.HeroActionSeconds)) return SlotStatus.TooLittleTime; // GG-T311
             var sl = h.Bar[slot];
             if (sl.IsWeapon) return SlotStatus.Ready;
@@ -370,19 +344,7 @@ namespace GridGame.Core.Battle
         /// What is left of the party's window in clock ticks: until the next enemy turn icon reaches the left edge (no
         /// pushback/hasten assumed). Each hero action spends some of it and a Pushback or Slow lengthens it (GG-T308). -1 when no enemy icon can arrive (none left, or every one halted) — the hold then has no limit.
         /// </summary>
-        public static int TurnTicks(BattleState s)
-        {
-            int best = -1;
-            foreach (var e in s.Timeline)
-            {
-                if (e.Kind != TimelineKind.Turn) continue;
-                var o = s.UnitById(e.OwnerId);
-                if (o == null || o.IsHero) continue;
-                int t = TicksUntilTurn(s, e.OwnerId);
-                if (t > 0 && (best < 0 || t < best)) best = t;
-            }
-            return best;
-        }
+        public static int TurnTicks(BattleState s) => TurnRules.TurnTicks(s); // §2.13 seam
 
         /// <summary>Real seconds a held hero has before the forced drop: the gap's ticks at TicksPerSecond (GG-T311: no
         /// floor — a gap too short to drag in can't start a drag at all). -1 = unlimited (no enemy icon can arrive).</summary>
@@ -399,12 +361,7 @@ namespace GridGame.Core.Battle
         /// capped at <see cref="BattleConfig.GuardMaxCharge"/>. With no enemy icon able to arrive the turn is the fixed
         /// <see cref="BattleConfig.ActionTicks"/> it would spend.
         /// </summary>
-        public static int GuardCharge(BattleState s, float heldSeconds = 0f)
-        {
-            float w = TurnWindowSeconds(s);
-            if (w < 0f) w = BattleConfig.ActionTicks / (float)BattleConfig.TicksPerSecond;
-            return GuardChargeFor(w - System.Math.Max(0f, heldSeconds));
-        }
+        public static int GuardCharge(BattleState s, float heldSeconds = 0f) => TurnRules.GuardCharge(s, heldSeconds); // §2.13 seam
 
         /// <summary>Fullness damping (§3.1.9, GG-T247): earned mana charge is scaled down as the shared bank fills.</summary>
         public static float ChargeDamping(BattleState s)

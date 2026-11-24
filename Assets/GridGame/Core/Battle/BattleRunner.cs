@@ -49,7 +49,7 @@ namespace GridGame.Core.Battle
             if (cmd is TutorialSceneCommand scene) { DoScene(scene); EnforceTileInvariant(nameof(TutorialSceneCommand)); return; }
 
             // GG-T308 (§2.0): each hero acts once per window.
-            if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit done && done.IsHero && done.ActedThisWindow)
+            if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit done && done.IsHero && TurnRules.HasActed(S, done))
             {
                 Emit(new AbilityRefusedEvent { CasterId = done.Id, Reason = "Already acted" });
                 return;
@@ -68,7 +68,7 @@ namespace GridGame.Core.Battle
             // GG-T308 (§2.0): what this hero's action spends of the party's window, measured before it resolves (a drag's
             // hold is a share of the window as it stood at pickup).
             int spend = BattleEngine.CommandTicks(S, cmd);
-            bool forcedGuard = cmd is ShieldCommand && BattleEngine.TooLittleTime(S); // GG-T311: a sacrifice, not a choice
+            bool forcedGuard = TurnRules.IsForcedGuard(S, cmd); // GG-T311: a sacrifice, not a choice
             bool acted;
             switch (cmd)
             {
@@ -101,14 +101,15 @@ namespace GridGame.Core.Battle
             windowOver = false;
             if (!S.IsOver && S.Wave == waveBefore)
             {
-                if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit hero && hero.IsHero) hero.ActedThisWindow = true;
-                if (!(cmd is ShieldCommand)) AdvanceClock(spend, stopAtEnemyTurn: true);
-                bool spent = cmd is ShieldCommand || BattleEngine.HeroesLeftToAct(S).Count == 0;
+                // §2.13 (GG-T768): the turn mode decides what the action marks, spends and whether it ends the turn.
+                if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit hero && hero.IsHero) TurnRules.MarkActed(S, hero);
+                if (TurnRules.SpendsClock(S, cmd)) AdvanceClock(spend, stopAtEnemyTurn: true);
+                bool spent = TurnRules.EndsPartyTurn(S, cmd);
                 if (!S.IsOver && S.Wave == waveBefore && !windowOver && spent) SpendWindow();
             }
             if (!S.IsOver) CheckEnd();
-            bool newWindow = windowOver || S.Wave != waveBefore;
-            if (newWindow) foreach (var u in S.Units) u.ActedThisWindow = false;
+            bool newWindow = TurnRules.IsTurnBoundary(S, windowOver, S.Wave != waveBefore);
+            if (newWindow) TurnRules.ResetTurn(S);
             if (!S.IsOver) ReturnControl(newWindow);
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
@@ -378,7 +379,7 @@ namespace GridGame.Core.Battle
             // §3.1.9) — measured before the clock runs. It replaces the drag-timer time bank (§3.1.8), which only a
             // move feeds, so a pending drag remainder is dropped rather than stacked on top.
             S.PendingTimeBankSeconds = 0f;
-            AddCharge(BattleEngine.GuardCharge(S, cmd.HeldSeconds), -1, "guard");
+            AddCharge(TurnRules.GuardCharge(S, cmd.HeldSeconds), -1, "guard"); // §2.13: what Guard banks is the mode's
             return true;
         }
 
