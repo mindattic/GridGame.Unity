@@ -60,6 +60,9 @@ namespace GridGame.App
             yield return Tween.Wait(Timing.Quick);
         }
 
+            // GG-T830: the hazard's countdown ticks over its area (seconds of timeline time), flashing when it lands.
+            hazardTiles[hq.EntryId] = hq.Tiles;
+            Text.Countdown(HazardCenter(hq.Tiles), Mathf.CeilToInt(hq.Seconds), HazardTint(hq.EventId));
         private IEnumerator HazardLandedAnim(HazardLandedEvent hl)
         {
             foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
@@ -68,12 +71,23 @@ namespace GridGame.App
             board.ClearMarks();
             board.SyncRegion(State);
             SyncTimeline(null);
+            var entry = State.Timeline.Find(x => x.Id == hr.EntryId);
+            // A called-off hazard has left the timeline: its tiles are the ones it was queued with.
+            var tiles = entry?.HazardTiles ?? (hazardTiles.TryGetValue(hr.EntryId, out var q) ? q : null);
+            if (hr.Cancelled) hazardTiles.Remove(hr.EntryId);
+            if (tiles != null && tiles.Count > 0)
+            {
+                if (hr.Cancelled) Text.Expired(HazardCenter(tiles), HazardName(hr.EventId, entry?.RuleId), HazardTint(hr.EventId));
+                else Text.Countdown(HazardCenter(tiles), Mathf.CeilToInt(hr.TicksLeft / (float)BattleConfig.TicksPerSecond), HazardTint(hr.EventId));
+            }
         }
 
         /// <summary>
         /// A unit falls into a hole (GG-T368, §14.21): carried to the hole if it was shoved or pulled in, it shrinks and fades
         /// into the dark, a full board's swap partner steps onto the filled hole, then it climbs out on its landing tile
         /// (the fall's damage is its own beat after this one).
+            if (!hl.Rearmed) hazardTiles.Remove(hl.EntryId);
+            if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
         /// </summary>
         private IEnumerator FellAnim(FellEvent f)
         {
@@ -140,6 +154,21 @@ namespace GridGame.App
             art.style.backgroundColor = HazardColor(e).WithA(0.3f);
             var tex = string.IsNullOrEmpty(def?.Icon) ? null : Art.UiIcon(def.Icon);
             if (tex != null)
+        /// <summary>GG-T830: each queued hazard's tiles by timeline entry, for its countdown once it leaves the bar.</summary>
+        private readonly System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<GridGame.Core.Coord>> hazardTiles = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<GridGame.Core.Coord>>();
+
+        /// <summary>GG-T830: where a hazard's countdown floats: the middle of its tiles.</summary>
+        private static Vector2 HazardCenter(System.Collections.Generic.List<GridGame.Core.Coord> tiles)
+        {
+            var sum = Vector2.zero;
+            foreach (var t in tiles) sum += BoardView.CenterOf(t);
+            return sum / tiles.Count;
+        }
+
+        /// <summary>A rule event's colour for its countdown text.</summary>
+        private static Color HazardTint(string eventId) =>
+            Color.Lerp(Art.HexColor(GameApp.I?.Content?.TryRuleEvent(eventId)?.Color, Palette.CastEnemy), Palette.White, 0.2f);
+
             {
                 var ic = new VisualElement { name = "tl-ability", pickingMode = PickingMode.Ignore };
                 ic.style.position = Position.Absolute;

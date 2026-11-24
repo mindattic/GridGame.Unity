@@ -202,8 +202,8 @@ namespace GridGame.App
                 case PickupExpiredEvent pe: return PickupExpiredAnim(pe);
 
                 case BuffAppliedEvent ba: return InflictAnim(ba);
-                case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); return br.Reason == "steam" ? FloatText(br.UnitId, "Steam!", Palette.White, 0.25f) : null;
-                case BuffTickedEvent bt: RefreshUnit(bt.UnitId); return null;
+                case BuffRemovedEvent br: RefreshUnit(br.UnitId); if (br.Reason == "steam") App.Audio.Sfx("element.steam", 0.8f); if (br.Reason != "steam") StatusGoneText(br); return br.Reason == "steam" ? FloatText(br.UnitId, "Steam!", Palette.White, 0.25f) : null;
+                case BuffTickedEvent bt: RefreshUnit(bt.UnitId); StatusCountdownText(bt); return null;
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
@@ -746,7 +746,10 @@ namespace GridGame.App
                 // style; its share of the target's max HP grows it. A plain hit on a hero keeps its red tint.
                 var kind = d.Note == "Armored!" ? CombatTextKind.Immune : d.SourceId < 0 ? CombatTextKind.StatusTick
                     : d.HpAfter <= 0 ? CombatTextKind.Overkill : crit ? CombatTextKind.Crit : CombatTextKind.Damage;
-                Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Damage || kind == CombatTextKind.Immune ? color : (Color?)null);
+                // GG-T830: a damage-over-time tick names its status: small, its pip glyph and its colour.
+                var dot = kind == CombatTextKind.StatusTick && d.Note != null ? t.Buffs.Find(b => b.Def.Name == d.Note)?.Def : null;
+                if (dot != null) Text.Tick(at, StatusGlyph(dot), text, StatusColor(dot), t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f);
+                else Text.Show(at, kind, text, t.MaxHp > 0 ? d.Amount * 2f / t.MaxHp : 0f, kind == CombatTextKind.Damage || kind == CombatTextKind.Immune ? color : (Color?)null);
             }
             v.SetHp(d.HpAfter, t.MaxHp);
             v.Frame.style.unityBackgroundImageTintColor = Palette.Bad;
@@ -2235,6 +2238,29 @@ namespace GridGame.App
         }
 
         private IEnumerator FloatAway(Label l, float seconds)
+        /// <summary>A status's pip glyph (its Letter, else its name's first letter), as its pip on the unit shows it.</summary>
+        private static string StatusGlyph(BuffDef def) => string.IsNullOrEmpty(def.Letter) ? def.Name.Substring(0, 1) : def.Letter;
+
+        /// <summary>A status's own colour (<c>BuffDef.Color</c>), as InflictAnim draws it.</summary>
+        private static Color StatusColor(BuffDef def) => Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+
+        /// <summary>GG-T830: a status on its last turn (or last tick) ticks a "1" countdown in its colour beside its glyph.</summary>
+        private void StatusCountdownText(BuffTickedEvent bt)
+        {
+            if (bt.Remaining != 1 || !board.Units.TryGetValue(bt.UnitId, out var v) || v.Dead) return;
+            var def = App.Content.TryBuff(bt.BuffId);
+            if (def != null) Text.Countdown(BoardView.CenterOf(v.Tile, v.W, v.H), bt.Remaining, StatusColor(def), StatusGlyph(def));
+        }
+
+        /// <summary>GG-T830: a status running out, cleansed, cured or broken fades out struck through over its bearer.</summary>
+        private void StatusGoneText(BuffRemovedEvent br)
+        {
+            var u = State.UnitById(br.UnitId);
+            if (u == null || !u.Alive || !board.Units.TryGetValue(br.UnitId, out var v) || v.Dead) return;
+            var def = App.Content.TryBuff(br.BuffId);
+            if (def != null) Text.Expired(BoardView.CenterOf(v.Tile, v.W, v.H), def.Name, StatusColor(def));
+        }
+
         {
             float top = l.resolvedStyle.top;
             if (float.IsNaN(top)) top = 0;

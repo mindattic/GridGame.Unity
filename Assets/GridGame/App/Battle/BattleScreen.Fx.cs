@@ -163,8 +163,9 @@ namespace GridGame.App
             var aura = AuraFor(u);
             if (aura.a > 0f && u.Id != SelectedHeroId && !ReduceMotion) v.SetGlow(aura, 0.45f);
             // Lifted above damage numbers (the Buff/Debuff style's lift) and stacked by CombatText, so the status name never
-            // sits on top of the hit that caused it (GG-T826).
-            Text.Show(at, def.Kind == BuffKind.Buff ? CombatTextKind.Buff : CombatTextKind.Debuff, def.Name + "!", 0f, Color.Lerp(color, Palette.White, 0.25f));
+            // sits on top of the hit that caused it (GG-T826). GG-T830: a buff rises with an up-chevron, a debuff drops with a
+            // down-chevron, in the status's own colour.
+            Text.Status(at, def.Kind == BuffKind.Buff, def.Name, Color.Lerp(color, Palette.White, 0.15f));
             yield return Tween.Wait(Timing.Quick);
         }
 

@@ -41,6 +41,10 @@ namespace GridGame.App
         Callout,
         /// <summary>Everything else that names an action or a pickup: plain, rises.</summary>
         Support,
+        /// <summary>A status ran out or was cleansed (GG-T830): its name struck through, fading where it stood.</summary>
+        Expire,
+        /// <summary>A countdown reaching 0 (GG-T830): flashes and swells away.</summary>
+        TimerEnd,
     }
 
     /// <summary>How a combat text moves on its way in and out.</summary>
@@ -58,6 +62,14 @@ namespace GridGame.App
         Shake,
         /// <summary>Slow rise with a sideways sway.</summary>
         Drift,
+        /// <summary>Jolts down onto the target, shudders, sinks away (GG-T830: debuffs drop).</summary>
+        Drop,
+        /// <summary>Snaps in from big like a clock hand, holds, fades (GG-T830: countdown digits).</summary>
+        Tick,
+        /// <summary>Pops in and flashes white, then swells out (GG-T830: a countdown hitting 0).</summary>
+        Flash,
+        /// <summary>Holds still, then fades and shrinks where it stood (GG-T830: expiry and cleanse).</summary>
+        Fade,
     }
 
     /// <summary>Which face a combat text draws in. Impact kinds use the heavy rounded cut; callouts use the Display
@@ -113,10 +125,12 @@ namespace GridGame.App
                 case CombatTextKind.Crit: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.85f, 0.2f), 2f, 0.5f, 5f, new Color(0.35f, 0.1f, 0f), true, CombatMotion.Slam, 0.95f, 0f);
                 case CombatTextKind.Overkill: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.42f, 0.18f), 2.3f, 0.4f, 6f, new Color(0.3f, 0f, 0f), true, CombatMotion.Slam, 1.05f, 0f);
                 case CombatTextKind.Heal: return new CombatTextStyle(CombatFace.Heavy, Palette.Good, 1.3f, 0.4f, 3f, Edge, true, CombatMotion.Rise, 0.8f, 0.1f);
-                case CombatTextKind.Buff: return new CombatTextStyle(CombatFace.Heavy, Palette.Buff, 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Pop, 0.8f, 0.3f);
-                case CombatTextKind.Debuff: return new CombatTextStyle(CombatFace.Heavy, new Color(0.86f, 0.45f, 1f), 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Shake, 0.8f, 0.3f);
-                case CombatTextKind.StatusTick: return new CombatTextStyle(CombatFace.Heavy, new Color(0.75f, 0.95f, 0.45f), 0.9f, 0.3f, 2f, Edge, true, CombatMotion.Drift, 0.7f, 0f);
-                case CombatTextKind.Timer: return new CombatTextStyle(CombatFace.Body, new Color(0.6f, 0.85f, 1f), 0.95f, 0.15f, 2f, Edge, true, CombatMotion.Drift, 0.8f, 0.3f);
+                case CombatTextKind.Buff: return new CombatTextStyle(CombatFace.Heavy, Palette.Buff, 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Rise, 0.85f, 0.3f);
+                case CombatTextKind.Debuff: return new CombatTextStyle(CombatFace.Heavy, new Color(0.86f, 0.45f, 1f), 1.05f, 0.2f, 3f, Edge, true, CombatMotion.Drop, 0.85f, 0.3f);
+                case CombatTextKind.StatusTick: return new CombatTextStyle(CombatFace.Heavy, new Color(0.75f, 0.95f, 0.45f), 0.85f, 0.25f, 2f, Edge, true, CombatMotion.Drift, 0.7f, 0f);
+                case CombatTextKind.Timer: return new CombatTextStyle(CombatFace.Heavy, new Color(0.6f, 0.85f, 1f), 1f, 0.2f, 3f, Edge, true, CombatMotion.Tick, 0.8f, 0.3f);
+                case CombatTextKind.TimerEnd: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.9f, 0.55f), 1.4f, 0.4f, 4f, new Color(0.3f, 0.1f, 0f), true, CombatMotion.Flash, 0.9f, 0.3f);
+                case CombatTextKind.Expire: return new CombatTextStyle(CombatFace.Heavy, new Color(0.72f, 0.72f, 0.78f), 0.95f, 0f, 2f, Edge, true, CombatMotion.Fade, 1f, 0.3f);
                 case CombatTextKind.Miss: return new CombatTextStyle(CombatFace.Heavy, Palette.Info, 1.1f, 0f, 3f, Edge, true, CombatMotion.Arc, 0.6f, 0.1f);
                 case CombatTextKind.Immune: return new CombatTextStyle(CombatFace.Heavy, new Color(0.7f, 0.7f, 0.75f), 1.1f, 0f, 3f, Edge, true, CombatMotion.Shake, 0.6f, 0.1f);
                 case CombatTextKind.Weak: return new CombatTextStyle(CombatFace.Heavy, new Color(1f, 0.6f, 0.2f), 1.2f, 0.3f, 4f, new Color(0.3f, 0.05f, 0f), true, CombatMotion.Pop, 0.7f, 0.35f);
@@ -166,6 +180,40 @@ namespace GridGame.App
             return l;
         }
 
+        /// <summary>The up-chevron a boon carries, the down-chevron a curse carries (GG-T830; both in the bundled fonts).</summary>
+        public const string Up = "▲", Down = "▼";
+
+        /// <summary>A status landing (GG-T830): a buff rises with an up-chevron, a debuff drops with a down-chevron, both
+        /// in the status's own colour (<c>BuffDef.Color</c>).</summary>
+        public Label Status(Vector2 at, bool buff, string name, Color color) =>
+            Show(at, buff ? CombatTextKind.Buff : CombatTextKind.Debuff, (buff ? Up : Down) + " " + name, 0f, color);
+
+        /// <summary>A damage-over-time tick (GG-T830): small, the status's pip glyph then the amount, in its colour.</summary>
+        public Label Tick(Vector2 at, string glyph, string amount, Color color, float magnitude = 0f) =>
+            Show(at, CombatTextKind.StatusTick, string.IsNullOrEmpty(glyph) ? amount : glyph + " " + amount, magnitude, color);
+
+        /// <summary>A status running out or being cleansed (GG-T830): its name struck through, fading in a dimmed colour.</summary>
+        public Label Expired(Vector2 at, string name, Color color) =>
+            Show(at, CombatTextKind.Expire, "<s>" + name + "</s>", 0f, Color.Lerp(color, StyleOf(CombatTextKind.Expire).Color, 0.45f));
+
+        /// <summary>One step of a countdown (GG-T830): 3, 2, 1 tick in as Timer digits (after an optional glyph), growing
+        /// as they near 0; at 0 it flashes, showing <paramref name="zero"/> (what fires) or "0".</summary>
+        public Label Countdown(Vector2 at, int left, Color? tint = null, string glyph = null, string zero = null)
+        {
+            if (left <= 0) return Show(at, CombatTextKind.TimerEnd, string.IsNullOrEmpty(zero) ? "0" : zero, 0.5f, null);
+            string n = left.ToString();
+            return Show(at, CombatTextKind.Timer, string.IsNullOrEmpty(glyph) ? n : glyph + " " + n, Mathf.Clamp01((4 - left) / 3f), tint);
+        }
+
+        /// <summary>Characters a text prints, rich-text tags (<c>&lt;s&gt;</c>) left out.</summary>
+        private static int VisibleLength(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+            int n = 0; bool tag = false;
+            foreach (char ch in text) { if (ch == '<') tag = true; else if (ch == '>' && tag) tag = false; else if (!tag) n++; }
+            return n;
+        }
+
         /// <summary>Builds (does not animate) a combat text label on the board's fx layer, its centre at
         /// <paramref name="at"/>. <see cref="BoardView.Float"/> builds through this too.</summary>
         public static Label Build(BoardView board, string text, Vector2 at, CombatTextStyle s, Color color, float size)
@@ -175,7 +223,7 @@ namespace GridGame.App
             l.style.position = Position.Absolute;
             // Wide enough for the words on one line (about 0.62 em a glyph), never wider than the board.
             float boardW = BoardView.Tile * BattleConfig.Cols;
-            float w = Mathf.Min(boardW, Mathf.Max(Size.Card, size * (0.62f * (text?.Length ?? 0) + 1f)));
+            float w = Mathf.Min(boardW, Mathf.Max(Size.Card, size * (0.62f * VisibleLength(text) + 1f)));
             // GG-T317: keep the label's box on the board so a unit in the edge column can't push it off-stage.
             l.style.left = Mathf.Clamp(at.x - w / 2f, 0f, Mathf.Max(0f, boardW - w));
             l.style.top = at.y - size * 0.75f;
@@ -265,6 +313,59 @@ namespace GridGame.App
                         l.style.top = rest - rise * k;
                         l.style.left = left + sway * Mathf.Sin(k * Mathf.PI * 2f);
                         l.style.opacity = k < 0.5f ? 1f : 1f - (k - 0.5f) / 0.5f;
+                    });
+                    break;
+                }
+                case CombatMotion.Drop:
+                {
+                    float fall = calm ? 0f : 22f, amp = calm ? 0f : 5f, sink = calm ? 15f : 45f;
+                    yield return Tween.Run(d * 0.15f, k => l.style.top = rest - fall * (1f - Ease.Out(k)));
+                    yield return Tween.Run(d * 0.25f, k =>
+                    {
+                        l.style.left = left + Random.Range(-amp, amp) * (1f - k);
+                        l.style.top = rest + Random.Range(0f, amp) * (1f - k);
+                    });
+                    l.style.left = left; l.style.top = rest;
+                    yield return Tween.Wait(d * 0.3f);
+                    yield return Tween.Run(d * 0.3f, k => { l.style.top = rest + sink * k * k; l.style.opacity = 1f - k; });
+                    break;
+                }
+                case CombatMotion.Tick:
+                {
+                    float from = calm ? 1f : 1.5f;
+                    yield return Tween.Run(d * 0.15f, k => l.style.scale = new Scale(Vector2.one * Mathf.Lerp(from, 1f, Ease.Out(k))));
+                    yield return Tween.Wait(d * 0.55f);
+                    yield return Tween.Run(d * 0.3f, k => { l.style.opacity = 1f - k; l.style.top = rest - (calm ? 5f : 14f) * k; });
+                    break;
+                }
+                case CombatMotion.Flash:
+                {
+                    var baseColor = l.style.color.value;
+                    float swell = calm ? 1f : 1.4f;
+                    yield return Tween.Run(d * 0.15f, k => l.style.scale = new Scale(Vector2.one * (calm ? 1f : Mathf.LerpUnclamped(0.6f, swell, Ease.Back(k)))));
+                    // Reduce Motion keeps one steady fade from white instead of the strobe.
+                    yield return Tween.Run(d * 0.5f, k =>
+                    {
+                        float blink = calm ? 1f - k : Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f));
+                        l.style.color = Color.Lerp(baseColor, Palette.White, blink);
+                        if (!calm) l.style.scale = new Scale(Vector2.one * Mathf.Lerp(swell, 1.1f, k));
+                    });
+                    l.style.color = baseColor;
+                    yield return Tween.Run(d * 0.35f, k =>
+                    {
+                        l.style.opacity = 1f - k;
+                        if (!calm) l.style.scale = new Scale(Vector2.one * (1.1f + 0.4f * Ease.Out(k)));
+                    });
+                    break;
+                }
+                case CombatMotion.Fade:
+                {
+                    yield return Tween.Wait(d * 0.35f);
+                    yield return Tween.Run(d * 0.65f, k =>
+                    {
+                        l.style.opacity = 1f - k;
+                        l.style.scale = new Scale(Vector2.one * (calm ? 1f : 1f - 0.12f * k));
+                        l.style.top = rest + (calm ? 0f : 10f * k);
                     });
                     break;
                 }
