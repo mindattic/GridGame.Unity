@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 15;
+        public const int CurrentVersion = 16;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -116,6 +116,11 @@ namespace GridGame.Meta
         /// Save v11: an older build refuses this save rather than drop the ledger and pay a re-delivered order twice.</summary>
         public PurchaseSave Purchases = new PurchaseSave();
         public Dictionary<string, BestiaryEntry> Bestiary = new Dictionary<string, BestiaryEntry>();
+        /// <summary>GG-T923: Codex entries unlocked, "&lt;kind&gt;:&lt;id&gt;" (<see cref="GridGame.Meta.Codex"/>). Save v16: an
+        /// older save back-fills everything it had already reached, taken as read.</summary>
+        public HashSet<string> Codex = new HashSet<string>();
+        /// <summary>GG-T923: Codex entries the player has opened; unlocked and not in here is "new".</summary>
+        public HashSet<string> CodexRead = new HashSet<string>();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -128,6 +133,7 @@ namespace GridGame.Meta
             if (itemId == null || n == 0) return;
             int v = Count(itemId) + n;
             if (v <= 0) Inventory.Remove(itemId); else Inventory[itemId] = v;
+            if (n > 0) GridGame.Meta.Codex.Unlock(this, CodexKinds.Item, itemId); // GG-T923: a gained item unlocks its Codex entry
             // Worn copies can't outnumber owned copies; when copies leave the bag the most-worn go first (an enchanted
             // copy, GG-T179, last).
             if (Worn.TryGetValue(itemId, out var worn))
@@ -751,6 +757,12 @@ namespace GridGame.Meta
                 s.TurnModeLock = null;
                 s.Version = 15;
             }
+            // GG-T923: the Codex. A save from before back-fills every entry it had already reached (below, after Notes.Clear),
+            // taken as read so a returning player isn't handed a wall of "new" badges.
+            bool beforeCodex = s.Version < 16;
+            if (s.Version < 16) s.Version = 16;
+            s.Codex ??= new HashSet<string>();
+            s.CodexRead ??= new HashSet<string>();
             // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
             if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
@@ -780,6 +792,8 @@ namespace GridGame.Meta
             JoinNewKeepers(s);
             if (c != null) GrantOwnedOrbs(s, c);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
+            // GG-T923: every load catches the Codex up with what the save shows (idempotent); only the v16 back-fill marks it read.
+            Codex.Sync(c, s, markRead: beforeCodex);
             if (c != null && beforeGearGate)
                 foreach (var h in s.Roster)
                 {
