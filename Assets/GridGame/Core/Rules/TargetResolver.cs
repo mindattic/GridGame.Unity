@@ -62,7 +62,7 @@ namespace GridGame.Core.Rules
             {
                 var team = a.Shape == TargetShape.AllAllies ? caster.Team : Opposite(caster.Team);
                 foreach (var u in s.Units)
-                    if (u.Alive && u.Team == team && Passes(a.Filter, caster, u)) result.Add(u);
+                    if (u.Alive && u.Team == team && Passes(a.Filter, caster, u) && Tagged(a, u)) result.Add(u);
                 return result;
             }
             if (a.Shape == TargetShape.Self)
@@ -73,10 +73,13 @@ namespace GridGame.Core.Rules
             foreach (var c in Tiles(anchor, a.Shape, a.Radius, caster?.Pos))
             {
                 var u = s.UnitAt(c);
-                if (u != null && !result.Contains(u) && Passes(a.Filter, caster, u)) result.Add(u);
+                if (u != null && !result.Contains(u) && Passes(a.Filter, caster, u) && Tagged(a, u)) result.Add(u);
             }
             return result;
         }
+
+        /// <summary>GG-T879: an ability with <see cref="AbilityDef.OnlyVsTag"/> catches only units whose class carries it.</summary>
+        private static bool Tagged(AbilityDef a, Unit u) => a.OnlyVsTag == null || (u.Def != null && u.Def.HasTag(a.OnlyVsTag));
 
         public static Team Opposite(Team t) => t == Team.Hero ? Team.Enemy : Team.Hero;
 

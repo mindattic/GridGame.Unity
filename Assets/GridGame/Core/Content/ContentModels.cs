@@ -601,6 +601,13 @@ namespace GridGame.Core.Content
         /// <summary>Damage ×BonusMultiplier against targets with this tag (Holy Water vs Undead).</summary>
         public string BonusVsTag;
         public float BonusMultiplier = 1f;
+        /// <summary>GG-T879: only units whose class carries this tag are caught (the Technician's EMP Pulse: "Tech" - gremlins,
+        /// cyber zombies, mecha, prototypes); everyone else in the shape is untouched. <c>TargetResolver.Collect</c> applies it,
+        /// so a pick that catches no such unit (and reaches no tile its reactions work on) is no pick at all.</summary>
+        public string OnlyVsTag;
+        /// <summary>GG-T879: seconds each caught foe's held cast slips (a <c>CastStaggeredEvent</c>, no Wisdom shrug); the slip
+        /// counts toward the interrupt like a blow's stagger, so a cast pushed past its own length is cancelled.</summary>
+        public float CastStagger;
         public string Icon;
         public string CastVfx;
         public string ProjectileVfx;

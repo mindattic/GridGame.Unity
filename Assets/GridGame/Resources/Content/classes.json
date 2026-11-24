@@ -3186,7 +3186,8 @@
     "Team": "Enemy",
     "Tags": [
       "Mechanical",
-      "Undead"
+      "Undead",
+      "Tech"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "cyber-zombie",
@@ -3318,7 +3319,8 @@
     "Team": "Enemy",
     "Tags": [
       "Mechanical",
-      "Undead"
+      "Undead",
+      "Tech"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "cyber-zombie",
@@ -3451,7 +3453,8 @@
     "Team": "Enemy",
     "Tags": [
       "Mechanical",
-      "Undead"
+      "Undead",
+      "Tech"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "cyber-zombie",
@@ -3584,7 +3587,8 @@
     "Team": "Enemy",
     "Tags": [
       "Mechanical",
-      "Undead"
+      "Undead",
+      "Tech"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "cyber-zombie",
@@ -3717,7 +3721,8 @@
     "Team": "Enemy",
     "Tags": [
       "Mechanical",
-      "Undead"
+      "Undead",
+      "Tech"
     ],
     "Card": "Grim [attrition] [drain]. Pressures with [fear] and [rot].",
     "Portrait": "cyber-zombie",
@@ -10376,7 +10381,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "mecha-armor",
@@ -10503,7 +10509,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "mecha-armor",
@@ -10631,7 +10638,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "mecha-armor",
@@ -12854,7 +12862,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "purple-prototype",
@@ -12977,7 +12986,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "purple-prototype",
@@ -13101,7 +13111,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "purple-prototype",
@@ -13225,7 +13236,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "purple-prototype",
@@ -13349,7 +13361,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "purple-prototype",
@@ -18348,7 +18361,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "tech-gremlin",
@@ -18472,7 +18486,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "tech-gremlin",
@@ -18596,7 +18611,8 @@
     "Team": "Enemy",
     "Tags": [
       "Humanoid",
-      "Sentient"
+      "Sentient",
+      "Tech"
     ],
     "Card": "Tactical [engineer] [controller]. Deploys [traps] [turrets] [gadgets].",
     "Portrait": "tech-gremlin",
@@ -18832,6 +18848,7 @@
       "frost",
       "antidote",
       "technician_diagnostic",
+      "technician_emp",
       "fieldeng_mine",
       "fieldeng_patch",
       "fieldeng_overdrive",

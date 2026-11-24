@@ -302,6 +302,7 @@ namespace GridGame.Core.Battle
 
                 if (a.HastenU > 0f && t.Alive) Hasten(t, a.HastenU, a.Id, a.TempoTurns);
                 if (a.Pushback > 0f && t.Alive && !friend) Pushback(t, a.Pushback); // the Pushback keyword (GG-T286)
+                if (a.CastStagger > 0f && t.Alive && !friend) JamCast(caster, t, a.CastStagger); // GG-T879: EMP Pulse staggers a tech foe's cast
                 if (a.SwapsTurns && t.Alive && !friend) DoCountermarch(t); // GG-T336: the Tactician reorders the foes' turns
 
                 var buff = C.TryBuff(a.ApplyBuff);

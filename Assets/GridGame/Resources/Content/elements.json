@@ -105,6 +105,14 @@
   ],
   "Reactions": [
     {
+      "Id": "emp",
+      "Tiles": [
+        { "On": "mine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "buriedmine", "Kind": "Becomes", "Into": "armedmine" },
+        { "On": "shock_mine", "Kind": "Clear" }
+      ]
+    },
+    {
       "Id": "disarm",
       "Tiles": [
         { "On": "venom_snare", "Kind": "Clear" },

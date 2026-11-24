@@ -1945,6 +1945,7 @@ namespace GridGame.App
             pendingItemUser = -1; pendingItemId = null;
             if (itemUse && caster != null && a != null)
                 yield return ItemVfx(caster, targets, a, itemId);
+            else if (EmpPulse.Is(a)) yield return EmpPulseVfx(ar); // GG-T879: the static ring, before the jams and the mines
             else if (caster != null && a != null && a.Kind == AbilityKind.Spell && targets.Count > 0)
             {
                 yield return SpellVfx(caster, targets, a, c);
