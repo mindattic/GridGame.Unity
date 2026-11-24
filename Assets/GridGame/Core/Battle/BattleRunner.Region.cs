@@ -728,7 +728,16 @@ namespace GridGame.Core.Battle
         {
             var area = AreaOf(e, ctx);
             Coord? point = S.Region.Anchor(e.Anchor) ?? (area.Count > 0 ? area[0] : ctx.Target);
-            foreach (var u in RuleUnitsOf(e, ctx))
+            var units = RuleUnitsOf(e, ctx);
+            // GG-T883: a pull toward a point moves the nearest first (a push away, the farthest), so the inner unit makes
+            // room for the one behind it and a Gravity Well clumps a wave instead of jamming it; ties keep id order.
+            if (point.HasValue && (e.Move == RuleMove.Toward || e.Move == RuleMove.Away))
+            {
+                var p = point.Value;
+                int sign = e.Move == RuleMove.Toward ? 1 : -1;
+                units.Sort((a, b) => { int d = sign * a.Pos.Manhattan(p).CompareTo(b.Pos.Manhattan(p)); return d != 0 ? d : a.Id.CompareTo(b.Id); });
+            }
+            foreach (var u in units)
             {
                 if (!u.Alive || u.WontBudge || u.IsCorpse) continue; // GG-T891: Heavy too
                 if (RootsHold(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose

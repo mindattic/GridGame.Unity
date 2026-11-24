@@ -577,6 +577,7 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += GravityWell.Value(s, a, anchor); // GG-T883: a Gravity Well only when it grows the next pincer's catch
             score += FlareValue(s, a, anchor); // GG-T888: a Flare Shot into the dark or over a suspected mine
             score += TimeBombValue(s, a, anchor); // GG-T874: a Time Bomb on a foe beside (or a shove from) its friends
             // A lone hero's bar is its only way to hurt anything (no pincers with one hero): spend mana and items on
