@@ -117,8 +117,8 @@ namespace GridGame.Core.Bot
         private BattleCommand Decide(BattleState s, bool movesOnly)
         {
             if (!movesOnly) lockedOut = false;
-            // GG-T308: a stall is counted per window (the party now takes several actions in one).
-            bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && u.ActedThisWindow);
+            // GG-T308: a stall is counted per party turn (the party now takes several actions in one); §2.13 the mode says who acted.
+            bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && TurnRules.HasActed(s, u));
             if (TimelineAware && freshWindow && !movesOnly) CountStall(s);
             // A recruitable whose every term is met (GG-T132) is worth more than any swing: talk it round first.
             if (!movesOnly && Recruitment.ReadyTalk(s) is TalkCommand talk) return talk;
@@ -844,7 +844,7 @@ namespace GridGame.Core.Bot
                 {
                     if (h.Id == mover.Id || !pv.Positions.TryGetValue(h.Id, out var hp)) continue;
                     // GG-T308: an ally still to act this window can close it before the foes move.
-                    if (Math.Abs(hp.X - far.X) + Math.Abs(hp.Y - far.Y) <= reach) { best = Math.Max(best, (e.HpFraction < 0.4f ? 4f : 3f) + (h.ActedThisWindow ? 0f : 2f)); break; }
+                    if (Math.Abs(hp.X - far.X) + Math.Abs(hp.Y - far.Y) <= reach) { best = Math.Max(best, (e.HpFraction < 0.4f ? 4f : 3f) + (TurnRules.HasActed(s, h) ? 0f : 2f)); break; }
                 }
             }
             return best;

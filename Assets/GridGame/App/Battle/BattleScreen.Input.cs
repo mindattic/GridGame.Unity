@@ -59,8 +59,9 @@ namespace GridGame.App
                 if (CoachBlocksDrag || (coachHeroId >= 0 && unit.Id != coachHeroId)) return;
                 if (!BattleEngine.CanMove(State, unit.Id))
                 {
-                    if (!unit.ActedThisWindow && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
-                    ShowBanner(unit.ActedThisWindow ? $"{unit.Name} has acted this turn" : $"{unit.Name} can't move");
+                    bool acted = TurnRules.HasActed(State, unit); // §2.13: the turn mode says who has acted
+                    if (!acted && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
+                    ShowBanner(acted ? $"{unit.Name} has acted this turn" : $"{unit.Name} can't move");
                     return;
                 }
                 pressing = true;
@@ -263,7 +264,7 @@ namespace GridGame.App
             var left = BattleEngine.HeroesLeftToAct(State);
             if (left.Count == 0) return;
             var sel = State.UnitById(SelectedHeroId);
-            if (sel == null || !sel.Alive || sel.ActedThisWindow) SelectHero(left[0].Id);
+            if (sel == null || !sel.Alive || TurnRules.HasActed(State, sel)) SelectHero(left[0].Id);
             float w = BattleEngine.TurnTicks(State) / (float)BattleConfig.TicksPerSecond;
             string who = left.Count == 1 ? left[0].Name : $"{left.Count} heroes";
             ShowBanner(w > 0f ? $"{who} can still act · {w:0.0}s left" : $"{who} can still act");

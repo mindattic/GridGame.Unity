@@ -1095,7 +1095,7 @@ namespace GridGame.App.Automation
                 var s = b.State;
                 dump["battle"] = new
                 {
-                    phase = s.Phase.ToString(), wave = s.Wave, clock = s.Clock, busy = b.Busy, selected = b.SelectedHeroId, targeting = b.TargetingSlot, confirming = b.Confirming, record = b.LastRecordPath,
+                    phase = s.Phase.ToString(), turn_mode = s.TurnMode.ToString(), wave = s.Wave, clock = s.Clock, busy = b.Busy, selected = b.SelectedHeroId, targeting = b.TargetingSlot, confirming = b.Confirming, record = b.LastRecordPath,
                     bank = s.Bank.ToString(), cutins = b.CutInsShown, coinsShown = b.CoinsShown, tallies = b.TalliesBurst, billboard = b.BillboardLines, paused = b.Paused, pauseOnTop = b.PauseOnTop, beats = b.PlaybackBeats, beatsWhilePaused = b.BeatsWhilePaused, orbSlots = b.OrbSlotsFlown, lines = b.LineStrokes, chain = b.ChainCount, amplifier = s.Amplifier.HasValue ? new[] { s.Amplifier.Value.X, s.Amplifier.Value.Y } : null,
                     units = s.Units.Where(u => u.Alive).Select(u => new
                     {
@@ -1104,7 +1104,7 @@ namespace GridGame.App.Automation
                         armor = u.Gear.ToDictionary(kv => kv.Key.ToString(), kv => new { item = kv.Value.ItemId, durability = kv.Value.Durability }),
                         buffs = u.Buffs.Select(x => x.Def.Id + ":" + x.Remaining).ToList(),
                         acts_in = u.IsHero ? -1 : BattleEngine.ActionsUntilTurn(s, u.Id),
-                        acted = u.IsHero && u.ActedThisWindow, // GG-T308: acted in this window
+                        acted = u.IsHero && TurnRules.HasActed(s, u), // GG-T308, §2.13: acted this party turn, as the mode says
                         bar = u.IsHero ? Enumerable.Range(0, u.Bar.Count).Select(i => (u.Bar[i].AbilityId ?? u.Bar[i].ItemId ?? "-") + "=" + BattleEngine.GetSlotStatus(s, u.Id, i)).ToList() : null,
                     }).ToList(),
                     window_seconds = BattleEngine.TurnTicks(s) / (float)BattleConfig.TicksPerSecond, to_act = BattleEngine.HeroesLeftToAct(s).Select(h => h.Id).ToList(), too_little_time = BattleEngine.TooLittleTime(s), // GG-T308/GG-T311
