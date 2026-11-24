@@ -574,93 +574,19 @@ namespace GridGame.App
 
         public void Blank() { path = null; goal = null; arrow = null; MarkDirtyRepaint(); }
 
-        private static readonly Color Ink = new Color(0f, 0f, 0.05f, 0.85f);
+        // GG-T735: every mark is a Shapes vector shape in the Tutorial style, tinted gold, outlined in ink.
+        private static ShapeStyle Style => ShapeStyle.Tutorial.Tint(Palette.Gold);
 
         private void Paint(MeshGenerationContext ctx)
         {
             var p = ctx.painter2D;
-            var gold = Palette.Gold;
-            if (goal is Rect g) DashedRect(p, new Rect(g.xMin - 6f, g.yMin - 6f, g.width + 12f, g.height + 12f), gold);
-            if (path != null && path.Count >= 2)
-            {
-                // Dots march along the route (still under Reduce Motion), then an arrowhead on the destination.
-                const float spacing = 34f;
-                float total = 0f;
-                for (int i = 1; i < path.Count; i++) total += Vector2.Distance(path[i - 1], path[i]);
-                for (float d = 20f + (t * 60f) % spacing; d < total - 40f; d += spacing) Dot(p, PointAt(path, d), 9f, gold);
-                var end = path[path.Count - 1];
-                var prev = path[path.Count - 2];
-                ArrowHead(p, end, (end - prev).normalized, 46f, gold);
-            }
-            if (arrow is (Vector2 from, Vector2 to))
-            {
-                var dir = (to - from).normalized;
-                var shaftEnd = to - dir * 40f;
-                p.lineCap = LineCap.Round;
-                p.lineWidth = 16f; p.strokeColor = Ink;
-                p.BeginPath(); p.MoveTo(from); p.LineTo(shaftEnd); p.Stroke();
-                p.lineWidth = 10f; p.strokeColor = gold;
-                p.BeginPath(); p.MoveTo(from); p.LineTo(shaftEnd); p.Stroke();
-                ArrowHead(p, to, dir, 52f, gold);
-            }
-        }
-
-        private static Vector2 PointAt(List<Vector2> pts, float d)
-        {
-            for (int i = 1; i < pts.Count; i++)
-            {
-                float len = Vector2.Distance(pts[i - 1], pts[i]);
-                if (d <= len) return Vector2.Lerp(pts[i - 1], pts[i], len <= 0f ? 0f : d / len);
-                d -= len;
-            }
-            return pts[pts.Count - 1];
-        }
-
-        private static void Dot(Painter2D p, Vector2 c, float r, Color col)
-        {
-            void Oct(float rr, Color cc)
-            {
-                p.fillColor = cc;
-                p.BeginPath();
-                for (int k = 0; k < 8; k++)
-                {
-                    float ang = k * Mathf.PI / 4f;
-                    var v = c + new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * rr;
-                    if (k == 0) p.MoveTo(v); else p.LineTo(v);
-                }
-                p.ClosePath();
-                p.Fill();
-            }
-            Oct(r + 4f, Ink);
-            Oct(r, col);
-        }
-
-        private static void ArrowHead(Painter2D p, Vector2 tip, Vector2 dir, float size, Color col)
-        {
-            var side = new Vector2(-dir.y, dir.x);
-            var a = tip - dir * size + side * size * 0.6f;
-            var b = tip - dir * size - side * size * 0.6f;
-            p.fillColor = Ink;
-            p.BeginPath(); p.MoveTo(tip + dir * 6f); p.LineTo(a - dir * 4f + side * 5f); p.LineTo(b - dir * 4f - side * 5f); p.ClosePath(); p.Fill();
-            p.fillColor = col;
-            p.BeginPath(); p.MoveTo(tip); p.LineTo(a); p.LineTo(b); p.ClosePath(); p.Fill();
-        }
-
-        private static void DashedRect(Painter2D p, Rect r, Color col)
-        {
-            p.lineWidth = 6f; p.strokeColor = col; p.lineCap = LineCap.Butt;
-            var pts = new[] { new Vector2(r.xMin, r.yMin), new Vector2(r.xMax, r.yMin), new Vector2(r.xMax, r.yMax), new Vector2(r.xMin, r.yMax) };
-            const float dash = 22f, gap = 14f;
-            for (int i = 0; i < 4; i++)
-            {
-                var a = pts[i]; var b = pts[(i + 1) % 4];
-                float len = Vector2.Distance(a, b);
-                var dir = (b - a) / Mathf.Max(1f, len);
-                for (float d = 0f; d < len; d += dash + gap)
-                {
-                    p.BeginPath(); p.MoveTo(a + dir * d); p.LineTo(a + dir * Mathf.Min(len, d + dash)); p.Stroke();
-                }
-            }
+            var s = Style;
+            if (goal is Rect g)
+                Shapes.RoundedRect(p, new Rect(g.xMin - 6f, g.yMin - 6f, g.width + 12f, g.height + 12f), 10f, s.Thick(6f).Outlined(s.Line, 2f), dashed: true);
+            // A move's route: dots march toward the destination (still under Reduce Motion), a solid head on it.
+            if (path != null && path.Count >= 2) Shapes.DashedArrow(p, path, s.Thick(18f).Dashes(0f, 16f), t * 60f);
+            // The caption's pointer.
+            if (arrow is (Vector2 from, Vector2 to)) Shapes.Arrow(p, from, to, s);
         }
     }
 }
