@@ -34,6 +34,7 @@ namespace GridGame.App
                 bool active = string.Equals(n, current, StringComparison.OrdinalIgnoreCase);
                 var row = Ui.MenuRow(n, active ? "Playing" : "", () => Switch(n), list);
                 row.name = "profile-" + n;
+                row.KindIcon(RowKind.Hero); // GG-T738 (§26.7)
                 if (active) row.Q<Label>("label").AddToClassList("gold");
                 var actions = Ui.Actions(list);
                 actions.AddToClassList("kit-note"); // under the row's label
@@ -44,6 +45,7 @@ namespace GridGame.App
             }
             var create = Ui.MenuRow("+ New profile", "", () => App.Router.Push(new ProfileNameScreen(null)), list);
             create.name = "new-profile";
+            create.KindIcon(RowKind.New);
             Ui.SelectFirst(list);
         }
 

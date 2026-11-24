@@ -99,15 +99,19 @@ namespace GridGame.App
             menu.style.width = Fit.C(66f);
             int recent = App.Saves.MostRecent();
             Debug.Log($"[Title] most recent save slot: {recent}");
-            if (recent >= 0) Ui.MenuRow("Continue", "", () => Continue(recent), menu);
-            Ui.MenuRow("New Game", "", () => App.Router.Push(new SaveSlotScreen(true)), menu);
-            Ui.MenuRow("Load Game", "", () => App.Router.Push(new SaveSlotScreen(false)), menu, null, recent >= 0 || App.Cloud.Available); // GG-T608: a new device restores from the cloud there
+            // GG-T738 (§26.7): each Title row leads with its kind icon.
+            if (recent >= 0) Ui.MenuRow("Continue", "", () => Continue(recent), menu).KindIcon(RowKind.Enter);
+            Ui.MenuRow("New Game", "", () => App.Router.Push(new SaveSlotScreen(true)), menu).KindIcon(RowKind.New);
+            Ui.MenuRow("Load Game", "", () => App.Router.Push(new SaveSlotScreen(false)), menu, null, recent >= 0 || App.Cloud.Available).KindIcon(RowKind.Save); // GG-T608: a new device restores from the cloud there
             // GG-T99 (§15.4): the player profile owns the settings and these three slots; switch / create / rename / delete here.
             var profile = Ui.MenuRow("Profile", App.Profile?.Name ?? "", () => App.Router.Push(new ProfileSelectScreen()), menu);
             profile.name = "title-profile";
+            profile.KindIcon(RowKind.Hero);
             profile.Q<Label>("value").AddToClassList("gold");
-            Ui.MenuRow("Settings", "", () => App.Router.Push(new SettingsScreen()), menu).name = "title-settings";
-            Ui.MenuRow("Credits", "", () => App.Router.Push(new CreditsScreen()), menu);
+            var settings = Ui.MenuRow("Settings", "", () => App.Router.Push(new SettingsScreen()), menu);
+            settings.name = "title-settings";
+            settings.KindIcon(RowKind.Settings);
+            Ui.MenuRow("Credits", "", () => App.Router.Push(new CreditsScreen()), menu).KindIcon(RowKind.Bestiary);
             Ui.SelectFirst(menu);
 
             var ver = Ui.Text($"v{Application.version}", "tiny dim", root);
@@ -154,6 +158,7 @@ namespace GridGame.App
                 string label = s != null ? $"Slot {i + 1} — {s.Name}" : damaged ? $"Slot {i + 1} — Damaged" : $"Slot {i + 1} — Empty";
                 string value = s == null ? "" : $"Stage {s.HighestClearedStage + 2}  {Ui.Gold(s.Gold)}";
                 var row = Ui.MenuRow(label, value, () => Pick(slot, s, damaged), w, null, newGame || s != null);
+                row.KindIcon(RowKind.Save); // GG-T738 (§26.7)
                 if (damaged) row.Q<Label>("label")?.AddToClassList("bad");
                 if (s != null)
                 {
@@ -165,6 +170,7 @@ namespace GridGame.App
             {
                 var restore = Ui.MenuRow("Restore from cloud", "", RestoreFromCloud, w);
                 restore.name = "load-cloud-restore";
+                restore.KindIcon(RowKind.Save);
             }
         }
 
@@ -466,8 +472,9 @@ namespace GridGame.App
             row.style.marginTop = Space.S16;
             Action cancel = () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); };
             veil.userData = cancel; // Android Back answers Cancel (CancelTop)
-            Ui.Button("Cancel", cancel, null, row).name = "confirm-no";
-            Ui.Button(yes, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
+            // GG-T738 (§26.7): Cancel leads with the Close cross, the answer with the Confirm check.
+            RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, row).name = "confirm-no";
+            RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
             return veil;
         }
 
@@ -988,29 +995,13 @@ namespace GridGame.App
         private void Foot(VisualElement body, bool can, string why)
         {
             var foot = Ui.Footer(body, "stage-confirm-footer");
-            IconButton("Back", RowKind.Back, () => App.Router.Back(), "btn--small", foot).name = "stage-back";
+            RowIcon.IconButton("Back", RowKind.Back, () => App.Router.Back(), "btn--small", foot).name = "stage-back";
             var mid = Ui.El("col grow", foot);
             mid.style.flexShrink = 1; mid.style.minWidth = 0;
             if (!can && !string.IsNullOrEmpty(why)) Ui.Para(why, mid, "bad").name = "stage-enter-why";
-            var enter = IconButton("Enter", RowKind.Enter, () => StageLauncher.Launch(stageId, true), "btn--primary", foot);
+            var enter = RowIcon.IconButton("Enter", RowKind.Enter, () => StageLauncher.Launch(stageId, true), "btn--primary", foot);
             enter.name = "stage-enter";
             Ui.SetEnabled(enter, can);
-        }
-
-        /// <summary>A button led by its kind icon (BIBLE §26.7): empty button text, the icon, then the label, which takes no
-        /// clicks so the whole button stays one target.</summary>
-        private static Button IconButton(string text, RowKind kind, Action onClick, string classes, VisualElement parent)
-        {
-            var b = Ui.Button("", onClick, classes, parent);
-            b.style.flexDirection = FlexDirection.Row;
-            b.style.alignItems = Align.Center;
-            var icon = b.KindIcon(kind);
-            icon.style.width = icon.style.height = Size.IconS;
-            icon.style.marginRight = Space.S8;
-            var label = Ui.Text(text, null, b);
-            label.pickingMode = PickingMode.Ignore;
-            Fonts.UseHeavy(label);
-            return b;
         }
     }
 

@@ -193,7 +193,8 @@ namespace GridGame.App
                 h.style.paddingTop = GameApp.SafeTop;
                 h.style.minHeight = Kit.HeaderHeight + GameApp.SafeTop;
             }
-            if (onBack != null) Button("‹", onBack, "btn--small btn--icon", h).name = "back";
+            // GG-T738 (§26.7): the back button is the Back kind emblem, not a "‹" glyph.
+            if (onBack != null) RowIcon.IconButton(null, RowKind.Back, onBack, "btn--small btn--icon", h).name = "back";
             if (subtitle == null) Text(title, "header-title shadow", h);
             else
             {

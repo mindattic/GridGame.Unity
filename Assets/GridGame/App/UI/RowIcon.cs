@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -108,6 +109,25 @@ namespace GridGame.App
                 return Place(row, host, kind);
             }
             return KindIcon(row, kind, ArtFor(kind, id));
+        }
+
+        /// <summary>A button led by its kind icon (BIBLE §26.7): empty button text, the icon, then <paramref name="text"/> as a
+        /// label that takes no clicks, so the whole button stays one target. With no text it is an icon-only button (the
+        /// header's back button, GG-T738): the icon centred, no label.</summary>
+        public static Button IconButton(string text, RowKind kind, Action onClick, string classes = null, VisualElement parent = null)
+        {
+            var b = Ui.Button("", onClick, classes, parent);
+            b.style.flexDirection = FlexDirection.Row;
+            b.style.alignItems = Align.Center;
+            b.style.justifyContent = Justify.Center;
+            var icon = b.KindIcon(kind);
+            icon.style.width = icon.style.height = Size.IconS;
+            if (string.IsNullOrEmpty(text)) { icon.style.marginRight = 0; return b; }
+            icon.style.marginRight = Space.S8;
+            var label = Ui.Text(text, null, b);
+            label.pickingMode = PickingMode.Ignore;
+            Fonts.UseHeavy(label);
+            return b;
         }
 
         /// <summary>A small badge (<see cref="RowKind.Cleared"/>, <see cref="RowKind.New"/>, <see cref="RowKind.Locked"/>)
