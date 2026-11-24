@@ -45,6 +45,14 @@ namespace GridGame.Core.Battle
             return false;
         }
 
+        // ── Records (GG-T945, §2.13.1, §22.10) ─────────────────────────────────────────────────────
+
+        /// <summary>The mode a finished battle's records are kept under. Wave counts and hauls from different modes aren't
+        /// comparable (one action per turn clears far fewer waves than a whole party window), so the Crucible keeps one
+        /// record per mode (<c>CrucibleSave</c>) and asks this, never <see cref="BattleState.TurnMode"/>. Any mode answers,
+        /// built or not: it only names the battle's own mode.</summary>
+        public static TurnMode RecordMode(BattleState s) => s.TurnMode;
+
         // ── Countdown badge (GG-T918, §2.10) ───────────────────────────────────────────────────────
 
         /// <summary>The countdown the badge shows for a foe: party turns until its pending cast lands, else until its turn

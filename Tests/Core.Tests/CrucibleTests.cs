@@ -151,10 +151,11 @@ namespace GridGame.Tests
         }
 
         /// <summary>A Crucible battle ended with a given haul — the meta rules don't care how it played out.</summary>
-        private static BattleState Ended(ContentDb c, SaveData s, BattlePhase phase, int wave, int coins, int xp, string item)
+        private static BattleState Ended(ContentDb c, SaveData s, BattlePhase phase, int wave, int coins, int xp, string item,
+            TurnMode mode = TurnMode.PartyWindow)
         {
             var st = Crucible.Generate(c, s, 42);
-            var b = BattleEngine.Create(c, BattleFactory.Build(c, s, st, 42), new List<BattleEvent>());
+            var b = BattleEngine.Create(c, BattleFactory.Build(c, s, st, 42, profileTurnMode: mode), new List<BattleEvent>());
             foreach (var u in b.Units.Where(u => u.IsHero)) { u.Hp = phase == BattlePhase.Defeat ? 0 : 1; }
             b.Wave = wave;
             b.Phase = phase;
@@ -231,6 +232,84 @@ namespace GridGame.Tests
             Assert.That(s.Crucible.BestGold, Is.EqualTo(400));
             BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Retreated, 2, 90, 10, "healing_potion"));
             Assert.That(s.Crucible.BestGold, Is.EqualTo(400));
+        }
+
+        /// <summary>GG-T945 (§2.13.1): a Crucible run plays the save's resolved turn mode like any battle (the lock, else the
+        /// profile), and the gauntlet's seed doesn't depend on it.</summary>
+        [Test]
+        public void A_crucible_run_plays_the_resolved_turn_mode_on_the_same_seed()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "Cru");
+            int seed = Crucible.SeedFor(s);
+            var st = Crucible.Generate(c, s, seed);
+            Assert.That(BattleFactory.Build(c, s, st, seed).TurnMode, Is.EqualTo(TurnMode.PartyWindow));
+            Assert.That(BattleFactory.Build(c, s, st, seed, profileTurnMode: TurnMode.AnyHeroEveryTurn).TurnMode, Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+            TurnModeSetting.Lock(s, TurnMode.PartyWindow);
+            Assert.That(BattleFactory.Build(c, s, st, seed, profileTurnMode: TurnMode.AnyHeroEveryTurn).TurnMode, Is.EqualTo(TurnMode.PartyWindow), "the save's lock wins");
+            Assert.That(Crucible.SeedFor(s), Is.EqualTo(seed), "the mode never moves the seed");
+        }
+
+        /// <summary>GG-T945: wave counts across turn modes aren't comparable, so each mode keeps its own best waves and best
+        /// haul; PartyWindow's stays in Best/BestGold. Runs and TotalWaves stay shared.</summary>
+        [Test]
+        public void Crucible_records_are_kept_per_turn_mode()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "Cru");
+            var pw = BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Defeat, 7, 400, 10, "healing_potion"));
+            Assert.That(pw.CrucibleMode, Is.EqualTo(TurnMode.PartyWindow));
+            Assert.That(pw.CrucibleBestGold, Is.EqualTo(400));
+            Assert.That(s.Crucible.ByMode, Is.Null, "a PartyWindow run leaves the save's shape as it was");
+
+            var a = BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Defeat, 3, 100, 10, "healing_potion", TurnMode.AnyHeroEveryTurn));
+            Assert.That(a.CrucibleMode, Is.EqualTo(TurnMode.AnyHeroEveryTurn));
+            Assert.That(a.CrucibleNewBest, Is.True, "3 waves is the mode's first record, though PartyWindow's is 7");
+            Assert.That(a.CrucibleBest, Is.EqualTo(3));
+            Assert.That(a.CrucibleBestGold, Is.EqualTo(100));
+            Assert.That(s.Crucible.Best, Is.EqualTo(7), "PartyWindow's record untouched");
+            Assert.That(s.Crucible.BestGold, Is.EqualTo(400));
+            Assert.That(s.Crucible.BestFor(TurnMode.AnyHeroEveryTurn), Is.EqualTo(3));
+            Assert.That(s.Crucible.BestGoldFor(TurnMode.AnyHeroEveryTurn), Is.EqualTo(100));
+            Assert.That(s.Crucible.Runs, Is.EqualTo(2));
+            Assert.That(s.Crucible.TotalWaves, Is.EqualTo(10));
+
+            var a2 = BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Retreated, 2, 50, 10, "healing_potion", TurnMode.AnyHeroEveryTurn));
+            Assert.That(a2.CrucibleNewBest, Is.False);
+            Assert.That(a2.CrucibleBest, Is.EqualTo(3));
+            Assert.That(a2.CrucibleBestGold, Is.EqualTo(100), "a poorer run never lowers the mode's best haul");
+
+            var pw2 = BattleFactory.Commit(c, s, Ended(c, s, BattlePhase.Defeat, 5, 10, 10, "healing_potion"));
+            Assert.That(pw2.CrucibleNewBest, Is.False, "5 waves beats Any hero's 3 but not PartyWindow's 7");
+            Assert.That(pw2.CrucibleBest, Is.EqualTo(7));
+            Assert.That(s.Crucible.BestFor(TurnMode.UnmovedThisRound), Is.EqualTo(0), "a mode never run has no record");
+        }
+
+        /// <summary>GG-T945: the per-mode records survive the save JSON, keyed by mode name, and a save without them (every
+        /// save before GG-T945) loads and reads its record unchanged.</summary>
+        [Test]
+        public void Crucible_per_mode_records_round_trip_the_save_json()
+        {
+            var c = Real;
+            var s = Progression.NewGame(c, "Cru");
+            s.Crucible.Record(TurnMode.PartyWindow, 7, 400);
+            var json = SaveFiles.Serialize(s);
+            Assert.That(json, Does.Not.Contain("ByMode"), "an older save's shape is unchanged");
+            var back = SaveFiles.Deserialize(json);
+            Assert.That(back.Crucible.ByMode, Is.Null);
+            Assert.That(back.Crucible.BestFor(TurnMode.PartyWindow), Is.EqualTo(7));
+            Assert.That(back.Crucible.BestGoldFor(TurnMode.PartyWindow), Is.EqualTo(400));
+
+            s.Crucible.Record(TurnMode.AnyHeroEveryTurn, 3, 120);
+            json = SaveFiles.Serialize(s);
+            Assert.That(json, Does.Contain("\"AnyHeroEveryTurn\""), "keyed by mode name");
+            back = SaveFiles.Deserialize(json);
+            Assert.That(back.Crucible.Best, Is.EqualTo(7));
+            Assert.That(back.Crucible.BestGold, Is.EqualTo(400));
+            Assert.That(back.Crucible.BestFor(TurnMode.AnyHeroEveryTurn), Is.EqualTo(3));
+            Assert.That(back.Crucible.BestGoldFor(TurnMode.AnyHeroEveryTurn), Is.EqualTo(120));
+            Assert.That(back.Crucible.Runs, Is.EqualTo(2));
+            Assert.That(back.Crucible.TotalWaves, Is.EqualTo(10));
         }
 
         [TestCase(BattlePhase.Defeat)]

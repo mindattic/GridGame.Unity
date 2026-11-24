@@ -232,7 +232,8 @@ namespace GridGame.App
                 "The party falls in the Crucible, but every coin, drop and point of experience earned is kept. Everyone recovers.", "small", list);
             t.style.whiteSpace = WhiteSpace.Normal;
             Tag(Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
-            if (App.Save?.Crucible != null) Tag(Ui.MenuRow("Best haul", Ui.Gold(App.Save.Crucible.BestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
+            // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
+            Tag(Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
             Tag(Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "crucible-xp";
             TurnsRow(list);
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);

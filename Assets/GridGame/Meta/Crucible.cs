@@ -216,11 +216,12 @@ namespace GridGame.Meta
 
             rep.CrucibleWaves = WavesSurvived(battle);
             s.Crucible ??= new CrucibleSave();
-            s.Crucible.Runs++;
-            s.Crucible.TotalWaves += rep.CrucibleWaves;
-            if (rep.CrucibleWaves > s.Crucible.Best) { s.Crucible.Best = rep.CrucibleWaves; rep.CrucibleNewBest = true; }
-            rep.CrucibleBest = s.Crucible.Best;
-            if (rep.Gold > s.Crucible.BestGold) s.Crucible.BestGold = rep.Gold;
+            // GG-T945 (§2.13.1): records are kept per turn mode, since wave counts across modes aren't comparable.
+            var mode = TurnRules.RecordMode(battle);
+            rep.CrucibleMode = mode;
+            rep.CrucibleNewBest = s.Crucible.Record(mode, rep.CrucibleWaves, rep.Gold);
+            rep.CrucibleBest = s.Crucible.BestFor(mode);
+            rep.CrucibleBestGold = s.Crucible.BestGoldFor(mode);
 
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;
             // GG-T929: the arena's theme (a generated stage has no entry of its own), then what the run showed.

@@ -1628,9 +1628,14 @@ namespace GridGame.App
         protected override string Title => "Crucible";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
-        /// <summary>The Camp row's value: the save's best run, or an invitation before the first one.</summary>
-        public static string RecordText(SaveData s) =>
-            s.Crucible != null && s.Crucible.Runs > 0 ? $"Best: {s.Crucible.Best} wave{(s.Crucible.Best == 1 ? "" : "s")}" : "Endless waves";
+        /// <summary>The Camp row's value: the save's best run in <paramref name="mode"/> (the mode the next run plays,
+        /// GG-T945: records are kept per turn mode), or an invitation before the first one.</summary>
+        public static string RecordText(SaveData s, TurnMode mode)
+        {
+            if (s.Crucible == null || s.Crucible.Runs == 0) return "Endless waves";
+            int best = s.Crucible.BestFor(mode);
+            return $"Best: {best} wave{(best == 1 ? "" : "s")}";
+        }
 
         protected override void BuildBody(VisualElement body)
         {
@@ -1649,7 +1654,8 @@ namespace GridGame.App
             rec.name = "crucible-record";
             Ui.Section("Record", rec);
             bool ran = S.Crucible.Runs > 0;
-            Ui.Field("Best", ran ? $"{S.Crucible.Best} waves · {Ui.Gold(S.Crucible.BestGold)}" : "None yet", rec, "gold");
+            var mode = TurnModeSetting.Resolve(S, App.Settings); // GG-T945: the record of the mode the next run plays
+            Ui.Field("Best", ran ? $"{S.Crucible.BestFor(mode)} waves · {Ui.Gold(S.Crucible.BestGoldFor(mode))}" : "None yet", rec, "gold");
             Ui.Field("Runs", ran ? $"{S.Crucible.Runs} · {S.Crucible.TotalWaves} waves" : "0", rec);
 
             // GG-T430: you pick one team before the run (the active party, up to the party-size cap) and it fights

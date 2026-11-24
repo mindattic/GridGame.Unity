@@ -311,6 +311,46 @@ namespace GridGame.Meta
         public int TotalWaves;
         /// <summary>The most gold one run has banked (wave pay plus drops, GG-T430); a worse run never lowers it.</summary>
         public int BestGold;
+        /// <summary>GG-T945 (§2.13.1, §22.10): the records of every mode other than <see cref="TurnMode.PartyWindow"/>,
+        /// whose record stays <see cref="Best"/>/<see cref="BestGold"/> so an older save loads and reads unchanged. Null
+        /// (and left out of the JSON) until a run in another mode ends; the JSON keys it by mode name.
+        /// <see cref="Runs"/> and <see cref="TotalWaves"/> stay shared: Runs seeds the next run whatever its mode.</summary>
+        public Dictionary<TurnMode, CrucibleRecord> ByMode;
+
+        /// <summary>The best waves survived in <paramref name="mode"/>'s runs (0 before the first).</summary>
+        public int BestFor(TurnMode mode) =>
+            mode == TurnMode.PartyWindow ? Best : ByMode != null && ByMode.TryGetValue(mode, out var r) ? r.Best : 0;
+
+        /// <summary>The richest haul of <paramref name="mode"/>'s runs (0 before the first).</summary>
+        public int BestGoldFor(TurnMode mode) =>
+            mode == TurnMode.PartyWindow ? BestGold : ByMode != null && ByMode.TryGetValue(mode, out var r) ? r.BestGold : 0;
+
+        /// <summary>Records one finished run of <paramref name="mode"/>: counts it, and raises that mode's best waves and
+        /// best haul (never lowers them). True when the waves are a new best for the mode.</summary>
+        public bool Record(TurnMode mode, int waves, int gold)
+        {
+            Runs++;
+            TotalWaves += waves;
+            bool newBest = waves > BestFor(mode);
+            if (mode == TurnMode.PartyWindow)
+            {
+                if (newBest) Best = waves;
+                if (gold > BestGold) BestGold = gold;
+                return newBest;
+            }
+            ByMode ??= new Dictionary<TurnMode, CrucibleRecord>();
+            if (!ByMode.TryGetValue(mode, out var r)) ByMode[mode] = r = new CrucibleRecord();
+            if (newBest) r.Best = waves;
+            if (gold > r.BestGold) r.BestGold = gold;
+            return newBest;
+        }
+    }
+
+    /// <summary>One turn mode's Crucible record (GG-T945): its best waves survived and its richest haul.</summary>
+    public sealed class CrucibleRecord
+    {
+        public int Best;
+        public int BestGold;
     }
 
     /// <summary>What the save knows about one enemy class (§25.11). How much the Bestiary and the battle inspect

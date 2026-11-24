@@ -393,9 +393,13 @@ namespace GridGame.Meta
         public bool Crucible;
         /// <summary>Waves fully cleared before the party fell or left.</summary>
         public int CrucibleWaves;
-        /// <summary>The save's best waves-survived after this run.</summary>
+        /// <summary>The save's best waves-survived after this run, in this run's turn mode (GG-T945).</summary>
         public int CrucibleBest;
         public bool CrucibleNewBest;
+        /// <summary>The save's best haul after this run, in this run's turn mode (GG-T945).</summary>
+        public int CrucibleBestGold;
+        /// <summary>The turn mode this run's record is kept under (GG-T945, <see cref="TurnRules.RecordMode"/>).</summary>
+        public TurnMode CrucibleMode;
         /// <summary>The battle's best combo window (§1.2.8, GG-T852): its rank (None when no combo ran) and score.</summary>
         public ComboRank BestComboRank;
         public int BestComboScore;

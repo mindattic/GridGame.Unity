@@ -668,7 +668,7 @@ namespace GridGame.App
             if (Features.Crucible && CampUnlocks.CrucibleOpen(s))
             {
                 bool crucibleOpen = Crucible.CanLaunch(c, s, out var crucibleWhy);
-                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
+                var crucible = Ui.MenuRow("Crucible", crucibleOpen ? CrucibleScreen.RecordText(s, TurnModeSetting.Resolve(s, App.Settings)) : "", () => App.Router.Push(new CrucibleScreen()), list.contentContainer, null, crucibleOpen);
                 crucible.name = "camp-crucible";
                 crucible.KindIcon(RowKind.Crucible);
                 if (!crucibleOpen) Subline(crucible, crucibleWhy); // "Closed on an expedition", whole (GG-T518)
