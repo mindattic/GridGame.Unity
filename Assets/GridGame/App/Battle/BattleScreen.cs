@@ -519,7 +519,7 @@ namespace GridGame.App
         {
             float k = 0.78f + 0.22f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f / Timing.OrbBreathe);
             for (int i = 0; i < orbBlooms.Count; i++)
-                if (orbViews[i].Filled) orbBlooms[i].style.opacity = k;
+                orbBlooms[i].style.opacity = orbViews[i].Filled ? k : 0.6f * Mathf.Clamp01(orbViews[i].Charge); // GG-T739: the halo of a filling orb brightens with its fill
         }
 
         // ─────────────────────────────────────────────────────────────────────────
