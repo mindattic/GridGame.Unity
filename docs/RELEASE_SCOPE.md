@@ -185,7 +185,18 @@ None of these were run (balance tools are test-gated). Each is a number to look 
   UnityPlayer access violation inside `Resources.Load` called from `Audio.Clip` <- `Audio.Music` <- `ScreenRouter.MountTop`
   (Audio.cs:74/90, ScreenRouter.cs:177) while the battle screen mounted; the harness then hit its socket TimeoutError. Same
   signature as the Swamp II crash (native, at battle start), so it is an intermittent music-clip load crash, not a Swamp II
-  stage bug. Stages 14-40 remain unmeasured; the crash is filed as its own ticket.
+  stage bug. The crash is filed as its own ticket (GG-T741, since fixed).
+  **GG-T742 resumed again (2026-11-24, one player run from a scratch copy of a fresh `-SkipProse` build of main that includes the
+  GG-T741 music preload, 3-battle `--resume --keep` chunks, port 28906; Cave II's music-load crash did NOT reproduce):** stages
+  14-27 won, every one first try with 0 retries (Cave II/III, Still I-III, City Ruins I-III, Cathedral I-III, Bloom I-III; 14/14).
+  Battle seconds 127-256 at x3 speed, rising with depth (Cave II 127 s, Bloom III 256 s). Party level (warden) 13 at Cave II, 19
+  at Bloom III; Rested pool ran 10 -> 1 over the stretch (it only refills via the paid gate). Gold at the camp before each stage:
+  1,755 / 2,590 / 2,925 / 2,655 / 3,218 / 4,262 / 3,373 / 3,867 / 4,912 / 3,871 / 2,923 / 4,393 / 3,377 / 2,632, ending at 3,176
+  before stage 28; gold stays in the 2.6-4.9k band, so the economy is not what gates this stretch. **Stage 28 (`greenvalley-04`,
+  the next stage after Bloom III in play order) is a difficulty wall for this autoplay party:** lost 4 times (first try plus 3 retries) with the party
+  at level 19 and Rested 1, consistent with the postgame level wall the nightly measured (see "the postgame level wall" below).
+  Stages 29-40 remain unmeasured because the bot cannot clear stage 28; that needs the owner's pick on the wall options
+  (GG-T474), not another chunk run. Full per-battle log: `artifacts/playthrough2/play.jsonl` (git-ignored).
 - **Wanderer join rule:** low trust (0) can't join even with a faction-mate and three right answers (0 + 1 + 3 = 4 is the
   bare threshold). In practice that means half trust or better, which is fine, but say so in the talk's outlook line.
 
