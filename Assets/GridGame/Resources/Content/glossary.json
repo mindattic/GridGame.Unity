@@ -108,6 +108,16 @@
     "LinkId": "blinded"
   },
   {
+    "Id": "shredded",
+    "Term": "Shredded",
+    "Aliases": [
+      "Shred",
+      "Shreds"
+    ],
+    "LinkKind": "Buff",
+    "LinkId": "shredded"
+  },
+  {
     "Id": "regen",
     "Term": "Regen",
     "Aliases": [

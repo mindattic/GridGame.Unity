@@ -714,6 +714,12 @@ namespace GridGame.Core.Content
         public bool BreaksOnDamage;
         public bool BreaksOnMove;
         public float IncomingDamageMultiplier = 1f;
+        /// <summary>Shredded (GG-T857, §8.1): each instance (so each stack) adds this to the bearer's incoming
+        /// <see cref="DamageType.Physical"/> damage, additively (3 stacks of 0.10 = ×1.3). Spells of other elements ignore it.</summary>
+        public float PhysicalDamageTakenBonus;
+        /// <summary>Shredded (GG-T857, §13.5): each application chips this much off the bearer's armor plate, whatever side
+        /// the plate faces (a <c>PlateHitEvent</c>, breaking it at 0). Nothing on an unplated unit.</summary>
+        public int PlateChip;
         public float TimelineSpeedMultiplier = 1f;
         /// <summary>Signed party tempo this buff adds while it sits on a hero (GG-T268): Slow on heroes is negative, so enemy icons speed up.</summary>
         public int Tempo;

@@ -642,6 +642,8 @@ namespace GridGame.App
             if (d.BlocksSpells) parts.Add("can't cast spells");
             if (d.IncomingDamageMultiplier < 1f) parts.Add($"takes {Mathf.RoundToInt((1f - d.IncomingDamageMultiplier) * 100)}% less damage");
             if (d.IncomingDamageMultiplier > 1f) parts.Add($"takes {Mathf.RoundToInt((d.IncomingDamageMultiplier - 1f) * 100)}% more damage");
+            if (d.PhysicalDamageTakenBonus > 0f) parts.Add($"takes {Mathf.RoundToInt(d.PhysicalDamageTakenBonus * 100)}% more physical damage per stack"); // GG-T857
+            if (d.PlateChip > 0) parts.Add($"chips {d.PlateChip} off its armor plate from any side");
             if (d.TimelineSpeedMultiplier < 1f) parts.Add("acts slower");
             if (d.TimelineSpeedMultiplier > 1f) parts.Add("acts faster");
             if (d.Tempo < 0) parts.Add($"on a hero: party Tempo {d.Tempo} (foes act sooner)");

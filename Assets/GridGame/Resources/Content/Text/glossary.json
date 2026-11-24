@@ -1780,6 +1780,26 @@
         ]
       }
     },
+    "glossary:shredded": {
+      "key": "glossary:shredded",
+      "id": "glossary-shredded",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bedf81e7ba3b1fe9832de1f7d5a6eb2f1d65b07c81bc4a2e21baac36657e7c84",
+      "about": [
+        "concept-shredded"
+      ],
+      "speakers": [],
+      "payload": {
+        "term": "Shredded",
+        "definition": "Its armor is torn: each stack (up to 3) makes it take 10% more physical damage, and each one that lands chips its armor plate, whichever way it faces.",
+        "aliases": [
+          "Shred",
+          "Shreds"
+        ]
+      }
+    },
     "glossary:siege_shot": {
       "key": "glossary:siege_shot",
       "id": "glossary-siege-shot",

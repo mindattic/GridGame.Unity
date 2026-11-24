@@ -848,10 +848,26 @@ namespace GridGame.Core.Battle
             }
             u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
+            if (def.PlateChip > 0) ChipPlate(u, def.PlateChip, sourceId); // GG-T857: Shredded bites the plate from any side
             ComboStatus(u, def, sourceId); // §1.2.8
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
+        }
+
+        /// <summary>GG-T857 (§13.5): a <see cref="BuffDef.PlateChip"/> debuff takes a fixed bite out of the bearer's plate
+        /// whichever way it faces, unlike a blow, which only dents it from the front. Same events as a blow on the plate.</summary>
+        private void ChipPlate(Unit u, int amount, int sourceId)
+        {
+            if (!u.HasPlate || amount <= 0) return;
+            int bite = Math.Min(amount, u.PlateHp);
+            u.PlateHp -= bite;
+            Emit(new PlateHitEvent { UnitId = u.Id, AttackerId = sourceId, Amount = bite, Left = u.PlateHp, Max = u.PlateMax });
+            if (u.PlateHp == 0)
+            {
+                Emit(new PlateBrokenEvent { UnitId = u.Id, AttackerId = sourceId });
+                Announce($"{u.Name}'s armor breaks off!", u.Id);
+            }
         }
 
         // ── Party tempo (GG-T268, §2.11) ─────────────────────────────────────────────────────────────────

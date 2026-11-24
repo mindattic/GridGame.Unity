@@ -164,6 +164,18 @@ namespace GridGame.Core.Rules
             return Math.Max(1f, Math.Max(reduced, floor));
         }
 
+        /// <summary>Everything the bearer's buffs do to damage of <paramref name="type"/> it takes: the plain
+        /// <see cref="Unit.IncomingDamageMultiplier"/>, and for Physical each Shredded stack's
+        /// <see cref="BuffDef.PhysicalDamageTakenBonus"/> on top, summed (GG-T857, §8.1: 3 stacks = ×1.3).</summary>
+        public static float TakenMultiplier(Unit u, DamageType type)
+        {
+            float m = u.IncomingDamageMultiplier;
+            if (type != DamageType.Physical) return m;
+            float bonus = 0f;
+            foreach (var b in u.Buffs) bonus += b.Def.PhysicalDamageTakenBonus;
+            return bonus == 0f ? m : m * Math.Max(0f, 1f + bonus);
+        }
+
         /// <summary>Physical pincer / melee attack (§13.1.1).</summary>
         public static AttackRoll Physical(Unit attacker, Unit defender, Rng rng, float multiplier = 1f, bool dodgeable = true)
         {
@@ -179,7 +191,7 @@ namespace GridGame.Core.Rules
             float typeMult = hit == HitKind.Critical ? CritMultiplier : 1f;
             float levelMult = (float)Math.Pow(DamageScalePerLevel, attacker.Level - defender.Level);
             int dmg = Math.Max(1, (int)Math.Floor(varied * typeMult * levelMult * multiplier));
-            float inc = defender.IncomingDamageMultiplier;
+            float inc = TakenMultiplier(defender, DamageType.Physical);
             if (inc != 1f) dmg = Math.Max(1, (int)Math.Floor(dmg * inc));
             if (defender.ResistanceMultiplier(DamageType.Physical) <= 0f) dmg = 0;
             return new AttackRoll { Damage = dmg, Hit = hit };
@@ -193,7 +205,7 @@ namespace GridGame.Core.Rules
             float res = defender.ResistanceMultiplier(DamageType.Physical);
             if (res <= 0f) return 0f;
             float levelMult = (float)Math.Pow(DamageScalePerLevel, attacker.Level - defender.Level);
-            return Math.Max(1f, raw * res * levelMult * multiplier * defender.IncomingDamageMultiplier);
+            return Math.Max(1f, raw * res * levelMult * multiplier * TakenMultiplier(defender, DamageType.Physical));
         }
 
         /// <summary>GG-T356: the same for an enemy charge landing on <paramref name="target"/>: the <see cref="Magic"/>
@@ -204,7 +216,7 @@ namespace GridGame.Core.Rules
             float res = target.ResistanceMultiplier(charge.DamageType);
             if (res <= 0f) return 0f;
             float levelMult = (float)Math.Pow(DamageScalePerLevel, caster.Level - target.Level);
-            float magic = Mitigate(caster.Effective.Intelligence, target.Effective.Wisdom) * res * levelMult * target.IncomingDamageMultiplier;
+            float magic = Mitigate(caster.Effective.Intelligence, target.Effective.Wisdom) * res * levelMult * TakenMultiplier(target, charge.DamageType);
             return magic + SpellDamage(charge, target, false);
         }
 
@@ -222,7 +234,7 @@ namespace GridGame.Core.Rules
             float typeMult = hit == HitKind.Critical ? CritMultiplier : 1f;
             float levelMult = (float)Math.Pow(DamageScalePerLevel, caster.Level - target.Level);
             int dmg = res <= 0f ? 0 : Math.Max(1, (int)Math.Floor(varied * typeMult * levelMult));
-            float inc = target.IncomingDamageMultiplier;
+            float inc = TakenMultiplier(target, type);
             if (dmg > 0 && inc != 1f) dmg = Math.Max(1, (int)Math.Floor(dmg * inc));
             return new AttackRoll { Damage = dmg, Hit = hit };
         }
@@ -232,7 +244,7 @@ namespace GridGame.Core.Rules
         {
             float res = target.ResistanceMultiplier(spell.DamageType);
             float elem = wetBonus ? BattleConfig.LightningWhenWetMultiplier : 1f;
-            float final = (float)Math.Round(spell.BaseDamage * res * elem * target.IncomingDamageMultiplier);
+            float final = (float)Math.Round(spell.BaseDamage * res * elem * TakenMultiplier(target, spell.DamageType));
             if (spell.BaseDamage > 0 && res > 0f) final = Math.Max(1f, final);
             return (int)final;
         }
