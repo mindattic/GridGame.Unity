@@ -132,11 +132,28 @@ namespace GridGame.Core.Battle
         public bool IsCommandable => Team == Team.Hero && !IsIndependent;
         public bool IsMultiTile => W > 1 || H > 1;
         /// <summary>GG-T891 (§1.1.3, §14.2): a Heavy class (<see cref="ClassDef.Heavy"/>) is never displaced by anyone
-        /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.</summary>
-        public bool IsHeavy => Def != null && Def.Heavy && !IsFloating;
-        /// <summary>The buff id that lifts a unit off the ground (GG-T859 authors it): a floating Heavy unit can be moved.</summary>
+        /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.
+        /// GG-T882: a <see cref="BuffDef.Heavy"/> buff (the Warden's Anchor Stance) makes any unit Heavy for as long as it lasts.</summary>
+        public bool IsHeavy => (Def != null && (Def.Heavy || IsRaging) || HasHeavyBuff) && !IsFloating;
+        /// <summary>GG-T882: a buff made it Heavy for a while (<see cref="BuffDef.Heavy"/>, the Warden's Anchor Stance).</summary>
+        public bool HasHeavyBuff
+        {
+            get { foreach (var b in Buffs) if (b.Def.Heavy) return true; return false; }
+        }
+        /// <summary>GG-T882: wears a <see cref="BuffDef.Braces"/> buff (Anchor Stance): the allies beside it can't be displaced.</summary>
+        public bool IsAnchoring
+        {
+            get { foreach (var b in Buffs) if (b.Def.Braces) return true; return false; }
+        }
+        /// <summary>GG-T897 (§14.18): carries a Rages buff (the Herd's Raging): Heavy, unpushable, unafraid.</summary>
+        public bool IsRaging
+        {
+            get { foreach (var b in Buffs) if (b.Def.Rages) return true; return false; }
+        }
+        /// <summary>The buff id that lifts a unit off the ground (buffs.json <c>floating</c>, GG-T859).</summary>
         public const string FloatingBuffId = "floating";
-        /// <summary>Hovers (GG-T859's Floating buff): Heavy no longer anchors it.</summary>
+        /// <summary>Hovers (GG-T859, §8.1 Floating): Heavy no longer anchors it, it sets off no ground tile state
+        /// (<see cref="RegionBoard.HoversOver"/>), and Rooted can't take hold (<see cref="IsRooted"/>).</summary>
         public bool IsFloating => HasBuff(FloatingBuffId);
         /// <summary>Nothing but its own legs ever moves it: a 2×2 boss, a snake member, remains, or a Heavy unit (GG-T891).</summary>
         public bool WontBudge => IsMultiTile || IsSnakeMember || IsRemains || IsHeavy;
@@ -279,10 +296,11 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.Immobile) return true; return false; }
         }
 
-        /// <summary>Carries a Roots buff (GG-T856): held to its tile, but free to act.</summary>
+        /// <summary>Carries a Roots buff (GG-T856): held to its tile, but free to act. Never while <see cref="IsFloating"/>
+        /// (GG-T859): roots find no ground to grip.</summary>
         public bool IsRooted
         {
-            get { foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
+            get { if (IsFloating) return false; foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
         }
 
         /// <summary>Carries a Frightens buff (GG-T916): flees its <see cref="FearSourceId"/>.</summary>
@@ -307,6 +325,14 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.BlocksSpells) return true; return false; }
         }
 
+        /// <summary>Afterimage (GG-T867, the Speedster): the tile its last dash left an afterimage on, until its next turn
+        /// (null = none). The afterimage draws foes' attacks (Taunting) and fades when struck or when the turn comes round.</summary>
+        public Coord? AfterimageAt;
+
+        /// <summary>GG-T867: true only for the rest of the dash's own action, while <see cref="AfterimageAt"/> stands in as a
+        /// pincer end of this unit's (<c>PincerDetector</c>).</summary>
+        public bool AfterimagePincers;
+
         /// <summary>Carries a taunt buff: enemies must come for this hero (§14.1.1).</summary>
         public bool IsTaunting
         {
@@ -330,8 +356,12 @@ namespace GridGame.Core.Battle
 
         public float AccuracyMultiplier
         {
-            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
+            get { float m = AimMultiplier; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
         }
+
+        /// <summary>GG-T861: the accuracy a blow aimed into smoke is rolled at (a Blind for that one roll), set by the runner
+        /// around a single hit roll and put back to 1 straight after; never saved.</summary>
+        public float AimMultiplier = 1f;
 
         /// <summary>Blind (any accuracy-lowering debuff, today <c>blinded</c>): lower hit and crit chance, and a crit landed
         /// anyway is a Clutch (GG-T566, §13.1.1).</summary>

@@ -1628,9 +1628,14 @@ namespace GridGame.App
         protected override string Title => "Crucible";
         protected override string Backdrop => HubScreen.ThemeFor(C, S);
 
-        /// <summary>The Camp row's value: the save's best run, or an invitation before the first one.</summary>
-        public static string RecordText(SaveData s) =>
-            s.Crucible != null && s.Crucible.Runs > 0 ? $"Best: {s.Crucible.Best} wave{(s.Crucible.Best == 1 ? "" : "s")}" : "Endless waves";
+        /// <summary>The Camp row's value: the save's best run in <paramref name="mode"/> (the mode the next run plays,
+        /// GG-T945: records are kept per turn mode), or an invitation before the first one.</summary>
+        public static string RecordText(SaveData s, TurnMode mode)
+        {
+            if (s.Crucible == null || s.Crucible.Runs == 0) return "Endless waves";
+            int best = s.Crucible.BestFor(mode);
+            return $"Best: {best} wave{(best == 1 ? "" : "s")}";
+        }
 
         protected override void BuildBody(VisualElement body)
         {
@@ -1649,7 +1654,8 @@ namespace GridGame.App
             rec.name = "crucible-record";
             Ui.Section("Record", rec);
             bool ran = S.Crucible.Runs > 0;
-            Ui.Field("Best", ran ? $"{S.Crucible.Best} waves · {Ui.Gold(S.Crucible.BestGold)}" : "None yet", rec, "gold");
+            var mode = TurnModeSetting.Resolve(S, App.Settings); // GG-T945: the record of the mode the next run plays
+            Ui.Field("Best", ran ? $"{S.Crucible.BestFor(mode)} waves · {Ui.Gold(S.Crucible.BestGoldFor(mode))}" : "None yet", rec, "gold");
             Ui.Field("Runs", ran ? $"{S.Crucible.Runs} · {S.Crucible.TotalWaves} waves" : "0", rec);
 
             // GG-T430: you pick one team before the run (the active party, up to the party-size cap) and it fights
@@ -1762,7 +1768,15 @@ namespace GridGame.App
         public override string Id => "bestiary";
         protected override string Title => "Bestiary";
 
-        protected override void BuildBody(VisualElement body)
+        /// <summary>The creature the detail shows (GG-T925: the Codex opens a linked foe here).</summary>
+        internal string Selected { get => selected; set => selected = value; }
+
+        protected override void BuildBody(VisualElement body) => BuildGrid(body);
+
+        /// <summary>The grid and detail into <paramref name="body"/>: this screen's own body, and the Codex's Foes tab
+        /// (GG-T925), which embeds it rather than copying it. <paramref name="onPick"/> hears each creature opened;
+        /// <paramref name="isNew"/> puts the New badge on a seen creature's card until it is opened.</summary>
+        internal void BuildGrid(VisualElement body, Action<string> onPick = null, Func<string, bool> isNew = null)
         {
             var enemies = C.Classes.Values.Where(c => c.Team == Team.Enemy).OrderBy(c => c.Name).ToList();
             int seen = enemies.Count(e => S.Bestiary.TryGetValue(e.Id, out var b) && b.Seen);
@@ -1777,8 +1791,9 @@ namespace GridGame.App
                 var t = Ui.Thumb(e.Id, grid, 160);
                 t.name = "beast-" + e.Id;
                 if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
+                else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
                 t.AddToClassList("card-tap");
-                Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); });
+                Ui.Tappable(t, () => { selected = def.Id; Show(detail, def, entry); RowIcon.ClearBadge(t); onPick?.Invoke(def.Id); });
             }
             grid.style.flexDirection = FlexDirection.Column;
             grid.style.flexWrap = Wrap.NoWrap;
@@ -1791,7 +1806,7 @@ namespace GridGame.App
                 // The content viewport (inside the ScrollView's border, padding and scroller) is what the rows really get.
                 laidCols = EvenGrid(grid, cells, scroll.contentViewport.layout.width, 160f, Space.S24, laidCols);
             });
-            if (selected != null) Show(detail, C.Class(selected), S.Bestiary.TryGetValue(selected, out var se) ? se : null);
+            if (selected != null && C.TryClass(selected) is ClassDef sel) { Show(detail, sel, S.Bestiary.TryGetValue(selected, out var se) ? se : null); onPick?.Invoke(selected); }
             else Ui.Empty("Tap a creature.", detail);
         }
 
@@ -1857,6 +1872,7 @@ namespace GridGame.App
             Ui.Caption($"Defeated {e.Defeated}", top, "gold");
             if (!string.IsNullOrEmpty(d.Description)) GlossaryText.Create(d.Description, "kit-text", w);
             if (!string.IsNullOrEmpty(d.Lore) && d.Lore != d.Description) GlossaryText.Create(d.Lore, "kit-text dim", w);
+            if (d.Heavy) GlossaryText.Create(InspectCard.HeavyLine, "kit-text gold", w).name = "beast-heavy"; // GG-T892: its keyword and counters, once seen
             if (d.DropTable != null && C.DropTables.TryGetValue(d.DropTable, out var drops) && drops.Entries.Count > 0)
             {
                 var names = drops.Entries.OrderByDescending(x => x.Chance).Select(de => C.TryItem(de.Item)).Where(it => it != null)

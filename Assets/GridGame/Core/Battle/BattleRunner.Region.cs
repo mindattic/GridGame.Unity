@@ -36,6 +36,8 @@ namespace GridGame.Core.Battle
             public int OwnerId = -1;
             /// <summary>The team-owned mark whose hook or OnMark this is: its effects reach only the units it works on.</summary>
             public TileMark Mark;
+            /// <summary>A quake's effects (GG-T859, <see cref="RuleEventDef.Quake"/>): they pass over every Floating unit.</summary>
+            public bool Quake;
         }
 
         private bool RegionActive => !PreviewOnly && !S.IsOver;
@@ -68,6 +70,7 @@ namespace GridGame.Core.Battle
             if (PreviewOnly) return;
             if (S.Region.Tiles.Count > 0) Squish(u); // GG-T844: a glob underfoot is squished before the tile's hooks read it
             if (S.Region.Tiles.Count > 0 && u.Alive) RuneCircle(u); // GG-T902: the Choir's circle completes as its third singer steps in
+            if (S.Region.Tiles.Count > 0 && u.Alive && BreakThrough(u)) return; // GG-T869: a Heavy unit falls through a crack
             if (S.Region.Rules.Count == 0 || !u.Alive) return;
             RegionHooks(RuleHook.EnterTile, u);
         }
@@ -76,7 +79,7 @@ namespace GridGame.Core.Battle
         /// GG-T844 (§14.23): <paramref name="u"/> entered a tile; each mark under its footprint whose state is
         /// <see cref="TileStateDef.SquishedBy"/> its team clears (a <see cref="SquishedEvent"/>, then the "cleared" tiles
         /// event), then the state's <see cref="TileStateDef.OnSquish"/> runs with the squisher as subject. A unit immune
-        /// to the state or its rule, and a body, an egg or remains, squish nothing.
+        /// to the state or its rule, a Floating one (GG-T859), and a body, an egg or remains, squish nothing.
         /// </summary>
         private void Squish(Unit u)
         {
@@ -89,6 +92,7 @@ namespace GridGame.Core.Battle
                 var def = C.TryTileState(m.State);
                 if (def?.SquishedBy == null || !TeamMatches(def.SquishedBy.Value, u)) continue;
                 if (RegionBoard.Immune(u, m.Rule, m.State)) continue;
+                if (RegionBoard.HoversOver(S, m, u)) continue; // GG-T859: a Floating unit passes over the glob
                 S.Region.Tiles.Remove(c);
                 Emit(new SquishedEvent { UnitId = u.Id, At = c, State = m.State, RuleId = m.Rule, OwnerTeam = m.OwnerTeam, OwnerId = m.OwnerId });
                 var cleared = new RegionTilesEvent { RuleId = m.Rule, State = m.State, Change = "cleared" };
@@ -138,6 +142,7 @@ namespace GridGame.Core.Battle
                     var h = rule.Hooks[i];
                     if (h.On != on || !TeamMatches(h.Team, subject)) continue;
                     if (h.Wave >= 0 && S.Wave != h.Wave) continue;
+                    if (h.StageOnly && !RegionRuleCatalog.ActiveFor(C, S.Stage).Contains(rule)) continue; // GG-T869
                     if (subject != null && RegionBoard.Immune(subject, rule.Id)) continue;
                     TileMark mark = null;
                     if (h.State != null)
@@ -146,7 +151,8 @@ namespace GridGame.Core.Battle
                         if (mark == null || !string.Equals(mark.State, h.State, StringComparison.OrdinalIgnoreCase)) continue;
                         if (subject != null && RegionBoard.Immune(subject, mark.State)) continue;
                         // GG-T842: a team-owned mark's hooks pass over a subject it doesn't work on (a hero walks
-                        // through the party's own firewall; a foe stepping on the party's mine sets it off).
+                        // through the party's own firewall; a foe stepping on the party's mine sets it off). GG-T859: a
+                        // Floating subject sets off no ground mark (Affects reads RegionBoard.HoversOver).
                         if (subject != null && !RegionBoard.Affects(S, mark, subject)) continue;
                     }
                     string key = rule.Id + "#" + i;
@@ -184,7 +190,7 @@ namespace GridGame.Core.Battle
             RunRuleEffects(def.Effects, new RuleCtx
             {
                 Rule = e.RuleId ?? (C.RuleEventRule.TryGetValue(def.Id, out var owner) ? owner : null),
-                Event = def.Id, Subject = source, At = source?.Pos, EventTiles = e.HazardTiles ?? new List<Coord>(),
+                Event = def.Id, Subject = source, At = source?.Pos, EventTiles = e.HazardTiles ?? new List<Coord>(), Quake = def.Quake,
             });
             CheckEnd();
         }
@@ -288,6 +294,7 @@ namespace GridGame.Core.Battle
                 case RuleEffectKind.Burrow: Burrow(e, ctx); break; // GG-T901: the scorpion's burrow ambush
                 case RuleEffectKind.Unburrow: Unburrow(ctx); break;
                 case RuleEffectKind.Surface: SurfaceAmbush(ctx); break;
+                case RuleEffectKind.Sabotage: Sabotage(e, ctx); break; // GG-T903: the tech gremlin turns a hero's gadget
                 case RuleEffectKind.GrantCharge: // GG-T894: once, however many heroes the area holds
                 {
                     Unit hero = null;
@@ -433,6 +440,7 @@ namespace GridGame.Core.Battle
             var who = S.UnitAt(c);
             if (who == null && S.ItemFree(c)) return null;
             if (def.Pit && who != null && S.ItemFree(c) && CanFall(who, rule, def.Id)) return who;
+            if (def.Pit && who != null && S.ItemFree(c) && who.IsFloating && !who.IsMultiTile) return null; // GG-T859: it opens under a floater, who hovers
             hold = true;
             return null;
         }
@@ -444,6 +452,9 @@ namespace GridGame.Core.Battle
             if (falls != null)
                 foreach (var (u, at) in falls)
                     if (u.Alive && !S.IsOver) Fall(u, at, u.Pos, def, rule);
+            if (def.HeavyBecomes != null) // GG-T869: a crack painted under a Heavy unit gives at once
+                foreach (var c in tiles.ToArray())
+                    if (!S.IsOver && S.UnitAt(c) is Unit heavy && heavy.Pos == c && StateMatches(S.Region.At(c), def.Id)) BreakThrough(heavy);
             if (def.OnMark.Count == 0) return;
             foreach (var c in tiles.ToArray())
             {
@@ -462,11 +473,47 @@ namespace GridGame.Core.Battle
 
         // ── Holes (GG-T368, §14.21) ──────────────────────────────────────────────────────────────
 
+        /// <summary>
+        /// GG-T869 (§14.21): <paramref name="u"/>, Heavy and able to fall, stands on a mark whose state has a
+        /// <see cref="TileStateDef.HeavyBecomes"/> (a crack): its weight breaks it at once. The tile becomes that pit (a
+        /// <see cref="BrokeThroughEvent"/>, then the "marked" tiles event) and the unit falls through. A floating Heavy unit,
+        /// a multi-tile one (a boss never falls) and one immune to the mark tread it like anyone. True when it broke.
+        /// </summary>
+        private bool BreakThrough(Unit u)
+        {
+            if (!RegionActive || u == null || !u.IsHeavy || !u.OnBoard) return false;
+            var c = u.Pos;
+            var m = S.Region.At(c);
+            var def = m == null ? null : C.TryTileState(m.State);
+            var next = def?.HeavyBecomes == null ? null : C.TryTileState(def.HeavyBecomes);
+            if (next == null || !next.Pit || !CanFall(u, m.Rule, m.State) || !RegionBoard.Affects(S, m, u)) return false;
+            string rule = C.TileStateRule.TryGetValue(next.Id, out var owner) ? owner : m.Rule;
+            var faller = HoleFaller(next, rule, c, out bool hold);
+            if (hold || faller != u) return false;
+            S.Region.Tiles[c] = NewMark(next, rule, 0, m.OwnerTeam, m.OwnerId);
+            EnsureRuleInPlay(rule, m.OwnerTeam);
+            Emit(new BrokeThroughEvent { UnitId = u.Id, At = c, From = m.State, Into = next.Id, RuleId = rule });
+            var marked = new RegionTilesEvent { RuleId = rule, State = next.Id, Change = "marked" };
+            marked.Tiles.Add(c);
+            Emit(marked);
+            AfterMarked(next, rule, marked.Tiles, new List<(Unit, Coord)> { (u, c) });
+            return true;
+        }
+
         /// <summary>Only a one-tile, living, ordinary unit falls (bosses, snakes, remains, corpses and eggs don't), and
         /// never one immune to the hole's rule or state.</summary>
         private static bool CanFall(Unit u, string rule, string state) =>
             u != null && u.Alive && u.OnBoard && !u.IsMultiTile && !u.IsSnakeMember && !u.IsRemains && !u.IsCorpse && !u.IsEgg
-            && !RegionBoard.Immune(u, rule, state);
+            && !u.IsFloating && !RegionBoard.Immune(u, rule, state); // GG-T859: a floater never falls
+
+        /// <summary>GG-T859: <paramref name="u"/>'s Floating just ended (it ran out or was stripped); over an open hole, it
+        /// drops in like anyone caught on one.</summary>
+        private void LandFromFloat(Unit u)
+        {
+            if (PreviewOnly || u == null || !u.Alive || !u.OnBoard || u.IsFloating || S.Region.Tiles.Count == 0) return;
+            var def = PitFor(u, u.Pos, out var mark);
+            if (def != null) Fall(u, u.Pos, u.Pos, def, mark.Rule);
+        }
 
         /// <summary>The open hole on <paramref name="c"/> <paramref name="u"/> would fall into, or null.</summary>
         private TileStateDef PitFor(Unit u, Coord c, out TileMark mark)
@@ -671,6 +718,24 @@ namespace GridGame.Core.Battle
             }
         }
 
+        /// <summary>GG-T903 (§14.23): every gadget of another side on the area (<see cref="Rules.EnemyPlanner.IsGadgetOf"/>)
+        /// turns the subject's: owner team and unit become the saboteur's. A hidden one stays hidden, now from its old side
+        /// (the party loses its buried charge; the foes know it). The mark keeps its counter, life and sight.</summary>
+        private void Sabotage(RuleEffectDef e, RuleCtx ctx)
+        {
+            var u = ctx.Subject;
+            if (u == null || !u.Alive) return;
+            foreach (var c in AreaOf(e, ctx))
+            {
+                var m = S.Region.At(c);
+                if (!StateMatches(m, e.State) || !GridGame.Core.Rules.EnemyPlanner.IsGadgetOf(S, m, u.Team)) continue;
+                var from = m.OwnerTeam;
+                m.OwnerTeam = u.Team;
+                m.OwnerId = u.Id;
+                Emit(new TileSabotagedEvent { UnitId = u.Id, At = c, State = m.State, RuleId = m.Rule, FromTeam = from, ToTeam = u.Team, Hidden = m.Hidden });
+            }
+        }
+
         private void ClearTiles(RuleEffectDef e, RuleCtx ctx)
         {
             var byState = new Dictionary<string, RegionTilesEvent>();
@@ -740,7 +805,7 @@ namespace GridGame.Core.Battle
             foreach (var u in units)
             {
                 if (!u.Alive || u.WontBudge || u.IsCorpse) continue; // GG-T891: Heavy too
-                if (RootsHold(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose
+                if (HeldFast(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose; GG-T882: nor a braced unit
                 for (int step = 0; step < e.Amount && u.Alive && !S.IsOver; step++)
                 {
                     var dir = Direction(e.Move, u.Pos, point);
@@ -980,6 +1045,11 @@ namespace GridGame.Core.Battle
                 case RuleArea.All:
                     for (int y = 0; y < BattleConfig.Rows; y++) for (int x = 0; x < BattleConfig.Cols; x++) Add(new Coord(x, y));
                     break;
+                case RuleArea.Line: // GG-T869: Count tiles straight ahead of the subject, toward the Target
+                {
+                    if (ctx.At.HasValue && ctx.Target.HasValue) foreach (var c in RegionRuleCatalog.LineTiles(ctx.At.Value, ctx.Target.Value, e.Count)) Add(c);
+                    break;
+                }
                 case RuleArea.RandomFree:
                 {
                     var pool = new List<Coord>();
@@ -1040,7 +1110,8 @@ namespace GridGame.Core.Battle
                                 || RegionBoard.Immune(u, ctx.Rule, ctx.Event, ctx.Ability)
                                 || (ctx.State != null && RegionBoard.Immune(u, ctx.State))
                                 || (e.State != null && RegionBoard.Immune(u, e.State))
-                                || (ctx.Mark != null && !RegionBoard.Affects(S, ctx.Mark, u))); // GG-T842
+                                || (ctx.Mark != null && !RegionBoard.Affects(S, ctx.Mark, u)) // GG-T842
+                                || (ctx.Quake && u.IsFloating)); // GG-T859: a quake shakes the ground, not the air
             list.Sort((a, b) => a.Id.CompareTo(b.Id));
             return list;
         }

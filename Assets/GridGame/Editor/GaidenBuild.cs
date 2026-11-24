@@ -491,7 +491,7 @@ namespace GridGame.EditorTools
             // GG-T353: backdrops keep the art's resolution (1536x3072 originals): 4096 so Unity never halves them.
             // Still CompressedHQ (BC7 / ASTC 4x4, ~1 byte per pixel, no mips): ~4.5 MB of texture memory each.
             else if (assetPath.Contains("/Backgrounds/")) ti.maxTextureSize = 4096;
-            // GG-T576: sky plates are soft 512x1024 fills behind a split backdrop's foreground; the Somnolith (786 px),
+            // GG-T576: sky plates are soft 512x1024 fills behind a split backdrop's foreground; the Manalith (786 px),
             // its shards and the Moon are drawn at most about screen-width.
             else if (assetPath.Contains("/Skies/") || assetPath.Contains("/Sky/")) ti.maxTextureSize = 1024;
             else if (assetPath.Contains("/Icons/")) { ti.maxTextureSize = 128; ti.textureCompression = TextureImporterCompression.Uncompressed; }

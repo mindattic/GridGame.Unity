@@ -16,6 +16,24 @@ namespace GridGame.Core.Battle
 
     public enum HitKind { Normal, Critical, Miss }
 
+    /// <summary>How the target's elemental multiplier met a blow's damage type (GG-T827, bible 9.1): above 1 is a
+    /// weakness, below 1 a resistance, 0 or less no effect at all. Combat text tags the number with it.</summary>
+    public enum HitEffectiveness { Normal, Weak, Resist, Immune }
+
+    /// <summary>GG-T827: the reads a <see cref="DamagedEvent"/> carries beside its amount.</summary>
+    public static class HitRead
+    {
+        /// <summary>The word for an elemental multiplier: above 1 Weak, 0 or less Immune, below 1 Resist, else Normal.</summary>
+        public static HitEffectiveness Of(float multiplier) =>
+            multiplier <= 0f ? HitEffectiveness.Immune : multiplier > 1.001f ? HitEffectiveness.Weak : multiplier < 0.999f ? HitEffectiveness.Resist : HitEffectiveness.Normal;
+
+        /// <summary>The target's multiplier for <paramref name="type"/> (its class resistances and gear) as a word.</summary>
+        public static HitEffectiveness Of(Unit target, DamageType type) => target == null ? HitEffectiveness.Normal : Of(target.ResistanceMultiplier(type));
+
+        /// <summary>Damage past the HP left: <paramref name="amount"/> beyond <paramref name="hpBefore"/>, never below 0.</summary>
+        public static int Overkill(int amount, int hpBefore) => Math.Max(0, amount - Math.Max(0, hpBefore));
+    }
+
     public sealed class ActionBeganEvent : BattleEvent
     {
         public int ActorId; public string Label;
@@ -67,10 +85,56 @@ namespace GridGame.Core.Battle
         public TileConflictException(string message) : base(message) { }
     }
 
+    /// <summary>GG-T862: Substitution — a blow that would have KO'd <see cref="UnitId"/> struck a log decoy at
+    /// <see cref="From"/> instead (<see cref="Blocked"/> damage it never took); the unit vanished in a puff of smoke and
+    /// reappeared at <see cref="To"/>, beside an ally. The log is tile state <see cref="State"/> (a RegionTilesEvent
+    /// marks it next).</summary>
+    public sealed class SubstitutedEvent : BattleEvent
+    {
+        public int UnitId; public int AttackerId = -1; public Coord From; public Coord To; public string State; public int Blocked;
+        public override string ToString() => $"Substituted {UnitId} {From}->{To} ({Blocked} blocked by {State})";
+    }
+
+    /// <summary>GG-T897 (§14.18): a raging bull's Bull Rush carried <see cref="UnitId"/> from <see cref="From"/> down
+    /// its marked line through <see cref="Path"/> (the tiles it will step into, in order; its SteppedEvents follow, each
+    /// trampled hero's DisplacedEvent ahead of the step onto its tile). <see cref="Trampled"/> are the heroes it ran down.
+    /// The view plays the steam-and-whistle run (GG-T898).</summary>
+    public sealed class RampagedEvent : BattleEvent
+    {
+        public int UnitId; public string AbilityId; public Coord From;
+        public List<Coord> Path = new List<Coord>(); public List<int> Trampled = new List<int>();
+        public override string ToString() => $"Rampaged {UnitId} from {From} over {Path.Count} tile(s), trampling {Trampled.Count}";
+    }
+
     public sealed class TeleportedEvent : BattleEvent
     {
         public int UnitId; public Coord From; public Coord To;
         public override string ToString() => $"Teleported {UnitId} {From}->{To}";
+    }
+
+    /// <summary>GG-T868 (§7): the Lancer's Pole Vault carried <see cref="UnitId"/> from <see cref="From"/> over unit
+    /// <see cref="OverId"/> (on <see cref="Over"/>, never entered) down onto <see cref="To"/>. The view arcs the jump over
+    /// the planted spear and kicks up dust where it lands.</summary>
+    public sealed class VaultedEvent : BattleEvent
+    {
+        public int UnitId; public int OverId = -1; public Coord From; public Coord Over; public Coord To;
+        public override string ToString() => $"Vaulted {UnitId} {From}->{To} over {OverId}";
+    }
+
+    /// <summary>GG-T861: a Smoke Vanish: <see cref="UnitId"/> left <see cref="From"/> in its smoke and reappears on
+    /// <see cref="To"/> (its <see cref="TeleportedEvent"/> follows). The view puffs smoke, calls "Vanish" and flashes the landing.</summary>
+    public sealed class VanishedEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To; public string AbilityId;
+        public override string ToString() => $"Vanished {UnitId} {From}->{To}";
+    }
+
+    /// <summary>GG-T861: a foe's charge locked on a unit that vanished re-plans: onto <see cref="NewTargetId"/> at
+    /// <see cref="TargetTile"/>, or (-1) onto the tile it was left aiming at.</summary>
+    public sealed class ChargeReplannedEvent : BattleEvent
+    {
+        public int EntryId; public int CasterId; public int OldTargetId; public int NewTargetId = -1; public Coord TargetTile;
+        public override string ToString() => $"ChargeReplanned #{EntryId} {OldTargetId}->{NewTargetId} at {TargetTile}";
     }
 
     /// <summary>
@@ -88,6 +152,8 @@ namespace GridGame.Core.Battle
     public sealed class PincerFormedEvent : BattleEvent
     {
         public Team Team; public int Attacker1; public int Attacker2;
+        /// <summary>GG-T867: that end is the attacker's afterimage (at <see cref="Attacker1At"/>/<see cref="Attacker2At"/>), not the unit.</summary>
+        public bool Afterimage1, Afterimage2;
         public List<int> Opponents = new List<int>();
         public List<int> Supporters = new List<int>();
         public int ChainIndex;
@@ -194,7 +260,11 @@ namespace GridGame.Core.Battle
     {
         public int TargetId; public int SourceId; public int Amount; public HitKind Hit; public DamageType Type;
         public int HpAfter; public string Note;
-        public override string ToString() => $"Damaged {TargetId} -{Amount} {Hit} {Type} hp={HpAfter}{(Note != null ? " " + Note : "")}";
+        /// <summary>GG-T827: the damage past the HP the target had left (0 unless this blow killed it with some to spare).</summary>
+        public int Overkill;
+        /// <summary>GG-T827: the target's elemental multiplier for <see cref="Type"/> as a word (Normal on a miss).</summary>
+        public HitEffectiveness Effectiveness;
+        public override string ToString() => $"Damaged {TargetId} -{Amount} {Hit} {Type} hp={HpAfter}{(Overkill > 0 ? " overkill=" + Overkill : "")}{(Effectiveness != HitEffectiveness.Normal ? " " + Effectiveness : "")}{(Note != null ? " " + Note : "")}";
     }
 
     /// <summary>The defender's Evasion slipped a blow that would have landed (GG-T297, §13.1.0): no damage, a "Dodge!"
@@ -459,6 +529,23 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"BoonStolen {FromId} -> {CasterId} {BuffId} {Remaining}";
     }
 
+    /// <summary>GG-T867 (§7): the Speedster's Afterimage dash carried <see cref="UnitId"/> from <see cref="From"/> to
+    /// <see cref="To"/> in a straight line and left an afterimage on <see cref="From"/>. The view streaks a ghost trail
+    /// along the line, leaves a translucent copy on <see cref="From"/> and calls "Afterimage".</summary>
+    public sealed class AfterimageLeftEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To;
+        public override string ToString() => $"AfterimageLeft {UnitId} {From}->{To}";
+    }
+
+    /// <summary>GG-T867: <see cref="UnitId"/>'s afterimage on <see cref="At"/> fades: its owner's turn came round ("faded"), a
+    /// foe's attack it drew struck it (<see cref="ById"/>, "struck"), its owner fell ("owner"), or a new dash replaced it.</summary>
+    public sealed class AfterimageFadedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public int ById = -1; public string Reason;
+        public override string ToString() => $"AfterimageFaded {UnitId}@{At} {Reason}";
+    }
+
     public sealed class AnnounceEvent : BattleEvent
     {
         public string Text; public int UnitId = -1;
@@ -673,6 +760,16 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"TileRevealed {State} at {At} ({Cause})";
     }
 
+    /// <summary>GG-T903 (§14.23): a tech gremlin's Sabotage turned another side's gadget (a buried charge, a barricade, a
+    /// firewall) into its own side's: the mark at At now belongs to ToTeam and to the saboteur (UnitId).</summary>
+    public sealed class TileSabotagedEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public string State; public string RuleId; public Team FromTeam; public Team ToTeam;
+        /// <summary>The mark was hidden from the saboteur's new foes when it turned (a buried charge: the party loses it).</summary>
+        public bool Hidden;
+        public override string ToString() => $"TileSabotaged {State} at {At} ({FromTeam} -> {ToTeam})";
+    }
+
     /// <summary>A named rule anchor was placed (From null) or moved.</summary>
     public sealed class RegionAnchorEvent : BattleEvent
     {
@@ -722,6 +819,14 @@ namespace GridGame.Core.Battle
         public int UnitId; public Coord From; public Coord Hole; public Coord To; public string RuleId; public int Damage;
         public int SwappedId = -1; public bool Filled;
         public override string ToString() => $"Fell {UnitId} into {Hole} -> {To}{(SwappedId >= 0 ? $" swapping {SwappedId}" : "")}";
+    }
+
+    /// <summary>GG-T869 (§14.21): a Heavy unit's weight broke a cracked tile (<see cref="Content.TileStateDef.HeavyBecomes"/>)
+    /// at <see cref="At"/>: <see cref="From"/> became <see cref="Into"/> (a hole) under it; its <see cref="FellEvent"/> follows.</summary>
+    public sealed class BrokeThroughEvent : BattleEvent
+    {
+        public int UnitId; public Coord At; public string From; public string Into; public string RuleId;
+        public override string ToString() => $"Broke through {From} at {At} under {UnitId}";
     }
 
     /// <summary>A unit of the state's <see cref="Content.TileStateDef.SquishedBy"/> team stepped on a mark and squished it

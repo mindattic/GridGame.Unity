@@ -69,6 +69,10 @@ namespace GridGame.Core.Content
         TurnEnd,
         /// <summary>The owner just finished an action (the hero whose command it was; an enemy at the end of its turn).</summary>
         ActionEnd,
+        /// <summary>GG-T862: a foe's blow (not a miss) is about to drop the owner to 0 HP, before it lands. Context: Attacker,
+        /// Damage. A <see cref="TriggerEffectKind.Substitute"/> answering it takes the blow off the owner; it also fires
+        /// from inside another Reactive's effects (a counter that would KO still meets the decoy).</summary>
+        OnLethalBlow,
     }
 
     /// <summary>What a fired trigger does (§4.1, GG-T296).</summary>
@@ -101,6 +105,10 @@ namespace GridGame.Core.Content
         ReductionMultiplier,
         /// <summary>Always-on: the owner can't gain any of <see cref="TriggerEffect.Statuses"/>.</summary>
         Immunity,
+        /// <summary>GG-T862 (OnLethalBlow only): the blow strikes a decoy instead. The owner vanishes in a puff and reappears
+        /// on a random free tile beside a living ally (the battle Rng, row-major candidates), leaving tile state
+        /// <see cref="TriggerEffect.State"/> (the log) where it stood. No free tile beside an ally: it doesn't fire.</summary>
+        Substitute,
     }
 
     /// <summary>Whom an effect lands on. Default picks the effect kind's natural target (see <see cref="TriggerEffectKind"/>).</summary>
@@ -131,6 +139,8 @@ namespace GridGame.Core.Content
         public int Cooldown;
         /// <summary>Fires at most once per action (a command, or one enemy turn).</summary>
         public bool OncePerAction;
+        /// <summary>GG-T862: fires at most once per battle (the White Ninja's Substitution).</summary>
+        public bool OncePerBattle;
         /// <summary>The float shown when it fires; empty = the ability's name.</summary>
         public string Callout;
     }
@@ -153,6 +163,9 @@ namespace GridGame.Core.Content
         /// <summary>GG-T340: the other unit's HP fraction is strictly below this (0 = unchecked) — the Hellspawn's
         /// Bloodscent, its blows on a hero already bleeding.</summary>
         public float OtherHpBelow;
+        /// <summary>GG-T897: OnAllyKO only - the ally that fell is of this family (its class DropTable row, one per
+        /// family: "herd"). The Herd rages when one of its own goes down, not for the gangers that hired it.</summary>
+        public string FallenFamily;
         /// <summary>The damage in the context is of this type (null = any).</summary>
         public DamageType? DamageType;
     }
@@ -169,6 +182,8 @@ namespace GridGame.Core.Content
         public string Ability;
         /// <summary>Immunity: the buff ids warded off.</summary>
         public List<string> Statuses = new List<string>();
+        /// <summary>Substitute: the tile state (a regionrules.json TileStates id) left on the owner's old tile.</summary>
+        public string State;
     }
 
     /// <summary>Wall (GG-T931): a line of 2 × Radius + 1 tiles through the anchor, square across the caster's line to it
@@ -464,6 +479,8 @@ namespace GridGame.Core.Content
         public string OnHitBuff;
         /// <summary>…with this chance per landed hit.</summary>
         public float OnHitChance;
+        /// <summary>GG-T904: turns the on-hit buff lasts; 0 = the buff's own Duration (a tree golem's Root Grasp roots for 1).</summary>
+        public int OnHitTurns;
         /// <summary>Class id of the remains this enemy leaves (gravestone, bone pile — §14.5). Destroy them or it rises again.</summary>
         public string Remains;
         /// <summary>Class id of the egg this enemy lays periodically (§14.8). Optional.</summary>
@@ -500,6 +517,14 @@ namespace GridGame.Core.Content
         /// Hero-only; required for Team.Hero, left null for Team.Enemy. The class's own starting kit
         /// (<see cref="DefaultLoadout"/>) is known from level 1 regardless of what's unlocked in the tree.</summary>
         public string HomeTree;
+        /// <summary>Hero family id (families.json, GG-T971, BIBLE §25.6.6): the loose collection of classes this one
+        /// shares a fantasy and moves with. Hero-only; required for Team.Hero, left null for Team.Enemy.</summary>
+        public string Family;
+        /// <summary>GG-T977: node ids of the class's family tree (the <see cref="SkillTreeDef"/> whose Id is
+        /// <see cref="Family"/>) a new hero of this class starts with learned, so siblings start specced differently.
+        /// Each one's prerequisites are start nodes too, and once set every <see cref="DefaultLoadout"/> ability (not an
+        /// item, not <see cref="AbilityDef.Universal"/>) is granted by one. Empty = not yet on a family tree.</summary>
+        public List<string> StartNodes = new List<string>();
         /// <summary>Weapon classes (GG-T52) this class is trained in from level 1 — no proficiency passive
         /// needed. Every hero can always use <see cref="WeaponClass.Simple"/> regardless of this list; leave
         /// it empty for a class that starts Simple-only (e.g. a healer/support archetype).</summary>
@@ -539,6 +564,11 @@ namespace GridGame.Core.Content
     public sealed class AbilityDef
     {
         public string Id;
+        /// <summary>GG-T973 (BIBLE §25.6.6.1): an alias stub for an ability merged into another. A row with MergedInto
+        /// carries only Id and MergedInto; <see cref="ContentLoader.Load"/> moves it out of <see cref="ContentDb.Abilities"/>
+        /// into <see cref="ContentDb.AbilityAliases"/>, and <c>SaveMigrations.Migrate</c> rewrites the old id in a save to
+        /// the surviving one. The target must be a live ability (no chains, no cycles) and no content may still name the alias.</summary>
+        public string MergedInto;
         public string Name;
         public string Description;
         public AbilityKind Kind;
@@ -562,6 +592,10 @@ namespace GridGame.Core.Content
         /// <summary>Party turns a hero haste from this ability keeps the party's tempo up (GG-T268); 0 = BattleConfig.DefaultTempoTurns.</summary>
         public int TempoTurns;
         public bool IsTeleport;
+        /// <summary>Pole Vault (GG-T868, the Lancer): with <see cref="IsTeleport"/>, the pick is the free tile straight beyond a
+        /// unit beside the caster, and the caster leaps over that unit onto it without entering the tile between
+        /// (<c>Battle.PoleVault</c>). A Skill or Spell that picks an empty tile (SingleTile, PickTile, EmptyOnly).</summary>
+        public bool Vaults;
         /// <summary>Tiles the target is shoved straight away from the caster (shield bash) — §6.3.</summary>
         public int Knockback;
         /// <summary>The pick must be cardinally adjacent to the caster (melee skills).</summary>
@@ -569,6 +603,11 @@ namespace GridGame.Core.Content
         /// <summary>Redirect Flow (GG-T887, the Monk): every debuff on the picked adjacent ally moves, with its remaining
         /// duration, onto the foe beside the caster (<c>Battle.RedirectFlow</c>). A Skill or Spell that picks one ally.</summary>
         public bool RedirectsDebuffs;
+        /// <summary>Afterimage (GG-T867, the Speedster): a dash of up to this many tiles in a straight cardinal line to an empty
+        /// tile, past anything in between, leaving an afterimage on the tile left (<c>Battle.Afterimage</c>). For the rest of
+        /// that action the afterimage is a pincer end of the dasher's own (pincers from one hero); until the dasher's next turn
+        /// it draws foes' attacks (Taunting), then fades. 0 = not a dash. A PickTile / EmptyOnly Skill.</summary>
+        public int Afterimage;
         /// <summary>Swipe Boon (GG-T866, the Thief): one boon (Empowered, Ward, Protection, Blurred or Regen) leaves the picked
         /// adjacent foe and the caster wears it with its remaining duration (<c>Battle.SwipeBoon</c>). A Skill or Spell that
         /// picks one foe.</summary>
@@ -593,8 +632,17 @@ namespace GridGame.Core.Content
         /// the picked tile is dragged up to this many tiles toward it, nearest first, and its plate swings to face it. A Heavy
         /// foe resists (unless Floating) and a Rooted one holds, but each still turns its plate (<c>Battle.Magnetize</c>).</summary>
         public int Magnetizes;
+        /// <summary>Smoke Vanish (GG-T861, the Black Ninja): the ability's <see cref="RuleEffects"/> (a smoke cloud) are laid
+        /// around the caster's own tile first, then the caster vanishes and reappears on a random free, safe tile at least 2
+        /// away (the battle Rng; <c>Battle.SmokeVanish</c>), auto-resolving any pincer it lands in like Teleport, and every
+        /// foe's charge locked on it re-plans. A Rooted caster still drops the smoke but can't blink. A Self / Auto Skill.</summary>
+        public bool Vanishes;
         /// <summary>Movement (GG-T183): the caster and its (one-tile) target trade tiles.</summary>
         public bool SwapsPlaces;
+        /// <summary>GG-T865: a PickActor ability may only pick a unit within this many tiles (Manhattan, nearest footprint
+        /// tile) of the caster; 0 = anywhere. The Assassin's Shadow Swap trades places with a foe within 3; a ranged swap
+        /// is a blink, so like a Teleport it scans the party's pincers once it lands.</summary>
+        public int MaxRange;
         /// <summary>Movement (GG-T183): once it resolves, the caster steps up to this many tiles straight away from the
         /// nearest foe (Disengage, Hit and Run).</summary>
         public int StepBack;
@@ -730,10 +778,25 @@ namespace GridGame.Core.Content
         /// <summary>Rooted (GG-T856): the bearer can't step or be displaced (drag swaps, shoves, knockback, pull, swap, rule
         /// moves all stop at it) but still acts, strikes and casts. Unlike <see cref="Immobile"/> it never skips a turn.</summary>
         public bool Roots;
+        /// <summary>Heavy (GG-T882): while the bearer carries this it is Heavy (<c>Unit.IsHeavy</c>) as a Heavy class is -
+        /// no shove, pull, swap or rule drag moves it, unless it floats. The buff-based path to a temporary Heavy (the
+        /// Warden's Anchor Stance); the class flag (<see cref="ClassDef.Heavy"/>) stays the permanent one.</summary>
+        public bool Heavy;
+        /// <summary>Braces (GG-T882, the Warden's Anchor Stance): every ally cardinally beside the bearer is braced - no foe's
+        /// shove, pull, swap or body-shove and no rule drag (the anchor's heave, §14.20.3) moves it (<c>Battle.AnchorStance</c>).
+        /// An ally's own drag swap still does.</summary>
+        public bool Braces;
+        /// <summary>Lasts until the bearer's next action (GG-T882): removed ("acted") as its next command starts, and never
+        /// counted down by turns (<see cref="Duration"/> is ignored for it).</summary>
+        public bool EndsOnAction;
         /// <summary>Frightened (GG-T916): the bearer flees its fear source. A frightened foe spends its next turn stepping
         /// directly away (no attack) and the fear is spent; a frightened hero can't end a drag beside the source. Bosses
         /// and Heavy units shrug it off (Immune!).</summary>
         public bool Frightens;
+        /// <summary>Raging (GG-T897, §14.18 the Herd): the bearer counts as Heavy (<see cref="Battle.Unit.IsHeavy"/>: no
+        /// shove, pull, swap or drag moves it, and it shrugs Frightened), Pushback can't set its icon back, a fear it
+        /// carries breaks when the rage lands, and a raging Gorer's Bull Rush carries it down its marked line.</summary>
+        public bool Rages;
         public bool HaltsTimeline;
         public bool BreaksOnDamage;
         public bool BreaksOnMove;
@@ -1218,6 +1281,13 @@ namespace GridGame.Core.Content
         public int Cost = 1;
         public int RequiredPointsInTree;
         public List<string> Prerequisites = new List<string>();
+        /// <summary>GG-T977: the node's cell on a family tree's grid (column, row; 0-based). Each cell holds one node per
+        /// family tree (<see cref="ContentLoader.ValidateFamilyTrees"/>); the 7 role trees ignore it.</summary>
+        public int Col;
+        public int Row;
+        /// <summary>GG-T977: on a family tree, the class id (a member of that family) whose start this node sits by, so
+        /// the screen can draw each sibling's opening corner; null = a shared node.</summary>
+        public string SignatureOf;
 
         public bool IsStatNode => GrantsStat != null;
     }
@@ -1252,7 +1322,10 @@ namespace GridGame.Core.Content
         }
     }
 
-    /// <summary>One archetype's skill tree (§25.6.1, GG-T50): named by a <see cref="ClassDef.HomeTree"/> id.</summary>
+    /// <summary>One archetype's skill tree (§25.6.1, GG-T50): named by a <see cref="ClassDef.HomeTree"/> id. GG-T977: it doubles as a family tree when its <see cref="Id"/> is a families.json id
+    /// (<see cref="ContentDb.TryFamily"/>): every member of that family spends points in it and may converge on the same
+    /// nodes, each class starting from its own <see cref="ClassDef.StartNodes"/>. Family trees sit beside the 7 role
+    /// trees (<see cref="ClassDef.HomeTree"/>) until the cutover.</summary>
     public sealed class SkillTreeDef
     {
         public string Id;

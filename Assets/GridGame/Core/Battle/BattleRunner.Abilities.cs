@@ -82,7 +82,8 @@ namespace GridGame.Core.Battle
             if (a.Mode != TargetMode.Auto && !TargetResolver.IsValidPick(S, a, hero, anchor)) return Refuse(hero, "No target");
             if (a.Revives && !S.Units.Exists(u => u.IsHero && !u.Alive && u.Hp <= 0 && !u.IsWildTamed)) return Refuse(hero, "Nobody to revive");
             if (a.Revives && ReviveSpot(hero) == null) return Refuse(hero, "No room!");
-            if (!a.IsTeleport && !a.Revives && !a.Escape && a.GrantsOrbs <= 0 && TargetResolver.Collect(S, a, hero, anchor).Count == 0 && a.Mode == TargetMode.Auto)
+            if (a.Vanishes && SmokeVanish.Landings(S, hero, hero.Pos).Count == 0) return Refuse(hero, "No room!"); // GG-T861
+            if (!a.IsTeleport && !a.Vanishes && !a.Revives && !a.Escape && a.GrantsOrbs <= 0 && TargetResolver.Collect(S, a, hero, anchor).Count == 0 && a.Mode == TargetMode.Auto)
                 return Refuse(hero, "No target");
             if (a.Echoes)
             {
@@ -171,8 +172,48 @@ namespace GridGame.Core.Battle
         private void ResolveAbility(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
         {
             if (ResolveTileReactions(caster, a, anchor)) return; // GG-T371: a hero's tool or element on the traps it covers
+            if (a.Vanishes) { ResolveVanish(caster, a); return; } // GG-T861: its smoke goes down first, then it vanishes
             ResolveAbilityEffects(caster, a, anchor, pickedUnit);
             RegionAbility(caster, a, anchor); // GG-T359: its region rule effects, once it has resolved
+        }
+
+        /// <summary>
+        /// Smoke Vanish (GG-T861, §7; <see cref="SmokeVanish"/>): the ability's rule effects (the smoke cloud) are laid around
+        /// the caster's tile, then it reappears on a random safe landing (one Rng draw), springs what lies there, and a pincer
+        /// it closes resolves at once, as Teleport's. Every foe's charge locked on it re-plans. Rooted, it stays in its smoke.
+        /// </summary>
+        private void ResolveVanish(Unit caster, AbilityDef a)
+        {
+            NoteRecover(caster, a);
+            var from = caster.Pos;
+            Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = from, Tiles = { from } });
+            RegionAbility(caster, a, from); // the smoke, on the tile it is about to leave and its neighbours
+            if (S.IsOver || !caster.Alive) return;
+            if (RootsHold(caster, from)) return; // GG-T912: rooted, it can't blink away
+            var lands = SmokeVanish.Landings(S, caster, from);
+            if (lands.Count == 0) { Announce("Blocked", caster.Id); return; }
+            var to = lands[S.Rng.Range(0, lands.Count)];
+            if (!Relocate(caster, to)) { Announce("Blocked", caster.Id); return; }
+            Emit(new VanishedEvent { UnitId = caster.Id, From = from, To = to, AbilityId = a.Id });
+            Emit(new TeleportedEvent { UnitId = caster.Id, From = from, To = to });
+            ReplanChargesOn(caster, from);
+            ShovePickupsUnder(caster, from);
+            TriggerTrap(caster);
+            if (caster.Alive && caster.IsHero) ResolvePincers(Team.Hero, caster);
+        }
+
+        /// <summary>GG-T861: every foe's charge locked on <paramref name="gone"/> loses it in the smoke and re-plans onto the
+        /// nearest other hero, or, with none, onto <paramref name="left"/> (the smoke).</summary>
+        private void ReplanChargesOn(Unit gone, Coord left)
+        {
+            foreach (var e in S.Timeline)
+            {
+                if (!SmokeVanish.LockedOn(e, gone)) continue;
+                var next = SmokeVanish.Replan(S, e, gone);
+                e.TargetUnitId = next?.Id ?? -1;
+                e.TargetTile = next?.Pos ?? left;
+                Emit(new ChargeReplannedEvent { EntryId = e.Id, CasterId = e.OwnerId, OldTargetId = gone.Id, NewTargetId = e.TargetUnitId, TargetTile = e.TargetTile });
+            }
         }
 
         private void ResolveAbilityEffects(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
@@ -181,7 +222,9 @@ namespace GridGame.Core.Battle
             if (a.Echoes) { ResolveEcho(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; }
             if (a.Magnetizes > 0) { ResolveMagnetize(caster, a, anchor); return; } // GG-T878: the Tinkerer's Magnetize
             if (a.RedirectsDebuffs) { ResolveRedirect(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T887: the Monk's Redirect Flow
+            if (a.Afterimage > 0) { ResolveAfterimage(caster, a, anchor); return; } // GG-T867: the Speedster's Afterimage dash
             if (a.StealsBoon) { ResolveSwipe(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T866: the Thief's Swipe Boon
+            if (a.Vaults) { ResolveVault(caster, a, anchor); return; } // GG-T868: the Lancer's Pole Vault
             if (a.IsTeleport)
             {
                 // The whole footprint must land on open tiles — never onto a unit, a movable, a block or off the board.
@@ -293,7 +336,10 @@ namespace GridGame.Core.Battle
 
                 if (a.Knockback > 0 && t.Alive && !friend) Knockback(caster, t, a.Knockback, a.BaseDamage);
                 if (a.Pull > 0 && t.Alive && t != caster) Pull(caster, t, a.Pull);
-                if (a.SwapsPlaces && t.Alive && t != caster && caster.Alive) SwapPlaces(caster, t);
+                // GG-T865: a ranged swap (Shadow Swap) is a blink: once both have landed, the party's pincers are scanned
+                // as after a Teleport, so a foe dropped into a pincer line is caught at once.
+                if (a.SwapsPlaces && t.Alive && t != caster && caster.Alive && SwapPlaces(caster, t)
+                    && a.MaxRange > 0 && caster.Alive && caster.IsHero && !S.IsOver) ResolvePincers(Team.Hero, caster);
 
                 // A heal aimed at a foe (Soul Feast, Blood Harvest) is a drain: it mends the caster, never the foe (GG-T183).
                 if (a.BaseHeal > 0)
@@ -309,7 +355,7 @@ namespace GridGame.Core.Battle
                 if (a.SwapsTurns && t.Alive && !friend) DoCountermarch(t); // GG-T336: the Tactician reorders the foes' turns
 
                 var buff = C.TryBuff(a.ApplyBuff);
-                if (buff != null && buff.Kind == BuffKind.Buff && !friend)
+                if (buff != null && buff.Kind == BuffKind.Buff && !friend && !FloatSpell.Is(a)) // GG-T872: Float lifts the foe itself
                 {
                     if (!selfGift && caster.Alive) { selfGift = true; ApplyBuff(caster, buff, buff.Duration); }
                 }
@@ -418,7 +464,7 @@ namespace GridGame.Core.Battle
         /// <summary>Pull (GG-T183): drag <paramref name="t"/> toward the caster a tile at a time onto free ground, stopping beside it.</summary>
         private void Pull(Unit caster, Unit t, int tiles)
         {
-            if (RootsHold(t, t.Pos)) return; // GG-T912
+            if (HeldFast(t, t.Pos, caster)) return; // GG-T912; GG-T882: a hook can't tear a braced ally loose
             if (!Budges(t)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
             for (int i = 0; i < tiles && t.Alive && !S.IsOver; i++)
             {
@@ -427,7 +473,7 @@ namespace GridGame.Core.Battle
                 if (dir.X == 0 && dir.Y == 0) return;
                 var next = t.Pos + dir;
                 if (TryShoveIntoPit(t, next, caster)) return; // GG-T368: dragged into an open hole
-                if (!S.FreeToEnter(next)) return;
+                if (!S.WalkableFor(next, t) || S.UnitAt(next) != null || S.MovableAt(next) != null) return; // GG-T859: a floater crosses a hole
                 var from = t.Pos;
                 if (!Relocate(t, next)) return;
                 Emit(new DisplacedEvent { UnitId = t.Id, From = from, To = next, ByUnitId = caster.Id });
@@ -437,18 +483,23 @@ namespace GridGame.Core.Battle
             }
         }
 
-        /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.</summary>
-        private void SwapPlaces(Unit caster, Unit t)
+        /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.
+        /// GG-T865: a foe is dropped where the caster stood (into a firewall, onto a mine, beside a pit) and both run the
+        /// EnterTile hooks; a swap with a foe calls "Swap!". False when it didn't happen (Rooted, Heavy unless Floating).</summary>
+        private bool SwapPlaces(Unit caster, Unit t)
         {
-            if (RootsHold(t, t.Pos) || RootsHold(caster, caster.Pos)) return; // GG-T912: neither half of a swap is uprooted
-            if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
+            if (HeldFast(t, t.Pos, caster) || RootsHold(caster, caster.Pos)) return false; // GG-T912: neither half of a swap is uprooted (GG-T882: nor a braced target)
+            if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return false; }
             Coord a = caster.Pos, b = t.Pos;
             caster.Pos = b;
             t.Pos = a;
             Emit(new DisplacedEvent { UnitId = caster.Id, From = a, To = b, ByUnitId = caster.Id });
             Emit(new DisplacedEvent { UnitId = t.Id, From = b, To = a, ByUnitId = caster.Id });
+            if (t.Team != caster.Team && !t.IsNeutral) Announce("Swap!", caster.Id); // GG-T865
+            if (t.Team != caster.Team) NoteShove(caster, t); // GG-T865: a region danger that kills it now is a HazardKill
             TriggerTrap(caster); // heroes spring traps; anyone runs the EnterTile hooks (GG-T368)
             if (t.Alive) TriggerTrap(t);
+            return true;
         }
 
         /// <summary>Step back (GG-T183): the caster backs straight away from the nearest foe onto free, trap-free ground.</summary>
@@ -605,6 +656,7 @@ namespace GridGame.Core.Battle
 
         private void ResolveDirectCharge(Unit caster, AbilityDef a, TimelineEntry cast)
         {
+            if (RagingRush(caster, a, cast)) return; // GG-T897 (§14.18): a raging bull runs its own line
             var victims = new List<Unit>();
             Coord? wall = null;
             if (cast.ChargeShape == ChargeShape.Line && cast.LineTiles != null)
@@ -630,11 +682,20 @@ namespace GridGame.Core.Battle
             Emit(resolved);
             if (wall.HasValue) BashWall(wall.Value, caster);
             if (victims.Count == 0) { if (!wall.HasValue) Announce("Dodged!", caster.Id); return; }
+            TrampleVictims(caster, a, victims);
+        }
+
+        /// <summary>A direct charge's blow on each of <paramref name="victims"/> in turn: a magic roll each (Evasion slips
+        /// it, OnDodge answers), the spell's damage, its buff, and the Bulwark's orb siphon when any blow landed.</summary>
+        private void TrampleVictims(Unit caster, AbilityDef a, List<Unit> victims)
+        {
             bool landed = false;
             foreach (var v in victims)
             {
                 if (!v.Alive) continue;
+                caster.AimMultiplier = RegionBoard.ObscuredAim(S, caster, v); // GG-T861: a charge aimed into smoke is Blind
                 var roll = Formulas.Magic(caster, v, a.DamageType, S.Rng);
+                caster.AimMultiplier = 1f;
                 if (roll.Dodged)
                 {
                     // Evasion slips a charged spell too (GG-T297); the dodger's OnDodge reactives answer it.
@@ -649,6 +710,9 @@ namespace GridGame.Core.Battle
                     Fire(TriggerOn.OnDodge, v, new TriggerContext { Attacker = caster, Type = a.DamageType });
                 var buff = C.TryBuff(a.ApplyBuff);
                 if (buff != null && v.Alive && roll.Hit != HitKind.Miss) ApplyBuff(v, buff, buff.Duration);
+                // GG-T997: a hook (Hook Line) hauls its victim toward the caster like any Pull: Pull() honours Rooted, braced (HeldFast),
+                // Heavy ("Too heavy!") and Floating (crosses a hole), so a direct charge no longer just damages.
+                if (a.Pull > 0 && v.Alive && v != caster && roll.Hit != HitKind.Miss) Pull(caster, v, a.Pull);
             }
             if (landed && a.DrainsOrbs > 0) DrainOrbs(caster, a); // GG-T332: the Bulwark's siphon
         }

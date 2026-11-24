@@ -20,7 +20,11 @@ namespace GridGame.Meta
             && string.Equals(c.Campaign.Ending.Stage, stageId, StringComparison.OrdinalIgnoreCase)
             && !s.Flags.Contains(EndingFlag);
 
-        public static void MarkEndingSeen(SaveData s) => s.Flags.Add(EndingFlag);
+        public static void MarkEndingSeen(SaveData s)
+        {
+            s.Flags.Add(EndingFlag);
+            Codex.Unlock(s, CodexKinds.Story, "ending"); // GG-T929
+        }
 
         /// <summary>GG-T386: the chapter crawl due on this save, or null: the latest chapter whose stage the save has
         /// cleared and which hasn't played. Never on a Test Mode save (bots never see story). Earlier unplayed chapters
@@ -41,6 +45,7 @@ namespace GridGame.Meta
             {
                 if (ch?.Id == null) continue;
                 s.SeenCrawls.Add(ch.SeenMark);
+                Codex.Unlock(s, CodexKinds.Story, "chapter/" + ch.Id); // GG-T929
                 if (ReferenceEquals(ch, chapter)) break;
             }
         }

@@ -1,0 +1,20 @@
+[
+  { "Id": "vanguard", "Name": "Vanguard", "Ring": 1, "Primary": "Vitality", "Secondary": "Stamina",
+    "Theme": "Shield-bearers who hold the line: taunt, guard an ally, shove and stomp, rally the party behind them." },
+  { "Id": "blade", "Name": "Blade", "Ring": 2, "Primary": "Strength", "Secondary": "Stamina",
+    "Theme": "Weapon masters of sword and spear: probe, parry, counter, then one decisive cut." },
+  { "Id": "brawn", "Name": "Brawn", "Ring": 3, "Primary": "Strength", "Secondary": "Vitality",
+    "Theme": "Fists, clubs and rage: chained combos, staggers and reckless swings that trade blood for damage." },
+  { "Id": "shadow", "Name": "Shadow", "Ring": 4, "Primary": "Agility", "Secondary": "Speed",
+    "Theme": "Thieves, ninjas and blurs: vanish, flank, strike the opening and be gone before the reply." },
+  { "Id": "wild", "Name": "Wild", "Ring": 5, "Primary": "Strength", "Secondary": "Wisdom",
+    "Theme": "Beasts and the ones who hunt beside them: roars, pack rallies, tamed monsters, snares and shots from afar." },
+  { "Id": "machina", "Name": "Machina", "Ring": 6, "Primary": "Intelligence", "Secondary": "Wisdom",
+    "Theme": "Builders of the battlefield: mines, turrets, drones, ward grids and field repairs." },
+  { "Id": "arcane", "Name": "Arcane", "Ring": 7, "Primary": "Intelligence", "Secondary": "Speed",
+    "Theme": "Mind over the fight: raw spells and spellblades, and the tempo weavers who bend who acts when." },
+  { "Id": "occult", "Name": "Occult", "Ring": 8, "Primary": "Intelligence", "Secondary": "Vitality",
+    "Theme": "Blood, curses and the dark: hexes that fester, drains that feed, and knights sworn to the night." },
+  { "Id": "grace", "Name": "Grace", "Ring": 9, "Primary": "Wisdom", "Secondary": "Intelligence",
+    "Theme": "Menders of every stripe: wards, cleanses, heals given at a run and harm turned into hope." }
+]

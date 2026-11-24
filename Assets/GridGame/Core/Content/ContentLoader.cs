@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace GridGame.Core.Content
 {
@@ -25,7 +26,11 @@ namespace GridGame.Core.Content
         {
             var db = new ContentDb();
             AddAll(db.Classes, ReadList<ClassDef>(readText, "classes"), c => c.Id);
-            AddAll(db.Abilities, ReadList<AbilityDef>(readText, "abilities"), c => c.Id);
+            // GG-T973: a row with MergedInto is an alias stub, not an ability: it goes to AbilityAliases instead.
+            var abilitiesText = readText("abilities");
+            var abilities = ReadList<AbilityDef>(_ => abilitiesText, "abilities");
+            AddAll(db.Abilities, abilities.FindAll(a => a == null || string.IsNullOrEmpty(a.MergedInto)), c => c.Id);
+            IndexAbilityAliases(db, abilities, abilitiesText);
             AddAll(db.Buffs, ReadList<BuffDef>(readText, "buffs"), c => c.Id);
             AddAll(db.Items, ReadList<ItemDef>(readText, "items"), c => c.Id);
             AddAll(db.Recipes, ReadList<RecipeDef>(readText, "recipes"), c => c.Id);
@@ -66,6 +71,9 @@ namespace GridGame.Core.Content
             db.Elements = elements ?? new ElementTableDef();
             db.Mercenaries.AddRange(ReadList<MercenaryDef>(readText, "mercenaries"));
             db.Factions.AddRange(ReadList<FactionDef>(readText, "factions"));
+            var families = readText("families"); // GG-T971: only a missing file is reported, not a hand-built ContentDb
+            db.FamiliesFileMissing = string.IsNullOrWhiteSpace(families);
+            db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
             AddAll(db.Pickups, ReadList<PickupDef>(readText, "pickups"), x => x.Id);
             AddAll(db.SkillTrees, ReadList<SkillTreeDef>(readText, "skilltrees"), x => x.Id);
@@ -96,6 +104,74 @@ namespace GridGame.Core.Content
                 foreach (var piece in set.Pieces)
                     if (piece != null && !db.SetByItem.ContainsKey(piece)) db.SetByItem[piece] = set;
             return db;
+        }
+
+        /// <summary>GG-T973: moves abilities.json's alias stubs (<see cref="AbilityDef.MergedInto"/>) into
+        /// <see cref="ContentDb.AbilityAliases"/>. The shape check: an alias row carries only Id and MergedInto, and its id is
+        /// neither a live ability nor another alias. Problems go to <see cref="ContentDb.LoadProblems"/>.</summary>
+        public static void IndexAbilityAliases(ContentDb db, List<AbilityDef> abilities, string abilitiesText)
+        {
+            foreach (var a in abilities)
+            {
+                if (a == null || string.IsNullOrEmpty(a.MergedInto)) continue;
+                if (string.IsNullOrEmpty(a.Id)) throw new FormatException("AbilityDef alias with empty Id");
+                if (db.Abilities.ContainsKey(a.Id)) db.LoadProblems.Add($"ability alias {a.Id}: is also a live ability id (GG-T973)");
+                else if (db.AbilityAliases.ContainsKey(a.Id)) db.LoadProblems.Add($"ability alias {a.Id}: listed twice (GG-T973)");
+                else db.AbilityAliases[a.Id] = a.MergedInto.Trim();
+            }
+            if (string.IsNullOrWhiteSpace(abilitiesText) || db.AbilityAliases.Count == 0) return;
+            JToken root;
+            try { root = JToken.Parse(abilitiesText); }
+            catch (JsonException) { return; } // ReadList has already rejected a file that doesn't parse
+            if (!(root is JArray rows)) return;
+            foreach (var o in rows.Children<JObject>())
+            {
+                var merged = o.Property("MergedInto", StringComparison.OrdinalIgnoreCase);
+                if (merged == null || merged.Value.Type == JTokenType.Null) continue;
+                var extra = new List<string>();
+                foreach (var prop in o.Properties())
+                    if (!string.Equals(prop.Name, "Id", StringComparison.OrdinalIgnoreCase) && !string.Equals(prop.Name, "MergedInto", StringComparison.OrdinalIgnoreCase))
+                        extra.Add(prop.Name);
+                if (extra.Count > 0)
+                    db.LoadProblems.Add($"ability alias {o.Property("Id", StringComparison.OrdinalIgnoreCase)?.Value}: an alias row carries only Id and MergedInto (drop {string.Join(", ", extra)}) (GG-T973)");
+            }
+        }
+
+        /// <summary>GG-T973: every alias names a live ability (no chains, no cycles, not itself), and no class, skill tree
+        /// or item still names an alias (it should name the surviving ability).</summary>
+        public static void ValidateAbilityAliases(ContentDb db, List<string> p)
+        {
+            foreach (var kv in db.AbilityAliases)
+            {
+                var w = $"ability alias {kv.Key}";
+                var to = kv.Value;
+                if (string.IsNullOrEmpty(to)) p.Add($"{w}: MergedInto is empty");
+                else if (string.Equals(to, kv.Key, StringComparison.OrdinalIgnoreCase)) p.Add($"{w}: merged into itself");
+                else if (db.AbilityAliases.ContainsKey(to)) p.Add($"{w}: merged into '{to}', which is itself an alias (no chains or cycles: name the surviving ability)");
+                else if (!db.Abilities.ContainsKey(to)) p.Add($"{w}: merged into unknown ability '{to}'");
+            }
+            if (db.AbilityAliases.Count == 0) return;
+            void NoAlias(string id, string where)
+            {
+                if (id != null && db.AbilityAliases.TryGetValue(id, out var to))
+                    p.Add($"{where}: '{id}' was merged into '{to}'; name '{to}' (GG-T973)");
+            }
+            foreach (var c in db.Classes.Values)
+            {
+                foreach (var a in c.Abilities) NoAlias(a, $"class {c.Id} abilities");
+                foreach (var s in c.DefaultLoadout)
+                    if (s != null && !s.StartsWith("item:")) NoAlias(s, $"class {c.Id} loadout");
+                NoAlias(c.ChargeAbility, $"class {c.Id} charge");
+                foreach (var ph in c.BossPhases) NoAlias(ph?.OnEnterAbility, $"class {c.Id} boss phase");
+            }
+            foreach (var t in db.SkillTrees.Values)
+                foreach (var n in t.Nodes)
+                    if (n != null) NoAlias(n.Grants, $"tree {t.Id} node {n.Id}");
+            foreach (var i in db.Items.Values)
+            {
+                NoAlias(i.OnUseAbility, $"item {i.Id}");
+                NoAlias(i.TeachesAbility, $"item {i.Id} tome");
+            }
         }
 
         private static List<T> ReadList<T>(Func<string, string> readText, string name)
@@ -129,12 +205,74 @@ namespace GridGame.Core.Content
         /// <summary>Cross-reference check; returns human-readable problems (empty = valid).</summary>
         /// <param name="portraitExists">Whether Resources/Portraits/&lt;file&gt; exists (a <see cref="ClassDef.PortraitFile"/>); null skips that
         /// art check (Core can't see the art — the app and the dotnet tests pass their own lookup).</param>
+        /// <summary>GG-T977: family trees (a <see cref="SkillTreeDef"/> whose Id is a families.json id) and each hero's
+        /// <see cref="ClassDef.StartNodes"/>. On a family tree every node's (Col, Row) cell is its own and a
+        /// <see cref="SkillNodeDef.SignatureOf"/> names a member of that family; a role tree may not carry SignatureOf.
+        /// A class's start nodes resolve in its family's tree, each start node's prerequisites are start nodes too, and
+        /// once a class has start nodes every <see cref="ClassDef.DefaultLoadout"/> ability (not "item:", not
+        /// <see cref="AbilityDef.Universal"/>) is granted by one. Node ids unique across all trees is checked with the
+        /// rest of the skill trees in <see cref="Validate"/>.</summary>
+        public static void ValidateFamilyTrees(ContentDb db, List<string> p)
+        {
+            foreach (var t in db.SkillTrees.Values)
+            {
+                bool family = db.TryFamily(t.Id) != null;
+                var cells = new Dictionary<(int, int), string>();
+                foreach (var n in t.Nodes)
+                {
+                    if (n == null || string.IsNullOrEmpty(n.Id)) continue;
+                    var w = $"tree {t.Id} node {n.Id}";
+                    if (!family)
+                    {
+                        if (!string.IsNullOrEmpty(n.SignatureOf)) p.Add($"{w}: SignatureOf is only for a family tree");
+                        continue;
+                    }
+                    if (n.Col < 0 || n.Row < 0) p.Add($"{w}: layout cell ({n.Col}, {n.Row}) can't be negative");
+                    else if (cells.TryGetValue((n.Col, n.Row), out var other)) p.Add($"{w}: layout cell ({n.Col}, {n.Row}) is already node {other}");
+                    else cells[(n.Col, n.Row)] = n.Id;
+                    if (!string.IsNullOrEmpty(n.SignatureOf))
+                    {
+                        var sc = db.TryClass(n.SignatureOf);
+                        if (sc == null || sc.Team != Team.Hero || !string.Equals(sc.Family, t.Id, StringComparison.OrdinalIgnoreCase))
+                            p.Add($"{w}: SignatureOf '{n.SignatureOf}' is not a member of family {t.Id}");
+                    }
+                }
+            }
+            foreach (var c in db.Classes.Values)
+            {
+                if (c.StartNodes == null || c.StartNodes.Count == 0) continue;
+                var w = $"class {c.Id}";
+                if (c.Team != Team.Hero) { p.Add($"{w}: only a hero class has StartNodes"); continue; }
+                var tree = string.IsNullOrEmpty(c.Family) ? null : db.TrySkillTree(c.Family);
+                if (tree == null) { p.Add($"{w}: StartNodes need a family tree '{c.Family}' in skilltrees.json"); continue; }
+                var start = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var grants = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var id in c.StartNodes)
+                    if (!start.Add(id ?? "")) p.Add($"{w}: start node '{id}' listed twice");
+                foreach (var id in start)
+                {
+                    var n = tree.Nodes.Find(x => x != null && string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+                    if (n == null) { p.Add($"{w}: start node '{id}' is not in family tree {tree.Id}"); continue; }
+                    if (!string.IsNullOrEmpty(n.Grants)) grants.Add(n.Grants);
+                    foreach (var req in n.Prerequisites)
+                        if (!start.Contains(req)) p.Add($"{w}: start node '{n.Id}' needs '{req}', which is not a start node");
+                }
+                foreach (var s in c.DefaultLoadout)
+                {
+                    if (string.IsNullOrEmpty(s) || s.StartsWith("item:")) continue;
+                    if (db.TryAbility(s)?.Universal == true) continue;
+                    if (!grants.Contains(s)) p.Add($"{w}: loadout ability '{s}' is not granted by any start node");
+                }
+            }
+        }
+
         public static List<string> Validate(ContentDb db, Func<string, bool> portraitExists = null)
         {
             var p = new List<string>();
             void NeedClass(string id, string where) { if (id != null && !db.Classes.ContainsKey(id)) p.Add($"{where}: unknown class '{id}'"); }
             void NeedItem(string id, string where) { if (id != null && !db.Items.ContainsKey(id)) p.Add($"{where}: unknown item '{id}'"); }
-            void NeedAbility(string id, string where) { if (id != null && !db.Abilities.ContainsKey(id)) p.Add($"{where}: unknown ability '{id}'"); }
+            // An alias (GG-T973) is reported by ValidateAbilityAliases with the id to use instead.
+            void NeedAbility(string id, string where) { if (id != null && !db.Abilities.ContainsKey(id) && !db.AbilityAliases.ContainsKey(id)) p.Add($"{where}: unknown ability '{id}'"); }
             void NeedBuff(string id, string where) { if (id != null && !db.Buffs.ContainsKey(id)) p.Add($"{where}: unknown buff '{id}'"); }
 
             p.AddRange(db.LoadProblems);
@@ -174,6 +312,7 @@ namespace GridGame.Core.Content
                 if (c.Trap != null && !db.Traps.ContainsKey(c.Trap)) p.Add($"class {c.Id}: unknown trap '{c.Trap}'");
                 if (c.Trail != null && !db.Traps.ContainsKey(c.Trail)) p.Add($"class {c.Id}: unknown trail '{c.Trail}'");
                 NeedBuff(c.OnHitBuff, $"class {c.Id} on-hit buff");
+                if (c.OnHitTurns < 0 || (c.OnHitTurns > 0 && string.IsNullOrEmpty(c.OnHitBuff))) p.Add($"class {c.Id}: OnHitTurns {c.OnHitTurns} needs an OnHitBuff and can't be negative (GG-T904)");
                 NeedClass(c.Remains, $"class {c.Id} remains");
                 NeedClass(c.LaysEgg, $"class {c.Id} egg");
                 if (c.TameBond < 0) p.Add($"class {c.Id}: TameBond can't be negative (GG-T303)");
@@ -229,6 +368,19 @@ namespace GridGame.Core.Content
                 if (a.StealsBoon && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.EnemyOnly
                                      || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Swipe Boon (StealsBoon) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
+                // GG-T865: a range limit only means something on a pick of one unit.
+                if (a.MaxRange < 0 || (a.MaxRange > 0 && a.Mode != TargetMode.PickActor))
+                    p.Add($"ability {a.Id}: MaxRange is 0 (anywhere) or a positive reach on a PickActor ability");
+                // GG-T861: a Smoke Vanish leaves from the caster's own tile (its smoke goes there) to a random one, never a teleport too.
+                if (a.Vanishes && (a.Shape != TargetShape.Self || a.Mode != TargetMode.Auto || a.IsTeleport || a.Kind != AbilityKind.Skill))
+                    p.Add($"ability {a.Id}: a Smoke Vanish (Vanishes) is a Self / Auto Skill and not also a Teleport");
+                // GG-T868: a Pole Vault is a blink whose pick is the free tile beyond a unit beside the caster.
+                if (a.Vaults && (!a.IsTeleport || a.Shape != TargetShape.SingleTile || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly
+                                 || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
+                    p.Add($"ability {a.Id}: a Pole Vault (Vaults) is an IsTeleport Skill or Spell that picks an empty tile (SingleTile, PickTile, EmptyOnly)");
+                // GG-T867: an Afterimage dash picks the empty tile it lands on.
+                if (a.Afterimage < 0 || (a.Afterimage > 0 && (a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly || a.Kind != AbilityKind.Skill || a.IsTeleport)))
+                    p.Add($"ability {a.Id}: an Afterimage dash is a Skill that picks an empty tile (PickTile, EmptyOnly), not a Teleport");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
@@ -250,6 +402,8 @@ namespace GridGame.Core.Content
                     if (string.Equals(c, b.Id, StringComparison.OrdinalIgnoreCase)) p.Add($"buff {b.Id}: Cancels itself (GG-T667)");
                 }
                 if (b.Intercepts && b.Kind != BuffKind.Buff) p.Add($"buff {b.Id}: Intercepts must be a Buff (GG-T533)");
+                if (b.Frightens && b.Kind != BuffKind.Debuff) p.Add($"buff {b.Id}: Frightens must be a Debuff (GG-T917)");
+                if (b.Frightens && b.Immobile) p.Add($"buff {b.Id}: Frightens can't also be Immobile, a frightened unit runs (GG-T917)");
                 if (!(b.EvasionBonus >= -Rules.Formulas.EvasionCap && b.EvasionBonus <= Rules.Formulas.EvasionCap))
                     p.Add($"buff {b.Id}: EvasionBonus {b.EvasionBonus} outside -{Rules.Formulas.EvasionCap}..{Rules.Formulas.EvasionCap} (GG-T297)");
             }
@@ -464,6 +618,9 @@ namespace GridGame.Core.Content
             EncounterCatalog.Validate(db, p);
             MercenaryContent.Validate(db, p);
             WandererContent.ValidateFactions(db, p);
+            FamilyContent.Validate(db, p); // GG-T971
+            ValidateFamilyTrees(db, p); // GG-T977
+            ValidateAbilityAliases(db, p); // GG-T973
             QuestCatalog.Validate(db, p);
             RewardCatalog.Validate(db, p); // Tomes, Chests, campaign milestones (GG-T301)
             VfxStyleSheet.Validate(db, p);
@@ -471,6 +628,7 @@ namespace GridGame.Core.Content
             AttackTypeSheet.Validate(db, p); // GG-T556
             p.AddRange(GridGame.Core.Battle.DifficultyTable.Problems()); // the 1..10 dial (GG-T309)
             Glossary.Validate(db, p);
+            Glossary.ValidateKeywords(db, p); // GG-T907
             ValidateCodex(db, p); // GG-T936
             p.AddRange(db.TextProblems); // GG-T355: every key resolves, no story text in gameplay JSON, right-answer tags
             return p;
@@ -625,6 +783,7 @@ namespace GridGame.Core.Content
             if (!(t.Chance > 0f && t.Chance <= 1f)) p.Add($"{w}: Chance {t.Chance} outside (0, 1]");
             if (t.ChancePerLuck < 0f || t.ChancePerLuck > 0.1f) p.Add($"{w}: ChancePerLuck {t.ChancePerLuck} outside 0..0.1");
             if (t.Cooldown < 0) p.Add($"{w}: Cooldown can't be negative");
+            if (t.OncePerBattle && t.Cooldown > 0) p.Add($"{w}: OncePerBattle already outlasts any Cooldown"); // GG-T862
             if (t.On == TriggerOn.OnSurrounded && (t.Count < 1 || t.Count > 4)) p.Add($"{w}: OnSurrounded needs Count 1..4");
             if (t.On != TriggerOn.OnSurrounded && t.Count != 0) p.Add($"{w}: Count is only for OnSurrounded");
             if (t.On == TriggerOn.OnLowHp && !(t.Threshold > 0f && t.Threshold < 1f)) p.Add($"{w}: OnLowHp needs Threshold in (0, 1)");
@@ -641,6 +800,8 @@ namespace GridGame.Core.Content
                 if (c.OtherTag != null && c.OtherTag.Trim().Length == 0) p.Add($"{w}: condition OtherTag is blank");
                 if (c.OtherHasStatus != null && !KnownStatus(c.OtherHasStatus)) p.Add($"{w}: condition unknown status '{c.OtherHasStatus}'");
                 if (c.OtherHpBelow < 0f || c.OtherHpBelow >= 1f) p.Add($"{w}: condition OtherHpBelow outside 0..1");
+                if (c.FallenFamily != null && t.On != TriggerOn.OnAllyKO) p.Add($"{w}: condition FallenFamily is only for OnAllyKO"); // GG-T897
+                if (c.FallenFamily != null && c.FallenFamily.Trim().Length == 0) p.Add($"{w}: condition FallenFamily is blank");
             }
             if (t.Effects == null || t.Effects.Count == 0) { p.Add($"{w}: needs at least one effect"); return; }
             foreach (var e in t.Effects)
@@ -684,7 +845,14 @@ namespace GridGame.Core.Content
                         if (!db.Abilities.TryGetValue(e.Ability ?? "", out var cast)) p.Add($"{we}: unknown ability '{e.Ability}'");
                         else if (cast.Kind == AbilityKind.Passive || cast.Kind == AbilityKind.Reactive) p.Add($"{we}: '{e.Ability}' must be an Active ability");
                         break;
+                    case TriggerEffectKind.Substitute: // GG-T862
+                        if (t.On != TriggerOn.OnLethalBlow) p.Add($"{we}: Substitute answers OnLethalBlow only");
+                        if (e.State == null) p.Add($"{we}: needs a State (the decoy left behind)");
+                        else if (!(db.TryTileState(e.State) is TileStateDef st)) p.Add($"{we}: unknown tile state '{e.State}'");
+                        else if (!st.Blocks || st.Pit) p.Add($"{we}: the decoy state '{e.State}' must Block (an obstacle, not a hole)");
+                        break;
                 }
+                if (e.Kind != TriggerEffectKind.Substitute && e.State != null) p.Add($"{we}: State is only for Substitute");
                 if (e.Kind != TriggerEffectKind.ApplyBuff && e.Buff != null) p.Add($"{we}: Buff is only for ApplyBuff");
                 if (e.Kind != TriggerEffectKind.CastAbility && e.Ability != null) p.Add($"{we}: Ability is only for CastAbility");
                 if (e.Kind != TriggerEffectKind.Immunity && e.Statuses != null && e.Statuses.Count > 0) p.Add($"{we}: Statuses are only for Immunity");

@@ -5,7 +5,7 @@ namespace GridGame.Core.Content
 {
     /// <summary>
     /// The staged, living backdrop's sky (GG-T576, Content/sky.json): back to front a backdrop is its sky plate, the
-    /// ordinary Moon, the Somnolith (one canonical image in every scene, growing region by region), its drifting shards,
+    /// ordinary Moon, the Manalith (one canonical image in every scene, growing region by region), its drifting shards,
     /// then the foreground plate (the landscape with the sky cut out). Which backdrops have a sky to split is
     /// <see cref="BackdropLayerDef"/> (Content/backdroplayers.json, written by tools/split_backdrops.py).
     ///
@@ -16,19 +16,19 @@ namespace GridGame.Core.Content
     /// </summary>
     public sealed class SkyDef
     {
-        public SkyBodyDef Somnolith = new SkyBodyDef();
+        public SkyBodyDef Manalith = new SkyBodyDef();
         public SkyBodyDef Moon = new SkyBodyDef();
         public ShardsDef Shards = new ShardsDef();
-        /// <summary>GG-T670: the wake of debris the Somnolith drags across the sky behind it.</summary>
+        /// <summary>GG-T670: the wake of debris the Manalith drags across the sky behind it.</summary>
         public DebrisDef Debris = new DebrisDef();
         /// <summary>GG-T670: the Aetherain, the occasional fall of aether dust from that wake.</summary>
         public AetherainDef Aetherain = new AetherainDef();
         public ParallaxDef Parallax = new ParallaxDef();
-        /// <summary>The Somnolith per campaign theme id (it grows as the campaign goes on; Morrow's Shadow is the
-        /// largest). A theme with no entry uses its base theme's (cityruins2 → cityruins), then <see cref="Somnolith"/>.</summary>
+        /// <summary>The Manalith per campaign theme id (it grows as the campaign goes on; Morrow's Shadow is the
+        /// largest). A theme with no entry uses its base theme's (cityruins2 → cityruins), then <see cref="Manalith"/>.</summary>
         public Dictionary<string, SkyRegionDef> Regions = new Dictionary<string, SkyRegionDef>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>The Somnolith's placement for <paramref name="theme"/>: its region entry, else its base theme's, else
+        /// <summary>The Manalith's placement for <paramref name="theme"/>: its region entry, else its base theme's, else
         /// the default body's own numbers.</summary>
         public SkyRegionDef RegionFor(string theme)
         {
@@ -37,17 +37,17 @@ namespace GridGame.Core.Content
                 if (Regions.TryGetValue(theme, out var r)) return r;
                 if (Regions.TryGetValue(Backdrops.BaseTheme(theme), out r)) return r;
             }
-            return new SkyRegionDef { Size = Somnolith.Size, X = Somnolith.X, Y = Somnolith.Y };
+            return new SkyRegionDef { Size = Manalith.Size, X = Manalith.X, Y = Manalith.Y };
         }
 
-        /// <summary>The wake behind <paramref name="r"/>'s Somnolith: the region's own <see cref="SkyRegionDef.Debris"/>
-        /// as written, else the default <see cref="Debris"/> with its Count scaled by how large the Somnolith is there
+        /// <summary>The wake behind <paramref name="r"/>'s Manalith: the region's own <see cref="SkyRegionDef.Debris"/>
+        /// as written, else the default <see cref="Debris"/> with its Count scaled by how large the Manalith is there
         /// (sparse while it's far off, heavy at Morrow's Shadow).</summary>
         public DebrisDef DebrisFor(SkyRegionDef r)
         {
             if (r?.Debris != null) return r.Debris;
             var d = Debris ?? new DebrisDef();
-            float k = d.FullAtSize > 0f ? Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / d.FullAtSize)) : 1f;
+            float k = d.FullAtSize > 0f ? Math.Min(1f, Math.Max(0f, (r?.Size ?? Manalith.Size) / d.FullAtSize)) : 1f;
             var scaled = d.Clone();
             scaled.Count = Math.Max(d.MinCount, (int)Math.Round(d.Count * k));
             // GG-T734: the fine grit thickens and the wake stretches further across the sky as the Manalith closes in.
@@ -63,18 +63,18 @@ namespace GridGame.Core.Content
         public float ApproachFor(SkyRegionDef r)
         {
             float full = Debris?.FullAtSize > 0f ? Debris.FullAtSize : 1f;
-            return Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / full));
+            return Math.Min(1f, Math.Max(0f, (r?.Size ?? Manalith.Size) / full));
         }
 
         /// <summary>The chance (0-1) that a backdrop in region <paramref name="r"/> shows a dust fall: the region's own
         /// <see cref="SkyRegionDef.AetherainChance"/> when set (0 or more), else <see cref="AetherainDef.Chance"/> scaled by
-        /// the Somnolith's size there, like the wake it falls from.</summary>
+        /// the Manalith's size there, like the wake it falls from.</summary>
         public float AetherainChanceFor(SkyRegionDef r)
         {
             if (r != null && r.AetherainChance >= 0f) return Math.Min(1f, r.AetherainChance);
             var d = Aetherain ?? new AetherainDef();
             float full = Debris?.FullAtSize > 0f ? Debris.FullAtSize : 1f;
-            float k = Math.Min(1f, Math.Max(0f, (r?.Size ?? Somnolith.Size) / full));
+            float k = Math.Min(1f, Math.Max(0f, (r?.Size ?? Manalith.Size) / full));
             return Math.Min(1f, d.Chance * k);
         }
 
@@ -94,7 +94,7 @@ namespace GridGame.Core.Content
         {
             var s = db.Sky;
             if (s == null) return;
-            if (string.IsNullOrEmpty(s.Somnolith?.Image)) p.Add("sky: Somnolith needs an Image");
+            if (string.IsNullOrEmpty(s.Manalith?.Image)) p.Add("sky: Manalith needs an Image");
             if (string.IsNullOrEmpty(s.Moon?.Image)) p.Add("sky: Moon needs an Image");
             if (s.Shards != null && s.Shards.Count > 0 && (s.Shards.Images == null || s.Shards.Images.Count == 0))
                 p.Add("sky: Shards has a Count but no Images");
@@ -162,7 +162,7 @@ namespace GridGame.Core.Content
         public float Opacity = 1f;
     }
 
-    /// <summary>The Somnolith in one region.</summary>
+    /// <summary>The Manalith in one region.</summary>
     public sealed class SkyRegionDef
     {
         public float Size;
@@ -170,35 +170,35 @@ namespace GridGame.Core.Content
         public float Y;
         public float Rotation;
         /// <summary>GG-T665: opacity 0-1 of a dark backing behind the battle board in this region, so the grid and danger
-        /// tiles read where a large Somnolith sits behind the board. 0 (the default) keeps the board see-through
+        /// tiles read where a large Manalith sits behind the board. 0 (the default) keeps the board see-through
         /// (owner direction 2026-10-11: the stage background reads clearly through the board).</summary>
         public float BoardScrim;
         /// <summary>GG-T670: this region's own wake, used as written (no size scaling); null = the default scaled by Size.</summary>
         public DebrisDef Debris;
         /// <summary>GG-T670: this region's wake direction (degrees, see <see cref="DebrisDef.Angle"/>), steering the wake
-        /// into visible sky where the Somnolith sits near the middle of the screen; below 0 (the default) = the default Angle.</summary>
+        /// into visible sky where the Manalith sits near the middle of the screen; below 0 (the default) = the default Angle.</summary>
         public float DebrisAngle = -1f;
         /// <summary>GG-T670: chance 0-1 of a dust fall here; below 0 (the default) = the default Chance scaled by Size.</summary>
         public float AetherainChance = -1f;
     }
 
     /// <summary>GG-T670 (owner: "the Somnolith really needs to be dragging a lot of debris across the sky behind it"): a
-    /// comet-like wake strung out from the Somnolith along <see cref="Angle"/>, densest and largest near the body and
+    /// comet-like wake strung out from the Manalith along <see cref="Angle"/>, densest and largest near the body and
     /// thinning and fading with distance, flowing slowly away from it. Pieces are the shard images at small sizes plus
     /// finer specks. Cosmetic, not deterministic.</summary>
     public sealed class DebrisDef
     {
         /// <summary>Upper bound on pieces, to keep the backdrop cheap on phones.</summary>
         public const int MaxCount = 90;
-        /// <summary>Pieces at <see cref="FullAtSize"/> or larger (fewer for a smaller Somnolith).</summary>
+        /// <summary>Pieces at <see cref="FullAtSize"/> or larger (fewer for a smaller Manalith).</summary>
         public int Count = 60;
-        /// <summary>Fewest pieces even where the Somnolith is far off.</summary>
+        /// <summary>Fewest pieces even where the Manalith is far off.</summary>
         public int MinCount = 12;
-        /// <summary>Somnolith Size at which the wake is at its full Count.</summary>
+        /// <summary>Manalith Size at which the wake is at its full Count.</summary>
         public float FullAtSize = 0.6f;
-        /// <summary>Wake length as a share of the screen width, measured from the Somnolith's edge.</summary>
+        /// <summary>Wake length as a share of the screen width, measured from the Manalith's edge.</summary>
         public float Length = 0.75f;
-        /// <summary>Direction of the wake from the Somnolith, degrees clockwise on screen from screen-right: 180 is
+        /// <summary>Direction of the wake from the Manalith, degrees clockwise on screen from screen-right: 180 is
         /// straight left, a little over 180 tilts it up-left (the body coming down and in, trailing its wake behind).</summary>
         public float Angle = 192f;
         /// <summary>Half-width of the wake across its direction at its far end, as a share of the screen width; it is
@@ -209,7 +209,7 @@ namespace GridGame.Core.Content
         public float MinSize = 0.008f;
         /// <summary>Share of pieces drawn as fine specks (small dots) instead of shard images.</summary>
         public float SpeckShare = 0.45f;
-        /// <summary>GG-T674: speck colours sampled from the Somnolith art; each speck picks one (repeat a colour to
+        /// <summary>GG-T674: speck colours sampled from the Manalith art; each speck picks one (repeat a colour to
         /// weight it).</summary>
         public List<string> SpeckColors = new List<string> { "#2D346C", "#46508E", "#6B3C6A", "#974B72" };
         /// <summary>Seconds a piece takes to drift from the body to the far end of the wake.</summary>
@@ -263,12 +263,12 @@ namespace GridGame.Core.Content
 
     /// <summary>GG-T670 (owner: "that's why it sometimes rains aether dust"; "Aetherain falls"): the Aetherain. Now and
     /// then a backdrop shows sparse,
-    /// slow-falling glints of aether dust shaken loose from the Somnolith's wake. Rolled once per backdrop shown, with a
-    /// chance that grows with the Somnolith's size (<see cref="SkyDef.AetherainChanceFor"/>). Cosmetic.</summary>
+    /// slow-falling glints of aether dust shaken loose from the Manalith's wake. Rolled once per backdrop shown, with a
+    /// chance that grows with the Manalith's size (<see cref="SkyDef.AetherainChanceFor"/>). Cosmetic.</summary>
     public sealed class AetherainDef
     {
         public const int MaxMotes = 60;
-        /// <summary>Chance of a dust fall where the Somnolith is at Debris.FullAtSize or larger.</summary>
+        /// <summary>Chance of a dust fall where the Manalith is at Debris.FullAtSize or larger.</summary>
         public float Chance = 0.3f;
         public int Motes = 28;
         /// <summary>Seconds a mote takes to fall from the wake to the bottom of the screen.</summary>
@@ -276,13 +276,13 @@ namespace GridGame.Core.Content
         /// <summary>Mote diameter as a share of the screen width.</summary>
         public float MinSize = 0.004f;
         public float MaxSize = 0.009f;
-        /// <summary>GG-T674: mote colours from the Somnolith art, mostly its blue with violet and red glints; each mote
+        /// <summary>GG-T674: mote colours from the Manalith art, mostly its blue with violet and red glints; each mote
         /// picks one (repeat a colour to weight it).</summary>
         public List<string> Colors = new List<string> { "#5D64A3", "#5D64A3", "#A096C7", "#B2A4D2", "#9D6492", "#974B72" };
         public float Opacity = 0.85f;
     }
 
-    /// <summary>Fragments of the Somnolith dragged slowly across the sky (cosmetic, not deterministic).</summary>
+    /// <summary>Fragments of the Manalith dragged slowly across the sky (cosmetic, not deterministic).</summary>
     public sealed class ShardsDef
     {
         public List<string> Images = new List<string>();

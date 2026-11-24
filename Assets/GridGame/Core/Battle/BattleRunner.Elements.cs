@@ -60,7 +60,7 @@ namespace GridGame.Core.Battle
         /// so the dispatcher doesn't call it a miss. Enemy abilities leave the board alone (their own snares stay put).</summary>
         private bool ResolveTileReactions(Unit caster, AbilityDef a, Coord anchor)
         {
-            if (caster == null || !caster.IsHero || a.IsTeleport || a.Escape || a.Revives) return false;
+            if (caster == null || !caster.IsHero || a.IsTeleport || a.Vanishes || a.Escape || a.Revives) return false;
             var reactions = ElementCounters.ReactionsOf(C, a);
             if (reactions.Count == 0 || (S.Traps.Count == 0 && S.Region.Tiles.Count == 0)) return false;
             var area = TileReactions.Area(a, anchor, caster.Pos);

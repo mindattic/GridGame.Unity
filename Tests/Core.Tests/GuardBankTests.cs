@@ -59,21 +59,19 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Guard_bubble_rolls_into_an_orb_and_fades_when_the_bank_holds_12()
+        public void Guard_earns_nothing_while_the_bank_holds_12()
         {
+            // GG-T673: once the orb row is full, earning stops until a spell spends an orb, so a Guard banks no charge and mints no orb.
             var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
             Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
             s.Bank.Add(s.Bank.Capacity);
             Assert.That(s.Bank.Count, Is.EqualTo(ManaBank.DefaultCapacity));
             s.ManaCharge = BattleConfig.ManaChargePerOrb - 1;
-            int amount = BattleEngine.DampedCharge(s, BattleEngine.GuardCharge(s)); // a full bank damps it (§3.1.9, GG-T247)
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            var minted = ev.OfType<OrbMintedEvent>().Where(o => o.Reason == "guard").ToList();
-            Assert.That(minted.Count, Is.EqualTo(1));
-            Assert.That(minted[0].Landed, Is.False, "a full bank lets the rolled-over orb fade (GG-LAW-6)");
+            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "guard"), Is.False, "a full bank mints no orb");
+            Assert.That(ev.Any(e => e is ManaChargedEvent c && c.Reason == "guard"), Is.False, "a full bank earns no charge");
             Assert.That(s.Bank.Count, Is.EqualTo(ManaBank.DefaultCapacity));
-            Assert.That(ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "guard").Total,
-                Is.EqualTo((BattleConfig.ManaChargePerOrb - 1 + amount) % BattleConfig.ManaChargePerOrb));
+            Assert.That(s.ManaCharge, Is.EqualTo(BattleConfig.ManaChargePerOrb - 1));
         }
 
         [Test]

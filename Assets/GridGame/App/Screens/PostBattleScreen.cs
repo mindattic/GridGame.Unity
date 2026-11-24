@@ -95,6 +95,7 @@ namespace GridGame.App
                 if (report.BrokenOrbFound)
                     Tag(Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list), RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
+                TurnsRow(list);
                 ComboRows(c, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
@@ -152,6 +153,7 @@ namespace GridGame.App
                 }
                 if (!report.Escaped && report.XpEach > 0)
                     Tag(Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "defeat-xp";
+                TurnsRow(list);
                 ComboRows(c, list);
             }
 
@@ -230,8 +232,10 @@ namespace GridGame.App
                 "The party falls in the Crucible, but every coin, drop and point of experience earned is kept. Everyone recovers.", "small", list);
             t.style.whiteSpace = WhiteSpace.Normal;
             Tag(Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
-            if (App.Save?.Crucible != null) Tag(Ui.MenuRow("Best haul", Ui.Gold(App.Save.Crucible.BestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
+            // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
+            Tag(Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
             Tag(Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "crucible-xp";
+            TurnsRow(list);
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);
             if (Features.Bounties && report.BountyProgress != null) Ui.MenuRow("Bounty", report.BountyProgress, null, list).KindIcon(RowKind.Bounty);
@@ -263,6 +267,15 @@ namespace GridGame.App
 
         /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
         /// <c>.Q&lt;Label&gt;</c> or <c>.name</c> still lands on the row (KindIcon itself returns the icon).</summary>
+        /// <summary>GG-T944 (§2.13.1): how long the battle ran, "N turns" or "N turns, M actions" when several heroes acted
+        /// in a turn (<see cref="BattleReport.TurnsLabel"/>); the turn mode itself is never read here.</summary>
+        private void TurnsRow(VisualElement list)
+        {
+            string value = report.TurnsLabel();
+            if (value.Length == 0) return;
+            Tag(Ui.MenuRow("Battle length", value, null, list), RowKind.Hero).name = "results-turns";
+        }
+
         /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
         /// combo points earned supporting), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
         private void ComboRows(ContentDb c, VisualElement list)

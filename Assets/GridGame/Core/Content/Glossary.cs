@@ -245,6 +245,20 @@ namespace GridGame.Core.Content
             }
         }
 
+        /// <summary>
+        /// GG-T907: a content set with a glossary defines every battle-feel keyword the cards and the generated sentences
+        /// print (<see cref="Rules.KeywordText.Keywords"/>: Heavy, Floating, Rooted, Shredded, Frightened, Linked, Volley,
+        /// the tactical tiles), and the keyword lines themselves resolve. Fixtures without a glossary are exempt.
+        /// </summary>
+        public static void ValidateKeywords(ContentDb db, List<string> p)
+        {
+            if (db.GlossaryOrder.Count == 0) return;
+            foreach (var k in Rules.KeywordText.Keywords)
+                if (db.TryTerm(k) == null) p.Add($"glossary: no entry for the keyword '{k}'");
+            Need(db, Rules.KeywordText.HeavyLine, "keyword line Heavy", p);
+            Need(db, Rules.KeywordText.HeavyFloatingLine, "keyword line Heavy (floating)", p);
+        }
+
         private static void Need(ContentDb db, string text, string where, List<string> p)
         {
             if (string.IsNullOrEmpty(text) || text.IndexOf('[') < 0) return;

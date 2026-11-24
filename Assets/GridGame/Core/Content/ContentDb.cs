@@ -8,6 +8,9 @@ namespace GridGame.Core.Content
     {
         public readonly Dictionary<string, ClassDef> Classes = new Dictionary<string, ClassDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, AbilityDef> Abilities = new Dictionary<string, AbilityDef>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>GG-T973: merged ability id → the ability it was merged into (abilities.json rows with
+        /// <see cref="AbilityDef.MergedInto"/>). Never in <see cref="Abilities"/>; a save still naming one is rewritten on load.</summary>
+        public readonly Dictionary<string, string> AbilityAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, BuffDef> Buffs = new Dictionary<string, BuffDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, ItemDef> Items = new Dictionary<string, ItemDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, RecipeDef> Recipes = new Dictionary<string, RecipeDef>(StringComparer.OrdinalIgnoreCase);
@@ -30,7 +33,7 @@ namespace GridGame.Core.Content
         public AttackTypeSheet AttackTypes = new AttackTypeSheet();
         /// <summary>vfx.json (GG-T269): the effect prefabs vfxstyle.json points at.</summary>
         public VfxCatalog VfxPrefabs = new VfxCatalog();
-        /// <summary>sky.json (GG-T576): the living backdrop's Moon, Somnolith (per region), shards and parallax.</summary>
+        /// <summary>sky.json (GG-T576): the living backdrop's Moon, Manalith (per region), shards and parallax.</summary>
         public SkyDef Sky = new SkyDef();
         /// <summary>backdroplayers.json (GG-T576, tools/split_backdrops.py): which backdrops are split into sky and
         /// foreground plates, keyed by file stem (<c>halcyon-00</c>).</summary>
@@ -49,6 +52,23 @@ namespace GridGame.Core.Content
         /// <summary>factions.json (GG-T342): the STORY.md factions and the hero classes in each, in file order.</summary>
         public readonly List<FactionDef> Factions = new List<FactionDef>();
         /// <summary>The faction a hero class belongs to, or null.</summary>
+        /// <summary>families.json (GG-T971, BIBLE §25.6.6): the hero families, in file order.</summary>
+        public readonly List<FamilyDef> Families = new List<FamilyDef>();
+        /// <summary>True when <see cref="ContentLoader.Load"/> found no families.json; a hand-built ContentDb has none and
+        /// simply skips the family checks.</summary>
+        public bool FamiliesFileMissing;
+        public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
+        /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
+        public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);
+        /// <summary>Every hero class id in a family, by id.</summary>
+        public List<string> FamilyMembers(string familyId)
+        {
+            var ids = new List<string>();
+            foreach (var c in Classes.Values)
+                if (c.Team == Team.Hero && familyId != null && string.Equals(c.Family, familyId, StringComparison.OrdinalIgnoreCase)) ids.Add(c.Id);
+            ids.Sort(StringComparer.OrdinalIgnoreCase);
+            return ids;
+        }
         public FactionDef FactionOf(string classId) => classId == null ? null : Factions.Find(f => f.Heroes.Exists(h => string.Equals(h, classId, StringComparison.OrdinalIgnoreCase)));
         public readonly Dictionary<string, CaravanUpgradeDef> Caravan = new Dictionary<string, CaravanUpgradeDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, SkillTreeDef> SkillTrees = new Dictionary<string, SkillTreeDef>(StringComparer.OrdinalIgnoreCase);
@@ -100,6 +120,9 @@ namespace GridGame.Core.Content
         public RecipeDef Recipe(string id) => Get(Recipes, id, "recipe");
 
         public AbilityDef TryAbility(string id) => id != null && Abilities.TryGetValue(id, out var a) ? a : null;
+        /// <summary>GG-T973: the surviving id for <paramref name="id"/>: its <see cref="AbilityAliases"/> target when it is a
+        /// merged ability, else <paramref name="id"/> itself (null stays null).</summary>
+        public string ResolveAbility(string id) => id != null && AbilityAliases.TryGetValue(id, out var to) && !string.IsNullOrEmpty(to) ? to : id;
         public ItemDef TryItem(string id) => id != null && Items.TryGetValue(id, out var a) ? a : null;
         public BuffDef TryBuff(string id) => id != null && Buffs.TryGetValue(id, out var a) ? a : null;
         public ClassDef TryClass(string id) => id != null && Classes.TryGetValue(id, out var a) ? a : null;

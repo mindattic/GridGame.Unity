@@ -323,5 +323,172 @@ namespace GridGame.Tests
             if (!CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
                 Assert.That(Talents.Respec(c, s, h).Ok, Is.False);
         }
+
+        // ── Family trees (GG-T979, epic GG-T953) ─────────────────────────────────────────────────────
+
+        /// <summary>Six families on a ring (listed out of ring order on purpose), each with its own tree, plus one role tree.
+        /// The thief is a Shadow (Ring 4) whose HomeTree still names the role tree "rogue": its family tree is home anyway.
+        /// Every family tree has a free root, a 4-point gate node and ten 2-point filler nodes to invest in.</summary>
+        private static ContentDb FamilyDb()
+        {
+            var c = new ContentDb();
+            var families = new[] { ("wild", 5), ("vanguard", 1), ("shadow", 4), ("blade", 2), ("machina", 6), ("brawn", 3) };
+            foreach (var (id, ring) in families)
+            {
+                string name = char.ToUpperInvariant(id[0]) + id.Substring(1);
+                c.Families.Add(new FamilyDef { Id = id, Name = name, Theme = "t", Primary = "Strength", Secondary = "Vitality", Ring = ring });
+                var t = new SkillTreeDef { Id = id, Name = name };
+                t.Nodes.Add(FamilyNode(c, id + "_root", 1, 0));
+                t.Nodes.Add(FamilyNode(c, id + "_gate", 1, 4));
+                for (int i = 0; i < 10; i++) t.Nodes.Add(FamilyNode(c, $"{id}_fill{i}", 2, 0));
+                c.SkillTrees[id] = t;
+            }
+            c.SkillTrees["rogue"] = new SkillTreeDef { Id = "rogue", Name = "Rogue", Nodes = { FamilyNode(c, "rogue_root", 1, 0) } };
+            c.Abilities["steal"] = new AbilityDef { Id = "steal", Name = "Steal", Kind = AbilityKind.Skill };
+            var shadow = c.SkillTrees["shadow"];
+            shadow.Nodes.Add(new SkillNodeDef { Id = "t_root", Name = "Quick Hands", Cost = 1, SignatureOf = "thief",
+                GrantsStat = new StatGrantDef { Stat = "Agility", Amount = 1 } });
+            shadow.Nodes.Add(new SkillNodeDef { Id = "t_steal", Name = "Steal", Cost = 1, Grants = "steal", SignatureOf = "thief", Prerequisites = { "t_root" } });
+            c.Classes["thief"] = new ClassDef { Id = "thief", Name = "Thief", Team = Team.Hero, Role = "Striker", Family = "shadow",
+                HomeTree = "rogue", DefaultLoadout = { "steal" }, StartNodes = { "t_root", "t_steal" } };
+            return c;
+        }
+
+        private static SkillNodeDef FamilyNode(ContentDb c, string id, int cost, int required)
+        {
+            c.Abilities[id] = new AbilityDef { Id = id, Name = id, Kind = AbilityKind.Passive };
+            return new SkillNodeDef { Id = id, Name = id, Cost = cost, Grants = id, RequiredPointsInTree = required };
+        }
+
+        private static (ContentDb c, SaveData s, HeroSave h, SkillTreeDef home) FamilySetup()
+        {
+            var c = FamilyDb();
+            var s = new SaveData { TestMode = true, Gold = 100000 };
+            CampNpcs.JoinAll(s);
+            var h = Progression.NewHero(c, "thief");
+            h.SkillPoints = 2000;
+            return (c, s, h, c.SkillTrees["shadow"]);
+        }
+
+        /// <summary>Buys the home tree's open fillers until it counts <paramref name="target"/> points (start nodes included).</summary>
+        private static void InvestFamily(ContentDb c, SaveData s, HeroSave h, SkillTreeDef home, int target)
+        {
+            for (int guard = 0; guard < 100 && Talents.PointsIn(c, h, home) < target; guard++)
+            {
+                var next = home.Nodes.First(n => n.Id.Contains("_fill") && Talents.State(c, h, home, n) == TalentState.Available);
+                Assert.That(Talents.Unlock(c, s, h, home.Id, next.Id).Ok, Is.True, next.Id);
+            }
+            Assert.That(Talents.PointsIn(c, h, home), Is.GreaterThanOrEqualTo(target));
+        }
+
+        [Test]
+        public void The_family_tree_is_home_even_when_HomeTree_names_a_role_tree()
+        {
+            var (c, _, h, shadow) = FamilySetup();
+            var def = c.Class("thief");
+            Assert.That(Progression.FamilyTree(c, def), Is.SameAs(shadow), "the tree named by Family, as ContentLoader.ValidateFamilyTrees reads it");
+            Assert.That(Talents.HomeTree(c, h), Is.SameAs(shadow));
+            Assert.That(Talents.IsHome(c, h, shadow), Is.True);
+            Assert.That(Talents.IsHome(c, h, c.SkillTrees["rogue"]), Is.False, "the old role tree is an off-tree now");
+            Assert.That(Talents.Trees(c, h).First(), Is.SameAs(shadow));
+            Assert.That(h.Known, Does.Contain("steal"), "the start grant came from the family tree");
+            Assert.That(Talents.State(c, h, shadow, shadow.Nodes.First(n => n.Id == "t_root")), Is.EqualTo(TalentState.Innate));
+            Assert.That(Talents.PointsIn(c, h, shadow), Is.EqualTo(2), "both start nodes count");
+            Assert.That(Talents.Premium(c, h, shadow), Is.Zero);
+            Assert.That(Talents.Required(c, h, shadow, shadow.Nodes.First(n => n.Id == "shadow_gate")), Is.EqualTo(4), "home gates are unscaled");
+        }
+
+        [Test]
+        public void The_family_board_follows_families_json_ring_order()
+        {
+            var c = FamilyDb();
+            Assert.That(TreeAdjacency.FamilyRing(c), Is.EqualTo(new[] { "vanguard", "blade", "brawn", "shadow", "wild", "machina" }));
+            Assert.That(TreeAdjacency.BoardFor(c, "shadow"), Is.EqualTo(TreeAdjacency.FamilyRing(c)));
+            Assert.That(TreeAdjacency.BoardFor(c, "rogue"), Is.SameAs(TreeAdjacency.Ring), "a role home keeps the role ring");
+            var board = TreeAdjacency.FamilyRing(c);
+            Assert.That(TreeAdjacency.Adjacent("shadow", "brawn", board), Is.True);
+            Assert.That(TreeAdjacency.Adjacent("machina", "vanguard", board), Is.True, "the ring wraps");
+            Assert.That(TreeAdjacency.Distance("shadow", "vanguard", board), Is.EqualTo(3));
+            Assert.That(TreeAdjacency.Distance("shadow", "rogue", board), Is.EqualTo(TreeAdjacency.Unreachable), "a role tree is off the family board");
+
+            var real = Real;
+            var ring = TreeAdjacency.FamilyRing(real);
+            Assert.That(ring, Is.EqualTo(real.Families.OrderBy(f => f.Ring).Select(f => f.Id).ToArray()));
+            Assert.That(ring.Distinct().Count(), Is.EqualTo(real.Families.Count), "every family once");
+        }
+
+        [Test]
+        public void ExtraEdges_bridge_the_family_board_too()
+        {
+            var c = FamilyDb();
+            var board = TreeAdjacency.FamilyRing(c);
+            var saved = TreeAdjacency.ExtraEdges;
+            try
+            {
+                TreeAdjacency.ExtraEdges = new System.Collections.Generic.List<(string A, string B)> { ("shadow", "vanguard") };
+                Assert.That(TreeAdjacency.Distance("shadow", "vanguard", board), Is.EqualTo(1));
+            }
+            finally { TreeAdjacency.ExtraEdges = saved; }
+        }
+
+        [Test]
+        public void Off_family_slots_premium_and_scaled_gates_work_as_off_trees_do()
+        {
+            var (c, s, h, shadow) = FamilySetup();
+            Assume.That(TalentConfig.OpenTreeAt, Is.EqualTo(new[] { 10, 20 }));
+            Assume.That(TreeAdjacency.MaxOpenDistance, Is.EqualTo(2));
+            var brawn = c.SkillTrees["brawn"];       // neighbour (Ring 3)
+            var machina = c.SkillTrees["machina"];   // 2 steps (Ring 6)
+            var vanguard = c.SkillTrees["vanguard"]; // 3 steps (Ring 1)
+            var rogue = c.SkillTrees["rogue"];       // the old role tree, off the family board
+
+            Assert.That(Talents.OffTreeSlots(c, h), Is.Zero);
+            Assert.That(Talents.WhyClosed(c, h, brawn), Does.Contain("needs 10 pts in Shadow (2 now)"), "start nodes count toward the slot");
+            Assert.That(Talents.Unlock(c, s, h, "brawn", "brawn_root").Ok, Is.False);
+
+            InvestFamily(c, s, h, shadow, TalentConfig.OpenTreeAt[0]);
+            Assert.That(Talents.OffTreeSlots(c, h), Is.EqualTo(1));
+            Assert.That(Talents.Distance(c, h, brawn), Is.EqualTo(1));
+            Assert.That(Talents.Premium(c, h, brawn), Is.EqualTo(TalentConfig.OffTreePremium));
+            Assert.That(Talents.Required(c, h, brawn, brawn.Nodes.First(n => n.Id == "brawn_gate")), Is.EqualTo(Talents.ScaledRequirement(4)));
+            Assert.That(Talents.WhyClosed(c, h, vanguard), Does.Contain("Vanguard is 3 steps away").And.Contain("Brawn or Wild"));
+            Assert.That(Talents.Distance(c, h, machina), Is.EqualTo(2));
+            Assert.That(Talents.Premium(c, h, machina), Is.EqualTo(TalentConfig.OffTreePremium + TreeAdjacency.PremiumPerExtraStep));
+            Assert.That(Talents.Distance(c, h, rogue), Is.EqualTo(TreeAdjacency.Unreachable));
+            Assert.That(Talents.Premium(c, h, rogue), Is.EqualTo(TalentConfig.OffTreePremium), "off the board pays the flat premium only");
+
+            int before = h.SkillPoints;
+            Assert.That(Talents.Unlock(c, s, h, "brawn", "brawn_root").Ok, Is.True);
+            Assert.That(h.SkillPoints, Is.EqualTo(before - 1 - TalentConfig.OffTreePremium));
+            Assert.That(Talents.OpenedOffTrees(c, h), Is.EqualTo(new[] { brawn }));
+            Assert.That(Talents.HeldTreeIds(c, h), Is.EqualTo(new[] { "shadow", "brawn" }));
+            Assert.That(Talents.WhyClosed(c, h, machina), Does.Contain("needs 20 pts in Shadow"), "the second slot waits for 20");
+
+            InvestFamily(c, s, h, shadow, TalentConfig.OpenTreeAt[1]);
+            Assert.That(Talents.Distance(c, h, vanguard), Is.EqualTo(2), "Brawn is a stepping stone to Vanguard");
+            Assert.That(Talents.WhyClosed(c, h, vanguard), Is.Null);
+            Assert.That(Talents.Unlock(c, s, h, "vanguard", "vanguard_root").Ok, Is.True);
+            Assert.That(Talents.WhyClosed(c, h, machina), Does.Contain("Already specialized in 2 other trees"));
+            Assert.That(h.SkillPoints + Talents.PointsSpent(c, h), Is.EqualTo(2000));
+        }
+
+        [Test]
+        public void Respec_on_a_family_tree_refunds_what_was_bought_and_never_the_start_nodes()
+        {
+            var (c, s, h, shadow) = FamilySetup();
+            InvestFamily(c, s, h, shadow, TalentConfig.OpenTreeAt[0]);
+            Assert.That(Talents.Unlock(c, s, h, "brawn", "brawn_root").Ok, Is.True);
+            Assert.That(Talents.PointsSpent(c, h), Is.EqualTo(2000 - h.SkillPoints));
+
+            Assert.That(Talents.Respec(c, s, h).Ok, Is.True);
+            Assert.That(h.SkillPoints, Is.EqualTo(2000));
+            Assert.That(Talents.PointsSpent(c, h), Is.Zero);
+            Assert.That(h.Known, Does.Contain("steal"), "a start grant is never forgotten");
+            Assert.That(h.Known, Does.Not.Contain("brawn_root"));
+            Assert.That(Talents.PointsIn(c, h, shadow), Is.EqualTo(2), "the start nodes still count");
+            foreach (var id in new[] { "t_root", "t_steal" })
+                Assert.That(Talents.State(c, h, shadow, shadow.Nodes.First(n => n.Id == id)), Is.EqualTo(TalentState.Innate), id);
+            Assert.That(Talents.OpenedOffTrees(c, h), Is.Empty);
+        }
     }
 }

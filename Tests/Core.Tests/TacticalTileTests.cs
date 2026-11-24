@@ -492,5 +492,183 @@ namespace GridGame.Tests
             GuardUntil(s, () => s.Region.At(Lane) == null);
             Assert.That(!sapper.Alive || sapper.Hp < hp, Is.True, "and the blast catches it");
         }
+
+        // ── The tech gremlin's Sabotage (GG-T903, §14.23) ───────────────────────────────────────
+
+        private static readonly Coord Gadget = new Coord(2, 4);
+
+        /// <summary>The tactics content with its firewall and mine made gadgets, the real Sabotage, Silenced and element
+        /// table, an instant copy of the real EMP Pulse, and a Tech "gremlin" foe (moves 1) with Sabotage in its kit.</summary>
+        private static ContentDb GremlinDb()
+        {
+            var db = Db();
+            db.TryTileState("firewall").Gadget = true;
+            db.TryTileState("mine").Gadget = true;
+            db.Elements = Real.Elements;
+            db.Buffs["silenced"] = Real.Buffs["silenced"];
+            db.Abilities["gremlin_sabotage"] = Real.TryAbility("gremlin_sabotage");
+            db.Classes["gremlin"] = new ClassDef
+            {
+                Id = "gremlin", Name = "Gremlin", Team = Team.Enemy, Tags = { "Humanoid", EmpPulse.Tag },
+                BaseStats = new Stats { Strength = 5, Vitality = 50, Agility = 10, Speed = 10, Intelligence = 5 }, MoveRange = 1,
+                Abilities = { "gremlin_sabotage" },
+            };
+            var r = Real.TryAbility("technician_emp");
+            db.Abilities["emp"] = new AbilityDef
+            {
+                Id = "emp", Name = r.Name, Kind = AbilityKind.Skill, Shape = r.Shape, Radius = r.Radius, Mode = r.Mode, Filter = r.Filter,
+                DamageType = r.DamageType, ApplyBuff = r.ApplyBuff, ApplyBuffChance = 1f, OnlyVsTag = r.OnlyVsTag, CastStagger = r.CastStagger, TileReaction = r.TileReaction,
+            };
+            return db;
+        }
+
+        /// <summary>The gremlin on <paramref name="gx"/>,<paramref name="gy"/>, the knight on (0,6) with
+        /// <paramref name="knightBar"/>, the cleric on (5,7): neither beside the gremlin.</summary>
+        private static BattleState Gremlin(int gx, int gy, string knightBar = null) =>
+            Setup(GremlinDb(), Stage(("gremlin", gx, gy)), new[] { ("knight", 0, 6, knightBar), ("cleric", 5, 7, (string)null) });
+
+        private static Unit GremlinOf(BattleState s) => s.Units.First(u => u.Def.Id == "gremlin");
+
+        /// <summary>Paints a mark of the tactics rule on <paramref name="at"/> as the knight's (the party's).</summary>
+        private static TileMark PartyMark(BattleState s, Coord at, string state, bool hidden = false)
+        {
+            var m = new TileMark { State = state, Rule = "tactics", Hazard = true, OwnerTeam = Team.Hero, OwnerId = Hero(s, "knight").Id, Hidden = hidden };
+            s.Region.Tiles[at] = m;
+            if (!s.Region.Rules.Contains("tactics")) s.Region.Rules.Add("tactics");
+            return m;
+        }
+
+        [Test]
+        public void Sabotage_ships_in_the_tech_gremlins_kit_and_the_engineers_gadgets_are_gadgets()
+        {
+            var problems = ContentLoader.Validate(Real).Where(p => p.Contains("gremlin_sabotage") || p.Contains("techgremlin")).ToList();
+            Assert.That(problems, Is.Empty, string.Join("\n", problems));
+            var a = Real.TryAbility("gremlin_sabotage");
+            Assert.That(a, Is.Not.Null);
+            Assert.That(a.Mode, Is.EqualTo(TargetMode.PickTile));
+            Assert.That(a.RuleEffects.Any(fx => fx.Kind == RuleEffectKind.Sabotage && fx.Area == RuleArea.Target), Is.True);
+            foreach (var id in new[] { "techgremlin00", "techgremlin01", "techgremlin02" })
+            {
+                Assert.That(Real.Classes[id].Abilities, Does.Contain("gremlin_sabotage"), id);
+                Assert.That(Real.Classes[id].HasTag(EmpPulse.Tag), Is.True, id + " is Tech: the EMP Pulse jams it");
+                Assert.That(EnemyPlanner.SabotageAbility(Real, Real.Classes[id])?.Id, Is.EqualTo("gremlin_sabotage"), id);
+            }
+            foreach (var st in new[] { "buriedmine", "firewall", "machinist_barricade" })
+                Assert.That(Real.TryTileState(st)?.Gadget, Is.True, st + " is a gadget");
+            Assert.That(Real.TryTileState("armedmine")?.Gadget ?? false, Is.False, "a charge already going off is past saving");
+            var halcyon = Real.Stages["cityruins-01"];
+            Assert.That(halcyon.Waves.Any(w => w.Guests.Any(g => g.Class == "machinist")), Is.True, "the Machinist fights beside the party there");
+            Assert.That(halcyon.Waves.Any(w => w.Enemies.Any(e => e.Class.StartsWith("techgremlin"))), Is.True, "and meets a tech gremlin");
+        }
+
+        [Test]
+        public void Only_another_sides_gadget_can_be_sabotaged()
+        {
+            var s = Gremlin(2, 2);
+            var m = PartyMark(s, Gadget, "firewall");
+            Assert.That(EnemyPlanner.IsGadgetOf(s, m, Team.Enemy), Is.True, "the party's firewall");
+            Assert.That(EnemyPlanner.IsGadgetOf(s, m, Team.Hero), Is.False, "never your own side's");
+            m.OwnerTeam = Team.Neutral;
+            Assert.That(EnemyPlanner.IsGadgetOf(s, m, Team.Enemy), Is.False, "the board's own mark is nobody's gadget");
+            Assert.That(EnemyPlanner.IsGadgetOf(s, new TileMark { State = "burst", OwnerTeam = Team.Hero }, Team.Enemy), Is.False, "a state that is no gadget");
+        }
+
+        [Test]
+        public void A_gremlin_beside_the_partys_firewall_turns_it_against_the_party()
+        {
+            var s = Gremlin(2, 3, "firewall");
+            var gremlin = GremlinOf(s);
+            var knight = Hero(s, "knight");
+            BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = Gadget });
+            var m = s.Region.At(Gadget);
+            Assert.That(m?.OwnerTeam, Is.EqualTo(Team.Hero));
+            Assert.That(RegionBoard.DangerAt(s, Gadget, knight), Is.EqualTo(0f), "the party's own firewall");
+            var plan = EnemyPlanner.PlanSabotage(s, gremlin);
+            Assert.That(plan?.Kind, Is.EqualTo(SabotagePlanKind.Sabotage));
+            Assert.That(plan.At, Is.EqualTo(Gadget));
+            var ev = GuardUntil(s, () => s.Region.At(Gadget)?.OwnerTeam == Team.Enemy);
+            Assert.That(m.OwnerTeam, Is.EqualTo(Team.Enemy), "sabotaged");
+            Assert.That(m.OwnerId, Is.EqualTo(gremlin.Id), "the gremlin's now");
+            Assert.That(ev.OfType<TileSabotagedEvent>().Any(x => x.UnitId == gremlin.Id && x.At == Gadget && x.FromTeam == Team.Hero && x.ToTeam == Team.Enemy), Is.True);
+            Assert.That(gremlin.Cooldowns.TryGetValue("gremlin_sabotage", out var cd) && cd > 0, Is.True, "and it rests");
+            Assert.That(RegionBoard.DangerAt(s, Gadget, knight), Is.GreaterThan(0f), "it burns the party now");
+            Assert.That(RegionBoard.DangerAt(s, Gadget, gremlin), Is.EqualTo(0f), "and spares the foes");
+            gremlin.Cooldowns.Clear();
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Null, "nothing left to turn");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_sabotaged_buried_mine_hides_from_the_party_that_laid_it()
+        {
+            var s = Gremlin(2, 3, "mine_lay");
+            var gremlin = GremlinOf(s);
+            var knight = Hero(s, "knight");
+            BattleEngine.Apply(s, new UseSlotCommand { HeroId = knight.Id, Slot = 0, Target = Gadget });
+            Assert.That(s.Region.At(Gadget)?.OwnerTeam, Is.EqualTo(Team.Hero));
+            GuardUntil(s, () => s.Region.At(Gadget)?.OwnerTeam == Team.Enemy);
+            GuardUntil(s, () => s.Region.At(Gadget)?.Hidden == true);
+            var m = s.Region.At(Gadget);
+            Assert.That(m.OwnerTeam, Is.EqualTo(Team.Enemy));
+            Assert.That(m.Hidden, Is.True);
+            Assert.That(RegionBoard.Sees(m, Team.Hero), Is.False, "the party loses track of its own mine");
+            Assert.That(RegionBoard.Sees(m, Team.Enemy), Is.True, "the foes know where it is");
+            Assert.That(RegionBoard.Affects(s, m, knight), Is.True, "and it waits for the party");
+            Assert.That(RegionBoard.DangerAt(s, Gadget, knight), Is.EqualTo(0f), "the hero bot can't see it");
+            Assert.That(RegionBoard.DangerAt(s, Gadget, gremlin), Is.EqualTo(0f), "a foe walks it unharmed");
+        }
+
+        [Test]
+        public void The_planner_closes_on_a_gadget_it_sees_and_senses_a_hidden_one_beside_it()
+        {
+            var s = Gremlin(2, 1);
+            var gremlin = GremlinOf(s);
+            PartyMark(s, Gadget, "firewall");
+            var plan = EnemyPlanner.PlanSabotage(s, gremlin);
+            Assert.That(plan?.Kind, Is.EqualTo(SabotagePlanKind.Walk), "three tiles off: it goes for it");
+            Assert.That(plan.At, Is.EqualTo(new Coord(2, 2)));
+            Assert.That(plan.Gadget, Is.EqualTo(Gadget));
+
+            s.Region.Tiles.Clear();
+            PartyMark(s, Gadget, "mine", hidden: true);
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Null, "a hidden mine it can't see draws nobody");
+            s.Region.Tiles.Clear();
+            PartyMark(s, new Coord(2, 2), "mine", hidden: true);
+            plan = EnemyPlanner.PlanSabotage(s, gremlin);
+            Assert.That(plan?.Kind, Is.EqualTo(SabotagePlanKind.Sabotage), "tech senses tech beside it");
+            Assert.That(plan.At, Is.EqualTo(new Coord(2, 2)));
+
+            s.Region.Tiles.Clear();
+            PartyMark(s, new Coord(2, 7), "firewall");
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Null, "out of reach");
+        }
+
+        [Test]
+        public void The_planner_prefers_a_hidden_mine_over_a_firewall_and_strikes_a_hero_beside_it_instead()
+        {
+            var s = Gremlin(2, 3);
+            var gremlin = GremlinOf(s);
+            PartyMark(s, new Coord(1, 3), "firewall");
+            PartyMark(s, new Coord(3, 3), "mine", hidden: true);
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin)?.At, Is.EqualTo(new Coord(3, 3)), "the buried charge is worth more");
+            gremlin.Cooldowns["gremlin_sabotage"] = 1;
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Null, "resting");
+            var near = Setup(GremlinDb(), Stage(("gremlin", 2, 3)), new[] { ("knight", 0, 6, (string)null), ("cleric", 2, 4, (string)null) });
+            PartyMark(near, new Coord(3, 3), "mine", hidden: true);
+            Assert.That(EnemyPlanner.PlanSabotage(near, GremlinOf(near)), Is.Null, "a hero beside it: it strikes");
+        }
+
+        [Test]
+        public void The_emp_pulse_jams_a_gremlin_so_it_cannot_sabotage()
+        {
+            var s = Gremlin(2, 3, "emp");
+            var gremlin = GremlinOf(s);
+            PartyMark(s, Gadget, "firewall");
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Not.Null);
+            BattleEngine.Apply(s, new UseSlotCommand { HeroId = Hero(s, "knight").Id, Slot = 0, Target = gremlin.Pos });
+            Assert.That(gremlin.IsSilenced, Is.True, "the pulse jams the gremlin's relays");
+            Assert.That(EnemyPlanner.PlanSabotage(s, gremlin), Is.Null, "a jammed gremlin can't tamper");
+            Assert.That(s.Region.At(Gadget).OwnerTeam, Is.EqualTo(Team.Hero), "the firewall is still the party's");
+        }
     }
 }

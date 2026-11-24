@@ -1,4 +1,5 @@
 using System.Collections;
+using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using UnityEngine;
@@ -24,9 +25,12 @@ namespace GridGame.App
         private IEnumerator RegionTilesAnim(RegionTilesEvent rt)
         {
             TrackGlobs(rt); // GG-T895
+            if (WallHit(rt)) { yield return WallHitAnim(rt); yield break; } // GG-T935
             board.SyncRegion(State);
             if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
-            App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
+            if (rt.Change == "marked" && RuneState(rt.State) is TileStateDef rune) { yield return RunePaintAnim(rt, rune); yield break; } // GG-T939: a Choir rune's paint puff
+            if (rt.Change == "marked" && FireTile(App.Content.TryTileState(rt.State))) FireCrackle(0.8f); // GG-T933: the wall catches
+            else App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
             yield return Tween.Wait(rt.Change == "changed" ? Timing.Quick : Timing.Standard);
         }
 
@@ -362,7 +366,224 @@ namespace GridGame.App
                 App.Audio.Sfx("slime.squish", 0.9f);
                 Text?.Show(sq.At, CombatTextKind.Callout, "Squish!", 0.3f, Color.Lerp(col, Palette.White, 0.25f));
             }
+            else if (def?.Circle != null) RuneScuffed(sq, def); // GG-T939: a hero scuffs a Choir rune out
             if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
+            yield return Tween.Wait(Timing.Quick);
+        }
+
+        // ── GG-T933 (§7, §14.23): firewall visuals ──────────────────────────────────────────────
+
+        /// <summary>The vfx.json loop that burns on a fire hazard mark (a firewall, a fire trail) while it lasts.</summary>
+        private const string FireTileLoop = "Flame.Loop";
+
+        /// <summary>A mark that burns: a hazard state carrying Fire (the Red Mage's firewall, a fire trail).</summary>
+        private static bool FireTile(TileStateDef def) => def != null && def.Hazard && def.Element == DamageType.Fire;
+
+        /// <summary>The crackle of flames: <c>element.crackle</c> is a placeholder cue (docs/SFX.md), so the fire cue
+        /// plays low beneath it as its stand-in until it has a file.</summary>
+        private void FireCrackle(float volume)
+        {
+            App.Audio.Sfx("element.crackle", volume);
+            App.Audio.Sfx("element.fire", volume * 0.7f, 0.7f);
+        }
+
+        /// <summary>Called from <see cref="TickPrefabFx"/>: a looping flame (vfx.json <see cref="FireTileLoop"/>) stands on
+        /// every fire hazard mark the party can see, kept while the mark lasts (Reduce Motion: none; the wash and glyph
+        /// still show it).</summary>
+        private void FireTileLoops(System.Collections.Generic.HashSet<string> keep)
+        {
+            if (State?.Region == null || State.Region.Tiles.Count == 0) return;
+            var def = App.Content.VfxPrefabs.Find(FireTileLoop);
+            if (def == null || def.Mode != VfxMode.Loop) return;
+            foreach (var kv in State.Region.Tiles)
+            {
+                var st = App.Content.TryTileState(kv.Value.State);
+                if (!FireTile(st) || !RegionBoard.Sees(kv.Value, Team.Hero) || kv.Value.Hidden) continue;
+                string key = "tile:" + kv.Key + ":" + st.Id;
+                keep.Add(key);
+                if (!prefabFx.HasLoop(key)) prefabFx.Play(def, BoardView.CenterOf(kv.Key), Art.HexColor(st.Color, Palette.Bad), key);
+            }
+        }
+
+        /// <summary>A rule's hook damage is a burn from a fire mark: the hit is Fire with no source, and the unit stands on a
+        /// fire mark, or the hit names a rule that paints one (the mark may be gone by the time the beat plays).</summary>
+        private TileStateDef FireTileBurn(DamagedEvent d, GridGame.Core.Coord at)
+        {
+            if (d.SourceId >= 0 || d.Type != DamageType.Fire) return null;
+            var here = State?.Region?.At(at);
+            var st = here == null ? null : App.Content.TryTileState(here.State);
+            if (FireTile(st)) return st;
+            if (d.Note == null) return null;
+            foreach (var r in App.Content.RegionRules.Values)
+                if (r.Name == d.Note || r.Id == d.Note)
+                    foreach (var s in r.TileStates) if (FireTile(s)) return s;
+            return null;
+        }
+
+        // ── GG-T869 (§7, §14.21): the Barbarian's Earthsplitter ─────────────────────────────────
+
+        /// <summary>The cracking state an ability paints along a line ahead of its caster (Earthsplitter's cracked), or null.</summary>
+        private TileStateDef FissurePainted(AbilityDef a)
+        {
+            if (a?.RuleEffects == null) return null;
+            foreach (var e in a.RuleEffects)
+                if (e != null && e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Line && App.Content.TryTileState(e.State) is TileStateDef def)
+                    return def;
+            return null;
+        }
+
+        /// <summary>The slam: a low rumble under a board shake, then the fissure runs out from the caster tile by tile, each
+        /// one flashing the crack's colour with a burst of grit and a stone crack (the "marked" region event that follows
+        /// draws the cracks). Reduce Motion: no shake, one quick pass.</summary>
+        private IEnumerator FissureAnim(Unit caster, AbilityDef a, TileStateDef crack, GridGame.Core.Coord anchor)
+        {
+            int count = 3;
+            foreach (var e in a.RuleEffects) if (e != null && e.Area == RuleArea.Line) { count = e.Count; break; }
+            var line = RegionRuleCatalog.LineTiles(caster.Pos, anchor, count);
+            var col = Art.HexColor(crack.Color, Palette.Gold);
+            App.Audio.Sfx("battle.explosion", 0.55f, 0.45f); // the rumble
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 7f, Timing.Standard));
+            float beat = ReduceMotion ? Timing.Quick * 0.3f : Timing.Quick * 0.6f;
+            foreach (var t in line)
+            {
+                board.Mark(t, col, 0.7f);
+                Emit(StyleOf(DamageType.Physical), BoardView.CenterOf(t), 0.5f, quiet: true);
+                App.Audio.Sfx("battle.shatter", 0.45f, 0.55f);
+                yield return Tween.Wait(beat);
+            }
+            board.SyncRegion(State);
+        }
+
+        /// <summary>A Heavy unit breaks through a crack (GG-T869): the tile flashes dark under a deep rumble and a hard shake,
+        /// "Broke through!" over it, then its <see cref="FellEvent"/> plays the fall.</summary>
+        private IEnumerator BrokeThroughAnim(BrokeThroughEvent bt)
+        {
+            board.Mark(bt.At, new Color(0.25f, 0.18f, 0.12f), 0.85f);
+            Emit(StyleOf(DamageType.Physical), BoardView.CenterOf(bt.At), 0.8f, quiet: true);
+            App.Audio.Sfx("battle.explosion", 0.8f, 0.35f);
+            App.Audio.Sfx("battle.shatter", 0.7f, 0.5f);
+            Text?.Show(bt.At, CombatTextKind.Callout, "Broke through!", 0.3f, new Color(0.85f, 0.65f, 0.4f));
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 10f, Timing.Standard));
+            board.SyncRegion(State);
+            yield return Tween.Wait(Timing.Quick);
+            board.ClearMarks();
+        }
+
+        // ── GG-T935 (§7, §14.23): the Machinist's barricade ──────────────────────────────────────
+
+        /// <summary>Set by the "Blocked!" a line charge announces when it runs into a wall; the wall's hit that follows (its
+        /// RegionTilesEvent) shows it on the wall's tile instead of a banner.</summary>
+        private bool wallBlocked;
+
+        /// <summary>The state a wall-raising ability paints on its picked tile (a MarkTiles Target of a blocking state that is
+        /// neither a hole nor a hazard), or null.</summary>
+        private TileStateDef WallRaisedBy(AbilityDef a)
+        {
+            if (a == null) return null;
+            foreach (var fx in a.RuleEffects)
+                if (fx != null && fx.Kind == RuleEffectKind.MarkTiles && fx.Area == RuleArea.Target
+                    && App.Content?.TryTileState(fx.State) is TileStateDef d && d.Blocks && !d.Pit && !d.Hazard)
+                    return d;
+            return null;
+        }
+
+        /// <summary>The barricade drops in: a Shapes crate falls onto the tile, lands with a clank, a dust kick and a short
+        /// shake (Reduce Motion: it is simply there, with the clank). The "marked" region event that follows draws it.</summary>
+        private IEnumerator BarricadeDropAnim(GridGame.Core.Coord at)
+        {
+            var crate = board.CrateDrop(at);
+            var c = BoardView.CenterOf(at);
+            if (!ReduceMotion)
+            {
+                App.Audio.Sfx("battle.whoosh", 0.4f, 1.3f);
+                yield return Tween.Run(Timing.Quick, k =>
+                {
+                    crate.style.translate = new Translate(0f, -BoardView.Tile * 1.6f * (1f - k * k));
+                    crate.style.opacity = Mathf.Clamp01(0.4f + k);
+                });
+            }
+            crate.style.translate = new Translate(0f, 0f);
+            WallClank(0.9f);
+            NamedImpactFlourish("DustKick", c, StyleOf(DamageType.Physical));
+            Emit(StyleOf(DamageType.Physical), c + new Vector2(0f, BoardView.Tile * 0.3f), 0.45f, quiet: true);
+            if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
+            board.SyncRegion(State);
+            crate.RemoveFromHierarchy();
+            yield return Tween.Wait(Timing.Quick);
+        }
+
+        /// <summary>The clank of wood and iron (cue <c>battle.clank</c>, a placeholder until its file exists: docs/SFX.md),
+        /// played over its stand-in, a high <c>battle.shatter</c>.</summary>
+        private void WallClank(float volume)
+        {
+            App.Audio.Sfx("battle.clank", volume);
+            App.Audio.Sfx("battle.shatter", volume * 0.6f, 1.6f);
+        }
+
+        /// <summary>A wall the party raised takes a hit ("changed": a foe ended its turn beside it, or a charge ran into it), or
+        /// one with no rubble to become comes down ("cleared").</summary>
+        private bool WallHit(RegionTilesEvent rt)
+        {
+            if (rt.Tiles.Count == 0 || State == null) return false;
+            var def = App.Content?.TryTileState(rt.State);
+            if (def == null || !def.Blocks || def.Pit || def.Hazard) return false;
+            if (rt.Change == "changed") return BoardView.IsPartyWall(def, State.Region.At(rt.Tiles[0])) || wallBlocked;
+            return rt.Change == "cleared" && def.Becomes == null && def.Threshold > 0;
+        }
+
+        /// <summary>The hit: a clank and grit off the wall, "Blocked!" (a Callout) when a charge just ran into it, else
+        /// "Bashed!" (Resist: steel, a clang); its fall: a dust kick and "Down!" (Expire).</summary>
+        private IEnumerator WallHitAnim(RegionTilesEvent rt)
+        {
+            bool blocked = wallBlocked;
+            wallBlocked = false;
+            board.SyncRegion(State);
+            foreach (var t in rt.Tiles)
+            {
+                var c = BoardView.CenterOf(t);
+                WallClank(rt.Change == "cleared" ? 1f : 0.75f);
+                NamedImpactFlourish("DustKick", c, StyleOf(DamageType.Physical));
+                if (blocked) Text?.Show(t, CombatTextKind.Callout, "Blocked!", 0.4f, TileMarkFx.Wood);
+                else if (rt.Change == "changed") Text?.Show(t, CombatTextKind.Resist, "Bashed!", 0.2f);
+                else Text?.Show(t, CombatTextKind.Expire, "Down!", 0.2f);
+            }
+            if (blocked && !ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 6f, Timing.Quick));
+            yield return Tween.Wait(blocked ? Timing.Standard : Timing.Quick);
+        }
+
+        // ── GG-T886 (§7, §14.23): the Alchemist's Oil Flask ──────────────────────────────────────
+
+        /// <summary>The oil flask: a corked bottle tumbles in a high arc onto the picked tile and bursts, sloshing a splat of
+        /// oil over every tile of the pool with a wet slosh (cue <c>alchemist.slosh</c>, a placeholder until its file
+        /// exists: docs/SFX.md, over a low <c>element.water</c>). The "marked" region event that follows draws the slick.
+        /// Reduce Motion: a short straight toss, no tumble or shake.</summary>
+        private IEnumerator OilFlaskAnim(Unit caster, TileStateDef oil, AbilityResolvedEvent ar)
+        {
+            var col = Art.HexColor(oil.Color, Palette.Gold);
+            bool calm = ReduceMotion;
+            Vector2 from = ViewCenter(caster), to = BoardView.CenterOf(ar.Anchor);
+            App.Audio.Sfx("battle.whoosh", 0.45f, 1.2f);
+            float dist = Vector2.Distance(from, to);
+            float travel = calm ? 0.2f : Mathf.Clamp(dist / 1400f, 0.3f, 0.5f);
+            float height = Mathf.Max(200f, dist * 0.5f);
+            Vector2 P(float kk) => Vector2.Lerp(from, to, kk) + (calm ? Vector2.zero : Vector2.up * (-height * 4f * kk * (1f - kk)));
+            yield return Tween.Run(travel, k =>
+            {
+                board.Lines.ClearLines();
+                var p = P(k);
+                float spin = calm ? 0f : k * Mathf.PI * 4f; // the flask tumbles end over end
+                var neck = new Vector2(Mathf.Cos(spin), Mathf.Sin(spin)) * 16f;
+                board.Lines.Dot(p, 26f, col);
+                board.Lines.Add(p, p + neck, Palette.White.WithA(0.8f), 7f);
+                board.Lines.Dot(p + new Vector2(-6f, -7f), 7f, Palette.White.WithA(0.6f));
+            });
+            board.Lines.ClearLines();
+            App.Audio.Sfx("alchemist.slosh", 0.9f);
+            App.Audio.Sfx("element.water", 0.75f, 0.55f); // stand-in until alchemist.slosh has its own sound
+            App.Audio.Sfx("battle.shatter", 0.35f, 1.8f); // the glass breaking
+            foreach (var t in ar.Tiles) board.Splat(t, col);
+            Emit(StyleOf(DamageType.Physical), to, 0.4f, quiet: true);
+            if (!calm) App.StartCoroutine(Tween.Shake(shake, 2.5f, Timing.Quick));
             yield return Tween.Wait(Timing.Quick);
         }
 
