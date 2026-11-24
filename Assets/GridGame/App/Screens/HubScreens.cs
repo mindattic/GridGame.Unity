@@ -188,7 +188,7 @@ namespace GridGame.App
             }
             if (it != null && it.Type == ItemType.RecipeScroll)
             {
-                Ui.Button("Learn recipe", () => { selected = it; Done(RecipeDiscovery.Learn(C, S, it.Id)); }, "btn--small btn--primary", Ui.Actions(detail));
+                RowIcon.IconButton("Learn recipe", RowKind.Confirm, () => { selected = it; Done(RecipeDiscovery.Learn(C, S, it.Id)); }, "btn--small btn--primary", Ui.Actions(detail));
                 return;
             }
             // GG-T301: read a Tome to a hero, or open a Chest.
@@ -207,7 +207,7 @@ namespace GridGame.App
             var row = Ui.Actions(detail);
             if (Camp.HealsWholeParty(it))
             {
-                Ui.Button("Use on party", () => Done(Camp.Use(C, S, it.Id, null)), "btn--small btn--primary", row);
+                RowIcon.IconButton("Use on party", RowKind.Confirm, () => Done(Camp.Use(C, S, it.Id, null)), "btn--small btn--primary", row);
                 return;
             }
             // One button per party hero; a party of six (GG-T291) wraps into equal thirds instead of running off the window.
@@ -840,7 +840,7 @@ namespace GridGame.App
             var fr = Ui.Footer(body, "shop-footer");
             int total = Shop.CartTotal(C, cart, selling);
             Ui.Heading(selling ? $"Receive: {Ui.Gold(total)}" : $"Pay: {Ui.Gold(total)}", fr, "grow " + (!selling && total > S.Gold ? "bad" : "gold"));
-            var commit = Ui.Button(selling ? "Sell" : "Buy", () =>
+            var commit = RowIcon.IconButton(selling ? "Sell" : "Buy", RowKind.Confirm, () =>
             {
                 var r = selling ? Shop.Sell(C, S, cart) : Shop.Buy(C, S, cart);
                 if (r.Ok) cart.Clear();
@@ -885,7 +885,7 @@ namespace GridGame.App
             Ui.Gauge((float)offer.Durability / offer.Item.Durability, w, 320);
             Ui.Para("Used gear: cheap now, but it can shatter mid-battle before you get a chance to repair it.", w, "warn");
             bool owned = S.Count(offer.Item.Id) >= offer.Item.MaxStack;
-            var btn = Ui.Button(owned ? "Already owned" : $"Buy for {Ui.Gold(offer.Price)}", () =>
+            var btn = RowIcon.IconButton(owned ? "Already owned" : $"Buy for {Ui.Gold(offer.Price)}", RowKind.Confirm, () =>
             {
                 bargainSelected = null;
                 Done(Bargains.Buy(C, S, offer.Item.Id));
@@ -1127,7 +1127,7 @@ namespace GridGame.App
                 Ui.Para($"🔒 Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", w, "bad");
                 if (Facilities.Next(c, s, r.Station) is CaravanLevel next)
                 {
-                    var b = Ui.Button($"Build {next.Name} · {Ui.Gold(next.Cost)}", () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w));
+                    var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w));
                     b.name = "facility-build-detail";
                     Ui.SetEnabled(b, s.Gold >= next.Cost);
                 }
@@ -1154,7 +1154,7 @@ namespace GridGame.App
             if (Forging.IsGuidedArmor(c, s, r) && Forging.SuitedWearer(c, s, result) is HeroSave wearer)
                 Ui.Para($"First armor: the {c.TryClass(wearer.ClassId)?.Name ?? wearer.ClassId} wears it", need, "gold");
             string verb = r.Station == CraftStation.Alchemy ? "Brew" : r.Station == CraftStation.Enchant ? "Enchant" : "Craft";
-            var btn = Ui.Button(verb, () =>
+            var btn = RowIcon.IconButton(verb, RowKind.Confirm, () =>
             {
                 // The guided first forge (GG-T177) and first armor (GG-T178) also equip what they make on the hero it suits.
                 var res = Forging.Forge(c, s, r);
@@ -1178,7 +1178,7 @@ namespace GridGame.App
                     int have = s.Count(ic.Item);
                     Ui.Text($"{(have >= ic.Count ? "✔" : "✘")} {it?.Name ?? ic.Item} ×{ic.Count}   (have {have})", "kit-text " + (have >= ic.Count ? "good" : "bad"), pneed);
                 }
-                var pbtn = Ui.Button($"{verb} {greater.Name}", () =>
+                var pbtn = RowIcon.IconButton($"{verb} {greater.Name}", RowKind.Confirm, () =>
                 {
                     var res = Crafting.Craft(c, s, r, potency: true);
                     GameApp.I.Toast(res.Message);
@@ -1232,7 +1232,7 @@ namespace GridGame.App
                     + (salvage ? " An uneconomical repair offers salvage instead." : ""), detail, "dim");
             var due = Repair.DuePieces(C, S);
             int dueCost = due.Sum(p => Repair.Cost(C, S, p));
-            var all = Ui.Button(due.Count == 0 ? "Nothing needs repair yet" : $"Repair all ({due.Count}) · {Ui.Gold(dueCost)}",
+            var all = RowIcon.IconButton(due.Count == 0 ? "Nothing needs repair yet" : $"Repair all ({due.Count}) · {Ui.Gold(dueCost)}", RowKind.Confirm,
                 () => Done(Repair.RepairAll(C, S), cue: "camp.repair"), "btn--primary", Ui.Actions(detail));
             all.name = RepairAllButton;
             Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
@@ -1396,7 +1396,7 @@ namespace GridGame.App
                 var old = C.TryArmorEnchant(piece.Piece.Enchant);
                 Ui.Para($"Into the {hero}'s {piece.Item.Name}" + (old != null && old != enchant ? $" (replaces {old.Name})" : ""), detail, "gold");
             }
-            var btn = Ui.Button("Enchant", () => Done(ArmorEnchanting.Enchant(C, S, piece?.Hero, piece?.Slot ?? EquipmentSlot.Head, enchant)), "btn--primary", Ui.Actions(detail));
+            var btn = RowIcon.IconButton("Enchant", RowKind.Confirm, () => Done(ArmorEnchanting.Enchant(C, S, piece?.Hero, piece?.Slot ?? EquipmentSlot.Head, enchant)), "btn--primary", Ui.Actions(detail));
             btn.name = CampTips.CraftButton;
             Ui.SetEnabled(btn, piece != null && unlocked && ArmorEnchanting.HasInputs(S, enchant) && ArmorEnchanting.CanAfford(C, S, enchant) && piece.Piece.Enchant != enchant.Id);
         }
@@ -1436,7 +1436,7 @@ namespace GridGame.App
                 Ui.Para(d.Description, col, "dim");
                 if (lv > 0) Ui.Para("Now: " + d.Levels[lv - 1].Text, col, "good");
                 if (next != null) Ui.Para("Next: " + next.Text, col);
-                var b = Ui.Button(next == null ? "Maxed" : Ui.Gold(next.Cost), () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
+                var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
             }
@@ -1480,7 +1480,7 @@ namespace GridGame.App
                 bool owned = S.Hero(d.Id) != null;
                 Ui.Card(list, d.Id, d.Name, out var col);
                 GlossaryText.Create(d.Card ?? d.Description ?? "", "kit-text dim", col);
-                var b = Ui.Button(owned ? "Joined" : "Recruit", () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
+                var b = RowIcon.IconButton(owned ? "Joined" : "Recruit", RowKind.Confirm, () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
                     TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
@@ -1507,7 +1507,7 @@ namespace GridGame.App
                 img.style.marginLeft = Space.TargetHalfGap;
             }
             Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", row, "grow").style.marginLeft = Space.S8;
-            var b = Ui.Button($"Draw · {DiamondSummon.Tag(S)}", () =>
+            var b = RowIcon.IconButton($"Draw · {DiamondSummon.Tag(S)}", RowKind.Confirm, () =>
             {
                 var can = DiamondSummon.CanDraw(C, S);
                 if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
@@ -1672,7 +1672,7 @@ namespace GridGame.App
             var costCol = Ui.El("col grow", foot);
             if (!can) Ui.Para(why, costCol, "bad");
             Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", costCol, "dim");
-            var enter = Ui.Button("Enter the Crucible", () => CrucibleLauncher.Launch(false), "btn--primary", foot);
+            var enter = RowIcon.IconButton("Enter the Crucible", RowKind.Enter, () => CrucibleLauncher.Launch(false), "btn--primary", foot);
             enter.name = "crucible-enter";
             Ui.SetEnabled(enter, can);
         }
@@ -2060,7 +2060,7 @@ namespace GridGame.App
             maxBuyBtn.name = "aetherist-buy-max";
             Ui.SetEnabled(maxBuyBtn, maxBuy > 0);
             Ui.Field("Costs", Ui.Gold(DustEconomy.GoldFor(buyAmount)), buy, S.Gold >= DustEconomy.GoldFor(buyAmount) ? null : "bad", "aetherist-buy-quote");
-            var buyBtn = Ui.Button($"Buy {buyAmount:N0} {DustEconomy.DustName}", () => Done(DustEconomy.Buy(C, S, buyAmount), true, "ui.buy"), "btn--primary", buy);
+            var buyBtn = RowIcon.IconButton($"Buy {buyAmount:N0} {DustEconomy.DustName}", RowKind.Confirm, () => Done(DustEconomy.Buy(C, S, buyAmount), true, "ui.buy"), "btn--primary", buy);
             buyBtn.name = "aetherist-buy";
             Ui.SetEnabled(buyBtn, buyAmount <= maxBuy);
 
@@ -2085,7 +2085,7 @@ namespace GridGame.App
             Ui.SetEnabled(maxRefineBtn, maxRefine > 0);
             Ui.Field("Needs", $"{refineAmount * DustEconomy.DustPerShard:N0} {DustEconomy.DustName}", refine,
                 dust >= refineAmount * DustEconomy.DustPerShard ? null : "bad", "aetherist-refine-quote");
-            var refineBtn = Ui.Button($"Refine {ShardText.ShortOf(refineAmount)}", () =>
+            var refineBtn = RowIcon.IconButton($"Refine {ShardText.ShortOf(refineAmount)}", RowKind.Confirm, () =>
             {
                 string occasion = dust < maxRefine * DustEconomy.DustPerShard ? "aetherist/short" : "aetherist/refine";
                 var r = DustEconomy.Refine(C, S, refineAmount);
@@ -2103,7 +2103,7 @@ namespace GridGame.App
             Ui.Field("Broken Mana Orbs", broken.ToString("N0"), orbs, null, "aetherist-broken-count");
             Ui.Field("Restoring one costs", $"{ManaOrbs.RestoreDust:N0} {DustEconomy.DustName} + {Ui.Gold(ManaOrbs.RestoreGold)}", orbs, null, "aetherist-restore-quote");
             var can = ManaOrbs.CanRestore(C, S);
-            var restoreBtn = Ui.Button("Restore a Mana Orb", () => Done(ManaOrbs.Restore(C, S), true, "ui.diamond"), "btn--primary", orbs);
+            var restoreBtn = RowIcon.IconButton("Restore a Mana Orb", RowKind.Confirm, () => Done(ManaOrbs.Restore(C, S), true, "ui.diamond"), "btn--primary", orbs);
             restoreBtn.name = "aetherist-restore";
             Ui.SetEnabled(restoreBtn, can.Ok);
             if (!can.Ok && broken > 0) Ui.Para(can.Message, orbs, "dim");
