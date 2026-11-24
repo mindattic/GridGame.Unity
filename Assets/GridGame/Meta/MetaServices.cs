@@ -123,12 +123,27 @@ namespace GridGame.Meta
             return h;
         }
 
-        /// <summary>GG-T978: the class's family tree when its <see cref="ClassDef.HomeTree"/> is one (a skill tree whose Id is
-        /// a families.json id, GG-T977), else null (a role tree, or none).</summary>
+        /// <summary>GG-T978/GG-T979: the class's family tree: the skill tree named by its <see cref="ClassDef.Family"/> when
+        /// that is a families.json family with a tree (GG-T977, the tree <see cref="ContentLoader.ValidateFamilyTrees"/>
+        /// checks <see cref="ClassDef.StartNodes"/> against), else its <see cref="ClassDef.HomeTree"/> when that is a family
+        /// tree, else null (a role tree, or none). It is the hero's home tree (<see cref="Talents.HomeTree"/>) whenever set.</summary>
         public static SkillTreeDef FamilyTree(ContentDb c, ClassDef def)
         {
-            var t = c?.TrySkillTree(def?.HomeTree);
-            return t != null && c.TryFamily(t.Id) != null ? t : null;
+            if (c == null || def == null) return null;
+            foreach (var id in new[] { def.Family, def.HomeTree })
+            {
+                var t = string.IsNullOrEmpty(id) ? null : c.TrySkillTree(id);
+                if (t != null && c.TryFamily(t.Id) != null) return t;
+            }
+            return null;
+        }
+
+        /// <summary>GG-T979: how the Build screen names a tree: a family tree as "Shadow family", a role tree by its name.</summary>
+        public static string TreeLabel(ContentDb c, SkillTreeDef t)
+        {
+            if (t == null) return "";
+            var family = c?.TryFamily(t.Id);
+            return family != null ? $"{family.Name ?? t.Name ?? t.Id} family" : t.Name ?? t.Id;
         }
 
         /// <summary>GG-T978: the <see cref="ClassDef.StartNodes"/> that resolve in the class's <see cref="FamilyTree"/>, in
@@ -303,7 +318,7 @@ namespace GridGame.Meta
             foreach (var t in c.SkillTrees.Values)
             {
                 int points = t.Nodes.Where(n => h.Known.Contains(n.Grants) || Talents.IsStartNode(c, h, t, n)).Sum(n => n.Cost); // GG-T978
-                if (points > 0) result.Add((t.Id, t.Name, points));
+                if (points > 0) result.Add((t.Id, TreeLabel(c, t), points)); // GG-T979: a family tree reads "Shadow family"
             }
             return result.OrderByDescending(x => x.Item3).ThenBy(x => x.Item2, StringComparer.OrdinalIgnoreCase).ToList();
         }
@@ -341,7 +356,8 @@ namespace GridGame.Meta
         }
 
         /// <summary>A one-line "what this hero is becoming" summary for the Build screen, e.g.
-        /// "Knight · Guardian 7 / Cleric 3 — a tank who heals". Built only from the class name, its
+        /// "Knight · Guardian 7 / Cleric 3 — a tank who heals" (GG-T979: on a family tree, "Thief · Shadow family 4 /
+        /// Vanguard family 3 — a striker who holds the line"). Built only from the class name, its
         /// <see cref="TreeInvestment"/> and its <see cref="ClassDef.Role"/> — never an authored string that
         /// could drift from the numbers behind it.</summary>
         public static string BuildSummary(ContentDb c, HeroSave h)
@@ -351,7 +367,8 @@ namespace GridGame.Meta
             string treePart = trees.Count == 0 ? "no tree investment yet" : string.Join(" / ", trees.Take(3).Select(t => $"{t.TreeName} {t.Points}"));
             string tail = RoleWord(def.Role);
             const int crossTreeFlavorThreshold = 3;
-            var cross = trees.FirstOrDefault(t => !string.Equals(t.TreeId, def.HomeTree, StringComparison.OrdinalIgnoreCase));
+            string home = Talents.HomeTree(c, h)?.Id ?? def.HomeTree; // GG-T979: the family tree when the class has one
+            var cross = trees.FirstOrDefault(t => !string.Equals(t.TreeId, home, StringComparison.OrdinalIgnoreCase));
             if (cross.TreeId != null && cross.Points >= crossTreeFlavorThreshold)
             {
                 string verb = TreeVerb(cross.TreeId);
@@ -387,6 +404,16 @@ namespace GridGame.Meta
                 case "mage": return "casts";
                 case "cleric": return "heals";
                 case "alchemist": return "supports";
+                // GG-T979: the families (families.json), each by what every member does
+                case "vanguard": return "holds the line";
+                case "blade": return "duels";
+                case "brawn": return "brawls";
+                case "shadow": return "skirmishes";
+                case "wild": return "hunts";
+                case "machina": return "builds";
+                case "arcane": return "casts";
+                case "occult": return "curses";
+                case "grace": return "mends";
                 default: return null;
             }
         }

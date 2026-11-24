@@ -47,6 +47,9 @@ namespace GridGame.Meta
     /// <see cref="TalentConfig.OpenTreeAt"/>[0] points in its home tree, and a third at [1]. Buying the first node of an
     /// off-tree is what opens it. Off-tree nodes cost <see cref="TalentConfig.OffTreePremium"/> more, and their points-in-tree
     /// gates are scaled by <see cref="TalentConfig.OffTreeGateScale"/>.
+    /// GG-T979: a class with a family tree (<see cref="Progression.FamilyTree"/>) is at home there: its start nodes are
+    /// Innate and count toward the slots, every other tree (role or family) is an off-tree with the same slots, premium and
+    /// scaled gates, and adjacency is measured on the family board (<see cref="TreeAdjacency.FamilyRing"/>).
     /// </summary>
     public static class Talents
     {
@@ -97,10 +100,14 @@ namespace GridGame.Meta
             return ids;
         }
 
+        /// <summary>GG-T979: the adjacency board this hero plays on: the family ring when its home is a family tree, else the
+        /// role ring (<see cref="TreeAdjacency.BoardFor"/>).</summary>
+        public static string[] Board(ContentDb c, HeroSave h) => TreeAdjacency.BoardFor(c, HomeTree(c, h)?.Id);
+
         /// <summary>Steps from the nearest other held tree to this one on <see cref="TreeAdjacency"/>'s board (0 for home).</summary>
         public static int Distance(ContentDb c, HeroSave h, SkillTreeDef t) =>
             t == null || IsHome(c, h, t) ? 0
-                : TreeAdjacency.DistanceFrom(HeldTreeIds(c, h).Where(id => id != t.Id), t.Id);
+                : TreeAdjacency.DistanceFrom(HeldTreeIds(c, h).Where(id => id != t.Id), t.Id, Board(c, h));
 
         /// <summary>Why the hero can't buy into this tree yet (no free off-tree slot, then too far from every held tree on
         /// the adjacency board — GG-T135), or null when it is opened or can be.</summary>
@@ -109,7 +116,7 @@ namespace GridGame.Meta
             if (Opened(c, h, t)) return null;
             int opened = OpenedOffTrees(c, h).Count;
             if (opened < OffTreeSlots(c, h))
-                return TreeAdjacency.WhyTooFar(HeldTreeIds(c, h), t.Id, id => c.TrySkillTree(id)?.Name ?? id);
+                return TreeAdjacency.WhyTooFar(HeldTreeIds(c, h), t.Id, id => c.TrySkillTree(id)?.Name ?? id, Board(c, h));
             var home = HomeTree(c, h);
             if (home == null) return "No home tree to specialize from";
             if (opened >= TalentConfig.OpenTreeAt.Length)
@@ -164,7 +171,14 @@ namespace GridGame.Meta
             return total;
         }
 
-        public static SkillTreeDef HomeTree(ContentDb c, HeroSave h) => c.TrySkillTree(c.TryClass(h.ClassId)?.HomeTree);
+        /// <summary>The hero's home tree. GG-T979: its class's family tree (<see cref="Progression.FamilyTree"/>, named by
+        /// <see cref="ClassDef.Family"/>) when the content has one, else the role tree named by <see cref="ClassDef.HomeTree"/>.</summary>
+        public static SkillTreeDef HomeTree(ContentDb c, HeroSave h)
+        {
+            var def = c?.TryClass(h?.ClassId);
+            if (def == null) return null;
+            return Progression.FamilyTree(c, def) ?? c.TrySkillTree(def.HomeTree);
+        }
 
         /// <summary>The trees the Talents screen shows: home first; then, by name, every off-tree the hero has opened or
         /// already holds a Known node in; then, while an off-tree slot is free (§25.6.2), every other tree it could open.</summary>
