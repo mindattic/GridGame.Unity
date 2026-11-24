@@ -341,6 +341,16 @@ namespace GridGame.Core.Battle
         /// enter/land/displace/spawn goes through it.</summary>
         public bool Walkable(Coord c) => InBounds(c) && !Blocks.Contains(c) && !Region.BlocksAt(c);
 
+        /// <summary><see cref="Walkable"/> for <paramref name="u"/>: a one-tile Floating unit (GG-T859) may also hover over an
+        /// open hole (a <see cref="TileStateDef.Pit"/> mark) - it passes over it and never falls while it floats.</summary>
+        public bool WalkableFor(Coord c, Unit u)
+        {
+            if (Walkable(c)) return true;
+            if (u == null || !u.IsFloating || u.IsMultiTile || !InBounds(c) || Blocks.Contains(c)) return false;
+            var m = Region.At(c);
+            return m != null && (Content?.TryTileState(m.State)?.Pit ?? false);
+        }
+
         public IEnumerable<Unit> Living(Team team)
         {
             foreach (var u in Units) if (u.Alive && u.Team == team) yield return u;

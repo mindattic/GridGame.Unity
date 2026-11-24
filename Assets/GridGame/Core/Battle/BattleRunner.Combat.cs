@@ -97,7 +97,7 @@ namespace GridGame.Core.Battle
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "edge" });
                     return false;
                 }
-                if (!S.Walkable(next)) // a stage block, or a blocking region tile (a barricade, an open hole: GG-T359/T368)
+                if (!S.WalkableFor(next, hero)) // a stage block, or a blocking region tile (a barricade, an open hole: GG-T359/T368; a floater hovers over a hole, GG-T859)
                 {
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "block" });
                     return false;
@@ -170,7 +170,7 @@ namespace GridGame.Core.Battle
         {
             if (!u.Alive || u.Team != Team.Hero) return;
             CollectPickup(u);
-            if (!u.Alive) return;
+            if (!u.Alive || u.IsFloating) return; // GG-T859: a floater passes over a floor trap
             var trap = S.TrapAt(u.Pos);
             if (trap == null) return;
             S.Traps.Remove(trap);
@@ -486,7 +486,7 @@ namespace GridGame.Core.Battle
             {
                 var next = t.Pos + dir;
                 if (TryShoveIntoPit(t, next, caster)) { Announce("Into the pit!", t.Id); return; } // GG-T368: shoved into an open hole
-                if (!S.Walkable(next))
+                if (!S.WalkableFor(next, t)) // GG-T859: a floater is carried over a hole, not slammed into it
                 {
                     Announce("Slam!", t.Id);
                     Damage(t, BattleConfig.KnockbackSlamDamage + baseDamage, caster, HitKind.Normal, DamageType.Physical, "Slam!");

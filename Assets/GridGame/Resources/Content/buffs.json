@@ -389,5 +389,15 @@
     "Rages": true,
     "Letter": "R",
     "Color": "#E0442B"
+  },
+  {
+    "Id": "floating",
+    "Name": "Floating",
+    "Kind": "Buff",
+    "Unit": "Turns",
+    "Duration": 2,
+    "Stacking": "Refresh",
+    "Letter": "^",
+    "Color": "#9FD3F0"
   }
 ]

@@ -139,9 +139,10 @@ namespace GridGame.Core.Battle
         {
             get { foreach (var b in Buffs) if (b.Def.Rages) return true; return false; }
         }
-        /// <summary>The buff id that lifts a unit off the ground (GG-T859 authors it): a floating Heavy unit can be moved.</summary>
+        /// <summary>The buff id that lifts a unit off the ground (buffs.json <c>floating</c>, GG-T859).</summary>
         public const string FloatingBuffId = "floating";
-        /// <summary>Hovers (GG-T859's Floating buff): Heavy no longer anchors it.</summary>
+        /// <summary>Hovers (GG-T859, §8.1 Floating): Heavy no longer anchors it, it sets off no ground tile state
+        /// (<see cref="RegionBoard.HoversOver"/>), and Rooted can't take hold (<see cref="IsRooted"/>).</summary>
         public bool IsFloating => HasBuff(FloatingBuffId);
         /// <summary>Nothing but its own legs ever moves it: a 2×2 boss, a snake member, remains, or a Heavy unit (GG-T891).</summary>
         public bool WontBudge => IsMultiTile || IsSnakeMember || IsRemains || IsHeavy;
@@ -284,10 +285,11 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.Immobile) return true; return false; }
         }
 
-        /// <summary>Carries a Roots buff (GG-T856): held to its tile, but free to act.</summary>
+        /// <summary>Carries a Roots buff (GG-T856): held to its tile, but free to act. Never while <see cref="IsFloating"/>
+        /// (GG-T859): roots find no ground to grip.</summary>
         public bool IsRooted
         {
-            get { foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
+            get { if (IsFloating) return false; foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
         }
 
         /// <summary>Carries a Frightens buff (GG-T916): flees its <see cref="FearSourceId"/>.</summary>

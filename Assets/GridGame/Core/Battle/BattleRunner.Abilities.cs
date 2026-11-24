@@ -473,7 +473,7 @@ namespace GridGame.Core.Battle
                 if (dir.X == 0 && dir.Y == 0) return;
                 var next = t.Pos + dir;
                 if (TryShoveIntoPit(t, next, caster)) return; // GG-T368: dragged into an open hole
-                if (!S.FreeToEnter(next)) return;
+                if (!S.WalkableFor(next, t) || S.UnitAt(next) != null || S.MovableAt(next) != null) return; // GG-T859: a floater crosses a hole
                 var from = t.Pos;
                 if (!Relocate(t, next)) return;
                 Emit(new DisplacedEvent { UnitId = t.Id, From = from, To = next, ByUnitId = caster.Id });

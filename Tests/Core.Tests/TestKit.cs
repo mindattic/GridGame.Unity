@@ -188,7 +188,7 @@ namespace GridGame.Tests
                 if (!u.Alive) continue;
                 foreach (var t in u.Tiles())
                 {
-                    Assert.That(s.Walkable(t), Is.True, $"{u} out of bounds or on a block at {t}");
+                    Assert.That(s.WalkableFor(t, u), Is.True, $"{u} out of bounds or on a block at {t}"); // GG-T859: a floater may hover over a hole
                     Assert.That(seen.ContainsKey(t), Is.False, $"Two units on {t}: {u.Id} and {(seen.ContainsKey(t) ? seen[t] : -1)}");
                     seen[t] = u.Id;
                 }

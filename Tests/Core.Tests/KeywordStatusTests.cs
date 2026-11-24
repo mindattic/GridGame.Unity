@@ -624,5 +624,275 @@ namespace GridGame.Tests
             Assert.That(ev.OfType<AbilityRefusedEvent>().Any(r => r.Reason == "Too frightened"), Is.False);
             Assert.That(k.Pos, Is.EqualTo(new Coord(2, 4)), "a drag that stops short of it is fine");
         }
+
+        // ── Floating (GG-T859): Heavy no longer anchors it, no ground tile state touches it, Rooted can't take hold ──
+
+        private static void Float(Unit u) =>
+            u.Buffs.Add(new BuffInstance { Def = Real.Buffs["floating"], Remaining = 20 });
+
+        [Test]
+        public void Floating_is_a_two_turn_refreshing_buff_with_a_glossary_entry()
+        {
+            var d = Real.Buffs["floating"];
+            Assert.That(d.Id, Is.EqualTo(Unit.FloatingBuffId), "the id Unit.IsFloating reads");
+            Assert.That(d.Kind, Is.EqualTo(BuffKind.Buff));
+            Assert.That(d.Unit, Is.EqualTo(DurationUnit.Turns));
+            Assert.That(d.Duration, Is.EqualTo(2));
+            Assert.That(d.Stacking, Is.EqualTo(BuffStacking.Refresh));
+            Assert.That(d.Immobile || d.Roots || d.HaltsTimeline, Is.False, "it only lifts the bearer");
+            Assert.That(Real.TryTerm("Floating"), Is.Not.Null);
+            Assert.That(Real.TryTerm("Float"), Is.Not.Null);
+        }
+
+        [Test]
+        public void Knockback_moves_a_floating_heavy_target_that_a_grounded_one_resists()
+        {
+            var (s, k) = WithMove(Shove(2, 0, false), Stage(("tank", 2, 3)));
+            var tank = Enemy(s, "tank");
+            tank.Def.Heavy = true;
+            Use(s, k, new Coord(2, 3));
+            Assert.That(tank.Pos, Is.EqualTo(new Coord(2, 3)), "Heavy, it holds");
+
+            (s, k) = WithMove(Shove(2, 0, false), Stage(("tank", 2, 3)));
+            tank = Enemy(s, "tank");
+            tank.Def.Heavy = true;
+            Float(tank);
+            Assert.That(tank.IsHeavy, Is.False);
+            Assert.That(tank.WontBudge, Is.False);
+            Use(s, k, new Coord(2, 3));
+            Assert.That(tank.Pos, Is.Not.EqualTo(new Coord(2, 3)), "floating, Heavy no longer anchors it");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_floating_unit_already_rooted_is_not_held()
+        {
+            var (s, _) = Battle(WithRoot(), Stage(("tank", 5, 0)), ("knight", 2, 4), ("cleric", 5, 7));
+            var k = Hero(s, "knight");
+            Root(k);
+            Float(k);
+            Assert.That(k.IsRooted, Is.False);
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = k.Id, Path = P((2, 3)) });
+            Assert.That(RootedBlock(ev), Is.False);
+            Assert.That(k.Pos, Is.EqualTo(new Coord(2, 3)));
+        }
+
+        [Test]
+        public void Rooted_cannot_take_hold_of_a_floating_foe()
+        {
+            var db = WithRoot();
+            db.Buffs["floating"] = Real.Buffs["floating"];
+            db.Abilities["root_dart"] = new AbilityDef { Id = "root_dart", Name = "Root Dart", Kind = AbilityKind.Spell, Cost = 1, BaseDamage = 1, DamageType = DamageType.Fire, ApplyBuff = "rooted", Shape = TargetShape.SingleActor, Mode = TargetMode.PickActor, Filter = TargetFilter.EnemyOnly };
+            var (s, _) = Battle(db, Stage(("tank", 2, 2), ("goblin", 4, 2)), ("knight", 5, 7), ("mage", 4, 7));
+            var m = Hero(s, "mage");
+            m.Bar[0] = new AbilitySlot { AbilityId = "root_dart" };
+            var tank = Enemy(s, "tank");
+            Float(tank);
+            s.Bank.Add(1);
+            var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = tank.Pos });
+            Assert.That(tank.HasBuff("rooted"), Is.False, "no ground for roots to grip");
+            Assert.That(ev.OfType<BuffAppliedEvent>().Any(b => b.UnitId == tank.Id && b.BuffId == "rooted"), Is.False);
+            Assert.That(ev.OfType<AnnounceEvent>().Any(a => a.UnitId == tank.Id && a.Text == "Floating!"), Is.True);
+
+            var gob = Enemy(s, "goblin");
+            s.Bank.Add(1);
+            m.ActedThisWindow = false;
+            BattleEngine.Apply(s, new UseSlotCommand { HeroId = m.Id, Slot = 0, Target = gob.Pos });
+            Assert.That(gob.IsRooted, Is.True, "a grounded foe is rooted");
+        }
+
+        /// <summary>Mini plus a "ground" rule: a mine (hazard; EnterTile deals 5) on (1,6) and (4,6), a squishable glob on
+        /// (1,5), a light on (4,5), tall flames (EnterTile deals 4) on (0,6), an open hole on (2,5) and a crack that gives
+        /// under a Heavy unit on (3,6); and a quake event (6 to each unit on its tiles) any test can schedule.</summary>
+        private static ContentDb WithGround()
+        {
+            var db = Mini();
+            db.Buffs["floating"] = Real.Buffs["floating"];
+            var paint = new RuleHookDef { On = RuleHook.BattleStart };
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(1, 6), new Coord(4, 6) }, State = "mine" });
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(1, 5) }, State = "glob" });
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(4, 5) }, State = "glow" });
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(0, 6) }, State = "flames" });
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(2, 5) }, State = "hole" });
+            paint.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(3, 6) }, State = "cracked" });
+            var mine = new RuleHookDef { On = RuleHook.EnterTile, State = "mine" };
+            mine.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.Damage, Units = RuleUnits.Subject, Amount = 5, DamageType = DamageType.Fire });
+            var flames = new RuleHookDef { On = RuleHook.EnterTile, State = "flames" };
+            flames.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.Damage, Units = RuleUnits.Subject, Amount = 4, DamageType = DamageType.Fire });
+            var rule = new RegionRuleDef
+            {
+                Id = "ground",
+                TileStates =
+                {
+                    new TileStateDef { Id = "mine", Hazard = true },
+                    new TileStateDef { Id = "glob", SquishedBy = RuleTeam.Hero },
+                    new TileStateDef { Id = "glow", Lights = true },
+                    new TileStateDef { Id = "flames", Hazard = true, Tall = true },
+                    new TileStateDef { Id = "hole", Blocks = true, Pit = true, FallDamage = 0.2f },
+                    new TileStateDef { Id = "cracked", HeavyBecomes = "hole" },
+                },
+                Events =
+                {
+                    new RuleEventDef
+                    {
+                        Id = "quake", Seconds = 0.5f, Quake = true,
+                        Effects = { new RuleEffectDef { Kind = RuleEffectKind.Damage, Area = RuleArea.EventTiles, Amount = 6 } },
+                    },
+                },
+            };
+            rule.Hooks.Add(paint);
+            rule.Hooks.Add(mine);
+            rule.Hooks.Add(flames);
+            RegionRuleCatalog.Index(db, new System.Collections.Generic.List<RegionRuleDef> { rule });
+            return db;
+        }
+
+        private static StageDef GroundStage()
+        {
+            var st = Stage(("tank", 5, 0));
+            st.Rules.Add("ground");
+            return st;
+        }
+
+        [Test]
+        public void Fire_and_firewalls_are_tall_and_mines_are_ground_in_the_shipped_rules()
+        {
+            Assert.That(Real.TryTileState("fire").Tall, Is.True, "fire trails: the flames are high");
+            Assert.That(Real.TryTileState("firewall").Tall, Is.True);
+            foreach (var id in new[] { "mine", "buriedmine", "slime", "slime_glob", "cracked", "hole" })
+                Assert.That(Real.TryTileState(id).Tall, Is.False, id + " is on the ground");
+        }
+
+        [Test]
+        public void A_floating_hero_sets_off_no_mine_and_reads_no_danger_there()
+        {
+            var (s, _) = Battle(WithGround(), GroundStage(), ("knight", 1, 7), ("cleric", 4, 7));
+            var knight = Hero(s, "knight");
+            var cleric = Hero(s, "cleric");
+            Float(knight);
+            Assert.That(RegionBoard.DangerAt(s, new Coord(1, 6), knight), Is.EqualTo(0f), "a floater reads no danger in a ground mark");
+            Assert.That(RegionBoard.DangerAt(s, new Coord(4, 6), cleric), Is.GreaterThan(0f));
+            int kHp = knight.Hp, cHp = cleric.Hp;
+            BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6)) });
+            Assert.That(knight.Hp, Is.EqualTo(kHp), "it hovers over the mine");
+            Assert.That(s.Region.At(new Coord(1, 6))?.State, Is.EqualTo("mine"), "the mine is still there for the next one");
+            BattleEngine.Apply(s, new MoveCommand { HeroId = cleric.Id, Path = P((4, 6)) });
+            Assert.That(cleric.Hp, Is.EqualTo(cHp - 5), "a grounded hero sets it off");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_floating_hero_still_burns_in_tall_flames()
+        {
+            var (s, _) = Battle(WithGround(), GroundStage(), ("knight", 0, 7), ("cleric", 4, 7));
+            var knight = Hero(s, "knight");
+            Float(knight);
+            Assert.That(RegionBoard.HoversOver(s, s.Region.At(new Coord(0, 6)), knight), Is.False);
+            Assert.That(RegionBoard.DangerAt(s, new Coord(0, 6), knight), Is.GreaterThan(0f));
+            int hp = knight.Hp;
+            BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((0, 6)) });
+            Assert.That(knight.Hp, Is.EqualTo(hp - 4), "the flames are high");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_floating_hero_squishes_no_glob_but_a_light_still_reaches_it()
+        {
+            var (s, _) = Battle(WithGround(), GroundStage(), ("knight", 1, 7), ("cleric", 4, 7));
+            var knight = Hero(s, "knight");
+            Float(knight);
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((1, 6), (1, 5)) });
+            Assert.That(ev.OfType<SquishedEvent>().Any(), Is.False);
+            Assert.That(s.Region.At(new Coord(1, 5))?.State, Is.EqualTo("glob"), "it passes over the glob");
+            Assert.That(RegionBoard.HoversOver(s, s.Region.At(new Coord(1, 5)), knight), Is.True);
+            Assert.That(RegionBoard.HoversOver(s, s.Region.At(new Coord(4, 5)), knight), Is.False, "a light shines on a floater too");
+            Assert.That(RegionBoard.Affects(s, s.Region.At(new Coord(4, 5)), knight), Is.True);
+            knight.Buffs.Clear();
+            Assert.That(RegionBoard.HoversOver(s, s.Region.At(new Coord(1, 5)), knight), Is.False, "landed, it is on the ground again");
+        }
+
+        [Test]
+        public void A_floating_hero_crosses_a_hole_without_falling_and_drops_in_when_it_lands_on_one()
+        {
+            var (s, _) = Battle(WithGround(), GroundStage(), ("knight", 2, 7), ("cleric", 4, 7));
+            var knight = Hero(s, "knight");
+            BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((2, 6), (2, 5)) });
+            Assert.That(knight.Pos, Is.Not.EqualTo(new Coord(2, 5)), "grounded, the hole is a wall");
+
+            (s, _) = Battle(WithGround(), GroundStage(), ("knight", 2, 6), ("cleric", 4, 7));
+            knight = Hero(s, "knight");
+            Float(knight);
+            Assert.That(s.WalkableFor(new Coord(2, 5), knight), Is.True);
+            Assert.That(RegionBoard.IsPitFor(s, new Coord(2, 5), knight), Is.False);
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((2, 5), (2, 4)) });
+            Assert.That(ev.OfType<FellEvent>().Any(), Is.False, "it hovers across");
+            Assert.That(knight.Pos, Is.EqualTo(new Coord(2, 4)));
+            AssertInvariants(s);
+
+            (s, _) = Battle(WithGround(), GroundStage(), ("knight", 2, 6), ("cleric", 4, 7));
+            knight = Hero(s, "knight");
+            knight.Buffs.Add(new BuffInstance { Def = Real.Buffs["floating"], Remaining = 1 });
+            BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((2, 5)) });
+            Assert.That(knight.Pos, Is.EqualTo(new Coord(2, 5)), "it stops over the hole");
+            AssertInvariants(s);
+            var all = new System.Collections.Generic.List<BattleEvent>();
+            for (int i = 0; i < 12 && knight.IsFloating && !s.IsOver; i++) all.AddRange(BattleEngine.Apply(s, new ShieldCommand()));
+            Assert.That(knight.IsFloating, Is.False);
+            Assert.That(all.OfType<FellEvent>().Any(f => f.UnitId == knight.Id), Is.True, "Floating ran out over the hole: it drops in");
+            Assert.That(knight.Pos, Is.Not.EqualTo(new Coord(2, 5)));
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_floating_foe_knocked_over_a_hole_is_carried_across_not_dropped()
+        {
+            var (s, k) = WithMove(Shove(2, 0, false), Stage(("tank", 2, 6)));
+            s.Content.Buffs["floating"] = Real.Buffs["floating"];
+            var rule = new RegionRuleDef { Id = "pit", TileStates = { new TileStateDef { Id = "hole", Blocks = true, Pit = true, FallDamage = 0.2f } } };
+            RegionRuleCatalog.Index(s.Content, new System.Collections.Generic.List<RegionRuleDef> { rule });
+            var tank = Enemy(s, "tank");
+            k.Pos = new Coord(2, 7);
+            s.Region.Tiles[new Coord(2, 5)] = new TileMark { State = "hole", Rule = "pit", Blocks = true };
+            Float(tank);
+            var ev = Use(s, k, tank.Pos);
+            Assert.That(ev.OfType<FellEvent>().Any(), Is.False);
+            Assert.That(tank.Pos, Is.EqualTo(new Coord(2, 4)), "two tiles back, over the hole");
+            AssertInvariants(s);
+        }
+
+        [Test]
+        public void A_floating_heavy_unit_never_breaks_through_a_crack()
+        {
+            var (s, _) = Battle(WithGround(), GroundStage(), ("knight", 3, 7), ("cleric", 5, 7));
+            var knight = Hero(s, "knight");
+            knight.Def.Heavy = true;
+            Float(knight);
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = knight.Id, Path = P((3, 6)) });
+            Assert.That(ev.OfType<BrokeThroughEvent>().Any(), Is.False);
+            Assert.That(s.Region.At(new Coord(3, 6))?.State, Is.EqualTo("cracked"), "the crack holds under a floater");
+            Assert.That(knight.Pos, Is.EqualTo(new Coord(3, 6)));
+        }
+
+        [Test]
+        public void A_quake_shakes_the_grounded_and_passes_under_a_floater()
+        {
+            var db = WithGround();
+            var rule = db.RegionRules["ground"];
+            var start = new RuleHookDef { On = RuleHook.BattleStart };
+            start.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.Schedule, Area = RuleArea.Tiles, Tiles = { new Coord(0, 7), new Coord(5, 7) }, Event = "quake" });
+            rule.Hooks.Add(start);
+            var (s, _) = Battle(db, GroundStage(), ("knight", 0, 7), ("cleric", 5, 7));
+            var knight = Hero(s, "knight");
+            var cleric = Hero(s, "cleric");
+            Float(knight);
+            Assert.That(RegionBoard.DangerAt(s, new Coord(0, 7), knight), Is.EqualTo(0f), "no quake danger for a floater");
+            Assert.That(RegionBoard.DangerAt(s, new Coord(5, 7), cleric), Is.GreaterThan(0f));
+            int kHp = knight.Hp, cHp = cleric.Hp;
+            var all = new System.Collections.Generic.List<BattleEvent>();
+            for (int i = 0; i < 6 && s.Timeline.Any(e => e.Kind == TimelineKind.Hazard) && !s.IsOver; i++) all.AddRange(BattleEngine.Apply(s, new ShieldCommand()));
+            Assert.That(all.OfType<HazardLandedEvent>().Any(h => h.EventId == "quake"), Is.True);
+            Assert.That(knight.Hp, Is.EqualTo(kHp), "the floater rides it out");
+            Assert.That(cleric.Hp, Is.LessThan(cHp), "the grounded cleric is shaken");
+        }
     }
 }

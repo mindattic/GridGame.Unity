@@ -1010,6 +1010,24 @@
         "definition": "Wins from the sides and behind, where foes are open."
       }
     },
+    "glossary:floating": {
+      "key": "glossary:floating",
+      "id": "glossary-floating",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:615b160ee0550c3ec14c1fe353fe23274b872bd3f0dd3558dcf7d080ad146892",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Floating",
+        "definition": "Hovering just off the ground for 2 turns: even a heavy body can be shoved, pulled and swapped, it passes over mines, slime, globs, cracks, holes and other floor traps without setting them off, quakes don't shake it, and [Rooted] can't take hold. Tall flames, like a firewall, still burn it.",
+        "aliases": [
+          "Float",
+          "Floats"
+        ]
+      }
+    },
     "glossary:footwork": {
       "key": "glossary:footwork",
       "id": "glossary-footwork",

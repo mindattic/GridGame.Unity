@@ -205,6 +205,7 @@
       {
         "Id": "fire",
         "Hazard": true,
+        "Tall": true,
         "Element": "Fire",
         "LifeSeconds": 10,
         "Color": "#ff6a1a",
@@ -249,6 +250,7 @@
       {
         "Id": "firewall",
         "Hazard": true,
+        "Tall": true,
         "Element": "Fire",
         "LifeSeconds": 12,
         "Affects": "Any",

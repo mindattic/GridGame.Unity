@@ -247,6 +247,11 @@ namespace GridGame.Core.Content
         /// by an attacker the mark works on (<see cref="Affects"/>), is rolled as if the attacker were Blinded (the
         /// <c>blinded</c> buff's accuracy; no extra Rng draw, never stacked on a real Blind).</summary>
         public bool Obscures;
+        /// <summary>Rises off the ground (GG-T859, owner: "the flames are high"): it still reaches a Floating unit over
+        /// it. Every other state is on the ground, and a hovering unit sets off, squishes and suffers none of it (mines,
+        /// slime, globs, cracks, holes, floor traps); a light (<see cref="Lights"/>) and smoke (<see cref="Obscures"/>)
+        /// count as tall too (<see cref="Battle.RegionBoard.HoversOver"/>).</summary>
+        public bool Tall;
         /// <summary>Whom a mark of this state works on, read against the team that painted it (GG-T842): its hooks that
         /// read the subject's tile (EnterTile, TurnEnd...) skip an unaffected subject, its OnMark and hook effects skip
         /// unaffected units, and <see cref="Battle.RegionBoard.DangerAt"/> reads no danger for them. Ignored on a mark the
@@ -296,6 +301,9 @@ namespace GridGame.Core.Content
         public bool Repeat;
         /// <summary>Its telegraphed tiles are dangerous (drawn as a warning; the bot steps off them).</summary>
         public bool Hazard = true;
+        /// <summary>A ground shake (GG-T859: a quake, a tremor): its effects pass over every Floating unit, and the bot
+        /// and planners read no danger from it for one.</summary>
+        public bool Quake;
         /// <summary>Glyph on its timeline icon and its warning tiles.</summary>
         public string Glyph;
         public string Color;

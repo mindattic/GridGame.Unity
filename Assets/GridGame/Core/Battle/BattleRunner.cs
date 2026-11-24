@@ -143,7 +143,7 @@ namespace GridGame.Core.Battle
                 for (int dx = 0; dx < u.W; dx++)
                 {
                     var t = new Coord(anchor.X + dx, anchor.Y + dy);
-                    if (!S.Walkable(t)) return false;
+                    if (!S.WalkableFor(t, u)) return false; // GG-T859: a floater may hover over a hole
                     foreach (var o in S.Units)
                         if (o != u && o.Alive && o.Occupies(t) && (yields == null || !yields(o))) return false;
                     if (!movablesYield && S.MovableAt(t) != null) return false;
@@ -291,7 +291,7 @@ namespace GridGame.Core.Battle
                 if (!u.Alive) continue;
                 foreach (var t in u.Tiles())
                 {
-                    if (!S.Walkable(t)) return (u, null, null, null, t);
+                    if (!S.WalkableFor(t, u)) return (u, null, null, null, t); // GG-T859: a floater over a hole is no conflict
                     if (!seen.TryGetValue(t, out var other)) { seen[t] = u; continue; }
                     var mover = u.Id > other.Id ? u : other;
                     return (mover, mover == u ? other : u, null, null, t);
@@ -846,6 +846,7 @@ namespace GridGame.Core.Battle
             if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
             if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
             if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
+            if (def.Roots && u.IsFloating) { Announce("Floating!", u.Id); return; } // GG-T859: roots find no ground to grip
             if (def.Frightens) // GG-T916: bosses and Heavy units don't scare; the rest remember what they fear
             {
                 if (IsBossLike(u) || u.IsHeavy) { Announce("Immune!", u.Id); return; }
@@ -975,6 +976,7 @@ namespace GridGame.Core.Battle
                 Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = def.Id, Reason = reason });
                 if (u.IsHero && def.Tempo != 0) DropBuffTempo(def.Id);
             }
+            LandFromFloat(u); // GG-T859
         }
 
         /// <summary>Cleansing a tempo buff (Slow) off the last hero carrying it lifts its party tempo too (GG-T275).</summary>
@@ -990,6 +992,7 @@ namespace GridGame.Core.Battle
             Emit(new BuffRemovedEvent { UnitId = u.Id, BuffId = b.Def.Id, Reason = "expired" });
             var chain = C.TryBuff(b.Def.OnExpireApply);
             if (chain != null && u.Alive) ApplyBuff(u, chain, chain.Duration);
+            if (b.Def.Id == Unit.FloatingBuffId) LandFromFloat(u); // GG-T859
         }
 
         /// <summary>Removes a buff as if it expired (runs its expire chain) — e.g. Fire melting Frozen.</summary>

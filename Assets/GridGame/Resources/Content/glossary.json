@@ -902,5 +902,12 @@
     "Aliases": ["Rage", "Rages"],
     "LinkKind": "Buff",
     "LinkId": "raging"
+  },
+  {
+    "Id": "floating",
+    "Term": "Floating",
+    "Aliases": ["Float", "Floats"],
+    "LinkKind": "Buff",
+    "LinkId": "floating"
   }
 ]

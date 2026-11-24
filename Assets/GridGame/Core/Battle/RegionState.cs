@@ -79,17 +79,34 @@ namespace GridGame.Core.Battle
         /// <summary>
         /// Does mark <paramref name="m"/> work on <paramref name="u"/> (GG-T842, BIBLE §14.23)? A board-painted mark (no
         /// owner) or a state that affects <see cref="TileAffects.Any"/> works on everyone; otherwise the state's
-        /// <see cref="TileStateDef.Affects"/> is read against the team that painted it.
+        /// <see cref="TileStateDef.Affects"/> is read against the team that painted it. GG-T859: a ground mark never works on
+        /// a unit hovering over it (<see cref="HoversOver"/>), whoever painted it.
         /// </summary>
         public static bool Affects(BattleState s, TileMark m, Unit u)
         {
-            if (m == null || u == null || m.OwnerTeam == Team.Neutral) return true;
+            if (m == null || u == null) return true;
+            if (HoversOver(s, m, u)) return false;
+            if (m.OwnerTeam == Team.Neutral) return true;
             switch (s.Content?.TryTileState(m.State)?.Affects ?? TileAffects.Any)
             {
                 case TileAffects.FoesOfOwner: return u.Team != m.OwnerTeam;
                 case TileAffects.AlliesOfOwner: return u.Team == m.OwnerTeam;
                 default: return true;
             }
+        }
+
+        /// <summary>
+        /// GG-T859 (§8.1): is <paramref name="u"/> Floating (<see cref="Unit.IsFloating"/>) over a ground mark? Every state
+        /// is on the ground (mines, slime, globs, cracks, holes, floor traps...) except a <see cref="TileStateDef.Tall"/> one
+        /// (fire trails and firewalls: the flames are high), a light (<see cref="TileStateDef.Lights"/>) or smoke
+        /// (<see cref="TileStateDef.Obscures"/>). A hovering unit sets off, squishes and suffers no ground mark, and the bot
+        /// and planners read no danger from one.
+        /// </summary>
+        public static bool HoversOver(BattleState s, TileMark m, Unit u)
+        {
+            if (m == null || u == null || !u.IsFloating) return false;
+            var def = s?.Content?.TryTileState(m.State);
+            return def == null || (!def.Tall && !def.Lights && !def.Obscures);
         }
 
         /// <summary>
@@ -125,6 +142,7 @@ namespace GridGame.Core.Battle
             {
                 if (e.Kind != TimelineKind.Hazard || e.HazardTiles == null || !e.HazardTiles.Contains(c)) continue;
                 if (!IsHazardEntry(s, e) || Immune(u, e.RuleId, e.RuleEvent)) continue;
+                if (u != null && u.IsFloating && (s.Content?.TryRuleEvent(e.RuleEvent)?.Quake ?? false)) continue; // GG-T859
                 float soon = 1f - Math.Min(1f, Math.Max(0, e.RemainingTicks) / (float)(BattleConfig.TicksPerSecond * BattleConfig.BarSeconds));
                 d += 2f + 2f * soon;
             }
@@ -158,6 +176,7 @@ namespace GridGame.Core.Battle
         {
             var m = s.Region.At(c);
             if (m == null || !m.Blocks || u == null || u.IsMultiTile || u.IsSnakeMember || u.IsRemains || u.IsCorpse || u.IsEgg) return false;
+            if (u.IsFloating) return false; // GG-T859: it hovers over the hole
             return (s.Content?.TryTileState(m.State)?.Pit ?? false) && !Immune(u, m.Rule, m.State);
         }
 
