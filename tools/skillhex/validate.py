@@ -19,6 +19,9 @@ Checks (see docs/design/skill-hexagon/PLAN.md):
     - each hero's Class exists in classes.json (null only for Status New)
     - each Recipe sums to 4; Signatures are unique
     - each Start path is on the lattice, connected through lattice adjacency, and holds its Signature's node
+    - warnings: a Signature that another class also has in its Abilities or DefaultLoadout, and a Signature
+      node more than --max-sig-distance lattice steps (default 1) from its hero's spot (the stat-hexagon
+      spot of its Recipe, placed the way app.js does it, snapped to the nearest lattice point)
 
 Prints a summary and the Open slot gap list grouped by wedge. Exits 1 when any error is found.
 Standard library only, plus jsonschema when available.
@@ -36,6 +39,8 @@ CONTENT = os.path.join(REPO, 'Assets', 'GridGame', 'Resources', 'Content')
 STAT_IDS = ['VIT', 'STR', 'AGI', 'SPD', 'WIS', 'INT']
 DIRS = [(1, 0), (0, 1), (-1, 1), (-1, 0), (0, -1), (1, -1)]
 RECIPE_POINTS = 4
+MAX_SIG_DISTANCE = 1
+BOARD_R = 520  # app.js: hexagon radius in pixels; only ratios matter here
 
 
 def load_json(path, what):
@@ -185,6 +190,77 @@ def check_nodes(doc, abilities, stats, rep):
     return at, points, placed
 
 
+def pixel(q, r, n):
+    """Point position as app.js draws it: axial -> pixel at spacing BOARD_R / n, rotated so corner 0 points up."""
+    d = BOARD_R / n
+    x0, y0 = (q + r / 2) * d, (r * math.sqrt(3) / 2) * d
+    return y0, -x0
+
+
+def hex_distance(a, b):
+    dq, dr = a[0] - b[0], a[1] - b[1]
+    return max(abs(dq), abs(dr), abs(dq + dr))
+
+
+def hero_spots(heroes, stats):
+    """Pixel spot of each hero's Recipe, using the stat-hexagon slot layout from app.js (heroSpot)."""
+    cv = [(math.cos(math.radians(-90 + 60 * i)), math.sin(math.radians(-90 + 60 * i))) for i in range(6)]
+    st = lambda i: stats[i % 6]
+    lerp = lambda p, q, t: (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+    at = lambda p, f: (p[0] * f * BOARD_R, p[1] * f * BOARD_R)
+    key = lambda parts: tuple(sorted((s, w) for s, w in parts if w > 0))
+    by_recipe = {}
+    for h in heroes:
+        rec = h.get('Recipe')
+        if isinstance(rec, dict):
+            by_recipe[key(rec.items())] = h
+    spots = {}
+
+    def put(parts, pos):
+        h = by_recipe.get(key(parts))
+        if h is not None:
+            spots[id(h)] = pos
+    for k in range(6):
+        A, B = cv[k], cv[(k + 1) % 6]
+        a, b, dd, e = st(k), st(k + 1), st(k + 3), st(k + 4)
+        put([(a, 4)], at(A, 0.97))
+        for i, (x, y) in enumerate([(3, 1), (2, 2), (1, 3)]):
+            put([(a, x), (b, y)], at(lerp(A, B, (i + 1) / 4), 0.95))
+        for i, (x, y, f) in enumerate([(2, 1, dd), (2, 1, e), (1, 2, dd), (1, 2, e)]):
+            put([(a, x), (b, y), (f, 1)], at(lerp(A, B, 0.2 + 0.2 * i), 0.62))
+        put([(a, 3), (dd, 1)], at(A, 0.36))
+        put([(a, 3), (st(k - 2), 1)], at(lerp(A, B, 0.13), 0.8))
+        put([(a, 3), (st(k + 2), 1)], at(lerp(A, cv[(k + 5) % 6], 0.13), 0.8))
+    return spots
+
+
+def check_signatures(doc, heroes, classes, points, placed, stats, max_dist, rep):
+    """Warn when a Signature is not unique to its class, or sits far from its hero's spot."""
+    users = defaultdict(set)
+    for cid, c in classes.items():
+        for aid in (c.get('Abilities') or []) + (c.get('DefaultLoadout') or []):
+            users[aid].add(cid)
+    n = doc.get('Radius')
+    spots = hero_spots(heroes, stats) if isinstance(n, int) and n >= 2 else {}
+    pix = {p: pixel(*p, n) for p in points} if spots else {}
+    for h in heroes:
+        sig, cls = h.get('Signature'), h.get('Class')
+        if not sig:
+            continue
+        tag = f'hero {cls or h.get("Name")!r}'
+        others = sorted(users.get(sig, set()) - {cls})
+        if others:
+            rep.warn(f'{tag}: Signature {sig!r} is not unique to its class; also in {others}')
+        nodes = placed.get(sig)
+        spot = spots.get(id(h))
+        if h.get('Status') == 'Placed' and nodes and spot is not None:
+            near = min(pix, key=lambda p: (pix[p][0] - spot[0]) ** 2 + (pix[p][1] - spot[1]) ** 2)
+            dist = hex_distance(near, nodes[0])
+            if dist > max_dist:
+                rep.warn(f'{tag}: Signature {sig!r} at {nodes[0]} is {dist} steps from its spot {near} '
+                         f'(max {max_dist})')
+
+
 def connected(cells):
     cells = set(cells)
     if not cells:
@@ -270,6 +346,9 @@ def main(argv=None):
     ap.add_argument('--schema', default=None, help='default: skillhex.schema.json next to the board file')
     ap.add_argument('--abilities', default=os.path.join(CONTENT, 'abilities.json'))
     ap.add_argument('--classes', default=os.path.join(CONTENT, 'classes.json'))
+    ap.add_argument('--max-sig-distance', type=int, default=MAX_SIG_DISTANCE,
+                    help=f"warn when a Signature sits more than this many lattice steps from its hero's spot "
+                         f'(default {MAX_SIG_DISTANCE})')
     args = ap.parse_args(argv)
     schema_path = args.schema or os.path.join(os.path.dirname(os.path.abspath(args.skillhex)), 'skillhex.schema.json')
 
@@ -282,6 +361,8 @@ def main(argv=None):
     stats, fams = check_stats_families(doc, rep)
     at, points, placed = check_nodes(doc, abilities, stats or STAT_IDS, rep)
     heroes = check_heroes(doc, abilities, classes, points, placed, rep)
+    check_signatures(doc, heroes, classes, points, placed, stats if len(stats) == 6 else STAT_IDS,
+                     args.max_sig_distance, rep)
 
     # Summary
     kinds = Counter(n.get('Kind') for n in at.values())
