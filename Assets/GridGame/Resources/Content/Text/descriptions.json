@@ -3421,13 +3421,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bde1d0cd0ce91e83ca0a04d730889acd37f9e92c96a7b090e556fdfaf098af92",
+      "hash": "sha256:388222bbd176c7d122e367f70837c2f5ebe47d11bf6f1cfa1c618989f9a9ba1b",
       "about": [
         "class-tactician"
       ],
       "speakers": [],
       "payload": {
-        "short": "A former Concord staff officer who plans the crew's war and rewrites the enemy's turn order.",
+        "short": "A former Choir staff officer who plans the crew's war and rewrites the enemy's turn order.",
         "long": "Planned tithe routes until the ledgers showed where the surplus went."
       }
     },
@@ -24194,13 +24194,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ab24d6a5386d48a4c6223b09c78d7a040e8bd2e66f4e4f005c3afdf1a11bc368",
+      "hash": "sha256:079c85272e3b855307ee7165b81013ae30125cc18f25bbb4493b492a825da029",
       "about": [
         "place-bloom"
       ],
       "speakers": [],
       "payload": {
-        "short": "Where the Hierarch's reservoir broke, the stolen mana came down hardest, and the Bloom came up through the Concord's white stone: red blossom over broken pillars, moss in every crack."
+        "short": "Where the Hierarch's reservoir broke, the stolen mana came down hardest, and the Bloom came up through the old white stone: red blossom over broken pillars, moss in every crack."
       }
     },
     "place:bloom-01": {
@@ -24614,13 +24614,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f5512be5a0f65f8acbaaee22dabfee720249e6b59b294ab60a2cde0a620d3405",
+      "hash": "sha256:6f026fcf7ff3879073e924ca2df0e1f0ebe52f8dd4165ef4fe55010507ca1b3b",
       "about": [
         "place-desert2"
       ],
       "speakers": [],
       "payload": {
-        "short": "With the Concord broken, nobody is digging in the Shardfall anymore. Nobody is guarding it, either."
+        "short": "With the Choir's collectors gone, nobody is digging in the Shardfall anymore. Nobody is guarding it, either."
       }
     },
     "place:greenvalley": {
