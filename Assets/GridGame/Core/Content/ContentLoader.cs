@@ -235,6 +235,10 @@ namespace GridGame.Core.Content
                 // GG-T861: a Smoke Vanish leaves from the caster's own tile (its smoke goes there) to a random one, never a teleport too.
                 if (a.Vanishes && (a.Shape != TargetShape.Self || a.Mode != TargetMode.Auto || a.IsTeleport || a.Kind != AbilityKind.Skill))
                     p.Add($"ability {a.Id}: a Smoke Vanish (Vanishes) is a Self / Auto Skill and not also a Teleport");
+                // GG-T868: a Pole Vault is a blink whose pick is the free tile beyond a unit beside the caster.
+                if (a.Vaults && (!a.IsTeleport || a.Shape != TargetShape.SingleTile || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly
+                                 || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
+                    p.Add($"ability {a.Id}: a Pole Vault (Vaults) is an IsTeleport Skill or Spell that picks an empty tile (SingleTile, PickTile, EmptyOnly)");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

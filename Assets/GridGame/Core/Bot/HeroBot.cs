@@ -457,6 +457,7 @@ namespace GridGame.Core.Bot
             }
             if (a.Magnetizes > 0) return Magnetize.Value(s, caster, a, anchor); // GG-T878: only when two or more metal foes would line up
             if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861: slip a threat, or roll for a pincer landing
+            if (a.Vaults) return PoleVault.Value(s, caster, anchor); // GG-T868: vault out of a box or onto a pincer square
             if (a.IsTeleport)
             {
                 var copy = s.Clone();

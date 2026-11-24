@@ -92,6 +92,7 @@ namespace GridGame.Core.Rules
             if (a.Filter == TargetFilter.EmptyOnly)
             {
                 if (occ != null || s.TrapAt(target) != null) return false;
+                if (a.Vaults) return PoleVault.Over(s, caster, target) != null; // GG-T868: the free tile beyond a unit beside the caster
                 if (!a.AdjacentOnly) return true;
                 foreach (var t in caster.Tiles()) if (t.IsCardinalNeighbor(target)) return true;
                 return false;

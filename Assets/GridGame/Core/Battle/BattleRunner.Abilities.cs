@@ -223,6 +223,7 @@ namespace GridGame.Core.Battle
             if (a.Magnetizes > 0) { ResolveMagnetize(caster, a, anchor); return; } // GG-T878: the Tinkerer's Magnetize
             if (a.RedirectsDebuffs) { ResolveRedirect(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T887: the Monk's Redirect Flow
             if (a.StealsBoon) { ResolveSwipe(caster, a, pickedUnit ?? S.UnitAt(anchor)); return; } // GG-T866: the Thief's Swipe Boon
+            if (a.Vaults) { ResolveVault(caster, a, anchor); return; } // GG-T868: the Lancer's Pole Vault
             if (a.IsTeleport)
             {
                 // The whole footprint must land on open tiles — never onto a unit, a movable, a block or off the board.

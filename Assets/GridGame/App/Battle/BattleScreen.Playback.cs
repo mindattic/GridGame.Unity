@@ -95,7 +95,7 @@ namespace GridGame.App
                 // GG-T228: a unit token may sit on a pickup token only while the step that shoves the pickup is still
                 // playing out (a snake's segments follow before its head's pickup goes behind the tail, a 2×2's lanes
                 // shove in turn), so the unit-on-pickup check waits until no move beat is next.
-                bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent));
+                bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent || events[i + 1] is VaultedEvent));
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
             ResetPincerBeats(); // GG-T836: battle speed is the setting's again
@@ -162,6 +162,7 @@ namespace GridGame.App
                 case SteppedEvent s: return StepAnim(s.UnitId, s.To, 0.16f, "battle.move");
                 case DisplacedEvent d: return StepAnim(d.UnitId, d.To, 0.14f, "battle.slide");
                 case TeleportedEvent t: return TeleportAnim(t);
+                case VaultedEvent vt: return VaultAnim(vt); // GG-T868: the Lancer's Pole Vault arc
                 case SubstitutedEvent sb: return SubstitutionAnim(sb); // GG-T862: the White Ninja's log and smoke
 
                 case PincerFormedEvent p: FlushTallies(); return PincerAnim(p);

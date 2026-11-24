@@ -574,6 +574,10 @@ namespace GridGame.Core.Content
         /// <summary>Party turns a hero haste from this ability keeps the party's tempo up (GG-T268); 0 = BattleConfig.DefaultTempoTurns.</summary>
         public int TempoTurns;
         public bool IsTeleport;
+        /// <summary>Pole Vault (GG-T868, the Lancer): with <see cref="IsTeleport"/>, the pick is the free tile straight beyond a
+        /// unit beside the caster, and the caster leaps over that unit onto it without entering the tile between
+        /// (<c>Battle.PoleVault</c>). A Skill or Spell that picks an empty tile (SingleTile, PickTile, EmptyOnly).</summary>
+        public bool Vaults;
         /// <summary>Tiles the target is shoved straight away from the caster (shield bash) — §6.3.</summary>
         public int Knockback;
         /// <summary>The pick must be cardinally adjacent to the caster (melee skills).</summary>

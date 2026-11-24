@@ -2432,7 +2432,8 @@ namespace GridGame.Meta
             if (a.Revives) k.Add("revive");
             if (a.Escape) k.Add("escape");
             if (a.BonusVsTag != null) k.Add("vs:" + a.BonusVsTag);
-            if (a.IsTeleport) k.Add("teleport");
+            if (a.Vaults) k.Add("vault"); // GG-T868
+            else if (a.IsTeleport) k.Add("teleport");
             if (a.Knockback > 0) k.Add("knockback");
             if (a.Pull > 0) k.Add("pull");
             if (a.Magnetizes > 0) k.Add("magnetize"); // GG-T878

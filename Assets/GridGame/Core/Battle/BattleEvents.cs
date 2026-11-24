@@ -83,6 +83,15 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Teleported {UnitId} {From}->{To}";
     }
 
+    /// <summary>GG-T868 (§7): the Lancer's Pole Vault carried <see cref="UnitId"/> from <see cref="From"/> over unit
+    /// <see cref="OverId"/> (on <see cref="Over"/>, never entered) down onto <see cref="To"/>. The view arcs the jump over
+    /// the planted spear and kicks up dust where it lands.</summary>
+    public sealed class VaultedEvent : BattleEvent
+    {
+        public int UnitId; public int OverId = -1; public Coord From; public Coord Over; public Coord To;
+        public override string ToString() => $"Vaulted {UnitId} {From}->{To} over {OverId}";
+    }
+
     /// <summary>GG-T861: a Smoke Vanish: <see cref="UnitId"/> left <see cref="From"/> in its smoke and reappears on
     /// <see cref="To"/> (its <see cref="TeleportedEvent"/> follows). The view puffs smoke, calls "Vanish" and flashes the landing.</summary>
     public sealed class VanishedEvent : BattleEvent

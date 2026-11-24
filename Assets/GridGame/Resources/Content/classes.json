@@ -9247,7 +9247,8 @@
       "skirmisher_hitandrun",
       "skirmisher_runningriot",
       "grappling_hook",
-      "set_spear"
+      "set_spear",
+      "lancer_polevault"
     ],
     "DefaultLoadout": [
       "cleave",
