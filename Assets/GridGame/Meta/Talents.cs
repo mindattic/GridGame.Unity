@@ -36,6 +36,12 @@ namespace GridGame.Meta
         /// <summary>An off-tree node's <see cref="SkillNodeDef.RequiredPointsInTree"/> is multiplied by this (rounded up),
         /// so its deeper tiers need more points in that tree than the home tree's do; Start-tier nodes (0) stay at 0.</summary>
         public static float OffTreeGateScale = 1.5f;
+
+        /// <summary>GG-T980 (owner decision pending, conservative default): does a sibling's signature node on a family tree
+        /// (<see cref="SkillNodeDef.SignatureOf"/> another class) keep its grant's <see cref="AbilityDef.Requires"/> stat gate?
+        /// True: a sibling may spec into the same move but must meet its stats; only the node's own class (and any hero's
+        /// start nodes) is waived. False: every signature node is waived for every member of the family.</summary>
+        public static bool SiblingSignatureStatGated = true;
     }
 
     /// <summary>
@@ -224,9 +230,34 @@ namespace GridGame.Meta
         public static string WhyLocked(HeroSave h, SkillTreeDef t, SkillNodeDef n) => Gates(null, h, t, n, n.RequiredPointsInTree);
 
         /// <summary>What still blocks a node for this hero: a closed off-tree first (no free slot), then missing prerequisites,
-        /// then points in the tree (scaled up in an off-tree) — or null when every gate is met.</summary>
+        /// then points in the tree (scaled up in an off-tree), then (GG-T980) a family node's stat requirement
+        /// (<see cref="WhyStatLocked"/>) — or null when every gate is met.</summary>
         public static string WhyLocked(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n) =>
-            WhyClosed(c, h, t) ?? Gates(c, h, t, n, Required(c, h, t, n));
+            WhyClosed(c, h, t) ?? Gates(c, h, t, n, Required(c, h, t, n)) ?? WhyStatLocked(c, h, t, n);
+
+        /// <summary>GG-T980: a family-tree node whose grant carries <see cref="AbilityDef.Requires"/> stays Locked until the
+        /// hero's spent stat points (<see cref="StatPoints.Picks"/>) meet it, with the same text as the Learn screen (GG-T592):
+        /// "needs INT 8 (have 3)". Null when met, waived (<see cref="StatWaived"/>), off a family tree, or nothing is granted.</summary>
+        public static string WhyStatLocked(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
+        {
+            if (c == null || h == null || t == null || n == null || string.IsNullOrEmpty(n.Grants) || c.TryFamily(t.Id) == null) return null;
+            var a = c.TryAbility(n.Grants);
+            if (a == null || !a.HasRequires || StatWaived(c, h, t, n)) return null;
+            return Abilities.NeedsText(a.UnmetRequires(StatPoints.Picks(h)));
+        }
+
+        /// <summary>GG-T980: is this family node free of its grant's stat requirement for this hero? Yes for one of its class's
+        /// start nodes (<see cref="IsStartNode"/>), its class's own signature node (<see cref="SkillNodeDef.SignatureOf"/>), or a
+        /// grant that is already one of its kit moves (<see cref="Abilities.IsKitMove"/>); a sibling's signature node only when
+        /// <see cref="TalentConfig.SiblingSignatureStatGated"/> is off.</summary>
+        public static bool StatWaived(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
+        {
+            if (IsStartNode(c, h, t, n)) return true;
+            if (!string.IsNullOrEmpty(n.SignatureOf) &&
+                (string.Equals(n.SignatureOf, h.ClassId, StringComparison.OrdinalIgnoreCase) || !TalentConfig.SiblingSignatureStatGated))
+                return true;
+            return Abilities.IsKitMove(c, h, c.TryAbility(n.Grants));
+        }
 
         /// <summary>The tree's own gates; with content (<paramref name="c"/> not null) the class's start nodes count as unlocked (GG-T978).</summary>
         private static string Gates(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n, int required)

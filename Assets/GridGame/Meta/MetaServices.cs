@@ -2462,25 +2462,48 @@ namespace GridGame.Meta
 
     public static class Abilities
     {
-        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only).</summary>
+        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only).
+        /// GG-T980: a class on a family tree (<see cref="Progression.FamilyTree"/>) has no separate class list: its gold list
+        /// is its kit (<see cref="Progression.KitAbilities(ContentDb, ClassDef)"/>: loadout and start grants) and its own
+        /// signature grants (<see cref="Progression.SignatureGrants"/>), all at <see cref="KitPrice"/>, plus the general
+        /// catalog less every family move (<see cref="FamilyMoves"/>): a sibling's corner, or a shared family node, comes only
+        /// through the tree. A role-tree class keeps its <see cref="ClassDef.Abilities"/> list and the whole catalog.</summary>
         public static List<AbilityDef> Learnable(ContentDb c, HeroSave h)
         {
             var def = c.TryClass(h.ClassId);
             var set = new List<AbilityDef>();
             if (h.Domesticated) return set; // a tamed monster fights with its own instincts, never a trainer's skills (GG-T303)
-            if (def != null)
-                foreach (var id in def.Abilities)
-                {
-                    var a = c.TryAbility(id);
-                    if (a != null && IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a)) set.Add(a);
-                }
+            bool family = Progression.FamilyTree(c, def) != null;
+            var own = def == null ? new List<string>()
+                : family ? Progression.KitAbilities(c, def).Concat(Progression.SignatureGrants(c, def)).ToList()
+                : def.Abilities;
+            foreach (var id in own)
+            {
+                var a = c.TryAbility(id);
+                if (a != null && IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a)) set.Add(a);
+            }
+            var familyMoves = family ? FamilyMoves(c) : null;
             foreach (var a in c.Abilities.Values)
                 if (IsHeroUsable(a) && !h.Known.Contains(a.Id) && !set.Contains(a) &&
-                    (a.Kind == AbilityKind.Spell || a.Universal))
+                    (a.Kind == AbilityKind.Spell || a.Universal) && (familyMoves == null || !familyMoves.Contains(a.Id)))
                     set.Add(a);
             // GG-T388: the hero's own kit moves first (the cheapest, and what it was built to do), then by price.
             var kit = Progression.KitAbilities(c, def); // GG-T978: start grants too on a family tree
+            kit.AddRange(Progression.SignatureGrants(c, def)); // GG-T980: and its own signature grants, as IsKitMove
             return set.OrderBy(a => kit.Contains(a.Id) ? 0 : 1).ThenBy(a => Price(a)).ThenBy(a => a.Name).ToList();
+        }
+
+        /// <summary>GG-T980: every ability some family tree's node grants (a skill tree whose id is a families.json family).
+        /// A hero on a family tree buys these only with skill points, except its own start and signature grants.</summary>
+        public static HashSet<string> FamilyMoves(ContentDb c)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (c == null) return set;
+            foreach (var t in c.SkillTrees.Values)
+                if (t != null && c.TryFamily(t.Id) != null)
+                    foreach (var n in t.Nodes)
+                        if (n != null && !string.IsNullOrEmpty(n.Grants)) set.Add(n.Grants);
+            return set;
         }
 
         /// <summary>Boss-phase abilities only an enemy fires (an <c>OnEnterAbility</c>): free, so never learnable.</summary>
@@ -2521,7 +2544,14 @@ namespace GridGame.Meta
         {
             var onHeroLists = new HashSet<string>();
             foreach (var cls in c.Classes.Values)
-                if (cls.Team == Team.Hero) foreach (var id in cls.Abilities) onHeroLists.Add(id);
+                if (cls.Team == Team.Hero)
+                {
+                    // GG-T980: a family-tree class's gold list is its kit and signature grants, not ClassDef.Abilities.
+                    var ids = Progression.FamilyTree(c, cls) != null
+                        ? Progression.KitAbilities(c, cls).Concat(Progression.SignatureGrants(c, cls))
+                        : cls.Abilities;
+                    foreach (var id in ids) onHeroLists.Add(id);
+                }
             return c.Abilities.Values
                 .Where(a => IsHeroUsable(a) && (a.Kind == AbilityKind.Spell || a.Universal || onHeroLists.Contains(a.Id)))
                 .OrderBy(a => a.Id).ToList();
