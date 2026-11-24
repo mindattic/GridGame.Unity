@@ -495,7 +495,7 @@ namespace GridGame.App
                     var sp = pv.Positions.TryGetValue(sup.Id, out var spp) ? spp : sup.Pos;
                     var partner = pv.Positions.TryGetValue(via.Id, out var vp) ? vp : via.Pos;
                     var (la, lb) = BoardView.EdgeLink(sp, partner);
-                    board.Lines.Add(la, lb, Palette.Mana.WithA(0.9f), 10f);
+                    board.Lines.Bar(la, lb, ShapeStyle.Indicator.Tint(Palette.Mana.WithA(0.9f)).Thick(10f));
                 }
                 foreach (var o in p.Opponents)
                 {
@@ -548,11 +548,7 @@ namespace GridGame.App
             // Stop short of both token centres so the arrow reads between them, not over the art.
             a += dir * (BoardView.Tile * 0.22f);
             b -= dir * (BoardView.Tile * 0.22f);
-            board.Lines.Add(a, b, col, 6f);
-            var side = new Vector2(-dir.y, dir.x);
-            float head = BoardView.Tile * 0.16f;
-            board.Lines.Add(b, b - dir * head + side * head * 0.7f, col, 6f);
-            board.Lines.Add(b, b - dir * head - side * head * 0.7f, col, 6f);
+            board.Lines.Arrow(a, b, ShapeStyle.Indicator.Tint(col));
         }
 
         /// <summary>Puts a drag back where it started with no command and no clock spent — for a drop that can't be

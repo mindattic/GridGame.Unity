@@ -151,6 +151,10 @@ namespace GridGame.App
             Paint(p, s, Band(line, s.Width * 0.5f));
         }
 
+        /// <summary>A round-capped bar (an arrow with no head) from <paramref name="from"/> to <paramref name="to"/>: a link (GG-T736).</summary>
+        public static void Bar(Painter2D p, Vector2 from, Vector2 to, ShapeStyle s) =>
+            Paint(p, s, Band(new List<Vector2> { from, to }, s.Width * 0.5f));
+
         /// <summary>A filled dot (outlined disc) of <paramref name="radius"/>.</summary>
         public static void Dot(Painter2D p, Vector2 center, float radius, ShapeStyle s) => Paint(p, s, Circle(center, radius));
 

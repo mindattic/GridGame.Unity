@@ -1026,9 +1026,30 @@ namespace GridGame.App
         /// <summary>Rounded outlines drawn around a group of tiles; <c>f</c> is how much of the border has drawn itself (0..1).</summary>
         public readonly List<(Rect r, Color color, float w, float f)> Outlines = new List<(Rect, Color, float, float)>();
 
+        /// <summary>GG-T736: board indicators drawn as <see cref="Shapes"/> (white-bodied, ink-outlined vector shapes).</summary>
+        public enum ShapeKind { Arrow, PathArrow, Chevron, Bar }
+        public struct ShapeEntry
+        {
+            public ShapeKind Kind;
+            /// <summary>Arrow/Bar: [from, to]; PathArrow: the whole path, tip last.</summary>
+            public Vector2[] Path;
+            /// <summary>Chevron only: centre, pointing direction and size.</summary>
+            public Vector2 Center, Dir;
+            public float Size;
+            public ShapeStyle Style;
+        }
+        public readonly List<ShapeEntry> ShapeList = new List<ShapeEntry>();
+
         public LineLayer() { generateVisualContent += Draw; }
 
-        public void ClearLines() { Segs.Clear(); Dots.Clear(); Rings.Clear(); Outlines.Clear(); MarkDirtyRepaint(); }
+        public void ClearLines() { Segs.Clear(); Dots.Clear(); Rings.Clear(); Outlines.Clear(); ShapeList.Clear(); MarkDirtyRepaint(); }
+        /// <summary>A straight arrow from <paramref name="from"/> with its tip at <paramref name="to"/>.</summary>
+        public void Arrow(Vector2 from, Vector2 to, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Arrow, Path = new[] { from, to }, Style = s }); MarkDirtyRepaint(); }
+        /// <summary>An arrow along a polyline with its head at the last point.</summary>
+        public void PathArrow(IList<Vector2> path, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.PathArrow, Path = new List<Vector2>(path).ToArray(), Style = s }); MarkDirtyRepaint(); }
+        public void Chevron(Vector2 center, Vector2 dir, float size, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Chevron, Center = center, Dir = dir, Size = size, Style = s }); MarkDirtyRepaint(); }
+        /// <summary>A round-capped bar (a link with no head) from <paramref name="from"/> to <paramref name="to"/>.</summary>
+        public void Bar(Vector2 from, Vector2 to, ShapeStyle s) { ShapeList.Add(new ShapeEntry { Kind = ShapeKind.Bar, Path = new[] { from, to }, Style = s }); MarkDirtyRepaint(); }
         public void Outline(Rect r, Color color, float w, float f) { Outlines.Add((r, color, w, f)); MarkDirtyRepaint(); }
         public void Ring(Vector2 c, float r, Color color, float w) { Rings.Add((c, r, color, w)); MarkDirtyRepaint(); }
         public void Add(Vector2 a, Vector2 b, Color c, float w) { Segs.Add(new Seg { A = a, B = b, Color = c, Width = w }); MarkDirtyRepaint(); }
@@ -1049,13 +1070,25 @@ namespace GridGame.App
             }
             foreach (var (rect, color, w, f) in Outlines)
             {
-                var pts = CastRing.Perimeter(rect, 30f, f);
-                if (pts.Count < 2) continue;
-                p.lineJoin = LineJoin.Round; p.lineCap = LineCap.Round;
-                p.strokeColor = new Color(0f, 0f, 0f, 0.5f * color.a); p.lineWidth = w + 6f;
-                p.BeginPath(); p.MoveTo(pts[0]); for (int i = 1; i < pts.Count; i++) p.LineTo(pts[i]); p.Stroke();
-                p.strokeColor = color; p.lineWidth = w;
-                p.BeginPath(); p.MoveTo(pts[0]); for (int i = 1; i < pts.Count; i++) p.LineTo(pts[i]); p.Stroke();
+                if (f <= 0f) continue;
+                // GG-T736: a Shapes frame (tinted body, ink border) that draws itself clockwise from top-centre.
+                var r = new Rect(rect.xMin + 5f, rect.yMin + 5f, Mathf.Max(0f, rect.width - 10f), Mathf.Max(0f, rect.height - 10f));
+                float rad = Mathf.Min(30f, r.width * 0.5f, r.height * 0.5f);
+                float perim = 2f * (r.width + r.height) - 8f * rad + 2f * Mathf.PI * rad;
+                float start = perim > 0f ? (r.width * 0.5f - rad) / perim : 0f;
+                var style = ShapeStyle.Indicator.Tint(color).Thick(w);
+                style.Line = new Color(style.Line.r, style.Line.g, style.Line.b, style.Line.a * color.a);
+                Shapes.RoundedRect(p, r, rad, style, start: start, portion: f);
+            }
+            foreach (var e in ShapeList)
+            {
+                switch (e.Kind)
+                {
+                    case ShapeKind.Arrow: Shapes.Arrow(p, e.Path[0], e.Path[1], e.Style); break;
+                    case ShapeKind.PathArrow: Shapes.PathArrow(p, e.Path, e.Style); break;
+                    case ShapeKind.Chevron: Shapes.Chevron(p, e.Center, e.Dir, e.Size, e.Style); break;
+                    case ShapeKind.Bar: Shapes.Bar(p, e.Path[0], e.Path[1], e.Style); break;
+                }
             }
             foreach (var (c, r, color, w) in Rings)
             {

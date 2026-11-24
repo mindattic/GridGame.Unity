@@ -390,7 +390,7 @@ namespace GridGame.App
             {
                 board.Lines.ClearLines();
                 board.Lines.Outline(rect, color, 9f, k);
-                if (k >= 0.6f) foreach (var (la, lb) in links) board.Lines.Add(la, Vector2.Lerp(la, lb, (k - 0.6f) / 0.4f), Palette.Mana.WithA(0.95f), 12f);
+                if (k >= 0.6f) foreach (var (la, lb) in links) board.Lines.Bar(la, Vector2.Lerp(la, lb, (k - 0.6f) / 0.4f), ShapeStyle.Indicator.Tint(Palette.Mana.WithA(0.95f)).Thick(12f));
             });
             if (!ReduceMotion) yield return Tween.Wait(Timing.Quick);
             tallying = true;
@@ -1198,7 +1198,7 @@ namespace GridGame.App
         private VisualElement billboard;
         public int BillboardLines => billboard?.childCount ?? 0;
         /// <summary>Strokes on the pincer/outline layer right now (automation: the pause harness pauses mid-chain).</summary>
-        public int LineStrokes => board == null ? 0 : board.Lines.Segs.Count + board.Lines.Outlines.Count + board.Lines.Rings.Count;
+        public int LineStrokes => board == null ? 0 : board.Lines.Segs.Count + board.Lines.Outlines.Count + board.Lines.Rings.Count + board.Lines.ShapeList.Count;
 
         /// <summary>A top-of-board window naming every spell, ability and combo as it happens; lines fade after 1.6 s.</summary>
         /// <summary>The billboard steps out of the way: when the action is in the top two rows it moves to the board's foot.</summary>

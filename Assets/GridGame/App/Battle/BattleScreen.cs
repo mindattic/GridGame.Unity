@@ -1846,8 +1846,10 @@ namespace GridGame.App
             board.Mark(dest, Palette.Gold, 0.5f);
             if (board.Units.TryGetValue(hero.Id, out var hv)) { hv.SetGlow(Palette.Gold, 0.95f); App.StartCoroutine(Tween.Pop(hv.Root, 1.12f, 0.35f)); }
             board.Lines.ClearLines();
-            var from = BoardView.CenterOf(hero.Pos);
-            foreach (var step in cmd.Path) { var to = BoardView.CenterOf(step); board.Lines.Add(from, to, Palette.Gold.WithA(0.55f), 10f); from = to; }
+            // GG-T736: one Shapes path arrow along the route, its head on the last step.
+            var route = new List<Vector2> { BoardView.CenterOf(hero.Pos) };
+            foreach (var step in cmd.Path) route.Add(BoardView.CenterOf(step));
+            board.Lines.PathArrow(route, ShapeStyle.Indicator);
             ShowBanner($"Hint: drag {hero.Name} to the glowing tile");
         }
 
