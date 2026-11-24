@@ -1011,6 +1011,23 @@
         "definition": "A frontline all-rounder: steady melee damage and staying power."
       }
     },
+    "glossary:firewall": {
+      "key": "glossary:firewall",
+      "id": "glossary-firewall",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fa92f666e8d0b39e4d6fccbe2fed7efca686b920bb19191a19ab2da0019066b4",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Firewall",
+        "definition": "A line of tall flames on the floor. Whoever steps in takes Fire and starts [Burning], and ending a turn in it burns again. It burns friend and foe alike, even a [Floating] body; Ice douses it.",
+        "aliases": [
+          "Firewalls"
+        ]
+      }
+    },
     "glossary:flanker": {
       "key": "glossary:flanker",
       "id": "glossary-flanker",
@@ -1256,6 +1273,20 @@
         "definition": "Mends and cleanses; heals grow with WIS."
       }
     },
+    "glossary:heavy": {
+      "key": "glossary:heavy",
+      "id": "glossary-heavy",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:63ad53d3a7ce1bb15be6add80f90c98a34317d51d9ebc6a1b7653cfb7a2b4ae5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Heavy",
+        "definition": "Too heavy for anyone else to move: no drag, shove, pull or swap shifts it, and nothing [Frightens] it. Lift it with [Floating] and it can be moved like anyone else."
+      }
+    },
     "glossary:hellfire": {
       "key": "glossary:hellfire",
       "id": "glossary-hellfire",
@@ -1270,6 +1301,23 @@
       "payload": {
         "term": "Hellfire",
         "definition": "An Infernalist Pyromancer's charge: fire on one hero and the four tiles beside it, which [Burns] each one hit. Spread out, or [Interrupt] it."
+      }
+    },
+    "glossary:hidden": {
+      "key": "glossary:hidden",
+      "id": "glossary-hidden",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:6a667e5c8890cfbc382a767c04d59a96ec50b2b7d6c72851d15a53b6d1e195dc",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Hidden",
+        "definition": "A mark only the side that laid it can see, like a buried [mine]. It shows to everyone, for good, once it goes off, when a flare or an EMP uncovers it, or when an element hits it.",
+        "aliases": [
+          "Hides"
+        ]
       }
     },
     "glossary:int": {
@@ -1477,6 +1525,46 @@
       "payload": {
         "term": "Mauler",
         "definition": "Tears into foes up close with claws and fangs."
+      }
+    },
+    "glossary:mine": {
+      "key": "glossary:mine",
+      "id": "glossary-mine",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0cd58ed856a5892f4904578b9d2d791b26b82cfbb41cdc61861271026e2d03f3",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Mine",
+        "definition": "A charge set in a tile. Whoever steps on it sets it off, and it blows a moment later on its tile and its neighbours. A buried one goes [hidden] after a moment; a [Floating] body passes over it.",
+        "aliases": [
+          "Mines",
+          "Landmine",
+          "Landmines",
+          "Buried Charge",
+          "Buried Charges"
+        ]
+      }
+    },
+    "glossary:oil": {
+      "key": "glossary:oil",
+      "id": "glossary-oil",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d92d67decb82fef96969c579ad591bbc25edf61157d4932a0d75ff2df9d52aff",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Oil",
+        "definition": "Lamp oil spilled over the floor: a foe of whoever spilled it that steps in is [Slowed]. Any fire that touches it sets it ablaze as a [firewall].",
+        "aliases": [
+          "Oil Slick",
+          "Oil Slicks",
+          "Lamp Oil"
+        ]
       }
     },
     "glossary:openings": {
@@ -1977,6 +2065,25 @@
         "definition": "A slight chance: about 10% (up to 15%)."
       }
     },
+    "glossary:slime_glob": {
+      "key": "glossary:slime_glob",
+      "id": "glossary-slime-glob",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8f484fbda6124c627359a5771e2e296f2aa313d09cb8e9f8524624e5d400f8e8",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Slime Glob",
+        "definition": "A glob a slime lobs onto a free tile. Left alone it hatches into a slime; a hero who steps on it squishes it for a little [mana charge], and fire burns it away.",
+        "aliases": [
+          "Glob",
+          "Globs",
+          "Slime Globs"
+        ]
+      }
+    },
     "glossary:slowed": {
       "key": "glossary:slowed",
       "id": "glossary-slowed",
@@ -2414,6 +2521,23 @@
       "payload": {
         "term": "Void Beam",
         "definition": "A Void Sentinel's charge: a beam down a marked line to the board's edge that hits and [Silences] every hero still on it. Step off the line, or [Interrupt] it."
+      }
+    },
+    "glossary:volley": {
+      "key": "glossary:volley",
+      "id": "glossary-volley",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3704a0e4f358bae8b8fb24c1af7ad6e4cdaa60b81606fff62a7a69f924c6ff84",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Volley",
+        "definition": "A supporter's thrown hit: instead of stepping in, it throws at each foe trapped in the [pincer] it backs, and may leave a status where the throw lands.",
+        "aliases": [
+          "Volleys"
+        ]
       }
     },
     "glossary:wanderer": {

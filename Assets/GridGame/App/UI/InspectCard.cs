@@ -415,9 +415,9 @@ namespace GridGame.App
         }
 
         /// <summary>GG-T892: the Heavy keyword line (§1.1.3, §14.2) the unit card and the Bestiary show, with its counters.</summary>
-        public const string HeavyLine = "Heavy: no drag, shove, pull or swap moves it. Counters: [Floating] lifts it so it can be moved; [Rooted] stops its own legs; a barricade walls it out; Earthsplitter's cracks break under it and it falls.";
+        public const string HeavyLine = GridGame.Core.Rules.KeywordText.HeavyLine; // GG-T907: [Heavy] is a glossary term
         /// <summary>GG-T892: a Heavy unit while it is <see cref="GridGame.Core.Battle.Unit.IsFloating"/>.</summary>
-        public const string HeavyFloatingLine = "Heavy, but [Floating]: while it hovers it can be dragged, shoved, pulled or swapped like anyone else.";
+        public const string HeavyFloatingLine = GridGame.Core.Rules.KeywordText.HeavyFloatingLine;
 
         /// <summary>A tamed monster's bond meter (GG-T303): bond so far out of what it needs, the turns its tame has left,
         /// and what a full bond means. A domesticated monster just says it is the party's for good.</summary>

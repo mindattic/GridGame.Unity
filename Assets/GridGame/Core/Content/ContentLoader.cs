@@ -628,6 +628,7 @@ namespace GridGame.Core.Content
             AttackTypeSheet.Validate(db, p); // GG-T556
             p.AddRange(GridGame.Core.Battle.DifficultyTable.Problems()); // the 1..10 dial (GG-T309)
             Glossary.Validate(db, p);
+            Glossary.ValidateKeywords(db, p); // GG-T907
             ValidateCodex(db, p); // GG-T936
             p.AddRange(db.TextProblems); // GG-T355: every key resolves, no story text in gameplay JSON, right-answer tags
             return p;

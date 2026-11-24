@@ -2498,7 +2498,7 @@
  {
   "Id": "charge_slime_glob",
   "Name": "Vomit Glob",
-  "Description": "Lobs a glob of itself onto a free tile near the party. Left alone for 8 seconds it hatches into a slime a level below; a hero who steps on it squishes it for a little mana charge, and fire burns it away.",
+  "Description": "Lobs a [glob] of itself onto a free tile near the party. Left alone for 8 seconds it hatches into a slime a level below; a hero who steps on it squishes it for a little mana charge, and fire burns it away.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
@@ -2560,7 +2560,7 @@
  {
   "Id": "gremlin_sabotage",
   "Name": "Sabotage",
-  "Description": "Tampers with a party gadget beside it (a buried charge, a barricade, a firewall) and turns it to the foes' side. A turned buried charge hides from the party. Tech senses tech: it finds a hidden charge it stands beside. An EMP Pulse jams it.",
+  "Description": "Tampers with a party gadget beside it (a [buried charge], a barricade, a [firewall]) and turns it to the foes' side. A turned buried charge [hides] from the party. Tech senses tech: it finds a [hidden] charge it stands beside. An EMP Pulse jams it.",
   "Kind": "Skill",
   "Cost": 0,
   "CastTime": 0.0,
@@ -3704,7 +3704,7 @@
  {
   "Id": "darktemplar_gravitywell",
   "Name": "Gravity Well",
-  "Description": "Opens a well of dark gravity on a tile: every foe within 2 tiles is pulled one tile toward it, nearest first. Heavy foes resist unless floating, Rooted ones hold. Clump a scattered wave into a line for your next pincer.",
+  "Description": "Opens a well of dark gravity on a tile: every foe within 2 tiles is pulled one tile toward it, nearest first. [Heavy] foes resist unless [floating], [Rooted] ones hold. Clump a scattered wave into a line for your next pincer.",
   "Kind": "Spell",
   "Requires": { "Intelligence": 4, "Strength": 2 },
   "Cost": 2,
@@ -3735,7 +3735,7 @@
  {
   "Id": "drifter_float",
   "Name": "Float",
-  "Description": "Lifts one unit, ally or foe, off the ground for 2 turns ([Floating]). A floating Heavy foe can be slid, shoved, pulled and swapped into a pincer; a floating hero passes over mines, slime and holes. Tall flames still burn it.",
+  "Description": "Lifts one unit, ally or foe, off the ground for 2 turns ([Floating]). A floating [Heavy] foe can be slid, shoved, pulled and swapped into a pincer; a floating hero passes over [mines], slime and holes. Tall flames still burn it.",
   "Kind": "Spell",
   "Requires": { "Intelligence": 3, "Wisdom": 2 },
   "Cost": 1,
@@ -4319,7 +4319,7 @@
  {
   "Id": "bluelion_intimidate",
   "Name": "Intimidate",
-  "Description": "A roar that leaves every [adjacent] foe [Frightened]: on its next turn it backs straight away from the Lion and makes no attack. Drive foes into a firewall or onto a mine, out of a pincer round an ally, or into the party's pincer line. Bosses and Heavy foes don't scare.",
+  "Description": "A roar that leaves every [adjacent] foe [Frightened]: on its next turn it backs straight away from the Lion and makes no attack. Drive foes into a [firewall] or onto a [mine], out of a pincer round an ally, or into the party's pincer line. Bosses and [Heavy] foes don't scare.",
   "Kind": "Skill",
   "Requires": { "Strength": 4 },
   "Cost": 0,
@@ -4500,7 +4500,7 @@
  {
   "Id": "technician_emp",
   "Name": "EMP Pulse",
-  "Description": "A burst of static over a 3x3 area that touches only tech foes (gremlins, cyber zombies, mecha, prototypes): each is [Silenced] and its charging cast slips 1.5 s, cancelled if that runs it past its own length. Every hidden mine in the burst shows, and every mine in it is set off. The answer to sappers and machines.",
+  "Description": "A burst of static over a 3x3 area that touches only tech foes (gremlins, cyber zombies, mecha, prototypes): each is [Silenced] and its charging cast slips 1.5 s, cancelled if that runs it past its own length. Every [hidden] [mine] in the burst shows, and every mine in it is set off. The answer to sappers and machines.",
   "Kind": "Spell",
   "Requires": { "Intelligence": 4 },
   "Cost": 2,
@@ -4593,7 +4593,7 @@
  {
   "Id": "tinkerer_magnetize",
   "Name": "Magnetize",
-  "Description": "Instant: a magnetic field drags every plated or Tech foe within 3 of the picked tile up to 2 tiles toward it and swings their plates to face it. Heavy foes resist unless floating. Line armored foes up for one pincer.",
+  "Description": "Instant: a magnetic field drags every plated or Tech foe within 3 of the picked tile up to 2 tiles toward it and swings their plates to face it. [Heavy] foes resist unless [floating]. Line armored foes up for one pincer.",
   "Kind": "Spell",
   "Requires": { "Intelligence": 4, "Wisdom": 2 },
   "Cost": 2,
@@ -4933,7 +4933,7 @@
  {
   "Id": "assassain_shadow_swap",
   "Name": "Shadow Swap",
-  "Description": "Trade places with a foe within 3 tiles in a flash of shadow: it lands where you stood - in your firewall, on your mine, at a pit's edge or in a [Pincer] line - and both of you run whatever that tile does. Heavy foes won't budge unless floating; [Rooted] ones hold.",
+  "Description": "Trade places with a foe within 3 tiles in a flash of shadow: it lands where you stood - in your [firewall], on your [mine], at a pit's edge or in a [Pincer] line - and both of you run whatever that tile does. [Heavy] foes won't budge unless [floating]; [Rooted] ones hold.",
   "Kind": "Skill",
   "Requires": { "Agility": 5 },
   "Cost": 0,
@@ -5058,7 +5058,7 @@
  {
   "Id": "lancer_polevault",
   "Name": "Pole Vault",
-  "Description": "Plant the spear and leap over a unit beside you, friend or foe, Heavy or not, onto the free tile beyond. You never touch the tile you clear, so the fire, mines or slime under it stay behind; a landing that closes a [pincer] springs it.",
+  "Description": "Plant the spear and leap over a unit beside you, friend or foe, [Heavy] or not, onto the free tile beyond. You never touch the tile you clear, so the fire, [mines] or slime under it stay behind; a landing that closes a [pincer] springs it.",
   "Kind": "Skill",
   "Requires": { "Agility": 3, "Strength": 2 },
   "Cost": 0,
@@ -5089,7 +5089,7 @@
  {
   "Id": "ripper_flay",
   "Name": "Flay",
-  "Description": "Peels an [adjacent] foe's armor in strips: 8 Physical and [Shredded], which bites its plate from any side and stacks so every later blow lands harder. The answer to plated and Heavy foes.",
+  "Description": "Peels an [adjacent] foe's armor in strips: 8 Physical and [Shredded], which bites its plate from any side and stacks so every later blow lands harder. The answer to plated and [Heavy] foes.",
   "Kind": "Skill",
   "Requires": { "Strength": 5 },
   "Cost": 0,
@@ -5213,7 +5213,7 @@
  {
   "Id": "barbarian_earthsplitter",
   "Name": "Earthsplitter",
-  "Description": "Slams the ground: the empty tile picked beside the Barbarian and the two beyond it crack. A Heavy foe on a crack breaks through and falls at once; anyone else crossing one cracks it further until it caves in.",
+  "Description": "Slams the ground: the empty tile picked beside the Barbarian and the two beyond it crack. A [Heavy] foe on a crack breaks through and falls at once; anyone else crossing one cracks it further until it caves in.",
   "Kind": "Skill",
   "Requires": { "Strength": 4 },
   "Cost": 0,
@@ -6813,7 +6813,7 @@
  {
   "Id": "engineer_buried_charge",
   "Name": "Buried Charge",
-  "Description": "Buries a charge in an empty tile. It shows for 2s, then only the party sees it; whoever steps on it pops it out, and it blows 1.5s later on its tile and neighbours.",
+  "Description": "Buries a charge ([mine]) in an empty tile. It shows for 2s, then it is [hidden]: only the party sees it; whoever steps on it pops it out, and it blows 1.5s later on its tile and neighbours.",
   "Kind": "Skill",
   "Requires": { "Intelligence": 4 },
   "Cost": 0,
@@ -6844,7 +6844,7 @@
  {
   "Id": "firewall",
   "Name": "Firewall",
-  "Description": "Raises a wall of fire three tiles wide across the line from the caster, on an empty tile. Whoever steps in takes 6 Fire and burns; ending a turn in it, 4 Fire and burns again. It burns friend and foe alike for 12s; Ice douses it.",
+  "Description": "Raises a [firewall] three tiles wide across the line from the caster, on an empty tile. Whoever steps in takes 6 Fire and [burns]; ending a turn in it, 4 Fire and burns again. It burns friend and foe alike for 12s; Ice douses it.",
   "Kind": "Spell",
   "Requires": { "Intelligence": 6 },
   "Cost": 2,
@@ -6875,7 +6875,7 @@
  {
   "Id": "alchemist_oilflask",
   "Name": "Oil Flask",
-  "Description": "Hurls a flask of lamp oil onto an empty tile: it splashes over that tile and its four neighbours for 15s. A foe that steps in is [Slowed]. Any Fire that touches the oil sets it ablaze as a firewall that burns friend and foe alike, so a Red Mage's spark turns it into a trap.",
+  "Description": "Hurls a flask of lamp oil onto an empty tile: it splashes over that tile and its four neighbours for 15s. A foe that steps in is [Slowed]. Any Fire that touches the [oil] sets it ablaze as a [firewall] that burns friend and foe alike, so a Red Mage's spark turns it into a trap.",
   "Kind": "Skill",
   "Requires": { "Intelligence": 3 },
   "Cost": 0,
@@ -8665,7 +8665,7 @@
  {
   "Id": "hexstalker_flare_shot",
   "Name": "Flare Shot",
-  "Description": "Lobs a flare onto an empty tile. For about 2 turns it lights every tile within 2: hidden marks there show for good (a buried mine), foes there can't hide in the dark, and heroes crit foes standing in its light 15% more often.",
+  "Description": "Lobs a flare onto an empty tile. For about 2 turns it lights every tile within 2: [hidden] marks there show for good (a buried [mine]), foes there can't hide in the dark, and heroes crit foes standing in its light 15% more often.",
   "Kind": "Skill",
   "Requires": { "Agility": 3, "Intelligence": 2 },
   "Cost": 0,
@@ -10569,7 +10569,7 @@
  {
   "Id": "charge_bull_rush",
   "Name": "Bull Rush",
-  "Description": "Charges, then runs straight down a marked line to the board's edge, trampling every hero still on it for 8 Physical and more. [Raging], the bull itself charges down the line, knocking aside every hero in its path, until a barricade, stone or Heavy unit stops it. Step off the line, or [Interrupt] the charge.",
+  "Description": "Charges, then runs straight down a marked line to the board's edge, trampling every hero still on it for 8 Physical and more. [Raging], the bull itself charges down the line, knocking aside every hero in its path, until a barricade, stone or [Heavy] unit stops it. Step off the line, or [Interrupt] the charge.",
   "Kind": "Spell",
   "Cost": 0,
   "CastTime": 2.5,
@@ -11684,7 +11684,7 @@
  {
   "Id": "warden_anchorstance",
   "Name": "Anchor Stance",
-  "Description": "Plant the shield and set your feet: until your next action you are [Rooted] and Heavy, and no foe's shove, pull, hook or swap (nor the anchor's heave) moves an ally beside you.",
+  "Description": "Plant the shield and set your feet: until your next action you are [Rooted] and [Heavy], and no foe's shove, pull, hook or swap (nor the anchor's heave) moves an ally beside you.",
   "Kind": "Skill",
   "Requires": { "Vitality": 4, "Stamina": 3 },
   "Cost": 0,

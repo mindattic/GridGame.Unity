@@ -318,6 +318,27 @@ namespace GridGame.Tests
             Assert.That(ContentLoader.Validate(TestKit.Real).Where(p => p.Contains("Projectile") || p.Contains("Sfx")), Is.Empty);
         }
 
+        /// <summary>GG-T907: a content set with a glossary defines every battle keyword the cards print (Heavy, Floating,
+        /// Rooted, Shredded, Frightened, Linked, Volley, the tactical tiles).</summary>
+        [Test]
+        public void A_glossary_missing_a_battle_keyword_is_reported()
+        {
+            ContentDb Fixture(string leaveOut)
+            {
+                var db = ValidDb();
+                db.GlossaryOrder.Add(new GlossaryEntry { Id = "burning", Term = "Burning", Text = "On fire." });
+                db.GlossaryOrder.Add(new GlossaryEntry { Id = "supporter", Term = "Supporter", Text = "Backs a pincer." });
+                foreach (var k in GridGame.Core.Rules.KeywordText.Keywords)
+                    if (k != leaveOut) db.GlossaryOrder.Add(new GlossaryEntry { Id = k.ToLowerInvariant().Replace(' ', '_'), Term = k, Text = "A keyword." });
+                Glossary.Index(db);
+                return db;
+            }
+            Assert.That(ContentLoader.Validate(Fixture(null)), Is.Empty);
+            Assert.That(OneProblem(Fixture("Volley")), Does.Contain("no entry for the keyword 'Volley'"));
+            Assert.That(ContentLoader.Validate(Fixture("Heavy")), Has.Some.Contains("no entry for the keyword 'Heavy'"));
+            Assert.That(ContentLoader.Validate(Fixture("Heavy")), Has.Some.Contains("keyword line Heavy: unknown glossary term [Heavy]"));
+        }
+
         /// <summary>GG-T838: every enemy class's support names its family's projectile, motion and sound (BIBLE 1.2.3
         /// enemy supports), all of them ids that exist.</summary>
         [Test]

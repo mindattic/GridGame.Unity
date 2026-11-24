@@ -916,5 +916,41 @@
     "Aliases": ["Anchor Stance"],
     "LinkKind": "Buff",
     "LinkId": "anchored"
+  },
+  {
+    "Id": "heavy",
+    "Term": "Heavy"
+  },
+  {
+    "Id": "volley",
+    "Term": "Volley",
+    "Aliases": ["Volleys"]
+  },
+  {
+    "Id": "firewall",
+    "Term": "Firewall",
+    "Aliases": ["Firewalls"],
+    "LinkKind": "Ability",
+    "LinkId": "firewall"
+  },
+  {
+    "Id": "mine",
+    "Term": "Mine",
+    "Aliases": ["Mines", "Landmine", "Landmines", "Buried Charge", "Buried Charges"]
+  },
+  {
+    "Id": "hidden",
+    "Term": "Hidden",
+    "Aliases": ["Hides"]
+  },
+  {
+    "Id": "oil",
+    "Term": "Oil",
+    "Aliases": ["Oil Slick", "Oil Slicks", "Lamp Oil"]
+  },
+  {
+    "Id": "slime_glob",
+    "Term": "Slime Glob",
+    "Aliases": ["Glob", "Globs", "Slime Globs"]
   }
 ]
