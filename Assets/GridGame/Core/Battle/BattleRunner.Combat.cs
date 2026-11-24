@@ -17,6 +17,14 @@ namespace GridGame.Core.Battle
             if (hero == null || !hero.Alive || !hero.IsHero) { Emit(new AbilityRefusedEvent { CasterId = m.HeroId, Reason = "No such hero" }); return false; }
             AutoEquipBackupWeapon(hero);
             if (hero.IsImmobile) { Emit(new AbilityRefusedEvent { CasterId = hero.Id, Reason = "Can't move" }); return false; }
+            if (hero.IsFrightened && m.Path != null && m.Path.Count > 0) // GG-T916: won't end a drag beside what it fears
+            {
+                var src = FearSourceOf(hero);
+                var end = m.Path[m.Path.Count - 1];
+                bool beside = false;
+                if (src != null) foreach (var t in src.Tiles()) if (!src.Occupies(end) && t.IsCardinalNeighbor(end)) beside = true;
+                if (beside) { Emit(new AbilityRefusedEvent { CasterId = hero.Id, Reason = "Too frightened" }); return false; }
+            }
             if (hero.IsIndependent) { Emit(new AbilityRefusedEvent { CasterId = hero.Id, Reason = "Acts on its own" }); return false; } // GG-T303
 
             var before = SnapshotPositions();

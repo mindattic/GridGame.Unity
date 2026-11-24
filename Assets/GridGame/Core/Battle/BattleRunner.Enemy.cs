@@ -60,6 +60,8 @@ namespace GridGame.Core.Battle
                 return;
             }
 
+            if (enemy.IsFrightened && !enemy.IsSnakeMember && !enemy.IsRooted) { FleeTurn(enemy); return; } // GG-T916
+
             if (RuleBreakBeforeTurn(enemy)) return;
             if (BrainTurn(enemy)) return;
 
@@ -92,6 +94,43 @@ namespace GridGame.Core.Battle
             EnemyAttack(enemy);
             if (CheckEnd()) return;
             EndEnemyTurn(enemy);
+        }
+
+        /// <summary>GG-T916: a frightened foe spends its turn running from its fear source - up to MoveRange steps, each
+        /// on the axis that puts the most ground between them first, only ever widening the gap - then the fear is spent.
+        /// No attack. Deterministic (no Rng).</summary>
+        private void FleeTurn(Unit enemy)
+        {
+            var src = FearSourceOf(enemy);
+            if (src != null)
+            {
+                int steps = Math.Max(0, enemy.Def.MoveRange);
+                for (int i = 0; i < steps && enemy.Alive && !S.IsOver; i++)
+                {
+                    int dist = enemy.DistanceTo(src);
+                    int dx = enemy.Pos.X - src.Pos.X, dy = enemy.Pos.Y - src.Pos.Y;
+                    var xStep = new Coord(dx >= 0 ? 1 : -1, 0);
+                    var yStep = new Coord(0, dy >= 0 ? 1 : -1);
+                    var first = Math.Abs(dx) >= Math.Abs(dy) ? xStep : yStep;
+                    var second = first == xStep ? yStep : xStep;
+                    if (!FleeStep(enemy, src, enemy.Pos + first, dist) && !FleeStep(enemy, src, enemy.Pos + second, dist)) break;
+                }
+                if (!enemy.Alive || S.IsOver) return;
+            }
+            Announce($"{enemy.Name} flees!", enemy.Id);
+            RemoveBuffsWhere(enemy, b => b.Def.Frightens, "spent");
+            if (CheckEnd()) return;
+            EndEnemyTurn(enemy);
+        }
+
+        private bool FleeStep(Unit enemy, Unit src, Coord to, int dist)
+        {
+            if (!BattleState.InBounds(to)) return false;
+            int after = int.MaxValue; // the footprint's distance to the source were it standing at `to`
+            for (int y = 0; y < enemy.H; y++)
+                for (int x = 0; x < enemy.W; x++)
+                    foreach (var t in src.Tiles()) after = Math.Min(after, new Coord(to.X + x, to.Y + y).Manhattan(t));
+            return after > dist && StepEnemy(enemy, to);
         }
 
         /// <summary>

@@ -279,6 +279,18 @@ namespace GridGame.Core.Battle
             get { foreach (var b in Buffs) if (b.Def.Roots) return true; return false; }
         }
 
+        /// <summary>Carries a Frightens buff (GG-T916): flees its <see cref="FearSourceId"/>.</summary>
+        public bool IsFrightened
+        {
+            get { foreach (var b in Buffs) if (b.Def.Frightens) return true; return false; }
+        }
+
+        /// <summary>The unit the first Frightens buff names as its source, or -1 (GG-T916).</summary>
+        public int FearSourceId
+        {
+            get { foreach (var b in Buffs) if (b.Def.Frightens) return b.SourceId; return -1; }
+        }
+
         public bool IsTimelineHalted
         {
             get { foreach (var b in Buffs) if (b.Def.HaltsTimeline) return true; return false; }

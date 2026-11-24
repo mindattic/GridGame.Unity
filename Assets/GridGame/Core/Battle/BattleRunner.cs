@@ -829,6 +829,13 @@ namespace GridGame.Core.Battle
             if (u.Id == recoverActorId && def.Unit == DurationUnit.Turns && !def.HaltsTimeline) duration++;
             if (u.Def.ImmuneBuffs != null && u.Def.ImmuneBuffs.Contains(def.Id)) { Announce("Immune!", u.Id); return; }
             if (WardedAgainst(u, def.Id)) { Announce("Warded!", u.Id); return; } // Always Immunity passives (GG-T179, GG-T296)
+            if (def.Frightens) // GG-T916: bosses and Heavy units don't scare; the rest remember what they fear
+            {
+                if (IsBossLike(u) || u.IsHeavy) { Announce("Immune!", u.Id); return; }
+                var src = sourceId >= 0 ? S.UnitById(sourceId) : null;
+                if (src == null || !src.Alive || !src.OnBoard) src = NearestFoeOf(u);
+                sourceId = src?.Id ?? -1;
+            }
             if (def.Cancels != null && def.Cancels.Count > 0) // GG-T667: the newest of a mutually exclusive pair wins
                 RemoveBuffsWhere(u, b => def.Cancels.Exists(c => string.Equals(c, b.Def.Id, StringComparison.OrdinalIgnoreCase)), "cancelled by " + def.Id);
             var existing = u.Buffs.Find(b => b.Def.Id == def.Id);
@@ -857,6 +864,32 @@ namespace GridGame.Core.Battle
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
+        }
+
+        /// <summary>Same test as <see cref="Taming.WhyNot"/>'s "Too mighty": a Boss tag, a rule break, or boss phases.</summary>
+        private static bool IsBossLike(Unit u) =>
+            u.Def.HasTag("Boss") || u.RuleBreak != RuleBreak.None || (u.Def.BossPhases != null && u.Def.BossPhases.Count > 0);
+
+        /// <summary>The nearest living, on-board unit of the opposing side (footprint Manhattan, ties by lowest Id), or null.</summary>
+        private Unit NearestFoeOf(Unit u)
+        {
+            var opp = u.Team == Team.Hero ? Team.Enemy : Team.Hero;
+            Unit best = null;
+            int bestD = int.MaxValue;
+            foreach (var o in S.Living(opp))
+            {
+                if (!o.OnBoard) continue;
+                int d = u.DistanceTo(o);
+                if (d < bestD || (d == bestD && best != null && o.Id < best.Id)) { best = o; bestD = d; }
+            }
+            return best;
+        }
+
+        /// <summary>GG-T916: what a frightened unit flees - its fear source if still alive on the board, else the nearest foe.</summary>
+        private Unit FearSourceOf(Unit u)
+        {
+            var src = u.FearSourceId >= 0 ? S.UnitById(u.FearSourceId) : null;
+            return src != null && src.Alive && src.OnBoard ? src : NearestFoeOf(u);
         }
 
         /// <summary>GG-T857 (§13.5): a <see cref="BuffDef.PlateChip"/> debuff takes a fixed bite out of the bearer's plate

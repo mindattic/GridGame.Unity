@@ -710,6 +710,10 @@ namespace GridGame.Core.Content
         /// <summary>Rooted (GG-T856): the bearer can't step or be displaced (drag swaps, shoves, knockback, pull, swap, rule
         /// moves all stop at it) but still acts, strikes and casts. Unlike <see cref="Immobile"/> it never skips a turn.</summary>
         public bool Roots;
+        /// <summary>Frightened (GG-T916): the bearer flees its fear source. A frightened foe spends its next turn stepping
+        /// directly away (no attack) and the fear is spent; a frightened hero can't end a drag beside the source. Bosses
+        /// and Heavy units shrug it off (Immune!).</summary>
+        public bool Frightens;
         public bool HaltsTimeline;
         public bool BreaksOnDamage;
         public bool BreaksOnMove;
