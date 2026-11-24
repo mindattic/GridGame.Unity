@@ -3,7 +3,7 @@
 [hidden] { display: none !important; }
 :root {
   color-scheme: dark;
-  --bg: #0d0f14; --panel: #151821; --line: #2a2f3d; --fg: #e6e8ee; --muted: #9097a8; --accent: #7fd1ff; --hot: #ffcf6b; --bad: #ff7a7a;
+  --bg: #0d0f14; --panel: #151821; --line: #2a2f3d; --fg: #e6e8ee; --muted: #9097a8; --accent: #7fd1ff; --hot: #ffcf6b;
   --s-WIS: #f1e3a6; --s-VIT: #5b8def; --s-STR: #e0784a; --s-AGI: #a07cf0; --s-SPD: #6fd6c4; --s-INT: #d35fb0;
   --display: "Chakra Petch", "Rajdhani", "Segoe UI", system-ui, sans-serif;
   --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
@@ -52,43 +52,19 @@ select:focus-visible, button.btn:focus-visible { outline: 2px solid var(--hot); 
 .kit .tag { font-family: var(--mono); font-size: 10.5px; color: var(--bg); border-radius: 3px; padding: 0 5px; }
 .sum { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
 .node { cursor: pointer; }
-.links { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
-a { color: var(--accent); }
-/* Edit mode (editor.js): .vo shows only when viewing, .eo only when editing. Same palette, no new look. */
-body:not(.editing) .eo, body.editing .vo, body.editing aside > :not(#editor) { display: none !important; }
-.edfile { display: inline-flex; flex-wrap: wrap; gap: 8px; }
-button.btn[aria-pressed="true"] { border-color: var(--hot); color: var(--hot); }
+.open { cursor: pointer; }
+code { font-family: var(--mono); font-size: 12.5px; color: var(--fg); }
+.file { font-family: var(--mono); font-size: 12px; }
 button.btn:disabled { opacity: .45; cursor: default; }
-#editor { display: grid; gap: 14px; min-width: 0; }
-#editor h3 { margin: 0; font-family: var(--display); font-size: 16px; }
-#editor p { margin: 4px 0 0; }
-#edstatus { font-family: var(--mono); font-size: 12px; }
-.ednote { color: var(--fg) !important; font-size: 13px; }
-.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.seg button { flex: 1; font: inherit; font-size: 13px; color: var(--muted); background: none; border: 0; padding: 6px 10px; cursor: pointer; }
-.seg button[aria-pressed="true"] { background: #1c2030; color: var(--hot); }
-.seg button + button { border-left: 1px solid var(--line); }
-.tool { display: grid; gap: 8px; min-width: 0; }
-#editor input[type="text"], #editor input[type="search"], #editor input[type="number"], #editor select { font: inherit; font-size: 13px; color: var(--fg); background: #11141b; border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; min-width: 0; width: 100%; }
-#editor input:focus-visible, #editor select:focus-visible, .seg button:focus-visible, .abrow:focus-visible, .chk:focus-visible { outline: 2px solid var(--hot); outline-offset: 1px; }
-.ablist { max-height: 300px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; background: #11141b; }
-.abrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; width: 100%; text-align: left; font: inherit; font-size: 13px; color: var(--fg); background: none; border: 0; border-bottom: 1px solid var(--line); padding: 5px 8px; cursor: pointer; }
-.abrow .m { grid-column: 1; font-family: var(--mono); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.abrow .st { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-family: var(--mono); font-size: 10.5px; color: var(--muted); }
-.abrow .st.un { color: var(--accent); }
-.abrow:hover { background: #1c2030; }
-.abrow.on { background: #1c2030; box-shadow: inset 3px 0 0 var(--accent); }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.row select { flex: 1; width: auto !important; }
-.fld { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
-.rc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; font-family: var(--mono); font-size: 12px; }
-.rc label { display: flex; align-items: center; gap: 6px; }
-.rc input { padding: 3px 6px !important; }
-#insp:empty { display: none; }
-#insp { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
-.bad { color: var(--bad); }
-#chsum { font-family: var(--body); font-size: 12.5px; font-weight: 500; letter-spacing: 0; text-transform: none; margin-left: 6px; }
-.checks { display: grid; gap: 4px; margin-top: 6px; max-height: 260px; overflow-y: auto; }
-.chk { text-align: left; font: inherit; font-size: 12.5px; color: var(--fg); background: #11141b; border: 1px solid var(--line); border-left: 3px solid var(--hot); border-radius: 4px; padding: 4px 8px; cursor: pointer; overflow-wrap: anywhere; }
-.chk.error { border-left-color: var(--bad); }
-.chk b { font-weight: 600; color: var(--muted); margin-right: 4px; }
+.edit { display: grid; gap: 8px; margin-top: 10px; }
+.edit label { display: grid; gap: 4px; color: var(--muted); font-size: 12.5px; }
+.edit select { width: 100%; }
+.edit .row { display: flex; flex-wrap: wrap; gap: 8px; }
+.edit .pas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.edit .pas label { font-family: var(--mono); }
+textarea, input[type="number"] { font: inherit; font-size: 13px; color: var(--fg); background: #11141b; border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; width: 100%; resize: vertical; }
+textarea:focus-visible, input[type="number"]:focus-visible { outline: 2px solid var(--hot); outline-offset: 1px; }
+#valsum { font-family: var(--mono); font-size: 12px; letter-spacing: 0; text-transform: none; margin-left: 6px; }
+.ok { color: var(--s-SPD); }
+.bad { color: var(--s-STR); }
+.val { display: grid; gap: 4px; font-family: var(--mono); font-size: 12px; max-height: 260px; overflow-y: auto; overflow-wrap: anywhere; }

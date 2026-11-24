@@ -12,22 +12,21 @@
 <div class="wrap">
   <header>
     <h1>Skill Hexagon</h1>
-    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Edit board changes the board itself and saves skillhex.json.</p>
-    <p class="links"><a href="GAPS.md">Open slots: the gap list (GAPS.md)</a> · <a href="PLAN.md">Plan (PLAN.md)</a></p>
+    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Switch the mode to edit the board or a hero's start path, then save the board back over <code id="savepath"></code> and run <code>python tools/skillhex/sync.py</code> so this page draws it.</p>
   </header>
   <div class="controls">
-    <label for="hero" class="vo">Hero <select id="hero"></select></label>
-    <button class="btn vo" id="undo" type="button">Undo last path</button>
-    <button class="btn vo" id="reset" type="button">Reset to starting path</button>
+    <label for="mode">Mode <select id="mode"><option value="plan">Plan a build</option><option value="board">Edit board</option><option value="path">Edit hero path</option></select></label>
+    <button class="btn" id="open" type="button">Open…</button>
+    <button class="btn" id="save" type="button">Save</button>
+    <button class="btn" id="undoedit" type="button" disabled>Undo edit</button>
+    <span class="file" id="file"></span>
+    <input type="file" id="pick" accept=".json,application/json" hidden>
+  </div>
+  <div class="controls">
+    <label for="hero">Hero <select id="hero"></select></label>
+    <button class="btn" id="undo" type="button">Undo last path</button>
+    <button class="btn" id="reset" type="button">Reset to starting path</button>
     <label><input type="checkbox" id="names" checked> Hero signatures</label>
-    <button class="btn" id="edit" type="button" aria-pressed="false">Edit board</button>
-    <span class="eo edfile">
-      <button class="btn" id="edopen" type="button">Open skillhex.json</button>
-      <input type="file" id="edfile" accept=".json,application/json" hidden>
-      <button class="btn" id="edsave" type="button">Save skillhex.json</button>
-      <button class="btn" id="edcopy" type="button">Copy JSON</button>
-      <button class="btn" id="edundo" type="button">Undo edit</button>
-    </span>
   </div>
   <div class="main">
     <div class="board"><svg id="hex" viewBox="-600 -600 1200 1200" role="img" aria-label="Skill hexagon"></svg></div>
@@ -38,30 +37,7 @@
       <div><h2>Abilities owned</h2><div class="kit" id="kit"></div></div>
       <div><h2>Cut and new heroes</h2><div class="kit" id="others"></div></div>
       <div id="detail"></div>
-      <div id="editor" class="eo">
-        <div><h2>Edit board</h2><p id="edstatus"></p><p id="ednote" class="ednote" hidden></p></div>
-        <div class="seg" role="group" aria-label="Edit tool"><button type="button" data-tool="ability">Abilities</button><button type="button" data-tool="hero">Heroes</button></div>
-        <div id="tool-ability" class="tool">
-          <input type="search" id="absearch" placeholder="Search abilities by name or id" aria-label="Search abilities">
-          <div class="m" id="abcount"></div>
-          <div class="ablist" id="ablist"></div>
-          <p class="m" id="abhint"></p>
-        </div>
-        <div id="tool-hero" class="tool" hidden>
-          <div class="row"><select id="ehero" aria-label="Hero to edit"></select><button class="btn" id="addhero" type="button">Add New hero</button></div>
-          <label class="fld">Name <input type="text" id="hname"></label>
-          <label class="fld">Class <input type="text" id="hclass" placeholder="classes.json id; empty for a New hero"></label>
-          <label class="fld">Status <select id="hstatus"><option>Placed</option><option>Cut</option><option>New</option></select></label>
-          <div class="fld">Recipe <span id="rcsum" class="m"></span>
-            <div class="rc"><label><span style="color:var(--s-VIT)">VIT</span><input type="number" min="0" max="4" id="rc-VIT"></label><label><span style="color:var(--s-STR)">STR</span><input type="number" min="0" max="4" id="rc-STR"></label><label><span style="color:var(--s-AGI)">AGI</span><input type="number" min="0" max="4" id="rc-AGI"></label><label><span style="color:var(--s-SPD)">SPD</span><input type="number" min="0" max="4" id="rc-SPD"></label><label><span style="color:var(--s-WIS)">WIS</span><input type="number" min="0" max="4" id="rc-WIS"></label><label><span style="color:var(--s-INT)">INT</span><input type="number" min="0" max="4" id="rc-INT"></label></div>
-          </div>
-          <label class="fld">Signature <select id="hsig"></select></label>
-          <label class="fld">Note <input type="text" id="hnote"></label>
-          <p class="m" id="hpath"></p>
-        </div>
-        <div id="insp"></div>
-        <div><h2>Checks <span id="chsum" class="m"></span></h2><div class="checks" id="checks"></div></div>
-      </div>
+      <div><h2>Validation <span id="valsum"></span></h2><div class="val" id="val"></div></div>
     </aside>
   </div>
 </div>
@@ -69,6 +45,5 @@
 <script src="skillhex.js"></script>
 <script src="data.js"></script>
 <script src="app.js"></script>
-<script src="editor.js"></script>
 </body>
 </html>
