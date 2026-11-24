@@ -229,6 +229,9 @@ namespace GridGame.Core.Content
                 if (a.StealsBoon && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.EnemyOnly
                                      || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Swipe Boon (StealsBoon) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
+                // GG-T865: a range limit only means something on a pick of one unit.
+                if (a.MaxRange < 0 || (a.MaxRange > 0 && a.Mode != TargetMode.PickActor))
+                    p.Add($"ability {a.Id}: MaxRange is 0 (anywhere) or a positive reach on a PickActor ability");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

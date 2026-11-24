@@ -595,6 +595,10 @@ namespace GridGame.Core.Content
         public int Magnetizes;
         /// <summary>Movement (GG-T183): the caster and its (one-tile) target trade tiles.</summary>
         public bool SwapsPlaces;
+        /// <summary>GG-T865: a PickActor ability may only pick a unit within this many tiles (Manhattan, nearest footprint
+        /// tile) of the caster; 0 = anywhere. The Assassin's Shadow Swap trades places with a foe within 3; a ranged swap
+        /// is a blink, so like a Teleport it scans the party's pincers once it lands.</summary>
+        public int MaxRange;
         /// <summary>Movement (GG-T183): once it resolves, the caster steps up to this many tiles straight away from the
         /// nearest foe (Disengage, Hit and Run).</summary>
         public int StepBack;

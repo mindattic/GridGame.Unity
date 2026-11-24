@@ -538,7 +538,9 @@ namespace GridGame.Core.Bot
                         var pdir = Math.Abs(px) >= Math.Abs(py) ? new Coord(Math.Sign(px), 0) : new Coord(0, Math.Sign(py));
                         score += 12f * RegionBoard.ShoveFloorValue(s, t, pdir, a.Pull, caster); // GG-T368: drag a foe into a hole
                     }
-                    if (a.SwapsPlaces) score += t.IsHeavy || t.IsRooted ? -5f : 2f; // GG-T891/GG-T920: a Heavy or Rooted foe won't trade places
+                    // GG-T891/GG-T920: a Heavy or Rooted foe won't trade places. GG-T865: a swap is worth the hazard or pincer
+                    // it drops the foe into (Shadow Swap does nothing else, so it's never cast for its own sake).
+                    if (a.SwapsPlaces) score += SwapValue(s, caster, t) + (a.BaseDamage > 0 && !t.WontBudge && !t.IsRooted ? 3f : 0f);
                 }
                 else
                 {
@@ -1177,6 +1179,37 @@ namespace GridGame.Core.Bot
             foreach (var ally in s.LivingList(Team.Hero))
                 foreach (var e in s.LivingList(Team.Enemy)) if (e.DistanceTo(ally) <= 2) return true;
             return false;
+        }
+
+        /// <summary>
+        /// GG-T865: what trading places with foe <paramref name="t"/> is worth: the foe lands where the caster stands, so a
+        /// dangerous tile there (a firewall, the party's mine, a telegraphed strike) counts, as does each open hole beside it
+        /// (a pit edge for the next shove); a pincer the swap closes at once, and each extra foe the party's next pincer
+        /// would trap from the new lines, count too. Less what the caster's new tile threatens it with. A swap that gains
+        /// nothing reads -1, and one a Heavy (not Floating) or Rooted foe refuses reads -5. Pure: it moves the two units'
+        /// <c>Pos</c> to look and puts them back.
+        /// </summary>
+        public static float SwapValue(BattleState s, Unit caster, Unit t)
+        {
+            if (s == null || caster == null || t == null || !t.Alive || t.WontBudge || t.IsRooted
+                || caster.IsRooted || caster.IsMultiTile || caster.IsSnakeMember) return -5f;
+            Coord mine = caster.Pos, theirs = t.Pos;
+            float v = 6f * Math.Min(2f, RegionBoard.DangerAt(s, mine, t, Team.Hero));
+            int edges = 0;
+            foreach (var d in Coord.Cardinals) if (RegionBoard.IsPitFor(s, mine + d, t)) edges++;
+            v += 2.5f * Math.Min(2, edges);
+            v -= 5f * Math.Min(2f, RegionBoard.DangerAt(s, theirs, caster));
+            int before = GravityWell.NextPincerTrapped(s), after;
+            caster.Pos = theirs; t.Pos = mine;
+            try
+            {
+                foreach (var p in PincerDetector.Detect(s, Team.Hero, caster))
+                    if (p.Opponents.Contains(t) && PincerPlanner.PincerValue(s, p) > 0f) { v += 8f; break; }
+                after = GravityWell.NextPincerTrapped(s);
+            }
+            finally { caster.Pos = mine; t.Pos = theirs; }
+            v += 0.5f * GravityWell.TrappedValue * Math.Max(0, after - before);
+            return v > 0f ? v : -1f;
         }
 
         /// <summary>GG-T864: what a Shredded-style debuff (plate chip, extra Physical damage taken) is worth on this foe.

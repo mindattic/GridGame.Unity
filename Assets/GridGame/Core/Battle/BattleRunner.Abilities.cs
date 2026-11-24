@@ -293,7 +293,10 @@ namespace GridGame.Core.Battle
 
                 if (a.Knockback > 0 && t.Alive && !friend) Knockback(caster, t, a.Knockback, a.BaseDamage);
                 if (a.Pull > 0 && t.Alive && t != caster) Pull(caster, t, a.Pull);
-                if (a.SwapsPlaces && t.Alive && t != caster && caster.Alive) SwapPlaces(caster, t);
+                // GG-T865: a ranged swap (Shadow Swap) is a blink: once both have landed, the party's pincers are scanned
+                // as after a Teleport, so a foe dropped into a pincer line is caught at once.
+                if (a.SwapsPlaces && t.Alive && t != caster && caster.Alive && SwapPlaces(caster, t)
+                    && a.MaxRange > 0 && caster.Alive && caster.IsHero && !S.IsOver) ResolvePincers(Team.Hero, caster);
 
                 // A heal aimed at a foe (Soul Feast, Blood Harvest) is a drain: it mends the caster, never the foe (GG-T183).
                 if (a.BaseHeal > 0)
@@ -437,18 +440,23 @@ namespace GridGame.Core.Battle
             }
         }
 
-        /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.</summary>
-        private void SwapPlaces(Unit caster, Unit t)
+        /// <summary>Swap (GG-T183): caster and target trade tiles — both one-tile, so the board stays one actor per tile.
+        /// GG-T865: a foe is dropped where the caster stood (into a firewall, onto a mine, beside a pit) and both run the
+        /// EnterTile hooks; a swap with a foe calls "Swap!". False when it didn't happen (Rooted, Heavy unless Floating).</summary>
+        private bool SwapPlaces(Unit caster, Unit t)
         {
-            if (RootsHold(t, t.Pos) || RootsHold(caster, caster.Pos)) return; // GG-T912: neither half of a swap is uprooted
-            if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
+            if (RootsHold(t, t.Pos) || RootsHold(caster, caster.Pos)) return false; // GG-T912: neither half of a swap is uprooted
+            if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return false; }
             Coord a = caster.Pos, b = t.Pos;
             caster.Pos = b;
             t.Pos = a;
             Emit(new DisplacedEvent { UnitId = caster.Id, From = a, To = b, ByUnitId = caster.Id });
             Emit(new DisplacedEvent { UnitId = t.Id, From = b, To = a, ByUnitId = caster.Id });
+            if (t.Team != caster.Team && !t.IsNeutral) Announce("Swap!", caster.Id); // GG-T865
+            if (t.Team != caster.Team) NoteShove(caster, t); // GG-T865: a region danger that kills it now is a HazardKill
             TriggerTrap(caster); // heroes spring traps; anyone runs the EnterTile hooks (GG-T368)
             if (t.Alive) TriggerTrap(t);
+            return true;
         }
 
         /// <summary>Step back (GG-T183): the caster backs straight away from the nearest foe onto free, trap-free ground.</summary>
