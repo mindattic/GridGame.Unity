@@ -250,7 +250,7 @@ namespace GridGame.App
             art.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
             // GG-T532: a class with male art can switch looks here any time (the same picker as on joining).
             if (!h.Domesticated && Art.HasMaleArt(h.ClassId))
-                Ui.Button("Change look", () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
+                RowIcon.IconButton("Change look", RowKind.Hero, () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
             var stats = Ui.El("col grow", top);
             stats.style.marginLeft = Space.S24; stats.style.flexShrink = 1; stats.style.minWidth = 0;
             int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
@@ -372,6 +372,7 @@ namespace GridGame.App
                     bool mastery = MasteryFor(sl);
                     bool enchanted = h.Armor.TryGetValue(sl, out var worn) && ArmorEnchanting.PassiveOf(C, worn.Enchant) != null; // GG-T179
                     var row = Ui.MenuRow(ItemUi.SlotName(sl), it == null ? "—" : (mastery ? "★ " : "") + it.Name + (enchanted ? " ✦" : ""), () => { slot = s2; previewId = null; Refresh(); }, slotList.contentContainer);
+                    row.KindIcon(RowKind.Item, it != null ? Art.ItemIcon(it.Id) : null); // GG-T718: the worn piece, else the Item emblem
                     row.name = "equip-slot-" + sl; // GG-T448: so a specific slot can be selected by automation without clicking its display text
                     if (it != null) row.Q<Label>("value").AddToClassList(Ui.RarityClass(it.Rarity));
                     if (sl == slot) { Ui.Select(row); pickedRow = row; }
@@ -422,7 +423,7 @@ namespace GridGame.App
             // GG-T452: splits the leftover height evenly with the slot list above (both kit list panels).
             var list = Ui.ListPanel(body, $"{ItemUi.SlotName(slot)} — your bag", "equip-bag");
             if (Equipment.Equipped(h, slot) != null)
-                Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list);
+                Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list).KindIcon(RowKind.Close);
             // GG-T52: the bag listing is shape-only (Equipment.Candidates with no hero) so a piece the hero
             // owns but isn't proficient in still shows up — locked, with a 🔒 and the passive that would
             // unlock it — instead of silently disappearing as if it were never picked up.
@@ -520,10 +521,10 @@ namespace GridGame.App
             support.name = "abilities-support";
             Ui.Para("Pick a slot, then choose what goes in it — or move it along the bar.", barW, "dim");
             var tools = Ui.Actions(barW);
-            var left = Ui.Button("‹ Move", () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
+            var left = RowIcon.IconButton("Move", RowKind.Back, () => { var r = Abilities.Swap(S, h, slot, slot - 1); if (r.Ok) slot--; Done(r); }, "btn--small", tools);
             left.name = "bar-move-left";
             Ui.SetEnabled(left, slot > 0 && slot < unlocked);
-            var right = Ui.Button("Move ›", () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
+            var right = RowIcon.IconButton("Move", RowKind.Enter, () => { var r = Abilities.Swap(S, h, slot, slot + 1); if (r.Ok) slot++; Done(r); }, "btn--small", tools);
             right.name = "bar-move-right";
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
@@ -531,7 +532,7 @@ namespace GridGame.App
             var list = Ui.ListPanel(body);
             if (tab == PassivesTab) { Passives(h, list); return; }
             if (tab == LockedTab) { Locked(h, list); return; }
-            if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list);
+            if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list).KindIcon(RowKind.Close);
             if (tab == 0)
             {
                 int ownedOrbs = ManaOrbs.Owned(C, S); // GG-T677: a spell costing more orbs than you hold can't be cast yet
@@ -680,7 +681,7 @@ namespace GridGame.App
             GlossaryText.Create(plan.Skill.Description ?? "", "kit-text dim", card);
             string hero = C.TryClass(plan.Hero.ClassId)?.Name ?? plan.Hero.ClassId;
             Ui.Para($"First lesson free — it goes onto the {hero}'s battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
-            var btn = Ui.Button("Learn", () => LearnDone(Abilities.Learn(C, S, plan.Hero, plan.Skill.Id), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
+            var btn = RowIcon.IconButton("Learn", RowKind.Confirm, () => LearnDone(Abilities.Learn(C, S, plan.Hero, plan.Skill.Id), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
             btn.name = CampTips.CraftButton;
         }
 

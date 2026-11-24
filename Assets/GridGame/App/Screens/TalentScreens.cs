@@ -74,7 +74,7 @@ namespace GridGame.App
             Ui.Caption($"Spent {spent} · earn more on level-up", counter, "dim");
             int cost = Talents.RespecCost(h);
             string closed = Talents.RespecClosed(S);
-            var respec = Ui.Button($"Respec · {Ui.Gold(cost)}", () => RespecScreen.Ask(C, h,
+            var respec = RowIcon.IconButton($"Respec · {Ui.Gold(cost)}", RowKind.NewGamePlus, () => RespecScreen.Ask(C, h,
                 $"Pay {Ui.Gold(cost)} at the Inn to unlearn {C.Class(h.ClassId).Name}'s talents and refund {spent} skill point{(spent == 1 ? "" : "s")}?",
                 r => Done(r), () => Talents.Respec(C, S, h), () => Talents.Respec(C, S, h, true)), "btn--small", headRow);
             respec.name = "talent-respec";
@@ -243,7 +243,7 @@ namespace GridGame.App
             {
                 var hero = C.Class(h.ClassId).Name;
                 bool opens = offTree && !Talents.Opened(C, h, tree);
-                var learn = Ui.Button($"Learn · {cost} pt{(cost == 1 ? "" : "s")}", () => Confirm.Show(
+                var learn = RowIcon.IconButton($"Learn · {cost} pt{(cost == 1 ? "" : "s")}", RowKind.Confirm, () => Confirm.Show(
                     $"Spend {pts} to teach {hero} {n.Name ?? a?.Name}?" + (opens ? $" This opens {tree.Name} as an off-tree." : ""), "Spend", () =>
                     {
                         var r = Talents.Unlock(C, S, h, tree.Id, n.Id);
