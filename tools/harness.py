@@ -39,6 +39,10 @@ Self-play harness: launches the development player with the automation endpoint 
     MindAttic.Media.Viewer. The agent is %LOCALAPPDATA%\\MindAttic\\Capture\\bin\\capture.exe (MINDATTIC_CAPTURE_AGENT
     overrides); without it the run only warns. e.g. python tools/harness.py sweep --preview
 
+    The player's capture endpoint (GG-T1005) while it records: call capture op=marker|raise|screenshot|save-replay|
+    clip|status (name=, event=, tag=, before=/after= seconds), e.g. call capture op=clip before=10 after=2 tag=combo;
+    tap/click/drag take mark=1 to drop a chapter marker. README.md's Capture section has the whole how-to.
+
     --headless anywhere in the args (GG-T314): no popup window. Passes Unity's native -batchmode
     -nographics to the launched player instead of a real window, for bot-driven runs that are never
     watched (endless, testmode, boardaudit, stress, clips, durability, campaign, crucible, fullloop,

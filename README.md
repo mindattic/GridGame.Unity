@@ -164,7 +164,48 @@ No prefabs, no hand-built scenes, no Inspector wiring.
 
 ## Capture
 
-[MindAttic.Media.Capture](https://github.com/mindattic/MindAttic.Media.Capture) auto-starts in Editor Play sessions and development builds, but its trigger rules are only read when the player is launched with `-capture-config PATH`; `Assets/StreamingAssets/capture.json` is never auto-loaded just because it exists. Pass that flag (see `battle_clips()` in `tools/harness.py`) to record a clip from `battle-start` to `battle-end`. Recording is currently disabled project-wide by `"enabled": false` in that file; set it to `true` or remove the key to re-enable it.
+GridGame records itself with [MindAttic.Media.Capture](https://github.com/mindattic/MindAttic.Media.Capture), through its Unity package `com.mindattic.media.capture` (MindAttic.Media.Capture.Unity, referenced from `Packages/manifest.json` as `file:../../MindAttic.Media.Capture/unity/com.mindattic.media.capture`). It auto-starts in Editor Play sessions and development builds. Its own README covers the engine, the rule format and the `capture` agent; this section is what GridGame does with it.
+
+Prerequisites: the capture agent installed by MindAttic.Media.Capture's `run.ps1` (`%LOCALAPPDATA%\MindAttic\Capture\bin\capture.exe`; `MINDATTIC_CAPTURE_AGENT` points elsewhere) and ffmpeg. Recording needs a GPU, so none of this works with `--headless`.
+
+**Player flags.** `-capture video hq` records the whole session (`campaign()` documents `-capture video screen 5` for recording a soak). `-capture-config PATH` loads trigger rules; `Assets/StreamingAssets/capture.json` (one clip from `battle-start` to `battle-end`) is never auto-loaded just because it exists, and it ships with `"enabled": false`.
+
+**Where files land.** Recordings go to the session folder under `R:\MindAttic\Capture\GridGame.Unity\<session>\`; harness screenshots stay in `artifacts/<run>/`. Preview sets go under `R:\MindAttic\Preview\GridGame.Unity\`.
+
+**Recorded harness runs: `--record`.** Anywhere in a harness command's args, `--record` adds `-capture video hq` to every launch and loads `tools/harness.capture.json`: a 30 s replay buffer, a `harness-fail` rule that saves the last 25 s plus 2 s after as a fail replay, and a `harness-step` rule that turns each step into a chapter marker (sweep, storyarc and coach raise them). When a command fails, by exception or exit 1 on a check, the harness raises `harness-fail`, takes a `fail-COMMAND` screenshot and waits for the replay before exiting. `endless` and `clips` keep their own configs.
+
+```powershell
+python tools/harness.py sweep --record    # session video with a chapter per step; a fail replay .mp4 if a check fails
+```
+
+**Preview sets: `--preview [TICKET]`.** When the command ends, pass or fail, the PNGs it wrote under `artifacts/<run>/` (captioned with their file names), any failure replay and screenshot, and with `--record` the session video become one preview set (`capture set new/add/show`), opened in MindAttic.Media.Viewer. A ticket ID files the set under that ticket. Without the agent the run only warns.
+
+```powershell
+python tools/harness.py coach --record --preview GG-T1008
+```
+
+**Per-battle clips.** `endless N --capture` writes an enabled copy of `capture.json` into the run folder and passes it with `-capture-config`, so every encounter becomes its own clip; the summary lists the clip folders. `clips [N]` uses the built player's `capture.json`, which needs `"enabled": true` to record.
+
+```powershell
+python tools/harness.py endless 20 --capture --seed 7
+```
+
+**The automation endpoint.** While a development player records, each automation `screenshot` drops a chapter marker named after its PNG, and `tap`, `click` and `drag` add one when called with `mark=1`. The `capture` endpoint drives the engine with `op=`:
+
+| Op | Parameters | Does |
+|---|---|---|
+| `marker` | `name`, extra `k=v` as data | Chapter marker |
+| `raise` | `event`, extra `k=v` as data | Fires a rule event, e.g. `harness-fail` |
+| `screenshot` | `tag` | Screenshot into the session folder |
+| `save-replay` | `tag` | Saves the replay buffer |
+| `clip` | `before`, `after` (seconds), `tag` | Saves `before` seconds of buffer plus `after` seconds more |
+| `status` | | Enabled, recording, session id and folder (the default op) |
+
+Each answers `{ok, error?, folder?}` (and `file`/`files` for saved media); with capture off it answers `{ok:false, error:"capture off"}` at once.
+
+```powershell
+python tools/harness.py call capture op=clip before=10 after=2 tag=combo
+```
 
 ## Audio mute
 
