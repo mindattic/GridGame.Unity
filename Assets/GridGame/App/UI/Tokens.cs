@@ -291,8 +291,8 @@ namespace GridGame.App
         // smallest it may shrink to at 20; OrbGap the equal gap between orbs; OrbLabel the "MANA" label's width.
         public const float OrbRow = 88, OrbMin = 36, OrbGap = 12, OrbLabel = 96, OrbBloom = 26, TrailSpark = 22, TrailSwing = 120, TrailLift = 160;
         // GG-T678: Manapunk window hardware. A corner clamp's arm length and bar thickness and its bolt head; the edge
-        // conduit's tube width, its flowing light's length, and the shortest window that gets a conduit at all.
-        public const float ClampArm = 44, ClampBar = 6, ClampBolt = 14, Conduit = 8, ConduitGlow = 160, ConduitMinHeight = 220;
+        // conduit's tube width, and the shortest window that gets a conduit at all.
+        public const float ClampArm = 44, ClampBar = 6, ClampBolt = 14, Conduit = 8, ConduitMinHeight = 220;
         // Controls and table columns (POL-C2: a tap target is at least 132×132)
         public const float Plate = 92, Target = 132, Cell = 170, Slot = 196, Card = 300,
             ColumnS = 70, Column = 90, ColumnL = 100, Label = 180;
@@ -391,8 +391,9 @@ namespace GridGame.App
         /// <summary>GG-T673: a lit orb's bloom breathes on this period; a mana trail drops a spark every TrailSparkEvery
         /// seconds, each living TrailSparkLife.</summary>
         public const float OrbBreathe = 2.4f, TrailSparkEvery = 0.03f, TrailSparkLife = 0.35f;
-        /// <summary>GG-T678: one pass of contained mana flowing down a Manapunk window's edge conduit.</summary>
-        public const float ConduitFlow = 3.6f;
+        /// <summary>GG-T761: a Manapunk conduit's Quake light style steps ConduitStep seconds a letter (10 Hz), and the
+        /// tube idles a random ConduitIdleMin..ConduitIdleMax seconds between bursts of power.</summary>
+        public const float ConduitStep = 0.1f, ConduitIdleMin = 2.5f, ConduitIdleMax = 9f;
     }
 
     /// <summary>GG-T668: a damage number strikes the target (falls onto it big and fast, squashes, settles, holds, drops

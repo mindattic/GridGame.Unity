@@ -620,7 +620,7 @@ namespace GridGame.App
 
         /// <summary>Owner 2026-11-22, Manapunk: "the Halcyon technology used to contain mana, so alchemy glassware, pumps,
         /// laboratory equipment... like a high tech facility but also old and abandoned". Four pewter clamp brackets hold
-        /// the pane at its corners, and a glass conduit down its left edge carries a slow pulse of contained mana. All of
+        /// the pane at its corners, and a glass conduit down its left edge flickers with contained mana now and then. All of
         /// it sits in the frame's padding band, never behind text, and ignores picking.</summary>
         private static void LabHardware(VisualElement layer, bool on)
         {
@@ -671,8 +671,8 @@ namespace GridGame.App
             bolt.style.borderBottomWidth = Size.Underline / 2f; bolt.style.borderBottomColor = Palette.PewterDark;
         }
 
-        /// <summary>A glass tube down the window's left edge, between the clamps, with valve collars at both ends and a
-        /// slow pulse of mana flowing down it (a steady glow under Reduce Motion). Hidden on windows too short to hold it.</summary>
+        /// <summary>A glass tube down the window's left edge, between the clamps, with valve collars at both ends, whose
+        /// mana flickers with power now and then (<see cref="Flicker"/>). Hidden on windows too short to hold it.</summary>
         private static void Conduit(VisualElement lab)
         {
             float edge = Space.S4 + Size.ClampArm + Space.S8;
@@ -693,20 +693,66 @@ namespace GridGame.App
                 valve.style.borderBottomWidth = Size.Underline / 2f; valve.style.borderBottomColor = Palette.PewterDark;
             }
             var glow = Piece(tube, Palette.ConduitMana);
-            glow.style.left = glow.style.right = Space.S0;
-            glow.style.height = Size.ConduitGlow;
+            glow.style.left = glow.style.right = glow.style.top = glow.style.bottom = Space.S0;
             glow.style.borderTopLeftRadius = glow.style.borderTopRightRadius = glow.style.borderBottomLeftRadius = glow.style.borderBottomRightRadius = tr;
             lab.RegisterCallback<GeometryChangedEvent>(_ =>
                 tube.style.display = lab.resolvedStyle.height >= Size.ConduitMinHeight ? DisplayStyle.Flex : DisplayStyle.None);
-            float start = Time.realtimeSinceStartup;
+            Flicker(glow);
+        }
+
+        /// <summary>GG-T761: Quake light styles, a = dark, m = normal, z = full. Each burst plays one of these once.</summary>
+        private static readonly string[] ConduitStyles =
+        {
+            "mmnmmommommnonmmonqnmmo",                              // flicker
+            "mmamammmmammamamaaamammma",                            // fluorescent flicker
+            "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba",  // slow strong pulse
+            "mmmmmaaaaammmmmaaaaaabcdefgabcdefg",                   // candle
+            "nmonqnmomnmomomno",                                    // flicker, second variety
+            "mamamamamama",                                         // fast strobe
+            "jklmnopqrstuvwxyzyxwvutsrqponmlkj",                    // gentle pulse
+            "mmmaaaabcdefgmmmmaaaammmaamm",                         // candle, second variety
+        };
+
+        /// <summary>The dim charge the tube idles at between bursts, and its steady level under Reduce Motion.</summary>
+        private const char ConduitIdle = 'c', ConduitStill = 'h';
+
+        private static float ConduitLevel(char c) => Mathf.Clamp01((c - 'a') / 25f);
+
+        /// <summary>GG-T761, owner 2026-11-23: "the tubes on the side light up once in awhile like they are flickering with
+        /// power ... high tech but degrading". The tube idles at a dim charge, then now and then plays one Quake light style
+        /// (a random one each time, mostly at Quake's 10 Hz, sometimes a little off it) and falls back to idle. Each window
+        /// gets its own random seed and starting offset, so no two conduits fire together. Static under Reduce Motion.</summary>
+        private static void Flicker(VisualElement glow)
+        {
+            var rng = new System.Random(unchecked(System.Environment.TickCount * 397 ^ glow.GetHashCode()));
+            float Range(float lo, float hi) => lo + (float)rng.NextDouble() * (hi - lo);
+            string style = null;
+            int step = 0;
+            float stepLen = Timing.ConduitStep;
+            float next = Time.realtimeSinceStartup + Range(0f, Timing.ConduitIdleMax);
+            glow.style.opacity = ConduitLevel(ConduitIdle);
             glow.schedule.Execute(() =>
             {
-                float h = tube.resolvedStyle.height;
-                if (float.IsNaN(h) || h <= 0f) return;
-                if (ReduceMotion) { glow.style.top = (h - Size.ConduitGlow) / 2f; return; }
-                float k = ((Time.realtimeSinceStartup - start) % Timing.ConduitFlow) / Timing.ConduitFlow;
-                glow.style.top = Mathf.Lerp(-Size.ConduitGlow, h, k);
-            }).Every(33);
+                if (ReduceMotion) { style = null; glow.style.opacity = ConduitLevel(ConduitStill); return; }
+                float now = Time.realtimeSinceStartup;
+                if (now < next) return;
+                if (style == null)
+                {
+                    style = ConduitStyles[rng.Next(ConduitStyles.Length)];
+                    step = 0;
+                    double roll = rng.NextDouble();
+                    stepLen = roll < 0.7 ? Timing.ConduitStep : Timing.ConduitStep * (roll < 0.85 ? 0.6f : 1.6f);
+                }
+                else if (++step >= style.Length)
+                {
+                    style = null;
+                    glow.style.opacity = ConduitLevel(ConduitIdle);
+                    next = now + Range(Timing.ConduitIdleMin, Timing.ConduitIdleMax);
+                    return;
+                }
+                glow.style.opacity = ConduitLevel(style[step]);
+                next = now + stepLen;
+            }).Every(25);
         }
 
         /// <summary>Dresses every <c>.window</c> under <paramref name="root"/>.</summary>
