@@ -275,6 +275,13 @@ namespace GridGame.Core.Battle
                 }
                 case RuleEffectKind.MoveAnchor: MoveAnchor(e, ctx); break;
                 case RuleEffectKind.SpawnUnit: SpawnRuleUnits(e, ctx); break;
+                case RuleEffectKind.GrantCharge: // GG-T894: once, however many heroes the area holds
+                {
+                    Unit hero = null;
+                    foreach (var u in RuleUnitsOf(e, ctx)) if (u.Alive && u.IsHero) { hero = u; break; }
+                    if (hero != null && e.Amount > 0) AddCharge(e.Amount, hero.Id, "rule:" + (ctx.State ?? ctx.Rule ?? ctx.Event ?? ctx.Ability));
+                    break;
+                }
                 case RuleEffectKind.SetFlag:
                 case RuleEffectKind.ClearFlag:
                 {
@@ -751,6 +758,8 @@ namespace GridGame.Core.Battle
             int authored = e.Level > 0 ? e.Level : Math.Max(1, S.RecommendedLevel);
             int level = S.Stage == null || S.Stage.IsTest ? authored
                 : Math.Max(authored, S.RecommendedLevel) + S.NewGamePlus * BattleConfig.NgPlusLevelStep + DifficultyTable.At(S.Difficulty).EnemyLevelOffset;
+            // GG-T894: a hatchling takes after its painter (whose level the wave already dialled), Level below or above it.
+            if (e.FromOwnerLevel && S.UnitById(ctx.OwnerId) is Unit owner) level = Math.Max(1, owner.Level + e.Level);
             List<int> spawned = null;
             foreach (var c in AreaOf(e, ctx))
             {

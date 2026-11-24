@@ -76,6 +76,7 @@ namespace GridGame.Core.Battle
                 return;
             }
 
+            if (TryLob(enemy)) { EndEnemyTurn(enemy); return; } // GG-T894: a slime vomits a glob instead of closing in
             if (TryLayTrap(enemy)) { EndEnemyTurn(enemy); return; }
             if (pincerPlan != null) { FollowPincerPlan(enemy, pincerPlan); return; } // set up an end or join as a supporter
 
@@ -309,6 +310,19 @@ namespace GridGame.Core.Battle
             if (plan.Ability.CooldownTurns > 0) enemy.Cooldowns[plan.Ability.Id] = plan.Ability.CooldownTurns;
             Emit(new CastQueuedEvent { EntryId = entry.Id, CasterId = enemy.Id, AbilityId = plan.Ability.Id, Ticks = ticks, IsCharge = true, LineTiles = entry.LineTiles, TargetUnitId = plan.Target.Id, TargetTile = plan.Target.Pos });
             Announce($"{enemy.Name} is charging {plan.Ability.Name}!", enemy.Id);
+        }
+
+        /// <summary>GG-T894 (§14.23): the foe lobs its glob (<see cref="EnemyPlanner.PlanLob"/>) onto a free tile near the
+        /// party: the ability resolves there at once (its rule effects paint the mark) and starts its cooldown.</summary>
+        private bool TryLob(Unit enemy)
+        {
+            var plan = EnemyPlanner.PlanLob(S, enemy);
+            if (plan == null) return false;
+            var (a, at) = plan.Value;
+            if (a.CooldownTurns > 0) enemy.Cooldowns[a.Id] = a.CooldownTurns;
+            Announce($"{a.Name}!", enemy.Id);
+            ResolveAbility(enemy, a, at, null);
+            return true;
         }
 
         private bool TryLayTrap(Unit enemy)

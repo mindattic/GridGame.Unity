@@ -3220,6 +3220,23 @@ Firewalls, landmines and slime globs the party lays need tiles that know which s
   tile's EnterTile hooks. Bodies, eggs, remains and units immune to the state or its rule squish nothing. `Validate`
   wants a known `Class`, `LifeSeconds` for an `OnExpire`, `SquishedBy` for an `OnSquish`, and no `SquishedBy` on a
   blocking state.
+- **The slime's glob (GG-T894).** The content for the owner's line. `slime02` and `slime03` carry `charge_slime_glob`
+  ("Vomit Glob": a PickTile, EmptyOnly Skill, cooldown 2 turns, whose `RuleEffects` paint `slime_glob` on its Target).
+  `EnemyPlanner.PlanLob` finds a lob in a foe's class kit (any PickTile, EmptyOnly ability with a MarkTiles on its
+  Target) and throws it, in place of the step and strike, when no hero is adjacent, it is off cooldown and fewer than
+  `LobKinCap` 4 of the foe's kin (living foes of its portrait family) plus unhatched marks of that state stand; the
+  tile is a free one (no unit, item, trap, block or mark) within `LobRange` 3 of the foe, nearest the heroes, then
+  nearest the foe, then row-major. The ability resolves on the spot (`TryLob`: "Vomit Glob!", its cooldown starts).
+  `slime_glob` (regionrules.json rule `slimeglobs`: not a hazard, not blocking) lasts `LifeSeconds` 8; `OnExpire`
+  hatches a `slime01` with `SpawnUnit` `FromOwnerLevel` (new: the level is the painter's own, already dialled for the
+  wave, plus `Level`, here -1, at least 1; no painter = the stage's level). `SquishedBy` Hero; `OnSquish` runs
+  `RuleEffectKind.GrantCharge` (new: `Amount` 15 mana charge into the party's meter once, when a hero is among the
+  units; reason "rule:slime_glob"). Fire burns it away (elements.json Fire `Tiles`: `slime_glob` Clear), by a hero's
+  fire ability covering it or a fire mark painted onto it. The hero bot's `ScoreMove` adds `SquishValue`: each squishable
+  mark the walk steps on is worth 4 (+3 as it nears its hatch) when it would hatch a foe, 1 otherwise, about half a
+  pincer, so a squish beats a so-so move but never a real pincer. Placed on The Tithe Moors I (`greenvalley-01`, wave
+  1's second slime is now a `slime02`) and II (`greenvalley-02`, already led by one). No `slime04` exists yet.
+  *(Tests: `SlimeGlobTests`.)*
 - **Hidden marks (GG-T843).** A buried mine shows for a moment, fades from sight, then pops out and goes off.
   `TileStateDef.VisibleSeconds` (new; 0 = always seen): a fresh mark is seen by everyone that long
   (`TileMark.SightTicks`, counted down by the clock before lifetimes), then hides (`TileMark.Hidden`, a "hidden"

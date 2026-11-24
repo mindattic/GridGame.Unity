@@ -420,6 +420,56 @@ namespace GridGame.Core.Rules
             return plan;
         }
 
+        /// <summary>GG-T894: how far (Manhattan) a foe lobs a glob from where it stands.</summary>
+        public const int LobRange = 3;
+        /// <summary>GG-T894: no foe lobs while this many of its kind (same portrait family) and unhatched globs stand.</summary>
+        public const int LobKinCap = 4;
+
+        /// <summary>
+        /// GG-T894 (BIBLE §14.23, the slime's glob): a lob is a PickTile, EmptyOnly ability in the foe's class kit with a
+        /// MarkTiles rule effect on its Target. It is thrown in place of a step and a strike when no hero is adjacent,
+        /// it is off cooldown, and fewer than <see cref="LobKinCap"/> of the foe's kin (living foes of its portrait family)
+        /// plus marks of the state it paints are on the board. The tile is a free one (no unit, item, trap, block or
+        /// mark) within <see cref="LobRange"/> of the foe, nearest the heroes (then nearest the foe, then row-major), so
+        /// the party meets it on the way. Null = no lob this turn. Pure: reads state, never commits.
+        /// </summary>
+        public static (AbilityDef Ability, Coord At)? PlanLob(BattleState s, Unit enemy)
+        {
+            if (enemy?.Def?.Abilities == null || enemy.IsImmobile || enemy.IsSilenced || enemy.IsRemains || enemy.IsEgg || enemy.IsMultiTile) return null;
+            AbilityDef lob = null; string state = null;
+            foreach (var id in enemy.Def.Abilities)
+            {
+                var a = s.Content.TryAbility(id);
+                if (a == null || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly) continue;
+                foreach (var e in a.RuleEffects)
+                    if (e.Kind == RuleEffectKind.MarkTiles && e.Area == RuleArea.Target && e.State != null) { lob = a; state = e.State; break; }
+                if (lob != null) break;
+            }
+            if (lob == null) return null;
+            if (enemy.Cooldowns.TryGetValue(lob.Id, out var cd) && cd > 0) return null;
+            var heroes = s.LivingList(Team.Hero);
+            if (heroes.Count == 0) return null;
+            foreach (var h in heroes) if (enemy.IsAdjacentTo(h)) return null;
+            int kin = 0;
+            foreach (var u in s.LivingList(Team.Enemy))
+                if (!u.IsRemains && !u.IsEgg && !u.IsCorpse && u.Def?.Portrait != null && u.Def.Portrait == enemy.Def.Portrait) kin++;
+            foreach (var m in s.Region.Tiles.Values) if (m.State == state) kin++;
+            if (kin >= LobKinCap) return null;
+            Coord? best = null; int bestHero = int.MaxValue, bestSelf = int.MaxValue;
+            for (int y = 0; y < BattleConfig.Rows; y++)
+                for (int x = 0; x < BattleConfig.Cols; x++)
+                {
+                    var c = new Coord(x, y);
+                    int self = c.Manhattan(enemy.Pos);
+                    if (self == 0 || self > LobRange) continue;
+                    if (!s.FreeForSpawn(c) || s.TrapAt(c) != null || s.Region.At(c) != null) continue;
+                    int near = int.MaxValue;
+                    foreach (var h in heroes) foreach (var t in h.Tiles()) near = Math.Min(near, c.Manhattan(t));
+                    if (near < bestHero || (near == bestHero && self < bestSelf)) { best = c; bestHero = near; bestSelf = self; }
+                }
+            return best.HasValue ? (lob, best.Value) : ((AbilityDef, Coord)?)null;
+        }
+
         /// <summary>Cardinal line from beside the caster to the board edge along the dominant axis toward the target (X on ties).</summary>
         public static List<Coord> LineToward(Unit caster, Unit target, BattleState state = null)
         {

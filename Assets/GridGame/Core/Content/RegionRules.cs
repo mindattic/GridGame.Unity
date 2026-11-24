@@ -68,6 +68,9 @@ namespace GridGame.Core.Content
         /// on each tile of the area, or the nearest free tile when it is taken; it joins the current wave like a
         /// reinforcement (GG-T844: a slime glob nobody squished hatches into a slime).</summary>
         SpawnUnit,
+        /// <summary>Add Amount to the party's mana meter (charge, <see cref="Battle.BattleConfig.ManaChargePerOrb"/> to an orb)
+        /// once, when a hero is among the units (GG-T894: a hero squishing a slime glob banks a little charge).</summary>
+        GrantCharge,
     }
 
     /// <summary>Which tiles a rule effect works on.</summary>
@@ -149,8 +152,12 @@ namespace GridGame.Core.Content
         public int CollideDamage;
         /// <summary>SpawnUnit: the class id of the foe it puts on the board (GG-T844).</summary>
         public string Class;
-        /// <summary>SpawnUnit: its level before the wave's dial (a reinforcement's rule); 0 = the stage's recommended level.</summary>
+        /// <summary>SpawnUnit: its level before the wave's dial (a reinforcement's rule); 0 = the stage's recommended level.
+        /// With <see cref="FromOwnerLevel"/> it is an offset instead (may be negative).</summary>
         public int Level;
+        /// <summary>SpawnUnit (GG-T894): the spawn's level is its painter's level (the mark's owner, already dialled for the
+        /// wave) plus <see cref="Level"/>, at least 1; no owner = the stage's level. A slime's glob hatches a slime a level below it.</summary>
+        public bool FromOwnerLevel;
     }
 
     /// <summary>Whom a team-owned tile state works on (GG-T842, BIBLE §14.23): a mark records the team that painted it, and
@@ -403,7 +410,8 @@ namespace GridGame.Core.Content
                     case RuleEffectKind.MarkTiles: if (e.State == null) p.Add($"{w}: needs a State"); break;
                     case RuleEffectKind.Damage:
                     case RuleEffectKind.Heal:
-                    case RuleEffectKind.GrantOrbs: if (e.Amount <= 0) p.Add($"{w}: Amount must be positive"); break;
+                    case RuleEffectKind.GrantOrbs:
+                    case RuleEffectKind.GrantCharge: if (e.Amount <= 0) p.Add($"{w}: Amount must be positive"); break;
                     case RuleEffectKind.ApplyBuff: if (e.Buff == null) p.Add($"{w}: needs a Buff"); break;
                     case RuleEffectKind.MoveUnits:
                     case RuleEffectKind.MoveAnchor:
@@ -421,7 +429,7 @@ namespace GridGame.Core.Content
                     case RuleEffectKind.SpawnUnit:
                         if (string.IsNullOrEmpty(e.Class)) p.Add($"{w}: needs a Class");
                         else if (db.TryClass(e.Class) == null) p.Add($"{w}: unknown class '{e.Class}'");
-                        if (e.Level < 0) p.Add($"{w}: Level can't be negative");
+                        if (e.Level < 0 && !e.FromOwnerLevel) p.Add($"{w}: Level can't be negative");
                         break;
                 }
             }

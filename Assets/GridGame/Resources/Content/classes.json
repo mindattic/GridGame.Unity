@@ -16209,7 +16209,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "gelatinous"
+      "gelatinous",
+      "charge_slime_glob"
     ],
     "DefaultLoadout": [],
     "DropTable": "slime",
@@ -16334,7 +16335,8 @@
     ],
     "Resistances": {},
     "Abilities": [
-      "gelatinous"
+      "gelatinous",
+      "charge_slime_glob"
     ],
     "DefaultLoadout": [],
     "DropTable": "slime",

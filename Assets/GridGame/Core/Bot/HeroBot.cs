@@ -334,6 +334,8 @@ namespace GridGame.Core.Bot
                 if (pv.Positions.TryGetValue(hero.Id, out var end)) score -= 6f * RegionBoard.DangerAt(s, end, hero);
                 else if (RegionBoard.DangerAt(s, hero.Pos, hero) > 0f) score -= 6f; // stepping off a danger tile is worth it
             }
+            // GG-T894 (§14.23): a glob the party can squish on the way is a foe that never hatches, worth more the sooner it would.
+            if (s.Region.Tiles.Count > 0) score += SquishValue(s, pv, hero);
             // Mild preference for staying out of melee range of soon-acting enemies when nothing else is on offer.
             if (pv.Positions.TryGetValue(hero.Id, out var at))
             {
@@ -376,6 +378,29 @@ namespace GridGame.Core.Bot
         /// displaces it). Each repositioned unit is worth a solid bonus, more when it ends somewhere that sets up
         /// a pincer next turn: a displaced ally beside a foe, or a displaced foe beside a hero.
         /// </summary>
+        /// <summary>GG-T894: what squishing the hatching marks along this walk is worth (each tile the hero steps onto
+        /// whose state a hero squishes, once): a glob that would hatch a foe weighs about half a pincer, more as it nears
+        /// its hatch, so the bot trades a so-so move for a squish but never a real pincer.</summary>
+        private static float SquishValue(BattleState s, MovePreview pv, Unit hero)
+        {
+            float v = 0f;
+            HashSet<Coord> seen = null;
+            foreach (var step in pv.StepsTaken)
+            {
+                var m = s.Region.At(step);
+                if (m == null) continue;
+                var def = s.Content.TryTileState(m.State);
+                if (def?.SquishedBy == null || def.SquishedBy == RuleTeam.Enemy) continue;
+                if (RegionBoard.Immune(hero, m.Rule, m.State)) continue;
+                if (!(seen ??= new HashSet<Coord>()).Add(step)) continue;
+                bool hatches = def.OnExpire.Exists(e => e.Kind == RuleEffectKind.SpawnUnit);
+                int life = Formulas.SecondsToTicks(def.LifeSeconds);
+                float urgency = life > 0 && m.LifeTicks > 0 ? 1f - Math.Min(1f, (float)m.LifeTicks / life) : 0f;
+                v += hatches ? 4f + 3f * urgency : 1f;
+            }
+            return v;
+        }
+
         private static float DisplacementScore(BattleState s, MovePreview pv, Unit mover, bool onlySetups = false)
         {
             float score = 0f;

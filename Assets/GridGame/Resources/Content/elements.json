@@ -22,6 +22,7 @@
         { "On": "venom_snare", "Kind": "Clear" },
         { "On": "miasma", "Kind": "Clear" },
         { "On": "slime", "Kind": "Clear" },
+        { "On": "slime_glob", "Kind": "Clear" },
         { "On": "ice", "Kind": "Clear" },
         { "On": "mine", "Kind": "Becomes", "Into": "armedmine" }
       ]
