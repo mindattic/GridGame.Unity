@@ -27,7 +27,7 @@ Bosses are the rule-break enemies in stage waves (`RuleBreak`, BIBLE §14.9), th
 bounty targets. Byte-identical portrait files were found with an MD5 pass, which is how the two Echo portraits (the hero's since cut, GG-T531) turned
 out to be copies of the mannequin.
 
-Rerun: `python -I <path>/art_gaps.py D:\Projects\MindAttic\Unity.GridGame`. It prints JSON.
+Rerun: `python -I tools/art_gaps.py [--json out.json]`. It prints a summary; `--json` writes the full report.
 
 ## Counts
 
@@ -213,74 +213,10 @@ mannequin in battle, on the inspect card, in the Bestiary and on the death disso
 
 ## Appendix A: the enumeration script
 
-<details><summary>art_gaps.py (read-only; prints JSON)</summary>
-
-```python
-import glob, hashlib, json, os, sys, collections
-ROOT = sys.argv[1] if len(sys.argv) > 1 else "."
-RES = os.path.join(ROOT, "Assets", "GridGame", "Resources"); C = os.path.join(RES, "Content")
-L = lambda n: json.load(open(os.path.join(C, n + ".json"), encoding="utf-8-sig"))
-def files(folder):
-    d = os.path.join(RES, folder)
-    return {os.path.splitext(f)[0] for f in os.listdir(d) if f.lower().endswith((".png", ".jpg"))} if os.path.isdir(d) else set()
-portraits, backs, tiles = files("Portraits"), files("Backgrounds"), files("Tiles")
-aicons, iicons, sicons, icons, ui = files("AbilityIcons"), files("ItemIcons"), files("StatusIcons"), files("Icons"), files("UI")
-classes = {c["Id"]: c for c in L("classes")}; camp, stages = L("campaign"), {s["Id"]: s for s in L("stages")}
-enc = {e["Id"]: e for e in L("encounters")}
-def strings(x):
-    if isinstance(x, str): yield x
-    elif isinstance(x, dict):
-        for v in x.values(): yield from strings(v)
-    elif isinstance(x, list):
-        for v in x: yield from strings(v)
-order, stage_theme = [], {}
-for t in camp["Themes"]:
-    for sid in t["Stages"]: order.append(sid); stage_theme[sid] = t
-def stage_classes(s):
-    found = collections.OrderedDict()
-    for w in s["Waves"]:
-        for o in [w] + ([enc[w["Group"]]] if w.get("Group") in enc else []):
-            for e in o.get("Enemies", []):
-                found.setdefault(e["Class"], []).append("boss:" + e["RuleBreak"] if e.get("RuleBreak") else "foe")
-            for k in ("Guests", "Recruitables", "SurpriseSpeaker"):
-                for v in strings(o.get(k)):
-                    if v in classes: found.setdefault(v, []).append(k)
-    return found
-first, fielded = {}, collections.defaultdict(set)
-for i, sid in enumerate(order, 1):
-    for cid, rs in stage_classes(stages[sid]).items():
-        first.setdefault(cid, i)
-        for r in rs: fielded[cid].add((r.split(":")[0], i))
-refs = collections.defaultdict(set)
-for f in glob.glob(os.path.join(C, "*.json")):
-    if not f.endswith("classes.json"):
-        for v in strings(json.load(open(f, encoding="utf-8-sig"))):
-            if v in classes: refs[v].add(os.path.basename(f))
-out = {"main_stages": order.index(camp["Ending"]["Stage"]) + 1}
-out["portraits_missing"] = sorted(((first.get(c, 999), c, sorted(refs[c])) for c in classes if c not in portraits))
-h = collections.defaultdict(list)
-for p in portraits:
-    fn = os.path.join(RES, "Portraits", p + ".png")
-    if os.path.exists(fn): h[hashlib.md5(open(fn, "rb").read()).hexdigest()].append(p)
-out["portraits_identical"] = [sorted(v) for v in h.values() if len(v) > 1]
-out["finale_bosses"] = [(i, cid, r[5:], cid in portraits, sorted(k for kind, k in fielded[cid] if kind == "foe"))
-    for i, sid in enumerate(order, 1) for cid, rs in stage_classes(stages[sid]).items() for r in rs if r.startswith("boss:")]
-out["bounties"] = [(b["Id"], b["TargetClass"], b["Stage"], b["TargetClass"] in portraits) for b in L("bounties")]
-themes = {t["Id"]: t for t in camp["Themes"]}
-set_of = lambda t: (themes.get(t) or {}).get("Backgrounds") or t
-count = lambda s: next(n for n in range(33) if f"{s}_{n+1:02d}" not in backs)
-out["backgrounds"] = [(t, set_of(t), count(set_of(t))) for t in themes]
-out["stage_theme_mismatch"] = [(sid, stages[sid]["Theme"], stage_theme[sid]["Id"]) for sid in order if stages[sid]["Theme"] != stage_theme[sid]["Id"]]
-out["tiles_borrowed"] = [t for t in themes if t not in tiles]
-out["ability_icons_missing"] = [a["Id"] for a in L("abilities") if a["Id"] not in aicons and not (a.get("Icon") in icons)]
-out["item_icons_missing"] = [i["Id"] for i in L("items") if i["Id"] not in iicons]
-out["status_icons_missing"] = [b["Id"] for b in L("buffs") if b["Id"] not in sicons] + ([] if "stunned" in sicons else ["stunned"])
-out["pickup_icons_missing"] = [p["Id"] for p in L("pickups") if (p.get("Icon") or p["Id"]) not in ui]
-out["caravan_icons_missing"] = [c["Id"] for c in L("caravan") if c.get("Icon") and c["Icon"] not in iicons]
-print(json.dumps(out, indent=1))
-```
-
-</details>
+Committed as `tools/art_gaps.py` (GG-T752). It resolves every file name through `tools/asset_names.py` (the hyphenated
+`-00` layout: `Portraits/acolyte-female-00.png`, `Backgrounds/<set>-NN.jpg`, `Tiles/<theme>-00.png`, the icon folders)
+and the theme `Backgrounds` / `Tiles` keys in `campaign.json`. Read-only, not a build gate; it prints a short summary
+and writes the full report with `--json <file>` (`--json -` for stdout).
 
 The app icon is checked by hand: `ProjectSettings/ProjectSettings.asset` has `m_BuildTargetIcons: []` and every
 platform's `m_Textures: []`.
