@@ -12,8 +12,16 @@
 <div class="wrap">
   <header>
     <h1>Skill Hexagon</h1>
-    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Visualization only.</p>
+    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Switch the mode to edit the board or a hero's start path, then save the board back over <code id="savepath"></code> and run <code>python tools/skillhex/sync.py</code> so this page draws it.</p>
   </header>
+  <div class="controls">
+    <label for="mode">Mode <select id="mode"><option value="plan">Plan a build</option><option value="board">Edit board</option><option value="path">Edit hero path</option></select></label>
+    <button class="btn" id="open" type="button">Open…</button>
+    <button class="btn" id="save" type="button">Save</button>
+    <button class="btn" id="undoedit" type="button" disabled>Undo edit</button>
+    <span class="file" id="file"></span>
+    <input type="file" id="pick" accept=".json,application/json" hidden>
+  </div>
   <div class="controls">
     <label for="hero">Hero <select id="hero"></select></label>
     <button class="btn" id="undo" type="button">Undo last path</button>
@@ -29,6 +37,7 @@
       <div><h2>Abilities owned</h2><div class="kit" id="kit"></div></div>
       <div><h2>Cut and new heroes</h2><div class="kit" id="others"></div></div>
       <div id="detail"></div>
+      <div><h2>Validation <span id="valsum"></span></h2><div class="val" id="val"></div></div>
     </aside>
   </div>
 </div>

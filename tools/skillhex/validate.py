@@ -371,7 +371,11 @@ def main(argv=None):
     live = [i for i, a in abilities.items() if not a.get('MergedInto')]
     unplaced = sorted(i for i in live if i not in placed)
     status = Counter(h.get('Status') for h in heroes)
-    print(f'skillhex: {os.path.relpath(args.skillhex, REPO)}')
+    try:
+        shown = os.path.relpath(args.skillhex, REPO)
+    except ValueError:  # a file on another drive (Windows) has no relative path
+        shown = os.path.abspath(args.skillhex)
+    print(f'skillhex: {shown}')
     print(f'  lattice radius {doc.get("Radius")}: {len(points)} points, {slots} ability slots, {len(points) - slots} passive points')
     print(f'  nodes: {kinds.get("Ability", 0)} Ability, {kinds.get("Open", 0)} Open, {kinds.get("Passive", 0)} Passive')
     print(f'  abilities: {len(placed)} placed of {len(live)} in abilities.json ({len(unplaced)} not on the board)')
