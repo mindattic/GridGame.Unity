@@ -32,7 +32,7 @@ namespace GridGame.Tests
             Assert.That(db.TextJoined, Is.True, "Content/Text was loaded and joined");
             var keys = ProseText.Keys(db);
             Assert.That(keys.Count, Is.GreaterThan(1900), "every record names its key (1976 at the seed)");
-            var missing = keys.Keys.Where(k => db.TryText(k) == null || db.TryText(k).Missing).ToList();
+            var missing = keys.Keys.Where(k => !ProseText.IsOptional(k) && (db.TryText(k) == null || db.TryText(k).Missing)).ToList(); // GG-T936: Codex bodies are optional
             Assert.That(missing, Is.Empty, string.Join("\n", missing.Take(40)));
             Assert.That(db.TextProblems, Is.Empty, string.Join("\n", db.TextProblems.Take(40)));
             var problems = ContentLoader.Validate(db).Where(p => p.StartsWith("text") || p.Contains("story text in gameplay JSON")).ToList();

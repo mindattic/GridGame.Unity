@@ -12105,7 +12105,8 @@
       "fieldcaster_wardgrid",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "shock_plating"
+      "shock_plating",
+      "operative_timebomb"
     ],
     "DefaultLoadout": [
       "poison",
@@ -19897,6 +19898,7 @@
       "frost",
       "antidote",
       "tinkerer_juryrig",
+      "tinkerer_magnetize",
       "fieldeng_mine",
       "fieldeng_patch",
       "fieldeng_overdrive",

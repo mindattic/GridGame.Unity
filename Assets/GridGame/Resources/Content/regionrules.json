@@ -370,6 +370,26 @@
     ]
   },
   {
+    "Id": "timebombs",
+    "Name": "Time Bomb",
+    "Events": [
+      {
+        "Id": "timebomb",
+        "Seconds": 4,
+        "Glyph": "⏲",
+        "Color": "#ff7a1a",
+        "Effects": [
+          {
+            "Kind": "Damage",
+            "Area": "EventTiles",
+            "Amount": 16,
+            "DamageType": "Fire"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "Id": "holds-barricades",
     "TileStates": [
       {

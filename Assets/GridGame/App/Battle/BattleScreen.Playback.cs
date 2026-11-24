@@ -221,6 +221,7 @@ namespace GridGame.App
                 case DodgedEvent dg: return DodgeAnim(dg);
                 case UnitsLinkedEvent ul: return LinkedAnim(ul); // GG-T873: Curse Link's tether
                 case LinkEchoEvent le: return LinkEchoAnim(le);
+                case MagnetizedEvent mz: return MagnetizedAnim(mz); // GG-T878: Magnetize's arcs and hum
                 case DebuffsRedirectedEvent dr: return RedirectAnim(dr); // GG-T887: Redirect Flow's chi stream
                 case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, CombatTextKind.Debuff, "Snare!", 0.3f);
                 case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, CombatTextKind.Debuff, "Trap!", 0.25f);
@@ -234,6 +235,7 @@ namespace GridGame.App
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);
                 case HazardRetimedEvent hzr: return HazardRetimedAnim(hzr);
                 case HazardLandedEvent hzl: return HazardLandedAnim(hzl);
+                case HazardMovedEvent hzm: HazardMoved(hzm); return null; // GG-T874: a Time Bomb rides its carrier
                 case FellEvent fel: return FellAnim(fel); // GG-T368
                 case WeaponWornEvent _: return null;
                 case WeaponShatteredEvent ws: App.Audio.Sfx("battle.shatter"); return FloatText(ws.UnitId, CombatTextKind.Debuff, "SHATTER!", 0.5f, 1f);
@@ -251,7 +253,7 @@ namespace GridGame.App
                 case WaveClearedEvent wc: FlushTallies(); return WaveClearedAnim(wc);
                 case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
                 case RevivedEvent rv: return ReviveAnim(rv);
-                case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); CastCountdownTexts(); WindowContinues(pc.NewWindow); return null;
+                case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); CastCountdownTexts(); BombCountdownTexts(); WindowContinues(pc.NewWindow); return null;
                 case TileConflictEvent tc:
                     // The engine's last-resort net fired (GG-T97): a root-cause bug. Loud in every build's log; in a
                     // dev build also on screen, and counted in /state so the harness fails on it.

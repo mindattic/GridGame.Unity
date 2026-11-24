@@ -431,6 +431,16 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"LinkEcho {FromId} -> {ToId} {Amount}";
     }
 
+    /// <summary>GG-T878 (§7): a Magnetize field gripped <see cref="UnitIds"/> (nearest <see cref="Anchor"/> first); their
+    /// pulls (<see cref="DisplacedEvent"/>s) and plate swings (<see cref="FacingChangedEvent"/>s) follow. The view arcs a
+    /// magnetic field from the tile to each and hums.</summary>
+    public sealed class MagnetizedEvent : BattleEvent
+    {
+        public int CasterId; public string AbilityId; public Coord Anchor;
+        public List<int> UnitIds = new List<int>();
+        public override string ToString() => $"Magnetized at {Anchor}: {string.Join(",", UnitIds)}";
+    }
+
     /// <summary>GG-T887 (§7): the Monk's Redirect Flow carried these debuffs (<see cref="BuffIds"/>, one per instance, in
     /// order) off ally <see cref="FromId"/> onto foe <see cref="ToId"/>; each move's BuffRemoved/BuffApplied follows. The
     /// view runs a chi stream from the ally to the foe.</summary>
@@ -672,7 +682,17 @@ namespace GridGame.Core.Battle
     public sealed class HazardQueuedEvent : BattleEvent
     {
         public int EntryId; public string EventId; public string RuleId; public List<Coord> Tiles = new List<Coord>(); public float Seconds;
-        public override string ToString() => $"HazardQueued {EventId} #{EntryId} in {Seconds:0.0}s on {Tiles.Count} tiles";
+        /// <summary>GG-T874: the unit it rides (a Follow schedule); -1 = fixed tiles.</summary>
+        public int CarrierId = -1;
+        public override string ToString() => $"HazardQueued {EventId} #{EntryId} in {Seconds:0.0}s on {Tiles.Count} tiles{(CarrierId >= 0 ? " riding " + CarrierId : "")}";
+    }
+
+    /// <summary>GG-T874 (§7): a carried hazard's tiles moved with its carrier (<see cref="Tiles"/> after), or its carrier fell
+    /// and it stays where it fell (<see cref="Dropped"/>).</summary>
+    public sealed class HazardMovedEvent : BattleEvent
+    {
+        public int EntryId; public string EventId; public int CarrierId; public List<Coord> Tiles = new List<Coord>(); public bool Dropped;
+        public override string ToString() => $"HazardMoved {EventId} #{EntryId} with {CarrierId}{(Dropped ? " (dropped)" : "")}";
     }
 
     /// <summary>A queued rule event's timer changed (TicksLeft after), or it was called off.</summary>

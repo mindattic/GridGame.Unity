@@ -80,6 +80,14 @@ namespace GridGame.Core.Content
             db.ArmorSetOrder.AddRange(sets);
             db.GlossaryOrder.AddRange(ReadList<GlossaryEntry>(readText, "glossary"));
             RegionRuleCatalog.Index(db, ReadList<RegionRuleDef>(readText, "regionrules")); // GG-T359
+            // GG-T936: the Codex's entries; a key listed twice keeps the first, Validate reports the clash.
+            foreach (var e in ReadList<CodexDef>(readText, "codex"))
+            {
+                if (e == null) continue;
+                e.Related ??= new List<string>();
+                db.CodexOrder.Add(e);
+                if (!string.IsNullOrWhiteSpace(e.Key) && !db.Codex.ContainsKey(e.Key.Trim())) db.Codex[e.Key.Trim()] = e;
+            }
             // GG-T355: the story words come from Prose (Content/Text/<kind>.json), joined onto the records by key.
             ProseText.Join(db, readText);
             Glossary.Index(db);
@@ -459,6 +467,7 @@ namespace GridGame.Core.Content
             AttackTypeSheet.Validate(db, p); // GG-T556
             p.AddRange(GridGame.Core.Battle.DifficultyTable.Problems()); // the 1..10 dial (GG-T309)
             Glossary.Validate(db, p);
+            ValidateCodex(db, p); // GG-T936
             p.AddRange(db.TextProblems); // GG-T355: every key resolves, no story text in gameplay JSON, right-answer tags
             return p;
         }
@@ -522,6 +531,34 @@ namespace GridGame.Core.Content
 
         /// <summary>Armor sets (GG-T182): five real armor pieces, one per armor slot, all the set's weight, no piece in
         /// two sets, and bonuses at distinct piece counts between 2 and 5.</summary>
+        /// <summary>GG-T936: every codex.json Key and Related key names a known <see cref="CodexKinds"/> kind and a record
+        /// that exists (<see cref="ContentDb.CodexRecordExists"/>), in its lower-case form, once.</summary>
+        private static void ValidateCodex(ContentDb db, List<string> p)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string Check(string key, string where)
+            {
+                if (!CodexKinds.TrySplit(key?.Trim(), out var kind, out var id)) return $"{where}: '{key}' is not '<kind>:<id>'";
+                if (Array.IndexOf(CodexKinds.All, kind) < 0) return $"{where}: unknown codex kind '{kind}' in '{key}'";
+                if (!db.CodexRecordExists(kind, id)) return $"{where}: '{key}' names no {kind} record";
+                if (key.Trim() != CodexKinds.Key(kind, id)) return $"{where}: '{key}' should be '{CodexKinds.Key(kind, id)}' (lower case)";
+                return null;
+            }
+            foreach (var e in db.CodexOrder)
+            {
+                string where = $"codex {e.Key}";
+                var bad = Check(e.Key, "codex entry");
+                if (bad != null) { p.Add(bad); continue; }
+                if (!seen.Add(e.Key.Trim())) p.Add($"{where}: listed twice");
+                foreach (var r in e.Related)
+                {
+                    var rb = Check(r, where + " Related");
+                    if (rb != null) p.Add(rb);
+                    else if (string.Equals(r.Trim(), e.Key.Trim(), StringComparison.OrdinalIgnoreCase)) p.Add($"{where}: relates to itself");
+                }
+            }
+        }
+
         private static void ValidateArmorSet(ContentDb db, ArmorSetDef set, List<string> p)
         {
             string w = $"armor set {set.Id}";
