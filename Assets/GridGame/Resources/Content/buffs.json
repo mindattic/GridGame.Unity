@@ -399,5 +399,19 @@
     "Stacking": "Refresh",
     "Letter": "^",
     "Color": "#9FD3F0"
+  },
+  {
+    "Id": "anchored",
+    "Name": "Anchored",
+    "Kind": "Buff",
+    "Unit": "Turns",
+    "Duration": 1,
+    "Stacking": "Refresh",
+    "Roots": true,
+    "Heavy": true,
+    "Braces": true,
+    "EndsOnAction": true,
+    "Letter": "A",
+    "Color": "#7A8FA6"
   }
 ]

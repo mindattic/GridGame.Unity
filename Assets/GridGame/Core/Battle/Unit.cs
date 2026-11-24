@@ -132,8 +132,19 @@ namespace GridGame.Core.Battle
         public bool IsCommandable => Team == Team.Hero && !IsIndependent;
         public bool IsMultiTile => W > 1 || H > 1;
         /// <summary>GG-T891 (§1.1.3, §14.2): a Heavy class (<see cref="ClassDef.Heavy"/>) is never displaced by anyone
-        /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.</summary>
-        public bool IsHeavy => Def != null && (Def.Heavy || IsRaging) && !IsFloating;
+        /// else - a drag step into it is refused, a shove, pull, swap or rule drag fizzles - unless it is <see cref="IsFloating"/>.
+        /// GG-T882: a <see cref="BuffDef.Heavy"/> buff (the Warden's Anchor Stance) makes any unit Heavy for as long as it lasts.</summary>
+        public bool IsHeavy => (Def != null && (Def.Heavy || IsRaging) || HasHeavyBuff) && !IsFloating;
+        /// <summary>GG-T882: a buff made it Heavy for a while (<see cref="BuffDef.Heavy"/>, the Warden's Anchor Stance).</summary>
+        public bool HasHeavyBuff
+        {
+            get { foreach (var b in Buffs) if (b.Def.Heavy) return true; return false; }
+        }
+        /// <summary>GG-T882: wears a <see cref="BuffDef.Braces"/> buff (Anchor Stance): the allies beside it can't be displaced.</summary>
+        public bool IsAnchoring
+        {
+            get { foreach (var b in Buffs) if (b.Def.Braces) return true; return false; }
+        }
         /// <summary>GG-T897 (§14.18): carries a Rages buff (the Herd's Raging): Heavy, unpushable, unafraid.</summary>
         public bool IsRaging
         {

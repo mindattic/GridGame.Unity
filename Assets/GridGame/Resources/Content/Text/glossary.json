@@ -173,6 +173,23 @@
         "definition": "Help for allies: heals, cures and boosts."
       }
     },
+    "glossary:anchored": {
+      "key": "glossary:anchored",
+      "id": "glossary-anchored",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:33c3aa3ffd8f83410674ef32e33f1b0d719139f780629a7079009a2143d2f133",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Anchored",
+        "definition": "Planted by the Warden's Anchor Stance until its next action: [Rooted] and Heavy, and no foe's shove, pull, hook or swap, nor the anchor's heave, moves an ally beside it.",
+        "aliases": [
+          "Anchor Stance"
+        ]
+      }
+    },
     "glossary:aoe": {
       "key": "glossary:aoe",
       "id": "glossary-aoe",

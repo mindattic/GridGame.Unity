@@ -765,6 +765,17 @@ namespace GridGame.Core.Content
         /// <summary>Rooted (GG-T856): the bearer can't step or be displaced (drag swaps, shoves, knockback, pull, swap, rule
         /// moves all stop at it) but still acts, strikes and casts. Unlike <see cref="Immobile"/> it never skips a turn.</summary>
         public bool Roots;
+        /// <summary>Heavy (GG-T882): while the bearer carries this it is Heavy (<c>Unit.IsHeavy</c>) as a Heavy class is -
+        /// no shove, pull, swap or rule drag moves it, unless it floats. The buff-based path to a temporary Heavy (the
+        /// Warden's Anchor Stance); the class flag (<see cref="ClassDef.Heavy"/>) stays the permanent one.</summary>
+        public bool Heavy;
+        /// <summary>Braces (GG-T882, the Warden's Anchor Stance): every ally cardinally beside the bearer is braced - no foe's
+        /// shove, pull, swap or body-shove and no rule drag (the anchor's heave, §14.20.3) moves it (<c>Battle.AnchorStance</c>).
+        /// An ally's own drag swap still does.</summary>
+        public bool Braces;
+        /// <summary>Lasts until the bearer's next action (GG-T882): removed ("acted") as its next command starts, and never
+        /// counted down by turns (<see cref="Duration"/> is ignored for it).</summary>
+        public bool EndsOnAction;
         /// <summary>Frightened (GG-T916): the bearer flees its fear source. A frightened foe spends its next turn stepping
         /// directly away (no attack) and the fear is spent; a frightened hero can't end a drag beside the source. Bosses
         /// and Heavy units shrug it off (Immune!).</summary>

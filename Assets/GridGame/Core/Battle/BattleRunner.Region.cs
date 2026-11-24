@@ -805,7 +805,7 @@ namespace GridGame.Core.Battle
             foreach (var u in units)
             {
                 if (!u.Alive || u.WontBudge || u.IsCorpse) continue; // GG-T891: Heavy too
-                if (RootsHold(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose
+                if (HeldFast(u, u.Pos)) continue; // GG-T912: no rule drag (the anchor heave included) tears it loose; GG-T882: nor a braced unit
                 for (int step = 0; step < e.Amount && u.Alive && !S.IsOver; step++)
                 {
                     var dir = Direction(e.Move, u.Pos, point);

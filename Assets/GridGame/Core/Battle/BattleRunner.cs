@@ -72,6 +72,10 @@ namespace GridGame.Core.Battle
             // hold is a share of the window as it stood at pickup).
             int spend = BattleEngine.CommandTicks(S, cmd);
             bool forcedGuard = TurnRules.IsForcedGuard(S, cmd); // GG-T311: a sacrifice, not a choice
+            // GG-T882: a stance worn until the bearer's next action (Anchor Stance) lifts as that action starts, so a
+            // planted Warden walks again; a command that is then refused puts it back.
+            var stanceBearer = S.UnitById(BattleEngine.CommandHeroId(cmd));
+            var stances = LiftStances(stanceBearer);
             bool acted;
             switch (cmd)
             {
@@ -81,7 +85,7 @@ namespace GridGame.Core.Battle
                 case TalkCommand t: acted = DoTalk(t); break;
                 default: acted = false; break;
             }
-            if (!acted) return;
+            if (!acted) { RestoreStances(stanceBearer, stances); return; }
             // GG-T311 (§2.0): a forced Guard (no action fitted the gap) rallies the party — enemy icons slow a tempo step,
             // stacking to RallyMaxStacks — so a run of too-short gaps always opens; any hero action resets it.
             if (forcedGuard) S.Rally = Math.Min(BattleConfig.RallyMaxStacks, S.Rally + 1);
@@ -986,6 +990,30 @@ namespace GridGame.Core.Battle
             if (S.Tempo.RemoveAll(t => t.Source == "buff:" + buffId) > 0) EmitTempo("cleansed");
         }
 
+        /// <summary>GG-T882: takes every <see cref="BuffDef.EndsOnAction"/> buff off <paramref name="u"/> (a BuffRemoved
+        /// "acted" each) and returns them, or null when it wore none.</summary>
+        private List<BuffInstance> LiftStances(Unit u)
+        {
+            if (u == null || !u.Alive) return null;
+            var lifted = u.Buffs.FindAll(b => b.Def.EndsOnAction);
+            if (lifted.Count == 0) return null;
+            RemoveBuffsWhere(u, b => b.Def.EndsOnAction, "acted");
+            return lifted;
+        }
+
+        /// <summary>GG-T882: the bearer's command was refused, so it hasn't acted: the stances <see cref="LiftStances"/>
+        /// took come back as they were.</summary>
+        private void RestoreStances(Unit u, List<BuffInstance> lifted)
+        {
+            if (u == null || lifted == null || !u.Alive) return;
+            foreach (var b in lifted)
+            {
+                if (u.HasBuff(b.Def.Id)) continue;
+                u.Buffs.Add(b);
+                Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = b.Def.Id, Duration = b.Remaining });
+            }
+        }
+
         private void Expire(Unit u, BuffInstance b)
         {
             u.Buffs.Remove(b);
@@ -1013,6 +1041,7 @@ namespace GridGame.Core.Battle
             {
                 if (!u.Buffs.Contains(b)) continue;
                 if (b.Def.Unit != DurationUnit.Turns) continue;
+                if (b.Def.EndsOnAction) continue; // GG-T882: it lasts until the bearer's next action, not a turn count
                 if (haltingOnly != b.Def.HaltsTimeline) continue;
                 if (b.Def.HaltsTimeline && b.Fresh) { b.Fresh = false; continue; }
                 b.Remaining--;

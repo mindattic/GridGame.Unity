@@ -1974,6 +1974,7 @@ namespace GridGame.App
             if (itemUse && caster != null && a != null)
                 yield return ItemVfx(caster, targets, a, itemId);
             else if (caster != null && GravityWell.Is(a)) yield return GravityWellVfx(ar); // GG-T883: the vortex, then the pull's slides
+            else if (caster != null && AnchorStance.Is(State, a)) yield return AnchorStanceVfx(caster); // GG-T882: the planted shield and its brace lines
             else if (EmpPulse.Is(a)) yield return EmpPulseVfx(ar); // GG-T879: the static ring, before the jams and the mines
             else if (caster != null && Intimidate.Is(App.Content, a)) yield return IntimidateVfx(caster, ar); // GG-T884: the roar's shockwaves, then each Frightened
             else if (caster != null && a != null && a.Kind == AbilityKind.Spell && targets.Count > 0)

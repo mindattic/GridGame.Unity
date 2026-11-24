@@ -639,6 +639,9 @@ namespace GridGame.App
             if (d.HealPerTick > 0) parts.Add($"heals {d.HealPerTick} each tick");
             if (d.Immobile) parts.Add("can't move or act");
             if (d.Roots) parts.Add("can't move or be moved, but still acts"); // GG-T920
+            if (d.Heavy) parts.Add("Heavy: no shove, pull or swap moves it"); // GG-T882
+            if (d.Braces) parts.Add("allies beside it can't be moved by foes"); // GG-T882
+            if (d.EndsOnAction) parts.Add("until its next action"); // GG-T882
             if (d.Frightens) parts.Add("flees what scared it; won't stop beside it"); // GG-T917
             if (d.HaltsTimeline) parts.Add("timeline halted");
             if (d.BlocksSpells) parts.Add("can't cast spells");

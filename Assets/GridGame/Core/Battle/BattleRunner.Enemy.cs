@@ -206,7 +206,7 @@ namespace GridGame.Core.Battle
         {
             var occ = S.UnitAt(next);
             if (occ == null) return StepEnemy(enemy, next);
-            if (RootsHold(enemy, next) || RootsHold(occ, next, enemy)) return false; // GG-T912
+            if (RootsHold(enemy, next) || HeldFast(occ, next, enemy)) return false; // GG-T912; GG-T882: nor a braced hero
             if (enemy.IsMultiTile || !enemy.Pos.IsCardinalNeighbor(next) || !PincerPlanner.Swappable(occ, enemy)) return false;
             var from = enemy.Pos;
             if (!Relocate(enemy, next, o => o == occ)) return false;
@@ -450,7 +450,7 @@ namespace GridGame.Core.Battle
                         var occ = S.UnitAt(entered);
                         if (occ == null) continue;
                         if (!occ.IsHero) return false;
-                        if (RootsHold(occ, entered, enemy)) return false; // GG-T912: a rooted hero holds the body off
+                        if (HeldFast(occ, entered, enemy)) return false; // GG-T912: a rooted (GG-T882: or braced) hero holds the body off
                         shoves.Add((occ, VacatedTile(enemy, from, delta, entered)));
                     }
                 // Each shoved hero (and movable) takes the tile the body vacates on its own lane: one entered tile per
@@ -603,7 +603,11 @@ namespace GridGame.Core.Battle
                 {
                     if (!u.IsHero || !u.Alive) break; // a Heavy foe, a crewmate, a corpse: it pulls up short
                     victims.Add(u);
-                    if (RushAside(u, dir) == null) break; // it can't be knocked aside: trampled, and the bull stops
+                    if (RushAside(u, dir) == null) // it can't be knocked aside: trampled, and the bull stops
+                    {
+                        if (AnchorStance.BracedBy(S, u, caster) != null) Announce("Braced!", u.Id); // GG-T882: held by an Anchor Stance
+                        break;
+                    }
                 }
                 path.Add(tile);
             }
@@ -644,10 +648,11 @@ namespace GridGame.Core.Battle
 
         /// <summary>GG-T897: the free tile beside a raging bull's line (running along <paramref name="dir"/>) that the
         /// hero <paramref name="h"/> is knocked aside to - its left first, then its right - or null when it can't be
-        /// moved (Rooted, Heavy, immovable) or both sides are stone, wall, a unit, a movable or a hole.</summary>
+        /// moved (Rooted, Heavy, immovable, GG-T882: braced beside an Anchor Stance) or both sides are stone, wall, a unit,
+        /// a movable or a hole.</summary>
         private Coord? RushAside(Unit h, Coord dir)
         {
-            if (h == null || !h.Alive || h.WontBudge || h.IsRooted) return null;
+            if (h == null || !h.Alive || h.WontBudge || h.IsRooted || AnchorStance.BracedBy(S, h) != null) return null;
             foreach (var side in new[] { new Coord(-dir.Y, dir.X), new Coord(dir.Y, -dir.X) })
             {
                 var c = h.Pos + side;

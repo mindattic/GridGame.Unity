@@ -110,7 +110,7 @@ namespace GridGame.Core.Battle
                 }
                 if (RootsHold(hero, next)) return false; // GG-T912: a rooted walker can't take a step
                 var occ = S.UnitAt(next);
-                if (occ != null && RootsHold(occ, next, hero)) return false; // GG-T912: nor drag a rooted occupant off its tile
+                if (occ != null && HeldFast(occ, next, hero)) return false; // GG-T912: nor drag a rooted occupant off its tile (GG-T882: nor a braced foe)
                 if (occ != null && occ.IsHeavy && !occ.IsMultiTile && !occ.IsSnakeMember && !occ.IsRemains) // GG-T891
                 {
                     Emit(new StepBlockedEvent { UnitId = hero.Id, At = next, Reason = "heavy" });
@@ -155,6 +155,19 @@ namespace GridGame.Core.Battle
         {
             if (u == null || !u.IsRooted) return false;
             Emit(new StepBlockedEvent { UnitId = (by ?? u).Id, At = at, Reason = "rooted" });
+            return true;
+        }
+
+        /// <summary>GG-T882: is <paramref name="u"/> held to its tile against a displacement by <paramref name="by"/> (null
+        /// for a rule's drag)? Rooted (<see cref="RootsHold"/>), or braced by an ally's Anchor Stance beside it
+        /// (<see cref="AnchorStance.BracedBy"/>: a StepBlocked "braced" and a "Braced!" call). Only for being moved by
+        /// someone else - a unit's own steps ask <see cref="RootsHold"/>.</summary>
+        private bool HeldFast(Unit u, Coord at, Unit by = null)
+        {
+            if (RootsHold(u, at, by)) return true;
+            if (AnchorStance.BracedBy(S, u, by) == null) return false;
+            Emit(new StepBlockedEvent { UnitId = (by ?? u).Id, At = at, Reason = "braced" });
+            Announce("Braced!", u.Id);
             return true;
         }
 
@@ -477,7 +490,7 @@ namespace GridGame.Core.Battle
         private void Knockback(Unit caster, Unit t, int tiles, int baseDamage)
         {
             if (!t.Alive || t.IsMultiTile || t.IsSnakeMember || t.IsRemains) return;
-            if (RootsHold(t, t.Pos)) return; // GG-T912
+            if (HeldFast(t, t.Pos, caster)) return; // GG-T912; GG-T882: braced beside an Anchor Stance
             if (t.IsHeavy) { Announce("Too heavy!", t.Id); return; } // GG-T891
             var d = new Coord(t.Pos.X - caster.Pos.X, t.Pos.Y - caster.Pos.Y);
             var dir = Math.Abs(d.X) >= Math.Abs(d.Y) ? new Coord(Math.Sign(d.X), 0) : new Coord(0, Math.Sign(d.Y));

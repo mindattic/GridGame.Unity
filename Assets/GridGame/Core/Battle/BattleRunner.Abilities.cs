@@ -464,7 +464,7 @@ namespace GridGame.Core.Battle
         /// <summary>Pull (GG-T183): drag <paramref name="t"/> toward the caster a tile at a time onto free ground, stopping beside it.</summary>
         private void Pull(Unit caster, Unit t, int tiles)
         {
-            if (RootsHold(t, t.Pos)) return; // GG-T912
+            if (HeldFast(t, t.Pos, caster)) return; // GG-T912; GG-T882: a hook can't tear a braced ally loose
             if (!Budges(t)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return; }
             for (int i = 0; i < tiles && t.Alive && !S.IsOver; i++)
             {
@@ -488,7 +488,7 @@ namespace GridGame.Core.Battle
         /// EnterTile hooks; a swap with a foe calls "Swap!". False when it didn't happen (Rooted, Heavy unless Floating).</summary>
         private bool SwapPlaces(Unit caster, Unit t)
         {
-            if (RootsHold(t, t.Pos) || RootsHold(caster, caster.Pos)) return false; // GG-T912: neither half of a swap is uprooted
+            if (HeldFast(t, t.Pos, caster) || RootsHold(caster, caster.Pos)) return false; // GG-T912: neither half of a swap is uprooted (GG-T882: nor a braced target)
             if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return false; }
             Coord a = caster.Pos, b = t.Pos;
             caster.Pos = b;

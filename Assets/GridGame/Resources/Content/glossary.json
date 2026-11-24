@@ -909,5 +909,12 @@
     "Aliases": ["Float", "Floats"],
     "LinkKind": "Buff",
     "LinkId": "floating"
+  },
+  {
+    "Id": "anchored",
+    "Term": "Anchored",
+    "Aliases": ["Anchor Stance"],
+    "LinkKind": "Buff",
+    "LinkId": "anchored"
   }
 ]
