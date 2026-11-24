@@ -27,6 +27,7 @@ namespace GridGame.App
             TrackGlobs(rt); // GG-T895
             board.SyncRegion(State);
             if (rt.Change == "hidden") { App.Audio.Sfx("battle.slide", 0.3f, 0.8f); yield return Tween.Wait(Timing.Quick); yield break; } // GG-T843: it fades from sight
+            if (rt.Change == "marked" && RuneState(rt.State) is TileStateDef rune) { yield return RunePaintAnim(rt, rune); yield break; } // GG-T939: a Choir rune's paint puff
             App.Audio.Sfx(rt.Change == "cleared" ? "battle.slide" : "battle.trap", rt.Change == "changed" ? 0.4f : 0.65f);
             yield return Tween.Wait(rt.Change == "changed" ? Timing.Quick : Timing.Standard);
         }
@@ -363,6 +364,7 @@ namespace GridGame.App
                 App.Audio.Sfx("slime.squish", 0.9f);
                 Text?.Show(sq.At, CombatTextKind.Callout, "Squish!", 0.3f, Color.Lerp(col, Palette.White, 0.25f));
             }
+            else if (def?.Circle != null) RuneScuffed(sq, def); // GG-T939: a hero scuffs a Choir rune out
             if (!ReduceMotion) App.StartCoroutine(Tween.Shake(shake, 4f, Timing.Quick));
             yield return Tween.Wait(Timing.Quick);
         }
