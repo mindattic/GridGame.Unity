@@ -89,14 +89,11 @@ namespace GridGame.App
             var bal = Ui.Panel(body, null, false, "diamond-balance");
             var head = Ui.El("row", bal);
             head.style.alignItems = Align.Center;
+            // GG-T745 (§26.7): the Diamond's pixel icon, else the Diamond emblem.
             var icon = Art.ItemIcon(Crafting.DiamondId);
-            if (icon != null)
-            {
-                var img = Ui.El(null, head);
-                img.style.width = img.style.height = Size.Icon;
-                img.style.marginRight = Space.S16;
-                img.style.backgroundImage = new StyleBackground(icon);
-            }
+            var img = head.KindIcon(RowKind.Diamond, icon);
+            img.style.width = img.style.height = Size.Icon;
+            img.style.marginRight = Space.S16;
             Ui.Heading(ShardText.Of(have), head, "gold").name = "diamond-count";
             Ui.Caption($"1 {ShardText.Short} = {DiamondExchange.GoldPerDiamond} G · {ShardText.ShortOf(DiamondExchange.DiamondsPerDollar)} = $1.00", bal, "dim");
             Ui.Para($"{ShardText.Plural} pay for a random summon, an instant Rested refill and a lucky craft. Anything priced in {ShardText.ShortPlural} can also be paid in gold at the same rate.", bal, "dim");
@@ -144,7 +141,8 @@ namespace GridGame.App
                     var local = store.PriceOf(pack);
                     localized |= local != null;
                     var value = DiamondStores.InFlight == pack.ProductId ? "Processing…" : local ?? pack.Price;
-                    var row = Ui.MenuRow(ShardText.ShortOf(pack.Diamonds), value, () => Buy(store, pack), packs, icon, open);
+                    var row = Ui.MenuRow(ShardText.ShortOf(pack.Diamonds), value, () => Buy(store, pack), packs, null, open);
+                    row.KindIcon(RowKind.Diamond, icon); // GG-T745
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)
@@ -155,7 +153,7 @@ namespace GridGame.App
 
             var foot = Ui.Footer(body, "diamond-footer");
             Ui.Name($"{ShardText.ShortOf(amount)} for {Ui.Gold(DiamondExchange.GoldFor(amount))}", foot, "grow");
-            var go = Ui.Button("Exchange", Exchange, "btn--primary", foot);
+            var go = RowIcon.IconButton("Exchange", RowKind.Confirm, Exchange, "btn--primary", foot); // GG-T745
             go.name = "diamond-exchange";
             Ui.SetEnabled(go, amount <= max);
         }

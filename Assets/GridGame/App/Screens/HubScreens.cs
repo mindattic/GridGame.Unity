@@ -1498,14 +1498,11 @@ namespace GridGame.App
                 : "No one is left on the road to answer.", "kit-text", w);
             if (left > 0) OddsRow(w);
             var row = Ui.Actions(w);
-            var icon = Art.ItemIcon(Crafting.DiamondId);
-            if (icon != null)
-            {
-                var img = Ui.El(null, row);
-                img.style.width = img.style.height = Size.IconS;
-                img.style.backgroundImage = new StyleBackground(icon);
-                img.style.marginLeft = Space.TargetHalfGap;
-            }
+            // GG-T745 (§26.7): the Diamond's pixel icon, else the Diamond emblem, leads the balance.
+            var img = row.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId));
+            img.style.width = img.style.height = Size.IconS;
+            img.style.marginLeft = Space.TargetHalfGap;
+            img.style.marginRight = 0;
             Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", row, "grow").style.marginLeft = Space.S8;
             var b = RowIcon.IconButton($"Draw · {DiamondSummon.Tag(S)}", RowKind.Confirm, () =>
             {

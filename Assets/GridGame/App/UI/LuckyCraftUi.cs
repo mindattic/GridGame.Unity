@@ -20,17 +20,13 @@ namespace GridGame.App
             box.name = "lucky-craft";
             box.style.marginTop = Space.S16;
             var head = Ui.El("row", box);
-            var tex = Art.ItemIcon(Crafting.DiamondId);
-            if (tex != null)
-            {
-                var img = Ui.El(null, head);
-                img.style.width = img.style.height = Size.IconS; img.style.marginRight = Space.S8;
-                img.style.backgroundImage = new StyleBackground(tex);
-            }
+            // GG-T745 (§26.7): the Diamond's pixel icon, else the Diamond emblem.
+            var img = head.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId));
+            img.style.width = img.style.height = Size.IconS; img.style.marginRight = Space.S8;
             Ui.Text($"{ShardText.ShortPlural}: {Ui.Count(DiamondExchange.Have(s))}", "small", head);
 
             // GG-T455: the old 600 g one-Diamond job is retired; Diamonds come from the store's gold exchange.
-            var buy = Ui.Button(ShardText.Store, DiamondStores.Open, "btn--small", box);
+            var buy = RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", box); // GG-T745
             buy.name = "buy-diamond";
             buy.style.marginTop = Space.S8;
 
@@ -42,7 +38,7 @@ namespace GridGame.App
             odds.style.marginTop = Space.S8;
 
             bool can = Crafting.CanLucky(c, s, r);
-            var lucky = Ui.Button($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {OddsText.Percent(withDiamond)}", () =>
+            var lucky = RowIcon.IconButton($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {OddsText.Percent(withDiamond)}", RowKind.Confirm, () =>
             {
                 if (!Crafting.CanLucky(c, s, r)) { DiamondStores.OfferStore(DiamondExchange.CanPay(s, Crafting.LuckyDiamondCost, r.Gold).Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(s, Crafting.LuckyDiamondCost);
@@ -53,7 +49,7 @@ namespace GridGame.App
                     if (res.Ok) GameApp.I.Persist();
                     Reveal(res, refresh);
                 });
-            }, can ? "btn--primary" : null, box);
+            }, can ? "btn--primary" : null, box); // GG-T745: led by the Confirm emblem
             lucky.name = "lucky-craft-btn";
             lucky.style.marginTop = Space.S8;
             // Short of Diamonds and gold it stays tappable and offers the store; it's disabled only when the craft itself isn't.
