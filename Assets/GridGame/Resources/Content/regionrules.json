@@ -874,5 +874,18 @@
         ]
       }
     ]
+  },
+  {
+    "Id": "smoke",
+    "TileStates": [
+      {
+        "Id": "smoke",
+        "Obscures": true,
+        "Affects": "FoesOfOwner",
+        "LifeSeconds": 8,
+        "Color": "#8a8f99",
+        "Glyph": "≈"
+      }
+    ]
   }
 ]

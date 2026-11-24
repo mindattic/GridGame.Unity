@@ -238,6 +238,10 @@ namespace GridGame.Core.Content
         /// mark is its own side's (a board-painted mark: any hero's), on weapon blows and spells alike (GG-T888: the
         /// Hexstalker's flare light). Several tiles under a big foe don't add up; the highest counts.</summary>
         public float CritTakenBonus;
+        /// <summary>Smoke (GG-T861, the Black Ninja's Smoke Vanish): a blow or charge aimed at a unit standing on this state,
+        /// by an attacker the mark works on (<see cref="Affects"/>), is rolled as if the attacker were Blinded (the
+        /// <c>blinded</c> buff's accuracy; no extra Rng draw, never stacked on a real Blind).</summary>
+        public bool Obscures;
         /// <summary>Whom a mark of this state works on, read against the team that painted it (GG-T842): its hooks that
         /// read the subject's tile (EnterTile, TurnEnd...) skip an unaffected subject, its OnMark and hook effects skip
         /// unaffected units, and <see cref="Battle.RegionBoard.DangerAt"/> reads no danger for them. Ignored on a mark the

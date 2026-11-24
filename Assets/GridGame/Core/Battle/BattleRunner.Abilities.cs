@@ -82,7 +82,8 @@ namespace GridGame.Core.Battle
             if (a.Mode != TargetMode.Auto && !TargetResolver.IsValidPick(S, a, hero, anchor)) return Refuse(hero, "No target");
             if (a.Revives && !S.Units.Exists(u => u.IsHero && !u.Alive && u.Hp <= 0 && !u.IsWildTamed)) return Refuse(hero, "Nobody to revive");
             if (a.Revives && ReviveSpot(hero) == null) return Refuse(hero, "No room!");
-            if (!a.IsTeleport && !a.Revives && !a.Escape && a.GrantsOrbs <= 0 && TargetResolver.Collect(S, a, hero, anchor).Count == 0 && a.Mode == TargetMode.Auto)
+            if (a.Vanishes && SmokeVanish.Landings(S, hero, hero.Pos).Count == 0) return Refuse(hero, "No room!"); // GG-T861
+            if (!a.IsTeleport && !a.Vanishes && !a.Revives && !a.Escape && a.GrantsOrbs <= 0 && TargetResolver.Collect(S, a, hero, anchor).Count == 0 && a.Mode == TargetMode.Auto)
                 return Refuse(hero, "No target");
             if (a.Echoes)
             {
@@ -171,8 +172,48 @@ namespace GridGame.Core.Battle
         private void ResolveAbility(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
         {
             if (ResolveTileReactions(caster, a, anchor)) return; // GG-T371: a hero's tool or element on the traps it covers
+            if (a.Vanishes) { ResolveVanish(caster, a); return; } // GG-T861: its smoke goes down first, then it vanishes
             ResolveAbilityEffects(caster, a, anchor, pickedUnit);
             RegionAbility(caster, a, anchor); // GG-T359: its region rule effects, once it has resolved
+        }
+
+        /// <summary>
+        /// Smoke Vanish (GG-T861, §7; <see cref="SmokeVanish"/>): the ability's rule effects (the smoke cloud) are laid around
+        /// the caster's tile, then it reappears on a random safe landing (one Rng draw), springs what lies there, and a pincer
+        /// it closes resolves at once, as Teleport's. Every foe's charge locked on it re-plans. Rooted, it stays in its smoke.
+        /// </summary>
+        private void ResolveVanish(Unit caster, AbilityDef a)
+        {
+            NoteRecover(caster, a);
+            var from = caster.Pos;
+            Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = from, Tiles = { from } });
+            RegionAbility(caster, a, from); // the smoke, on the tile it is about to leave and its neighbours
+            if (S.IsOver || !caster.Alive) return;
+            if (RootsHold(caster, from)) return; // GG-T912: rooted, it can't blink away
+            var lands = SmokeVanish.Landings(S, caster, from);
+            if (lands.Count == 0) { Announce("Blocked", caster.Id); return; }
+            var to = lands[S.Rng.Range(0, lands.Count)];
+            if (!Relocate(caster, to)) { Announce("Blocked", caster.Id); return; }
+            Emit(new VanishedEvent { UnitId = caster.Id, From = from, To = to, AbilityId = a.Id });
+            Emit(new TeleportedEvent { UnitId = caster.Id, From = from, To = to });
+            ReplanChargesOn(caster, from);
+            ShovePickupsUnder(caster, from);
+            TriggerTrap(caster);
+            if (caster.Alive && caster.IsHero) ResolvePincers(Team.Hero, caster);
+        }
+
+        /// <summary>GG-T861: every foe's charge locked on <paramref name="gone"/> loses it in the smoke and re-plans onto the
+        /// nearest other hero, or, with none, onto <paramref name="left"/> (the smoke).</summary>
+        private void ReplanChargesOn(Unit gone, Coord left)
+        {
+            foreach (var e in S.Timeline)
+            {
+                if (!SmokeVanish.LockedOn(e, gone)) continue;
+                var next = SmokeVanish.Replan(S, e, gone);
+                e.TargetUnitId = next?.Id ?? -1;
+                e.TargetTile = next?.Pos ?? left;
+                Emit(new ChargeReplannedEvent { EntryId = e.Id, CasterId = e.OwnerId, OldTargetId = gone.Id, NewTargetId = e.TargetUnitId, TargetTile = e.TargetTile });
+            }
         }
 
         private void ResolveAbilityEffects(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
@@ -642,7 +683,9 @@ namespace GridGame.Core.Battle
             foreach (var v in victims)
             {
                 if (!v.Alive) continue;
+                caster.AimMultiplier = RegionBoard.ObscuredAim(S, caster, v); // GG-T861: a charge aimed into smoke is Blind
                 var roll = Formulas.Magic(caster, v, a.DamageType, S.Rng);
+                caster.AimMultiplier = 1f;
                 if (roll.Dodged)
                 {
                     // Evasion slips a charged spell too (GG-T297); the dodger's OnDodge reactives answer it.

@@ -240,5 +240,30 @@ namespace GridGame.Core.Battle
             }
             return best;
         }
+
+        /// <summary>Accuracy multiplier when no Blind buff is to hand (content without <c>blinded</c>).</summary>
+        public const float SmokeAccuracy = 0.5f;
+
+        /// <summary>
+        /// GG-T861 (§7, the Black Ninja's Smoke Vanish): the accuracy <paramref name="attacker"/> rolls at when it aims at
+        /// <paramref name="target"/>, a unit standing on an <see cref="TileStateDef.Obscures"/> mark that works on the attacker
+        /// (<see cref="Affects"/>: the party's smoke fouls the foes' aim only): the <c>blinded</c> buff's accuracy, as if Blind.
+        /// 1 when the target stands clear, the attacker is a friend of the target, or it is already Blind (never stacked).
+        /// </summary>
+        public static float ObscuredAim(BattleState s, Unit attacker, Unit target)
+        {
+            if (s?.Content == null || attacker == null || target == null || s.Region.Tiles.Count == 0) return 1f;
+            if (attacker.Team == target.Team || attacker.IsBlinded) return 1f;
+            foreach (var t in target.Tiles())
+            {
+                var m = s.Region.At(t);
+                if (m == null || !Affects(s, m, attacker)) continue;
+                var st = s.Content.TryTileState(m.State);
+                if (st == null || !st.Obscures) continue;
+                float acc = s.Content.TryBuff("blinded")?.AccuracyMultiplier ?? SmokeAccuracy;
+                return acc > 0f && acc < 1f ? acc : SmokeAccuracy;
+            }
+            return 1f;
+        }
     }
 }

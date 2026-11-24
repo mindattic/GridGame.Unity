@@ -83,6 +83,22 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Teleported {UnitId} {From}->{To}";
     }
 
+    /// <summary>GG-T861: a Smoke Vanish: <see cref="UnitId"/> left <see cref="From"/> in its smoke and reappears on
+    /// <see cref="To"/> (its <see cref="TeleportedEvent"/> follows). The view puffs smoke, calls "Vanish" and flashes the landing.</summary>
+    public sealed class VanishedEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To; public string AbilityId;
+        public override string ToString() => $"Vanished {UnitId} {From}->{To}";
+    }
+
+    /// <summary>GG-T861: a foe's charge locked on a unit that vanished re-plans: onto <see cref="NewTargetId"/> at
+    /// <see cref="TargetTile"/>, or (-1) onto the tile it was left aiming at.</summary>
+    public sealed class ChargeReplannedEvent : BattleEvent
+    {
+        public int EntryId; public int CasterId; public int OldTargetId; public int NewTargetId = -1; public Coord TargetTile;
+        public override string ToString() => $"ChargeReplanned #{EntryId} {OldTargetId}->{NewTargetId} at {TargetTile}";
+    }
+
     /// <summary>
     /// A unit's footprint (anchor tile + size) frozen at one moment of the event stream. Events that the view draws
     /// geometry from carry these because the state the view holds is already the END of the command: a unit that

@@ -232,6 +232,9 @@ namespace GridGame.Core.Content
                 // GG-T865: a range limit only means something on a pick of one unit.
                 if (a.MaxRange < 0 || (a.MaxRange > 0 && a.Mode != TargetMode.PickActor))
                     p.Add($"ability {a.Id}: MaxRange is 0 (anywhere) or a positive reach on a PickActor ability");
+                // GG-T861: a Smoke Vanish leaves from the caster's own tile (its smoke goes there) to a random one, never a teleport too.
+                if (a.Vanishes && (a.Shape != TargetShape.Self || a.Mode != TargetMode.Auto || a.IsTeleport || a.Kind != AbilityKind.Skill))
+                    p.Add($"ability {a.Id}: a Smoke Vanish (Vanishes) is a Self / Auto Skill and not also a Teleport");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

@@ -330,8 +330,12 @@ namespace GridGame.Core.Battle
 
         public float AccuracyMultiplier
         {
-            get { float m = 1f; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
+            get { float m = AimMultiplier; foreach (var b in Buffs) m *= b.Def.AccuracyMultiplier; return m; }
         }
+
+        /// <summary>GG-T861: the accuracy a blow aimed into smoke is rolled at (a Blind for that one roll), set by the runner
+        /// around a single hit roll and put back to 1 straight after; never saved.</summary>
+        public float AimMultiplier = 1f;
 
         /// <summary>Blind (any accuracy-lowering debuff, today <c>blinded</c>): lower hit and crit chance, and a crit landed
         /// anyway is a Clutch (GG-T566, §13.1.1).</summary>

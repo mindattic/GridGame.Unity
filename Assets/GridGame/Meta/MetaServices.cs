@@ -2436,6 +2436,7 @@ namespace GridGame.Meta
             if (a.Knockback > 0) k.Add("knockback");
             if (a.Pull > 0) k.Add("pull");
             if (a.Magnetizes > 0) k.Add("magnetize"); // GG-T878
+            if (a.Vanishes) k.Add("vanish"); // GG-T861
             if (a.SwapsPlaces) k.Add("swap");
             if (a.StepBack > 0) k.Add("stepback");
             if (a.HastenU > 0f) k.Add("hasten");
@@ -2450,7 +2451,7 @@ namespace GridGame.Meta
         /// <summary>Does the ability do anything at all when it resolves? (GG-T183 found four that did nothing.)</summary>
         public static bool HasEffect(AbilityDef a) =>
             a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.RemovesDebuffs || a.RemovesBuff != null || a.StealsMana || a.DrainsOrbs > 0 ||
-            a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.Magnetizes > 0 || a.SwapsPlaces ||
+            a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.Magnetizes > 0 || a.Vanishes || a.SwapsPlaces ||
             a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs || a.StealsBoon; // GG-T866: a Swipe Boon steals a boon; GG-T887: a Redirect Flow moves debuffs; GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
 
         /// <summary>GG-T592 (§25.6.5): is <paramref name="a"/> waived from its <see cref="AbilityDef.Requires"/> for this hero?

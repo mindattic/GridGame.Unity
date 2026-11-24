@@ -1083,6 +1083,7 @@
       "teleport",
       "quicken",
       "blackninja_shadowfang",
+      "blackninja_smoke_vanish",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -1090,7 +1091,7 @@
     ],
     "DefaultLoadout": [
       "cleave",
-      "shadowstep_fade_step",
+      "blackninja_smoke_vanish",
       "item:x_potion",
       "blackninja_shadowfang",
       "shadowstep_vanishing_cut"

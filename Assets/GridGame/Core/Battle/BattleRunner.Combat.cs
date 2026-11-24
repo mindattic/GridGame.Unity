@@ -370,7 +370,9 @@ namespace GridGame.Core.Battle
             // support crit for this one blow (same draw count), then the lent value comes back exactly.
             float lent = attacker.SupportCritBonus, lit = RegionBoard.CritTakenBonus(S, attacker, target);
             if (lit > 0f) attacker.SupportCritBonus = lent + lit;
+            attacker.AimMultiplier = RegionBoard.ObscuredAim(S, attacker, target); // GG-T861: a blow aimed into smoke is Blind
             var roll = Formulas.Physical(attacker, target, S.Rng, mult * KitDamageMultiplier(attacker, target) * attacker.OutgoingDamageMultiplier, Dodgeable(kind));
+            attacker.AimMultiplier = 1f;
             attacker.SupportCritBonus = lent;
             if (!(roll.Hit != HitKind.Miss && PlateAbsorbs(target, attacker, roll.Damage)))
             {

@@ -456,6 +456,7 @@ namespace GridGame.Core.Bot
                 return ScoreAbility(s, caster, copy, plan.Value.Anchor) - 1f;
             }
             if (a.Magnetizes > 0) return Magnetize.Value(s, caster, a, anchor); // GG-T878: only when two or more metal foes would line up
+            if (a.Vanishes) return SmokeVanish.Value(s, caster); // GG-T861: slip a threat, or roll for a pincer landing
             if (a.IsTeleport)
             {
                 var copy = s.Clone();

@@ -232,6 +232,7 @@ namespace GridGame.App
                 case RegionTilesEvent rgt: return RegionTilesAnim(rgt);
                 case TileRevealedEvent trv: return TileRevealedAnim(trv); // GG-T843
                 case SquishedEvent sqe: return SquishedAnim(sqe); // GG-T846
+                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861: Smoke Vanish's puff, callout and reappear flash
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);
