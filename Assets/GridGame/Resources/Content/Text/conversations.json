@@ -41,7 +41,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3afb579035eae03d6caa0700de99878bab63c3dc1046e815306a4179aba99e10",
+      "hash": "sha256:b7e604c0f72d7e8d530a1b15b1fb88806e2fefe9aae7f841f5862c93f78375a3",
       "about": [
         "class-hierarch",
         "place-cathedral-03"
@@ -57,19 +57,19 @@
           {
             "id": "a",
             "speaker": "class-hierarch",
-            "line": "Thieves from the holds, in my own white wagon. Do you know how long I have kept the Manalith in the sky?",
+            "line": "Thieves from the holds, in my own white wagon. Do you know how long my Choir has kept the Manalith asleep?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "The Anchors hold the Manalith. They need a thread of the tithe. You drank everything else.",
+            "line": "The Lullaby needs a thread of the tithe. You drank everything else.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "class-hierarch",
-            "line": "Two hundred years of it, and I am still here. While my Choir sings, I do not stay down.",
+            "line": "Twelve hundred years of singing, and it still sleeps. While my Choir sings, I do not stay down.",
             "next": "d"
           },
           {
@@ -86,7 +86,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4db62288afc59461f65aa23c25d0baedd06169e9be35ca35302e4e4d8efacbca",
+      "hash": "sha256:aff62130e4b4e21785cdfe7b704617ca7767e4a59eda1f45a8046b87ef797c50",
       "about": [
         "class-cyclops02",
         "place-cave-03"
@@ -102,13 +102,13 @@
           {
             "id": "a",
             "speaker": "class-cyclops02",
-            "line": "Small. Warm. Loud. Keeper holds the big arch. Keeper was grown to hold it. You are not allowed.",
+            "line": "Small. Warm. Loud. Keeper holds the big arch. Keeper came down with the shell and stayed to hold it. You are not allowed.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Grown? In a white tank, out of somebody's tithe. Maybe somebody from Saltmoss.",
+            "line": "Came down with the shell? So you fell out of the Manalith's own crust. And now you guard an Anchor.",
             "next": "c"
           },
           {
@@ -287,7 +287,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:54f6fa88aacb3ff60f602ea22e37b722bd8dce4bb0f08b8e8fc3d0f51319cc06",
+      "hash": "sha256:ca8b420add3d8ba58c8f279fe57cd2c0d99e798996af57ff522e74d867a2a3ed",
       "about": [
         "class-chronomancer",
         "place-still-03"
@@ -303,19 +303,19 @@
           {
             "id": "a",
             "speaker": "class-chronomancer",
-            "line": "Mind the floor. You came to see the tithe? Look in tank nine. That's a whole hold, kept cold.",
+            "line": "Mind the floor. You came to see the tithe? Look in tank nine. That's a whole hold's colour, kept cold.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "$lead",
-            "line": "Roofs. A well. People, asleep. ...The Hollow aren't empty, are they? They're in there.",
+            "line": "A glow, cyan, tank after tank. That's mana, and far more than the Lullaby needs. ...Where does the rest go?",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "class-chronomancer",
-            "line": "Not empty. Stored. The Anchors sip, the spire drinks, and I keep the clocks. Give me room and I take two turns.",
+            "line": "Up the spire. The Anchors sip, the spire drinks, and I keep the clocks. Give me room and I take two turns.",
             "next": "d"
           },
           {
