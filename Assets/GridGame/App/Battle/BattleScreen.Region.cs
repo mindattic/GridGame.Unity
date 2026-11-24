@@ -79,8 +79,48 @@ namespace GridGame.App
             ShowBanner($"{HazardName(hq.EventId, hq.RuleId)} lands in {hq.Seconds:0.#}s");
             // GG-T830: the hazard's countdown ticks over its area (seconds of timeline time), flashing when it lands.
             hazardTiles[hq.EntryId] = hq.Tiles;
-            Text.Countdown(HazardCenter(hq.Tiles), Mathf.CeilToInt(hq.Seconds), HazardTint(hq.EventId));
+            if (hq.CarrierId >= 0 && board.Units.TryGetValue(hq.CarrierId, out var cv) && !cv.Dead)
+            {
+                // GG-T874: a Time Bomb ticks over its carrier, not the middle of its tiles, and a fuse hisses as it sticks.
+                App.Audio.Sfx("battle.trap", 0.8f, 1.4f);
+                board.Mark(cv.Tile, HazardTint(hq.EventId), 0.6f);
+                BombTick(hq.EntryId, hq.EventId, cv, Mathf.CeilToInt(hq.Seconds));
+            }
+            else Text.Countdown(HazardCenter(hq.Tiles), Mathf.CeilToInt(hq.Seconds), HazardTint(hq.EventId));
             yield return Tween.Wait(Timing.Emphasis);
+            if (hq.CarrierId >= 0) board.ClearMarks();
+        }
+
+        /// <summary>GG-T874: a carried hazard's tiles moved with its carrier (or it fell and the bomb stays): redraw them.</summary>
+        private void HazardMoved(HazardMovedEvent hm)
+        {
+            hazardTiles[hm.EntryId] = hm.Tiles;
+            board.SyncRegion(State);
+            if (hm.Dropped) bombShown.Remove(hm.EntryId);
+        }
+
+        /// <summary>GG-T874: the seconds last shown over each carried bomb, so each second ticks once.</summary>
+        private readonly System.Collections.Generic.Dictionary<int, int> bombShown = new System.Collections.Generic.Dictionary<int, int>();
+
+        /// <summary>GG-T874: the ticking glyph over a Time Bomb's carrier: a Timer countdown with the fuse glyph and a tick.</summary>
+        private void BombTick(int entryId, string eventId, UnitView v, int secs)
+        {
+            if (bombShown.TryGetValue(entryId, out int was) && was == secs) return;
+            bombShown[entryId] = secs;
+            if (secs <= 0) return; // the landing flashes its own name
+            Text.Countdown(BoardView.CenterOf(v.Tile, v.W, v.H), secs, HazardTint(eventId), "⏲");
+            App.Audio.Sfx("battle.trap", 0.45f, secs <= 1 ? 2f : 1.6f);
+        }
+
+        /// <summary>GG-T874: each carried bomb on the bar ticks its seconds left over its carrier (once per second shown).</summary>
+        private void BombCountdownTexts()
+        {
+            foreach (var e in State.Timeline)
+            {
+                if (e.Kind != TimelineKind.Hazard || e.CarrierId < 0) continue;
+                if (!board.Units.TryGetValue(e.CarrierId, out var v) || v.Dead) continue;
+                BombTick(e.Id, e.RuleEvent, v, Mathf.CeilToInt(Mathf.Max(0, e.RemainingTicks) / (float)BattleConfig.TicksPerSecond));
+            }
         }
 
         private IEnumerator HazardRetimedAnim(HazardRetimedEvent hr)
@@ -103,12 +143,19 @@ namespace GridGame.App
         private IEnumerator HazardLandedAnim(HazardLandedEvent hl)
         {
             foreach (var t in hl.Tiles) board.Mark(t, new Color(1f, 0.45f, 0.15f), 0.6f);
-            if (!hl.Rearmed) hazardTiles.Remove(hl.EntryId);
+            if (!hl.Rearmed) { hazardTiles.Remove(hl.EntryId); bombShown.Remove(hl.EntryId); }
             if (hl.Tiles.Count > 0) Text.Countdown(HazardCenter(hl.Tiles), 0, zero: HazardName(hl.EventId, hl.RuleId) + "!");
             if (hl.EventId == "mineblast" && hl.Tiles.Count > 0) // GG-T876: the boom after the click
             {
                 App.Audio.Sfx("battle.explosion", 0.9f);
                 Emit(StyleOf(DamageType.Fire), HazardCenter(hl.Tiles));
+            }
+            else if (hl.EventId == "timebomb" && hl.Tiles.Count > 0) // GG-T874: the Time Bomb goes off round its carrier
+            {
+                App.Audio.Sfx("battle.explosion", 1f, 0.85f);
+                Emit(StyleOf(DamageType.Fire), HazardCenter(hl.Tiles), 1.3f, sizeMul: 1.4f);
+                foreach (var t in hl.Tiles) Emit(StyleOf(DamageType.Fire), BoardView.CenterOf(t), 0.5f, quiet: true);
+                App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Standard));
             }
             else App.Audio.Sfx("battle.shatter", 0.7f);
             yield return Tween.Wait(Timing.Standard);

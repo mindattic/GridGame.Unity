@@ -210,10 +210,6 @@ namespace GridGame.Core.Content
                 if (a.SwapsTurns && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.EnemyOnly
                                      || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
                     p.Add($"ability {a.Id}: a Countermarch (SwapsTurns) is a Skill or Spell that picks one foe (SingleActor, PickActor, EnemyOnly)");
-                // GG-T887: a Redirect Flow picks the one ally whose debuffs it moves.
-                if (a.RedirectsDebuffs && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter != TargetFilter.AllyOnly
-                                           || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))
-                    p.Add($"ability {a.Id}: a Redirect Flow (RedirectsDebuffs) is a Skill or Spell that picks one ally (SingleActor, PickActor, AllyOnly)");
                 // GG-T388: an Echo picks the one unit whose move it repeats, and carries nothing of its own.
                 if (a.Echoes && (a.Shape != TargetShape.SingleActor || a.Mode != TargetMode.PickActor || a.Filter == TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

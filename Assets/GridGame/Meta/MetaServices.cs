@@ -2441,7 +2441,6 @@ namespace GridGame.Meta
             if (a.Pushback > 0f) k.Add("pushback");
             if (a.SwapsTurns) k.Add("countermarch"); // GG-T336
             if (a.Echoes) k.Add("echo"); // GG-T388
-            if (a.RedirectsDebuffs) k.Add("redirect"); // GG-T887
             return string.Join("|", k);
         }
 
@@ -2449,7 +2448,7 @@ namespace GridGame.Meta
         public static bool HasEffect(AbilityDef a) =>
             a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.RemovesDebuffs || a.RemovesBuff != null || a.StealsMana || a.DrainsOrbs > 0 ||
             a.GrantsOrbs > 0 || a.Revives || a.Escape || a.IsTeleport || a.Knockback > 0 || a.Pull > 0 || a.SwapsPlaces ||
-            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes || a.RedirectsDebuffs; // GG-T887: a Redirect Flow moves debuffs; GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
+            a.StepBack > 0 || a.HastenU > 0f || a.Pushback > 0f || a.Tame > 0f || a.SwapsTurns || a.Echoes; // GG-T388: an Echo repeats a move; GG-T303: a Tame turns a monster; GG-T336: a Countermarch reorders the foes
 
         /// <summary>GG-T592 (§25.6.5): is <paramref name="a"/> waived from its <see cref="AbilityDef.Requires"/> for this hero?
         /// A hero's own kit moves are (what its class was built to do: a fresh Red Mage is never locked out of its own

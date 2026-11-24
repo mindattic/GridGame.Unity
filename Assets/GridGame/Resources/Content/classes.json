@@ -10873,7 +10873,6 @@
       "skirmishmenders_guardiansrush",
       "skirmishmenders_flowingcurrent",
       "skirmishmenders_coveringwithdrawal",
-      "monk_redirectflow",
       "meditate",
       "inner_calm"
     ],
@@ -12097,7 +12096,8 @@
       "fieldcaster_wardgrid",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "shock_plating"
+      "shock_plating",
+      "operative_timebomb"
     ],
     "DefaultLoadout": [
       "poison",

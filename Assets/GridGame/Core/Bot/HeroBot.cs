@@ -463,7 +463,6 @@ namespace GridGame.Core.Bot
                 foreach (var p in PincerDetector.Detect(copy, Team.Hero, cu)) sc += 10f * p.Opponents.Count;
                 return sc - 2f;
             }
-            if (a.RedirectsDebuffs) return RedirectFlow.Value(s, caster, s.UnitAt(anchor)); // GG-T887: lift a harmful debuff onto a foe in reach
             var targets = TargetResolver.Collect(s, a, caster, anchor);
             float score = 0f;
             bool close = FightIsClose(s);
@@ -575,6 +574,7 @@ namespace GridGame.Core.Bot
                 }
             }
             score += BuryValue(s, a, anchor); // GG-T876: a Buried Charge on a foe's likely path
+            score += TimeBombValue(s, a, anchor); // GG-T874: a Time Bomb on a foe beside (or a shove from) its friends
             // A lone hero's bar is its only way to hurt anything (no pincers with one hero): spend mana and items on
             // damage freely rather than hoarding them for a pincer that can never come (GG-T123).
             // GG-T333: an essence heal costs the caster HP. Never bleed below 40% for it; otherwise price the HP given.
@@ -626,6 +626,36 @@ namespace GridGame.Core.Bot
                 value += 4 - toAnchor; // sooner is likelier
             }
             return value;
+        }
+
+        /// <summary>
+        /// GG-T874 (§7): what planting a carried hazard (a <see cref="RuleEffectDef.Follow"/> Schedule, the Operative's Time
+        /// Bomb) on the foe at <paramref name="anchor"/> is worth: its blast catches the carrier's neighbours, so a foe with
+        /// friends beside it (8 for the first, 4 each further) or a shove away from them (Manhattan 2: 3 each, the party can
+        /// push it into them before it blows) is worth planting on; a foe alone is worth nothing. A hero beside it costs 4
+        /// (it has to step off), and a foe already carrying one is worth nothing more.
+        /// </summary>
+        public static float TimeBombValue(BattleState s, AbilityDef a, Coord anchor)
+        {
+            RuleEffectDef plant = null;
+            foreach (var fx in a.RuleEffects) if (fx.Kind == RuleEffectKind.Schedule && fx.Follow) { plant = fx; break; }
+            if (plant == null) return 0f;
+            var carrier = s.UnitAt(anchor);
+            if (carrier == null || carrier.Team != Team.Enemy) return 0f;
+            foreach (var x in s.Timeline) if (x.Kind == TimelineKind.Hazard && x.CarrierId == carrier.Id) return 0f;
+            int reach = Math.Max(1, plant.Radius);
+            float value = 0f;
+            int beside = 0;
+            foreach (var e in s.LivingList(Team.Enemy))
+            {
+                if (e == carrier) continue;
+                int d = e.DistanceTo(carrier);
+                if (d <= reach) value += beside++ == 0 ? 8f : 4f;
+                else if (d == reach + 1) value += 3f;
+            }
+            if (value <= 0f) return 0f;
+            foreach (var h in s.LivingList(Team.Hero)) if (h.DistanceTo(carrier) <= reach) value -= 4f;
+            return Math.Max(0f, value);
         }
 
         // ── GG-T292: reading the bar (the smart bot) ────────────────────────────────────────────────────────────

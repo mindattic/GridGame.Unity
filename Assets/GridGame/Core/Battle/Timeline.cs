@@ -49,6 +49,10 @@ namespace GridGame.Core.Battle
         public List<Coord> HazardTiles;
         /// <summary>The unit that queued it (its subject when it lands, if still standing); -1 = none.</summary>
         public int SourceUnitId = -1;
+        /// <summary>GG-T874: the unit it rides (a Follow schedule, the Operative's Time Bomb): <see cref="HazardTiles"/> are its
+        /// footprint grown by <see cref="CarrierRadius"/> and move with it; -1 = none (fixed tiles, or its carrier fell).</summary>
+        public int CarrierId = -1;
+        public int CarrierRadius;
 
         public TimelineEntry Clone()
         {
