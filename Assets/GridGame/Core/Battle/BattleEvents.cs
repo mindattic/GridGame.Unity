@@ -431,6 +431,16 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"LinkEcho {FromId} -> {ToId} {Amount}";
     }
 
+    /// <summary>GG-T878 (§7): a Magnetize field gripped <see cref="UnitIds"/> (nearest <see cref="Anchor"/> first); their
+    /// pulls (<see cref="DisplacedEvent"/>s) and plate swings (<see cref="FacingChangedEvent"/>s) follow. The view arcs a
+    /// magnetic field from the tile to each and hums.</summary>
+    public sealed class MagnetizedEvent : BattleEvent
+    {
+        public int CasterId; public string AbilityId; public Coord Anchor;
+        public List<int> UnitIds = new List<int>();
+        public override string ToString() => $"Magnetized at {Anchor}: {string.Join(",", UnitIds)}";
+    }
+
     /// <summary>GG-T887 (§7): the Monk's Redirect Flow carried these debuffs (<see cref="BuffIds"/>, one per instance, in
     /// order) off ally <see cref="FromId"/> onto foe <see cref="ToId"/>; each move's BuffRemoved/BuffApplied follows. The
     /// view runs a chi stream from the ally to the foe.</summary>

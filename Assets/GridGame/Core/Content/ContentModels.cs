@@ -585,6 +585,10 @@ namespace GridGame.Core.Content
         /// <summary>Movement (GG-T183): each target is dragged up to this many tiles straight toward the caster, stopping
         /// beside it or at the first thing in the way. Bosses and snakes don't budge.</summary>
         public int Pull;
+        /// <summary>Magnetize (GG-T878, the Tinkerer's spell): every plated or Tech-tagged foe within <see cref="Radius"/> of
+        /// the picked tile is dragged up to this many tiles toward it, nearest first, and its plate swings to face it. A Heavy
+        /// foe resists (unless Floating) and a Rooted one holds, but each still turns its plate (<c>Battle.Magnetize</c>).</summary>
+        public int Magnetizes;
         /// <summary>Movement (GG-T183): the caster and its (one-tile) target trade tiles.</summary>
         public bool SwapsPlaces;
         /// <summary>Movement (GG-T183): once it resolves, the caster steps up to this many tiles straight away from the

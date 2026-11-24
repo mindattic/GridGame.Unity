@@ -454,6 +454,7 @@ namespace GridGame.Core.Bot
                 if (copy.Kind == AbilityKind.Spell && !s.Bank.CanAfford(copy.Cost)) return 0f;
                 return ScoreAbility(s, caster, copy, plan.Value.Anchor) - 1f;
             }
+            if (a.Magnetizes > 0) return Magnetize.Value(s, caster, a, anchor); // GG-T878: only when two or more metal foes would line up
             if (a.IsTeleport)
             {
                 var copy = s.Clone();

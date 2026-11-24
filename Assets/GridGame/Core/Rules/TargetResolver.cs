@@ -98,6 +98,7 @@ namespace GridGame.Core.Rules
             // A tame (GG-T303) only ever picks a tameable monster: never a Sentient foe, a boss or remains.
             if (a.Tame > 0f && a.Mode == TargetMode.PickActor && !Taming.Tameable(occ)) return false;
             if (a.Mode == TargetMode.PickActor) return occ != null && Passes(a.Filter, caster, occ);
+            if (a.Magnetizes > 0) return Magnetize.Caught(s, a, caster, target).Count > 0; // GG-T878: a tile some metal foe is gripped toward
             // PickTile: any in-bounds tile whose shape catches at least one valid unit, or a trap its tile reactions clear (GG-T371).
             return Collect(s, a, caster, target).Count > 0 || TileReactions.ReachesTrap(s, a, caster, target);
         }

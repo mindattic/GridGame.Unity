@@ -221,6 +221,7 @@ namespace GridGame.App
                 case DodgedEvent dg: return DodgeAnim(dg);
                 case UnitsLinkedEvent ul: return LinkedAnim(ul); // GG-T873: Curse Link's tether
                 case LinkEchoEvent le: return LinkEchoAnim(le);
+                case MagnetizedEvent mz: return MagnetizedAnim(mz); // GG-T878: Magnetize's arcs and hum
                 case DebuffsRedirectedEvent dr: return RedirectAnim(dr); // GG-T887: Redirect Flow's chi stream
                 case TrapPlacedEvent tp: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tp.ById, CombatTextKind.Debuff, "Snare!", 0.3f);
                 case TrapTriggeredEvent tt: board.SyncTraps(State); App.Audio.Sfx("battle.trap"); return FloatText(tt.UnitId, CombatTextKind.Debuff, "Trap!", 0.25f);

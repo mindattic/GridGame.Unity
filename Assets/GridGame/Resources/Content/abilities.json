@@ -4302,6 +4302,12 @@
   "Sfx": null
  },
  {
+  "Id": "tinkerer_magnetize",
+  "Name": "Magnetize",
+  "Description": "Instant: a magnetic field drags every plated or Tech foe within 3 of the picked tile up to 2 tiles toward it and swings their plates to face it. Heavy foes resist unless floating. Line armored foes up for one pincer.",
+  "Kind": "Spell",
+  "Requires": { "Intelligence": 4, "Wisdom": 2 },
+ {
   "Id": "wildchild_howl",
   "Name": "Feral Howl",
   "Description": "A primal howl that rattles every foe nearby (6 damage).",
