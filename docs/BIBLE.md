@@ -4833,11 +4833,98 @@ Ring: Vanguard - Blade - Brawn - Shadow - Wild - Machina - Arcane - Occult - Gra
 
 Sizes 8 / 8 / 10 / 12 / 6 / 6 / 5 / 5 / 9 = 69. **Edge calls:** `whiteninja` is Grace, not Shadow (its whole kit heals; only its name and stats are ninja); `alchemist` and `doctor` are Grace, not Machina (Aegis Wardens kit, Healer role); `monk` is Grace, not Brawn (Healer, Skirmish-Menders); the three hex rangers join Wild rather than a three-class Hunt family; `warchief` and `shieldmaiden` stay Vanguard (Tanks with Shield Bash); `harbinger` is Arcane (Spellblade, with Red Mage), not Occult; `drifter` is Machina (its kit is Operative's).
 
-**Merge candidates each family creates** (input to GG-T972; each group shares its whole cluster kit and differs by one to three signature moves): Vanguard: `knight` / `paladin` / `defender`, `myrmidon` / `tank`, `shieldmaiden` / `warchief`. Blade: `fencer` / `ronin` / `sellsword` / `swordmaster`, `odachi` / `slasher`. Brawn: `barbarian` / `basher` / `bruiser`, `prizefighter` / `pugilist` / `fighter` / `martialartist`, and the Skirmisher-kit `streetfighter` / `raider` against Combo Brawler. Shadow: the six ninjas (one Shadowstep kit differing by an element edge: one ninja move with an element variant), `nighthunter` / `ripper`, `speedster` / `striker`, `thief` / `assassain`. Wild: `bluelion` / `wildchild`, the hex rangers' shared `ranged_*` baseline. Machina: `engineer` / `technician` / `machinist`, `drifter` / `operative`, and the Field Caster and Field Engineer kits themselves (trapline vs mine, resupply drone vs patch). Arcane: `courier` / `dervish` (/ `tactician`), `redmage` / `harbinger`. Occult: `darktemplar` / `jadeknight`, `blackwitch` / `ritualist`. Grace: `cleric` / `doctor` / `alchemist`, `sage` / `whitewitch`, `monk` / `whiteninja` / `herald` / `sister`.
+**Merge candidates each family creates** (input to GG-T972, decided in §25.6.6.1; each group shares its whole cluster kit and differs by one to three signature moves): Vanguard: `knight` / `paladin` / `defender`, `myrmidon` / `tank`, `shieldmaiden` / `warchief`. Blade: `fencer` / `ronin` / `sellsword` / `swordmaster`, `odachi` / `slasher`. Brawn: `barbarian` / `basher` / `bruiser`, `prizefighter` / `pugilist` / `fighter` / `martialartist`, and the Skirmisher-kit `streetfighter` / `raider` against Combo Brawler. Shadow: the six ninjas (one Shadowstep kit differing by an element edge: one ninja move with an element variant), `nighthunter` / `ripper`, `speedster` / `striker`, `thief` / `assassain`. Wild: `bluelion` / `wildchild`, the hex rangers' shared `ranged_*` baseline. Machina: `engineer` / `technician` / `machinist`, `drifter` / `operative`, and the Field Caster and Field Engineer kits themselves (trapline vs mine, resupply drone vs patch). Arcane: `courier` / `dervish` (/ `tactician`), `redmage` / `harbinger`. Occult: `darktemplar` / `jadeknight`, `blackwitch` / `ritualist`. Grace: `cleric` / `doctor` / `alchemist`, `sage` / `whitewitch`, `monk` / `whiteninja` / `herald` / `sister`.
 
 Nothing in battle, progression or the skill trees reads `Family` yet: `HomeTree` (§25.6.1) still decides which tree a hero spends in. The family tree model is GG-T977.
 
 *(Tests: `FamilyTaxonomyTests`.)*
+
+#### 25.6.6.1 Family merge audit (GG-T972, for owner review)
+
+**Added 2026-11-24, docs only: nothing in abilities.json or classes.json changes until the owner signs this table off.** Owner intent: fewer unique skills and effects because siblings share a family; only a true signature move stays class-specific. The audit read every hero ability held by 8 or fewer classes (abilities.json / classes.json at the time of writing) family by family. The cluster kits (`duelist_*`, `berserker_*`, `shadowstep_*`, `aegiswardens_*` and so on) are already one id shared by their siblings, so the near-copies sit in each class's **own** moves.
+
+**Rules.**
+- **Merge** when two moves in one family share shape, mode, filter and effect and differ only in name, element or numbers.
+- **Keep (signature)** when no sibling has a near-copy and the move carries the class's identity. These include the recent situational abilities (Smoke Vanish, Pole Vault, Substitution, Swipe Boon, Flay, Shadow Swap, Afterimage, Curse Link, Redirect Flow, Firewall, Magnetize, Gravity Well, EMP Pulse, Time Bomb, Earthsplitter, Barricade, Buried Charge, Flare Shot, Oil Flask, Bramble Snare, Anchor Stance, Intimidate). Float has no hero ability in content yet; it is reserved as a signature once it lands.
+- **Survivor.** The move most siblings already hold keeps its id, and **its numbers win** unless the row says otherwise, so the fewest saves and loadouts move. A new id is minted only where no sibling move can stand for the rest (`vanguard_bulwark`, `ninja_fang`, `ninja_edge`, `hex_shot`).
+- **On implementation** (one ticket per family, filed once approved): each folded id leaves abilities.json. Each class that held it holds the survivor instead, in `Abilities` and in `DefaultLoadout`. Each `HeroSave.Known` and `HeroSave.Bar` entry is remapped through an id-alias table so old saves load. Skill-tree nodes and tomes that teach a folded id point at the survivor. Bot scoring keyed on a folded id moves to the survivor.
+
+| Family | Survivor (family ability) | Folds in (class) | Numbers that win / note | Net ids |
+|---|---|---|---|---|
+| Vanguard | `vanguard_bulwark` (new) | `defender_wall` (Defender, Cross r1 Ward, CD 4), `paladin_bulwark` (Paladin, all allies Ward, CD 5) | Cross r1 Ward on allies beside the caster, CD 4, VIT 5 (Shield Wall's). The party-wide reach goes; Grace's Sanctuary Rite owns that. This also ends the "Shield Wall" name clash with the `shield_wall` passive | -1 |
+| Vanguard | `warlord_rally_point` | `warchief_banner` (Warchief, all allies Empowered, CD 5) | Rally Point: Cross r1 Empowered, CD 3 | -1 |
+| Vanguard | `juggernaut_overrun` | `tank_juggernaut` (Tank, 12 dmg adjacent Knockback 2, CD 3) | Overrun: 6 dmg, Knockback 3 at any reach, CD 4 (Tank already holds it) | -1 |
+| Vanguard | `grappling_hook` | `myrmidon_phalanx` (Myrmidon, 10 dmg Pull 2, CD 3) | Grappling Hook: 6 dmg Pull 3, CD 3. Already a cross-family move (Lancer, Panda Girl, Raider, Hex Warden) | -1 |
+| Blade | `duelist_decisivecut` | `swordmaster_perfectcut` (identical: 24 adjacent, CD 4), `odachi_iaijutsu` (26, CD 4), `sellsword_contract` (20, +30% vs Boss, CD 3) | Decisive Cut: 24 adjacent, CD 4, STR 4 AGI 3. Contract's boss bonus is dropped | -3 |
+| Blade | `skirmisher_runningriot` | `lancer_chargeline` (Row 12, CD 3; Lancer holds both) | Running Riot: Row 14 Knockback 1, CD 4 | -1 |
+| Blade | `skirmisher_hitandrun` | `ronin_masterless` (14 adjacent StepBack 2, CD 3) | Hit and Run: 12 adjacent StepBack 1, CD 1 | -1 |
+| Blade | `brawler_wide_cleave` | `slasher_flurry` (Cross r1 10, CD 2; Slasher holds both) | Wide Cleave: Row 14 Knockback 1, CD 3 | -1 |
+| Brawn | `berserker_skullrattle` | `basher_skullcrack` (10 adjacent Blinded, CD 3), `streetfighter_dirtytrick` (12 adjacent Blinded, CD 3) | Skull Rattle: 14 adjacent Blinded, CD 2, STR 3 | -2 |
+| Brawn | `combobrawler_knockoutcombo` | `bruiser_haymaker` (14 adjacent Knockback 1, CD 3), `prizefighter_knockout` (16 adjacent, 50% Asleep, CD 4) | Knockout Combo: 16 adjacent Knockback 1, CD 3, combo scaling. **Plus** Knockout Punch's 50% Asleep, so the Prizefighter's knockout lives on in the family move | -2 |
+| Brawn | `combobrawler_onetwoflurry` | `fighter_combo` (14 adjacent Pushback 1, CD 3), `pugilist_jabcross` (22 adjacent, CD 2: an outlier) | One-Two Flurry: 10 adjacent, CD 1, combo scaling (both classes hold it already) | -2 |
+| Brawn | `blood_rage` | `berserk` (Barbarian passive: below 50% HP, +35% damage) | Blood Rage: dropping below 50% makes it Empowered (Bruiser; Wild Child holds it too) | -1 |
+| Shadow | `ninja_fang` (new, **element variant**) | `blackninja_shadowfang` (Dark 14 Blinded), `blueninja_frostfang` (Ice 10 Slowed), `chromaninja_prismfang` (Physical 20), `greenninja_venomfang` (Poison 8 Poisoned), `redninja_flamefang` (Fire 18), `yellowninja_shockfang` (Lightning 18), `nighthunter_nightstalk` (Dark 14, self Blurred) | One adjacent strike, CD 3, AGI 3 INT 2. It deals 14 of the wearer's element with that element's rider: Dark Blinded, Ice Slowed, Poison Poisoned, Fire Burning, Lightning Slowed. Chroma is Physical, 18, no rider. The Night Hunter takes the Dark variant and keeps its blur through the `vanish` passive. Needs a small engine seam: a per-class element for an ability flagged to take it | -6 |
+| Shadow | `ninja_edge` (new, element variant) | `shadow_edge` (15% Blind), `rime_edge` (10% Freeze), `ember_edge` (15% Burn), `static_edge` (15% Slow) | 15% on a landed hit to apply the wearer's element status (Freeze stays 10%). `venom_edge` stays as it is: it is the Poison edge, and the Green Ninja and Blade's Slasher both hold it | -3 |
+| Shadow | `duelist_exploit_opening` | `assassain_killingblow` (16 adjacent, CD 4; Assassin holds both), `striker_finishingblow` (20 adjacent, CD 3) | Exploit the Opening: 24 adjacent, CD 3, AGI 3 SPD 2 | -2 |
+| Shadow | `opportunist_exploit` | `ripper_rend` (10 adjacent Poisoned, CD 3; Ripper holds both) | Exploit: Poison 8 adjacent Poisoned, CD 2 | -1 |
+| Wild | `primalpack_rally` | `bluelion_roar` (self Empowered, CD 3; Blue Lion holds both) | Pack Rally: Cross r1 Empowered, CD 3 | -1 |
+| Wild | `hex_shot` (new) | `hexsniper_piercingshot` (Dark 26), `hexwarden_snareshot` (Dark 12 Slowed), `hexstalker_fadingshot` (Dark 14 Blinded StepBack 2), `trapper_binding_shot` (8 Slowed, CD 2) | One ranged Dark shot: 14 + Slowed, CD 3, AGI 3 INT 2 (Snare Shot's shape). Fading Shot's step-back is covered by `skirmisher_retreat_shot`. The Hex Sniper's big hit is `marksman_execution_shot` | -3 |
+| Wild | `ranged_quickshot` | `marksman_deadeye_shot` (18 ranged, CD 2) | Quickshot: 14 ranged, CD 1 | -1 |
+| Wild | `ranged_calledshot` | `skirmisher_rapid_barrage` (Row 10, CD 4: the same move at a worse cooldown) | Called Shot: Row 10, CD 2 | -1 |
+| Wild | `ranged_suppressingfire` | `marksman_piercing_volley` (Column 14, CD 3), `skirmisher_covering_volley` (Column 8 Pushback 0.75, CD 2) | Suppressing Fire: Column 8, 50% Blinded, CD 3. Lane delay stays on `pinning_shot` | -2 |
+| Machina | `fieldeng_mine` | `fieldcaster_wardgrid` (Square r1 10 Blinded, 3 orbs) | Suppression Mine: Square r1 6 Silenced, 3 orbs. The trapline-vs-mine pair from §25.6.6: Trapline (Row Slowed) stays, as a different shape | -1 |
+| Machina | `fieldeng_overdrive` | `operative_shock` (Lightning 12 Blinded, 2 orbs) | Overdrive Tap: Lightning 12, 2 orbs, cast 0.5 s | -1 |
+| Machina | `fieldeng_patch` | `tinkerer_juryrig` (heal 10 + Cleanse, CD 3) | Field Patch: heal 10, **plus** Jury-Rig's Cleanse, CD rises to 3. This is the patch-vs-resupply call: Resupply Drone (Cross r2 heal 8 + Regen) stays, as the area version | -1 |
+| Machina | `machinist_turret` | `technician_diagnostic` (8 Slowed, CD 3) | Turret Barrage: 16 ranged, CD 3, INT 5 | -1 |
+| Machina | `shock_plating` | `chill_aura` (Drifter: 25% Slows the attacker) | Shock Plating: 25% Pushback 0.75 on the attacker | -1 |
+| Arcane | `meteor` | `redmage_fury` (Cross r1 Fire 20, 4 orbs; Red Mage holds both) | Meteor: Diamond r2 Fire 22 Burning, 4 orbs | -1 |
+| Arcane | `tempoweave_shortcut` | `courier_relay` (ally Empowered, haste 0.15, CD 3; Courier holds both) | Shortcut: ally Empowered, haste 0.3, 3 orbs, instant | -1 |
+| Arcane | `disrupt` | `hinder` (Tactician: 2 s Pushback, 3 orbs) | Disrupt: Silenced + 1 s Pushback, CD 4 (the Harbinger holds it) | -1 |
+| Occult | `hexweaver_festeringmark` | `ritualist_bloodrite` (Arcane 12 Poisoned, 2 orbs; Ritualist holds both) | Festering Mark: Dark 10 Poisoned, 2 orbs | -1 |
+| Occult | `attrition_bloodletting` | `vampire_enervate` (Dark 10 adjacent Poisoned, CD 3), `deathguard_venomous_grip` (Poison 6 adjacent Poisoned, CD 2) | Bloodletting Bite: Dark 12 adjacent, heal 6, Poisoned, CD 2. The dark knights gain the drain | -2 |
+| Occult | `deathguard_dark_communion` | `jadeknight_resolve` (self Regen, CD 3; Jade Knight holds both) | Dark Communion: self heal 12 + Regen, 1 orb | -1 |
+| Occult | `blackwitch_shadowbolt` | `darktemplar_rite` (Dark 8 Blinded, CD 3) | Shadow Bolt: Dark 14 Blinded, 2 orbs | -1 |
+| Grace | `aegiswardens_preemptiveward` | `cleric_grace` (ally Ward, CD 3; Cleric holds both), `whitewitch_ward` (ally heal 10 + Ward, CD 4) | Preemptive Ward: heal 10 + Ward, 1 orb | -2 |
+| Grace | `doctor_triage` | `alchemist_transmute` (Cleanse + Protection, CD 3) | Field Triage: heal 18 + Cleanse, CD 3. The Protection rider is dropped | -1 |
+| Grace | `whiteninja_moonlit` | `monk_peace` (self Regen, CD 3) | Moonlit Recovery: self heal 22, CD 3 | -1 |
+| Grace | `disrupt` | `sage_insight` (8 Silenced, CD 3; Sage holds both) | Disrupt: Silenced + Pushback 1, CD 4 | -1 |
+| Grace | `inner_calm` | `herald_rebloom` (turn start below 60% HP: heal 5%) | Inner Calm keeps its id; Rebloom's numbers win: below 60% HP, heal 5% at turn start | -1 |
+
+**Net: 56 ability ids retired** (Vanguard 4, Blade 6, Brawn 7, Shadow 12, Wild 8, Machina 5, Arcane 3, Occult 5, Grace 6), 4 new family ids minted (counted in the net).
+
+**Signatures kept class-specific** (no sibling near-copy; each carries its class):
+
+| Family | Signatures |
+|---|---|
+| Vanguard | Knight `knight_oath`; Warden `warden_stand_guard`, `warden_reveille`, `warden_lantern`, `warden_anchorstance`, `warden_full_light`, `warden_last_watch`; Shieldmaiden `shieldmaiden_valkyrie` (the one revive) |
+| Blade | Duelist `duelist_riposte`; Fencer `fencer_fleche` (the one damaging swap); Lancer `lancer_polevault`, `set_spear` |
+| Brawn | Barbarian `barbarian_earthsplitter`, `barbarian_reckless`; Basher `rattle`; Panda Girl `pandagirl_slam`; Martial Artist `martialartist_palm`; Pugilist `counterpunch`; Raider `raider_plunder`; Street Fighter `dirty_fighting` |
+| Shadow | Black Ninja `blackninja_smoke_vanish`; Assassin `assassain_shadow_swap`; Thief `thief_swipeboon`, `thief_snatch`; Ripper `ripper_flay`; Speedster `speedster_afterimage`, `speedster_blitz` |
+| Wild | Blue Lion `bluelion_intimidate`, `vengeance`; Wild Child `wildchild_bramblesnare`; Monster Tamer `tame`, `pack_leader`, `beast_sense`; Hex Sniper `marksman_execution_shot`; Hex Stalker `hexstalker_flare_shot`; Hex Warden `trapper_pitfall_volley`, `trapper_snare_net` |
+| Machina | Engineer `engineer_buried_charge`, `engineer_overclock`; Machinist `machinist_barricade`; Technician `technician_emp`; Tinkerer `tinkerer_magnetize`; Operative `operative_timebomb`; Drifter `drifter_frostnova` |
+| Arcane | Red Mage `firewall`; Harbinger `harbinger_omen`; Courier `echo_mirrorskin`; Dervish `dervish_whirl`; Tactician `tactician_countermarch`, `echo_encore` |
+| Occult | Black Witch `blackwitch_curselink`; Dark Templar `darktemplar_gravitywell`, `dark_retribution`; Jade Knight `steadfast`; Ritualist `blood_price`; Vampire `attrition_dreadaura`, `attrition_soulfeast`, `vampires_kiss` |
+| Grace | Alchemist `alchemist_oilflask`, `poison_ward`; Monk `monk_redirectflow`; White Ninja `whiteninja_substitution`; Sister `sister_benediction` (the one party Regen), `aetherist_aetherpour`; Herald `herald_lifegift` |
+
+**Cross-family twins: out of scope here, flagged for a later pass.** These moves are near-copies across two families. A family merge can't fold them, because each would leave one family short. The fix is one generic id that both families teach, as `grappling_hook` and `disrupt` already are:
+- `aegisguard_hands_of_mercy` (Vanguard) and `aegiswardens_preemptiveward` (Grace): the same spell (Wisdom 2, 1 orb, heal 10 + Ward). Wild's `primalpack_denmother` (heal 18 + Ward, 2 orbs) is close.
+- `defender_wall` / `vanguard_bulwark` (Vanguard) and `dervish_whirl` (Arcane): Cross r1 Ward, CD 4.
+- `duelist_riposte` (Blade) and `fighter_combo` (Brawn): adjacent hit, Pushback 1, CD 3.
+- `duelist_probingthrust` (Blade), `duelist_riposte_thrust` (Shadow) and `martialartist_palm` (Brawn): an adjacent jab that Slows.
+- `duelist_decisivecut` (Blade) and `barbarian_reckless` (Brawn): 24 adjacent, CD 4.
+- `brawler_guard_break` (Blade) and `combobrawler_knockoutcombo` (Brawn): adjacent hit, Knockback 1.
+- `raider_plunder` (Brawn) and `thief_snatch` (Shadow): adjacent hit that steals mana, CD 3.
+- `speedster_blitz` (Shadow) and `spellblade_followthrough` (Arcane): self Empowered + haste, CD 3.
+- `bluelion_roar` (Wild) and `juggernaut_unstoppable_momentum` (Vanguard): self Empowered, CD 3.
+- `deathguard_mana_siphon` (Occult) and the `disrupt` / Silence line: a Silence on one foe.
+- `echo_mirrorskin` (Arcane) and `dark_retribution` (Occult): a chance to Reflect.
+- `set_spear` (Blade) and `counterpunch` (Brawn): a chance to Counterstrike.
+- `shock_plating` (Machina) and `keep_away` (Wild / Arcane): a chance to Pushback the attacker.
+- `self_repair` (Machina) and `inner_calm` (Grace): a small heal at turn start.
+- `attrition_dreadaura` (Occult) and `wildchild_howl` (Wild): Cross r1, 6 damage and a debuff.
+- The hexweaver spells (Occult) and the hexmender spells (Grace): Poison or Blind on one foe.
+
+*(No tests: docs only.)*
 
 ### 25.7 Shared Camp utilities
 
