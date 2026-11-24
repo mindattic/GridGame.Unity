@@ -221,6 +221,53 @@ The bots don't replay stages to hunt, so real players will sit higher than these
 I, Drowned Arks II) are the ones to look at first either way. Floodwater had no counter until GG-T410, which may account
 for part of the Drowned Arks number.
 
+### Worked out: the wall per option (GG-T757, `tools/xp_wall.py`)
+
+Numbers for GG-T474, computed from content, not a soak; no balance value changed. `python tools/xp_wall.py` plays the
+campaign straight through on paper (every hero earns the battle's full XP, every foe killed once at Normal, party from
+level 1) and prints each cell below as **party level arriving / foe level (replays of the previous stage needed to
+reach the foe level)**. Options: **now** = current curve (option 4, keep it); **1a** = kill XP's level term
++ 2*(L-24)^2 past 24 (option 1's example); **1b** = kill XP x XpToNext(L)/XpToNext(24) past 24; **2a** = per-region
+levels, Bloom 25 then +2 a region, Morrow's Shadow III kept at 40; **2b** = +1 a region, Morrow's Shadow III 34;
+**3** = XpToNext linear past 24 (+480 a level); **5a** = flat postgame bonus, kill XP x2 past 24; **5b** = catch-up,
++50% kill XP per level the hero is behind the foe (max x4) past 24.
+
+| Stage | now | 1a | 1b | 2a | 2b | 3 | 5a | 5b |
+|---|---|---|---|---|---|---|---|---|
+| The Bloom I | 15/25 (47) | 15/25 (47) | 15/25 (47) | 15/25 (47) | 15/25 (47) | 15/25 (47) | 15/25 (47) | 15/25 (47) |
+| The Bloom II | 16/26 (61) | 16/26 (59) | 16/26 (56) | 16/25 (52) | 16/25 (52) | 16/26 (61) | 16/26 (30) | 16/26 (27) |
+| The Bloom III | 16/27 (67) | 16/27 (60) | 16/27 (57) | 16/25 (51) | 16/25 (51) | 16/27 (67) | 16/27 (33) | 17/27 (29) |
+| The Free Holds I | 16/28 (67) | 16/28 (54) | 16/28 (53) | 16/27 (62) | 16/26 (53) | 16/28 (67) | 17/28 (32) | 18/28 (28) |
+| The Free Holds II | 16/29 (81) | 17/29 (57) | 17/29 (59) | 16/27 (63) | 16/26 (56) | 16/29 (81) | 18/29 (39) | 19/29 (32) |
+| The Underspire I | 17/30 (80) | 17/30 (49) | 17/30 (54) | 17/29 (75) | 17/27 (58) | 17/30 (79) | 18/30 (38) | 20/30 (31) |
+| The Underspire II | 17/31 (94) | 18/31 (50) | 18/31 (59) | 17/29 (75) | 17/27 (60) | 17/31 (93) | 19/31 (44) | 21/31 (36) |
+| The Drowned Arks I | 17/32 (92) | 18/32 (42) | 18/32 (54) | 17/31 (86) | 17/28 (62) | 17/32 (90) | 19/32 (43) | 22/32 (34) |
+| The Drowned Arks II | 18/33 (112) | 19/33 (44) | 19/33 (62) | 18/31 (92) | 18/28 (67) | 18/33 (110) | 20/33 (53) | 23/33 (40) |
+| Deep Shardfall I | 18/34 (109) | 20/34 (37) | 19/34 (56) | 18/33 (104) | 18/29 (69) | 18/34 (106) | 20/34 (51) | 23/34 (39) |
+| Deep Shardfall II | 18/35 (129) | 20/35 (38) | 20/35 (62) | 18/33 (107) | 18/29 (73) | 18/35 (125) | 20/35 (60) | 24/35 (45) |
+| Under the Anchors I | 19/36 (125) | 21/36 (32) | 20/36 (57) | 18/35 (119) | 18/30 (74) | 19/36 (120) | 21/36 (58) | 25/36 (43) |
+| Under the Anchors II | 19/37 (145) | 22/37 (33) | 21/37 (62) | 19/35 (122) | 19/30 (78) | 19/37 (138) | 21/37 (67) | 25/37 (49) |
+| Morrow's Shadow I | 19/38 (142) | 23/38 (29) | 21/38 (57) | 19/37 (136) | 19/31 (81) | 19/38 (134) | 22/38 (66) | 26/38 (47) |
+| Morrow's Shadow II | 19/39 (162) | 24/39 (30) | 22/39 (62) | 19/37 (138) | 19/31 (83) | 19/39 (153) | 22/39 (75) | 26/39 (53) |
+| Morrow's Shadow III | 20/40 (171) | 25/40 (28) | 22/40 (61) | 20/40 (179) | 19/34 (117) | 20/40 (159) | 23/40 (79) | 27/40 (56) |
+| **Total hunts, close every gap** | **202** | **109** | **130** | **199** | **122** | **189** | **117** | **202** |
+| Straight-through level after Morrow's Shadow III | 20 | 26 | 23 | 20 | 20 | 20 | 23 | 28 |
+
+What the numbers say:
+
+- **The wall starts in the main campaign, not the postgame.** A straight-through party falls behind at the Swamp
+  (level 9 against 10) and reaches The Bloom I at **15 against 25**; every option above only touches levels past 24,
+  so all of them start the Bloom 10 levels down and 47 hunts short. The soak's falloff lines up with the gap: 80-100%
+  wins up to a gap of about 10 (Cathedral, the Bloom), 50% at 12 (Free Holds I), 0-12% at 15-16 (Drowned Arks II,
+  Deep Shardfall I).
+- **Now:** the gap grows a level every ~1.5 stages, 10 to 20; closing every gap costs **202** replays.
+- **Only 5b holds the gap** (10-13, the Bloom's own) for a straight-through party; 1a holds it at 14-15 and roughly
+  halves the hunting (109). 1b and 5a slow the growth (to 18 and 17). 2a is the current climb in steps and changes
+  almost nothing; 2b flattens the ramp (gap 10-12 until the finale's 34) but ends 6 levels lower. 3 barely helps:
+  at 25-40 the bent curve is only 0-16% cheaper a level than the quadratic.
+- Catch-up (5b) gives nothing to a party that is already level, so its close-every-gap total stays 202; it rewards the
+  straight-through player rather than the hunter.
+
 ## Owner answers (2026-11-19)
 
 1. **Crucible, bounty board, caravan upgrades:** keep, and build them out. The Crucible is the "toilet play" horde
