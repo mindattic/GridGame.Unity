@@ -28,16 +28,6 @@ variant `-00`, the asset naming rule (GG-T561/GG-T562, `Core/Content/AssetNames`
 
 Also given a cue from the existing set: **Respite** (the pincer-pair spin) plays `battle.whoosh`.
 
-## Placeholder cues (no file yet)
-
-Called by the game already; `Audio.Sfx` skips a cue with no file, so each also plays the stand-in listed until its
-sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
-
-| Cue | Wants | Plays on | Stand-in |
-|---|---|---|---|
-| `slime.vomit` | a wet retching heave and a gloopy launch | a slime lobs its Vomit Glob (GG-T895, §14.23) | `element.water` low |
-| `slime.squish` | a juicy squelch underfoot | a hero squishes a slime glob (SquishedEvent, GG-T895) | `battle.slide` low |
-
 ## Battle events (`Core/Battle` events → `App/Battle/BattleScreen.*`)
 
 | Event | Cue(s) | Wants (GG-T464) |
@@ -87,7 +77,6 @@ sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
 | TrapPlacedEvent, TrapTriggeredEvent, TrapClearedEvent | `battle.trap` | |
 | RegionRuleEvent | `battle.whoosh` | |
 | RegionTilesEvent | `battle.slide` / `battle.trap` | |
-| SquishedEvent | `battle.slide`; a slime glob adds `slime.squish` (GG-T895) | |
 | RegionAnchorEvent | `battle.dash` | |
 | RegionFlagEvent, HazardQueuedEvent | `battle.channel` | |
 | HazardRetimedEvent | `battle.slide` | |
@@ -98,7 +87,7 @@ sound exists (`Resources/Audio/Sfx/<group>-<name>-00.ogg`).
 | RuleBrokenEvent | `battle.warcry` arrival, then per rule (`battle.dash`, `battle.clang`/`battle.shatter`, `battle.whoosh`, `battle.explosion`, `battle.powerup`) | |
 | BountyTargetEvent | `battle.warcry`, `battle.pickup` | |
 | WaveStartedEvent | `battle.wave` (GG-T465); Crucible `battle.crucible_wave` | |
-| ReinforcementsArrivedEvent | entrance cues (`battle.trap`, `battle.dash`, `status.debuff`, `battle.shatter`); a slime hatching from its glob `battle.crit` high + `element.water` (GG-T895) | |
+| ReinforcementsArrivedEvent | entrance cues (`battle.trap`, `battle.dash`, `status.debuff`, `battle.shatter`) | |
 | BattleEndedEvent | `battle.victory` / `battle.defeat` / `battle.dash` (escaped) | |
 | ComboChangedEvent | `battle.powerup` on a rank-up, pitch rising with the rank (GG-T851) | a rising sting per rank |
 | ComboEndedEvent | `combo.rank.d` / `combo.rank.c` / `combo.rank.b` / `combo.rank.a` / `combo.rank.s` / `combo.rank.ss` / `combo.rank.sss` with the rank callout banner (GG-T852), plus `ui.diamond` at S and above | **placeholders, no files yet** (`combo-rank-<rank>-00.ogg`; silent until made): an announcer-style stab per rank, hotter from D up to SSS |

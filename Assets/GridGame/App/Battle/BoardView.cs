@@ -863,12 +863,6 @@ namespace GridGame.App
                     ? Mathf.Clamp01(kv.Value.LifeTicks / (def.LifeSeconds * BattleConfig.TicksPerSecond)) : -1f;
                 var fx = new TileMarkFx(edge, col, faint);
                 e.Add(fx);
-                // GG-T895: a hatching mark (a slime glob) is a wobbling blob, redrawn every frame so it jiggles.
-                if (Hatches(def))
-                {
-                    fx.Glob = true; fx.Calm = calm;
-                    if (!calm && !faint) fx.schedule.Execute(fx.MarkDirtyRepaint).Every(33);
-                }
                 if (faint)
                 {
                     // The party's own hidden mark: its wash fades out over 0.5 s (from when it hid), the dotted owner outline stays.
@@ -959,8 +953,7 @@ namespace GridGame.App
 
         private static Color TeamHero => Palette.Colorblind ? Palette.CbHero : Palette.Hero;
 
-        /// <summary>The state hatches a unit when its life runs out (an OnExpire SpawnUnit: a slime glob).</summary>
-        public static bool Hatches(TileStateDef def)
+        private static bool Hatches(TileStateDef def)
         {
             if (def?.OnExpire == null) return false;
             foreach (var fx in def.OnExpire) if (fx != null && fx.Kind == RuleEffectKind.SpawnUnit) return true;

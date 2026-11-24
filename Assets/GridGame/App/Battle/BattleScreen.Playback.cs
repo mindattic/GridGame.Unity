@@ -1045,8 +1045,7 @@ namespace GridGame.App
                 var v = board.Add(u);
                 if (si < ra.SpawnedAt.Count) board.Place(v, ra.SpawnedAt[si].At); // it may already have walked on this command
                 v.SetHp(u.Hp, u.MaxHp);
-                if (si >= ra.SpawnedAt.Count || !TryHatchPop(v, u, ra.SpawnedAt[si].At)) // GG-T895: a slime glob hatches
-                    App.StartCoroutine(EntranceAnim(v, u.Def));
+                App.StartCoroutine(EntranceAnim(v, u.Def));
             }
             SyncTimeline(null);
             if (ra.Spawned.Count > 0) yield return Tween.Wait(Timing.Standard);
@@ -1961,7 +1960,6 @@ namespace GridGame.App
                 board.Lines.ClearLines();
                 foreach (var t in targets) NamedImpactFlourish(a.ImpactVfx, ViewCenter(t), abilityStyle);
             }
-            else if (caster != null && GlobPainted(a) is TileStateDef glob) yield return GlobLobAnim(caster, glob, ar.Anchor); // GG-T895
             else yield return Tween.Wait(Timing.Quick);
             App.StartCoroutine(ClearMarksLater(0.35f));
         }

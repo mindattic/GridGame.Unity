@@ -95,6 +95,7 @@ namespace GridGame.App
                 if (report.BrokenOrbFound)
                     Tag(Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list), RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
+                ComboRows(c, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
                     Tag(Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list), RowKind.Settings).name = "results-difficulty";
@@ -151,6 +152,7 @@ namespace GridGame.App
                 }
                 if (!report.Escaped && report.XpEach > 0)
                     Tag(Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "defeat-xp";
+                ComboRows(c, list);
             }
 
             // A guest down at the end isn't lost (GG-T114) — they'll be met on this stage again.
@@ -261,6 +263,20 @@ namespace GridGame.App
 
         /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
         /// <c>.Q&lt;Label&gt;</c> or <c>.name</c> still lands on the row (KindIcon itself returns the icon).</summary>
+        /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
+        /// combo points earned supporting), from <see cref="BattleReport"/>; nothing when no combo ran.</summary>
+        private void ComboRows(ContentDb c, VisualElement list)
+        {
+            if (report.BestComboRank == GridGame.Core.Battle.ComboRank.None) return;
+            var best = Ui.MenuRow("Best combo", $"{report.BestComboRank} · {report.BestComboScore} pts", null, list);
+            best.name = "results-best-combo";
+            best.KindIcon(RowKind.Hero);
+            best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
+            if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
+            string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
+            Tag(Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list), RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+        }
+
         private static VisualElement Tag(VisualElement row, RowKind kind, Texture2D tex = null) { row.KindIcon(kind, tex); return row; }
 
         /// <summary>GG-T749: <see cref="Tag(VisualElement, RowKind, Texture2D)"/> with the art found from an id (a hero's class id).</summary>

@@ -395,6 +395,12 @@ namespace GridGame.Meta
         /// <summary>The save's best waves-survived after this run.</summary>
         public int CrucibleBest;
         public bool CrucibleNewBest;
+        /// <summary>The battle's best combo window (§1.2.8, GG-T852): its rank (None when no combo ran) and score.</summary>
+        public ComboRank BestComboRank;
+        public int BestComboScore;
+        /// <summary>The hero class with the most combo points earned as a supporter this battle (null when none), and its points.</summary>
+        public string TopSupporter;
+        public int TopSupporterPoints;
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
@@ -746,7 +752,12 @@ namespace GridGame.Meta
                 StageTheme = battle.Stage.Theme,
                 Difficulty = battle.Difficulty,
                 OrbsLeft = battle.Bank?.Count ?? 0,
+                BestComboRank = r.BestComboRank,
+                BestComboScore = r.BestComboScore,
             };
+            // GG-T852: the top supporter, ties to the lower class id so it is deterministic.
+            foreach (var kv in r.ComboSupporterPoints.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+                if (kv.Value > rep.TopSupporterPoints) { rep.TopSupporter = kv.Key; rep.TopSupporterPoints = kv.Value; }
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);
 

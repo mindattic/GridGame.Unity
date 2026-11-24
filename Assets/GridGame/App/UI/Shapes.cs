@@ -178,23 +178,6 @@ namespace GridGame.App
         /// <summary>A filled dot (outlined disc) of <paramref name="radius"/>.</summary>
         public static void Dot(Painter2D p, Vector2 center, float radius, ShapeStyle s) => Paint(p, s, Circle(center, radius));
 
-        /// <summary>GG-T895: a wobbling blob (outlined, like <see cref="Dot"/>): a disc of <paramref name="radius"/> whose rim
-        /// ripples in slow lobes by <paramref name="wobble"/> (share of the radius) at <paramref name="phase"/> (radians), its
-        /// lower half squashed flat as if resting on the floor. A wobble of 0 is a plain squashed disc.</summary>
-        public static void Blob(Painter2D p, Vector2 center, float radius, float wobble, float phase, ShapeStyle s)
-        {
-            var pts = new List<Vector2>(CircleSegments);
-            for (int k = 0; k < CircleSegments; k++)
-            {
-                float a = 2f * Mathf.PI * k / CircleSegments;
-                float r = radius * (1f + wobble * (Mathf.Sin(3f * a + phase) * 0.7f + Mathf.Sin(5f * a - phase * 1.3f) * 0.3f));
-                var d = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
-                if (d.y > 0f) d.y *= 0.72f;
-                pts.Add(center + d * r);
-            }
-            Paint(p, s, pts);
-        }
-
         /// <summary>A ring (band of <see cref="ShapeStyle.Width"/>) of centreline <paramref name="radius"/>; a partial ring
         /// sweeps <paramref name="sweepDeg"/> clockwise (screen space) from <paramref name="startDeg"/> (0 = right) with round ends.</summary>
         public static void Ring(Painter2D p, Vector2 center, float radius, ShapeStyle s, float startDeg = 0f, float sweepDeg = 360f)

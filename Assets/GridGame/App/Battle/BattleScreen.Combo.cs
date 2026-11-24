@@ -17,6 +17,8 @@ namespace GridGame.App
     /// (§11.6). It sits on the board's top-right corner in screen space (the board is the same design size at every
     /// stage aspect, so it is portrait-safe everywhere) and takes no input. Reduce Motion keeps every number and colour
     /// but drops the slam, shake, strobe and slides for plain fades.
+    /// The close (GG-T852): after the rank stamps, each hero's attacker / supporter points fly from the meter to its token,
+    /// and the rank is called out as one announcement beat (§12.0.1) with its <c>combo.rank.*</c> cue.
     /// </summary>
     public sealed partial class BattleScreen
     {
@@ -340,13 +342,71 @@ namespace GridGame.App
         private IEnumerator ComboEndedAnim(ComboEndedEvent e)
         {
             EnsureComboMeter();
-            if (comboRoot == null) return null;
-            comboClosing = true;
-            comboHits = 0;
-            comboDecay = 0f;
-            comboAttackers.Clear();
-            App.StartCoroutine(ComboClose(e));
-            return null;
+            if (comboRoot != null)
+            {
+                comboClosing = true;
+                comboHits = 0;
+                comboDecay = 0f;
+                comboAttackers.Clear();
+                App.StartCoroutine(ComboClose(e));
+            }
+            return ComboCallout(e);
+        }
+
+        /// <summary>The cue for a closing rank (GG-T852): <c>combo.rank.d</c> .. <c>combo.rank.sss</c>, placeholders listed in
+        /// docs/SFX.md (silent until their files land; the rank-up sting and <c>ui.diamond</c> still play).</summary>
+        private static string ComboRankCue(ComboRank r) => r == ComboRank.None ? null : "combo.rank." + r.ToString().ToLowerInvariant();
+
+        /// <summary>The rank callout (GG-T852) through the announcement cadence (§12.0.1): one awaited banner beat, like an
+        /// <see cref="AnnounceEvent"/>, with the rank's cue.</summary>
+        private IEnumerator ComboCallout(ComboEndedEvent e)
+        {
+            if (e.Rank == ComboRank.None) yield break;
+            App.Audio.Sfx(ComboRankCue(e.Rank));
+            ShowBanner($"{e.Rank} combo! {ComboWord(e.Rank)}");
+            yield return Tween.Wait(Timing.Standard);
+        }
+
+        /// <summary>A hero's closing share flies from the meter's rank letter to its token (GG-T852): attacker points in the
+        /// combo colour, supporter points in mana blue, each landing as a combat text and a token pop. Reduce Motion (or a
+        /// token not on the board) shows the text at the token without the flight.</summary>
+        private IEnumerator ComboFlyShare(ComboShare s)
+        {
+            var u = State?.UnitById(s.UnitId);
+            if (u == null || board == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
+            var comboTint = CombatText.StyleOf(CombatTextKind.Combo).Color;
+            if (s.AttackerPoints > 0) App.StartCoroutine(ComboFlyPoints(v, $"+{s.AttackerPoints} atk", comboTint));
+            if (s.AttackerPoints > 0 && s.SupporterPoints > 0) yield return Tween.Wait(ReduceMotion ? Timing.Instant : Timing.Quick * 0.6f);
+            if (s.SupporterPoints > 0) App.StartCoroutine(ComboFlyPoints(v, $"+{s.SupporterPoints} sup", Palette.Mana));
+        }
+
+        private IEnumerator ComboFlyPoints(UnitView v, string text, Color tint)
+        {
+            void Land()
+            {
+                if (v.Root.panel == null) return;
+                Text.Show(v, CombatTextKind.Combo, text, 0f, tint);
+                if (!ReduceMotion) App.StartCoroutine(Tween.Pop(v.Root, 1.12f, 0.16f));
+            }
+            if (ReduceMotion || shake == null || comboRankLabel == null || comboRankLabel.panel == null || v.Root.panel == null) { Land(); yield break; }
+            Vector2 from = shake.WorldToLocal(comboRankLabel.worldBound.center);
+            Vector2 to = shake.WorldToLocal(v.Root.worldBound.center);
+            var l = ComboTextLabel(text, TypeScale.Base * 0.8f, shake);
+            l.style.position = Position.Absolute;
+            l.style.color = tint;
+            l.style.translate = new Translate(Length.Percent(-50f), Length.Percent(-50f));
+            float lift = Mathf.Clamp(Vector2.Distance(from, to) * 0.25f, Space.S48, 240f);
+            float travel = Mathf.Clamp(Vector2.Distance(from, to) / 2400f, 0.28f, 0.45f);
+            yield return Tween.Run(travel, k =>
+            {
+                float e = k * k * (3f - 2f * k);
+                var p = Vector2.Lerp(from, to, e) + Vector2.down * lift * Mathf.Sin(Mathf.PI * k);
+                l.style.left = p.x; l.style.top = p.y;
+                l.style.scale = new Scale(Vector2.one * Mathf.Lerp(1.35f, 0.8f, k));
+                l.style.opacity = Mathf.Min(1f, k * 6f);
+            });
+            l.RemoveFromHierarchy();
+            Land();
         }
 
         private IEnumerator ComboClose(ComboEndedEvent e)
@@ -366,6 +426,7 @@ namespace GridGame.App
                 string split = s.SupporterPoints > 0 && s.AttackerPoints > 0 ? $"{s.AttackerPoints} atk · {s.SupporterPoints} sup"
                     : s.SupporterPoints > 0 ? "Support" : "Attack";
                 App.StartCoroutine(ComboChip(s.ClassId, $"{s.Total}", split, s.SupporterPoints > s.AttackerPoints, true));
+                App.StartCoroutine(ComboFlyShare(s));
                 yield return Tween.Wait(ReduceMotion ? Timing.Instant : Timing.Quick);
             }
             yield return Tween.Wait(1.8f);
@@ -377,6 +438,43 @@ namespace GridGame.App
             comboShownRank = ComboRank.None;
             comboRankLabel.text = comboWordLabel.text = comboScoreLabel.text = "";
             comboFrame.MarkDirtyRepaint();
+        }
+
+        /// <summary>The meter for AutomationServer GET /combo (GG-T852): what it shows now, the model's open window (the
+        /// tracker on <see cref="State"/>, which may run ahead of playback) and the battle's best combo and top supporter.</summary>
+        public object ComboReport()
+        {
+            var c = State?.Combo;
+            var r = State?.Results;
+            string top = null; int topPts = 0;
+            if (r != null)
+                foreach (var kv in r.ComboSupporterPoints)
+                    if (kv.Value > topPts || (kv.Value == topPts && topPts > 0 && string.CompareOrdinal(kv.Key, top) < 0)) { top = kv.Key; topPts = kv.Value; }
+            bool up = comboRoot != null && comboRoot.panel != null;
+            return new
+            {
+                meter = new
+                {
+                    visible = up && comboRoot.resolvedStyle.opacity > 0.01f,
+                    rank = up ? comboRankLabel.text : "",
+                    word = up ? comboWordLabel.text : "",
+                    score = up ? comboScoreLabel.text : "",
+                    shownRank = comboShownRank.ToString(),
+                    hits = comboHits,
+                    decay = comboDecay,
+                    closing = comboClosing,
+                    chips = up ? comboChips.childCount : 0,
+                },
+                window = c == null ? null : new
+                {
+                    score = c.Score, rank = c.Rank.ToString(), hits = c.Hits,
+                    shares = c.Shares.ConvertAll(x => new { unit = x.UnitId, classId = x.ClassId, attacker = x.AttackerPoints, supporter = x.SupporterPoints }),
+                },
+                best = r == null ? null : new { rank = r.BestComboRank.ToString(), score = r.BestComboScore },
+                topSupporter = top == null ? null : new { classId = top, points = topPts },
+                attackerPoints = r?.ComboAttackerPoints,
+                supporterPoints = r?.ComboSupporterPoints,
+            };
         }
     }
 }

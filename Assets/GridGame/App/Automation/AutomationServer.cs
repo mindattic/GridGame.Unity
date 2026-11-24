@@ -708,6 +708,9 @@ namespace GridGame.App.Automation
                 case "camera":
                     foreach (var cam in Camera.allCameras) cam.enabled = q["on"] == "1";
                     return new { ok = true };
+                case "combo": // GG-T852: the combo meter (shown and model), best combo and top supporter
+                    if (app.Router.Current is BattleScreen cbs) return cbs.ComboReport();
+                    return new { error = "not in battle" };
                 case "banner":
                 {
                     // GG-T358: "shown" is every banner/billboard line this battle has put up, so an opening announcement

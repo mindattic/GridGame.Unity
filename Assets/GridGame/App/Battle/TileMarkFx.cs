@@ -12,10 +12,6 @@ namespace GridGame.App
     {
         /// <summary>Share of the mark's life left (0..1); below 0 = no ring (the mark lasts until cleared).</summary>
         public float Life = -1f;
-        /// <summary>GG-T895: the mark hatches when its life runs out (a slime glob): it is drawn as a wobbling blob of its
-        /// state's colour that swells, and wobbles harder and quicker, as <see cref="Life"/> drains. <see cref="Calm"/>
-        /// (Reduce Motion) holds it still, swelling only.</summary>
-        public bool Glob, Calm;
         private readonly Color owner, state;
         private readonly bool hidden;
 
@@ -38,18 +34,6 @@ namespace GridGame.App
                 var st = ShapeStyle.Small.Tint(owner.WithA(0.9f)).Thick(5f).Dashes(0f, 10f);
                 var inner = new Rect(r.x + 10f, r.y + 10f, r.width - 20f, r.height - 20f);
                 Shapes.RoundedRect(p, inner, 14f, st, dashed: true);
-            }
-            if (Glob && !hidden)
-            {
-                float grow = Life >= 0f ? 1f - Life : 0f;
-                float radius = Mathf.Min(r.width, r.height) * (0.2f + 0.1f * grow);
-                float wobble = Calm ? 0f : 0.05f + 0.1f * grow;
-                float phase = Calm ? 0f : Tween.Clock * (3f + 6f * grow);
-                var c = r.center + new Vector2(0f, radius * 0.15f);
-                Shapes.Blob(p, c, radius, wobble, phase, ShapeStyle.Small.Tint(state.WithA(0.95f)).Outlined(ShapeStyle.Ink, 3f));
-                // A wet shine on its upper left, riding the wobble.
-                var shine = c + new Vector2(-radius * 0.35f, -radius * (0.4f + 0.5f * wobble * Mathf.Sin(phase)));
-                Shapes.Dot(p, shine, radius * 0.18f, ShapeStyle.Small.Tint(Color.white.WithA(0.7f)).Outlined(Color.clear, 0f));
             }
             if (Life >= 0f)
             {
