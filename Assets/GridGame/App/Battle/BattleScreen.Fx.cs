@@ -184,6 +184,7 @@ namespace GridGame.App
                 yield break;
             }
             App.Audio.Sfx(st.Cue, 0.8f);
+            if (id == "rooted") yield return VineCoil(at); // GG-T881: brambles coil up round the rooted unit first
             bool tinted = st.Tint != null;
             if (tinted) v.Art.style.unityBackgroundImageTintColor = Palette.Hex(st.Tint, Palette.White);
             float seconds = Emit(st, at);

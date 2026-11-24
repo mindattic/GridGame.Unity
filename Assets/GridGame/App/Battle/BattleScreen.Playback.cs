@@ -203,7 +203,7 @@ namespace GridGame.App
 
                 case CastQueuedEvent cq: return CastQueuedAnim(cq);
                 case CastStaggeredEvent cs: return StaggerAnim(cs);
-                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : "Fizzled", 0.35f);
+                case CastCancelledEvent cc: App.Audio.Sfx("battle.fizzle", 0.8f); castGhosts.Remove(cc.EntryId); SyncTimeline(null); board.Lines.ClearLines(); board.ClearMarks(); return FloatText(cc.CasterId, cc.Reason == "interrupted" || cc.Reason == "rooted" ? CombatTextKind.Debuff : CombatTextKind.Expire, cc.Reason == "interrupted" ? "Interrupted!" : cc.Reason == "rooted" ? "Snared!" : "Fizzled", 0.35f); // GG-T881: roots snap a Line charge
                 case ClutchEvent cl: return ClutchAnim(cl);
                 case AbilityResolvedEvent ar: FlushTallies(); return AbilityAnim(ar);
                 case AbilityRefusedEvent rf: App.Audio.Sfx("ui.error"); ShowBanner(rf.Reason); return null;

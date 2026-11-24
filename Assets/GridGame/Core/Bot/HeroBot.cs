@@ -513,6 +513,7 @@ namespace GridGame.Core.Bot
                     }
                     var curse = s.Content.TryBuff(a.ApplyBuff);
                     if (curse != null && curse.Links) score += CurseLink.Value(s, t); // GG-T873: link a pincer target to a foe out of reach
+                    else if (curse != null && curse.Roots) score += BrambleSnare.Value(s, t) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T881: root a Kiter, a fleeing foe, a Line charger or a hooker
                     else if (curse != null && !t.HasBuff(curse.Id)) score += DebuffValue(curse) * Math.Max(0.25f, a.ApplyBuffChance);
                     if (curse != null) score += ShredValue(t, curse) * Math.Max(0.25f, a.ApplyBuffChance); // GG-T864: Flay a plated or tough foe
                     if (a.StealsMana) score += s.Bank.IsFull ? 0f : 3f;

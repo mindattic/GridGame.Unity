@@ -153,6 +153,10 @@ namespace GridGame.Core.Rules
             return n == 1;
         }
 
+        /// <summary>GG-T881: wounded below its brain's retreat threshold, so its next step breaks contact (PlanStep), unless
+        /// one hero is left (no foe flees a lone hero).</summary>
+        public static bool Retreats(BattleState s, Unit e) => e.HpFraction < RetreatThreshold(e) && !LoneHero(s);
+
         private static float RetreatThreshold(Unit e)
         {
             switch (e.Def.Brain)

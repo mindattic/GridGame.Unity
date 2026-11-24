@@ -877,10 +877,22 @@ namespace GridGame.Core.Battle
             u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
             if (def.PlateChip > 0) ChipPlate(u, def.PlateChip, sourceId); // GG-T857: Shredded bites the plate from any side
+            if (def.Roots) SnapLineCharge(u); // GG-T881: a Line charge carries the caster down its lane; rooted, it can't
             ComboStatus(u, def, sourceId); // §1.2.8
             if (u.IsCommandable && def.Tempo != 0)
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
+        }
+
+        /// <summary>GG-T881 (§7 Bramble Snare): roots landing on a unit winding up a Line charge snap the charge off
+        /// (<see cref="CastCancelledEvent"/> reason "rooted"; the view calls "Snared!"). A Single charge, a bolt from
+        /// where it stands, goes on.</summary>
+        private void SnapLineCharge(Unit u)
+        {
+            var cast = BrambleSnare.LineCharge(S, u);
+            if (cast == null) return;
+            S.Timeline.Remove(cast);
+            Emit(new CastCancelledEvent { EntryId = cast.Id, CasterId = u.Id, AbilityId = cast.AbilityId, Reason = "rooted" });
         }
 
         /// <summary>Same test as <see cref="Taming.WhyNot"/>'s "Too mighty": a Boss tag, a rule break, or boss phases.</summary>
