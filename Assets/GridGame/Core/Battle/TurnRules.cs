@@ -309,6 +309,18 @@ namespace GridGame.Core.Battle
             return cmd is ShieldCommand && TooLittleTime(s);
         }
 
+        /// <summary>Who Guard's Protection covers (§2.5). Every living hero, except under HeroTimeline (GG-T1075, §2.13.3),
+        /// where Guard is the active hero's own turn: only that hero, banking the rest of its window
+        /// (<see cref="GuardCharge"/>: time to the next other icon minus the time held).</summary>
+        public static List<Unit> GuardProtects(BattleState s)
+        {
+            Require(s);
+            if (!HeroesOnTimeline(s)) return s.LivingList(GridGame.Core.Content.Team.Hero);
+            var list = new List<Unit>();
+            if (s.UnitById(s.ActiveHeroId) is Unit active && active.Alive) list.Add(active);
+            return list;
+        }
+
         /// <summary>
         /// Guard bank (GG-T189, §2.5): the mana charge a Guard pressed after <paramref name="heldSeconds"/> earns.
         /// PartyWindow: the window minus the time already used, at <see cref="BattleConfig.GuardChargePerSecond"/>, capped

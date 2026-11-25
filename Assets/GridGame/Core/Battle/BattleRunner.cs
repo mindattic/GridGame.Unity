@@ -151,6 +151,13 @@ namespace GridGame.Core.Battle
                 S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;
             }
             if (!S.IsOver) ReturnControl(newWindow, roundStarted);
+            // GG-T1075 (§2.13.3): the active hero fell as its turn opened (a TurnEnd/TurnStart hook, a burn) — the
+            // advance resumes to the next hero's own icon.
+            for (int i = 0; i < 4 && !S.IsOver && TurnRules.HeroesOnTimeline(S) && S.ActiveHeroId < 0; i++)
+            {
+                AdvanceUntilHeroTurn();
+                if (!S.IsOver) ReturnControl(true);
+            }
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
         }
@@ -414,7 +421,7 @@ namespace GridGame.Core.Battle
             Emit(new ActionBeganEvent { ActorId = -1, Label = "Shield" });
             var prot = C.TryBuff(BattleConfig.ShieldBuffId);
             if (prot != null)
-                foreach (var h in S.LivingList(Team.Hero)) ApplyBuff(h, prot, prot.Duration);
+                foreach (var h in TurnRules.GuardProtects(S)) ApplyBuff(h, prot, prot.Duration); // GG-T1075: the mode's
             // GG-T189: Guard ends the turn early and banks the turn time it gives up as mana charge (the forming bubble,
             // §3.1.9) — measured before the clock runs. It replaces the drag-timer time bank (§3.1.8), which only a
             // move feeds, so a pending drag remainder is dropped rather than stacked on top.
@@ -714,6 +721,7 @@ namespace GridGame.Core.Battle
             // A fallen hero no longer carries its Slow: lift that party tempo unless another living hero still has it (GG-T275).
             if (tempoBuffs != null) foreach (var b in tempoBuffs) DropBuffTempo(b.Def.Id);
             S.Timeline.RemoveAll(e => e.OwnerId == u.Id);
+            if (u.Id == S.ActiveHeroId) S.ActiveHeroId = -1; // GG-T1075: a fallen hero's turn is over; the clock runs on
             Emit(new DiedEvent { UnitId = u.Id, Team = u.Team, At = at });
             NoteFoeDeathForClutch(u, killer, u.AlreadyLooted); // GG-T571: LastStand, HazardKill, the Finisher candidate
             ComboKill(u, killer); // §1.2.8

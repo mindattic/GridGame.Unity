@@ -256,7 +256,9 @@ namespace GridGame.Core.Battle
         /// (the wave's opening, a guest who just joined, a hero revived since) gets one, entering at its Speed's entry.
         /// Returns the latest tick any hero icon arrives at (-1 with none), so the wave's foes can open behind it.
         /// </summary>
-        private int ScheduleHeroIcons()
+        /// <remarks>GG-T1075: <paramref name="onlyMissing"/> (a revive mid-wave) gives icons only to heroes without one
+        /// and leaves every other icon where it is.</remarks>
+        private int ScheduleHeroIcons(bool onlyMissing = false)
         {
             if (!TurnRules.HeroesOnTimeline(S)) return -1;
             int last = -1;
@@ -264,6 +266,7 @@ namespace GridGame.Core.Battle
             {
                 if (!u.Alive || !u.OnBoard || !TurnRules.IsHeroIcon(S, u)) continue;
                 var e = S.TurnEntryOf(u.Id);
+                if (onlyMissing && e != null) continue;
                 if (e == null) { e = new TimelineEntry { Id = S.NextEntryId++, Kind = TimelineKind.Turn, OwnerId = u.Id }; S.Timeline.Add(e); }
                 ScheduleReentry(e, u, 0f, space: false);
                 last = Math.Max(last, BattleEngine.TicksUntilAct(S, e, ignoreHalt: true));

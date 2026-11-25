@@ -592,6 +592,7 @@ namespace GridGame.Core.Battle
             fallen.OnBoard = true;
             fallen.Hp = Math.Min(fallen.MaxHp, Math.Max(1, hp));
             if (fallen.IsIndependent || fallen.Team == Team.Enemy) EnsureTurnEntry(fallen); // a domesticated monster / a raised foe gets its turn icon back (GG-T303)
+            else if (TurnRules.IsHeroIcon(S, fallen)) ScheduleHeroIcons(onlyMissing: true); // GG-T1075: back on the timeline mid-wave
             Emit(new RevivedEvent { UnitId = fallen.Id, At = fallen.Pos, Hp = fallen.Hp });
         }
 
