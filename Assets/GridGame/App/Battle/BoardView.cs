@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using GridGame.Core;
 using GridGame.Core.Battle;
@@ -271,6 +272,64 @@ namespace GridGame.App
             tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
             tag.style.color = u.IsNeutral ? Palette.Neutral : wanderer ? Palette.Wanderer : tamed ? Palette.Tamed : new Color(0.6f, 1f, 0.75f);
             Frame.Add(tag);
+        }
+
+        private VisualElement cardBack;
+
+        /// <summary>GG-T1072: the tile's back face, built on first use: the same rounded frame as the front, filled with
+        /// the card-back texture. Placeholder art (<see cref="CardFlip.DiamondBack"/>) until the owner supplies a real back.</summary>
+        private VisualElement CardBack
+        {
+            get
+            {
+                if (cardBack != null) return cardBack;
+                cardBack = new VisualElement { name = "card-back-" + Id, pickingMode = PickingMode.Ignore };
+                cardBack.AddToClassList("unit-frame");
+                cardBack.style.position = Position.Absolute;
+                cardBack.style.left = cardBack.style.top = cardBack.style.right = cardBack.style.bottom = Space.S8;
+                cardBack.style.borderTopLeftRadius = Frame.style.borderTopLeftRadius; cardBack.style.borderTopRightRadius = Frame.style.borderTopRightRadius;
+                cardBack.style.borderBottomLeftRadius = Frame.style.borderBottomLeftRadius; cardBack.style.borderBottomRightRadius = Frame.style.borderBottomRightRadius;
+                cardBack.style.backgroundImage = new StyleBackground(CardFlip.DiamondBack);
+                cardBack.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
+                cardBack.style.display = DisplayStyle.None;
+                Root.Add(cardBack);
+                return cardBack;
+            }
+        }
+
+        /// <summary>
+        /// GG-T1072: a card flip about the tile's vertical (Y) axis, <paramref name="turns"/> half-turns of 180° over
+        /// <paramref name="seconds"/> (2 = a full turn back to the front). Drawn with the shared <see cref="CardFlip"/>
+        /// rule: the width scales by |cos(angle)| down to one pixel edge-on, the front (portrait, bars, badges) shows only
+        /// while the tile faces the camera and the back texture only once it has turned past 90°, so the face swap lands
+        /// on the edge-on frame with no pop. <paramref name="atBack"/> runs once, the first frame the back fully faces the
+        /// camera (180°), so a change to the front (a new team look) happens unseen.
+        /// </summary>
+        public IEnumerator FlipCard(float seconds, int turns = 2, System.Action atBack = null)
+        {
+            var back = CardBack;
+            float total = 180f * Mathf.Max(1, turns);
+            float onePixel = 1f / Mathf.Max(1f, tileSize * W);
+            bool fired = atBack == null;
+            bool? showingFront = null;
+            void Pose(float deg)
+            {
+                bool front = CardFlip.FrontFacing(deg);
+                if (showingFront != front)
+                {
+                    showingFront = front;
+                    foreach (var child in Root.Children())
+                        if (child != back && child != Glow) child.style.visibility = front ? Visibility.Visible : Visibility.Hidden;
+                }
+                float w = CardFlip.Apply(back, deg, onePixel);
+                Root.style.scale = new Scale(new Vector2(w, 1f));
+                if (!fired && deg >= 180f) { fired = true; atBack(); }
+            }
+            yield return Tween.Run(seconds, k => Pose(total * k), Tween.EaseInOut);
+            Pose(total);
+            if (!fired) { fired = true; atBack(); }
+            // Rest on whichever face the flip ended on; an even count is back on the front at full width.
+            Root.style.scale = new Scale(new Vector2(CardFlip.WidthScale(total, onePixel), 1f));
         }
 
         public void SetHp(int hp, int max)

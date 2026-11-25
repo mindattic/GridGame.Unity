@@ -63,11 +63,13 @@ namespace GridGame.App
             foreach (var line in e.Lines) yield return SurpriseAnnounce(line.SpeakerClassId, line.Text);
             var u = State.UnitById(e.UnitId);
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
-            v.SetTeamLook(u);
             App.Audio.Sfx("battle.victory", 0.6f);
             if (e.GoldPaid > 0) App.StartCoroutine(FloatText(e.UnitId, CombatTextKind.Support, $"-{e.GoldPaid} G", 0.6f, 0f, Palette.Gold));
             Billboard($"{u.Name} joins the fight! Keep them standing to recruit them.", null, new Color(0.6f, 1f, 0.75f));
-            yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.7f ? 1f + k / 0.7f * 0.15f : 1.15f - 0.15f * (k - 0.7f) / 0.3f)));
+            if (ReduceMotion) { v.SetTeamLook(u); yield break; }
+            // GG-T1072: the tile turns over like a card, showing its back past 90°, and comes round guest-green.
+            App.Audio.Sfx("battle.whoosh", 0.6f, 1.1f);
+            yield return v.FlipCard(Timing.Dramatic, 2, () => v.SetTeamLook(u));
             v.Root.style.scale = new Scale(Vector2.one);
         }
     }
