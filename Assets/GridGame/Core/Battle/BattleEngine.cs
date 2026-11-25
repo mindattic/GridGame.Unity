@@ -478,7 +478,7 @@ namespace GridGame.Core.Battle
         public static AbilityDef SlotAbility(BattleState s, Unit hero, int slot)
         {
             if (slot < 0 || slot >= hero.Bar.Count) return null;
-            return BattleRunner.AbilityForSlot(s.Content, hero.Bar[slot]);
+            return BattleRunner.AbilityForSlot(s.Content, hero.Bar[slot], hero);
         }
 
         /// <summary>All legal anchor tiles for a slot (empty list for Auto abilities — they need no pick).</summary>

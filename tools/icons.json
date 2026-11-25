@@ -1673,6 +1673,14 @@
    "lorc/heavy-arrow",
    "shadow"
   ],
+  "ninja_fang": [
+   "skoll/fangs",
+   "steel"
+  ],
+  "ninja_edge": [
+   "lorc/dripping-blade",
+   "eclipse"
+  ],
   "barbarian_earthsplitter": [
    "lorc/quake-stomp",
    "earth"

@@ -1266,10 +1266,14 @@
    "Callout": "Venom!"
   }
  },
+ { "Id": "ember_edge", "MergedInto": "ninja_edge" },
+ { "Id": "static_edge", "MergedInto": "ninja_edge" },
+ { "Id": "rime_edge", "MergedInto": "ninja_edge" },
+ { "Id": "shadow_edge", "MergedInto": "ninja_edge" },
  {
-  "Id": "ember_edge",
-  "Name": "Ember Edge",
-  "Description": "Its landed blows have a [slight] chance to [Burn] the target.",
+  "Id": "ninja_edge",
+  "Name": "Ninja Edge",
+  "Description": "Its landed blows have a [slight] chance to strike with its element: [Blind] for Dark, [Freeze] for Ice, [Burn] for Fire, [Slow] for Lightning, [Poison] for Poison.",
   "Kind": "Passive",
   "Cost": 0,
   "CastTime": 0.0,
@@ -1298,136 +1302,17 @@
    "On": "OnLandedHit",
    "Chance": 0.15,
    "Effects": [
-    {
-     "Kind": "ApplyBuff",
-     "Buff": "burning",
-     "Who": "Target"
-    }
+    { "Kind": "ApplyBuff", "Buff": "blinded", "Who": "Target" }
    ],
-   "Callout": "Ember!"
-  }
- },
- {
-  "Id": "static_edge",
-  "Name": "Static Edge",
-  "Description": "Its landed blows have a [slight] chance to [Slow] the target.",
-  "Kind": "Passive",
-  "Cost": 0,
-  "CastTime": 0.0,
-  "CooldownTurns": 0,
-  "Shape": "Self",
-  "Radius": 0,
-  "Mode": "Auto",
-  "Filter": "Any",
-  "Motion": "None",
-  "DamageType": "Physical",
-  "BaseDamage": 0,
-  "BaseHeal": 0,
-  "ApplyBuff": null,
-  "ApplyBuffChance": 1.0,
-  "RemovesDebuffs": false,
-  "StealsMana": false,
-  "HastenU": 0.0,
-  "IsTeleport": false,
-  "Icon": null,
-  "CastVfx": null,
-  "ProjectileVfx": null,
-  "ImpactVfx": null,
-  "LingerVfx": null,
-  "Sfx": null,
-  "Trigger": {
-   "On": "OnLandedHit",
-   "Chance": 0.15,
-   "Effects": [
-    {
-     "Kind": "ApplyBuff",
-     "Buff": "slowed",
-     "Who": "Target"
-    }
-   ],
-   "Callout": "Static!"
-  }
- },
- {
-  "Id": "rime_edge",
-  "Name": "Rime Edge",
-  "Description": "Its landed blows have a [slight] chance to [Freeze] the target.",
-  "Kind": "Passive",
-  "Cost": 0,
-  "CastTime": 0.0,
-  "CooldownTurns": 0,
-  "Shape": "Self",
-  "Radius": 0,
-  "Mode": "Auto",
-  "Filter": "Any",
-  "Motion": "None",
-  "DamageType": "Physical",
-  "BaseDamage": 0,
-  "BaseHeal": 0,
-  "ApplyBuff": null,
-  "ApplyBuffChance": 1.0,
-  "RemovesDebuffs": false,
-  "StealsMana": false,
-  "HastenU": 0.0,
-  "IsTeleport": false,
-  "Icon": null,
-  "CastVfx": null,
-  "ProjectileVfx": null,
-  "ImpactVfx": null,
-  "LingerVfx": null,
-  "Sfx": null,
-  "Trigger": {
-   "On": "OnLandedHit",
-   "Chance": 0.1,
-   "Effects": [
-    {
-     "Kind": "ApplyBuff",
-     "Buff": "frozen",
-     "Who": "Target"
-    }
-   ],
-   "Callout": "Rime!"
-  }
- },
- {
-  "Id": "shadow_edge",
-  "Name": "Shadow Edge",
-  "Description": "Its landed blows have a [slight] chance to [Blind] the target.",
-  "Kind": "Passive",
-  "Cost": 0,
-  "CastTime": 0.0,
-  "CooldownTurns": 0,
-  "Shape": "Self",
-  "Radius": 0,
-  "Mode": "Auto",
-  "Filter": "Any",
-  "Motion": "None",
-  "DamageType": "Physical",
-  "BaseDamage": 0,
-  "BaseHeal": 0,
-  "ApplyBuff": null,
-  "ApplyBuffChance": 1.0,
-  "RemovesDebuffs": false,
-  "StealsMana": false,
-  "HastenU": 0.0,
-  "IsTeleport": false,
-  "Icon": null,
-  "CastVfx": null,
-  "ProjectileVfx": null,
-  "ImpactVfx": null,
-  "LingerVfx": null,
-  "Sfx": null,
-  "Trigger": {
-   "On": "OnLandedHit",
-   "Chance": 0.15,
-   "Effects": [
-    {
-     "Kind": "ApplyBuff",
-     "Buff": "blinded",
-     "Who": "Target"
-    }
-   ],
-   "Callout": "Shadow!"
+   "Callout": "Edge!"
+  },
+  "ElementFromCaster": true,
+  "ElementVariants": {
+   "Dark": { "Buff": "blinded", "Description": "Its landed blows have a [slight] chance to [Blind] the target." },
+   "Ice": { "Buff": "frozen", "Chance": 0.1, "Description": "Its landed blows have a [slight] chance to [Freeze] the target." },
+   "Fire": { "Buff": "burning", "Description": "Its landed blows have a [slight] chance to [Burn] the target." },
+   "Lightning": { "Buff": "slowed", "Description": "Its landed blows have a [slight] chance to [Slow] the target." },
+   "Poison": { "Buff": "poisoned", "Description": "Its landed blows have a [slight] chance to [Poison] the target." }
   }
  },
  {
@@ -4512,10 +4397,11 @@
   "Sfx": null,
   "AdjacentOnly": true
  },
+ { "Id": "blackninja_shadowfang", "MergedInto": "ninja_fang" },
  {
-  "Id": "blackninja_shadowfang",
-  "Name": "Shadow Fang",
-  "Description": "A strike from the dark that blinds the eye.",
+  "Id": "ninja_fang",
+  "Name": "Ninja Fang",
+  "Description": "A strike in the wielder's own element that leaves that element's sting. With no element of its own, it is pure force.",
   "Kind": "Skill",
   "Requires": { "Agility": 3, "Intelligence": 2 },
   "Cost": 0,
@@ -4526,10 +4412,10 @@
   "Mode": "PickActor",
   "Filter": "EnemyOnly",
   "Motion": "Strike",
-  "DamageType": "Dark",
-  "BaseDamage": 14,
+  "DamageType": "Physical",
+  "BaseDamage": 18,
   "BaseHeal": 0,
-  "ApplyBuff": "blinded",
+  "ApplyBuff": null,
   "ApplyBuffChance": 1.0,
   "RemovesDebuffs": false,
   "StealsMana": false,
@@ -4541,7 +4427,15 @@
   "ImpactVfx": null,
   "LingerVfx": null,
   "Sfx": null,
-  "AdjacentOnly": true
+  "AdjacentOnly": true,
+  "ElementFromCaster": true,
+  "ElementVariants": {
+   "Dark": { "BaseDamage": 14, "Buff": "blinded", "Description": "A strike from the dark that blinds the eye." },
+   "Ice": { "BaseDamage": 14, "Buff": "slowed", "Description": "A chilling strike that slows the foe's step." },
+   "Poison": { "BaseDamage": 14, "Buff": "poisoned", "Description": "A strike laced with creeping poison." },
+   "Fire": { "BaseDamage": 14, "Buff": "burning", "Description": "A strike wreathed in cinder that sets the foe alight." },
+   "Lightning": { "BaseDamage": 14, "Buff": "slowed", "Description": "A strike that crackles with stored current and numbs the foe's step." }
+  }
  },
  {
   "Id": "blackninja_smoke_vanish",

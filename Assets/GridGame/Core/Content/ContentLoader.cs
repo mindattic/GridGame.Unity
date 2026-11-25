@@ -352,6 +352,32 @@ namespace GridGame.Core.Content
                 if (a.Echoes && (a.BaseDamage > 0 || a.BaseHeal > 0 || a.ApplyBuff != null || a.GrantsOrbs > 0 || a.Revives || a.IsTeleport || a.SwapsTurns
                                  || a.Knockback > 0 || a.Pull > 0 || a.SwapsPlaces || a.Pushback > 0f || a.HastenU > 0f || a.Cost > 0))
                     p.Add($"ability {a.Id}: an Echo carries no effect or cost of its own (the move it repeats does)");
+                // GG-T1134: an ability that takes its caster's element, and its per-element rows.
+                if (!a.ElementFromCaster && a.ElementVariants != null && a.ElementVariants.Count > 0)
+                    p.Add($"ability {a.Id}: ElementVariants only mean something on an ElementFromCaster ability (GG-T1134)");
+                if (a.ElementFromCaster)
+                {
+                    bool active = a.Kind == AbilityKind.Skill || a.Kind == AbilityKind.Spell;
+                    if (active && a.BaseDamage <= 0)
+                        p.Add($"ability {a.Id}: an ElementFromCaster Skill or Spell deals damage (its caster's element) (GG-T1134)");
+                    if (!active && (a.Trigger == null || !a.Trigger.Effects.Exists(e => e != null && e.Kind == TriggerEffectKind.ApplyBuff)))
+                        p.Add($"ability {a.Id}: an ElementFromCaster passive or reactive carries an ApplyBuff trigger effect (its element's rider) (GG-T1134)");
+                    foreach (var kv in a.ElementVariants ?? new Dictionary<DamageType, ElementVariantDef>())
+                    {
+                        string wv = $"ability {a.Id} ElementVariants {kv.Key}";
+                        var v = kv.Value;
+                        if (v == null) { p.Add($"{wv}: empty row"); continue; }
+                        if (v.BaseDamage != null && (!active || v.BaseDamage.Value <= 0)) p.Add($"{wv}: BaseDamage is a positive hit on a Skill or Spell");
+                        if (!string.IsNullOrEmpty(v.Buff)) NeedBuff(v.Buff, wv);
+                        if (v.Chance != null && !(v.Chance.Value > 0f && v.Chance.Value <= 1f)) p.Add($"{wv}: Chance {v.Chance} outside (0, 1]");
+                        if (v.Description != null && db.GlossaryIndex.Count > 0)
+                            foreach (var t in Glossary.Terms(v.Description))
+                                if (db.TryTerm(t) == null) p.Add($"{wv}: unknown glossary term [{t}] in its description");
+                        if (a.Trigger != null && db.GlossaryIndex.Count > 0)
+                            foreach (var t in Glossary.Terms(Rules.TriggerText.Describe(db, a.ForElement(kv.Key))))
+                                if (db.TryTerm(t) == null) p.Add($"{wv}: unknown glossary term [{t}] in its trigger sentence");
+                    }
+                }
                 // GG-T302: the generated "When [attacked directly]: ..." sentence only uses glossary terms.
                 if (a.Trigger != null && db.GlossaryIndex.Count > 0)
                     foreach (var t in Glossary.Terms(Rules.TriggerText.Describe(db, a)))

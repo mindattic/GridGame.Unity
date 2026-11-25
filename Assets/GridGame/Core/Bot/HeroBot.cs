@@ -1171,8 +1171,8 @@ namespace GridGame.Core.Bot
         /// <summary>What a pending hero cast landing before foe <paramref name="f"/> acts is worth.</summary>
         private static float CastStake(BattleState s, TimelineEntry c, Unit f)
         {
-            var a = s.Content.TryAbility(c.AbilityId);
             var caster = s.UnitById(c.OwnerId);
+            var a = s.Content.TryAbility(c.AbilityId)?.ForCaster(caster?.Def); // GG-T1134
             if (a == null || caster == null) return 0f;
             float v = 0f;
             foreach (var t in TargetResolver.Collect(s, a, caster, c.TargetTile))

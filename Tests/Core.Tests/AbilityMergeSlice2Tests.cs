@@ -12,7 +12,8 @@ namespace GridGame.Tests
     /// hero whose signature was folded holds a new signature that is its own (no other class holds it) on or beside its
     /// spot. Hex Shot is the one new family id. Held back: the two ninja element-variant rows (ninja_fang, ninja_edge),
     /// striker_finishingblow and technician_diagnostic (no unique move of their own near their spot), and chill_aura
-    /// (monsters hold it).</summary>
+    /// (monsters hold it). GG-T1134 since folded the four edges into ninja_edge and blackninja_shadowfang into ninja_fang
+    /// (AbilityMergeSlice2LeftoversTests).</summary>
     public class AbilityMergeSlice2Tests
     {
         private static readonly Dictionary<string, string> Merged = new Dictionary<string, string>
@@ -44,9 +45,8 @@ namespace GridGame.Tests
         /// <summary>Ids this slice leaves live on purpose.</summary>
         private static readonly string[] HeldBack =
         {
-            "blackninja_shadowfang", "blueninja_frostfang", "chromaninja_prismfang", "greenninja_venomfang", "redninja_flamefang",
-            "yellowninja_shockfang", "nighthunter_nightstalk", "shadow_edge", "rime_edge", "ember_edge", "static_edge",
-            "striker_finishingblow", "technician_diagnostic", "chill_aura",
+            "blueninja_frostfang", "chromaninja_prismfang", "greenninja_venomfang", "redninja_flamefang",
+            "yellowninja_shockfang", "nighthunter_nightstalk", "striker_finishingblow", "technician_diagnostic", "chill_aura",
         };
 
         [Test]

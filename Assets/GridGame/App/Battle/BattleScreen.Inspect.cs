@@ -61,7 +61,7 @@ namespace GridGame.App
             if (e.Kind == TimelineKind.Hazard) return BuildHazardCard(body, e); // GG-T359
             var owner = State.UnitById(e.OwnerId);
             if (e.Kind == TimelineKind.Cast)
-                return InspectCard.Ability(body, App.Content.TryAbility(e.AbilityId),
+                return InspectCard.Ability(body, App.Content.TryAbility(e.AbilityId)?.ForCaster(owner?.Def), // GG-T1134
                     owner == null ? "Lands when it reaches the left edge." : $"{owner.Name}'s spell — lands when it reaches the left edge. Hit {owner.Name} to stagger it back.");
             return owner != null && InspectCard.Unit(body, State, owner, Knowledge(owner));
         }

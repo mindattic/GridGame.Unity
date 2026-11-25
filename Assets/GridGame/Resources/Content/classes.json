@@ -987,6 +987,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Dark",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -994,18 +995,18 @@
       "steal",
       "teleport",
       "quicken",
-      "blackninja_shadowfang",
+      "ninja_fang",
       "blackninja_smoke_vanish",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
-      "shadow_edge"
+      "ninja_edge"
     ],
     "DefaultLoadout": [
       "cleave",
       "blackninja_smoke_vanish",
       "item:x_potion",
-      "blackninja_shadowfang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -1411,6 +1412,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Ice",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -1422,7 +1424,7 @@
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
-      "rime_edge"
+      "ninja_edge"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -2659,6 +2661,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Physical",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -7395,6 +7398,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Poison",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -10647,6 +10651,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Dark",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -13066,6 +13071,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Fire",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -13077,7 +13083,7 @@
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
-      "ember_edge"
+      "ninja_edge"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -21561,6 +21567,7 @@
       }
     ],
     "Resistances": {},
+    "Element": "Lightning",
     "Abilities": [
       "cleave",
       "war_cry",
@@ -21572,7 +21579,7 @@
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
-      "static_edge"
+      "ninja_edge"
     ],
     "DefaultLoadout": [
       "cleave",
