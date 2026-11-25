@@ -14,6 +14,9 @@ namespace GridGame.Meta
     /// way a level can move (battle, hard-won XP, Crucible, a recruit or guest arriving above level 1, a debug level set) pays
     /// them with no grant at each site, and an older save needs no backfill. Only the picks are saved
     /// (<see cref="HeroSave.StatPicks"/>); a pick is permanent, the hero's build is the history of what they chose.
+    /// GG-T1058: retired for the skill hexagon. <see cref="Formulas.StatPointsForLevel"/> is 0, so nothing is earned any
+    /// more; old picks are kept in the save but no longer add to battle stats or meet <see cref="AbilityDef.Requires"/>
+    /// (that reads <see cref="HeroBoard.BoardStats"/> now).
     /// </summary>
     public static class StatPoints
     {
@@ -50,18 +53,6 @@ namespace GridGame.Meta
             foreach (var kv in h.StatPicks)
                 if (kv.Value > 0 && StatGrantDef.IsStatName(kv.Key))
                     s = s + new StatGrantDef { Stat = kv.Key, Amount = kv.Value }.ToStats();
-            return s;
-        }
-
-        /// <summary>Every pick as one <see cref="Stats"/> block, added to the hero's level stats in battle
-        /// (<see cref="Core.Battle.HeroSpec.StatBonus"/>). Unknown keys (a hand-edited save) are ignored.</summary>
-        public static Stats Bonus(HeroSave h)
-        {
-            var s = new Stats();
-            if (h?.StatPicks == null) return s;
-            foreach (var kv in h.StatPicks)
-                if (kv.Value > 0 && StatGrantDef.IsStatName(kv.Key))
-                    s = s + new StatGrantDef { Stat = kv.Key, Amount = kv.Value * Formulas.StatPointValue }.ToStats();
             return s;
         }
 

@@ -36,28 +36,7 @@ namespace GridGame.App
         public static string StateLabel(TalentState s) => s == TalentState.Purchased ? "Learned"
             : s == TalentState.Innate ? "Known" : s == TalentState.Available ? "Available" : "Locked";
 
-        private static readonly string[] StatShort = { "STR", "VIT", "AGI", "SPD", "STA", "INT", "WIS", "LCK" };
-
-        /// <summary>Level-up stat points (GG-T591): the unspent count and one "+" button per stat (in
-        /// <see cref="StatGrantDef.Names"/> order), each showing the points already put there. Picks are permanent.</summary>
-        private void StatPointsPanel(VisualElement body, HeroSave h)
-        {
-            int unspent = StatPoints.Unspent(h);
-            var panel = Ui.Panel(body, null, false, "stat-points");
-            Ui.Heading($"{unspent} stat point{(unspent == 1 ? "" : "s")}", panel, unspent > 0 ? "gold" : "dim").name = "stat-points-count";
-            Ui.Caption("One a level · put each into any stat · picks are permanent", panel, "dim");
-            var row = Ui.El("row", panel);
-            row.style.flexWrap = Wrap.Wrap;
-            row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap; // button margin (12) + 12 = the 24 px edge gap that matches the 24 px between buttons (GG-T708)
-            for (int i = 0; i < StatGrantDef.Names.Length; i++)
-            {
-                string stat = StatGrantDef.Names[i];
-                int n = StatPoints.In(h, stat);
-                var b = RowIcon.IconButton($"+ {StatShort[i]}{(n > 0 ? $" ({n})" : "")}", RowKind.Confirm, () => Done(StatPoints.Spend(h, stat)), "btn--small", row);
-                b.name = "stat-point-" + stat.ToLowerInvariant();
-                Ui.SetEnabled(b, unspent > 0);
-            }
-        }
+        // GG-T1058: the level-up stat point row (GG-T591) is gone; a hero's stats come from its skill hexagon now.
 
         public override void BuildBody(VisualElement body)
         {
@@ -80,8 +59,6 @@ namespace GridGame.App
             respec.name = "talent-respec";
             Ui.SetEnabled(respec, closed == null && spent > 0 && S.Gold >= cost);
             if (closed != null) Ui.Para(closed, head, "dim");
-
-            StatPointsPanel(body, h);
 
             if (trees.Count == 0)
             {

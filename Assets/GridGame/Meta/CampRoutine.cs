@@ -121,9 +121,7 @@ namespace GridGame.Meta
             // Spend banked skill points on tree nodes (GG-T54) — home tree first — before filling the bar, so a
             // freshly granted ability can take a dead slot on this same visit.
             SpendSkillPoints(c, s, log);
-            // GG-T591/593: level-up stat points build toward the next class ability the hero's Requires lock out (on-build
-            // first), else its strongest class growth stat; spent before FillBars so an unlock can be learned this visit.
-            log.AddRange(BotStatSpend.Spend(c, s));
+            // GG-T1058: per-level stat points retired (stats come from the skill hexagon), so there is no stat spend here any more.
 
             // Fill the ability bar (GG-T100) before the discretionary gear pass, so a full gear shopping list
             // can't starve it every visit.

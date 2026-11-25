@@ -354,8 +354,10 @@ namespace GridGame.Core.Rules
         /// <summary>How much one stat point adds to the stat it goes into.</summary>
         public const int StatPointValue = 1;
 
-        /// <summary>Stat points a hero at <paramref name="level"/> has earned in all (GG-T591).</summary>
-        public static int StatPointsForLevel(int level) => Math.Max(0, level - 1) * StatPointsPerLevel;
+        /// <summary>Stat points a hero at <paramref name="level"/> has earned in all: none since GG-T1058, when per-level stat
+        /// picks retired for the skill hexagon (a hero's stats now come from its owned board passives, <c>HeroBoard.BoardStats</c>).
+        /// Was one per level past 1 (GG-T591).</summary>
+        public static int StatPointsForLevel(int level) => 0;
 
         /// <summary>Per-action chance that a Power Amplifier appears, from the living party's combined Luck (§1.2.6).</summary>
         public static float AmplifierChance(float partyLuck) =>

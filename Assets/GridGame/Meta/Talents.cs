@@ -236,14 +236,14 @@ namespace GridGame.Meta
             WhyClosed(c, h, t) ?? Gates(c, h, t, n, Required(c, h, t, n)) ?? WhyStatLocked(c, h, t, n);
 
         /// <summary>GG-T980: a family-tree node whose grant carries <see cref="AbilityDef.Requires"/> stays Locked until the
-        /// hero's spent stat points (<see cref="StatPoints.Picks"/>) meet it, with the same text as the Learn screen (GG-T592):
+        /// hero's skill hexagon stat totals (<see cref="HeroBoard.BoardStats"/>, GG-T1058) meet it, with the same text as the Learn screen (GG-T592):
         /// "needs INT 8 (have 3)". Null when met, waived (<see cref="StatWaived"/>), off a family tree, or nothing is granted.</summary>
         public static string WhyStatLocked(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
         {
             if (c == null || h == null || t == null || n == null || string.IsNullOrEmpty(n.Grants) || c.TryFamily(t.Id) == null) return null;
             var a = c.TryAbility(n.Grants);
             if (a == null || !a.HasRequires || StatWaived(c, h, t, n)) return null;
-            return Abilities.NeedsText(a.UnmetRequires(StatPoints.Picks(h)));
+            return Abilities.NeedsText(a.UnmetRequires(HeroBoard.BoardStats(c, h)));
         }
 
         /// <summary>GG-T980: is this family node free of its grant's stat requirement for this hero? Yes for one of its class's

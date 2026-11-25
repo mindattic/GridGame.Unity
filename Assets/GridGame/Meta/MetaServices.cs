@@ -2623,11 +2623,12 @@ namespace GridGame.Meta
             IsKitMove(c, h, a) || Training.Guides(s, a);
 
         /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> at the Learn screen, measured against
-        /// its spent level-up stat points (<see cref="StatPoints.Picks"/>). Empty when it can be bought now (met or waived).</summary>
+        /// its skill hexagon stat totals (<see cref="HeroBoard.BoardStats"/>, GG-T1058; was its spent level-up stat points).
+        /// Empty when it can be bought now (met or waived).</summary>
         public static List<(string Abbrev, string Stat, float Min, float Have)> Unmet(ContentDb c, SaveData s, HeroSave h, AbilityDef a)
         {
             if (a == null || h == null || !a.HasRequires || RequiresWaived(c, s, h, a)) return new List<(string, string, float, float)>();
-            return a.UnmetRequires(StatPoints.Picks(h));
+            return a.UnmetRequires(HeroBoard.BoardStats(c, h));
         }
 
         /// <summary>A locked Learn entry's reason: "needs INT 8 (have 3)", or "needs VIT 5, WIS 4 (have 2, 0)". Null when met.</summary>
