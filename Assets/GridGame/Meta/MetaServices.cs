@@ -87,8 +87,8 @@ namespace GridGame.Meta
         /// A new hero (GG-T388, owner 2026-11-16: "start with basic characters … skills start as few but they are purchased
         /// or discovered over time"): it knows only its <see cref="StarterKit"/> — the role's baseline move and the class's
         /// own signature — and its bar is those two, then the default loadout's items, then empty slots. The rest of the
-        /// default loadout (the archetype's two moves) is bought from the trainer at the kit price
-        /// (<see cref="Abilities.KitPrice"/>) or with skill points in the home tree.
+        /// default loadout (the archetype's two moves) comes from the skill board with skill points (GG-T1079: the gold
+        /// trainer is gone).
         /// GG-T1032: a class with a skill-hexagon Start path joins on it instead and knows the abilities on that path.
         /// </summary>
         public static HeroSave NewHero(ContentDb c, string classId)
@@ -2488,10 +2488,11 @@ namespace GridGame.Meta
 
     public static class Abilities
     {
-        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only).
-        /// GG-T980: a class on a family tree (<see cref="Progression.FamilyTree"/>) has no separate class list: its gold list
+        /// <summary>What a hero could learn: its class list plus the general spell catalog (hero spells only). GG-T1079: no
+        /// longer sold for gold (abilities come from the skill board); kept as the catalog the ability audits check.
+        /// GG-T980: a class on a family tree (<see cref="Progression.FamilyTree"/>) has no separate class list: its list
         /// is its kit (<see cref="Progression.KitAbilities(ContentDb, ClassDef)"/>: loadout and start grants) and its own
-        /// signature grants (<see cref="Progression.SignatureGrants"/>), all at <see cref="KitPrice"/>, plus the general
+        /// signature grants (<see cref="Progression.SignatureGrants"/>), plus the general
         /// catalog less every family move (<see cref="FamilyMoves"/>): a sibling's corner, or a shared family node, comes only
         /// through the tree. A role-tree class keeps its <see cref="ClassDef.Abilities"/> list and the whole catalog.</summary>
         public static List<AbilityDef> Learnable(ContentDb c, HeroSave h)
@@ -2545,13 +2546,9 @@ namespace GridGame.Meta
             ? BattleConfig.SkillTrainBasePrice + BattleConfig.SkillTrainPricePerCooldown * a.CooldownTurns
             : BattleConfig.SpellTrainBasePrice + BattleConfig.SpellTrainPricePerOrb * a.Cost;
 
-        /// <summary>GG-T388: what the trainer asks for a move of the hero's own default kit (<see cref="Progression.KitAbilities"/>)
-        /// it doesn't know yet — a third of a stranger's skill, so a fresh party can fill its bars from early battle gold.</summary>
-        public const int KitPrice = 100;
-
         /// <summary>Is <paramref name="a"/> one of this hero's own kit moves (its class's default loadout)? GG-T978: on a family
         /// tree also anything its start nodes grant and anything on its own signature nodes (<see cref="SkillNodeDef.SignatureOf"/>),
-        /// so those are trainer-priced at <see cref="KitPrice"/> and waived from their Requires (<see cref="RequiresWaived"/>).</summary>
+        /// so those are waived from their Requires (<see cref="RequiresWaived"/>).</summary>
         public static bool IsKitMove(ContentDb c, HeroSave h, AbilityDef a)
         {
             if (a == null || h == null) return false;
@@ -2559,12 +2556,7 @@ namespace GridGame.Meta
             return Progression.KitAbilities(c, def).Contains(a.Id) || Progression.SignatureGrants(c, def).Contains(a.Id);
         }
 
-        /// <summary>The trainer's price for this hero: <see cref="KitPrice"/> for its own kit moves, else <see cref="Price(AbilityDef)"/>
-        /// (GG-T1085: the guided first skill is taught on the skill hexagon by <see cref="Training.Teach"/>, not here).</summary>
-        public static int Price(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
-            a == null ? 0 : IsKitMove(c, h, a) ? Math.Min(KitPrice, Price(a)) : Price(a);
-
-        /// <summary>Every hero-usable ability some hero can buy at the Learn screen: any spell, any universal skill, and
+        /// <summary>Every hero-usable ability some hero could learn (GG-T1079: the gold Learn screen is gone): any spell, any universal skill, and
         /// every skill on a hero class's list (the union of <see cref="Learnable"/> over the hero classes).</summary>
         public static List<AbilityDef> LearnableByAnyHero(ContentDb c)
         {
@@ -2650,7 +2642,7 @@ namespace GridGame.Meta
         /// spares the Learn tab a Training.First route search per row.</summary>
         public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) => IsKitMove(c, h, a);
 
-        /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> at the Learn screen, measured against
+        /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> (a display hint only, GG-T1031), measured against
         /// its skill hexagon stat totals (<see cref="HeroBoard.BoardStats"/>, GG-T1058; was its spent level-up stat points).
         /// Empty when it can be bought now (met or waived).</summary>
         public static List<(string Abbrev, string Stat, float Min, float Have)> Unmet(ContentDb c, SaveData s, HeroSave h, AbilityDef a)
@@ -2663,23 +2655,6 @@ namespace GridGame.Meta
         public static string NeedsText(List<(string Abbrev, string Stat, float Min, float Have)> unmet) =>
             unmet == null || unmet.Count == 0 ? null
                 : $"needs {string.Join(", ", unmet.Select(u => $"{u.Abbrev} {u.Min:0}"))} (have {string.Join(", ", unmet.Select(u => $"{u.Have:0}"))})";
-
-        public static Result Learn(ContentDb c, SaveData s, HeroSave h, string abilityId)
-        {
-            var a = c.TryAbility(abilityId);
-            if (a == null || !Learnable(c, h).Contains(a)) return Result.Fail("Can't learn that");
-            // GG-T1031: Requires no longer gate learning (the skill hexagon's path is the gate); Unmet stays a display hint.
-            int price = Price(c, s, h, a);
-            if (s.Gold < price) return Result.Fail("Not enough gold");
-            s.Gold -= price;
-            h.Known.Add(a.Id);
-            Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
-            return Result.Success($"Learned {a.Name}");
-        }
-
-        /// <summary>What <paramref name="a"/> costs this save at the Learn screen: <see cref="Price(AbilityDef)"/> (GG-T1085: the
-        /// guided first skill is free on the skill hexagon via <see cref="Training.Teach"/>).</summary>
-        public static int Price(SaveData s, AbilityDef a) => a == null ? 0 : Price(a);
 
         /// <summary>Reorder the bar (owner direction 2026-10-11: organise your abilities): swap two unlocked slots.</summary>
         public static Result Swap(SaveData s, HeroSave h, int a, int b)
@@ -2721,7 +2696,7 @@ namespace GridGame.Meta
 
     // ─────────────────────────────────────────────────────────────────────────────
     // Training (GG-T180, §25.0.9): onboarding step 7, the last of the chain. Once the first armor enchant is bound, the
-    // Abilities screen's Learn tab is introduced: a guided prompt trains one new skill (free) and slots it on the bar.
+    // Abilities screen opens on its Board sub-tab: a guided prompt trains one new skill (free) and slots it on the bar.
     // GG-T1085: the lesson is an ability node on the skill hexagon, bought (route and all) without spending skill points.
     // ─────────────────────────────────────────────────────────────────────────────
 
@@ -2731,9 +2706,6 @@ namespace GridGame.Meta
         public const string FirstSkillFlag = "onboard:first-skill";
         /// <summary>The Abilities screen's camp tip while this step is ahead (its plain "abilities" tip otherwise).</summary>
         public const string TipStation = "abilities-learn";
-        /// <summary>The Abilities screen's Learn tab index, and its learn-row name prefix.</summary>
-        public const int LearnTab = 2;
-        public const string LearnRowPrefix = "learn-";
 
         /// <summary>The guided first skill: which hero learns which skill, and whether the bar has room for it.</summary>
         public sealed class Plan

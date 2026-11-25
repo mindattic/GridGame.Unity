@@ -128,7 +128,7 @@ namespace GridGame.Tests
 
             // Learn + slot
             var learn = Abilities.Learnable(c, hero).First();
-            Assert.That(Abilities.Learn(c, s, hero, learn.Id).Ok, Is.True);
+            hero.Known.Add(learn.Id); // GG-T1079: gold Learn is gone (the skill board teaches)
             Assert.That(Abilities.Assign(c, s, hero, 0, learn.Id).Ok, Is.True);
             Assert.That(hero.Bar[0], Is.EqualTo(learn.Id));
 

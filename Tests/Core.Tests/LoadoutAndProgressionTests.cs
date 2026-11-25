@@ -402,46 +402,7 @@ namespace GridGame.Tests
             Assert.That(hero.Bar.Count(e => e == "taunt"), Is.EqualTo(1));
         }
 
-        // ── Abilities.Learn ──
-
-        [Test]
-        public void Learn_rejects_an_ability_outside_the_hero_class_and_not_a_spell()
-        {
-            var c = Real;
-            var s = Progression.NewGame(c, "Le1");
-            var hero = s.Hero("warden"); // the fixed lead (GG-T533)
-            Assert.That(c.Class("warden").Abilities.Any(id => id == "steal"), Is.False);
-            var result = Abilities.Learn(c, s, hero, "steal");
-            Assert.That(result.Ok, Is.False);
-            Assert.That(hero.Known, Does.Not.Contain("steal"));
-        }
-
-        [Test]
-        public void Learn_rejects_when_gold_is_short()
-        {
-            var c = Real;
-            var s = Progression.NewGame(c, "Le2");
-            var hero = s.Hero("warden");
-            s.Gold = 0;
-            Assert.That(Abilities.Learnable(c, hero).Any(a => a.Id == "heal"), Is.True);
-            var result = Abilities.Learn(c, s, hero, "heal");
-            Assert.That(result.Ok, Is.False);
-            Assert.That(hero.Known, Does.Not.Contain("heal"));
-        }
-
-        [Test]
-        public void Learn_succeeds_and_spends_gold_on_a_learnable_ability()
-        {
-            var c = Real;
-            var s = Progression.NewGame(c, "Le3");
-            var hero = s.Hero("warden");
-            s.Gold = 10000;
-            int price = Abilities.Price(c.Ability("heal"));
-            int before = s.Gold;
-            Assert.That(Abilities.Learn(c, s, hero, "heal").Ok, Is.True);
-            Assert.That(hero.Known, Does.Contain("heal"));
-            Assert.That(s.Gold, Is.EqualTo(before - price));
-        }
+        // GG-T1079: gold Abilities.Learn is gone (abilities come from the skill board, SkillHexProgress).
 
         // ── Price formula ──
         [TestCase("shield_bash", 250)]   // Skill (GG-T215): SkillTrainBasePrice 150 + 50 x CooldownTurns 2

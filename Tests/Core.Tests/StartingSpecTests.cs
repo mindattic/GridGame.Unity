@@ -90,7 +90,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void StartGrantsAndSignatureNodes_AreKitPriced_AndWaivedFromRequires()
+        public void StartGrantsAndSignatureNodes_AreKitMoves_AndWaivedFromRequires()
         {
             var db = Fixture();
             var s = Save();
@@ -100,8 +100,6 @@ namespace GridGame.Tests
             Assert.That(Abilities.IsKitMove(db, thief, db.Abilities["steal"]), Is.True, "a start grant is a kit move");
             Assert.That(Abilities.IsKitMove(db, thief, smoke), Is.True, "its own signature node is a kit move");
             Assert.That(Abilities.IsKitMove(db, thief, rain), Is.False, "a sibling's signature is not");
-            Assert.That(Abilities.Price(db, s, thief, smoke), Is.EqualTo(System.Math.Min(Abilities.KitPrice, Abilities.Price(smoke))));
-            Assert.That(Abilities.Price(db, s, thief, rain), Is.EqualTo(Abilities.Price(rain)));
             Assert.That(Abilities.RequiresWaived(db, s, thief, smoke), Is.True);
             Assert.That(Abilities.Unmet(db, s, thief, smoke), Is.Empty);
             Assert.That(Abilities.RequiresWaived(db, s, thief, rain), Is.False);

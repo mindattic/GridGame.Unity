@@ -114,26 +114,10 @@ namespace GridGame.Tests
             Assert.That(ids, Does.Not.Contain("vanish"), "a Universal move on a family node comes only through the tree");
             Assert.That(ids, Does.Not.Contain("steal"), "a start grant is already known");
             Assert.That(ids.First(), Is.EqualTo("smoke"), "its own corner sorts first");
-            Assert.That(Abilities.Price(db, Save(), thief, db.Abilities["smoke"]),
-                Is.EqualTo(System.Math.Min(Abilities.KitPrice, Abilities.Price(db.Abilities["smoke"]))), "own signature at kit price");
 
             var ninjaIds = Abilities.Learnable(db, Hero(db, "ninja")).Select(a => a.Id).ToList();
             Assert.That(ninjaIds, Does.Contain("star_rain"));
             Assert.That(ninjaIds, Does.Not.Contain("smoke"));
-        }
-
-        [Test]
-        public void FamilyHero_CannotGoldLearnASiblingsMove()
-        {
-            var db = Fixture();
-            var s = Save();
-            var thief = Hero(db, "thief", Int3, Int6);
-            var r = Abilities.Learn(db, s, thief, "star_rain");
-            Assert.That(r.Ok, Is.False);
-            Assert.That(r.Message, Is.EqualTo("Can't learn that"));
-            Assert.That(thief.Known, Does.Not.Contain("star_rain"));
-            Assert.That(s.Gold, Is.EqualTo(10000));
-            Assert.That(Abilities.Learn(db, s, thief, "smoke").Ok, Is.True, "its own signature is bought with gold, Requires waived");
         }
 
         [Test]

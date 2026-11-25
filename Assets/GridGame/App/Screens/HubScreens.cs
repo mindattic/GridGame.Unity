@@ -458,17 +458,17 @@ namespace GridGame.App
 
     // ── Abilities: learn + slot the bar ───────────────────────────────────────────
 
-    /// <summary>The Hero screen's Abilities tab (§25.6, GG-T435): the battle bar over the Known / Items / Learn / Passives /
-    /// Locked sub-tabs, plus Talents — the skill trees and their Respec, folded in from the old Talents screen.</summary>
+    /// <summary>The Hero screen's Abilities tab (§25.6, GG-T435): the battle bar over the Known / Items / Passives /
+    /// Locked sub-tabs, plus Board — the skill hexagon (GG-T1079: the gold Learn sub-tab is gone; abilities come from the board).</summary>
     internal sealed class AbilitiesTab : HeroTab
     {
         private int slot;
         private int tab = -1;
         private readonly SkillHexTab talents = new SkillHexTab();
-        /// <summary>The Board sub-tab's index (after Known, Items, Learn, Passives, Locked): the skill hexagon (GG-T1056),
+        /// <summary>The Board sub-tab's index (after Known, Items, Passives, Locked): the skill hexagon (GG-T1056),
         /// in place of the old Talents skill trees; its id stays "talents".</summary>
-        public const int TalentsSub = 5;
-        private static readonly string[] SubTabs = { "Known", "Items", "Learn", "Passives", "Locked", "Board" };
+        public const int TalentsSub = 4;
+        private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Board" };
 
         public AbilitiesTab(int subTab = -1) { tab = subTab; }
         public override void OnHeroChanged() => talents.OnHeroChanged();
@@ -577,36 +577,10 @@ namespace GridGame.App
                     ItemUi.Row(item, weapon ? "swap in battle" : $"×{S.Count(item.Id)}", () => Done(Abilities.Assign(C, S, h, slot, (weapon ? "weapon:" : "item:") + item.Id)), list, slot < unlocked);
                 }
             }
-            else if (tab == 2)
-            {
-                // GG-T592 (§25.6.5): what the hero's spent stat points unlock first, then the locked ones with what they need.
-                var learnable = Abilities.Learnable(C, h).Select(a => (a, needs: Abilities.NeedsText(Abilities.Unmet(C, S, h, a))))
-                    .OrderBy(x => x.needs != null).ToList();
-                foreach (var (a, needs) in learnable)
-                {
-                    var ab = a;
-                    int price = Abilities.Price(C, S, h, a);
-                    VisualElement row;
-                    if (needs != null)
-                    {
-                        row = Ui.MenuRow(a.Name, $"Locked · {needs}", null, list, Art.AbilityIcon(a), false);
-                        row.Q<Label>("value")?.AddToClassList("bad");
-                        row.AddToClassList("learn-locked");
-                        InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // a locked row still reads on a tap
-                    }
-                    else
-                    {
-                        row = Ui.MenuRow(a.Name, price == 0 ? "Free" : Ui.Gold(price), () => Confirm.Show($"Teach {C.Class(h.ClassId).Name} {ab.Name} for {(price == 0 ? "free" : Ui.Gold(price))}?", "Learn", () => LearnDone(Abilities.Learn(C, S, h, ab.Id), h, ab.Id)), list, Art.AbilityIcon(a), S.Gold >= price);
-                        InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
-                    }
-                    row.name = Training.LearnRowPrefix + a.Id;
-                    Describe(a, list);
-                }
-            }
         }
 
-        private const int PassivesTab = 3;
-        private const int LockedTab = 4;
+        private const int PassivesTab = 2;
+        private const int LockedTab = 3;
 
         /// <summary>A skill this hero lacks and where it comes from (GG-T1081: the talent-tree sources are gone).</summary>
         private sealed class LockedSkill
@@ -627,11 +601,6 @@ namespace GridGame.App
                 var a = C.TryAbility(id);
                 if (a == null || h.Known.Contains(a.Id) || PassiveLoadout.IsInnate(C, h, a.Id) || !seen.Add(a.Id)) return;
                 var sources = new List<string>();
-                if (Abilities.Learnable(C, h).Contains(a))
-                {
-                    string needs = Abilities.NeedsText(Abilities.Unmet(C, S, h, a));
-                    sources.Add($"Trainer (Abilities › Learn) · {Abilities.Price(C, S, h, a)} G" + (needs != null ? $" · {needs}" : ""));
-                }
                 foreach (var tome in C.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
                     sources.Add($"{tome.Name}: {string.Join(", ", TomeFoundAt(tome.Id).DefaultIfEmpty("not found anywhere yet"))}");
                 var boardPt = SkillHexProgress.Board(C)?.FindAbility(a.Id);

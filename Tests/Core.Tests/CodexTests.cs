@@ -178,15 +178,15 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Learning_an_ability_at_the_trainer_unlocks_it()
+        public void Learning_the_guided_first_skill_unlocks_it()
         {
             var c = TestKit.Real;
             var s = Progression.NewGame(c, "Codex");
-            s.Gold = 1000000;
-            var h = s.Roster.First(x => Abilities.Learnable(c, x).Any(a => !Codex.IsUnlocked(s, CodexKinds.Ability, a.Id) && Abilities.Unmet(c, s, x, a).Count == 0));
-            var learn = Abilities.Learnable(c, h).First(a => !Codex.IsUnlocked(s, CodexKinds.Ability, a.Id) && Abilities.Unmet(c, s, h, a).Count == 0);
+            s.Flags.Add(ArmorEnchanting.FirstEnchantFlag);
+            s.Flags.Add(Forging.FirstArmorFlag);
+            var learn = Training.First(c, s).Skill; // GG-T1079: gold Learn is gone; the guided lesson on the board teaches
             Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, learn.Id), Is.False);
-            Assert.That(Abilities.Learn(c, s, h, learn.Id).Ok, Is.True);
+            Assert.That(Training.Teach(c, s).Ok, Is.True);
             Assert.That(Codex.IsUnlocked(s, CodexKinds.Ability, learn.Id), Is.True);
             Assert.That(Codex.IsNew(s, CodexKinds.Ability, learn.Id), Is.True, "a live unlock is new until read");
         }
