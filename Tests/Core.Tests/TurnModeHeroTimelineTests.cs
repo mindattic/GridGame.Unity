@@ -482,6 +482,168 @@ namespace GridGame.Tests
 
         #endregion
 
+        #region GG-T1103: Sleep skips, own-turn counting, Frozen thaw and icon rate (GG-T1100, GG-T809, GG-T1102)
+
+        /// <summary><see cref="Db"/> plus a five-turn "ward" (Turns), and tick-unit "slowed" (×0.5) and "hasted" (×2) icon rates.</summary>
+        private static BattleState Warded(string foe, params (string cls, int x, int y)[] heroes)
+        {
+            var db = Db();
+            db.Buffs["ward"] = new BuffDef { Id = "ward", Name = "Ward", Kind = BuffKind.Buff, Unit = DurationUnit.Turns, Duration = 5 };
+            db.Buffs["slowed"] = new BuffDef { Id = "slowed", Name = "Slowed", Unit = DurationUnit.Ticks, Duration = 999, TimelineSpeedMultiplier = 0.5f };
+            db.Buffs["hasted"] = new BuffDef { Id = "hasted", Name = "Hasted", Kind = BuffKind.Buff, Unit = DurationUnit.Ticks, Duration = 999, TimelineSpeedMultiplier = 2f };
+            return BattleEngine.Create(db, Setup(Stage((foe, 5, 0)), 7, heroes), new List<BattleEvent>());
+        }
+
+        private static BuffInstance Give(BattleState s, Unit u, string id, int remaining)
+        {
+            var b = new BuffInstance { Def = s.Content.Buffs[id], Remaining = remaining, Fresh = false };
+            u.Buffs.Add(b);
+            return b;
+        }
+
+        [Test]
+        public void A_slept_heros_arrived_icon_reenters_without_becoming_active_and_ticks_its_turn_buffs_and_cooldowns()
+        {
+            var s = Warded("imp", ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+            var sleep = Give(s, slow, "sleep", 3);
+            var ward = Give(s, slow, "ward", 5);
+            var fastWard = Give(s, fast, "ward", 5);
+            slow.Cooldowns["x"] = 3;
+            fast.Cooldowns["x"] = 3;
+            ArriveIn(s, slow, 1);
+            Assert.That(Ticks(s, Foe(s)), Is.GreaterThan(1));
+            Assert.That(Ticks(s, fast), Is.GreaterThan(1));
+
+            var ev = BattleEngine.RunClock(s, 1);
+            Assert.That(ev.OfType<TurnSkippedEvent>().Single(t => t.UnitId == slow.Id).Reason, Is.EqualTo("asleep"));
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id), "the sleeper never became the active hero");
+            Assert.That(TurnRules.NotThisHerosTurn(s, slow), Is.True);
+            Assert.That(sleep.Remaining, Is.EqualTo(2), "Sleep itself counts the lost turn");
+            Assert.That(ward.Remaining, Is.EqualTo(4), "its Turns buffs tick");
+            Assert.That(slow.Cooldowns["x"], Is.EqualTo(2), "its cooldowns tick");
+            Assert.That(fastWard.Remaining, Is.EqualTo(5), "another hero's buffs don't");
+            Assert.That(fast.Cooldowns["x"], Is.EqualTo(3));
+            Assert.That(s.TurnEntryOf(slow.Id), Is.Not.Null, "its icon stays on the timeline");
+            Assert.That(Ticks(s, slow), Is.GreaterThan(1), "and re-entered on its cycle");
+        }
+
+        [Test]
+        public void Only_the_active_hero_counts_its_turn_and_a_waiting_hero_ticks_only_a_halting_debuff()
+        {
+            var s = Warded("imp", ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+            var slowWard = Give(s, slow, "ward", 5);
+            var fastWard = Give(s, fast, "ward", 5);
+            slow.Cooldowns["x"] = 3;
+            fast.Cooldowns["x"] = 3;
+            ArriveIn(s, slow, 3);
+            Assert.That(Ticks(s, Foe(s)), Is.GreaterThan(3), "the plodder's icon arrives first");
+            Assert.That(Ticks(s, fast), Is.GreaterThan(3));
+
+            BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(s.ActiveHeroId, Is.EqualTo(slow.Id), "the plodder's own icon arrived");
+            Assert.That(slowWard.Remaining, Is.EqualTo(4), "the active hero counts its own turn");
+            Assert.That(slow.Cooldowns["x"], Is.EqualTo(2));
+            Assert.That(fastWard.Remaining, Is.EqualTo(5), "the waiting hero's Turns buff holds");
+            Assert.That(fast.Cooldowns["x"], Is.EqualTo(3), "and so do its cooldowns");
+
+            // A halting debuff on the waiting hero does count down on another hero's turn.
+            var frozen = Give(s, fast, "frozen", 2);
+            ArriveIn(s, slow, 3);
+            Assert.That(Ticks(s, Foe(s)), Is.GreaterThan(3));
+            BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(s.ActiveHeroId, Is.EqualTo(slow.Id));
+            Assert.That(frozen.Remaining, Is.EqualTo(1), "Frozen ticked on the plodder's turn");
+            Assert.That(fastWard.Remaining, Is.EqualTo(5), "the ward still held");
+        }
+
+        [Test]
+        public void A_frozen_hero_thaws_on_foe_turns_while_its_icon_holds()
+        {
+            var s = Warded("imp", ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            var foe = Foe(s);
+            var frozen = Give(s, slow, "frozen", 2);
+            var icon = s.TurnEntryOf(slow.Id);
+            var held = (icon.Ip, icon.RecoverTicks, icon.StunTicks);
+
+            for (int turn = 1; turn <= 2; turn++)
+            {
+                ArriveIn(s, foe, 1);
+                Assert.That(Ticks(s, fast), Is.GreaterThan(1));
+                var ev = BattleEngine.RunClock(s, 1);
+                Assert.That(ev.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Contain(foe.Id), $"foe turn {turn}");
+                if (turn == 1)
+                {
+                    Assert.That(frozen.Remaining, Is.EqualTo(1), "the halt counted down on the foe's turn");
+                    Assert.That((icon.Ip, icon.RecoverTicks, icon.StunTicks), Is.EqualTo(held), "the frozen icon held");
+                }
+            }
+            Assert.That(slow.IsTimelineHalted, Is.False, "thawed after two foe turns");
+            Assert.That(slow.HasBuff("frozen"), Is.False);
+            var before = (icon.Ip, icon.RecoverTicks);
+            BattleEngine.RunClock(s, 1);
+            Assert.That((icon.Ip, icon.RecoverTicks), Is.Not.EqualTo(before), "its icon moves again");
+        }
+
+        [Test]
+        public void Slow_and_haste_on_a_hero_change_its_own_icon_rate_and_leave_the_foes_alone()
+        {
+            var s = Warded("imp", ("sprinter", 0, 6), ("plodder", 4, 6));
+            var slow = Hero(s, "plodder");
+            var foe = Foe(s);
+            int Rate(float m) => Math.Max(1, (int)Math.Round(BattleConfig.BaseIpPerTick * m));
+            float tempo = BattleEngine.EnemyTempoMultiplier(s);
+            int foeRate = BattleEngine.TurnRatePerTick(s, foe);
+            ArriveIn(s, slow, 10);
+            Assert.That(BattleEngine.TimelineScale(s, slow), Is.EqualTo(1f).Within(1e-5f));
+            Assert.That(BattleEngine.TurnRatePerTick(s, slow), Is.EqualTo(Rate(1f)));
+            int plain = Ticks(s, slow);
+
+            var slowed = Give(s, slow, "slowed", 999);
+            Assert.That(BattleEngine.TimelineScale(s, slow), Is.EqualTo(0.5f).Within(1e-5f));
+            Assert.That(BattleEngine.TurnRatePerTick(s, slow), Is.EqualTo(Rate(0.5f)));
+            Assert.That(Ticks(s, slow), Is.GreaterThan(plain), "Slow: its icon arrives later");
+            slow.Buffs.Remove(slowed);
+
+            Give(s, slow, "hasted", 999);
+            Assert.That(BattleEngine.TimelineScale(s, slow), Is.EqualTo(2f).Within(1e-5f));
+            Assert.That(BattleEngine.TurnRatePerTick(s, slow), Is.EqualTo(Rate(2f)));
+            Assert.That(Ticks(s, slow), Is.LessThan(plain), "Haste: its icon arrives sooner");
+
+            Assert.That(BattleEngine.EnemyTempoMultiplier(s), Is.EqualTo(tempo), "party tempo untouched");
+            Assert.That(BattleEngine.TurnRatePerTick(s, foe), Is.EqualTo(foeRate), "the foe's icon rate untouched");
+        }
+
+        [Test]
+        public void Hasten_on_a_hero_rushes_its_own_icon_and_leaves_party_tempo_alone()
+        {
+            // GG-T1102: under HeroTimeline the haste lands on the hero's icon alone; party tempo would count it twice.
+            var s = Warded("imp", ("sprinter", 0, 6), ("plodder", 4, 6));
+            var slow = Hero(s, "plodder");
+            var foe = Foe(s);
+            int net = s.NetTempo;
+            float tempo = BattleEngine.EnemyTempoMultiplier(s);
+            int foeTicks = Ticks(s, foe);
+            int before = Ticks(s, slow);
+            Assert.That(before, Is.GreaterThan(1));
+
+            RunnerType.GetMethod("Hasten", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(NewRunner(s), new object[] { slow, 0.3f, null, 0 });
+            Assert.That(Ticks(s, slow), Is.LessThan(before), "its own icon was rushed");
+            Assert.That(s.NetTempo, Is.EqualTo(net), "no party tempo");
+            Assert.That(BattleEngine.EnemyTempoMultiplier(s), Is.EqualTo(tempo));
+            Assert.That(Ticks(s, foe), Is.EqualTo(foeTicks), "the foe's icon didn't slow");
+        }
+
+        #endregion
+
         // BattleRunner is internal and its tie rule private: read it by reflection rather than widen it for a test.
         private static readonly Type RunnerType = typeof(BattleEngine).Assembly.GetType("GridGame.Core.Battle.BattleRunner", throwOnError: true);
 
