@@ -200,11 +200,11 @@
    "#5a86ff",
    "#1a2a8a"
   ],
-   "mana": [
-    "#d0c6f2",
-    "#5d64a3",
-    "#2d346c"
-   ]
+  "mana": [
+   "#d0c6f2",
+   "#5d64a3",
+   "#2d346c"
+  ]
  },
  "status": {
   "burning": [
@@ -1592,6 +1592,126 @@
   "warden_last_watch": [
    "lorc/candle-light",
    "gold"
+  ],
+  "choir_rune": [
+   "lorc/rune-stone",
+   "arcane"
+  ],
+  "scorpion_burrow": [
+   "skoll/fangs",
+   "sand"
+  ],
+  "charge_slime_glob": [
+   "delapouite/slime",
+   "green"
+  ],
+  "sapper_buried_charge": [
+   "lorc/grenade",
+   "iron"
+  ],
+  "gremlin_sabotage": [
+   "lorc/cog",
+   "rust"
+  ],
+  "darktemplar_gravitywell": [
+   "lorc/vortex",
+   "void"
+  ],
+  "drifter_float": [
+   "lorc/feather",
+   "teal"
+  ],
+  "thief_swipeboon": [
+   "darkzaitzev/robber-hand",
+   "gray"
+  ],
+  "monk_redirectflow": [
+   "lorc/divert",
+   "jade"
+  ],
+  "whiteninja_substitution": [
+   "delapouite/log",
+   "wood"
+  ],
+  "bluelion_intimidate": [
+   "lorc/shouting",
+   "steel"
+  ],
+  "machinist_barricade": [
+   "delapouite/barricade",
+   "iron"
+  ],
+  "technician_emp": [
+   "lorc/thunderball",
+   "spark"
+  ],
+  "tinkerer_magnetize": [
+   "lorc/magnet",
+   "steel"
+  ],
+  "wildchild_bramblesnare": [
+   "lorc/thorny-vine",
+   "moss"
+  ],
+  "blackninja_smoke_vanish": [
+   "darkzaitzev/smoke-bomb",
+   "shadow"
+  ],
+  "assassain_shadow_swap": [
+   "lorc/teleport",
+   "shadow"
+  ],
+  "lancer_polevault": [
+   "lorc/thrown-spear",
+   "steel"
+  ],
+  "ripper_flay": [
+   "lorc/bleeding-wound",
+   "crimson"
+  ],
+  "barbarian_earthsplitter": [
+   "lorc/quake-stomp",
+   "earth"
+  ],
+  "speedster_afterimage": [
+   "lorc/ghost-ally",
+   "ghost"
+  ],
+  "engineer_buried_charge": [
+   "lorc/powder",
+   "bronze"
+  ],
+  "firewall": [
+   "lorc/fire-ring",
+   "fire"
+  ],
+  "alchemist_oilflask": [
+   "lorc/round-bottom-flask",
+   "bronze"
+  ],
+  "operative_timebomb": [
+   "lorc/sands-of-time",
+   "fire"
+  ],
+  "blackwitch_curselink": [
+   "lorc/chained-heart",
+   "shadow"
+  ],
+  "hexstalker_flare_shot": [
+   "lorc/charged-arrow",
+   "fire"
+  ],
+  "herd_rage": [
+   "lorc/bull-horns",
+   "crimson"
+  ],
+  "herd_rage_kin": [
+   "lorc/rally-the-troops",
+   "crimson"
+  ],
+  "warden_anchorstance": [
+   "lorc/anchor",
+   "iron"
   ]
  },
  "item": {
