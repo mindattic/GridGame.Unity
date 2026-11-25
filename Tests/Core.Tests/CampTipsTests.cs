@@ -166,7 +166,7 @@ namespace GridGame.Tests
                 Assert.That(ready.Target, Is.EqualTo(CampTips.CraftButton));
                 string hero = c.Class(plan.Hero.ClassId).Name;
                 Assert.That(ready.Text, Does.Contain(plan.Skill.Name).And.Contain(hero).And.Contain("free").And.Contain("Tap Learn"));
-                Assert.That(Abilities.Learn(c, s, plan.Hero, plan.Skill.Id).Ok, Is.True);
+                Assert.That(Training.Teach(c, s).Ok, Is.True);
                 Assert.That(CampTips.Resolve(c, s, tip), Is.SameAs(tip), "after the first skill the tip reads as written");
             }
             finally { Features.Enchanter = false; }

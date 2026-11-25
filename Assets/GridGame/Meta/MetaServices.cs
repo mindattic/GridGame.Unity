@@ -2555,10 +2555,10 @@ namespace GridGame.Meta
             return Progression.KitAbilities(c, def).Contains(a.Id) || Progression.SignatureGrants(c, def).Contains(a.Id);
         }
 
-        /// <summary>The trainer's price for this hero: <see cref="KitPrice"/> for its own kit moves, else <see cref="Price(AbilityDef)"/>,
-        /// and nothing for the guided first skill (GG-T180).</summary>
+        /// <summary>The trainer's price for this hero: <see cref="KitPrice"/> for its own kit moves, else <see cref="Price(AbilityDef)"/>
+        /// (GG-T1085: the guided first skill is taught on the skill hexagon by <see cref="Training.Teach"/>, not here).</summary>
         public static int Price(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
-            a == null ? 0 : Training.Guides(s, a) ? 0 : IsKitMove(c, h, a) ? Math.Min(KitPrice, Price(a)) : Price(a);
+            a == null ? 0 : IsKitMove(c, h, a) ? Math.Min(KitPrice, Price(a)) : Price(a);
 
         /// <summary>Every hero-usable ability some hero can buy at the Learn screen: any spell, any universal skill, and
         /// every skill on a hero class's list (the union of <see cref="Learnable"/> over the hero classes).</summary>
@@ -2644,7 +2644,7 @@ namespace GridGame.Meta
         /// Fireball; GG-T978: on a family tree that takes in its start-node grants and its SignatureOf nodes), and so is the guided first skill
         /// (GG-T180), which the onboarding chain must always be able to finish.</summary>
         public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
-            IsKitMove(c, h, a) || Training.Guides(s, a);
+            IsKitMove(c, h, a) || Training.Guides(c, s, a);
 
         /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> at the Learn screen, measured against
         /// its skill hexagon stat totals (<see cref="HeroBoard.BoardStats"/>, GG-T1058; was its spent level-up stat points).
@@ -2667,22 +2667,15 @@ namespace GridGame.Meta
             // GG-T1031: Requires no longer gate learning (the skill hexagon's path is the gate); Unmet stays a display hint.
             int price = Price(c, s, h, a);
             if (s.Gold < price) return Result.Fail("Not enough gold");
-            bool guided = Training.Guides(s, a);
             s.Gold -= price;
             h.Known.Add(a.Id);
             Codex.Unlock(s, CodexKinds.Ability, a.Id); // GG-T929
-            if (!guided) return Result.Success($"Learned {a.Name}");
-            // GG-T180 (§25.0.9): the guided first skill goes straight onto the battle bar and ends the onboarding chain.
-            int slot = Training.SlotFor(s, h);
-            if (slot >= 0) Assign(c, s, h, slot, a.Id);
-            s.Flags.Add(Training.FirstSkillFlag);
-            string hero = c.TryClass(h.ClassId)?.Name ?? h.ClassId;
-            return Result.Success(slot >= 0 ? $"{hero} learned {a.Name}: it's on the battle bar, slot {slot + 1}" : $"{hero} learned {a.Name}");
+            return Result.Success($"Learned {a.Name}");
         }
 
-        /// <summary>What <paramref name="a"/> costs this save at the Learn screen: <see cref="Price(AbilityDef)"/>, except the
-        /// guided first skill (GG-T180), which the trainer teaches for nothing.</summary>
-        public static int Price(SaveData s, AbilityDef a) => a == null ? 0 : Training.Guides(s, a) ? 0 : Price(a);
+        /// <summary>What <paramref name="a"/> costs this save at the Learn screen: <see cref="Price(AbilityDef)"/> (GG-T1085: the
+        /// guided first skill is free on the skill hexagon via <see cref="Training.Teach"/>).</summary>
+        public static int Price(SaveData s, AbilityDef a) => a == null ? 0 : Price(a);
 
         /// <summary>Reorder the bar (owner direction 2026-10-11: organise your abilities): swap two unlocked slots.</summary>
         public static Result Swap(SaveData s, HeroSave h, int a, int b)
@@ -2725,6 +2718,7 @@ namespace GridGame.Meta
     // ─────────────────────────────────────────────────────────────────────────────
     // Training (GG-T180, §25.0.9): onboarding step 7, the last of the chain. Once the first armor enchant is bound, the
     // Abilities screen's Learn tab is introduced: a guided prompt trains one new skill (free) and slots it on the bar.
+    // GG-T1085: the lesson is an ability node on the skill hexagon, bought (route and all) without spending skill points.
     // ─────────────────────────────────────────────────────────────────────────────
 
     public static class Training
@@ -2743,6 +2737,10 @@ namespace GridGame.Meta
             public HeroSave Hero;
             public AbilityDef Skill;
             public int Slot;
+            /// <summary>The ability node <see cref="Teach"/> buys (GG-T1085).</summary>
+            public (int Q, int R) Node;
+            /// <summary>The hero isn't on the board yet: <see cref="Teach"/> joins it on its class Start path first.</summary>
+            public bool Join;
         }
 
         /// <summary>The first skill is behind this save: trained, or a bot's or New Game+ save.</summary>
@@ -2754,8 +2752,8 @@ namespace GridGame.Meta
         public static bool Step(SaveData s) => !FirstDone(s) &&
             (Features.Enchanter ? s.Flags.Contains(ArmorEnchanting.FirstEnchantFlag) : Forging.ArmorDone(s));
 
-        /// <summary>Is learning <paramref name="a"/> right now the guided first skill (free, auto-slotted)?</summary>
-        public static bool Guides(SaveData s, AbilityDef a) => a != null && a.Kind == AbilityKind.Skill && Step(s);
+        /// <summary>Is <paramref name="a"/> right now the guided first skill (<see cref="First"/>'s pick, free, auto-slotted)?</summary>
+        public static bool Guides(ContentDb c, SaveData s, AbilityDef a) => a != null && Step(s) && First(c, s)?.Skill == a;
 
         /// <summary>The bar slot a newly trained skill goes into: the first empty unlocked slot, else the last unlocked one.</summary>
         public static int SlotFor(SaveData s, HeroSave h)
@@ -2767,28 +2765,70 @@ namespace GridGame.Meta
             return unlocked - 1;
         }
 
-        /// <summary>The skill the Learn screen's guided prompt trains, or null outside step 7: for the party lead first (then
-        /// the rest of the party, then the reserve), the first skill on its own class list it hasn't learned, else the first
-        /// universal skill.</summary>
+        /// <summary>The guided first skill (GG-T1085), or null outside step 7: for the party lead first (then the party,
+        /// then the reserve), an ability node on the skill hexagon it can reach (joining its Start path first when it isn't
+        /// on the board) whose ability it doesn't know: a frontier node when one exists, else the nearest by route; skills first.</summary>
         public static Plan First(ContentDb c, SaveData s)
         {
             if (c == null || !Step(s)) return null;
+            var board = SkillHexProgress.Board(c);
+            if (board == null) return null;
             var heroes = s.Party.Select(s.Hero).Where(h => h != null).Concat(s.Roster.Where(h => !s.Party.Contains(h.ClassId)));
             foreach (var h in heroes)
             {
-                var skill = SkillFor(c, h);
-                if (skill != null) return new Plan { Hero = h, Skill = skill, Slot = SlotFor(s, h) };
+                if (h.Domesticated) continue;
+                bool join = (h.HexNodes?.Count ?? 0) == 0;
+                IReadOnlyCollection<(int Q, int R)> owned = join ? board.StartOf(h.ClassId) : SkillHexProgress.Owned(h).Nodes;
+                if (owned.Count == 0) continue;
+                var pick = NodeFor(c, board, h, owned);
+                if (pick == null) continue;
+                return new Plan { Hero = h, Skill = c.TryAbility(board.Node(pick.Value).Ability), Node = pick.Value, Join = join, Slot = SlotFor(s, h) };
             }
             return null;
         }
 
-        /// <summary>The skill <paramref name="h"/> would be guided to train, or null when it has none left to learn.</summary>
-        public static AbilityDef SkillFor(ContentDb c, HeroSave h)
+        private static (int Q, int R)? NodeFor(ContentDb c, SkillHexBoard board, HeroSave h, IReadOnlyCollection<(int Q, int R)> owned)
         {
-            var learnable = Abilities.Learnable(c, h).Where(a => a.Kind == AbilityKind.Skill).ToList();
-            var classList = c.TryClass(h.ClassId)?.Abilities ?? new List<string>();
-            return learnable.Where(a => classList.Contains(a.Id)).OrderBy(a => classList.IndexOf(a.Id)).FirstOrDefault()
-                ?? learnable.OrderBy(a => a.Name).FirstOrDefault();
+            bool Wanted((int Q, int R) pt)
+            {
+                var n = board.Node(pt);
+                if (n == null || n.Kind != SkillHexNodeKind.Ability || string.IsNullOrEmpty(n.Ability) || owned.Contains(pt)) return false;
+                var a = c.TryAbility(n.Ability);
+                return a != null && !h.Known.Contains(a.Id) && !owned.Any(o => board.Node(o)?.Ability == a.Id);
+            }
+            int Rank((int Q, int R) pt) => c.TryAbility(board.Node(pt).Ability).Kind == AbilityKind.Skill ? 0 : 1;
+            var near = board.Frontier(owned).Where(Wanted).OrderBy(Rank).ThenBy(p => p).ToList();
+            if (near.Count > 0) return near[0];
+            var far = board.Def.Nodes.Select(n => (n.Q, n.R)).Where(Wanted)
+                .Select(pt => (pt, route: board.CheapestRoute(owned, pt))).Where(x => x.route != null)
+                .OrderBy(x => x.route.Count).ThenBy(x => Rank(x.pt)).ThenBy(x => x.pt).ToList();
+            return far.Count > 0 ? far[0].pt : ((int Q, int R)?)null;
+        }
+
+        /// <summary>Trains the guided first skill: Join if needed, buys the route to the node free (no SP), slots it via
+        /// <see cref="SlotFor"/>, sets <see cref="FirstSkillFlag"/>.</summary>
+        public static Result Teach(ContentDb c, SaveData s)
+        {
+            var plan = First(c, s);
+            if (plan == null) return Result.Fail("Nothing to train");
+            var h = plan.Hero;
+            var board = SkillHexProgress.Board(c);
+            if (plan.Join) { var j = SkillHexProgress.Join(c, h); if (!j.Ok) return j; }
+            var route = board.CheapestRoute(SkillHexProgress.Owned(h).Nodes, plan.Node);
+            if (route == null) return Result.Fail("Can't reach that");
+            foreach (var pt in route)
+            {
+                int price = board.Price(pt);
+                h.SkillPoints += price; // free: the price is granted, then spent
+                var r = SkillHexProgress.Buy(c, h, pt);
+                if (!r.Ok) { h.SkillPoints -= price; return r; }
+            }
+            Codex.Unlock(s, CodexKinds.Ability, plan.Skill.Id);
+            int slot = SlotFor(s, h);
+            if (slot >= 0) Abilities.Assign(c, s, h, slot, plan.Skill.Id);
+            s.Flags.Add(FirstSkillFlag);
+            string hero = c.TryClass(h.ClassId)?.Name ?? h.ClassId;
+            return Result.Success(slot >= 0 ? $"{hero} learned {plan.Skill.Name}: it's on the battle bar, slot {slot + 1}" : $"{hero} learned {plan.Skill.Name}");
         }
     }
 
