@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 18;
+        public const int CurrentVersion = 19;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -870,6 +870,11 @@ namespace GridGame.Meta
                     h?.StatPicks?.Remove("Stamina");
                 s.Version = 18;
             }
+            // GG-T1033: the skill hexagon replaces talent trees. A save from before stands each hero on the board (below, once
+            // content is at hand, after aliases and cut classes): its Start path plus the cheapest route to every ability it
+            // knows, free, and every talent point it spent comes back as SP.
+            bool beforeBoard = s.Version < 19;
+            if (s.Version < 19) s.Version = 19;
             // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
             if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
@@ -901,6 +906,7 @@ namespace GridGame.Meta
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) ConvertCutHeroes(s, c);
             if (c != null) EnsureLead(s, c);
+            if (c != null && beforeBoard) PlaceOnBoard(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             JoinNewKeepers(s);
             if (c != null) GrantOwnedOrbs(s, c);
@@ -1022,6 +1028,83 @@ namespace GridGame.Meta
                     }
                 }
                 if (s.LostGuests != null && s.LostGuests.Remove(from)) s.LostGuests.Add(to);
+            }
+        }
+
+        /// <summary>GG-T1033 (docs/design/skill-hexagon/PLAN.md, Saves): every hero of a save from before the skill hexagon
+        /// takes its place on the board. Talent-tree nodes it bought are cleared and their points (<see cref="Talents.PointsSpent"/>,
+        /// what was paid) come back as unspent <see cref="HeroSave.SkillPoints"/>; it keeps every ability it knows. Its
+        /// <see cref="HeroSave.HexNodes"/> become its class Start path (when it owns none yet) plus, free, the cheapest route
+        /// (<see cref="SkillHexBoard.CheapestRoute"/>) to every known ability on the board, nearest first, each route
+        /// preferring to pass through the other wanted abilities. Owning an ability node teaches it, as buying does. An
+        /// ability off the board stays known with no node; a hero whose class has no Start path (a domesticated monster) only
+        /// gets its refund. Run after alias rewrites and cut-class conversion so the ids are final. Never throws.</summary>
+        public static void PlaceOnBoard(SaveData s, ContentDb c)
+        {
+            if (s?.Roster == null || c == null) return;
+            var board = HeroBoard.Board(c);
+            foreach (var h in s.Roster)
+            {
+                if (h == null) continue;
+                try
+                {
+                    h.Known ??= new List<string>();
+                    if (h.TreeNodes != null && h.TreeNodes.Count > 0)
+                    {
+                        int refund = c.SkillTrees != null ? Talents.PointsSpent(c, h) : 0;
+                        h.TreeNodes.Clear();
+                        h.SkillPoints += refund;
+                        if (refund > 0) Notes.Add($"{h.ClassId}: {refund} talent point(s) returned as skill points (GG-T1033)");
+                    }
+                    h.TreeNodeCosts?.Clear();
+                    if (board == null) continue;
+                    h.HexNodes ??= new List<string>();
+                    var owned = new HashSet<(int Q, int R)>(SkillHexProgress.Owned(h).Nodes);
+                    if (owned.Count == 0) owned.UnionWith(board.StartOf(h.ClassId));
+                    if (owned.Count == 0) continue;
+                    var wanted = new HashSet<(int Q, int R)>();
+                    foreach (var id in h.Known)
+                    {
+                        var at = board.FindAbility(id);
+                        if (at.HasValue && !owned.Contains(at.Value)) wanted.Add(at.Value);
+                    }
+                    while (wanted.Count > 0)
+                    {
+                        List<(int Q, int R)> best = null;
+                        int bestCost = int.MaxValue;
+                        (int Q, int R) bestTarget = default;
+                        var unreachable = new List<(int Q, int R)>();
+                        foreach (var target in wanted)
+                        {
+                            var route = board.CheapestRoute(owned, target, wanted);
+                            if (route == null) { unreachable.Add(target); continue; }
+                            int cost = board.SpCost(route, owned);
+                            if (cost < bestCost || (cost == bestCost && target.CompareTo(bestTarget) < 0))
+                            {
+                                best = route; bestCost = cost; bestTarget = target;
+                            }
+                        }
+                        foreach (var u in unreachable)
+                        {
+                            wanted.Remove(u);
+                            Notes.Add($"{h.ClassId}: couldn't route to its known ability '{board.Node(u)?.Ability}' on the skill hexagon (GG-T1033)");
+                        }
+                        if (best == null) break;
+                        foreach (var pt in best) owned.Add(pt);
+                        wanted.ExceptWith(owned);
+                    }
+                    var keys = new List<(int Q, int R)>(owned);
+                    keys.Sort();
+                    foreach (var pt in keys)
+                    {
+                        var key = SkillHexProgress.Key(pt);
+                        if (!h.HexNodes.Contains(key)) h.HexNodes.Add(key);
+                        var n = board.Node(pt);
+                        if (n != null && n.Kind == SkillHexNodeKind.Ability && !string.IsNullOrEmpty(n.Ability) && !h.Known.Contains(n.Ability))
+                            h.Known.Add(n.Ability);
+                    }
+                }
+                catch (Exception e) { Notes.Add($"couldn't place '{h.ClassId}' on the skill hexagon: {e.Message}"); }
             }
         }
 
