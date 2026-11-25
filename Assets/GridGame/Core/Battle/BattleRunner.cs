@@ -116,16 +116,18 @@ namespace GridGame.Core.Battle
             }
             if (!S.IsOver) CheckEnd();
             bool newWindow = TurnRules.IsTurnBoundary(S, windowOver, S.Wave != waveBefore);
+            bool roundStarted = false;
             if (newWindow)
             {
                 CloseCombo(); // §1.2.8: the combo window is the party's turn
                 // GG-T794 (§2.13.2): under UnmovedThisRound the boundary may also start a new round.
-                if (TurnRules.ResetTurn(S, S.Wave != waveBefore)) Emit(new RoundStartedEvent { Round = S.Round });
+                roundStarted = TurnRules.ResetTurn(S, S.Wave != waveBefore);
+                if (roundStarted) Emit(new RoundStartedEvent { Round = S.Round });
                 // GG-T944: count the party turn for the results (pure counters, read by nothing in the rules).
                 S.Results.TurnsEnded++;
                 S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;
             }
-            if (!S.IsOver) ReturnControl(newWindow);
+            if (!S.IsOver) ReturnControl(newWindow, roundStarted);
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
         }
@@ -435,7 +437,9 @@ namespace GridGame.Core.Battle
         /// <param name="newWindow">GG-T308: false when control returns mid-window (heroes still to act): no turn
         /// boundary — buffs, cooldowns, tempo, pickups and corpses count party turns, which are windows. GG-T782 (§2.13.1):
         /// in every turn mode they count party turns (one per enemy arrival), never hero actions.</param>
-        private void ReturnControl(bool newWindow = true)
+        /// <param name="roundStarted">GG-T796 (§2.13.2): the boundary also started a new round (UnmovedThisRound), so
+        /// RoundStart triggers fire for every living commanded hero after its TurnStart.</param>
+        private void ReturnControl(bool newWindow = true, bool roundStarted = false)
         {
             if (!newWindow) { Emit(new PlayerControlEvent { NewWindow = false }); return; }
             AgePickups();
@@ -466,6 +470,10 @@ namespace GridGame.Core.Battle
             // The party's new turn begins: hero trigger cooldowns tick, TurnStart and OnSurrounded fire (GG-T296).
             foreach (var h in S.LivingList(Team.Hero))
                 if (!S.IsOver && h.Alive && !h.IsIndependent) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359
+            // GG-T796 (§2.13.2): a new round's RoundStart passives, once per round for each commanded hero.
+            if (roundStarted)
+                foreach (var h in S.LivingList(Team.Hero))
+                    if (!S.IsOver && h.Alive && !h.IsIndependent) Fire(TriggerOn.RoundStart, h, new TriggerContext());
             if (!S.IsOver && S.Region.Rules.Count > 0) CheckEnd(); // a region rule's turn hook may have felled someone
             if (S.IsOver) return;
             Emit(new PlayerControlEvent());

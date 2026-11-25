@@ -432,5 +432,41 @@ namespace GridGame.Tests
             Acts(s, Hero(s, "knight"));
             Assert.That(goblin.HasBuff("frozen"), Is.False, "Frozen 1 Turn = one party turn, not one round");
         }
+
+        // ── GG-T796: the RoundStart trigger ─────────────────────────────────────────────────────
+
+        [Test]
+        public void Round_start_triggers_fire_for_every_hero_once_per_round_after_turn_start()
+        {
+            var db = Mini();
+            foreach (var (id, on) in new[] { ("t_start", TriggerOn.TurnStart), ("t_round", TriggerOn.RoundStart) })
+                db.Abilities[id] = new AbilityDef
+                {
+                    Id = id, Name = id, Kind = AbilityKind.Passive,
+                    Trigger = new TriggerDef { On = on, Effects = { new TriggerEffect { Kind = TriggerEffectKind.ApplyBuff, Buff = "warm" } } },
+                };
+            var setup = new BattleSetup { Stage = Stage(("goblin", 5, 0)), Seed = 7, UnlockedSlots = 5, TurnMode = TurnMode.UnmovedThisRound };
+            foreach (var (cls, x) in new[] { ("knight", 0), ("mage", 4) })
+                setup.Party.Add(new HeroSpec { ClassId = cls, Start = new Coord(x, 6), Passives = new List<string> { "t_start", "t_round" } });
+            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
+            var knight = Hero(s, "knight");
+            var mage = Hero(s, "mage");
+            int Fired(List<BattleEvent> ev, Unit u, TriggerOn on) => ev.OfType<TriggeredEvent>().Count(t => t.UnitId == u.Id && t.On == on);
+
+            var first = Acts(s, knight);
+            Assert.That(Rounds(first), Is.Empty);
+            Assert.That(Fired(first, knight, TriggerOn.TurnStart), Is.EqualTo(1));
+            Assert.That(Fired(first, knight, TriggerOn.RoundStart) + Fired(first, mage, TriggerOn.RoundStart), Is.EqualTo(0), "no new round yet");
+
+            var last = Acts(s, mage);
+            Assert.That(Rounds(last).Single().Round, Is.EqualTo(2));
+            foreach (var h in new[] { knight, mage })
+            {
+                Assert.That(Fired(last, h, TriggerOn.RoundStart), Is.EqualTo(1), h.Def.Id + ": one RoundStart for the new round");
+                int turn = last.FindIndex(e => e is TriggeredEvent t && t.UnitId == h.Id && t.On == TriggerOn.TurnStart);
+                int round = last.FindIndex(e => e is TriggeredEvent t && t.UnitId == h.Id && t.On == TriggerOn.RoundStart);
+                Assert.That(round, Is.GreaterThan(turn), h.Def.Id + ": RoundStart after the party turn's TurnStart");
+            }
+        }
     }
 }

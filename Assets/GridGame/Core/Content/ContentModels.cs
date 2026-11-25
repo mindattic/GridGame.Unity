@@ -73,6 +73,9 @@ namespace GridGame.Core.Content
         /// Damage. A <see cref="TriggerEffectKind.Substitute"/> answering it takes the blow off the owner; it also fires
         /// from inside another Reactive's effects (a counter that would KO still meets the decoy).</summary>
         OnLethalBlow,
+        /// <summary>GG-T796 (§2.13.2): a new round starts under UnmovedThisRound (every able hero has acted, or a new wave
+        /// began), after the party turn's TurnStart. Fires for every living commanded hero; never in the other modes.</summary>
+        RoundStart,
     }
 
     /// <summary>What a fired trigger does (§4.1, GG-T296).</summary>
