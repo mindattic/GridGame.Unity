@@ -116,7 +116,6 @@ namespace GridGame.Tests
             Assert.That(s.Results.ActionsTaken, Is.EqualTo(final.Results.ActionsTaken));
         }
 
-        [TestCase(TurnMode.UnmovedThisRound)]
         [TestCase(TurnMode.HeroTimeline)]
         public void Unbuilt_modes_refuse_through_the_seam(TurnMode mode)
         {

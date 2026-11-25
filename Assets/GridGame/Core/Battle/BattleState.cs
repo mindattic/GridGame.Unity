@@ -208,6 +208,9 @@ namespace GridGame.Core.Battle
         public int Difficulty;
         /// <summary>The turn mode (§2.13, GG-T767), copied from <see cref="BattleSetup.TurnMode"/>; Clone()'s shallow copy keeps it.</summary>
         public TurnMode TurnMode;
+        /// <summary>GG-T794 (§2.13.2): the current round under UnmovedThisRound, from 1; <c>TurnRules.ResetTurn</c> bumps it
+        /// when every able hero has acted (or a new wave begins). Stays 1 in other modes. Clone()'s shallow copy keeps it.</summary>
+        public int Round = 1;
         /// <summary>GG-T321: heroes the party fielded (<see cref="BattleSetup.Party"/>); enemy strength scales with it
         /// (<see cref="BattleEngine.PartyScale"/>).</summary>
         public int PartySize;

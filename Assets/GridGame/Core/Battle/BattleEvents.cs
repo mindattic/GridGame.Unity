@@ -358,6 +358,14 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"TurnSkipped {UnitId} ({Reason})";
     }
 
+    /// <summary>GG-T794 (§2.13.2, UnmovedThisRound): every able hero has acted (or a new wave began), so a new round starts
+    /// and each hero may act once more. Emitted at the party-turn boundary; never in other modes.</summary>
+    public sealed class RoundStartedEvent : BattleEvent
+    {
+        public int Round;
+        public override string ToString() => $"RoundStarted {Round}";
+    }
+
     public sealed class PlayerControlEvent : BattleEvent
     {
         /// <summary>GG-T308 (§2.0): true when a new window begins (an enemy acted, a wave began, the window was spent) and

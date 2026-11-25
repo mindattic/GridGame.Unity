@@ -119,7 +119,8 @@ namespace GridGame.Core.Battle
             if (newWindow)
             {
                 CloseCombo(); // §1.2.8: the combo window is the party's turn
-                TurnRules.ResetTurn(S);
+                // GG-T794 (§2.13.2): under UnmovedThisRound the boundary may also start a new round.
+                if (TurnRules.ResetTurn(S, S.Wave != waveBefore)) Emit(new RoundStartedEvent { Round = S.Round });
                 // GG-T944: count the party turn for the results (pure counters, read by nothing in the rules).
                 S.Results.TurnsEnded++;
                 S.Results.ActionsAtTurnEnd = S.Results.ActionsTaken;

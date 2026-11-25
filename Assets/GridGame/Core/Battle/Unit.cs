@@ -181,6 +181,9 @@ namespace GridGame.Core.Battle
         public bool IsGuest;
         /// <summary>GG-T308 (§2.0): this hero has already acted in the current window (each hero acts once per window).</summary>
         public bool ActedThisWindow;
+        /// <summary>GG-T794 (§2.13.2, UnmovedThisRound): this hero has acted in the current round; cleared when the round
+        /// resets (<c>TurnRules.ResetTurn</c>) or it joins the party (<c>TurnRules.ClearActed</c>). Never set in other modes.</summary>
+        public bool ActedThisRound;
         /// <summary>A neutral recruitable's terms (§25.11.1, GG-T132); kept after it joins. Null for everyone else.</summary>
         public RecruitableDef Recruitable;
         /// <summary>What heroes have done for a recruitable so far: "healed", "healed:&lt;class&gt;", "pincer", "pincer:&lt;class&gt;".</summary>

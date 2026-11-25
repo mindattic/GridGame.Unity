@@ -23,18 +23,50 @@ namespace GridGame.Core.Battle
     /// breaks, tames, bonds and a wanderer's turns count that unit's own icon; a recruit joins through Talk, the turn's
     /// action; the countdown badge counts other icons; pickups and corpses age at the boundary. Joins and partings still
     /// come through <see cref="ClearActed"/>.</para>
+    /// <para>GG-T794 (§2.13.2): <see cref="TurnMode.UnmovedThisRound"/> is AnyHeroEveryTurn's one action per party turn,
+    /// taken only by a hero who hasn't acted this <b>round</b> (<see cref="Unit.ActedThisRound"/>). At a turn boundary,
+    /// once every able hero has acted, the round resets (<see cref="BattleState.Round"/> + 1, every mark cleared, the runner
+    /// emits a <see cref="RoundStartedEvent"/>). Able = alive, commanded, on the board and not Immobile, so a hero who
+    /// falls, or is Frozen or Asleep, is skipped and never holds the round up; it keeps its mark (a revived hero that
+    /// already acted waits for the next round, one that hadn't may act). A hero joining mid-round (<see cref="ClearActed"/>)
+    /// may act this round and the round waits for it. Guard uses no hero's place. A new wave resets the round (each wave
+    /// opens with every hero free, like its opening window). The marks live on the units and the counter on the state, so
+    /// Clone and replay carry them.</para>
     /// </summary>
     public static class TurnRules
     {
-        /// <summary>Throws for a mode that isn't built yet (§2.13.2–§2.13.3 land with their own features).</summary>
+        /// <summary>Throws for a mode that isn't built yet (§2.13.3 lands with its own feature).</summary>
         private static void Require(BattleState s)
         {
-            if (s.TurnMode != TurnMode.PartyWindow && s.TurnMode != TurnMode.AnyHeroEveryTurn)
+            if (s.TurnMode != TurnMode.PartyWindow && s.TurnMode != TurnMode.AnyHeroEveryTurn && s.TurnMode != TurnMode.UnmovedThisRound)
                 throw new NotSupportedException($"Turn mode {s.TurnMode} is not built yet (bible §2.13)");
         }
 
-        /// <summary>§2.13.1 (GG-T781): is this an any-hero-every-turn battle — one hero action per party turn?</summary>
-        private static bool OneActionPerTurn(BattleState s) => s.TurnMode == TurnMode.AnyHeroEveryTurn;
+        /// <summary>§2.13.1 (GG-T781): one hero action per party turn — AnyHeroEveryTurn, and UnmovedThisRound (§2.13.2,
+        /// GG-T794), which adds the round on top.</summary>
+        private static bool OneActionPerTurn(BattleState s) => s.TurnMode == TurnMode.AnyHeroEveryTurn || s.TurnMode == TurnMode.UnmovedThisRound;
+
+        /// <summary>§2.13.2 (GG-T794): does this battle keep rounds (each able hero acts once per round)?</summary>
+        private static bool KeepsRounds(BattleState s) => s.TurnMode == TurnMode.UnmovedThisRound;
+
+        /// <summary>§2.13.2: can this unit take a place in the round — alive, commanded, on the board and not Immobile
+        /// (Frozen, Asleep)? A unit that can't is skipped; the round never waits for it.</summary>
+        private static bool AbleThisRound(Unit u) => u.Alive && u.IsCommandable && u.OnBoard && !u.IsImmobile;
+
+        /// <summary>§2.13.2 (GG-T794): someone acted this round and every able hero has, so the round is over. Always false
+        /// outside UnmovedThisRound.</summary>
+        public static bool RoundComplete(BattleState s)
+        {
+            Require(s);
+            if (!KeepsRounds(s)) return false;
+            bool any = false;
+            foreach (var u in s.Units)
+            {
+                if (u.ActedThisRound) any = true;
+                else if (AbleThisRound(u)) return false;
+            }
+            return any;
+        }
 
         /// <summary>§2.13.1: has any unit taken the party's one action this turn? The mark is the same per-unit
         /// <see cref="Unit.ActedThisWindow"/> PartyWindow uses (cleared at the turn boundary by <see cref="ResetTurn"/>),
@@ -72,7 +104,8 @@ namespace GridGame.Core.Battle
         public static bool HasActed(BattleState s, Unit hero)
         {
             Require(s);
-            return OneActionPerTurn(s) ? PartyHasActed(s) : hero.ActedThisWindow;
+            if (!OneActionPerTurn(s)) return hero.ActedThisWindow;
+            return PartyHasActed(s) || (KeepsRounds(s) && hero.ActedThisRound); // GG-T794: once per round
         }
 
         /// <summary>May this hero be picked up or use its bar now, time aside? PartyWindow: alive, commanded, not
@@ -93,7 +126,7 @@ namespace GridGame.Core.Battle
             var list = new List<Unit>();
             if (OneActionPerTurn(s) && PartyHasActed(s)) return list;
             foreach (var u in s.Units)
-                if (u.Alive && u.IsCommandable && u.OnBoard && !u.IsImmobile && !u.ActedThisWindow) list.Add(u);
+                if (AbleThisRound(u) && !u.ActedThisWindow && !(KeepsRounds(s) && u.ActedThisRound)) list.Add(u);
             return list;
         }
 
@@ -136,6 +169,7 @@ namespace GridGame.Core.Battle
         {
             Require(s);
             hero.ActedThisWindow = true;
+            if (KeepsRounds(s)) hero.ActedThisRound = true; // GG-T794: its place in the round is used
         }
 
         /// <summary>After <paramref name="cmd"/> resolved (and its hero was marked), is the party's turn spent — the clock
@@ -263,10 +297,21 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>A turn boundary: what it resets. PartyWindow: every unit may act again in the new window.</summary>
-        public static void ResetTurn(BattleState s)
+        /// <remarks>UnmovedThisRound (GG-T794): also, when every able hero has acted (<see cref="RoundComplete"/>), or a new
+        /// wave began after someone acted this round, a new round starts: <see cref="BattleState.Round"/> + 1 and every
+        /// <see cref="Unit.ActedThisRound"/> cleared. Returns true when it started one (the caller emits
+        /// <see cref="RoundStartedEvent"/>); never in the other modes.</remarks>
+        public static bool ResetTurn(BattleState s, bool waveChanged = false)
         {
             Require(s);
             foreach (var u in s.Units) u.ActedThisWindow = false;
+            if (!KeepsRounds(s)) return false;
+            bool anyActed = false;
+            foreach (var u in s.Units) if (u.ActedThisRound) { anyActed = true; break; }
+            if (!(waveChanged ? anyActed : RoundComplete(s))) return false;
+            s.Round++;
+            foreach (var u in s.Units) u.ActedThisRound = false;
+            return true;
         }
 
         /// <summary>A unit joining the hero side mid-battle (tamed, a wanderer) or leaving it (a tame wears off) starts
@@ -275,6 +320,7 @@ namespace GridGame.Core.Battle
         {
             Require(s);
             u.ActedThisWindow = false;
+            u.ActedThisRound = false; // GG-T794: a joiner may act this round, and the round waits for it
         }
     }
 }
