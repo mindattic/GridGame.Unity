@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using GridGame.Core.Battle;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -32,7 +33,38 @@ namespace GridGame.App
             if (timelineFrame == null || State == null) return;
             EnsureTempoLabel();
             shownTempo = State.NetTempo;
+            shownTempoMultiplier = BattleEngine.EnemyTempoMultiplier(State);
             ApplyTempoLook(shownTempo, 1f);
+        }
+
+        /// <summary>The foes' tempo rate the bar is drawn at; a Slow scales on-bar foe icons by old/new (GG-T1084).</summary>
+        private float shownTempoMultiplier = 1f;
+
+        /// <summary>
+        /// GG-T1084: a Slow (party tempo up) pushes every on-bar foe turn icon later at once: its u (time left) scales by
+        /// old/new enemy tempo multiplier. Each icon syncs to its new u and spin-slides back with PushSlide (GG-T1071) like
+        /// any other pushback. Hero icons, casts and tray icons hold still.
+        /// </summary>
+        private void TempoPushback(float oldMult, float newMult)
+        {
+            if (lastAt == null || State == null || newMult <= 0f || newMult >= oldMult) return;
+            float ratio = oldMult / newMult;
+            var hold = new Dictionary<int, float>(lastAt);
+            var moved = new List<(int id, float from, float to)>();
+            foreach (var e in State.Timeline)
+            {
+                if (e.Kind != TimelineKind.Turn || inTray.Contains(e.Id) || !lastAt.TryGetValue(e.Id, out var u)) continue;
+                var owner = State.UnitById(e.OwnerId);
+                if (owner == null || owner.IsHero) continue;
+                float to = Mathf.Clamp01(u * ratio);
+                if (to - u < 0.002f) continue;
+                hold[e.Id] = to;
+                moved.Add((e.Id, u, to));
+            }
+            if (moved.Count == 0) return;
+            SyncTimeline(hold);
+            App.Audio.Sfx("battle.slide", 0.7f, 0.75f);
+            foreach (var m in moved) App.StartCoroutine(PushSlide(m.id, m.from, m.to, 0.45f));
         }
 
         private void ApplyTempoLook(int net, float k)
@@ -49,6 +81,9 @@ namespace GridGame.App
             EnsureTempoLabel();
             int from = shownTempo;
             shownTempo = t.Net;
+            float fromMult = shownTempoMultiplier;
+            shownTempoMultiplier = t.Multiplier;
+            TempoPushback(fromMult, t.Multiplier); // GG-T1084: foes slowed slide back now
             if (t.Net == from) yield break;
             bool up = t.Net > from;
             App.Audio.Sfx(up ? "battle.powerup" : "status.debuff", 0.7f, up ? 1.25f : 0.8f);
