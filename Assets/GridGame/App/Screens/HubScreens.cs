@@ -751,6 +751,7 @@ namespace GridGame.App
 
         public override void BuildBody(VisualElement body)
         {
+            PartyBoards.Build(C, S, body); // GG-T1044: each party hero's board and bar side by side
             var list = Ui.ListPanel(body, $"Active party {S.Party.Count}/{Progression.MaxPartySize} — tap to swap", "party-list");
             foreach (var h in S.Roster.OrderByDescending(x => S.Party.Contains(x.ClassId)).ThenBy(x => x.ClassId))
             {
