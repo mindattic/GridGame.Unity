@@ -318,3 +318,25 @@ breaks against GG-T479's epic (GG-T477).
 **Target devices (GG-T724, BIBLE §26.3).** iPhone 13 (A15) and newer flagships. App Store Connect can't exclude
 models, so the iPhone SE and 12/13 mini are "not designed for" rather than blocked; the iOS 17.0 floor already drops
 anything older than the iPhone XS/XR.
+
+## Release player audit (2026-11-25, GG-T1120)
+
+A code read of `origin/main` for what a non-development player (no `DEVELOPMENT_BUILD`, no editor) exposes. No player
+was built or launched for it (build-only checks, no Unity); run `pwsh tools/build.ps1 -Release -SkipProse` as part of
+the owner's phone check (GG-T1123).
+
+- **Release switches** (`Meta/Features.cs`): Enchanter, Taming and InnRespecRow default off; Crucible, Bounties, Caravan
+  and DiamondStore on, as RELEASE_SCOPE decided. `LookPresets` is on in code but RELEASE_SCOPE still says DISABLE (GG-T1124).
+- **Launch flags** (`GameApp.cs`, `CommandLine`): in a release player `Has`/`Value` return false/null without
+  `-enableDebugOptions`, so `-allfeatures`, `-start`, `-saveRoot`, `-profile`, `-testmode`, `-demo`, `-endless`,
+  `-automation`, `-turnMode`, `-skill` and the headless session do nothing. The profile folder is pinned to
+  `persistentDataPath/Profiles` (`OpenProfiles`). Unity.Shared's own `--headless`, `-muted` and `-profiles-root`
+  readers are not behind that gate (GG-T1125).
+- **AutomationServer** (all three files) is inside `#if DEVELOPMENT_BUILD || UNITY_EDITOR`, and so is its one call in
+  `GameApp.Awake`; it also needs `-automation PORT`. Not in a release binary.
+- **Diamond store**: `DiamondStores.Choose` uses the free `DevDiamondStore` only for the editor or `Debug.isDebugBuild`;
+  release is `UnityIapDiamondStore` on Android/iOS (with `GG_IAP`), else `UnconnectedDiamondStore` ("Store not
+  connected yet"). No free stub in release.
+- **CrashReporter** is installed first in `GameApp.Awake` in every build; telemetry is a no-op in release
+  (`TelemetryUnity.IsTelemetryBuild`). Invariant culture is set at `SubsystemRegistration` and again in `Boot`.
+- **Build options**: `BuildWindowsRelease` passes `BuildOptions.None` (development only adds `Development | AllowDebugging`).
