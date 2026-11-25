@@ -212,7 +212,7 @@ namespace GridGame.Meta
             return new CampTip
             {
                 Station = tip.Station, Title = tip.Title, Target = CraftButton,
-                Text = $"Heroes learn new skills here for gold. The {hero} can train {plan.Skill.Name}: the first lesson is free{where}. Tap Learn.",
+                Text = $"Heroes grow new skills on the skill board. The {hero} can take the {plan.Skill.Name} node: the first lesson is free, no skill points{where}. Tap Learn.",
             };
         }
 

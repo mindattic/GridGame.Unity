@@ -474,26 +474,28 @@ namespace GridGame.App
         public override void OnHeroChanged() => talents.OnHeroChanged();
         /// <summary>"talents" while the Talents sub-tab is up, so `-start talents` and the harness's goto check still match.</summary>
         public override string Id => tab == TalentsSub ? talents.Id : "abilities";
-        /// <summary>GG-T180: while onboarding step 7 is ahead, the tab introduces Learn with its own tip.</summary>
-        public override string TipStation => tab == TalentsSub ? null : Training.Step(S) ? Training.TipStation : "abilities";
+        /// <summary>GG-T180/GG-T1086: while onboarding step 7 is ahead, the Board sub-tab (where the guided lesson sits)
+        /// carries the training tip; the other sub-tabs keep the plain "abilities" tip.</summary>
+        public override string TipStation => tab == TalentsSub ? (Training.Step(S) ? Training.TipStation : null) : "abilities";
 
-        /// <summary>GG-T180 (§25.0.9): during step 7 the tab opens on Learn, on the hero the guided first skill is for —
-        /// decided before the hero picker draws, so the picker marks that hero.</summary>
+        /// <summary>GG-T180 (§25.0.9), GG-T1086: during step 7 the tab opens on the Board, on the hero the guided first skill
+        /// is for — decided before the hero picker draws, so the picker marks that hero.</summary>
         public override void Prepare()
         {
             if (tab >= 0) return;
             var plan = Training.First(C, S);
-            tab = plan != null ? Training.LearnTab : 0;
+            tab = plan != null ? TalentsSub : 0;
             if (plan != null) HeroId = plan.Hero.ClassId;
         }
 
         public override void BuildBody(VisualElement body)
         {
             Prepare();
-            var plan = Training.First(C, S);
             if (tab == TalentsSub)
             {
                 Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
+                var plan = Training.First(C, S);
+                if (plan != null && plan.Hero == Hero) GuidedLesson(plan, body); // GG-T1086: above the hexagon
                 talents.Host = Host;
                 talents.BuildBody(body);
                 return;
@@ -577,7 +579,6 @@ namespace GridGame.App
             }
             else if (tab == 2)
             {
-                if (plan != null && plan.Hero == h) GuidedLesson(plan, list);
                 // GG-T592 (§25.6.5): what the hero's spent stat points unlock first, then the locked ones with what they need.
                 var learnable = Abilities.Learnable(C, h).Select(a => (a, needs: Abilities.NeedsText(Abilities.Unmet(C, S, h, a))))
                     .OrderBy(x => x.needs != null).ToList();
@@ -741,8 +742,9 @@ namespace GridGame.App
 
         private void Sentence(AbilityDef a, VisualElement list) => GlossaryText.Create(TriggerText.Describe(C, a), "kit-text dim", list).AddToClassList("kit-note"); // on the box, not each word
 
-        /// <summary>The guided first skill (GG-T180, §25.0.9) heads the Learn tab: what it does, that it's free and which bar
-        /// slot it lands in, with a Learn button (the camp tip's target) that trains and slots it in one tap.</summary>
+        /// <summary>The guided first skill (GG-T180, §25.0.9) heads the Board sub-tab (GG-T1086): what it does, that its board
+        /// node is free (no skill points) and which bar slot it lands in, with a Learn button (the camp tip's target) that
+        /// buys the node and slots the skill in one tap (<see cref="Training.Teach"/>).</summary>
         private void GuidedLesson(Training.Plan plan, VisualElement list)
         {
             var card = Ui.Window(null, list);
@@ -754,8 +756,8 @@ namespace GridGame.App
             Ui.Heading($"{plan.Skill.Name} — {KindLabel(plan.Skill)}", head, "grow");
             GlossaryText.Create(plan.Skill.Description ?? "", "kit-text dim", card);
             string hero = C.TryClass(plan.Hero.ClassId)?.Name ?? plan.Hero.ClassId;
-            Ui.Para($"First lesson free — it goes onto the {hero}'s battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
-            var btn = RowIcon.IconButton("Learn", RowKind.Confirm, () => LearnDone(Abilities.Learn(C, S, plan.Hero, plan.Skill.Id), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
+            Ui.Para($"First lesson free — the {hero} takes this skill board node at no skill point cost, and it goes onto the battle bar" + (plan.Slot >= 0 ? $", slot {plan.Slot + 1}." : "."), card, "gold");
+            var btn = RowIcon.IconButton("Learn", RowKind.Confirm, () => LearnDone(Training.Teach(C, S), plan.Hero, plan.Skill.Id), "btn--primary", Ui.Actions(card));
             btn.name = CampTips.CraftButton;
         }
 

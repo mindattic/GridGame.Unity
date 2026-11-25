@@ -2642,9 +2642,9 @@ namespace GridGame.Meta
         /// <summary>GG-T592 (§25.6.5): is <paramref name="a"/> waived from its <see cref="AbilityDef.Requires"/> for this hero?
         /// A hero's own kit moves are (what its class was built to do: a fresh Red Mage is never locked out of its own
         /// Fireball; GG-T978: on a family tree that takes in its start-node grants and its SignatureOf nodes), and so is the guided first skill
-        /// (GG-T180), which the onboarding chain must always be able to finish.</summary>
-        public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) =>
-            IsKitMove(c, h, a) || Training.Guides(c, s, a);
+        /// (GG-T180) — GG-T1086: no longer, it is taught on the skill board by <see cref="Training.Teach"/>, and dropping it
+        /// spares the Learn tab a Training.First route search per row.</summary>
+        public static bool RequiresWaived(ContentDb c, SaveData s, HeroSave h, AbilityDef a) => IsKitMove(c, h, a);
 
         /// <summary>GG-T592: the stats this hero falls short on for <paramref name="a"/> at the Learn screen, measured against
         /// its skill hexagon stat totals (<see cref="HeroBoard.BoardStats"/>, GG-T1058; was its spent level-up stat points).
