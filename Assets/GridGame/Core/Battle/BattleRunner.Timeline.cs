@@ -171,6 +171,10 @@ namespace GridGame.Core.Battle
                     if (owner != null && owner.Alive && owner.IsIndependent) { RunAllyTurn(owner); CheckTilesStrict("ally turn of " + owner); }
                     else if (owner != null && owner.Alive) { RunEnemyTurn(owner); RuleBreakAfterTurn(owner); enemyTurnResolved = true; CheckTilesStrict("turn of " + owner); }
                     if (owner != null && owner.Alive && !S.IsOver) RegionTurn(RuleHook.TurnEnd, owner);
+                    // GG-T809 (§2.13.3): a Frozen hero's icon never arrives, so its halt counts down on each foe turn too.
+                    if (owner != null && !owner.IsIndependent && TurnRules.HeroesOnTimeline(S) && !S.IsOver)
+                        foreach (var fh in S.LivingList(Team.Hero))
+                            if (TurnRules.IsHeroIcon(S, fh) && fh.IsTimelineHalted) TickTurnBuffs(fh, true);
                     recoverActorId = -1;
                     // GG-T318: the turn is done, so its recovery cost is known. Off the bar, then back on at its Speed's entry.
                     if (owner != null && owner.Alive && S.Timeline.Contains(next))

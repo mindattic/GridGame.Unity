@@ -479,6 +479,10 @@ namespace GridGame.Core.Battle
             {
                 // An independent ally (GG-T303) counts its own turns like an enemy: only a halting buff ticks here.
                 if (h.IsIndependent) { TickTurnBuffs(h, true); continue; }
+                // GG-T809 (§2.13.3): under HeroTimeline a hero counts its own turns like a foe: its Turns buffs, cooldowns,
+                // regen and TurnEnd/TurnStart run only when its own icon arrives; another hero's turn ticks only its
+                // halting debuff (Frozen), which also counts down on each foe turn (ResolveArrivals) so it always thaws.
+                if (TurnRules.IsHeroIcon(S, h) && h.Id != S.ActiveHeroId) { TickTurnBuffs(h, true); continue; }
                 if (h.RegenPerTurn > 0 && h.Hp < h.MaxHp) Heal(h, h.RegenPerTurn, h);
                 // TurnEnd passives (GG-T296): a hero's turn ends each time control returns (Regenerate knits 6%).
                 if (h.Alive) Fire(TriggerOn.TurnEnd, h, new TriggerContext());
@@ -499,7 +503,7 @@ namespace GridGame.Core.Battle
             FadeAfterimages(); // GG-T867: each afterimage lasts until its Speedster's next turn
             // The party's new turn begins: hero trigger cooldowns tick, TurnStart and OnSurrounded fire (GG-T296).
             foreach (var h in S.LivingList(Team.Hero))
-                if (!S.IsOver && h.Alive && !h.IsIndependent) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359
+                if (!S.IsOver && h.Alive && !h.IsIndependent && !TurnRules.NotThisHerosTurn(S, h)) { TriggersTurnStart(h); if (h.Alive) RegionTurn(RuleHook.TurnStart, h); } // GG-T359
             // GG-T796 (§2.13.2): a new round's RoundStart passives, once per round for each commanded hero.
             if (roundStarted)
                 foreach (var h in S.LivingList(Team.Hero))
