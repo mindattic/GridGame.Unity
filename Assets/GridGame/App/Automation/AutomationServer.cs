@@ -651,6 +651,10 @@ namespace GridGame.App.Automation
                 case "devcast":
                     if (app.Router.Current is BattleScreen dcs) { int caster = dcs.DevQueueCast((int)F(q["target"]), q["ability"], (int)F(q["ticks"], 30)); return new { ok = caster >= 0, caster }; }
                     return new { error = "not in battle" };
+                case "devpushback":
+                    // GG-T1094: kind=push|slow|clear, shift= (bar share, default 0.35), k= freezes the slide there (omit to play it).
+                    if (app.Router.Current is BattleScreen dpb) return (object)dpb.DevPushback(q["kind"] ?? "push", F(q["shift"], 0.35f), F(q["k"], -1f)) ?? new { error = "no timeline" };
+                    return new { error = "not in battle" };
                 case "devprefab":
                     // GG-T269: play one vfx.json effect prefab on the first foe (the prefab contact sheet).
                     if (app.Router.Current is BattleScreen dpf)

@@ -708,8 +708,7 @@ namespace GridGame.App
             icon.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
             icon.style.rotate = new Rotate(new Angle(0f));
             icon.BringToFront();
-            int turns = ReduceMotion ? 0 : Mathf.Clamp(1 + Mathf.RoundToInt(Mathf.Abs(toU - fromU) * 4f), 1, 3);
-            pushSlides[entryId] = (fromU, 0f, turns);
+            pushSlides[entryId] = (fromU, 0f, PushTurns(fromU, toU));
             yield return Tween.Run(seconds, k =>
             {
                 if (!pushSlides.TryGetValue(entryId, out var ps)) return;
@@ -719,6 +718,10 @@ namespace GridGame.App
             pushSlides.Remove(entryId);
             if (lastAt != null) { LayoutIcons(lastAt); SyncTimelineStatus(); }
         }
+
+        /// <summary>GG-T1071: whole spins for a pushback of this length (1 to 3; none under Reduce Motion).</summary>
+        private int PushTurns(float fromU, float toU) =>
+            ReduceMotion ? 0 : Mathf.Clamp(1 + Mathf.RoundToInt(Mathf.Abs(toU - fromU) * 4f), 1, 3);
 
         /// <summary>GG-T319: recovery as the state has it, or <paramref name="aheadTicks"/> from now (a hold plays it forward).</summary>
         private void RefreshRecoverView(int aheadTicks = 0)
