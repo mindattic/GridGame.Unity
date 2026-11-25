@@ -153,6 +153,8 @@ namespace GridGame.Core.Battle
                 BeginClutchAction(); // GG-T571: each arrival (a cast resolving, a turn, a rule event) is its own action
                 if (next.Kind == TimelineKind.Cast) { ResolveCast(next); CheckTilesStrict("cast " + next.AbilityId); }
                 else if (next.Kind == TimelineKind.Hazard) { ResolveHazard(next); CheckTilesStrict("rule event " + next.RuleEvent); }
+                else if (S.UnitById(next.OwnerId) is Unit sleeper && sleeper.Alive && TurnRules.IsHeroIcon(S, sleeper) && sleeper.IsImmobile)
+                    SkipHeroTurn(next, sleeper); // GG-T1100: Asleep/Immobile — the icon re-enters, nobody becomes active
                 else if (S.UnitById(next.OwnerId) is Unit hero && hero.Alive && TurnRules.IsHeroIcon(S, hero))
                 {
                     HeroIconArrived(next, hero);
@@ -253,6 +255,27 @@ namespace GridGame.Core.Battle
             e.Ip = 0;
             S.ActiveHeroId = hero.Id; // GG-T1074: this hero alone may act now (TurnRules.NotThisHerosTurn)
             ScheduleReentry(e, hero, BattleConfig.RecoverBaseSeconds, space: false);
+        }
+
+        /// <summary>
+        /// GG-T1100 (§2.13.3): an Immobile (Asleep), non-halted hero's own icon arrived under HeroTimeline. Like a foe's
+        /// skipped turn (RunEnemyTurn's Immobile branch) the turn is lost but still counts: its Turns buffs (Sleep itself
+        /// included) and skill cooldowns tick, then the icon re-enters at its Speed's entry. It never becomes
+        /// <see cref="BattleState.ActiveHeroId"/> and the clock runs on to the next hero's own icon.
+        /// </summary>
+        private void SkipHeroTurn(TimelineEntry e, Unit hero)
+        {
+            e.Ip = 0;
+            Emit(new TurnSkippedEvent { UnitId = hero.Id, Reason = hero.HasBuff("sleep") ? "asleep" : "immobile" });
+            TickTurnBuffs(hero, false);
+            if (hero.Alive)
+            {
+                var keys = new List<string>(hero.Cooldowns.Keys);
+                foreach (var k in keys)
+                    if (hero.Cooldowns[k] > 0) hero.Cooldowns[k]--;
+            }
+            CheckEnd();
+            if (hero.Alive && S.Timeline.Contains(e)) ScheduleReentry(e, hero, BattleConfig.RecoverBaseSeconds, space: false);
         }
 
         /// <summary>
