@@ -334,7 +334,7 @@ namespace GridGame.App
                 var a = C.TryAbility(id);
                 if (a == null) continue;
                 var row = Ui.MenuRow(a.Name, a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString(), null, abilitiesBlock, Art.AbilityIcon(a));
-                InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450: tap or hold to read it
+                InspectCard.Attach(row, b => InspectCard.Ability(b, a), tap: true); // GG-T450: tap or hold to read it
             }
 
             var profBlock = Ui.El("col", sheet);
@@ -555,7 +555,7 @@ namespace GridGame.App
                     var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, Art.AbilityIcon(a), slot < unlocked);
                     if (shortOrbs) row.Q<Label>("value")?.AddToClassList("bad");
                     if (a.Cost > 0) Ui.CostPips(a.Cost, row, have: ownedOrbs);
-                    InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)));
+                    InspectCard.Attach(row, b => InspectCard.Ability(b, a));
                     Describe(a, list);
                 }
             }
@@ -642,7 +642,7 @@ namespace GridGame.App
                 var row = Ui.MenuRow(ab.Name, l.Kit ? "Own kit" : Abilities.IsHeroUsable(ab) ? KindLabel(ab) : "Passive", null, list, Art.AbilityIcon(ab));
                 row.name = "locked-" + ab.Id;
                 if (l.Kit) row.Q<Label>("value")?.AddToClassList("gold");
-                InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450: a read-only row reads on a tap
+                InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // GG-T450: a read-only row reads on a tap
                 foreach (var src in l.Sources) Ui.Note("· " + src, list, null);
                 Describe(ab, list);
             }
@@ -667,7 +667,7 @@ namespace GridGame.App
                 var row = Ui.MenuRow(a.Name, active ? "On" : "Off", () => Done(PassiveLoadout.Toggle(C, h, ab.Id)), list, Art.AbilityIcon(a));
                 row.name = "passive-" + a.Id;
                 row.Q<Label>("value").AddToClassList(active ? "good" : "dim");
-                InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)));
+                InspectCard.Attach(row, b => InspectCard.Ability(b, ab));
                 Sentence(a, list);
             }
             var innate = PassiveLoadout.Innate(C, h);
@@ -678,7 +678,7 @@ namespace GridGame.App
                 {
                     var ab = a;
                     var row = Ui.MenuRow(a.Name, "Innate", null, list, Art.AbilityIcon(a));
-                    InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450
+                    InspectCard.Attach(row, b => InspectCard.Ability(b, ab), tap: true); // GG-T450
                     Sentence(a, list);
                 }
             }
@@ -2055,7 +2055,7 @@ namespace GridGame.App
             size.KindIcon(RowKind.Settings);
             DifficultyControl(st, w); // GG-T309: the 1..10 dial
             Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
-            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
+            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
             Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
             Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);

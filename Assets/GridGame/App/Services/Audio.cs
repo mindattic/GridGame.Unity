@@ -14,7 +14,7 @@ namespace GridGame.App
         public string CurrentTrack => currentTrack;
         /// <summary>Recent cues (for automation checks that every event is voiced).</summary>
         public readonly List<string> CueLog = new List<string>();
-        private float musicVolume = 0.6f, sfxVolume = 0.85f;
+        private float musicVolume = 0.6f, sfxVolume = 0.7f;
         private readonly Dictionary<string, float> lastPlayed = new Dictionary<string, float>();
 
         public static Audio Create(Transform parent)
