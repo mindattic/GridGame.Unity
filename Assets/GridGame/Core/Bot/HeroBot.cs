@@ -134,6 +134,7 @@ namespace GridGame.Core.Bot
             // GG-T66: displacement bonus per move candidate (index into candidates), applied only when no pincer is on offer.
             var displacement = new List<(int index, float bonus)>();
             bool pincerAvailable = false;
+            HashSet<int> realPincers = null; // GG-T1087: candidate indices that land a real pincer (never charged the round save)
             // GG-T188/GG-T311 (§2.0): picking a hero up starts the clock and the bot drags like a human — its think time,
             // the pickup, then DragSecondsPerTile a tile — so a path longer than the window is cut where the time runs out
             // (forced drop), and a gap too short for pickup + think + one tile offers no drag at all.
@@ -161,7 +162,7 @@ namespace GridGame.Core.Bot
                     if (window > 0f) held = Math.Min(held, window);
                     float score = ScoreMove(s, pv, h);
                     if (ReadsBar) score += MoveTimeValue(s, pv, h, held);
-                    if (!pincerAvailable && HasRealPincer(s, pv)) pincerAvailable = true;
+                    if (HasRealPincer(s, pv)) { pincerAvailable = true; (realPincers ??= new HashSet<int>()).Add(candidates.Count); }
                     float push = lone ? 0f : DisplacementScore(s, pv, h, TimelineAware);
                     if (push > 0f) displacement.Add((candidates.Count, push));
                     candidates.Add((new MoveCommand { HeroId = h.Id, Path = new List<Coord>(pv.StepsTaken), HeldSeconds = held }, score));
@@ -209,6 +210,8 @@ namespace GridGame.Core.Bot
                 foreach (var (index, bonus) in displacement)
                     candidates[index] = (candidates[index].cmd, candidates[index].score + bonus);
 
+            if (TimelineAware && !lone) SaveForPincers(s, candidates, realPincers);
+
             lockedOut = candidates.Count == 0 && !movesOnly;
             if (candidates.Count == 0) return movesOnly ? null : new ShieldCommand();
             if (Randomness > 0f && rng.Chance(Randomness)) return candidates[rng.Range(0, candidates.Count)].cmd;
@@ -239,6 +242,40 @@ namespace GridGame.Core.Bot
 
         /// <summary>GG-T798: some hero has taken its place this round (only ever under UnmovedThisRound).</summary>
         private static bool MidRound(BattleState s) => s.Units.Exists(u => u.ActedThisRound);
+
+        /// <summary>GG-T1087: what a non-pincer action costs a hero the round planner is saving for a pincer.</summary>
+        public const float RoundSaveCost = 6f;
+
+        /// <summary>
+        /// GG-T1087 (§2.13.2, follow-up to GG-T798): the smart bot's round rotation. Mid-round (some hero has taken its place,
+        /// <see cref="Unit.ActedThisRound"/>, which only UnmovedThisRound ever sets, so PartyWindow and AnyHeroEveryTurn
+        /// replay unchanged) with 2+ heroes still unmoved, a hero with pincer prospects (<see cref="PincerPlanner.Plan"/> at
+        /// full reach finds a Complete or Setup walk) is saved for that pincer: its non-pincer candidates cost
+        /// <see cref="RoundSaveCost"/>, so a hero with no prospects (Kind None) spends the turn on support or positioning.
+        /// A real pincer is never charged, and nothing is charged when no unmoved hero lacks prospects (someone must act)
+        /// or only one hero is left (the round's last unmoved hero). Pure: the planner only looks, no Rng is drawn.
+        /// </summary>
+        private static void SaveForPincers(BattleState s, List<(BattleCommand cmd, float score)> candidates, HashSet<int> realPincers)
+        {
+            if (!MidRound(s)) return;
+            var unmoved = TurnRules.HeroesLeftToAct(s);
+            if (unmoved.Count < 2) return;
+            HashSet<int> saved = null;
+            bool spender = false;
+            foreach (var h in unmoved)
+            {
+                var kind = PincerPlanner.Plan(s, h, PincerPlanner.MaxSearchSteps).Kind;
+                if (kind == PincerPlanKind.Complete || kind == PincerPlanKind.Setup) (saved ??= new HashSet<int>()).Add(h.Id);
+                else if (kind == PincerPlanKind.None) spender = true;
+            }
+            if (saved == null || !spender) return;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                if (realPincers != null && realPincers.Contains(i)) continue;
+                if (!saved.Contains(BattleEngine.CommandHeroId(candidates[i].cmd))) continue;
+                candidates[i] = (candidates[i].cmd, candidates[i].score - RoundSaveCost);
+            }
+        }
 
         /// <summary>Voluntary Guards already taken in the current round (battle, wave and round).</summary>
         private int GuardsThisRound(BattleState s) =>
