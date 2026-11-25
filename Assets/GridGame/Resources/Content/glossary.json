@@ -943,5 +943,10 @@
     "Id": "slime_glob",
     "Term": "Slime Glob",
     "Aliases": ["Glob", "Globs", "Slime Globs"]
+  },
+  {
+    "Id": "skill_board",
+    "Term": "Skill Board",
+    "Aliases": ["Skill Boards"]
   }
 ]

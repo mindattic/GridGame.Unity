@@ -423,22 +423,6 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
-    "class:ironbarkgolem": {
-      "key": "class:ironbarkgolem",
-      "id": "description-class-ironbarkgolem",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:26eb27c2bb101b45c760add99d07e0df15a889b374664185fde0044f139127da",
-      "about": [
-        "class-ironbarkgolem"
-      ],
-      "speakers": [],
-      "payload": {
-        "short": "A tree golem bound in riveted iron plate, too heavy for any heave.",
-        "long": "The Arks' wardens plated their old golems against the flood. The flood left; the plate stayed."
-      }
-    },
     "class:anchorhulk": {
       "key": "class:anchorhulk",
       "id": "description-class-anchorhulk",
@@ -2069,6 +2053,22 @@
       "payload": {
         "short": "A black-armoured zealot with a jagged horned helm and red light running down its limbs, a red blade in hand and a red cape flaring wide.",
         "long": "Infernalists: Ember zealots in black armour and red capes, met in the Shardfall, who want the Anchors broken. The Executioners finish whatever the Ember has set alight."
+      }
+    },
+    "class:ironbarkgolem": {
+      "key": "class:ironbarkgolem",
+      "id": "description-class-ironbarkgolem",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:26eb27c2bb101b45c760add99d07e0df15a889b374664185fde0044f139127da",
+      "about": [
+        "class-ironbarkgolem"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A tree golem bound in riveted iron plate, too heavy for any heave.",
+        "long": "The Arks' wardens plated their old golems against the flood. The flood left; the plate stayed."
       }
     },
     "class:jadeknight": {
@@ -4367,6 +4367,19 @@
       "speakers": [],
       "payload": {
         "long": "Wild children, beast tamers and things the Bloom has touched, living out where the Manalith's fallen substance takes root."
+      }
+    },
+    "codex:keyword/skill_board": {
+      "key": "codex:keyword/skill_board",
+      "id": "description-codex-keyword-skill-board",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ae829eb898dfb138eb1c240cd3c78db408f5ea4901bdb9075606c159e871350d",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "long": "Every hero earns 1 skill point (SP) a level, and every node on the Skill Board costs 1 SP. Open it from Heroes, Abilities, Board.\n\nThe board is a hexagon with the six identity stats at its corners: VIT, STR, AGI, SPD, WIS and INT. Each edge between two of them is a family: Martial (VIT and STR), Brawn (STR and AGI), Shadow (AGI and SPD), Wild (SPD and WIS), Brains (WIS and INT) and Grace (INT and VIT).\n\nA hero starts on its class's Start path and buys nodes next to the ones it already owns, so it grows outward from home. Tap any node to see the cheapest route to it and what it costs. Passive nodes add stats; ability nodes teach their ability. Luck is not on the board: it grows a little every level and comes from gear."
       }
     },
     "codex:place/bloom": {

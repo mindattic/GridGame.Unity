@@ -123,5 +123,6 @@
   {"Key": "story:dialogue/boss_intro_cave", "Related": ["place:cave", "foe:cyclops02"]},
   {"Key": "story:dialogue/boss_intro_still", "Related": ["place:still", "foe:chronomancer"]},
   {"Key": "story:dialogue/boss_intro_cityruins", "Related": ["place:cityruins", "foe:ceramicknight06"]},
-  {"Key": "story:dialogue/boss_intro_cathedral", "Related": ["place:cathedral", "foe:hierarch"]}
+  {"Key": "story:dialogue/boss_intro_cathedral", "Related": ["place:cathedral", "foe:hierarch"]},
+  {"Key": "keyword:skill_board", "Title": "The Skill Board", "Related": []}
 ]

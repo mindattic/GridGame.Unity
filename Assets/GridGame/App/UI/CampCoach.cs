@@ -83,6 +83,13 @@ namespace GridGame.App
                 Coach.Run(EquipLesson(GameApp.I.Content, s, h, slot, item));
                 return;
             }
+            // GG-T1045: the first time a party hero holds a skill point, walk Heroes > Abilities > the hero > Board.
+            if (Coach.Pending(s, BoardLesson) && BoardPlan(s) is HeroSave earner && CampTipOverlay.Find("camp-heroes") != null)
+            {
+                Codex.Unlock(s, CodexKinds.Keyword, BoardKeyword);
+                Coach.Run(BoardLessonFor(GameApp.I.Content, earner));
+                return;
+            }
             // GG-T926: once a stage is cleared and the Codex holds an unread entry, one lesson points at its row.
             if (Coach.Pending(s, CodexLesson) && s.ClearedStages != null && s.ClearedStages.Count > 0
                 && Codex.UnreadCount(GameApp.I.Content, s) > 0 && CampTipOverlay.Find("camp-codex") != null)
@@ -93,6 +100,39 @@ namespace GridGame.App
                     Image = "Tutorial/" + CodexLesson,
                     Steps = { new CoachStep { Caption = "Tap Codex.", Element = () => CampTipOverlay.Find("camp-codex") } },
                 });
+        }
+
+        /// <summary>GG-T1045: the Skill Board lesson's id (its save flag is "lesson:hub-board") and its Codex keyword entry.</summary>
+        public const string BoardLesson = "hub-board", BoardKeyword = "skill_board";
+
+        /// <summary>GG-T1045: the first party hero with a skill point to spend, or null.</summary>
+        public static HeroSave BoardPlan(SaveData s) =>
+            s?.Party?.Select(s.Hero).FirstOrDefault(h => h != null && h.SkillPoints > 0);
+
+        private static CoachLesson BoardLessonFor(ContentDb c, HeroSave h)
+        {
+            string hero = c.TryClass(h.ClassId)?.Name ?? h.ClassId;
+            string id = h.ClassId;
+            bool OnAbilities() => GameApp.I.Router.Current is HeroScreen hs && (hs.Id == "abilities" || hs.Id == "talents");
+            return new CoachLesson
+            {
+                Id = BoardLesson, Kicker = "Camp", Title = "Skill points",
+                Text = $"The {hero} earned a skill point. Every level gives 1 SP, and every node on the Skill Board costs 1. " +
+                       "Buy nodes next to the ones the hero owns: passives add stats, ability nodes teach the ability. The Codex explains the board and its six families.",
+                Image = "Tutorial/" + BoardLesson,
+                Steps = new List<CoachStep>
+                {
+                    new CoachStep { Caption = "Tap Heroes.", Element = () => CampTipOverlay.Find("camp-heroes"),
+                        Done = () => GameApp.I.Router.Current is HeroScreen },
+                    new CoachStep { Caption = "Tap Abilities.", Element = () => CampTipOverlay.Find("tab-abilities"), Done = OnAbilities },
+                    new CoachStep { Caption = $"Tap the {hero}.", Element = () => CampTipOverlay.Find("hero-pick-" + id),
+                        Done = () => OnAbilities() && GameApp.I.Router.Current is HeroScreen hs && hs.HeroId == id },
+                    new CoachStep { Caption = "Tap Board.", Element = () => CampTipOverlay.Find("tab-board"),
+                        Done = () => GameApp.I.Router.Current is HeroScreen hs && hs.Id == "talents" },
+                    new CoachStep { Caption = "Tap a node next to your trail to see its route and cost, then Buy route.",
+                        Element = () => CampTipOverlay.Find("hex-board"), Info = true },
+                },
+            };
         }
 
         /// <summary>GG-T926: the Codex lesson's id (its save flag is "lesson:hub-codex").</summary>

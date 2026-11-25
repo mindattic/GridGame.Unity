@@ -2049,6 +2049,23 @@
         ]
       }
     },
+    "glossary:skill_board": {
+      "key": "glossary:skill_board",
+      "id": "glossary-skill-board",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:dd8cc727d5408b3ae08df0e2755d34a2ede9789a436f550378e07a2f8d63f579",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Skill Board",
+        "definition": "Each hero's hexagon of nodes, bought with the skill point earned every level. Passive nodes add stats; ability nodes teach the ability.",
+        "aliases": [
+          "Skill Boards"
+        ]
+      }
+    },
     "glossary:slight": {
       "key": "glossary:slight",
       "id": "glossary-slight",
