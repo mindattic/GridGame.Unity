@@ -9,8 +9,8 @@ namespace GridGame.Meta
 {
     /// <summary>
     /// "What a sensible player does at camp": scrap worn-out gear, rest, repair, forge and equip better
-    /// gear (owned bag, then Forge, then the Merchant's Bargain shelf), spend skill points on tree nodes
-    /// (home tree first, GG-T54), learn abilities into dead bar slots (GG-T100), keep potions stocked, recruit at the Summon Circle into an open
+    /// gear (owned bag, then Forge, then the Merchant's Bargain shelf), spend skill points on the skill hexagon
+    /// (party needs, cheapest routes, GG-T1047), learn abilities into dead bar slots (GG-T100), keep potions stocked, recruit at the Summon Circle into an open
     /// party slot (GG-T87). Used by the balance simulation and the in-game auto-manage helper;
     /// every step goes through the same services the screens call, and only the services whose Camp NPC has
     /// joined (GG-T119): no Blacksmith means no repair/salvage/forge, no Innkeeper no rest, no Merchant no
@@ -118,9 +118,10 @@ namespace GridGame.Meta
             foreach (var r in Tomes.AutoTeach(c, s)) Note(r);
             Phase("loot");
 
-            // Spend banked skill points on tree nodes (GG-T54) — home tree first — before filling the bar, so a
-            // freshly granted ability can take a dead slot on this same visit.
-            SpendSkillPoints(c, s, log);
+            // Spend banked skill points on the skill hexagon (GG-T1047, replacing the GG-T54 talent-tree spend): each hero
+            // heads for the ability the party most lacks by its cheapest route, before filling the bar, so a freshly
+            // owned ability can take a dead slot on this same visit. Seeded off the rng without drawing from it.
+            log.AddRange(BoardBot.Spend(c, s, BoardBot.SeedFor(s, rng)));
             // GG-T1058: per-level stat points retired (stats come from the skill hexagon), so there is no stat spend here any more.
 
             // Fill the ability bar (GG-T100) before the discretionary gear pass, so a full gear shopping list
@@ -276,8 +277,8 @@ namespace GridGame.Meta
         /// <summary>GG-T373: the dearest spell (half the base bank) the camp routine buys for an open slot before a big one.</summary>
         public const int FillerMaxCost = ManaBank.DefaultCapacity / 2;
 
-        /// <summary>Text in a camp log line that records a skill-tree purchase ("Paladin spent 2 SP on Aegisguard Core").</summary>
-        public const string TalentMarker = " SP on ";
+        /// <summary>Text in a camp log line that records a skill purchase ("Paladin spent 1 SP on Smite (skill hexagon)").</summary>
+        public const string TalentMarker = BoardBot.Marker;
 
         /// <summary>The node a sensible player spends points on next in one tree (GG-T54), or null when none is
         /// <see cref="TalentState.Available"/>. Deepening a branch the hero is already in (a node with prerequisites —
@@ -299,38 +300,6 @@ namespace GridGame.Meta
                 .ThenByDescending(x => x.n.RequiredPointsInTree)
                 .ThenBy(x => x.i)
                 .Select(x => x.n).FirstOrDefault();
-        }
-
-        /// <summary>Spend every roster hero's banked skill points (GG-T54): the home tree first, by <see cref="NextTalent"/>;
-        /// when that node costs more than the hero has, the points bank for it rather than leak into a cheaper sideline.
-        /// Only once the home tree has nothing left to buy do points go off-tree — into a tree the hero is already in
-        /// (<see cref="Talents.HeldTrees"/>: opened, or holding a Known node e.g. through a gold-Learned ability), by the same
-        /// rule and at the off-tree price and gates (§25.6.2, GG-T51); opening a tree the hero has no foot in is a player's
-        /// call, not the routine's.</summary>
-        private static void SpendSkillPoints(ContentDb c, SaveData s, List<string> log)
-        {
-            foreach (var h in s.Roster)
-            {
-                if (h == null || h.SkillPoints <= 0) continue;
-                string heroName = c.TryClass(h.ClassId)?.Name ?? h.ClassId;
-                // Bounded by the node count: every pass either buys a node (strictly fewer left) or stops.
-                for (int guard = 0; guard < 500 && h.SkillPoints > 0; guard++)
-                {
-                    var trees = Talents.HeldTrees(c, h);
-                    SkillTreeDef tree = null; SkillNodeDef node = null;
-                    foreach (var t in trees)
-                    {
-                        node = NextTalent(c, h, t);
-                        if (node != null) { tree = t; break; }
-                    }
-                    if (node == null) break;
-                    int cost = Talents.Cost(c, h, tree, node);
-                    if (cost > h.SkillPoints) break;
-                    var r = Talents.Unlock(c, s, h, tree.Id, node.Id);
-                    if (!r.Ok) break;
-                    log.Add($"{heroName} spent {cost}{TalentMarker}{node.Name ?? node.Id} ({tree.Name})");
-                }
-            }
         }
 
         /// <summary>For every party hero, put something useful in each dead bar slot — and upgrade a slot

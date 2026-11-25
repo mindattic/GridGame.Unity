@@ -549,42 +549,53 @@ namespace GridGame.Tests
 
         // GG-T431: the camp routine no longer works the Bounty Board (BountyHuntTests.The_camp_routine_never_works_the_board).
 
-        /// <summary>GG-T54: banked skill points go into the hero's home tree, deepening one branch, and nothing
-        /// leaks off-tree while the home tree still has a node to buy.</summary>
+        /// <summary>GG-T1047: banked skill points go onto the skill hexagon: the hero joins on its Start path, then walks
+        /// toward a target ability node by node, and every purchase is logged.</summary>
         [Test]
-        public void CampRoutine_spends_skill_points_in_the_home_tree_first()
+        public void CampRoutine_spends_skill_points_on_the_skill_hexagon()
         {
-            var c = Real; var s = Progression.NewGame(c, "CRTalents"); CampNpcs.JoinAll(s); // every Camp service open (GG-T119)
+            var c = Real; var s = Progression.NewGame(c, "CRBoard"); CampNpcs.JoinAll(s); // every Camp service open (GG-T119)
             var h = s.Hero(s.Party[0]);
-            var home = Talents.HomeTree(c, h);
-            Assert.That(home, Is.Not.Null, "precondition: the hero has a home tree");
+            Assume.That(HeroBoard.Board(c), Is.Not.Null, "precondition: the content has a skill hexagon");
+            int start = HeroBoard.Owned(c, h).Count;
             h.SkillPoints = 3;
             var log = CampRoutine.Run(c, s);
-            Assert.That(Talents.PointsSpent(c, h), Is.GreaterThan(0), "the routine should have spent banked points");
-            Assert.That(h.TreeNodes.All(k => k.StartsWith(home.Id + "/")), Is.True, "every point should land in the home tree first");
-            Assert.That(log.Any(m => m.Contains(CampRoutine.TalentMarker)), Is.True);
-            // Deepening beats spreading: the second purchase follows up the first branch rather than opening another.
-            var bought = home.Nodes.Where(n => Talents.Bought(h, home, n)).ToList();
-            Assert.That(bought.Count(n => n.Prerequisites.Count == 0 && n.RequiredPointsInTree > 0), Is.EqualTo(1), "only one branch opener bought");
+            Assert.That(h.SkillPoints, Is.EqualTo(0), "every banked point should be spent");
+            Assert.That(h.HexNodes.Count, Is.EqualTo(start + 3), "Start path plus one node per point");
+            Assert.That(log.Count(m => m.Contains(CampRoutine.TalentMarker)), Is.GreaterThanOrEqualTo(3));
+            Assert.That(h.TreeNodes.Count, Is.EqualTo(0), "nothing goes into the retired talent trees");
         }
 
-        /// <summary>GG-T54: a hero whose next home-tree node costs more than it holds banks the points for it.</summary>
+        /// <summary>GG-T1047: the board spend is deterministic per seed: the same save and seed buy the same nodes.</summary>
         [Test]
-        public void CampRoutine_banks_points_for_a_home_node_it_cannot_afford_yet()
+        public void Board_spend_is_deterministic_per_seed()
         {
-            var c = Real; var s = Progression.NewGame(c, "CRTalentsBank"); CampNpcs.JoinAll(s); // every Camp service open (GG-T119)
-            var h = s.Hero(s.Party[0]);
-            var home = Talents.HomeTree(c, h);
-            for (int sp = 1; sp <= 6; sp++)
+            var c = Real;
+            List<string> Run(int seed)
             {
-                h.SkillPoints += sp;
-                CampRoutine.Run(c, s);
-                var next = CampRoutine.NextTalent(h, home);
-                // Points left over only ever mean the home tree's next pick is dearer than the balance — never a skipped buy
-                // or a point spent off-tree.
-                if (h.SkillPoints > 0) Assert.That(next != null && next.Cost > h.SkillPoints, Is.True, $"{h.SkillPoints} SP left with an affordable home node waiting");
-                Assert.That(h.TreeNodes.All(k => k.StartsWith(home.Id + "/")), Is.True);
+                var s = Progression.NewGame(c, "CRBoardSeed");
+                foreach (var h in s.Roster) h.SkillPoints = 12;
+                BoardBot.Spend(c, s, seed);
+                return s.Roster.SelectMany(h => h.HexNodes.Select(k => h.ClassId + ":" + k)).ToList();
             }
+            Assert.That(Run(7), Is.EqualTo(Run(7)));
+        }
+
+        /// <summary>GG-T1047: the bot heads for an ability the hero does not own yet, and a party with no healing weighs Heal
+        /// at its full importance.</summary>
+        [Test]
+        public void Board_bot_targets_an_unowned_ability_by_party_needs()
+        {
+            var c = Real; var s = Progression.NewGame(c, "CRBoardNeeds");
+            var h = s.Hero(s.Party[0]);
+            var board = HeroBoard.Board(c);
+            Assume.That(board, Is.Not.Null);
+            var target = BoardBot.PickTarget(c, s, h, 1);
+            Assert.That(target, Is.Not.Null);
+            Assert.That(board.Node(target.Value).Kind, Is.EqualTo(GridGame.Core.Content.SkillHexNodeKind.Ability));
+            Assert.That(HeroBoard.Owned(c, h).Owns(target.Value), Is.False);
+            var bare = new SaveData();
+            Assert.That(BoardBot.Needs(c, bare)[PartyNeed.Heal], Is.EqualTo(BoardBot.Importance[PartyNeed.Heal]));
         }
 
         /// <summary>GG-T54: a Bargain offer at or above the safety threshold is still a legitimate cheap
