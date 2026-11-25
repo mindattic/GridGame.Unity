@@ -1472,6 +1472,8 @@ Added 2026-10-11 (owner direction). `BattleState.ManaCharge` (0–99) is the for
 
 Level stats: `Formulas.StatsAtLevel` = base + growth per level from 2 + milestone bonuses at their level, each stat floored. Spell damage with a non-zero base always does ≥ 1 unless the target is immune (resistance 0).
 
+*Amended 2026-11-25 (GG-T1028, owner decision in GG-T1025: "Luck: flat base per level for everyone plus gear Luck"):* **Luck is no longer a class stat.** Every unit, hero or enemy, has the same level Luck, `Formulas.LuckAtLevel = floor(12 + 0.6·(level − 1))` (12 at Lv1, 29 at Lv30; `LuckBase`, `LuckPerLevel`), which `StatsAtLevel` sets in place of any class value; gear Luck adds on top in `Unit.Effective`. So crit, hit, Evasion, Clutch, trigger chances, Steal, Tame, pickup drops and the Power Amplifier all read flat-by-level Luck plus gear. `classes.json` no longer carries Luck in any `BaseStats`, `Growth` or milestone. The Bestiary's stat line shows level-1 stats (`StatsAtLevel(def, 1)`), so its LCK and EVA include the flat Luck. Still open elsewhere: Luck skill-tree stat nodes and level-up stat picks into Luck retire with the skill hexagon's stats-from-the-board work (GG-T1029).
+
 #### 3.2.1 Stat-to-effect cheat sheet
 
 Tank: VIT, STR (not INT) · glass cannon: INT, WIS, LCK (not VIT) · skirmisher: SPD, AGI, LCK · heavy hitter: STR, VIT (not SPD/AGI) · rogue: LCK, AGI · mystic support: WIS, INT (not STR).

@@ -60,7 +60,20 @@ namespace GridGame.Core.Rules
 
         public static int MaxHp(Stats s, int level) => (int)Math.Floor(12f + s.Vitality * 5f + level * 1f);
 
-        /// <summary>Level-derived stats: base + per-level growth + instant milestone bonuses, floored (old ActorData.GetStatsWithOptions).</summary>
+        /// <summary>Luck at level 1 for every unit (GG-T1028): Luck is no longer a class stat.</summary>
+        public const float LuckBase = 12f;
+        /// <summary>Luck every unit gains per level past 1 (GG-T1028).</summary>
+        public const float LuckPerLevel = 0.6f;
+
+        /// <summary>
+        /// The flat, class-independent Luck a unit has at <paramref name="level"/> (GG-T1028, owner 2026-11-24: "flat base per
+        /// level for everyone plus gear Luck"): <c>floor(12 + 0.6·(level − 1))</c>, 12 at Lv1, 29 at Lv30. Gear Luck adds on top
+        /// in <c>Unit.Effective</c>; crit, hit, evasion, clutch, triggers, steal, tame, drops and the amplifier all read that.
+        /// </summary>
+        public static float LuckAtLevel(int level) => (float)Math.Floor(LuckBase + LuckPerLevel * (Math.Max(1, level) - 1));
+
+        /// <summary>Level-derived stats: base + per-level growth + instant milestone bonuses, floored (old ActorData.GetStatsWithOptions).
+        /// Luck ignores the class (GG-T1028): it is always <see cref="LuckAtLevel"/>.</summary>
         public static Stats StatsAtLevel(ClassDef def, int level)
         {
             if (level < 1) level = 1;
@@ -79,7 +92,7 @@ namespace GridGame.Core.Rules
             s.Stamina = (float)Math.Floor(s.Stamina);
             s.Intelligence = (float)Math.Floor(s.Intelligence);
             s.Wisdom = (float)Math.Floor(s.Wisdom);
-            s.Luck = (float)Math.Floor(s.Luck);
+            s.Luck = LuckAtLevel(level);
             return s;
         }
 
@@ -251,7 +264,7 @@ namespace GridGame.Core.Rules
 
         /// <summary>
         /// Role identity (§13.1.5): a hero's spell lands harder the higher its INT (physical skills: STR), and its heals
-        /// mend more the higher its WIS — so a Red Mage's Fireball outclasses a Fighter's. 12 is par; ±3.5% per point.
+        /// mend more the higher its INT too (<see cref="HealPower"/>) — so a Red Mage's Fireball outclasses a Fighter's. 12 is par; ±3.5% per point.
         /// </summary>
         public static float CasterPower(AbilityDef a, Unit caster)
         {
@@ -261,10 +274,12 @@ namespace GridGame.Core.Rules
             return Clamp(1f + (stat - 12f) * BattleConfig.CasterPowerPerPoint, BattleConfig.CasterPowerMin, BattleConfig.CasterPowerMax);
         }
 
+        /// <summary>How much harder a hero's heals mend: INT drives healing (GG-T1025, owner: healing moved off WIS onto INT).
+        /// 12 is par; ±3.5% per point, clamped like <see cref="CasterPower"/>. Non-heroes heal at 1.</summary>
         public static float HealPower(Unit caster)
         {
             if (caster == null || !caster.IsHero) return 1f;
-            return Clamp(1f + (caster.Effective.Wisdom - 12f) * BattleConfig.CasterPowerPerPoint, BattleConfig.CasterPowerMin, BattleConfig.CasterPowerMax);
+            return Clamp(1f + (caster.Effective.Intelligence - 12f) * BattleConfig.CasterPowerPerPoint, BattleConfig.CasterPowerMin, BattleConfig.CasterPowerMax);
         }
 
         /// <summary>Essence (GG-T333): the HP a <see cref="AbilityDef.LifeCost"/> heal takes from its caster, at least 1 and
