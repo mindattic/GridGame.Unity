@@ -803,7 +803,8 @@ namespace GridGame.Meta
             // GG-T301: only the ones switched on, up to the hero's passive slots (PassiveLoadout); class-kit ones are innate.
             spec.Passives.AddRange(PassiveLoadout.Active(c, h));
             spec.Domesticated = h.Domesticated; // fights on its own AI (GG-T303)
-            if (StatPoints.Spent(h) > 0) spec.StatBonus = StatPoints.Bonus(h); // level-up stat picks (GG-T591)
+            var boardStats = HeroBoard.BoardStats(c, h); // owned skill hexagon passives (GG-T1057; was StatPoints picks, GG-T591)
+            if (!HeroBoard.IsZero(boardStats)) spec.StatBonus = boardStats;
             return spec;
         }
 
