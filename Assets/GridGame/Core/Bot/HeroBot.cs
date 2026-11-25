@@ -122,7 +122,10 @@ namespace GridGame.Core.Bot
             if (!movesOnly) lockedOut = false;
             pincerEnds = null; // GG-T935: worked out afresh for this board
             // GG-T308: a stall is counted per party turn (the party now takes several actions in one); §2.13 the mode says who acted.
-            bool freshWindow = !s.Units.Exists(u => u.IsHero && u.Alive && TurnRules.HasActed(s, u));
+            // GG-T812 (§2.13.3): under HeroTimeline every other hero reads as acted (not its turn), so the window is fresh
+            // while the hero whose icon arrived still has its action; the clock check in CountStall counts it once.
+            bool freshWindow = TurnRules.HeroesOnTimeline(s) ? TurnRules.HeroesLeftToAct(s).Count > 0
+                : !s.Units.Exists(u => u.IsHero && u.Alive && TurnRules.HasActed(s, u));
             if (TimelineAware && freshWindow && !movesOnly) CountStall(s);
             // A recruitable whose every term is met (GG-T132) is worth more than any swing: talk it round first.
             if (!movesOnly && Recruitment.ReadyTalk(s) is TalkCommand talk) return talk;
@@ -1031,7 +1034,7 @@ namespace GridGame.Core.Bot
         {
             int before = EnemyActTicks(s, f);
             if (before < 0 || ticks <= 0) return 0f;
-            float v = LandsFirstValue(s, f, before, before + ticks);
+            float v = LandsFirstValue(s, f, before, before + ticks) + HeroTurnsValue(s, f, before, before + ticks);
             if (s.CastEntryOf(f.Id) != null) v += 2f;
             else if (Threatens(s, f) && before == BattleEngine.TurnTicks(s)) v += 1.5f;
             return v;
@@ -1116,7 +1119,39 @@ namespace GridGame.Core.Bot
             int left = Math.Max(0, BattleConfig.BarLength - e.Ip);
             int after = Math.Max(0, e.RecoverTicks) + Math.Max(0, e.StunTicks) + (left + slowRate - 1) / slowRate; // recovery isn't slowed (GG-T318)
             // A Slow lasts its turns, so the lap after is slowed too: a threatening foe loses most of a turn over the fight.
-            return LandsFirstValue(s, f, before, after) + (Threatens(s, f) ? 2f : 0.5f);
+            return LandsFirstValue(s, f, before, after) + HeroTurnsValue(s, f, before, after) + (Threatens(s, f) ? 2f : 0.5f);
+        }
+
+        /// <summary>GG-T812 (§2.13.3): what one hero turn that now comes before a delayed foe acts is worth to the smart bot.</summary>
+        public const float HeroTurnWorth = 3f;
+
+        /// <summary>
+        /// GG-T812 (§2.13.3): under HeroTimeline a push or a Slow on foe <paramref name="f"/> is worth the hero turns it buys:
+        /// each living, able commanded hero's own icon (the acting hero's already re-entered one included) that arrived after
+        /// the foe would have acted (<paramref name="before"/>) and now arrives by the time it does (<paramref name="after"/>;
+        /// a hero wins a tie), at <see cref="HeroTurnWorth"/>, half for a foe that threatens no hero. 0 in every other mode,
+        /// so they replay unchanged.
+        /// </summary>
+        internal static float HeroTurnsValue(BattleState s, Unit f, int before, int after)
+        {
+            int n = HeroTurnsBought(s, before, after);
+            return n == 0 ? 0f : n * HeroTurnWorth * (Threatens(s, f) ? 1f : 0.5f);
+        }
+
+        /// <summary>GG-T812: hero icons (HeroTimeline only) arriving in (<paramref name="before"/>, <paramref name="after"/>] ticks.</summary>
+        internal static int HeroTurnsBought(BattleState s, int before, int after)
+        {
+            if (!TurnRules.HeroesOnTimeline(s) || before < 0 || after <= before) return 0;
+            int n = 0;
+            foreach (var e in s.Timeline)
+            {
+                if (e.Kind != TimelineKind.Turn) continue;
+                var o = s.UnitById(e.OwnerId);
+                if (o == null || !o.Alive || o.IsImmobile || !TurnRules.IsHeroIcon(s, o)) continue;
+                int t = BattleEngine.TicksUntilTurn(s, o.Id);
+                if (t > before && t <= after) n++;
+            }
+            return n;
         }
 
         /// <summary>Hero casts in flight that foe <paramref name="f"/> acted before (before ticks) and acts after (after ticks).</summary>
