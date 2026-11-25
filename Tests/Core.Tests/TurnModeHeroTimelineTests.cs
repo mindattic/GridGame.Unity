@@ -47,8 +47,6 @@ namespace GridGame.Tests
 
         private static int Ticks(BattleState s, Unit u) => BattleEngine.TicksUntilTurn(s, u.Id);
 
-        private static readonly int RecoverTicks = (int)Math.Round(BattleConfig.RecoverBaseSeconds * BattleConfig.TicksPerSecond);
-
         [Test]
         public void A_faster_hero_enters_further_left_judged_against_the_hero_reference_speed()
         {
@@ -210,6 +208,94 @@ namespace GridGame.Tests
 
             Assert.That(Run(), Is.EqualTo(Run()));
         }
+
+        #region GG-T1097: the active hero's window, Guard and death (GG-T1075)
+
+        /// <summary>Puts <paramref name="u"/>'s turn icon <paramref name="n"/> ticks from the left edge.</summary>
+        private static void ArriveIn(BattleState s, Unit u, int n)
+        {
+            var e = s.TurnEntryOf(u.Id);
+            e.RecoverTicks = 0; e.StunTicks = 0;
+            e.Ip = BattleConfig.BarLength - BattleEngine.TurnRatePerTick(s, u) * n;
+        }
+
+        [Test]
+        public void The_window_is_the_time_to_the_next_icon_other_than_the_active_heros()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+            ArriveIn(s, fast, 1); // the active hero's own icon is the soonest, yet it doesn't bound its own turn
+            int expected = Math.Min(Ticks(s, Hero(s, "plodder")), Ticks(s, Foe(s)));
+            Assert.That(expected, Is.GreaterThan(1));
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(expected), "the next other icon, a foe's or another hero's");
+            Assert.That(BattleEngine.TurnWindowSeconds(s), Is.EqualTo(expected / (float)BattleConfig.TicksPerSecond).Within(1e-5f));
+        }
+
+        [Test]
+        public void A_forced_drop_spends_exactly_the_window()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            int window = TurnRules.TurnTicks(s);
+            Assert.That(window, Is.GreaterThan(0));
+            var move = new MoveCommand { HeroId = fast.Id, Path = P((0, 6), (0, 5)), HeldSeconds = 999f };
+            Assert.That(BattleEngine.IsTimeUp(s, move.HeldSeconds), Is.True);
+            Assert.That(TurnRules.CommandTicks(s, move), Is.EqualTo(window), "capped at the window");
+            var ev = BattleEngine.Apply(s, move);
+            Assert.That(ev.OfType<TurnTimeUpEvent>().Select(t => t.HeroId), Does.Contain(fast.Id));
+        }
+
+        [Test]
+        public void Too_little_time_refuses_an_action_and_forces_Guard()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            ArriveIn(s, Foe(s), 1);
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(1));
+            Assert.That(TurnRules.TooLittleTime(s), Is.True);
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = fast.Id, Path = P((0, 6), (0, 5)) });
+            Assert.That(ev.OfType<AbilityRefusedEvent>().Single().Reason, Is.EqualTo("Too little time"));
+            Assert.That(fast.Pos, Is.EqualTo(new Coord(0, 6)), "nothing happened");
+            Assert.That(TurnRules.IsForcedGuard(s, new ShieldCommand()), Is.True);
+            int rally = s.Rally;
+            BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(s.Rally, Is.EqualTo(Math.Min(BattleConfig.RallyMaxStacks, rally + 1)), "a forced Guard rallies");
+        }
+
+        [Test]
+        public void Guard_protects_only_the_active_hero_and_banks_the_rest_of_its_window()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            Assert.That(TurnRules.GuardProtects(s).Select(u => u.Id), Is.EqualTo(new[] { fast.Id }));
+            const float held = 0.25f;
+            int expected = BattleEngine.GuardChargeFor(BattleEngine.TurnWindowSeconds(s) - held);
+            Assert.That(expected, Is.GreaterThan(0));
+            Assert.That(TurnRules.GuardCharge(s, held), Is.EqualTo(expected));
+            int damped = BattleEngine.DampedCharge(s, expected);
+            var ev = BattleEngine.Apply(s, new ShieldCommand { HeldSeconds = held });
+            var prot = ev.OfType<BuffAppliedEvent>().Where(b => b.BuffId == BattleConfig.ShieldBuffId).Select(b => b.UnitId).ToList();
+            Assert.That(prot, Does.Contain(fast.Id));
+            Assert.That(prot, Does.Not.Contain(slow.Id), "the waiting hero isn't covered");
+            Assert.That(ev.OfType<ManaChargedEvent>().First(m => m.Reason == "guard").Amount, Is.EqualTo(damped));
+        }
+
+        [Test]
+        public void A_fallen_active_hero_leaves_the_timeline_and_clears_the_active_hero()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+            RunnerType.GetMethod("Kill", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(NewRunner(s), new object[] { fast, null });
+            Assert.That(fast.Alive, Is.False);
+            Assert.That(s.Timeline.Any(e => e.OwnerId == fast.Id), Is.False, "its icon left the timeline");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(-1));
+            Assert.That(TurnRules.GuardProtects(s), Is.Empty);
+        }
+
+        #endregion
 
         // BattleRunner is internal and its tie rule private: read it by reflection rather than widen it for a test.
         private static readonly Type RunnerType = typeof(BattleEngine).Assembly.GetType("GridGame.Core.Battle.BattleRunner", throwOnError: true);
