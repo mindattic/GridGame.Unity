@@ -89,6 +89,7 @@ namespace GridGame.Meta
         /// own signature — and its bar is those two, then the default loadout's items, then empty slots. The rest of the
         /// default loadout (the archetype's two moves) is bought from the trainer at the kit price
         /// (<see cref="Abilities.KitPrice"/>) or with skill points in the home tree; <see cref="SkillSources"/> says where.
+        /// GG-T1032: a class with a skill-hexagon Start path joins on it instead and knows the abilities on that path.
         /// </summary>
         public static HeroSave NewHero(ContentDb c, string classId)
         {
@@ -97,6 +98,21 @@ namespace GridGame.Meta
             // waits for the player's female/male pick; the app asks at its next quiet moment (VariantPicker).
             var h = new HeroSave { ClassId = def.Id, VariantPending = true };
             int i = 0;
+            // GG-T1032: a class on the skill hexagon joins on its skillhex.json Start path (SkillHexProgress.Join owns the
+            // path and learns every ability node on it). Its bar is its default loadout in authored order (items may
+            // repeat; a move only when the path taught it, once), then any further path ability while a slot is free.
+            if (SkillHexProgress.Join(c, h).Ok)
+            {
+                foreach (var entry in def.DefaultLoadout)
+                {
+                    if (string.IsNullOrEmpty(entry) || i >= MaxBarSlots) continue;
+                    if (!entry.StartsWith("item:") && (!h.Known.Contains(entry) || h.Bar.Take(i).Contains(entry))) continue;
+                    h.Bar[i++] = entry;
+                }
+                foreach (var id in h.Known)
+                    if (i < MaxBarSlots && !h.Bar.Take(i).Contains(id)) h.Bar[i++] = id;
+                return h;
+            }
             if (IsFamilySpec(c, def))
             {
                 // GG-T978: starts specced from its family tree. Every start grant is Known; the bar is the default loadout
