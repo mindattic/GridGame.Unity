@@ -21,11 +21,21 @@ namespace GridGame.Core.Content
             ObjectCreationHandling = ObjectCreationHandling.Replace,
         };
 
+        /// <summary>GG-T1037 (skill-hex, owner 2026-11-25; skillhex.json marks them Status Cut): the hero classes cut from the
+        /// roster and the placed hero each becomes (<see cref="ClassDef.CutInto"/>). They stay in classes.json for the Codex
+        /// and old saves, but leave recruit pools, stage guests and drops.</summary>
+        public static readonly IReadOnlyDictionary<string, string> CutClasses = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            { "basher", "bruiser" }, { "operative", "drifter" }, { "technician", "engineer" }, { "tinkerer", "engineer" },
+        };
+
         /// <param name="readText">Returns the JSON text for a file name (no extension), or null if absent.</param>
         public static ContentDb Load(Func<string, string> readText)
         {
             var db = new ContentDb();
             AddAll(db.Classes, ReadList<ClassDef>(readText, "classes"), c => c.Id);
+            foreach (var kv in CutClasses) // GG-T1037: a class row's own CutInto wins
+                if (db.Classes.TryGetValue(kv.Key, out var cut) && !cut.IsCut) cut.CutInto = kv.Value;
             // GG-T973: a row with MergedInto is an alias stub, not an ability: it goes to AbilityAliases instead.
             var abilitiesText = readText("abilities");
             var abilities = ReadList<AbilityDef>(_ => abilitiesText, "abilities");
@@ -547,6 +557,22 @@ namespace GridGame.Core.Content
                 if (b.RewardSkillPoints < 0) p.Add($"bounty {b.Id}: skill points can't be negative");
             }
             foreach (var c in db.Summon.Pool) NeedClass(c, "summon pool");
+            // GG-T1037: a cut class becomes a placed hero, and nobody meets it again (summon pool, guests, recruitables).
+            foreach (var c in db.Classes.Values)
+            {
+                if (!c.IsCut) continue;
+                if (c.Team != Team.Hero) p.Add($"class {c.Id}: only a hero class can be cut");
+                if (!db.Classes.TryGetValue(c.CutInto, out var into) || into.Team != Team.Hero || into.IsCut)
+                    p.Add($"class {c.Id}: CutInto '{c.CutInto}' must be a hero class still in play");
+            }
+            bool Cut(string id) => id != null && db.Classes.TryGetValue(id, out var cd) && cd.IsCut;
+            foreach (var c in db.Summon.Pool) if (Cut(c)) p.Add($"summon pool: '{c}' is a cut class (GG-T1037)");
+            foreach (var st in db.Stages.Values)
+                foreach (var w in st.Waves)
+                {
+                    foreach (var g in w.Guests) if (Cut(g?.Class)) p.Add($"stage {st.Id}: guest '{g.Class}' is a cut class (GG-T1037)");
+                    foreach (var r in w.Recruitables) if (Cut(r?.Class)) p.Add($"stage {st.Id}: recruitable '{r.Class}' is a cut class (GG-T1037)");
+                }
             foreach (var e in db.Enchants.Values) NeedItem(e.Essence, $"enchant {e.Id}");
             // GG-T179: an armor enchant grants a real Passive ability and costs real materials.
             foreach (var e in db.ArmorEnchantOrder)

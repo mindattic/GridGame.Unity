@@ -338,7 +338,7 @@ namespace GridGame.App
             grid.style.flexDirection = FlexDirection.Row;
             grid.style.flexWrap = Wrap.Wrap;
             grid.style.justifyContent = Justify.Center;
-            foreach (var def in App.Content.Classes.Values.Where(d => d.Team == Team.Hero).OrderBy(d => d.Name))
+            foreach (var def in App.Content.Classes.Values.Where(d => d.Team == Team.Hero && !d.IsCut).OrderBy(d => d.Name))
             {
                 var id = def.Id;
                 var t = Ui.Thumb(id, grid, 164);
@@ -403,7 +403,7 @@ namespace GridGame.App
             while (!finishing && locked.Count < PartySize)
             {
                 yield return Tween.Wait(Timing.Emphasis);
-                var pool = App.Content.Classes.Values.Where(d => d.Team == Team.Hero && !locked.Contains(d.Id)).ToList();
+                var pool = App.Content.Classes.Values.Where(d => d.Team == Team.Hero && !d.IsCut && !locked.Contains(d.Id)).ToList();
                 if (pool.Count == 0) yield break;
                 Pick(pool[rng.Next(pool.Count)].Id);
                 yield return Tween.Wait(Timing.Dramatic);

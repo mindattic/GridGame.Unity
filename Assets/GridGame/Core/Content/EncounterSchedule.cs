@@ -73,7 +73,7 @@ namespace GridGame.Core.Content
                 .OrderBy(f => f, StringComparer.Ordinal).ToList();
             if (familyIds.Count == 0) throw new InvalidOperationException("EncounterSchedule: no enemy family (ClassDef.DropTable) to draw from");
 
-            var heroIds = db.Classes.Values.Where(c => c.Team == Team.Hero)
+            var heroIds = db.Classes.Values.Where(c => c.Team == Team.Hero && !c.IsCut) // GG-T1037: cut classes are never fielded
                 .Select(c => c.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
             if (heroIds.Count == 0) throw new InvalidOperationException("EncounterSchedule: no hero class to draw from");
 

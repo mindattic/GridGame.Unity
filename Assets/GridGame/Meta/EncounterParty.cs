@@ -54,7 +54,7 @@ namespace GridGame.Meta
             else
             {
                 var rng = new Rng(seed);
-                var classes = db.Classes.Values.Where(c => c.Team == Team.Hero)
+                var classes = db.Classes.Values.Where(c => c.Team == Team.Hero && !c.IsCut) // GG-T1037
                     .OrderBy(c => c.Id, StringComparer.Ordinal).ToList();
                 if (classes.Count == 0) throw new InvalidOperationException("EncounterParty: no hero class to draw from");
                 picked = Shuffle(rng, classes).Take(Math.Min(PartySize, classes.Count)).ToList();

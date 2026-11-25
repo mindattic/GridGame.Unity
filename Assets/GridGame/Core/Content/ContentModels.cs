@@ -548,6 +548,13 @@ namespace GridGame.Core.Content
         /// <summary>Lays <see cref="TrailRule"/> every Nth step (1 = every step; a mine layer spaces its mines out).</summary>
         public int TrailEvery = 1;
 
+        /// <summary>GG-T1037 (skill-hex, owner 2026-11-25): a hero class cut from the roster names the placed hero it becomes
+        /// (Basher → Bruiser). A cut class leaves recruit pools, stage guests and drops; its Codex lore stays. Null = in play.</summary>
+        public string CutInto;
+
+        /// <summary>GG-T1037: true for a hero class cut from the roster (<see cref="CutInto"/> set).</summary>
+        public bool IsCut => !string.IsNullOrEmpty(CutInto);
+
         public bool HasTag(string tag) => Tags != null && Tags.Contains(tag);
 
         /// <summary>True when the class has male art (<see cref="MalePortrait"/>).</summary>
