@@ -83,6 +83,10 @@ namespace GridGame.Core.Battle
             if (gold > 0) S.Results.CoinsSpent += gold;
             target.Team = Team.Hero;
             target.IsGuest = true; // from here it's a guest ally: standing at a victory, it joins the roster (§25.11)
+            TurnRules.ClearActed(S, target);
+            // GG-T810 (§2.13.3): under HeroTimeline a recruit is a commanded hero, so it joins on its own turn icon (at its
+            // Speed's entry); every other icon stays where it is. No-op in the other modes.
+            ScheduleHeroIcons(onlyMissing: true);
             S.PendingTimeBankSeconds = 0f;
             Emit(new RecruitJoinedEvent { HeroId = hero.Id, UnitId = target.Id, GoldPaid = gold, Lines = Recruitment.Lines(C, hero, target, true) });
             Announce($"{target.Name} joins the fight!", target.Id);
