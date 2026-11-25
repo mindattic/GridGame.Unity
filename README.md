@@ -239,6 +239,7 @@ is a session-only override independent of it, reaching only `AudioListener.volum
 - [docs/AMENDMENTS.md](docs/AMENDMENTS.md) — recorded deviations from the bible
 - [docs/USER_STORIES.md](docs/USER_STORIES.md) — the story backlog and status, generated from the workflow database
 - [docs/PLAYTEST.md](docs/PLAYTEST.md) — a fifteen-minute play-test checklist
+- [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) — release-candidate gates, owner-only steps and night-only runs
 - [docs/PIXEL_ICONS.md](docs/PIXEL_ICONS.md) — the pixel-art icon pipeline
 - [AGENTS.md](AGENTS.md) — instructions and laws for coding agents working in this repo
 
