@@ -360,6 +360,80 @@ namespace GridGame.Tests
             Assert.That(s.Results.ActionsTaken, Is.EqualTo(final.Results.ActionsTaken));
         }
 
+        // ── GG-T798: bots plan the round and never strand it ────────────────────────────────────────
+
+        /// <summary>Plays the first campaign stage in UnmovedThisRound with <paramref name="bot"/> to the end (no round is
+        /// stranded: mid-round the bot Guards at most <see cref="HeroBot.RoundGuardLimit"/> times by choice), then replays it.</summary>
+        private static BattleState PlayRoundStage(ContentDb db, int seed, HeroBot bot)
+        {
+            var save = GridGame.Meta.Progression.NewGame(db, "ModeB");
+            var setup = GridGame.Meta.BattleFactory.Build(db, save, db.CampaignStages()[0].Id, seed, 1, TurnMode.UnmovedThisRound);
+            var commands = new List<BattleCommand>();
+            var played = new StringBuilder();
+            var final = BotRunner.Play(db, setup, bot, 3000, (cmd, ev, st) =>
+            {
+                if (cmd != null) commands.Add(cmd);
+                foreach (var e in ev) played.AppendLine(e.ToString());
+            });
+            Assert.That(final.IsOver, Is.True, "the bot finished the stage (no stranded round)");
+            Assert.That(final.TurnMode, Is.EqualTo(TurnMode.UnmovedThisRound));
+
+            var opening = new List<BattleEvent>();
+            var s = BattleEngine.Create(db, setup, opening);
+            var replayed = new StringBuilder();
+            foreach (var e in opening) replayed.AppendLine(e.ToString());
+            foreach (var cmd in commands) foreach (var e in BattleEngine.Apply(s, cmd)) replayed.AppendLine(e.ToString());
+            Assert.That(replayed.ToString(), Is.EqualTo(played.ToString()), "the battle replays identically");
+            Assert.That(s.Round, Is.EqualTo(final.Round));
+            Assert.That(s.Clock, Is.EqualTo(final.Clock));
+            return final;
+        }
+
+        [Test]
+        public void The_smart_bot_wins_a_stage_and_it_replays_identically()
+        {
+            var final = PlayRoundStage(Real, 11, new HeroBot(11));
+            Assert.That(final.Phase, Is.EqualTo(BattlePhase.Victory));
+        }
+
+        [Test]
+        public void The_casual_bot_finishes_a_stage_and_it_replays_identically()
+        {
+            var bot = new HeroBot(13, randomness: 0.5f);
+            Assert.That(bot.TimelineAware, Is.False);
+            PlayRoundStage(Real, 13, bot);
+        }
+
+        [Test]
+        public void The_same_seed_decides_the_same_rotation()
+        {
+            var db = Real;
+            var save = GridGame.Meta.Progression.NewGame(db, "ModeB");
+            var setup = GridGame.Meta.BattleFactory.Build(db, save, db.CampaignStages()[0].Id, 17, 1, TurnMode.UnmovedThisRound);
+            var a = new List<string>();
+            var b = new List<string>();
+            BotRunner.Play(db, setup, new HeroBot(17), 200, (cmd, ev, st) => { if (cmd != null) a.Add(cmd.ToString()); });
+            BotRunner.Play(db, setup, new HeroBot(17), 200, (cmd, ev, st) => { if (cmd != null) b.Add(cmd.ToString()); });
+            Assert.That(a, Is.Not.Empty);
+            Assert.That(b, Is.EqualTo(a), "the bot is deterministic for a seed");
+        }
+
+        /// <summary>GG-T798, decided: the enemy AI does not notice who has moved this round. Targeting (personality, taunt)
+        /// and charges read the board and HP, never <see cref="Unit.ActedThisRound"/>, so a foe's pick is the same whether
+        /// or not its target has taken its place (a moved hero is no softer a target: it can still be pincered by allies
+        /// and acts again next round).</summary>
+        [Test]
+        public void Enemy_targeting_ignores_who_has_moved_this_round()
+        {
+            var (s, _) = Trio();
+            var goblin = s.LivingList(Team.Enemy).First();
+            var before = GridGame.Core.Rules.EnemyPlanner.PickTarget(s, goblin);
+            foreach (var h in s.LivingList(Team.Hero)) h.ActedThisRound = h != before;
+            Assert.That(GridGame.Core.Rules.EnemyPlanner.PickTarget(s, goblin), Is.SameAs(before));
+            foreach (var h in s.LivingList(Team.Hero)) h.ActedThisRound = h == before;
+            Assert.That(GridGame.Core.Rules.EnemyPlanner.PickTarget(s, goblin), Is.SameAs(before));
+        }
+
         // ── GG-T795: per-turn systems under rounds — they count party turns, not rounds ─────────────
 
         [Test]

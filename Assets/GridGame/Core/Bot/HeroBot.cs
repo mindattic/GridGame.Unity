@@ -222,10 +222,37 @@ namespace GridGame.Core.Bot
             }
             // A lone hero (GG-T123, §22.10) can't pincer: with no damage, pickup or heal worth taking it guards rather
             // than wandering — foes no longer flee a lone hero (EnemyPlanner.LoneHero), so they come to its bar.
-            if (!movesOnly && ReadsBar && !lone && best < GuardValue(s)) return new ShieldCommand();
-            if (!movesOnly && best < BattleConfig.BotGuardBelowScore && (lone || rng.Chance(BattleConfig.BotGuardChance))) return new ShieldCommand();
+            // GG-T798 (§2.13.2): Guard uses no place, so mid-round a voluntary Guard keeps every hero who has moved locked
+            // out; the bot gives a round at most RoundGuardLimit of them, then spends an unmoved hero (never strands it).
+            bool mayGuard = movesOnly || !MidRound(s) || GuardsThisRound(s) < RoundGuardLimit;
+            if (!movesOnly && mayGuard && ReadsBar && !lone && best < GuardValue(s)) return RoundGuard(s);
+            if (!movesOnly && mayGuard && best < BattleConfig.BotGuardBelowScore && (lone || rng.Chance(BattleConfig.BotGuardChance))) return RoundGuard(s);
             if (SkillLevel < 99.9f) return SkillWeightedPick(candidates, best);
             return bestList[rng.Range(0, bestList.Count)];
+        }
+
+        /// <summary>GG-T798: voluntary Guards the bot takes mid-round before it must spend an unmoved hero.</summary>
+        public const int RoundGuardLimit = 1;
+        private int roundGuards;
+        private StageDef roundGuardStage;
+        private int roundGuardWave = -1, roundGuardRound = -1;
+
+        /// <summary>GG-T798: some hero has taken its place this round (only ever under UnmovedThisRound).</summary>
+        private static bool MidRound(BattleState s) => s.Units.Exists(u => u.ActedThisRound);
+
+        /// <summary>Voluntary Guards already taken in the current round (battle, wave and round).</summary>
+        private int GuardsThisRound(BattleState s) =>
+            s.Stage == roundGuardStage && s.Wave == roundGuardWave && s.Round == roundGuardRound ? roundGuards : 0;
+
+        /// <summary>A voluntary Guard, counted against the round when one is under way.</summary>
+        private ShieldCommand RoundGuard(BattleState s)
+        {
+            if (MidRound(s))
+            {
+                roundGuards = GuardsThisRound(s) + 1;
+                roundGuardStage = s.Stage; roundGuardWave = s.Wave; roundGuardRound = s.Round;
+            }
+            return new ShieldCommand();
         }
 
         /// <summary>
@@ -1214,6 +1241,9 @@ namespace GridGame.Core.Bot
                 foreach (var h in s.LivingList(Team.Hero))
                 {
                     if (h.Id == mover.Id || !pv.Positions.TryGetValue(h.Id, out var hp)) continue;
+                    // GG-T798 (§2.13.2): an ally that already took its place this round can't close the set-up until the
+                    // round ends, unless this action is the round's last (it frees everyone). Never set outside rounds.
+                    if (h.ActedThisRound && TurnRules.HeroesLeftToAct(s).Count > 1) continue;
                     // GG-T308: an ally still to act this window can close it before the foes move. §2.13.1 (GG-T785): under
                     // AnyHeroEveryTurn no ally acts again before the foes, so the set-up spans turns and earns only its base.
                     if (Math.Abs(hp.X - far.X) + Math.Abs(hp.Y - far.Y) <= reach) { best = Math.Max(best, (e.HpFraction < 0.4f ? 4f : 3f) + (TurnRules.ActsLaterThisTurn(s, h) ? 2f : 0f)); break; }
