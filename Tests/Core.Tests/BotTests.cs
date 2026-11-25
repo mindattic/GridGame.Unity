@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Bot;
@@ -191,5 +193,129 @@ namespace GridGame.Tests
             var ordered = MetaHeuristics.BestFirst(new[] { weak, strong, mid }).ToList();
             Assert.That(ordered, Is.EqualTo(new[] { strong, mid, weak }));
         }
+
+        #region GG-T1106: HeroBot under HeroTimeline (Mode C) finishes a stage, replays, and counts hero turns bought (GG-T812)
+
+        /// <summary>Plays the first campaign stage in HeroTimeline with a fresh bot from <paramref name="makeBot"/> to the end
+        /// (no soft-lock), plays it again with a second bot from the same seed (same commands), then replays the commands
+        /// into a fresh battle (same events, clock and active hero).</summary>
+        private static BattleState PlayHeroTimelineStage(ContentDb db, int seed, System.Func<HeroBot> makeBot)
+        {
+            var save = GridGame.Meta.Progression.NewGame(db, "ModeC");
+            var setup = GridGame.Meta.BattleFactory.Build(db, save, db.CampaignStages()[0].Id, seed, 1, TurnMode.HeroTimeline);
+            var commands = new List<BattleCommand>();
+            var played = new StringBuilder();
+            int heroActions = 0;
+            var final = BotRunner.Play(db, setup, makeBot(), 3000, (cmd, ev, st) =>
+            {
+                if (cmd != null) commands.Add(cmd);
+                foreach (var e in ev) played.AppendLine(e.ToString());
+                if (cmd != null && BattleEngine.CommandHeroId(cmd) >= 0 && !ev.OfType<AbilityRefusedEvent>().Any()) heroActions++;
+            });
+            Assert.That(final.IsOver, Is.True, "the bot finished the stage (no soft-lock)");
+            Assert.That(final.TurnMode, Is.EqualTo(TurnMode.HeroTimeline));
+            Assert.That(heroActions, Is.GreaterThan(1), "the bot played heroes on their own turns");
+
+            var again = new List<BattleCommand>();
+            BotRunner.Play(db, setup, makeBot(), 3000, (cmd, ev, st) => { if (cmd != null) again.Add(cmd); });
+            Assert.That(again.Select(c => c.ToString()), Is.EqualTo(commands.Select(c => c.ToString())), "the bot is deterministic for a seed");
+
+            var opening = new List<BattleEvent>();
+            var s = BattleEngine.Create(db, setup, opening);
+            var replayed = new StringBuilder();
+            foreach (var e in opening) replayed.AppendLine(e.ToString());
+            foreach (var cmd in commands) foreach (var e in BattleEngine.Apply(s, cmd)) replayed.AppendLine(e.ToString());
+            Assert.That(replayed.ToString(), Is.EqualTo(played.ToString()), "the battle replays identically");
+            Assert.That(s.Clock, Is.EqualTo(final.Clock));
+            Assert.That(s.Phase, Is.EqualTo(final.Phase));
+            Assert.That(s.ActiveHeroId, Is.EqualTo(final.ActiveHeroId));
+            Assert.That(s.Results.ActionsTaken, Is.EqualTo(final.Results.ActionsTaken));
+            return final;
+        }
+
+        [Test]
+        public void HeroTimeline_smart_bot_finishes_a_stage_and_it_replays_identically()
+        {
+            var bot = new HeroBot(11);
+            Assert.That(bot.TimelineAware, Is.True);
+            PlayHeroTimelineStage(Real, 11, () => new HeroBot(11));
+        }
+
+        [Test]
+        public void HeroTimeline_casual_bot_finishes_a_stage_and_it_replays_identically()
+        {
+            var bot = new HeroBot(13, randomness: 0.5f);
+            Assert.That(bot.TimelineAware, Is.False);
+            PlayHeroTimelineStage(Real, 13, () => new HeroBot(13, randomness: 0.5f));
+        }
+
+        private static readonly MethodInfo HeroTurnsBoughtMethod =
+            typeof(HeroBot).GetMethod("HeroTurnsBought", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+
+        private static int HeroTurnsBought(BattleState s, int before, int after) =>
+            (int)HeroTurnsBoughtMethod.Invoke(null, new object[] { s, before, after });
+
+        /// <summary>Three heroes of distinct Speed (so their icons arrive on distinct ticks) against one goblin.</summary>
+        private static BattleState TimelineTrio(TurnMode mode)
+        {
+            var db = Mini();
+            Stats Spd(float speed) => new Stats { Strength = 20, Vitality = 10, Agility = 10, Speed = speed, Intelligence = 10 };
+            db.Classes["sprinter"] = new ClassDef { Id = "sprinter", Name = "Sprinter", Team = Team.Hero, Tags = { "Humanoid" }, BaseStats = Spd(24) };
+            db.Classes["plodder"] = new ClassDef { Id = "plodder", Name = "Plodder", Team = Team.Hero, Tags = { "Humanoid" }, BaseStats = Spd(8) };
+            var setup = new BattleSetup { Stage = Stage(("goblin", 5, 0)), Seed = 7, UnlockedSlots = 5, TurnMode = mode };
+            setup.Party.Add(new HeroSpec { ClassId = "sprinter", Start = new Coord(0, 6) });
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(2, 6) });
+            setup.Party.Add(new HeroSpec { ClassId = "plodder", Start = new Coord(4, 6) });
+            return BattleEngine.Create(db, setup, new List<BattleEvent>());
+        }
+
+        [Test]
+        public void HeroTurnsBought_counts_hero_icons_between_the_foes_old_and_new_act_ticks()
+        {
+            Assert.That(HeroTurnsBoughtMethod, Is.Not.Null);
+            var s = TimelineTrio(TurnMode.HeroTimeline);
+            var heroes = s.Units.Where(u => u.IsHero && u.Alive).ToList();
+            Assert.That(heroes.Count, Is.EqualTo(3));
+            var t = heroes.ToDictionary(h => h, h => BattleEngine.TicksUntilTurn(s, h.Id));
+            foreach (var h in heroes)
+            {
+                Assert.That(TurnRules.IsHeroIcon(s, h), Is.True, h.Def.Id);
+                Assert.That(t[h], Is.GreaterThan(0), h.Def.Id + " has an icon on the bar (the active hero's re-entered one too)");
+            }
+            int max = t.Values.Max();
+
+            Assert.That(HeroTurnsBought(s, 0, max), Is.EqualTo(3), "every hero icon arrives within (0, latest]");
+            Assert.That(HeroTurnsBought(s, 0, max + 50), Is.EqualTo(3), "an icon counts once, not per lap");
+            Assert.That(HeroTurnsBought(s, max, max + 50), Is.EqualTo(0), "none arrives after the latest");
+            Assert.That(HeroTurnsBought(s, 5, 5), Is.EqualTo(0), "no delay buys nothing");
+            Assert.That(HeroTurnsBought(s, 10, 5), Is.EqualTo(0), "a foe brought forward buys nothing");
+            Assert.That(HeroTurnsBought(s, -1, max), Is.EqualTo(0), "a foe with no turn icon buys nothing");
+
+            foreach (var h in heroes)
+            {
+                int expectThrough = t.Values.Count(v => v > t[h] - 1 && v <= t[h]);
+                Assert.That(HeroTurnsBought(s, t[h] - 1, t[h]), Is.EqualTo(expectThrough), h.Def.Id + ": arriving on the foe's new tick counts (a hero wins a tie)");
+                int expectAfter = t.Values.Count(v => v > t[h] && v <= max);
+                Assert.That(HeroTurnsBought(s, t[h], max), Is.EqualTo(expectAfter), h.Def.Id + ": arriving on the foe's old tick doesn't (it came first anyway)");
+            }
+
+            // A fallen hero's icon brings no turn.
+            var gone = heroes[0];
+            gone.Hp = 0;
+            gone.OnBoard = false;
+            Assert.That(HeroTurnsBought(s, 0, max + 50), Is.EqualTo(2), "a fallen hero is not counted");
+        }
+
+        [TestCase(TurnMode.PartyWindow)]
+        [TestCase(TurnMode.UnmovedThisRound)]
+        public void HeroTurnsBought_is_zero_outside_HeroTimeline(TurnMode mode)
+        {
+            Assert.That(HeroTurnsBoughtMethod, Is.Not.Null);
+            var s = TimelineTrio(mode);
+            Assert.That(TurnRules.HeroesOnTimeline(s), Is.False);
+            Assert.That(HeroTurnsBought(s, 0, 100000), Is.EqualTo(0), mode.ToString());
+        }
+
+        #endregion
     }
 }
