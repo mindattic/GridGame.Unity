@@ -26,64 +26,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -167,64 +167,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -309,64 +309,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -450,64 +450,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -931,64 +931,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -1073,64 +1073,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 7,
+      "Strength": 8,
       "Vitality": 8,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 20,
-      "Wisdom": 18
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.35,
+      "Strength": 0.45,
       "Vitality": 0.45,
-      "Agility": 0.55,
-      "Speed": 0.6,
-      "Intelligence": 1.2,
-      "Wisdom": 1
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.12,
-          "Vitality": 0.16,
-          "Agility": 0.19,
-          "Speed": 0.21,
-          "Intelligence": 0.42,
-          "Wisdom": 0.35
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.16,
-          "Vitality": 0.2,
-          "Agility": 0.25,
-          "Speed": 0.27,
-          "Intelligence": 0.54,
-          "Wisdom": 0.45
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.21,
+          "Strength": 0.27,
           "Vitality": 0.27,
-          "Agility": 0.33,
-          "Speed": 0.36,
-          "Intelligence": 0.72,
-          "Wisdom": 0.6
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.28,
+          "Strength": 0.36,
           "Vitality": 0.36,
-          "Agility": 0.44,
-          "Speed": 0.48,
-          "Intelligence": 0.96,
-          "Wisdom": 0.8
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -1218,64 +1218,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -1359,64 +1359,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -1499,64 +1499,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -2609,64 +2609,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -2743,64 +2743,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -2883,64 +2883,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -4347,63 +4347,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -4491,63 +4491,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -4745,64 +4745,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -4885,64 +4885,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -5017,64 +5017,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -5162,18 +5162,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -5181,32 +5181,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -5214,10 +5214,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -5303,64 +5303,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 14
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.95,
-      "Wisdom": 0.85
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.43,
-          "Wisdom": 0.38
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.57,
-          "Wisdom": 0.51
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.76,
-          "Wisdom": 0.68
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -5437,18 +5437,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -5456,32 +5456,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -5489,10 +5489,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -5571,18 +5571,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -5590,32 +5590,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -5623,10 +5623,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -7358,64 +7358,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -7967,64 +7967,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -8232,63 +8232,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -8375,63 +8375,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -8511,18 +8511,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -8530,32 +8530,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -8563,10 +8563,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -8999,64 +8999,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 14
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.95,
-      "Wisdom": 0.85
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.43,
-          "Wisdom": 0.38
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.57,
-          "Wisdom": 0.51
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.76,
-          "Wisdom": 0.68
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -9606,64 +9606,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -10107,64 +10107,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -10365,63 +10365,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -10620,64 +10620,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -10761,18 +10761,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -10780,32 +10780,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -10813,10 +10813,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -11252,64 +11252,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 14
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.95,
-      "Wisdom": 0.85
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.43,
-          "Wisdom": 0.38
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.57,
-          "Wisdom": 0.51
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.76,
-          "Wisdom": 0.68
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -11397,63 +11397,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -11539,64 +11539,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 15,
-      "Vitality": 12,
-      "Agility": 15,
-      "Speed": 14,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
       "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.75,
-      "Agility": 0.9,
-      "Speed": 0.85,
-      "Intelligence": 0.4,
-      "Wisdom": 0.4
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.26,
-          "Agility": 0.32,
-          "Speed": 0.3,
-          "Intelligence": 0.14,
-          "Wisdom": 0.14
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.34,
-          "Agility": 0.41,
-          "Speed": 0.38,
-          "Intelligence": 0.18,
-          "Wisdom": 0.18
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.45,
-          "Agility": 0.54,
-          "Speed": 0.51,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.6,
-          "Agility": 0.72,
-          "Speed": 0.68,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -11797,18 +11797,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -11816,32 +11816,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -11849,10 +11849,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -11937,18 +11937,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -11956,32 +11956,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -11989,10 +11989,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -12649,18 +12649,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -12668,32 +12668,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -12701,10 +12701,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -12906,64 +12906,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 7,
+      "Strength": 8,
       "Vitality": 8,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 20,
-      "Wisdom": 18
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.35,
+      "Strength": 0.45,
       "Vitality": 0.45,
-      "Agility": 0.55,
-      "Speed": 0.6,
-      "Intelligence": 1.2,
-      "Wisdom": 1
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.12,
-          "Vitality": 0.16,
-          "Agility": 0.19,
-          "Speed": 0.21,
-          "Intelligence": 0.42,
-          "Wisdom": 0.35
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.16,
-          "Vitality": 0.2,
-          "Agility": 0.25,
-          "Speed": 0.27,
-          "Intelligence": 0.54,
-          "Wisdom": 0.45
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.21,
+          "Strength": 0.27,
           "Vitality": 0.27,
-          "Agility": 0.33,
-          "Speed": 0.36,
-          "Intelligence": 0.72,
-          "Wisdom": 0.6
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.28,
+          "Strength": 0.36,
           "Vitality": 0.36,
-          "Agility": 0.44,
-          "Speed": 0.48,
-          "Intelligence": 0.96,
-          "Wisdom": 0.8
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -13051,64 +13051,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -13193,64 +13193,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -13329,64 +13329,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 7,
+      "Strength": 8,
       "Vitality": 8,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 20,
-      "Wisdom": 18
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.35,
+      "Strength": 0.45,
       "Vitality": 0.45,
-      "Agility": 0.55,
-      "Speed": 0.6,
-      "Intelligence": 1.2,
-      "Wisdom": 1
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.12,
-          "Vitality": 0.16,
-          "Agility": 0.19,
-          "Speed": 0.21,
-          "Intelligence": 0.42,
-          "Wisdom": 0.35
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.16,
-          "Vitality": 0.2,
-          "Agility": 0.25,
-          "Speed": 0.27,
-          "Intelligence": 0.54,
-          "Wisdom": 0.45
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.21,
+          "Strength": 0.27,
           "Vitality": 0.27,
-          "Agility": 0.33,
-          "Speed": 0.36,
-          "Intelligence": 0.72,
-          "Wisdom": 0.6
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.28,
+          "Strength": 0.36,
           "Vitality": 0.36,
-          "Agility": 0.44,
-          "Speed": 0.48,
-          "Intelligence": 0.96,
-          "Wisdom": 0.8
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -13473,18 +13473,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -13492,32 +13492,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -13525,10 +13525,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -13616,64 +13616,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 7,
+      "Strength": 8,
       "Vitality": 8,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 20,
-      "Wisdom": 18
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.35,
+      "Strength": 0.45,
       "Vitality": 0.45,
-      "Agility": 0.55,
-      "Speed": 0.6,
-      "Intelligence": 1.2,
-      "Wisdom": 1
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.12,
-          "Vitality": 0.16,
-          "Agility": 0.19,
-          "Speed": 0.21,
-          "Intelligence": 0.42,
-          "Wisdom": 0.35
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.16,
-          "Vitality": 0.2,
-          "Agility": 0.25,
-          "Speed": 0.27,
-          "Intelligence": 0.54,
-          "Wisdom": 0.45
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.21,
+          "Strength": 0.27,
           "Vitality": 0.27,
-          "Agility": 0.33,
-          "Speed": 0.36,
-          "Intelligence": 0.72,
-          "Wisdom": 0.6
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.28,
+          "Strength": 0.36,
           "Vitality": 0.36,
-          "Agility": 0.44,
-          "Speed": 0.48,
-          "Intelligence": 0.96,
-          "Wisdom": 0.8
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -13990,18 +13990,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -14009,32 +14009,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -14042,10 +14042,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -14131,63 +14131,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -14274,64 +14274,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -14763,18 +14763,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -14782,32 +14782,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -14815,10 +14815,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -15833,64 +15833,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -16548,18 +16548,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -16567,32 +16567,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -16600,10 +16600,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -16688,64 +16688,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -16945,18 +16945,18 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 14,
-      "Agility": 13,
-      "Speed": 13,
-      "Intelligence": 9,
-      "Wisdom": 9
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.95,
-      "Vitality": 0.8,
-      "Agility": 0.7,
-      "Speed": 0.7,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
       "Intelligence": 0.45,
       "Wisdom": 0.45
     },
@@ -16964,32 +16964,32 @@
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.28,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.16,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.43,
-          "Vitality": 0.36,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.2,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.57,
-          "Vitality": 0.48,
-          "Agility": 0.42,
-          "Speed": 0.42,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
           "Intelligence": 0.27,
           "Wisdom": 0.27
         }
@@ -16997,10 +16997,10 @@
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.76,
-          "Vitality": 0.64,
-          "Agility": 0.56,
-          "Speed": 0.56,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
           "Intelligence": 0.36,
           "Wisdom": 0.36
         }
@@ -17079,63 +17079,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -17574,64 +17574,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 16,
-      "Wisdom": 14
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.95,
-      "Wisdom": 0.85
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.43,
-          "Wisdom": 0.38
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.57,
-          "Wisdom": 0.51
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.76,
-          "Wisdom": 0.68
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -18411,64 +18411,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -18554,64 +18554,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -20156,64 +20156,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 14,
-      "Vitality": 15,
-      "Agility": 10,
-      "Speed": 10,
-      "Intelligence": 10,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.85,
-      "Vitality": 0.9,
-      "Agility": 0.5,
-      "Speed": 0.5,
-      "Intelligence": 0.55,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.3,
-          "Vitality": 0.32,
-          "Agility": 0.17,
-          "Speed": 0.17,
-          "Intelligence": 0.19,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.38,
-          "Vitality": 0.41,
-          "Agility": 0.23,
-          "Speed": 0.23,
-          "Intelligence": 0.25,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.51,
-          "Vitality": 0.54,
-          "Agility": 0.3,
-          "Speed": 0.3,
-          "Intelligence": 0.33,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.68,
-          "Vitality": 0.72,
-          "Agility": 0.4,
-          "Speed": 0.4,
-          "Intelligence": 0.44,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -20413,63 +20413,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 17,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 9
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
@@ -20677,64 +20677,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -20822,64 +20822,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 7,
+      "Strength": 8,
       "Vitality": 8,
-      "Agility": 11,
-      "Speed": 12,
-      "Intelligence": 20,
-      "Wisdom": 18
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.35,
+      "Strength": 0.45,
       "Vitality": 0.45,
-      "Agility": 0.55,
-      "Speed": 0.6,
-      "Intelligence": 1.2,
-      "Wisdom": 1
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.12,
-          "Vitality": 0.16,
-          "Agility": 0.19,
-          "Speed": 0.21,
-          "Intelligence": 0.42,
-          "Wisdom": 0.35
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.16,
-          "Vitality": 0.2,
-          "Agility": 0.25,
-          "Speed": 0.27,
-          "Intelligence": 0.54,
-          "Wisdom": 0.45
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.21,
+          "Strength": 0.27,
           "Vitality": 0.27,
-          "Agility": 0.33,
-          "Speed": 0.36,
-          "Intelligence": 0.72,
-          "Wisdom": 0.6
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.28,
+          "Strength": 0.36,
           "Vitality": 0.36,
-          "Agility": 0.44,
-          "Speed": 0.48,
-          "Intelligence": 0.96,
-          "Wisdom": 0.8
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -20956,64 +20956,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -21576,64 +21576,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 10,
-      "Agility": 18,
-      "Speed": 18,
-      "Intelligence": 12,
-      "Wisdom": 10
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.55,
-      "Agility": 1.1,
-      "Speed": 1.05,
-      "Intelligence": 0.55,
-      "Wisdom": 0.5
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.19,
-          "Agility": 0.39,
-          "Speed": 0.37,
-          "Intelligence": 0.19,
-          "Wisdom": 0.17
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.25,
-          "Agility": 0.5,
-          "Speed": 0.47,
-          "Intelligence": 0.25,
-          "Wisdom": 0.23
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.33,
-          "Agility": 0.66,
-          "Speed": 0.63,
-          "Intelligence": 0.33,
-          "Wisdom": 0.3
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.44,
-          "Agility": 0.88,
-          "Speed": 0.84,
-          "Intelligence": 0.44,
-          "Wisdom": 0.4
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -22304,64 +22304,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -22439,64 +22439,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -22572,64 +22572,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 12,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 12,
-      "Wisdom": 12
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.7,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.7,
-      "Wisdom": 0.7
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -22815,64 +22815,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 11,
-      "Vitality": 12,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 10,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.6,
-      "Vitality": 0.7,
-      "Agility": 0.7,
-      "Speed": 0.7,
-      "Intelligence": 0.5,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.24,
-          "Vitality": 0.24,
-          "Agility": 0.24,
-          "Speed": 0.24,
-          "Intelligence": 0.24,
-          "Wisdom": 0.24
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.32,
-          "Vitality": 0.32,
-          "Agility": 0.32,
-          "Speed": 0.32,
-          "Intelligence": 0.32,
-          "Wisdom": 0.32
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.42,
-          "Vitality": 0.42,
-          "Agility": 0.42,
-          "Speed": 0.42,
-          "Intelligence": 0.42,
-          "Wisdom": 0.42
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.56,
-          "Vitality": 0.56,
-          "Agility": 0.56,
-          "Speed": 0.56,
-          "Intelligence": 0.56,
-          "Wisdom": 0.56
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -22950,64 +22950,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 9,
-      "Vitality": 14,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 13,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -23083,64 +23083,64 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 10,
-      "Vitality": 11,
-      "Agility": 12,
-      "Speed": 12,
-      "Intelligence": 15,
-      "Wisdom": 15
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 0.55,
-      "Vitality": 0.6,
-      "Agility": 0.6,
-      "Speed": 0.65,
-      "Intelligence": 0.95,
-      "Wisdom": 0.9
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.19,
-          "Vitality": 0.21,
-          "Agility": 0.21,
-          "Speed": 0.23,
-          "Intelligence": 0.33,
-          "Wisdom": 0.32
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.25,
-          "Vitality": 0.27,
-          "Agility": 0.27,
-          "Speed": 0.29,
-          "Intelligence": 0.43,
-          "Wisdom": 0.41
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.33,
-          "Vitality": 0.36,
-          "Agility": 0.36,
-          "Speed": 0.39,
-          "Intelligence": 0.57,
-          "Wisdom": 0.54
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.44,
-          "Vitality": 0.48,
-          "Agility": 0.48,
-          "Speed": 0.52,
-          "Intelligence": 0.76,
-          "Wisdom": 0.72
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
         }
       }
     ],
@@ -28895,63 +28895,63 @@
       "H": 1
     },
     "BaseStats": {
-      "Strength": 16,
-      "Vitality": 18,
-      "Agility": 10,
-      "Speed": 11,
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
       "Intelligence": 8,
-      "Wisdom": 10
+      "Wisdom": 8
     },
     "Growth": {
-      "Strength": 1.05,
-      "Vitality": 1,
-      "Agility": 0.55,
-      "Speed": 0.55,
-      "Intelligence": 0.4,
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
       "Wisdom": 0.45
     },
     "Milestones": [
       {
         "Level": 5,
         "Growth": {
-          "Strength": 0.37,
-          "Vitality": 0.35,
-          "Agility": 0.19,
-          "Speed": 0.19,
-          "Intelligence": 0.14,
-          "Wisdom": 0.16
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
         }
       },
       {
         "Level": 10,
         "Growth": {
-          "Strength": 0.47,
-          "Vitality": 0.45,
-          "Agility": 0.25,
-          "Speed": 0.25,
-          "Intelligence": 0.18,
-          "Wisdom": 0.2
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
         }
       },
       {
         "Level": 20,
         "Growth": {
-          "Strength": 0.63,
-          "Vitality": 0.6,
-          "Agility": 0.33,
-          "Speed": 0.33,
-          "Intelligence": 0.24,
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
           "Wisdom": 0.27
         }
       },
       {
         "Level": 40,
         "Growth": {
-          "Strength": 0.84,
-          "Vitality": 0.8,
-          "Agility": 0.44,
-          "Speed": 0.44,
-          "Intelligence": 0.32,
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
           "Wisdom": 0.36
         }
       }
