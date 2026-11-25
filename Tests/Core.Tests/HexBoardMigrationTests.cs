@@ -94,17 +94,17 @@ namespace GridGame.Tests
         public void Spent_talent_points_come_back_as_skill_points_and_the_tree_is_cleared()
         {
             var (cls, _) = HeroWithFarAbility();
-            var tree = Real.SkillTrees.Values.OrderBy(t => t.Id).First(t => t.Nodes.Count >= 2);
             var s = Progression.NewGame(Real, "Hex-talents");
             var h = s.Hero(cls) ?? Progression.NewHero(Real, cls);
             if (s.Hero(cls) == null) s.Roster.Add(h);
             int sp = h.SkillPoints;
-            string paidKey = tree.Id + "/" + tree.Nodes[0].Id, oldKey = tree.Id + "/" + tree.Nodes[1].Id;
+            // GG-T1092: keys of the retired talent trees, priced by SaveMigrations' embedded legacy table, not Real.SkillTrees
+            const string tree = "guardian";
+            string paidKey = tree + "/guardian_shield_wall", oldKey = tree + "/guardian_iron_will";
             h.TreeNodes = new List<string> { paidKey, oldKey };
             h.TreeNodeCosts = new Dictionary<string, int> { [paidKey] = 7 };
-            var def0 = Real.TryClass(h.ClassId);
-            var home0 = Progression.FamilyTree(Real, def0) ?? Real.TrySkillTree(def0.HomeTree);
-            int expected = 7 + tree.Nodes[1].Cost + (tree == home0 ? 0 : 1); // an unrecorded off-tree node also refunds the old flat premium
+            Assert.That(SaveMigrations.LegacyTalentNodeCost(oldKey), Is.EqualTo(1));
+            int expected = 7 + 1 + (SaveMigrations.LegacyHomeTree(h.ClassId) == tree ? 0 : 1); // an unrecorded off-tree node also refunds the old flat premium
 
             var back = SaveMigrations.Migrate(V17(s), Real);
             var m = back.Hero(cls);
@@ -170,9 +170,8 @@ namespace GridGame.Tests
         public void A_hero_off_the_board_keeps_its_refund_and_gets_no_nodes()
         {
             var s = new SaveData();
-            var tree = Real.SkillTrees.Values.OrderBy(t => t.Id).First(t => t.Nodes.Count >= 1);
             var h = new HeroSave { ClassId = "not_a_board_class", SkillPoints = 2 };
-            string key = tree.Id + "/" + tree.Nodes[0].Id;
+            const string key = "guardian/guardian_shield_wall"; // GG-T1092: a retired talent-tree node
             h.TreeNodes = new List<string> { key };
             h.TreeNodeCosts = new Dictionary<string, int> { [key] = 4 };
             s.Roster.Add(h);

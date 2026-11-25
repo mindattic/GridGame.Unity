@@ -1033,25 +1033,254 @@ namespace GridGame.Meta
 
         /// <summary>GG-T1081: points a pre-hexagon hero paid for its talent-tree nodes: the recorded price per
         /// <see cref="HeroSave.TreeNodeCosts"/> key, else the node's own cost plus, in a tree that is not the hero's home tree, the flat off-tree premium
-        /// (<see cref="LegacyOffTreePremium"/>; the per-step extra the adjacency board added is not recomputed).</summary>
+        /// (<see cref="LegacyOffTreePremium"/>; the per-step extra the adjacency board added is not recomputed). GG-T1092: node costs and
+        /// home trees come from the embedded legacy tables below (frozen from skilltrees.json as it stood when talent trees were retired),
+        /// so the refund doesn't depend on <see cref="ContentDb.SkillTrees"/>; a "tree/node" key not in the table refunds nothing, as before.</summary>
         private const int LegacyOffTreePremium = 1;
 
-        private static int TalentPointsPaid(ContentDb c, HeroSave h)
+        private static int TalentPointsPaid(HeroSave h)
         {
-            if (c?.SkillTrees == null || h?.TreeNodes == null) return 0;
+            if (h?.TreeNodes == null) return 0;
             int total = 0;
-            var def = c.TryClass(h.ClassId);
-            var home = def == null ? null : Progression.FamilyTree(c, def) ?? c.TrySkillTree(def.HomeTree);
-            foreach (var t in c.SkillTrees.Values)
-                foreach (var n in t.Nodes)
-                {
-                    string key = t.Id + "/" + n.Id;
-                    if (!h.TreeNodes.Contains(key)) continue;
-                    total += h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(key, out var paid) && paid >= 0
-                        ? paid : n.Cost + (t == home ? 0 : LegacyOffTreePremium);
-                }
+            string home = LegacyHomeTree(h.ClassId);
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var key in h.TreeNodes)
+            {
+                if (key == null || !seen.Add(key) || !LegacyTalentNodeCosts.TryGetValue(key, out int cost)) continue;
+                if (h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(key, out var paid) && paid >= 0) { total += paid; continue; }
+                string tree = key.Substring(0, key.IndexOf('/'));
+                total += cost + (home != null && string.Equals(tree, home, StringComparison.Ordinal) ? 0 : LegacyOffTreePremium);
+            }
             return total;
         }
+
+        /// <summary>GG-T1092: a retired talent-tree node's cost by its "tree/node" key, or null when no such node existed.</summary>
+        public static int? LegacyTalentNodeCost(string key) => key != null && LegacyTalentNodeCosts.TryGetValue(key, out int c) ? c : (int?)null;
+
+        /// <summary>GG-T1092: the retired talent tree that was a class's home tree (its family tree, else its HomeTree), or null.</summary>
+        public static string LegacyHomeTree(string classId) => classId != null && LegacyHomeTrees.TryGetValue(classId, out var t) ? t : null;
+
+        /// <summary>GG-T1092: every "tree/node" key of the retired skilltrees.json and its cost (generated, do not edit).</summary>
+        private static readonly Dictionary<string, int> LegacyTalentNodeCosts = new Dictionary<string, int>(StringComparer.Ordinal)
+        {
+            ["guardian/guardian_shield_wall"] = 1,
+            ["guardian/guardian_iron_will"] = 1,
+            ["guardian/aegisguard_opener"] = 1,
+            ["guardian/aegisguard_stat1"] = 1,
+            ["guardian/aegisguard_core"] = 2,
+            ["guardian/aegisguard_stat2"] = 1,
+            ["guardian/aegisguard_capstone"] = 2,
+            ["guardian/juggernaut_opener"] = 1,
+            ["guardian/juggernaut_stat1"] = 1,
+            ["guardian/juggernaut_core"] = 2,
+            ["guardian/juggernaut_stat2"] = 1,
+            ["guardian/juggernaut_capstone"] = 2,
+            ["guardian/warlord_opener"] = 1,
+            ["guardian/warlord_stat1"] = 1,
+            ["guardian/warlord_core"] = 2,
+            ["guardian/warlord_stat2"] = 1,
+            ["guardian/warlord_capstone"] = 2,
+            ["guardian/deathguard_opener"] = 1,
+            ["guardian/deathguard_stat1"] = 1,
+            ["guardian/deathguard_core"] = 2,
+            ["guardian/deathguard_stat2"] = 1,
+            ["guardian/deathguard_capstone"] = 2,
+            ["guardian/guardian_finale"] = 3,
+            ["warrior/warrior_cleaving_strikes"] = 1,
+            ["warrior/warrior_battle_fury"] = 1,
+            ["warrior/berserker_opener"] = 1,
+            ["warrior/berserker_stat1"] = 1,
+            ["warrior/berserker_core"] = 2,
+            ["warrior/berserker_stat2"] = 1,
+            ["warrior/berserker_capstone"] = 2,
+            ["warrior/duelist_opener"] = 1,
+            ["warrior/duelist_stat1"] = 1,
+            ["warrior/duelist_core"] = 2,
+            ["warrior/duelist_stat2"] = 1,
+            ["warrior/duelist_capstone"] = 2,
+            ["warrior/brawler_opener"] = 1,
+            ["warrior/brawler_stat1"] = 1,
+            ["warrior/brawler_core"] = 2,
+            ["warrior/brawler_stat2"] = 1,
+            ["warrior/brawler_capstone"] = 2,
+            ["warrior/attrition_opener"] = 1,
+            ["warrior/attrition_stat1"] = 1,
+            ["warrior/attrition_core"] = 2,
+            ["warrior/attrition_stat2"] = 1,
+            ["warrior/attrition_capstone"] = 2,
+            ["warrior/warrior_finale"] = 3,
+            ["rogue/rogue_light_fingers"] = 1,
+            ["rogue/rogue_feint"] = 1,
+            ["rogue/shadowstep_opener"] = 1,
+            ["rogue/shadowstep_stat1"] = 1,
+            ["rogue/shadowstep_core"] = 2,
+            ["rogue/shadowstep_stat2"] = 1,
+            ["rogue/shadowstep_capstone"] = 2,
+            ["rogue/rogue_skirmisher_opener"] = 1,
+            ["rogue/rogue_skirmisher_stat1"] = 1,
+            ["rogue/rogue_skirmisher_core"] = 2,
+            ["rogue/rogue_skirmisher_stat2"] = 1,
+            ["rogue/rogue_skirmisher_capstone"] = 2,
+            ["rogue/combobrawler_opener"] = 1,
+            ["rogue/combobrawler_stat1"] = 1,
+            ["rogue/combobrawler_core"] = 2,
+            ["rogue/combobrawler_stat2"] = 1,
+            ["rogue/combobrawler_capstone"] = 2,
+            ["rogue/opportunist_opener"] = 1,
+            ["rogue/opportunist_stat1"] = 1,
+            ["rogue/opportunist_core"] = 2,
+            ["rogue/opportunist_stat2"] = 1,
+            ["rogue/opportunist_capstone"] = 2,
+            ["rogue/rogue_finale"] = 3,
+            ["ranger/ranger_focused_aim"] = 1,
+            ["ranger/ranger_covering_fire"] = 1,
+            ["ranger/marksman_opener"] = 1,
+            ["ranger/marksman_stat1"] = 1,
+            ["ranger/marksman_core"] = 2,
+            ["ranger/marksman_capstone"] = 2,
+            ["ranger/trapper_opener"] = 1,
+            ["ranger/trapper_stat1"] = 1,
+            ["ranger/trapper_core"] = 2,
+            ["ranger/trapper_capstone"] = 2,
+            ["ranger/skirmisher_opener"] = 1,
+            ["ranger/skirmisher_stat1"] = 1,
+            ["ranger/skirmisher_core"] = 2,
+            ["ranger/skirmisher_capstone"] = 2,
+            ["ranger/ranger_finale"] = 3,
+            ["mage/mage_arcane_bolt"] = 1,
+            ["mage/mage_chilling_frost"] = 1,
+            ["mage/spellblade_opener"] = 1,
+            ["mage/spellblade_stat1"] = 1,
+            ["mage/spellblade_core"] = 2,
+            ["mage/spellblade_stat2"] = 1,
+            ["mage/spellblade_capstone"] = 2,
+            ["mage/fieldcaster_opener"] = 1,
+            ["mage/fieldcaster_stat1"] = 1,
+            ["mage/fieldcaster_core"] = 2,
+            ["mage/fieldcaster_stat2"] = 1,
+            ["mage/fieldcaster_capstone"] = 2,
+            ["mage/hexweaver_opener"] = 1,
+            ["mage/hexweaver_stat1"] = 1,
+            ["mage/hexweaver_core"] = 2,
+            ["mage/hexweaver_stat2"] = 1,
+            ["mage/hexweaver_capstone"] = 2,
+            ["mage/warden_opener"] = 1,
+            ["mage/warden_stat1"] = 1,
+            ["mage/warden_core"] = 2,
+            ["mage/warden_stat2"] = 1,
+            ["mage/warden_capstone"] = 2,
+            ["mage/mage_finale"] = 3,
+            ["mage/mage_heavy_armor_proficiency"] = 2,
+            ["cleric/cleric_mending_light"] = 1,
+            ["cleric/cleric_sacred_cleanse"] = 1,
+            ["cleric/aegiswardens_opener"] = 1,
+            ["cleric/aegiswardens_stat1"] = 1,
+            ["cleric/aegiswardens_core"] = 2,
+            ["cleric/aegiswardens_stat2"] = 1,
+            ["cleric/aegiswardens_capstone"] = 2,
+            ["cleric/hexmenders_opener"] = 1,
+            ["cleric/hexmenders_stat1"] = 1,
+            ["cleric/hexmenders_core"] = 2,
+            ["cleric/hexmenders_stat2"] = 1,
+            ["cleric/hexmenders_capstone"] = 2,
+            ["cleric/skirmishmenders_opener"] = 1,
+            ["cleric/skirmishmenders_stat1"] = 1,
+            ["cleric/skirmishmenders_core"] = 2,
+            ["cleric/skirmishmenders_stat2"] = 1,
+            ["cleric/skirmishmenders_capstone"] = 2,
+            ["cleric/cleric_finale"] = 3,
+            ["cleric/cleric_martial_weapons_proficiency"] = 2,
+            ["alchemist/alchemist_quickening_brew"] = 1,
+            ["alchemist/alchemist_binding_toxin"] = 1,
+            ["alchemist/tempoweave_opener"] = 1,
+            ["alchemist/tempoweave_core"] = 2,
+            ["alchemist/tempoweave_stat2"] = 1,
+            ["alchemist/tempoweave_capstone"] = 2,
+            ["alchemist/fieldeng_opener"] = 1,
+            ["alchemist/fieldeng_core"] = 2,
+            ["alchemist/fieldeng_stat2"] = 1,
+            ["alchemist/fieldeng_capstone"] = 2,
+            ["alchemist/primalpack_opener"] = 1,
+            ["alchemist/primalpack_core"] = 2,
+            ["alchemist/primalpack_stat2"] = 1,
+            ["alchemist/primalpack_capstone"] = 2,
+            ["alchemist/alchemist_finale"] = 3,
+            ["alchemist/alchemist_arcane_focus_proficiency"] = 2,
+        };
+
+        /// <summary>GG-T1092: each class's home tree id in the retired skilltrees.json (generated, do not edit).</summary>
+        private static readonly Dictionary<string, string> LegacyHomeTrees = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["alchemist"] = "cleric",
+            ["assassain"] = "warrior",
+            ["barbarian"] = "warrior",
+            ["basher"] = "warrior",
+            ["blackninja"] = "rogue",
+            ["blackwitch"] = "mage",
+            ["bluelion"] = "alchemist",
+            ["blueninja"] = "rogue",
+            ["bruiser"] = "warrior",
+            ["chromaninja"] = "rogue",
+            ["cleric"] = "cleric",
+            ["courier"] = "alchemist",
+            ["darktemplar"] = "guardian",
+            ["defender"] = "guardian",
+            ["dervish"] = "alchemist",
+            ["doctor"] = "cleric",
+            ["drifter"] = "mage",
+            ["duelist"] = "warrior",
+            ["engineer"] = "alchemist",
+            ["fencer"] = "warrior",
+            ["fighter"] = "rogue",
+            ["greenninja"] = "rogue",
+            ["harbinger"] = "mage",
+            ["jadeknight"] = "guardian",
+            ["knight"] = "guardian",
+            ["lancer"] = "rogue",
+            ["machinist"] = "alchemist",
+            ["martialartist"] = "rogue",
+            ["monk"] = "cleric",
+            ["myrmidon"] = "guardian",
+            ["nighthunter"] = "rogue",
+            ["odachi"] = "warrior",
+            ["operative"] = "mage",
+            ["paladin"] = "guardian",
+            ["pandagirl"] = "warrior",
+            ["prizefighter"] = "rogue",
+            ["pugilist"] = "rogue",
+            ["raider"] = "rogue",
+            ["redmage"] = "mage",
+            ["redninja"] = "rogue",
+            ["ripper"] = "rogue",
+            ["ritualist"] = "mage",
+            ["ronin"] = "warrior",
+            ["sage"] = "cleric",
+            ["sellsword"] = "warrior",
+            ["shieldmaiden"] = "guardian",
+            ["sister"] = "cleric",
+            ["slasher"] = "warrior",
+            ["speedster"] = "rogue",
+            ["streetfighter"] = "rogue",
+            ["striker"] = "rogue",
+            ["swordmaster"] = "warrior",
+            ["tank"] = "guardian",
+            ["technician"] = "alchemist",
+            ["thief"] = "warrior",
+            ["tinkerer"] = "alchemist",
+            ["vampire"] = "warrior",
+            ["warchief"] = "guardian",
+            ["whiteninja"] = "cleric",
+            ["whitewitch"] = "cleric",
+            ["wildchild"] = "alchemist",
+            ["yellowninja"] = "rogue",
+            ["hexsniper"] = "ranger",
+            ["hexwarden"] = "ranger",
+            ["hexstalker"] = "ranger",
+            ["monstertamer"] = "alchemist",
+            ["herald"] = "cleric",
+            ["tactician"] = "alchemist",
+            ["warden"] = "guardian",
+        };
 
         /// <summary>GG-T1033 (docs/design/skill-hexagon/PLAN.md, Saves): every hero of a save from before the skill hexagon
         /// takes its place on the board. Talent-tree nodes it bought are cleared and their points (TalentPointsPaid,
@@ -1073,7 +1302,7 @@ namespace GridGame.Meta
                     h.Known ??= new List<string>();
                     if (h.TreeNodes != null && h.TreeNodes.Count > 0)
                     {
-                        int refund = TalentPointsPaid(c, h);
+                        int refund = TalentPointsPaid(h);
                         h.TreeNodes.Clear();
                         h.SkillPoints += refund;
                         if (refund > 0) Notes.Add($"{h.ClassId}: {refund} talent point(s) returned as skill points (GG-T1033)");
