@@ -1,0 +1,21 @@
+﻿{
+    "protocolVersion":  "1.2",
+    "code":  "epic-robins",
+    "updatedAt":  "2026-11-24T21:26:04.3645143Z",
+    "savedBy":  "shampoo1232@mindattic.com",
+    "repo":  {
+                 "name":  "GridGame.Unity",
+                 "path":  "D:\\Projects\\MindAttic\\GridGame.Unity",
+                 "worktree":  false,
+                 "mainRepo":  "D:\\Projects\\MindAttic\\GridGame.Unity",
+                 "branch":  "main"
+             },
+    "task":  "GridGame.Unity /allocate loop plus the skill-hex design: the skill hexagon (six stats VIT STR AGI SPD WIS INT, six family wedges Martial Brawn Shadow Wild Brains Grace, a lattice of abilities ringed by stat passives, heroes as starting paths) becomes the template for every hero. Epic GG-T1015.",
+    "decisions":  "Owner signed off on the skill hexagon page exactly as drawn, colours included. Stamina is eliminated; Luck leaves hero identity. 66-hero roster: cut Basher, Operative, Technician, Tinkerer; one new Wild druid-brawler (WIS2 STR1 SPD1). Golden rule: every artifact is also saved as a self-contained html/css/js page under docs/design/\u003cname\u003e/ (added to MINDATTIC_AGENT.md and memory). Old family-tree tickets GG-T954, T956-T959 parked as superseded by skill-hex. Commit rule for agents: temp index on a pinned origin/main SHA, never from the shared checkout.",
+    "state":  "Landed: design pages docs/design/family-wheel, stat-hexagon, skill-hexagon (artifacts AJfvczkh..., PZzLEhJX..., PyBk3i2j...). Canonical board Assets/GridGame/Resources/Content/skillhex.json (817 nodes: 249 abilities, 546 passives, 22 open; 65 placed heroes, 4 cut, 1 new), schema docs/design/skill-hexagon/skillhex.schema.json, PLAN.md, GAPS.md, SIGNATURES.md, tools/skillhex (validate, sync, regenerate), page editor (bf40ab76), ContentDb.SkillHex loader and ValidateSkillHex (6cdf698c). Earlier this session: battle-feel epic, Codex, keyword text, coach lessons, Ironbark golems, Drifter Float, family-tree engine GG-T977..T980, ability alias migration. /allocate is off.",
+    "next":  "Turn /allocate on to run approved GG-T1023 (SkillHex runtime) and GG-T1051 (editor follow-ups: GAPS link, Copy JSON, README). Owner decisions in GG-T1025 gate stats, progression, saves and roster tickets (SP economy, Luck, stat growth, healing stat INT vs WIS, cut-class conversions, new Wild hero, open slots, signatures). Still waiting on owner: run the soaks (GG-T790 turn modes, GG-T921, GG-T276), merge audit approval (GG-T974), XP wall pick (GG-T474).",
+    "queued":  [
+
+               ],
+    "universe":  ""
+}
