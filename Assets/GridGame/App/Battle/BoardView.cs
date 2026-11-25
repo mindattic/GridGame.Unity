@@ -865,6 +865,20 @@ namespace GridGame.App
             selectionCue.style.display = DisplayStyle.Flex;
         }
 
+        private VisualElement activeHeroCue;
+
+        /// <summary>
+        /// The active hero's outline (GG-T1110, TurnMode.HeroTimeline; null hides it): a ring just outside the tile edge, so
+        /// it reads alongside the selection outline and the approach cue instead of covering them.
+        /// </summary>
+        public void SetActiveHero(Coord? at, int w, int h, Color c)
+        {
+            if (activeHeroCue == null) activeHeroCue = NewCue("cue-active-hero", 16);
+            if (!at.HasValue) { activeHeroCue.style.display = DisplayStyle.None; return; }
+            Frame(activeHeroCue, at.Value, w, h, -5f, 4f, c);
+            activeHeroCue.style.display = DisplayStyle.Flex;
+        }
+
         /// <summary>Hides every unit cue not in <paramref name="keep"/>.</summary>
         public void HideCues(ICollection<int> keep)
         {
