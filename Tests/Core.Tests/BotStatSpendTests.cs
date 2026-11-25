@@ -6,8 +6,9 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T593 (§25.6.5): the camp routine spends level-up stat points toward the next class ability its
-    /// <c>Requires</c> lock out, on-build first, and only falls back to the growth stat once nothing is locked.</summary>
+    /// <summary>GG-T593 (§25.6.5): the bot's stat-spend heuristic picks the next class ability its <c>Requires</c> lock
+    /// out, on-build first. Level-up stat points are retired (GG-T1058), so there is nothing for it to spend and the camp
+    /// routine no longer calls it; Requires are measured against the hero's skill hexagon stats.</summary>
     public class BotStatSpendTests
     {
         private static (SaveData s, HeroSave h) Hero(string classId, int level)
@@ -15,7 +16,7 @@ namespace GridGame.Tests
             var s = Progression.NewGame(Real, "BotStatSpend", new[] { classId });
             var h = s.Hero(classId);
             h.TotalXp = Formulas.TotalXpForLevel(level);
-            return (s, h); // the lead who always sets out stays level 1: no points of its own
+            return (s, h);
         }
 
         [Test]
@@ -41,33 +42,23 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Spending_unlocks_the_target_and_logs_where_the_points_went()
+        public void Spend_has_no_points_to_spend_at_any_level()
         {
             var (s, h) = Hero("barbarian", 12);
             var first = BotStatSpend.Target(Real, s, h);
             var log = BotStatSpend.Spend(Real, s);
-            Assert.That(StatPoints.Unspent(h), Is.Zero);
-            Assert.That(Abilities.Unmet(Real, s, h, first), Is.Empty, $"{first.Id} still locked after 11 points");
-            Assert.That(log, Has.Count.EqualTo(1));
-            Assert.That(log[0], Does.StartWith("Barbarian put 11 stat points into"));
+            Assert.That(log, Is.Empty);
+            Assert.That(StatPoints.Spent(h), Is.Zero);
+            Assert.That(BotStatSpend.Target(Real, s, h)?.Id, Is.EqualTo(first?.Id), "nothing was unlocked");
         }
 
         [Test]
-        public void With_nothing_locked_the_point_goes_to_the_growth_stat()
-        {
-            var (s, h) = Hero("barbarian", 2);
-            foreach (var n in Core.Content.StatGrantDef.Names) (h.StatPicks ??= new System.Collections.Generic.Dictionary<string, int>())[n] = 10;
-            Assert.That(BotStatSpend.Target(Real, s, h), Is.Null);
-            Assert.That(BotStatSpend.Pick(Real, s, h), Is.EqualTo(StatPoints.BotPick(Real, h)));
-        }
-
-        [Test]
-        public void The_camp_routine_spends_stat_points_by_the_requires_heuristic()
+        public void The_camp_routine_spends_no_stat_points()
         {
             var (s, h) = Hero("barbarian", 4);
             CampRoutine.Run(Real, s);
-            Assert.That(StatPoints.Unspent(h), Is.Zero);
-            Assert.That(StatPoints.In(h, "Strength"), Is.EqualTo(3));
+            Assert.That(StatPoints.Spent(h), Is.Zero);
+            Assert.That(StatPoints.In(h, "Strength"), Is.Zero);
         }
     }
 }

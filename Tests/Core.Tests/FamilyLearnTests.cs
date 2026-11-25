@@ -10,13 +10,15 @@ namespace GridGame.Tests
     /// <summary>GG-T980 (epic GG-T963): gold Learn and stat requirements in a family world. A family-tree class's gold
     /// list is its start and signature grants (kit price) plus the general catalog less every family move, so a sibling's
     /// corner and the shared family nodes come only through the tree. A family node whose grant has Requires is Locked
-    /// until the hero's stat picks meet it ("needs LCK 9 (have 3)", the GG-T592 text), unless it is one of the hero's start
+    /// until the hero's skill hexagon stats meet it ("needs INT 9 (have 3)", the GG-T592 text; GG-T1058 reads
+    /// <see cref="HeroBoard.BoardStats"/>, not level-up stat picks), unless it is one of the hero's start
     /// nodes or its own class's signature node; a sibling's signature node stays stat-gated while
     /// <see cref="TalentConfig.SiblingSignatureStatGated"/> is on (the default). Role trees keep the old rules.</summary>
     public class FamilyLearnTests
     {
         /// <summary>Family "shadow": thief and ninja on one tree, each from its own corner, plus shared nodes; knight on a
-        /// role tree whose class list holds a skill with a stat requirement.</summary>
+        /// role tree whose class list holds a skill with a stat requirement; a tiny skill hexagon whose passive nodes
+        /// (<see cref="Int3"/>, <see cref="Int6"/>, <see cref="Wis5"/>) are where a hero's Requires stats come from.</summary>
         private static ContentDb Fixture()
         {
             var db = new ContentDb();
@@ -30,14 +32,14 @@ namespace GridGame.Tests
             foreach (var id in new[] { "steal", "cleave" })
                 db.Abilities[id] = new AbilityDef { Id = id, Name = id, Kind = AbilityKind.Skill, CooldownTurns = 4 };
             db.Abilities["shuriken"] = new AbilityDef { Id = "shuriken", Name = "Shuriken", Kind = AbilityKind.Skill, CooldownTurns = 2,
-                Requires = new Stats { Luck = 4 } };
+                Requires = new Stats { Intelligence = 4 } };
             db.Abilities["vanish"] = new AbilityDef { Id = "vanish", Name = "Vanish", Kind = AbilityKind.Skill, CooldownTurns = 3, Universal = true };
             db.Abilities["shield_wall"] = new AbilityDef { Id = "shield_wall", Name = "Shield Wall", Kind = AbilityKind.Skill, CooldownTurns = 4,
                 Requires = new Stats { Vitality = 6 } };
             db.Abilities["smoke"] = new AbilityDef { Id = "smoke", Name = "Smoke", Kind = AbilityKind.Spell, Cost = 3,
                 Requires = new Stats { Agility = 9 } };
             db.Abilities["star_rain"] = new AbilityDef { Id = "star_rain", Name = "Star Rain", Kind = AbilityKind.Spell, Cost = 3,
-                Requires = new Stats { Luck = 9 } };
+                Requires = new Stats { Intelligence = 9 } };
             db.Abilities["shade"] = new AbilityDef { Id = "shade", Name = "Shade", Kind = AbilityKind.Spell, Cost = 2,
                 Requires = new Stats { Wisdom = 5 } };
             db.Abilities["spark"] = new AbilityDef { Id = "spark", Name = "Spark", Kind = AbilityKind.Spell, Cost = 1 };
@@ -67,6 +69,20 @@ namespace GridGame.Tests
                     new SkillNodeDef { Id = "g_wall", Name = "Shield Wall", Cost = 1, Grants = "shield_wall" },
                 },
             };
+            // GG-T1067: Requires are measured against owned hexagon passives (LCK is not a board stat). No Heroes, so a
+            // hero with no HexNodes owns nothing and has all-zero board stats.
+            db.SkillHex = new SkillHexDef
+            {
+                Version = 1,
+                Radius = 2,
+                Costs = new SkillHexCostsDef { Passive = 1, Ability = 1 },
+                Nodes =
+                {
+                    new SkillHexNodeDef { Q = 1, R = 0, Kind = SkillHexNodeKind.Passive, Stats = new Dictionary<string, int> { ["INT"] = 3 } },
+                    new SkillHexNodeDef { Q = 2, R = 0, Kind = SkillHexNodeKind.Passive, Stats = new Dictionary<string, int> { ["INT"] = 6 } },
+                    new SkillHexNodeDef { Q = 0, R = 1, Kind = SkillHexNodeKind.Passive, Stats = new Dictionary<string, int> { ["WIS"] = 5 } },
+                },
+            };
             return db;
         }
 
@@ -74,12 +90,14 @@ namespace GridGame.Tests
         private static SkillNodeDef Node(ContentDb db, string id) => Shadow(db).Nodes.First(n => n.Id == id);
         private static SaveData Save() => new SaveData { TestMode = true, Gold = 10000 };
 
-        private static HeroSave Hero(ContentDb db, string classId, params (string Stat, int Picks)[] picks)
+        private const string Int3 = "1,0", Int6 = "2,0", Wis5 = "0,1";
+
+        /// <summary>A hero owning the given fixture hexagon nodes ("q,r").</summary>
+        private static HeroSave Hero(ContentDb db, string classId, params string[] hexNodes)
         {
             var h = Progression.NewHero(db, classId);
             h.SkillPoints = 100;
-            h.StatPicks = new Dictionary<string, int>();
-            foreach (var (stat, n) in picks) h.StatPicks[stat] = n;
+            h.HexNodes = new List<string>(hexNodes);
             return h;
         }
 
@@ -109,7 +127,7 @@ namespace GridGame.Tests
         {
             var db = Fixture();
             var s = Save();
-            var thief = Hero(db, "thief", ("Luck", 20));
+            var thief = Hero(db, "thief", Int3, Int6);
             var r = Abilities.Learn(db, s, thief, "star_rain");
             Assert.That(r.Ok, Is.False);
             Assert.That(r.Message, Is.EqualTo("Can't learn that"));
@@ -131,21 +149,23 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void SiblingSignatureNode_IsLockedUntilStatPicksMeetIt()
+        public void SiblingSignatureNode_IsLockedUntilBoardStatsMeetIt()
         {
             var db = Fixture();
             var s = Save();
-            var thief = Hero(db, "thief", ("Luck", 3));
+            var thief = Hero(db, "thief", Int3);
             var rain = Node(db, "n_rain");
             Assert.That(TalentConfig.SiblingSignatureStatGated, Is.True, "the conservative default");
             Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Locked));
-            Assert.That(Talents.WhyLocked(db, thief, Shadow(db), rain), Is.EqualTo("needs LCK 9 (have 3)"));
+            Assert.That(Talents.WhyLocked(db, thief, Shadow(db), rain), Is.EqualTo("needs INT 9 (have 3)"));
             var fail = Talents.Unlock(db, s, thief, "shadow", "n_rain");
             Assert.That(fail.Ok, Is.False);
-            Assert.That(fail.Message, Is.EqualTo("needs LCK 9 (have 3)"));
+            Assert.That(fail.Message, Is.EqualTo("needs INT 9 (have 3)"));
             Assert.That(thief.SkillPoints, Is.EqualTo(100));
 
-            thief.StatPicks["Luck"] = 9;
+            thief.StatPicks = new Dictionary<string, int> { ["Intelligence"] = 20, ["Luck"] = 20 };
+            Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Locked), "old stat picks no longer count");
+            thief.HexNodes.Add(Int6);
             Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Available));
             Assert.That(Talents.Unlock(db, s, thief, "shadow", "n_rain").Ok, Is.True, "a sibling can spec into the same move");
             Assert.That(thief.Known, Does.Contain("star_rain"));
@@ -158,6 +178,7 @@ namespace GridGame.Tests
             var thief = Hero(db, "thief");
             Assert.That(Talents.WhyLocked(db, thief, Shadow(db), Node(db, "s_shade")), Is.EqualTo("needs WIS 5 (have 0)"));
             Assert.That(Talents.WhyLocked(db, thief, Shadow(db), Node(db, "s_vanish")), Is.Null, "no Requires, no stat gate");
+            Assert.That(Talents.WhyStatLocked(db, Hero(db, "thief", Wis5), Shadow(db), Node(db, "s_shade")), Is.Null, "a WIS 5 passive meets it");
         }
 
         [Test]
@@ -173,7 +194,7 @@ namespace GridGame.Tests
             var shuriken = Node(db, "n_shuriken");
             Assert.That(Talents.StatWaived(db, ninja, Shadow(db), shuriken), Is.True, "its own start node");
             Assert.That(Talents.WhyStatLocked(db, ninja, Shadow(db), shuriken), Is.Null);
-            Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), shuriken), Is.EqualTo("needs LCK 4 (have 0)"),
+            Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), shuriken), Is.EqualTo("needs INT 4 (have 0)"),
                 "a sibling's start node is still the sibling's signature");
         }
 

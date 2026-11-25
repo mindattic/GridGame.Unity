@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GridGame.Core.Rules;
 using GridGame.Meta;
 using NUnit.Framework;
@@ -5,8 +6,8 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>Level-up stat points (§15.1, GG-T591): one free point a level, spendable on any of the 8 stats, a pool
-    /// apart from skill points.</summary>
+    /// <summary>Level-up stat points (§15.1, GG-T591) are retired for the skill hexagon (GG-T1058): nothing is earned at
+    /// any level, so nothing can be spent, and the camp routine spends nothing. Old picks stay in the save, untouched.</summary>
     public class StatPointsTests
     {
         private static (SaveData s, HeroSave h) Setup(int level)
@@ -18,46 +19,52 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Every_level_past_one_earns_one_stat_point_and_an_old_save_has_them_all_unspent()
+        public void No_level_earns_a_stat_point()
         {
             var (_, h) = Setup(1);
-            Assert.That(StatPoints.Earned(h), Is.Zero);
-            h.TotalXp = Formulas.TotalXpForLevel(7);
+            foreach (int level in new[] { 1, 2, 7, 20 })
+            {
+                h.TotalXp = Formulas.TotalXpForLevel(level);
+                Assert.That(Formulas.StatPointsForLevel(level), Is.Zero, $"level {level}");
+                Assert.That(StatPoints.Earned(h), Is.Zero, $"level {level}");
+                Assert.That(StatPoints.Unspent(h), Is.Zero, $"level {level}");
+            }
             h.StatPicks = null; // a save from before GG-T591
-            Assert.That(StatPoints.Earned(h), Is.EqualTo(6));
-            Assert.That(StatPoints.Unspent(h), Is.EqualTo(6));
+            Assert.That(StatPoints.Unspent(h), Is.Zero);
         }
 
         [Test]
-        public void Spending_a_point_raises_that_stat_in_battle_and_leaves_skill_points_alone()
+        public void Spend_fails_with_nothing_earned_and_leaves_skill_points_alone()
         {
-            var (_, h) = Setup(4);
+            var (_, h) = Setup(12);
             int skill = h.SkillPoints;
-            float before = Progression.Preview(Real, h).LevelStats.Intelligence;
-            Assert.That(StatPoints.Spend(h, "Intelligence").Ok, Is.True);
-            Assert.That(StatPoints.Spend(h, "Intelligence").Ok, Is.True);
-            Assert.That(StatPoints.In(h, "Intelligence"), Is.EqualTo(2));
-            Assert.That(StatPoints.Unspent(h), Is.EqualTo(1));
-            Assert.That(h.SkillPoints, Is.EqualTo(skill), "separate pools");
-            Assert.That(Progression.Preview(Real, h).LevelStats.Intelligence, Is.EqualTo(before + 2 * Formulas.StatPointValue));
+            var r = StatPoints.Spend(h, "Intelligence");
+            Assert.That(r.Ok, Is.False);
+            Assert.That(r.Message, Is.EqualTo("No stat points to spend"));
+            Assert.That(StatPoints.In(h, "Intelligence"), Is.Zero);
+            Assert.That(StatPoints.Spend(h, "Charisma").Ok, Is.False, "an unknown stat");
+            Assert.That(h.SkillPoints, Is.EqualTo(skill));
         }
 
         [Test]
-        public void No_point_can_be_spent_past_what_was_earned_or_on_an_unknown_stat()
+        public void Old_picks_stay_in_the_save_with_nothing_unspent()
         {
-            var (_, h) = Setup(2);
-            Assert.That(StatPoints.Spend(h, "Charisma").Ok, Is.False);
-            Assert.That(StatPoints.Spend(h, "Luck").Ok, Is.True);
-            Assert.That(StatPoints.Spend(h, "Luck").Ok, Is.False);
+            var (_, h) = Setup(7);
+            h.StatPicks = new Dictionary<string, int> { ["Strength"] = 4 };
+            Assert.That(StatPoints.In(h, "Strength"), Is.EqualTo(4));
+            Assert.That(StatPoints.Unspent(h), Is.Zero);
+            Assert.That(StatPoints.Spend(h, "Strength").Ok, Is.False);
+            Assert.That(StatPoints.In(h, "Strength"), Is.EqualTo(4));
         }
 
         [Test]
-        public void The_camp_routine_spends_every_point_on_the_class_growth_stat()
+        public void The_camp_routine_spends_nothing()
         {
             var (s, h) = Setup(5);
-            StatPoints.AutoSpend(Real, s);
-            Assert.That(StatPoints.Unspent(h), Is.Zero);
-            Assert.That(StatPoints.In(h, StatPoints.BotPick(Real, h)), Is.EqualTo(4));
+            Assert.That(StatPoints.AutoSpend(Real, s), Is.Empty);
+            Assert.That(StatPoints.Spent(h), Is.Zero);
+            CampRoutine.Run(Real, s);
+            Assert.That(StatPoints.Spent(h), Is.Zero);
         }
     }
 }
