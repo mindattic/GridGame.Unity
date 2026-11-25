@@ -176,17 +176,5 @@ namespace GridGame.Tests
             m.Bar[m.UnlockedSlots] = new AbilitySlot { AbilityId = "nova" }; // a locked slot can't cast it
             Assert.That(HeroBot.SavingFor(s), Is.EqualTo(0));
         }
-
-        [Test]
-        public void Camp_fills_an_open_slot_with_a_spell_it_can_cast_most_battles()
-        {
-            var c = FreshReal();
-            var h = Progression.NewHero(c, "redmage");
-            var big = Abilities.Learnable(c, h).Where(a => a.Kind == AbilityKind.Spell && a.Cost > CampRoutine.FillerMaxCost).ToList();
-            Assume.That(big, Is.Not.Empty, "the red mage can learn a big spell (Meteor)");
-            var pick = CampRoutine.BestLearnable(c, h, 100000);
-            Assert.That(pick, Is.Not.Null);
-            Assert.That(pick.Kind != AbilityKind.Spell || pick.Cost <= CampRoutine.FillerMaxCost, Is.True, $"picked {pick.Id} ({pick.Cost} orbs)");
-        }
     }
 }

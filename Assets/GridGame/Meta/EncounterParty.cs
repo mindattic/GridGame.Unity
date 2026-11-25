@@ -19,8 +19,7 @@ namespace GridGame.Meta
     /// Picks 5 of every hero-team class in the content (all of them, not just the campaign's small
     /// <see cref="Progression.StartingRoster"/>) and gears each the way CampRoutine/MetaHeuristics gear a
     /// real save at Camp: the best weapon, armor and relic (jewelry) <see cref="MetaHeuristics.Score"/> can
-    /// find, abilities picked by the same "priciest affordable" rule <see cref="CampRoutine.BestLearnable"/>
-    /// uses. The difference is that an endless encounter has no save, no gold and no bag to equip from — it
+    /// find, and a bar of its own class abilities ranked by price. The difference is that an endless encounter has no save, no gold and no bag to equip from — it
     /// only has a level — so rather than simulate an economy this reads straight off the catalog: for each
     /// slot/ability pool, ranks every candidate by power and takes the one at this level's percentile of the
     /// full 1..campaignMax spectrum (0 = the weakest in the game, 1 = the best). That keeps it a pure
@@ -113,9 +112,8 @@ namespace GridGame.Meta
         /// <summary>Fills every bar slot (all five are unlocked from the start, §4.7 — <see cref="Progression.UnlockedSlots"/>
         /// never gates them) with the hero's own class abilities, a contiguous slice of the class list ranked by
         /// <see cref="Abilities.Price"/> that slides from the cheapest/earliest abilities at band 0 to the priciest
-        /// at band 1 — the same "priciest affordable" idea <see cref="CampRoutine.BestLearnable"/> applies one slot
-        /// at a time at Camp, just resolved for the whole bar at once since a synthetic party has no Known list that
-        /// grows battle by battle. A class with fewer than <see cref="Progression.MaxBarSlots"/> usable abilities
+        /// at band 1, resolved for the whole bar at once since a synthetic party has no Known list or skill hexagon
+        /// that grows battle by battle (a real hero's camp routine slots what <see cref="BoardBot.Spend"/> bought). A class with fewer than <see cref="Progression.MaxBarSlots"/> usable abilities
         /// (rare) parks the camp's stopgap potion in whatever slots are left, exactly like a real hero's unused slots.</summary>
         private static List<string> BuildBar(ContentDb db, ClassDef def, float band)
         {

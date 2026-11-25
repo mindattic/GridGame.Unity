@@ -150,10 +150,11 @@ namespace GridGame.Meta
                     var r = SkillHexProgress.Buy(c, h, step);
                     if (!r.Ok) break;
                     var node = board.Node(step);
-                    string what = node?.Kind == SkillHexNodeKind.Ability
-                        ? c.TryAbility(node.Ability)?.Name ?? node.Ability
-                        : string.Join(" ", (node?.Stats ?? new Dictionary<string, int>()).Select(kv => $"{kv.Key} +{kv.Value}"));
-                    log.Add($"{name} spent {price}{Marker}{what} (skill hexagon)");
+                    // GG-T1077: an ability node is how the camp routine learns now, so its line carries the learned marker too.
+                    if (node?.Kind == SkillHexNodeKind.Ability)
+                        log.Add($"{name}{CampRoutine.LearnedMarker}{c.TryAbility(node.Ability)?.Name ?? node.Ability} for {price}{Marker}the skill hexagon");
+                    else
+                        log.Add($"{name} spent {price}{Marker}{string.Join(" ", (node?.Stats ?? new Dictionary<string, int>()).Select(kv => $"{kv.Key} +{kv.Value}"))} (skill hexagon)");
                 }
             }
             return log;

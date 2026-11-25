@@ -2687,7 +2687,7 @@ def testmode(run="testmode", cycles=4, timeout_per_cycle=600):
         "party_level_never_falls": all(b >= a for a, b in levels) and all(levels[i + 1][0] >= levels[i][1] for i in range(len(levels) - 1)),
         "camp_did_something": any(": nothing to do" not in l for l in cycle_lines),
         # GG-T100: "learn abilities" is part of what Test Mode must prove — a run of 6+ cycles that never
-        # learned one fails (CampRoutine logs "<Hero> learned <Ability> (<price>g)"; TestLoop.CyclesThatMustLearnAnAbility).
+        # learned one fails (BoardBot logs "<Hero> learned <Ability> for <n> SP on the skill hexagon"; TestLoop.CyclesThatMustLearnAnAbility).
         "learned_an_ability": len(cycle_lines) < 6 or any(" learned " in l for l in cycle_lines),
         "no_errors": not errors,
     }

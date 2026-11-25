@@ -236,7 +236,8 @@ namespace GridGame.Meta
             }
         }
 
-        /// <summary>Text in a camp log line that records learning an ability ("Cleric learned Rejuvenate (280g)");
+        /// <summary>Text in a camp log line that records learning an ability (GG-T1077: a skill hexagon ability node
+        /// <see cref="BoardBot.Spend"/> bought, "Cleric learned Rejuvenate for 2 SP on the skill hexagon");
         /// the Test Mode check looks for it.</summary>
         public const string LearnedMarker = " learned ";
 
@@ -253,59 +254,13 @@ namespace GridGame.Meta
             return false;
         }
 
-        /// <summary>The ability a sensible player buys for an open slot (GG-T100): the priciest (highest-tier)
-        /// affordable one from the hero's own class list, in list order on ties; only once the class list is
-        /// fully learned does it reach into the general catalog. GG-T373: a slot filler should fire most battles, so a
-        /// spell above <see cref="FillerMaxCost"/> orbs (one the party saves several waves for) comes only after every
-        /// affordable cheaper choice.</summary>
-        public static AbilityDef BestLearnable(ContentDb c, HeroSave h, int gold)
-        {
-            // GG-T592: only what the hero's spent stat points already unlock (kit moves are waived); a bot's stat spending is GG-T593.
-            var learnable = Abilities.Learnable(c, h).Where(a => Abilities.Unmet(c, null, h, a).Count == 0).ToList();
-            var classList = c.TryClass(h.ClassId)?.Abilities ?? new List<string>();
-            // GG-T388: a hero starts with two moves; the rest of its own default kit comes back first, at the kit price.
-            var kit = learnable.Where(a => Abilities.IsKitMove(c, h, a) && Abilities.KitPrice <= gold).ToList();
-            if (kit.Count > 0) return kit.OrderBy(a => Progression.KitAbilities(c.TryClass(h.ClassId)).IndexOf(a.Id)).First();
-            var own = learnable.Where(a => classList.Contains(a.Id)).ToList();
-            var pool = own.Count > 0 ? own : learnable;
-            return pool.Where(a => Abilities.Price(a) <= gold)
-                .OrderBy(a => a.Kind == AbilityKind.Spell && a.Cost > FillerMaxCost)
-                .ThenByDescending(Abilities.Price).ThenBy(a => classList.IndexOf(a.Id))
-                .FirstOrDefault();
-        }
-
-        /// <summary>GG-T373: the dearest spell (half the base bank) the camp routine buys for an open slot before a big one.</summary>
-        public const int FillerMaxCost = ManaBank.DefaultCapacity / 2;
-
         /// <summary>Text in a camp log line that records a skill purchase ("Paladin spent 1 SP on Smite (skill hexagon)").</summary>
         public const string TalentMarker = BoardBot.Marker;
 
-        /// <summary>The node a sensible player spends points on next in one tree (GG-T54), or null when none is
-        /// <see cref="TalentState.Available"/>. Deepening a branch the hero is already in (a node with prerequisites —
-        /// stat nodes, cores, capstones, the finale) beats opening a new one, deepest first, then authored order —
-        /// so points pile into one branch until its capstone instead of spreading thin across every opener.</summary>
-        public static SkillNodeDef NextTalent(HeroSave h, SkillTreeDef t) =>
-            NextTalent(h, t, n => Talents.State(h, t, n) == TalentState.Available);
-
-        /// <summary><see cref="NextTalent(HeroSave, SkillTreeDef)"/> with §25.6.2's cross-tree gates applied (GG-T51).</summary>
-        public static SkillNodeDef NextTalent(ContentDb c, HeroSave h, SkillTreeDef t) =>
-            NextTalent(h, t, n => Talents.State(c, h, t, n) == TalentState.Available);
-
-        private static SkillNodeDef NextTalent(HeroSave h, SkillTreeDef t, System.Func<SkillNodeDef, bool> available)
-        {
-            if (h == null || t == null) return null;
-            return t.Nodes.Select((n, i) => (n, i))
-                .Where(x => available(x.n))
-                .OrderByDescending(x => x.n.Prerequisites.Count > 0)
-                .ThenByDescending(x => x.n.RequiredPointsInTree)
-                .ThenBy(x => x.i)
-                .Select(x => x.n).FirstOrDefault();
-        }
-
         /// <summary>For every party hero, put something useful in each dead bar slot — and upgrade a slot
-        /// holding only the stopgap potion: an already-known but unslotted ability first, else learn the
-        /// <see cref="BestLearnable"/> one the gold allows, else (dead slots only) the stopgap potion if any is
-        /// stocked. Runs before discretionary gear so learning isn't permanently outbid by gear (GG-T100).</summary>
+        /// holding only the stopgap potion: an owned but unslotted ability first (<see cref="HeroBoard.OwnedAbilities"/>:
+        /// known, or on an owned skill hexagon node), else (dead slots only) the stopgap potion if any is stocked.
+        /// GG-T1077: the routine no longer buys abilities with gold; <see cref="BoardBot.Spend"/> buys ability nodes.</summary>
         private static void FillBars(ContentDb c, SaveData s, List<string> log)
         {
             int unlocked = System.Math.Min(Progression.UnlockedSlots(s), Progression.MaxBarSlots);
@@ -321,17 +276,7 @@ namespace GridGame.Meta
                     bool dead = IsDeadSlot(s, h.Bar[i]);
                     if (!dead && h.Bar[i] != stopgap) continue;
                     // Only an ability usable from the bar: a tree-granted passive (GG-T54) works from Known and would waste a slot.
-                    string entry = h.Known.FirstOrDefault(k => !h.Bar.Contains(k) && c.TryAbility(k) is AbilityDef ka && Abilities.IsHeroUsable(ka));
-                    if (entry == null)
-                    {
-                        var learn = BestLearnable(c, h, s.Gold);
-                        if (learn != null)
-                        {
-                            int paid = Abilities.Price(c, s, h, learn);
-                            var r = Abilities.Learn(c, s, h, learn.Id);
-                            if (r.Ok) { log.Add($"{heroName}{LearnedMarker}{learn.Name} ({paid}g)"); entry = learn.Id; }
-                        }
-                    }
+                    string entry = HeroBoard.OwnedAbilities(c, h).FirstOrDefault(k => !h.Bar.Contains(k) && c.TryAbility(k) is AbilityDef ka && Abilities.IsHeroUsable(ka));
                     if (entry == null && dead && s.Count(StopgapPotion) > 0 && !h.Bar.Contains(stopgap)) entry = stopgap;
                     if (entry == null) continue;
                     var assigned = Abilities.Assign(c, s, h, i, entry);
