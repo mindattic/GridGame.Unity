@@ -2453,6 +2453,20 @@
         "definition": "One hero acts each turn, any hero, the same one again if you like, before the next foe moves."
       }
     },
+    "glossary:turn_mode_hero_timeline": {
+      "key": "glossary:turn_mode_hero_timeline",
+      "id": "glossary-turn-mode-hero-timeline",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b17fb69966f3757d397008dd527fd39f853c2a98983efed60d04ee8bf30330f7",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Heroes on the timeline",
+        "definition": "Every hero has their own icon on the timeline among the foes. When a hero's icon reaches the front, that hero alone acts; the others wait for their own icons."
+      }
+    },
     "glossary:turn_mode_party_window": {
       "key": "glossary:turn_mode_party_window",
       "id": "glossary-turn-mode-party-window",

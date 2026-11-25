@@ -61,6 +61,13 @@ namespace GridGame.App
                 if (!BattleEngine.CanMove(State, unit.Id))
                 {
                     bool acted = TurnRules.HasActed(State, unit); // §2.13: the turn mode says who has acted
+                    if (TurnRules.NotThisHerosTurn(State, unit)) // GG-T814 (§2.13.3): only the hero whose own icon arrived may be picked up
+                    {
+                        var active = State.UnitById(State.ActiveHeroId);
+                        ShowBanner(active != null && active.Alive ? $"It's {active.Name}'s turn · {unit.Name} waits for its own icon" : $"{unit.Name} waits for its own icon");
+                        App.Audio.Sfx("ui.error", 0.5f);
+                        return;
+                    }
                     if (!acted && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
                     ShowBanner(!acted ? $"{unit.Name} can't move" : TurnRules.MovedThisRound(State, unit) ? $"{unit.Name} has moved this round · free again in round {State.Round + 1}" // GG-T800 (§2.13.2)
                         : TurnRules.OneHeroPerTurn(State) ? "The party has acted this turn" : $"{unit.Name} has acted this turn"); // GG-T787

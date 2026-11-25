@@ -878,6 +878,10 @@
     "Term": "Unmoved this round"
   },
   {
+    "Id": "turn_mode_hero_timeline",
+    "Term": "Heroes on the timeline"
+  },
+  {
     "Id": "rooted",
     "Term": "Rooted",
     "Aliases": ["Root", "Roots"],
