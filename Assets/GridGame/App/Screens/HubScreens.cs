@@ -633,6 +633,8 @@ namespace GridGame.App
                 }
                 foreach (var tome in C.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
                     sources.Add($"{tome.Name}: {string.Join(", ", TomeFoundAt(tome.Id).DefaultIfEmpty("not found anywhere yet"))}");
+                var boardPt = SkillHexProgress.Board(C)?.FindAbility(a.Id);
+                if (boardPt != null) sources.Add($"Skill board - {SkillHexProgress.Board(C).Price(boardPt.Value)} SP");
                 if (sources.Count == 0) sources.Add("Not taught anywhere yet");
                 result.Add(new LockedSkill { Ability = a, Kit = kit, Sources = sources });
             }

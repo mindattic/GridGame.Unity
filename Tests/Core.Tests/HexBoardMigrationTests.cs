@@ -102,13 +102,15 @@ namespace GridGame.Tests
             string paidKey = tree.Id + "/" + tree.Nodes[0].Id, oldKey = tree.Id + "/" + tree.Nodes[1].Id;
             h.TreeNodes = new List<string> { paidKey, oldKey };
             h.TreeNodeCosts = new Dictionary<string, int> { [paidKey] = 7 };
-            int expected = 7 + tree.Nodes[1].Cost;
+            var def0 = Real.TryClass(h.ClassId);
+            var home0 = Progression.FamilyTree(Real, def0) ?? Real.TrySkillTree(def0.HomeTree);
+            int expected = 7 + tree.Nodes[1].Cost + (tree == home0 ? 0 : 1); // an unrecorded off-tree node also refunds the old flat premium
 
             var back = SaveMigrations.Migrate(V17(s), Real);
             var m = back.Hero(cls);
             Assert.That(m.TreeNodes, Is.Empty);
             Assert.That(m.TreeNodeCosts ?? new Dictionary<string, int>(), Is.Empty);
-            Assert.That(m.SkillPoints, Is.EqualTo(sp + expected), "what was paid comes back; an unrecorded node refunds its current cost");
+            Assert.That(m.SkillPoints, Is.EqualTo(sp + expected), "what was paid comes back; an unrecorded node refunds its cost (plus the off-tree premium)");
         }
 
         [Test]

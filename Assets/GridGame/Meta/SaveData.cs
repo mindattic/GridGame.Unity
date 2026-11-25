@@ -1032,17 +1032,23 @@ namespace GridGame.Meta
         }
 
         /// <summary>GG-T1081: points a pre-hexagon hero paid for its talent-tree nodes: the recorded price per
-        /// <see cref="HeroSave.TreeNodeCosts"/> key, else the node's own cost (the old off-tree premium is not recomputed).</summary>
+        /// <see cref="HeroSave.TreeNodeCosts"/> key, else the node's own cost plus, in a tree that is not the hero's home tree, the flat off-tree premium
+        /// (<see cref="LegacyOffTreePremium"/>; the per-step extra the adjacency board added is not recomputed).</summary>
+        private const int LegacyOffTreePremium = 1;
+
         private static int TalentPointsPaid(ContentDb c, HeroSave h)
         {
             if (c?.SkillTrees == null || h?.TreeNodes == null) return 0;
             int total = 0;
+            var def = c.TryClass(h.ClassId);
+            var home = def == null ? null : Progression.FamilyTree(c, def) ?? c.TrySkillTree(def.HomeTree);
             foreach (var t in c.SkillTrees.Values)
                 foreach (var n in t.Nodes)
                 {
                     string key = t.Id + "/" + n.Id;
                     if (!h.TreeNodes.Contains(key)) continue;
-                    total += h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(key, out var paid) && paid >= 0 ? paid : n.Cost;
+                    total += h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(key, out var paid) && paid >= 0
+                        ? paid : n.Cost + (t == home ? 0 : LegacyOffTreePremium);
                 }
             return total;
         }

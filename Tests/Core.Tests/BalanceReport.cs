@@ -135,7 +135,11 @@ namespace GridGame.Tests
                 bountiesClaimed += save.Bounty.Claimed.Count;
                 bountySp += Bounties.SkillPointsClaimed(Real, save); // GG-T134: skill points paid each party hero
                 // GG-T54: the skill-point sink — what the camp routine put into trees vs. what's still banked at the end.
-                spSpent += save.Roster.Sum(h => SkillHexProgress.Owned(h).Nodes.Count);
+                {
+                    var hexBoard = SkillHexProgress.Board(Real); // SP actually paid: owned nodes outside the free class Start path
+                    spSpent += save.Roster.Sum(h => hexBoard == null ? 0
+                        : SkillHexProgress.Owned(h).Nodes.Where(pt => !hexBoard.StartOf(h.ClassId).Contains(pt)).Sum(hexBoard.Price));
+                }
                 spBanked += save.Roster.Sum(h => h.SkillPoints);
                 if (finished) finishedRuns++;
                 foreach (var kv in rows)
