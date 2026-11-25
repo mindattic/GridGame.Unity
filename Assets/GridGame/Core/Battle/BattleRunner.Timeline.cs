@@ -207,6 +207,7 @@ namespace GridGame.Core.Battle
         private void HeroIconArrived(TimelineEntry e, Unit hero)
         {
             e.Ip = 0;
+            S.ActiveHeroId = hero.Id; // GG-T1074: this hero alone may act now (TurnRules.NotThisHerosTurn)
             ScheduleReentry(e, hero, BattleConfig.RecoverBaseSeconds, space: false);
         }
 

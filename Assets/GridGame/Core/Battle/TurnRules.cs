@@ -57,13 +57,21 @@ namespace GridGame.Core.Battle
         /// <summary>Throws for a mode that isn't built yet (§2.13.3 lands with its own feature).</summary>
         private static void Require(BattleState s)
         {
-            if (s.TurnMode != TurnMode.PartyWindow && s.TurnMode != TurnMode.AnyHeroEveryTurn && s.TurnMode != TurnMode.UnmovedThisRound)
+            if (s.TurnMode != TurnMode.PartyWindow && s.TurnMode != TurnMode.AnyHeroEveryTurn && s.TurnMode != TurnMode.UnmovedThisRound
+                && s.TurnMode != TurnMode.HeroTimeline)
                 throw new NotSupportedException($"Turn mode {s.TurnMode} is not built yet (bible §2.13)");
         }
 
         /// <summary>§2.13.1 (GG-T781): one hero action per party turn — AnyHeroEveryTurn, and UnmovedThisRound (§2.13.2,
-        /// GG-T794), which adds the round on top.</summary>
-        private static bool OneActionPerTurn(BattleState s) => s.TurnMode == TurnMode.AnyHeroEveryTurn || s.TurnMode == TurnMode.UnmovedThisRound;
+        /// GG-T794), which adds the round on top, and HeroTimeline (§2.13.3, GG-T1074), where the one action is the active
+        /// hero's own turn.</summary>
+        private static bool OneActionPerTurn(BattleState s) =>
+            s.TurnMode == TurnMode.AnyHeroEveryTurn || s.TurnMode == TurnMode.UnmovedThisRound || s.TurnMode == TurnMode.HeroTimeline;
+
+        /// <summary>GG-T1074 (§2.13.3): under HeroTimeline, is it some other hero's turn — <paramref name="u"/> is a
+        /// commanded hero but not <see cref="BattleState.ActiveHeroId"/>? Always false in the other modes. The runner
+        /// refuses such a command with "Not this hero's turn".</summary>
+        public static bool NotThisHerosTurn(BattleState s, Unit u) => IsHeroIcon(s, u) && u.Id != s.ActiveHeroId;
 
         /// <summary>§2.13.2 (GG-T794): does this battle keep rounds (each able hero acts once per round)?</summary>
         private static bool KeepsRounds(BattleState s) => s.TurnMode == TurnMode.UnmovedThisRound;
@@ -134,6 +142,7 @@ namespace GridGame.Core.Battle
         public static bool HasActed(BattleState s, Unit hero)
         {
             Require(s);
+            if (NotThisHerosTurn(s, hero)) return true; // GG-T1074: only the active hero has a turn
             if (!OneActionPerTurn(s)) return hero.ActedThisWindow;
             return PartyHasActed(s) || (KeepsRounds(s) && hero.ActedThisRound); // GG-T794: once per round
         }
@@ -156,7 +165,7 @@ namespace GridGame.Core.Battle
             var list = new List<Unit>();
             if (OneActionPerTurn(s) && PartyHasActed(s)) return list;
             foreach (var u in s.Units)
-                if (AbleThisRound(u) && !u.ActedThisWindow && !(KeepsRounds(s) && u.ActedThisRound)) list.Add(u);
+                if (AbleThisRound(u) && !u.ActedThisWindow && !(KeepsRounds(s) && u.ActedThisRound) && !NotThisHerosTurn(s, u)) list.Add(u);
             return list;
         }
 
@@ -219,6 +228,8 @@ namespace GridGame.Core.Battle
         /// What is left of the party's turn in clock ticks. PartyWindow: until the next enemy turn icon reaches the left
         /// edge (no pushback/hasten assumed); each hero action spends some of it and a Pushback or Slow lengthens it
         /// (GG-T308). -1 when no enemy icon can arrive (none left, or every one halted) — the hold then has no limit.
+        /// HeroTimeline (GG-T1074, §2.13.3): until the next turn icon of either side other than the active hero's own (a
+        /// foe's or another hero's), so the forced drop and the minimum-action gap (§2.0) read the same way.
         /// </summary>
         public static int TurnTicks(BattleState s)
         {
@@ -228,7 +239,8 @@ namespace GridGame.Core.Battle
             {
                 if (e.Kind != TimelineKind.Turn) continue;
                 var o = s.UnitById(e.OwnerId);
-                if (o == null || o.IsHero) continue;
+                if (o == null) continue;
+                if (o.IsHero && !(IsHeroIcon(s, o) && o.Id != s.ActiveHeroId)) continue;
                 int t = BattleEngine.TicksUntilTurn(s, e.OwnerId);
                 if (t > 0 && (best < 0 || t < best)) best = t;
             }
@@ -324,6 +336,7 @@ namespace GridGame.Core.Battle
         public static bool IsTurnBoundary(BattleState s, bool windowOver, bool waveChanged)
         {
             Require(s);
+            if (HeroesOnTimeline(s)) return true; // GG-T1074: every hero turn is a boundary (the clock ran on to it)
             return windowOver || waveChanged;
         }
 

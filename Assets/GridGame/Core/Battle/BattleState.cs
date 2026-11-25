@@ -211,6 +211,10 @@ namespace GridGame.Core.Battle
         /// <summary>GG-T794 (§2.13.2): the current round under UnmovedThisRound, from 1; <c>TurnRules.ResetTurn</c> bumps it
         /// when every able hero has acted (or a new wave begins). Stays 1 in other modes. Clone()'s shallow copy keeps it.</summary>
         public int Round = 1;
+        /// <summary>GG-T1074 (§2.13.3): under HeroTimeline, the commanded hero whose own turn icon has arrived and who
+        /// alone may act now; -1 with none (other modes, or the clock running on between hero turns). Set as the icon
+        /// arrives, cleared as its action resolves. Clone()'s shallow copy keeps it.</summary>
+        public int ActiveHeroId = -1;
         /// <summary>GG-T321: heroes the party fielded (<see cref="BattleSetup.Party"/>); enemy strength scales with it
         /// (<see cref="BattleEngine.PartyScale"/>).</summary>
         public int PartySize;

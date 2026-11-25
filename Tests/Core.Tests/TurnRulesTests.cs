@@ -115,17 +115,5 @@ namespace GridGame.Tests
             Assert.That(s.Phase, Is.EqualTo(final.Phase));
             Assert.That(s.Results.ActionsTaken, Is.EqualTo(final.Results.ActionsTaken));
         }
-
-        [TestCase(TurnMode.HeroTimeline)]
-        public void Unbuilt_modes_refuse_through_the_seam(TurnMode mode)
-        {
-            var db = Real;
-            var s = BattleEngine.Create(db, Setup(db, mode), new List<BattleEvent>());
-            Assert.Throws<NotSupportedException>(() => TurnRules.TurnTicks(s));
-            Assert.Throws<NotSupportedException>(() => TurnRules.HeroesLeftToAct(s));
-            Assert.Throws<NotSupportedException>(() => TurnRules.EndsPartyTurn(s, new ShieldCommand()));
-            Assert.Throws<NotSupportedException>(() => TurnRules.GuardCharge(s, 0f));
-            Assert.Throws<NotSupportedException>(() => TurnRules.ResetTurn(s));
-        }
     }
 }
