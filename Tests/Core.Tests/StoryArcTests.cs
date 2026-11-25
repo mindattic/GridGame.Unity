@@ -109,8 +109,7 @@ namespace GridGame.Tests
         private static ContentDb Fixture(DialogueDef d)
         {
             var db = new ContentDb();
-            db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank", HomeTree = "t" };
-            db.SkillTrees["t"] = new SkillTreeDef { Id = "t", Name = "T" };
+            db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank" };
             db.Stages["s1"] = new StageDef { Id = "s1", Name = "S1" };
             db.Campaign.Themes.Add(new ThemeDef { Id = "vale", Name = "Vale", Stages = { "s1" } });
             db.Dialogues[d.Id] = d;

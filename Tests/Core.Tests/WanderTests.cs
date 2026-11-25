@@ -365,9 +365,8 @@ namespace GridGame.Tests
         private static ContentDb TalkDb(DialogueDef d)
         {
             var db = new ContentDb();
-            db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank", HomeTree = "t" };
+            db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank" };
             db.Classes["goblin"] = new ClassDef { Id = "goblin", Name = "Goblin", Team = Team.Enemy };
-            db.SkillTrees["t"] = new SkillTreeDef { Id = "t", Name = "T" };
             db.Factions.Add(new FactionDef { Id = "holds", Name = "the Free Holds", Heroes = { "knight" } });
             db.Dialogues[d.Id] = d;
             db.DialogueOrder.Add(d);

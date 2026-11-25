@@ -72,7 +72,6 @@ namespace GridGame.Tests
                 DropTable = "knightdrop",
                 Abilities = { "slash" },
                 DefaultLoadout = { "slash", "item:potion" },
-                HomeTree = "tanktree",
             };
 
             db.Stages["s1"] = new StageDef
@@ -230,22 +229,6 @@ namespace GridGame.Tests
             var db = ValidDb();
             db.Classes["knight"].Role = role;
             Assert.That(OneProblem(db), Does.Contain("needs a Role"));
-        }
-
-        [Test]
-        public void Hero_missing_home_tree_is_reported()
-        {
-            var db = ValidDb();
-            db.Classes["knight"].HomeTree = null;
-            Assert.That(OneProblem(db), Does.Contain("needs a HomeTree"));
-        }
-
-        [Test]
-        public void Unknown_home_tree_is_reported()
-        {
-            var db = ValidDb();
-            db.Classes["knight"].HomeTree = "missing";
-            Assert.That(OneProblem(db), Does.Contain("unknown home tree 'missing'"));
         }
 
         [Test]

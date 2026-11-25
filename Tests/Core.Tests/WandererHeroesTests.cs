@@ -35,8 +35,6 @@ namespace GridGame.Tests
             foreach (var a in k.DefaultLoadout.Where(x => !x.StartsWith("item:"))) Assert.That(k.Abilities, Does.Contain(a), $"{id}: {a} in the bar but not learnable");
             Assert.That(k.DefaultLoadout, Does.Contain(signature), "the signature is on the starting bar");
             Assert.That(k.DefaultLoadout, Has.Count.EqualTo(5));
-            Assert.That(k.HomeTree, Is.EqualTo(homeTree));
-            Assert.That(c.TrySkillTree(k.HomeTree), Is.Not.Null);
             Assert.That(k.Support, Is.Not.Null, "backs pincers like every hero");
             // The Speed tier of the role: every healer and support but the White Ninja runs at 12.
             Assert.That(k.BaseStats.Speed, Is.EqualTo(12f));

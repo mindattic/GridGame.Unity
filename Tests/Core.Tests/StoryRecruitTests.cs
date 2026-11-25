@@ -162,9 +162,8 @@ namespace GridGame.Tests
             List<string> Problems(DialogueDef d)
             {
                 var db = new ContentDb();
-                db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank", HomeTree = "t" };
+                db.Classes["knight"] = new ClassDef { Id = "knight", Name = "Knight", Team = Team.Hero, Role = "Tank" };
                 db.Classes["goblin"] = new ClassDef { Id = "goblin", Name = "Goblin", Team = Team.Enemy };
-                db.SkillTrees["t"] = new SkillTreeDef { Id = "t", Name = "T" };
                 db.Campaign.Themes.Add(new ThemeDef { Id = "greenvalley", Name = "GV" });
                 db.Dialogues[d.Id] = d; db.DialogueOrder.Add(d);
                 return ContentLoader.Validate(db).Where(p => p.StartsWith("dialogue")).ToList();

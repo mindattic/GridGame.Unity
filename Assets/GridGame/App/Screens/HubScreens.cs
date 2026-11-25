@@ -337,13 +337,6 @@ namespace GridGame.App
                 InspectCard.Attach(row, b => InspectCard.Ability(b, a), tap: true); // GG-T450: tap or hold to read it
             }
 
-            var treeBlock = Ui.El("col", sheet);
-            treeBlock.name = "status-skill-trees";
-            Ui.Section("Skill trees", treeBlock);
-            var trees = Progression.TreeInvestment(C, h);
-            if (trees.Count == 0) Ui.Para("No tree investment yet — abilities already known will count here as they match tree nodes.", treeBlock, "dim");
-            foreach (var t in trees) Ui.Field(t.TreeName, $"{t.Points} pts", treeBlock, "gold");
-
             var profBlock = Ui.El("col", sheet);
             profBlock.name = "status-proficiencies";
             Ui.Section("Proficiencies", profBlock);
@@ -609,7 +602,6 @@ namespace GridGame.App
                 result.Add(new LockedSkill { Ability = a, Kit = kit, Sources = sources });
             }
             foreach (var id in Progression.KitAbilities(C, def)) Add(id, true);
-            foreach (var id in Progression.SignatureGrants(C, def)) Add(id, true);
             foreach (var id in def.Abilities) Add(id, false);
             foreach (var item in C.Items.Values.Where(i => i.Type == ItemType.Tome && i.TeachesAbility != null).OrderBy(i => i.Id, StringComparer.Ordinal))
             {
