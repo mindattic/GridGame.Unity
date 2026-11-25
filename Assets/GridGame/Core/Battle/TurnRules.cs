@@ -208,7 +208,6 @@ namespace GridGame.Core.Battle
             Require(s);
             return KeepsRounds(s) && hero.ActedThisRound;
         }
-
         /// <summary>GG-T1091 (the battle view, §2.13.2): the round readout by the timeline, "Round 3 · 2 of 4 moved".
         /// Round = <see cref="BattleState.Round"/>; Moved = living commanded heroes that used their place this round;
         /// Of = Moved plus the heroes still able to take one (a fallen, Frozen or Asleep hero that hasn't moved isn't
@@ -324,6 +323,18 @@ namespace GridGame.Core.Battle
         {
             Require(s);
             return cmd is ShieldCommand && TooLittleTime(s);
+        }
+
+        /// <summary>Who Guard's Protection covers (§2.5). Every living hero, except under HeroTimeline (GG-T1075, §2.13.3),
+        /// where Guard is the active hero's own turn: only that hero, banking the rest of its window
+        /// (<see cref="GuardCharge"/>: time to the next other icon minus the time held).</summary>
+        public static List<Unit> GuardProtects(BattleState s)
+        {
+            Require(s);
+            if (!HeroesOnTimeline(s)) return s.LivingList(GridGame.Core.Content.Team.Hero);
+            var list = new List<Unit>();
+            if (s.UnitById(s.ActiveHeroId) is Unit active && active.Alive) list.Add(active);
+            return list;
         }
 
         /// <summary>
