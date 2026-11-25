@@ -298,6 +298,12 @@ namespace GridGame.Core.Content
             foreach (var c in db.Classes.Values)
             {
                 if (c.DropTable != null && !db.DropTables.ContainsKey(c.DropTable)) p.Add($"class {c.Id}: unknown drop table '{c.DropTable}'");
+                // GG-T1063: Luck is flat per level (Formulas.LuckAtLevel, GG-T1028), never a class stat.
+                if (c.BaseStats != null && c.BaseStats.Luck != 0f) p.Add($"class {c.Id}: BaseStats Luck {c.BaseStats.Luck} (Luck is flat per level, not a class stat)");
+                if (c.Growth != null && c.Growth.Luck != 0f) p.Add($"class {c.Id}: Growth Luck {c.Growth.Luck} (Luck is flat per level, not a class stat)");
+                if (c.Milestones != null)
+                    foreach (var m in c.Milestones)
+                        if (m?.Growth != null && m.Growth.Luck != 0f) p.Add($"class {c.Id}: milestone {m.Level} Luck {m.Growth.Luck} (Luck is flat per level, not a class stat)");
                 var th = c.Thumbnail;
                 if (th == null) p.Add($"class {c.Id}: no Thumbnail (frame it in tools/ThumbnailStudio)");
                 else if (!(th.Zoom >= Thumbnail.MinZoom && th.Zoom <= Thumbnail.MaxZoom) || !(th.X >= Thumbnail.MinOffset && th.X <= Thumbnail.MaxOffset)

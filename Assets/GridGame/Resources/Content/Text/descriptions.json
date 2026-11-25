@@ -26015,19 +26015,6 @@
         "short": "A mine that silences whatever sets it off."
       }
     },
-    "skillnode:fieldeng_stat1": {
-      "key": "skillnode:fieldeng_stat1",
-      "id": "description-skillnode-fieldeng-stat1",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:a90c57d4b7d6b33406b2c974a0d0442ee7ab3d22c212896ff659d129b37cbfb2",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Field Engineers conditioning: a permanent +3 Luck."
-      }
-    },
     "skillnode:fieldeng_stat2": {
       "key": "skillnode:fieldeng_stat2",
       "id": "description-skillnode-fieldeng-stat2",
@@ -26379,19 +26366,6 @@
         "short": "Marksman conditioning: a permanent +3 Agility."
       }
     },
-    "skillnode:marksman_stat2": {
-      "key": "skillnode:marksman_stat2",
-      "id": "description-skillnode-marksman-stat2",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:ac5c0034345decb44eb546af8c22a5d6b5e148b0ee3db964dfb41336390d83e5",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Marksman conditioning: a permanent +2 Luck."
-      }
-    },
     "skillnode:opportunist_capstone": {
       "key": "skillnode:opportunist_capstone",
       "id": "description-skillnode-opportunist-capstone",
@@ -26494,19 +26468,6 @@
       "speakers": [],
       "payload": {
         "short": "Call the pack's attention onto you."
-      }
-    },
-    "skillnode:primalpack_stat1": {
-      "key": "skillnode:primalpack_stat1",
-      "id": "description-skillnode-primalpack-stat1",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:9ce8290e6a81232c0521c7bf6b84448caab4ce275ab6d0019ad09f8f66f51f28",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Primal Pack conditioning: a permanent +3 Luck."
       }
     },
     "skillnode:primalpack_stat2": {
@@ -26782,19 +26743,6 @@
         "short": "Skirmisher conditioning: a permanent +3 Agility."
       }
     },
-    "skillnode:skirmisher_stat2": {
-      "key": "skillnode:skirmisher_stat2",
-      "id": "description-skillnode-skirmisher-stat2",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:807d6c6523776507222805726853b8ae786e6289c0167d14431adca7659fdf06",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Skirmisher conditioning: a permanent +2 Luck."
-      }
-    },
     "skillnode:skirmishmenders_capstone": {
       "key": "skillnode:skirmishmenders_capstone",
       "id": "description-skillnode-skirmishmenders-capstone",
@@ -26964,19 +26912,6 @@
         "short": "Send an ally the fast way across the board."
       }
     },
-    "skillnode:tempoweave_stat1": {
-      "key": "skillnode:tempoweave_stat1",
-      "id": "description-skillnode-tempoweave-stat1",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:b9b7127593c44bfc232f43b9443a76534c5a6540a4f439401031022fd7a547e3",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Tempo Weavers conditioning: a permanent +3 Luck."
-      }
-    },
     "skillnode:tempoweave_stat2": {
       "key": "skillnode:tempoweave_stat2",
       "id": "description-skillnode-tempoweave-stat2",
@@ -27040,19 +26975,6 @@
       "speakers": [],
       "payload": {
         "short": "Trapper conditioning: a permanent +3 Agility."
-      }
-    },
-    "skillnode:trapper_stat2": {
-      "key": "skillnode:trapper_stat2",
-      "id": "description-skillnode-trapper-stat2",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:bc9dd5ce70b76918082894ef68b961598154e862530d9e9444ac3717016925d7",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "short": "Trapper conditioning: a permanent +2 Luck."
       }
     },
     "skillnode:warden_capstone": {

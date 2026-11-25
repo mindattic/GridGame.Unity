@@ -798,19 +798,6 @@
     ]
    },
    {
-    "Id": "marksman_stat2",
-    "Name": "Luck +2",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 2
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 5,
-    "Prerequisites": [
-     "marksman_core"
-    ]
-   },
-   {
     "Id": "marksman_capstone",
     "Name": "Execution Shot",
     "Grants": "marksman_execution_shot",
@@ -852,19 +839,6 @@
     ]
    },
    {
-    "Id": "trapper_stat2",
-    "Name": "Luck +2",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 2
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 5,
-    "Prerequisites": [
-     "trapper_core"
-    ]
-   },
-   {
     "Id": "trapper_capstone",
     "Name": "Snare Net",
     "Grants": "trapper_snare_net",
@@ -903,19 +877,6 @@
     "RequiredPointsInTree": 3,
     "Prerequisites": [
      "skirmisher_opener"
-    ]
-   },
-   {
-    "Id": "skirmisher_stat2",
-    "Name": "Luck +2",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 2
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 5,
-    "Prerequisites": [
-     "skirmisher_core"
     ]
    },
    {
@@ -1430,19 +1391,6 @@
     "Prerequisites": []
    },
    {
-    "Id": "tempoweave_stat1",
-    "Name": "Luck +3",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 3
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 2,
-    "Prerequisites": [
-     "tempoweave_opener"
-    ]
-   },
-   {
     "Id": "tempoweave_core",
     "Name": "Stumbling Ground",
     "Grants": "tempoweave_stumble",
@@ -1484,19 +1432,6 @@
     "Prerequisites": []
    },
    {
-    "Id": "fieldeng_stat1",
-    "Name": "Luck +3",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 3
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 2,
-    "Prerequisites": [
-     "fieldeng_opener"
-    ]
-   },
-   {
     "Id": "fieldeng_core",
     "Name": "Field Patch",
     "Grants": "fieldeng_patch",
@@ -1536,19 +1471,6 @@
     "Cost": 1,
     "RequiredPointsInTree": 1,
     "Prerequisites": []
-   },
-   {
-    "Id": "primalpack_stat1",
-    "Name": "Luck +3",
-    "GrantsStat": {
-     "Stat": "Luck",
-     "Amount": 3
-    },
-    "Cost": 1,
-    "RequiredPointsInTree": 2,
-    "Prerequisites": [
-     "primalpack_opener"
-    ]
    },
    {
     "Id": "primalpack_core",
