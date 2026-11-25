@@ -230,7 +230,9 @@ namespace GridGame.App
             SyncRound(); // GG-T1091
             float nextU = 2f;
             foreach (var e in drawn.Values)
-                if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsHero && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u) && u > 0f)
+                if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted
+                    && (!o.IsHero || TurnRules.NotThisHerosTurn(State, o)) // GG-T1109: mirror TurnRules.TurnTicks (another hero's icon ends it too)
+                    && at.TryGetValue(e.Id, out var u) && u > 0f)
                     nextU = Mathf.Min(nextU, u);
             int ticks = BattleEngine.TurnTicks(State);
             bool show = !overridden && holdLane == null && ticks > 0 && nextU <= 1f && !State.IsOver && State.Phase == BattlePhase.PlayerInput;
@@ -247,6 +249,8 @@ namespace GridGame.App
             if (TurnRules.OneHeroPerTurn(State) && (skill || drag)) // GG-T787 (§2.13.1): the gap holds one hero's one action
                 fits = "one hero: " + (skill && drag ? "move or skill" : drag ? "move" : "skill");
             gapLabel.text = $"{secs:0.0}s · {fits}";
+            if (TurnRules.HeroesOnTimeline(State) && State.UnitById(State.ActiveHeroId) is Unit ah && ah.Alive)
+                gapLabel.text = $"{ah.Name}'s turn · {gapLabel.text}"; // GG-T1109 (§2.13.3)
             gapLabel.style.color = c;
             gapLabel.style.left = XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f);
         }
@@ -410,7 +414,21 @@ namespace GridGame.App
         /// (GG-T525) hero casts blue, foes and their casts orange, a boss vermilion.</summary>
         private Color EntryColor(TimelineEntry e) =>
             e.Kind == TimelineKind.Hazard ? HazardColor(e) // GG-T359
-            : e.Kind == TimelineKind.Cast ? Palette.TeamCast(e.CasterTeam == Team.Hero) : TurnRing(State.UnitById(e.OwnerId));
+            : e.Kind == TimelineKind.Cast ? Palette.TeamCast(e.CasterTeam == Team.Hero)
+            : TurnRules.IsHeroIcon(State, State.UnitById(e.OwnerId)) ? HeroTurnRing // GG-T1109: a hero's own turn icon (HeroTimeline)
+            : TurnRing(State.UnitById(e.OwnerId));
+
+        /// <summary>GG-T1109 (§2.13.3): a commanded hero's own turn diamond rings in the hero blue (colourblind sky blue),
+        /// never a foe's red.</summary>
+        private static Color HeroTurnRing => Palette.Colorblind ? Palette.CbHero : Palette.Hero;
+
+        /// <summary>GG-T1109 (§2.13.3): the active hero's own turn entry under HeroTimeline (-1 with none).</summary>
+        private int ActiveHeroEntry()
+        {
+            if (State == null || State.ActiveHeroId < 0 || !TurnRules.HeroesOnTimeline(State)) return -1;
+            foreach (var e in drawn.Values) if (e.Kind == TimelineKind.Turn && e.OwnerId == State.ActiveHeroId) return e.Id;
+            return -1;
+        }
 
         private VisualElement MakeTimelineIcon(TimelineEntry e)
         {
@@ -581,7 +599,8 @@ namespace GridGame.App
         private void SyncSlot(Dictionary<int, float> at)
         {
             if (timelineSlot == null) return;
-            int id = actingEntry >= 0 && drawn.ContainsKey(actingEntry) ? actingEntry : nextActorEntry;
+            int activeHero = ActiveHeroEntry(); // GG-T1109: the hero whose own icon arrived holds the slot while it acts
+            int id = actingEntry >= 0 && drawn.ContainsKey(actingEntry) ? actingEntry : activeHero >= 0 ? activeHero : nextActorEntry;
             drawn.TryGetValue(id, out var e);
             if (id != slotEntry)
             {
@@ -597,8 +616,9 @@ namespace GridGame.App
             if (e == null) { slotTime.text = ""; return; }
             SetBorder(slotFrame, 8f, SlotBorder, EntryColor(e));
             float secs = at.TryGetValue(e.Id, out var u) ? u * BattleConfig.BarSeconds : 0f;
-            slotTime.text = e.Id == actingEntry || secs < 0.05f ? "NOW" : $"{secs:0.0}s";
-            slotTime.style.color = e.Id == actingEntry ? Palette.Gold : Palette.Text;
+            bool now = e.Id == actingEntry || e.Id == activeHero;
+            slotTime.text = now || secs < 0.05f ? "NOW" : $"{secs:0.0}s";
+            slotTime.style.color = now ? Palette.Gold : Palette.Text;
         }
 
         /// <summary>
