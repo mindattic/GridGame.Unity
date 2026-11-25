@@ -263,6 +263,7 @@ namespace GridGame.App
                 case ComboChangedEvent cce: return ComboChangedAnim(cce); // GG-T851: the combo meter, off the beat
                 case ComboEndedEvent cen: return ComboEndedAnim(cen);
                 case WaveStartedEvent wv: TutorialWaveStarted(); return WaveAnim(wv);
+                case RoundStartedEvent rs: return RoundAnim(rs); // GG-T1091 (§2.13.2)
                 case ReinforcementsArrivedEvent ra: return ReinforcementsAnim(ra);
                 case EggLaidEvent el: return EggLaidAnim(el);
                 case EggHatchedEvent eh: return HatchAnim(eh);
@@ -2202,6 +2203,24 @@ namespace GridGame.App
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
             }
+        }
+
+        /// <summary>GG-T1091 (§2.13.2): a new round under Unmoved this round. Every hero is free again: the banner says so,
+        /// a rising wave sting plays, every hero view drops its acted check (with a small pop unless Reduce Motion), and
+        /// the timeline's round readout refreshes.</summary>
+        private IEnumerator RoundAnim(RoundStartedEvent rs)
+        {
+            ShowBanner($"Round {rs.Round} · every hero may move again");
+            Feed($"Round {rs.Round}", Palette.GoldLight);
+            App.Audio.Sfx("battle.wave", 0.6f, 1.25f);
+            foreach (var u in State.Units)
+            {
+                if (!u.IsHero || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) continue;
+                v.SetActed(false);
+                if (!ReduceMotion) App.StartCoroutine(Tween.Pop(v.Root, 1.08f, Timing.Quick));
+            }
+            SyncRound();
+            yield return Tween.Wait(ReduceMotion ? Timing.Quick : Timing.Standard);
         }
 
         private IEnumerator ReviveAnim(RevivedEvent rv)

@@ -874,6 +874,10 @@
     "Term": "Any hero every turn"
   },
   {
+    "Id": "turn_mode_unmoved_this_round",
+    "Term": "Unmoved this round"
+  },
+  {
     "Id": "rooted",
     "Term": "Rooted",
     "Aliases": ["Root", "Roots"],

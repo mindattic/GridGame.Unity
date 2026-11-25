@@ -176,6 +176,8 @@ namespace GridGame.App
         // ── The gap (GG-T311, §2.0): the stretch between the left edge and the next enemy icon is the party's time ──
         private VisualElement gapLane;
         private Label gapLabel;
+        /// <summary>GG-T1091 (§2.13.2): "Round 3 · 2 of 4 moved", above the track's left end, only when rounds are kept.</summary>
+        private Label roundLabel;
         private Button guardButton;
         private static readonly Color GapRoomy = new Color(0.35f, 0.85f, 0.45f), GapTight = new Color(1f, 0.72f, 0.2f), GapNone = new Color(1f, 0.3f, 0.25f);
 
@@ -194,6 +196,27 @@ namespace GridGame.App
             gapLabel.style.top = TrackY + IconSpan / 2f - Space.S8;
             gapLabel.style.display = DisplayStyle.None;
             Fonts.UseHeavy(gapLabel);
+            roundLabel = Ui.Text("", "tiny shadow", frame);
+            roundLabel.name = "tl-round";
+            roundLabel.pickingMode = PickingMode.Ignore;
+            roundLabel.style.position = Position.Absolute;
+            roundLabel.style.top = TrackY - IconSpan / 2f - Space.S8;
+            roundLabel.style.left = XOfU(0f);
+            roundLabel.style.color = Palette.GoldLight;
+            roundLabel.style.display = DisplayStyle.None;
+            Fonts.UseHeavy(roundLabel);
+        }
+
+        /// <summary>GG-T1091 (§2.13.2): the round readout. The view asks <see cref="TurnRules.RoundProgress"/> only (never
+        /// the mode), so it shows nothing in a battle that doesn't keep rounds.</summary>
+        private void SyncRound()
+        {
+            if (roundLabel == null || State == null) return;
+            var r = State.IsOver ? null : TurnRules.RoundProgress(State);
+            roundLabel.style.display = r == null ? DisplayStyle.None : DisplayStyle.Flex;
+            if (r == null) return;
+            roundLabel.text = $"Round {r.Value.Round} · {r.Value.Moved} of {r.Value.Of} moved";
+            roundLabel.style.left = XOfU(0f);
         }
 
         /// <summary>
@@ -204,6 +227,7 @@ namespace GridGame.App
         private void SyncGap(Dictionary<int, float> at, bool overridden)
         {
             if (gapLane == null || State == null) return;
+            SyncRound(); // GG-T1091
             float nextU = 2f;
             foreach (var e in drawn.Values)
                 if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsHero && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u) && u > 0f)

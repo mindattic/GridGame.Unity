@@ -2467,6 +2467,20 @@
         "definition": "Every hero acts once each turn, in any order, before the next foe moves."
       }
     },
+    "glossary:turn_mode_unmoved_this_round": {
+      "key": "glossary:turn_mode_unmoved_this_round",
+      "id": "glossary-turn-mode-unmoved-this-round",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0b28301505a4c94dc7d1ee0f8372753e92263030900c2fc6925152566effa197",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Unmoved this round",
+        "definition": "One hero acts each turn, but only one who hasn't moved yet this round. Once every hero has moved, a new round begins and all of them are free again."
+      }
+    },
     "glossary:turrets": {
       "key": "glossary:turrets",
       "id": "glossary-turrets",
