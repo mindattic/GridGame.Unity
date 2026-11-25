@@ -62,7 +62,8 @@ namespace GridGame.App
                 {
                     bool acted = TurnRules.HasActed(State, unit); // §2.13: the turn mode says who has acted
                     if (!acted && !unit.IsImmobile && !BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds)) { TooLittleTimeCue(); return; } // GG-T311
-                    ShowBanner(acted ? (TurnRules.OneHeroPerTurn(State) ? "The party has acted this turn" : $"{unit.Name} has acted this turn") : $"{unit.Name} can't move"); // GG-T787
+                    ShowBanner(!acted ? $"{unit.Name} can't move" : TurnRules.MovedThisRound(State, unit) ? $"{unit.Name} has moved this round · free again in round {State.Round + 1}" // GG-T800 (§2.13.2)
+                        : TurnRules.OneHeroPerTurn(State) ? "The party has acted this turn" : $"{unit.Name} has acted this turn"); // GG-T787
                     return;
                 }
                 pressing = true;

@@ -200,6 +200,15 @@ namespace GridGame.Core.Battle
             return OneActionPerTurn(s);
         }
 
+        /// <summary>GG-T800 (the battle view, §2.13.2): has <paramref name="hero"/> used its place in the current round?
+        /// Only UnmovedThisRound keeps rounds, so always false elsewhere. The view dims such a hero with the acted check
+        /// until the round resets and refuses its pickup with that reason.</summary>
+        public static bool MovedThisRound(BattleState s, Unit hero)
+        {
+            Require(s);
+            return KeepsRounds(s) && hero.ActedThisRound;
+        }
+
         // ── 2. Whether an action ends the party's turn ─────────────────────────────────────────────
 
         /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window;

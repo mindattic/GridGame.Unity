@@ -549,7 +549,7 @@ namespace GridGame.App
                 v.SetHp(u.Hp, u.MaxHp);
                 v.SetBuffs(u, Colorblind, State.TurnEntryOf(u.Id)?.StunTicks > 0);
                 v.SetPlate(u.Facing, u.PlateHp, u.PlateMax);
-                v.SetActed(u.IsHero && !TurnRules.OneHeroPerTurn(State) && TurnRules.HasActed(State, u)); // GG-T308, §2.13: acted this party turn, as the mode says; GG-T787: no ✓ when the turn is one hero's action
+                v.SetActed(u.IsHero && (TurnRules.OneHeroPerTurn(State) ? TurnRules.MovedThisRound(State, u) : TurnRules.HasActed(State, u))); // GG-T308, §2.13: acted this party turn, as the mode says; GG-T787: no ✓ when the turn is one hero's action; GG-T800: under rounds the ✓ holds until the round resets
                 if (u.IsHero)
                 {
                     var weaponDef = u.WeaponId != null ? App.Content.TryItem(u.WeaponId) : null;
