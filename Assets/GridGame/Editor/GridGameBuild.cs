@@ -85,7 +85,16 @@ namespace GridGame.EditorTools
         }
 
         [MenuItem("GridGame/Build Windows (Development)")]
-        public static void BuildWindowsDev() => Build(BuildTarget.StandaloneWindows64, "Build/Windows/GridGame.exe", true);
+        public static void BuildWindowsDev() => Build(BuildTarget.StandaloneWindows64, ArgValue("-buildOutput") ?? "Build/Windows/GridGame.exe", true);
+
+        /// <summary>The value after <paramref name="flag"/> on the command line, or null (GG-T707: <c>-buildOutput DIR/GridGame.exe</c>
+        /// builds the dev player somewhere else, so a build never has to overwrite Build/Windows while players run from it).</summary>
+        private static string ArgValue(string flag)
+        {
+            var a = System.Environment.GetCommandLineArgs();
+            int i = System.Array.IndexOf(a, flag);
+            return i >= 0 && i + 1 < a.Length ? a[i + 1] : null;
+        }
 
         public static void BuildWindowsRelease() => Build(BuildTarget.StandaloneWindows64, "Build/WindowsRelease/GridGame.exe", false);
 
