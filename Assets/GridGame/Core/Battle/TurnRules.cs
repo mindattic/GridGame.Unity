@@ -32,6 +32,16 @@ namespace GridGame.Core.Battle
     /// may act this round and the round waits for it. Guard uses no hero's place. A new wave resets the round (each wave
     /// opens with every hero free, like its opening window). The marks live on the units and the counter on the state, so
     /// Clone and replay carry them.</para>
+    /// <para>GG-T795 (§2.13.2) per-turn systems under rounds, decided: a round is only who may act, never a unit of time.
+    /// A party turn still spans one enemy arrival (or a cleared wave), so everything GG-T782 kept on party turns stays
+    /// there and nothing counts rounds. Guard spends no hero's place (default no): it gives the turn up and the round waits.
+    /// Guard's Protection (1 Turn, through the enemy turn it skips) and bank (<see cref="GuardCharge"/> on the whole window,
+    /// capped) are unchanged. Mana: pincer and Guard charge and regen are unchanged; the time bank keeps AnyHeroEveryTurn's
+    /// per-action cap (<see cref="MaxTimeBankOrbs"/>), every drop being the turn's only action. Turns buffs, Protection,
+    /// skill cooldowns, Frozen/Sleep/Stun and party tempo tick at each party turn's boundary, for a hero waiting out the
+    /// round too (a cooldown no longer than the party is ready by its next place: the round is the cadence). Rally: a forced
+    /// Guard stacks it, uses no place, and any hero action resets it. The support extra turn is enemy-side and unchanged.
+    /// So no code path asks the mode beyond <see cref="MaxTimeBankOrbs"/>; TurnModeRoundTests pin each answer.</para>
     /// </summary>
     public static class TurnRules
     {
@@ -290,6 +300,7 @@ namespace GridGame.Core.Battle
         /// same cap would pay 3 orbs on every action. It mints at most <see cref="BattleConfig.AnyHeroMaxTimeBankOrbs"/>
         /// (1), about PartyWindow's per-action share. Pincer, Guard and regen charge stay as they are: pincer charge and
         /// spells are both per action, Guard's cap already bounds the one turn it gives up, and regen follows the clock.
+        /// UnmovedThisRound (GG-T795) takes the same per-action cap: one action per party turn there too.
         /// </summary>
         public static int MaxTimeBankOrbs(BattleState s)
         {
