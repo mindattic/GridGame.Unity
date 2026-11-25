@@ -130,7 +130,7 @@ if ($busy) {
 # ── 4. a fix ticket per new failing test ────────────────────────────────────────────────────────────────────
 $filed = @()
 if (-not $NoTickets -and $failing.Count -gt 0) {
-    $open = (tickets ticket list --repo Unity.GridGame --status open --format csv 2>$null) -join "`n"
+    $open = (tickets ticket list --repo GridGame.Unity --status open --format csv 2>$null) -join "`n"
     foreach ($f in $failing | Select-Object -First 25) {
         $short = ($f.Name -split '\.')[-1]
         if ($open -match [regex]::Escape($short)) { continue }

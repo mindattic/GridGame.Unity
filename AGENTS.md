@@ -1,4 +1,4 @@
-# Unity.GridGame — agent entrypoint
+# GridGame.Unity — agent entrypoint
 
 Read the shared protocol at ..\mindattic-agent-standard\AGENTS.md, then this file, then docs/BIBLE.md.
 
