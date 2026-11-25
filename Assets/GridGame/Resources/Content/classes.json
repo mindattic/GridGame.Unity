@@ -4402,10 +4402,10 @@
       "sleep",
       "antidote",
       "poison",
-      "darktemplar_rite",
+      "blackwitch_shadowbolt",
       "darktemplar_gravitywell",
       "deathguard_mana_siphon",
-      "deathguard_venomous_grip",
+      "attrition_bloodletting",
       "deathguard_dark_communion",
       "dark_retribution"
     ],
@@ -4413,7 +4413,7 @@
       "taunt",
       "deathguard_mana_siphon",
       "item:x_potion",
-      "darktemplar_rite",
+      "darktemplar_gravitywell",
       "deathguard_dark_communion"
     ],
     "DropTable": null,
@@ -8276,7 +8276,7 @@
       "antidote",
       "jadeknight_resolve",
       "deathguard_mana_siphon",
-      "deathguard_venomous_grip",
+      "attrition_bloodletting",
       "deathguard_dark_communion",
       "shield_wall",
       "steadfast"
@@ -10145,7 +10145,7 @@
       "silence",
       "quicken",
       "sleep",
-      "monk_peace",
+      "whiteninja_moonlit",
       "skirmishmenders_guardiansrush",
       "skirmishmenders_flowingcurrent",
       "skirmishmenders_coveringwithdrawal",
@@ -10157,7 +10157,7 @@
       "heal",
       "skirmishmenders_guardiansrush",
       "item:x_potion",
-      "monk_peace",
+      "monk_redirectflow",
       "skirmishmenders_coveringwithdrawal"
     ],
     "DropTable": null,
@@ -12934,7 +12934,6 @@
       "sleep",
       "slow",
       "charge_fireball",
-      "redmage_fury",
       "spellblade_quickstrike",
       "spellblade_overchannel",
       "spellblade_followthrough",
@@ -12945,7 +12944,7 @@
       "fireball",
       "spellblade_quickstrike",
       "item:x_potion",
-      "redmage_fury",
+      "firewall",
       "spellblade_followthrough"
     ],
     "DropTable": null,
@@ -13353,7 +13352,6 @@
       "sleep",
       "slow",
       "charge_fireball",
-      "ritualist_bloodrite",
       "hexweaver_festeringmark",
       "hexweaver_curseoffate",
       "hexweaver_bloodharvest",
@@ -13363,7 +13361,7 @@
       "poison",
       "hexweaver_festeringmark",
       "item:x_potion",
-      "ritualist_bloodrite",
+      "hexweaver_curseoffate",
       "hexweaver_bloodharvest"
     ],
     "DropTable": null,
@@ -20157,7 +20155,6 @@
       "steal",
       "teleport",
       "quicken",
-      "vampire_enervate",
       "attrition_bloodletting",
       "attrition_dreadaura",
       "attrition_soulfeast",
@@ -20168,7 +20165,7 @@
       "cleave",
       "attrition_bloodletting",
       "item:x_potion",
-      "vampire_enervate",
+      "attrition_dreadaura",
       "attrition_soulfeast"
     ],
     "DropTable": "vampire",
@@ -22939,7 +22936,7 @@
       "skirmishmenders_guardiansrush",
       "skirmishmenders_flowingcurrent",
       "skirmishmenders_coveringwithdrawal",
-      "herald_rebloom",
+      "inner_calm",
       "mending_touch"
     ],
     "DefaultLoadout": [

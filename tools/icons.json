@@ -1669,6 +1669,10 @@
    "lorc/bleeding-wound",
    "crimson"
   ],
+  "hex_shot": [
+   "lorc/heavy-arrow",
+   "shadow"
+  ],
   "barbarian_earthsplitter": [
    "lorc/quake-stomp",
    "earth"
