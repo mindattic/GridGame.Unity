@@ -4736,6 +4736,8 @@ meaningful but optional share for facilities and summons. A piece repaired over 
 
 ### 25.6.1 Skill trees (content only, GG-T50)
 
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** Talent trees are retired (GG-T1099: `skilltrees.json` is `[]`, `HomeTree` fields are gone from `classes.json`). Kept as history; the live model is [§25.6.7](#2567-the-skill-board-gg-t1023-family).
+
 `Assets/GridGame/Resources/Content/skilltrees.json` → `ContentDb.SkillTrees` (`SkillTreeDef`/`SkillNodeDef`, `Core/Content/ContentModels.cs`): one tree per hero archetype, named by a `ClassDef.HomeTree` id every hero class must set (`ContentLoader.Validate`, same pattern as §25.13's `Role` check). A tree is a small DAG of nodes:
 - `Grants` — the ability or passive id the node would unlock (must resolve in `ContentDb.Abilities`). **Amended 2026-11-06 (GG-T296):** a granted Passive or Reactive (Last Bastion's Counter Attack, Lifesteal, Double Attack, Tough Hide, Regenerate) fights with the hero. `BattleFactory.SpecFor` copies every known Passive/Reactive into `HeroSpec.Passives`; it had dropped them, so these nodes did nothing in battle.
 - `Cost` — skill points to spend on it.
@@ -4788,6 +4790,8 @@ This audit is read-only — no `ClassDef`, `SkillTreeDef` or other content chang
 
 ### 25.6.2 Cross-tree specialization (GG-T51)
 
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** There are no trees to open, no off-tree premium and no adjacency ring; every hero walks one shared lattice and pays the same price per node ([§25.6.7](#2567-the-skill-board-gg-t1023-family)). History only.
+
 **Decided 2026-11-02 (owner, "do" on GG-T51): the home-tree threshold ships.** This replaces the earlier "not decided; nothing here ships" text and the notes on GG-T51, GG-T135 and GG-T167 that called this model undecided or rejected. It is how you get a tank that casts Heal, a rogue that throws Fireball, or a mage in plate. The rules (`Meta.Talents`, tuned in `Meta.TalentConfig`, both in `Assets/GridGame/Meta/Talents.cs`):
 
 - **Opening a second tree, then a third.** A hero can open its first off-tree once it has **10 points in its home tree** (`TalentConfig.OpenTreeAt[0]`) and a second off-tree at **20** (`OpenTreeAt[1]`). The array's length is the cap: two off-trees, three trees in all. "Points in the home tree" is `Talents.PointsIn`, the same sum the node gates use (every unlocked node's `Cost`, starting-kit Known nodes included). `Talents.OffTreeSlots` is how many of those thresholds the hero has met.
@@ -4803,9 +4807,13 @@ All three numbers are static fields, not consts, so a balance pass can retune th
 
 #### 25.6.2.1 Topology history (GG-T83)
 
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** The topology question is settled: one shared hexagonal lattice with six families around it (§25.6.7).
+
 Before the owner's 2026-11-02 decision above, the topology was left open. Topologies tried and set aside: (A) six trees plus a toll-gated bridge (GG-T51/GG-T76; GG-T51's rules above are this option, now adopted); (B) one hex map of six wedges, cost = path length (GG-T79, which also got its own opposite-pair arithmetic wrong); (C) an octagon of the 8 stats; (D) the owner's own archetype wheel of 8 pure plus 8 hybrid archetypes, the closest so far but "not quite right". The two references are FF12's Zodiac License Boards (pick 2 of 12 boards) and FFX's Sphere Grid (one shared lattice, different start points). The full record, including why each was rejected and the later GG-T166/167/168 attempts (GG-T168, stat-threshold unlocks with no board, was awaiting owner review when GG-T51 was adopted instead), is in [`docs/research-skill-map-topology.md`](research-skill-map-topology.md). The GG-T80 audit findings above don't depend on this decision.
 
 #### 25.6.2.2 Archetype adjacency (GG-T135, added 2026-11-02)
+
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** `TreeAdjacency` and its ring are replaced by lattice distance on the board. History only.
 
 Built on §25.6.2's rules, not beside them: the slot thresholds, the scaled gates and Respec are unchanged; adjacency only decides **which** tree a free slot may open and **how much** the flat premium grows. The board (`Meta.TreeAdjacency`, `Assets/GridGame/Meta/TreeAdjacency.cs`) is GG-T79's role-kinship ring with Rogue between its kin (§25.6.1's Rogue note): **Guardian - Warrior - Rogue - Ranger - Alchemist - Mage - Cleric - (Guardian)**. Seven trees, so the farthest any tree is from another is 3 steps.
 
@@ -4818,6 +4826,8 @@ Built on §25.6.2's rules, not beside them: the slot thresholds, the scaled gate
 *(Tests: `TalentTests` — `Every_skill_tree_sits_once_on_the_adjacency_ring`, `Ring_distance_routes_a_warrior_to_mage_through_guardian`, `A_distant_tree_must_be_routed_to_and_costs_more_per_step`. The GG-T51 tests pick the home tree's neighbours first, so they keep testing the flat premium.)*
 
 ### 25.6.3 Talents screen and Inn Respec (GG-T53)
+
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** The Talents sub-tab, `Talents.Unlock` and the tree-point Respec are retired. Abilities > **Board** and the board Inn Respec replace them (§25.6.7); the Inn price (`100 + 50 x level` gold) is kept.
 
 **Amended 2026-11-19 (GG-T435):** the Talents screen is folded into Abilities: it is the **Talents** sub-tab of the Hero screen's Abilities tab (§25.0), the same point counter, Respec button, tree tabs, node graph and detail, with the hero picked on the roster strip. Camp's **Talents** row is gone; the **Heroes** row shows the party's unspent points instead. `SkillTreeScreen` opens the Hero screen there (id `talents`).
 
@@ -4867,6 +4877,8 @@ Owner: heroes get passive/reactive abilities from class kits, skill-tree nodes, 
 **Amended 2026-11-23 (GG-T593): the bots build toward it.** The camp routine spends level-up stat points with `Meta.BotStatSpend` (right after the skill-tree spend, before `FillBars`, so an unlock is bought on the same visit). One point at a time, it picks a **target**: of the hero's own class list, the hero-usable abilities it doesn't know and is locked out of (`Abilities.Unmet`, so kit moves and the guided first skill, being waived, are never targets), **on-build first** (every stat it is short on is one the class's own kit asks for, `BotStatSpend.KitAffinity` = the sum of its kit moves' `Requires`: Barbarian STR, Paladin VIT + WIS + a little STR), then the fewest points away, then the pricier, then class-list order. The point goes into the target's largest shortfall (ties: the stat the kit leans on more, then the stronger `Growth`). With nothing locked left on the class list, points fall back to `StatPoints.BotPick`. So a Barbarian puts its first points into STR for Skull Rattle (STR 3) before any off-build detour into Steal or Mug, and a Paladin unlocks Shield Bash, Heal and Hands of Mercy (STR/VIT/WIS) before Silence's INT, instead of stacking STR (its top growth) and never reaching a WIS ability. Each hero that spent logs one camp line, "<Class> put N stat points into <Stat> n, <Stat> n". *(Tests: `BotStatSpendTests`.)*
 
 ### 25.6.6 Hero families (GG-T971)
+
+**Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** The nine-family taxonomy was the input to the family-tree model (GG-T977), which was never built. The board has six stat-edge families instead (§25.6.7); `families.json` / `ClassDef.Family` are not the board's families. §25.6.6 and §25.6.6.1 stay as the class-grouping record only.
 
 **Added 2026-11-24, owner direction:** "all these characters need to belong to some sort of vague collection of skills, e.g. Thief and Ninja have something in common as do warrior and paladin"; "I would rather 2 similar heroes be able to spec themselves into same moves"; "see how many families it would take, that way you need less unique skills and effects". **Nine families** hold the 69 hero classes. A family is a loose kit, not a story faction (factions.json, GG-T342, is unchanged): classes in one family share skills and effects, so near-duplicate moves between siblings can merge into one family ability (the merge audit, GG-T972) and only a truly signature move stays class-specific.
 
@@ -4982,6 +4994,35 @@ Nothing in battle, progression or the skill trees reads `Family` yet: `HomeTree`
 - The hexweaver spells (Occult) and the hexmender spells (Grace): Poison or Blind on one foe.
 
 *(No tests: docs only.)*
+
+### 25.6.7 The skill board (GG-T1023 family)
+
+**Added 2026-11-25 (GG-T1050).** Design and prototype: `docs/design/skill-hexagon/PLAN.md`. **This section is the live progression model; it supersedes the talent trees and the family tree (§25.6.1 to §25.6.3, §25.6.6).**
+
+**Model.** `Assets/GridGame/Resources/Content/skillhex.json` (`SkillHexDef`) holds one shared axial hex lattice (`Radius` 16) that every hero walks. Each point is a node of `Kind` **Passive** (adds `Stats`, e.g. SPD +2), **Ability** (grants one ability id) or **Open** (a slot with nothing on it yet: never takeable, and no route passes through it). `Core/Rules/SkillHex.cs`: `SkillHexBoard` (lattice, `Neighbors`, `Distance`, `StartOf(classId)`, `CanTake`, `Frontier`, `Price`, `SpCost`, `CheapestRoute`, `StatTotals`) and `SkillHexOwned` (the connected set a hero owns). All pure functions; nothing changes a save.
+- **Families.** Six stat edges of the hexagon, from the file's `Families`: Martial (VIT to STR), Brawn (STR to AGI), Shadow (AGI to SPD), Wild (SPD to WIS), Brains (WIS to INT), Grace (INT to VIT). Not the nine families of §25.6.6.
+- **Start path.** Each hero class has a Start path of nodes it owns on joining (`StartOf`); a recruit starts on its own class path. Four cut classes convert to a kept one: Basher to Bruiser, Operative to Drifter, Technician and Tinkerer to Engineer.
+- **Taking a node.** A takeable node adjacent to one already owned (`CanTake`); the **frontier** is every such node. `Requires` on an ability is a display hint only and gates nothing (§25.6.5).
+- **Cost.** `Costs`: **1 SP** per node, passive or ability (`Price`); `SpCost` of a route sums the nodes not yet owned. **1 SP per level**; per-level stat picks are retired. Planner weights: `CheapestRoute` steps through passives at 1 and through an ability nobody asked for at `PlannerPassThroughAbility` (4), so routes go round unwanted abilities; ties break the same way every time.
+- **Where abilities come from.** Board ability nodes, Tomes (§25.6.4), and the free guided first skill (`Training.Teach`, the Board tab; §25.0.9). Gold Learn is gone.
+
+**Stats.** Six identity stats: **VIT STR AGI SPD WIS INT** (Stamina removed). **Luck** is not a board stat: flat `12 + 0.6 per level` plus gear (GG-T1028). Every hero class has base **8** and growth **0.45** per stat, so classes differ by board path, not by sheet. A hero's stats are its level base plus the sum of its owned passives (`HeroBoard.BoardStats`, via `StatTotals`); gear adds on top in `Unit.Effective`. **Healing scales with INT.** A hero with no saved nodes stands on its class Start path (`HeroBoard.Owned`).
+
+**Saves.** `HeroSave.HexNodes` is the owned set. **v18** drops Stamina stat picks. **v19** places each existing hero on the board with a free route to every ability it already knows and refunds its spent talent points as SP, using the legacy talent cost tables so the refund matches what was paid. `SaveData.CurrentVersion` is 19.
+
+**Screens.**
+- **Abilities > Board** (`SkillHexTab`): the lattice, the hero's owned nodes, its frontier; tap a node for its route preview (path, SP total) and **Buy route**, which takes the route in order.
+- **Party** shows a mini-board per hero.
+- **Status** shows stats as **Base / Board / Gear / Total**.
+- **Inn Respec** (`SkillHexProgress`, gold `100 + 50 x level`): refunds the nodes **off the Start path** (`Refundable`, `RefundPoints`) and forgets their abilities.
+
+**Bots.** `Meta.BoardBot` (the camp routine, MetaBot, balance soaks, auto-manage, HeroBots) replaces `BotStatSpend` and the talent auto-spend. Each roster hero joins the board free, then `PickTarget` picks the ability node with the best `Value` (what the party is short of: Heal, Cleanse, Damage, Area, Support, Control; `Importance / (1 + abilities already covering it)`, plus `BaseValue` 0.5) per planner cost, and `Spend` walks `CheapestRoute` one node at a time with banked SP, banking the rest. Deterministic per seed; the seed only breaks ties.
+
+**Retired with it.** Talent trees (GG-T1099: content and `HomeTree` data removed), stat picks, the Talents sub-tab, Stamina.
+
+**Open.** GG-T1054: the Wild hero has 22 Open slots and auto-picked signatures, awaiting an owner decision.
+
+*(Tests: `SkillHexRuntimeTests`, `SkillHexLoaderTests`, `SkillHexProgressTests`, `BoardRulesTests`, `HexBoardMigrationTests`.)*
 
 ### 25.7 Shared Camp utilities
 
