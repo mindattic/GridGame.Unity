@@ -456,10 +456,11 @@ namespace GridGame.App
     {
         private int slot;
         private int tab = -1;
-        private readonly TalentsTab talents = new TalentsTab();
-        /// <summary>The Talents sub-tab's index (after Known, Items, Learn, Passives, Locked).</summary>
+        private readonly SkillHexTab talents = new SkillHexTab();
+        /// <summary>The Board sub-tab's index (after Known, Items, Learn, Passives, Locked): the skill hexagon (GG-T1056),
+        /// in place of the old Talents skill trees; its id stays "talents".</summary>
         public const int TalentsSub = 5;
-        private static readonly string[] SubTabs = { "Known", "Items", "Learn", "Passives", "Locked", "Talents" };
+        private static readonly string[] SubTabs = { "Known", "Items", "Learn", "Passives", "Locked", "Board" };
 
         public AbilitiesTab(int subTab = -1) { tab = subTab; }
         public override void OnHeroChanged() => talents.OnHeroChanged();
