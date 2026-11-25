@@ -2878,7 +2878,7 @@ namespace GridGame.Meta
         /// earlier JoinHero effects of the same dialogue.</summary>
         public static string StoryPick(ContentDb c, SaveData s, string preferred, string role, ICollection<string> exclude = null)
         {
-            bool Free(ClassDef d) => d != null && d.Team == Team.Hero && !Progression.IsLead(d.Id) && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && (exclude == null || !exclude.Contains(d.Id));
+            bool Free(ClassDef d) => d != null && d.Team == Team.Hero && !d.IsCut && !Progression.IsLead(d.Id) && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && (exclude == null || !exclude.Contains(d.Id));
             if (preferred != null && Free(c.TryClass(preferred))) return preferred;
             var guests = new HashSet<string>(c.Stages.Values.SelectMany(st => st.Waves).SelectMany(w => w.Guests).Select(g => g.Class));
             var pool = c.Classes.Values.Where(d => Free(d) && !c.Summon.Pool.Contains(d.Id) && !guests.Contains(d.Id))

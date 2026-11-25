@@ -891,6 +891,7 @@ namespace GridGame.Meta
                 if (merged > 0) Notes.Add($"{merged} merged ability id(s) rewritten to the abilities they became (GG-T973)");
             }
             if (c != null) DropRetiredHeroes(s, c);
+            if (c != null) ConvertCutHeroes(s, c);
             if (c != null) EnsureLead(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             JoinNewKeepers(s);
@@ -924,23 +925,95 @@ namespace GridGame.Meta
                 var h = s.Roster[i];
                 if (h == null) { s.Roster.RemoveAt(i); continue; }
                 if (h.ClassId != null && c.TryClass(h.ClassId) != null) continue;
-                try
-                {
-                    h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();
-                    h.Jewelry ??= new Dictionary<EquipmentSlot, string>();
-                    var slots = new List<EquipmentSlot> { EquipmentSlot.Weapon };
-                    slots.AddRange(h.Armor.Keys);
-                    slots.AddRange(h.Jewelry.Keys);
-                    foreach (var slot in slots)
-                    {
-                        try { Equipment.Unequip(c, s, h, slot); }
-                        catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't return {slot} gear ({e.Message})"); }
-                    }
-                }
-                catch (Exception e) { Notes.Add($"retired hero '{h.ClassId}': couldn't clear its gear ({e.Message})"); }
+                ReturnGear(s, c, h, "retired hero");
                 s.Roster.RemoveAt(i);
                 s.Party?.RemoveAll(id => string.Equals(id, h.ClassId, StringComparison.OrdinalIgnoreCase));
                 Notes.Add($"hero class '{h.ClassId ?? "(none)"}' no longer exists; removed from the roster, gear returned to the bag");
+            }
+        }
+
+        /// <summary>Takes every piece a leaving hero wears off into the bag, with its wear (GG-T531, GG-T1064). Never throws.</summary>
+        private static void ReturnGear(SaveData s, ContentDb c, HeroSave h, string who)
+        {
+            try
+            {
+                h.Armor ??= new Dictionary<EquipmentSlot, EquippedArmor>();
+                h.Jewelry ??= new Dictionary<EquipmentSlot, string>();
+                var slots = new List<EquipmentSlot> { EquipmentSlot.Weapon };
+                slots.AddRange(h.Armor.Keys);
+                slots.AddRange(h.Jewelry.Keys);
+                foreach (var slot in slots)
+                {
+                    try { Equipment.Unequip(c, s, h, slot); }
+                    catch (Exception e) { Notes.Add($"{who} '{h.ClassId}': couldn't return {slot} gear ({e.Message})"); }
+                }
+            }
+            catch (Exception e) { Notes.Add($"{who} '{h.ClassId}': couldn't clear its gear ({e.Message})"); }
+        }
+
+        /// <summary>GG-T1064: a hero of a class cut from the roster (<see cref="ClassDef.IsCut"/>, GG-T1037) becomes its
+        /// <see cref="ClassDef.CutInto"/> hero. When the save doesn't own that hero yet, the cut hero's place in the roster
+        /// and party goes to a new one at the same experience: trained to its level, every skill point it has earned
+        /// unspent (the old class's abilities and board don't carry over), the same look. When it does, the cut hero's
+        /// experience folds into it (with the skill points those levels bring) and the cut hero leaves. Either way its gear
+        /// goes back to the bag with its wear, and the party, Permadeath and Codex follow the new id (the cut class keeps
+        /// its Codex entry). Idempotent: a save with no cut hero is untouched. Never throws.</summary>
+        public static void ConvertCutHeroes(SaveData s, ContentDb c)
+        {
+            if (s?.Roster == null || c == null) return;
+            for (int i = s.Roster.Count - 1; i >= 0; i--)
+            {
+                var h = s.Roster[i];
+                var def = h?.ClassId == null ? null : c.TryClass(h.ClassId);
+                if (def == null || !def.IsCut) continue;
+                var into = c.TryClass(def.CutInto);
+                if (into == null || into.Team != Team.Hero || into.IsCut)
+                {
+                    Notes.Add($"cut hero '{h.ClassId}': CutInto '{def.CutInto}' is not a hero in play; left as it is");
+                    continue;
+                }
+                string from = h.ClassId, to = into.Id;
+                try
+                {
+                    ReturnGear(s, c, h, "cut hero");
+                    var owned = s.Hero(to);
+                    if (owned != null)
+                    {
+                        int before = Progression.Level(owned);
+                        owned.TotalXp += Math.Max(0, h.TotalXp);
+                        owned.SkillPoints += Formulas.SkillPointsForLevelUp(before, Progression.Level(owned));
+                        s.Roster.RemoveAt(i);
+                        Notes.Add($"cut hero '{from}' folded into {into.Name} (experience kept, gear returned to the bag, GG-T1064)");
+                    }
+                    else
+                    {
+                        var nh = Progression.NewHero(c, to);
+                        nh.TotalXp = Math.Max(0, h.TotalXp);
+                        nh.SkillPoints += Formulas.SkillPointsForLevelUp(1, Progression.Level(nh));
+                        nh.Variant = h.Variant;
+                        nh.VariantPending = h.VariantPending;
+                        Progression.TrainTo(c, nh);
+                        s.Roster[i] = nh;
+                        Codex.UnlockHero(s, nh);
+                        Notes.Add($"cut hero '{from}' became {into.Name} (experience kept, gear returned to the bag, GG-T1064)");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Notes.Add($"couldn't convert cut hero '{from}': {e.Message}");
+                    continue;
+                }
+                if (s.Party != null)
+                {
+                    bool inParty = s.Party.Exists(id => string.Equals(id, to, StringComparison.OrdinalIgnoreCase));
+                    for (int p = s.Party.Count - 1; p >= 0; p--)
+                    {
+                        if (!string.Equals(s.Party[p], from, StringComparison.OrdinalIgnoreCase)) continue;
+                        if (inParty) s.Party.RemoveAt(p);
+                        else { s.Party[p] = to; inParty = true; }
+                    }
+                }
+                if (s.LostGuests != null && s.LostGuests.Remove(from)) s.LostGuests.Add(to);
             }
         }
 
