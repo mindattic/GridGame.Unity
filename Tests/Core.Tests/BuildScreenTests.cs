@@ -137,8 +137,8 @@ namespace GridGame.Tests
         private static ContentDb FamilyDb()
         {
             var db = TreeDb();
-            db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", Primary = "Agility", Secondary = "Speed", Ring = 1 });
-            db.Families.Add(new FamilyDef { Id = "martial", Name = "Martial", Theme = "t", Primary = "Vitality", Secondary = "Stamina", Ring = 2 });
+            db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", From = "AGI", To = "SPD", Ring = 1 });
+            db.Families.Add(new FamilyDef { Id = "martial", Name = "Martial", Theme = "t", From = "VIT", To = "STR", Ring = 2 });
             foreach (var id in new[] { "steal", "smoke", "guard_up", "pickpocket" })
                 db.Abilities[id] = new AbilityDef { Id = id, Name = id, Kind = AbilityKind.Skill };
             db.SkillTrees["shadow"] = new SkillTreeDef

@@ -20,7 +20,7 @@ namespace GridGame.Tests
         private static ContentDb Fixture()
         {
             var db = new ContentDb();
-            db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", Primary = "Agility", Secondary = "Luck", Ring = 1 });
+            db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", From = "AGI", To = "INT", Ring = 1 });
             db.Classes["thief"] = new ClassDef { Id = "thief", Name = "Thief", Team = Team.Hero, Family = "shadow", HomeTree = "shadow",
                 DefaultLoadout = { "steal" }, StartNodes = { "t_root", "t_steal" }, Abilities = { "steal", "star_rain", "vanish" } };
             db.Classes["ninja"] = new ClassDef { Id = "ninja", Name = "Ninja", Team = Team.Hero, Family = "shadow", HomeTree = "shadow",

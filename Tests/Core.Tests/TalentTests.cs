@@ -336,7 +336,7 @@ namespace GridGame.Tests
             foreach (var (id, ring) in families)
             {
                 string name = char.ToUpperInvariant(id[0]) + id.Substring(1);
-                c.Families.Add(new FamilyDef { Id = id, Name = name, Theme = "t", Primary = "Strength", Secondary = "Vitality", Ring = ring });
+                c.Families.Add(new FamilyDef { Id = id, Name = name, Theme = "t", From = "STR", To = "VIT", Ring = ring });
                 var t = new SkillTreeDef { Id = id, Name = name };
                 t.Nodes.Add(FamilyNode(c, id + "_root", 1, 0));
                 t.Nodes.Add(FamilyNode(c, id + "_gate", 1, 4));

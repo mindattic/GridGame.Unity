@@ -132,7 +132,7 @@
       "Sfx": "battle.glug"
     },
     "HomeTree": "cleric",
-    "Family": "grace"
+    "Family": "brains"
   },
   {
     "Id": "assassain",
@@ -412,7 +412,7 @@
       "Sfx": "battle.warcry"
     },
     "HomeTree": "warrior",
-    "Family": "brawn",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -1180,7 +1180,7 @@
       "Sfx": "element.arcane"
     },
     "HomeTree": "mage",
-    "Family": "occult",
+    "Family": "brains",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -2988,7 +2988,7 @@
       "Sfx": "battle.dash"
     },
     "HomeTree": "alchemist",
-    "Family": "arcane"
+    "Family": "brains"
   },
   {
     "Id": "cyberzombie00",
@@ -4452,7 +4452,7 @@
       "Sfx": "battle.taunt"
     },
     "HomeTree": "guardian",
-    "Family": "occult",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -4596,7 +4596,7 @@
       "Sfx": "battle.taunt"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -4849,7 +4849,7 @@
       "Sfx": "battle.whoosh"
     },
     "HomeTree": "alchemist",
-    "Family": "arcane"
+    "Family": "wild"
   },
   {
     "Id": "doctor",
@@ -4989,7 +4989,7 @@
       "Sfx": "battle.heal"
     },
     "HomeTree": "cleric",
-    "Family": "grace"
+    "Family": "brains"
   },
   {
     "Id": "drifter",
@@ -5124,7 +5124,7 @@
       "Sfx": "battle.whoosh"
     },
     "HomeTree": "mage",
-    "Family": "machina",
+    "Family": "brains",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -5265,7 +5265,7 @@
       "Sfx": "battle.crit"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -5409,7 +5409,7 @@
       "Sfx": "battle.powerup"
     },
     "HomeTree": "alchemist",
-    "Family": "machina"
+    "Family": "brains"
   },
   {
     "Id": "fencer",
@@ -5540,7 +5540,7 @@
       "Sfx": "battle.clang"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -7462,7 +7462,7 @@
       "Sfx": "battle.whoosh"
     },
     "HomeTree": "rogue",
-    "Family": "shadow",
+    "Family": "wild",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -8073,7 +8073,7 @@
       "Sfx": "element.arcane"
     },
     "HomeTree": "mage",
-    "Family": "arcane",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -8336,7 +8336,7 @@
       "Sfx": "battle.clang"
     },
     "HomeTree": "guardian",
-    "Family": "occult",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -8479,7 +8479,7 @@
       "Sfx": "battle.clang"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -8615,7 +8615,7 @@
       "Sfx": "battle.dash"
     },
     "HomeTree": "rogue",
-    "Family": "blade",
+    "Family": "wild",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -9104,7 +9104,7 @@
       "Sfx": "element.lightning"
     },
     "HomeTree": "alchemist",
-    "Family": "machina"
+    "Family": "brains"
   },
   {
     "Id": "mannequin",
@@ -10213,7 +10213,7 @@
       "Sfx": "battle.channel"
     },
     "HomeTree": "cleric",
-    "Family": "grace"
+    "Family": "shadow"
   },
   {
     "Id": "mountaintroll",
@@ -10469,7 +10469,7 @@
       "Sfx": "battle.clang"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -10723,7 +10723,7 @@
       "Sfx": "battle.crit"
     },
     "HomeTree": "rogue",
-    "Family": "shadow",
+    "Family": "wild",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -10864,7 +10864,7 @@
       "Sfx": "battle.whoosh"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -11359,7 +11359,7 @@
       "Sfx": "element.lightning"
     },
     "HomeTree": "mage",
-    "Family": "machina",
+    "Family": "brains",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -11500,7 +11500,7 @@
       "Sfx": "battle.powerup"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -11642,7 +11642,7 @@
       "Sfx": "battle.slide"
     },
     "HomeTree": "warrior",
-    "Family": "brawn",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -11899,7 +11899,7 @@
       "Sfx": "battle.crit"
     },
     "HomeTree": "rogue",
-    "Family": "brawn",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -12752,7 +12752,7 @@
       "Sfx": "battle.pickup"
     },
     "HomeTree": "rogue",
-    "Family": "brawn",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -13013,7 +13013,7 @@
       "Sfx": "battle.orb"
     },
     "HomeTree": "mage",
-    "Family": "arcane",
+    "Family": "brains",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -13435,7 +13435,7 @@
       "Sfx": "battle.channel"
     },
     "HomeTree": "mage",
-    "Family": "occult",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Arcane"
     ]
@@ -13576,7 +13576,7 @@
       "Sfx": "battle.whoosh"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -13724,7 +13724,7 @@
       "Sfx": "battle.heal"
     },
     "HomeTree": "cleric",
-    "Family": "grace"
+    "Family": "brains"
   },
   {
     "Id": "sandmaw",
@@ -14093,7 +14093,7 @@
       "Sfx": "battle.clang"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -14234,7 +14234,7 @@
       "Sfx": "battle.powerup"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -14867,7 +14867,7 @@
       "Sfx": "element.poison"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -15936,7 +15936,7 @@
       "Sfx": "battle.dash"
     },
     "HomeTree": "rogue",
-    "Family": "shadow",
+    "Family": "wild",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -17048,7 +17048,7 @@
       "Sfx": "battle.crit"
     },
     "HomeTree": "warrior",
-    "Family": "blade",
+    "Family": "brawn",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -17183,7 +17183,7 @@
       "Sfx": "battle.taunt"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -17679,7 +17679,7 @@
       "Sfx": "battle.pickup"
     },
     "HomeTree": "alchemist",
-    "Family": "machina"
+    "Family": "brains"
   },
   {
     "Id": "templar00",
@@ -18659,7 +18659,7 @@
       "Sfx": "battle.orb"
     },
     "HomeTree": "alchemist",
-    "Family": "machina"
+    "Family": "brains"
   },
   {
     "Id": "toad00",
@@ -20260,7 +20260,7 @@
       "Sfx": "status.sleep"
     },
     "HomeTree": "warrior",
-    "Family": "occult",
+    "Family": "grace",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -20516,7 +20516,7 @@
       "Sfx": "battle.warcry"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],
@@ -20785,7 +20785,7 @@
       "Sfx": "battle.heal"
     },
     "HomeTree": "cleric",
-    "Family": "grace"
+    "Family": "wild"
   },
   {
     "Id": "whitewitch",
@@ -22408,7 +22408,7 @@
       "Sfx": "element.arcane"
     },
     "HomeTree": "ranger",
-    "Family": "wild",
+    "Family": "shadow",
     "WeaponProficiencies": [
       "Martial"
     ]
@@ -22914,7 +22914,7 @@
       "Sfx": "battle.crit"
     },
     "HomeTree": "alchemist",
-    "Family": "wild"
+    "Family": "brains"
   },
   {
     "Id": "herald",
@@ -23188,7 +23188,7 @@
       "Sfx": "battle.pincer"
     },
     "HomeTree": "alchemist",
-    "Family": "arcane"
+    "Family": "brains"
   },
   {
     "Id": "harpy01",
@@ -28997,7 +28997,7 @@
       "Sfx": "battle.warcry"
     },
     "HomeTree": "guardian",
-    "Family": "vanguard",
+    "Family": "martial",
     "WeaponProficiencies": [
       "Martial"
     ],

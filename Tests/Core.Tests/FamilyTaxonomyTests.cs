@@ -19,11 +19,12 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Real_content_has_nine_families_and_every_hero_is_in_one()
+        public void Real_content_has_the_six_hex_families_and_every_hero_is_in_one()
         {
             var db = Real;
             Assert.That(db.FamiliesFileMissing, Is.False);
-            Assert.That(db.Families.Count, Is.EqualTo(9));
+            Assert.That(db.Families.Count, Is.EqualTo(6));
+            Assert.That(db.Families.OrderBy(f => f.Ring).Select(f => f.Id), Is.EqualTo(db.SkillHex.Families.Select(f => f.Id)), "GG-T1060: the hex families in ring order");
             Assert.That(FamilyProblems(db), Is.Empty);
             var heroes = db.Classes.Values.Where(c => c.Team == Team.Hero).ToList();
             Assert.That(heroes.Sum(c => 1), Is.EqualTo(db.Families.Sum(f => db.FamilyMembers(f.Id).Count)));
@@ -36,7 +37,7 @@ namespace GridGame.Tests
         {
             var db = Real;
             Assert.That(db.FamilyOf("thief").Id, Is.EqualTo(db.FamilyOf("blackninja").Id), "Thief and Ninja");
-            Assert.That(db.FamilyOf("knight").Id, Is.EqualTo(db.FamilyOf("paladin").Id), "Knight and Paladin");
+            Assert.That(db.FamilyOf("knight").Id, Is.EqualTo(db.FamilyOf("defender").Id), "Knight and Defender");
         }
 
         [Test]
@@ -55,8 +56,8 @@ namespace GridGame.Tests
             db.Classes["c"] = new ClassDef { Id = "c", Team = Team.Hero, Family = "f2" };
             db.Classes["d"] = new ClassDef { Id = "d", Team = Team.Hero, Family = "f2" };
             db.Classes["slime"] = new ClassDef { Id = "slime", Team = Team.Enemy };
-            db.Families.Add(new FamilyDef { Id = "f1", Name = "One", Theme = "t", Primary = "Strength", Secondary = "Vitality", Ring = 1 });
-            db.Families.Add(new FamilyDef { Id = "f2", Name = "Two", Theme = "t", Primary = "Agility", Secondary = "Speed", Ring = 2 });
+            db.Families.Add(new FamilyDef { Id = "f1", Name = "One", Theme = "t", From = "STR", To = "VIT", Ring = 1 });
+            db.Families.Add(new FamilyDef { Id = "f2", Name = "Two", Theme = "t", From = "AGI", To = "SPD", Ring = 2 });
             return db;
         }
 
@@ -94,7 +95,7 @@ namespace GridGame.Tests
         public void An_empty_family_and_an_unjustified_lone_member_are_reported()
         {
             var db = Mini();
-            db.Families.Add(new FamilyDef { Id = "f3", Name = "Three", Theme = "t", Primary = "Wisdom", Secondary = "Luck", Ring = 3 });
+            db.Families.Add(new FamilyDef { Id = "f3", Name = "Three", Theme = "t", From = "WIS", To = "INT", Ring = 3 });
             Assert.That(FamilyProblems(db).Single(), Does.Contain("family f3: no hero class belongs to it"));
             db.Classes["d"].Family = "f3";
             var p = FamilyProblems(db);
@@ -109,16 +110,16 @@ namespace GridGame.Tests
         public void Bad_ids_stats_and_ring_slots_are_reported()
         {
             var db = Mini();
-            db.Families[1].Primary = "Str";
+            db.Families[1].From = "Str";
             db.Families[1].Ring = 1;
-            db.Families.Add(new FamilyDef { Id = "f1", Name = "", Theme = "", Primary = "Luck", Secondary = "Luck", Ring = 9 });
+            db.Families.Add(new FamilyDef { Id = "f1", Name = "", Theme = "", From = "INT", To = "INT", Ring = 9 });
             var p = FamilyProblems(db);
-            Assert.That(p, Has.Some.Contains("family f2: unknown Primary stat 'Str'"));
+            Assert.That(p, Has.Some.Contains("family f2: unknown From stat 'Str'"));
             Assert.That(p, Has.Some.Contains("family f2: Ring 1 already taken"));
             Assert.That(p, Has.Some.Contains("family f1: duplicate id"));
             Assert.That(p, Has.Some.Contains("family f1: needs a Name"));
             Assert.That(p, Has.Some.Contains("family f1: needs a Theme line"));
-            Assert.That(p, Has.Some.Contains("family f1: Primary and Secondary are the same stat"));
+            Assert.That(p, Has.Some.Contains("family f1: From and To are the same stat"));
             Assert.That(p, Has.Some.Contains("family f1: Ring 9 outside 1..3"));
         }
     }
