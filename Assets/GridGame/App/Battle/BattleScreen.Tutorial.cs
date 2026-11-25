@@ -36,6 +36,11 @@ namespace GridGame.App
             /// <summary>GG-T1095 (§2.13.2): the lesson's text when the battle keeps rounds (<see cref="TurnRules.HasRounds"/>),
             /// for a lesson whose <see cref="TextOneHero"/> lets the same hero act again; wins over <see cref="TextOneHero"/>.</summary>
             public string TextRound;
+            /// <summary>GG-T815 (§2.13.3): the lesson's text when heroes ride the timeline on their own icons
+            /// (<see cref="TurnRules.HeroesOnTimeline"/>); wins over <see cref="TextRound"/> and <see cref="TextOneHero"/>.</summary>
+            public string TextHeroTimeline;
+            /// <summary>GG-T815: the popup's lines under HeroTimeline, for a lesson whose <see cref="Short"/> would mislead there.</summary>
+            public string ShortHeroTimeline;
             /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board.</summary>
@@ -94,6 +99,7 @@ namespace GridGame.App
                 Text = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each hero acts once before that enemy does, sharing the time — what one hero leaves, the next can use, and pushing the enemy back buys more. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 TextOneHero = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn; pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 TextRound = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero who hasn't moved this round acts, and that action is the party's whole turn; once every hero has moved, a new round frees them all. Pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
+                TextHeroTimeline = "Each hero has its own icon on the timeline, and only the hero whose icon reached the left edge acts: that one action is its whole turn. Picking it up starts the clock: the bar under it drains until the next icon, a foe's or another hero's, reaches the left edge, then the hero drops where it is. Pushing a foe back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 Example = "Example: lift a hero, then drag it off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
@@ -136,6 +142,7 @@ namespace GridGame.App
                 Marks = b => b.BuffMarks() },
             new Lesson { Id = "timeline", Title = "The timeline", Wave = 2, Patience = 3,
                 Short = "Time moves only when you act. Icons flow left, and whoever reaches the left edge acts. Speed decides who gets there first.",
+                TextHeroTimeline = "Time moves only when you act. Every hero and foe has an icon that flows left; whoever reaches the left edge acts, and a hero's icon arriving makes it that hero's turn. Speed sets where each icon enters. Spells ride the bar from their cast time. Pincers and Pushback skills shove a foe back anywhere on the bar. GUARD gives up the acting hero's turn, shielded.",
                 Text = "Time moves only when you act. Icons flow left; whoever reaches the left edge acts. The big diamond on the left shows who is next, ringed gold on the bar and on the board, and a foe glows (icon and tile alike) in its last 3 seconds. Spells ride the bar from their cast time. Pincers and Pushback skills shove a foe back anywhere on the bar. GUARD skips ahead with everyone shielded.",
                 Example = "Example: pincer the gold-ringed foe before it reaches the left edge.",
                 Done = (b, c, e) => e.Exists(x => x is PushedBackEvent),
@@ -149,6 +156,8 @@ namespace GridGame.App
             new Lesson { Id = "guard", Title = "Guard", Wave = 3, Patience = 2,
                 Short = "GUARD gives up the party's turn: time skips to the next enemy with every hero shielded. Use it when there's no good move or no time.",
                 Text = "GUARD gives up what is left of the party's turn: the clock skips to the next enemy turn with every hero shielded. Use it when there is no good move, or when the gap before the next enemy is too short for any action.",
+                ShortHeroTimeline = "GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Use it when there's no good move or no time.",
+                TextHeroTimeline = "GUARD gives up the acting hero's turn: that hero is shielded and the clock runs on to the next hero's icon, foes acting on the way. Use it when there is no good move, or when the gap before the next icon is too short for any action.",
                 Example = "Example: tap GUARD at the top right.",
                 Done = (b, c, e) => c is ShieldCommand,
                 Marks = b => b.GuardMarks() },
@@ -222,9 +231,12 @@ namespace GridGame.App
         private void NextLesson() => AdvanceTutorial(TutorialStep + 1);
 
         /// <summary>GG-T788 (§2.13.1): a lesson's full text for this battle's turn mode, as <see cref="TurnRules"/> says it is.
-        /// GG-T1095 (§2.13.2): under rounds, <see cref="Lesson.TextRound"/> first.</summary>
+        /// GG-T1095 (§2.13.2): under rounds, <see cref="Lesson.TextRound"/> first. GG-T815 (§2.13.3): under HeroTimeline,
+        /// <see cref="Lesson.TextHeroTimeline"/> before either (the other lessons' marks already go through MayAct/CanMove,
+        /// which only the active hero passes, so a lesson simply waits for a hero whose turn it is).</summary>
         private string LessonText(Lesson l)
         {
+            if (l.TextHeroTimeline != null && TurnRules.HeroesOnTimeline(State)) return l.TextHeroTimeline; // GG-T815 (§2.13.3)
             if (l.TextRound != null && TurnRules.HasRounds(State)) return l.TextRound;
             return l.TextOneHero != null && TurnRules.OneHeroPerTurn(State) ? l.TextOneHero : l.Text;
         }
@@ -386,7 +398,7 @@ namespace GridGame.App
                 Id = "battle-" + l.Id,
                 Kicker = $"Lesson {step + 1} of {Lessons.Length}",
                 Title = l.Title,
-                Text = l.Short ?? LessonText(l),
+                Text = (l.ShortHeroTimeline != null && TurnRules.HeroesOnTimeline(State) ? l.ShortHeroTimeline : l.Short) ?? LessonText(l), // GG-T815
                 Image = "Tutorial/" + l.Id,
                 Steps = marks,
                 SkipPopup = popupDone,
@@ -430,7 +442,9 @@ namespace GridGame.App
             var s = App.Save;
             if (Coach.Pending(s, "battle-guard") && BattleEngine.TooLittleTime(State))
             {
-                RunSystem("battle-guard", "Guard", "Too little time for any hero to act before the next enemy. GUARD gives the turn up with every hero shielded.", GuardMarks());
+                RunSystem("battle-guard", "Guard", TurnRules.HeroesOnTimeline(State) // GG-T815 (§2.13.3): Guard shields only the acting hero
+                    ? "Too little time for this hero to act before the next icon. GUARD gives its turn up, shielded."
+                    : "Too little time for any hero to act before the next enemy. GUARD gives the turn up with every hero shielded.", GuardMarks());
                 return;
             }
             if (Coach.Pending(s, "battle-potion") && PotionPick() is (Unit hero, int slot))
