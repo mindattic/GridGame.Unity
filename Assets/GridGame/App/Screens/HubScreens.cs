@@ -266,26 +266,33 @@ namespace GridGame.App
             Ui.Caption($"Next: {GridGame.Core.Rules.Formulas.XpToNext(lvl) - into} XP  ·  Skill points: {h.SkillPoints}", stats, "dim");
 
             // GG-T48: base (pre-gear) vs. gear-bought vs. total, instead of just the effective total.
-            var baseStats = u.LevelStats;
+            // GG-T1043: the skill hexagon's owned passives get their own Board column (they were folded into Base).
+            var board = HeroBoard.BoardStats(C, h);
+            var withBoard = u.LevelStats; // the preview's level stats already carry the board bonus (BattleFactory.SpecFor)
+            var baseStats = withBoard + board * -1f;
             var eff = u.Effective;
             var statHead = Ui.El("row", stats);
+            statHead.name = "status-stat-head";
             Ui.Caption("", statHead).style.width = Size.Column;
             Ui.Caption("Base", statHead, "dim").style.width = Size.ColumnS;
+            Ui.Caption("Board", statHead, "dim").style.width = Size.ColumnS;
             Ui.Caption("Gear", statHead, "dim").style.width = Size.ColumnS;
             Ui.Caption("Total", statHead, "dim").style.width = Size.Column;
-            void Stat(string n, float b, float t)
+            void Delta(VisualElement r, float d) =>
+                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = Size.ColumnS;
+            void Stat(string n, float b, float bb, float t)
             {
                 var r = Ui.El("row", stats);
                 Ui.Caption(n, r, "dim").style.width = Size.Column;
                 Ui.Caption($"{b:0}", r, "dim").style.width = Size.ColumnS;
-                float d = t - b;
-                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = Size.ColumnS;
+                Delta(r, bb - b);
+                Delta(r, t - bb);
                 Ui.Name($"{t:0}", r).style.width = Size.Column;
             }
-            Stat("STR", baseStats.Strength, eff.Strength); Stat("VIT", baseStats.Vitality, eff.Vitality);
-            Stat("AGI", baseStats.Agility, eff.Agility); Stat("SPD", baseStats.Speed, eff.Speed);
-            Stat("INT", baseStats.Intelligence, eff.Intelligence); Stat("WIS", baseStats.Wisdom, eff.Wisdom);
-            Stat("LCK", baseStats.Luck, eff.Luck);
+            Stat("STR", baseStats.Strength, withBoard.Strength, eff.Strength); Stat("VIT", baseStats.Vitality, withBoard.Vitality, eff.Vitality);
+            Stat("AGI", baseStats.Agility, withBoard.Agility, eff.Agility); Stat("SPD", baseStats.Speed, withBoard.Speed, eff.Speed);
+            Stat("INT", baseStats.Intelligence, withBoard.Intelligence, eff.Intelligence); Stat("WIS", baseStats.Wisdom, withBoard.Wisdom, eff.Wisdom);
+            Stat("LCK", baseStats.Luck, withBoard.Luck, eff.Luck);
 
             Ui.Section("Gear", sheet);
             void G(string label, string id, int dur = -1, int repairs = 0, float mastery = 1f, string enchant = null)
@@ -319,9 +326,10 @@ namespace GridGame.App
 
             var abilitiesBlock = Ui.El("col", sheet);
             abilitiesBlock.name = "status-known-abilities";
-            Ui.Section($"Known abilities ({h.Known.Count})", abilitiesBlock);
-            if (h.Known.Count == 0) Ui.Para("None learned yet.", abilitiesBlock, "dim");
-            foreach (var id in h.Known)
+            var ownedAbilities = HeroBoard.OwnedAbilities(C, h); // GG-T1043: known, or on an owned skill hexagon node
+            Ui.Section($"Known abilities ({ownedAbilities.Count})", abilitiesBlock);
+            if (ownedAbilities.Count == 0) Ui.Para("None learned yet.", abilitiesBlock, "dim");
+            foreach (var id in ownedAbilities)
             {
                 var a = C.TryAbility(id);
                 if (a == null) continue;
@@ -541,10 +549,12 @@ namespace GridGame.App
             if (tab == 0)
             {
                 int ownedOrbs = ManaOrbs.Owned(C, S); // GG-T677: a spell costing more orbs than you hold can't be cast yet
-                foreach (var id in h.Known)
+                // GG-T1043: the bar picks from the abilities the hero owns (known, or on its owned skill hexagon nodes) —
+                // only the ones it can fire (skills and spells); passives work from the Passives tab, not a slot.
+                foreach (var id in HeroBoard.OwnedAbilities(C, h))
                 {
                     var a = C.TryAbility(id);
-                    if (a == null) continue;
+                    if (a == null || !Abilities.IsHeroUsable(a)) continue;
                     bool shortOrbs = a.Kind == AbilityKind.Spell && a.Cost > ownedOrbs;
                     string value = shortOrbs ? $"{KindLabel(a)} · needs {a.Cost} orbs, you have {ownedOrbs}" : KindLabel(a);
                     var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, Art.AbilityIcon(a), slot < unlocked);

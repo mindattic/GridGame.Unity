@@ -2689,7 +2689,7 @@ namespace GridGame.Meta
                     if (w == null || w.Slot != EquipmentSlot.Weapon) return Result.Fail("Not a weapon");
                     if (s.Count(w.Id) < 1) return Result.Fail("You need a spare one in your bag");
                 }
-                else if (!h.Known.Contains(entry)) return Result.Fail("Not learned");
+                else if (!HeroBoard.OwnsAbility(c, h, entry)) return Result.Fail("Not learned"); // known, or on an owned board node (GG-T1043)
                 int dup = h.Bar.IndexOf(entry);
                 if (dup >= 0 && dup != slot) h.Bar[dup] = null;
             }
