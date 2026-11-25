@@ -12,12 +12,13 @@
 <div class="wrap">
   <header>
     <h1>Skill Hexagon</h1>
-    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Switch the mode to edit the board or a hero's start path, then save the board back over <code id="savepath"></code> and run <code>python tools/skillhex/sync.py</code> so this page draws it.</p>
+    <p class="sub">The same six stats on the corners, but the board is made of abilities, not heroes. Every ability sits where its stat needs put it, and every ability is ringed by stat passives, so you can always walk sideways. A hero is just the path it starts with: a snaking, sometimes branching trail through the abilities it joins with, ending at its own signature move. From there any hero can spec toward anything. Pick a hero, then click abilities to plan a build. Switch the mode to edit the board or a hero's start path, then save the board back over <code id="savepath"></code> and run <code>python tools/skillhex/sync.py</code> so this page draws it. Inside the claude.ai viewer, where downloads are blocked, use Copy JSON and paste it over that file instead. The empty Open slots, and what should go in each, are listed in <a href="GAPS.md">GAPS.md</a>.</p>
   </header>
   <div class="controls">
     <label for="mode">Mode <select id="mode"><option value="plan">Plan a build</option><option value="board">Edit board</option><option value="path">Edit hero path</option></select></label>
     <button class="btn" id="open" type="button">Open…</button>
     <button class="btn" id="save" type="button">Save</button>
+    <button class="btn" id="copy" type="button" title="Copy the board as skillhex.json text, for when Save cannot download">Copy JSON</button>
     <button class="btn" id="undoedit" type="button" disabled>Undo edit</button>
     <span class="file" id="file"></span>
     <input type="file" id="pick" accept=".json,application/json" hidden>

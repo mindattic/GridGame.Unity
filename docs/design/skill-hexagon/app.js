@@ -373,6 +373,23 @@ async function save() {
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   dirty = false; validation();
 }
+// Copy JSON: the claude.ai artifact viewer blocks downloads and the file pickers, so Save cannot write there.
+// Copying does not count as saving: the edits stay marked unsaved until they are pasted into skillhex.json and saved.
+async function copyJson() {
+  if (report.errors.length && !confirm(`The board has ${report.errors.length} validation error(s). Copy anyway?`)) return;
+  const text = dump(B);
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { /* clipboard API blocked; fall back below */ }
+  if (!ok) {
+    const t = document.createElement('textarea'); t.value = text; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select();
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    t.remove();
+  }
+  const b = $('copy');
+  if (!ok) { alert('Copying was blocked here. Open this page from docs/design/skill-hexagon/index.html and use Save instead.'); return; }
+  b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy JSON'; }, 1500);
+}
 window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
 // --- Controls
@@ -388,6 +405,7 @@ $('names').onchange = e => { showNames = e.target.checked; render(); };
 $('mode').onchange = e => { mode = e.target.value; selN = -1; $('detail').innerHTML = ''; setHero(hero); };
 $('open').onclick = openFile;
 $('save').onclick = save;
+$('copy').onclick = copyJson;
 $('undoedit').onclick = () => { if (!undoStack.length) return; B = JSON.parse(undoStack.pop()); dirty = true; refresh(); };
 $('savepath').textContent = CONTENT_PATH;
 const place = e => { const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight; let x = e.clientX + pad, y = e.clientY + pad; if (x + w > innerWidth - 8) x = e.clientX - w - pad; if (y + h > innerHeight - 8) y = e.clientY - h - pad; tip.style.left = Math.max(8, x) + 'px'; tip.style.top = Math.max(8, y) + 'px'; };
