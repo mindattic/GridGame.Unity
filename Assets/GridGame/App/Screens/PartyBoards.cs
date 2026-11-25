@@ -44,10 +44,9 @@ namespace GridGame.App
             col.style.marginLeft = col.style.marginRight = Space.S4;
             col.style.alignItems = Align.Stretch;
 
-            var name = Ui.Caption(c.TryClass(h.ClassId)?.Name ?? h.ClassId, col);
+            // GG-T1112: one line through the shared marquee (POL-C5), so a long class name scrolls instead of clipping.
+            var name = Ui.Marquee(Ui.Caption(c.TryClass(h.ClassId)?.Name ?? h.ClassId, col), grow: false);
             name.style.unityTextAlign = TextAnchor.MiddleCenter;
-            name.style.overflow = Overflow.Hidden;
-            name.style.whiteSpace = WhiteSpace.NoWrap;
 
             // The miniature: a square box clipping a full-size view scaled about its centre to the box's width.
             var box = Ui.El(null, col);
@@ -63,13 +62,16 @@ namespace GridGame.App
             var bar = Ui.El("row", col);
             bar.name = "party-bar-" + h.ClassId;
             bar.style.marginTop = Space.S4;
+            bar.style.flexWrap = Wrap.Wrap;
+            bar.style.justifyContent = Justify.Center;
             var cells = new VisualElement[Progression.MaxBarSlots];
             for (int i = 0; i < cells.Length; i++)
             {
                 var cell = Ui.El(null, bar);
                 cells[i] = cell;
-                cell.style.flexGrow = 1; cell.style.flexBasis = 0;
-                cell.style.marginLeft = cell.style.marginRight = 1;
+                cell.style.flexShrink = 0;
+                cell.style.marginLeft = cell.style.marginRight = CellGap / 2f;
+                cell.style.marginBottom = CellGap;
                 cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 4;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 1;
                 var bc = Palette.Text.WithA(0.4f);
@@ -89,10 +91,27 @@ namespace GridGame.App
                 float off = (w - BoardSide) / 2f;
                 view.style.left = off; view.style.top = off;
                 view.style.scale = new Scale(Vector2.one * (w / BoardSide));
-                float cw = w / cells.Length - 2f;
-                foreach (var cell in cells) cell.style.height = cw;
+                float cw = CellSide(w, cells.Length, out int perRow);
+                foreach (var cell in cells) { cell.style.width = cw; cell.style.height = cw; }
             });
         }
+
+        /// <summary>
+        /// GG-T1112: a bar cell's side for a column <paramref name="width"/> wide. All <paramref name="slots"/> share one row
+        /// while each still gets at least <see cref="Size.IconS"/>; a narrower column (six heroes on a phone: about 30 px a
+        /// cell) wraps the bar into balanced rows (3 + 2, then 2 + 2 + 1, ...) so every icon stays legible. The cells are
+        /// read-only (nothing here is tappable), so the floor is the icon's, not a tap target's.
+        /// </summary>
+        internal static float CellSide(float width, int slots, out int perRow)
+        {
+            slots = Mathf.Max(1, slots);
+            int fit = Mathf.Clamp(Mathf.FloorToInt(width / (Size.IconS + CellGap)), 1, slots);
+            int rows = Mathf.CeilToInt(slots / (float)fit);
+            perRow = Mathf.CeilToInt(slots / (float)rows);
+            return Mathf.Max(1f, Mathf.Floor(width / perRow - CellGap)); // floored so rounding never wraps a full row
+        }
+
+        private const float CellGap = 2f;
 
         private static Texture2D EntryIcon(ContentDb c, string entry)
         {
