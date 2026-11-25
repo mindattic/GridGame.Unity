@@ -88,7 +88,7 @@ namespace GridGame.Meta
         /// or discovered over time"): it knows only its <see cref="StarterKit"/> — the role's baseline move and the class's
         /// own signature — and its bar is those two, then the default loadout's items, then empty slots. The rest of the
         /// default loadout (the archetype's two moves) is bought from the trainer at the kit price
-        /// (<see cref="Abilities.KitPrice"/>) or with skill points in the home tree; <see cref="SkillSources"/> says where.
+        /// (<see cref="Abilities.KitPrice"/>) or with skill points in the home tree.
         /// GG-T1032: a class with a skill-hexagon Start path joins on it instead and knows the abilities on that path.
         /// </summary>
         public static HeroSave NewHero(ContentDb c, string classId)
@@ -142,7 +142,7 @@ namespace GridGame.Meta
         /// <summary>GG-T978/GG-T979: the class's family tree: the skill tree named by its <see cref="ClassDef.Family"/> when
         /// that is a families.json family with a tree (GG-T977, the tree <see cref="ContentLoader.ValidateFamilyTrees"/>
         /// checks <see cref="ClassDef.StartNodes"/> against), else its <see cref="ClassDef.HomeTree"/> when that is a family
-        /// tree, else null (a role tree, or none). It is the hero's home tree (<see cref="Talents.HomeTree"/>) whenever set.</summary>
+        /// tree, else null (a role tree, or none). It is the hero's home tree (family tree) whenever set.</summary>
         public static SkillTreeDef FamilyTree(ContentDb c, ClassDef def)
         {
             if (c == null || def == null) return null;
@@ -322,6 +322,14 @@ namespace GridGame.Meta
         public static readonly string[] ProficiencyPassiveIds =
             { "heavy_armor_proficiency", "martial_weapons_proficiency", "arcane_focus_proficiency" };
 
+        /// <summary>GG-T978: is <paramref name="n"/> one of the nodes the hero's class starts with on its family tree?</summary>
+        private static bool IsFamilyStartNode(ContentDb c, HeroSave h, SkillTreeDef t, SkillNodeDef n)
+        {
+            var def = c?.TryClass(h?.ClassId);
+            if (def == null || n == null || def.StartNodes == null || def.StartNodes.Count == 0 || Progression.FamilyTree(c, def) != t) return false;
+            return def.StartNodes.Any(id => string.Equals(id, n.Id, StringComparison.OrdinalIgnoreCase));
+        }
+
         /// <summary>How many of each skill tree's points a hero's current <c>Known</c> list would represent,
         /// highest first: for every <see cref="SkillTreeDef"/>, the sum of every node's <c>Cost</c> whose
         /// <c>Grants</c> ability the hero already knows (its default loadout, §25.6.1's last paragraph, plus
@@ -333,7 +341,7 @@ namespace GridGame.Meta
             var result = new List<(string, string, int)>();
             foreach (var t in c.SkillTrees.Values)
             {
-                int points = t.Nodes.Where(n => h.Known.Contains(n.Grants) || Talents.IsStartNode(c, h, t, n)).Sum(n => n.Cost); // GG-T978
+                int points = t.Nodes.Where(n => h.Known.Contains(n.Grants) || IsFamilyStartNode(c, h, t, n)).Sum(n => n.Cost); // GG-T978
                 if (points > 0) result.Add((t.Id, TreeLabel(c, t), points)); // GG-T979: a family tree reads "Shadow family"
             }
             return result.OrderByDescending(x => x.Item3).ThenBy(x => x.Item2, StringComparer.OrdinalIgnoreCase).ToList();
@@ -383,7 +391,7 @@ namespace GridGame.Meta
             string treePart = trees.Count == 0 ? "no tree investment yet" : string.Join(" / ", trees.Take(3).Select(t => $"{t.TreeName} {t.Points}"));
             string tail = RoleWord(def.Role);
             const int crossTreeFlavorThreshold = 3;
-            string home = Talents.HomeTree(c, h)?.Id ?? def.HomeTree; // GG-T979: the family tree when the class has one
+            string home = (Progression.FamilyTree(c, def) ?? c.TrySkillTree(def.HomeTree))?.Id ?? def.HomeTree; // GG-T979: the family tree when the class has one
             var cross = trees.FirstOrDefault(t => !string.Equals(t.TreeId, home, StringComparison.OrdinalIgnoreCase));
             if (cross.TreeId != null && cross.Points >= crossTreeFlavorThreshold)
             {

@@ -99,10 +99,10 @@ namespace GridGame.Tests
             var h = s.Hero(cls) ?? Progression.NewHero(Real, cls);
             if (s.Hero(cls) == null) s.Roster.Add(h);
             int sp = h.SkillPoints;
-            string paidKey = Talents.Key(tree, tree.Nodes[0]), oldKey = Talents.Key(tree, tree.Nodes[1]);
+            string paidKey = tree.Id + "/" + tree.Nodes[0].Id, oldKey = tree.Id + "/" + tree.Nodes[1].Id;
             h.TreeNodes = new List<string> { paidKey, oldKey };
             h.TreeNodeCosts = new Dictionary<string, int> { [paidKey] = 7 };
-            int expected = 7 + Talents.Cost(Real, h, tree, tree.Nodes[1]);
+            int expected = 7 + tree.Nodes[1].Cost;
 
             var back = SaveMigrations.Migrate(V17(s), Real);
             var m = back.Hero(cls);
@@ -170,7 +170,7 @@ namespace GridGame.Tests
             var s = new SaveData();
             var tree = Real.SkillTrees.Values.OrderBy(t => t.Id).First(t => t.Nodes.Count >= 1);
             var h = new HeroSave { ClassId = "not_a_board_class", SkillPoints = 2 };
-            string key = Talents.Key(tree, tree.Nodes[0]);
+            string key = tree.Id + "/" + tree.Nodes[0].Id;
             h.TreeNodes = new List<string> { key };
             h.TreeNodeCosts = new Dictionary<string, int> { [key] = 4 };
             s.Roster.Add(h);

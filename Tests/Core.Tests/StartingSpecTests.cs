@@ -9,7 +9,7 @@ namespace GridGame.Tests
     /// <summary>GG-T978 (epic GG-T953): a new hero whose class's HomeTree is a family tree starts specced from its
     /// ClassDef.StartNodes: their grants are Known at creation, the nodes read Innate (stat nodes too), count toward the
     /// tree's points and are never refunded. Kit pricing and the Requires waiver cover start-node grants and the class's
-    /// SignatureOf nodes; SkillSources names the family node a missing move comes from. A role-tree class keeps the
+    /// SignatureOf nodes; A role-tree class keeps the
     /// DefaultLoadout rules (GG-T388).</summary>
     public class StartingSpecTests
     {
@@ -77,23 +77,6 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void StartNodes_AreInnate_CountTowardPoints_AndAreNeverRefunded()
-        {
-            var db = Fixture();
-            var h = Progression.NewHero(db, "thief");
-            var t = Shadow(db);
-            Assert.That(Talents.State(db, h, t, Node(db, "t_root")), Is.EqualTo(TalentState.Innate), "a stat start node is innate too");
-            Assert.That(Talents.State(db, h, t, Node(db, "t_steal")), Is.EqualTo(TalentState.Innate));
-            Assert.That(Talents.State(db, h, t, Node(db, "n_root")), Is.EqualTo(TalentState.Available), "a sibling's start is not this hero's");
-            Assert.That(Talents.PointsIn(db, h, t), Is.EqualTo(2), "both start nodes count");
-            Assert.That(Talents.IsHome(db, h, t), Is.True);
-            Assert.That(Talents.PointsSpent(db, h), Is.EqualTo(0), "nothing for a respec to refund");
-            Assert.That(Talents.State(db, h, t, Node(db, "s_vanish")), Is.EqualTo(TalentState.Available), "the start opens the shared node");
-            Assert.That(Talents.Unlock(db, Save(), h, "shadow", "t_root").Ok, Is.False, "a start node can't be bought again");
-            Assert.That(Progression.TreeInvestment(db, h).Single(x => x.TreeId == "shadow").Points, Is.EqualTo(2));
-        }
-
-        [Test]
         public void RoleTreeClass_KeepsTheDefaultLoadoutRules()
         {
             var db = Fixture();
@@ -123,23 +106,6 @@ namespace GridGame.Tests
             Assert.That(Abilities.Unmet(db, s, thief, smoke), Is.Empty);
             Assert.That(Abilities.RequiresWaived(db, s, thief, rain), Is.False);
             Assert.That(Abilities.Unmet(db, s, thief, rain), Is.Not.Empty);
-        }
-
-        [Test]
-        public void LockedTab_NamesTheFamilyNode()
-        {
-            var db = Fixture();
-            var s = Save();
-            var thief = Progression.NewHero(db, "thief");
-            var locked = SkillSources.For(db, s, thief);
-            var smoke = locked.Single(l => l.Ability.Id == "smoke");
-            Assert.That(smoke.Kit, Is.True, "its own signature reads as a kit move");
-            Assert.That(smoke.Sources, Has.Some.StartsWith("Talents › Shadow family: Smoke · 2 SP"));
-            var vanish = locked.Single(l => l.Ability.Id == "vanish");
-            Assert.That(vanish.Sources, Has.Some.StartsWith("Talents › Shadow family: Vanish"));
-            Assert.That(locked.Any(l => l.Ability.Id == "steal"), Is.False, "a start grant is already known");
-            var rain = SkillSources.Of(db, s, thief, db.Abilities["star_rain"]);
-            Assert.That(rain, Has.Some.Contains("Star Rain (Ninja's corner)"));
         }
 
         [Test]

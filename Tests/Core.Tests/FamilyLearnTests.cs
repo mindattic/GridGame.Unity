@@ -13,7 +13,7 @@ namespace GridGame.Tests
     /// until the hero's skill hexagon stats meet it ("needs INT 9 (have 3)", the GG-T592 text; GG-T1058 reads
     /// <see cref="HeroBoard.BoardStats"/>, not level-up stat picks), unless it is one of the hero's start
     /// nodes or its own class's signature node; a sibling's signature node stays stat-gated while
-    /// <see cref="TalentConfig.SiblingSignatureStatGated"/> is on (the default). Role trees keep the old rules.</summary>
+    /// the family stat gates are gone with the talent trees (GG-T1081).</summary>
     public class FamilyLearnTests
     {
         /// <summary>Family "shadow": thief and ninja on one tree, each from its own corner, plus shared nodes; knight on a
@@ -144,76 +144,7 @@ namespace GridGame.Tests
             var ids = Abilities.Learnable(db, knight).Select(a => a.Id).ToList();
             Assert.That(ids, Does.Contain("shield_wall"));
             Assert.That(ids, Does.Contain("smoke").And.Contain("star_rain").And.Contain("shade").And.Contain("spark").And.Contain("vanish"));
-            var guard = db.SkillTrees["guard"];
-            Assert.That(Talents.WhyStatLocked(db, knight, guard, guard.Nodes[1]), Is.Null, "a role-tree node is not stat-gated");
         }
 
-        [Test]
-        public void SiblingSignatureNode_IsLockedUntilBoardStatsMeetIt()
-        {
-            var db = Fixture();
-            var s = Save();
-            var thief = Hero(db, "thief", Int3);
-            var rain = Node(db, "n_rain");
-            Assert.That(TalentConfig.SiblingSignatureStatGated, Is.True, "the conservative default");
-            Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Locked));
-            Assert.That(Talents.WhyLocked(db, thief, Shadow(db), rain), Is.EqualTo("needs INT 9 (have 3)"));
-            var fail = Talents.Unlock(db, s, thief, "shadow", "n_rain");
-            Assert.That(fail.Ok, Is.False);
-            Assert.That(fail.Message, Is.EqualTo("needs INT 9 (have 3)"));
-            Assert.That(thief.SkillPoints, Is.EqualTo(100));
-
-            thief.StatPicks = new Dictionary<string, int> { ["Intelligence"] = 20, ["Luck"] = 20 };
-            Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Locked), "old stat picks no longer count");
-            thief.HexNodes.Add(Int6);
-            Assert.That(Talents.State(db, thief, Shadow(db), rain), Is.EqualTo(TalentState.Available));
-            Assert.That(Talents.Unlock(db, s, thief, "shadow", "n_rain").Ok, Is.True, "a sibling can spec into the same move");
-            Assert.That(thief.Known, Does.Contain("star_rain"));
-        }
-
-        [Test]
-        public void SharedFamilyNode_IsStatGated()
-        {
-            var db = Fixture();
-            var thief = Hero(db, "thief");
-            Assert.That(Talents.WhyLocked(db, thief, Shadow(db), Node(db, "s_shade")), Is.EqualTo("needs WIS 5 (have 0)"));
-            Assert.That(Talents.WhyLocked(db, thief, Shadow(db), Node(db, "s_vanish")), Is.Null, "no Requires, no stat gate");
-            Assert.That(Talents.WhyStatLocked(db, Hero(db, "thief", Wis5), Shadow(db), Node(db, "s_shade")), Is.Null, "a WIS 5 passive meets it");
-        }
-
-        [Test]
-        public void OwnSignatureAndStartNodes_AreWaived()
-        {
-            var db = Fixture();
-            var thief = Hero(db, "thief");
-            var smoke = Node(db, "t_smoke");
-            Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), smoke), Is.Null, "its own signature node");
-            Assert.That(Talents.State(db, thief, Shadow(db), smoke), Is.EqualTo(TalentState.Available));
-
-            var ninja = Hero(db, "ninja");
-            var shuriken = Node(db, "n_shuriken");
-            Assert.That(Talents.StatWaived(db, ninja, Shadow(db), shuriken), Is.True, "its own start node");
-            Assert.That(Talents.WhyStatLocked(db, ninja, Shadow(db), shuriken), Is.Null);
-            Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), shuriken), Is.EqualTo("needs INT 4 (have 0)"),
-                "a sibling's start node is still the sibling's signature");
-        }
-
-        [Test]
-        public void FlippingTheFlag_WaivesSiblingSignatures_ButNotSharedNodes()
-        {
-            var db = Fixture();
-            var thief = Hero(db, "thief");
-            bool was = TalentConfig.SiblingSignatureStatGated;
-            try
-            {
-                TalentConfig.SiblingSignatureStatGated = false;
-                Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), Node(db, "n_rain")), Is.Null);
-                Assert.That(Talents.WhyStatLocked(db, thief, Shadow(db), Node(db, "s_shade")), Is.EqualTo("needs WIS 5 (have 0)"));
-            }
-            finally
-            {
-                TalentConfig.SiblingSignatureStatGated = was;
-            }
-        }
     }
 }

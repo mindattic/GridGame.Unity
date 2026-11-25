@@ -166,12 +166,12 @@ namespace GridGame.Meta
         /// <summary>Unspent skill points (§15.1, GG-T49), earned per level plus milestone bonuses
         /// (<see cref="Formulas.SkillPointsForLevelUp"/>). Spent on skill-tree nodes (GG-T50).</summary>
         public int SkillPoints;
-        /// <summary>Skill-tree nodes bought with points, as "treeId/nodeId" (§25.6.3, GG-T53, <see cref="Talents"/>);
+        /// <summary>Skill-tree nodes bought with points, as "treeId/nodeId" (§25.6.3, GG-T53, the retired talent trees);
         /// the Inn's Respec clears it and refunds their cost. An older save simply has none.</summary>
         public List<string> TreeNodes = new List<string>();
         /// <summary>Skill points actually paid for each bought node, keyed like <see cref="TreeNodes"/> (premium included), so
         /// Respec refunds what was paid even if the off-tree premium has since changed. A node bought before this was recorded
-        /// (an older save) has no entry and refunds its current <see cref="Talents.Cost"/>. Null-safe: may be missing.</summary>
+        /// (an older save) has no entry and refunds its node's cost. Null-safe: may be missing.</summary>
         public Dictionary<string, int> TreeNodeCosts;
         /// <summary>Skill hexagon nodes this hero owns, as "q,r" (GG-T1031, <see cref="SkillHexProgress"/>), bought with
         /// <see cref="SkillPoints"/>. An older save simply has none. Null-safe: may be missing.</summary>
@@ -1031,8 +1031,24 @@ namespace GridGame.Meta
             }
         }
 
+        /// <summary>GG-T1081: points a pre-hexagon hero paid for its talent-tree nodes: the recorded price per
+        /// <see cref="HeroSave.TreeNodeCosts"/> key, else the node's own cost (the old off-tree premium is not recomputed).</summary>
+        private static int TalentPointsPaid(ContentDb c, HeroSave h)
+        {
+            if (c?.SkillTrees == null || h?.TreeNodes == null) return 0;
+            int total = 0;
+            foreach (var t in c.SkillTrees.Values)
+                foreach (var n in t.Nodes)
+                {
+                    string key = t.Id + "/" + n.Id;
+                    if (!h.TreeNodes.Contains(key)) continue;
+                    total += h.TreeNodeCosts != null && h.TreeNodeCosts.TryGetValue(key, out var paid) && paid >= 0 ? paid : n.Cost;
+                }
+            return total;
+        }
+
         /// <summary>GG-T1033 (docs/design/skill-hexagon/PLAN.md, Saves): every hero of a save from before the skill hexagon
-        /// takes its place on the board. Talent-tree nodes it bought are cleared and their points (<see cref="Talents.PointsSpent"/>,
+        /// takes its place on the board. Talent-tree nodes it bought are cleared and their points (TalentPointsPaid,
         /// what was paid) come back as unspent <see cref="HeroSave.SkillPoints"/>; it keeps every ability it knows. Its
         /// <see cref="HeroSave.HexNodes"/> become its class Start path (when it owns none yet) plus, free, the cheapest route
         /// (<see cref="SkillHexBoard.CheapestRoute"/>) to every known ability on the board, nearest first, each route
@@ -1051,7 +1067,7 @@ namespace GridGame.Meta
                     h.Known ??= new List<string>();
                     if (h.TreeNodes != null && h.TreeNodes.Count > 0)
                     {
-                        int refund = c.SkillTrees != null ? Talents.PointsSpent(c, h) : 0;
+                        int refund = TalentPointsPaid(c, h);
                         h.TreeNodes.Clear();
                         h.SkillPoints += refund;
                         if (refund > 0) Notes.Add($"{h.ClassId}: {refund} talent point(s) returned as skill points (GG-T1033)");

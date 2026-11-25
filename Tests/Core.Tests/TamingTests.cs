@@ -278,7 +278,6 @@ namespace GridGame.Tests
             Domestication.Accept(c, save, new Domestication.Offer { ClassId = "wolf00", Level = 3 });
             var wolf = save.Hero("wolf00");
             Assert.That(Abilities.Learnable(c, wolf), Is.Empty, "no skills");
-            Assert.That(Talents.Trees(c, wolf), Is.Empty, "no skill tree");
             Assert.That(Equipment.Equip(c, save, wolf, EquipmentSlot.Weapon, "eq_sword_rusty").Ok, Is.False, "no gear");
         }
 

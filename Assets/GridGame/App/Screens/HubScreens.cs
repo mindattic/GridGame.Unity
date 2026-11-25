@@ -607,13 +607,70 @@ namespace GridGame.App
         private const int PassivesTab = 3;
         private const int LockedTab = 4;
 
+        /// <summary>A skill this hero lacks and where it comes from (GG-T1081: the talent-tree sources are gone).</summary>
+        private sealed class LockedSkill
+        {
+            public AbilityDef Ability;
+            public bool Kit;
+            public List<string> Sources = new List<string>();
+        }
+
+        private List<LockedSkill> LockedSkills(HeroSave h)
+        {
+            var result = new List<LockedSkill>();
+            var def = C.TryClass(h?.ClassId);
+            if (def == null || h.Domesticated) return result;
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            void Add(string id, bool kit)
+            {
+                var a = C.TryAbility(id);
+                if (a == null || h.Known.Contains(a.Id) || PassiveLoadout.IsInnate(C, h, a.Id) || !seen.Add(a.Id)) return;
+                var sources = new List<string>();
+                if (Abilities.Learnable(C, h).Contains(a))
+                {
+                    string needs = Abilities.NeedsText(Abilities.Unmet(C, S, h, a));
+                    sources.Add($"Trainer (Abilities › Learn) · {Abilities.Price(C, S, h, a)} G" + (needs != null ? $" · {needs}" : ""));
+                }
+                foreach (var tome in C.Items.Values.Where(i => i.Type == ItemType.Tome && string.Equals(i.TeachesAbility, a.Id, StringComparison.OrdinalIgnoreCase)))
+                    sources.Add($"{tome.Name}: {string.Join(", ", TomeFoundAt(tome.Id).DefaultIfEmpty("not found anywhere yet"))}");
+                if (sources.Count == 0) sources.Add("Not taught anywhere yet");
+                result.Add(new LockedSkill { Ability = a, Kit = kit, Sources = sources });
+            }
+            foreach (var id in Progression.KitAbilities(C, def)) Add(id, true);
+            foreach (var id in Progression.SignatureGrants(C, def)) Add(id, true);
+            foreach (var id in def.Abilities) Add(id, false);
+            foreach (var item in C.Items.Values.Where(i => i.Type == ItemType.Tome && i.TeachesAbility != null).OrderBy(i => i.Id, StringComparer.Ordinal))
+            {
+                var a = C.TryAbility(item.TeachesAbility);
+                if (a != null && RewardCatalog.AllowedFor(a, def)) Add(a.Id, false);
+            }
+            return result;
+        }
+
+        /// <summary>Where an item turns up: a quest or bounty reward, a theme's first clear, the Merchant, a foe's drops or a chest.</summary>
+        private List<string> TomeFoundAt(string itemId)
+        {
+            var found = new List<string>();
+            foreach (var q in C.QuestOrder) if (q.RewardItem == itemId) found.Add($"quest {q.Name}");
+            foreach (var b in C.Bounties.Values.OrderBy(b => b.Id, StringComparer.Ordinal)) if (b.RewardItem == itemId) found.Add($"bounty {b.Name}");
+            foreach (var t in C.Campaign.Themes) if (t.MilestoneReward == itemId) found.Add($"clearing {t.Name}");
+            if (C.TryItem(itemId)?.SoldByVendor == true) found.Add("the Merchant");
+            var tables = new HashSet<string>(C.DropTables.Values.Where(t => t.Entries.Any(e => e.Item == itemId)).Select(t => t.Id), StringComparer.OrdinalIgnoreCase);
+            var foes = C.Classes.Values.Where(d => d.Team == Team.Enemy && d.DropTable != null && tables.Contains(d.DropTable))
+                .Select(d => d.Name).Distinct().OrderBy(n => n, StringComparer.Ordinal).ToList();
+            if (foes.Count > 0) found.Add("dropped by " + string.Join(", ", foes.Take(3)) + (foes.Count > 3 ? $" and {foes.Count - 3} more" : ""));
+            foreach (var chest in C.Items.Values.Where(i => i.Type == ItemType.Chest && i.OpensTable != null && tables.Contains(i.OpensTable)).OrderBy(i => i.Id, StringComparer.Ordinal))
+                found.Add($"a {chest.Name}");
+            return found;
+        }
+
         /// <summary>The Locked tab (GG-T388): every skill this hero doesn't know yet that belongs to it — its own kit moves,
         /// the rest of its class list, its home tree and the passives a Tome could teach — each with where it comes from
         /// (the trainer's price, the tree node and its points, the Tome and where that Tome is found).</summary>
         private void Locked(HeroSave h, VisualElement list)
         {
-            var locked = SkillSources.For(C, S, h);
-            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or the skill tree (Talents), or discovered as Tomes.", list, "dim");
+            var locked = LockedSkills(h);
+            Ui.Para("A hero starts with two moves. The rest are bought from the trainer (Learn) or the skill board, or discovered as Tomes.", list, "dim");
             if (locked.Count == 0) Ui.Empty("Nothing left to learn.", list);
             foreach (var l in locked)
             {
