@@ -620,7 +620,7 @@
     {"Q": 6, "R": 6, "Kind": "Ability", "Ability": "grudge"},
     {"Q": 6, "R": 7, "Kind": "Passive", "Stats": {"VIT": 1, "STR": 1}},
     {"Q": 6, "R": 8, "Kind": "Passive", "Stats": {"VIT": 1, "STR": 1}},
-    {"Q": 6, "R": 9, "Kind": "Ability", "Ability": "berserk"},
+    {"Q": 6, "R": 9, "Kind": "Open", "Note": "freed by merge GG-T1126 (berserk into blood_rage for heroes; monsters keep berserk)"},
     {"Q": 6, "R": 10, "Kind": "Passive", "Stats": {"STR": 2}},
     {"Q": 7, "R": -16, "Kind": "Passive", "Stats": {"WIS": 1, "INT": 1}},
     {"Q": 7, "R": -15, "Kind": "Passive", "Stats": {"WIS": 1, "INT": 1}},

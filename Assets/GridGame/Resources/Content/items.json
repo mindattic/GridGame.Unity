@@ -38129,7 +38129,7 @@
   },
   {
     "Id": "tome_berserk",
-    "Name": "Tome of Berserk",
+    "Name": "Tome of Blood Rage",
     "Type": "Tome",
     "Rarity": "Rare",
     "Slot": "None",
@@ -38137,7 +38137,7 @@
     "MaxStack": 9,
     "SoldByVendor": false,
     "Icon": null,
-    "TeachesAbility": "berserk"
+    "TeachesAbility": "blood_rage"
   },
   {
     "Id": "tome_mana_siphon",

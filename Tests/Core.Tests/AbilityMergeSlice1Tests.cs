@@ -11,7 +11,7 @@ namespace GridGame.Tests
     /// abilities.json as a MergedInto alias stub, every class, loadout and attack-type entry names the survivor, its board
     /// node became an Open slot, and each hero whose signature was folded has a new live signature on its Start path.
     /// Held back from this slice: the two rows that drop a side effect the owner flagged (Holy Bulwark's party reach,
-    /// Contract Kill's boss bonus) and berserk into Blood Rage (a monster-wide passive).</summary>
+    /// Contract Kill's boss bonus) and berserk into Blood Rage (a monster-wide passive), which GG-T1126 then folded for heroes only.</summary>
     public class AbilityMergeSlice1Tests
     {
         private static readonly Dictionary<string, string> Merged = new Dictionary<string, string>
@@ -104,6 +104,23 @@ namespace GridGame.Tests
                 Assert.That(h.Start.Any(c => c[0] == node.Q && c[1] == node.R), Is.True, $"{h.Class} Start holds {h.Signature}");
             }
             Assert.That(ContentLoader.Validate(Real).Where(p => p.StartsWith("skillhex")), Is.Empty);
+        }
+
+        /// <summary>GG-T1126: berserk folds into Blood Rage for heroes only. Monsters keep berserk (+35% below half HP), so
+        /// no monster plays differently; the Barbarian holds Blood Rage, the Tome teaches it, and berserk's board node is
+        /// an Open slot. berserk stays a live ability (not an alias stub) for the monsters and for saves that learned it.</summary>
+        [Test]
+        public void Berserk_folds_into_blood_rage_for_heroes_only()
+        {
+            Assert.That(Real.Abilities.ContainsKey("berserk"), Is.True);
+            Assert.That(Real.AbilityAliases.ContainsKey("berserk"), Is.False);
+            Assert.That(Real.Classes.Values.Where(c => c.Team != Team.Enemy && c.Abilities.Contains("berserk")).Select(c => c.Id), Is.Empty);
+            Assert.That(Real.Classes["barbarian"].Abilities, Does.Contain("blood_rage"));
+            foreach (var id in new[] { "oni00", "purpleprototype00", "werewolf00", "sandmaw", "minotaur04", "mountaintroll" })
+                Assert.That(Real.Classes[id].Abilities, Does.Contain("berserk"), id);
+            Assert.That(Real.Item("tome_berserk").TeachesAbility, Is.EqualTo("blood_rage"));
+            Assert.That(Real.SkillHex.Nodes.Where(n => n.Ability == "berserk"), Is.Empty);
+            Assert.That(Real.SkillHex.Nodes.Count(n => n.Kind == SkillHexNodeKind.Open && (n.Note ?? "").Contains("GG-T1126")), Is.EqualTo(1));
         }
     }
 }
