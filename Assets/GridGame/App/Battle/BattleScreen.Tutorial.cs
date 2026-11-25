@@ -33,6 +33,9 @@ namespace GridGame.App
             /// <summary>GG-T788 (§2.13.1): the lesson's text when the party's turn is one hero's one action
             /// (<see cref="TurnRules.OneHeroPerTurn"/>), for a lesson whose <see cref="Text"/> assumes every hero acts each turn.</summary>
             public string TextOneHero;
+            /// <summary>GG-T1095 (§2.13.2): the lesson's text when the battle keeps rounds (<see cref="TurnRules.HasRounds"/>),
+            /// for a lesson whose <see cref="TextOneHero"/> lets the same hero act again; wins over <see cref="TextOneHero"/>.</summary>
+            public string TextRound;
             /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
             public string Short;
             /// <summary>The wave (0-based) the lesson needs on the board.</summary>
@@ -90,6 +93,7 @@ namespace GridGame.App
                 Short = "Lifting a hero starts the clock. Changed your mind? Drop it off the board, or back on its own tile, to cancel for free.",
                 Text = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each hero acts once before that enemy does, sharing the time — what one hero leaves, the next can use, and pushing the enemy back buys more. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 TextOneHero = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero acts — any hero, the same one again if you like — and that action is the party's whole turn; pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
+                TextRound = "Picking a hero up starts the clock: the bar under it drains until the next enemy reaches the left edge, then the hero drops where it is. Each turn one hero who hasn't moved this round acts, and that action is the party's whole turn; once every hero has moved, a new round frees them all. Pushing the enemy back buys more time. Changed your mind? Drop it back on its own tile, or off the board, to cancel — no time spent.",
                 Example = "Example: lift a hero, then drag it off the board and let go.",
                 Done = (b, c, e) => c is MoveCommand,
                 Marks = b => b.CancelMarks() },
@@ -217,8 +221,13 @@ namespace GridGame.App
 
         private void NextLesson() => AdvanceTutorial(TutorialStep + 1);
 
-        /// <summary>GG-T788 (§2.13.1): a lesson's full text for this battle's turn mode, as <see cref="TurnRules"/> says it is.</summary>
-        private string LessonText(Lesson l) => l.TextOneHero != null && TurnRules.OneHeroPerTurn(State) ? l.TextOneHero : l.Text;
+        /// <summary>GG-T788 (§2.13.1): a lesson's full text for this battle's turn mode, as <see cref="TurnRules"/> says it is.
+        /// GG-T1095 (§2.13.2): under rounds, <see cref="Lesson.TextRound"/> first.</summary>
+        private string LessonText(Lesson l)
+        {
+            if (l.TextRound != null && TurnRules.HasRounds(State)) return l.TextRound;
+            return l.TextOneHero != null && TurnRules.OneHeroPerTurn(State) ? l.TextOneHero : l.Text;
+        }
 
         private void TutorialAfterCommit(BattleCommand cmd, List<BattleEvent> events)
         {

@@ -531,15 +531,18 @@ namespace GridGame.Meta
         /// commands it took (<see cref="BattleResults.ActionsTaken"/>, Guards included).</summary>
         public int PartyTurns;
         public int Actions;
+        /// <summary>GG-T1095 (§2.13.2): rounds played (<see cref="BattleResults.Rounds"/>); 0 outside UnmovedThisRound.</summary>
+        public int Rounds;
 
         /// <summary>The results row's value: "N turns", or "N turns, M actions" when several heroes acted in a turn
-        /// (the two differ). Empty when no turn was played.</summary>
+        /// (the two differ), then ", R rounds" when the battle kept rounds. Empty when no turn was played.</summary>
         public string TurnsLabel()
         {
             if (PartyTurns <= 0 && Actions <= 0) return "";
             string turns = PartyTurns == 1 ? "1 turn" : $"{PartyTurns} turns";
-            if (Actions == PartyTurns) return turns;
-            return turns + (Actions == 1 ? ", 1 action" : $", {Actions} actions");
+            if (Actions != PartyTurns) turns += Actions == 1 ? ", 1 action" : $", {Actions} actions";
+            if (Rounds > 0) turns += Rounds == 1 ? ", 1 round" : $", {Rounds} rounds";
+            return turns;
         }
     }
 
@@ -897,6 +900,7 @@ namespace GridGame.Meta
                 BestComboScore = r.BestComboScore,
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
+                Rounds = r.Rounds,
             };
             // GG-T852: the top supporter, ties to the lower class id so it is deterministic.
             foreach (var kv in r.ComboSupporterPoints.OrderBy(kv => kv.Key, StringComparer.Ordinal))

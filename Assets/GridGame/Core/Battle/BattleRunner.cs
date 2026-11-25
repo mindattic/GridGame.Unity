@@ -160,6 +160,7 @@ namespace GridGame.Core.Battle
             }
             EnforceTileInvariant(cmd.GetType().Name);
             S.Results.TicksElapsed = (int)S.Clock;
+            S.Results.Rounds = TurnRules.RoundsPlayed(S); // GG-T1095: 0 outside UnmovedThisRound
         }
 
         // ─────────────────────────────────────────────────────────────────────────────

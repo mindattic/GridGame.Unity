@@ -122,6 +122,9 @@ namespace GridGame.Core.Battle
         /// <summary>Party turns the battle took: every boundary passed, plus the turn it ended in when an action was taken
         /// after the last boundary (a winning action ends the battle before any boundary fires).</summary>
         public int PartyTurns => TurnsEnded + (ActionsTaken > ActionsAtTurnEnd ? 1 : 0);
+        /// <summary>GG-T1095 (§2.13.2): rounds played (<c>TurnRules.RoundsPlayed</c>), set beside <see cref="TicksElapsed"/>
+        /// after each command; 0 outside UnmovedThisRound. Display only.</summary>
+        public int Rounds;
         /// <summary>Banked gold paid out mid-battle (a recruitable's PayGold, GG-T132): the meta layer deducts it whatever the outcome.</summary>
         public int CoinsSpent;
         /// <summary>§1.2.8 (GG-T849): the best combo this battle (display and stats only).</summary>
@@ -150,7 +153,7 @@ namespace GridGame.Core.Battle
             return new BattleResults
             {
                 Coins = Coins, Xp = Xp, ActionsTaken = ActionsTaken, TicksElapsed = TicksElapsed, CoinsSpent = CoinsSpent,
-                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd,
+                TurnsEnded = TurnsEnded, ActionsAtTurnEnd = ActionsAtTurnEnd, Rounds = Rounds,
                 BestComboRank = BestComboRank, BestComboScore = BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
                 ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),

@@ -225,6 +225,21 @@ namespace GridGame.Core.Battle
             return (s.Round, moved, moved + left);
         }
 
+        /// <summary>GG-T1095 (§2.13.2): does this battle keep rounds? Only UnmovedThisRound. Public for the tutorial's
+        /// round-aware lesson copy and the post-battle round count; answers in any mode (it only reads the mode).</summary>
+        public static bool HasRounds(BattleState s) => s != null && KeepsRounds(s);
+
+        /// <summary>GG-T1095 (§2.13.2, the post-battle Battle length row): rounds the party played — every finished round
+        /// (<see cref="BattleState.Round"/> - 1) plus the current one if any unit has used its place in it. 0 outside
+        /// UnmovedThisRound, so the row shows no round count there.</summary>
+        public static int RoundsPlayed(BattleState s)
+        {
+            if (!HasRounds(s)) return 0;
+            int n = s.Round - 1;
+            foreach (var u in s.Units) if (u.ActedThisRound) { n++; break; }
+            return n;
+        }
+
         // ── 2. Whether an action ends the party's turn ─────────────────────────────────────────────
 
         /// <summary>Records that <paramref name="hero"/> has taken its action (PartyWindow: acted this window;

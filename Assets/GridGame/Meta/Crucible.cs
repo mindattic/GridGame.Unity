@@ -185,6 +185,7 @@ namespace GridGame.Meta
                 Crucible = true,
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
+                Rounds = r.Rounds,
             };
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);
