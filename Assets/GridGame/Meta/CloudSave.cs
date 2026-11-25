@@ -113,6 +113,41 @@ namespace GridGame.Meta
             return mine.PlaySeconds > theirs.PlaySeconds;
         }
 
+        // ---- the save's own timestamp in a Play Games snapshot (GG-T1132) ----
+
+        private const string StampOpen = " [t=";
+        /// <summary>Play Games descriptions are at most 256 characters; the stamp needs about 28 of them.</summary>
+        public const int MaxDescriptionLength = 256;
+
+        /// <summary>The Play Games snapshot description carrying the save's own <c>UpdatedUtc</c> (ticks) after the
+        /// readable text, because the snapshot's <c>LastModifiedTimestamp</c> is the upload time (up to a minute after the
+        /// save) and would read as newer than the save it holds. The readable text is cut to leave room for the stamp.</summary>
+        public static string StampDescription(string description, DateTime savedUtc)
+        {
+            var stamp = StampOpen + savedUtc.ToUniversalTime().Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture) + "]";
+            var text = (description ?? "").Replace('\r', ' ').Replace('\n', ' ');
+            int room = MaxDescriptionLength - stamp.Length;
+            if (text.Length > room) text = text.Substring(0, room);
+            return text + stamp;
+        }
+
+        /// <summary><see cref="StampDescription"/> read back: true with the readable text and the save's own time. False
+        /// (text unchanged, no time) for a snapshot written before the stamp existed or with a damaged one: the caller
+        /// then falls back to the snapshot's modified time. Never throws.</summary>
+        public static bool TryReadStamp(string stamped, out string description, out DateTime savedUtc)
+        {
+            description = stamped ?? "";
+            savedUtc = default;
+            int at = description.LastIndexOf(StampOpen, StringComparison.Ordinal);
+            if (at < 0 || !description.EndsWith("]", StringComparison.Ordinal)) return false;
+            var digits = description.Substring(at + StampOpen.Length, description.Length - at - StampOpen.Length - 1);
+            if (!long.TryParse(digits, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var ticks)
+                || ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks) return false;
+            savedUtc = new DateTime(ticks, DateTimeKind.Utc);
+            description = description.Substring(0, at);
+            return true;
+        }
+
         // ---- iCloud key-value store (GG-T609) ----
 
         /// <summary>NSUbiquitousKeyValueStore keys are at most 64 bytes of UTF-8.</summary>

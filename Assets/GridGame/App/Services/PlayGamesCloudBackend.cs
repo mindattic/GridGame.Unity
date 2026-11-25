@@ -53,12 +53,17 @@ namespace GridGame.App
                 if (meta == null) { done(null); return; }
                 // Opening a name that was never written creates an empty snapshot: no play time, no description.
                 bool hasData = meta.TotalTimePlayed > TimeSpan.Zero || !string.IsNullOrEmpty(meta.Description);
+                // The save's own time rides in the description (GG-T1132): LastModifiedTimestamp is the upload time, up to
+                // a minute after the save. Snapshots written before the stamp fall back to the modified time.
+                var updated = meta.LastModifiedTimestamp.ToUniversalTime();
+                var text = meta.Description;
+                if (CloudSave.TryReadStamp(meta.Description, out var plain, out var savedUtc)) { text = plain; updated = savedUtc; }
                 done(new CloudSnapshotInfo
                 {
                     Name = name,
-                    UpdatedUtc = meta.LastModifiedTimestamp.ToUniversalTime(),
+                    UpdatedUtc = updated,
                     PlaySeconds = meta.TotalTimePlayed.TotalSeconds,
-                    Description = meta.Description,
+                    Description = text,
                     HasData = hasData,
                 });
             });
@@ -75,12 +80,12 @@ namespace GridGame.App
 
         public void Write(string name, byte[] data, string description, TimeSpan playTime, DateTime savedUtc, Action<bool> done)
         {
-            // savedUtc unused: Play Games stamps LastModifiedTimestamp itself.
+            // Play Games stamps LastModifiedTimestamp with the upload time, so the save's own time goes in the description.
             Open(name, meta =>
             {
                 if (meta == null) { done(false); return; }
                 var update = new SavedGameMetadataUpdate.Builder()
-                    .WithUpdatedDescription(description)
+                    .WithUpdatedDescription(CloudSave.StampDescription(description, savedUtc))
                     .WithUpdatedPlayedTime(playTime)
                     .Build();
                 Client.CommitUpdate(meta, update, data, (status, _) => done(status == SavedGameRequestStatus.Success));

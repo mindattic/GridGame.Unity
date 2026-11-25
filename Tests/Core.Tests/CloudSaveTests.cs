@@ -159,5 +159,48 @@ namespace GridGame.Tests
             Assert.That(CloudSave.KeepMineOnConflict(Info(1), null), Is.True);
             Assert.That(CloudSave.KeepMineOnConflict(null, Info(1)), Is.False);
         }
+
+        [Test]
+        public void The_saves_own_time_round_trips_through_the_Play_Games_description()
+        {
+            var saved = new DateTime(2026, 11, 25, 19, 0, 7, DateTimeKind.Utc);
+            var stamped = CloudSave.StampDescription("Hero - 4 heroes - 3:07 played", saved);
+            Assert.That(CloudSave.TryReadStamp(stamped, out var text, out var back), Is.True);
+            Assert.That(text, Is.EqualTo("Hero - 4 heroes - 3:07 played"));
+            Assert.That(back, Is.EqualTo(saved));
+            Assert.That(back.Kind, Is.EqualTo(DateTimeKind.Utc));
+        }
+
+        [Test]
+        public void A_long_description_is_cut_to_leave_room_for_the_stamp()
+        {
+            var stamped = CloudSave.StampDescription(new string('x', 400), DateTime.UtcNow);
+            Assert.That(stamped.Length, Is.LessThanOrEqualTo(CloudSave.MaxDescriptionLength));
+            Assert.That(CloudSave.TryReadStamp(stamped, out _, out _), Is.True);
+        }
+
+        [Test]
+        public void A_snapshot_written_without_a_stamp_reads_as_unstamped()
+        {
+            Assert.That(CloudSave.TryReadStamp("Hero - 4 heroes - 3:07 played", out var text, out _), Is.False);
+            Assert.That(text, Is.EqualTo("Hero - 4 heroes - 3:07 played"), "text untouched");
+            Assert.That(CloudSave.TryReadStamp(null, out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=abc]", out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=99999999999999999999999]", out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=-5]", out _, out _), Is.False);
+        }
+
+        [Test]
+        public void An_upload_a_minute_after_the_save_is_still_the_same_save_on_the_next_Continue()
+        {
+            var saved = new DateTime(2026, 11, 25, 19, 0, 0, DateTimeKind.Utc);
+            var local = new SaveData { UpdatedUtc = saved };
+            CloudSave.TryReadStamp(CloudSave.StampDescription("d", saved), out _, out var stampedTime);
+            var cloud = new CloudSnapshotInfo { UpdatedUtc = stampedTime, HasData = true };
+            Assert.That(CloudSave.Decide(local, cloud), Is.EqualTo(CloudChoice.InSync));
+            // Play Games' own LastModifiedTimestamp (the upload time) is what used to be compared.
+            cloud.UpdatedUtc = saved.AddSeconds(60);
+            Assert.That(CloudSave.Decide(local, cloud), Is.EqualTo(CloudChoice.OfferCloud), "the old upload-time stamp is the bug");
+        }
     }
 }
