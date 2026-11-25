@@ -295,6 +295,64 @@ namespace GridGame.Tests
             Assert.That(TurnRules.GuardProtects(s), Is.Empty);
         }
 
+        [Test]
+        public void A_hero_that_falls_as_its_turn_opens_hands_the_turn_to_the_next_hero()
+        {
+            // GG-T1101: a region rule's TurnEnd hook bites the active hero as its own icon arrives (ReturnControl).
+            var db = Db();
+            var bite = new RuleHookDef { On = RuleHook.TurnEnd, Team = RuleTeam.Hero };
+            bite.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.Damage, Units = RuleUnits.Subject, Amount = 1 });
+            var rule = new RegionRuleDef { Id = "bite-rule" };
+            rule.Hooks.Add(bite);
+            RegionRuleCatalog.Index(db, new List<RegionRuleDef> { rule });
+            var stage = Stage(("goblin", 5, 0));
+            stage.Rules.Add("bite-rule");
+            var s = BattleEngine.Create(db, Setup(stage, 7, ("sprinter", 0, 6), ("knight", 2, 6), ("plodder", 4, 6)), new List<BattleEvent>());
+            var fast = Hero(s, "sprinter");
+            var knight = Hero(s, "knight");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+
+            knight.Hp = 1;
+            ArriveIn(s, knight, 2);
+            foreach (var u in s.Units.Where(u => u.Alive && u.Id != knight.Id && u.Id != fast.Id && s.TurnEntryOf(u.Id) != null))
+                Assert.That(Ticks(s, u), Is.GreaterThan(2), u.Def.Id + " arrives after the knight");
+
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(ev.OfType<DiedEvent>().Select(d => d.UnitId), Does.Contain(knight.Id), "the knight fell as its turn opened");
+            Assert.That(knight.Alive, Is.False);
+            Assert.That(s.IsOver, Is.False);
+            Assert.That(s.ActiveHeroId, Is.GreaterThanOrEqualTo(0), "the advance resumed to another hero's own icon");
+            Assert.That(s.ActiveHeroId, Is.Not.EqualTo(knight.Id));
+            var next = s.UnitById(s.ActiveHeroId);
+            Assert.That(next.IsHero && next.Alive, Is.True);
+            Assert.That(TurnRules.MayAct(s, next), Is.True);
+        }
+
+        [Test]
+        public void A_revived_hero_gets_its_icon_back_and_every_other_icon_stays_put()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("knight", 2, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            RunnerType.GetMethod("Kill", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(NewRunner(s), new object[] { slow, null });
+            Assert.That(slow.Alive, Is.False);
+            Assert.That(s.TurnEntryOf(slow.Id), Is.Null);
+            var before = s.Timeline.ToDictionary(e => e.Id, e => (e.Ip, e.RecoverTicks, e.StunTicks));
+
+            RunnerType.GetMethod("Revive", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(NewRunner(s), new object[] { fast, 5 });
+            Assert.That(slow.Alive, Is.True, "revived mid-wave");
+            var icon = s.TurnEntryOf(slow.Id);
+            Assert.That(icon, Is.Not.Null, "its turn icon is back on the timeline");
+            Assert.That(TurnRules.IsHeroIcon(s, slow), Is.True);
+            foreach (var e in s.Timeline.Where(e => e != icon))
+            {
+                Assert.That(before.ContainsKey(e.Id), Is.True, "no other icon was made");
+                Assert.That((e.Ip, e.RecoverTicks, e.StunTicks), Is.EqualTo(before[e.Id]), "icon " + e.Id + " stayed where it was");
+            }
+            Assert.That(s.Timeline.Count, Is.EqualTo(before.Count + 1));
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id), "the active hero's turn is untouched");
+        }
+
         #endregion
 
         // BattleRunner is internal and its tie rule private: read it by reflection rather than widen it for a test.
