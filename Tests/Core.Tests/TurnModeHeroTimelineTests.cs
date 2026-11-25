@@ -69,10 +69,10 @@ namespace GridGame.Tests
             Assert.That(Formulas.ReferenceHeroSpeed(1), Is.EqualTo(12f));
             Assert.That(Formulas.ReferenceHeroSpeed(11), Is.EqualTo(19f).Within(1e-4f), "12 + 0.7 per level");
 
-            Assert.That(Ticks(s, fast), Is.LessThan(Ticks(s, mid)));
+            // GG-T1083: the battle opens on the first hero's own turn — the fastest arrived first and is the active hero.
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id), "the fastest hero's icon arrived first");
             Assert.That(Ticks(s, mid), Is.LessThan(Ticks(s, slow)));
-            Assert.That(BattleEngine.BarU(s, s.TurnEntryOf(fast.Id)), Is.LessThan(BattleEngine.BarU(s, s.TurnEntryOf(mid.Id))), "further left");
-            Assert.That(BattleEngine.BarU(s, s.TurnEntryOf(mid.Id)), Is.LessThan(BattleEngine.BarU(s, s.TurnEntryOf(slow.Id))));
+            Assert.That(BattleEngine.BarU(s, s.TurnEntryOf(mid.Id)), Is.LessThan(BattleEngine.BarU(s, s.TurnEntryOf(slow.Id))), "further left");
         }
 
         [Test]
@@ -81,23 +81,22 @@ namespace GridGame.Tests
             var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6));
             var hero = Hero(s, "sprinter");
             var foe = Foe(s);
-            int th = Ticks(s, hero), tf = Ticks(s, foe);
-            Assert.That(th, Is.GreaterThan(1));
-            Assert.That(tf, Is.GreaterThan(th), "the hero opens the wave");
+            // GG-T1083: the battle opened on the hero's turn, so its icon is already back on its cycle (recovery + entry).
+            Assert.That(s.ActiveHeroId, Is.EqualTo(hero.Id));
+            int cycle = Ticks(s, hero), tf = Ticks(s, foe);
+            int k = Math.Min(cycle, tf) - 1;
+            Assert.That(k, Is.GreaterThan(0));
 
-            var ev = BattleEngine.RunClock(s, th - 1);
-            Assert.That(Ticks(s, hero), Is.EqualTo(1));
-            Assert.That(Ticks(s, foe), Is.EqualTo(tf - th + 1), "both icons moved the same ticks");
+            var ev = BattleEngine.RunClock(s, k);
+            Assert.That(Ticks(s, hero), Is.EqualTo(cycle - k));
+            Assert.That(Ticks(s, foe), Is.EqualTo(tf - k), "both icons moved the same ticks");
             Assert.That(ev.OfType<TurnStartedEvent>(), Is.Empty);
 
-            ev = BattleEngine.RunClock(s, 1);
-            Assert.That(Ticks(s, hero), Is.EqualTo(th + RecoverTicks), "arrived: off the bar for RecoverBaseSeconds, then back at its Speed's entry");
-            Assert.That(Ticks(s, foe), Is.EqualTo(tf - th));
-            Assert.That(ev.OfType<TurnStartedEvent>(), Is.Empty, "a hero's arrival runs no foe turn");
-
-            ev = BattleEngine.RunClock(s, tf - th);
-            Assert.That(ev.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Contain(foe.Id), "the foe's icon arrives on the same clock");
-            Assert.That(ev.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Not.Contain(hero.Id));
+            var all = new List<BattleEvent>(BattleEngine.RunClock(s, Ticks(s, hero)));
+            Assert.That(Ticks(s, hero), Is.EqualTo(cycle), "arrived: off the bar for RecoverBaseSeconds, then back at its Speed's entry");
+            if (!all.OfType<TurnStartedEvent>().Any(t => t.UnitId == foe.Id)) all.AddRange(BattleEngine.RunClock(s, Ticks(s, foe)));
+            Assert.That(all.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Contain(foe.Id), "the foe's icon arrives on the same clock");
+            Assert.That(all.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Not.Contain(hero.Id), "a hero's arrival runs no foe turn");
         }
 
         [Test]
@@ -106,7 +105,8 @@ namespace GridGame.Tests
             var stage = StageWaves(new[] { ("imp", 5, 0) }, new[] { ("imp", 5, 1), ("imp", 3, 0) });
             var s = Create(stage, ("plodder", 0, 6), ("knight", 2, 6));
             var heroes = s.Units.Where(u => u.IsHero).ToList();
-            AssertHeroesOpen(s, heroes, "wave 1");
+            // GG-T1083: wave 1 opened on the first hero's turn; the rest of the party still opens ahead of the foes.
+            AssertHeroesOpen(s, heroes.Where(h => h.Id != s.ActiveHeroId).ToList(), "wave 1");
 
             // The wave-1 imp burns down on the clock alone; the next wave's opening reschedules every hero icon.
             var imp = Foe(s);
@@ -149,7 +149,39 @@ namespace GridGame.Tests
 
             var ev = BattleEngine.RunClock(s, t);
             Assert.That(ev.OfType<TurnStartedEvent>().Select(x => x.UnitId), Does.Contain(foe.Id), "the foe still took its turn on the tie tick");
-            Assert.That(Ticks(s, hero), Is.EqualTo(t + RecoverTicks), "the hero's icon resolved on the same tick");
+            Assert.That(Ticks(s, hero), Is.EqualTo(t), "the hero's icon resolved on the same tick (back on the same cycle the battle opened with)");
+        }
+
+        [Test]
+        public void Only_the_active_hero_may_act()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id), "the battle opens on the first hero's own turn");
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = slow.Id, Path = new List<Coord> { new Coord(4, 6), new Coord(4, 5) } });
+            var refused = ev.OfType<AbilityRefusedEvent>().Single();
+            Assert.That(refused.CasterId, Is.EqualTo(slow.Id));
+            Assert.That(refused.Reason, Is.EqualTo("Not this hero's turn"));
+            Assert.That(slow.Pos, Is.EqualTo(new Coord(4, 6)), "nothing happened");
+        }
+
+        [Test]
+        public void An_action_runs_the_clock_on_to_the_next_hero_turn()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            Assert.That(s.ActiveHeroId, Is.Not.EqualTo(-1));
+            var clock = s.Clock;
+            int arrivedBefore = s.ActiveHeroId;
+            BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(s.IsOver, Is.False);
+            Assert.That(s.Clock, Is.GreaterThan(clock), "the clock ran on");
+            Assert.That(s.ActiveHeroId, Is.Not.EqualTo(-1), "it stopped on a hero's own turn");
+            var active = s.UnitById(s.ActiveHeroId);
+            Assert.That(active.IsHero && TurnRules.MayAct(s, active), Is.True, "the new active hero may act");
+            foreach (var h in s.Units.Where(u => u.IsHero && u.Id != s.ActiveHeroId))
+                Assert.That(TurnRules.NotThisHerosTurn(s, h), Is.True, h.Def.Id + " waits for its own icon");
+            Assert.That(arrivedBefore, Is.Not.EqualTo(-1));
         }
 
         [Test]

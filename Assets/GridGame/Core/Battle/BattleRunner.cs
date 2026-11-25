@@ -51,6 +51,12 @@ namespace GridGame.Core.Battle
             // GG-T542: a tutorial set-up is no one's action: no time passes, no turn is spent.
             if (cmd is TutorialSceneCommand scene) { DoScene(scene); EnforceTileInvariant(nameof(TutorialSceneCommand)); return; }
 
+            // GG-T1083 (§2.13.3): under HeroTimeline only the hero whose own icon arrived may act.
+            if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit waiting && TurnRules.NotThisHerosTurn(S, waiting))
+            {
+                Emit(new AbilityRefusedEvent { CasterId = waiting.Id, Reason = "Not this hero's turn" });
+                return;
+            }
             // GG-T308 (§2.0): each hero acts once per window.
             if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit done && done.IsHero && TurnRules.HasActed(S, done))
             {
@@ -106,7 +112,24 @@ namespace GridGame.Core.Battle
             // someone hasn't acted; when the time runs out the enemy acts, when everyone has acted the clock runs on to
             // the next enemy turn, and Guard gives the rest of the window up. Clearing a wave opens a fresh window.
             windowOver = false;
-            if (!S.IsOver && S.Wave == waveBefore)
+            if (TurnRules.HeroesOnTimeline(S))
+            {
+                // GG-T1083 (§2.13.3): the action is the active hero's whole turn. Its time runs on the clock (stopping at
+                // the next turn of either side), then the clock runs on to the next hero's own icon; enemy turns and wave
+                // changes resolve on the way. IsTurnBoundary is always true here.
+                if (!S.IsOver)
+                {
+                    bool heroReached = false;
+                    if (S.Wave == waveBefore)
+                    {
+                        if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit active && active.IsHero) TurnRules.MarkActed(S, active);
+                        S.ActiveHeroId = -1;
+                        if (TurnRules.SpendsClock(S, cmd)) heroReached = AdvanceClock(spend, stopAtEnemyTurn: true);
+                    }
+                    if (!S.IsOver && !heroReached) AdvanceUntilHeroTurn();
+                }
+            }
+            else if (!S.IsOver && S.Wave == waveBefore)
             {
                 // §2.13 (GG-T768): the turn mode decides what the action marks, spends and whether it ends the turn.
                 if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit hero && hero.IsHero) TurnRules.MarkActed(S, hero);

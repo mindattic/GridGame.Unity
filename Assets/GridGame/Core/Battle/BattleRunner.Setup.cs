@@ -52,6 +52,8 @@ namespace GridGame.Core.Battle
                 foreach (var id in startProtected) { var h = S.UnitById(id); if (h != null) ApplyBuff(h, prot, prot.Duration); }
             RegionBattleStart(); // GG-T359: the stage's region rules come into play before wave 1 spawns
             SpawnWave(0);
+            // GG-T1083 (§2.13.3): under HeroTimeline the battle opens on the first hero's own turn (heroes open each wave).
+            if (TurnRules.HeroesOnTimeline(S)) AdvanceUntilHeroTurn();
         }
 
         /// <summary>Guest allies of a wave join the hero team on their tile (or the nearest free one).</summary>
