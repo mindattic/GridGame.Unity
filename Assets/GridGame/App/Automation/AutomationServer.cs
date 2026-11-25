@@ -771,9 +771,13 @@ namespace GridGame.App.Automation
                         firstEnchant = ArmorEnchanting.First(c, s) is var fe && fe != null ? new { enchant = fe.Enchant.Id, row = fe.Target.RowName, piece = fe.Target.Item.Id, hero = fe.Target.Hero.ClassId, ready = fe.Ready } : null,
                         enchants = ArmorEnchanting.Pieces(c, s).Where(t => t.Piece.Enchant != null).ToDictionary(t => t.RowName, t => t.Piece.Enchant),
                         // GG-T180: onboarding step 7, the guided first skill, and each party hero's battle bar.
-                        firstSkill = Training.First(c, s) is var fk && fk != null ? new { skill = fk.Skill.Id, hero = fk.Hero.ClassId, slot = fk.Slot } : null,
+                        // GG-T1096: the guided first skill is an ability node on the skill hexagon (q/r = Training.Plan.Node).
+                        firstSkill = Training.First(c, s) is var fk && fk != null ? new { skill = fk.Skill.Id, hero = fk.Hero.ClassId, slot = fk.Slot, q = fk.Node.Q, r = fk.Node.R, join = fk.Join } : null,
                         onboarded = s.Flags.Contains(Training.FirstSkillFlag),
                         bars = s.Party.Select(s.Hero).Where(h => h != null).ToDictionary(h => h.ClassId, h => h.Bar.ToList()),
+                        // GG-T1096: each roster hero's unspent skill points and owned hex nodes ("q,r", SkillHexProgress.Key).
+                        skillPoints = s.Roster.Where(h => h != null).ToDictionary(h => h.ClassId, h => h.SkillPoints),
+                        hexNodes = s.Roster.Where(h => h != null).ToDictionary(h => h.ClassId, h => (h.HexNodes ?? new List<string>()).ToList()),
                         bounty = new { hunting = s.Bounty.Taken.ToList(), slain = s.Bounty.Slain.ToList(), claimed = s.Bounty.Claimed.Count, offers = Bounties.Offers(c, s).Select(b => b.Id).ToList() }, // GG-T431
                     };
                 }
@@ -1126,9 +1130,10 @@ namespace GridGame.App.Automation
                         acts_in = u.IsHero ? -1 : BattleEngine.ActionsUntilTurn(s, u.Id),
                         acted = u.IsHero && TurnRules.HasActed(s, u), // GG-T308, §2.13: acted this party turn, as the mode says
                         may_act = u.IsHero && TurnRules.MayAct(s, u), // GG-T788: may be picked up or use its bar now, time aside
+                        acted_this_round = u.IsHero && TurnRules.MovedThisRound(s, u), // GG-T801 (§2.13.2): used its place this round; false outside UnmovedThisRound
                         bar = u.IsHero ? Enumerable.Range(0, u.Bar.Count).Select(i => (u.Bar[i].AbilityId ?? u.Bar[i].ItemId ?? "-") + "=" + BattleEngine.GetSlotStatus(s, u.Id, i)).ToList() : null,
                     }).ToList(),
-                    window_seconds = BattleEngine.TurnTicks(s) / (float)BattleConfig.TicksPerSecond, to_act = BattleEngine.HeroesLeftToAct(s).Select(h => h.Id).ToList(), one_hero_per_turn = TurnRules.OneHeroPerTurn(s), too_little_time = BattleEngine.TooLittleTime(s), // GG-T308/GG-T311
+                    window_seconds = BattleEngine.TurnTicks(s) / (float)BattleConfig.TicksPerSecond, to_act = BattleEngine.HeroesLeftToAct(s).Select(h => h.Id).ToList(), one_hero_per_turn = TurnRules.OneHeroPerTurn(s), round = s.Round /* GG-T801: UnmovedThisRound's round, 1 in other modes */, too_little_time = BattleEngine.TooLittleTime(s), // GG-T308/GG-T311
                     timeline = s.Timeline.Select(e => new { e.Id, kind = e.Kind.ToString(), owner = e.OwnerId, u = Math.Round(BattleEngine.BarU(s, e), 3), e.AbilityId, in_recovery = BattleEngine.InRecovery(e), recover_seconds = Math.Round(Math.Max(0, e.RecoverTicks) / (double)BattleConfig.TicksPerSecond, 2), entry_u = Math.Round(BattleEngine.EntryBarU(s, e), 3) }).ToList(),
                     pickups = s.Pickups.Select(p => new { p.Id, kind = p.PickupId, x = p.At.X, y = p.At.Y, left = p.ActionsLeft }).ToList(), // GG-T228
                     results = new { s.Results.Coins, s.Results.Xp, s.Results.ActionsTaken },

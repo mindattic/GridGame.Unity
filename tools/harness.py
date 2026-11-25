@@ -1911,8 +1911,9 @@ def firstenchant(run="firstenchant"):
 
 def firstskill(run="firstskill"):
     """GG-T180: onboarding step 7, the end of the chain. Forge the starter lantern and the Wayfarer's Trousers and bind
-    Regeneration into them (as in firstenchant); the Abilities screen then opens on Learn with the guided first skill at
-    the top, its tip names the skill and rings Learn, and tapping Learn trains it for no gold onto the lead's bar."""
+    Regeneration into them (as in firstenchant); the Abilities screen then opens on the Board sub-tab with the guided
+    first skill's card above the skill hexagon (GG-T1086), its tip names the node and rings Learn, and tapping Learn
+    buys that hex node free (no gold, no skill points) and slots the skill onto the hero's bar (GG-T1096)."""
     fails = []
     launch(run, extra=("-campTips",), fresh=True)
     call("newgame", slot=0, gold=100, npcs="merchant,blacksmith,alchemist,enchantress", seen="blacksmith,abilities", lessons=CAMP_ROW_LESSONS); time.sleep(1)
@@ -1939,7 +1940,7 @@ def firstskill(run="firstskill"):
     elif not call("names", prefix="camp-tip-ring"):
         fails.append("training tip has no ring: guided Learn button not found")
     if not call("names", prefix="guided-lesson"):
-        fails.append("Abilities didn't open on Learn with the guided lesson")
+        fails.append("Abilities didn't open on Board with the guided lesson")
     texts = " ".join(str(t) for t in call("texts"))
     if "Tap Learn" not in texts:
         fails.append("tip doesn't ring Learn")
@@ -1954,6 +1955,13 @@ def firstskill(run="firstskill"):
         fails.append(f"the skill isn't on the {fk['hero']}'s bar: {after.get('bars')}")
     if after["Gold"] != gold:
         fails.append(f"the first skill cost gold ({gold} -> {after['Gold']})")
+    if fk:  # GG-T1096: Learn buys the planned hex node free: the hero owns it and its skill points are untouched
+        node = f"{fk['q']},{fk['r']}"
+        if node not in after.get("hexNodes", {}).get(fk["hero"], []):
+            fails.append(f"the {fk['hero']} doesn't own the board node {node}: {after.get('hexNodes', {}).get(fk['hero'])}")
+        sp0, sp1 = camp.get("skillPoints", {}).get(fk["hero"]), after.get("skillPoints", {}).get(fk["hero"])
+        if sp0 != sp1:
+            fails.append(f"the first skill spent the {fk['hero']}'s skill points ({sp0} -> {sp1})")
     if not after.get("onboarded") or after.get("firstSkill"):
         fails.append("onboarding chain not complete after the first skill")
     errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
