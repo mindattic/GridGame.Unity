@@ -18,15 +18,18 @@ namespace GridGame.App
         void ReadInfo(string name, Action<CloudSnapshotInfo> done);
         /// <summary>The snapshot's bytes, or null on any failure.</summary>
         void Read(string name, Action<byte[]> done);
-        void Write(string name, byte[] data, string description, TimeSpan playTime, Action<bool> done);
+        /// <summary>Uploads <paramref name="data"/>; <paramref name="savedUtc"/> is the save's own <c>UpdatedUtc</c>, kept
+        /// by a store that holds its own metadata (iCloud, GG-T609) so the same save never reads back as newer.</summary>
+        void Write(string name, byte[] data, string description, TimeSpan playTime, DateTime savedUtc, Action<bool> done);
     }
 
     /// <summary>
     /// Cloud save (§15.2, GG-T608): after each <c>Persist</c> the slot is uploaded (debounced to one upload a minute, and
     /// flushed on pause/quit); before a save is played, a newer cloud copy is offered — "Use the cloud save from &lt;date&gt;,
     /// &lt;play time&gt;?" — never merged; on a new device, Load Game's <b>Restore from cloud</b> fills empty slots from the
-    /// cloud. With no backend (every platform but an Android build with Play Games compiled in, see
-    /// <see cref="PlatformBackend"/>) every call is a no-op and loading goes straight on.
+    /// cloud. With no backend (every platform but an Android build with Play Games compiled in and an iOS player, see
+    /// <see cref="PlatformBackend"/>), or with iCloud unavailable on the iPhone, every call is a no-op and loading goes
+    /// straight on.
     /// </summary>
     public sealed class CloudSaves
     {
@@ -44,11 +47,15 @@ namespace GridGame.App
         public static CloudSaves Create() => new CloudSaves(PlatformBackend());
 
         /// <summary>Play Games Saved Games in an Android player built with the <c>GG_PLAY_GAMES</c> define (set once the
-        /// Play Games plugin and the Play Console app id are in, GG-T608); nothing anywhere else.</summary>
+        /// Play Games plugin and the Play Console app id are in, GG-T608); the iCloud key-value store in an iOS player
+        /// (GG-T609; it reports itself signed out, so every call is a no-op, until the iCloud entitlement is in and the
+        /// player is signed into iCloud); nothing anywhere else.</summary>
         private static ICloudSaveBackend PlatformBackend()
         {
 #if GG_PLAY_GAMES && UNITY_ANDROID && !UNITY_EDITOR
             return new PlayGamesCloudBackend();
+#elif UNITY_IOS && !UNITY_EDITOR
+            return new ICloudCloudBackend();
 #else
             return null;
 #endif
@@ -103,7 +110,7 @@ namespace GridGame.App
             catch (Exception e) { Debug.LogError("[Cloud] couldn't pack the save: " + e.Message); return; }
             if (data.Length > CloudSave.MaxSnapshotBytes) { Debug.LogError($"[Cloud] {name} is {data.Length} bytes, over the snapshot limit"); return; }
             uploading = true;
-            backend.Write(name, data, CloudSave.Description(s), TimeSpan.FromSeconds(Math.Max(0, s.PlaySeconds)), ok =>
+            backend.Write(name, data, CloudSave.Description(s), TimeSpan.FromSeconds(Math.Max(0, s.PlaySeconds)), s.UpdatedUtc, ok =>
             {
                 uploading = false;
                 if (ok) Debug.Log($"[Cloud] uploaded {name} ({data.Length} bytes)");

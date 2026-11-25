@@ -107,5 +107,57 @@ namespace GridGame.Tests
             CloudSave.Description(s);
             Assert.That(Newtonsoft.Json.JsonConvert.SerializeObject(s, SaveFiles.Settings), Is.EqualTo(before));
         }
+
+        // ---- iCloud key-value store (GG-T609) ----
+
+        [Test]
+        public void An_iCloud_value_reads_back_into_the_same_save_and_metadata()
+        {
+            var s = Game(T0);
+            var value = CloudSave.ICloudPack(CloudSave.Encode(s), s.UpdatedUtc, s.PlaySeconds, "Cloud · 1 heroes\n· 3:07 played");
+            Assert.That(CloudSave.ICloudTryUnpack("Default-slot1", value, out var info, out var body), Is.True);
+            Assert.That(info.Name, Is.EqualTo("Default-slot1"));
+            Assert.That(info.UpdatedUtc, Is.EqualTo(T0), "the save's own UpdatedUtc, so the same save reads back in sync");
+            Assert.That(info.PlaySeconds, Is.EqualTo(s.PlaySeconds));
+            Assert.That(info.Description, Does.Not.Contain("\n"));
+            Assert.That(info.HasData, Is.True);
+            Assert.That(CloudSave.Decide(s, info), Is.EqualTo(CloudChoice.InSync));
+            Assert.That(CloudSave.TryDecode(body, Real, out var back, out var error), Is.True, error);
+            Assert.That(back.Gold, Is.EqualTo(777));
+        }
+
+        [Test]
+        public void A_missing_foreign_or_damaged_iCloud_value_is_nothing()
+        {
+            Assert.That(CloudSave.ICloudTryUnpack("n", null, out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "hello", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC1\nnot-ticks\n1\nd\ncode", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC1\n1\nNaN\nd\ncode", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC2\n1\n1\nd\ncode", out _, out _), Is.False);
+        }
+
+        [Test]
+        public void iCloud_keys_fit_in_64_bytes_and_stay_distinct()
+        {
+            Assert.That(CloudSave.ICloudKey("Default-slot1"), Is.EqualTo("Default-slot1"));
+            var a = CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "a", 0));
+            var b = CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "b", 0));
+            Assert.That(a.Length, Is.LessThanOrEqualTo(CloudSave.MaxICloudKeyLength));
+            Assert.That(a, Does.EndWith("-slot1"));
+            Assert.That(a, Is.Not.EqualTo(b));
+            Assert.That(CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "a", 0)), Is.EqualTo(a), "stable");
+        }
+
+        [Test]
+        public void A_conflict_keeps_the_longer_play_time_like_Play_Games()
+        {
+            CloudSnapshotInfo Info(double play) => new CloudSnapshotInfo { PlaySeconds = play, HasData = true };
+            Assert.That(CloudSave.KeepMineOnConflict(Info(200), Info(100)), Is.True);
+            Assert.That(CloudSave.KeepMineOnConflict(Info(100), Info(200)), Is.False);
+            Assert.That(CloudSave.KeepMineOnConflict(Info(100), Info(100)), Is.False, "a tie keeps the cloud's copy");
+            Assert.That(CloudSave.KeepMineOnConflict(Info(1), null), Is.True);
+            Assert.That(CloudSave.KeepMineOnConflict(null, Info(1)), Is.False);
+        }
     }
 }

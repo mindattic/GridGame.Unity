@@ -300,8 +300,8 @@ breaks against GG-T479's epic (GG-T477).
    distribution certificate and App Store provisioning profile itself. Do the same Team pick for the
    **UnityFramework** target if Xcode flags it.
 3. Still in Signing & Capabilities, add **+ Capability > In-App Purchase** if it isn't listed (Unity IAP usually adds
-   it). Leave Game Center, iCloud and Push off until a feature needs them (iCloud saves are a later ticket, BIBLE
-   §15.2).
+   it). **iCloud** (Key-value storage only) is added by the export itself for cloud save (GG-T609, "Cloud save:
+   iCloud" below); leave Game Center and Push off until a feature needs them.
 4. Scheme destination **Any iOS Device (arm64)**, then **Product > Archive**. The Organizer opens with the archive.
 5. **Distribute App > App Store Connect > Upload** (keep "Upload your app's symbols" on so crash reports in Xcode's
    Organizer and App Store Connect are readable). Processing takes 5-30 minutes; you get an email.
@@ -314,6 +314,26 @@ breaks against GG-T479's epic (GG-T477).
    rating questionnaire, screenshots for the largest iPhone size App Store Connect asks for (currently 6.9-inch, 1320 x
    2868 portrait), description, keywords, support and privacy
    policy URLs, then pick the build and **Submit for Review**.
+
+### Cloud save: iCloud (GG-T609)
+
+The game side is built (BIBLE §15.2) and inert until the steps below are done. iOS uses the **iCloud key-value store**
+(NSUbiquitousKeyValueStore; no CloudKit, no iCloud Documents): `App/Services/ICloudCloudBackend` (compiled only into an
+iOS player) behind the same `CloudSaves` layer as Play Games, the native bridge `Plugins/iOS/GGICloud.mm`, and
+`Editor/ICloudEntitlements`, a post-build step that adds the **iCloud > Key-value storage** capability and its
+entitlement (`com.apple.developer.ubiquity-kvstore-identifier`) to the exported Xcode project, so no one ticks it by
+hand. Without an iCloud account on the phone, with iCloud off for the game, or without the entitlement, the backend
+reports itself signed out and cloud save does nothing. The store holds 1 MB for the whole app (every profile's slots
+together; a slot is tens of KB packed). Each owner step is its own ticket with the exact checklist:
+
+1. **The owner, Apple developer account (GG-T1127):** Identifiers > App ID `com.mindattic.gridgame` > tick **iCloud**
+   with "Include CloudKit support" **off** > Save; regenerate manual provisioning profiles (automatic signing does it
+   itself). Nothing to send back: there is no container id.
+2. **The owner, Mac (GG-T1128):** export (`pwsh tools/build.ps1 -Platform iOS`), confirm Signing & Capabilities shows
+   **iCloud** with **Key-value storage** ticked, build onto an iPhone (this is the first compile of `GGICloud.mm`) and
+   read `[Cloud] sign-in ok` in Xcode's console.
+3. **The owner, iPhones on one Apple ID (GG-T1129):** upload, Load Game > **Restore from cloud** after a reinstall, the
+   newer-copy offer on Continue, the longest-play-time conflict, and nothing happening with iCloud off.
 
 **Target devices (GG-T724, BIBLE §26.3).** iPhone 13 (A15) and newer flagships. App Store Connect can't exclude
 models, so the iPhone SE and 12/13 mini are "not designed for" rather than blocked; the iOS 17.0 floor already drops

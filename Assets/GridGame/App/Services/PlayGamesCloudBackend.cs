@@ -73,8 +73,9 @@ namespace GridGame.App
             });
         }
 
-        public void Write(string name, byte[] data, string description, TimeSpan playTime, Action<bool> done)
+        public void Write(string name, byte[] data, string description, TimeSpan playTime, DateTime savedUtc, Action<bool> done)
         {
+            // savedUtc unused: Play Games stamps LastModifiedTimestamp itself.
             Open(name, meta =>
             {
                 if (meta == null) { done(false); return; }
