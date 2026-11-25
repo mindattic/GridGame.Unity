@@ -51,6 +51,22 @@ namespace GridGame.Core.Battle
     /// hero's place or holds the round up. A recruit joins through Talk, which uses the talker's place, and may act this
     /// round (<see cref="ClearActed"/>). Naming: a region <c>RuleHookDef.Every</c> counts hook matches, not rounds, so
     /// nothing is renamed. TurnModeRoundTests pin each answer.</para>
+    /// <para>GG-T1102 (§2.13.3) HeroTimeline rate and per-turn decisions. Every hero turn is a party-turn boundary
+    /// (<see cref="IsTurnBoundary"/>), but a hero counts <b>its own</b> turns like a foe (GG-T809): its Turns buffs, cooldowns,
+    /// regen and TurnEnd/TurnStart run only as its own icon arrives. Sleep (GG-T1100): an Immobile, non-halted hero's arrived
+    /// icon is a skipped turn — it re-enters, never becomes <see cref="BattleState.ActiveHeroId"/>, emits TurnSkipped and
+    /// ticks its own Turns buffs and cooldowns; Frozen halts the icon and thaws on the shared cycle. Rates: Hasten,
+    /// HastenSeconds and a buff's Tempo on a hero with an icon (<see cref="IsHeroIcon"/>) move only that hero's own icon
+    /// (a rush; Slowed's TimelineSpeedMultiplier), never party tempo, which would count them twice (the hero sooner and
+    /// every foe slower). Party tempo and Rally stay foe-only (<c>BattleEngine.EnemyTempoMultiplier</c>): a forced Guard
+    /// stacks Rally and any hero action resets it, as before. A foe's Pushback lands on a hero's icon like any icon
+    /// (<c>Pushback</c> has no hero skip): content's enemy users are the Spire Shover's Shove and an Echo of a hero's
+    /// pushback skill; every enemy Hasten (Enrage, Chrono Rewind, Open Reservoir: Self; Charge Howl, Feed the Herd:
+    /// AllyOnly) lands on foes. Mana: pincer charge and spells are per action, regen follows the clock, Guard's bank is
+    /// unchanged, and the time bank keeps the per-action cap (<see cref="MaxTimeBankOrbs"/> =
+    /// <c>AnyHeroMaxTimeBankOrbs</c>), one hero turn being one action. The support extra turn (<c>supportTurnOwner</c>,
+    /// GG-T307) stays enemy-side and unchanged: a hero's Turns buff gained on its own turn already lasts until its own
+    /// next arrival, so no hero needs one.</para>
     /// </summary>
     public static class TurnRules
     {

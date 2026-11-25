@@ -597,10 +597,14 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>Hasten/Quicken (§2.7.1): slide a turn icon forward, or rush a cast. A hasted hero also raises the
-        /// party's tempo (§2.11, GG-T268), which slows every enemy icon: heroes have no turn icons under the held turn.</summary>
+        /// party's tempo (§2.11, GG-T268), which slows every enemy icon: heroes have no turn icons under the held turn.
+        /// GG-T1102 (§2.13.3): under HeroTimeline a hero has its own icon, so the haste rushes that icon alone; party tempo
+        /// would count it twice (its icon sooner and every foe slower).</summary>
         private void Hasten(Unit t, float amountU, string source = null, int turns = 0)
         {
-            if (t.IsCommandable) // a tamed ally has its own icon: it is hastened like any icon, not via party tempo (GG-T303)
+            // A tamed ally has its own icon: it is hastened like any icon, not via party tempo (GG-T303); so is a hero
+            // under HeroTimeline (GG-T1102).
+            if (t.IsCommandable && !TurnRules.IsHeroIcon(S, t))
                 AddTempo(source ?? "haste", Math.Max(1, (int)Math.Round(amountU / BattleConfig.HastenUPerTempo)),
                     turns > 0 ? turns : BattleConfig.DefaultTempoTurns);
             var turn = S.TurnEntryOf(t.Id);

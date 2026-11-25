@@ -930,7 +930,9 @@ namespace GridGame.Core.Battle
             if (def.PlateChip > 0) ChipPlate(u, def.PlateChip, sourceId); // GG-T857: Shredded bites the plate from any side
             if (def.Roots) SnapLineCharge(u); // GG-T881: a Line charge carries the caster down its lane; rooted, it can't
             ComboStatus(u, def, sourceId); // §1.2.8
-            if (u.IsCommandable && def.Tempo != 0)
+            // GG-T1102 (§2.13.3): under HeroTimeline a hero's own icon already feels the buff (TimelineSpeedMultiplier),
+            // so it doesn't move party tempo too, which would count it twice.
+            if (u.IsCommandable && def.Tempo != 0 && !TurnRules.IsHeroIcon(S, u))
                 AddTempo("buff:" + def.Id, def.Tempo, def.Unit == DurationUnit.Turns ? duration : BattleConfig.DefaultTempoTurns);
             Fire(TriggerOn.OnStatusGained, u, new TriggerContext { Status = def.Id });
         }

@@ -208,7 +208,9 @@ namespace GridGame.Core.Battle
             if (!(seconds > 0f) || !t.Alive) return;
             seconds = Math.Min(seconds, SupportDef.MaxHasteSeconds);
             int ticks = Formulas.SecondsToTicks(seconds);
-            if (t.IsCommandable) // like Hasten: a tamed beast/wanderer has its own icon, hastened directly, not via party tempo
+            // Like Hasten: a tamed beast/wanderer, and a hero under HeroTimeline (GG-T1102), has its own icon, hastened
+            // directly, not via party tempo.
+            if (t.IsCommandable && !TurnRules.IsHeroIcon(S, t))
                 AddTempo(source, Math.Max(1, (int)Math.Round(seconds / BattleConfig.BarSeconds / BattleConfig.HastenUPerTempo)), BattleConfig.DefaultTempoTurns);
             var turn = S.TurnEntryOf(t.Id);
             if (turn != null)

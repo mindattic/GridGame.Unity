@@ -1295,6 +1295,15 @@ What is built so far (GG-T807, tests GG-T1070 `TurnModeHeroTimelineTests`):
 - **Ties.** On the same tick a hero's turn resolves before a foe's ([§2.4](#24-turn-order--arrival-order)): casts > rule hazards > hero turn > foe turn > lower entry id. A seeded run replays identically.
 - **Gap (GG-T808).** `ScheduleHeroIcons` runs only in `OpenPartyWindow` (a wave's opening), so a hero revived mid-wave gets its icon only at the next wave's opening; until then it has no turn icon. Handing a hero's arrived icon to the player is GG-T808's.
 
+**Rates and per-turn systems (✅ GG-T1102).** Every hero turn is a party-turn boundary, but each hero counts **its own** turns, the way a foe does (GG-T809). `TurnRules`' summary records each answer below.
+- **Own turns.** A hero's Turns buffs, skill cooldowns, regen and TurnStart/TurnEnd run only when its own icon arrives. On another hero's turn, only a halting debuff (Frozen) ticks. A Frozen hero's icon is halted, so its freeze also counts down on each foe turn and it always thaws.
+- **Sleep (GG-T1100, `804f6d3d`).** When an Immobile hero's icon arrives and the hero isn't halted, it loses that turn, like a foe's skipped turn. The icon re-enters at its Speed's entry and the hero never becomes `ActiveHeroId`. `TurnSkipped` is emitted (asleep/immobile), and the hero's own Turns buffs (Sleep included) and cooldowns tick. The clock then runs on to the next hero's icon.
+- **Hasten, Quicken and Slow on a hero.** Hasten (`HastenU`), `HastenSeconds` (support haste, haste pickups) and a buff's `Tempo` (Slowed: −1) move **only that hero's own icon**: Hasten rushes it, and Slowed's `TimelineSpeedMultiplier` slows it. They do **not** also raise or lower party tempo. Doing both would count the effect twice, once as the hero arriving sooner and again as every foe arriving later. In every other mode heroes have no icons, so party tempo is still how a hero's haste is felt.
+- **Party tempo and Rally** still slow foes only (`BattleEngine.EnemyTempoMultiplier`). They speed the heroes up relative to the foes and never touch a hero's own icon. A forced Guard stacks Rally and any hero action resets it, as before.
+- **A foe's Pushback** lands on a hero's icon like any other icon. `Pushback` has no hero exception, so the push adds stun at an empty bar, or adds to recovery while the icon is off the bar. Audit of `abilities.json` with `classes.json`: the only enemy pushback is the Spire Shover's **Shove**, plus any hero pushback skill an Echo copies. Every enemy Hasten (Enrage, Chrono Rewind and Open Reservoir on Self; Charge Howl and Feed the Herd on AllyOnly) lands on foes, never on a hero.
+- **Mana income per hero turn (§3.1).** One hero turn is one action. Pincer charge and spells are both per action, regen follows the clock, and Guard's bank is unchanged. The time bank keeps AnyHeroEveryTurn's per-action cap: `TurnRules.MaxTimeBankOrbs` = `AnyHeroMaxTimeBankOrbs` (1).
+- **The support extra turn (`supportTurnOwner`, GG-T307).** Unchanged and enemy-side only. A Turns buff a hero gains on its own turn already lasts until that hero's next arrival, so no hero needs an extra turn.
+
 ---
 
 ## 3. Resources
