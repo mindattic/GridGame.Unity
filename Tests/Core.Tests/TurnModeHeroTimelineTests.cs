@@ -359,19 +359,34 @@ namespace GridGame.Tests
 
         /// <summary>The Mode B flood rule (TurnModeRoundTests' GG-T1073 region) on <see cref="Db"/>: at BattleStart (0,6) and
         /// (4,6) are flooded; a hero standing in the flood is soaked (Warm) at its TurnStart and its TurnEnd.</summary>
-        private static BattleState Flooded(params (string cls, int x, int y)[] heroes)
+        private static BattleState Flooded(params (string cls, int x, int y)[] heroes) => Flooded(false, false, heroes);
+
+        /// <param name="timed">BattleStart also schedules the timed "rise" (6 s) to flood (5,7).</param>
+        /// <param name="summon">A hero's TurnEnd in the flood also brings a goblin at (5,2), a rule summon.</param>
+        private static BattleState Flooded(bool timed, bool summon, params (string cls, int x, int y)[] heroes)
         {
             var db = Db();
             var rule = new RegionRuleDef { Id = "turn-flood", TileStates = { new TileStateDef { Id = "flood", Color = "#3B6FA0", Glyph = "~" } } };
+            rule.Events.Add(new RuleEventDef
+            {
+                Id = "rise", Seconds = 6f, Hazard = false,
+                Effects = { new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.EventTiles, State = "flood" } },
+            });
             var start = new RuleHookDef { On = RuleHook.BattleStart };
             start.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(0, 6), new Coord(4, 6) }, State = "flood" });
+            if (timed) start.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.Schedule, Area = RuleArea.Tiles, Tiles = { new Coord(5, 7) }, Event = "rise" });
             rule.Hooks.Add(start);
             foreach (var on in new[] { RuleHook.TurnStart, RuleHook.TurnEnd })
-                rule.Hooks.Add(new RuleHookDef
+            {
+                var hook = new RuleHookDef
                 {
                     On = on, Team = RuleTeam.Hero, State = "flood",
                     Effects = { new RuleEffectDef { Kind = RuleEffectKind.ApplyBuff, Units = RuleUnits.Subject, Buff = "warm" } },
-                });
+                };
+                if (summon && on == RuleHook.TurnEnd)
+                    hook.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.SpawnUnit, Area = RuleArea.Tiles, Tiles = { new Coord(5, 2) }, Class = "goblin", Level = 1 });
+                rule.Hooks.Add(hook);
+            }
             RegionRuleCatalog.Index(db, new List<RegionRuleDef> { rule });
             var stage = Stage(("goblin", 5, 0));
             stage.Rules.Add("turn-flood");
@@ -478,6 +493,146 @@ namespace GridGame.Tests
             foreach (var a in allies) Assert.That(a.TurnsTaken - before[a.Id], Is.EqualTo(turns[a.Id]), a.Def.Id + " counts its own turns");
             Assert.That(turns.Values.Sum(), Is.GreaterThan(0), "the allies took turns on the clock");
             Assert.That(wolf.TameTurnsLeft, Is.EqualTo(99 - grew), "the tame counts the wolf's own turns, not hero turns");
+        }
+
+        [Test]
+        public void A_timed_rule_event_lands_on_the_clock_tick_it_was_scheduled_for_whatever_hero_turns_pass()
+        {
+            var s = Flooded(true, false, ("sprinter", 0, 6), ("plodder", 4, 6));
+            var rise = s.Timeline.Single(e => e.Kind == TimelineKind.Hazard && e.RuleEvent == "rise");
+            long due = s.Clock + BattleEngine.TicksUntilAct(s, rise);
+            Assert.That(rise.TotalCastTicks, Is.EqualTo(6 * BattleConfig.TicksPerSecond), "scheduled 6 s out");
+            Assert.That(due, Is.GreaterThan(s.Clock));
+
+            int turns = 0;
+            for (int i = 0; i < 30 && !s.IsOver; i++)
+            {
+                long before = s.Clock;
+                var ev = BattleEngine.Apply(s, new ShieldCommand());
+                turns++;
+                if (ev.OfType<HazardLandedEvent>().Any(h => h.EventId == "rise"))
+                {
+                    Assert.That(before, Is.LessThan(due), "it had not landed before this hero turn");
+                    Assert.That(s.Clock, Is.GreaterThanOrEqualTo(due), "it landed within the clock this hero turn ran");
+                    Assert.That(s.Region.At(new Coord(5, 7))?.State, Is.EqualTo("flood"), "the water rose");
+                    Assert.That(turns, Is.GreaterThan(1), "hero turns passed while it waited");
+                    return;
+                }
+                Assert.That(s.Timeline, Does.Contain(rise), $"turn {i}: still pending");
+                Assert.That(s.Clock + BattleEngine.TicksUntilAct(s, rise), Is.EqualTo(due), $"turn {i}: a hero turn neither hastens nor delays it");
+            }
+            Assert.Fail("the water never rose");
+        }
+
+        [Test]
+        public void A_recruit_joins_on_its_own_hero_icon_and_every_other_icon_stays_put()
+        {
+            BattleState Recruiting()
+            {
+                var stage = Stage(("goblin", 5, 0));
+                stage.Waves[0].Recruitables.Add(new RecruitableDef { Class = "mage", X = 1, Y = 5 });
+                return BattleEngine.Create(Db(), Setup(stage, 7, ("sprinter", 1, 6), ("plodder", 4, 6)), new List<BattleEvent>());
+            }
+
+            // The join itself (DoTalk): ScheduleHeroIcons(onlyMissing) leaves every other icon where it is.
+            var s = Recruiting();
+            var fast = Hero(s, "sprinter");
+            var mage = s.Units.Single(u => u.Def.Id == "mage");
+            Assert.That(mage.IsNeutral, Is.True);
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
+            var before = s.Timeline.Where(e => e.OwnerId != mage.Id).ToDictionary(e => e.Id, e => (e.Ip, e.RecoverTicks, e.StunTicks));
+            bool joined = (bool)RunnerType.GetMethod("DoTalk", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(NewRunner(s), new object[] { new TalkCommand { HeroId = fast.Id, TargetId = mage.Id } });
+            Assert.That(joined, Is.True);
+            Assert.That(mage.IsCommandable, Is.True);
+            var icon = s.TurnEntryOf(mage.Id);
+            Assert.That(icon, Is.Not.Null, "the recruit rides the timeline on its own icon");
+            Assert.That(TurnRules.IsHeroIcon(s, mage), Is.True, "a commanded hero's icon");
+            foreach (var e in s.Timeline.Where(e => e != icon))
+            {
+                Assert.That(before.ContainsKey(e.Id), Is.True, "no other icon was made");
+                Assert.That((e.Ip, e.RecoverTicks, e.StunTicks), Is.EqualTo(before[e.Id]), "icon " + e.Id + " stayed where it was");
+            }
+            Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id), "the talker's turn is untouched");
+
+            // Through the command: Talk is the talker's turn, and the recruit then holds hero turns of its own.
+            s = Recruiting();
+            fast = Hero(s, "sprinter");
+            mage = s.Units.Single(u => u.Def.Id == "mage");
+            var talk = BattleEngine.Apply(s, new TalkCommand { HeroId = fast.Id, TargetId = mage.Id });
+            Assert.That(talk.OfType<RecruitJoinedEvent>().Count(), Is.EqualTo(1));
+            Assert.That(TurnRules.IsHeroIcon(s, mage), Is.True);
+            Assert.That(s.TurnEntryOf(mage.Id), Is.Not.Null);
+            bool held = s.ActiveHeroId == mage.Id;
+            for (int i = 0; i < 8 && !held && !s.IsOver; i++)
+            {
+                BattleEngine.Apply(s, new ShieldCommand());
+                held = s.ActiveHeroId == mage.Id;
+            }
+            Assert.That(held, Is.True, "the recruit's own icon arrived as a hero turn");
+        }
+
+        [Test]
+        public void A_rule_summon_gets_a_foe_icon_and_never_holds_a_heros_turn()
+        {
+            var s = Flooded(false, true, ("sprinter", 0, 6), ("plodder", 4, 6));
+            var summoned = new HashSet<int>();
+            for (int i = 0; i < 6 && !s.IsOver; i++)
+            {
+                var ev = BattleEngine.Apply(s, new ShieldCommand());
+                foreach (var id in ev.OfType<ReinforcementsArrivedEvent>().SelectMany(r => r.Spawned)) summoned.Add(id);
+                Assert.That(summoned, Does.Not.Contain(s.ActiveHeroId), $"turn {i}: a summon never becomes the active hero");
+                foreach (var id in summoned)
+                {
+                    var u = s.UnitById(id);
+                    if (!u.Alive) continue;
+                    Assert.That(u.Team, Is.EqualTo(Team.Enemy), u.Def.Id);
+                    Assert.That(s.TurnEntryOf(u.Id), Is.Not.Null, u.Def.Id + " rides the timeline on its own icon");
+                    Assert.That(TurnRules.IsHeroIcon(s, u), Is.False, u.Def.Id + " has a foe icon");
+                }
+            }
+            Assert.That(summoned, Is.Not.Empty, "a hero's TurnEnd in the flood summoned a goblin");
+        }
+
+        [Test]
+        public void A_wave_guest_gets_a_hero_icon_at_its_waves_opening()
+        {
+            var stage = StageWaves(new[] { ("imp", 5, 0) }, new[] { ("imp", 5, 1) });
+            stage.Waves[1].Guests.Add(new SpawnDef { Class = "mage", X = 2, Y = 6 });
+            var s = Create(stage, ("sprinter", 0, 6), ("plodder", 4, 6));
+            Assert.That(s.Units.Any(u => u.Def.Id == "mage"), Is.False, "the guest waits for wave 2");
+
+            var imp = Foe(s);
+            imp.Hp = 1;
+            imp.Buffs.Add(new BuffInstance { Def = s.Content.Buffs["burning"], Remaining = 5 });
+            List<BattleEvent> opening = null;
+            for (int i = 0; i < 200 && s.Wave == 0 && !s.IsOver; i++) opening = BattleEngine.RunClock(s, 1);
+            Assert.That(s.Wave, Is.EqualTo(1), "wave 2 began");
+            Assert.That(opening.OfType<GuestJoinedEvent>().Count(), Is.EqualTo(1), "the guest joined at the wave's opening");
+
+            var guest = s.Units.Single(u => u.Def.Id == "mage");
+            Assert.That(guest.IsGuest && guest.IsCommandable, Is.True);
+            Assert.That(s.TurnEntryOf(guest.Id), Is.Not.Null, "it rides the timeline on its own icon");
+            Assert.That(TurnRules.IsHeroIcon(s, guest), Is.True, "a commanded hero's icon");
+            AssertHeroesOpen(s, s.Units.Where(u => u.IsHero && u.Alive).ToList(), "wave 2 with its guest");
+        }
+
+        [Test]
+        public void The_countdown_badge_counts_a_hero_icon_arriving_before_the_foes()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
+            var fast = Hero(s, "sprinter");
+            var slow = Hero(s, "plodder");
+            var foe = Foe(s);
+            Assert.That(s.CastEntryOf(foe.Id), Is.Null);
+            ArriveIn(s, slow, 2);
+            ArriveIn(s, foe, 5);
+            ArriveIn(s, fast, 50);
+            Assert.That(TurnRules.CountdownLeft(s, foe.Id), Is.EqualTo(1), "the plodder's hero turn comes first; the sprinter's after");
+            Assert.That(BattleEngine.ActionsUntilTurn(s, foe.Id), Is.EqualTo(1));
+
+            ArriveIn(s, slow, 6);
+            Assert.That(TurnRules.CountdownLeft(s, foe.Id), Is.EqualTo(0), "0 = the foe's icon is the next to arrive");
         }
 
         #endregion

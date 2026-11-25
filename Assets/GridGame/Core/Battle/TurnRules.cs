@@ -67,6 +67,17 @@ namespace GridGame.Core.Battle
     /// <c>AnyHeroMaxTimeBankOrbs</c>), one hero turn being one action. The support extra turn (<c>supportTurnOwner</c>,
     /// GG-T307) stays enemy-side and unchanged: a hero's Turns buff gained on its own turn already lasts until its own
     /// next arrival, so no hero needs one.</para>
+    /// <para>GG-T1104 (§2.13.3) HeroTimeline and the GG-T783 rules, decided. A hero's region TurnStart/TurnEnd hooks and
+    /// TurnStart/TurnEnd triggers fire once per hero turn, only for the active hero whose own icon arrived (TurnEnd, then
+    /// TurnStart, on that arrival), never for the heroes still waiting; ActionEnd only for the actor. Timed rule events
+    /// (rising water, the anchor heave) follow the clock: one lands on the tick it was scheduled for, however many hero
+    /// turns pass. Rule breaks, tames, bonds and a wanderer's turns count that unit's own <see cref="Unit.TurnsTaken"/>
+    /// on its own non-hero icon (<see cref="IsHeroIcon"/> is false for an independent ally), which never becomes
+    /// <see cref="BattleState.ActiveHeroId"/>; a rule summon gets a foe icon the same way. A recruit (Talk, the talker's
+    /// turn) and a wave's guest (at its wave's opening) join on their own hero icon at their Speed's entry, every other
+    /// icon left where it is. The countdown badge (<see cref="CountdownLeft"/>) counts every other icon on the one bar:
+    /// a hero icon is a party turn and a foe icon a foe turn, so a hero arriving before the foe counts, and 0 means the
+    /// foe's icon is the next to arrive. TurnModeHeroTimelineTests pin each answer.</para>
     /// <para>GG-T1105 (§2.13.3) the enemy AI under HeroTimeline, decided: foes stay blind to whose icon arrives next, as
     /// they stay blind to who has moved under rounds (GG-T798). <c>EnemyPlanner</c> targeting (taunt, personality, then
     /// distance, HP, id), its step and its ranged pick read the board and HP, never <see cref="BattleState.ActiveHeroId"/>
