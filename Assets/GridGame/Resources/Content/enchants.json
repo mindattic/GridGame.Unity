@@ -11,7 +11,6 @@
       "Vitality": 0,
       "Agility": 0,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 0,
       "Wisdom": 0,
       "Luck": 0
@@ -29,7 +28,6 @@
       "Vitality": 0,
       "Agility": 0,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 5,
       "Wisdom": 0,
       "Luck": 0
@@ -47,7 +45,6 @@
       "Vitality": 0,
       "Agility": 3,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 0,
       "Wisdom": 2,
       "Luck": 0
@@ -65,7 +62,6 @@
       "Vitality": 0,
       "Agility": 0,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 0,
       "Wisdom": 0,
       "Luck": 3
@@ -83,7 +79,6 @@
       "Vitality": 3,
       "Agility": 0,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 0,
       "Wisdom": 0,
       "Luck": 2
@@ -101,7 +96,6 @@
       "Vitality": 0,
       "Agility": 0,
       "Speed": 0,
-      "Stamina": 0,
       "Intelligence": 0,
       "Wisdom": 5,
       "Luck": 0

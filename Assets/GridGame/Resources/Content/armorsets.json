@@ -168,8 +168,7 @@
       {
         "Pieces": 5,
         "Stats": {
-          "Vitality": 3,
-          "Stamina": 2
+          "Vitality": 5
         },
         "RegenPerTurn": 4
       }
@@ -353,8 +352,7 @@
       {
         "Pieces": 5,
         "Stats": {
-          "Vitality": 5,
-          "Stamina": 3
+          "Vitality": 8
         },
         "Resistances": {
           "Ice": 0.6
@@ -445,8 +443,7 @@
       {
         "Pieces": 5,
         "Stats": {
-          "Vitality": 5,
-          "Stamina": 3
+          "Vitality": 8
         },
         "StartsProtected": true
       }
