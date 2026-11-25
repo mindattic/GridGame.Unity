@@ -92,7 +92,8 @@ namespace GridGame.App
                 for (int r = -n; r <= n; r++)
                     if (board.Contains((q, r))) points.Add((q, r));
 
-            // Corner labels: the stat ids, just outside each corner.
+            // Corner labels: the stat ids, just outside each corner. 30 px (the caption floor, POL-A2) in the real Heavy
+            // cut, not faux bold (POL-A3) (GG-T1068).
             for (int k = 0; k < 6; k++)
             {
                 var id = k < stats.Count ? stats[k]?.Id : null;
@@ -100,13 +101,13 @@ namespace GridGame.App
                 var at = centre + corners[k] * (BoardRadius + 40f);
                 var label = new Label(id) { pickingMode = PickingMode.Ignore };
                 label.style.position = Position.Absolute;
-                label.style.left = at.x - 40f;
-                label.style.top = at.y - 18f;
-                label.style.width = 80f;
-                label.style.height = 36f;
+                label.style.left = at.x - 50f;
+                label.style.top = at.y - 21f;
+                label.style.width = 100f;
+                label.style.height = 42f;
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
-                label.style.fontSize = 26;
-                label.style.unityFontStyleAndWeight = FontStyle.Bold;
+                label.style.fontSize = 30;
+                Fonts.UseHeavy(label);
                 label.style.color = statColors[k];
                 Add(label);
             }

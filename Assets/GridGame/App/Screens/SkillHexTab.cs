@@ -22,6 +22,8 @@ namespace GridGame.App
     /// </summary>
     internal sealed class SkillHexTab : HeroTab
     {
+        /// <summary>The detail window's height in design px: a full route preview without scrolling (GG-T1068).</summary>
+        private const float DetailHeight = 460f;
         private readonly PanZoomState zoom = new PanZoomState();
         private (int Q, int R)? selected;
 
@@ -47,11 +49,16 @@ namespace GridGame.App
 
             var frame = Ui.Panel(body, null, true, "hex-board");
             var host = SkillHexView.Host(board, zoom, out var view);
+            // GG-T1068: the board's own dark fills the whole viewport, not just the fitted square in the middle of it.
+            host.style.backgroundColor = SkillHexView.Bg;
             frame.Add(host);
             view.SetOwned(start, owned);
             view.SetSelected(selected);
 
             var detail = Ui.DetailPanel(body, "hex-detail");
+            // GG-T1068: one fixed height (a node's name, route, stats, learns and Buy route) so hovering or tapping
+            // never resizes the board above it, which re-centred the hexagon under the pointer on every preview.
+            body.Q("hex-detail").style.height = DetailHeight;
             void Show((int Q, int R)? pt)
             {
                 detail.Clear();
