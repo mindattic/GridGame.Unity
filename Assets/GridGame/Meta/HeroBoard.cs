@@ -49,7 +49,7 @@ namespace GridGame.Meta
 
         /// <summary>Whether <paramref name="s"/> adds nothing.</summary>
         public static bool IsZero(Stats s) =>
-            s == null || (s.Strength == 0f && s.Vitality == 0f && s.Agility == 0f && s.Speed == 0f && s.Stamina == 0f
+            s == null || (s.Strength == 0f && s.Vitality == 0f && s.Agility == 0f && s.Speed == 0f
                           && s.Intelligence == 0f && s.Wisdom == 0f && s.Luck == 0f);
     }
 }

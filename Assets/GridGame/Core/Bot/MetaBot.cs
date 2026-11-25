@@ -15,7 +15,7 @@ namespace GridGame.Core.Bot
         {
             if (i == null) return 0f;
             var s = i.Stats;
-            return s.Strength + s.Vitality + s.Agility + s.Speed + s.Intelligence + s.Wisdom + s.Luck + s.Stamina + i.BaseDamage * 0.5f;
+            return s.Strength + s.Vitality + s.Agility + s.Speed + s.Intelligence + s.Wisdom + s.Luck + i.BaseDamage * 0.5f;
         }
 
         public static IEnumerable<ItemDef> BestFirst(IEnumerable<ItemDef> items) => items.OrderByDescending(Score);

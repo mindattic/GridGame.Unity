@@ -48,7 +48,7 @@ namespace GridGame.App
             var s = i.Stats;
             void P(string n, float v) { if (Math.Abs(v) > 0.01f) parts.Add($"{n} {(v > 0 ? "+" : "")}{v:0}"); }
             P("STR", s.Strength); P("VIT", s.Vitality); P("AGI", s.Agility); P("SPD", s.Speed);
-            P("INT", s.Intelligence); P("WIS", s.Wisdom); P("LCK", s.Luck); P("STA", s.Stamina);
+            P("INT", s.Intelligence); P("WIS", s.Wisdom); P("LCK", s.Luck);
             if (i.BaseDamage > 0) parts.Add($"ATK +{i.BaseDamage}");
             if (i.BaseHealing > 0) parts.Add($"Heals {i.BaseHealing}");
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");

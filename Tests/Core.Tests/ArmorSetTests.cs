@@ -37,7 +37,7 @@ namespace GridGame.Tests
         }
 
         private static string ItemStatsKey(ItemDef i) =>
-            $"{i.Stats.Strength},{i.Stats.Vitality},{i.Stats.Agility},{i.Stats.Speed},{i.Stats.Stamina},{i.Stats.Intelligence},{i.Stats.Wisdom},{i.Stats.Luck}";
+            $"{i.Stats.Strength},{i.Stats.Vitality},{i.Stats.Agility},{i.Stats.Speed},{i.Stats.Intelligence},{i.Stats.Wisdom},{i.Stats.Luck}";
 
         [Test]
         public void Every_set_has_a_two_and_a_five_piece_bonus()

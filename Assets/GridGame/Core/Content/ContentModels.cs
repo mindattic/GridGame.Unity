@@ -239,7 +239,6 @@ namespace GridGame.Core.Content
         public float Vitality;
         public float Agility;
         public float Speed;
-        public float Stamina;
         public float Intelligence;
         public float Wisdom;
         public float Luck;
@@ -252,7 +251,6 @@ namespace GridGame.Core.Content
             Vitality = a.Vitality + b.Vitality,
             Agility = a.Agility + b.Agility,
             Speed = a.Speed + b.Speed,
-            Stamina = a.Stamina + b.Stamina,
             Intelligence = a.Intelligence + b.Intelligence,
             Wisdom = a.Wisdom + b.Wisdom,
             Luck = a.Luck + b.Luck,
@@ -264,7 +262,6 @@ namespace GridGame.Core.Content
             Vitality = a.Vitality * k,
             Agility = a.Agility * k,
             Speed = a.Speed * k,
-            Stamina = a.Stamina * k,
             Intelligence = a.Intelligence * k,
             Wisdom = a.Wisdom * k,
             Luck = a.Luck * k,
@@ -767,7 +764,7 @@ namespace GridGame.Core.Content
         {
             ("STR", nameof(Stats.Strength), s => s.Strength), ("VIT", nameof(Stats.Vitality), s => s.Vitality),
             ("AGI", nameof(Stats.Agility), s => s.Agility), ("SPD", nameof(Stats.Speed), s => s.Speed),
-            ("STA", nameof(Stats.Stamina), s => s.Stamina), ("INT", nameof(Stats.Intelligence), s => s.Intelligence),
+            ("INT", nameof(Stats.Intelligence), s => s.Intelligence),
             ("WIS", nameof(Stats.Wisdom), s => s.Wisdom), ("LCK", nameof(Stats.Luck), s => s.Luck),
         };
     }
@@ -1306,7 +1303,7 @@ namespace GridGame.Core.Content
         public string Stat;
         public float Amount;
 
-        public static readonly string[] Names = { "Strength", "Vitality", "Agility", "Speed", "Stamina", "Intelligence", "Wisdom", "Luck" };
+        public static readonly string[] Names = { "Strength", "Vitality", "Agility", "Speed", "Intelligence", "Wisdom", "Luck" };
 
         public static bool IsStatName(string s) => s != null && System.Array.IndexOf(Names, s) >= 0;
 
@@ -1320,7 +1317,6 @@ namespace GridGame.Core.Content
                 case "Vitality": s.Vitality = Amount; break;
                 case "Agility": s.Agility = Amount; break;
                 case "Speed": s.Speed = Amount; break;
-                case "Stamina": s.Stamina = Amount; break;
                 case "Intelligence": s.Intelligence = Amount; break;
                 case "Wisdom": s.Wisdom = Amount; break;
                 case "Luck": s.Luck = Amount; break;

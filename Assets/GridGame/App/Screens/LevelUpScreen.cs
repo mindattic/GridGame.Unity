@@ -180,7 +180,6 @@ namespace GridGame.App
             if (after.Vitality > before.Vitality) yield return ("VIT", before.Vitality, after.Vitality);
             if (after.Agility > before.Agility) yield return ("AGI", before.Agility, after.Agility);
             if (after.Speed > before.Speed) yield return ("SPD", before.Speed, after.Speed);
-            if (after.Stamina > before.Stamina) yield return ("STA", before.Stamina, after.Stamina);
             if (after.Intelligence > before.Intelligence) yield return ("INT", before.Intelligence, after.Intelligence);
             if (after.Wisdom > before.Wisdom) yield return ("WIS", before.Wisdom, after.Wisdom);
             if (after.Luck > before.Luck) yield return ("LCK", before.Luck, after.Luck);

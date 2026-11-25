@@ -1792,10 +1792,10 @@ namespace GridGame.Meta
             var g = c.TryClass(h.ClassId)?.Growth;
             var st = item?.Stats;
             if (g == null || st == null) return 0f;
-            float total = st.Strength + st.Vitality + st.Agility + st.Speed + st.Stamina + st.Intelligence + st.Wisdom + st.Luck;
+            float total = st.Strength + st.Vitality + st.Agility + st.Speed + st.Intelligence + st.Wisdom + st.Luck;
             if (total <= 0f) return 0f;
             return (st.Strength * g.Strength + st.Vitality * g.Vitality + st.Agility * g.Agility + st.Speed * g.Speed
-                    + st.Stamina * g.Stamina + st.Intelligence * g.Intelligence + st.Wisdom * g.Wisdom + st.Luck * g.Luck) / total;
+                    + st.Intelligence * g.Intelligence + st.Wisdom * g.Wisdom + st.Luck * g.Luck) / total;
         }
 
         /// <summary>The party hero a weapon suits: one who can wield it and would be better off with it than with what

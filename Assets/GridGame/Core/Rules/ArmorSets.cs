@@ -64,7 +64,7 @@ namespace GridGame.Core.Rules
         private static readonly (string Name, Func<Stats, float> Get)[] StatNames =
         {
             ("STR", s => s.Strength), ("VIT", s => s.Vitality), ("AGI", s => s.Agility), ("SPD", s => s.Speed),
-            ("INT", s => s.Intelligence), ("WIS", s => s.Wisdom), ("LCK", s => s.Luck), ("STA", s => s.Stamina),
+            ("INT", s => s.Intelligence), ("WIS", s => s.Wisdom), ("LCK", s => s.Luck),
         };
 
         /// <summary>One line for a bonus tier, e.g. "STR +3, Fire ×0.6, Starts battles Protected".</summary>

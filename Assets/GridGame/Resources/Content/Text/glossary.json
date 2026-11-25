@@ -2156,25 +2156,6 @@
         ]
       }
     },
-    "glossary:sta": {
-      "key": "glossary:sta",
-      "id": "glossary-sta",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:5c0cfcb7c994c0d5aecd6ac5a330018652cab3112383d0cf461acb756865151c",
-      "about": [
-        "concept-sta"
-      ],
-      "speakers": [],
-      "payload": {
-        "term": "Stamina",
-        "definition": "STA. Staying power for long fights.",
-        "aliases": [
-          "STA"
-        ]
-      }
-    },
     "glossary:stagger": {
       "key": "glossary:stagger",
       "id": "glossary-stagger",

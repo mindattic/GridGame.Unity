@@ -101,7 +101,6 @@ namespace GridGame.Meta
                 case "Vitality": return g.Vitality;
                 case "Agility": return g.Agility;
                 case "Speed": return g.Speed;
-                case "Stamina": return g.Stamina;
                 case "Intelligence": return g.Intelligence;
                 case "Wisdom": return g.Wisdom;
                 case "Luck": return g.Luck;

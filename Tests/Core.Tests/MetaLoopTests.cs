@@ -642,7 +642,7 @@ namespace GridGame.Tests
         }
 
         private static float StatSum(GridGame.Core.Content.Stats st) =>
-            st.Strength + st.Vitality + st.Agility + st.Speed + st.Stamina + st.Intelligence + st.Wisdom + st.Luck;
+            st.Strength + st.Vitality + st.Agility + st.Speed + st.Intelligence + st.Wisdom + st.Luck;
 
         [Test]
         public void Forge_craft_can_roll_a_masterwork_variant_with_boosted_stats_and_durability()

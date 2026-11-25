@@ -25349,7 +25349,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Aegis Guard conditioning: a permanent +2 Stamina."
+        "short": "Aegis Guard conditioning: a permanent +2 Strength."
       }
     },
     "skillnode:aegiswardens_capstone": {
@@ -25843,7 +25843,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Deathguard conditioning: a permanent +2 Stamina."
+        "short": "Deathguard conditioning: a permanent +2 Strength."
       }
     },
     "skillnode:duelist_capstone": {
@@ -26025,7 +26025,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Field Engineers conditioning: a permanent +2 Stamina."
+        "short": "Field Engineers conditioning: a permanent +2 Vitality."
       }
     },
     "skillnode:guardian_finale": {
@@ -26259,7 +26259,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Juggernaut conditioning: a permanent +2 Stamina."
+        "short": "Juggernaut conditioning: a permanent +2 Strength."
       }
     },
     "skillnode:mage_arcane_bolt": {
@@ -26480,7 +26480,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Primal Pack conditioning: a permanent +2 Stamina."
+        "short": "Primal Pack conditioning: a permanent +2 Vitality."
       }
     },
     "skillnode:ranger_covering_fire": {
@@ -26922,7 +26922,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Tempo Weavers conditioning: a permanent +2 Stamina."
+        "short": "Tempo Weavers conditioning: a permanent +2 Vitality."
       }
     },
     "skillnode:trapper_capstone": {
@@ -27104,7 +27104,7 @@
       "about": [],
       "speakers": [],
       "payload": {
-        "short": "Warlord conditioning: a permanent +2 Stamina."
+        "short": "Warlord conditioning: a permanent +2 Strength."
       }
     },
     "skillnode:warrior_battle_fury": {

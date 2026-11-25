@@ -62,7 +62,7 @@ namespace GridGame.Meta
         {
             var g = c?.TryClass(h?.ClassId)?.Growth;
             if (g == null) return StatGrantDef.Names[0];
-            float[] v = { g.Strength, g.Vitality, g.Agility, g.Speed, g.Stamina, g.Intelligence, g.Wisdom, g.Luck };
+            float[] v = { g.Strength, g.Vitality, g.Agility, g.Speed, g.Intelligence, g.Wisdom, g.Luck };
             int best = 0;
             for (int i = 1; i < v.Length; i++) if (v[i] > v[best]) best = i;
             return StatGrantDef.Names[best];

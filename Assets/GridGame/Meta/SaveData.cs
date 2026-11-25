@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 17;
+        public const int CurrentVersion = 18;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -862,6 +862,14 @@ namespace GridGame.Meta
             // once aliases existed; the rewrite itself runs on every load (below, once content is at hand), since each later
             // merge adds an alias without a version bump.
             if (s.Version < 17) s.Version = 17;
+            if (s.Version < 18)
+            {
+                // GG-T1065: Stamina is gone (no Stats field, no StatGrantDef name). Points a hero put into it come back as
+                // unspent: StatPoints.Spent sums every key, so dropping the key refunds them.
+                foreach (var h in s.Roster)
+                    h?.StatPicks?.Remove("Stamina");
+                s.Version = 18;
+            }
             // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
             if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.

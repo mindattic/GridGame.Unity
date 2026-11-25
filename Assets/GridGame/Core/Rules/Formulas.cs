@@ -89,7 +89,6 @@ namespace GridGame.Core.Rules
             s.Vitality = (float)Math.Floor(s.Vitality);
             s.Agility = (float)Math.Floor(s.Agility);
             s.Speed = (float)Math.Floor(s.Speed);
-            s.Stamina = (float)Math.Floor(s.Stamina);
             s.Intelligence = (float)Math.Floor(s.Intelligence);
             s.Wisdom = (float)Math.Floor(s.Wisdom);
             s.Luck = LuckAtLevel(level);

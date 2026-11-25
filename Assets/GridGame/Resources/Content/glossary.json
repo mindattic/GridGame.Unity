@@ -183,15 +183,6 @@
     "LinkId": "Speed"
   },
   {
-    "Id": "sta",
-    "Term": "Stamina",
-    "Aliases": [
-      "STA"
-    ],
-    "LinkKind": "Stat",
-    "LinkId": "Stamina"
-  },
-  {
     "Id": "int",
     "Term": "Intelligence",
     "Aliases": [

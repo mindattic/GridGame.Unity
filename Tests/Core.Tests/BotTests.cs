@@ -176,10 +176,10 @@ namespace GridGame.Tests
                 Name = "Blade",
                 Type = ItemType.Equipment,
                 BaseDamage = 10,
-                Stats = new Stats { Strength = 3, Vitality = 2, Agility = 1, Speed = 4, Intelligence = 5, Wisdom = 6, Luck = 7, Stamina = 8 },
+                Stats = new Stats { Strength = 3, Vitality = 2, Agility = 1, Speed = 4, Intelligence = 5, Wisdom = 6, Luck = 7 },
             };
-            // 3+2+1+4+5+6+7+8 = 36, plus half of 10 base damage = 41.
-            Assert.That(MetaHeuristics.Score(item), Is.EqualTo(41f));
+            // 3+2+1+4+5+6+7 = 28, plus half of 10 base damage = 33.
+            Assert.That(MetaHeuristics.Score(item), Is.EqualTo(33f));
         }
 
         [Test]

@@ -36,7 +36,7 @@ namespace GridGame.Tests
             string Profile(ItemDef w)
             {
                 var s = w.Stats;
-                return string.Join(",", s.Strength, s.Vitality, s.Agility, s.Speed, s.Stamina, s.Intelligence, s.Wisdom, s.Luck,
+                return string.Join(",", s.Strength, s.Vitality, s.Agility, s.Speed, s.Intelligence, s.Wisdom, s.Luck,
                     w.PincerDamageBonus, w.RegenPerTurn, w.StartsProtected, w.BattleStartManaOrbs, w.BankCapacityBonus,
                     w.PincerApplyBuff, w.PincerApplyBuffChance, w.LifestealFraction, w.AdjacentAllyDamageReduction,
                     string.Join("/", w.Resistances.OrderBy(kv => kv.Key).Select(kv => $"{kv.Key}{kv.Value}")));

@@ -52,9 +52,9 @@
    },
    {
     "Id": "aegisguard_stat2",
-    "Name": "Stamina +2",
+    "Name": "Strength +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Strength",
      "Amount": 2
     },
     "Cost": 1,
@@ -106,9 +106,9 @@
    },
    {
     "Id": "juggernaut_stat2",
-    "Name": "Stamina +2",
+    "Name": "Strength +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Strength",
      "Amount": 2
     },
     "Cost": 1,
@@ -160,9 +160,9 @@
    },
    {
     "Id": "warlord_stat2",
-    "Name": "Stamina +2",
+    "Name": "Strength +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Strength",
      "Amount": 2
     },
     "Cost": 1,
@@ -214,9 +214,9 @@
    },
    {
     "Id": "deathguard_stat2",
-    "Name": "Stamina +2",
+    "Name": "Strength +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Strength",
      "Amount": 2
     },
     "Cost": 1,
@@ -1402,9 +1402,9 @@
    },
    {
     "Id": "tempoweave_stat2",
-    "Name": "Stamina +2",
+    "Name": "Vitality +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Vitality",
      "Amount": 2
     },
     "Cost": 1,
@@ -1443,9 +1443,9 @@
    },
    {
     "Id": "fieldeng_stat2",
-    "Name": "Stamina +2",
+    "Name": "Vitality +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Vitality",
      "Amount": 2
     },
     "Cost": 1,
@@ -1484,9 +1484,9 @@
    },
    {
     "Id": "primalpack_stat2",
-    "Name": "Stamina +2",
+    "Name": "Vitality +2",
     "GrantsStat": {
-     "Stat": "Stamina",
+     "Stat": "Vitality",
      "Amount": 2
     },
     "Cost": 1,
