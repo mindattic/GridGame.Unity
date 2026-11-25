@@ -18,8 +18,9 @@ namespace GridGame.Meta
     /// (via Cleric) — the fireball-casting barbarian in plate — and Warrior → Guardian → Cleric puts it 1 step away.</para>
     ///
     /// <para>GG-T979: a hero on a family tree plays on the family board instead: <see cref="FamilyRing"/>, the families of
-    /// families.json in their <see cref="FamilyDef.Ring"/> order (Vanguard - Blade - Brawn - Shadow - Wild - Machina - Arcane -
-    /// Occult - Grace - back to Vanguard). Every walk takes the board as an optional <c>ring</c> (null = the role
+    /// families.json in their <see cref="FamilyDef.Ring"/> order, which is the skillhex.json wedge order clockwise round
+    /// the hexagon (GG-T1061): Martial (VIT-STR) - Brawn (STR-AGI) - Shadow (AGI-SPD) - Wild (SPD-WIS) - Brains (WIS-INT)
+    /// - Grace (INT-VIT) - back to Martial, so neighbours share a stat corner. Every walk takes the board as an optional <c>ring</c> (null = the role
     /// <see cref="Ring"/>); <see cref="ExtraEdges"/>, <see cref="MaxOpenDistance"/> and <see cref="PremiumPerExtraStep"/>
     /// apply on either board. <see cref="Talents"/> picks the board with <see cref="BoardFor"/>.</para>
     ///

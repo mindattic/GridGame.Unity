@@ -357,7 +357,7 @@ namespace GridGame.Meta
 
         /// <summary>A one-line "what this hero is becoming" summary for the Build screen, e.g.
         /// "Knight · Guardian 7 / Cleric 3 — a tank who heals" (GG-T979: on a family tree, "Thief · Shadow family 4 /
-        /// Vanguard family 3 — a striker who holds the line"). Built only from the class name, its
+        /// Martial family 3 — a striker who holds the line"). Built only from the class name, its
         /// <see cref="TreeInvestment"/> and its <see cref="ClassDef.Role"/> — never an authored string that
         /// could drift from the numbers behind it.</summary>
         public static string BuildSummary(ContentDb c, HeroSave h)
@@ -404,15 +404,12 @@ namespace GridGame.Meta
                 case "mage": return "casts";
                 case "cleric": return "heals";
                 case "alchemist": return "supports";
-                // GG-T979: the families (families.json), each by what every member does
-                case "vanguard": return "holds the line";
-                case "blade": return "duels";
+                // GG-T979, GG-T1061: the six hex families (families.json, skillhex.json wedges), each by what every member does
+                case "martial": return "holds the line";
                 case "brawn": return "brawls";
                 case "shadow": return "skirmishes";
                 case "wild": return "hunts";
-                case "machina": return "builds";
-                case "arcane": return "casts";
-                case "occult": return "curses";
+                case "brains": return "outthinks";
                 case "grace": return "mends";
                 default: return null;
             }

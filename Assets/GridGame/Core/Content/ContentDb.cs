@@ -64,6 +64,21 @@ namespace GridGame.Core.Content
         public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
         /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
         public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);
+        /// <summary>GG-T1061: a family's colours, read from skillhex.json rather than written twice: the
+        /// <see cref="SkillHexStatDef.Color"/> of its wedge's <see cref="SkillHexFamilyDef.From"/> and
+        /// <see cref="SkillHexFamilyDef.To"/> corners (#rrggbb). False when there is no board, the family isn't one of its
+        /// wedges, or a corner has no colour; a UI then falls back to its own neutral tint.</summary>
+        public bool TryFamilyColors(string familyId, out string from, out string to)
+        {
+            from = to = null;
+            if (SkillHex == null || string.IsNullOrEmpty(familyId)) return false;
+            var fam = SkillHex.Families?.Find(f => f != null && string.Equals(f.Id, familyId, StringComparison.OrdinalIgnoreCase));
+            if (fam == null) return false;
+            from = SkillHex.Stats?.Find(s => s != null && string.Equals(s.Id, fam.From, StringComparison.OrdinalIgnoreCase))?.Color;
+            to = SkillHex.Stats?.Find(s => s != null && string.Equals(s.Id, fam.To, StringComparison.OrdinalIgnoreCase))?.Color;
+            if (string.IsNullOrEmpty(from) || string.IsNullOrEmpty(to)) { from = to = null; return false; }
+            return true;
+        }
         /// <summary>Every hero class id in a family, by id.</summary>
         public List<string> FamilyMembers(string familyId)
         {

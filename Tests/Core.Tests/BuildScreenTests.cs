@@ -133,12 +133,12 @@ namespace GridGame.Tests
         // ── Family trees (GG-T979) ──────────────────────────────────────────────────────────────
 
         /// <summary>A Shadow-family thief (starts on t_root + t_steal) whose HomeTree still names the role tree "rogue",
-        /// plus a Vanguard family tree to cross into.</summary>
+        /// plus a Martial family tree to cross into.</summary>
         private static ContentDb FamilyDb()
         {
             var db = TreeDb();
             db.Families.Add(new FamilyDef { Id = "shadow", Name = "Shadow", Theme = "t", Primary = "Agility", Secondary = "Speed", Ring = 1 });
-            db.Families.Add(new FamilyDef { Id = "vanguard", Name = "Vanguard", Theme = "t", Primary = "Vitality", Secondary = "Stamina", Ring = 2 });
+            db.Families.Add(new FamilyDef { Id = "martial", Name = "Martial", Theme = "t", Primary = "Vitality", Secondary = "Stamina", Ring = 2 });
             foreach (var id in new[] { "steal", "smoke", "guard_up", "pickpocket" })
                 db.Abilities[id] = new AbilityDef { Id = id, Name = id, Kind = AbilityKind.Skill };
             db.SkillTrees["shadow"] = new SkillTreeDef
@@ -152,7 +152,7 @@ namespace GridGame.Tests
                     new SkillNodeDef { Id = "t_smoke", Cost = 2, Grants = "smoke", SignatureOf = "thief", Prerequisites = { "t_steal" } },
                 },
             };
-            db.SkillTrees["vanguard"] = new SkillTreeDef { Id = "vanguard", Name = "Vanguard", Nodes = { new SkillNodeDef { Id = "v_guard", Cost = 3, Grants = "guard_up" } } };
+            db.SkillTrees["martial"] = new SkillTreeDef { Id = "martial", Name = "Martial", Nodes = { new SkillNodeDef { Id = "v_guard", Cost = 3, Grants = "guard_up" } } };
             db.SkillTrees["rogue"] = new SkillTreeDef { Id = "rogue", Name = "Rogue", Nodes = { new SkillNodeDef { Id = "r_pick", Cost = 3, Grants = "pickpocket" } } };
             db.Classes["thief"] = new ClassDef { Id = "thief", Name = "Thief", Team = Team.Hero, Role = "Striker", Family = "shadow",
                 HomeTree = "rogue", DefaultLoadout = { "steal" }, StartNodes = { "t_root", "t_steal" } };
@@ -182,7 +182,7 @@ namespace GridGame.Tests
             h.Known.Add("smoke");
             h.Known.Add("guard_up");
             var summary = Progression.BuildSummary(c, h);
-            Assert.That(summary, Does.StartWith("Thief · Shadow family 4 / Vanguard family 3"));
+            Assert.That(summary, Does.StartWith("Thief · Shadow family 4 / Martial family 3"));
             Assert.That(summary, Does.EndWith("a striker who holds the line"), "another family's verb");
         }
 
