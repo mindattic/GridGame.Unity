@@ -78,6 +78,9 @@ namespace GridGame.Core.Battle
             // hold is a share of the window as it stood at pickup).
             int spend = BattleEngine.CommandTicks(S, cmd);
             bool forcedGuard = TurnRules.IsForcedGuard(S, cmd); // GG-T311: a sacrifice, not a choice
+            // GG-T1111 (§2.13.3): whose hero turn this is, read before the action resolves (a hero that falls in its own
+            // action clears ActiveHeroId, but its turn was still taken).
+            int activeHeroBefore = TurnRules.HeroesOnTimeline(S) ? S.ActiveHeroId : -1;
             // GG-T882: a stance worn until the bearer's next action (Anchor Stance) lifts as that action starts, so a
             // planted Warden walks again; a command that is then refused puts it back.
             var stanceBearer = S.UnitById(BattleEngine.CommandHeroId(cmd));
@@ -99,6 +102,8 @@ namespace GridGame.Core.Battle
             CheckTilesStrict(cmd.GetType().Name);
 
             S.Results.ActionsTaken++;
+            // GG-T1111: the active hero's action landed — one hero turn for the results (display only).
+            if (activeHeroBefore >= 0 && BattleEngine.CommandHeroId(cmd) == activeHeroBefore) S.Results.HeroTurns++;
             CheckEnd();
             // ActionEnd passives/reactives of the hero whose command it was (GG-T296).
             if (!S.IsOver && S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit actor && actor.IsHero && actor.Alive)

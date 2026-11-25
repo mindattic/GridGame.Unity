@@ -268,7 +268,8 @@ namespace GridGame.App
         /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
         /// <c>.Q&lt;Label&gt;</c> or <c>.name</c> still lands on the row (KindIcon itself returns the icon).</summary>
         /// <summary>GG-T944 (§2.13.1): how long the battle ran, "N turns" or "N turns, M actions" when several heroes acted
-        /// in a turn (<see cref="BattleReport.TurnsLabel"/>); the turn mode itself is never read here.</summary>
+        /// in a turn (<see cref="BattleReport.TurnsLabel"/>), "N hero turns" under HeroTimeline (GG-T1111); the turn mode
+        /// itself is never read here.</summary>
         private void TurnsRow(VisualElement list)
         {
             string value = report.TurnsLabel();

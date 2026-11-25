@@ -389,11 +389,20 @@ namespace GridGame.Meta
         public int Actions;
         /// <summary>GG-T1095 (§2.13.2): rounds played (<see cref="BattleResults.Rounds"/>); 0 outside UnmovedThisRound.</summary>
         public int Rounds;
+        /// <summary>GG-T1111 (§2.13.3): hero turns taken (<see cref="BattleResults.HeroTurns"/>); 0 outside HeroTimeline.</summary>
+        public int HeroTurns;
 
         /// <summary>The results row's value: "N turns", or "N turns, M actions" when several heroes acted in a turn
-        /// (the two differ), then ", R rounds" when the battle kept rounds. Empty when no turn was played.</summary>
+        /// (the two differ), then ", R rounds" when the battle kept rounds. Under HeroTimeline (GG-T1111) it reads
+        /// "N hero turns" (", M actions" only when the two differ). Empty when no turn was played.</summary>
         public string TurnsLabel()
         {
+            if (HeroTurns > 0)
+            {
+                string heroTurns = HeroTurns == 1 ? "1 hero turn" : $"{HeroTurns} hero turns";
+                if (Actions != HeroTurns) heroTurns += Actions == 1 ? ", 1 action" : $", {Actions} actions";
+                return heroTurns;
+            }
             if (PartyTurns <= 0 && Actions <= 0) return "";
             string turns = PartyTurns == 1 ? "1 turn" : $"{PartyTurns} turns";
             if (Actions != PartyTurns) turns += Actions == 1 ? ", 1 action" : $", {Actions} actions";
@@ -757,6 +766,7 @@ namespace GridGame.Meta
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
                 Rounds = r.Rounds,
+                HeroTurns = r.HeroTurns,
             };
             // GG-T852: the top supporter, ties to the lower class id so it is deterministic.
             foreach (var kv in r.ComboSupporterPoints.OrderBy(kv => kv.Key, StringComparer.Ordinal))

@@ -186,6 +186,7 @@ namespace GridGame.Meta
                 PartyTurns = r.PartyTurns,
                 Actions = r.ActionsTaken,
                 Rounds = r.Rounds,
+                HeroTurns = r.HeroTurns,
             };
             int slotsBefore = Progression.UnlockedSlots(s);
             Bargains.Rotate(s);

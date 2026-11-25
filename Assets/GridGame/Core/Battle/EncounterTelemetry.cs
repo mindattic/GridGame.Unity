@@ -123,6 +123,7 @@ namespace GridGame.Core.Battle
             record.Actions = state.Results?.ActionsTaken ?? 0;
             record.PartyTurns = state.Results?.PartyTurns ?? 0;
             record.Rounds = state.Results?.Rounds ?? 0;
+            record.HeroTurns = state.Results?.HeroTurns ?? 0;
             foreach (var h in heroes.Values)
             {
                 var u = state.UnitById(h.UnitId);
@@ -319,6 +320,8 @@ namespace GridGame.Core.Battle
         public int PartyTurns;
         /// <summary>GG-T1095: <see cref="BattleResults.Rounds"/>, rounds played; 0 outside UnmovedThisRound.</summary>
         public int Rounds;
+        /// <summary>GG-T1111: <see cref="BattleResults.HeroTurns"/>, hero turns taken; 0 outside HeroTimeline.</summary>
+        public int HeroTurns;
         public int Ticks;
         public float Seconds;
         public List<WaveTally> Waves = new List<WaveTally>();
