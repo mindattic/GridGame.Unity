@@ -776,7 +776,7 @@ Turns and casts share the one axis, so a cast is a racer like any turn: it is bo
 
 ### 2.4 Turn order = arrival order
 
-Icons advance independently. Within a tick, arrivals resolve one at a time: **cast icons before turn icons, then lower entry id first** (`BattleRunner.Earlier`). **Amended 2026-10-09** (explicit tie rule). A resolving turn resets that icon to IP 0. Pushback, Hasten, Slowed and Frozen reorder icons only by changing IP/rate. **Amended 2026-11-06 (GG-T286):** turns and casts race on the one axis (`secondsUntilAct`), so the order on screen, left to right, *is* the order they act in; ties at the left edge still go casts first, then the lower entry id.
+Icons advance independently. Within a tick, arrivals resolve one at a time: **cast icons before turn icons, then lower entry id first** (`BattleRunner.Earlier`). **Amended 2026-10-09** (explicit tie rule). A resolving turn resets that icon to IP 0. Pushback, Hasten, Slowed and Frozen reorder icons only by changing IP/rate. **Amended 2026-11-06 (GG-T286):** turns and casts race on the one axis (`secondsUntilAct`), so the order on screen, left to right, *is* the order they act in; ties at the left edge still go casts first, then the lower entry id. **Amended 2026-11-25 (GG-T807, recorded GG-T1080):** the full tie order on one tick is **casts > rule hazards (GG-T359) > a hero's turn > a foe's turn > lower entry id** (`BattleRunner.Earlier`/`ArrivalRank`; the bar's next-actor ring, `BattleScreen.Earlier`, mirrors it). Hero turn icons exist only in `HeroTimeline` ([§2.13.3](#2133-heroes-on-the-timeline-herotimeline--not-yet-built-gg-t805)), so every other mode keeps casts, hazards, then entry id.
 
 ### 2.5 Auto-skip / Shield
 
@@ -1282,6 +1282,14 @@ One hero acts per party turn, but **only a hero who hasn't acted this round**. W
 #### 2.13.3 Heroes on the timeline (`HeroTimeline`) — ⬜ Not yet built (GG-T805)
 
 Every hero has **its own turn icon** on the shared bar with the foes (Grandia style; this lifts "heroes have no icons here", [§2](#2-the-timeline)). When a hero's icon reaches the left edge, that hero acts. Open questions: every topic in the table. On top of those: how a hero's Speed sets its entry and recovery ([§2.1](#21-speed-and-pace), [§2.12](#212-recovery-and-spacing-gg-t318)); what pushback, Hasten, Slow and party tempo do to hero icons; whether the clock runs or stops while a hero is held; and how the ACT-zone question in [§2](#2-the-timeline) changes once heroes have icons.
+
+What is built so far (GG-T807, tests GG-T1070 `TurnModeHeroTimelineTests`):
+
+- **Entry by Speed.** A hero's icon enters at its Speed's entry (`BattleEngine.EntrySeconds`), judged against `Formulas.ReferenceHeroSpeed` (**12 + 0.7 per level above 1**) instead of the foes' reference, so a faster hero enters further left. Heroes open each wave ahead of the foes: the wave's foes open behind the latest hero arrival.
+- **Recovery.** When a hero's icon reaches the left edge it resets and is off the bar for `BattleConfig.RecoverBaseSeconds`, then re-enters at its Speed's entry (`HeroIconArrived`). Hero and foe icons race on one clock (`BattleEngine.RunClock`).
+- **No spacing.** `TimelineSpacing` ([§2.12](#212-recovery-and-spacing-gg-t318)) keeps foes' turns apart for the player's sake; it does not space hero icons, which race the foes unspaced.
+- **Ties.** On the same tick a hero's turn resolves before a foe's ([§2.4](#24-turn-order--arrival-order)): casts > rule hazards > hero turn > foe turn > lower entry id. A seeded run replays identically.
+- **Gap (GG-T808).** `ScheduleHeroIcons` runs only in `OpenPartyWindow` (a wave's opening), so a hero revived mid-wave gets its icon only at the next wave's opening; until then it has no turn icon. Handing a hero's arrived icon to the player is GG-T808's.
 
 ---
 

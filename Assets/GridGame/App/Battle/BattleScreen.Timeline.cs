@@ -465,8 +465,18 @@ namespace GridGame.App
             timelineSeeded = true;
         }
 
-        /// <summary>Arrival order on a tie (BattleRunner.Tick): casts before turns, then by id.</summary>
-        private static bool Earlier(TimelineEntry a, TimelineEntry b) => a.Kind != b.Kind ? Rank(a.Kind) < Rank(b.Kind) : a.Id < b.Id;
+        /// <summary>Arrival order on a tie (BattleRunner.Earlier): casts before turns, a hero's turn before a foe's
+        /// (HeroTimeline only, GG-T1080), then by id.</summary>
+        private bool Earlier(TimelineEntry a, TimelineEntry b)
+        {
+            if (a.Kind != b.Kind) return Rank(a.Kind) < Rank(b.Kind);
+            if (a.Kind == TimelineKind.Turn)
+            {
+                bool ha = TurnRules.IsHeroIcon(State, State.UnitById(a.OwnerId)), hb = TurnRules.IsHeroIcon(State, State.UnitById(b.OwnerId));
+                if (ha != hb) return ha;
+            }
+            return a.Id < b.Id;
+        }
         private static int Rank(TimelineKind k) => k == TimelineKind.Cast ? 0 : k == TimelineKind.Hazard ? 1 : 2; // casts, rule hazards, turns (GG-T359)
 
         /// <summary>GG-T359: a rule flag changed how icons read (darkness masks foes): redraw every icon's art.</summary>
