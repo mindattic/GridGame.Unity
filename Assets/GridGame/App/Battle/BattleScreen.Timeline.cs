@@ -96,6 +96,9 @@ namespace GridGame.App
         private readonly Dictionary<int, (float x, float y, float s, float t0, float dur)> trayFlights = new Dictionary<int, (float, float, float, float, float)>();
         private readonly Dictionary<int, float> iconScaleNow = new Dictionary<int, float>();
         private readonly Dictionary<int, float> ringFlash = new Dictionary<int, float>();
+        /// <summary>GG-T1071: icons mid-pushback: where the slide began (u), how far it has run (0..1), and the Y-axis
+        /// turns it spins; LayoutIcons draws them eased from there toward their live u.</summary>
+        private readonly Dictionary<int, (float fromU, float k, int turns)> pushSlides = new Dictionary<int, (float, float, int)>();
         private VisualElement traySocket;
         /// <summary>Off for the very first sync of a build, so the opening layout doesn't fire arrival/glow sounds.</summary>
         private bool timelineSeeded;
@@ -103,7 +106,7 @@ namespace GridGame.App
         private void BuildTimeline(VisualElement root)
         {
             timelineIconViews.Clear(); drawn.Clear(); approach.Clear(); glowing.Clear(); delimiters.Clear();
-            recoverView.Clear(); inTray.Clear(); trayFlights.Clear(); iconScaleNow.Clear(); ringFlash.Clear();
+            recoverView.Clear(); inTray.Clear(); trayFlights.Clear(); iconScaleNow.Clear(); ringFlash.Clear(); pushSlides.Clear();
             nextActorEntry = -1; slotEntry = int.MinValue; actingEntry = -1; timelineSeeded = false;
 
             var frame = Ui.El("", root);
@@ -399,6 +402,13 @@ namespace GridGame.App
             frame.style.overflow = Overflow.Hidden;
             SetBorder(frame, 5f, IconBorder, EntryColor(e));
             SetDiamondArt(frame, IconSide, IconBorder, e);
+            // GG-T1071: the diamond's back face, shown only while a pushback spin has it facing away (CardFlip).
+            var back = new VisualElement { name = "tl-back", pickingMode = PickingMode.Ignore };
+            back.style.position = Position.Absolute;
+            back.style.left = back.style.top = back.style.right = back.style.bottom = Space.S0;
+            back.style.backgroundImage = new StyleBackground(CardFlip.DiamondBack);
+            back.style.display = DisplayStyle.None;
+            frame.Add(back);
             if (e.Kind == TimelineKind.Turn) icon.Add(new RecoverRing(IconSpan));
             AttachTimelineInspect(icon, e);
             icon.RegisterCallback<ClickEvent>(_ => OnTimelineTap(e.OwnerId)); // GG-T288: a tap selects, a hold reads
@@ -443,7 +453,7 @@ namespace GridGame.App
                     created.Add(kv.Key);
                 }
             foreach (var kv in timelineIconViews.ToList())
-                if (!drawn.ContainsKey(kv.Key)) { kv.Value.RemoveFromHierarchy(); timelineIconViews.Remove(kv.Key); trayFlights.Remove(kv.Key); iconScaleNow.Remove(kv.Key); }
+                if (!drawn.ContainsKey(kv.Key)) { kv.Value.RemoveFromHierarchy(); timelineIconViews.Remove(kv.Key); trayFlights.Remove(kv.Key); iconScaleNow.Remove(kv.Key); pushSlides.Remove(kv.Key); }
             SyncTray(created);
             lastAt = at;
             SyncGap(at, uOverride != null);
@@ -571,7 +581,7 @@ namespace GridGame.App
                 .OrderBy(e => recoverView.TryGetValue(e.Id, out var r) ? r.left : int.MaxValue).ThenBy(e => e.Id).ToList();
             float now = Time.unscaledTime;
             foreach (var e in entries)
-                PlaceIcon(e, XOfU(at[e.Id]), TrackY, e.Id == nextActorEntry ? NextScale : 1f, 0f, now);
+                PlaceIcon(e, XOfU(SlideU(e.Id, at[e.Id])), TrackY, e.Id == nextActorEntry ? NextScale : 1f, 0f, now);
             for (int i = 0; i < tray.Count; i++)
             {
                 var (cx, cy) = TraySlot(i);
@@ -627,7 +637,13 @@ namespace GridGame.App
                 }
             }
             icon.style.left = x; icon.style.top = y;
-            icon.style.scale = new Scale(new Vector2(scale, scale));
+            // GG-T1071: a pushback spins the diamond about its Y axis: its width follows |cos|, its back shows past 90°.
+            float w = 1f;
+            var back = icon.Q("tl-back");
+            if (pushSlides.TryGetValue(e.Id, out var ps) && trayK <= 0f)
+                w = CardFlip.Apply(back, ps.turns * 360f * PushEase(ps.k), 1f / IconSpan);
+            else if (back != null) back.style.display = DisplayStyle.None;
+            icon.style.scale = new Scale(new Vector2(scale * w, scale));
             iconScaleNow[e.Id] = scale;
             var ring = icon.Q<RecoverRing>();
             if (ring == null) return;
@@ -636,6 +652,38 @@ namespace GridGame.App
             ring.style.opacity = blend;
             float frac = recoverView.TryGetValue(e.Id, out var r) && r.total > 0 ? r.left / (float)r.total : 0f;
             ring.Set(frac, Color.Lerp(Palette.Text, Palette.Info, ringFlash.TryGetValue(e.Id, out var fl) ? fl : 0f));
+        }
+
+        /// <summary>GG-T1071: a pushback's deceleration (cubic ease-out), shared by the slide and the spin so both settle together.</summary>
+        private static float PushEase(float k) { float r = 1f - Mathf.Clamp01(k); return 1f - r * r * r; }
+
+        /// <summary>GG-T1071: an icon mid-pushback is drawn eased from where it was toward its live u.</summary>
+        private float SlideU(int id, float u) =>
+            pushSlides.TryGetValue(id, out var ps) ? Mathf.LerpUnclamped(ps.fromU, u, PushEase(ps.k)) : u;
+
+        /// <summary>
+        /// GG-T1071: every pushback (a Pushback, a knockback delay, a staggered cast, any effect that moves an icon later)
+        /// on any bar icon, foe or hero: from <paramref name="fromU"/> it slides laterally back along the track to its
+        /// live u, decelerating into place, while the diamond spins about its Y axis (whole turns, so it lands face up).
+        /// The caller has already synced the icon's new u. Reduce Motion keeps the slide and drops the spin.
+        /// </summary>
+        private IEnumerator PushSlide(int entryId, float fromU, float toU, float seconds)
+        {
+            if (!timelineIconViews.TryGetValue(entryId, out var icon) || inTray.Contains(entryId)) yield break;
+            trayFlights.Remove(entryId); // a half-finished tray hop would pull it off the track's Y
+            icon.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
+            icon.style.rotate = new Rotate(new Angle(0f));
+            icon.BringToFront();
+            int turns = ReduceMotion ? 0 : Mathf.Clamp(1 + Mathf.RoundToInt(Mathf.Abs(toU - fromU) * 4f), 1, 3);
+            pushSlides[entryId] = (fromU, 0f, turns);
+            yield return Tween.Run(seconds, k =>
+            {
+                if (!pushSlides.TryGetValue(entryId, out var ps)) return;
+                pushSlides[entryId] = (ps.fromU, k, ps.turns);
+                if (lastAt != null) { LayoutIcons(lastAt); SyncTimelineStatus(); }
+            });
+            pushSlides.Remove(entryId);
+            if (lastAt != null) { LayoutIcons(lastAt); SyncTimelineStatus(); }
         }
 
         /// <summary>GG-T319: recovery as the state has it, or <paramref name="aheadTicks"/> from now (a hold plays it forward).</summary>

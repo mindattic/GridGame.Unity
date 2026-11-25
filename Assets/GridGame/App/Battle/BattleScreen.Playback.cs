@@ -1844,26 +1844,15 @@ namespace GridGame.App
             yield return FloatText(pb.UnitId, CombatTextKind.Timer, "Pushback!", 0.12f);
         }
 
-        /// <summary>GG-T367: Pushback tosses the icon back down the bar: it travels linearly along the track (never off
-        /// its line) while spinning one full turn that slows as it lands, so the throw reads as a throw.</summary>
+        /// <summary>GG-T367 / GG-T1071: Pushback tosses the icon back down the bar: it moves to its new u at once in the
+        /// view's model, and PushSlide draws it sliding back along its line, spinning about its Y axis and easing in.</summary>
         private IEnumerator TossOne(int entryId, float fromU, float toU, float seconds)
         {
-            trayFlights.Remove(entryId); // a half-finished tray hop would pull it off the track's Y
             var hold = new Dictionary<int, float>();
             foreach (var e in State.Timeline) hold[e.Id] = lastAt != null && lastAt.TryGetValue(e.Id, out var u) ? u : BattleEngine.BarU(State, e);
-            timelineIconViews.TryGetValue(entryId, out var icon);
-            if (icon != null)
-            {
-                icon.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(50));
-                icon.BringToFront();
-            }
-            yield return Tween.Run(seconds, k =>
-            {
-                hold[entryId] = Mathf.Lerp(fromU, toU, k); // linear travel down the timeline
-                SyncTimeline(hold);
-                if (icon != null) icon.style.rotate = new Rotate(new Angle(360f * Tween.EaseOut(k)));
-            });
-            if (icon != null) icon.style.rotate = new Rotate(new Angle(0f));
+            hold[entryId] = toU;
+            SyncTimeline(hold);
+            yield return PushSlide(entryId, fromU, toU, seconds);
         }
 
         /// <summary>A staggered cast slips right on the bar by its delay (GG-T287), with the knock's slide.</summary>
@@ -1872,7 +1861,7 @@ namespace GridGame.App
             if (!cs.Resisted && cs.DelayTicks > 0 && lastAt != null && lastAt.TryGetValue(cs.EntryId, out var from))
             {
                 App.Audio.Sfx("battle.slide", 0.7f, 1.15f);
-                App.StartCoroutine(GlideOne(cs.EntryId, from, Mathf.Clamp01(from + CastSpanU(cs.DelayTicks)), 0.3f));
+                App.StartCoroutine(TossOne(cs.EntryId, from, Mathf.Clamp01(from + CastSpanU(cs.DelayTicks)), 0.38f)); // GG-T1071: a delay is a pushback
             }
             yield return FloatText(cs.CasterId, cs.Resisted ? CombatTextKind.Resist : CombatTextKind.Timer, cs.Resisted ? "Steady!" : "Stagger!", 0.25f, 0.4f);
         }
