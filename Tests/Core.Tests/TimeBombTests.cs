@@ -170,7 +170,7 @@ namespace GridGame.Tests
             Assert.That(alone, Is.EqualTo(0f));
             FoeAt(s, 3, 1).Pos = new Coord(2, 1); // now right beside it
             Assert.That(HeroBot.TimeBombValue(s, a, new Coord(1, 1)), Is.GreaterThan(crowded), "beside beats a shove away");
-            Assert.That(HeroBot.TimeBombValue(s, Real.TryAbility("operative_shock"), new Coord(1, 1)), Is.EqualTo(0f), "only a carried bomb");
+            Assert.That(HeroBot.TimeBombValue(s, Real.TryAbility("fieldeng_overdrive"), new Coord(1, 1)), Is.EqualTo(0f), "only a carried bomb");
         }
     }
 }

@@ -57,7 +57,7 @@
     "lampsnuffer": "magic", "duskstalker": "claw", "gloommender": "magic", "duskmimic": "claw", "mockingecho": "slam"
   },
   "Abilities": {
-    "cleave": "slash", "ripper_rend": "slash", "ripper_flay": "slash",
+    "cleave": "slash", "ripper_flay": "slash",
     "duelist_decisivecut": "slash",
     "shadowstep_vanishing_cut": "slash", "brawler_wide_cleave": "slash",
     "fencer_fleche": "pierce", "duelist_probingthrust": "pierce",
@@ -69,9 +69,9 @@
     "juggernaut_war_stomp": "slam", "juggernaut_overrun": "slam", "charge_bull_rush": "slam",
     "charge_ram_smash": "slam", "charge_floor_shove": "slam",
     "ranged_quickshot": "projectile", "ranged_calledshot": "projectile", "ranged_suppressingfire": "projectile",
-    "marksman_deadeye_shot": "projectile", "marksman_piercing_volley": "projectile", "marksman_execution_shot": "projectile",
-    "trapper_binding_shot": "projectile", "trapper_snare_net": "projectile", "skirmisher_covering_volley": "projectile",
-    "skirmisher_retreat_shot": "projectile", "skirmisher_rapid_barrage": "projectile", "pinning_shot": "projectile",
+    "marksman_execution_shot": "projectile",
+    "trapper_snare_net": "projectile",
+    "skirmisher_retreat_shot": "projectile", "pinning_shot": "projectile",
     "machinist_turret": "projectile"
   },
   "Notes": { "Slam!": "slam", "Crash!": "slam", "Fell!": "slam" }
