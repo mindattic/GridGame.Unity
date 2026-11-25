@@ -305,6 +305,9 @@ namespace GridGame.Core.Battle
         {
             int need = BattleEngine.NeedTicks(BattleConfig.OpeningWindowSeconds);
             S.Rally = 0;
+            // GG-T807 (§2.13.3): in HeroTimeline the heroes' own icons are scheduled first, at their Speed's entry, and no
+            // foe opens the wave before the last of them (a tie goes to the hero, Earlier), so the heroes open every wave.
+            need = Math.Max(need, ScheduleHeroIcons());
             var fresh = new List<TimelineEntry>();
             foreach (var e in S.Timeline)
                 if (e.Kind == TimelineKind.Turn && S.UnitById(e.OwnerId) is Unit u && u.Team == Team.Enemy && !u.IsIndependent && u.Alive)

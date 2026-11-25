@@ -77,6 +77,17 @@ namespace GridGame.Core.Battle
             return false;
         }
 
+        // ── Hero icons on the timeline (GG-T807, §2.13.3) ────────────────────────────────
+
+        /// <summary>GG-T807 (§2.13.3): does each commanded hero ride the shared timeline on its own turn icon? Only
+        /// <see cref="TurnMode.HeroTimeline"/>. It answers before that mode is playable (no <c>Require</c>): the icons
+        /// are scheduled and race the foes' now, and handing a hero's arrival to the player lands with GG-T808.</summary>
+        public static bool HeroesOnTimeline(BattleState s) => s.TurnMode == TurnMode.HeroTimeline;
+
+        /// <summary>GG-T807: is this a commanded hero's own turn icon (never a tamed, domesticated or wanderer ally's,
+        /// which act on their own AI in every mode)? False outside <see cref="TurnMode.HeroTimeline"/>.</summary>
+        public static bool IsHeroIcon(BattleState s, Unit owner) => HeroesOnTimeline(s) && owner != null && owner.IsCommandable;
+
         // ── Records (GG-T945, §2.13.1, §22.10) ─────────────────────────────────────────────────────
 
         /// <summary>The mode a finished battle's records are kept under. Wave counts and hauls from different modes aren't

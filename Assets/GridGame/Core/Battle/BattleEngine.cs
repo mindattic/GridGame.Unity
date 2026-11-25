@@ -55,6 +55,15 @@ namespace GridGame.Core.Battle
             return r.S;
         }
 
+        /// <summary>GG-T807: runs the shared clock <paramref name="ticks"/> ticks forward with no command, resolving every
+        /// arrival on the way exactly as a command's advance does (a test and headless-soak hook; the game never calls it).</summary>
+        public static List<BattleEvent> RunClock(BattleState s, int ticks)
+        {
+            var events = new List<BattleEvent>();
+            new BattleRunner(s, events).RunClock(ticks);
+            return events;
+        }
+
         public static List<BattleEvent> Apply(BattleState s, BattleCommand cmd)
         {
             var events = new List<BattleEvent>();
@@ -228,7 +237,8 @@ namespace GridGame.Core.Battle
         public static float EntrySeconds(Unit u)
         {
             float speed = System.Math.Max(1f, u.Effective.Speed);
-            float reference = Formulas.ReferenceEnemySpeed(u.Level);
+            // GG-T807: a commanded hero's icon (HeroTimeline only; no other mode gives one an icon) is judged against heroes.
+            float reference = u.IsCommandable ? Formulas.ReferenceHeroSpeed(u.Level) : Formulas.ReferenceEnemySpeed(u.Level);
             float secs = BattleConfig.EntryBaseSeconds * (float)System.Math.Pow(reference / speed, BattleConfig.EntrySpeedExponent);
             return System.Math.Max(BattleConfig.EntryMinSeconds, System.Math.Min(BattleConfig.EntryMaxSeconds, secs));
         }

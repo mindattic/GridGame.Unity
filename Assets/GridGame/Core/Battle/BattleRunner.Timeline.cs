@@ -117,6 +117,8 @@ namespace GridGame.Core.Battle
                 BeginClutchAction(); // GG-T571: each arrival (a cast resolving, a turn, a rule event) is its own action
                 if (next.Kind == TimelineKind.Cast) { ResolveCast(next); CheckTilesStrict("cast " + next.AbilityId); }
                 else if (next.Kind == TimelineKind.Hazard) { ResolveHazard(next); CheckTilesStrict("rule event " + next.RuleEvent); }
+                else if (S.UnitById(next.OwnerId) is Unit hero && hero.Alive && TurnRules.IsHeroIcon(S, hero))
+                    HeroIconArrived(next, hero);
                 else
                 {
                     next.Ip = 0;
@@ -194,14 +196,60 @@ namespace GridGame.Core.Battle
             e.RecoverTotalTicks = recover;
         }
 
-        private static bool Earlier(TimelineEntry a, TimelineEntry b)
+        /// <summary>
+        /// GG-T807 (§2.13.3): a commanded hero's own icon reached the left edge. Until GG-T808 hands that hero to the player,
+        /// the icon is reset and put back on its cycle: off the bar for <see cref="BattleConfig.RecoverBaseSeconds"/>, then
+        /// re-entering at its Speed's entry (<see cref="BattleEngine.EntrySeconds"/>, judged against
+        /// <see cref="GridGame.Core.Rules.Formulas.ReferenceHeroSpeed"/>). It never ends the party's window and runs no TurnStart/TurnEnd hooks
+        /// (those stay at party-turn boundaries, §2.13.1). Hero icons are not spaced: <see cref="TimelineSpacing"/> keeps
+        /// foes' turns apart for the player's sake, and a hero's own turn is the player's, so it races the foes unspaced.
+        /// </summary>
+        private void HeroIconArrived(TimelineEntry e, Unit hero)
+        {
+            e.Ip = 0;
+            ScheduleReentry(e, hero, BattleConfig.RecoverBaseSeconds, space: false);
+        }
+
+        /// <summary>
+        /// GG-T807 (§2.13.3): in <see cref="TurnMode.HeroTimeline"/> every commanded hero on the board without a turn icon
+        /// (the wave's opening, a guest who just joined, a hero revived since) gets one, entering at its Speed's entry.
+        /// Returns the latest tick any hero icon arrives at (-1 with none), so the wave's foes can open behind it.
+        /// </summary>
+        private int ScheduleHeroIcons()
+        {
+            if (!TurnRules.HeroesOnTimeline(S)) return -1;
+            int last = -1;
+            foreach (var u in S.Units)
+            {
+                if (!u.Alive || !u.OnBoard || !TurnRules.IsHeroIcon(S, u)) continue;
+                var e = S.TurnEntryOf(u.Id);
+                if (e == null) { e = new TimelineEntry { Id = S.NextEntryId++, Kind = TimelineKind.Turn, OwnerId = u.Id }; S.Timeline.Add(e); }
+                ScheduleReentry(e, u, 0f, space: false);
+                last = Math.Max(last, BattleEngine.TicksUntilAct(S, e, ignoreHalt: true));
+            }
+            return last;
+        }
+
+        private bool Earlier(TimelineEntry a, TimelineEntry b)
         {
             if (a.Kind != b.Kind) return ArrivalRank(a.Kind) < ArrivalRank(b.Kind);
+            // GG-T807 (§2.4, §2.13.3): on the same tick a hero's turn beats a foe's (the party opens and wins ties, as
+            // in every mode); otherwise the earlier-made icon. Only HeroTimeline gives heroes turn icons, so other modes
+            // are unchanged.
+            if (a.Kind == TimelineKind.Turn)
+            {
+                bool ha = TurnRules.IsHeroIcon(S, S.UnitById(a.OwnerId)), hb = TurnRules.IsHeroIcon(S, S.UnitById(b.OwnerId));
+                if (ha != hb) return ha;
+            }
             return a.Id < b.Id;
         }
 
-        /// <summary>Tie order on one tick: casts, then rule hazards (GG-T359), then turns.</summary>
+        /// <summary>Tie order on one tick: casts, then rule hazards (GG-T359), then turns (a hero's before a foe's, GG-T807).</summary>
         internal static int ArrivalRank(TimelineKind k) => k == TimelineKind.Cast ? 0 : k == TimelineKind.Hazard ? 1 : 2;
+
+        /// <summary>GG-T807: runs the shared clock <paramref name="ticks"/> ticks forward with no command (the
+        /// <see cref="BattleEngine.RunClock"/> hook).</summary>
+        internal void RunClock(int ticks) => AdvanceClock(ticks);
 
         /// <summary>Time-banked orbs (§3.1.8): drag-timer seconds left at the last drop convert to orbs at the enemy handoff.</summary>
         private void MintTimeBank()

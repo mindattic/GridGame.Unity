@@ -99,6 +99,11 @@ namespace GridGame.Core.Rules
         /// at Lv30). Speed is judged against it, so a fast foe stays fast relative to its peers at every level.</summary>
         public static float ReferenceEnemySpeed(int level) => 11f + 0.75f * (Math.Max(1, level) - 1);
 
+        /// <summary>GG-T807 (§2.13.3): the median hero SPD at <paramref name="level"/> across classes.json's hero classes (base 12,
+        /// growth 0.7 per level). A hero's own turn icon (HeroTimeline) enters by its Speed against this, as a foe's does
+        /// against <see cref="ReferenceEnemySpeed"/>, so a fast hero is fast among heroes at every level.</summary>
+        public static float ReferenceHeroSpeed(int level) => 12f + 0.7f * (Math.Max(1, level) - 1);
+
         public static float HitPercent(Stats s) => Clamp(80f + s.Speed * 0.5f + s.Luck * 0.2f, 5f, 95f);
         public static float CritPercent(Stats s) => Clamp(8f + s.Luck * 0.4f, 0f, 50f);
 
