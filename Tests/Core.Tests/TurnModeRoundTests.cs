@@ -16,7 +16,9 @@ namespace GridGame.Tests
     /// once every able hero has acted the round resets (<see cref="BattleState.Round"/> + 1, a
     /// <see cref="RoundStartedEvent"/>). Fallen, Frozen and Asleep heroes are skipped, a revived hero keeps its mark, a
     /// joiner may act this round, Guard uses no place, a new wave resets the round, Clone carries it all and a bot battle
-    /// replays identically.
+    /// replays identically. GG-T1073 (GG-T796): region turn hooks and TurnStart/TurnEnd triggers run once per party turn
+    /// for every hero (ActionEnd only for the actor), timed rule events and the countdown badge read as in PartyWindow, and
+    /// foes, tames, wanderers and summons count their own turns and never take a hero's place in the round.
     /// </summary>
     public class TurnModeRoundTests
     {
@@ -466,6 +468,252 @@ namespace GridGame.Tests
                 int turn = last.FindIndex(e => e is TriggeredEvent t && t.UnitId == h.Id && t.On == TriggerOn.TurnStart);
                 int round = last.FindIndex(e => e is TriggeredEvent t && t.UnitId == h.Id && t.On == TriggerOn.RoundStart);
                 Assert.That(round, Is.GreaterThan(turn), h.Def.Id + ": RoundStart after the party turn's TurnStart");
+            }
+        }
+
+        // ── GG-T1073 (GG-T796): region rules, joins, triggers and the badge under rounds ──────────
+
+        /// <summary>A setup in <paramref name="mode"/> with <paramref name="heroes"/> (each with the given passives).</summary>
+        private static BattleSetup Setup(StageDef stage, TurnMode mode, params (string cls, int x, int y, string[] passives)[] heroes)
+        {
+            var setup = new BattleSetup { Stage = stage, Seed = 7, UnlockedSlots = 5, TurnMode = mode };
+            foreach (var h in heroes)
+                setup.Party.Add(new HeroSpec { ClassId = h.cls, Start = new Coord(h.x, h.y), Passives = (h.passives ?? new string[0]).ToList() });
+            return setup;
+        }
+
+        private static BattleState Create(ContentDb db, BattleSetup setup) => BattleEngine.Create(db, setup, new List<BattleEvent>());
+
+        /// <summary>Party turn <paramref name="i"/> (0-based) of a round robin over <paramref name="order"/>: each hero in
+        /// turn, so every round is one pass, each stepping up on its first pass and back down on its second. In
+        /// PartyWindow every other hero counts as acted (TestKit.Turn), so the same step is the whole party turn there.</summary>
+        private static List<BattleEvent> RoundRobin(BattleState s, int i, params string[] order)
+        {
+            var h = Hero(s, order[i % order.Length]);
+            int dy = (i / order.Length) % 2 == 0 ? -1 : 1;
+            var cmd = new MoveCommand { HeroId = h.Id, Path = new List<Coord> { new Coord(h.Pos.X, h.Pos.Y + dy) }, HeldSeconds = BattleEngine.MinDragSeconds };
+            var ev = s.TurnMode == TurnMode.PartyWindow ? Turn(s, cmd) : BattleEngine.Apply(s, cmd);
+            Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty, $"{s.TurnMode} turn {i}: {h.Def.Id} acts");
+            Assert.That(NewTurn(ev), Is.True, $"{s.TurnMode} turn {i} is a party turn");
+            return ev;
+        }
+
+        private static readonly string[] Three = { "knight", "cleric", "mage" };
+
+        /// <summary>TurnModeAnyHeroTests' flood rule (the Drowned Arks' tide, §14.20.4): at BattleStart (4,6) and (4,5) are
+        /// flooded, or a timed "rise" is scheduled to flood (5,7) after 6 s; a hero standing in the flood is soaked (Warm)
+        /// at its TurnStart and its TurnEnd. <paramref name="summon"/>: a hero's TurnEnd in the flood also brings a goblin
+        /// at (5,2), a rule summon joining mid-round.</summary>
+        private static (ContentDb db, StageDef stage) Flooded(bool timed, bool summon = false)
+        {
+            var db = Mini();
+            var rule = new RegionRuleDef
+            {
+                Id = "turn-flood",
+                TileStates = { new TileStateDef { Id = "flood", Color = "#3B6FA0", Glyph = "~" } },
+                Events =
+                {
+                    new RuleEventDef
+                    {
+                        Id = "rise", Seconds = 6f, Hazard = false,
+                        Effects = { new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.EventTiles, State = "flood" } },
+                    },
+                },
+            };
+            var start = new RuleHookDef { On = RuleHook.BattleStart };
+            start.Effects.Add(timed
+                ? new RuleEffectDef { Kind = RuleEffectKind.Schedule, Area = RuleArea.Tiles, Tiles = { new Coord(5, 7) }, Event = "rise" }
+                : new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(4, 6), new Coord(4, 5) }, State = "flood" });
+            rule.Hooks.Add(start);
+            foreach (var on in new[] { RuleHook.TurnStart, RuleHook.TurnEnd })
+            {
+                var hook = new RuleHookDef
+                {
+                    On = on, Team = RuleTeam.Hero, State = "flood",
+                    Effects = { new RuleEffectDef { Kind = RuleEffectKind.ApplyBuff, Units = RuleUnits.Subject, Buff = "warm" } },
+                };
+                if (summon && on == RuleHook.TurnEnd)
+                    hook.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.SpawnUnit, Area = RuleArea.Tiles, Tiles = { new Coord(5, 2) }, Class = "goblin", Level = 1 });
+                rule.Hooks.Add(hook);
+            }
+            RegionRuleCatalog.Index(db, new List<RegionRuleDef> { rule });
+            var stage = Stage(("goblin", 5, 0));
+            stage.Rules.Add("turn-flood");
+            return (db, stage);
+        }
+
+        /// <summary>How often the flood rule's hook <paramref name="hook"/> (1 TurnStart, 2 TurnEnd) has matched.</summary>
+        private static int Runs(BattleState s, int hook) => s.Region.HookCounts.TryGetValue("turn-flood#" + hook, out int n) ? n : 0;
+
+        [Test]
+        public void A_heros_region_turn_hooks_run_once_per_party_turn_not_once_per_round()
+        {
+            var (db, stage) = Flooded(timed: false);
+            var (s, _) = Battle(db, stage, ("knight", 0, 6), ("cleric", 2, 6), ("mage", 4, 6));
+            Assert.That(s.Region.At(new Coord(4, 6))?.State, Is.EqualTo("flood"), "the mage stands in the flood");
+            int starts = Runs(s, 1), ends = Runs(s, 2);
+            var mage = Hero(s, "mage");
+            for (int i = 0; i < 6; i++)
+            {
+                RoundRobin(s, i, Three);
+                Assert.That(s.Region.At(mage.Pos)?.State, Is.EqualTo("flood"), "the mage only wades between flooded tiles");
+                Assert.That(Runs(s, 1), Is.EqualTo(starts + i + 1), "the mage's TurnStart in the water, once per party turn");
+                Assert.That(Runs(s, 2), Is.EqualTo(ends + i + 1), "and its TurnEnd, whoever acted");
+                Assert.That(mage.HasBuff("warm"), Is.True, "soaked whether or not it has its place yet");
+            }
+            Assert.That(s.Round, Is.EqualTo(3), "six party turns were two rounds, and the hooks counted the turns");
+        }
+
+        [Test]
+        public void A_timed_rule_event_lands_after_the_same_party_turns_as_in_party_window()
+        {
+            // Rising water and the anchor heave are timeline events on the clock: a party turn still runs to the next enemy
+            // arrival whoever takes it, so rounds see them land when a full PartyWindow window would.
+            (int turns, long clock) Play(TurnMode mode)
+            {
+                var (db, stage) = Flooded(timed: true);
+                var s = Create(db, Setup(stage, mode, ("knight", 0, 6, null), ("cleric", 2, 6, null), ("mage", 4, 6, null)));
+                for (int i = 0; i < 30 && !s.IsOver; i++)
+                    if (RoundRobin(s, i, Three).OfType<HazardLandedEvent>().Any(h => h.EventId == "rise")) return (i + 1, (long)s.Clock);
+                return (-1, (long)s.Clock);
+            }
+            var r = Play(TurnMode.UnmovedThisRound);
+            var w = Play(TurnMode.PartyWindow);
+            Assert.That(r.turns, Is.GreaterThan(0), "the water rose");
+            Assert.That(r, Is.EqualTo(w));
+        }
+
+        [Test]
+        public void Turn_triggers_fire_for_every_hero_each_party_turn_and_action_end_only_for_the_actor()
+        {
+            var db = Mini();
+            foreach (var (id, on) in new[] { ("t_start", TriggerOn.TurnStart), ("t_end", TriggerOn.TurnEnd), ("t_action", TriggerOn.ActionEnd) })
+                db.Abilities[id] = new AbilityDef
+                {
+                    Id = id, Name = id, Kind = AbilityKind.Passive,
+                    Trigger = new TriggerDef { On = on, Effects = { new TriggerEffect { Kind = TriggerEffectKind.ApplyBuff, Buff = "warm" } } },
+                };
+            var all = new[] { "t_start", "t_end", "t_action" };
+            var s = Create(db, Setup(Stage(("goblin", 5, 0)), TurnMode.UnmovedThisRound, ("knight", 0, 6, all), ("mage", 4, 6, all)));
+            var knight = Hero(s, "knight");
+            var mage = Hero(s, "mage");
+            int Fired(List<BattleEvent> ev, Unit u, TriggerOn on) => ev.OfType<TriggeredEvent>().Count(t => t.UnitId == u.Id && t.On == on);
+
+            for (int i = 0; i < 4; i++)
+            {
+                var actor = i % 2 == 0 ? knight : mage;
+                var other = i % 2 == 0 ? mage : knight;
+                var ev = RoundRobin(s, i, "knight", "mage");
+                foreach (var h in new[] { knight, mage })
+                {
+                    Assert.That(Fired(ev, h, TriggerOn.TurnStart), Is.EqualTo(1), $"turn {i} {h.Def.Id}: one party turn, one TurnStart");
+                    Assert.That(Fired(ev, h, TriggerOn.TurnEnd), Is.EqualTo(1), $"turn {i} {h.Def.Id}: and one TurnEnd");
+                }
+                Assert.That(Fired(ev, actor, TriggerOn.ActionEnd), Is.EqualTo(1), $"turn {i}: the actor's action ended");
+                Assert.That(Fired(ev, other, TriggerOn.ActionEnd), Is.EqualTo(0), $"turn {i}: the hero waiting took no action");
+            }
+            Assert.That(s.Round, Is.EqualTo(3), "four party turns, two rounds: the triggers counted turns");
+        }
+
+        [Test]
+        public void A_foe_counts_its_own_turns_not_hero_actions_or_rounds()
+        {
+            // What a rule break counts (TwinTurn, GravityStamp's every third turn) is the breaker's own TurnsTaken.
+            var (s, _) = Trio();
+            var goblin = s.Units.First(u => u.Def.Id == "goblin");
+            int before = goblin.TurnsTaken, turns = 0;
+            for (int i = 0; i < 4; i++)
+                turns += RoundRobin(s, i, Three).OfType<TurnStartedEvent>().Count(t => t.UnitId == goblin.Id);
+            Assert.That(turns, Is.GreaterThanOrEqualTo(4), "a lone foe arrives once per party turn, not once per round");
+            Assert.That(goblin.TurnsTaken - before, Is.EqualTo(turns));
+            Assert.That(goblin.ActedThisRound, Is.False, "a foe never holds a place in the round");
+        }
+
+        [Test]
+        public void A_tamed_ally_counts_its_own_turns_and_never_takes_a_place_in_the_round()
+        {
+            var (s, _) = Battle(Mini(), Stage(("tank", 5, 0), ("wolf", 0, 2)), ("knight", 0, 6), ("cleric", 2, 6), ("mage", 4, 6));
+            var wolf = s.Units.First(u => u.Def.Id == "wolf");
+            wolf.Team = Team.Hero; wolf.Tamed = true; wolf.TameTurnsLeft = 99; wolf.BondNeeded = 999;
+            TurnRules.ClearActed(s, wolf);
+            Assert.That(wolf.IsIndependent, Is.True);
+            Assert.That(BattleEngine.HeroesLeftToAct(s), Does.Not.Contain(wolf), "not the party's to command");
+            Assert.That(BattleEngine.HeroesLeftToAct(s).Count, Is.EqualTo(3));
+
+            int grew = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                var ev = RoundRobin(s, i, Three);
+                grew += ev.OfType<BondGrewEvent>().Count(b => b.UnitId == wolf.Id);
+                Assert.That(wolf.ActedThisRound, Is.False, "its own turns never use a place in the round");
+                Assert.That(BattleEngine.HeroesLeftToAct(s), Does.Not.Contain(wolf));
+                if (i < 2) Assert.That(BattleEngine.HeroesLeftToAct(s).Count, Is.EqualTo(2 - i), "the round waits only for heroes");
+            }
+            Assert.That(s.Round, Is.EqualTo(2), "three hero actions were the whole round: the wolf held nothing up");
+            Assert.That(BattleEngine.HeroesLeftToAct(s).Count, Is.EqualTo(3));
+            Assert.That(wolf.TameTurnsLeft, Is.EqualTo(99 - grew), "the tame counts the wolf's own turns, not the party's or rounds");
+        }
+
+        [Test]
+        public void A_wanderer_is_independent_and_never_takes_a_place_in_the_round()
+        {
+            var setup = Setup(Stage(("tank", 5, 0)), TurnMode.UnmovedThisRound, ("knight", 0, 6, null), ("cleric", 2, 6, null));
+            setup.Wanderer = new WandererSpec { Class = "mage", Wave = 0 };
+            var s = Create(Mini(), setup);
+            var wanderer = s.Units.Single(u => u.Wanderer);
+            Assert.That(wanderer.IsIndependent, Is.True);
+            Assert.That(BattleEngine.CanMove(s, wanderer.Id), Is.False);
+            Assert.That(BattleEngine.HeroesLeftToAct(s).Count, Is.EqualTo(2));
+
+            int before = wanderer.TurnsTaken, turns = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                var ev = RoundRobin(s, i, "knight", "cleric");
+                turns += ev.OfType<TurnStartedEvent>().Count(t => t.UnitId == wanderer.Id);
+                Assert.That(wanderer.ActedThisRound, Is.False);
+                Assert.That(BattleEngine.HeroesLeftToAct(s), Does.Not.Contain(wanderer));
+            }
+            Assert.That(s.Round, Is.EqualTo(3), "two heroes, two rounds in four turns: the wanderer held nothing up");
+            Assert.That(wanderer.TurnsTaken - before, Is.EqualTo(turns), "it counts its own turns");
+        }
+
+        [Test]
+        public void A_unit_summoned_mid_round_never_holds_the_round_up()
+        {
+            var (db, stage) = Flooded(timed: false, summon: true);
+            var (s, _) = Battle(db, stage, ("knight", 0, 6), ("cleric", 2, 6), ("mage", 4, 6));
+            var knight = Hero(s, "knight");
+            var cleric = Hero(s, "cleric");
+            var mage = Hero(s, "mage");
+            int foes = s.Units.Count(u => u.Alive && u.Team == Team.Enemy);
+
+            var first = RoundRobin(s, 0, Three);
+            var summoned = first.OfType<ReinforcementsArrivedEvent>().SelectMany(r => r.Spawned).Select(s.UnitById).ToList();
+            Assert.That(summoned, Is.Not.Empty, "the mage's TurnEnd in the flood summoned a goblin");
+            Assert.That(s.Units.Count(u => u.Alive && u.Team == Team.Enemy), Is.GreaterThan(foes));
+            foreach (var u in summoned) Assert.That(u.ActedThisRound, Is.False, "it joins with no action spent");
+            Assert.That(BattleEngine.HeroesLeftToAct(s), Is.EquivalentTo(new[] { cleric, mage }), "the round still waits only for its heroes");
+            Assert.That(s.Round, Is.EqualTo(1));
+
+            RoundRobin(s, 1, Three);
+            var last = RoundRobin(s, 2, Three);
+            Assert.That(Rounds(last).Single().Round, Is.EqualTo(2), "the summons never took a hero's place");
+            Assert.That(BattleEngine.HeroesLeftToAct(s), Is.EquivalentTo(new[] { knight, cleric, mage }));
+        }
+
+        [Test]
+        public void The_countdown_badge_reads_the_same_as_party_window()
+        {
+            BattleState Make(TurnMode mode) =>
+                Create(Mini(), Setup(Stage(("goblin", 5, 0), ("wolf", 0, 0)), mode, ("knight", 0, 6, null), ("cleric", 2, 6, null), ("mage", 4, 6, null)));
+            var r = Make(TurnMode.UnmovedThisRound);
+            var w = Make(TurnMode.PartyWindow);
+            for (int i = 0; i < 4; i++)
+            {
+                foreach (var foe in r.Units.Where(u => u.Team == Team.Enemy && u.Alive))
+                    Assert.That(TurnRules.CountdownLeft(r, foe.Id), Is.EqualTo(TurnRules.CountdownLeft(w, foe.Id)), $"{foe.Def.Id} after {i} turns");
+                RoundRobin(r, i, Three);
+                RoundRobin(w, i, Three);
             }
         }
     }

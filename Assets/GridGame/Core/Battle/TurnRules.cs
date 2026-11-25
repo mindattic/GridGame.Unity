@@ -42,6 +42,15 @@ namespace GridGame.Core.Battle
     /// round too (a cooldown no longer than the party is ready by its next place: the round is the cadence). Rally: a forced
     /// Guard stacks it, uses no place, and any hero action resets it. The support extra turn is enemy-side and unchanged.
     /// So no code path asks the mode beyond <see cref="MaxTimeBankOrbs"/>; TurnModeRoundTests pin each answer.</para>
+    /// <para>GG-T796 (§2.13.2) rounds and the GG-T783 rules, decided: none of them counts rounds, so none asks the mode.
+    /// A hero's region TurnStart/TurnEnd hooks and TurnStart/TurnEnd triggers fire for every commanded hero once per party
+    /// turn, whether or not it has its place yet (ActionEnd only for the actor); RoundStart is the one per-round hook
+    /// (fired when <see cref="ResetTurn"/> starts a round). Timed rule events follow the clock and the countdown badge counts party turns,
+    /// so both read as in PartyWindow. Rule breaks, tames, bonds and wanderers count their own turns; an independent ally,
+    /// a foe or a summon is never able this round (<see cref="AbleThisRound"/> needs a commanded hero), so none takes a
+    /// hero's place or holds the round up. A recruit joins through Talk, which uses the talker's place, and may act this
+    /// round (<see cref="ClearActed"/>). Naming: a region <c>RuleHookDef.Every</c> counts hook matches, not rounds, so
+    /// nothing is renamed. TurnModeRoundTests pin each answer.</para>
     /// </summary>
     public static class TurnRules
     {
