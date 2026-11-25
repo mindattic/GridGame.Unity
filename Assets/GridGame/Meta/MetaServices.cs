@@ -2641,8 +2641,7 @@ namespace GridGame.Meta
         {
             var a = c.TryAbility(abilityId);
             if (a == null || !Learnable(c, h).Contains(a)) return Result.Fail("Can't learn that");
-            var unmet = Unmet(c, s, h, a);
-            if (unmet.Count > 0) return Result.Fail($"Locked: {NeedsText(unmet)}");
+            // GG-T1031: Requires no longer gate learning (the skill hexagon's path is the gate); Unmet stays a display hint.
             int price = Price(c, s, h, a);
             if (s.Gold < price) return Result.Fail("Not enough gold");
             bool guided = Training.Guides(s, a);

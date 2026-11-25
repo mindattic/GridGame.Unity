@@ -173,6 +173,9 @@ namespace GridGame.Meta
         /// Respec refunds what was paid even if the off-tree premium has since changed. A node bought before this was recorded
         /// (an older save) has no entry and refunds its current <see cref="Talents.Cost"/>. Null-safe: may be missing.</summary>
         public Dictionary<string, int> TreeNodeCosts;
+        /// <summary>Skill hexagon nodes this hero owns, as "q,r" (GG-T1031, <see cref="SkillHexProgress"/>), bought with
+        /// <see cref="SkillPoints"/>. An older save simply has none. Null-safe: may be missing.</summary>
+        public List<string> HexNodes = new List<string>();
         /// <summary>Level-up stat points put into each stat (GG-T591, <see cref="StatPoints"/>), keyed by a
         /// <see cref="StatGrantDef.Names"/> entry: how many points, not how much stat. Earned points are derived from the
         /// level, so only the picks are saved. Null-safe: an older save has none (all its points are simply unspent).</summary>
