@@ -1,0 +1,194 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using GridGame.Core;
+using GridGame.Core.Battle;
+using GridGame.Core.Content;
+using GridGame.Core.Rules;
+using NUnit.Framework;
+using static GridGame.Tests.TestKit;
+
+namespace GridGame.Tests
+{
+    /// <summary>
+    /// GG-T1070 (bible §2.4, §2.13.3, core GG-T807): in <see cref="TurnMode.HeroTimeline"/> each commanded hero rides the
+    /// shared timeline on its own turn icon. A faster hero enters further left (Speed against
+    /// <see cref="Formulas.ReferenceHeroSpeed"/>), hero and foe icons race on the one clock, the heroes open each wave ahead
+    /// of the foes, a same-tick tie goes to the hero, and a seeded run replays identically. Only the clock is driven
+    /// (<see cref="BattleEngine.RunClock"/>): handing a hero's arrival to the player lands with GG-T808.
+    /// </summary>
+    public class TurnModeHeroTimelineTests
+    {
+        private static Stats Spd(float speed) =>
+            new Stats { Strength = 20, Vitality = 10, Agility = 10, Speed = speed, Intelligence = 10 };
+
+        private static ContentDb Db()
+        {
+            var db = Mini();
+            db.Classes["sprinter"] = new ClassDef { Id = "sprinter", Name = "Sprinter", Team = Team.Hero, Tags = { "Humanoid" }, BaseStats = Spd(24) };
+            db.Classes["plodder"] = new ClassDef { Id = "plodder", Name = "Plodder", Team = Team.Hero, Tags = { "Humanoid" }, BaseStats = Spd(8) };
+            db.Classes["imp"] = new ClassDef { Id = "imp", Name = "Imp", Team = Team.Enemy, Tags = { "Beast" }, BaseStats = Spd(30), MoveRange = 0 };
+            return db;
+        }
+
+        private static BattleSetup Setup(StageDef stage, int seed, params (string cls, int x, int y)[] heroes)
+        {
+            var setup = new BattleSetup { Stage = stage, Seed = seed, UnlockedSlots = 5, TurnMode = TurnMode.HeroTimeline };
+            foreach (var h in heroes) setup.Party.Add(new HeroSpec { ClassId = h.cls, Start = new Coord(h.x, h.y) });
+            return setup;
+        }
+
+        private static BattleState Create(StageDef stage, params (string cls, int x, int y)[] heroes) =>
+            BattleEngine.Create(Db(), Setup(stage, 7, heroes), new List<BattleEvent>());
+
+        private static Unit Foe(BattleState s) => s.Units.First(u => u.Alive && u.Team == Team.Enemy);
+
+        private static int Ticks(BattleState s, Unit u) => BattleEngine.TicksUntilTurn(s, u.Id);
+
+        private static readonly int RecoverTicks = (int)Math.Round(BattleConfig.RecoverBaseSeconds * BattleConfig.TicksPerSecond);
+
+        [Test]
+        public void A_faster_hero_enters_further_left_judged_against_the_hero_reference_speed()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("knight", 2, 6), ("plodder", 4, 6));
+            Assert.That(TurnRules.HeroesOnTimeline(s), Is.True);
+            var fast = Hero(s, "sprinter");
+            var mid = Hero(s, "knight");
+            var slow = Hero(s, "plodder");
+            foreach (var h in new[] { fast, mid, slow })
+            {
+                Assert.That(TurnRules.IsHeroIcon(s, h), Is.True, h.Def.Id);
+                Assert.That(s.TurnEntryOf(h.Id), Is.Not.Null, h.Def.Id + " has its own turn icon");
+                float expected = BattleConfig.EntryBaseSeconds
+                    * (float)Math.Pow(Formulas.ReferenceHeroSpeed(h.Level) / Math.Max(1f, h.Effective.Speed), BattleConfig.EntrySpeedExponent);
+                expected = Math.Max(BattleConfig.EntryMinSeconds, Math.Min(BattleConfig.EntryMaxSeconds, expected));
+                Assert.That(BattleEngine.EntrySeconds(h), Is.EqualTo(expected).Within(1e-4f), h.Def.Id + " is judged against heroes");
+            }
+            Assert.That(Formulas.ReferenceHeroSpeed(1), Is.EqualTo(12f));
+            Assert.That(Formulas.ReferenceHeroSpeed(11), Is.EqualTo(19f).Within(1e-4f), "12 + 0.7 per level");
+
+            Assert.That(Ticks(s, fast), Is.LessThan(Ticks(s, mid)));
+            Assert.That(Ticks(s, mid), Is.LessThan(Ticks(s, slow)));
+            Assert.That(BattleEngine.BarU(s, s.TurnEntryOf(fast.Id)), Is.LessThan(BattleEngine.BarU(s, s.TurnEntryOf(mid.Id))), "further left");
+            Assert.That(BattleEngine.BarU(s, s.TurnEntryOf(mid.Id)), Is.LessThan(BattleEngine.BarU(s, s.TurnEntryOf(slow.Id))));
+        }
+
+        [Test]
+        public void Hero_and_foe_icons_race_on_the_one_clock()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6));
+            var hero = Hero(s, "sprinter");
+            var foe = Foe(s);
+            int th = Ticks(s, hero), tf = Ticks(s, foe);
+            Assert.That(th, Is.GreaterThan(1));
+            Assert.That(tf, Is.GreaterThan(th), "the hero opens the wave");
+
+            var ev = BattleEngine.RunClock(s, th - 1);
+            Assert.That(Ticks(s, hero), Is.EqualTo(1));
+            Assert.That(Ticks(s, foe), Is.EqualTo(tf - th + 1), "both icons moved the same ticks");
+            Assert.That(ev.OfType<TurnStartedEvent>(), Is.Empty);
+
+            ev = BattleEngine.RunClock(s, 1);
+            Assert.That(Ticks(s, hero), Is.EqualTo(th + RecoverTicks), "arrived: off the bar for RecoverBaseSeconds, then back at its Speed's entry");
+            Assert.That(Ticks(s, foe), Is.EqualTo(tf - th));
+            Assert.That(ev.OfType<TurnStartedEvent>(), Is.Empty, "a hero's arrival runs no foe turn");
+
+            ev = BattleEngine.RunClock(s, tf - th);
+            Assert.That(ev.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Contain(foe.Id), "the foe's icon arrives on the same clock");
+            Assert.That(ev.OfType<TurnStartedEvent>().Select(t => t.UnitId), Does.Not.Contain(hero.Id));
+        }
+
+        [Test]
+        public void Heroes_open_each_wave_ahead_of_the_foes()
+        {
+            var stage = StageWaves(new[] { ("imp", 5, 0) }, new[] { ("imp", 5, 1), ("imp", 3, 0) });
+            var s = Create(stage, ("plodder", 0, 6), ("knight", 2, 6));
+            var heroes = s.Units.Where(u => u.IsHero).ToList();
+            AssertHeroesOpen(s, heroes, "wave 1");
+
+            // The wave-1 imp burns down on the clock alone; the next wave's opening reschedules every hero icon.
+            var imp = Foe(s);
+            imp.Hp = 1;
+            imp.Buffs.Add(new BuffInstance { Def = s.Content.Buffs["burning"], Remaining = 5 });
+            for (int i = 0; i < 200 && s.Wave == 0 && !s.IsOver; i++) BattleEngine.RunClock(s, 1);
+            Assert.That(s.Wave, Is.EqualTo(1), "wave 2 began");
+            AssertHeroesOpen(s, heroes, "wave 2");
+            foreach (var h in heroes)
+                Assert.That(Ticks(s, h), Is.EqualTo(BattleEngine.TicksUntilAct(s, s.TurnEntryOf(h.Id))), h.Def.Id);
+        }
+
+        private static void AssertHeroesOpen(BattleState s, List<Unit> heroes, string wave)
+        {
+            int lastHero = heroes.Max(h => Ticks(s, h));
+            foreach (var foe in s.Units.Where(u => u.Alive && u.Team == Team.Enemy))
+                Assert.That(Ticks(s, foe), Is.GreaterThanOrEqualTo(lastHero), wave + ": no foe opens before the last hero (a tie goes to the hero)");
+        }
+
+        [Test]
+        public void On_a_same_tick_tie_the_hero_turn_resolves_before_the_foe_turn()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("knight", 0, 6));
+            var hero = Hero(s, "knight");
+            var foe = Foe(s);
+            var he = s.TurnEntryOf(hero.Id);
+            var fe = s.TurnEntryOf(foe.Id);
+            Assert.That(fe.Id, Is.LessThan(he.Id), "by entry id alone the foe would win the tie");
+
+            // Line the foe's icon up with the hero's so both arrive on one tick.
+            fe.Ip = he.Ip; fe.RecoverTicks = he.RecoverTicks; fe.RecoverTotalTicks = he.RecoverTotalTicks; fe.StunTicks = he.StunTicks;
+            int t = Ticks(s, hero);
+            Assert.That(Ticks(s, foe), Is.EqualTo(t));
+
+            var runner = NewRunner(s);
+            Assert.That(Earlier(runner, he, fe), Is.True, "hero turn before foe turn");
+            Assert.That(Earlier(runner, fe, he), Is.False);
+            Assert.That(ArrivalRank(TimelineKind.Cast), Is.LessThan(ArrivalRank(TimelineKind.Hazard)), "casts before hazards");
+            Assert.That(ArrivalRank(TimelineKind.Hazard), Is.LessThan(ArrivalRank(TimelineKind.Turn)), "hazards before turns");
+
+            var ev = BattleEngine.RunClock(s, t);
+            Assert.That(ev.OfType<TurnStartedEvent>().Select(x => x.UnitId), Does.Contain(foe.Id), "the foe still took its turn on the tie tick");
+            Assert.That(Ticks(s, hero), Is.EqualTo(t + RecoverTicks), "the hero's icon resolved on the same tick");
+        }
+
+        [Test]
+        public void A_seeded_run_replays_identically()
+        {
+            string Run()
+            {
+                var stage = StageWaves(new[] { ("goblin", 5, 0), ("imp", 3, 0) }, new[] { ("imp", 5, 1) });
+                var s = BattleEngine.Create(Db(), Setup(stage, 31, ("sprinter", 0, 6), ("knight", 2, 6), ("plodder", 4, 6)), new List<BattleEvent>());
+                var sb = new StringBuilder();
+                var arrivals = new Dictionary<int, int>();
+                for (int i = 0; i < 400 && !s.IsOver; i++)
+                {
+                    var before = s.Units.Where(u => u.IsHero).ToDictionary(u => u.Id, u => Ticks(s, u));
+                    foreach (var e in BattleEngine.RunClock(s, 1)) sb.Append(e.GetType().Name).Append(';');
+                    foreach (var kv in before)
+                        if (Ticks(s, s.UnitById(kv.Key)) > kv.Value) arrivals[kv.Key] = arrivals.TryGetValue(kv.Key, out var n) ? n + 1 : 1;
+                    sb.Append('|').Append(s.Clock).Append(':');
+                    foreach (var e in s.Timeline) sb.Append(e.Id).Append(',').Append(e.OwnerId).Append(',').Append(e.Ip).Append(',').Append(e.RecoverTicks).Append(',').Append(e.StunTicks).Append(' ');
+                    foreach (var u in s.Units) sb.Append(u.Id).Append('=').Append(u.Hp).Append(' ');
+                    sb.Append('\n');
+                }
+                Assert.That(arrivals.Count, Is.EqualTo(3), "every hero icon arrived at least once");
+                return sb.ToString();
+            }
+
+            Assert.That(Run(), Is.EqualTo(Run()));
+        }
+
+        // BattleRunner is internal and its tie rule private: read it by reflection rather than widen it for a test.
+        private static readonly Type RunnerType = typeof(BattleEngine).Assembly.GetType("GridGame.Core.Battle.BattleRunner", throwOnError: true);
+
+        private static object NewRunner(BattleState s) =>
+            Activator.CreateInstance(RunnerType, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, new object[] { s, new List<BattleEvent>() }, null);
+
+        private static bool Earlier(object runner, TimelineEntry a, TimelineEntry b) =>
+            (bool)RunnerType.GetMethod("Earlier", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(runner, new object[] { a, b });
+
+        private static int ArrivalRank(TimelineKind k) =>
+            (int)RunnerType.GetMethod("ArrivalRank", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).Invoke(null, new object[] { k });
+    }
+}
