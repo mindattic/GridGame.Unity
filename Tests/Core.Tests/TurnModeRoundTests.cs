@@ -5,6 +5,7 @@ using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Bot;
 using GridGame.Core.Content;
+using GridGame.Core.Rules;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
 
@@ -432,6 +433,96 @@ namespace GridGame.Tests
             Assert.That(GridGame.Core.Rules.EnemyPlanner.PickTarget(s, goblin), Is.SameAs(before));
             foreach (var h in s.LivingList(Team.Hero)) h.ActedThisRound = h == before;
             Assert.That(GridGame.Core.Rules.EnemyPlanner.PickTarget(s, goblin), Is.SameAs(before));
+        }
+
+        // ── GG-T1090 (GG-T1087): the smart bot's save-vs-spend round planner ────────────────────────
+
+        /// <summary>The knight (1,3) and the cleric (4,3) flank the goblin (2,3)'s row: the cleric's one step to (3,3)
+        /// closes a pincer (Complete), while the mage in the far corner (5,7) is more than <see cref="PincerPlanner.MaxSearchSteps"/>
+        /// from any tile beside the goblin (Kind None).</summary>
+        private static BattleState SaveBoard(TurnMode mode)
+        {
+            var setup = new BattleSetup { Stage = Stage(("goblin", 2, 3)), Seed = 7, UnlockedSlots = 5, TurnMode = mode };
+            foreach (var (cls, x, y) in new[] { ("knight", 1, 3), ("cleric", 4, 3), ("mage", 5, 7) })
+                setup.Party.Add(new HeroSpec { ClassId = cls, Start = new Coord(x, y) });
+            var s = BattleEngine.Create(Mini(), setup, new List<BattleEvent>());
+            Assume.That(PincerPlanner.Plan(s, Hero(s, "cleric"), PincerPlanner.MaxSearchSteps).Kind, Is.EqualTo(PincerPlanKind.Complete), "the cleric has pincer prospects");
+            Assume.That(PincerPlanner.Plan(s, Hero(s, "mage"), PincerPlanner.MaxSearchSteps).Kind, Is.EqualTo(PincerPlanKind.None), "the mage has none");
+            return s;
+        }
+
+        /// <summary>Runs HeroBot.SaveForPincers on a hand-made candidate list: a cleric shuffle (10), a mage action (5) and
+        /// the cleric's real pincer (12, index 2). Returns the scores after the round planner has charged them.</summary>
+        private static float[] Saved(BattleState s)
+        {
+            var cleric = Hero(s, "cleric");
+            var mage = Hero(s, "mage");
+            var candidates = new List<(BattleCommand cmd, float score)>
+            {
+                (new MoveCommand { HeroId = cleric.Id, Path = P((4, 4)) }, 10f),
+                (new MoveCommand { HeroId = mage.Id, Path = P((5, 6)) }, 5f),
+                (new MoveCommand { HeroId = cleric.Id, Path = P((3, 3)) }, 12f),
+            };
+            var m = typeof(HeroBot).GetMethod("SaveForPincers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.That(m, Is.Not.Null, "HeroBot.SaveForPincers");
+            m.Invoke(null, new object[] { s, candidates, new HashSet<int> { 2 } });
+            return candidates.Select(c => c.score).ToArray();
+        }
+
+        [Test]
+        public void Mid_round_the_planner_saves_the_hero_with_prospects_and_spends_the_one_without()
+        {
+            var s = SaveBoard(TurnMode.UnmovedThisRound);
+            TurnRules.MarkActed(s, Hero(s, "knight"));
+            Assert.That(Hero(s, "knight").ActedThisRound, Is.True, "mid-round");
+            Assert.That(TurnRules.HeroesLeftToAct(s).Count, Is.EqualTo(2));
+
+            var after = Saved(s);
+            Assert.That(after[0], Is.EqualTo(10f - HeroBot.RoundSaveCost), "the saved cleric's non-pincer action is charged");
+            Assert.That(after[1], Is.EqualTo(5f), "the mage (no prospects) is never charged");
+            Assert.That(after[2], Is.EqualTo(12f), "a real pincer is never charged");
+            Assert.That(after[1], Is.GreaterThan(after[0]), "short of the pincer, the mage spends the turn");
+        }
+
+        [Test]
+        public void Mid_round_the_smart_bot_still_takes_the_saved_heros_real_pincer()
+        {
+            var s = SaveBoard(TurnMode.UnmovedThisRound);
+            var cleric = Hero(s, "cleric");
+            TurnRules.MarkActed(s, Hero(s, "knight"));
+            var cmd = new HeroBot(7).Decide(s);
+            Assert.That(cmd, Is.InstanceOf<MoveCommand>(), cmd?.ToString());
+            var move = (MoveCommand)cmd;
+            Assert.That(move.HeroId, Is.EqualTo(cleric.Id), "the saved hero spends its place on the pincer");
+            Assert.That(BattleEngine.PreviewMove(s, move.HeroId, move.Path).Pincers, Is.Not.Empty, "a real pincer");
+        }
+
+        [Test]
+        public void At_round_start_nothing_is_charged()
+        {
+            var s = SaveBoard(TurnMode.UnmovedThisRound);
+            Assert.That(s.Units.Any(u => u.ActedThisRound), Is.False);
+            Assert.That(Saved(s), Is.EqualTo(new[] { 10f, 5f, 12f }));
+        }
+
+        [Test]
+        public void With_one_hero_left_unmoved_nothing_is_charged()
+        {
+            var s = SaveBoard(TurnMode.UnmovedThisRound);
+            TurnRules.MarkActed(s, Hero(s, "knight"));
+            TurnRules.MarkActed(s, Hero(s, "mage"));
+            Assert.That(TurnRules.HeroesLeftToAct(s), Is.EquivalentTo(new[] { Hero(s, "cleric") }), "the round's last unmoved hero");
+            Assert.That(Saved(s), Is.EqualTo(new[] { 10f, 5f, 12f }));
+        }
+
+        [TestCase(TurnMode.PartyWindow)]
+        [TestCase(TurnMode.AnyHeroEveryTurn)]
+        public void Other_modes_decide_as_before(TurnMode mode)
+        {
+            var s = SaveBoard(mode);
+            TurnRules.MarkActed(s, Hero(s, "knight"));
+            Assert.That(s.Units.Any(u => u.ActedThisRound), Is.False, mode + " never sets ActedThisRound");
+            Assert.That(Saved(s), Is.EqualTo(new[] { 10f, 5f, 12f }), mode + ": no round save");
         }
 
         // ── GG-T795: per-turn systems under rounds — they count party turns, not rounds ─────────────
