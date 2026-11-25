@@ -67,6 +67,13 @@ namespace GridGame.Core.Battle
     /// <c>AnyHeroMaxTimeBankOrbs</c>), one hero turn being one action. The support extra turn (<c>supportTurnOwner</c>,
     /// GG-T307) stays enemy-side and unchanged: a hero's Turns buff gained on its own turn already lasts until its own
     /// next arrival, so no hero needs one.</para>
+    /// <para>GG-T1105 (§2.13.3) the enemy AI under HeroTimeline, decided: foes stay blind to whose icon arrives next, as
+    /// they stay blind to who has moved under rounds (GG-T798). <c>EnemyPlanner</c> targeting (taunt, personality, then
+    /// distance, HP, id), its step and its ranged pick read the board and HP, never <see cref="BattleState.ActiveHeroId"/>
+    /// or the hero icons' order, so no code path asks the mode. A foe may target or push back any hero, the one about to
+    /// act included: its Pushback lands on whichever hero icon its pattern catches (GG-T1102), with no preference and no
+    /// exception. That can never soft-lock: a push only adds time (stun at the empty bar, or recovery), the one clock keeps
+    /// running every icon, so each hero's icon still arrives. TurnModeHeroTimelineTests pin it.</para>
     /// </summary>
     public static class TurnRules
     {

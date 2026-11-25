@@ -482,6 +482,52 @@ namespace GridGame.Tests
 
         #endregion
 
+        #region GG-T1105: the enemy AI is blind to whose icon arrives next (GG-T812)
+
+        /// <summary>GG-T1105, decided: foes don't prefer (or avoid) the hero whose icon arrives next. Targeting (taunt,
+        /// personality, distance, HP, id), the step and the ranged pick read the board and HP, never
+        /// <see cref="BattleState.ActiveHeroId"/>, so a foe's choices are the same whichever hero holds the turn.</summary>
+        [Test]
+        public void Enemy_targeting_ignores_whose_turn_it_is()
+        {
+            var s = Create(Stage(("goblin", 3, 2)), ("sprinter", 0, 6), ("knight", 3, 6), ("plodder", 5, 6));
+            var foe = Foe(s);
+            var target = EnemyPlanner.PickTarget(s, foe);
+            var ranged = EnemyPlanner.RangedTarget(s, foe);
+            var step = EnemyPlanner.PlanStep(s, foe);
+            Assert.That(target, Is.Not.Null);
+            int active = s.ActiveHeroId;
+            foreach (int id in s.Units.Where(u => u.IsHero).Select(u => u.Id).Concat(new[] { -1 }))
+            {
+                s.ActiveHeroId = id;
+                Assert.That(EnemyPlanner.PickTarget(s, foe), Is.SameAs(target), "target with hero " + id + " to act");
+                Assert.That(EnemyPlanner.RangedTarget(s, foe), Is.SameAs(ranged), "ranged pick with hero " + id + " to act");
+                Assert.That(EnemyPlanner.PlanStep(s, foe), Is.EqualTo(step), "step with hero " + id + " to act");
+            }
+            s.ActiveHeroId = active;
+        }
+
+        /// <summary>GG-T1105: a foe may push back the hero whose icon arrives next (no hero exception), and it never
+        /// soft-locks: the push only adds bounded time, so that hero's icon still arrives.</summary>
+        [Test]
+        public void A_push_on_the_next_hero_only_delays_its_icon()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("knight", 2, 6), ("plodder", 4, 6));
+            var next = s.Units.Where(u => u.IsHero && u.Id != s.ActiveHeroId).OrderBy(u => Ticks(s, u)).First();
+            int before = Ticks(s, next);
+            Assert.That(before, Is.GreaterThan(0));
+
+            var runner = NewRunner(s);
+            RunnerType.GetMethod("Pushback", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(runner, new object[] { next, 1f });
+            int after = Ticks(s, next);
+            Assert.That(after, Is.GreaterThan(before), "the push lands on the hero about to act");
+            int cap = Formulas.SecondsToTicks(BattleConfig.PushbackMaxSeconds);
+            Assert.That(after, Is.LessThanOrEqualTo(before + cap + BattleEngine.TurnRatePerTick(s, next) * cap),
+                "the delay is bounded, so the icon still arrives");
+        }
+
+        #endregion
+
         #region GG-T1103: Sleep skips, own-turn counting, Frozen thaw and icon rate (GG-T1100, GG-T809, GG-T1102)
 
         /// <summary><see cref="Db"/> plus a five-turn "ward" (Turns), and tick-unit "slowed" (×0.5) and "hasted" (×2) icon rates.</summary>

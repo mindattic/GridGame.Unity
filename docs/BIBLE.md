@@ -1304,6 +1304,8 @@ What is built so far (GG-T807, tests GG-T1070 `TurnModeHeroTimelineTests`):
 - **Mana income per hero turn (§3.1).** One hero turn is one action. Pincer charge and spells are both per action, regen follows the clock, and Guard's bank is unchanged. The time bank keeps AnyHeroEveryTurn's per-action cap: `TurnRules.MaxTimeBankOrbs` = `AnyHeroMaxTimeBankOrbs` (1).
 - **The support extra turn (`supportTurnOwner`, GG-T307).** Unchanged and enemy-side only. A Turns buff a hero gains on its own turn already lasts until that hero's next arrival, so no hero needs an extra turn.
 
+**The enemy AI (✅ GG-T1105, decided: no change).** Foes don't know whose icon arrives next, just as they don't know who has moved in Mode B (GG-T798). `EnemyPlanner` picks its target by taunt, then personality, then distance, HP and id. Its step and its ranged pick also read only the board and HP, never `ActiveHeroId` or the order of the hero icons. So a foe may hit or push back any hero, including the one about to act, but it doesn't seek that hero out. Its Pushback lands on whichever hero icon its pattern catches, with no hero exception. This can't soft-lock the battle: a push only adds time (stun at an empty bar, or more recovery), and the one clock keeps every icon moving, so each hero's icon still arrives. `TurnRules`' summary records this, and `TurnModeHeroTimelineTests` pins it.
+
 ---
 
 ## 3. Resources
