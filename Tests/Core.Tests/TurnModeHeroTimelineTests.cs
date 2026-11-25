@@ -355,6 +355,133 @@ namespace GridGame.Tests
 
         #endregion
 
+        #region GG-T1104: region rules, joins and triggers on each hero's own turn (GG-T810)
+
+        /// <summary>The Mode B flood rule (TurnModeRoundTests' GG-T1073 region) on <see cref="Db"/>: at BattleStart (0,6) and
+        /// (4,6) are flooded; a hero standing in the flood is soaked (Warm) at its TurnStart and its TurnEnd.</summary>
+        private static BattleState Flooded(params (string cls, int x, int y)[] heroes)
+        {
+            var db = Db();
+            var rule = new RegionRuleDef { Id = "turn-flood", TileStates = { new TileStateDef { Id = "flood", Color = "#3B6FA0", Glyph = "~" } } };
+            var start = new RuleHookDef { On = RuleHook.BattleStart };
+            start.Effects.Add(new RuleEffectDef { Kind = RuleEffectKind.MarkTiles, Area = RuleArea.Tiles, Tiles = { new Coord(0, 6), new Coord(4, 6) }, State = "flood" });
+            rule.Hooks.Add(start);
+            foreach (var on in new[] { RuleHook.TurnStart, RuleHook.TurnEnd })
+                rule.Hooks.Add(new RuleHookDef
+                {
+                    On = on, Team = RuleTeam.Hero, State = "flood",
+                    Effects = { new RuleEffectDef { Kind = RuleEffectKind.ApplyBuff, Units = RuleUnits.Subject, Buff = "warm" } },
+                });
+            RegionRuleCatalog.Index(db, new List<RegionRuleDef> { rule });
+            var stage = Stage(("goblin", 5, 0));
+            stage.Rules.Add("turn-flood");
+            return BattleEngine.Create(db, Setup(stage, 7, heroes), new List<BattleEvent>());
+        }
+
+        /// <summary>How often the flood rule's hook <paramref name="hook"/> (1 TurnStart, 2 TurnEnd) has matched.</summary>
+        private static int Runs(BattleState s, int hook) => s.Region.HookCounts.TryGetValue("turn-flood#" + hook, out int n) ? n : 0;
+
+        /// <summary>The active hero steps one tile up or down (its whole turn, which ends with the next hero's arrival).</summary>
+        private static List<BattleEvent> Step(BattleState s)
+        {
+            var h = s.UnitById(s.ActiveHeroId);
+            int dy = h.Pos.Y >= 6 ? -1 : 1;
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = h.Id, Path = new List<Coord> { new Coord(h.Pos.X, h.Pos.Y + dy) }, HeldSeconds = BattleEngine.MinDragSeconds });
+            Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty, h.Def.Id + " steps");
+            return ev;
+        }
+
+        [Test]
+        public void Region_turn_hooks_run_once_per_hero_turn_and_only_for_the_hero_whose_icon_arrived()
+        {
+            var s = Flooded(("sprinter", 0, 6), ("plodder", 4, 6));
+            var heroes = s.Units.Where(u => u.IsHero).ToList();
+            foreach (var h in heroes) Assert.That(s.Region.At(h.Pos)?.State, Is.EqualTo("flood"), h.Def.Id + " stands in the flood");
+            for (int i = 0; i < 4 && !s.IsOver; i++)
+            {
+                int starts = Runs(s, 1), ends = Runs(s, 2);
+                foreach (var h in heroes) h.Buffs.RemoveAll(b => b.Def.Id == "warm");
+                BattleEngine.Apply(s, new ShieldCommand()); // Guard: nobody leaves the water
+                Assert.That(s.ActiveHeroId, Is.GreaterThanOrEqualTo(0), $"turn {i}: a hero's own icon arrived");
+                Assert.That(Runs(s, 1), Is.EqualTo(starts + 1), $"turn {i}: one TurnStart, the arriving hero's, though both stand in the flood");
+                Assert.That(Runs(s, 2), Is.EqualTo(ends + 1), $"turn {i}: and one TurnEnd");
+                foreach (var h in heroes)
+                    Assert.That(h.HasBuff("warm"), Is.EqualTo(h.Id == s.ActiveHeroId), $"turn {i}: only {h.Def.Id}'s own turn soaks it");
+            }
+        }
+
+        [Test]
+        public void Turn_triggers_fire_only_on_a_heros_own_turn_and_action_end_only_for_the_actor()
+        {
+            var db = Db();
+            foreach (var (id, on) in new[] { ("t_start", TriggerOn.TurnStart), ("t_end", TriggerOn.TurnEnd), ("t_action", TriggerOn.ActionEnd) })
+                db.Abilities[id] = new AbilityDef
+                {
+                    Id = id, Name = id, Kind = AbilityKind.Passive,
+                    Trigger = new TriggerDef { On = on, Effects = { new TriggerEffect { Kind = TriggerEffectKind.ApplyBuff, Buff = "warm" } } },
+                };
+            var setup = Setup(Stage(("goblin", 5, 0)), 7, ("sprinter", 0, 6), ("plodder", 4, 6));
+            foreach (var p in setup.Party) p.Passives = new List<string> { "t_start", "t_end", "t_action" };
+            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
+            var heroes = s.Units.Where(u => u.IsHero).ToList();
+            int Fired(List<BattleEvent> ev, Unit u, TriggerOn on) => ev.OfType<TriggeredEvent>().Count(t => t.UnitId == u.Id && t.On == on);
+
+            for (int i = 0; i < 4 && !s.IsOver; i++)
+            {
+                int actor = s.ActiveHeroId;
+                var ev = Step(s);
+                int next = s.ActiveHeroId;
+                Assert.That(next, Is.GreaterThanOrEqualTo(0));
+                foreach (var h in heroes)
+                {
+                    int own = h.Id == next ? 1 : 0;
+                    Assert.That(Fired(ev, h, TriggerOn.TurnStart), Is.EqualTo(own), $"turn {i} {h.Def.Id}: TurnStart only as its own icon arrives");
+                    Assert.That(Fired(ev, h, TriggerOn.TurnEnd), Is.EqualTo(own), $"turn {i} {h.Def.Id}: and TurnEnd with it");
+                    Assert.That(Fired(ev, h, TriggerOn.ActionEnd), Is.EqualTo(h.Id == actor ? 1 : 0), $"turn {i} {h.Def.Id}: ActionEnd only for the actor");
+                }
+            }
+        }
+
+        [Test]
+        public void A_tamed_ally_and_a_wanderer_keep_their_own_icons_and_count_their_own_turns()
+        {
+            var setup = Setup(Stage(("tank", 5, 0), ("wolf", 0, 2)), 7, ("sprinter", 0, 6), ("plodder", 4, 6));
+            setup.Wanderer = new WandererSpec { Class = "mage", Wave = 0 };
+            var s = BattleEngine.Create(Db(), setup, new List<BattleEvent>());
+            var wolf = s.Units.First(u => u.Def.Id == "wolf");
+            wolf.Team = Team.Hero; wolf.Tamed = true; wolf.TameTurnsLeft = 99; wolf.BondNeeded = 999;
+            TurnRules.ClearActed(s, wolf);
+            var wanderer = s.Units.Single(u => u.Wanderer);
+            var allies = new[] { wolf, wanderer };
+            var icons = allies.ToDictionary(a => a.Id, a => s.TurnEntryOf(a.Id));
+            var before = allies.ToDictionary(a => a.Id, a => a.TurnsTaken);
+            var turns = allies.ToDictionary(a => a.Id, a => 0);
+            foreach (var a in allies)
+            {
+                Assert.That(a.IsIndependent, Is.True, a.Def.Id);
+                Assert.That(TurnRules.IsHeroIcon(s, a), Is.False, a.Def.Id + " is no commanded hero");
+                Assert.That(icons[a.Id], Is.Not.Null, a.Def.Id + " rides the timeline on its own icon");
+            }
+
+            int grew = 0;
+            for (int i = 0; i < 6 && !s.IsOver; i++)
+            {
+                var ev = BattleEngine.Apply(s, new ShieldCommand());
+                grew += ev.OfType<BondGrewEvent>().Count(b => b.UnitId == wolf.Id);
+                foreach (var a in allies)
+                {
+                    turns[a.Id] += ev.OfType<TurnStartedEvent>().Count(t => t.UnitId == a.Id);
+                    Assert.That(s.ActiveHeroId, Is.Not.EqualTo(a.Id), a.Def.Id + " never holds a hero's turn");
+                    if (a.Alive) Assert.That(s.TurnEntryOf(a.Id), Is.SameAs(icons[a.Id]), a.Def.Id + " keeps its own icon; no hero icon is made for it");
+                }
+            }
+            foreach (var a in allies) Assert.That(a.TurnsTaken - before[a.Id], Is.EqualTo(turns[a.Id]), a.Def.Id + " counts its own turns");
+            Assert.That(turns.Values.Sum(), Is.GreaterThan(0), "the allies took turns on the clock");
+            Assert.That(wolf.TameTurnsLeft, Is.EqualTo(99 - grew), "the tame counts the wolf's own turns, not hero turns");
+        }
+
+        #endregion
+
         // BattleRunner is internal and its tie rule private: read it by reflection rather than widen it for a test.
         private static readonly Type RunnerType = typeof(BattleEngine).Assembly.GetType("GridGame.Core.Battle.BattleRunner", throwOnError: true);
 
