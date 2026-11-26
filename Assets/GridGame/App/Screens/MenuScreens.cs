@@ -848,6 +848,11 @@ namespace GridGame.App
             if (open == null) Regions(regions, locked, list);
             else Stages(open, stages, regions.Count > 1, list);
             Ui.SelectFirst(list);
+            // The hand rests on the next stage that can be entered, never a locked one (GG-T1155): after a defeat the
+            // expedition is back at battle 1, so the later rows stay locked until it is replayed.
+            if (open != null)
+                foreach (var row in list.Children())
+                    if (row.name != null && row.name.StartsWith("stage-") && !row.ClassListContains("menu-row--disabled")) { Ui.Select(row); break; }
         }
 
         /// <summary>Step one: every unlocked region with its state — the expedition under way, a stage not yet won (New), or

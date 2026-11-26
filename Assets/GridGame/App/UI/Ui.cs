@@ -397,7 +397,7 @@ namespace GridGame.App
             });
             row.EnableInClassList("menu-row--disabled", !enabled);
             Pressable(row);
-            row.RegisterCallback<PointerEnterEvent>(_ => Select(row));
+            row.RegisterCallback<PointerEnterEvent>(_ => { if (enabled) Select(row); });
             row.RegisterCallback<ClickEvent>(_ =>
             {
                 try
