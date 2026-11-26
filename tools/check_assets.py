@@ -111,7 +111,7 @@ def art_findings():
 
 
 def main():
-    code = "".join(open(p, encoding="utf-8").read() for p in glob.glob(os.path.join(ROOT, "Assets", "GridGame", "App", "**", "*.cs"), recursive=True))
+    code = "".join(open(p, encoding="utf-8", errors="replace").read() for p in glob.glob(os.path.join(ROOT, "Assets", "GridGame", "App", "**", "*.cs"), recursive=True))
     cues = set(re.findall(r'Sfx\("([^"]+)"', code))
     # (NB: a bare "A and B or []" here would silently evaluate to [] whenever A itself found nothing,
     # even though B is the pattern that actually matters — never leave that construct for the next edit.)
