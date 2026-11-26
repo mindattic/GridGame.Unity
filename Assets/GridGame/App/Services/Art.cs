@@ -86,6 +86,7 @@ namespace GridGame.App
                 cache.Remove(k);
                 lastUsed.Remove(k);
                 scopes.Remove(k);
+                screenOwners.Remove(k);
             }
             ForgetTextures(dropped);
         }
@@ -100,6 +101,13 @@ namespace GridGame.App
 
         private static readonly Dictionary<string, ArtScope> scopes = new Dictionary<string, ArtScope>();
         private static readonly bool[] activeScopes = new bool[3];
+        // GG-T1206: the Screen scope is held per screen. Each open token (a screen showing non-party heroes and enemies, an
+        // in-battle dialogue) owns the Screen entries loaded while it was focused; an entry several tokens asked for lives
+        // until the last of them is released, so a screen pushed over another and popped again releases only its own art.
+        // Owner 0 is the legacy BeginScope(Screen). An entry a Stage or Resident load also asked for is theirs, never a token's.
+        private static readonly Dictionary<string, HashSet<int>> screenOwners = new Dictionary<string, HashSet<int>>();
+        private static readonly Dictionary<int, int> screenTokens = new Dictionary<int, int>(); // open token -> focus it replaced
+        private static int screenFocus, nextScreenToken;
         private const string ThumbKey = "thumb:", BackdropSetKey = "backdropset:";
 
         /// <summary>The scope new loads are tagged with: the narrowest begun scope (Screen, else Stage, else Resident),
@@ -108,6 +116,7 @@ namespace GridGame.App
         {
             get
             {
+                if (screenFocus != 0) return ArtScope.Screen;
                 for (int i = activeScopes.Length - 1; i >= 0; i--) if (activeScopes[i]) return (ArtScope)i;
                 return null;
             }
@@ -135,13 +144,58 @@ namespace GridGame.App
         public static void ReleaseScope(ArtScope scope)
         {
             activeScopes[(int)scope] = false;
+            if (scope == ArtScope.Screen) { screenTokens.Clear(); screenFocus = 0; } // every screen's art, tokens and all
             var keys = new List<string>();
             foreach (var kv in scopes) if (kv.Value == scope) keys.Add(kv.Key);
+            DropKeys(keys);
+        }
+
+        /// <summary>GG-T1206: opens a Screen scope token and focuses it, so loads from now on (until another token is
+        /// focused or this one released) are tagged Screen and owned by it. Release it with <see cref="ReleaseScreenScope"/>
+        /// when the screen or overlay closes; tokens nest and may be released in any order.</summary>
+        public static int OpenScreenScope()
+        {
+            int token = ++nextScreenToken;
+            if (token <= 0) token = nextScreenToken = 1;
+            screenTokens[token] = screenFocus;
+            screenFocus = token;
+            return token;
+        }
+
+        /// <summary>GG-T1206: makes <paramref name="token"/> (an open one) the token new loads are owned by, or none
+        /// (0, or a released token): loads then fall to the begun Stage/Resident scope. The router focuses the screen it mounts.</summary>
+        public static void FocusScreenScope(int token) => screenFocus = token != 0 && screenTokens.ContainsKey(token) ? token : 0;
+
+        /// <summary>GG-T1206: closes <paramref name="token"/> and drops every Screen entry no other open token (nor the legacy
+        /// Screen scope) still owns. Art a Stage or Resident load asked for is never touched, so an overlay in a battle
+        /// releases only what the battle does not draw. The focus goes back to what this token replaced if still open.</summary>
+        public static void ReleaseScreenScope(int token)
+        {
+            if (token == 0 || !screenTokens.TryGetValue(token, out var before)) return;
+            screenTokens.Remove(token);
+            if (screenFocus == token) screenFocus = before != 0 && screenTokens.ContainsKey(before) ? before : 0;
+            var keys = new List<string>();
+            foreach (var kv in screenOwners)
+            {
+                if (!kv.Value.Remove(token) || kv.Value.Count > 0) continue;
+                if (scopes.TryGetValue(kv.Key, out var sc) && sc == ArtScope.Screen) keys.Add(kv.Key);
+            }
+            DropKeys(keys);
+        }
+
+        /// <summary>Open Screen scope tokens (tests and the leak probe).</summary>
+        internal static int OpenScreenScopes => screenTokens.Count;
+
+        /// <summary>Drops each scoped entry in <paramref name="keys"/> (cache, thumbnail, backdrop set) and forgets the textures
+        /// nothing else holds.</summary>
+        private static void DropKeys(List<string> keys)
+        {
             if (keys.Count == 0) return;
             var dropped = new List<Texture2D>();
             foreach (var k in keys)
             {
                 scopes.Remove(k);
+                screenOwners.Remove(k);
                 if (k.StartsWith(ThumbKey, System.StringComparison.Ordinal))
                 {
                     string file = k.Substring(ThumbKey.Length);
@@ -179,8 +233,10 @@ namespace GridGame.App
         {
             if (set == null) return;
             bool wasStage = activeScopes[(int)ArtScope.Stage], wasScreen = activeScopes[(int)ArtScope.Screen];
+            int wasFocus = screenFocus;
             activeScopes[(int)ArtScope.Stage] = true;
             activeScopes[(int)ArtScope.Screen] = false; // tag as Stage even if a screen is open
+            screenFocus = 0;
             try
             {
                 var content = GameApp.I != null ? GameApp.I.Content : null;
@@ -204,6 +260,7 @@ namespace GridGame.App
             {
                 activeScopes[(int)ArtScope.Stage] = wasStage;
                 activeScopes[(int)ArtScope.Screen] = wasScreen;
+                screenFocus = wasFocus;
             }
         }
 
@@ -212,7 +269,16 @@ namespace GridGame.App
         {
             var cur = CurrentScope;
             if (cur == null) return;
-            if (!scopes.TryGetValue(key, out var had) || cur.Value < had) scopes[key] = cur.Value;
+            bool known = scopes.TryGetValue(key, out var had);
+            if (!known || cur.Value < had)
+            {
+                scopes[key] = cur.Value;
+                if (cur.Value != ArtScope.Screen) { screenOwners.Remove(key); return; } // now the Stage's or Resident's
+            }
+            else if (cur.Value != ArtScope.Screen || had != ArtScope.Screen) return;
+            // GG-T1206: a Screen entry is owned by every token focused when it was asked for (0: the legacy scope).
+            if (!screenOwners.TryGetValue(key, out var owners)) screenOwners[key] = owners = new HashSet<int>();
+            owners.Add(screenFocus);
         }
 
         /// <summary>Drops the per-texture entries (owner, figure sprite) of textures no remaining cache or thumbnail entry

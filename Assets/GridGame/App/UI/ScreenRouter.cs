@@ -61,6 +61,13 @@ namespace GridGame.App
         public virtual IEnumerator Prepare(Action<float> progress) => null;
         internal bool Prepared;
 
+        /// <summary>GG-T1206: true for a screen that shows heroes and enemies outside the party (the bestiary, the hero and
+        /// party picker, the mercenary camp): the router gives it its own <see cref="ArtScope.Screen"/> token while it is on
+        /// the stack, focused whenever it is the mounted screen, and releases that art when it leaves the stack. A screen
+        /// pushed over it keeps it (it is rebuilt on the way back); popping releases only the popped screen's own art.</summary>
+        public virtual bool HoldsScreenArt => false;
+        internal int ArtToken;
+
         /// <summary>Rebuilds in place (after a purchase etc.).</summary>
         public void Refresh()
         {
@@ -109,8 +116,8 @@ namespace GridGame.App
         }
 
         public void Push(GameScreen s) => Go(() => stack.Push(s));
-        public void Replace(GameScreen s) => Go(() => { if (stack.Count > 0) stack.Pop().OnHidden(); stack.Push(s); });
-        public void ResetTo(GameScreen s) => Go(() => { while (stack.Count > 0) stack.Pop().OnHidden(); stack.Push(s); });
+        public void Replace(GameScreen s) => Go(() => { if (stack.Count > 0) Leave(stack.Pop()); stack.Push(s); });
+        public void ResetTo(GameScreen s) => Go(() => { while (stack.Count > 0) Leave(stack.Pop()); stack.Push(s); });
 
         public void Pop()
         {
@@ -135,7 +142,16 @@ namespace GridGame.App
         // A queued pop runs after earlier queued changes, so it re-checks there is still a screen under the top.
         private void PopOne()
         {
-            if (stack.Count > 1) stack.Pop().OnHidden();
+            if (stack.Count > 1) Leave(stack.Pop());
+        }
+
+        /// <summary>A screen leaves the stack: it is told, and its Screen art token (GG-T1206) is released.</summary>
+        private static void Leave(GameScreen s)
+        {
+            s.OnHidden();
+            if (s.ArtToken == 0) return;
+            Art.ReleaseScreenScope(s.ArtToken);
+            s.ArtToken = 0;
         }
 
         private void Go(Action mutate)
@@ -247,7 +263,12 @@ namespace GridGame.App
         {
             host.Clear();
             var top = Current;
-            if (top == null) return;
+            if (top == null) { Art.FocusScreenScope(0); return; }
+            // GG-T1206: what the mounted screen loads belongs to its own Screen token, or to no token at all (the battle's
+            // stays Stage), never to a screen it covers.
+            if (!top.HoldsScreenArt) Art.FocusScreenScope(0);
+            else if (top.ArtToken == 0) top.ArtToken = Art.OpenScreenScope();
+            else Art.FocusScreenScope(top.ArtToken);
             host.Add(top.Mount());
             if (top.Music != null) GameApp.I.Audio.Music(top.Music);
             top.OnShown();

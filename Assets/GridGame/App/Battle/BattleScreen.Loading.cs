@@ -74,6 +74,7 @@ namespace GridGame.App
         /// <summary>Drops this battle's stage art when it leaves (the next stage's load unloads and collects it).</summary>
         private void ReleaseStageArt()
         {
+            ReleaseRecruitArt(); // GG-T1206: a recruit dialogue cut short by the battle leaving
             if (stageOwner != this) return;
             stageOwner = null;
             Art.ReleaseScope(ArtScope.Stage);

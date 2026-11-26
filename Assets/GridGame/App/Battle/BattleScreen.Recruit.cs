@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using GridGame.Core.Battle;
 using UnityEngine;
@@ -12,6 +13,30 @@ namespace GridGame.App
     public sealed partial class BattleScreen
     {
         private static readonly Color RecruitAmber = Palette.Neutral;
+        /// <summary>GG-T1206: the Screen art token the recruit dialogue's speaker portraits load under (0 = none).</summary>
+        private int recruitArt;
+
+        /// <summary>A recruit dialogue's lines. A speaker can be any class (a dialogue's own cast), so the portraits it loads go
+        /// to a Screen scope token released when the lines end: what the battle already holds stays the Stage's.</summary>
+        private IEnumerator RecruitLines(List<RecruitLine> lines)
+        {
+            if (lines == null || lines.Count == 0) yield break;
+            ReleaseRecruitArt();
+            recruitArt = Art.OpenScreenScope();
+            try
+            {
+                foreach (var line in lines) yield return SurpriseAnnounce(line.SpeakerClassId, line.Text);
+            }
+            finally { ReleaseRecruitArt(); }
+        }
+
+        /// <summary>Releases the recruit dialogue's Screen art (its lines ended, or the battle left mid-dialogue).</summary>
+        private void ReleaseRecruitArt()
+        {
+            if (recruitArt == 0) return;
+            Art.ReleaseScreenScope(recruitArt);
+            recruitArt = 0;
+        }
 
         /// <summary>A tap on a neutral: talk with the selected hero if it stands beside it, else any hero that does.</summary>
         private void TapRecruitable(Unit neutral)
@@ -51,7 +76,7 @@ namespace GridGame.App
         private IEnumerator RecruitOfferedAnim(RecruitOfferedEvent e)
         {
             App.Audio.Sfx("ui.click", 0.8f);
-            foreach (var line in e.Lines) yield return SurpriseAnnounce(line.SpeakerClassId, line.Text);
+            yield return RecruitLines(e.Lines);
             var u = State.UnitById(e.UnitId);
             ShowBanner($"{u?.Name} wants: {string.Join(", ", e.Wants)}");
             yield return FloatText(e.UnitId, CombatTextKind.Callout, "?", 0.35f, 0.65f, RecruitAmber);
@@ -60,7 +85,7 @@ namespace GridGame.App
         /// <summary>Talked round: its join line, the gold handed over, and its frame turns guest-green as it joins.</summary>
         private IEnumerator RecruitJoinedAnim(RecruitJoinedEvent e)
         {
-            foreach (var line in e.Lines) yield return SurpriseAnnounce(line.SpeakerClassId, line.Text);
+            yield return RecruitLines(e.Lines);
             var u = State.UnitById(e.UnitId);
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             App.Audio.Sfx("battle.victory", 0.6f);

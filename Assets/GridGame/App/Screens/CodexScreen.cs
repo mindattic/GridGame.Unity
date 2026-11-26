@@ -51,6 +51,8 @@ namespace GridGame.App
         private readonly Dictionary<string, VisualElement> rowIcons = new Dictionary<string, VisualElement>();
 
         public override string Id => "codex";
+        /// <summary>GG-T1206: the bestiary's heroes and enemies load into its own Screen art scope, released when it closes.</summary>
+        public override bool HoldsScreenArt => true;
         protected override string Title => "Codex";
 
         protected override void BuildBody(VisualElement body)

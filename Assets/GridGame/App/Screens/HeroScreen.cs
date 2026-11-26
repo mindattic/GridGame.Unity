@@ -65,6 +65,8 @@ namespace GridGame.App
         /// <summary>The active tab's id ("status", "equip", "abilities", "talents", "party"): the automation's screen check and
         /// the camp tips key off it exactly as they did off the separate screens.</summary>
         public override string Id => Active.Id;
+        /// <summary>GG-T1206: the roster and party picker's heroes (party and benched) load into its own Screen art scope, released when it closes.</summary>
+        public override bool HoldsScreenArt => true;
         protected override string Title => "Heroes";
         protected override string TipStation => Active.TipStation;
 

@@ -12,6 +12,8 @@ namespace GridGame.App
     public sealed class MercenaryScreen : HubPage
     {
         public override string Id => "mercenaries";
+        /// <summary>GG-T1206: the camp's mercenaries (non-party heroes) load into its own Screen art scope, released when it closes.</summary>
+        public override bool HoldsScreenArt => true;
         protected override string Title => "Mercenaries";
         protected override string Backdrop => "desert";
         private bool haggling;
@@ -159,6 +161,8 @@ namespace GridGame.App
         private bool answered;
         public MercenaryRenewalScreen(string classId) { this.classId = classId; }
         public override string Id => "merc-renewal";
+        /// <summary>GG-T1206: the renewing mercenary's portrait and backdrop load into its own Screen art scope, released when it closes.</summary>
+        public override bool HoldsScreenArt => true;
 
         private static ContentDb C => GameApp.I.Content;
         private static SaveData S => GameApp.I.Save;
