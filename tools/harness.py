@@ -163,6 +163,28 @@ def _ensure_port(wait=6.0):
 
 
 _launched = False
+_procs = []
+
+
+def _stop_player(wait=8.0):
+    """GG-T1144: quit the player(s) this harness launched and force-kill any still running after `wait` seconds, so a
+    player that ignores quit (busy, hung) never lingers as an orphan holding the port."""
+    try:
+        if alive():
+            call("quit", timeout=3)
+    except Exception:
+        pass
+    deadline = time.time() + wait
+    for proc in _procs:
+        try:
+            proc.wait(timeout=max(0.1, deadline - time.time()))
+        except Exception:
+            try:
+                proc.kill()
+                proc.wait(timeout=5)
+            except Exception:
+                pass
+    del _procs[:]
 
 
 def _quit_launched():
@@ -171,16 +193,13 @@ def _quit_launched():
     talk to an already running player (shot, call) never launch, so they leave it alone."""
     if not _launched:
         return
-    try:
-        if alive():
-            call("quit", timeout=3)
-    except Exception:
-        pass
+    _stop_player()
 
 
 def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
     global _launched
     _launched = True
+    _stop_player()
     if alive():
         try:
             call("quit", timeout=3)
@@ -214,6 +233,7 @@ def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
     if HEADLESS:
         args += ["-batchmode", "-nographics"]
     proc = subprocess.Popen(args, cwd=ROOT)
+    _procs.append(proc)
     for _ in range(60):
         if alive():
             return art
@@ -575,40 +595,39 @@ def aspects(run="aspects", height=1200, shapes=None):
     failures, report = [], {}
     for label, a in (shapes or ASPECTS):
         w = int(round(height * a))
-        launch(f"{run}/{label}", width=w, height=height, fresh=True)
-        _wait_screen("title"); time.sleep(0.8)
-        sb = call("stagebounds")
-        dw, dh = sb["design"]
-        expect_framed = not (ASPECT_MIN - 0.002 <= w / height <= ASPECT_MAX + 0.002)
-        entry = {"window": [w, height], "stage": [dw, dh], "framed": sb["framed"], "screens": {}}
-        if dw < 1170 or dh < 2532:
-            failures.append(f"{label}: stage {dw}x{dh} below the 1170x2532 minimum")
-        if dw > 1899 or dh > 2990:
-            failures.append(f"{label}: stage {dw}x{dh} above the 1899x2990 maximum")
-        if sb["framed"] != expect_framed:
-            failures.append(f"{label}: framed={sb['framed']}, expected {expect_framed}")
-        shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")
-        call("newgame", slot=0); time.sleep(1.2)
-        shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
-        call("clicktext", text="Adventure"); time.sleep(0.8)
-        enter_stage("The Tithe Moors I"); time.sleep(1.5)
-        through_story(wait=1.2)
-        if _wait_screen("battle", 8):
-            time.sleep(2.0)
-            shot(f"{label}-3-battle"); entry["screens"]["battle"] = call("layout").get("problems")
-        else:
-            failures.append(f"{label}: never reached the battle screen")
-        for scr, probs in entry["screens"].items():
-            if probs:
-                failures.append(f"{label}/{scr}: {probs}")
-        errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
-        if errs:
-            failures.append(f"{label}: log errors {errs[:3]}")
-        report[label] = entry
-    try:
-        call("quit", timeout=3)
-    except Exception:
-        pass
+        try:
+            launch(f"{run}/{label}", width=w, height=height, fresh=True)
+            _wait_screen("title"); time.sleep(0.8)
+            sb = call("stagebounds")
+            dw, dh = sb["design"]
+            expect_framed = not (ASPECT_MIN - 0.002 <= w / height <= ASPECT_MAX + 0.002)
+            entry = {"window": [w, height], "stage": [dw, dh], "framed": sb["framed"], "screens": {}}
+            if dw < 1170 or dh < 2532:
+                failures.append(f"{label}: stage {dw}x{dh} below the 1170x2532 minimum")
+            if dw > 1899 or dh > 2990:
+                failures.append(f"{label}: stage {dw}x{dh} above the 1899x2990 maximum")
+            if sb["framed"] != expect_framed:
+                failures.append(f"{label}: framed={sb['framed']}, expected {expect_framed}")
+            shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")
+            call("newgame", slot=0); time.sleep(1.2)
+            shot(f"{label}-2-hub"); entry["screens"]["hub"] = call("layout").get("problems")
+            call("clicktext", text="Adventure"); time.sleep(0.8)
+            enter_stage("The Tithe Moors I"); time.sleep(1.5)
+            through_story(wait=1.2)
+            if _wait_screen("battle", 8):
+                time.sleep(2.0)
+                shot(f"{label}-3-battle"); entry["screens"]["battle"] = call("layout").get("problems")
+            else:
+                failures.append(f"{label}: never reached the battle screen")
+            for scr, probs in entry["screens"].items():
+                if probs:
+                    failures.append(f"{label}/{scr}: {probs}")
+            errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
+            if errs:
+                failures.append(f"{label}: log errors {errs[:3]}")
+            report[label] = entry
+        finally:
+            _stop_player()  # GG-T1144: close this aspect's player before the next launch
     print(json.dumps(report, indent=1))
     print("FAILURES:" if failures else "ALL ASPECTS OK", *failures, sep="\n  ")
     return not failures
