@@ -306,8 +306,8 @@
  },
  "ability": {
   "slasher_rending_slash": [
-   "lorc/sword-wound",
-   "crimson"
+   "lorc/whip",
+   "rust"
   ],
   "streetfighter_sucker_punch": [
    "lorc/punch",
