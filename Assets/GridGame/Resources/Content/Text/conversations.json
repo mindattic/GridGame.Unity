@@ -4499,6 +4499,58 @@
         ]
       }
     },
+    "dialogue:talk_quiz_druidbrawler": {
+      "key": "dialogue:talk_quiz_druidbrawler",
+      "id": "conversation-talk-quiz-druidbrawler",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:18462b5684c36649333f54a56908c17e444c53c263049d3fbf06afdfc8bc738e",
+      "about": [
+        "class-druidbrawler"
+      ],
+      "speakers": [
+        "$with"
+      ],
+      "payload": {
+        "title": "Advice",
+        "start": "ask",
+        "nodes": [
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "My Rootbreaker pins a foe in place. When does it land best?",
+            "choices": [
+              {
+                "text": "On a foe far across the field.",
+                "next": "wrong"
+              },
+              {
+                "text": "Right after a snare holds it beside me.",
+                "next": "right",
+                "tags": [
+                  "right-answer"
+                ]
+              },
+              {
+                "text": "To heal a hurt ally.",
+                "next": "wrong"
+              }
+            ]
+          },
+          {
+            "id": "right",
+            "speaker": "$with",
+            "line": "Right. Snare first, then break it where it stands."
+          },
+          {
+            "id": "wrong",
+            "speaker": "$with",
+            "line": "It's a slam, up close. Snare the foe first, then hit."
+          }
+        ]
+      }
+    },
     "dialogue:talk_quiz_duelist": {
       "key": "dialogue:talk_quiz_duelist",
       "id": "conversation-talk-quiz-duelist",

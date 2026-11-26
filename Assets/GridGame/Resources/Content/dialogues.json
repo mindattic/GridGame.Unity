@@ -2129,6 +2129,26 @@
     ]
   },
   {
+    "Id": "talk_quiz_druidbrawler",
+    "Title": "Advice",
+    "Trigger": { "Kind": "Talk", "Id": "druidbrawler" },
+    "Speakers": [
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "wrong" },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "wrong" }
+        ]
+      },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "wrong", "Speaker": "hero" }
+    ]
+  },
+  {
     "Id": "talk_quiz_courier",
     "Title": "Advice",
     "Trigger": { "Kind": "Talk", "Id": "courier" },

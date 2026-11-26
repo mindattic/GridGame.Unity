@@ -31,6 +31,6 @@
   {
     "Id": "wild", "Name": "the Wild",
     "Regions": [ "bloom" ],
-    "Heroes": [ "wildchild", "monstertamer", "bluelion", "herald" ]
+    "Heroes": [ "wildchild", "monstertamer", "bluelion", "herald", "druidbrawler" ]
   }
 ]

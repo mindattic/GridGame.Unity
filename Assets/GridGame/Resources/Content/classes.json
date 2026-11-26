@@ -22855,6 +22855,134 @@
     "Family": "brains"
   },
   {
+    "Id": "druidbrawler",
+    "Name": "Druid Brawler",
+    "Team": "Hero",
+    "Tags": [
+      "Humanoid"
+    ],
+    "Card": "Front-line [brawler]. Snares a foe, then breaks it where it stands ([Rooted]).",
+    "Portrait": "mannequin",
+    "ArtSource": "mannequin",
+    "Thumbnail": {
+      "Zoom": 2.3786,
+      "X": 0.493,
+      "Y": 0.2102
+    },
+    "Figure": {
+      "X": 0,
+      "Y": 0,
+      "W": 1,
+      "H": 1
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "BaseStats": {
+      "Strength": 8,
+      "Vitality": 8,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 8,
+      "Wisdom": 8
+    },
+    "Growth": {
+      "Strength": 0.45,
+      "Vitality": 0.45,
+      "Agility": 0.45,
+      "Speed": 0.45,
+      "Intelligence": 0.45,
+      "Wisdom": 0.45
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.15,
+          "Vitality": 0.15,
+          "Agility": 0.15,
+          "Speed": 0.15,
+          "Intelligence": 0.15,
+          "Wisdom": 0.15
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.21,
+          "Vitality": 0.21,
+          "Agility": 0.21,
+          "Speed": 0.21,
+          "Intelligence": 0.21,
+          "Wisdom": 0.21
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.27,
+          "Vitality": 0.27,
+          "Agility": 0.27,
+          "Speed": 0.27,
+          "Intelligence": 0.27,
+          "Wisdom": 0.27
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.36,
+          "Vitality": 0.36,
+          "Agility": 0.36,
+          "Speed": 0.36,
+          "Intelligence": 0.36,
+          "Wisdom": 0.36
+        }
+      }
+    ],
+    "Resistances": {},
+    "Abilities": [
+      "cleave",
+      "druidbrawler_rootbreaker",
+      "primalpack_challenge",
+      "trapper_snare_net",
+      "tempoweave_stumble",
+      "wildchild_howl"
+    ],
+    "DefaultLoadout": [
+      "cleave",
+      "druidbrawler_rootbreaker",
+      "item:x_potion",
+      "primalpack_challenge",
+      "trapper_snare_net"
+    ],
+    "DropTable": null,
+    "MoveRange": 1,
+    "XpReward": 10,
+    "BossPhases": [],
+    "ChargeAbility": null,
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Role": "Striker",
+    "Support": {
+      "Effect": "Status",
+      "Magnitude": 0.5,
+      "Target": "Attacker",
+      "Range": 1,
+      "Buff": "rooted",
+      "Label": "Bramble Grip",
+      "Projectile": "SlowShimmer",
+      "Motion": "Straight",
+      "Sfx": "battle.trap"
+    },
+    "Family": "wild",
+    "WeaponProficiencies": [
+      "Martial"
+    ]
+  },
+  {
     "Id": "herald",
     "Name": "Herald",
     "Team": "Hero",

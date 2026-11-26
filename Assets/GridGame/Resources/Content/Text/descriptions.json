@@ -1207,6 +1207,22 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
+    "class:druidbrawler": {
+      "key": "class:druidbrawler",
+      "id": "description-class-druidbrawler",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a9625a7f5cff702af5882db3baf0d8741c86fe07ce97a372d334450635e97a08",
+      "about": [
+        "class-druidbrawler"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A grove-sworn brawler who snares a foe, then breaks it where it stands.",
+        "long": "Fights the way roots grow: slowly, then all at once."
+      }
+    },
     "class:duelist": {
       "key": "class:duelist",
       "id": "description-class-duelist",
