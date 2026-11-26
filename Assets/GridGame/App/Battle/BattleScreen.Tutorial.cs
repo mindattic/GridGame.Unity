@@ -320,6 +320,13 @@ namespace GridGame.App
         private void TutorialWaveStarted()
         {
             if (!TutorialActive) return;
+            // GG-T1149: a lesson whose popup showed but whose moment passed (a pickup that rang out) gives way once the next wave's lesson is due.
+            while (TutorialStep < Lessons.Length - 1 && coachPopupFor == TutorialStep && !LessonWaiting && Lessons[TutorialStep + 1].Wave <= State.Wave && Lessons[TutorialStep].Waits)
+            {
+                if (Coach.Active) Coach.Cancel();
+                DisarmCoach();
+                NextLesson();
+            }
             SyncPanel();
             if (!LessonWaiting) { App.Audio.Sfx("ui.select", 0.6f); FocusLesson(); }
         }
@@ -335,6 +342,23 @@ namespace GridGame.App
         private bool CoachAvailable => !Coach.Suppressed && App.Save != null && !Coach.Off(App.Save) && setupOverride == null;
 
         private int commitCount, coachTriedAt = -1, coachPopupFor = -1, sceneStep = -1, sceneCommit = -1;
+        /// <summary>GG-T1149: how often the current lesson's scene was staged again and its mark aborted, after its popup showed;
+        /// a lesson that keeps failing (the pickup rings out, a foe keeps attacking) is skipped instead of repeating forever.</summary>
+        private int stuckStep = -1, stuckScenes, stuckAborts;
+        private const int StuckLimit = 3;
+        private bool NoteStuck(int step, bool scene)
+        {
+            if (stuckStep != step) { stuckStep = step; stuckScenes = 0; stuckAborts = 0; }
+            if (scene) stuckScenes++; else stuckAborts++;
+            return stuckScenes >= StuckLimit || stuckAborts >= StuckLimit;
+        }
+        /// <summary>GG-T1149: skips the lesson in progress when its popup has shown and it is stuck or overdue (the next lesson's wave has begun).</summary>
+        private bool SkipStuckLesson(int step)
+        {
+            if (step >= Lessons.Length - 1 || TutorialStep != step) return false;
+            NextLesson();
+            return true;
+        }
         /// <summary>The armed drag rail: the hero a move mark is for, where it starts, and the only route it may take.</summary>
         private int coachHeroId = -1;
         private Coord coachStart;
@@ -382,6 +406,7 @@ namespace GridGame.App
             // Taunt, as the lesson opens), once per board: the marks are looked for again after it plays.
             if (l.Scene != null && State.Tutorial && (marks.Count == 0 || (l.SceneFirst && !popupDone)) && !(sceneStep == step && sceneCommit == commitCount))
             {
+                if (popupDone && NoteStuck(step, true) && SkipStuckLesson(step)) return;
                 Commit(new TutorialSceneCommand { Scene = l.Scene });
                 sceneStep = step;
                 sceneCommit = commitCount;
@@ -420,7 +445,11 @@ namespace GridGame.App
             if (how == CoachEnd.Completed && (hadMarks || !l.Waits)) NextLesson();
             // Aborted, or no marks for a lesson that waits: the popup's words stay in the Tutorial tab and the lesson
             // completes the old way, or puts its marks up when its situation arrives.
-            else SyncPanel();
+            else
+            {
+                if (how == CoachEnd.Aborted && l.Waits && NoteStuck(step, false) && SkipStuckLesson(step)) return;
+                SyncPanel();
+            }
         }
 
         private void DisarmCoach()
