@@ -171,6 +171,37 @@ namespace GridGame.App
             System.GC.Collect();
         }
 
+        /// <summary>GG-T1204: loads every texture of <paramref name="set"/> into <see cref="ArtScope.Stage"/> through the
+        /// same calls the battle draws with (portraits, figures, thumbnails, ability, item and status icons, the board tile
+        /// and the backdrop set), so the keys are exactly Art's. Begin the Stage scope first (that releases the last
+        /// stage's art); the scope is restored to what it was afterwards.</summary>
+        public static void Preload(StageTextureSet set)
+        {
+            if (set == null) return;
+            bool wasStage = activeScopes[(int)ArtScope.Stage], wasScreen = activeScopes[(int)ArtScope.Screen];
+            activeScopes[(int)ArtScope.Stage] = true;
+            activeScopes[(int)ArtScope.Screen] = false; // tag as Stage even if a screen is open
+            try
+            {
+                var content = GameApp.I != null ? GameApp.I.Content : null;
+                foreach (var c in set.Classes) { Portrait(c); PortraitFigure(c); Thumb(c); }
+                foreach (var a in set.Abilities) { var def = content?.TryAbility(a); if (def != null) AbilityIcon(def); }
+                foreach (var i in set.Items) ItemIcon(i);
+                foreach (var s in set.Statuses) StatusIcon(s);
+                if (!string.IsNullOrEmpty(set.Theme))
+                {
+                    BoardTile(set.Theme);
+                    var key = BackgroundKey(set.Theme);
+                    if (!string.IsNullOrEmpty(key) && Exists(key)) Load(key);
+                }
+            }
+            finally
+            {
+                activeScopes[(int)ArtScope.Stage] = wasStage;
+                activeScopes[(int)ArtScope.Screen] = wasScreen;
+            }
+        }
+
         /// <summary>Tags <paramref name="key"/> with the current scope, promoting it if that scope is more durable.</summary>
         private static void Tag(string key)
         {
