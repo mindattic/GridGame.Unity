@@ -481,7 +481,7 @@ window.SKILLHEX = {
     {"Q": 2, "R": -16, "Kind": "Open"},
     {"Q": 2, "R": -15, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": 2, "R": -14, "Kind": "Passive", "Stats": {"WIS": 2}},
-    {"Q": 2, "R": -13, "Kind": "Ability", "Ability": "alchemist_transmute"},
+    {"Q": 2, "R": -13, "Kind": "Ability", "Ability": "drench", "Note": "alchemist signature slot: alchemist_transmute merged into doctor_triage (GG-T1140), so drench, held by no other class, is placed here as the new Alchemist signature"},
     {"Q": 2, "R": -12, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": 2, "R": -11, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": 2, "R": -10, "Kind": "Ability", "Ability": "haste_field", "Note": "courier signature slot: courier_relay merged into tempoweave_shortcut (GG-T1138), so haste_field, held by no other class, is placed here as the new Courier signature"},
@@ -700,7 +700,7 @@ window.SKILLHEX = {
     {"Q": 9, "R": 7, "Kind": "Passive", "Stats": {"VIT": 1, "STR": 1}},
     {"Q": 10, "R": -16, "Kind": "Passive", "Stats": {"INT": 2}},
     {"Q": 10, "R": -15, "Kind": "Passive", "Stats": {"INT": 2}},
-    {"Q": 10, "R": -14, "Kind": "Ability", "Ability": "hinder"},
+    {"Q": 10, "R": -14, "Kind": "Open", "Note": "freed by merge GG-T1140 (hinder into disrupt)"},
     {"Q": 10, "R": -13, "Kind": "Passive", "Stats": {"INT": 2}},
     {"Q": 10, "R": -12, "Kind": "Passive", "Stats": {"INT": 2}},
     {"Q": 10, "R": -11, "Kind": "Ability", "Ability": "spellblade_quickstrike"},
@@ -840,7 +840,7 @@ window.SKILLHEX = {
     {"Q": 16, "R": 0, "Kind": "Passive", "Stats": {"VIT": 2}}
   ],
   "Heroes": [
-    {"Class": "alchemist", "Name": "Alchemist", "Recipe": {"WIS": 3, "AGI": 1}, "Status": "Placed", "Signature": "alchemist_transmute", "Start": [[2, -13], [3, -14], [4, -15], [5, -16], [3, -13], [4, -13], [4, -12], [5, -12], [5, -11], [6, -11], [6, -10], [7, -10], [7, -9], [8, -9], [9, -9], [4, -10], [4, -9], [3, -8], [3, -7], [2, -6], [2, -5], [1, -4], [1, -3], [0, -2], [-1, -1]]},
+    {"Class": "alchemist", "Name": "Alchemist", "Recipe": {"WIS": 3, "AGI": 1}, "Status": "Placed", "Signature": "drench", "Start": [[2, -13], [3, -14], [4, -15], [5, -16], [3, -13], [4, -13], [4, -12], [5, -12], [5, -11], [6, -11], [6, -10], [7, -10], [7, -9], [8, -9], [9, -9], [4, -10], [4, -9], [3, -8], [3, -7], [2, -6], [2, -5], [1, -4], [1, -3], [0, -2], [-1, -1]], "Note": "Signature alchemist_transmute merged into doctor_triage (GG-T1140); signature now drench"},
     {"Class": "assassain", "Name": "Assassin", "Recipe": {"AGI": 3, "SPD": 1}, "Status": "Placed", "Signature": "assassain_shadow_swap", "Start": [[-15, 12], [-16, 13], [-16, 14], [-15, 14], [-14, 14], [-13, 14], [-12, 13], [-11, 12], [-10, 12], [-9, 11], [-8, 11], [-7, 10], [-6, 10], [-5, 9], [-4, 9], [-3, 8], [-2, 7], [-16, 12], [-16, 11]], "Note": "Signature assassain_killingblow merged into duelist_exploit_opening (GG-T975); signature now assassain_shadow_swap"},
     {"Class": "barbarian", "Name": "Barbarian", "Recipe": {"VIT": 2, "STR": 2}, "Status": "Placed", "Signature": "barbarian_reckless", "Start": [[8, 8], [7, 8], [6, 8], [5, 8], [4, 9], [4, 10], [3, 10], [2, 10], [2, 9], [1, 9], [1, 8], [0, 8], [0, 7], [-1, 7], [-2, 7]]},
     {"Class": "basher", "Name": "Basher", "Recipe": null, "Status": "Cut", "Signature": "rattle", "Start": [[-1, 14], [0, 13], [1, 12], [2, 12], [3, 11], [4, 10], [4, 9], [5, 8], [1, 11], [0, 11], [0, 10], [-1, 10], [-1, 9], [-2, 9], [-2, 8], [-2, 7], [3, 9], [-2, 6], [-2, 5], [-1, 4], [-1, 3], [0, 2], [0, 1], [0, 0]], "Note": "Signature basher_skullcrack merged into berserker_skullrattle (GG-T974); signature now berserker_skullrattle; Signature berserker_skullrattle -> rattle, its only own move; Start extended to the centre (GG-T1131)"},
