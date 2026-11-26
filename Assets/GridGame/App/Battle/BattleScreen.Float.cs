@@ -53,7 +53,7 @@ namespace GridGame.App
                     float kk = Mathf.Repeat(k * 1.3f + i / (float)motes, 1f);
                     float x = (i - motes / 2f + 0.5f) * BoardView.Tile * 0.11f;
                     var p = at + new Vector2(x, BoardView.Tile * (0.45f - 0.9f * kk));
-                    board.Lines.Dot(p, 6f + 4f * (1f - kk), Color.Lerp(FloatColor, Palette.White, 0.4f).WithA(Mathf.Sin(kk * Mathf.PI)));
+                    board.Lines.Dot(p, 6f + 4f * (1f - kk), Color.Lerp(FloatColor, Palette.White, 0.4f).WithA(Ease.Arc(kk)));
                 }
                 // The unit lifts, then bobs on the air.
                 if (v != null)

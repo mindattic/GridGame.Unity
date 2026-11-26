@@ -39,7 +39,7 @@ namespace GridGame.App
                 for (int r = 0; r < 3; r++)
                 {
                     float kk = Mathf.Repeat(k * 1.6f + r / 3f, 1f);
-                    board.Lines.Ring(at, Mathf.Lerp(reach, 10f, kk), WellColor.WithA(0.75f * Mathf.Sin(kk * Mathf.PI)), 6f + 6f * kk);
+                    board.Lines.Ring(at, Mathf.Lerp(reach, 10f, kk), WellColor.WithA(0.75f * Ease.Arc(kk)), 6f + 6f * kk);
                 }
                 // Motes spiral down into the eye.
                 for (int i = 0; i < motes; i++)
@@ -50,7 +50,7 @@ namespace GridGame.App
                     var p = at + new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * rad;
                     board.Lines.Dot(p, 9f + 7f * (1f - kk), Color.Lerp(WellColor, Palette.White, 0.35f * kk).WithA(1f - 0.6f * kk));
                 }
-                board.Lines.Dot(at, 18f + 10f * Mathf.Sin(k * Mathf.PI), new Color(0.12f, 0.04f, 0.2f, 0.9f)); // the dark eye
+                board.Lines.Dot(at, 18f + 10f * Ease.Arc(k), new Color(0.12f, 0.04f, 0.2f, 0.9f)); // the dark eye
             });
             board.Lines.Rings.Clear(); board.Lines.ClearLines(); board.Lines.MarkDirtyRepaint();
             App.StartCoroutine(Tween.Shake(shake, 6f * Fx, Timing.Quick));

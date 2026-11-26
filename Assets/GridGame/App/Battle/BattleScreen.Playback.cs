@@ -2371,7 +2371,7 @@ namespace GridGame.App
                 float d = 26f * Fx + 6f;
                 App.StartCoroutine(Tween.Run(Timing.Quick, k =>
                 {
-                    float s = Mathf.Sin(k * Mathf.PI);
+                    float s = Ease.Arc(k);
                     v.Root.style.translate = new Translate(side.x * d * s, side.y * d * s);
                 }));
             }

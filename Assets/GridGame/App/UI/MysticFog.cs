@@ -114,7 +114,7 @@ namespace GridGame.App
                     float u = x / (float)TexSize, v = y / (float)TexSize;
                     float n = 0.55f * Sample(octaves[0], 4, u, v) + 0.3f * Sample(octaves[1], 8, u, v) + 0.15f * Sample(octaves[2], 16, u, v);
                     // Bias toward wisps and gaps rather than an even haze.
-                    float a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.3f, 0.78f, n));
+                    float a = Ease.InOut(Mathf.InverseLerp(0.3f, 0.78f, n));
                     px[y * TexSize + x] = new Color32(255, 255, 255, (byte)Mathf.RoundToInt(a * 255f));
                 }
             noise.SetPixels32(px);
@@ -134,7 +134,7 @@ namespace GridGame.App
         {
             float fx = u * n, fy = v * n;
             int x0 = Mathf.FloorToInt(fx), y0 = Mathf.FloorToInt(fy);
-            float tx = Mathf.SmoothStep(0f, 1f, fx - x0), ty = Mathf.SmoothStep(0f, 1f, fy - y0);
+            float tx = Ease.InOut(fx - x0), ty = Ease.InOut(fy - y0);
             int x1 = (x0 + 1) % n, y1 = (y0 + 1) % n;
             x0 %= n; y0 %= n;
             float a = Mathf.Lerp(g[y0 * n + x0], g[y0 * n + x1], tx);

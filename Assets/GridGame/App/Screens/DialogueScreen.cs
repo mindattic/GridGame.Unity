@@ -519,7 +519,7 @@ namespace GridGame.App
             var to = PipColor(w, at, after);
             App.StartCoroutine(Tween.Run(Timing.Quick * 2f, k =>
             {
-                pip.style.scale = new Scale(Vector2.one * (1f + 0.4f * Mathf.Sin(k * Mathf.PI)));
+                pip.style.scale = new Scale(Vector2.one * (1f + 0.4f * Ease.Arc(k)));
                 pip.style.backgroundColor = Color.Lerp(from, to, k);
             }, Tween.EaseOut));
         }
