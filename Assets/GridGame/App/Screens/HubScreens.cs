@@ -2033,15 +2033,27 @@ namespace GridGame.App
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
             var st = App.Settings;
             // GG-T454: one scrolling list (the rows, then How to play), so the last rows are never cut off a short phone.
+            // GG-T1223: grouped into Gameplay, Graphics, Display, Sound, Accessibility and Data sections.
             var w = Ui.ListPanel(body, null, "settings-list");
-            TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             // GG-T750 (§26.7): every setting row leads with the Settings gear, the save rows with the Save disk.
-            void Toggle(string label, bool value, Action<bool> set) => Ui.MenuRow(label, value ? "ON" : "OFF", () => { set(!value); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
-            void Cycle(string label, float value, float[] opts, string fmt, Action<float> set)
+            VisualElement Row(string label, string value, Action set, string name = null)
+            {
+                var row = Ui.MenuRow(label, value, () => { set(); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
+                if (name != null) row.name = name;
+                return row;
+            }
+            void Toggle(string label, bool value, Action<bool> set, string name = null) => Row(label, value ? "ON" : "OFF", () => set(!value), name);
+            void Cycle(string label, float value, float[] opts, string fmt, Action<float> set, string name = null)
             {
                 int i = Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f);
-                Ui.MenuRow(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => { set(opts[(i + 1) % opts.Length]); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
+                Row(label, string.Format(System.Globalization.CultureInfo.InvariantCulture, fmt, value), () => set(opts[(i + 1) % opts.Length]), name);
             }
+            void CycleInt(string label, int value, int[] opts, Func<int, string> text, Action<int> set, string name)
+            {
+                int i = Array.IndexOf(opts, value);
+                Row(label, text(value), () => set(opts[(i + 1) % opts.Length]), name);
+            }
+            void Section(string title) => Ui.Section(title, w).name = "settings-section-" + title.ToLowerInvariant();
             void CycleFont()
             {
                 var names = Fonts.Presets.Select(p => p.Name).ToArray();
@@ -2049,6 +2061,62 @@ namespace GridGame.App
                 st.FontName = names[(i + 1) % names.Length];
                 App.ApplySettings(); App.SaveSettings(); Refresh();
             }
+            // GG-T1222: Window mode and Resolution only apply to a desktop player, Thumb margin only to a phone.
+            bool mobile = Application.isMobilePlatform;
+            bool desktop = !mobile && Application.platform != RuntimePlatform.WebGLPlayer;
+
+            Section("Gameplay");
+            TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
+            DifficultyControl(st, w); // GG-T309: the 1..10 dial
+            Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
+            Toggle("Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
+            Toggle("Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
+            Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
+
+            // GG-T1221: quality (-1 = the project's own), frame-rate cap, vsync, shake and effects amount.
+            Section("Graphics");
+            var qualities = QualitySettings.names;
+            CycleInt("Quality", st.QualityLevel >= 0 && st.QualityLevel < qualities.Length ? st.QualityLevel : -1,
+                Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
+            CycleInt("Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
+                f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
+            Toggle("VSync", st.VSync, v => st.VSync = v, "settings-vsync");
+            Cycle("Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
+            Cycle("Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
+
+            Section("Display");
+            if (desktop)
+            {
+                CycleInt("Window mode", GameSettings.ClampFullScreen(st.FullScreen), new[] { -1, 0, 1 },
+                    m => m < 0 ? "As launched" : m == 1 ? "Fullscreen" : "Windowed", v => st.FullScreen = v, "settings-window-mode");
+                var sizes = new List<(int w, int h)> { (0, 0) };
+                foreach (var r in UnityEngine.Screen.resolutions)
+                    if (!sizes.Contains((r.width, r.height))) sizes.Add((r.width, r.height));
+                int at = Math.Max(0, sizes.IndexOf((st.ResolutionWidth, st.ResolutionHeight)));
+                Row("Resolution", at == 0 ? "As launched" : $"{sizes[at].w}×{sizes[at].h}", () =>
+                {
+                    var next = sizes[(at + 1) % sizes.Count];
+                    st.ResolutionWidth = next.w; st.ResolutionHeight = next.h;
+                }, "settings-resolution");
+            }
+            if (mobile)
+                CycleInt("Thumb margin", GameSettings.ClampThumbMargin(st.ThumbMargin), new[] { 0, 24, 48, 72, GameSettings.MaxThumbMargin },
+                    m => m == 0 ? "OFF" : $"{m} px", v => st.ThumbMargin = v, "settings-thumb-margin");
+            CycleInt("UI scale", GameSettings.ClampUiScale(st.UiScale), new[] { 80, 90, 100 }, s => $"{s}%", v => st.UiScale = v, "settings-ui-scale");
+
+            Section("Sound");
+            Cycle("Master volume", st.MasterVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MasterVolume = v, "settings-master-volume");
+            Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
+            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
+            Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
+            Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
+            Toggle("Mute when unfocused", st.MuteWhenUnfocused, v => st.MuteWhenUnfocused = v, "settings-mute-unfocused");
+
+            Section("Accessibility");
+            // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
+            Row("Text size", $"{TextSize.Clamp(st.TextScale)}%", () => st.TextScale = TextSize.Next(st.TextScale), "settings-text-size");
+            Toggle("Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
+            Toggle("Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
             // GG-T392: the look presets are developer dials, hidden while Features.LookPresets is off (GameApp.ApplySettings
             // then draws with the default theme, font and word wrap).
             if (Features.LookPresets)
@@ -2059,27 +2127,10 @@ namespace GridGame.App
                 windows.KindIcon(RowKind.Settings);
                 Ui.MenuRow("Font", st.FontName, CycleFont, w).KindIcon(RowKind.Settings);
                 // GG-T305: how wrapped text breaks, applied live to every screen (TextFit).
-                var wrap = Ui.MenuRow("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap",
-                    () => { st.Hyphenate = !st.Hyphenate; App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
-                wrap.name = "settings-text-wrap";
-                wrap.KindIcon(RowKind.Settings);
+                Row("Text wrapping", st.Hyphenate ? "Hyphenate" : "Word wrap", () => st.Hyphenate = !st.Hyphenate, "settings-text-wrap");
             }
-            // GG-T495: text size, applied live to every screen (TextSize classes on the UI root).
-            var size = Ui.MenuRow("Text size", $"{TextSize.Clamp(st.TextScale)}%",
-                () => { st.TextScale = TextSize.Next(st.TextScale); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w);
-            size.name = "settings-text-size";
-            size.KindIcon(RowKind.Settings);
-            DifficultyControl(st, w); // GG-T309: the 1..10 dial
-            Cycle("Music volume", st.MusicVolume, new[] { 0f, 0.2f, 0.4f, 0.6f, 0.8f, 1f }, "{0:0%}", v => st.MusicVolume = v);
-            Cycle("Sound volume", st.SfxVolume, new[] { 0f, 0.25f, 0.5f, 0.7f, 0.85f, 1f }, "{0:0%}", v => st.SfxVolume = v);
-            Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
-            Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
-            Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
-            Toggle("Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
-            Toggle("Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
-            Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);
-            Toggle("Confirm before acting", st.ConfirmActions, v => st.ConfirmActions = v);
-            Toggle("Reduce motion", st.ReduceMotion, v => st.ReduceMotion = v);
+
+            Section("Data");
             // GG-T607 (§15.2): move a slot to another device as a copyable code, no cloud account needed.
             var transfer = Ui.MenuRow("Transfer save", "Copy code", () => App.Router.Push(new SaveExportScreen(App.Slot >= 0 ? App.Slot : Math.Max(0, App.Saves?.Root == null ? 0 : SaveFiles.MostRecent(App.Saves.Root)))), w);
             transfer.name = "settings-transfer-save";
