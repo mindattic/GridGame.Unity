@@ -1036,7 +1036,7 @@ namespace GridGame.Core.Bot
             if (before < 0 || ticks <= 0) return 0f;
             float v = LandsFirstValue(s, f, before, before + ticks) + HeroTurnsValue(s, f, before, before + ticks);
             if (s.CastEntryOf(f.Id) != null) v += 2f;
-            else if (Threatens(s, f) && before == BattleEngine.TurnTicks(s)) v += 1.5f;
+            else if (Threatens(s, f) && before == TurnRules.NextFoeTicks(s)) v += 1.5f;
             return v;
         }
 
@@ -1067,7 +1067,7 @@ namespace GridGame.Core.Bot
             // Turn icons only: a charge the foe already holds still lands when it would.
             float v = LandsFirstValue(s, f, myAt, theirAt) - LandsFirstValue(s, other, myAt, theirAt);
             float bought = Math.Min(1f, (theirAt - myAt) / (float)Formulas.SecondsToTicks(CountermarchFullDelaySeconds));
-            int window = BattleEngine.TurnTicks(s);
+            int window = TurnRules.NextFoeTicks(s);
             float weight = window < 0 || myAt <= window ? 1f : 0.4f;
             v += weight * (bought * NextTurnHarm(s, f) - NextTurnHarm(s, other));
             return v >= CountermarchMinValue ? v : Math.Min(v, 0f) - 2f;
@@ -1219,10 +1219,12 @@ namespace GridGame.Core.Bot
 
         /// <summary>
         /// Clock ticks the window gains when the foes in <paramref name="pushed"/> act <paramref name="ticks"/> later: the
-        /// window is the soonest enemy turn, so it grows only while a pushed foe was (one of) the next to act.
+        /// window is the soonest enemy turn, so it grows only while a pushed foe was (one of) the next to act. 0 under
+        /// HeroTimeline (GG-T1173): the hero's turn is a fixed frozen 4 s that no push lengthens.
         /// </summary>
         internal static int WindowGainTicks(BattleState s, ICollection<int> pushed, int ticks)
         {
+            if (TurnRules.HeroesOnTimeline(s)) return 0;
             int before = BattleEngine.TurnTicks(s);
             if (before < 0 || ticks <= 0 || pushed.Count == 0) return 0;
             int after = int.MaxValue;
@@ -1333,7 +1335,7 @@ namespace GridGame.Core.Bot
             if (stalled >= 3) return float.NegativeInfinity;
             float v = BattleEngine.GuardCharge(s) / 25f; // 40 charge (the cap) ≈ 1.6
             foreach (var f in s.LivingList(Team.Enemy))
-                if (EnemyActTicks(s, f) == BattleEngine.TurnTicks(s) && Threatens(s, f)) { v += 1f; break; }
+                if (EnemyActTicks(s, f) == TurnRules.NextFoeTicks(s) && Threatens(s, f)) { v += 1f; break; }
             return v;
         }
 
