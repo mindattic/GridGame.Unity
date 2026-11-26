@@ -111,7 +111,7 @@ namespace GridGame.App
                 }
                 else if (report.ExpeditionName != null)
                 {
-                    var er = Ui.MenuRow($"Expedition: battle {report.ExpeditionStep} of {report.ExpeditionLength} won", $"{report.CarriedOrbs} orbs carry over", null, list);
+                    var er = Ui.MenuRow($"Expedition: battle {report.ExpeditionStep} of {report.ExpeditionLength} won", report.CarriedOrbs == 0 ? "no orbs carry over" : report.CarriedOrbs == 1 ? "1 orb carries over" : $"{report.CarriedOrbs} orbs carry over", null, list);
                     er.name = "expedition-progress";
                     er.KindIcon(RowKind.Stage);
                     Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
