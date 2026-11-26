@@ -41,45 +41,44 @@ bot refusals.
 | PartyWindow | smart | 10 | ⬜ | | | | | | | | | | | | | | | | |
 | PartyWindow | casual | 10 | ⬜ | | | | | | | | | | | | | | | | |
 
-## AnyHeroEveryTurn (Mode A, GG-T790) — PARTIAL
+## AnyHeroEveryTurn (Mode A, GG-T790)
 
 Run 2026-11-26 on 684c461a: `python tools/turn_modes.py --modes AnyHeroEveryTurn --per-stage` (fixed stages, seeds
-1-3, smart and casual, difficulty 5 and 10; one serial `dotnet test` per difficulty).
+1-3, smart and casual, difficulty 5 and 10; one serial `dotnet test` per difficulty). The first run's casual case at
+difficulty 10 was killed for low memory, so that row alone was re-run the same night on 3e1a3694 with
+`--bots casual --difficulties 10` (no Mode A code changed between the two).
 
-> **PARTIAL: the casual bot at difficulty 10 is missing.** The machine ran critically low on memory partway through the
-> difficulty-10 run, and the host killed the soak after the smart case had passed and written its JSON, but before the
-> casual case finished. The other three rows are complete. Re-run just the missing row with
-> `python tools/turn_modes.py --modes AnyHeroEveryTurn --bots casual --difficulties 10 --per-stage` and add it here.
-
-**No stalls, soft-locks or invariant breaks in the rows that finished.** The three finished cases passed
+**No stalls, soft-locks or invariant breaks.** All four cases passed
 (`BotRunner.Play` throws on more than 5 refusals in a row, and the runner's tile checks throw on any broken invariant)
 and the bots logged 0 refusals, so no Mode A code was changed. **Near the 900-command cap:** the casual bot's battles
 are long, as under UnmovedThisRound: about 490 hero actions per run at difficulty 5 on average, and about **786 hero
-actions per run at swamp-01**, where it lost 11 of 12 runs. Those swamp-01 losses are very likely battles that ran into
-the cap rather than real defeats (the soak counts a capped battle as a plain loss, GG-T1175). The smart bot's battles
+actions per run at swamp-01**, where it lost 11 of 12 runs (at difficulty 10, about 620 at swamp-01 and
+about 495 at cave-03). Those swamp-01 losses are very likely battles that ran into the cap rather than real defeats (the soak counts a capped battle as a plain loss, GG-T1175). The smart bot's battles
 stay short (130-170 hero actions per run).
 
 | mode | bot | diff | win % | runs | hero acts/run | enemy turns/run | secs/run | heroes/turn | legal acts/turn | hero acts/enemy turn | downtime max | downtime avg | enemy-s/stretch | pincers | chains | guard forced/chosen | skill/spell/item | mana guard/pincer/other | refusals |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | AnyHeroEveryTurn | casual | 5 | 38 | 26 | 493.5 | 496.2 | 2102 | 1.35 | 55.7 | 0.99 | 3 | 2.7 | 0.00 | 123 | 1 | 103/56 | 5697/98/40 | 443/3492/15704 | 0 |
 | AnyHeroEveryTurn | smart | 5 | 88 | 17 | 132.2 | 133.4 | 802 | 2.62 | 114.5 | 0.99 | 3 | 2.6 | 0.00 | 275 | 26 | 79/21 | 1374/137/11 | 417/6022/15475 | 0 |
-| AnyHeroEveryTurn | casual | 10 | ⬜ not run (killed, low memory) | | | | | | | | | | | | | | | | |
+| AnyHeroEveryTurn | casual | 10 | 60 | 20 | 445.6 | 498.1 | 1623 | 1.57 | 56.0 | 0.89 | 4 | 3.0 | 0.00 | 123 | 4 | 885/230 | 4482/103/27 | 1205/2884/17133 | 0 |
 | AnyHeroEveryTurn | smart | 10 | 88 | 16 | 172.1 | 183.8 | 849 | 2.54 | 100.1 | 0.94 | 3 | 3.0 | 0.00 | 192 | 3 | 201/58 | 1858/131/19 | 959/4709/14081 | 0 |
 
 Per-stage win % (wins/runs; `-` = not reached, because a seed's run stops at a stage it can't clear; cityruins-02,
-cathedral-03 and bloom-03 were not reached by any finished row):
+cathedral-03 and bloom-03 were not reached by any row):
 
 | mode | bot | diff | greenvalley-01 | lanternroad-02 | desert-02 | swamp-01 | cave-03 | still-02 |
 |---|---|---|---|---|---|---|---|---|
 | AnyHeroEveryTurn | casual | 5 | 43 (3/7) | 75 (3/4) | 100 (3/3) | 8 (1/12) | - | - |
 | AnyHeroEveryTurn | smart | 5 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 75 (3/4) | 67 (2/3) | 100 (1/1) |
+| AnyHeroEveryTurn | casual | 10 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 33 (2/6) | 20 (1/5) | - |
 | AnyHeroEveryTurn | smart | 10 | 100 (3/3) | 100 (3/3) | 75 (3/4) | 75 (3/4) | 100 (2/2) | - |
 
-What it shows: close to UnmovedThisRound. About one hero action per enemy turn (0.94-0.99), downtime capped at 3 enemy
+What it shows: close to UnmovedThisRound. About one hero action per enemy turn (0.89-0.99), downtime capped at 3-4 enemy
 turns and no enemy-only stretches. The smart bot has the most choice of any mode so far (about 2.6 heroes and over 100
 legal actions per turn), and Guards are rare. The smart bot wins 88% at both difficulties, but no seed got past still-02,
 so some unlisted stage after cave-03 or still-02 stopped every seed. The casual bot clears the opening stages and then
-stalls out at swamp-01 in the near-cap battles described above.
+stalls out at swamp-01 (and at cave-03 at difficulty 10) in the near-cap battles described above. Oddly, casual does
+better at difficulty 10 (60%) than at 5 (38%), and it forces far more Guards there (885 forced against 103).
 
 ## HeroTimeline (Mode C, GG-T817)
 
