@@ -1564,7 +1564,8 @@
       "berserker_wildswing",
       "berserker_skullrattle",
       "berserker_lastmanswinging",
-      "blood_rage"
+      "blood_rage",
+      "shake_it_off"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -11840,7 +11841,8 @@
       "combobrawler_knockoutcombo",
       "combobrawler_openingjab",
       "combobrawler_onetwoflurry",
-      "grudge"
+      "grudge",
+      "second_wind"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -13504,6 +13506,7 @@
       "teleport",
       "quicken",
       "skirmisher_hitandrun",
+      "focus_breath",
       "duelist_probingthrust",
       "duelist_guardstance",
       "duelist_decisivecut",
@@ -13514,7 +13517,7 @@
       "cleave",
       "duelist_probingthrust",
       "item:x_potion",
-      "skirmisher_hitandrun",
+      "focus_breath",
       "duelist_decisivecut"
     ],
     "DropTable": null,
@@ -17101,6 +17104,7 @@
       "juggernaut_overrun",
       "juggernaut_war_stomp",
       "juggernaut_unstoppable_momentum",
+      "last_stand",
       "shove",
       "unbowed"
     ],
@@ -17109,7 +17113,7 @@
       "juggernaut_war_stomp",
       "item:x_potion",
       "juggernaut_overrun",
-      "juggernaut_unstoppable_momentum"
+      "last_stand"
     ],
     "DropTable": null,
     "MoveRange": 1,
@@ -20424,6 +20428,7 @@
       "sleep",
       "antidote",
       "warlord_rally_point",
+      "bolster",
       "warlord_battle_cry",
       "warlord_marked_for_warband",
       "grudge"
@@ -20432,7 +20437,7 @@
       "taunt",
       "warlord_battle_cry",
       "item:x_potion",
-      "warlord_rally_point",
+      "bolster",
       "warlord_marked_for_warband"
     ],
     "DropTable": null,
