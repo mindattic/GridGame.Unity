@@ -18,6 +18,16 @@ namespace GridGame.App
         public const int Layer = 31;
         private const int MaxRtSide = 1600;
 
+        /// <summary>Settings → Effects amount (GG-T1221), set by <c>GameApp.ApplySettings</c>: 0..1 scale on every
+        /// prefab's emission rates and burst counts, from the next effect played (1 = as authored).</summary>
+        public static float Amount = 1f;
+
+        private sealed class EmissionBase
+        {
+            public float RateOverTime, RateOverDistance;
+            public ParticleSystem.Burst[] Bursts;
+        }
+
         private sealed class Live
         {
             public VfxPrefabDef Def;
@@ -36,6 +46,7 @@ namespace GridGame.App
         private readonly Dictionary<string, Stack<GameObject>> pool = new Dictionary<string, Stack<GameObject>>();
         private readonly List<Live> live = new List<Live>();
         private readonly Dictionary<string, Live> loops = new Dictionary<string, Live>();
+        private readonly Dictionary<ParticleSystem, EmissionBase> emission = new Dictionary<ParticleSystem, EmissionBase>();
         private RenderTexture rt;
         private float lastSpeed = -1f;
 
@@ -116,6 +127,7 @@ namespace GridGame.App
                 l.BaseSpeed[i] = main.simulationSpeed > 0f ? main.simulationSpeed : 1f;
                 main.simulationSpeed = Tween.Paused ? 0f : l.BaseSpeed[i] * Tween.Speed;
                 if (def.Tint && tint.HasValue) main.startColor = tint.Value;
+                ScaleEmission(ps);
             }
             go.SetActive(true);
             foreach (var ps in l.Systems) { ps.Clear(true); ps.Play(true); }
@@ -123,6 +135,34 @@ namespace GridGame.App
             if (owner != null) loops[owner] = l;
             cam.enabled = true;
             return true;
+        }
+
+        /// <summary>Sets a pooled system's emission to its authored rates and bursts times <see cref="Amount"/>.</summary>
+        private void ScaleEmission(ParticleSystem ps)
+        {
+            var em = ps.emission;
+            if (!emission.TryGetValue(ps, out var b))
+            {
+                b = new EmissionBase { RateOverTime = em.rateOverTimeMultiplier, RateOverDistance = em.rateOverDistanceMultiplier, Bursts = new ParticleSystem.Burst[em.burstCount] };
+                em.GetBursts(b.Bursts);
+                emission[ps] = b;
+            }
+            float a = Mathf.Clamp01(Amount);
+            em.rateOverTimeMultiplier = b.RateOverTime * a;
+            em.rateOverDistanceMultiplier = b.RateOverDistance * a;
+            if (b.Bursts.Length == 0) return;
+            var bursts = new ParticleSystem.Burst[b.Bursts.Length];
+            for (int i = 0; i < bursts.Length; i++)
+            {
+                var burst = b.Bursts[i];
+                var count = burst.count;
+                count.curveMultiplier *= a;
+                count.constantMin *= a;
+                count.constantMax *= a;
+                burst.count = count;
+                bursts[i] = burst;
+            }
+            em.SetBursts(bursts);
         }
 
         public bool HasLoop(string owner) => loops.ContainsKey(owner);

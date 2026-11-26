@@ -42,10 +42,21 @@ namespace GridGame.Meta
             public const string TextScale = "textScale";
             /// <summary>The turn mode (§2.13, GG-T773): a <see cref="GridGame.Core.Battle.TurnMode"/> name, default PartyWindow.</summary>
             public const string TurnMode = "turnMode";
+            /// <summary>Graphics and Sound (GG-T1221): see the matching <see cref="SettingsSave"/> fields.</summary>
+            public const string QualityLevel = "qualityLevel";
+            public const string FrameRateCap = "frameRateCap";
+            public const string VSync = "vsync";
+            public const string ScreenShake = "screenShake";
+            public const string VfxAmount = "vfxAmount";
+            public const string MasterVolume = "masterVolume";
+            public const string MuteWhenUnfocused = "muteWhenUnfocused";
         }
 
         /// <summary>A text size the game offers (GG-T495), or 100 for anything else in the file.</summary>
         public static int ClampTextScale(int pct) => pct == 115 || pct == 130 ? pct : 100;
+
+        /// <summary>A frame-rate cap the game offers (GG-T1221): 30, 60 or -1 (uncapped); 60 for anything else in the file.</summary>
+        public static int ClampFrameRateCap(int fps) => fps == 30 || fps == -1 ? fps : 60;
 
         /// <summary>The settings a profile's settings.json holds, with defaults for anything missing.</summary>
         public static SettingsSave Read(ProfileSettings ps)
@@ -100,6 +111,13 @@ namespace GridGame.Meta
             d.CustomThemes = ReadCustomThemes(g.GetArray(Keys.CustomThemes));
             d.ThemeTones = ReadThemeTones(g.GetObject(Keys.ThemeTones));
             d.TurnMode = TurnModeSetting.Parse(g.GetString(Keys.TurnMode, null)); // GG-T773: missing/unknown = PartyWindow
+            d.QualityLevel = Math.Max(-1, g.GetInt(Keys.QualityLevel, d.QualityLevel));
+            d.FrameRateCap = ClampFrameRateCap(g.GetInt(Keys.FrameRateCap, d.FrameRateCap));
+            d.VSync = g.GetBool(Keys.VSync, d.VSync);
+            d.ScreenShake = Clamp01(g.GetFloat(Keys.ScreenShake, d.ScreenShake));
+            d.VfxAmount = Clamp01(g.GetFloat(Keys.VfxAmount, d.VfxAmount));
+            d.MasterVolume = Clamp01(g.GetFloat(Keys.MasterVolume, d.MasterVolume));
+            d.MuteWhenUnfocused = g.GetBool(Keys.MuteWhenUnfocused, d.MuteWhenUnfocused);
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -134,6 +152,13 @@ namespace GridGame.Meta
             g.Set(Keys.Hyphenate, s.Hyphenate);
             g.Set(Keys.TextScale, ClampTextScale(s.TextScale));
             g.Set(Keys.TurnMode, TurnModeSetting.Parse(s.TurnMode.ToString()).ToString());
+            g.Set(Keys.QualityLevel, Math.Max(-1, s.QualityLevel));
+            g.Set(Keys.FrameRateCap, ClampFrameRateCap(s.FrameRateCap));
+            g.Set(Keys.VSync, s.VSync);
+            g.Set(Keys.ScreenShake, Clamp01(s.ScreenShake));
+            g.Set(Keys.VfxAmount, Clamp01(s.VfxAmount));
+            g.Set(Keys.MasterVolume, Clamp01(s.MasterVolume));
+            g.Set(Keys.MuteWhenUnfocused, s.MuteWhenUnfocused);
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));

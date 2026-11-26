@@ -126,6 +126,7 @@ namespace GridGame.App
             }
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
+            projectQualityLevel = QualitySettings.GetQualityLevel();
 
             var cam = new GameObject("Camera").AddComponent<Camera>();
             cam.transform.SetParent(transform, false);
@@ -487,10 +488,20 @@ namespace GridGame.App
             t.RemoveFromHierarchy();
         }
 
+        /// <summary>The quality level the player booted with, for <see cref="SettingsSave.QualityLevel"/> -1.</summary>
+        private int projectQualityLevel;
+
         public void ApplySettings()
         {
             var st = Settings;
             Audio?.Apply(st);
+            // GG-T1221 Graphics: quality level (-1 = the project's own), vsync, and the frame-rate cap (60 by default).
+            int quality = st.QualityLevel >= 0 && st.QualityLevel < QualitySettings.names.Length ? st.QualityLevel : projectQualityLevel;
+            if (QualitySettings.GetQualityLevel() != quality) QualitySettings.SetQualityLevel(quality, true);
+            QualitySettings.vSyncCount = st.VSync ? 1 : 0;
+            Application.targetFrameRate = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
+            Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
+            VfxPrefabLayer.Amount = Mathf.Clamp01(st.VfxAmount);
             Tween.Speed = Mathf.Clamp(st.BattleSpeed, 0.5f, 3f);
             // GG-T392: with the look presets hidden (Features.LookPresets off) every profile draws with the defaults.
             bool presets = GridGame.Meta.Features.LookPresets;

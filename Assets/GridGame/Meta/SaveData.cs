@@ -493,6 +493,20 @@ namespace GridGame.Meta
         /// <summary>The turn mode (§2.13, GG-T773): <c>turnMode</c> in settings.json, <see cref="TurnMode.PartyWindow"/> by
         /// default. A save's <see cref="SaveData.TurnModeLock"/> overrides it (<see cref="TurnModeSetting.Resolve"/>).</summary>
         public TurnMode TurnMode = TurnMode.PartyWindow;
+        /// <summary>Graphics → Quality (GG-T1221): a QualitySettings level index; -1 (default) leaves the project's own level.</summary>
+        public int QualityLevel = -1;
+        /// <summary>Graphics → Frame rate cap (GG-T1221): 30, 60 (default) or -1 for uncapped; anything else reads as 60.</summary>
+        public int FrameRateCap = 60;
+        /// <summary>Graphics → VSync (GG-T1221): off by default; on, it paces frames and the cap is not used.</summary>
+        public bool VSync;
+        /// <summary>Graphics → Screen shake (GG-T1221): 0..1 scale on every shake, 1 = full (default), 0 = off.</summary>
+        public float ScreenShake = 1f;
+        /// <summary>Graphics → Effects amount (GG-T1221): 0..1 scale on particle emission, 1 = full (default).</summary>
+        public float VfxAmount = 1f;
+        /// <summary>Sound → Master volume (GG-T1221): 0..1 over music and SFX, 1 by default.</summary>
+        public float MasterVolume = 1f;
+        /// <summary>Sound → Mute when unfocused (GG-T1221): silence everything while the window lacks focus. Off by default.</summary>
+        public bool MuteWhenUnfocused;
     }
 
     /// <summary>

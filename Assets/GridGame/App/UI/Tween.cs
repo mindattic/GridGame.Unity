@@ -28,6 +28,10 @@ namespace GridGame.App
         /// menus, celebrations and the battle alike (the battle's own effects already check the setting).</summary>
         public static bool Calm;
 
+        /// <summary>Settings → Screen shake (GG-T1221), set by <c>GameApp.ApplySettings</c>: 0..1 scale on every
+        /// <see cref="Shake"/>'s magnitude (1 = full, 0 = off).</summary>
+        public static float ShakeScale = 1f;
+
         public static float Dt => Paused ? 0f : FixedStep > 0f ? FixedStep : Time.unscaledDeltaTime;
 
         /// <summary>Seconds of unpaused game time since launch, advanced once per frame by GameApp.Update — the
@@ -85,7 +89,7 @@ namespace GridGame.App
 
         public static IEnumerator Shake(VisualElement e, float magnitude, float seconds)
         {
-            if (Calm) magnitude = 0f;
+            magnitude = Calm ? 0f : magnitude * ShakeScale;
             return Run(seconds, k =>
             {
                 float m = magnitude * (1f - k);

@@ -51,10 +51,24 @@ namespace GridGame.App
             }
         }
 
+        private float master = 1f;
+        private bool muteWhenUnfocused, focused = true;
+
         public void Apply(Meta.SettingsSave s)
         {
+            master = Mathf.Clamp01(s.MasterVolume);
+            muteWhenUnfocused = s.MuteWhenUnfocused;
             musicVolume = s.MuteMusic ? 0f : s.MusicVolume;
             sfxVolume = s.MuteSfx ? 0f : s.SfxVolume;
+            FadeMusic();
+        }
+
+        /// <summary>Settings → Sound (GG-T1221): master volume over music and SFX, zero while unfocused if the player asked.</summary>
+        private float Gain => muteWhenUnfocused && !focused ? 0f : master;
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            focused = hasFocus;
             FadeMusic();
         }
 
@@ -135,8 +149,8 @@ namespace GridGame.App
                 if (oldGain <= 0f) oldMusic.Stop();
             }
             // Equal-power-ish curve: a linear gain ramp dips in the middle, the square root keeps loudness even.
-            music.volume = musicVolume * duck * Mathf.Sqrt(musicGain);
-            oldMusic.volume = musicVolume * duck * Mathf.Sqrt(oldGain);
+            music.volume = musicVolume * Gain * duck * Mathf.Sqrt(musicGain);
+            oldMusic.volume = musicVolume * Gain * duck * Mathf.Sqrt(oldGain);
         }
 
         /// <summary>Plays a cue. Rapid repeats of the same cue are thinned so chains don't clip into noise.</summary>
@@ -146,7 +160,8 @@ namespace GridGame.App
             key = Canonical(key);
             CueLog.Add(key);
             if (CueLog.Count > 300) CueLog.RemoveAt(0);
-            if (sfxVolume <= 0f) return;
+            float vol = sfxVolume * Gain;
+            if (vol <= 0f) return;
             float now = Time.unscaledTime;
             if (lastPlayed.TryGetValue(key, out var last) && now - last < 0.04f) return;
             lastPlayed[key] = now;
@@ -157,7 +172,7 @@ namespace GridGame.App
             if (src == null) foreach (var s in sfx) if (!held.Contains(s)) { src = s; break; }
             if (src == null) return;
             src.pitch = pitch;
-            src.PlayOneShot(c, volume * sfxVolume);
+            src.PlayOneShot(c, volume * vol);
         }
 
         private readonly HashSet<AudioSource> held = new HashSet<AudioSource>();
