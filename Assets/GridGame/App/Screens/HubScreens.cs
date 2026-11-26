@@ -954,7 +954,7 @@ namespace GridGame.App
         public override string Id => "blacksmith";
         protected override string Title => "Blacksmith";
         protected override string Backdrop => "cave";
-        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.HeaderText(S, StationKind.Blacksmith)}";
+        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.ShortText(S, StationKind.Blacksmith)}";
         protected override string Npc => CampNpcs.Blacksmith;
         /// <summary>The Forge tab has its own tip, the first forge (GG-T177), then the first armor once the weapon is made
         /// (GG-T178); Repair keeps the Blacksmith's.</summary>
@@ -965,7 +965,7 @@ namespace GridGame.App
             // GG-T175 (§25.0.4): he joins to mend worn gear, so Repair is his only open tab at first; Forge, Upgrade and
             // Salvage are dimmed and say when they arrive.
             bool workshop = CampUnlocks.SmithWorkshopOpen(S);
-            if (tab < 0) tab = workshop && CampTips.Pending(S, Id) == null ? 0 : RepairTab;
+            if (tab < 0) tab = workshop && (CampTips.Pending(S, Id) == null || Repair.Pieces(C, S).Count == 0) ? 0 : RepairTab;
             if (!workshop) tab = RepairTab;
             var bar = Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i =>
             {
