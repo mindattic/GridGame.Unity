@@ -31,15 +31,15 @@ bot refusals.
 ## PartyWindow baseline (GG-T778, GG-T921)
 
 Run 2026-11-26 on ef9da356: `python tools/turn_modes.py --modes PartyWindow --per-stage` (fixed stages, seeds 1-3, one
-serial `dotnet test` per difficulty). **PARTIAL: the casual bot at difficulty 10 is missing.** The host killed the soak
-for low memory twice (the second time after the difficulty 5 cases and the smart case at difficulty 10 had finished),
-so that row was not recorded; re-run it with `--bots casual --difficulties 10`. The `capped` column counts battles that
-hit the 900-command cap (GG-T1175): 0 in every row here, and no casual battle was long (about 160 hero actions per run).
-All recorded cases passed with 0 refusals, so no stalls or invariant breaks.
+serial `dotnet test` per difficulty). The host killed the first soak for low memory twice, so the casual bot at
+difficulty 10 was re-run alone the same night with `--bots casual --difficulties 10` (GG-T1187). The `capped` column
+counts battles that hit the 900-command cap (GG-T1175): 0 in the first three rows, 3 of 31 in the casual difficulty 10
+row (about 295 hero actions per run, 909 s per run). All cases passed with 0 refusals, so no stalls or invariant breaks.
 
 | mode | bot | diff | win % | runs | capped | hero acts/run | enemy turns/run | secs/run | heroes/turn | legal acts/turn | hero acts/enemy turn | downtime max | downtime avg | enemy-s/stretch | pincers | chains | guard forced/chosen | skill/spell/item | mana guard/pincer/other | refusals |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | PartyWindow | casual | 5 | 83 | 30 | 0 | 161.5 | 86.1 | 441 | 3.32 | 145.8 | 1.88 | 3 | 2.4 | 0.00 | 656 | 43 | 588/99 | 1579/240/16 | 2781/11179/29813 | 0 |
+| PartyWindow | casual | 10 | 74 | 31 | 3 | 294.9 | 222.5 | 909 | 2.31 | 90.9 | 1.33 | 4 | 2.9 | 0.00 | 707 | 52 | 1413/202 | 3637/366/27 | 5673/12692/42778 | 0 |
 | PartyWindow | smart | 5 | 100 | 27 | 0 | 68.8 | 15.7 | 124 | 5.25 | 249.9 | 4.39 | 3 | 2.1 | 0.00 | 967 | 150 | 123/76 | 637/158/9 | 1500/11366/22204 | 0 |
 | PartyWindow | smart | 10 | 96 | 28 | 0 | 78.9 | 22.8 | 137 | 5.06 | 219.6 | 3.46 | 3 | 2.3 | 0.00 | 1075 | 179 | 243/107 | 825/219/17 | 2104/13084/25723 | 0 |
 
@@ -48,12 +48,13 @@ Per-stage win % (wins/runs):
 | mode | bot | diff | greenvalley-01 | lanternroad-02 | desert-02 | swamp-01 | cave-03 | still-02 | cityruins-02 | cathedral-03 | bloom-03 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | PartyWindow | casual | 5 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 43 (3/7) | 50 (1/2) |
+| PartyWindow | casual | 10 | 100 (3/3) | 75 (3/4) | 100 (3/3) | 100 (3/3) | 75 (3/4) | 75 (3/4) | 33 (2/6) | 67 (2/3) | 100 (1/1) |
 | PartyWindow | smart | 5 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) |
 | PartyWindow | smart | 10 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 75 (3/4) |
 
 What it shows: the party moves freely inside its window, so heroes/turn (3.3-5.3) and legal actions per turn (146-250)
 are the highest of any mode, and hero actions per enemy turn are 1.9-4.4 against about 1 in the other modes. The smart bot wins
-96-100%; the casual bot wins 83% at difficulty 5 and only loses at cathedral-03 (3/7) and bloom-03 (1/2). Downtime is 3 enemy turns at most.
+96-100%; the casual bot wins 83% at difficulty 5 (losing only at cathedral-03 and bloom-03) and 74% at difficulty 10, where it also loses at lanternroad-02, cave-03, still-02 and most at cityruins-02 (2/6), and its battles run long (about 295 hero actions, 3 of 31 hit the cap). Downtime is 4 enemy turns at most.
 
 ## AnyHeroEveryTurn (Mode A, GG-T790)
 
