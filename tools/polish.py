@@ -133,7 +133,8 @@ def sweep_at(h, run, tag, width, height):
         h.call("back"); time.sleep(0.6)
     h.call("battle"); time.sleep(3.0)
     audit_screen(h, tally, "battle", shots, tag, fills)
-    errors = [l for l in h.call("logs") if l.startswith(("Error", "Exception"))]
+    # Unity's Input System logs "Failed to get first mouse position" while the window has no pointer (harness-driven, unfocused); every other gate already ignores it.
+    errors = [l for l in h.call("logs") if l.startswith(("Error", "Exception")) and "first mouse position" not in l]
     try:
         h.call("quit", timeout=3)
     except Exception:
