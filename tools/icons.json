@@ -481,6 +481,10 @@
    "delapouite/shield-bash",
    "steel"
   ],
+  "vanguard_bulwark": [
+   "delapouite/shield-bash",
+   "steel"
+  ],
   "myrmidon_phalanx": [
    "lorc/spear-hook",
    "iron"

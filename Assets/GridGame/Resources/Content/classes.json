@@ -4547,7 +4547,7 @@
       "silence",
       "sleep",
       "antidote",
-      "defender_wall",
+      "vanguard_bulwark",
       "aegisguard_sacred_challenge",
       "aegisguard_judgment_of_warding",
       "aegisguard_hands_of_mercy",
@@ -4559,7 +4559,7 @@
       "taunt",
       "aegisguard_sacred_challenge",
       "item:x_potion",
-      "defender_wall",
+      "vanguard_bulwark",
       "aegisguard_judgment_of_warding"
     ],
     "DropTable": null,
@@ -11434,17 +11434,18 @@
       "sleep",
       "antidote",
       "heal",
-      "paladin_bulwark",
+      "vanguard_bulwark",
       "aegisguard_sacred_challenge",
       "aegisguard_judgment_of_warding",
       "aegisguard_hands_of_mercy",
-      "shield_wall"
+      "shield_wall",
+      "warden_runeward"
     ],
     "DefaultLoadout": [
       "taunt",
       "aegisguard_sacred_challenge",
       "item:x_potion",
-      "paladin_bulwark",
+      "vanguard_bulwark",
       "aegisguard_judgment_of_warding"
     ],
     "DropTable": null,
@@ -14011,7 +14012,7 @@
       "steal",
       "teleport",
       "quicken",
-      "sellsword_contract",
+      "adrenaline_rush",
       "duelist_probingthrust",
       "duelist_guardstance",
       "duelist_decisivecut",
@@ -14022,7 +14023,7 @@
       "cleave",
       "duelist_probingthrust",
       "item:x_potion",
-      "sellsword_contract",
+      "adrenaline_rush",
       "duelist_decisivecut"
     ],
     "DropTable": null,
