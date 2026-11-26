@@ -246,10 +246,7 @@ namespace GridGame.App
         {
             sampling = true;
             lastSampledAt = encounter;
-            yield return Resources.UnloadUnusedAssets();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
+            yield return Art.ReleaseAndCollect(); // GG-T1203: Art's one release-and-collect (UnloadUnusedAssets + full GC)
             if (!Record(encounter.ToString(CultureInfo.InvariantCulture), encounter)) { sampling = false; yield break; }
             CheckGrowth(encounter);
             sampling = false;

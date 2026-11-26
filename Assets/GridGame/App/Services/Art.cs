@@ -6,6 +6,18 @@ using UnityEngine;
 
 namespace GridGame.App
 {
+    /// <summary>How long a cached texture lives (GG-T1203): <see cref="Art.BeginScope"/> tags every load made under it,
+    /// <see cref="Art.ReleaseScope"/> drops them. Ordered most durable first.</summary>
+    public enum ArtScope
+    {
+        /// <summary>Kept for the whole run (the UI chrome, the mannequin).</summary>
+        Resident = 0,
+        /// <summary>Kept for one stage or battle (its board, units, portraits).</summary>
+        Stage = 1,
+        /// <summary>Kept while one screen is open.</summary>
+        Screen = 2,
+    }
+
     /// <summary>
     /// Every texture the game draws: imported art by key (Resources) plus procedurally generated UI
     /// pieces (window gradient, cursor, orbs). Missing art never throws — it falls back to a
@@ -42,7 +54,7 @@ namespace GridGame.App
         private static readonly Dictionary<string, long> lastUsed = new Dictionary<string, long>();
         private static long useTick;
 
-        private static void Touch(string path) => lastUsed[path] = ++useTick;
+        private static void Touch(string path) { lastUsed[path] = ++useTick; Tag(path); }
 
         private static Texture2D Store(string path, Texture2D t)
         {
@@ -52,22 +64,142 @@ namespace GridGame.App
             return t;
         }
 
+        /// <summary>The LRU backstop (GG-T1193): drops the least recently used unscoped entries first, then (only if scoped
+        /// loads alone overflow the cap) the oldest Screen/Stage ones; Resident entries are never trimmed.</summary>
         private static void TrimCache()
         {
             var order = new List<KeyValuePair<string, long>>(cache.Count);
-            foreach (var k in cache.Keys) order.Add(new KeyValuePair<string, long>(k, lastUsed.TryGetValue(k, out var u) ? u : 0));
+            foreach (var k in cache.Keys)
+            {
+                bool scoped = scopes.TryGetValue(k, out var sc);
+                if (scoped && sc == ArtScope.Resident) continue;
+                long u = lastUsed.TryGetValue(k, out var lu) ? lu : 0;
+                order.Add(new KeyValuePair<string, long>(k, scoped ? u + long.MaxValue / 2 : u)); // unscoped sort first
+            }
             order.Sort((a, b) => a.Value.CompareTo(b.Value));
-            int drop = cache.Count - CacheTrimTo;
+            int drop = Mathf.Min(order.Count, cache.Count - CacheTrimTo);
+            var dropped = new List<Texture2D>(drop);
             for (int i = 0; i < drop; i++)
             {
                 string k = order[i].Key;
-                if (cache.TryGetValue(k, out var tex) && tex != null)
-                {
-                    owners.Remove(tex);
-                    figureSprites.Remove(tex);
-                }
+                if (cache.TryGetValue(k, out var tex) && tex != null) dropped.Add(tex);
                 cache.Remove(k);
                 lastUsed.Remove(k);
+                scopes.Remove(k);
+            }
+            ForgetTextures(dropped);
+        }
+
+        // ── Texture scopes (GG-T1203) ──────────────────────────────────────────────
+        // Every cached entry (a texture by path, a thumbnail, a backdrop set, and through its texture the owner and
+        // figure-sprite entries) is tagged with the scope it was loaded under: the most durable scope that has asked for
+        // it wins (Resident > Stage > Screen), so a Screen load of a texture a Stage already holds stays the Stage's.
+        // ReleaseScope drops that scope's references and destroys the Sprites made for its textures; ReleaseAndCollect
+        // then lets Unity unload whatever nothing else draws. A load made with no scope begun stays unscoped and is
+        // bounded only by the LRU cap above.
+
+        private static readonly Dictionary<string, ArtScope> scopes = new Dictionary<string, ArtScope>();
+        private static readonly bool[] activeScopes = new bool[3];
+        private const string ThumbKey = "thumb:", BackdropSetKey = "backdropset:";
+
+        /// <summary>The scope new loads are tagged with: the narrowest begun scope (Screen, else Stage, else Resident),
+        /// or null when none is begun (unscoped: LRU-bounded only).</summary>
+        public static ArtScope? CurrentScope
+        {
+            get
+            {
+                for (int i = activeScopes.Length - 1; i >= 0; i--) if (activeScopes[i]) return (ArtScope)i;
+                return null;
+            }
+        }
+
+        /// <summary>Entries tagged with <paramref name="scope"/> (the leak probe and tests).</summary>
+        internal static int CountInScope(ArtScope scope)
+        {
+            int n = 0;
+            foreach (var s in scopes.Values) if (s == scope) n++;
+            return n;
+        }
+
+        /// <summary>Starts <paramref name="scope"/>: whatever it held from its previous begin is released first (a new
+        /// stage drops the last stage's art), then loads are tagged with it until it is released or a narrower scope begins.</summary>
+        public static void BeginScope(ArtScope scope)
+        {
+            ReleaseScope(scope);
+            activeScopes[(int)scope] = true;
+        }
+
+        /// <summary>Ends <paramref name="scope"/>: drops every cache, thumbnail, owner, figure-sprite and backdrop-set
+        /// entry tagged with it and destroys those Sprites. The textures themselves are Unity's to unload
+        /// (<see cref="ReleaseAndCollect"/>), so one still drawn elsewhere keeps living and is re-found on its next load.</summary>
+        public static void ReleaseScope(ArtScope scope)
+        {
+            activeScopes[(int)scope] = false;
+            var keys = new List<string>();
+            foreach (var kv in scopes) if (kv.Value == scope) keys.Add(kv.Key);
+            if (keys.Count == 0) return;
+            var dropped = new List<Texture2D>();
+            foreach (var k in keys)
+            {
+                scopes.Remove(k);
+                if (k.StartsWith(ThumbKey, System.StringComparison.Ordinal))
+                {
+                    string file = k.Substring(ThumbKey.Length);
+                    if (thumbs.TryGetValue(file, out var th) && th != null) dropped.Add(th);
+                    thumbs.Remove(file);
+                }
+                else if (k.StartsWith(BackdropSetKey, System.StringComparison.Ordinal))
+                    backdropSets.Remove(k.Substring(BackdropSetKey.Length));
+                else
+                {
+                    if (cache.TryGetValue(k, out var tex) && tex != null) dropped.Add(tex);
+                    cache.Remove(k);
+                    lastUsed.Remove(k);
+                }
+            }
+            ForgetTextures(dropped);
+        }
+
+        /// <summary>Coroutine-friendly: optionally releases <paramref name="release"/> first, then unloads every asset
+        /// nothing references (Resources.UnloadUnusedAssets) and runs a full GC. <c>yield return Art.ReleaseAndCollect();</c></summary>
+        public static System.Collections.IEnumerator ReleaseAndCollect(params ArtScope[] release)
+        {
+            if (release != null) foreach (var s in release) ReleaseScope(s);
+            yield return Resources.UnloadUnusedAssets();
+            System.GC.Collect();
+            System.GC.WaitForPendingFinalizers();
+            System.GC.Collect();
+        }
+
+        /// <summary>Tags <paramref name="key"/> with the current scope, promoting it if that scope is more durable.</summary>
+        private static void Tag(string key)
+        {
+            var cur = CurrentScope;
+            if (cur == null) return;
+            if (!scopes.TryGetValue(key, out var had) || cur.Value < had) scopes[key] = cur.Value;
+        }
+
+        /// <summary>Drops the per-texture entries (owner, figure sprite) of textures no remaining cache or thumbnail entry
+        /// holds, destroying their Sprites. Generated and Resources textures are never destroyed here.</summary>
+        private static void ForgetTextures(List<Texture2D> dropped)
+        {
+            if (dropped.Count == 0) return;
+            var held = new HashSet<Texture2D>();
+            foreach (var t in cache.Values) if (t != null) held.Add(t);
+            foreach (var t in thumbs.Values) if (t != null) held.Add(t);
+            foreach (var tex in dropped)
+            {
+                if (held.Contains(tex)) continue;
+                owners.Remove(tex);
+                if (figureSprites.TryGetValue(tex, out var s))
+                {
+                    figureSprites.Remove(tex);
+                    if (s != null)
+                    {
+                        if (Application.isPlaying) Object.Destroy(s);
+                        else Object.DestroyImmediate(s);
+                    }
+                }
             }
         }
 
@@ -129,6 +261,7 @@ namespace GridGame.App
             // A class resolves its file as Portrait does; an id that is no class may name a Portraits/ file itself (GG-T570).
             string file = def != null ? def.PortraitFile(v == HeroVariant.Male && HasMaleArt(classId)) : classId;
             if (string.IsNullOrEmpty(file)) return null;
+            Tag(ThumbKey + file);
             if (thumbs.TryGetValue(file, out var t)) return t;
             return thumbs[file] = Resources.Load<Texture2D>(ThumbFolder + file);
         }
@@ -314,6 +447,7 @@ namespace GridGame.App
         public static BackdropSet BackgroundSet(string set)
         {
             if (string.IsNullOrEmpty(set)) return new BackdropSet(set, 0);
+            Tag(BackdropSetKey + set);
             if (!backdropSets.TryGetValue(set, out var s))
                 backdropSets[set] = s = Backdrops.Probe(set, ProbeBackground);
             return s;
