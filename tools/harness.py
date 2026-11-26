@@ -3021,6 +3021,106 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
     return clips
 
 
+# GG-T1213: --leakprobe drift report. EndlessStability logs one "[LeakProbe] encounter N: key=value ..." line per
+# encounter (GG-T1190, art fields GG-T1207) and Art logs "[TextureScope] '<key>' loaded mid-battle ..." once per key per
+# battle. Drift is judged per launch (a relaunch resets every counter), skipping each launch's first warm-up sample.
+_RE_LEAKPROBE = re.compile(r"\[LeakProbe\] encounter (\d+):(.*)$")
+_RE_LEAKPROBE_KV = re.compile(r"(\w+)=(-?\d+(?:\.\d+)?)\b")
+_RE_TEXTURE_SCOPE = re.compile(r"\[TextureScope\] '([^']*)'")
+LEAKPROBE_LIMITS = {"artTextures": 20, "artStage": 20, "textureMB": 32}  # rise over a launch that counts as a leak
+LEAKPROBE_MIN_SAMPLES = 4
+
+
+def leakprobe_parse_line(line):
+    """One Player.log line -> ("probe", {"encounter": N, field: number, ...}) | ("scope", key) | None."""
+    m = _RE_LEAKPROBE.search(line)
+    if m:
+        body = re.sub(r"screens\{[^}]*\}", "", m.group(2))  # screens{Type=count,...} isn't a drift field
+        sample = {k: float(v) if "." in v else int(v) for k, v in _RE_LEAKPROBE_KV.findall(body)}
+        sample["encounter"] = int(m.group(1))
+        return "probe", sample
+    m = _RE_TEXTURE_SCOPE.search(line)
+    if m:
+        return "scope", m.group(1)
+    return None
+
+
+def _leakprobe_drift(values, limit):
+    """Drift of one metric over one launch's samples (warm-up already dropped)."""
+    n = len(values)
+    if n < LEAKPROBE_MIN_SAMPLES:
+        return {"samples": n, "verdict": "insufficient"}
+    xs = range(n)
+    mx, my = (n - 1) / 2, sum(values) / n
+    slope = sum((x - mx) * (y - my) for x, y in zip(xs, values)) / sum((x - mx) ** 2 for x in xs)
+    h = n // 2
+    first, second = sum(values[:h]) / h, sum(values[n - h:]) / h
+    rise = slope * (n - 1)  # fitted rise across the launch
+    # A leak shows both as a fitted rise past the limit and as a later half that sits clearly higher (≈ rise/2
+    # for steady growth); one spike can tip the slope but not both.
+    leak = rise > limit and second - first > limit / 2
+    return {"samples": n, "first": values[0], "last": values[-1], "max": max(values),
+            "slope_per_encounter": round(slope, 3), "fitted_rise": round(rise, 1),
+            "first_half_mean": round(first, 1), "second_half_mean": round(second, 1),
+            "half_delta": round(second - first, 1), "limit": limit, "verdict": "fail" if leak else "pass"}
+
+
+def leakprobe_report(probes_by_launch, scope_keys):
+    """probes_by_launch: {launch: [sample dicts in log order]}; scope_keys: {key: count}. Returns the report dict:
+    per-launch drift of artTextures/artStage/textureMB (first sample of each launch skipped as warm-up) and an overall
+    verdict — fail if any metric of any launch fails, pass if some launch had enough samples and none failed,
+    insufficient otherwise (< LEAKPROBE_MIN_SAMPLES samples after warm-up in every launch)."""
+    launches, verdicts = {}, []
+    for k in sorted(probes_by_launch):
+        samples = probes_by_launch[k][1:]
+        entry = {"probes": len(probes_by_launch[k]), "metrics": {}}
+        for metric, limit in LEAKPROBE_LIMITS.items():
+            vals = [s[metric] for s in samples if metric in s]
+            d = _leakprobe_drift(vals, limit)
+            entry["metrics"][metric] = d
+            verdicts.append(d["verdict"])
+        last = probes_by_launch[k][-1] if probes_by_launch[k] else {}
+        entry["midBattleLoads"] = last.get("midBattleLoads")
+        entry["artScreen_last"] = last.get("artScreen")
+        launches[str(k)] = entry
+    verdict = "fail" if "fail" in verdicts else "pass" if "pass" in verdicts else "insufficient"
+    return {"verdict": verdict, "limits": LEAKPROBE_LIMITS, "min_samples": LEAKPROBE_MIN_SAMPLES,
+            "warmup_skipped": 1, "launches": launches,
+            "texture_scope_keys": sorted(scope_keys), "texture_scope_warnings": sum(scope_keys.values())}
+
+
+def leakprobe_from_logs(paths):
+    """Offline: build the leakprobe report from Player.log files (one per launch, in launch order)."""
+    probes, keys = {}, {}
+    for k, p in enumerate(paths, 1):
+        probes[k] = []
+        with open(p, encoding="utf-8", errors="replace") as f:
+            for line in f:
+                r = leakprobe_parse_line(line.rstrip("\r\n"))
+                if r and r[0] == "probe":
+                    probes[k].append(r[1])
+                elif r:
+                    keys[r[1]] = keys.get(r[1], 0) + 1
+    return leakprobe_report(probes, keys)
+
+
+def _print_leakprobe(rep):
+    print(f"leakprobe            : {rep['verdict']}  (limits {rep['limits']}, warm-up skipped, "
+          f"min {rep['min_samples']} samples per launch)")
+    for k, e in rep["launches"].items():
+        parts = []
+        for metric, d in e["metrics"].items():
+            if d["verdict"] == "insufficient":
+                parts.append(f"{metric} insufficient ({d['samples']})")
+            else:
+                parts.append(f"{metric} {d['verdict']} {d['first']:g}->{d['last']:g} slope {d['slope_per_encounter']:+g}/enc "
+                             f"halves {d['first_half_mean']:g}/{d['second_half_mean']:g}")
+        print(f"  launch {k} ({e['probes']} probes, midBattleLoads {e['midBattleLoads']}): " + "; ".join(parts))
+    keys = rep["texture_scope_keys"]
+    print(f"  [TextureScope]     : {rep['texture_scope_warnings']} warning(s), {len(keys)} key(s)"
+          + (f": {', '.join(keys)}" if keys else ""))
+
+
 def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mode=None, leakprobe=False,
             stall_secs=90, encounter_timeout=1200, unresponsive_secs=120, max_dead_launches=3):
     """GG-T62: endless-run driver. Launches the player with `-demo -endless -seed S -count N` (GG-T57) and babysits
@@ -3076,6 +3176,7 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
     errors = []              # exception lines seen in any Player.log
     telemetry_dirs, capture_dirs = [], []
     clip_starts = 0
+    probes_by_launch, scope_keys = {}, {}  # GG-T1213: [LeakProbe] samples per launch, [TextureScope] key counts
     crashes = stalls = hangs = relaunches = launches = dead_streak = 0
     consumed = 0             # encounter slots used up (finished + failed): the next launch starts at seed + consumed
     t_run = time.time()
@@ -3166,6 +3267,14 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
                     if re_clip_start.search(line):
                         clip_starts += 1
                         continue
+                    if leakprobe:
+                        lp = leakprobe_parse_line(line)
+                        if lp and lp[0] == "probe":
+                            probes_by_launch.setdefault(k, []).append(lp[1])
+                            continue
+                        if lp:
+                            scope_keys[lp[1]] = scope_keys.get(lp[1], 0) + 1
+                            continue
                     if re.match(r"^\w*Exception\b", line) and "first mouse" not in line and len(errors) < 50:
                         errors.append(f"launch {k}: {line[:300]}")
 
@@ -3274,6 +3383,8 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
         "clip_dirs": capture_dirs, "telemetry_dirs": telemetry_dirs,
         "logs": art, "errors": errors[:20], "minutes": round((time.time() - t_run) / 60, 1),
     }
+    if leakprobe:
+        summary["leakprobe"] = leakprobe_report(probes_by_launch, scope_keys)
     with open(os.path.join(art, "endless-summary.json"), "w", encoding="utf-8") as f:
         json.dump({**summary, "encounters": encounters, "clips": clips}, f, indent=1)
     print("\n=== endless summary ===")
@@ -3291,6 +3402,8 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
     print(f"logs + summary       : {art}")
     if errors:
         print(f"exceptions logged    : {len(errors)} (first: {errors[0]})")
+    if leakprobe:
+        _print_leakprobe(summary["leakprobe"])
     return summary
 
 
@@ -3500,7 +3613,8 @@ def _dispatch(cmd):
         ap.add_argument("--turn-mode", default=None, help="TurnMode name (GG-T775), e.g. PartyWindow; unbuilt modes are rejected")
         ap.add_argument("--run", default="endless")
         ap.add_argument("--leakprobe", action="store_true",
-                        help="pass -leakprobe to the player (GG-T1190): one [LeakProbe] line per encounter in Player.log")
+                        help="pass -leakprobe to the player (GG-T1190): one [LeakProbe] line per encounter in Player.log; "
+                             "the summary reports art/texture drift per launch and [TextureScope] keys (GG-T1213)")
         a = ap.parse_args(sys.argv[2:])
         s = endless(a.count, seed=a.seed, capture=a.capture, run=a.run, speed=a.speed, turn_mode=a.turn_mode,
                     leakprobe=a.leakprobe)
