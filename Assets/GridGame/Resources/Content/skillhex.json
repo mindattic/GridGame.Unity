@@ -236,7 +236,7 @@
     {"Q": -7, "R": 15, "Kind": "Passive", "Stats": {"STR": 1, "AGI": 1}},
     {"Q": -7, "R": 16, "Kind": "Passive", "Stats": {"STR": 1, "AGI": 1}},
     {"Q": -6, "R": -10, "Kind": "Passive", "Stats": {"WIS": 2}},
-    {"Q": -6, "R": -9, "Kind": "Open"},
+    {"Q": -6, "R": -9, "Kind": "Ability", "Ability": "tempoweave_stumble", "Note": "moved here from [-2, -8] to make room for the Druid Brawler signature (GG-T1219)"},
     {"Q": -6, "R": -8, "Kind": "Passive", "Stats": {"SPD": 1, "WIS": 1}},
     {"Q": -6, "R": -7, "Kind": "Passive", "Stats": {"SPD": 1, "WIS": 1}},
     {"Q": -6, "R": -6, "Kind": "Ability", "Ability": "ranged_quickshot"},
@@ -355,7 +355,7 @@
     {"Q": -2, "R": -11, "Kind": "Ability", "Ability": "trapper_snare_net", "Note": "moved here from [-3, -9] as the hexwarden signature when hexwarden_snareshot merged into hex_shot (GG-T975)"},
     {"Q": -2, "R": -10, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": -2, "R": -9, "Kind": "Passive", "Stats": {"WIS": 2}},
-    {"Q": -2, "R": -8, "Kind": "Ability", "Ability": "tempoweave_stumble"},
+    {"Q": -2, "R": -8, "Kind": "Ability", "Ability": "druidbrawler_rootbreaker"},
     {"Q": -2, "R": -7, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": -2, "R": -6, "Kind": "Passive", "Stats": {"WIS": 2}},
     {"Q": -2, "R": -5, "Kind": "Ability", "Ability": "tempoweave_swap"},
@@ -908,6 +908,6 @@
     {"Class": "herald", "Name": "Herald", "Recipe": {"INT": 1, "VIT": 3}, "Status": "Placed", "Signature": "herald_lifegift", "Start": [[15, -3], [14, -3], [13, -3], [12, -2], [11, -2], [10, -1], [9, -1], [8, 0], [7, 0], [6, 1], [5, 1], [4, 2], [3, 2], [2, 3], [1, 3], [0, 3], [-1, 3], [-1, 2], [-1, 1], [-1, 0], [-1, -1]]},
     {"Class": "tactician", "Name": "Tactician", "Recipe": {"WIS": 1, "INT": 3}, "Status": "Placed", "Signature": "tactician_countermarch", "Start": [[12, -15], [11, -15], [10, -15], [9, -14], [8, -14], [7, -13], [6, -13], [5, -12], [4, -12], [3, -11], [2, -11], [1, -10], [0, -10], [-1, -9], [-2, -8], [-2, -7], [-2, -6], [-2, -5], [-3, -4], [-4, -3], [-4, -2], [-5, -1], [-5, 0], [-6, 1], [-6, 2], [-7, 3], [-7, 4], [-8, 5], [-8, 6], [-9, 7], [-9, 8], [-10, 9], [-10, 10], [-10, 11]]},
     {"Class": "warden", "Name": "Warden", "Recipe": {"VIT": 3, "WIS": 1}, "Status": "Placed", "Signature": "warden_reveille", "Start": [[11, 2], [10, 3], [10, 4], [12, 1], [13, 1], [9, 4], [8, 4], [8, 3], [7, 3], [7, 2], [6, 2], [5, 2]]},
-    {"Class": null, "Name": "New Wild hero", "Recipe": {"WIS": 2, "STR": 1, "SPD": 1}, "Status": "New", "Signature": null, "Start": [], "Note": "A quick, wise, hard-hitting druid-brawler; needs art, kit and a signature"}
+    {"Class": "druidbrawler", "Name": "Druid Brawler", "Recipe": {"WIS": 2, "STR": 1, "SPD": 1}, "Status": "Placed", "Signature": "druidbrawler_rootbreaker", "Start": [[-2, -8], [-2, -9], [-2, -10], [-2, -11], [-3, -7], [-4, -7], [-4, -6], [-4, -5], [-4, -4], [-4, -8], [-4, -9], [-5, -9], [-6, -9]], "Note": "A quick, wise, hard-hitting druid-brawler; Druid Brawler is a working name"}
   ]
 }
