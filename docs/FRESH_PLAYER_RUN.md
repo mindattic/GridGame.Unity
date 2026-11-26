@@ -124,3 +124,32 @@ Moors III); GG-T514 still open (the tome Teach-to rows sit below about 14 rows, 
 
 Still not covered (split off): expeditions beyond Tithe Moors, every Camp vendor, Summon Circle, Diamond/Shard Store, Blacksmith, Abilities
 Board tab, Party tab mini-boards, the other turn modes.
+
+# Fresh-player run 2, part 3 (GG-T1153, 2026-11-26)
+
+New profile on the dev player, no recording (`artifacts/GG-T1153-fp/`, git-ignored), `harness.py`-style `campaign` autoplay
+through nine battles (Tithe Moors, Lantern Road, Shardfall I-II reached Lv 10, 6 heroes), then a driven tour.
+
+- **Covered:** Lantern Road and Shardfall expeditions (results `stage*-result.png`); Merchant Buy/Sell/Bargain; Blacksmith;
+  Alchemist; Manasmith; Bounties; Quests; Summon Circle (list, odds button); Shard Store; Mercenaries; Codex; Bestiary; Talk;
+  Items; Settings; Heroes Equip/Abilities/Board/Party (mini-boards); turn modes AnyHeroEveryTurn, UnmovedThisRound, HeroTimeline,
+  PartyWindow (one autoplayed battle each, `m-*` and `n-*`).
+- **Not reached (player died, see below):** the Summon draw and reveal (GG-T517), Merchant tap-scroll (GG-T508), a second brew
+  (GG-T509), Echo and Rusty Sword art (GG-T510/511), the capture socket (GG-T522, no `-capture` this run), the Inn (shut mid-expedition) and Caravan, Crucible (locked).
+- **Re-check of GG-T494:** GG-T513 fixed (reads "To Camp"); GG-T515 fixed (Sell names fit); GG-T516 fixed (Draw button visible); GG-T518
+  marquees read fine at hub; GG-T520 still open (about 110 Buy rows, GG-T1161); GG-T514 unchanged (loot rows under the tome milestone).
+  GG-T504/505/512 sit with the tutorial run (GG-T1146).
+- **GG-T1151 crash:** the player died again with `Crash!!!` right after `CaptureRunner.OnQuitting` (Application quit), crash
+  report `R:\Temp\MindAttic\GridGame\Crashes\Crash_2026-11-26_043206018`, with no `-capture` argument. So the quit crash does not need
+  video capture. It happened while another agent's harness launch (same checkout, same derived port) very likely sent `quit` to this player.
+
+| Ticket | Issue |
+|---|---|
+| GG-T1154 | Defeat screen: "The The Shardfall expedition has failed" |
+| GG-T1155 | Shardfall III locked after a defeat while the hand points at it |
+| GG-T1156 | Blacksmith header subtitle clipped; opens on empty Repair tab |
+| GG-T1157 | Shrink-to-fit labels at mixed sizes (Merchant, Party builds, Results, region rows) |
+| GG-T1158 | Turn-mode timeline captions overlap (Unmoved, HeroTimeline) |
+| GG-T1159 | BoardAudit: two tokens on one tile in HeroTimeline mode |
+| GG-T1160 | Autoplay loses Shardfall II/III under AnyHero and HeroTimeline |
+| GG-T1161 | Merchant Buy list still about 100 rows (GG-T520 recheck) |
