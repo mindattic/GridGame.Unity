@@ -14796,6 +14796,7 @@
       "quicken",
       "poison",
       "brawler_wide_cleave",
+      "slasher_rending_slash",
       "brawler_guard_break",
       "brawler_second_wind",
       "venom_edge"
@@ -14804,7 +14805,7 @@
       "cleave",
       "brawler_guard_break",
       "item:x_potion",
-      "brawler_wide_cleave",
+      "slasher_rending_slash",
       "brawler_second_wind"
     ],
     "DropTable": null,
@@ -16580,10 +16581,11 @@
       "skirmisher_blindside",
       "skirmisher_hitandrun",
       "skirmisher_runningriot",
-      "dirty_fighting"
+      "dirty_fighting",
+      "streetfighter_sucker_punch"
     ],
     "DefaultLoadout": [
-      "cleave",
+      "streetfighter_sucker_punch",
       "skirmisher_blindside",
       "item:x_potion",
       "berserker_skullrattle",
@@ -16975,6 +16977,7 @@
       "duelist_decisivecut",
       "duelist_probingthrust",
       "duelist_guardstance",
+      "swordmaster_pinning_thrust",
       "guard_counter",
       "evasive_riposte"
     ],
@@ -16983,7 +16986,7 @@
       "duelist_probingthrust",
       "item:x_potion",
       "duelist_decisivecut",
-      "duelist_guardstance"
+      "swordmaster_pinning_thrust"
     ],
     "DropTable": null,
     "MoveRange": 1,

@@ -305,6 +305,18 @@
   ]
  },
  "ability": {
+  "slasher_rending_slash": [
+   "lorc/sword-wound",
+   "crimson"
+  ],
+  "streetfighter_sucker_punch": [
+   "lorc/punch",
+   "leather"
+  ],
+  "swordmaster_pinning_thrust": [
+   "lorc/dripping-blade",
+   "silver"
+  ],
   "fighter_bell_ringer": [
    "lorc/visored-helm",
    "gold"
