@@ -129,7 +129,7 @@ namespace GridGame.App
             public string Source;              // the words fitted
             public float Natural, Applied;     // the element's own size and the shrunk one
             public float ParentWidth;
-            public bool ParentKnown, Active, Off;
+            public bool ParentKnown, Active, Off, CapDriven; // CapDriven: shown at a peer's smaller size, not its own need
             public StyleLength PrevInline;     // the inline font size code had set, restored on release
             public int Generation, Steps, Refits;
             public string GaveUpSource;        // a text that doesn't fit even at the floor, for this width
@@ -196,8 +196,11 @@ namespace GridGame.App
                 // The parent's width is read once the shrunk size has laid out, so a parent sized by this label (which the
                 // shrink just narrowed) is the baseline rather than a change that would undo the shrink again.
                 if (caughtUp && !st.ParentKnown) { st.ParentWidth = pw; st.ParentKnown = true; }
+                float cap = PeerCap(t);
                 bool stale = source != st.Source || st.Generation != generation
-                             || (st.ParentKnown && Mathf.Abs(pw - st.ParentWidth) > 1f);
+                             || (st.ParentKnown && Mathf.Abs(pw - st.ParentWidth) > 1f)
+                             || (!float.IsNaN(cap) && cap < st.Applied - 0.01f)
+                             || (st.CapDriven && (float.IsNaN(cap) || cap > st.Applied + 0.01f));
                 if (stale)
                 {
                     // New words, a new box, or a new type size: back to its own size, and fit again on the next pass
@@ -229,10 +232,15 @@ namespace GridGame.App
             if (st.GaveUpSource == source && Mathf.Abs(st.GaveUpWidth - w) <= 1f && Mathf.Abs(st.GaveUpFloor - floor) < 0.01f) return false;
             if (fontSize <= floor + 0.01f) return false;
             float need = Measure(t, source);
-            if (need <= w + 0.5f || need <= 0f) return false; // fits at its own size
+            float peer = PeerCap(t);
+            bool fits = need <= w + 0.5f || need <= 0f; // fits at its own size
+            if (fits && (float.IsNaN(peer) || peer >= fontSize - 0.01f)) return false;
             // Text width scales with its font size, so one measurement gives the size that fits (less a hair of slack).
-            float target = Mathf.Floor(fontSize * (w - Slack) / need / ShrinkStep) * ShrinkStep;
+            float target = fits ? fontSize : Mathf.Floor(fontSize * (w - Slack) / need / ShrinkStep) * ShrinkStep;
             if (target < floor) { GiveUp(st, source, w, floor); return false; }
+            // GG-T1157: rows of one list share one size, so a list never reads ragged: a peer already shrunk smaller sets it.
+            bool capDriven = !float.IsNaN(peer) && peer < target - 0.01f;
+            if (capDriven) target = peer;
 
             UndoWrap(t);
             st.PrevInline = t.style.fontSize;
@@ -243,9 +251,38 @@ namespace GridGame.App
             st.Steps = 0;
             st.ParentKnown = false;
             st.Active = true;
+            st.CapDriven = capDriven;
             st.GaveUpSource = null;
             t.style.fontSize = target;
             return true;
+        }
+
+        /// <summary>
+        /// GG-T1157: the smallest size a shrunk peer of <paramref name="t"/> shows, or NaN. Peers are the same-role labels
+        /// (same first class) in the siblings of <c>t</c>'s parent: the label of each menu row in a list, the name over each
+        /// column of a row of cards. Each shrinks to its own need, but a list whose rows shrink by different amounts reads
+        /// ragged, so every one of them takes the smallest.
+        /// </summary>
+        private static float PeerCap(TextElement t)
+        {
+            var row = t.parent;
+            var list = row?.parent;
+            if (list == null || list.childCount > 80) return float.NaN;
+            string role = null;
+            foreach (var c in t.GetClasses()) { role = c; break; }
+            if (role == null) return float.NaN;
+            float cap = float.NaN;
+            foreach (var sib in list.Children())
+            {
+                if (sib == row) continue;
+                foreach (var c in sib.Children())
+                {
+                    if (!(c is TextElement te) || te == t || !te.ClassListContains(role)) continue;
+                    float s = ShrunkSize(te);
+                    if (!float.IsNaN(s) && (float.IsNaN(cap) || s < cap)) cap = s;
+                }
+            }
+            return cap;
         }
 
         private static void GiveUp(ShrinkState st, string source, float w, float floor)
