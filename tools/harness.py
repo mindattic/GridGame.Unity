@@ -33,6 +33,11 @@ Self-play harness: launches the development player with the automation endpoint 
     harness-step rules), so a command that fails (an exception, or exit 1 on a check) leaves a fail replay .mp4 and a
     fail-COMMAND screenshot in the capture session folder before the harness exits. endless and clips keep their configs.
 
+    GG-T1186: launch() never quits or kills a GridGame player this harness process didn't start (another agent's run).
+    It waits for it to exit (polling every 10 s, up to --wait-existing SECONDS, default 600), then refuses with an error
+    naming the PID(s) and run. --kill-existing anywhere in the args (or launch(kill_existing=True)) restores the old
+    quit-and-kill. A player this same harness process launched earlier is always replaced.
+
     --preview [TICKET] anywhere in the args (GG-T1007): when the command ends, pass or fail, the PNGs it wrote under
     artifacts/<run>/ (name order, caption = file name) and, with --record, the session video become a preview set
     (MindAttic.Media.Capture's `capture set new/add/show`, under R:\\MindAttic\\Preview) opened in
@@ -164,13 +169,70 @@ def _ensure_port(wait=6.0):
 
 _launched = False
 _procs = []
+# GG-T1186: set from __main__ (--kill-existing, --wait-existing SECONDS).
+KILL_EXISTING = False
+WAIT_EXISTING = 600.0
+
+
+def _other_players():
+    """GG-T1186: [(pid, run)] of running GridGame players this harness process did not start; run is the artifacts/<run>
+    folder from the player's -artifacts argument, or None."""
+    mine = {p.pid for p in _procs}
+    try:
+        out = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+             "Get-CimInstance Win32_Process -Filter \"Name='GridGame.exe'\" | Select-Object ProcessId,CommandLine | ConvertTo-Json"],
+            capture_output=True, text=True, timeout=30).stdout.strip()
+        rows = json.loads(out) if out else []
+    except Exception:
+        return []
+    if isinstance(rows, dict):
+        rows = [rows]
+    found = []
+    for r in rows:
+        pid = r.get("ProcessId")
+        if pid in mine or pid == os.getpid():
+            continue
+        m = re.search(r'-artifacts\s+"?([^"]+?)"?(?:\s+-|$)', r.get("CommandLine") or "")
+        run = os.path.relpath(m.group(1), os.path.join(ROOT, "artifacts")) if m else None
+        found.append((pid, run))
+    return found
+
+
+def _wait_or_refuse_others(kill_existing):
+    """GG-T1186: another agent's player is running (one device at a time): leave it alone, wait for it to exit, then
+    refuse; with kill_existing, quit and kill it as launch() always used to."""
+    others = _other_players()
+    if not others:
+        return
+    if kill_existing:
+        try:
+            if alive():
+                call("quit", timeout=3)
+        except Exception:
+            pass
+        time.sleep(1.5)
+        for pid, _ in _other_players():
+            subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)], capture_output=True)
+        return
+    names = ", ".join(f"PID {pid}" + (f" (run {run})" if run else "") for pid, run in others)
+    print(f"[harness] a GridGame player this harness didn't start is running: {names}; waiting up to {WAIT_EXISTING:.0f} s", flush=True)
+    deadline = time.time() + WAIT_EXISTING
+    while time.time() < deadline:
+        time.sleep(10)
+        others = _other_players()
+        if not others:
+            return
+    names = ", ".join(f"PID {pid}" + (f" (run {run})" if run else "") for pid, run in others)
+    raise RuntimeError(f"refusing to launch: a GridGame player this harness didn't start is still running: {names}. "
+                       "Wait for it to finish, or pass --kill-existing (launch(kill_existing=True)) to quit it.")
 
 
 def _stop_player(wait=8.0):
     """GG-T1144: quit the player(s) this harness launched and force-kill any still running after `wait` seconds, so a
     player that ignores quit (busy, hung) never lingers as an orphan holding the port."""
     try:
-        if alive():
+        if _procs and alive():
             call("quit", timeout=3)
     except Exception:
         pass
@@ -196,11 +258,13 @@ def _quit_launched():
     _stop_player()
 
 
-def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True):
+def launch(run, width=585, height=1266, extra=(), fresh=False, muted=True, kill_existing=None):
     global _launched
-    _launched = True
+    had_ours = bool(_procs)
     _stop_player()
-    if alive():
+    _wait_or_refuse_others(KILL_EXISTING if kill_existing is None else kill_existing)
+    _launched = True
+    if (had_ours or KILL_EXISTING or kill_existing) and alive():
         try:
             call("quit", timeout=3)
         except Exception:
@@ -3466,6 +3530,13 @@ if __name__ == "__main__":
     if "--headless" in sys.argv:
         HEADLESS = True
         sys.argv = [a for a in sys.argv if a != "--headless"]
+    if "--kill-existing" in sys.argv:
+        KILL_EXISTING = True
+        sys.argv = [a for a in sys.argv if a != "--kill-existing"]
+    if "--wait-existing" in sys.argv:
+        i = sys.argv.index("--wait-existing")
+        WAIT_EXISTING = float(sys.argv[i + 1])
+        del sys.argv[i:i + 2]
     if "--record" in sys.argv:
         RECORD = True
         sys.argv = [a for a in sys.argv if a != "--record"]
