@@ -286,6 +286,7 @@ namespace GridGame.Core.Battle
                 // was scorching allies and knitting enemies).
                 bool friend = t.Team == caster.Team || (t.IsNeutral && caster.IsHero); // a recruitable is mended, never hurt (GG-T132)
                 bool deals = a.BaseDamage > 0 && !(a.BaseHeal > 0 && friend);
+                bool payoff = !friend && a.BonusVsBuffs.Exists(t.HasBuff); // GG-T1220: read before this hit thaws or lays a status
                 if (deals && a.DamageType == DamageType.Fire)
                 {
                     if (t.HasBuff("frozen")) ForceExpire(t, "frozen");
@@ -307,6 +308,7 @@ namespace GridGame.Core.Battle
                     int dmg = Formulas.SpellDamage(a, t, wet);
                     if (a.Kind != AbilityKind.Item) dmg = (int)Math.Round(dmg * Formulas.CasterPower(a, caster) * caster.OutgoingDamageMultiplier);
                     if (a.BonusVsTag != null && t.Def.HasTag(a.BonusVsTag)) dmg = (int)Math.Round(dmg * a.BonusMultiplier);
+                    if (payoff) dmg = (int)Math.Round(dmg * a.BonusVsBuffsMultiplier);
                     // Blind cuts the crit chance with the accuracy, as for a blow (GG-T566); same single draw.
                     float spellCrit = Formulas.CritPercent(caster.Effective) / 100f * BattleConfig.SpellCritFraction;
                     spellCrit += RegionBoard.CritTakenBonus(S, caster, t); // GG-T888: a foe in the party's flare light
@@ -352,7 +354,8 @@ namespace GridGame.Core.Battle
                 }
 
                 if (a.HastenU > 0f && t.Alive) Hasten(t, a.HastenU, a.Id, a.TempoTurns);
-                if (a.Pushback > 0f && t.Alive && !friend) Pushback(t, a.Pushback); // the Pushback keyword (GG-T286)
+                float push = a.Pushback + (payoff ? a.BonusVsBuffsPushback : 0f);
+                if (push > 0f && t.Alive && !friend) Pushback(t, push); // the Pushback keyword (GG-T286)
                 if (a.CastStagger > 0f && t.Alive && !friend) JamCast(caster, t, a.CastStagger); // GG-T879: EMP Pulse staggers a tech foe's cast
                 if (a.SwapsTurns && t.Alive && !friend) DoCountermarch(t); // GG-T336: the Tactician reorders the foes' turns
 

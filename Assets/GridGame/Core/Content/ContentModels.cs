@@ -685,6 +685,13 @@ namespace GridGame.Core.Content
         /// <summary>Damage ×BonusMultiplier against targets with this tag (Holy Water vs Undead).</summary>
         public string BonusVsTag;
         public float BonusMultiplier = 1f;
+        /// <summary>GG-T1220 (the Rootbreaker's payoff): a foe already wearing any of these buff ids when the ability lands
+        /// takes damage x<see cref="BonusVsBuffsMultiplier"/> and is pushed <see cref="BonusVsBuffsPushback"/> seconds more
+        /// (on top of <see cref="Pushback"/>, still one push per foe per action). Checked before this ability lays its own
+        /// <see cref="ApplyBuff"/>, so it never pays off its own status.</summary>
+        public List<string> BonusVsBuffs = new List<string>();
+        public float BonusVsBuffsMultiplier = 1f;
+        public float BonusVsBuffsPushback;
         /// <summary>GG-T879: only units whose class carries this tag are caught (the Technician's EMP Pulse: "Tech" - gremlins,
         /// cyber zombies, mecha, prototypes); everyone else in the shape is untouched. <c>TargetResolver.Collect</c> applies it,
         /// so a pick that catches no such unit (and reaches no tile its reactions work on) is no pick at all.</summary>

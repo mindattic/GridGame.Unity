@@ -287,6 +287,18 @@ namespace GridGame.Core.Content
                 NeedBuff(a.ApplyBuff, $"ability {a.Id}"); NeedBuff(a.RemovesBuff, $"ability {a.Id} removes");
                 if (!(a.Pushback >= 0f) || a.Pushback > Battle.BattleConfig.PushbackMaxSeconds)
                     p.Add($"ability {a.Id}: Pushback {a.Pushback}s outside 0..{Battle.BattleConfig.PushbackMaxSeconds}s (GG-T286)");
+                if (a.BonusVsBuffs == null) p.Add($"ability {a.Id}: BonusVsBuffs can't be null (GG-T1220)");
+                else
+                {
+                    foreach (var b in a.BonusVsBuffs) NeedBuff(b ?? "(null)", $"ability {a.Id} BonusVsBuffs");
+                    if (!(a.BonusVsBuffsMultiplier > 0f)) p.Add($"ability {a.Id}: BonusVsBuffsMultiplier {a.BonusVsBuffsMultiplier} must be above 0 (GG-T1220)");
+                    if (!(a.BonusVsBuffsPushback >= 0f) || a.Pushback + a.BonusVsBuffsPushback > Battle.BattleConfig.PushbackMaxSeconds)
+                        p.Add($"ability {a.Id}: Pushback + BonusVsBuffsPushback {a.Pushback + a.BonusVsBuffsPushback}s outside 0..{Battle.BattleConfig.PushbackMaxSeconds}s (GG-T1220)");
+                    if (a.BonusVsBuffs.Count == 0 && (a.BonusVsBuffsMultiplier != 1f || a.BonusVsBuffsPushback > 0f))
+                        p.Add($"ability {a.Id}: BonusVsBuffsMultiplier/BonusVsBuffsPushback need a BonusVsBuffs list (GG-T1220)");
+                    else if (a.BonusVsBuffs.Count > 0 && a.BaseDamage <= 0 && a.BonusVsBuffsMultiplier != 1f)
+                        p.Add($"ability {a.Id}: BonusVsBuffsMultiplier needs BaseDamage (GG-T1220)");
+                }
                 if (!(a.CastStagger >= 0f)) p.Add($"ability {a.Id}: CastStagger {a.CastStagger}s can't be negative (GG-T879)");
                 if (a.OnlyVsTag != null && !System.Linq.Enumerable.Any(db.Classes.Values, c => c.Team == Team.Enemy && c.HasTag(a.OnlyVsTag)))
                     p.Add($"ability {a.Id}: OnlyVsTag '{a.OnlyVsTag}' is carried by no foe (GG-T879)");

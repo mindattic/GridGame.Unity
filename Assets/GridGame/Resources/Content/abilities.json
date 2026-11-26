@@ -7340,7 +7340,7 @@
  {
   "Id": "druidbrawler_rootbreaker",
   "Name": "Rootbreaker",
-  "Description": "A bramble-wrapped slam into an [adjacent] foe that pins it where it stands: [Rooted] for a turn.",
+  "Description": "A bramble-wrapped slam into an [adjacent] foe that pins it where it stands: [Rooted] for a turn. A foe already [Slowed] or [Rooted] takes half again the damage and [Pushback].",
   "Kind": "Skill",
   "Requires": { "Wisdom": 2, "Strength": 1 },
   "Cost": 0,
@@ -7366,7 +7366,10 @@
   "ImpactVfx": null,
   "LingerVfx": null,
   "Sfx": null,
-  "AdjacentOnly": true
+  "AdjacentOnly": true,
+  "BonusVsBuffs": ["slowed", "rooted"],
+  "BonusVsBuffsMultiplier": 1.5,
+  "BonusVsBuffsPushback": 1.0
  },
  { "Id": "skirmisher_covering_volley", "MergedInto": "ranged_suppressingfire" },
  {
