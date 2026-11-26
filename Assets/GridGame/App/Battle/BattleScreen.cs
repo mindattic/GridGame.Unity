@@ -333,7 +333,10 @@ namespace GridGame.App
             RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
             var mid = Ui.El("col grow", bar);
             mid.style.alignItems = Align.Center;
-            Ui.Text(State.Stage.Name, "h2 shadow", mid);
+            mid.style.minWidth = Space.S0; // GG-T1143: the column may be narrower than the stage name (9:23), which then shrinks and ends in an ellipsis
+            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "h2 shadow", mid), grow: false);
+            stageName.style.maxWidth = Length.Percent(100); stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            stageName.AddToClassList(TextFit.EllipsisClass); stageName.style.overflow = Overflow.Hidden; stageName.style.textOverflow = TextOverflow.Ellipsis;
             // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
             // vanished against a pale shard so the label read as just "Wave" (GG-T666).
             waveLabel = Ui.Text("", "small shadow", mid);
