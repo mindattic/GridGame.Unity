@@ -231,12 +231,12 @@ namespace GridGame.App
         {
             if (gapLane == null || State == null) return;
             SyncRound(); // GG-T1091
-            float nextU = 2f;
-            foreach (var e in drawn.Values)
-                if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted
-                    && !o.IsHero // GG-T1169: mirror TurnRules.TurnTicks (only a foe's icon ends the window)
-                    && at.TryGetValue(e.Id, out var u) && u > 0f)
-                    nextU = Mathf.Min(nextU, u);
+            bool frozen = TurnRules.HeroesOnTimeline(State); // GG-T1172: a Mode C hero's turn is a frozen window across the bar
+            float nextU = frozen ? 1f : 2f;
+            if (!frozen)
+                foreach (var e in drawn.Values)
+                    if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u) && u > 0f)
+                        nextU = Mathf.Min(nextU, u);
             int ticks = BattleEngine.TurnTicks(State);
             bool show = !overridden && holdLane == null && ticks > 0 && nextU <= 1f && !State.IsOver && State.Phase == BattlePhase.PlayerInput;
             gapLane.style.display = gapLabel.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
