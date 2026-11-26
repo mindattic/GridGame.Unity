@@ -54,6 +54,13 @@ namespace GridGame.App
         /// that re-lays itself out (the battle) or whose rebuild would restart it (a crawl, the credits) opts out.</summary>
         public virtual bool RebuildOnResize => true;
 
+        /// <summary>GG-T1205: work the screen needs done before it is first mounted (the battle releases the last stage's
+        /// art and preloads its own), run by the router behind its fade with a progress bar, the screen it replaced already
+        /// gone. Report progress in 0..1 through <paramref name="progress"/>. Null (the default) mounts at once. Runs once
+        /// per screen instance: coming back to it (a pop) never prepares it again.</summary>
+        public virtual IEnumerator Prepare(Action<float> progress) => null;
+        internal bool Prepared;
+
         /// <summary>Rebuilds in place (after a purchase etc.).</summary>
         public void Refresh()
         {
@@ -78,6 +85,11 @@ namespace GridGame.App
         // screen changes wait in `queued` and are applied in order right after it (GG-T218).
         private bool applied;
         private readonly Queue<Action> queued = new Queue<Action>();
+        private VisualElement loading, loadingFill;
+
+        /// <summary>GG-T1205: true while the top screen's <see cref="GameScreen.Prepare"/> runs behind the fade: it is
+        /// Current but not mounted yet, so it is neither ticked nor told the app was suspended.</summary>
+        public bool Preparing { get; private set; }
 
         public GameScreen Current => stack.Count > 0 ? stack.Peek() : null;
         public IEnumerable<GameScreen> Stack => stack;
@@ -159,13 +171,76 @@ namespace GridGame.App
             // Apply this change, then every change queued while the fade was going on, in call order,
             // and mount only the resulting top screen once.
             mutate();
-            while (queued.Count > 0) queued.Dequeue()();
+            // GG-T1205: the screen about to show gets its Prepare (the battle's stage load) with the old screen
+            // unmounted, so what only it drew can be unloaded; changes queued meanwhile apply after, and a new top
+            // screen they leave is prepared in turn.
+            while (true)
+            {
+                while (queued.Count > 0) queued.Dequeue()();
+                var top = Current;
+                if (top == null || top.Prepared) break;
+                top.Prepared = true;
+                IEnumerator prep;
+                try { prep = top.Prepare(SetProgress); }
+                catch (Exception e) { Debug.LogException(e); prep = null; }
+                if (prep == null) continue;
+                host.Clear();
+                fade.AddToClassList("fade--on");
+                fade.pickingMode = PickingMode.Position;
+                SetProgress(0f);
+                Preparing = true;
+                while (true)
+                {
+                    object step;
+                    try
+                    {
+                        if (!prep.MoveNext()) break;
+                        step = prep.Current;
+                    }
+                    catch (Exception e) { Debug.LogException(e); break; } // a failed load still mounts the screen
+                    yield return step;
+                }
+                Preparing = false;
+            }
+            if (loading != null) loading.style.display = DisplayStyle.None;
             applied = true;
             MountTop();
             yield return null;
             fade.RemoveFromClassList("fade--on");
             fade.pickingMode = PickingMode.Ignore;
             busy = false;
+        }
+
+        /// <summary>The loading bar on the fade (GG-T1205), built on first use.</summary>
+        private void SetProgress(float k)
+        {
+            if (loading == null)
+            {
+                loading = new VisualElement { name = "loading", pickingMode = PickingMode.Ignore };
+                loading.style.position = Position.Absolute;
+                loading.style.left = new Length(25, LengthUnit.Percent);
+                loading.style.right = new Length(25, LengthUnit.Percent);
+                loading.style.bottom = new Length(12, LengthUnit.Percent);
+                loading.style.alignItems = Align.Center;
+                var label = Ui.Text("Loading", "kit-caption", loading);
+                label.style.color = Palette.GoldLight;
+                label.style.marginBottom = 8;
+                var track = new VisualElement { name = "loading-track", pickingMode = PickingMode.Ignore };
+                track.style.alignSelf = Align.Stretch;
+                track.style.height = 6;
+                track.style.backgroundColor = new Color(1f, 1f, 1f, 0.12f);
+                track.style.borderTopLeftRadius = track.style.borderTopRightRadius = 3;
+                track.style.borderBottomLeftRadius = track.style.borderBottomRightRadius = 3;
+                track.style.overflow = Overflow.Hidden;
+                loading.Add(track);
+                loadingFill = new VisualElement { name = "loading-fill", pickingMode = PickingMode.Ignore };
+                loadingFill.style.height = new Length(100, LengthUnit.Percent);
+                loadingFill.style.backgroundColor = Palette.Gold;
+                track.Add(loadingFill);
+                fade.Add(loading);
+            }
+            loading.style.display = DisplayStyle.Flex;
+            loadingFill.style.width = new Length(Mathf.Clamp01(k) * 100f, LengthUnit.Percent);
         }
 
         private void MountTop()

@@ -167,6 +167,7 @@ namespace GridGame.App
         {
             GameApp.StageResized -= OnStageResized;
             DisposePrefabFx();
+            ReleaseStageArt(); // GG-T1205
             if (pauseVeil != null) { pauseVeil.RemoveFromHierarchy(); pauseVeil = null; ResumeBattle(); }
             awayOnSettings = false;
             // The billboard lives on the Overlay too; without this, each battle left one behind (lines from the
@@ -200,7 +201,8 @@ namespace GridGame.App
             // the previous build's detached elements (every slot read "Locked", orbs empty, timeline icons
             // gone, coin label blank) — and the once-per-battle work (tutorial, opening playback, capture
             // event) must not run a second time (GG-T70).
-            bool firstBuild = State == null;
+            bool firstBuild = !built;
+            built = true;
             slotViews.Clear();
             pool = null;
             orbViews.Clear(); orbBlooms.Clear();
@@ -227,24 +229,9 @@ namespace GridGame.App
             }
             if (firstBuild)
             {
-                // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
-                bool tutorial = setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && (App.Save.HighestClearedStage < 0 || IsFirstStage)
-                    && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
-                // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet; the tutorial battle
-                // always plays the same (GG-T542), so its lessons' set pieces land the same way every time.
-                int seed = tutorial ? TutorialSeed : InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
-                var setup = setupOverride ?? BattleFactory.Build(App.Content, App.Save, stageId, seed, App.Settings?.Difficulty?.Level ?? DifficultyTable.Default,
-                    App.Settings?.TurnMode ?? TurnMode.PartyWindow); // §2.13 (GG-T773): the save's lock, else the profile's
-                setup.Tutorial = tutorial;
-                if (setupOverride == null && !tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
-                if (setupOverride == null && DevNextWanderer != null) { setup.Wanderer = new WandererSpec { Class = DevNextWanderer, Wave = 0 }; DevNextWanderer = null; }
-                // GG-T532: a wanderer shows either version of its class (when the male art exists), the same for this battle's
-                // replay and its talk after; the player still picks when they join.
-                HeroLooks.ClearShown();
-                if (setup.Wanderer?.Class is string wc && App.Save?.Hero(wc) == null && Art.HasMaleArt(wc))
-                    HeroLooks.Show(wc, HeroVariants.Roll(setup.Seed));
-                State = BattleEngine.Create(App.Content, setup, initial);
-                recorder = new BattleRecorder(State, setup, "player", initial);
+                if (State == null) { CreateState(); stageOwner = this; Art.BeginScope(ArtScope.Stage); Art.Preload(StageTextureSet.For(App.Content, setup)); } // mounted without the router's Prepare
+                initial.AddRange(openingEvents); // the recorder holds openingEvents itself, so it is handed over, not cleared
+                openingEvents = null;
                 // Every battle is tagged with the dial and the multipliers it applied (§22.9, GG-T309).
                 var diff = DifficultyTable.At(setup.Difficulty);
                 GameTelemetry.Begin(setup.Seed, Application.version, // GG-T548: a writable folder on every platform, never throws

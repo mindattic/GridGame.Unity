@@ -378,7 +378,7 @@ namespace GridGame.App
             Tween.Advance();
             float dt = Tween.Dt;
             if (Save != null) { playClock += dt; if (playClock >= 1f) { Save.PlaySeconds += playClock; playClock = 0f; } }
-            Router.Current?.Tick(dt);
+            if (!Router.Preparing) Router.Current?.Tick(dt); // GG-T1205: a screen still loading is not mounted yet
             Ticked?.Invoke(dt);
 
             // The Input System reports Android's back button (and back gesture) as the Escape key.
@@ -444,7 +444,7 @@ namespace GridGame.App
             if (flushSave && Save != null) { Save.PlaySeconds += playClock; playClock = 0f; Persist(); Cloud?.Flush(); }
             if (!PausesInBackground || suspended || Router == null) return;
             suspended = true;
-            Router.Current?.OnAppSuspended();
+            if (!Router.Preparing) Router.Current?.OnAppSuspended();
             AudioListener.pause = true; // music and every ringing effect hold mid-clip and carry on from there
         }
 
