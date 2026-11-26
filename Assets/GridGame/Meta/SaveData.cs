@@ -507,6 +507,16 @@ namespace GridGame.Meta
         public float MasterVolume = 1f;
         /// <summary>Sound → Mute when unfocused (GG-T1221): silence everything while the window lacks focus. Off by default.</summary>
         public bool MuteWhenUnfocused;
+        /// <summary>Display → Window mode (GG-T1222, desktop only): -1 (default) leaves the window as launched, 0 windowed,
+        /// 1 fullscreen.</summary>
+        public int FullScreen = -1;
+        /// <summary>Display → Resolution (GG-T1222, desktop only): window size in px; 0 (default) leaves it as launched.</summary>
+        public int ResolutionWidth, ResolutionHeight;
+        /// <summary>Display → Thumb margin (GG-T1222, phones only): extra design px kept clear above the safe area's
+        /// bottom edge, 0 (default) to <see cref="GameSettings.MaxThumbMargin"/>.</summary>
+        public int ThumbMargin;
+        /// <summary>Accessibility → UI scale (GG-T1222): 80, 90 or 100 (default) percent of the screen the stage fills.</summary>
+        public int UiScale = 100;
     }
 
     /// <summary>

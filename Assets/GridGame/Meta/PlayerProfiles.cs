@@ -50,7 +50,28 @@ namespace GridGame.Meta
             public const string VfxAmount = "vfxAmount";
             public const string MasterVolume = "masterVolume";
             public const string MuteWhenUnfocused = "muteWhenUnfocused";
+            /// <summary>Display and Accessibility (GG-T1222): see the matching <see cref="SettingsSave"/> fields.</summary>
+            public const string FullScreen = "fullScreen";
+            public const string ResolutionWidth = "resolutionWidth";
+            public const string ResolutionHeight = "resolutionHeight";
+            public const string ThumbMargin = "thumbMargin";
+            public const string UiScale = "uiScale";
         }
+
+        /// <summary>The most design px Display → Thumb margin may keep clear (GG-T1222).</summary>
+        public const int MaxThumbMargin = 96;
+
+        /// <summary>A window mode the game offers (GG-T1222): -1 (as launched), 0 windowed or 1 fullscreen.</summary>
+        public static int ClampFullScreen(int mode) => mode == 0 || mode == 1 ? mode : -1;
+
+        /// <summary>A window dimension in px (GG-T1222), or 0 (as launched) for anything not positive.</summary>
+        public static int ClampResolution(int px) => Math.Max(0, px);
+
+        /// <summary>A thumb margin in design px (GG-T1222), held to 0..<see cref="MaxThumbMargin"/>.</summary>
+        public static int ClampThumbMargin(int px) => Math.Min(MaxThumbMargin, Math.Max(0, px));
+
+        /// <summary>A UI scale the game offers (GG-T1222): 80, 90 or 100 percent; 100 for anything else in the file.</summary>
+        public static int ClampUiScale(int pct) => pct == 80 || pct == 90 ? pct : 100;
 
         /// <summary>A text size the game offers (GG-T495), or 100 for anything else in the file.</summary>
         public static int ClampTextScale(int pct) => pct == 115 || pct == 130 ? pct : 100;
@@ -118,6 +139,11 @@ namespace GridGame.Meta
             d.VfxAmount = Clamp01(g.GetFloat(Keys.VfxAmount, d.VfxAmount));
             d.MasterVolume = Clamp01(g.GetFloat(Keys.MasterVolume, d.MasterVolume));
             d.MuteWhenUnfocused = g.GetBool(Keys.MuteWhenUnfocused, d.MuteWhenUnfocused);
+            d.FullScreen = ClampFullScreen(g.GetInt(Keys.FullScreen, d.FullScreen));
+            d.ResolutionWidth = ClampResolution(g.GetInt(Keys.ResolutionWidth, d.ResolutionWidth));
+            d.ResolutionHeight = ClampResolution(g.GetInt(Keys.ResolutionHeight, d.ResolutionHeight));
+            d.ThumbMargin = ClampThumbMargin(g.GetInt(Keys.ThumbMargin, d.ThumbMargin));
+            d.UiScale = ClampUiScale(g.GetInt(Keys.UiScale, d.UiScale));
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -159,6 +185,11 @@ namespace GridGame.Meta
             g.Set(Keys.VfxAmount, Clamp01(s.VfxAmount));
             g.Set(Keys.MasterVolume, Clamp01(s.MasterVolume));
             g.Set(Keys.MuteWhenUnfocused, s.MuteWhenUnfocused);
+            g.Set(Keys.FullScreen, ClampFullScreen(s.FullScreen));
+            g.Set(Keys.ResolutionWidth, ClampResolution(s.ResolutionWidth));
+            g.Set(Keys.ResolutionHeight, ClampResolution(s.ResolutionHeight));
+            g.Set(Keys.ThumbMargin, ClampThumbMargin(s.ThumbMargin));
+            g.Set(Keys.UiScale, ClampUiScale(s.UiScale));
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));

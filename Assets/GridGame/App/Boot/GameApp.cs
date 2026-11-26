@@ -81,6 +81,9 @@ namespace GridGame.App
         private Vector2 lastScreen;
         private Rect lastSafe;
         private float lastDpi; // GG-T551: a density change alone (Android display size) moves the type floor
+        /// <summary>Settings → UI scale and Thumb margin (GG-T1222), set by <see cref="ApplySettings"/>; the stage fit
+        /// reruns when either differs from what it last laid out with.</summary>
+        private int uiScale = 100, thumbMargin, lastUiScale = 100, lastThumbMargin;
         /// <summary>A faked notch / gesture bar in screen px (top, bottom), from <c>-safeArea</c> or the automation
         /// <c>safearea</c> endpoint (GG-T483); null = the device's own <see cref="Screen.safeArea"/>.</summary>
         private Vector2? fakeInsets;
@@ -282,10 +285,13 @@ namespace GridGame.App
         {
             var screen = new Vector2(Screen.width, Screen.height);
             var safeNow = SafeAreaPx();
-            if (screen == lastScreen && safeNow == lastSafe && Screen.dpi == lastDpi && Stage.Q("screens") != null) return;
+            if (screen == lastScreen && safeNow == lastSafe && Screen.dpi == lastDpi && uiScale == lastUiScale
+                && thumbMargin == lastThumbMargin && Stage.Q("screens") != null) return;
             lastScreen = screen;
             lastSafe = safeNow;
             lastDpi = Screen.dpi;
+            lastUiScale = uiScale;
+            lastThumbMargin = thumbMargin;
             float screenAspect = screen.x / Mathf.Max(1f, screen.y);
             var size = StageSizeFor(screenAspect);
             bool resized = size.x != StageWidth || size.y != StageHeight;
@@ -293,9 +299,10 @@ namespace GridGame.App
 
             // Out of the phone range the stage is framed; leave room so the whole outline is visible on every side.
             float exactW = DesignHeight * screenAspect, exactH = DesignWidth / screenAspect;
-            bool framed = exactW > MaxStageWidth + 2f || exactH > MaxStageHeight + 2f;
+            // GG-T1222: a UI scale under 100% draws the stage smaller than the screen, framed in the fog like an off shape.
+            bool framed = exactW > MaxStageWidth + 2f || exactH > MaxStageHeight + 2f || uiScale < 100;
             float pad = framed ? FramePad : 0f;
-            var fit = new Vector2(size.x + pad * 2f, size.y + pad * 2f);
+            var fit = new Vector2(size.x + pad * 2f, size.y + pad * 2f) * (100f / uiScale);
 
             // Scale by the limiting axis so the whole stage (and frame) is visible.
             bool widthLimits = screen.x / fit.x <= screen.y / fit.y;
@@ -362,7 +369,8 @@ namespace GridGame.App
             if (Screen.width <= 0 || Screen.height <= 0) return false;
             float k = logicalH / Screen.height;
             float stageTop = (logicalH - StageHeight) / 2f, stageBottom = stageTop + StageHeight;
-            float safeTop = (Screen.height - safe.yMax) * k, safeBottom = logicalH - safe.yMin * k;
+            // GG-T1222: Settings → Thumb margin keeps extra room clear above the safe area's bottom edge (phones only).
+            float safeTop = (Screen.height - safe.yMax) * k, safeBottom = logicalH - safe.yMin * k - thumbMargin;
             var screens = Stage.Q("screens");
             float top = Mathf.Round(Mathf.Max(0f, safeTop - stageTop)), bottom = Mathf.Round(Mathf.Max(0f, stageBottom - safeBottom));
             bool changed = top != SafeTop || bottom != SafeBottom;
@@ -511,11 +519,27 @@ namespace GridGame.App
             TextFit.Configure(presets && st.Hyphenate);
             // GG-T495 accessibility: text size scales the one GUI size (GG-T770, --type-base), reduce motion for every shared tween.
             TextSize.Apply(Document?.rootVisualElement, st.TextScale);
+            // GG-T1222: UI scale and the phone's thumb margin take effect in the next stage fit (FitStage).
+            uiScale = GridGame.Meta.GameSettings.ClampUiScale(st.UiScale);
+            thumbMargin = Application.isMobilePlatform ? GridGame.Meta.GameSettings.ClampThumbMargin(st.ThumbMargin) : 0;
+            ApplyDisplay(st);
             Tween.Calm = st.ReduceMotion;
             // GG-T525: Colorblind palette swaps the team marks to a blue/orange pair: Palette for marks drawn in code
             // (timeline icons, cast rings), a root class for the board keylines in USS (Theme.uss .colorblind).
             Palette.Colorblind = st.ColorblindMode;
             Document?.rootVisualElement?.EnableInClassList("colorblind", st.ColorblindMode);
+        }
+
+        /// <summary>Display → Window mode and Resolution (GG-T1222), desktop players only: the window is left as launched
+        /// until the player picks one, and is only reset when it differs from what they picked.</summary>
+        private static void ApplyDisplay(GridGame.Meta.SettingsSave st)
+        {
+            if (Application.isMobilePlatform || Application.isEditor || Application.platform == RuntimePlatform.WebGLPlayer) return;
+            bool sized = st.ResolutionWidth > 0 && st.ResolutionHeight > 0;
+            if (st.FullScreen < 0 && !sized) return;
+            var mode = st.FullScreen < 0 ? Screen.fullScreenMode : st.FullScreen == 1 ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
+            int w = sized ? st.ResolutionWidth : Screen.width, h = sized ? st.ResolutionHeight : Screen.height;
+            if (mode != Screen.fullScreenMode || w != Screen.width || h != Screen.height) Screen.SetResolution(w, h, mode);
         }
 
         /// <summary>Writes the active profile's settings to its settings.json (a settings change, bible §15.2).</summary>
