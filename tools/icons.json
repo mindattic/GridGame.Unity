@@ -305,6 +305,18 @@
   ]
  },
  "ability": {
+  "fighter_bell_ringer": [
+   "lorc/visored-helm",
+   "gold"
+  ],
+  "myrmidon_shield_rush": [
+   "lorc/shield-reflect",
+   "bronze"
+  ],
+  "odachi_long_draw": [
+   "delapouite/two-handed-sword",
+   "steel"
+  ],
   "fireball": [
    "lorc/fireball",
    "fire"

@@ -1420,7 +1420,8 @@
       "steal",
       "teleport",
       "quicken",
-      "blueninja_frostfang",
+      "ninja_fang",
+      "undertow",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -1430,7 +1431,7 @@
       "cleave",
       "shadowstep_fade_step",
       "item:x_potion",
-      "blueninja_frostfang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -1563,7 +1564,8 @@
       "berserker_wildswing",
       "berserker_skullrattle",
       "berserker_lastmanswinging",
-      "blood_rage"
+      "blood_rage",
+      "shake_it_off"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -2669,7 +2671,8 @@
       "steal",
       "teleport",
       "quicken",
-      "chromaninja_prismfang",
+      "ninja_fang",
+      "feint",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -2679,7 +2682,7 @@
       "cleave",
       "shadowstep_fade_step",
       "item:x_potion",
-      "chromaninja_prismfang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -4548,6 +4551,7 @@
       "sleep",
       "antidote",
       "vanguard_bulwark",
+      "guard_stance",
       "aegisguard_sacred_challenge",
       "aegisguard_judgment_of_warding",
       "aegisguard_hands_of_mercy",
@@ -5078,7 +5082,7 @@
       "fieldeng_mine",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "chill_aura",
+      "shock_plating",
       "drifter_float"
     ],
     "DefaultLoadout": [
@@ -5621,6 +5625,7 @@
       "teleport",
       "quicken",
       "combobrawler_onetwoflurry",
+      "fighter_bell_ringer",
       "combobrawler_openingjab",
       "combobrawler_knockoutcombo",
       "battle_hardened"
@@ -5629,7 +5634,7 @@
       "cleave",
       "combobrawler_openingjab",
       "item:x_potion",
-      "combobrawler_onetwoflurry",
+      "fighter_bell_ringer",
       "combobrawler_knockoutcombo"
     ],
     "DropTable": null,
@@ -7406,7 +7411,8 @@
       "steal",
       "teleport",
       "quicken",
-      "greenninja_venomfang",
+      "ninja_fang",
+      "pressure_point",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -7416,7 +7422,7 @@
       "cleave",
       "shadowstep_fade_step",
       "item:x_potion",
-      "greenninja_venomfang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -8160,7 +8166,7 @@
     "Abilities": [
       "charge_ice",
       "frostborn",
-      "chill_aura"
+      "shock_plating"
     ],
     "DefaultLoadout": [],
     "DropTable": "icemauler",
@@ -10405,6 +10411,7 @@
       "sleep",
       "antidote",
       "grappling_hook",
+      "myrmidon_shield_rush",
       "juggernaut_war_stomp",
       "juggernaut_unstoppable_momentum",
       "juggernaut_overrun",
@@ -10415,7 +10422,7 @@
       "taunt",
       "juggernaut_war_stomp",
       "item:x_potion",
-      "grappling_hook",
+      "myrmidon_shield_rush",
       "juggernaut_overrun"
     ],
     "DropTable": null,
@@ -10660,7 +10667,8 @@
       "teleport",
       "quicken",
       "poison",
-      "nighthunter_nightstalk",
+      "ninja_fang",
+      "disengage",
       "opportunist_exploit",
       "opportunist_chain_the_opening",
       "opportunist_collect_the_debt",
@@ -10670,7 +10678,7 @@
       "cleave",
       "opportunist_exploit",
       "item:x_potion",
-      "nighthunter_nightstalk",
+      "ninja_fang",
       "opportunist_collect_the_debt"
     ],
     "DropTable": null,
@@ -10804,10 +10812,11 @@
       "brawler_guard_break",
       "brawler_wide_cleave",
       "brawler_second_wind",
-      "grim_resolve"
+      "grim_resolve",
+      "odachi_long_draw"
     ],
     "DefaultLoadout": [
-      "cleave",
+      "odachi_long_draw",
       "brawler_guard_break",
       "item:x_potion",
       "duelist_decisivecut",
@@ -11835,7 +11844,8 @@
       "combobrawler_knockoutcombo",
       "combobrawler_openingjab",
       "combobrawler_onetwoflurry",
-      "grudge"
+      "grudge",
+      "second_wind"
     ],
     "DefaultLoadout": [
       "cleave",
@@ -13080,7 +13090,8 @@
       "steal",
       "teleport",
       "quicken",
-      "redninja_flamefang",
+      "ninja_fang",
+      "flame_lance",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -13090,7 +13101,7 @@
       "cleave",
       "shadowstep_fade_step",
       "item:x_potion",
-      "redninja_flamefang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -13498,6 +13509,7 @@
       "teleport",
       "quicken",
       "skirmisher_hitandrun",
+      "focus_breath",
       "duelist_probingthrust",
       "duelist_guardstance",
       "duelist_decisivecut",
@@ -13508,7 +13520,7 @@
       "cleave",
       "duelist_probingthrust",
       "item:x_potion",
-      "skirmisher_hitandrun",
+      "focus_breath",
       "duelist_decisivecut"
     ],
     "DropTable": null,
@@ -16703,7 +16715,8 @@
       "steal",
       "teleport",
       "quicken",
-      "striker_finishingblow",
+      "duelist_exploit_opening",
+      "opportunist",
       "skirmisher_blindside",
       "skirmisher_hitandrun",
       "skirmisher_runningriot",
@@ -16713,7 +16726,7 @@
       "cleave",
       "skirmisher_blindside",
       "item:x_potion",
-      "striker_finishingblow",
+      "duelist_exploit_opening",
       "skirmisher_runningriot"
     ],
     "DropTable": null,
@@ -17094,6 +17107,7 @@
       "juggernaut_overrun",
       "juggernaut_war_stomp",
       "juggernaut_unstoppable_momentum",
+      "last_stand",
       "shove",
       "unbowed"
     ],
@@ -17102,7 +17116,7 @@
       "juggernaut_war_stomp",
       "item:x_potion",
       "juggernaut_overrun",
-      "juggernaut_unstoppable_momentum"
+      "last_stand"
     ],
     "DropTable": null,
     "MoveRange": 1,
@@ -17586,7 +17600,6 @@
       "rejuvenate",
       "frost",
       "antidote",
-      "technician_diagnostic",
       "technician_emp",
       "fieldeng_mine",
       "fieldeng_patch",
@@ -17597,7 +17610,7 @@
       "quicken",
       "fieldeng_mine",
       "item:x_potion",
-      "technician_diagnostic",
+      "technician_emp",
       "fieldeng_overdrive"
     ],
     "DropTable": null,
@@ -20418,6 +20431,7 @@
       "sleep",
       "antidote",
       "warlord_rally_point",
+      "bolster",
       "warlord_battle_cry",
       "warlord_marked_for_warband",
       "grudge"
@@ -20426,7 +20440,7 @@
       "taunt",
       "warlord_battle_cry",
       "item:x_potion",
-      "warlord_rally_point",
+      "bolster",
       "warlord_marked_for_warband"
     ],
     "DropTable": null,
@@ -21577,7 +21591,8 @@
       "steal",
       "teleport",
       "quicken",
-      "yellowninja_shockfang",
+      "ninja_fang",
+      "sprint",
       "shadowstep_fade_step",
       "shadowstep_smoke_veil",
       "shadowstep_vanishing_cut",
@@ -21587,7 +21602,7 @@
       "cleave",
       "shadowstep_fade_step",
       "item:x_potion",
-      "yellowninja_shockfang",
+      "ninja_fang",
       "shadowstep_vanishing_cut"
     ],
     "DropTable": null,
@@ -21719,7 +21734,7 @@
     "Resistances": {},
     "Abilities": [
       "frostborn",
-      "chill_aura"
+      "shock_plating"
     ],
     "DefaultLoadout": [],
     "DropTable": "yeti",

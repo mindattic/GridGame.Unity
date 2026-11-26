@@ -45,8 +45,7 @@ namespace GridGame.Tests
         /// <summary>Ids this slice leaves live on purpose.</summary>
         private static readonly string[] HeldBack =
         {
-            "blueninja_frostfang", "chromaninja_prismfang", "greenninja_venomfang", "redninja_flamefang",
-            "yellowninja_shockfang", "nighthunter_nightstalk", "striker_finishingblow", "technician_diagnostic", "chill_aura",
+            // the five ninja fangs and nighthunter_nightstalk merged into ninja_fang by GG-T1198 // striker_finishingblow, technician_diagnostic and chill_aura merged by GG-T1197
         };
 
         [Test]
