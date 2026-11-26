@@ -37,7 +37,7 @@ namespace GridGame.Tests
         /// <summary>Ids this slice leaves live on purpose.</summary>
         private static readonly string[] HeldBack =
         {
-            "jadeknight_resolve", "cleric_grace", "whitewitch_ward", "hinder", "alchemist_transmute", // courier_relay and sage_insight merged by GG-T1138
+            "hinder", "alchemist_transmute", // courier_relay and sage_insight merged by GG-T1138; jadeknight_resolve, cleric_grace and whitewitch_ward by GG-T1139
         };
 
         [Test]
