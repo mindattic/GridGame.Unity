@@ -134,12 +134,12 @@ Moves marked "Swap" are the hero's own unique, unplaced-as-signature moves near 
 swap with the old signature, as GG-T1039 did. "Tune" keeps the move and gives it the rider its name implies.
 
 **Summary.**
-- 40 heroes: keep, no flag.
+- 41 heroes: keep, no flag.
 - 7 swaps: Assassin, Barbarian, Machinist, Monk, Thief and Speedster, plus Dervish, which needs a changed effect.
 - 6 tunes: Chroma, Red and Yellow Ninja, Odachi, Striker and Sword Master.
 - 2 loadout fixes: Drifter and Wild Child.
 - 1 text fix: Hex Sniper.
-- 9 keep despite a flag (the other half of a D pair, or a cosmetic or text note).
+- 8 keep despite a flag (the other half of a D pair, or a cosmetic or text note).
 
 | Hero | Recipe | Signature | Effect (from abilities.json) | d | Flag | Proposal |
 |---|---|---|---|---|---|---|
@@ -153,7 +153,7 @@ swap with the old signature, as GG-T1039 did. "Tune" keeps the move and gives it
 | Bruiser | STR 4 | Haymaker (`bruiser_haymaker`) | Skill, 14 Physical, adjacent, knockback 1, pushback 0.5 | 1 | - | Keep |
 | Chroma Ninja | SPD 3 INT 1 | Prism Fang (`chromaninja_prismfang`) | Skill, 20 Physical, adjacent | 0 | P | Tune: give Prism Fang a rider (the Fang series pattern) |
 | Cleric | INT 3 VIT 1 | Divine Grace (`cleric_grace`) | Skill, [ward] | 1 | - | Keep |
-| Courier | WIS 2 STR 1 INT 1 | Swift Relay (`courier_relay`) | Skill, [empowered], hasten 0.15 | 0 | D | Keep (Speedster changes) |
+| Courier | WIS 2 STR 1 INT 1 | Haste Field (`haste_field`) | Spell, AllAllies, hasten 0.12 | 0 | - | Keep (GG-T1138 merged Swift Relay into Shortcut and re-signed Courier) |
 | Dark Templar | VIT 2 AGI 1 INT 1 | Dark Rite (`darktemplar_rite`) | Skill, 8 Dark, [blinded] | 1 | - | Keep |
 | Defender | VIT 2 STR 1 WIS 1 | Shield Wall (`defender_wall`) | Skill, Cross 1, [ward] | 1 | D | Keep (Dervish changes) |
 | Dervish | SPD 2 STR 1 WIS 1 | Whirling Ward (`dervish_whirl`) | Skill, Cross 1, [ward] | 1 | D | Change: same shape and effect as Shield Wall (Cross 1, Ward) |
@@ -191,11 +191,11 @@ swap with the old signature, as GG-T1039 did. "Tune" keeps the move and gives it
 | Ripper | AGI 3 VIT 1 | Rend (`ripper_rend`) | Skill, 10 Physical, adjacent, [poisoned] | 0 | T | Keep; "bleeding" is [Poisoned] in data |
 | Ritualist | VIT 2 SPD 1 INT 1 | Blood Rite (`ritualist_bloodrite`) | Spell, 12 Arcane, [poisoned] | 0 | - | Keep |
 | Ronin | AGI 3 WIS 1 | Masterless Cut (`ronin_masterless`) | Skill, 14 Physical, adjacent, stepback 2 | 0 | - | Keep |
-| Sage | WIS 4 | Sage's Insight (`sage_insight`) | Skill, 8 Physical, [silenced] | 1 | - | Keep |
+| Sage | WIS 4 | Spellshield (`warden_spellshield`) | Spell, [ward], cleanse | 1 | - | Keep (GG-T1138 merged Sage's Insight into Disrupt and re-signed Sage) |
 | Sellsword | STR 2 VIT 1 SPD 1 | Contract Kill (`sellsword_contract`) | Skill, 20 Physical, adjacent, x1.3 vs boss | 1 | - | Keep |
 | Shieldguard | VIT 3 AGI 1 | Valkyrie's Call (`shieldmaiden_valkyrie`) | Skill, heal 30, Self, revives | 0 | - | Keep |
 | Slasher | AGI 2 STR 1 WIS 1 | Flurry (`slasher_flurry`) | Skill, 10 Physical, Cross 1 | 1 | - | Keep |
-| Speedster | SPD 4 | Blitz Rush (`speedster_blitz`) | Skill, Self, [empowered], hasten 0.2 | 1 | D | Swap to Afterimage (d2, needs a node swap), or keep |
+| Speedster | SPD 4 | Blitz Rush (`speedster_blitz`) | Skill, Self, [empowered], hasten 0.2 | 1 | - | Swap to Afterimage (d2, needs a node swap), or keep |
 | Street Fighter | AGI 2 STR 1 INT 1 | Dirty Trick (`streetfighter_dirtytrick`) | Skill, 12 Physical, adjacent, [blinded] | 0 | - | Keep |
 | Striker | SPD 3 AGI 1 | Finishing Blow (`striker_finishingblow`) | Skill, 20 Physical, adjacent | 1 | P | Tune: a bonus against a hurt foe |
 | Sword Master | STR 2 AGI 2 | Perfect Cut (`swordmaster_perfectcut`) | Skill, 24 Physical, adjacent | 1 | P | Tune, or keep as the pure-damage hero |

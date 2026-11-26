@@ -51,8 +51,8 @@ node is closest.
 | -6,-9 | Wild | 15 | WIS +9, SPD +3 | Fading Shot (2), Flare Shot (2), Intimidate (2) | Hex Stalker, Blue Lion |
 | -14,-2 | Wild | 16 | SPD +8 | Blitz Rush (2), Night Stalk (2), Bramble Snare (3) | Speedster, Night Hunter |
 | -11,-5 | Wild | 16 | SPD +8 | Night Stalk (2), Pack Rally (2), Bramble Snare (3) | Night Hunter, Wild Child |
-| -2,-14 | Wild | 16 | WIS +8 | Lion's Roar (2), Pitfall Volley (2), Sage's Insight (2) | Blue Lion, Sage |
-| 2,-16 | Brains | 16 | WIS +8 | Sage's Insight (2), Arcane Insight (2), Field Triage (2) | Sage, Doctor |
+| -2,-14 | Wild | 16 | WIS +8 | Lion's Roar (2), Pitfall Volley (2), Spellshield (2) | Blue Lion, Sage |
+| 2,-16 | Brains | 16 | WIS +8 | Spellshield (2), Arcane Insight (2), Field Triage (2) | Sage, Doctor |
 | 16,-2 | Grace | 16 | VIT +8 | Sacred Challenge (2), Lifegift (2), Juggernaut Charge (2) | Herald, Tank |
 
 Basher is a cut hero; its Skull Crack node stays on the board.
@@ -89,9 +89,9 @@ The new Wild druid-brawler (WIS 2, STR 1, SPD 1) is the natural owner of several
 moves that fit: Stampede (`stampede_rush`), Dog Whistle (as a learned tame call), Drench,
 Undertow.
 
-**Brains (WIS → INT), 1 slot.** Ring 16 at the Wild edge, between Sage and Doctor (Sage's Insight,
+**Brains (WIS → INT), 1 slot.** Ring 16 at the Wild edge, between Sage and Doctor (Spellshield,
 Arcane Insight, Field Triage). A WIS-leaning support spell: a party-wide foresight or a triage that
-spends mana for tempo. Candidates: Haste Field, Stasis.
+spends mana for tempo. Candidates: Stasis (Haste Field went to Courier in GG-T1138).
 
 **Grace (INT → VIT), 1 slot.** Ring 16 at the Martial edge, between Herald and Tank (Sacred
 Challenge, Lifegift, Juggernaut Charge). A VIT-leaning holy guard: a ward that taunts, or a heal
@@ -100,7 +100,7 @@ that also shields. Candidates: Barrier, Spellshield, Rune Ward (the three `warde
 ## Abilities in abilities.json that are not on the board (110)
 
 No hero class in `classes.json` lists any of these, so none is a hero kit move that was dropped.
-They split into moves only enemy classes list (72) and moves no class lists at all (38). The
+They split into moves only enemy classes list (72) and moves no class lists at all (36). The
 second group is the hero-side pool to draw from first when filling the gaps above.
 
 ### Enemy only (72): listed by enemy classes, no hero class
@@ -122,12 +122,12 @@ second group is the hero-side pool to draw from first when filling the gaps abov
 - Skills and spells (8): choir_rune, chrono_rewind, enrage, gremlin_sabotage,
   hierarch_open_reservoir, lich_soul_harvest, sapper_buried_charge, scorpion_burrow.
 
-### No class lists them (38): hero-side moves left off
+### No class lists them (36): hero-side moves left off
 
 - Skills (13): adrenaline_rush, bolster, disengage, feint, focus_breath, guard_stance,
   last_stand, opportunist, pressure_point, second_wind, shake_it_off, sprint, stampede_rush.
-- Spells (9): drain_life, drench, flame_lance, haste_field, stasis, undertow, warden_barrier,
-  warden_runeward, warden_spellshield.
+- Spells (7): drain_life, drench, flame_lance, stasis, undertow, warden_barrier, warden_runeward.
+  GG-T1138 gave haste_field to Courier and warden_spellshield to Sage as their signatures.
 - Passives and reactions (5): arcane_focus_proficiency, heavy_armor_proficiency,
   martial_weapons_proficiency, mana_siphon, thorns.
 - Items (11): disarm_kit_use, dog_whistle_call, flask_arcane_burst, flask_fire_burst,
