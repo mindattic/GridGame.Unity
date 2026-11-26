@@ -2007,18 +2007,24 @@ namespace GridGame.App
 
         /// <summary>The turn mode (§2.13, GG-T774): the profile's <see cref="SettingsSave.TurnMode"/>, cycled like Battle
         /// speed through <see cref="TurnModes.Available"/> (only modes that are built), then one line explaining it. A save
-        /// New Game locked to a mode keeps playing that one, and the line says so.</summary>
+        /// New Game locked to a mode keeps playing that one, and the line says so; changing the mode here releases that lock
+        /// so the save follows Settings again (GG-T1216: switching modes to test them is never blocked).</summary>
         private void TurnModeControl(SettingsSave st, VisualElement parent)
         {
             var c = App.Content;
             var mode = TurnModes.IsBuilt(st.TurnMode) ? st.TurnMode : TurnModes.Available[0];
-            var row = Ui.MenuRow("Turn mode", TurnModes.Name(c, mode),
-                () => { st.TurnMode = TurnModes.Next(mode); App.SaveSettings(); Refresh(); }, parent);
+            var row = Ui.MenuRow("Turn mode", TurnModes.Name(c, mode), () =>
+            {
+                st.TurnMode = TurnModes.Next(mode);
+                App.SaveSettings();
+                if (App.Save?.TurnModeLock != null) { TurnModeSetting.Lock(App.Save, null); App.Persist(); }
+                Refresh();
+            }, parent);
             row.name = "settings-turn-mode";
             row.KindIcon(RowKind.Settings);
             string text = TurnModes.Describe(c, mode);
             if (App.Save?.TurnModeLock is TurnMode locked)
-                text += $" This save is locked to {TurnModes.Name(c, locked)}.";
+                text += $" This save is locked to {TurnModes.Name(c, locked)} until you change it here.";
             Ui.Note(text, parent).name = "settings-turn-mode-text";
         }
 
@@ -2028,6 +2034,7 @@ namespace GridGame.App
             var st = App.Settings;
             // GG-T454: one scrolling list (the rows, then How to play), so the last rows are never cut off a short phone.
             var w = Ui.ListPanel(body, null, "settings-list");
+            TurnModeControl(st, w); // GG-T774 (§2.13); first row so the modes can be picked from the title screen (GG-T1216)
             // GG-T750 (§26.7): every setting row leads with the Settings gear, the save rows with the Save disk.
             void Toggle(string label, bool value, Action<bool> set) => Ui.MenuRow(label, value ? "ON" : "OFF", () => { set(!value); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
             void Cycle(string label, float value, float[] opts, string fmt, Action<float> set)
@@ -2068,7 +2075,6 @@ namespace GridGame.App
             Toggle("Mute music", st.MuteMusic, v => st.MuteMusic = v);
             Toggle("Mute sound", st.MuteSfx, v => st.MuteSfx = v);
             Cycle("Battle speed", st.BattleSpeed, new[] { 1f, 1.5f, 2f, 3f }, "×{0:0.#}", v => st.BattleSpeed = v);
-            TurnModeControl(st, w); // GG-T774 (§2.13)
             Toggle("Drag timer (4 s)", st.DragTimer, v => st.DragTimer = v);
             Toggle("Colorblind palette", st.ColorblindMode, v => st.ColorblindMode = v);
             Toggle("Pincer close-ups", st.PincerCutIns, v => st.PincerCutIns = v);

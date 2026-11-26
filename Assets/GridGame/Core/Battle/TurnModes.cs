@@ -32,8 +32,24 @@ namespace GridGame.Core.Battle
         /// <summary>The glossary entry that names and explains <paramref name="mode"/>.</summary>
         public static string GlossaryId(TurnMode mode) => "turn_mode_" + Snake(mode.ToString());
 
-        /// <summary>The mode's display name: its glossary term, else the enum name.</summary>
-        public static string Name(ContentDb db, TurnMode mode) => db?.TryTerm(GlossaryId(mode))?.Term ?? mode.ToString();
+        /// <summary>The owner's test letter for <paramref name="mode"/> (GG-T1216): A, B or C; "" for PartyWindow, the
+        /// original default, which stays unlettered.</summary>
+        public static string Letter(TurnMode mode) => mode switch
+        {
+            TurnMode.AnyHeroEveryTurn => "A",
+            TurnMode.UnmovedThisRound => "B",
+            TurnMode.HeroTimeline => "C",
+            _ => "",
+        };
+
+        /// <summary>The mode's display name: its glossary term, else the enum name, led by "Mode A: " etc. when it has a
+        /// <see cref="Letter"/>.</summary>
+        public static string Name(ContentDb db, TurnMode mode)
+        {
+            var term = db?.TryTerm(GlossaryId(mode))?.Term ?? mode.ToString();
+            var letter = Letter(mode);
+            return letter.Length == 0 ? term : $"Mode {letter}: {term}";
+        }
 
         /// <summary>The mode's one-line explanation (its glossary definition, term brackets removed); "" when it has none.</summary>
         public static string Describe(ContentDb db, TurnMode mode)

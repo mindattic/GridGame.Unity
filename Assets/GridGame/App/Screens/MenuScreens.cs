@@ -196,7 +196,7 @@ namespace GridGame.App
             var shown = locked ?? profile;
             var note = Ui.Note(TurnModes.Describe(c, shown) + (locked == null
                 ? " Follows your Settings; change it there any time."
-                : " Locked: this save always plays it."), w);
+                : " Locked: this save plays it until you change Settings → Turn mode."), w);
             note.name = "newgame-turn-mode-text";
         }
 
