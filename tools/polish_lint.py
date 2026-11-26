@@ -110,6 +110,9 @@ def float_size_literals(text):
 def uss_without_root(text):
     # a rule that only sets custom properties (:root, .theme-* palette overrides) defines tokens; it is not a use site (GG-T1184)
     def keep(m):
+        # .theme-* per-window-theme rules are the palette definitions themselves (GG-T1185)
+        if all(s.strip().startswith(".theme-") for s in m.group(1).split(",")):
+            return ""
         decls = [d.strip() for d in m.group(2).split(";") if d.strip()]
         return "" if decls and all(d.startswith("--") for d in decls) else m.group(0)
     return re.sub(r"([^{}]+)\{([^{}]*)\}", keep, strip_comments(text))
