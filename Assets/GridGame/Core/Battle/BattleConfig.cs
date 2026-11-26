@@ -60,6 +60,11 @@ namespace GridGame.Core.Battle
         /// time it was held instead), so an instant action still costs budget. A spell's cast time rides the bar separately.
         /// </summary>
         public static float HeroActionSeconds = 1f;
+        /// <summary>
+        /// GG-T1171 (§2.13.3): game seconds a hero gets to move or act under HeroTimeline once its icon reaches the front.
+        /// The timeline is frozen for the whole turn; the action resolves, then the clock runs on.
+        /// </summary>
+        public static float HeroTimelineTurnSeconds = 4f;
 
         // ── Minimum action time (GG-T311, §2.0): a hero action can only start in a gap at least as long as it takes ──
         /// <summary>Seconds a drag costs before the hero has moved at all: picking it up (part of every drag's minimum).</summary>
@@ -203,6 +208,15 @@ namespace GridGame.Core.Battle
         /// as-yet-uncommitted Results.Coins and each item stack (floored). A true party wipe (Defeat)
         /// still keeps nothing but hard-won XP, unchanged.</summary>
         public const float RetreatKeepFraction = 0.5f;
+
+        // ── Catch-up XP (GG-T474, owner pick 5b) ─────────────────────────────────────
+        /// <summary>Foes above this level (the last main-campaign level) pay a hero below them extra XP, so a party that
+        /// fell behind in the main run closes the postgame gap by hunting instead of grinding.</summary>
+        public const int CatchUpFromFoeLevel = 24;
+        /// <summary>Extra XP per level the hero is behind the strongest foe: +50% a level.</summary>
+        public const float CatchUpPerLevelBehind = 0.5f;
+        /// <summary>The catch-up multiplier never passes this.</summary>
+        public const float CatchUpMaxMultiplier = 4f;
 
         // ── Power Amplifier (owner request 2026-10-10, from Terra Battle) ────────────
         /// <summary>Chance per player action that an amplifier appears (when none is on the board)…</summary>

@@ -787,12 +787,13 @@ namespace GridGame.Meta
 
                 var heroes = battle.Units.Where(u => u.IsHero && !u.IsVisitor).ToList(); // a wild tamed beast or a wanderer isn't yours (GG-T303, GG-T342)
                 rep.XpEach = heroes.Count > 0 ? r.Xp : 0;
+                int foeLevel = TopFoeLevel(battle);
                 foreach (var u in heroes)
                 {
                     var h = s.Hero(u.Def.Id);
                     if (h == null) continue;
                     int before = Progression.Level(h);
-                    h.TotalXp += Domestication.XpFor(h, rep.XpEach);
+                    h.TotalXp += Domestication.XpFor(h, Formulas.CatchUpXp(rep.XpEach, before, foeLevel));
                     int after = Progression.Level(h);
                     if (after > before) rep.LevelUps.Add((h.ClassId, before, after));
                     h.SkillPoints += Formulas.SkillPointsForLevelUp(before, after);
@@ -986,18 +987,23 @@ namespace GridGame.Meta
         {
             var heroes = battle.Units.Where(u => u.IsHero && !u.IsGuest && !u.IsVisitor).ToList();
             rep.XpEach = heroes.Count > 0 ? r.Xp : 0;
+            int foeLevel = TopFoeLevel(battle);
             foreach (var u in heroes)
             {
                 var h = s.Hero(u.Def.Id);
                 if (h == null || rep.XpEach <= 0) continue;
                 int before = Progression.Level(h);
-                h.TotalXp += Domestication.XpFor(h, rep.XpEach);
+                h.TotalXp += Domestication.XpFor(h, Formulas.CatchUpXp(rep.XpEach, before, foeLevel));
                 int after = Progression.Level(h);
                 if (after > before) rep.LevelUps.Add((h.ClassId, before, after));
                 h.SkillPoints += Formulas.SkillPointsForLevelUp(before, after);
             }
             foreach (var kv in r.Kills) Entry(s, kv.Key).Defeated += kv.Value;
         }
+
+        /// <summary>The level of the strongest foe in the battle: what catch-up XP measures a hero against (GG-T474).</summary>
+        private static int TopFoeLevel(BattleState battle) =>
+            battle.Units.Where(u => !u.IsHero).Select(u => u.Level).DefaultIfEmpty(0).Max();
 
         internal static BestiaryEntry Entry(SaveData s, string id)
         {

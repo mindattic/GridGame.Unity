@@ -316,6 +316,17 @@ namespace GridGame.Core.Rules
             return Math.Max(1, (int)Math.Round(reward));
         }
 
+        /// <summary>Catch-up XP (GG-T474): past <see cref="BattleConfig.CatchUpFromFoeLevel"/> a hero below the foe's level earns
+        /// +<see cref="BattleConfig.CatchUpPerLevelBehind"/> of the battle's XP per level behind, up to
+        /// <see cref="BattleConfig.CatchUpMaxMultiplier"/>x; a hero at or above the foe, or a foe at or below the
+        /// threshold, earns the XP unchanged.</summary>
+        public static int CatchUpXp(int xp, int heroLevel, int foeLevel)
+        {
+            if (xp <= 0 || foeLevel <= BattleConfig.CatchUpFromFoeLevel || heroLevel >= foeLevel) return xp;
+            float mult = Math.Min(BattleConfig.CatchUpMaxMultiplier, 1f + BattleConfig.CatchUpPerLevelBehind * (foeLevel - heroLevel));
+            return Math.Max(1, (int)Math.Round(xp * mult));
+        }
+
         /// <summary>Total XP needed to go from <paramref name="level"/> to level+1.</summary>
         public static int XpToNext(int level) => 50 + level * level * 10;
 

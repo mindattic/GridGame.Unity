@@ -220,5 +220,17 @@ namespace GridGame.Tests
 
             Assert.That(sawHit, Is.True, "Expected at least one hit across the seed sample (hit chance floors at 95%)");
         }
+
+        [TestCase(100, 20, 24, 100)] // foe at the threshold: no catch-up
+        [TestCase(100, 30, 28, 100)] // hero above the foe
+        [TestCase(100, 28, 28, 100)] // level
+        [TestCase(100, 25, 28, 250)] // 3 behind: x2.5
+        [TestCase(100, 16, 28, 400)] // 12 behind: capped at x4
+        [TestCase(100, 1, 40, 400)]
+        [TestCase(0, 10, 30, 0)]
+        public void CatchUpXp_is_50_percent_per_level_behind_capped_at_x4_past_level_24(int xp, int hero, int foe, int expected)
+        {
+            Assert.That(Formulas.CatchUpXp(xp, hero, foe), Is.EqualTo(expected));
+        }
     }
 }

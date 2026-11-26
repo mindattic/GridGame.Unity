@@ -279,7 +279,9 @@ What the numbers say:
 - Catch-up (5b) gives nothing to a party that is already level, so its close-every-gap total stays 202; it rewards the
   straight-through player rather than the hunter.
 
-### Decision brief for the owner (GG-T474, open until you pick)
+### Decision brief for the owner (GG-T474, picked: 5b, applied 2026-11-26)
+
+**Owner pick 2026-11-25: 5b, catch-up XP on hunts. Applied (GG-T474):** past foe level 24, a hero below the strongest foe earns +50% XP per level behind, capped at x4 (`BattleConfig.CatchUp*`, `Formulas.CatchUpXp`; BIBLE section 13). The start level was not specified, so the brief's 24 stands; starting earlier is unmeasured. Not soaked: GG-T919 measures stages 29-40.
 
 The question: Free Holds I (foe level 28) needs about 67 replays of the previous stage for a straight-through party
 (level 16), and the gap keeps growing. Pick one; nothing below is applied.
@@ -301,7 +303,6 @@ example from level 10) is a question for you and is not yet measured; (b) 5b alo
 pair it with 1a if you also want less grinding for the player who falls behind anyway. If you prefer the least change,
 choose Keep and accept the soak's 0% stages as the intended wall.
 
-Reply with the pick (and the catch-up start level if 5b) and the implementation ticket follows.
 
 ## Owner answers (2026-11-19)
 
