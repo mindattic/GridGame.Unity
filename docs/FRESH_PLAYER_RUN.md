@@ -96,3 +96,31 @@ GG-T1147.
 | GG-T1145 | Abilities: battle-bar name "Lantern of the Still" wraps to 3 lines over the Supporter text |
 | GG-T1146 | Tutorial battle lost while following every coach mark; lessons interrupt, plate and ready never shown (GG-T512 shape) |
 | GG-T1147 | Not covered: expeditions 2-3, vendors, Summon Circle, Diamond Store, Blacksmith, Board and Party tabs, turn modes, the regression check of the 19 GG-T494 findings |
+
+## Continuation (GG-T1147, 2026-11-25)
+
+A second fresh profile (Warden, Barbarian, Cleric) on a dev player rebuilt from this checkout with
+`tools/unity.ps1 -Method GridGame.EditorTools.GridGameBuild.BuildWindowsDev` (batch mode, no editor open; it overwrote
+`Build/Windows`, and the working tree carried other agents' uncommitted edits). It has the HeroTimeline turn modes and
+the Board tab. The tutorial battle was not played by coach: `call autoplay on=1` won it (the GG-T1146 loss does not
+reproduce under autoplay), so tutorial lessons were not re-checked. Played through the real UI: title, New Game, party
+pick (preview, lock-in), prologue crawl (lorem, GG-T497), Tithe Moors I, II and III (all won on autoplay, default turn
+mode PartyWindow), results with the tome Teach-to buttons, Camp with the Merchant joined. The player then crashed
+(GG-T1151) and the run stopped at the budget.
+
+- **Video:** `R:\MindAttic\Capture\GridGame.Unity6.11.26T03.13.35Z_GridGame.Unity` (the crashed session)
+- **Screenshots:** `artifacts/GG-T1147-fp/` (git-ignored): `01`-`05` title and party pick, `06`-`08` prologue and Camp, `10`-`19` stages and
+  the three battles' results, `20`-`21` Camp, `campA-*` the Merchant lessons.
+
+| Ticket | Issue |
+|---|---|
+| GG-T1151 | Player crashed in UnityPlayer after Capture stopped, in Camp during the Merchant lessons |
+| GG-T1152 | Results: "1 orbs carry over" / "0 orbs carry over" |
+
+Regression check of the GG-T494 findings, as far as reached: GG-T506 (party strip) holds, no clipped names (Barbarian is shown
+smaller than its neighbours); GG-T513 fixed (button reads "To Camp"); GG-T521 fixed (the Blacksmith joined after Tithe
+Moors III); GG-T514 still open (the tome Teach-to rows sit below about 14 rows, 18-results-tomes.png). Not reached: GG-T504, 505,
+507-512, 515-520, 522.
+
+Still not covered (split off): expeditions beyond Tithe Moors, every Camp vendor, Summon Circle, Diamond/Shard Store, Blacksmith, Abilities
+Board tab, Party tab mini-boards, the other turn modes.
