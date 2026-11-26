@@ -143,7 +143,7 @@ namespace GridGame.App
             {
                 var t = Ui.Text(report.Retreated ? "You fall back with part of your spoils — safer than risking the whole party. The stage is yours to retry." :
                     report.Escaped ? "The party slips away in the smoke. Wounds remain; no rewards." :
-                    report.ExpeditionFailed ? $"The {report.ExpeditionName} expedition has failed. The party falls back to the caravan and recovers — the expedition restarts from battle 1." :
+                    report.ExpeditionFailed ? $"{WithThe(report.ExpeditionName)} expedition has failed. The party falls back to the caravan and recovers — the expedition restarts from battle 1." :
                     "The party retreats to camp and recovers. The gold and loot are lost — but every hero keeps the experience they earned. The stage is yours to retry.", "kit-text", list);
                 t.style.whiteSpace = WhiteSpace.Normal;
                 if (report.Retreated)
@@ -263,6 +263,8 @@ namespace GridGame.App
         /// <summary>Items pop in one at a time instead of dumping the whole list at once (owner direction
         /// 2026-10-11: the same tempo and pause that makes a results screen enjoyable to read).</summary>
         /// <summary>Overflow past an item's stack cap auto-sells (US-245); "1 item", not "1 items".</summary>
+        private static string WithThe(string name) => name.StartsWith("The ", System.StringComparison.OrdinalIgnoreCase) ? name : "The " + name;
+
         private static string SoldCount(int n) => n == 1 ? "1 item" : $"{n} items";
 
         /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
