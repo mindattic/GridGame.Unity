@@ -232,7 +232,7 @@ namespace GridGame.App
             if (gapLane == null || State == null) return;
             SyncRound(); // GG-T1091
             bool frozen = TurnRules.HeroesOnTimeline(State); // GG-T1172: a Mode C hero's turn is a frozen window across the bar
-            float nextU = frozen ? 1f : 2f;
+            float nextU = frozen ? 1f - Mathf.Clamp01(heroTurnElapsed / Mathf.Max(0.01f, BattleEngine.TurnWindowSeconds(State))) : 2f; // GG-T1183: the lane drains from the turn's start
             if (!frozen)
                 foreach (var e in drawn.Values)
                     if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u) && u > 0f)
@@ -241,7 +241,7 @@ namespace GridGame.App
             bool show = !overridden && holdLane == null && ticks > 0 && nextU <= 1f && !State.IsOver && State.Phase == BattlePhase.PlayerInput;
             gapLane.style.display = gapLabel.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
             if (!show) return;
-            float secs = ticks / (float)BattleConfig.TicksPerSecond;
+            float secs = frozen ? Mathf.Max(0f, BattleEngine.TurnWindowSeconds(State) - heroTurnElapsed) : ticks / (float)BattleConfig.TicksPerSecond;
             bool skill = BattleEngine.ActionFits(State, BattleConfig.HeroActionSeconds), drag = BattleEngine.ActionFits(State, BattleEngine.MinDragSeconds);
             var c = skill && drag ? GapRoomy : (skill || drag) ? GapTight : GapNone;
             float w = Mathf.Max(6f, XOfU(nextU) - XOfU(0f));

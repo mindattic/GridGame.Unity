@@ -1687,6 +1687,7 @@ namespace GridGame.App
                 if (State.IsOver && !ended) App.StartCoroutine(EndBattle()); // the stopped Play would have ended it
             }
             TickLinger(dt);
+            TickHeroTurn(dt);
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
