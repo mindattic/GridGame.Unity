@@ -1515,7 +1515,7 @@ gender, same with summoning ... no change to story or mechanics makes everything
 - **Was:** Android was checked on one emulator by script (`tools/androidcheck.py`); there was no way for the owner to
   play the game by hand as it looks on a particular phone or tablet.
 - **Now ([RELEASE_BUILD.md, "Playing on emulated devices"](RELEASE_BUILD.md#playing-on-emulated-devices-android-emulator-suite-gg-t547)):**
-  `tools/deploy-apk.ps1 [-Build]` publishes the development APK to `C:\Apps\Unity.GridGame\`, and the Android Emulator
+  `tools/deploy-apk.ps1 [-Build]` publishes the development APK to `C:\Apps\GridGame.Unity\`, and the Android Emulator
   Suite (its own reusable repo, `Android.Emulator.Suite`, deployed to `C:\Apps\Android.Emulator.Suite\`) boots the
   Android Emulator, BlueStacks or LDPlayer shaped like one of about 100 real devices, installs the APK and starts the
   game for mouse play. GridGame is its first registered app; the suite source lives outside this repo.

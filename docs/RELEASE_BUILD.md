@@ -157,7 +157,7 @@ To play the whole game with the mouse as it looks on a given phone or tablet, us
 `C:\Apps\Android.Emulator.Suite\AndroidEmulatorSuite.exe`, Desktop shortcut "Android Emulator Suite").
 
 1. Publish the APK: `powershell -ExecutionPolicy Bypass -File tools\deploy-apk.ps1 -Build` builds the `-Dev` APK
-   and copies it to `C:\Apps\Unity.GridGame\GridGame.apk` (with `GridGame.txt`: version, commit, build
+   and copies it to `C:\Apps\GridGame.Unity\GridGame.apk` (with `GridGame.txt`: version, commit, build
    time). Without `-Build` it publishes the APK already in `Build\Android`. The suite's **Build APK** button runs the
    same command.
 2. Open the suite: app **GridGame**, pick a device from the gallery (about 100 real phones, foldables, tablets
