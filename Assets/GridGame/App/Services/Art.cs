@@ -191,8 +191,13 @@ namespace GridGame.App
                 if (!string.IsNullOrEmpty(set.Theme))
                 {
                     BoardTile(set.Theme);
-                    var key = BackgroundKey(set.Theme);
-                    if (!string.IsNullOrEmpty(key) && Exists(key)) Load(key);
+                    // GG-T1211: every backdrop index the stage shows (0 and the battle's pick), through BackgroundKey.
+                    var indexes = set.BackdropIndexes.Count > 0 ? (IEnumerable<int>)set.BackdropIndexes : new[] { 0 };
+                    foreach (var i in indexes)
+                    {
+                        var key = BackgroundKey(set.Theme, i);
+                        if (!string.IsNullOrEmpty(key) && Exists(key)) Load(key);
+                    }
                 }
             }
             finally

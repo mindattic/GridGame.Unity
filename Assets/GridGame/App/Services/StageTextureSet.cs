@@ -21,6 +21,19 @@ namespace GridGame.App
         public readonly HashSet<string> Statuses = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         /// <summary>The stage's theme: its board tile and backdrop set.</summary>
         public string Theme;
+        /// <summary>GG-T1211: the indexes into <see cref="Theme"/>'s backdrop set the stage shows (Art wraps each over the
+        /// set's own count): 0 (the theme's first image, the pre-battle screens') and the battle's own pick,
+        /// <see cref="BattleBackdropIndex"/>. The battle keeps one backdrop for all its waves.</summary>
+        public readonly HashSet<int> BackdropIndexes = new HashSet<int>();
+
+        // GG-T1211: region rules, tile states and rule events already walked (they can name each other in a loop).
+        private readonly HashSet<string> seenRules = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> seenStates = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> seenEvents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>The backdrop index <c>BattleScreen</c> shows for <paramref name="stageId"/> (keep the two in step).</summary>
+        public static int BattleBackdropIndex(string stageId) =>
+            string.IsNullOrEmpty(stageId) ? 0 : Math.Abs(stageId.GetHashCode() % 4096);
 
         /// <summary>Status ids every battle can show whatever the foes (the stun badge, the shield).</summary>
         public static readonly string[] CommonStatuses = { "stunned", BattleConfig.ShieldBuffId };
@@ -52,6 +65,11 @@ namespace GridGame.App
             if (stage != null)
             {
                 set.Theme = stage.Theme;
+                set.BackdropIndexes.Add(0);
+                set.BackdropIndexes.Add(BattleBackdropIndex(stage.Id));
+                // GG-T1211: the region rules it plays under (its theme's, then its own): the foes their SpawnUnit
+                // effects put on the board and the statuses they apply.
+                foreach (var r in RegionRuleCatalog.ActiveFor(db, stage)) set.AddRule(db, r);
                 foreach (var w in stage.Waves)
                 {
                     if (w == null) continue;
@@ -83,6 +101,11 @@ namespace GridGame.App
                 AddAbility(db, def.ChargeAbility);
             }
             if (!string.IsNullOrEmpty(def.OnHitBuff)) Statuses.Add(def.OnHitBuff);
+            // GG-T1211: a boss's phase-entry ability (a bounty target's too: it is the class's own) shows its icon.
+            if (def.BossPhases != null) foreach (var ph in def.BossPhases) AddAbility(db, ph?.OnEnterAbility);
+            // Snake segments (GrowSnake) are the head's own class (Def = head.Def), so the head covers them.
+            AddEffects(db, def.OnDeathRule);
+            AddEffects(db, def.TrailRule);
             AddClass(db, def.Remains);
             AddClass(db, def.LaysEgg);
         }
@@ -92,6 +115,55 @@ namespace GridGame.App
             if (string.IsNullOrEmpty(id) || !Abilities.Add(id)) return;
             var a = db?.TryAbility(id);
             if (!string.IsNullOrEmpty(a?.ApplyBuff)) Statuses.Add(a.ApplyBuff);
+            AddEffects(db, a?.RuleEffects);
+        }
+
+        /// <summary>GG-T1211: a region rule's tile states, events and hooks.</summary>
+        private void AddRule(ContentDb db, RegionRuleDef rule)
+        {
+            if (rule == null || string.IsNullOrEmpty(rule.Id) || !seenRules.Add(rule.Id)) return;
+            if (rule.TileStates != null) foreach (var t in rule.TileStates) AddState(db, t);
+            if (rule.Events != null) foreach (var e in rule.Events) AddEvent(db, e);
+            if (rule.Hooks != null) foreach (var h in rule.Hooks) AddEffects(db, h?.Effects);
+        }
+
+        private void AddState(ContentDb db, TileStateDef t)
+        {
+            if (t == null || string.IsNullOrEmpty(t.Id) || !seenStates.Add(t.Id)) return;
+            AddEffects(db, t.OnMark);
+            AddEffects(db, t.OnExpire);
+            AddEffects(db, t.OnSquish);
+            if (t.Circle != null) { AddEffects(db, t.Circle.OnSummon); AddEffects(db, t.Circle.OnEmpower); }
+            AddState(db, db?.TryTileState(t.Becomes));
+            AddState(db, db?.TryTileState(t.HeavyBecomes));
+        }
+
+        private void AddEvent(ContentDb db, RuleEventDef e)
+        {
+            if (e == null || string.IsNullOrEmpty(e.Id) || !seenEvents.Add(e.Id)) return;
+            AddEffects(db, e.Effects);
+        }
+
+        /// <summary>GG-T1211: what rule effects bring: a SpawnUnit's class (regionrules.json <c>Class</c>), an ApplyBuff's
+        /// status, a scheduled event's own effects, and a painted state with the rule it brings into play.</summary>
+        private void AddEffects(ContentDb db, List<RuleEffectDef> effects)
+        {
+            if (effects == null) return;
+            foreach (var fx in effects)
+            {
+                if (fx == null) continue;
+                switch (fx.Kind)
+                {
+                    case RuleEffectKind.SpawnUnit: AddClass(db, fx.Class); break;
+                    case RuleEffectKind.ApplyBuff: if (!string.IsNullOrEmpty(fx.Buff)) Statuses.Add(fx.Buff); break;
+                    case RuleEffectKind.Schedule: AddEvent(db, db?.TryRuleEvent(fx.Event)); break;
+                    case RuleEffectKind.MarkTiles:
+                        if (string.IsNullOrEmpty(fx.State) || db == null) break;
+                        AddState(db, db.TryTileState(fx.State));
+                        if (db.TileStateRule.TryGetValue(fx.State, out var ruleId)) AddRule(db, db.TryRegionRule(ruleId));
+                        break;
+                }
+            }
         }
 
         /// <summary>The Resources keys this set loads (diagnostics and tests): the same paths Art resolves.</summary>
@@ -108,10 +180,27 @@ namespace GridGame.App
             foreach (var a in Abilities) yield return AssetNames.Path("AbilityIcons", a);
             foreach (var i in Items) yield return AssetNames.Path("ItemIcons", i);
             foreach (var s in Statuses) yield return AssetNames.Path("StatusIcons", s);
-            if (!string.IsNullOrEmpty(Theme)) yield return AssetNames.Path("Tiles", Theme);
+            if (!string.IsNullOrEmpty(Theme))
+            {
+                yield return AssetNames.Path("Tiles", Theme);
+                foreach (var key in BackdropKeys(db)) yield return key;
+            }
+        }
+
+        /// <summary>GG-T1211: the backdrop keys of <see cref="BackdropIndexes"/>, each once (two indexes can wrap onto one
+        /// image), resolved as <see cref="Art.BackgroundKey"/> does.</summary>
+        public IEnumerable<string> BackdropKeys(ContentDb db)
+        {
+            if (string.IsNullOrEmpty(Theme)) yield break;
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var i in BackdropIndexes)
+            {
+                var key = Backdrops.Resolve(Theme, i, Art.BackgroundSet, x => Backdrops.SetOf(db, x));
+                if (!string.IsNullOrEmpty(key) && seen.Add(key)) yield return key;
+            }
         }
 
         public override string ToString() =>
-            $"StageTextureSet({Classes.Count} classes, {Abilities.Count} abilities, {Items.Count} items, {Statuses.Count} statuses, theme {Theme})";
+            $"StageTextureSet({Classes.Count} classes, {Abilities.Count} abilities, {Items.Count} items, {Statuses.Count} statuses, theme {Theme}, {BackdropIndexes.Count} backdrops)";
     }
 }
