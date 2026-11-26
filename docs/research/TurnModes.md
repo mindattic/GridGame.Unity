@@ -70,3 +70,37 @@ Per-stage win % (wins/runs; `-` = not reached, because a seed's run stops at a s
 What it shows: heroes/turn is always 1.00, as Mode C intends (one hero icon acts at a time). Guard is mostly forced
 (about 9 forced to 1 chosen), and hero actions per enemy turn sit below 1, so the foes out-pace the party. The casual bot
 can't clear the opening stage at either difficulty. That is a balance finding for the mode comparison, not a stall.
+
+## UnmovedThisRound (Mode B, GG-T803)
+
+Run 2026-11-26 on 066b4101: `python tools/turn_modes.py --modes UnmovedThisRound --per-stage` (fixed stages, seeds
+1-3, smart and casual, difficulty 5 and 10; one serial `dotnet test` per difficulty, about 18 minutes in all on a busy
+machine).
+
+**No stalls, soft-locks or invariant breaks found.** Both runs passed (`BotRunner.Play` throws on more than 5 refusals in
+a row, and the runner's tile checks throw on any broken invariant) and the bots logged 0 refusals, so no Mode B code was
+changed. One open question: the casual bot's battles are very long (about 550 hero actions per run at difficulty 5,
+against the soak's 900-command cap), so some casual losses, mostly the 11 at swamp-01, may be battles that hit the cap
+rather than real defeats. The soak doesn't separate the two yet (follow-up ticket).
+
+| mode | bot | diff | win % | runs | hero acts/run | enemy turns/run | secs/run | heroes/turn | legal acts/turn | hero acts/enemy turn | downtime max | downtime avg | enemy-s/stretch | pincers | chains | guard forced/chosen | skill/spell/item | mana guard/pincer/other | refusals |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| UnmovedThisRound | casual | 5 | 43 | 23 | 551.6 | 553.6 | 2286 | 1.10 | 46.9 | 1.00 | 3 | 2.7 | 0.00 | 110 | 1 | 84/47 | 5637/76/32 | 436/3142/13838 | 0 |
+| UnmovedThisRound | smart | 5 | 91 | 23 | 104.1 | 108.0 | 519 | 2.36 | 106.5 | 0.96 | 3 | 2.8 | 0.00 | 457 | 29 | 117/79 | 1448/205/30 | 957/9325/25863 | 0 |
+| UnmovedThisRound | casual | 10 | 27 | 15 | 362.7 | 376.3 | 1828 | 1.28 | 57.4 | 0.96 | 3 | 2.8 | 0.00 | 133 | 1 | 175/77 | 2149/96/45 | 716/3815/10064 | 0 |
+| UnmovedThisRound | smart | 10 | 62 | 37 | 214.3 | 226.3 | 1320 | 2.14 | 97.6 | 0.95 | 4 | 2.8 | 0.00 | 1116 | 56 | 481/106 | 5520/415/26 | 3078/15423/54167 | 0 |
+
+Per-stage win % (wins/runs; `-` = not reached, because a seed's run stops at a stage it can't clear):
+
+| mode | bot | diff | greenvalley-01 | lanternroad-02 | desert-02 | swamp-01 | cave-03 | still-02 | cityruins-02 | cathedral-03 | bloom-03 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| UnmovedThisRound | casual | 5 | 60 (3/5) | 100 (3/3) | 100 (3/3) | 8 (1/12) | - | - | - | - | - |
+| UnmovedThisRound | smart | 5 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 75 (3/4) | 100 (3/3) | 100 (3/3) | 75 (3/4) | - | - |
+| UnmovedThisRound | casual | 10 | 22 (2/9) | 100 (1/1) | 100 (1/1) | 0 (0/4) | - | - | - | - | - |
+| UnmovedThisRound | smart | 10 | 100 (3/3) | 100 (3/3) | 100 (3/3) | 100 (3/3) | 75 (3/4) | 100 (3/3) | 50 (3/6) | 25 (2/8) | 0 (0/4) |
+
+What it shows: about one hero action per enemy turn (0.95-1.00), with downtime capped at 3-4 enemy turns and no
+enemy-only stretches, so foes and party trade evenly. The smart bot has more than two heroes to choose from per turn,
+and Guards are rare (forced still outnumbers chosen, but far fewer than under HeroTimeline). Both bots win far more than
+under HeroTimeline (smart 91% / 62%, casual 43% / 27%). At difficulty 5 the smart bot cleared cityruins-02 on every seed
+but never reached cathedral-03 or bloom-03, so some unlisted stage between them stopped every seed.
