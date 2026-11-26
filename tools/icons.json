@@ -274,6 +274,34 @@
   "guarded": [
    "lorc/magic-shield",
    "teal"
+  ],
+  "linked": [
+   "lorc/linked-rings",
+   "steel"
+  ],
+  "shredded": [
+   "lorc/shatter",
+   "rust"
+  ],
+  "rooted": [
+   "lorc/thorny-vine",
+   "green"
+  ],
+  "frightened": [
+   "lorc/screaming",
+   "shadow"
+  ],
+  "raging": [
+   "lorc/bull-horns",
+   "crimson"
+  ],
+  "floating": [
+   "lorc/feather",
+   "silver"
+  ],
+  "anchored": [
+   "lorc/anchor",
+   "iron"
   ]
  },
  "ability": {

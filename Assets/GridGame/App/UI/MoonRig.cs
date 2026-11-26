@@ -235,7 +235,7 @@ namespace GridGame.App
                     foreach (var (c, r) in maria)
                     {
                         float ang = Mathf.Acos(Mathf.Clamp(Vector3.Dot(d, c), -1f, 1f));
-                        m = Mathf.Max(m, Mathf.SmoothStep(1f, 0f, Mathf.InverseLerp(r * 0.7f, r * 1.15f, ang)));
+                        m = Mathf.Max(m, (1f - Ease.InOut(Mathf.InverseLerp(r * 0.7f, r * 1.15f, ang))));
                     }
                     mare[j * MapW + i] = m;
                     height[j * MapW + i] = -0.02f * m;

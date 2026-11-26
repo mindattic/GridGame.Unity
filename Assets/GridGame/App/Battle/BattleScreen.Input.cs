@@ -332,7 +332,7 @@ namespace GridGame.App
         private void BeginHold()
         {
             EndHold();
-            holdElapsed = 0f;
+            holdElapsed = TurnRules.HeroesOnTimeline(State) ? heroTurnElapsed : 0f; // GG-T1183: the 4 s began with the turn, so a pickup carries on from where it is
             holdLastTime = Time.unscaledTime;
             holdTurnTicks = BattleEngine.TurnTicks(State);
             holdWindow = BattleEngine.TurnWindowSeconds(State);
@@ -371,6 +371,33 @@ namespace GridGame.App
 
         private static void Round(VisualElement e, float r) =>
             e.style.borderTopLeftRadius = e.style.borderTopRightRadius = e.style.borderBottomLeftRadius = e.style.borderBottomRightRadius = r;
+
+        private float heroTurnElapsed;
+        private int heroTurnHero = -1;
+
+        /// <summary>GG-T1183 (§2.13.3): a Mode C hero's 4 s starts when its icon arrives, held or not. Untouched at 0 s the turn
+        /// resolves itself as a Guard; a pickup carries the elapsed time into the hold (BeginHold), which forces its own drop.</summary>
+        private void TickHeroTurn(float dt)
+        {
+            if (State == null || !TurnRules.HeroesOnTimeline(State) || State.IsOver || State.Phase != BattlePhase.PlayerInput || State.ActiveHeroId < 0 || playing || ended)
+            {
+                heroTurnHero = -1;
+                return;
+            }
+            if (heroTurnHero != State.ActiveHeroId) { heroTurnHero = State.ActiveHeroId; heroTurnElapsed = 0f; }
+            if (dragging) { heroTurnElapsed = holdElapsed; return; }
+            heroTurnElapsed += dt;
+            float window = BattleEngine.TurnWindowSeconds(State);
+            if (heroTurnElapsed >= window && window > 0f && !pressing && TargetingSlot < 0 && !AutoPlay && !CoachRail && !coachCancelStep && CanCommand())
+            {
+                heroTurnHero = -1;
+                App.Audio.Sfx("ui.error");
+                ShowBanner("Time's up!");
+                Commit(new ShieldCommand());
+                return;
+            }
+            SyncGap(null, false);
+        }
 
         private void TickHold()
         {

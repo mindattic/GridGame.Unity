@@ -305,7 +305,7 @@
         "LifeSeconds": 15,
         "Affects": "FoesOfOwner",
         "Color": "#b8862b",
-        "Glyph": "≈"
+        "Glyph": "~"
       }
     ],
     "Hooks": [
@@ -915,7 +915,7 @@
         "Affects": "FoesOfOwner",
         "LifeSeconds": 8,
         "Color": "#8a8f99",
-        "Glyph": "≈"
+        "Glyph": "~"
       }
     ]
   }

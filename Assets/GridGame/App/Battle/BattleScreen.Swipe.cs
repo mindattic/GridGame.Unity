@@ -42,13 +42,13 @@ namespace GridGame.App
                 bool back = k >= 0.5f;
                 float t = back ? 1f - (k - 0.5f) * 2f : k * 2f;
                 float side = back ? -1f : 1f;
-                var hand = Vector2.Lerp(from, to, t) + normal * (side * 14f * Mathf.Sin(t * Mathf.PI));
+                var hand = Vector2.Lerp(from, to, t) + normal * (side * 14f * Ease.Arc(t));
                 const int segs = 6;
                 var prev = from;
                 for (int i = 1; i <= segs; i++)
                 {
                     float u = t * i / segs;
-                    var p = Vector2.Lerp(from, to, u) + normal * (side * 14f * Mathf.Sin(u * Mathf.PI));
+                    var p = Vector2.Lerp(from, to, u) + normal * (side * 14f * Ease.Arc(u));
                     board.Lines.Add(prev, p, SwipeColor.WithA(0.7f * (0.4f + 0.6f * i / segs)), 5f);
                     prev = p;
                 }

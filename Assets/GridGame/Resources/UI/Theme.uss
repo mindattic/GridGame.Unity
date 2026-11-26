@@ -201,7 +201,7 @@
 /* A long value (a locked station's "Opens after …" hint) wraps rather than clipping or squeezing the label. */
 .menu-value { font-size: var(--type-base); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
 /* GG-T760: the Equip slot list's shorter rows; the tap target stays above 88px. Text keeps the one GUI size (GG-T770). */
-.menu-row--compact { min-height: 96px; margin: var(--space-4) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.menu-row--compact { min-height: var(--size-target); margin: var(--space-4) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
 .menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
@@ -380,6 +380,8 @@
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.05);
 }
+/* A list of few cards (Respec) shares the panel height between them instead of spreading gaps (GG-T1182). */
+.list--fill .unity-scroll-view__content-container > .card--fill { flex-grow: 1; }
 .card--selected { background-color: rgba(140, 170, 255, 0.22); }
 .thumb {
     width: 150px; height: 150px;

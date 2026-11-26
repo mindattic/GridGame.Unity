@@ -159,7 +159,7 @@ namespace GridGame.App
             if (input != null)
             {
                 input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Color.white;
+                input.style.color = Palette.White;
                 input.style.paddingLeft = input.style.paddingRight = Space.S16;
             }
             row.Add(nameField);

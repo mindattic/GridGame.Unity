@@ -50,7 +50,7 @@ namespace GridGame.App
                             board.Lines.Dot(p, Random.Range(5f, 11f), Color.Lerp(EmpColor, Palette.White, Random.value * 0.6f).WithA(1f - kk));
                         }
                 }
-                board.Lines.Dot(at, 16f + 12f * Mathf.Sin(k * Mathf.PI), Palette.White.WithA(0.9f * (1f - k))); // the flash at its heart
+                board.Lines.Dot(at, 16f + 12f * Ease.Arc(k), Palette.White.WithA(0.9f * (1f - k))); // the flash at its heart
             });
             board.Lines.Rings.Clear(); board.Lines.ClearLines(); board.Lines.MarkDirtyRepaint();
             App.StartCoroutine(Tween.Shake(shake, 4f * Fx, Timing.Quick));

@@ -47,7 +47,7 @@ namespace GridGame.App
                 {
                     float start = (i + 1f) / (trail.Count + 1f) * 0.4f;
                     float tk = Mathf.Clamp01((k - start) / 0.6f);
-                    trail[i].style.opacity = 0.5f * Mathf.Sin(tk * Mathf.PI);
+                    trail[i].style.opacity = 0.5f * Ease.Arc(tk);
                 }
                 ghost.style.opacity = 0.45f + 0.2f * Mathf.Sin(k * Mathf.PI * 4f);
                 board.Lines.ClearLines();
