@@ -43,6 +43,7 @@ SEEDS = (1, 2, 3)
 COLUMNS = (
     ("win %", "winPct", "{:.0f}"),
     ("runs", "runs", "{}"),
+    ("capped", "capped", "{}"),
     ("hero acts/run", "heroActionsPerRun", "{:.1f}"),
     ("enemy turns/run", "enemyTurnsPerRun", "{:.1f}"),
     ("secs/run", "secondsPerRun", "{:.0f}"),

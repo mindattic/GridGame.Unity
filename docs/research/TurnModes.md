@@ -123,6 +123,14 @@ changed. One open question: the casual bot's battles are very long (about 550 he
 against the soak's 900-command cap), so some casual losses, mostly the 11 at swamp-01, may be battles that hit the cap
 rather than real defeats. The soak doesn't separate the two yet (follow-up ticket).
 
+**GG-T1175 follow-up.** The soak report and `tools/turn_modes.py` now have a `capped` column: battles that end with neither
+Victory nor Defeat when BotRunner's 900-command cap runs out. Probe on 1b733a3b (Core only, `GRIDGAME_SOAK_STAGES=swamp-01`,
+seed 1, casual, difficulty 5): all 4 attempts were capped (0 wins, 4 capped, about 892 hero actions and 897 enemy turns per
+run, 0 refusals, 0 defeats, downtime max 3). So the swamp-01 casual "losses" are cap timeouts, not Defeats, and no refusal or
+stuck-round was seen (rounds keep resetting, about 1 hero action per enemy turn). Heroes per round at the sampled turn starts
+was only 1.07, which hints the party is mostly down while the battle never ends; whether that is a balance stalemate or a Mode B
+fault (for instance a lone survivor that cannot damage the foes, or Defeat not firing) is still open (split ticket).
+
 | mode | bot | diff | win % | runs | hero acts/run | enemy turns/run | secs/run | heroes/turn | legal acts/turn | hero acts/enemy turn | downtime max | downtime avg | enemy-s/stretch | pincers | chains | guard forced/chosen | skill/spell/item | mana guard/pincer/other | refusals |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | UnmovedThisRound | casual | 5 | 43 | 23 | 551.6 | 553.6 | 2286 | 1.10 | 46.9 | 1.00 | 3 | 2.7 | 0.00 | 110 | 1 | 84/47 | 5637/76/32 | 436/3142/13838 | 0 |
