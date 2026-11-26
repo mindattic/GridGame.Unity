@@ -97,7 +97,7 @@ spends mana for tempo. Candidates: Stasis (Haste Field went to Courier in GG-T11
 Challenge, Lifegift, Juggernaut Charge). A VIT-leaning holy guard: a ward that taunts, or a heal
 that also shields. Candidates: Barrier, Spellshield, Rune Ward (the three `warden_*` spells).
 
-## Abilities in abilities.json that are not on the board (110)
+## Abilities in abilities.json that are not on the board (108)
 
 No hero class in `classes.json` lists any of these, so none is a hero kit move that was dropped.
 They split into moves only enemy classes list (72) and moves no class lists at all (36). The
