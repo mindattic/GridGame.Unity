@@ -75,8 +75,11 @@ namespace GridGame.Core.Battle
     /// on its own non-hero icon (<see cref="IsHeroIcon"/> is false for an independent ally), which never becomes
     /// <see cref="BattleState.ActiveHeroId"/>; a rule summon gets a foe icon the same way. A recruit (Talk, the talker's
     /// turn) and a wave's guest (at its wave's opening) join on their own hero icon at their Speed's entry, every other
-    /// icon left where it is. The active hero's window (<see cref="TurnTicks"/>) runs to the next foe icon only (§2.0,
-    /// GG-T1169): a hero icon arriving meanwhile waits at the edge for the next turn. The countdown badge (<see cref="CountdownLeft"/>) counts every other icon on the one bar:
+    /// icon left where it is. The active hero's turn (<see cref="TurnTicks"/>) is a fixed
+    /// <see cref="BattleConfig.HeroTimelineTurnSeconds"/> with the timeline frozen (GG-T1171): no icon moves while the
+    /// hero holds or acts, the action's time never runs the clock (<see cref="SpendsClock"/>), so the turn can't be cut
+    /// short and is never too short to act in; once the action resolves the clock runs on to the next hero's own icon.
+    /// The countdown badge (<see cref="CountdownLeft"/>) counts every other icon on the one bar:
     /// a hero icon is a party turn and a foe icon a foe turn, so a hero arriving before the foe counts, and 0 means the
     /// foe's icon is the next to arrive. TurnModeHeroTimelineTests pin each answer.</para>
     /// <para>GG-T1105 (§2.13.3) the enemy AI under HeroTimeline, decided: foes stay blind to whose icon arrives next, as
@@ -303,12 +306,20 @@ namespace GridGame.Core.Battle
         /// What is left of the party's turn in clock ticks. PartyWindow: until the next enemy turn icon reaches the left
         /// edge (no pushback/hasten assumed); each hero action spends some of it and a Pushback or Slow lengthens it
         /// (GG-T308). -1 when no enemy icon can arrive (none left, or every one halted) — the hold then has no limit.
-        /// HeroTimeline (§2.13.3, GG-T1169): the same, until the next foe icon (§2.0); another hero's icon arriving first
-        /// waits at the edge like a tie and doesn't shorten the active hero's turn.
+        /// HeroTimeline (§2.13.3, GG-T1171): always <see cref="BattleConfig.HeroTimelineTurnSeconds"/>, the frozen hero
+        /// turn, whatever icons are near the edge.
         /// </summary>
         public static int TurnTicks(BattleState s)
         {
             Require(s);
+            if (HeroesOnTimeline(s)) return Formulas.SecondsToTicks(BattleConfig.HeroTimelineTurnSeconds);
+            return NextFoeTicks(s);
+        }
+
+        /// <summary>Clock ticks until the next foe turn icon reaches the left edge (no pushback/hasten assumed); -1 when
+        /// no foe icon can arrive (none left, or every one halted).</summary>
+        public static int NextFoeTicks(BattleState s)
+        {
             int best = -1;
             foreach (var e in s.Timeline)
             {
@@ -346,10 +357,12 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>Does the clock run on by <see cref="CommandTicks"/> after this command resolves? PartyWindow: every
-        /// command but Guard (Guard spends the rest of the window through the turn end instead).</summary>
+        /// command but Guard (Guard spends the rest of the window through the turn end instead). HeroTimeline (GG-T1171):
+        /// none, the hero's turn is frozen and the clock only runs on to the next hero's own icon afterwards.</summary>
         public static bool SpendsClock(BattleState s, BattleCommand cmd)
         {
             Require(s);
+            if (HeroesOnTimeline(s)) return false;
             return !(cmd is ShieldCommand);
         }
 

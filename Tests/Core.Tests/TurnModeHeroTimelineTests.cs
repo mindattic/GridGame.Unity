@@ -220,20 +220,24 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_window_is_the_time_to_the_next_foe_icon()
+        public void The_turn_is_a_fixed_four_seconds_whatever_icons_are_near_the_edge()
         {
             var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
             var fast = Hero(s, "sprinter");
             Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
-            ArriveIn(s, fast, 1); // the active hero's own icon is the soonest, yet it doesn't bound its own turn
-            ArriveIn(s, Hero(s, "plodder"), 2); // GG-T1169 (§2.0): nor does another hero's
-            ArriveIn(s, Foe(s), 15);
-            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(15), "the next foe icon");
-            Assert.That(BattleEngine.TurnWindowSeconds(s), Is.EqualTo(15 / (float)BattleConfig.TicksPerSecond).Within(1e-5f));
+            int turn = Formulas.SecondsToTicks(BattleConfig.HeroTimelineTurnSeconds);
+            Assert.That(turn, Is.EqualTo(40));
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(turn));
+            ArriveIn(s, fast, 1); // GG-T1171: neither the active hero's own icon,
+            ArriveIn(s, Hero(s, "plodder"), 2); // another hero's,
+            ArriveIn(s, Foe(s), 3); // nor a foe's shortens the frozen turn
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(turn));
+            Assert.That(BattleEngine.TurnWindowSeconds(s), Is.EqualTo(BattleConfig.HeroTimelineTurnSeconds).Within(1e-5f));
+            Assert.That(TurnRules.TooLittleTime(s), Is.False);
         }
 
         [Test]
-        public void Six_heroes_still_get_a_window_that_holds_an_action_and_waiting_hero_icons_never_cut_it_short()
+        public void No_icon_advances_during_the_action_and_the_clock_then_runs_to_the_next_hero_icon()
         {
             var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 1, 6), ("knight", 2, 6),
                 ("sprinter", 3, 6), ("plodder", 4, 6), ("knight", 5, 6));
@@ -244,21 +248,18 @@ namespace GridGame.Tests
             for (int i = 0; i < waiting.Count; i++) ArriveIn(s, waiting[i], i + 1); // a hero icon on each of the next ticks
             var foe = Foe(s);
             ArriveIn(s, foe, 15);
-            int action = TurnRules.CommandTicks(s, new UseSlotCommand { HeroId = active.Id });
-            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(15));
-            Assert.That(TurnRules.TurnTicks(s), Is.GreaterThanOrEqualTo(action), "an action fits the window");
-            Assert.That(TurnRules.TooLittleTime(s), Is.False, "no forced Guard");
+            Assert.That(TurnRules.SpendsClock(s, new UseSlotCommand { HeroId = active.Id }), Is.False);
 
             long clock = s.Clock;
             var dest = new Coord(active.Pos.X, active.Pos.Y - 1);
             var move = new MoveCommand { HeroId = active.Id, Path = new List<Coord> { active.Pos, dest }, HeldSeconds = 1f };
-            int spend = TurnRules.CommandTicks(s, move);
-            Assert.That(spend, Is.GreaterThan(waiting.Count), "the drag outlasts the waiting heroes' arrivals");
+            Assert.That(TurnRules.SpendsClock(s, move), Is.False, "the action's time never runs the clock");
             var ev = BattleEngine.Apply(s, move);
             Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty);
             Assert.That(active.Pos, Is.EqualTo(dest));
-            Assert.That(s.Clock - clock, Is.GreaterThanOrEqualTo(spend), "the whole drag ran on the clock, past the hero icons");
-            Assert.That(waiting.Select(u => u.Id), Does.Contain(s.ActiveHeroId), "a waiting hero takes the next turn");
+            Assert.That(s.Clock - clock, Is.EqualTo(1), "only the run to the next hero icon moved the clock");
+            Assert.That(s.ActiveHeroId, Is.EqualTo(waiting[0].Id), "the nearest waiting hero takes the next turn");
+            Assert.That(Ticks(s, foe), Is.EqualTo(14), "the foe icon moved one tick, not the drag's 10");
         }
 
         [Test]
@@ -276,20 +277,15 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Too_little_time_refuses_an_action_and_forces_Guard()
+        public void A_foe_icon_a_tick_away_never_leaves_too_little_time()
         {
             var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
             var fast = Hero(s, "sprinter");
             ArriveIn(s, Foe(s), 1);
-            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(1));
-            Assert.That(TurnRules.TooLittleTime(s), Is.True);
+            Assert.That(TurnRules.TooLittleTime(s), Is.False, "GG-T1171: the frozen turn always holds an action");
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = fast.Id, Path = P((0, 6), (0, 5)) });
-            Assert.That(ev.OfType<AbilityRefusedEvent>().Single().Reason, Is.EqualTo("Too little time"));
-            Assert.That(fast.Pos, Is.EqualTo(new Coord(0, 6)), "nothing happened");
-            Assert.That(TurnRules.IsForcedGuard(s, new ShieldCommand()), Is.True);
-            int rally = s.Rally;
-            BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(s.Rally, Is.EqualTo(Math.Min(BattleConfig.RallyMaxStacks, rally + 1)), "a forced Guard rallies");
+            Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty);
+            Assert.That(fast.Pos, Is.EqualTo(new Coord(0, 5)));
         }
 
         [Test]

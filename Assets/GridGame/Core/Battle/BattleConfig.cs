@@ -60,6 +60,11 @@ namespace GridGame.Core.Battle
         /// time it was held instead), so an instant action still costs budget. A spell's cast time rides the bar separately.
         /// </summary>
         public static float HeroActionSeconds = 1f;
+        /// <summary>
+        /// GG-T1171 (§2.13.3): game seconds a hero gets to move or act under HeroTimeline once its icon reaches the front.
+        /// The timeline is frozen for the whole turn; the action resolves, then the clock runs on.
+        /// </summary>
+        public static float HeroTimelineTurnSeconds = 4f;
 
         // ── Minimum action time (GG-T311, §2.0): a hero action can only start in a gap at least as long as it takes ──
         /// <summary>Seconds a drag costs before the hero has moved at all: picking it up (part of every drag's minimum).</summary>
