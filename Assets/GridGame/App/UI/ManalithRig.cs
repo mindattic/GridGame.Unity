@@ -22,7 +22,7 @@ namespace GridGame.App
         public const float FovDegrees = 30f;
         public const int Seed = 1337;
 
-        public static readonly Color ManaBlue = new Color32(0x75, 0x90, 0xC8, 0xFF);
+        public static readonly Color ManaBlue = Palette.OrbLit;
         /// <summary>The base texture's average colour (104, 92, 132) x 0.5.</summary>
         public static readonly Color RockColor = new Color32(0x34, 0x2E, 0x42, 0xFF);
 
@@ -134,7 +134,7 @@ namespace GridGame.App
             bloom.Threshold = BloomThreshold;
             cam.enabled = false;
 
-            Light(KeyFrom, Color.white, 1f);
+            Light(KeyFrom, Palette.White, 1f);
             Light(RimFrom, ManaBlue, RimLightIntensity);
 
             var shardShader = Resources.Load<Shader>("Shaders/ManalithShard");
@@ -181,7 +181,7 @@ namespace GridGame.App
             m.SetColor("_Color", RockColor);
             m.SetColor("_EmissionColor", emission);
             m.SetVector("_KeyDir", ViewToWorld(KeyFrom));
-            m.SetColor("_KeyColor", Color.white);
+            m.SetColor("_KeyColor", Palette.White);
             m.SetVector("_RimDir", ViewToWorld(RimFrom));
             m.SetColor("_RimLightColor", ManaBlue * RimLightIntensity);
             return m;
@@ -192,7 +192,7 @@ namespace GridGame.App
         private ParticleSystem SteadyDebris(Material mat, Mesh[] rocks)
         {
             var flag = new Gradient { mode = GradientMode.Fixed };
-            flag.SetKeys(new[] { new GradientColorKey(Color.black, 1f - GlowShare), new GradientColorKey(Color.white, 1f) },
+            flag.SetKeys(new[] { new GradientColorKey(Color.black, 1f - GlowShare), new GradientColorKey(Palette.White, 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
             var ps = Shards("Debris", mat, rocks, ShardMin, ShardMax,
                 new ParticleSystem.MinMaxGradient(flag) { mode = ParticleSystemGradientMode.RandomColor });
@@ -284,7 +284,7 @@ namespace GridGame.App
             var col = ps.colorOverLifetime;
             col.enabled = true;
             var g = new Gradient();
-            g.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+            g.SetKeys(new[] { new GradientColorKey(Palette.White, 0f), new GradientColorKey(Palette.White, 1f) },
                 new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f - FadeSeconds / Life), new GradientAlphaKey(0f, 1f) });
             col.color = g;
             var r = go.GetComponent<ParticleSystemRenderer>();

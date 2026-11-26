@@ -19,6 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, "Assets", "GridGame", "App")
 USS = os.path.join(ROOT, "Assets", "GridGame", "Resources", "UI", "Theme.uss")
 TOKEN_FILES = {os.path.join(APP, "UI", "Tokens.cs")}
+PALETTE_FILES = {os.path.join(APP, "UI", "WindowThemes.cs")}  # theme definitions: color data, exempt from POL-B1 (GG-T1184)
 SKIP_DIRS = {os.path.join(APP, "Automation")}  # dev-only tooling, never shipped
 
 NUM = r"-?\d+(?:\.\d+)?f?"
@@ -107,8 +108,11 @@ def float_size_literals(text):
 
 
 def uss_without_root(text):
-    # token definitions live in :root and are not literals at a use site
-    return re.sub(r":root\s*\{.*?\}", "", strip_comments(text), flags=re.S)
+    # a rule that only sets custom properties (:root, .theme-* palette overrides) defines tokens; it is not a use site (GG-T1184)
+    def keep(m):
+        decls = [d.strip() for d in m.group(2).split(";") if d.strip()]
+        return "" if decls and all(d.startswith("--") for d in decls) else m.group(0)
+    return re.sub(r"([^{}]+)\{([^{}]*)\}", keep, strip_comments(text))
 
 
 def files():
@@ -131,6 +135,8 @@ def lint():
         subjects_files.append(rel)
         text = strip_comments(open(p, encoding="utf-8").read())
         for rule, (_, lits, toks) in CS_RULES.items():
+            if rule == "POL-B1" and p in PALETTE_FILES:
+                continue
             for rx in lits:
                 n = len(re.findall(rx, text))
                 if n:

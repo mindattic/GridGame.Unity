@@ -58,7 +58,7 @@ namespace GridGame.App
             Glow.style.borderTopLeftRadius = Glow.style.borderTopRightRadius = Glow.style.borderBottomLeftRadius = Glow.style.borderBottomRightRadius = gr;
             Glow.style.borderTopWidth = Glow.style.borderBottomWidth = Glow.style.borderLeftWidth = Glow.style.borderRightWidth = 5f;
             Glow.style.opacity = 0f;
-            glowColor = Color.white;
+            glowColor = Palette.White;
             Glow.schedule.Execute(PulseGlow).Every(33);
             Root.Add(Glow);
 
@@ -198,13 +198,13 @@ namespace GridGame.App
             var shardA = new VisualElement { pickingMode = PickingMode.Ignore };
             shardA.style.position = Position.Absolute;
             shardA.style.left = Space.S8; shardA.style.top = Space.S4; shardA.style.width = Size.Hairline; shardA.style.height = Size.Shard;
-            shardA.style.backgroundColor = Color.white;
+            shardA.style.backgroundColor = Palette.White;
             shardA.style.rotate = new Rotate(22f);
             WeaponCrack.Add(shardA);
             var shardB = new VisualElement { pickingMode = PickingMode.Ignore };
             shardB.style.position = Position.Absolute;
             shardB.style.left = Space.S8; shardB.style.top = Space.S8; shardB.style.width = Size.Hairline; shardB.style.height = Size.Shard;
-            shardB.style.backgroundColor = Color.white;
+            shardB.style.backgroundColor = Palette.White;
             shardB.style.rotate = new Rotate(-26f);
             WeaponCrack.Add(shardB);
             Root.Add(WeaponCrack);
@@ -376,7 +376,7 @@ namespace GridGame.App
                 Art.style.transitionDuration = ease;
             }
             actedBadge.style.display = on ? DisplayStyle.Flex : DisplayStyle.None;
-            Art.style.unityBackgroundImageTintColor = on ? new Color(0.5f, 0.5f, 0.55f) : Color.white;
+            Art.style.unityBackgroundImageTintColor = on ? new Color(0.5f, 0.5f, 0.55f) : Palette.White;
             Frame.style.opacity = on ? 0.7f : 1f;
         }
 
@@ -559,7 +559,7 @@ namespace GridGame.App
             CastBar.style.display = color.HasValue ? DisplayStyle.Flex : DisplayStyle.None;
             if (!color.HasValue) return;
             castBarFill.style.width = Length.Percent(Mathf.Clamp01(filled) * 100f);
-            castBarFill.style.backgroundColor = Color.Lerp(color.Value, Color.white, 0.15f + 0.25f * Mathf.Clamp01(filled));
+            castBarFill.style.backgroundColor = Color.Lerp(color.Value, Palette.White, 0.15f + 0.25f * Mathf.Clamp01(filled));
         }
 
         /// <summary>Target side: the incoming spell's icon (or initial) in its colour, top-left of the tile.</summary>
@@ -1296,7 +1296,7 @@ namespace GridGame.App
     /// </summary>
     public sealed class CastRing : VisualElement
     {
-        private Color color = Color.white;
+        private Color color = Palette.White;
         private float left = 1f;
         public float Left => left;
         public Color Color => color;
