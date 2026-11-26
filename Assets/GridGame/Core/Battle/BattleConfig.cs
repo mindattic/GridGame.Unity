@@ -204,6 +204,15 @@ namespace GridGame.Core.Battle
         /// still keeps nothing but hard-won XP, unchanged.</summary>
         public const float RetreatKeepFraction = 0.5f;
 
+        // ── Catch-up XP (GG-T474, owner pick 5b) ─────────────────────────────────────
+        /// <summary>Foes above this level (the last main-campaign level) pay a hero below them extra XP, so a party that
+        /// fell behind in the main run closes the postgame gap by hunting instead of grinding.</summary>
+        public const int CatchUpFromFoeLevel = 24;
+        /// <summary>Extra XP per level the hero is behind the strongest foe: +50% a level.</summary>
+        public const float CatchUpPerLevelBehind = 0.5f;
+        /// <summary>The catch-up multiplier never passes this.</summary>
+        public const float CatchUpMaxMultiplier = 4f;
+
         // ── Power Amplifier (owner request 2026-10-10, from Terra Battle) ────────────
         /// <summary>Chance per player action that an amplifier appears (when none is on the board)…</summary>
         public const float AmplifierBaseChance = 0.12f;

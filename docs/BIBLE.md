@@ -2455,6 +2455,7 @@ Added 2026-10-11. A hero's spell damage scales with **INT** (physical skills wit
 
 At 0 HP (`Kill`): off board, buffs cleared, every timeline entry it owns removed (pending casts vanish), `DiedEvent`; enemies award loot (`AwardLoot`):
 - **XP** `Formulas.XpReward = round(XpReward + 2·level + 0.10·(STR+VIT) + 0.08·(INT+WIS))`, min 1.
+  **Catch-up XP (added 2026-11-26, GG-T474, owner pick 5b):** when a battle's strongest foe is above level 24 (`BattleConfig.CatchUpFromFoeLevel`, the last main-campaign level), each hero below that foe is awarded the battle XP × `min(4, 1 + 0.5 × levels behind)` (`CatchUpPerLevelBehind`, `CatchUpMaxMultiplier`; `Formulas.CatchUpXp`), applied per hero on a victory and on hard-won XP, after the foe's own XP and the difficulty dial and before the domesticated-monster factor. A hero at or above the foe, or any foe at 24 or below, earns exactly the old XP, so a hunter is never worse off and the two pinned curves (`XpReward`, `XpToNext`) are untouched. Not yet measured by a soak (GG-T919 measures stages 29-40); `tools/xp_wall.py` option 5b predicts the gap held at 10-13 instead of growing to 20. Pinned by `FormulasTests.CatchUpXp_*`.
 - **Coins**: the drop table's `CoinsMin..CoinsMax` if authored; **Amended 2026-10-09:** otherwise **≈ half the XP, ×U(0.8, 1.2)**, min 1 (no table in content authors coins). Snake segments drop no coins.
 - **Items**: each drop-table entry rolls its `Chance` for `Min..Max`.
 - **Kills** count by class (bounties, bestiary); snake segments don't count.
