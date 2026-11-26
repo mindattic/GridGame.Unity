@@ -5080,7 +5080,7 @@
       "fieldeng_mine",
       "fieldcaster_resupplydrone",
       "disrupt",
-      "chill_aura",
+      "shock_plating",
       "drifter_float"
     ],
     "DefaultLoadout": [
@@ -8163,7 +8163,7 @@
     "Abilities": [
       "charge_ice",
       "frostborn",
-      "chill_aura"
+      "shock_plating"
     ],
     "DefaultLoadout": [],
     "DropTable": "icemauler",
@@ -16708,7 +16708,8 @@
       "steal",
       "teleport",
       "quicken",
-      "striker_finishingblow",
+      "duelist_exploit_opening",
+      "opportunist",
       "skirmisher_blindside",
       "skirmisher_hitandrun",
       "skirmisher_runningriot",
@@ -16718,7 +16719,7 @@
       "cleave",
       "skirmisher_blindside",
       "item:x_potion",
-      "striker_finishingblow",
+      "duelist_exploit_opening",
       "skirmisher_runningriot"
     ],
     "DropTable": null,
@@ -17591,7 +17592,6 @@
       "rejuvenate",
       "frost",
       "antidote",
-      "technician_diagnostic",
       "technician_emp",
       "fieldeng_mine",
       "fieldeng_patch",
@@ -17602,7 +17602,7 @@
       "quicken",
       "fieldeng_mine",
       "item:x_potion",
-      "technician_diagnostic",
+      "technician_emp",
       "fieldeng_overdrive"
     ],
     "DropTable": null,
@@ -21725,7 +21725,7 @@
     "Resistances": {},
     "Abilities": [
       "frostborn",
-      "chill_aura"
+      "shock_plating"
     ],
     "DefaultLoadout": [],
     "DropTable": "yeti",

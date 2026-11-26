@@ -48,7 +48,7 @@ namespace GridGame.Tests
             var c = Real;
             string K(string id) => Abilities.MechanicKey(c.Ability(id));
             // Same move, different coat of paint: numbers and element (bar Fire/Lightning) don't count.
-            Assert.That(K("cleave"), Is.EqualTo(K("striker_finishingblow")));
+            Assert.That(K("cleave"), Is.EqualTo(K("opportunist"))); // striker_finishingblow merged away (GG-T1197)
             // A self-buff is the same whether its filter says Any or AllyOnly.
             Assert.That(K("adrenaline_rush"), Is.EqualTo(K("juggernaut_unstoppable_momentum"))); // Valkyrie's Call became a revive (GG-T388, GG-T412); Lion's Roar merged away (GG-T975)
             // The audit's reworks now play differently from the plain strike they used to copy.
