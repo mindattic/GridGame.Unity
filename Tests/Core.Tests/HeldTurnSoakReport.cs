@@ -31,7 +31,7 @@ namespace GridGame.Tests
     {
         private sealed class Row
         {
-            public int Runs, Wins, Moves, Guards, Forced;
+            public int Runs, Wins, Capped, Moves, Guards, Forced;
             public float HeldSeconds, WindowSeconds;
             public readonly Dictionary<string, int> Mana = new Dictionary<string, int>();
             public int HealFromSupport, HealTotal, SupportBuffs, SupportHaste, SupportCleanse, SupportActions;
@@ -47,7 +47,7 @@ namespace GridGame.Tests
 
             public void Add(Row o)
             {
-                Runs += o.Runs; Wins += o.Wins; Moves += o.Moves; Guards += o.Guards; Forced += o.Forced;
+                Runs += o.Runs; Wins += o.Wins; Capped += o.Capped; Moves += o.Moves; Guards += o.Guards; Forced += o.Forced;
                 HeldSeconds += o.HeldSeconds; WindowSeconds += o.WindowSeconds;
                 foreach (var kv in o.Mana) Mana[kv.Key] = (Mana.TryGetValue(kv.Key, out var v) ? v : 0) + kv.Value;
                 HealFromSupport += o.HealFromSupport; HealTotal += o.HealTotal; SupportBuffs += o.SupportBuffs;
@@ -289,6 +289,7 @@ namespace GridGame.Tests
                         });
                         Finish(row, tracker, st);
                         if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
+                        else if (!st.IsOver) row.Capped++; // GG-T1175: ran out of BotRunner's command cap, neither won nor lost
                         BattleFactory.Commit(c, s, st);
                     }
                     if (!cleared) break;
@@ -304,7 +305,7 @@ namespace GridGame.Tests
             sb.AppendLine(Line("ALL", all));
             var mode = SoakTurnMode;
             sb.AppendLine($"--- turn-mode metrics ({mode}) ---");
-            sb.AppendLine("stage                  win%  hero-acts/run enemy-turns/run  secs/run  heroes x legal/turn  acts/enemy  downtime(max/avg) enemy-s/stretch  pincers chains  guard(forced/chosen)  skill/spell/item  refusals  combo(best/avg)");
+            sb.AppendLine("stage                  win%  capped  hero-acts/run enemy-turns/run  secs/run  heroes x legal/turn  acts/enemy  downtime(max/avg) enemy-s/stretch  pincers chains  guard(forced/chosen)  skill/spell/item  refusals  combo(best/avg)");
             foreach (var kv in rows) sb.AppendLine(ModeLine(kv.Key, kv.Value));
             sb.AppendLine(ModeLine("ALL", all));
             TestContext.Out.WriteLine(sb.ToString());
@@ -351,14 +352,14 @@ namespace GridGame.Tests
             $"{name,-22} {r.WinPct,4:F0}%  {r.UsedPct,9:F0}%  {r.AvgHeldSeconds,6:F2}  {r.GuardPct,5:F0}%  {r.ForcedPct,6:F0}%  {r.ManaOf("guard"),7}/{r.ManaOf("pincer")}/{r.ManaOther}  {r.HealFromSupport,6}/{r.HealTotal}  {r.SupportBuffs,5} {r.SupportHaste,5} {r.SupportCleanse,7}";
 
         private static string ModeLine(string name, Row r) =>
-            $"{name,-22} {r.WinPct,4:F0}%  {r.PerRun(r.HeroActions),13:F1} {r.PerRun(r.EnemyTurns),15:F1}  {r.PerRun(r.BattleSeconds),8:F1}  {r.HeroesPerTurn,6:F2} x {r.LegalActionsPerTurn,10:F1}  {r.HeroActionsPerEnemyTurn,10:F2}  {r.DowntimeMax,8}/{r.PerRun(r.DowntimeSum),-7:F1} {r.EnemyOnlySecondsPerStretch,15:F2}  {r.Pincers,7} {r.Chains,6}  {r.GuardsForced,10}/{r.GuardsChosen,-9}  {r.UsesOf(AbilityKind.Skill),5}/{r.UsesOf(AbilityKind.Spell)}/{r.UsesOf(AbilityKind.Item)}  {r.Refusals,8}  {r.ComboBestRank}/{r.PerRun(r.ComboScoreSum):F0}";
+            $"{name,-22} {r.WinPct,4:F0}%  {r.Capped,6}  {r.PerRun(r.HeroActions),13:F1} {r.PerRun(r.EnemyTurns),15:F1}  {r.PerRun(r.BattleSeconds),8:F1}  {r.HeroesPerTurn,6:F2} x {r.LegalActionsPerTurn,10:F1}  {r.HeroActionsPerEnemyTurn,10:F2}  {r.DowntimeMax,8}/{r.PerRun(r.DowntimeSum),-7:F1} {r.EnemyOnlySecondsPerStretch,15:F2}  {r.Pincers,7} {r.Chains,6}  {r.GuardsForced,10}/{r.GuardsChosen,-9}  {r.UsesOf(AbilityKind.Skill),5}/{r.UsesOf(AbilityKind.Spell)}/{r.UsesOf(AbilityKind.Item)}  {r.Refusals,8}  {r.ComboBestRank}/{r.PerRun(r.ComboScoreSum):F0}";
 
         private static string Obj(Dictionary<string, int> d) =>
             "{" + string.Join(",", d.OrderBy(kv => kv.Key).Select(kv => $"\"{kv.Key}\":{kv.Value}")) + "}";
 
         /// <summary>GG-T913: one row of the turn-mode comparison (raw sums plus derived rates), docs/TURN_MODES.md order.</summary>
         private static string ModeJson(Row r) =>
-            "{" + $"\"runs\":{r.Runs},\"wins\":{r.Wins},\"winPct\":{F(r.WinPct)}," +
+            "{" + $"\"runs\":{r.Runs},\"wins\":{r.Wins},\"capped\":{r.Capped},\"winPct\":{F(r.WinPct)}," +
             $"\"heroActions\":{r.HeroActions},\"enemyTurns\":{r.EnemyTurns},\"battleSeconds\":{F(r.BattleSeconds)}," +
             $"\"heroActionsPerRun\":{F(r.PerRun(r.HeroActions))},\"enemyTurnsPerRun\":{F(r.PerRun(r.EnemyTurns))},\"secondsPerRun\":{F(r.PerRun(r.BattleSeconds))}," +
             $"\"decisionSamples\":{r.DecisionSamples},\"heroesPerTurn\":{F(r.HeroesPerTurn)},\"legalActionsPerTurn\":{F(r.LegalActionsPerTurn)}," +

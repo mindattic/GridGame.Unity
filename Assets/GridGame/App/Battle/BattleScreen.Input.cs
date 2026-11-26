@@ -394,16 +394,18 @@ namespace GridGame.App
         {
             if (holdDrainFill == null) return;
             float k = holdWindow > 0f ? Mathf.Clamp01(holdElapsed / holdWindow) : 0f;
-            int ticks = holdTurnTicks > 0 ? Mathf.FloorToInt(k * holdTurnTicks) : 0;
+            bool frozen = TurnRules.HeroesOnTimeline(State); // GG-T1172: a Mode C hero's turn never runs the clock
+            int ticks = !frozen && holdTurnTicks > 0 ? Mathf.FloorToInt(k * holdTurnTicks) : 0;
             var at = BattleEngine.TimelineUAfter(State, ticks);
             RefreshRecoverView(ticks); // GG-T319: tray rings count down with the hold; one that runs out slides onto the bar
             SyncTimeline(at);
             holdDrainFill.style.width = Length.Percent((1f - k) * 100f);
             holdDrainFill.style.backgroundColor = Color.Lerp(HoldEmpty, HoldFull, 1f - k);
-            float nextU = 2f; // GG-T286: u is seconds-to-act over BarSeconds, so the next enemy is the lowest u (left = acts)
-            foreach (var e in State.Timeline)
-                if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsHero && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u))
-                    nextU = Mathf.Min(nextU, u);
+            float nextU = frozen ? 1f - k : 2f; // GG-T286: u is seconds-to-act over BarSeconds, so the next enemy is the lowest u (left = acts)
+            if (!frozen)
+                foreach (var e in State.Timeline)
+                    if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsHero && !o.IsTimelineHalted && at.TryGetValue(e.Id, out var u))
+                        nextU = Mathf.Min(nextU, u);
             bool limited = holdWindow > 0f && nextU <= 1f;
             holdLane.style.display = limited ? DisplayStyle.Flex : DisplayStyle.None;
             holdLabel.style.display = limited ? DisplayStyle.Flex : DisplayStyle.None;
