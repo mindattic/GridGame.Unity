@@ -107,5 +107,100 @@ namespace GridGame.Tests
             CloudSave.Description(s);
             Assert.That(Newtonsoft.Json.JsonConvert.SerializeObject(s, SaveFiles.Settings), Is.EqualTo(before));
         }
+
+        // ---- iCloud key-value store (GG-T609) ----
+
+        [Test]
+        public void An_iCloud_value_reads_back_into_the_same_save_and_metadata()
+        {
+            var s = Game(T0);
+            var value = CloudSave.ICloudPack(CloudSave.Encode(s), s.UpdatedUtc, s.PlaySeconds, "Cloud · 1 heroes\n· 3:07 played");
+            Assert.That(CloudSave.ICloudTryUnpack("Default-slot1", value, out var info, out var body), Is.True);
+            Assert.That(info.Name, Is.EqualTo("Default-slot1"));
+            Assert.That(info.UpdatedUtc, Is.EqualTo(T0), "the save's own UpdatedUtc, so the same save reads back in sync");
+            Assert.That(info.PlaySeconds, Is.EqualTo(s.PlaySeconds));
+            Assert.That(info.Description, Does.Not.Contain("\n"));
+            Assert.That(info.HasData, Is.True);
+            Assert.That(CloudSave.Decide(s, info), Is.EqualTo(CloudChoice.InSync));
+            Assert.That(CloudSave.TryDecode(body, Real, out var back, out var error), Is.True, error);
+            Assert.That(back.Gold, Is.EqualTo(777));
+        }
+
+        [Test]
+        public void A_missing_foreign_or_damaged_iCloud_value_is_nothing()
+        {
+            Assert.That(CloudSave.ICloudTryUnpack("n", null, out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "hello", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC1\nnot-ticks\n1\nd\ncode", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC1\n1\nNaN\nd\ncode", out _, out _), Is.False);
+            Assert.That(CloudSave.ICloudTryUnpack("n", "GGC2\n1\n1\nd\ncode", out _, out _), Is.False);
+        }
+
+        [Test]
+        public void iCloud_keys_fit_in_64_bytes_and_stay_distinct()
+        {
+            Assert.That(CloudSave.ICloudKey("Default-slot1"), Is.EqualTo("Default-slot1"));
+            var a = CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "a", 0));
+            var b = CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "b", 0));
+            Assert.That(a.Length, Is.LessThanOrEqualTo(CloudSave.MaxICloudKeyLength));
+            Assert.That(a, Does.EndWith("-slot1"));
+            Assert.That(a, Is.Not.EqualTo(b));
+            Assert.That(CloudSave.ICloudKey(CloudSave.SnapshotName(new string('x', 90) + "a", 0)), Is.EqualTo(a), "stable");
+        }
+
+        [Test]
+        public void A_conflict_keeps_the_longer_play_time_like_Play_Games()
+        {
+            CloudSnapshotInfo Info(double play) => new CloudSnapshotInfo { PlaySeconds = play, HasData = true };
+            Assert.That(CloudSave.KeepMineOnConflict(Info(200), Info(100)), Is.True);
+            Assert.That(CloudSave.KeepMineOnConflict(Info(100), Info(200)), Is.False);
+            Assert.That(CloudSave.KeepMineOnConflict(Info(100), Info(100)), Is.False, "a tie keeps the cloud's copy");
+            Assert.That(CloudSave.KeepMineOnConflict(Info(1), null), Is.True);
+            Assert.That(CloudSave.KeepMineOnConflict(null, Info(1)), Is.False);
+        }
+
+        [Test]
+        public void The_saves_own_time_round_trips_through_the_Play_Games_description()
+        {
+            var saved = new DateTime(2026, 11, 25, 19, 0, 7, DateTimeKind.Utc);
+            var stamped = CloudSave.StampDescription("Hero - 4 heroes - 3:07 played", saved);
+            Assert.That(CloudSave.TryReadStamp(stamped, out var text, out var back), Is.True);
+            Assert.That(text, Is.EqualTo("Hero - 4 heroes - 3:07 played"));
+            Assert.That(back, Is.EqualTo(saved));
+            Assert.That(back.Kind, Is.EqualTo(DateTimeKind.Utc));
+        }
+
+        [Test]
+        public void A_long_description_is_cut_to_leave_room_for_the_stamp()
+        {
+            var stamped = CloudSave.StampDescription(new string('x', 400), DateTime.UtcNow);
+            Assert.That(stamped.Length, Is.LessThanOrEqualTo(CloudSave.MaxDescriptionLength));
+            Assert.That(CloudSave.TryReadStamp(stamped, out _, out _), Is.True);
+        }
+
+        [Test]
+        public void A_snapshot_written_without_a_stamp_reads_as_unstamped()
+        {
+            Assert.That(CloudSave.TryReadStamp("Hero - 4 heroes - 3:07 played", out var text, out _), Is.False);
+            Assert.That(text, Is.EqualTo("Hero - 4 heroes - 3:07 played"), "text untouched");
+            Assert.That(CloudSave.TryReadStamp(null, out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=abc]", out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=99999999999999999999999]", out _, out _), Is.False);
+            Assert.That(CloudSave.TryReadStamp("x [t=-5]", out _, out _), Is.False);
+        }
+
+        [Test]
+        public void An_upload_a_minute_after_the_save_is_still_the_same_save_on_the_next_Continue()
+        {
+            var saved = new DateTime(2026, 11, 25, 19, 0, 0, DateTimeKind.Utc);
+            var local = new SaveData { UpdatedUtc = saved };
+            CloudSave.TryReadStamp(CloudSave.StampDescription("d", saved), out _, out var stampedTime);
+            var cloud = new CloudSnapshotInfo { UpdatedUtc = stampedTime, HasData = true };
+            Assert.That(CloudSave.Decide(local, cloud), Is.EqualTo(CloudChoice.InSync));
+            // Play Games' own LastModifiedTimestamp (the upload time) is what used to be compared.
+            cloud.UpdatedUtc = saved.AddSeconds(60);
+            Assert.That(CloudSave.Decide(local, cloud), Is.EqualTo(CloudChoice.OfferCloud), "the old upload-time stamp is the bug");
+        }
     }
 }

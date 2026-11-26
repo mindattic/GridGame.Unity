@@ -146,6 +146,14 @@ namespace GridGame.Core.Content
         public bool OncePerBattle;
         /// <summary>The float shown when it fires; empty = the ability's name.</summary>
         public string Callout;
+
+        /// <summary>GG-T1134: a shallow copy with its own <see cref="Effects"/> list (an element variant swaps an effect).</summary>
+        public TriggerDef Copy()
+        {
+            var t = (TriggerDef)MemberwiseClone();
+            t.Effects = new List<TriggerEffect>(Effects ?? new List<TriggerEffect>());
+            return t;
+        }
     }
 
     /// <summary>A small predicate vocabulary (§4.1): every set field must hold. "Other" is the context's attacker, else its target.</summary>
@@ -187,6 +195,24 @@ namespace GridGame.Core.Content
         public List<string> Statuses = new List<string>();
         /// <summary>Substitute: the tile state (a regionrules.json TileStates id) left on the owner's old tile.</summary>
         public string State;
+
+        /// <summary>GG-T1134: a shallow copy (an element variant rewrites <see cref="Buff"/>).</summary>
+        public TriggerEffect Copy() => (TriggerEffect)MemberwiseClone();
+    }
+
+    /// <summary>GG-T1134 (BIBLE §25.6.6.1): one element's row of an <see cref="AbilityDef.ElementFromCaster"/> ability: what
+    /// changes when a unit of that element uses it. Every field is optional; unset keeps the base ability's.</summary>
+    public sealed class ElementVariantDef
+    {
+        /// <summary>The hit's base damage in this element.</summary>
+        public int? BaseDamage;
+        /// <summary>The element's rider: the buff the hit applies (Active; "" = none) or its trigger's ApplyBuff effects
+        /// apply (Passive/Reactive).</summary>
+        public string Buff;
+        /// <summary>The rider's chance: ApplyBuffChance (Active) or the trigger's Chance (Passive/Reactive), in (0, 1].</summary>
+        public float? Chance;
+        /// <summary>The description a unit of this element reads.</summary>
+        public string Description;
     }
 
     /// <summary>Wall (GG-T931): a line of 2 × Radius + 1 tiles through the anchor, square across the caster's line to it
@@ -464,6 +490,10 @@ namespace GridGame.Core.Content
         public Stats Growth = new Stats();
         public List<MilestoneGrowth> Milestones = new List<MilestoneGrowth>();
         public Dictionary<DamageType, float> Resistances = new Dictionary<DamageType, float>();
+        /// <summary>GG-T1134 (BIBLE §25.6.6.1): the class's own element (the six ninjas, the Night Hunter). An ability flagged
+        /// <see cref="AbilityDef.ElementFromCaster"/> deals it and carries its rider (<see cref="AbilityDef.ForCaster"/>).
+        /// Null = no element of its own: such an ability keeps its base numbers.</summary>
+        public DamageType? Element;
         /// <summary>Abilities this class can learn/use (hero) or uses (enemy charge / trap).</summary>
         public List<string> Abilities = new List<string>();
         /// <summary>Default ability bar preset (ability ids; items as "item:id").</summary>
@@ -709,6 +739,65 @@ namespace GridGame.Core.Content
         /// <summary>Region rule effects (GG-T359) run once this resolves: the caster is their subject and the anchor
         /// their Target (mark/clear/modify tiles, queue or retime events, move anchors, raise flags).</summary>
         public List<RuleEffectDef> RuleEffects = new List<RuleEffectDef>();
+
+        /// <summary>GG-T1134 (BIBLE §25.6.6.1, the ninja family moves): the ability takes its caster class's
+        /// <see cref="ClassDef.Element"/>. An Active one deals that <see cref="DamageType"/>; the element's row in
+        /// <see cref="ElementVariants"/> then sets its numbers and rider (the status its hit, or its trigger's ApplyBuff,
+        /// applies). A caster with no element keeps the base ability; an element with no row keeps the base numbers and
+        /// rider but deals the element. Resolved by <see cref="ForCaster"/>.</summary>
+        public bool ElementFromCaster;
+        /// <summary>GG-T1134: per-element overrides for an <see cref="ElementFromCaster"/> ability, keyed by element.</summary>
+        public Dictionary<DamageType, ElementVariantDef> ElementVariants = new Dictionary<DamageType, ElementVariantDef>();
+
+        private Dictionary<DamageType, AbilityDef> elementCache;
+
+        /// <summary>GG-T1134: this ability as a unit of class <paramref name="caster"/> uses it: itself, unless it is
+        /// <see cref="ElementFromCaster"/> and the class has an <see cref="ClassDef.Element"/>.</summary>
+        public AbilityDef ForCaster(ClassDef caster) => ForElement(caster?.Element);
+
+        /// <summary>GG-T1134: this ability in <paramref name="element"/> (see <see cref="ElementFromCaster"/>): a cached copy
+        /// with the element's damage type, numbers and rider and the same <see cref="Id"/>, so cooldowns, bars and saves are
+        /// unchanged. Itself when it doesn't take an element or <paramref name="element"/> is null.</summary>
+        public AbilityDef ForElement(DamageType? element)
+        {
+            if (!ElementFromCaster || element == null) return this;
+            var e = element.Value;
+            lock (this)
+            {
+                if (elementCache == null) elementCache = new Dictionary<DamageType, AbilityDef>();
+                if (elementCache.TryGetValue(e, out var hit)) return hit;
+                var copy = (AbilityDef)MemberwiseClone();
+                copy.elementCache = null;
+                copy.ElementFromCaster = false; // resolved: a second ForCaster leaves it as it is
+                copy.DamageType = e;
+                if (ElementVariants != null && ElementVariants.TryGetValue(e, out var v) && v != null)
+                {
+                    if (v.BaseDamage != null) copy.BaseDamage = v.BaseDamage.Value;
+                    if (!string.IsNullOrEmpty(v.Description)) copy.Description = v.Description;
+                    if (Trigger == null)
+                    {
+                        if (v.Buff != null) copy.ApplyBuff = v.Buff.Length == 0 ? null : v.Buff;
+                        if (v.Chance != null) copy.ApplyBuffChance = v.Chance.Value;
+                    }
+                    else
+                    {
+                        var t = Trigger.Copy();
+                        if (v.Chance != null) t.Chance = v.Chance.Value;
+                        if (!string.IsNullOrEmpty(v.Buff))
+                            for (int i = 0; i < t.Effects.Count; i++)
+                                if (t.Effects[i] != null && t.Effects[i].Kind == TriggerEffectKind.ApplyBuff)
+                                {
+                                    var fx = t.Effects[i].Copy();
+                                    fx.Buff = v.Buff;
+                                    t.Effects[i] = fx;
+                                }
+                        copy.Trigger = t;
+                    }
+                }
+                elementCache[e] = copy;
+                return copy;
+            }
+        }
 
         /// <summary>GG-T590 (§25.6.5, GG-T168): the stat-threshold vector a hero must reach before the Learn screen will sell
         /// it this ability (Fireball: INT 8; a hybrid such as Paladin Bulwark: VIT 5 and WIS 4). Each non-zero stat is a

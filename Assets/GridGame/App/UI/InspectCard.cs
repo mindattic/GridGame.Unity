@@ -235,10 +235,12 @@ namespace GridGame.App
             return col;
         }
 
-        /// <summary>An ability, skill or battle item: kind, cost, cooldown, reach, numbers and its description.</summary>
-        public static bool Ability(VisualElement body, AbilityDef a, string note = null)
+        /// <summary>An ability, skill or battle item: kind, cost, cooldown, reach, numbers and its description. An ability
+        /// that takes its caster's element (GG-T1134) reads in <paramref name="wearer"/>'s element when one is given.</summary>
+        public static bool Ability(VisualElement body, AbilityDef a, string note = null, ClassDef wearer = null)
         {
             if (a == null) return false;
+            a = a.ForCaster(wearer);
             var itemTex = a.Id != null && a.Id.StartsWith("item:") ? Art.ItemIcon(a.Id.Substring(5)) : null;
             string kind = a.Kind == AbilityKind.Item ? "Item · acts at once"
                 : a.Kind == AbilityKind.Passive ? "Passive · just happens"

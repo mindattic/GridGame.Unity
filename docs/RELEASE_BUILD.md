@@ -157,7 +157,7 @@ To play the whole game with the mouse as it looks on a given phone or tablet, us
 `C:\Apps\Android.Emulator.Suite\AndroidEmulatorSuite.exe`, Desktop shortcut "Android Emulator Suite").
 
 1. Publish the APK: `powershell -ExecutionPolicy Bypass -File tools\deploy-apk.ps1 -Build` builds the `-Dev` APK
-   and copies it to `C:\Apps\Unity.GridGame\GridGame.apk` (with `GridGame.txt`: version, commit, build
+   and copies it to `C:\Apps\GridGame.Unity\GridGame.apk` (with `GridGame.txt`: version, commit, build
    time). Without `-Build` it publishes the APK already in `Build\Android`. The suite's **Build APK** button runs the
    same command.
 2. Open the suite: app **GridGame**, pick a device from the gallery (about 100 real phones, foldables, tablets
@@ -300,8 +300,8 @@ breaks against GG-T479's epic (GG-T477).
    distribution certificate and App Store provisioning profile itself. Do the same Team pick for the
    **UnityFramework** target if Xcode flags it.
 3. Still in Signing & Capabilities, add **+ Capability > In-App Purchase** if it isn't listed (Unity IAP usually adds
-   it). Leave Game Center, iCloud and Push off until a feature needs them (iCloud saves are a later ticket, BIBLE
-   §15.2).
+   it). **iCloud** (Key-value storage only) is added by the export itself for cloud save (GG-T609, "Cloud save:
+   iCloud" below); leave Game Center and Push off until a feature needs them.
 4. Scheme destination **Any iOS Device (arm64)**, then **Product > Archive**. The Organizer opens with the archive.
 5. **Distribute App > App Store Connect > Upload** (keep "Upload your app's symbols" on so crash reports in Xcode's
    Organizer and App Store Connect are readable). Processing takes 5-30 minutes; you get an email.
@@ -315,6 +315,48 @@ breaks against GG-T479's epic (GG-T477).
    2868 portrait), description, keywords, support and privacy
    policy URLs, then pick the build and **Submit for Review**.
 
+### Cloud save: iCloud (GG-T609)
+
+The game side is built (BIBLE §15.2) and inert until the steps below are done. iOS uses the **iCloud key-value store**
+(NSUbiquitousKeyValueStore; no CloudKit, no iCloud Documents): `App/Services/ICloudCloudBackend` (compiled only into an
+iOS player) behind the same `CloudSaves` layer as Play Games, the native bridge `Plugins/iOS/GGICloud.mm`, and
+`Editor/ICloudEntitlements`, a post-build step that adds the **iCloud > Key-value storage** capability and its
+entitlement (`com.apple.developer.ubiquity-kvstore-identifier`) to the exported Xcode project, so no one ticks it by
+hand. Without an iCloud account on the phone, with iCloud off for the game, or without the entitlement, the backend
+reports itself signed out and cloud save does nothing. The store holds 1 MB for the whole app (every profile's slots
+together; a slot is tens of KB packed). Each owner step is its own ticket with the exact checklist:
+
+1. **The owner, Apple developer account (GG-T1127):** Identifiers > App ID `com.mindattic.gridgame` > tick **iCloud**
+   with "Include CloudKit support" **off** > Save; regenerate manual provisioning profiles (automatic signing does it
+   itself). Nothing to send back: there is no container id.
+2. **The owner, Mac (GG-T1128):** export (`pwsh tools/build.ps1 -Platform iOS`), confirm Signing & Capabilities shows
+   **iCloud** with **Key-value storage** ticked, build onto an iPhone (this is the first compile of `GGICloud.mm`) and
+   read `[Cloud] sign-in ok` in Xcode's console.
+3. **The owner, iPhones on one Apple ID (GG-T1129):** upload, Load Game > **Restore from cloud** after a reinstall, the
+   newer-copy offer on Continue, the longest-play-time conflict, and nothing happening with iCloud off.
+
 **Target devices (GG-T724, BIBLE §26.3).** iPhone 13 (A15) and newer flagships. App Store Connect can't exclude
 models, so the iPhone SE and 12/13 mini are "not designed for" rather than blocked; the iOS 17.0 floor already drops
 anything older than the iPhone XS/XR.
+
+## Release player audit (2026-11-25, GG-T1120)
+
+A code read of `origin/main` for what a non-development player (no `DEVELOPMENT_BUILD`, no editor) exposes. No player
+was built or launched for it (build-only checks, no Unity); run `pwsh tools/build.ps1 -Release -SkipProse` as part of
+the owner's phone check (GG-T1123).
+
+- **Release switches** (`Meta/Features.cs`): Enchanter, Taming and InnRespecRow default off; Crucible, Bounties, Caravan
+  and DiamondStore on, as RELEASE_SCOPE decided. `LookPresets` is on in code but RELEASE_SCOPE still says DISABLE (GG-T1124).
+- **Launch flags** (`GameApp.cs`, `CommandLine`): in a release player `Has`/`Value` return false/null without
+  `-enableDebugOptions`, so `-allfeatures`, `-start`, `-saveRoot`, `-profile`, `-testmode`, `-demo`, `-endless`,
+  `-automation`, `-turnMode`, `-skill` and the headless session do nothing. The profile folder is pinned to
+  `persistentDataPath/Profiles` (`OpenProfiles`). Unity.Shared's own `--headless`, `-muted` and `-profiles-root`
+  readers are not behind that gate (GG-T1125).
+- **AutomationServer** (all three files) is inside `#if DEVELOPMENT_BUILD || UNITY_EDITOR`, and so is its one call in
+  `GameApp.Awake`; it also needs `-automation PORT`. Not in a release binary.
+- **Diamond store**: `DiamondStores.Choose` uses the free `DevDiamondStore` only for the editor or `Debug.isDebugBuild`;
+  release is `UnityIapDiamondStore` on Android/iOS (with `GG_IAP`), else `UnconnectedDiamondStore` ("Store not
+  connected yet"). No free stub in release.
+- **CrashReporter** is installed first in `GameApp.Awake` in every build; telemetry is a no-op in release
+  (`TelemetryUnity.IsTelemetryBuild`). Invariant culture is set at `SubsystemRegistration` and again in `Boot`.
+- **Build options**: `BuildWindowsRelease` passes `BuildOptions.None` (development only adds `Development | AllowDebugging`).

@@ -52,7 +52,7 @@ namespace GridGame.Tests
             Assert.That(Real.Classes["darktemplar"].Abilities, Does.Contain(Id));
             var problems = ContentLoader.Validate(Real).Where(p => p.Contains(Id)).ToList();
             Assert.That(problems, Is.Empty, string.Join("\n", problems));
-            Assert.That(GravityWell.Is(Real.Ability("darktemplar_rite")), Is.False);
+            Assert.That(GravityWell.Is(Real.Ability("blackwitch_shadowbolt")), Is.False);
         }
 
         [Test]
@@ -108,7 +108,7 @@ namespace GridGame.Tests
                 "both foes clump into column 2, between the cleric and the knight's next step");
             Assert.That(GravityWell.Value(s, a, new Coord(3, 1)), Is.EqualTo(0f), "a pull that sets no pincer up is superfluous");
             Assert.That(GravityWell.Value(s, a, new Coord(0, 7)), Is.EqualTo(0f), "nobody in reach");
-            Assert.That(GravityWell.Value(s, Real.Ability("darktemplar_rite"), new Coord(2, 3)), Is.EqualTo(0f), "only a gravity well counts");
+            Assert.That(GravityWell.Value(s, Real.Ability("blackwitch_shadowbolt"), new Coord(2, 3)), Is.EqualTo(0f), "only a gravity well counts");
             Assert.That((Enemy(s, "wolf").Pos, Enemy(s, "tank").Pos), Is.EqualTo((new Coord(1, 3), new Coord(3, 2))), "looking moves nothing");
 
             var ev = Cast(s, Hero(s, "knight"), new Coord(2, 3));

@@ -50,9 +50,9 @@ namespace GridGame.Tests
             // Same move, different coat of paint: numbers and element (bar Fire/Lightning) don't count.
             Assert.That(K("cleave"), Is.EqualTo(K("striker_finishingblow")));
             // A self-buff is the same whether its filter says Any or AllyOnly.
-            Assert.That(K("adrenaline_rush"), Is.EqualTo(K("bluelion_roar"))); // Valkyrie's Call became a revive (GG-T388, GG-T412)
+            Assert.That(K("adrenaline_rush"), Is.EqualTo(K("juggernaut_unstoppable_momentum"))); // Valkyrie's Call became a revive (GG-T388, GG-T412); Lion's Roar merged away (GG-T975)
             // The audit's reworks now play differently from the plain strike they used to copy.
-            foreach (var id in new[] { "fencer_fleche", "duelist_riposte", "skirmisher_hitandrun", "berserker_wildswing", "prizefighter_knockout" })
+            foreach (var id in new[] { "fencer_fleche", "duelist_riposte", "skirmisher_hitandrun", "berserker_wildswing", "combobrawler_knockoutcombo" })
                 Assert.That(K(id), Is.Not.EqualTo(K("cleave")), id);
             Assert.That(K("shieldmaiden_valkyrie"), Is.Not.EqualTo(K("adrenaline_rush")), "Valkyrie's Call revives now (GG-T388)");
         }

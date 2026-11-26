@@ -24,6 +24,11 @@ namespace GridGame.App
     {
         /// <summary>The detail window's height in design px: a full route preview without scrolling (GG-T1068).</summary>
         private const float DetailHeight = 460f;
+        /// <summary>The board's floor in design px: on the shortest stages the detail window gives way first, so the hexagon
+        /// stays big enough to tap (GG-T1113).</summary>
+        private const float BoardMinHeight = 280f;
+        /// <summary>The detail window's floor in design px: room for the node's name and the pinned Buy route row (GG-T1113).</summary>
+        private const float DetailMinHeight = 150f;
         private readonly PanZoomState zoom = new PanZoomState();
         private (int Q, int R)? selected;
 
@@ -52,19 +57,33 @@ namespace GridGame.App
             // GG-T1068: the board's own dark fills the whole viewport, not just the fitted square in the middle of it.
             host.style.backgroundColor = SkillHexView.Bg;
             frame.Add(host);
+            frame.style.minHeight = BoardMinHeight;
             view.SetOwned(start, owned);
             view.SetSelected(selected);
 
             var detail = Ui.DetailPanel(body, "hex-detail");
             // GG-T1068: one fixed height (a node's name, route, stats, learns and Buy route) so hovering or tapping
             // never resizes the board above it, which re-centred the hexagon under the pointer on every preview.
-            body.Q("hex-detail").style.height = DetailHeight;
+            var detailWindow = body.Q("hex-detail");
+            detailWindow.style.height = DetailHeight;
+            // GG-T1113: on short stages the window shrinks (its USS cap is 45% of the column) down to a floor that still
+            // shows the pinned Buy route row; the route, stats and learns lines scroll inside it instead of overflowing.
+            detailWindow.style.minHeight = DetailMinHeight;
+            detailWindow.style.overflow = Overflow.Hidden;
+            var scroll = detailWindow.Q<ScrollView>();
+            if (scroll != null) { scroll.style.flexGrow = 1; scroll.style.flexShrink = 1; scroll.style.minHeight = 0; }
+            // The Buy route row sits under the scroll, outside it, so a long route never scrolls it off the stage.
+            var foot = Ui.El("kit-footer", detailWindow);
+            foot.name = "hex-foot";
+            foot.style.flexShrink = 0;
             void Show((int Q, int R)? pt)
             {
                 detail.Clear();
+                foot.Clear();
                 var route = pt.HasValue ? board.CheapestRoute(owned, pt.Value) : null;
                 view.SetPreview(route);
-                Detail(board, h, owned, pt, route, detail);
+                Detail(board, h, owned, pt, route, detail, foot);
+                foot.style.display = foot.childCount > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
             view.HoverChanged += pt => Show(pt ?? selected);
             view.Tapped += pt => { selected = pt; view.SetSelected(pt); Show(pt); };
@@ -73,7 +92,7 @@ namespace GridGame.App
 
         /// <summary>What the shown node is, the route to it (SP, stats, abilities) and, for the tapped node, Buy route.</summary>
         private void Detail(SkillHexBoard board, HeroSave h, IReadOnlyCollection<(int Q, int R)> owned, (int Q, int R)? pt,
-            List<(int Q, int R)> route, VisualElement w)
+            List<(int Q, int R)> route, VisualElement w, VisualElement foot)
         {
             if (!pt.HasValue)
             {
@@ -81,7 +100,8 @@ namespace GridGame.App
                 return;
             }
             var node = board.Node(pt.Value);
-            Ui.Heading(NodeName(node), w);
+            // A passive's name lists its stats and can outrun the window's width: wrap it like the lines under it.
+            Ui.Heading(NodeName(node), w).style.whiteSpace = WhiteSpace.Normal;
             if (route == null) { Ui.Para(node == null || node.Kind == SkillHexNodeKind.Open ? "An open slot: nothing to buy here yet." : "Can't reach that.", w, "dim"); return; }
             if (route.Count == 0) { Ui.Para("Owned.", w, "good"); return; }
 
@@ -92,7 +112,6 @@ namespace GridGame.App
             var abilities = board.OwnedAbilities(route).Select(id => C.TryAbility(id)?.Name ?? id).ToList();
             if (abilities.Count > 0) Ui.Para("Learns: " + string.Join(", ", abilities), w, "good").name = "hex-route-abilities";
 
-            var foot = Ui.El("kit-footer", w);
             bool isSelected = pt.Equals(selected);
             Ui.Para(isSelected ? "" : "Tap it to buy.", foot, "dim grow");
             var target = pt.Value;

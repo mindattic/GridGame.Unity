@@ -210,6 +210,8 @@ namespace GridGame.Tests
         [Test]
         public void Berserk_tough_hide_and_wards_read_from_data_for_heroes_too()
         {
+            // Berserk is a monster passive since GG-T1126 (heroes fold into Blood Rage), but a hero who learned it from
+            // an older Tome of Berserk keeps it, so the engine still runs it for heroes.
             var db = Mini();
             foreach (var id in new[] { "berserk", "tough_hide", "steadfast", "poison_ward" }) db.Abilities[id] = Real.Ability(id);
             var (s, _) = Battle(db, Stage(("wolf", 0, 0)), ("knight", 3, 4), ("cleric", 5, 7));

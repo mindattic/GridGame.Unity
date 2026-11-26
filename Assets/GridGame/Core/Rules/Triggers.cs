@@ -79,8 +79,9 @@ namespace GridGame.Core.Rules
                 foreach (var x in list) if (x.Id == a.Id) return;
                 list.Add(a);
             }
-            if (u.Def.Abilities != null) foreach (var id in u.Def.Abilities) Add(c.TryAbility(id));
-            foreach (var id in u.Passives) Add(c.TryAbility(id));
+            // GG-T1134: an edge that takes its wearer's element fires with that element's rider.
+            if (u.Def.Abilities != null) foreach (var id in u.Def.Abilities) Add(c.TryAbility(id)?.ForCaster(u.Def));
+            foreach (var id in u.Passives) Add(c.TryAbility(id)?.ForCaster(u.Def));
             foreach (var slot in BattleEngine.ArmorSlots)
                 if (u.Gear.TryGetValue(slot, out var piece) && piece.Durability > 0 && piece.Enchant != null)
                     Add(c.TryAbility(c.TryArmorEnchant(piece.Enchant)?.Passive));

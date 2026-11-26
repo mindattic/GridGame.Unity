@@ -13,8 +13,8 @@ $root = Split-Path -Parent $PSScriptRoot
 # them. Packages/manifest.json pulls com.mindattic.media.capture/telemetry via "file:../../<Repo>/..."
 # paths, two levels above the project root. In the main checkout that lands on the real sibling
 # repo (<WorkspaceRoot>\<Repo>). In a per-ticket worktree
-# (<WorkspaceRoot>.worktrees\Unity.GridGame\<Ticket>\...) the same climb instead lands on
-# <WorkspaceRoot>.worktrees\Unity.GridGame\<Repo>, which has no repo of its own unless something
+# (<WorkspaceRoot>.worktrees\GridGame.Unity\<Ticket>\...) the same climb instead lands on
+# <WorkspaceRoot>.worktrees\GridGame.Unity\<Repo>, which has no repo of its own unless something
 # put one there -- Unity then refuses with "invalid dependencies ... cannot be found". Auto-create
 # a directory junction at that spot, pointing at the real sibling repo, so a fresh worktree builds
 # with no manual setup. Junctions (not symlinks) because creating a symlink needs
@@ -45,7 +45,7 @@ function Repair-SiblingPackageLinks([string]$ProjectRoot) {
         if (Test-Path $resolved) { continue } # already resolves - nothing to do
 
         # Walk the relative path's leading ".." segments off Packages\ to find the first missing
-        # directory: that's the sibling-repo folder itself (e.g. "...\Unity.GridGame\MindAttic.
+        # directory: that's the sibling-repo folder itself (e.g. "...\GridGame.Unity\MindAttic.
         # Capture"), not the package subfolder beneath it.
         $segments = $relPath -split '[\\/]'
         $upCount = 0
@@ -75,7 +75,7 @@ Repair-SiblingPackageLinks $root
 $ver = (Select-String -Path "$root/ProjectSettings/ProjectVersion.txt" -Pattern "m_EditorVersion: (.+)").Matches[0].Groups[1].Value.Trim()
 $unity = "C:\Program Files\Unity\Hub\Editor\$ver\Editor\Unity.exe"
 if (-not (Test-Path $unity)) { throw "Unity $ver not installed at $unity" }
-# Unity's Editor window title includes the project folder's leaf name (e.g. "Unity.GridGame" in
+# Unity's Editor window title includes the project folder's leaf name (e.g. "GridGame.Unity" in
 # the main checkout, or the ticket folder name in a per-ticket worktree) -- match that instead of
 # a hardcoded pre-Fleet-Rename name so this guard actually fires wherever the project lives.
 $projectName = Split-Path -Leaf $root

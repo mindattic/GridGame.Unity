@@ -914,6 +914,14 @@ namespace GridGame.App
             if (slotRing != null) slotRing.style.display = drawn.TryGetValue(slotEntry, out var sde) && sde.OwnerId == sel ? DisplayStyle.Flex : DisplayStyle.None;
             if (!dragging && board.Units.TryGetValue(sel, out var sv) && !sv.Dead) board.SetSelection(sv.Tile, sv.W, sv.H, Palette.White);
             else board.SetSelection(null, 1, 1, Palette.White);
+            // GG-T1110: under HeroTimeline the hero whose turn it is wears a hero-blue ring on its tile, the board's half of
+            // the NOW slot (which already holds its icon, GG-T1109); it breathes gently unless Reduce Motion holds it steady.
+            if (!dragging && TurnRules.HeroesOnTimeline(State) && board.Units.TryGetValue(State.ActiveHeroId, out var hv) && !hv.Dead)
+            {
+                float breath = ReduceMotion ? 1f : 0.8f + 0.2f * Mathf.Sin(t * 4f);
+                board.SetActiveHero(hv.Tile, hv.W, hv.H, HeroTurnRing.WithA(breath));
+            }
+            else board.SetActiveHero(null, 1, 1, HeroTurnRing);
             if (slotHalo != null)
             {
                 // The slot glows in its occupant's colour as it closes in, fully while it acts; an empty socket stays dim gold.

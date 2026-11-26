@@ -452,7 +452,7 @@ namespace GridGame.Meta
     public sealed class SettingsSave
     {
         public float MusicVolume = 0.6f;
-        public float SfxVolume = 0.85f;
+        public float SfxVolume = 0.7f;
         public bool MuteMusic;
         public bool MuteSfx;
         public bool ColorblindMode;

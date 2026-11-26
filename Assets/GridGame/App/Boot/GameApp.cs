@@ -117,6 +117,13 @@ namespace GridGame.App
         {
             I = this;
             CrashReporter.Install(); // GG-T484: first, so a boot failure is caught too
+            // GG-T1125: Unity.Shared's bootstraps (HeadlessBootstrap, ProfilesBootstrap) read --headless / -muted / MINDATTIC_* in any build, before this runs;
+            // a release player without -enableDebugOptions undoes what they set (mute, run-in-background) so it ignores debug flags like every other one (GG-T566).
+            if (!CommandLine.DebugOptionsAllowed)
+            {
+                global::Unity.Shared.Core.Profiles.SessionMuted = false;
+                Application.runInBackground = false;
+            }
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
 

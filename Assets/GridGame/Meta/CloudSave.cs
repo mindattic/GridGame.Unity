@@ -4,7 +4,8 @@ using GridGame.Core.Content;
 
 namespace GridGame.Meta
 {
-    /// <summary>What the cloud holds for one slot (a Play Games snapshot's metadata, GG-T608; iCloud's later, GG-T609).</summary>
+    /// <summary>What the cloud holds for one slot (a Play Games snapshot's metadata, GG-T608; an iCloud key-value
+    /// envelope's header, GG-T609).</summary>
     public sealed class CloudSnapshotInfo
     {
         public string Name;
@@ -33,7 +34,7 @@ namespace GridGame.Meta
     /// <c>&lt;profile&gt;-slotN</c>, holding the slot as a <see cref="SaveTransfer"/> code (the same Pack/TryImport pair as the
     /// transfer code, so the version check and <see cref="SaveMigrations.Migrate"/> run on every download), with
     /// <c>UpdatedUtc</c> and <c>PlaySeconds</c> in the snapshot metadata. The platform plugin (Play Games Saved Games on
-    /// Android) lives in the App layer and only moves bytes; every decision is made here so the tests can check it.
+    /// Android, the iCloud key-value store on iOS) lives in the App layer and only moves bytes; every decision is made here so the tests can check it.
     /// </summary>
     public static class CloudSave
     {
@@ -98,6 +99,118 @@ namespace GridGame.Meta
             var diff = cloud.UpdatedUtc.ToUniversalTime() - local.UpdatedUtc.ToUniversalTime();
             if (diff.Duration() <= SameSaveTolerance) return CloudChoice.InSync;
             return diff > TimeSpan.Zero ? CloudChoice.OfferCloud : CloudChoice.KeepLocal;
+        }
+
+        /// <summary>Two devices' unsynced writes to one snapshot: <c>true</c> when this device's copy
+        /// (<paramref name="mine"/>) should be written back over the one the cloud kept (<paramref name="theirs"/>). The
+        /// longer play time (the most progress) wins, the rule Play Games applies on Android
+        /// (<c>ConflictResolutionStrategy.UseLongestPlaytime</c>, GG-T608) and the iCloud backend applies itself (GG-T609);
+        /// a tie keeps the cloud's copy, so two devices never fight over the same save.</summary>
+        public static bool KeepMineOnConflict(CloudSnapshotInfo mine, CloudSnapshotInfo theirs)
+        {
+            if (mine == null || !mine.HasData) return false;
+            if (theirs == null || !theirs.HasData) return true;
+            return mine.PlaySeconds > theirs.PlaySeconds;
+        }
+
+        // ---- the save's own timestamp in a Play Games snapshot (GG-T1132) ----
+
+        private const string StampOpen = " [t=";
+        /// <summary>Play Games descriptions are at most 256 characters; the stamp needs about 28 of them.</summary>
+        public const int MaxDescriptionLength = 256;
+
+        /// <summary>The Play Games snapshot description carrying the save's own <c>UpdatedUtc</c> (ticks) after the
+        /// readable text, because the snapshot's <c>LastModifiedTimestamp</c> is the upload time (up to a minute after the
+        /// save) and would read as newer than the save it holds. The readable text is cut to leave room for the stamp.</summary>
+        public static string StampDescription(string description, DateTime savedUtc)
+        {
+            var stamp = StampOpen + savedUtc.ToUniversalTime().Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture) + "]";
+            var text = (description ?? "").Replace('\r', ' ').Replace('\n', ' ');
+            int room = MaxDescriptionLength - stamp.Length;
+            if (text.Length > room) text = text.Substring(0, room);
+            return text + stamp;
+        }
+
+        /// <summary><see cref="StampDescription"/> read back: true with the readable text and the save's own time. False
+        /// (text unchanged, no time) for a snapshot written before the stamp existed or with a damaged one: the caller
+        /// then falls back to the snapshot's modified time. Never throws.</summary>
+        public static bool TryReadStamp(string stamped, out string description, out DateTime savedUtc)
+        {
+            description = stamped ?? "";
+            savedUtc = default;
+            int at = description.LastIndexOf(StampOpen, StringComparison.Ordinal);
+            if (at < 0 || !description.EndsWith("]", StringComparison.Ordinal)) return false;
+            var digits = description.Substring(at + StampOpen.Length, description.Length - at - StampOpen.Length - 1);
+            if (!long.TryParse(digits, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var ticks)
+                || ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks) return false;
+            savedUtc = new DateTime(ticks, DateTimeKind.Utc);
+            description = description.Substring(0, at);
+            return true;
+        }
+
+        // ---- iCloud key-value store (GG-T609) ----
+
+        /// <summary>NSUbiquitousKeyValueStore keys are at most 64 bytes of UTF-8.</summary>
+        public const int MaxICloudKeyLength = 64;
+        /// <summary>NSUbiquitousKeyValueStore holds at most 1 MB per app (every key together), and 1 MB per value.</summary>
+        public const int MaxICloudStoreBytes = 1024 * 1024;
+        private const string EnvelopeTag = "GGC1";
+
+        /// <summary>The iCloud key for snapshot <paramref name="snapshotName"/> (<see cref="SnapshotName"/>, ASCII): the name
+        /// itself when it fits in <see cref="MaxICloudKeyLength"/>; otherwise its head, '~', an 8-digit hash of the whole
+        /// name and the <c>-slotN</c> suffix, so two long profile names sharing a head still get different keys.</summary>
+        public static string ICloudKey(string snapshotName)
+        {
+            var name = snapshotName ?? "";
+            if (name.Length <= MaxICloudKeyLength) return name;
+            int dash = name.LastIndexOf("-slot", StringComparison.Ordinal);
+            var suffix = dash >= 0 ? name.Substring(dash) : "";
+            if (suffix.Length > 16) suffix = "";
+            uint h = 2166136261; // FNV-1a: stable across runs and platforms, unlike string.GetHashCode
+            foreach (var c in name) { h ^= c; h *= 16777619; }
+            var tail = "~" + h.ToString("x8") + suffix;
+            return name.Substring(0, MaxICloudKeyLength - tail.Length) + tail;
+        }
+
+        /// <summary>One iCloud value per snapshot, so a slot's body and its metadata always change together: a line
+        /// <c>GGC1</c>, the save's own <c>UpdatedUtc</c> (ticks), its play seconds and the description, then the
+        /// <see cref="Encode"/>d body (a transfer code, plain ASCII).</summary>
+        public static string ICloudPack(byte[] body, DateTime savedUtc, double playSeconds, string description)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var desc = (description ?? "").Replace('\r', ' ').Replace('\n', ' ');
+            var code = body == null ? "" : new UTF8Encoding(false).GetString(body);
+            return EnvelopeTag + "\n"
+                + savedUtc.ToUniversalTime().Ticks.ToString(inv) + "\n"
+                + Math.Max(0, playSeconds).ToString("R", inv) + "\n"
+                + desc + "\n"
+                + code;
+        }
+
+        /// <summary><see cref="ICloudPack"/> read back: the snapshot's metadata (named <paramref name="name"/>) and body.
+        /// False (nothing usable) for a missing, foreign or damaged value. Never throws.</summary>
+        public static bool ICloudTryUnpack(string name, string value, out CloudSnapshotInfo info, out byte[] body)
+        {
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            info = null;
+            body = null;
+            if (string.IsNullOrEmpty(value)) return false;
+            var parts = value.Split(new[] { '\n' }, 5);
+            if (parts.Length != 5 || parts[0] != EnvelopeTag) return false;
+            if (!long.TryParse(parts[1], System.Globalization.NumberStyles.Integer, inv, out var ticks)
+                || ticks < DateTime.MinValue.Ticks || ticks > DateTime.MaxValue.Ticks) return false;
+            if (!double.TryParse(parts[2], System.Globalization.NumberStyles.Float, inv, out var play)
+                || double.IsNaN(play) || double.IsInfinity(play)) return false;
+            body = new UTF8Encoding(false).GetBytes(parts[4]);
+            info = new CloudSnapshotInfo
+            {
+                Name = name,
+                UpdatedUtc = new DateTime(ticks, DateTimeKind.Utc),
+                PlaySeconds = Math.Max(0, play),
+                Description = parts[3],
+                HasData = body.Length > 0,
+            };
+            return true;
         }
 
         /// <summary>The question asked for <see cref="CloudChoice.OfferCloud"/>; <paramref name="cloudLocalTime"/> is the

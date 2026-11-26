@@ -70,3 +70,29 @@ Already tracked and not refiled: every crawl and dialogue is still lorem ipsum (
   pool back on with `devrested limit=1`, which is what a player sees.
 - What worked well: the in-tab tutorial paced lessons per wave, the drag preview's PINCER outline and chain supporters
   read clearly, the odds disclosure sits in front of every paid random draw and lucky craft, and nothing crashed.
+
+# Fresh-player run 2 (GG-T1122, 2026-11-25), partial
+
+Repeat of the GG-T494 route on the dev player `Build/Windows/GridGame.exe` (built 2026-11-23, before the HeroTimeline
+commits of 2026-11-25), driven by `python tools/harness.py coach GG-T1122-fp --camp --record` on a new profile (Warden,
+Barbarian, Cleric). Only the tutorial battle and the first Camp lessons were reached; the rest of the route is split to
+GG-T1147.
+
+- **Video:** `R:\MindAttic\Capture\GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity_Video.mp4`
+- **Screenshots:** `artifacts/GG-T1122-fp/` (git-ignored): `b1-*` tutorial battle, `camp1-*` Camp and Heroes lessons.
+
+## Timeline
+
+| Step | Shots |
+|---|---|
+| New profile, tutorial battle 1: lessons 1-15 (move to pickup) each showed a popup and marks | b1-01..37 |
+| Wave 4/5 sat on lesson 16 (Interrupting); lessons 16-18 never showed; the battle ended in Defeat | GG-T1122-now |
+| Camp after the defeat: Skill points lesson (Heroes > Abilities > Board) | camp1-38..42 |
+
+## Issues
+
+| Ticket | Issue |
+|---|---|
+| GG-T1145 | Abilities: battle-bar name "Lantern of the Still" wraps to 3 lines over the Supporter text |
+| GG-T1146 | Tutorial battle lost while following every coach mark; lessons interrupt, plate and ready never shown (GG-T512 shape) |
+| GG-T1147 | Not covered: expeditions 2-3, vendors, Summon Circle, Diamond Store, Blacksmith, Board and Party tabs, turn modes, the regression check of the 19 GG-T494 findings |

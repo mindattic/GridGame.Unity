@@ -18,7 +18,7 @@ character system.
 | Families | Six wedges, each from one stat to the next: Martial (VIT→STR), Brawn (STR→AGI), Shadow (AGI→SPD), Wild (SPD→WIS), Brains (WIS→INT), Grace (INT→VIT). |
 | Board | Axial hexagonal lattice, radius 16, 817 points. Points with (Q−R) mod 3 = 0 are ability slots (271); every other point is a stat passive (546), so every ability is ringed by six passives. |
 | Passives | +2 of the nearest stat, or +1/+1 where two stats are near even. Stored per node, so they can be hand-tuned. |
-| Abilities | 249 placed, each at most once. 22 slots are Open: the gap list for future content or DLC, in [GAPS.md](GAPS.md). |
+| Abilities | 211 placed, each at most once. 60 slots are Open: the 22 gaps for future content or DLC in [GAPS.md](GAPS.md), 15 freed by the slice-1 ability merges (GG-T974 and GG-T1126), 13 by slice 2 (GG-T975), 7 by slice 3 (GG-T976) and 3 by the slice-2 leftovers (GG-T1134, BIBLE §25.6.6.1). |
 | Heroes | 65 placed heroes, 4 cut (Basher, Operative, Technician, Tinkerer), 1 new (a Wild druid-brawler, WIS 2 · STR 1 · SPD 1). Each hero = Recipe (its spot on the stat hexagon) + Signature (the move only it starts with) + Start (the connected path of nodes it joins with). |
 | Growth | You own a connected set of nodes. You can take any node next to one you own. Each node costs SP (Passive 1, Ability 1 today). Any hero can reach any ability; distance is the price. |
 | Party | Six heroes, each with a 5-slot bar (abilities, spells or consumables) picked from what that hero owns. |

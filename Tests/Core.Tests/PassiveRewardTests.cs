@@ -45,7 +45,7 @@ namespace GridGame.Tests
             Assert.That(enemyTables.All(t => t.Entries.Any(e => e.Item == "chest_wooden")), Is.True, "every enemy family can drop a chest");
 
             // Every committed battle passive has a Tome, and every Tome is reachable from some source.
-            foreach (var a in Real.Abilities.Values.Where(a => a.Trigger != null && new[] { "double_attack", "counter_attack", "lifesteal", "tough_hide", "berserk", "regenerate", "poison_ward", "steadfast", "thorns", "mana_siphon" }.Contains(a.Id)))
+            foreach (var a in Real.Abilities.Values.Where(a => a.Trigger != null && new[] { "double_attack", "counter_attack", "lifesteal", "tough_hide", "blood_rage", "regenerate", "poison_ward", "steadfast", "thorns", "mana_siphon" }.Contains(a.Id)))
                 Assert.That(Tomes_().Any(t => t.TeachesAbility == a.Id), Is.True, $"no tome teaches {a.Id}");
             var sources = new HashSet<string>(Real.QuestOrder.Select(q => q.RewardItem).Concat(Real.Bounties.Values.Select(b => b.RewardItem))
                 .Concat(Real.Campaign.Themes.Select(t => t.MilestoneReward)).Concat(Real.DropTables.Values.SelectMany(t => t.Entries.Select(e => e.Item))).Where(x => x != null));
@@ -162,15 +162,15 @@ namespace GridGame.Tests
             var s = NewSave();
             var h = s.Hero("warden");
             s.AddItem("tome_thorns", 1); Tomes.Teach(Real, s, "tome_thorns", "warden");
-            s.AddItem("tome_berserk", 1); Tomes.Teach(Real, s, "tome_berserk", "warden");
+            s.AddItem("tome_berserk", 1); Tomes.Teach(Real, s, "tome_berserk", "warden"); // teaches Blood Rage since GG-T1126
             PassiveLoadout.Toggle(Real, h, "thorns");
             s.Milestones.Add("greenvalley");
             s.ChestsOpened = 4;
             var back = SaveFiles.Deserialize(SaveFiles.Serialize(s));
             var bh = back.Hero("warden");
             Assert.That(bh.PassivesChosen, Is.True);
-            Assert.That(bh.ActivePassives, Is.EqualTo(new[] { "berserk" }));
-            Assert.That(PassiveLoadout.Active(Real, bh), Is.EqualTo(new[] { "berserk" }));
+            Assert.That(bh.ActivePassives, Is.EqualTo(new[] { "blood_rage" }));
+            Assert.That(PassiveLoadout.Active(Real, bh), Is.EqualTo(new[] { "blood_rage" }));
             Assert.That(back.Milestones, Does.Contain("greenvalley"));
             Assert.That(back.ChestsOpened, Is.EqualTo(4));
         }

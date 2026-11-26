@@ -90,6 +90,8 @@ $trx = Join-Path $out "suite.trx"
 Invoke-Step "suite" "dotnet" @("test", "Tests\Core.Tests\Core.Tests.csproj", "--logger", "trx;LogFileName=$trx", "--logger", "console;verbosity=minimal") $wt 120 | Out-Null
 Invoke-Step "glyphs" "python" @("tools\check_glyphs.py") $wt 10 | Out-Null
 Invoke-Step "assets" "python" @("tools\check_assets.py") $wt 15 | Out-Null
+# Release content lint (GG-T1119): lorem, placeholder text, reachable test stages, missing names and art. Report only, never a gate.
+Invoke-Step "release_lint" "python" @("tools\release_lint.py") $wt 5 | Out-Null
 
 $passed = 0; $failed = 0
 if (Test-Path $trx) {
@@ -130,7 +132,7 @@ if ($busy) {
 # ── 4. a fix ticket per new failing test ────────────────────────────────────────────────────────────────────
 $filed = @()
 if (-not $NoTickets -and $failing.Count -gt 0) {
-    $open = (tickets ticket list --repo Unity.GridGame --status open --format csv 2>$null) -join "`n"
+    $open = (tickets ticket list --repo GridGame.Unity --status open --format csv 2>$null) -join "`n"
     foreach ($f in $failing | Select-Object -First 25) {
         $short = ($f.Name -split '\.')[-1]
         if ($open -match [regex]::Escape($short)) { continue }
@@ -148,6 +150,8 @@ $verdict = if (-not $head) { "**NOT RUN: the clean copy of main could not be mad
 $md = @("# GridGame nightly $stamp", "", "main at ``$head``. Suite: $verdict.", "",
         "| Step | Exit | Seconds | Log |", "|---|---|---|---|")
 foreach ($k in $summary.Keys) { $s = $summary[$k]; $md += "| $k | $($s.exit) | $($s.seconds) | $($s.log) |" }
+$lintLog = Join-Path $out "release_lint.log"
+if (Test-Path $lintLog) { $md += ""; $md += "## Release lint (report only)"; $md += ""; $md += "``````"; $md += @(Get-Content $lintLog -TotalCount 12); $md += "``````" }
 if ($failing.Count) { $md += ""; $md += "## Failing tests"; $md += ""; foreach ($f in $failing) { $md += "- ``$($f.Name)``: $($f.Message)" } }
 if ($filed.Count) { $md += ""; $md += "## Tickets filed"; $md += ""; foreach ($t in $filed) { $md += "- $t" } }
 $md | Set-Content -Path (Join-Path $out "summary.md") -Encoding utf8

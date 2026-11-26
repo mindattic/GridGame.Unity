@@ -123,6 +123,7 @@ Authors: carl-olsen, darkzaitzev, delapouite, faithtoken, lorc, sbed, skoll, zer
 - lorc/linked-rings
 - lorc/locked-chest
 - lorc/magic-shield
+- lorc/magnet
 - lorc/magnifying-glass
 - lorc/medal
 - lorc/meditation
@@ -162,6 +163,7 @@ Authors: carl-olsen, darkzaitzev, delapouite, faithtoken, lorc, sbed, skoll, zer
 - lorc/sword-clash
 - lorc/sword-wound
 - lorc/teleport
+- lorc/thorny-vine
 - lorc/thrown-spear
 - lorc/thunderball
 - lorc/tornado

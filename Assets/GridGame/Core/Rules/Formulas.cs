@@ -32,7 +32,7 @@ namespace GridGame.Core.Rules
         public const string UnarmedTag = "Unarmed";
 
         /// <summary>Hero classes built around unarmed / martial-arts fighting (signature moves like
-        /// martialartist_palm, pugilist_jabcross, monk_peace). They get Unarmed Mastery even before their
+        /// martialartist_palm, counterpunch, monk_redirectflow). They get Unarmed Mastery even before their
         /// content carries the <see cref="UnarmedTag"/> tag.</summary>
         public static readonly HashSet<string> UnarmedMasteryClasses = new HashSet<string>(StringComparer.Ordinal)
         {

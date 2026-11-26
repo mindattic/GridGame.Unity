@@ -52,7 +52,7 @@ No store-page text claims beyond what the game shows; no frames with debug UI, h
 3. Run, one at a time, each with `--record`:
    `python tools/harness.py storyarc trailer-story` , `python tools/harness.py clips 8 --record`,
    `python tools/harness.py campaign trailer-camp --record`, `python tools/harness.py fullloop 2 --record`.
-4. Sessions land in `R:\MindAttic\Capture\Unity.GridGame\<UTC session>\*_Video.mp4`. Scrub each with ffplay and note
+4. Sessions land in `R:\MindAttic\Capture\GridGame.Unity\<UTC session>\*_Video.mp4`. Scrub each with ffplay and note
    in/out times per shot in the table above.
 
 ## Assembly (ffmpeg)

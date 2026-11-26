@@ -24072,13 +24072,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c1cba8357b8c21b790229b15bbb6c4021aa8f357409432c3c94a70ce37608d9",
+      "hash": "sha256:e72e52c0b017b2603c4112f9c6d30f3ee0693b581c7475b86e03aefe46a8bdd7",
       "about": [
         "item-tome-berserk"
       ],
       "speakers": [],
       "payload": {
-        "short": "A dog-eared field manual. Read it to teach one hero the [Passive] Berserk."
+        "short": "A dog-eared field manual. Read it to teach one hero the [Reactive] Blood Rage."
       }
     },
     "item:tome_counter_attack": {

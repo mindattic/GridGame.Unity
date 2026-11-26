@@ -7,8 +7,9 @@ namespace GridGame.Core.Battle
 {
     internal sealed partial class BattleRunner
     {
-        /// <summary>The ability a bar slot fires. A plain consumable becomes a synthesized single-target heal/damage.</summary>
-        public static AbilityDef AbilityForSlot(ContentDb c, AbilitySlot slot)
+        /// <summary>The ability a bar slot fires. A plain consumable becomes a synthesized single-target heal/damage. An
+        /// ability that takes its caster's element (GG-T1134) comes back in <paramref name="caster"/>'s.</summary>
+        public static AbilityDef AbilityForSlot(ContentDb c, AbilitySlot slot, Unit caster = null)
         {
             if (slot == null || slot.IsEmpty) return null;
             if (slot.IsWeapon)
@@ -16,7 +17,7 @@ namespace GridGame.Core.Battle
                 var w = c.TryItem(slot.WeaponId);
                 return new AbilityDef { Id = "weapon:" + slot.WeaponId, Name = "Equip " + (w?.Name ?? slot.WeaponId), Kind = AbilityKind.Skill, Shape = TargetShape.Self, Mode = TargetMode.Auto, Filter = TargetFilter.Any, Description = "Swap this weapon with the one in hand. Costs a turn." };
             }
-            if (!slot.IsItem) return c.TryAbility(slot.AbilityId);
+            if (!slot.IsItem) return c.TryAbility(slot.AbilityId)?.ForCaster(caster?.Def);
             return ItemAbility(c, c.TryItem(slot.ItemId));
         }
 
@@ -75,7 +76,7 @@ namespace GridGame.Core.Battle
             }
 
             var slot = hero.Bar[cmd.Slot];
-            var a = AbilityForSlot(C, slot);
+            var a = AbilityForSlot(C, slot, hero);
             if (a == null) return Refuse(hero, "Empty");
 
             Coord anchor = a.Mode == TargetMode.Auto ? TargetResolver.AutoAnchor(hero) : cmd.Target;
@@ -153,7 +154,7 @@ namespace GridGame.Core.Battle
         {
             S.Timeline.Remove(cast);
             var caster = S.UnitById(cast.OwnerId);
-            var a = C.TryAbility(cast.AbilityId);
+            var a = C.TryAbility(cast.AbilityId)?.ForCaster(caster?.Def); // GG-T1134
             if (caster == null || !caster.Alive || a == null)
             {
                 Emit(new CastCancelledEvent { EntryId = cast.Id, CasterId = cast.OwnerId, AbilityId = cast.AbilityId, Reason = "caster down" });
@@ -171,6 +172,7 @@ namespace GridGame.Core.Battle
         /// <summary>The dispatcher (§6): per target, cleanse → fire×wet/frozen → steal → damage → blind roll → heal → hasten → buff.</summary>
         private void ResolveAbility(Unit caster, AbilityDef a, Coord anchor, Unit pickedUnit)
         {
+            a = a.ForCaster(caster?.Def); // GG-T1134: a ninja move lands in its caster's element, with that element's rider
             if (ResolveTileReactions(caster, a, anchor)) return; // GG-T371: a hero's tool or element on the traps it covers
             if (a.Vanishes) { ResolveVanish(caster, a); return; } // GG-T861: its smoke goes down first, then it vanishes
             ResolveAbilityEffects(caster, a, anchor, pickedUnit);
