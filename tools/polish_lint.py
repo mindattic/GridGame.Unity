@@ -136,7 +136,7 @@ def lint():
     for p in files():
         rel = os.path.relpath(p, ROOT).replace("\\", "/")
         subjects_files.append(rel)
-        text = strip_comments(open(p, encoding="utf-8").read())
+        text = strip_comments(open(p, encoding="utf-8", errors="replace").read())
         for rule, (_, lits, toks) in CS_RULES.items():
             if rule == "POL-B1" and p in PALETTE_FILES:
                 continue
@@ -218,7 +218,7 @@ def vfx_rules():
     for p in VFX_FILES:
         if not os.path.exists(p):
             continue
-        n = len(switch.findall(strip_comments(open(p, encoding="utf-8").read())))
+        n = len(switch.findall(strip_comments(open(p, encoding="utf-8", errors="replace").read())))
         if n:
             failed += 1; worst.append((os.path.relpath(p, ROOT).replace("\\", "/"), n))
     checked4 = len(elements) + len(buffs) + sum(os.path.exists(p) for p in VFX_FILES)
@@ -233,7 +233,7 @@ def vfx_rules():
                                                   and t.get("HitStop", 0) > prev.get("HitStop", 0)))
         if not ok:
             t_fail += 1; t_worst.append((f"tier {name} missing or not above the one below", 1))
-    play = "".join(open(p, encoding="utf-8").read() for p in VFX_FILES if os.path.exists(p))
+    play = "".join(open(p, encoding="utf-8", errors="replace").read() for p in VFX_FILES if os.path.exists(p))
     wired = "TierOf(" in play and "HitStop" in play
     if not wired:
         t_fail += 1; t_worst.append(("hit playback does not read the tier", 1))
