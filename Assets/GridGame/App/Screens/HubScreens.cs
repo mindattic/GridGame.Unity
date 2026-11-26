@@ -504,7 +504,7 @@ namespace GridGame.App
                 int idx = i;
                 var cell = Ui.El("col center", bar);
                 // Every bar slot shares the row with even gutters, however many slots or however wide the stage (POL-C8).
-                cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.height = Size.Cell;
+                cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minHeight = Size.Cell; // GG-T1145: min, not fixed: a long name wraps to 3 lines and grows the cell instead of spilling onto the Supporter line
                 cell.style.marginLeft = cell.style.marginRight = Space.TargetHalfGap;
                 cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 14;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = i == slot ? 6 : 3;
