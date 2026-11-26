@@ -164,6 +164,7 @@ namespace GridGame.App
                 case RampagedEvent rp: return RampageAnim(rp); // GG-T898: the steam-train whistle
                 case SteppedEvent s: return StepAnim(s.UnitId, s.To, 0.16f, "battle.move");
                 case DisplacedEvent d: return StepAnim(d.UnitId, d.To, 0.14f, "battle.slide");
+                case BurrowedEvent bw: return BurrowAnim(bw); // GG-T1159: a burrowed unit's token goes under with it
                 case TeleportedEvent t: return TeleportAnim(t);
                 case VaultedEvent vt: return VaultAnim(vt); // GG-T868: the Lancer's Pole Vault arc
                 case SubstitutedEvent sb: return SubstitutionAnim(sb); // GG-T862: the White Ninja's log and smoke
@@ -374,11 +375,22 @@ namespace GridGame.App
             finally { if (trail) board.Trail.Release(v.Root); }
         }
 
+        /// <summary>GG-T1159: the unit is off the board (not Alive) until it surfaces, so its token leaves the board now —
+        /// another token may legitimately step onto the burrow tile meanwhile.</summary>
+        private IEnumerator BurrowAnim(BurrowedEvent b)
+        {
+            if (!board.Units.TryGetValue(b.UnitId, out var v) || v.Dead) yield break;
+            yield return Tween.Fade(v.Root, 1, 0, Timing.Quick);
+            v.Root.RemoveFromHierarchy();
+            v.Dead = true;
+        }
+
         private IEnumerator TeleportAnim(TeleportedEvent t)
         {
             if (!board.Units.TryGetValue(t.UnitId, out var v)) yield break;
             App.Audio.Sfx("element.arcane");
-            yield return Tween.Fade(v.Root, 1, 0, Timing.Quick);
+            if (v.Dead) { board.UnitLayer.Add(v.Root); v.Dead = false; v.Root.style.opacity = 0; } // GG-T1159: a burrower coming back up
+            else yield return Tween.Fade(v.Root, 1, 0, Timing.Quick);
             board.Place(v, t.To);
             yield return Tween.Fade(v.Root, 0, 1, Timing.Quick);
         }

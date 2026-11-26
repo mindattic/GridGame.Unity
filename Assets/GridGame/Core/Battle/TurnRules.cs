@@ -75,7 +75,8 @@ namespace GridGame.Core.Battle
     /// on its own non-hero icon (<see cref="IsHeroIcon"/> is false for an independent ally), which never becomes
     /// <see cref="BattleState.ActiveHeroId"/>; a rule summon gets a foe icon the same way. A recruit (Talk, the talker's
     /// turn) and a wave's guest (at its wave's opening) join on their own hero icon at their Speed's entry, every other
-    /// icon left where it is. The countdown badge (<see cref="CountdownLeft"/>) counts every other icon on the one bar:
+    /// icon left where it is. The active hero's window (<see cref="TurnTicks"/>) runs to the next foe icon only (§2.0,
+    /// GG-T1169): a hero icon arriving meanwhile waits at the edge for the next turn. The countdown badge (<see cref="CountdownLeft"/>) counts every other icon on the one bar:
     /// a hero icon is a party turn and a foe icon a foe turn, so a hero arriving before the foe counts, and 0 means the
     /// foe's icon is the next to arrive. TurnModeHeroTimelineTests pin each answer.</para>
     /// <para>GG-T1105 (§2.13.3) the enemy AI under HeroTimeline, decided: foes stay blind to whose icon arrives next, as
@@ -302,8 +303,8 @@ namespace GridGame.Core.Battle
         /// What is left of the party's turn in clock ticks. PartyWindow: until the next enemy turn icon reaches the left
         /// edge (no pushback/hasten assumed); each hero action spends some of it and a Pushback or Slow lengthens it
         /// (GG-T308). -1 when no enemy icon can arrive (none left, or every one halted) — the hold then has no limit.
-        /// HeroTimeline (GG-T1074, §2.13.3): until the next turn icon of either side other than the active hero's own (a
-        /// foe's or another hero's), so the forced drop and the minimum-action gap (§2.0) read the same way.
+        /// HeroTimeline (§2.13.3, GG-T1169): the same, until the next foe icon (§2.0); another hero's icon arriving first
+        /// waits at the edge like a tie and doesn't shorten the active hero's turn.
         /// </summary>
         public static int TurnTicks(BattleState s)
         {
@@ -314,7 +315,7 @@ namespace GridGame.Core.Battle
                 if (e.Kind != TimelineKind.Turn) continue;
                 var o = s.UnitById(e.OwnerId);
                 if (o == null) continue;
-                if (o.IsHero && !(IsHeroIcon(s, o) && o.Id != s.ActiveHeroId)) continue;
+                if (o.IsHero) continue;
                 int t = BattleEngine.TicksUntilTurn(s, e.OwnerId);
                 if (t > 0 && (best < 0 || t < best)) best = t;
             }

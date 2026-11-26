@@ -13,6 +13,7 @@ namespace GridGame.App
     {
         private Label tempoLabel;
         private int shownTempo;
+        private const float TempoLabelWidth = 90f;
 
         private void EnsureTempoLabel()
         {
@@ -21,7 +22,10 @@ namespace GridGame.App
             tempoLabel.name = "timeline-tempo";
             tempoLabel.pickingMode = PickingMode.Ignore;
             tempoLabel.style.position = Position.Absolute;
-            tempoLabel.style.left = TrackX0 - IconSpan / 2f; // over the track's acting end, clear of the slot (GG-T287)
+            tempoLabel.style.left = XOfU(1f) - TempoLabelWidth + IconSpan / 2f; // over the track's far end, so the round readout owns the acting end (GG-T1158)
+            tempoLabel.style.width = TempoLabelWidth;
+            tempoLabel.style.unityTextAlign = TextAnchor.UpperRight;
+            tempoLabel.style.whiteSpace = WhiteSpace.NoWrap;
             tempoLabel.style.top = Space.S0;
             Fonts.UseHeavy(tempoLabel);
         }

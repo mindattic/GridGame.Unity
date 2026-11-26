@@ -800,6 +800,7 @@ namespace GridGame.App
     {
         private int tab;
         private string bargainSelected;
+        private int buyCategory = -1;
         private readonly Dictionary<string, int> buyCart = new Dictionary<string, int>();
         private readonly Dictionary<string, int> sellCart = new Dictionary<string, int>();
         private ScrollView cartScroll;
@@ -813,17 +814,33 @@ namespace GridGame.App
             Ui.Tabs(new[] { "Buy", "Sell", "Bargain" }, tab, i => { tab = i; bargainSelected = null; Refresh(); }, body);
             if (tab == 2) { BuildBargain(body); return; }
             bool selling = tab == 1;
+            // GG-T538 (§25.0.10): the shelf grows with progress; a fresh Merchant shows the first stock tier only.
+            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C, S).Where(i => Features.Offers(i.Id)).ToList();
+            if (!selling)
+            {
+                // GG-T1161 (§25.1): one category at a time (about 110 rows in one list was a wall); the first non-empty one opens.
+                var cats = items.Select(Shop.SectionOf).Distinct().OrderBy(c => c).ToList();
+                if (cats.Count > 0)
+                {
+                    if (!cats.Contains(buyCategory)) buyCategory = cats[0];
+                    Ui.Tabs(cats.Select(c => Shop.Sections[c]).ToArray(), cats.IndexOf(buyCategory), i => { buyCategory = cats[i]; keepScroll = 0f; Refresh(); }, body);
+                    items = items.Where(i => Shop.SectionOf(i) == buyCategory).ToList();
+                }
+            }
             var list = Ui.ListPanel(body, null, out cartScroll);
             // A −/+ tap rebuilds the page: keep the list where the player had scrolled it, not back at the top.
             float restore = keepScroll; keepScroll = 0f;
             var sv = cartScroll;
             if (restore > 0f) sv.RegisterCallback<GeometryChangedEvent>(_ => { if (restore > 0f) { sv.scrollOffset = new Vector2(0f, restore); restore = 0f; } });
             var cart = selling ? sellCart : buyCart;
-            // GG-T538 (§25.0.10): the shelf grows with progress; a fresh Merchant shows the first stock tier only.
-            var items = selling ? Shop.Sellable(C, S) : Shop.Stock(C, S).Where(i => Features.Offers(i.Id)).ToList();
-            // GG-T520 (§25.1): the Buy list in sections (Weapons, Armor, Jewelry, Consumables, Materials), each keeping the
-            // shelf's price order.
-            if (!selling) items = items.OrderBy(Shop.SectionOf).ToList();
+            if (!selling && Shop.NextStock(C, S) is var next && next.tier > 0)
+            {
+                // The next stock tier, signposted at the head of the list: "More stock after The Lantern Road III · +14 items".
+                string when = VendorTiers.OpensHint(C, next.tier);
+                var more = Ui.MenuRow($"More stock {when}", $"+{next.count} items", () => { App.Toast($"The Merchant restocks {when}"); }, list, null, false);
+                more.KindIcon(RowKind.Locked); // GG-T750 (§26.7): stock not open yet
+                more.name = "shop-next";
+            }
             if (items.Count == 0) Ui.Empty(selling ? "Nothing to sell." : "Sold out.", list);
             var detail = Ui.DetailPanel(body);
             ItemUi.Detail(detail, null);
@@ -868,14 +885,6 @@ namespace GridGame.App
                 // GG-T520: under a gear row, which party heroes can equip it and whom it upgrades.
                 if (!selling && Shop.GearFitLine(C, S, item, out bool upgrade) is string fit)
                     Ui.Note(fit, list, upgrade ? "good" : "dim").name = "shop-fit-" + item.Id;
-            }
-            if (!selling && Shop.NextStock(C, S) is var next && next.tier > 0)
-            {
-                // The next stock tier, signposted at the foot of the list: "More stock after The Lantern Road III · +14 items".
-                string when = VendorTiers.OpensHint(C, next.tier);
-                var more = Ui.MenuRow($"More stock {when}", $"+{next.count} items", () => { App.Toast($"The Merchant restocks {when}"); }, list, null, false);
-                more.KindIcon(RowKind.Locked); // GG-T750 (§26.7): stock not open yet
-                more.name = "shop-next";
             }
             var fr = Ui.Footer(body, "shop-footer");
             int total = Shop.CartTotal(C, cart, selling);
@@ -945,7 +954,7 @@ namespace GridGame.App
         public override string Id => "blacksmith";
         protected override string Title => "Blacksmith";
         protected override string Backdrop => "cave";
-        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.HeaderText(S, StationKind.Blacksmith)}";
+        protected override string Subtitle => $"{Facilities.Current(C, S, CraftStation.Forge)} · {StationProgress.ShortText(S, StationKind.Blacksmith)}";
         protected override string Npc => CampNpcs.Blacksmith;
         /// <summary>The Forge tab has its own tip, the first forge (GG-T177), then the first armor once the weapon is made
         /// (GG-T178); Repair keeps the Blacksmith's.</summary>
@@ -956,7 +965,7 @@ namespace GridGame.App
             // GG-T175 (§25.0.4): he joins to mend worn gear, so Repair is his only open tab at first; Forge, Upgrade and
             // Salvage are dimmed and say when they arrive.
             bool workshop = CampUnlocks.SmithWorkshopOpen(S);
-            if (tab < 0) tab = workshop && CampTips.Pending(S, Id) == null ? 0 : RepairTab;
+            if (tab < 0) tab = workshop && (CampTips.Pending(S, Id) == null || !Repair.Pieces(C, S).Any()) ? 0 : RepairTab;
             if (!workshop) tab = RepairTab;
             var bar = Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i =>
             {

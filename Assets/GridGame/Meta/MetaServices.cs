@@ -1285,6 +1285,13 @@ namespace GridGame.Meta
 
         public static bool IsUnlocked(SaveData s, StationKind k, int tier) => Level(s, k) >= tier;
 
+        /// <summary>The header's compact form: "Apprentice 40/150 XP", or just the rank once maxed.</summary>
+        public static string ShortText(SaveData s, StationKind k)
+        {
+            int lvl = Level(s, k);
+            return lvl >= LevelNames.Length ? LevelNames[lvl - 1] : $"{LevelNames[lvl - 1]} {Xp(s, k)}/{Thresholds[lvl]} XP";
+        }
+
         /// <summary>"Journeyman — 40/450 XP to Master", or "Master — every tier unlocked" when maxed.</summary>
         public static string HeaderText(SaveData s, StationKind k)
         {

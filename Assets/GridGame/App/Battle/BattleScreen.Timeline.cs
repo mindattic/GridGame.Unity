@@ -202,6 +202,8 @@ namespace GridGame.App
             roundLabel.style.position = Position.Absolute;
             roundLabel.style.top = TrackY - IconSpan / 2f - Space.S8;
             roundLabel.style.left = XOfU(0f);
+            roundLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) - XOfU(0f) - TempoLabelWidth); // GG-T1158: never runs under the tempo caption
+            roundLabel.style.whiteSpace = WhiteSpace.NoWrap; roundLabel.style.overflow = Overflow.Hidden; roundLabel.style.textOverflow = TextOverflow.Ellipsis;
             roundLabel.style.color = Palette.GoldLight;
             roundLabel.style.display = DisplayStyle.None;
             Fonts.UseHeavy(roundLabel);
@@ -217,6 +219,7 @@ namespace GridGame.App
             if (r == null) return;
             roundLabel.text = $"Round {r.Value.Round} · {r.Value.Moved} of {r.Value.Of} moved";
             roundLabel.style.left = XOfU(0f);
+            roundLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) - XOfU(0f) - TempoLabelWidth);
         }
 
         /// <summary>
@@ -231,7 +234,7 @@ namespace GridGame.App
             float nextU = 2f;
             foreach (var e in drawn.Values)
                 if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted
-                    && (!o.IsHero || TurnRules.NotThisHerosTurn(State, o)) // GG-T1109: mirror TurnRules.TurnTicks (another hero's icon ends it too)
+                    && !o.IsHero // GG-T1169: mirror TurnRules.TurnTicks (only a foe's icon ends the window)
                     && at.TryGetValue(e.Id, out var u) && u > 0f)
                     nextU = Mathf.Min(nextU, u);
             int ticks = BattleEngine.TurnTicks(State);
@@ -252,7 +255,10 @@ namespace GridGame.App
             if (TurnRules.HeroesOnTimeline(State) && State.UnitById(State.ActiveHeroId) is Unit ah && ah.Alive)
                 gapLabel.text = $"{ah.Name}'s turn · {gapLabel.text}"; // GG-T1109 (§2.13.3)
             gapLabel.style.color = c;
-            gapLabel.style.left = XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f);
+            float gapMin = Fit.Edge + SlotSpan + Space.S8; // GG-T1158: clear of the NOW portrait
+            gapLabel.style.left = Mathf.Max(gapMin, XOfU(0f) + Mathf.Max(0f, w * 0.5f - 60f));
+            gapLabel.style.maxWidth = Mathf.Max(0f, XOfU(1f) + IconSpan / 2f - gapMin);
+            gapLabel.style.whiteSpace = WhiteSpace.NoWrap; gapLabel.style.overflow = Overflow.Hidden; gapLabel.style.textOverflow = TextOverflow.Ellipsis;
         }
 
         /// <summary>The prominence slot: a gold socket holding a large diamond of the next (or acting) actor, its seconds under it.</summary>
