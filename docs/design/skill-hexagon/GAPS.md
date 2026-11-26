@@ -95,7 +95,7 @@ spends mana for tempo. Candidates: Stasis (Haste Field went to Courier in GG-T11
 
 **Grace (INT → VIT), 1 slot.** Ring 16 at the Martial edge, between Herald and Tank (Sacred
 Challenge, Lifegift, Juggernaut Charge). A VIT-leaning holy guard: a ward that taunts, or a heal
-that also shields. Candidates: Barrier, Spellshield, Rune Ward (the three `warden_*` spells).
+that also shields. Candidates: Barrier, Rune Ward (`warden_*` spells; Spellshield went to Sage in GG-T1138).
 
 ## Abilities in abilities.json that are not on the board (108)
 

@@ -88,13 +88,13 @@ New portraits and the icon stay with the owner.
 - At runtime (`SkillHex.cs`) an Open slot is a hole. No hero can take it, and routes go around it.
 - The validator only prints the gap list, and no test asserts the count.
 - The page and `SkillHexView` draw a faint ring. No Open node carries a `Note` yet.
-- GAPS.md lists 38 hero-side moves that no class lists. Eleven of them are items that belong on the 5-slot bar,
-  which leaves **27 candidates for the 22 slots**.
+- GAPS.md lists 36 hero-side moves that no class lists. Eleven of them are items that belong on the 5-slot bar,
+  which leaves **25 candidates for the 22 slots**.
 
 | Option | What the slots are | Validator | Page / game |
 |---|---|---|---|
 | **A. DLC packs by wedge** | Keep them Open and tag each one with a `Note` such as `DLC: Wild pack`. Packs follow the GAPS wedge briefs (Martial+Brawn, Shadow+Wild, Brains+Grace). | Add a check that every Open slot has a pack `Note`, and print the gap list grouped by pack. | The rings show the pack name on hover. In game, 22 holes stay on the outer rings until a pack ships. |
-| **B. Fill now from the 27 unlisted hero-side moves** (recommended) | Place 20 of them by wedge (list below), move Stumbling Ground into one (question 1), and keep **1 Wild slot Open** as reserve with a `Note`. | The "not on the board" count drops from 110 to 90 (72 enemy-only, 11 items, 7 leftovers). Add a check that each remaining Open slot carries a `Note`. | Almost no faint rings. Late-game reach grows in the physical half. GAPS.md becomes history. A balance soak covers the new nodes. |
+| **B. Fill now from the 25 unlisted hero-side moves** (recommended) | Place 20 of them by wedge (list below), move Stumbling Ground into one (question 1), and keep **1 Wild slot Open** as reserve with a `Note`. | The "not on the board" count drops from 108 to 88 (72 enemy-only, 11 items, 5 leftovers). Add a check that each remaining Open slot carries a `Note`. | Almost no faint rings. Late-game reach grows in the physical half. GAPS.md becomes history. A balance soak covers the new nodes. |
 | **C. Reserve for future hero kits** | Keep them Open, and give each a `Note` naming the planned hero or ticket that will fill it (for example, the 6 Wild slots for the new Wild hero's late kit). | Add a check that a reserved `Note` names a real ticket or hero, with a warning when one goes stale. | Same as A, but labelled by hero. Nothing new is playable until those heroes exist. |
 
 **The fill list for B** follows the GAPS.md wedge briefs. The implementer picks exact slots in the page editor.
@@ -103,9 +103,10 @@ New portraits and the icon stay with the owner.
   `brawler_second_wind`; it may be a merge alias (GG-T973) and not a node of its own.
 - Shadow (4): Sprint, Disengage, Opportunist, Pressure Point.
 - Wild (6): Stampede, Drench, Undertow, Focus Breath, Stumbling Ground (moved there), and 1 Open reserve.
-- Brains (1): Haste Field.
+- Brains (1): Stasis (Haste Field became Courier's signature in GG-T1138).
 - Grace (1): Barrier (`warden_barrier`).
-- Left off the board (7): Stasis, Rune Ward, Spellshield, Flame Lance, Drain Life, Mana Siphon and Arcane Focus. They
+- Left off the board (5): Rune Ward, Flame Lance, Drain Life, Mana Siphon and Arcane Focus (Spellshield became Sage's
+  signature in GG-T1138). They
   can be DLC, or replace a weaker move later.
 
 **Why B is recommended.**
