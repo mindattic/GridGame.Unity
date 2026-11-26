@@ -5625,6 +5625,7 @@
       "teleport",
       "quicken",
       "combobrawler_onetwoflurry",
+      "fighter_bell_ringer",
       "combobrawler_openingjab",
       "combobrawler_knockoutcombo",
       "battle_hardened"
@@ -5633,7 +5634,7 @@
       "cleave",
       "combobrawler_openingjab",
       "item:x_potion",
-      "combobrawler_onetwoflurry",
+      "fighter_bell_ringer",
       "combobrawler_knockoutcombo"
     ],
     "DropTable": null,
@@ -10410,6 +10411,7 @@
       "sleep",
       "antidote",
       "grappling_hook",
+      "myrmidon_shield_rush",
       "juggernaut_war_stomp",
       "juggernaut_unstoppable_momentum",
       "juggernaut_overrun",
@@ -10420,7 +10422,7 @@
       "taunt",
       "juggernaut_war_stomp",
       "item:x_potion",
-      "grappling_hook",
+      "myrmidon_shield_rush",
       "juggernaut_overrun"
     ],
     "DropTable": null,
@@ -10810,10 +10812,11 @@
       "brawler_guard_break",
       "brawler_wide_cleave",
       "brawler_second_wind",
-      "grim_resolve"
+      "grim_resolve",
+      "odachi_long_draw"
     ],
     "DefaultLoadout": [
-      "cleave",
+      "odachi_long_draw",
       "brawler_guard_break",
       "item:x_potion",
       "duelist_decisivecut",
