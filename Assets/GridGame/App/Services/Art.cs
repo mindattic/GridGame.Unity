@@ -19,14 +19,14 @@ namespace GridGame.App
         public static Texture2D Load(string path)
         {
             if (string.IsNullOrEmpty(path)) return Placeholder;
-            if (cache.TryGetValue(path, out var t) && t != null) return t;
+            if (cache.TryGetValue(path, out var t) && t != null) { Touch(path); return t; }
             t = Resources.Load<Texture2D>(path);
             if (t == null)
             {
                 if (warned.Add(path)) Debug.LogWarning($"[Art] missing texture '{path}'");
                 t = Placeholder;
             }
-            cache[path] = t;
+            Store(path, t);
             return t;
         }
 
@@ -34,6 +34,42 @@ namespace GridGame.App
 
         /// <summary>Textures held by path (the `-leakprobe` line, GG-T375): bounded by the art on disk, never per battle.</summary>
         internal static int CachedTextures => cache.Count;
+
+        // GG-T1193: the cache is an LRU with a cap. Evicting only drops our references (the cache, owner and figure-sprite
+        // entries); Unity unloads a texture once nothing else holds it (Resources.UnloadUnusedAssets), so a texture still
+        // drawn by a window or the board keeps living and is simply re-found by Resources.Load when asked for again.
+        internal const int CacheCap = 400, CacheTrimTo = 320;
+        private static readonly Dictionary<string, long> lastUsed = new Dictionary<string, long>();
+        private static long useTick;
+
+        private static void Touch(string path) => lastUsed[path] = ++useTick;
+
+        private static Texture2D Store(string path, Texture2D t)
+        {
+            cache[path] = t;
+            Touch(path);
+            if (cache.Count > CacheCap) TrimCache();
+            return t;
+        }
+
+        private static void TrimCache()
+        {
+            var order = new List<KeyValuePair<string, long>>(cache.Count);
+            foreach (var k in cache.Keys) order.Add(new KeyValuePair<string, long>(k, lastUsed.TryGetValue(k, out var u) ? u : 0));
+            order.Sort((a, b) => a.Value.CompareTo(b.Value));
+            int drop = cache.Count - CacheTrimTo;
+            for (int i = 0; i < drop; i++)
+            {
+                string k = order[i].Key;
+                if (cache.TryGetValue(k, out var tex) && tex != null)
+                {
+                    owners.Remove(tex);
+                    figureSprites.Remove(tex);
+                }
+                cache.Remove(k);
+                lastUsed.Remove(k);
+            }
+        }
 
         private static readonly Dictionary<string, int> spellIndex = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
 
@@ -132,7 +168,7 @@ namespace GridGame.App
                 string path = PortraitFolder + def.PortraitFile(true);
                 var t = Resources.Load<Texture2D>(path);
                 has = t != null;
-                if (has) { cache[path] = t; owners[t] = (def, true); } // it's drawn soon anyway
+                if (has) { Store(path, t); owners[t] = (def, true); } // it's drawn soon anyway
             }
             return maleArt[classId] = has;
         }
@@ -153,7 +189,7 @@ namespace GridGame.App
         private static Texture2D PortraitByFile(string file, ClassDef def, bool male)
         {
             string path = PortraitFolder + file;
-            if (cache.TryGetValue(path, out var t) && t != null) return t;
+            if (cache.TryGetValue(path, out var t) && t != null) { Touch(path); return t; }
             t = string.IsNullOrEmpty(file) ? null : Resources.Load<Texture2D>(path);
             if (t == null)
             {
@@ -162,7 +198,8 @@ namespace GridGame.App
                 def = Class(MannequinClass); male = false;
             }
             if (t != null && def != null && !owners.ContainsKey(t)) owners[t] = (def, male);
-            return cache[path] = t;
+            Store(path, t);
+            return t;
         }
 
         /// <summary>The placeholder class, and its portrait file every class without art falls back to.</summary>
@@ -238,8 +275,8 @@ namespace GridGame.App
         {
             if (string.IsNullOrEmpty(id)) return null;
             string path = AssetNames.Path(folder, id); // GG-T561: <folder>/<id words>-00
-            if (cache.TryGetValue(path, out var t)) return t;
-            return cache[path] = Resources.Load<Texture2D>(path);
+            if (cache.TryGetValue(path, out var t)) { Touch(path); return t; }
+            return Store(path, Resources.Load<Texture2D>(path));
         }
 
         /// <summary>An ability's pixel icon (AbilityIcons/&lt;id&gt;-00, GG-T561), else its legacy icon, else null.</summary>
@@ -253,8 +290,8 @@ namespace GridGame.App
         {
             if (string.IsNullOrEmpty(id)) return null;
             string path = AssetNames.Path("StatusIcons", id);
-            if (cache.TryGetValue(path, out var t)) return t;
-            return cache[path] = Resources.Load<Texture2D>(path);
+            if (cache.TryGetValue(path, out var t)) { Touch(path); return t; }
+            return Store(path, Resources.Load<Texture2D>(path));
         }
 
         /// <summary>A theme's board tile: <c>Tiles/&lt;theme&gt;-00</c>, else its base theme's (a postgame theme with its own
