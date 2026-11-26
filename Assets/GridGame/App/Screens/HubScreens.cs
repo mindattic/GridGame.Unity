@@ -965,7 +965,7 @@ namespace GridGame.App
             // GG-T175 (§25.0.4): he joins to mend worn gear, so Repair is his only open tab at first; Forge, Upgrade and
             // Salvage are dimmed and say when they arrive.
             bool workshop = CampUnlocks.SmithWorkshopOpen(S);
-            if (tab < 0) tab = workshop && (CampTips.Pending(S, Id) == null || Repair.Pieces(C, S).Count == 0) ? 0 : RepairTab;
+            if (tab < 0) tab = workshop && (CampTips.Pending(S, Id) == null || !Repair.Pieces(C, S).Any()) ? 0 : RepairTab;
             if (!workshop) tab = RepairTab;
             var bar = Ui.Tabs(new[] { "Forge", "Upgrade", "Salvage", "Repair" }, tab, i =>
             {
