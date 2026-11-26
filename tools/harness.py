@@ -40,7 +40,7 @@ Self-play harness: launches the development player with the automation endpoint 
 
     --preview [TICKET] anywhere in the args (GG-T1007): when the command ends, pass or fail, the PNGs it wrote under
     artifacts/<run>/ (name order, caption = file name) and, with --record, the session video become a preview set
-    (MindAttic.Media.Capture's `capture set new/add/show`, under R:\\MindAttic\\Preview) opened in
+    (MindAttic.Media.Capture's `capture set new/add/show`, under R:\\MindAttic\\Media\\Preview) opened in
     MindAttic.Media.Viewer. The agent is %LOCALAPPDATA%\\MindAttic\\Capture\\bin\\capture.exe (MINDATTIC_CAPTURE_AGENT
     overrides); without it the run only warns. e.g. python tools/harness.py sweep --preview
 
@@ -3364,7 +3364,8 @@ def _new_files(top, ext, skip=("saves",)):
 
 def _session_video(timeout=30.0):
     """GG-T1007: the --record session video (MindAttic.Media.Capture finalizes it after the player quits)."""
-    roots = [os.path.join(ROOT, "artifacts"), r"R:\MindAttic\Capture\GridGame.Unity"]
+    roots = [os.path.join(ROOT, "artifacts"), r"R:\MindAttic\Media\Capture\GridGame.Unity",
+             r"R:\MindAttic\Capture\GridGame.Unity"]  # LEGACY-ROOT: old root, kept one release
     deadline = time.time() + timeout
     while True:
         vids = [v for r in roots for v in _new_files(r, ".mp4") if v not in FAIL_FOOTAGE]

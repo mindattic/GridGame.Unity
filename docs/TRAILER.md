@@ -9,8 +9,8 @@ itself is not captured yet (see Status).
 - Prep done (this file). Footage not captured and nothing cut: the capture needs a player running for several
   minutes under the heavy-process lease, and the cut needs the clips watched shot by shot.
 - Left to do: capture the shots below, pick the best take of each, run the assembly, drop the result at
-  `docs/store/trailer/gridgame-trailer-45s.mp4` (size permitting; else keep it under `R:\MindAttic\Capture` and link it).
-- Raw footage from earlier runs already exists under `R:\MindAttic\Capture\Unity.GridGame\<session>\*_Video.mp4`
+  `docs/store/trailer/gridgame-trailer-45s.mp4` (size permitting; else keep it under `R:\MindAttic\Media\Capture` and link it).
+- Raw footage from earlier runs already exists under `R:\MindAttic\Media\Capture\Unity.GridGame\<session>\*_Video.mp4`
   (the 2026-11-22 sessions are the newest) but predates the latest UI and icon work; prefer a fresh run.
 
 ## Music cue
@@ -52,7 +52,7 @@ No store-page text claims beyond what the game shows; no frames with debug UI, h
 3. Run, one at a time, each with `--record`:
    `python tools/harness.py storyarc trailer-story` , `python tools/harness.py clips 8 --record`,
    `python tools/harness.py campaign trailer-camp --record`, `python tools/harness.py fullloop 2 --record`.
-4. Sessions land in `R:\MindAttic\Capture\GridGame.Unity\<UTC session>\*_Video.mp4`. Scrub each with ffplay and note
+4. Sessions land in `R:\MindAttic\Media\Capture\GridGame.Unity\<UTC session>\*_Video.mp4`. Scrub each with ffplay and note
    in/out times per shot in the table above.
 
 ## Assembly (ffmpeg)

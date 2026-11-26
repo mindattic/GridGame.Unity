@@ -6,7 +6,7 @@ vendors, the Summon Circle (with the new odds display), the Diamond Store and th
 were driven through real drags, taps and spell casts on the automation endpoint (the bot's suggested move, dragged
 tile by tile), not autoplay.
 
-- **Video:** `R:\MindAttic\Capture\Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame_Video.mp4`
+- **Video:** `R:\MindAttic\Media\Capture\Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame\2026.11.21T03.55.06Z_Unity.GridGame_Video.mp4`
   (MindAttic.Media.Capture `-capture video hq`, 584x1266, 2.0 GB)
 - **Screenshots:** `artifacts/fresh-player/NN-*.png` (git-ignored, local). After the fixes landed, the rebuilt player
   was checked in `artifacts/verify/v01..v06-*.png`.
@@ -78,7 +78,7 @@ commits of 2026-11-25), driven by `python tools/harness.py coach GG-T1122-fp --c
 Barbarian, Cleric). Only the tutorial battle and the first Camp lessons were reached; the rest of the route is split to
 GG-T1147.
 
-- **Video:** `R:\MindAttic\Capture\GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity_Video.mp4`
+- **Video:** `R:\MindAttic\Media\Capture\GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity\2026.11.26T02.46.25Z_GridGame.Unity_Video.mp4`
 - **Screenshots:** `artifacts/GG-T1122-fp/` (git-ignored): `b1-*` tutorial battle, `camp1-*` Camp and Heroes lessons.
 
 ## Timeline
@@ -108,7 +108,7 @@ pick (preview, lock-in), prologue crawl (lorem, GG-T497), Tithe Moors I, II and 
 mode PartyWindow), results with the tome Teach-to buttons, Camp with the Merchant joined. The player then crashed
 (GG-T1151) and the run stopped at the budget.
 
-- **Video:** `R:\MindAttic\Capture\GridGame.Unity6.11.26T03.13.35Z_GridGame.Unity` (the crashed session)
+- **Video:** `R:\MindAttic\Media\Capture\GridGame.Unity6.11.26T03.13.35Z_GridGame.Unity` (the crashed session)
 - **Screenshots:** `artifacts/GG-T1147-fp/` (git-ignored): `01`-`05` title and party pick, `06`-`08` prologue and Camp, `10`-`19` stages and
   the three battles' results, `20`-`21` Camp, `campA-*` the Merchant lessons.
 

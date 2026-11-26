@@ -170,7 +170,7 @@ Prerequisites: the capture agent installed by MindAttic.Media.Capture's `run.ps1
 
 **Player flags.** `-capture video hq` records the whole session (`campaign()` documents `-capture video screen 5` for recording a soak). `-capture-config PATH` loads trigger rules; `Assets/StreamingAssets/capture.json` (one clip from `battle-start` to `battle-end`) is never auto-loaded just because it exists, and it ships with `"enabled": false`.
 
-**Where files land.** Recordings go to the session folder under `R:\MindAttic\Capture\GridGame.Unity\<session>\`; harness screenshots stay in `artifacts/<run>/`. Preview sets go under `R:\MindAttic\Preview\GridGame.Unity\`.
+**Where files land.** Recordings go to the session folder under `R:\MindAttic\Media\Capture\GridGame.Unity\<session>\`; harness screenshots stay in `artifacts/<run>/`. Preview sets go under `R:\MindAttic\Media\Preview\GridGame.Unity\`.
 
 **Recorded harness runs: `--record`.** Anywhere in a harness command's args, `--record` adds `-capture video hq` to every launch and loads `tools/harness.capture.json`: a 30 s replay buffer, a `harness-fail` rule that saves the last 25 s plus 2 s after as a fail replay, and a `harness-step` rule that turns each step into a chapter marker (sweep, storyarc and coach raise them). When a command fails, by exception or exit 1 on a check, the harness raises `harness-fail`, takes a `fail-COMMAND` screenshot and waits for the replay before exiting. `endless` and `clips` keep their own configs.
 
