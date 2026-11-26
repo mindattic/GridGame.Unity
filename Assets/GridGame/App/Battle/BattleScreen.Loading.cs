@@ -45,6 +45,8 @@ namespace GridGame.App
                 progress(0.25f + 0.75f * (i + 1) / chunks.Count);
                 yield return null;
             }
+            // GG-T1207: from here on, a Stage load the set missed is warned about while this battle is the mounted screen.
+            Art.WatchStageLoads(() => stageOwner == this && App.Router != null && ReferenceEquals(App.Router.Current, this));
         }
 
         /// <summary>Builds the setup, the engine state and the recorder (once); Build starts the telemetry and playback.</summary>
@@ -77,6 +79,7 @@ namespace GridGame.App
             ReleaseRecruitArt(); // GG-T1206: a recruit dialogue cut short by the battle leaving
             if (stageOwner != this) return;
             stageOwner = null;
+            Art.WatchStageLoads(null); // GG-T1207
             Art.ReleaseScope(ArtScope.Stage);
         }
 

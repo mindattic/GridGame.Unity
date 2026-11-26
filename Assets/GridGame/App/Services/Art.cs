@@ -32,6 +32,7 @@ namespace GridGame.App
         {
             if (string.IsNullOrEmpty(path)) return Placeholder;
             if (cache.TryGetValue(path, out var t) && t != null) { Touch(path); return t; }
+            NoteStageLoad(path);
             t = Resources.Load<Texture2D>(path);
             if (t == null)
             {
@@ -186,6 +187,40 @@ namespace GridGame.App
         /// <summary>Open Screen scope tokens (tests and the leak probe).</summary>
         internal static int OpenScreenScopes => screenTokens.Count;
 
+        // ── Mid-battle load warning (GG-T1207) ─────────────────────────────────────
+        // A battle preloads its StageTextureSet behind the loading fade (GG-T1205), so while it plays every texture it draws
+        // should already be cached. A cache miss tagged Stage while the battle is the mounted screen is a texture the set
+        // should have contained: logged once per key per battle as [TextureScope]. Screen-scoped loads (a recruit dialogue's
+        // token, GG-T1206) are legitimate and never warn, nor does Preload itself.
+
+        private static System.Func<bool> stageWatch;
+        private static bool preloading;
+        private static readonly HashSet<string> stageWarned = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Mid-battle Stage loads outside the preloaded set this run, each key counted once per battle (the leak probe).</summary>
+        internal static int MidBattleLoads { get; private set; }
+
+        /// <summary>GG-T1207: starts watching for Stage loads the preloaded set missed while <paramref name="watching"/> says
+        /// the battle is playing (the battle mounted, its Stage scope held); null stops. Each call starts a fresh
+        /// warn-once set (a new battle).</summary>
+        public static void WatchStageLoads(System.Func<bool> watching)
+        {
+            stageWatch = watching;
+            stageWarned.Clear();
+        }
+
+        /// <summary>Called on every cache miss about to hit Resources: warns when it is a Stage-bound load mid-battle.</summary>
+        private static void NoteStageLoad(string key)
+        {
+            if (stageWatch == null || preloading || string.IsNullOrEmpty(key) || CurrentScope != ArtScope.Stage) return;
+            bool watching;
+            try { watching = stageWatch(); }
+            catch { watching = false; }
+            if (!watching || !stageWarned.Add(key)) return;
+            MidBattleLoads++;
+            Debug.LogWarning($"[TextureScope] '{key}' loaded mid-battle under the Stage scope: the preloaded StageTextureSet should have contained it");
+        }
+
         /// <summary>Drops each scoped entry in <paramref name="keys"/> (cache, thumbnail, backdrop set) and forgets the textures
         /// nothing else holds.</summary>
         private static void DropKeys(List<string> keys)
@@ -234,6 +269,8 @@ namespace GridGame.App
             if (set == null) return;
             bool wasStage = activeScopes[(int)ArtScope.Stage], wasScreen = activeScopes[(int)ArtScope.Screen];
             int wasFocus = screenFocus;
+            bool wasPreloading = preloading;
+            preloading = true; // GG-T1207: the preload's own loads are the set, never a miss
             activeScopes[(int)ArtScope.Stage] = true;
             activeScopes[(int)ArtScope.Screen] = false; // tag as Stage even if a screen is open
             screenFocus = 0;
@@ -261,6 +298,7 @@ namespace GridGame.App
                 activeScopes[(int)ArtScope.Stage] = wasStage;
                 activeScopes[(int)ArtScope.Screen] = wasScreen;
                 screenFocus = wasFocus;
+                preloading = wasPreloading;
             }
         }
 
@@ -365,6 +403,7 @@ namespace GridGame.App
             if (string.IsNullOrEmpty(file)) return null;
             Tag(ThumbKey + file);
             if (thumbs.TryGetValue(file, out var t)) return t;
+            NoteStageLoad(ThumbFolder + file);
             return thumbs[file] = Resources.Load<Texture2D>(ThumbFolder + file);
         }
 
@@ -425,6 +464,7 @@ namespace GridGame.App
         {
             string path = PortraitFolder + file;
             if (cache.TryGetValue(path, out var t) && t != null) { Touch(path); return t; }
+            if (!string.IsNullOrEmpty(file)) NoteStageLoad(path);
             t = string.IsNullOrEmpty(file) ? null : Resources.Load<Texture2D>(path);
             if (t == null)
             {
@@ -511,6 +551,7 @@ namespace GridGame.App
             if (string.IsNullOrEmpty(id)) return null;
             string path = AssetNames.Path(folder, id); // GG-T561: <folder>/<id words>-00
             if (cache.TryGetValue(path, out var t)) { Touch(path); return t; }
+            NoteStageLoad(path);
             return Store(path, Resources.Load<Texture2D>(path));
         }
 
@@ -526,6 +567,7 @@ namespace GridGame.App
             if (string.IsNullOrEmpty(id)) return null;
             string path = AssetNames.Path("StatusIcons", id);
             if (cache.TryGetValue(path, out var t)) { Touch(path); return t; }
+            NoteStageLoad(path);
             return Store(path, Resources.Load<Texture2D>(path));
         }
 
@@ -568,7 +610,9 @@ namespace GridGame.App
         /// (<see cref="Backdrops.Resolve"/>).</summary>
         public static Texture2D Background(string theme, int index = 0)
         {
-            var t = Resources.Load<Texture2D>(BackgroundKey(theme, index));
+            string key = BackgroundKey(theme, index);
+            var t = string.IsNullOrEmpty(key) ? null : Resources.Load<Texture2D>(key);
+            if (t != null && !cache.ContainsKey(key)) NoteStageLoad(key); // GG-T1207: Preload caches the stage's backdrops
             return t != null ? t : Load(Backdrops.Fallback);
         }
 

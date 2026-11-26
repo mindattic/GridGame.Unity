@@ -212,7 +212,8 @@ namespace GridGame.App
             Debug.Log($"[LeakProbe] encounter {encounter}: managedMB={GC.GetTotalMemory(false) / 1048576.0:0.0} " +
                       $"screens{{{screens}}} battleStates={probeStates.Count} " +
                       $"captureEngines={EndlessCapture.EnginesHeld} captureRestarts={EndlessCapture.Restarts} captureEncounters={EndlessCapture.EncountersHeld} " +
-                      $"artTextures={Art.CachedTextures} sfxCueLog={app?.Audio?.CueLog.Count ?? 0} boardAuditRecent={BoardAudit.Recent.Count} " +
+                      $"artTextures={Art.CachedTextures} artStage={Art.CountInScope(ArtScope.Stage)} artScreen={Art.CountInScope(ArtScope.Screen)} " +
+                      $"textureMB={Texture.currentTextureMemory / 1048576.0:0.0} midBattleLoads={Art.MidBattleLoads} sfxCueLog={app?.Audio?.CueLog.Count ?? 0} boardAuditRecent={BoardAudit.Recent.Count} " +
                       $"overlayChildren={app?.Overlay?.childCount ?? 0} visualElements={CountElements(app?.Document != null ? app.Document.rootVisualElement : null)}");
         }
 
