@@ -636,6 +636,10 @@ namespace GridGame.Core.Battle
             // The difficulty dial (GG-T309): an enemy's blow on a hero lands at the level's EnemyDamage (min 1; 1.0 at 10).
             if (hit != HitKind.Miss && amount > 0 && target.IsHero && source != null && source.Team == Team.Enemy && !(S.Stage?.IsTest ?? false))
                 amount = DifficultyTable.Scale(amount, DifficultyTable.At(S.Difficulty).EnemyDamage, 1);
+            // GG-T1148: the guided first battle is not losable by following its marks: foes' blows land at half, and never
+            // take a hero below 1 HP (the lesson props and a coach mark's step into reach can't end the lesson in defeat).
+            bool tutorialSpare = S.Tutorial && hit != HitKind.Miss && amount > 0 && target.IsHero && source != null && source.Team == Team.Enemy;
+            if (tutorialSpare) amount = Math.Max(1, amount / 2);
             if (hit != HitKind.Miss && amount > 0 && target.IsHero && source != null)
             {
                 float reduction = BestAdjacentGuardianReduction(target);
@@ -647,6 +651,7 @@ namespace GridGame.Core.Battle
             if (hit != HitKind.Miss && amount > 0)
                 RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
             int hpBeforeBlow = target.Hp;
+            if (tutorialSpare) amount = Math.Min(amount, Math.Max(0, target.Hp - 1));
             target.Hp = Math.Max(0, target.Hp - amount);
             var echoTo = LinkEchoTarget(target, hpBeforeBlow - target.Hp, hit); // GG-T873: Curse Link, read before a Kill clears it
             Emit(new DamagedEvent
