@@ -6132,7 +6132,7 @@
   },
   {
     "Id": "frog03",
-    "Name": "Frog_",
+    "Name": "Frog",
     "Team": "Enemy",
     "Tags": [
       "Aquatic",
@@ -13809,7 +13809,7 @@
     "Name": "Scorpion",
     "Team": "Enemy",
     "Tags": [
-      "Humanoid"
+      "Beast"
     ],
     "Card": "Close-range [brawler] [cleaver]. Wins trades with [stagger].",
     "Portrait": "scorpion",
