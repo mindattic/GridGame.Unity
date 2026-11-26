@@ -12,21 +12,19 @@ namespace GridGame.Core.Battle
         private bool windowOver;
 
         /// <summary>Runs the shared clock forward <paramref name="ticks"/> ticks, resolving every arrival in order;
-        /// <paramref name="stopAtEnemyTurn"/> ends the advance at the first enemy turn, hero turn (GG-T1083, HeroTimeline) or
-        /// new wave — the window is over. Returns whether a hero's own turn icon arrived (only HeroTimeline gives one).</summary>
-        private bool AdvanceClock(int ticks, bool stopAtEnemyTurn = false)
+        /// <paramref name="stopAtEnemyTurn"/> ends the advance at the first enemy turn or new wave — the window is over. It
+        /// spends an action's time, so a hero's own icon (HeroTimeline) arriving on the way waits at the edge, unresolved,
+        /// for <see cref="AdvanceUntilHeroTurn"/> (GG-T1169, §2.0: only a foe's icon ends the active hero's turn).</summary>
+        private void AdvanceClock(int ticks, bool stopAtEnemyTurn = false)
         {
             int wave = S.Wave;
-            bool heroReached = false;
             for (int i = 0; i < ticks && !S.IsOver; i++)
             {
-                Tick(out bool turnResolved, out bool heroTurn, stopAtHero: stopAtEnemyTurn);
+                Tick(out bool turnResolved, out _, stopAtHero: stopAtEnemyTurn, holdHeroes: stopAtEnemyTurn);
                 if (turnResolved) windowOver = true;
-                if (heroTurn) heroReached = true;
-                if (stopAtEnemyTurn && (turnResolved || heroTurn || S.Wave != wave)) break;
+                if (stopAtEnemyTurn && (turnResolved || S.Wave != wave)) break;
             }
             ReportAdvance();
-            return heroReached;
         }
 
         /// <summary>Run the clock until an enemy turn has resolved, a hero's own turn came (GG-T1083), or nothing can ever arrive.</summary>
@@ -87,8 +85,9 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>One clock tick. <paramref name="heroTurn"/>: a commanded hero's own icon arrived (HeroTimeline);
-        /// <paramref name="stopAtHero"/> leaves the tick's later arrivals pending right after it (GG-T1083).</summary>
-        private void Tick(out bool enemyTurnResolved, out bool heroTurn, bool stopAtHero = false)
+        /// <paramref name="stopAtHero"/> leaves the tick's later arrivals pending right after it (GG-T1083);
+        /// <paramref name="holdHeroes"/> leaves every arrived hero icon pending (see <see cref="ResolveArrivals"/>).</summary>
+        private void Tick(out bool enemyTurnResolved, out bool heroTurn, bool stopAtHero = false, bool holdHeroes = false)
         {
             enemyTurnResolved = false;
             heroTurn = false;
@@ -127,13 +126,15 @@ namespace GridGame.Core.Battle
             if (S.Region.Tiles.Count > 0) TickRegionTiles(); // GG-T359: painted tiles with a lifetime fade
             if (S.IsOver) return;
 
-            ResolveArrivals(stopAtHero, ref enemyTurnResolved, ref heroTurn);
+            ResolveArrivals(stopAtHero, ref enemyTurnResolved, ref heroTurn, holdHeroes);
         }
 
         /// <summary>Resolves every arrival due at the current tick (GG-T1083: split out of <see cref="Tick"/> so
         /// <see cref="AdvanceUntilHeroTurn"/> can finish a tick a hero turn stopped). <paramref name="stopAtHero"/> stops
-        /// right after a hero's own icon arrived.</summary>
-        private void ResolveArrivals(bool stopAtHero, ref bool enemyTurnResolved, ref bool heroTurn)
+        /// right after a hero's own icon arrived. <paramref name="holdHeroes"/> (GG-T1169) skips arrived hero icons, a
+        /// sleeper's included: they stay full at the edge while the other arrivals resolve, and a later
+        /// <see cref="AdvanceUntilHeroTurn"/> resolves them in tie order.</summary>
+        private void ResolveArrivals(bool stopAtHero, ref bool enemyTurnResolved, ref bool heroTurn, bool holdHeroes = false)
         {
             // Arrivals this tick, resolved in arrival order: casts that hit 0, then rule hazards, then full turn icons; ties by id.
             for (int guard = 0; guard < 64 && !S.IsOver; guard++)
@@ -146,6 +147,7 @@ namespace GridGame.Core.Battle
                     // A halted (Frozen) owner holds its full icon until it thaws, same as the advance loop above skips it —
                     // a haste to a full bar or a freeze landing on the arrival tick must not let it act while frozen.
                     if (e.Kind != TimelineKind.Hazard) { var eo = S.UnitById(e.OwnerId); if (eo != null && eo.Alive && eo.IsTimelineHalted) continue; }
+                    if (holdHeroes && e.Kind == TimelineKind.Turn && S.UnitById(e.OwnerId) is Unit hu && hu.Alive && TurnRules.IsHeroIcon(S, hu)) continue;
                     if (next == null || Earlier(e, next)) next = e;
                 }
                 if (next == null) break;

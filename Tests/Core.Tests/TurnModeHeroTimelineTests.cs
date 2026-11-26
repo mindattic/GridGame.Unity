@@ -220,16 +220,45 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void The_window_is_the_time_to_the_next_icon_other_than_the_active_heros()
+        public void The_window_is_the_time_to_the_next_foe_icon()
         {
             var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 4, 6));
             var fast = Hero(s, "sprinter");
             Assert.That(s.ActiveHeroId, Is.EqualTo(fast.Id));
             ArriveIn(s, fast, 1); // the active hero's own icon is the soonest, yet it doesn't bound its own turn
-            int expected = Math.Min(Ticks(s, Hero(s, "plodder")), Ticks(s, Foe(s)));
-            Assert.That(expected, Is.GreaterThan(1));
-            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(expected), "the next other icon, a foe's or another hero's");
-            Assert.That(BattleEngine.TurnWindowSeconds(s), Is.EqualTo(expected / (float)BattleConfig.TicksPerSecond).Within(1e-5f));
+            ArriveIn(s, Hero(s, "plodder"), 2); // GG-T1169 (§2.0): nor does another hero's
+            ArriveIn(s, Foe(s), 15);
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(15), "the next foe icon");
+            Assert.That(BattleEngine.TurnWindowSeconds(s), Is.EqualTo(15 / (float)BattleConfig.TicksPerSecond).Within(1e-5f));
+        }
+
+        [Test]
+        public void Six_heroes_still_get_a_window_that_holds_an_action_and_waiting_hero_icons_never_cut_it_short()
+        {
+            var s = Create(Stage(("goblin", 5, 0)), ("sprinter", 0, 6), ("plodder", 1, 6), ("knight", 2, 6),
+                ("sprinter", 3, 6), ("plodder", 4, 6), ("knight", 5, 6));
+            var active = s.UnitById(s.ActiveHeroId);
+            Assert.That(active, Is.Not.Null);
+            var waiting = s.Units.Where(u => u.IsHero && u.Id != active.Id).ToList();
+            Assert.That(waiting.Count, Is.EqualTo(5));
+            for (int i = 0; i < waiting.Count; i++) ArriveIn(s, waiting[i], i + 1); // a hero icon on each of the next ticks
+            var foe = Foe(s);
+            ArriveIn(s, foe, 15);
+            int action = TurnRules.CommandTicks(s, new UseSlotCommand { HeroId = active.Id });
+            Assert.That(TurnRules.TurnTicks(s), Is.EqualTo(15));
+            Assert.That(TurnRules.TurnTicks(s), Is.GreaterThanOrEqualTo(action), "an action fits the window");
+            Assert.That(TurnRules.TooLittleTime(s), Is.False, "no forced Guard");
+
+            long clock = s.Clock;
+            var dest = new Coord(active.Pos.X, active.Pos.Y - 1);
+            var move = new MoveCommand { HeroId = active.Id, Path = new List<Coord> { active.Pos, dest }, HeldSeconds = 1f };
+            int spend = TurnRules.CommandTicks(s, move);
+            Assert.That(spend, Is.GreaterThan(waiting.Count), "the drag outlasts the waiting heroes' arrivals");
+            var ev = BattleEngine.Apply(s, move);
+            Assert.That(ev.OfType<AbilityRefusedEvent>(), Is.Empty);
+            Assert.That(active.Pos, Is.EqualTo(dest));
+            Assert.That(s.Clock - clock, Is.GreaterThanOrEqualTo(spend), "the whole drag ran on the clock, past the hero icons");
+            Assert.That(waiting.Select(u => u.Id), Does.Contain(s.ActiveHeroId), "a waiting hero takes the next turn");
         }
 
         [Test]

@@ -234,7 +234,7 @@ namespace GridGame.App
             float nextU = 2f;
             foreach (var e in drawn.Values)
                 if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit o && !o.IsTimelineHalted
-                    && (!o.IsHero || TurnRules.NotThisHerosTurn(State, o)) // GG-T1109: mirror TurnRules.TurnTicks (another hero's icon ends it too)
+                    && !o.IsHero // GG-T1169: mirror TurnRules.TurnTicks (only a foe's icon ends the window)
                     && at.TryGetValue(e.Id, out var u) && u > 0f)
                     nextU = Mathf.Min(nextU, u);
             int ticks = BattleEngine.TurnTicks(State);

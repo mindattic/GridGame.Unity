@@ -120,18 +120,17 @@ namespace GridGame.Core.Battle
             if (TurnRules.HeroesOnTimeline(S))
             {
                 // GG-T1083 (§2.13.3): the action is the active hero's whole turn. Its time runs on the clock (stopping at
-                // the next turn of either side), then the clock runs on to the next hero's own icon; enemy turns and wave
-                // changes resolve on the way. IsTurnBoundary is always true here.
+                // the next foe turn; a hero icon arriving meanwhile waits, GG-T1169), then the clock runs on to the next
+                // hero's own icon; enemy turns and wave changes resolve on the way. IsTurnBoundary is always true here.
                 if (!S.IsOver)
                 {
-                    bool heroReached = false;
                     if (S.Wave == waveBefore)
                     {
                         if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit active && active.IsHero) TurnRules.MarkActed(S, active);
                         S.ActiveHeroId = -1;
-                        if (TurnRules.SpendsClock(S, cmd)) heroReached = AdvanceClock(spend, stopAtEnemyTurn: true);
+                        if (TurnRules.SpendsClock(S, cmd)) AdvanceClock(spend, stopAtEnemyTurn: true);
                     }
-                    if (!S.IsOver && !heroReached) AdvanceUntilHeroTurn();
+                    if (!S.IsOver) AdvanceUntilHeroTurn();
                 }
             }
             else if (!S.IsOver && S.Wave == waveBefore)
