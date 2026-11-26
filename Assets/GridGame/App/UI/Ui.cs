@@ -474,18 +474,28 @@ namespace GridGame.App
 
         /// <summary>A framed card thumbnail: the class's baked thumbnail (<see cref="PortraitThumb"/>). Above
         /// <see cref="ThumbMaxSize"/> it draws the full portrait through its Thumbnail window instead (the summon reveal).
-        /// Tint the art (e.g. the bestiary's unseen silhouette) on <c>t.Q(ThumbArt)</c>, not on the frame.</summary>
-        public static VisualElement Thumb(string classId, VisualElement parent, float size = Kit.Thumb)
+        /// Tint the art (e.g. the bestiary's unseen silhouette) on <c>t.Q(ThumbArt)</c>, not on the frame.
+        /// <paramref name="thumbOnly"/> (GG-T1210): a grid of 100+ cards (hub, bestiary) draws baked thumbs only, never a
+        /// full portrait, even for a class with no baked thumb (that card then shows empty).</summary>
+        public static VisualElement Thumb(string classId, VisualElement parent, float size = Kit.Thumb, bool thumbOnly = false)
         {
             var t = El("thumb", parent);
             t.style.width = size;
             t.style.height = size;
-            PortraitThumb(t, classId, size <= ThumbMaxSize);
+            PortraitThumb(t, classId, thumbOnly || size <= ThumbMaxSize, thumbOnly);
             return t;
         }
 
-        /// <summary>GG-T720: the largest draw (design px) that uses the 256 px baked thumbnail; bigger ones use the portrait.</summary>
+        /// <summary>GG-T720: the largest draw (design px) that uses the baked thumbnail; bigger ones use the portrait.
+        /// GG-T1210: a thumb bakes at 320 px with <see cref="ThumbMargin"/> on every side, so its visible window is
+        /// ~267 px, still above 256.</summary>
         public const float ThumbMaxSize = 200f;
+
+        /// <summary>GG-T1210: the baked thumb's extra margin on every side, as a fraction of the visible (owner-framed)
+        /// side. tools/make_thumbs.py (MARGIN) bakes a square of side ×(1 + 2·ThumbMargin) around the framing's centre,
+        /// and <see cref="PortraitThumb"/> draws it at that size offset by −ThumbMargin, so at rest exactly the framing
+        /// shows. <see cref="ThumbWobble"/> drifts the art inside this margin.</summary>
+        public const float ThumbMargin = 0.1f;
 
         /// <summary>Name of the portrait child <see cref="PortraitThumb"/> puts in a host (tint/opacity it, not the host).</summary>
         public const string ThumbArt = "thumb-art";
@@ -499,8 +509,12 @@ namespace GridGame.App
         /// Zoom×100%, height = Zoom×aspect×100%, left = 50% − X·width, top = 50% − Y·height), so the framing is
         /// right at any size with no layout pass. A portrait with no Thumbnail (or an id that isn't a class) shows
         /// whole, contained. Returns the art child (named <see cref="ThumbArt"/>), which callers tint.
+        /// GG-T1210: the baked thumb carries <see cref="ThumbMargin"/> on every side and is drawn at 120%, offset −10%,
+        /// so at rest it shows exactly the owner's framing, as the live fallback does (the portrait itself is the margin
+        /// there); both framed paths get the shared handheld drift (<see cref="ThumbWobble"/>).
+        /// <paramref name="thumbOnly"/>: never load the full portrait (grids of 100+); no baked thumb draws nothing.
         /// </summary>
-        public static VisualElement PortraitThumb(VisualElement host, string classId, bool useThumb = true)
+        public static VisualElement PortraitThumb(VisualElement host, string classId, bool useThumb = true, bool thumbOnly = false)
         {
             host.style.overflow = Overflow.Hidden;
             var clip = host.Q("thumb-clip");
@@ -519,15 +533,22 @@ namespace GridGame.App
                 art.style.position = Position.Absolute;
                 clip.Add(art);
             }
-            var thumb = useThumb ? Art.Thumb(classId) : null;
+            var thumb = useThumb || thumbOnly ? Art.Thumb(classId) : null;
             if (thumb != null)
             {
-                // The crop is baked in (tools/make_thumbs.py): the whole square thumb is exactly the old window.
-                // Hosts are reused, so every placement is reset here.
+                // The crop is baked in (tools/make_thumbs.py) with ThumbMargin spare on every side: drawn at 120%,
+                // offset −10%, the visible box is exactly the owner's framing. Hosts are reused, so every placement is reset.
                 art.style.backgroundImage = new StyleBackground(thumb);
-                art.style.left = art.style.top = Space.S0;
-                art.style.width = art.style.height = Length.Percent(100);
+                art.style.left = art.style.top = Length.Percent(-ThumbMargin * 100f);
+                art.style.width = art.style.height = Length.Percent((1f + 2f * ThumbMargin) * 100f);
                 art.style.backgroundSize = new BackgroundSize(Length.Percent(100), Length.Percent(100));
+                ThumbWobble.Track(art);
+                return art;
+            }
+            if (thumbOnly)
+            {
+                art.style.backgroundImage = StyleKeyword.Null;
+                ThumbWobble.Untrack(art);
                 return art;
             }
             var tex = string.IsNullOrEmpty(classId) ? null : Art.Portrait(classId);
@@ -538,8 +559,11 @@ namespace GridGame.App
                 art.style.left = art.style.top = Space.S0;
                 art.style.width = art.style.height = Length.Percent(100);
                 art.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+                ThumbWobble.Untrack(art);
                 return art;
             }
+            // The live framing: the portrait around the window is the margin the drift moves into.
+            ThumbWobble.Track(art);
             float w = th.Zoom * 100f, h = w * tex.height / tex.width;
             art.style.width = Length.Percent(w);
             art.style.height = Length.Percent(h);

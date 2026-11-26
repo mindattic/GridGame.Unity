@@ -341,7 +341,7 @@ namespace GridGame.App
             foreach (var def in App.Content.Classes.Values.Where(d => d.Team == Team.Hero && !d.IsCut).OrderBy(d => d.Name))
             {
                 var id = def.Id;
-                var t = Ui.Thumb(id, grid, 164);
+                var t = Ui.Thumb(id, grid, 164, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "tile-" + id;
                 t.style.marginLeft = t.style.marginRight = t.style.marginTop = t.style.marginBottom = Space.S8;
                 t.AddToClassList("card-tap");

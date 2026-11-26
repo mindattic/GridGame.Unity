@@ -6,8 +6,9 @@ tile with no mipmaps aliases, so every small use draws a purpose-made 256 px ima
 
 For each Assets/GridGame/Resources/Portraits/<name>.png this writes Assets/GridGame/Resources/Thumbs/<name>.png (and a
 hand-written .meta) with the class's existing head framing baked in. The crop is exactly Ui.PortraitThumb's window: a
-square of side W/Zoom centred at (X*W, Y*H) (Y measured from the top), padded transparent where it runs off the canvas,
-downscaled premultiplied (RGBa) with Lanczos to 256x256.
+square of side W/Zoom centred at (X*W, Y*H) (Y measured from the top), grown by MARGIN (10%) of that side on every side
+(GG-T1210: room for the handheld wobble), padded transparent where it runs off the canvas, downscaled premultiplied
+(RGBa) with Lanczos to 320x320.
 
 Which framing a file gets: the class whose PortraitFile() it is (classes.json, first in file order when two classes
 share a file); male art uses MaleThumbnail, else Thumbnail. A file no class draws (aetherist-00, aetherist-male-00, the
@@ -43,9 +44,14 @@ CLASSES = RES / "Content" / "classes.json"
 MANIFEST = Path(__file__).resolve().parent / "thumbs_manifest.json"
 TEMPLATE_META = PORTRAITS / "acolyte-female-00.png.meta"
 
-SIZE = 256
+# GG-T1210: the baked square is the owner's framing plus MARGIN of its side on every side (side x 1.2), so the
+# visible (framed) window inside it is SIZE / 1.2 = ~267 px, still above the old 256. Ui.PortraitThumb draws the thumb
+# at (1 + 2 MARGIN) x the host, offset -MARGIN, so at rest exactly the framing shows, and its handheld wobble drifts
+# the art inside the margin. Keep MARGIN equal to Ui.ThumbMargin.
+SIZE = 320
+MARGIN = 0.1
 # Bump when the crop/resample rule or the .meta template changes, so every thumb counts as stale.
-VERSION = 1
+VERSION = 2
 # Default head crop for portraits no class frames (measured from the medians of the class framings).
 DEFAULT_SIDE_PER_BBOX_H = 0.42
 DEFAULT_CENTRE_Y_PER_SIDE = 0.464
@@ -79,9 +85,9 @@ def default_framing(im):
 
 
 def bake(im, th):
-    """The Ui.PortraitThumb window of `im` at SIZE x SIZE, transparent where it runs off the canvas."""
+    """The Ui.PortraitThumb window of `im` plus MARGIN on every side, at SIZE x SIZE, transparent off the canvas."""
     w, h = im.size
-    side = w / float(th["Zoom"])
+    side = w / float(th["Zoom"]) * (1 + 2 * MARGIN)
     cx, cy = float(th["X"]) * w, float(th["Y"]) * h
     l, t = cx - side / 2, cy - side / 2
     r, b = l + side, t + side
@@ -99,7 +105,7 @@ def bake(im, th):
 def source_hash(path, th):
     h = hashlib.sha256()
     h.update(path.read_bytes())
-    h.update(json.dumps({"v": VERSION, "size": SIZE, "framing": th}, sort_keys=True).encode())
+    h.update(json.dumps({"v": VERSION, "size": SIZE, "margin": MARGIN, "framing": th}, sort_keys=True).encode())
     return h.hexdigest()[:20]
 
 
@@ -118,7 +124,7 @@ def meta_text(guid):
     t = re.sub(r"^guid: [0-9a-f]{32}$", "guid: " + guid, t, count=1, flags=re.M)
     t = t.replace("    enableMipMap: 0", "    enableMipMap: 1", 1)
     t = t.replace("    filterMode: 1", "    filterMode: 2", 1)
-    t = re.sub(r"maxTextureSize: \d+", "maxTextureSize: 256", t)  # importer and every platform
+    t = re.sub(r"maxTextureSize: \d+", "maxTextureSize: 512", t)  # importer and every platform (SIZE 320 fits, no downscale)
     assert "enableMipMap: 1" in t and "filterMode: 2" in t, "template meta changed shape"
     return t
 

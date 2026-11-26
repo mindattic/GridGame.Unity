@@ -5,9 +5,9 @@ namespace GridGame.EditorTools
 {
     /// <summary>
     /// GG-T719 (GG-T713): import settings for the baked actor thumbnails under Resources/Thumbs (tools/make_thumbs.py).
-    /// <see cref="GridGameImport"/> turns mipmaps off for everything in Resources; a 256 px thumb is drawn at 40-100 px,
+    /// <see cref="GridGameImport"/> turns mipmaps off for everything in Resources; a 320 px thumb is drawn at 40-200 px,
     /// so without mips it aliases exactly like the shrunk portraits it replaces. This runs after it
-    /// (<see cref="GetPostprocessOrder"/> 1) and gives Thumbs mips, trilinear filtering, a 256 cap and CompressedHQ,
+    /// (<see cref="GetPostprocessOrder"/> 1) and gives Thumbs mips, trilinear filtering, a 512 cap (the 320 px thumb kept whole, GG-T1210) and CompressedHQ,
     /// with an Android ASTC 6x6 override (GG-T499). Portraits keep no mips.
     /// </summary>
     public sealed class ThumbImport : AssetPostprocessor
@@ -15,7 +15,7 @@ namespace GridGame.EditorTools
         public const string ThumbFolder = "Assets/GridGame/Resources/Thumbs/";
 
         public override int GetPostprocessOrder() => 1;
-        public override uint GetVersion() => 1;
+        public override uint GetVersion() => 2;
 
         private void OnPreprocessTexture()
         {
@@ -28,11 +28,11 @@ namespace GridGame.EditorTools
             ti.wrapMode = TextureWrapMode.Clamp;
             ti.filterMode = FilterMode.Trilinear;
             ti.sRGBTexture = true;
-            ti.maxTextureSize = 256;
+            ti.maxTextureSize = 512; // GG-T1210: thumbs bake at 320 px (framing + 10% margin), never downscaled
             ti.textureCompression = TextureImporterCompression.CompressedHQ;
             var a = ti.GetPlatformTextureSettings("Android");
             a.overridden = true;
-            a.maxTextureSize = 256;
+            a.maxTextureSize = 512;
             a.format = TextureImporterFormat.ASTC_6x6;
             a.compressionQuality = 100;
             a.resizeAlgorithm = TextureResizeAlgorithm.Mitchell;

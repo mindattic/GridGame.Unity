@@ -1831,7 +1831,7 @@ namespace GridGame.App
             {
                 var def = e;
                 S.Bestiary.TryGetValue(e.Id, out var entry);
-                var t = Ui.Thumb(e.Id, grid, 160);
+                var t = Ui.Thumb(e.Id, grid, 160, thumbOnly: true); // GG-T1210: 100+ cards, baked thumbs only
                 t.name = "beast-" + e.Id;
                 if (entry == null || !entry.Seen) { t.Q(Ui.ThumbArt).style.unityBackgroundImageTintColor = new Color(0, 0, 0, 0.92f); }
                 else if (isNew != null && isNew(e.Id)) RowIcon.Badge(t, RowKind.New);
