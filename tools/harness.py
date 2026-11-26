@@ -3021,7 +3021,7 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
     return clips
 
 
-def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mode=None,
+def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mode=None, leakprobe=False,
             stall_secs=90, encounter_timeout=1200, unresponsive_secs=120, max_dead_launches=3):
     """GG-T62: endless-run driver. Launches the player with `-demo -endless -seed S -count N` (GG-T57) and babysits
     it: tails each launch's Player.log for the "[EndlessDemo]" progress lines (encounter start "encounter K seed X:",
@@ -3060,7 +3060,9 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
         cfg_path = os.path.join(art, "capture-endless.json")
         with open(cfg_path, "w", encoding="utf-8") as f:
             json.dump(cfg, f, indent=2)
-        extra = ["-capture-config", cfg_path]
+        extra += ["-capture-config", cfg_path]
+    if leakprobe:  # GG-T1190: -leakprobe makes EndlessStability log one [LeakProbe] line per encounter
+        extra += ["-leakprobe"]
 
     re_start = re.compile(r"\[EndlessDemo\] encounter (\d+) seed (-?\d+): (\S+)")
     re_result = re.compile(r"\[EndlessDemo\] encounter (\d+) \(([^)]*)\): (\w+)")
@@ -3496,8 +3498,11 @@ def _dispatch(cmd):
         ap.add_argument("--speed", type=float, default=None)
         ap.add_argument("--turn-mode", default=None, help="TurnMode name (GG-T775), e.g. PartyWindow; unbuilt modes are rejected")
         ap.add_argument("--run", default="endless")
+        ap.add_argument("--leakprobe", action="store_true",
+                        help="pass -leakprobe to the player (GG-T1190): one [LeakProbe] line per encounter in Player.log")
         a = ap.parse_args(sys.argv[2:])
-        s = endless(a.count, seed=a.seed, capture=a.capture, run=a.run, speed=a.speed, turn_mode=a.turn_mode)
+        s = endless(a.count, seed=a.seed, capture=a.capture, run=a.run, speed=a.speed, turn_mode=a.turn_mode,
+                    leakprobe=a.leakprobe)
         sys.exit(0 if s["completed"] == a.count and not s["crashes"] and not s["stalls"] and not s["hangs"] else 1)
     elif cmd == "recruits":
         sys.exit(0 if story_recruits() else 1)
