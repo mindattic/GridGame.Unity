@@ -380,6 +380,8 @@
     border-radius: 14px;
     background-color: rgba(255, 255, 255, 0.05);
 }
+/* A list of few cards (Respec) shares the panel height between them instead of spreading gaps (GG-T1182). */
+.list--fill .unity-scroll-view__content-container > .card--fill { flex-grow: 1; }
 .card--selected { background-color: rgba(140, 170, 255, 0.22); }
 .thumb {
     width: 150px; height: 150px;
