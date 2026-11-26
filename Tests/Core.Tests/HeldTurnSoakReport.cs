@@ -231,6 +231,17 @@ namespace GridGame.Tests
             row.LegalActionsSum += legal;
         }
 
+        /// <summary>GG-T1176: the end state of a battle that hit the command cap - round, heroes left to act and every unit's
+        /// alive/hp/acted flags - to tell a balance stalemate from a rules fault.</summary>
+        private static string CappedProbe(string stageId, BattleState st)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"[CappedProbe] {stageId} phase={st.Phase} round={st.Round} clock={st.Clock} heroesLeftToAct={BattleEngine.HeroesLeftToAct(st).Count}");
+            foreach (var u in st.Units)
+                sb.Append($"\n  {(u.IsHero ? "hero" : "foe ")} {u.Id} {u.Name} alive={u.Alive} hp={u.Hp}/{u.MaxHp} actedWindow={u.ActedThisWindow} actedRound={u.ActedThisRound} commandable={u.IsCommandable}");
+            return sb.ToString();
+        }
+
         /// <summary>GG-T913: end-of-battle totals - battle seconds, the longest enemy-turn run and the combo results.</summary>
         private static void Finish(Row row, ModeTracker t, BattleState st)
         {
@@ -289,7 +300,7 @@ namespace GridGame.Tests
                         });
                         Finish(row, tracker, st);
                         if (st.Phase == BattlePhase.Victory) { row.Wins++; cleared = true; }
-                        else if (!st.IsOver) row.Capped++; // GG-T1175: ran out of BotRunner's command cap, neither won nor lost
+                        else if (!st.IsOver) { row.Capped++; TestContext.Progress.WriteLine(CappedProbe(stage.Id, st)); } // GG-T1175: ran out of BotRunner's command cap, neither won nor lost
                         BattleFactory.Commit(c, s, st);
                     }
                     if (!cleared) break;
