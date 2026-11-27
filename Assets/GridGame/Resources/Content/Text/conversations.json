@@ -845,13 +845,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5e1883524f4f13bf58c45630016d1a2cc3d94d49fddb03cf1ac030698ff632dc",
+      "hash": "sha256:953d4a4fa485921cabd1d23164d241e243f64dc8a3df8bf688b8589ad1188eac",
       "about": [
+        "character-commander",
         "place-cave"
       ],
       "speakers": [
         "$recruit",
-        "$commander"
+        "character-commander",
+        "$party:2"
       ],
       "payload": {
         "title": "A guard on the ice",
@@ -865,29 +867,174 @@
           },
           {
             "id": "reply",
-            "speaker": "$commander",
-            "line": "Because we stole it. We ran from the tithe at Saltmoss, and we're following the beams.",
+            "speaker": "character-commander",
+            "line": "The hammer is bigger than the one holding it, and it hasn't moved yet.",
             "choices": [
               {
-                "text": "Help us see where they go.",
-                "next": "joined"
+                "text": "Because we stole it.",
+                "next": "stole"
               },
               {
-                "text": "It only gets worse ahead.",
-                "next": "warned"
+                "text": "Because you'd lose.",
+                "next": "threat"
+              },
+              {
+                "text": "Because we're not here for you.",
+                "next": "passing"
               }
             ]
           },
           {
-            "id": "warned",
+            "id": "stole",
             "speaker": "$recruit",
-            "line": "Worse than this? My hold sent me to guard these arches. Every night they hum, and our tithe rides the beam.",
+            "line": "Stole it. From the Choir. Out here people don't steal from the Choir, they kneel to it and pay.",
+            "next": "post"
+          },
+          {
+            "id": "threat",
+            "speaker": "$recruit",
+            "line": "Ha. Plenty of things have told me that on this ice. The Watch's dead knights told me that. I'm still standing.",
+            "next": "post"
+          },
+          {
+            "id": "passing",
+            "speaker": "$recruit",
+            "line": "Nobody passes the arches by accident. Either you're carrying the tithe or you're running from it.",
+            "next": "post"
+          },
+          {
+            "id": "post",
+            "speaker": "$recruit",
+            "line": "My hold sent me to guard these arches. Every night they hum, and our tithe rides the beam up into the dark.",
+            "next": "beams"
+          },
+          {
+            "id": "beams",
+            "speaker": "character-commander",
+            "line": "The arches throw their light at the sky.",
+            "choices": [
+              {
+                "text": "We ran from the tithe at Saltmoss. We're following the beams.",
+                "next": "follow"
+              },
+              {
+                "text": "Guarding them for whom?",
+                "next": "whom"
+              }
+            ]
+          },
+          {
+            "id": "follow",
+            "speaker": "$recruit",
+            "line": "Following them where? The beams go up. There's nothing up there but the stone in the sky.",
+            "next": "doubt"
+          },
+          {
+            "id": "whom",
+            "speaker": "$recruit",
+            "line": "For my hold. For the oath. The Captain stood in our hall and swore the tithe would buy us peace. I swore to guard it.",
+            "next": "doubt"
+          },
+          {
+            "id": "doubt",
+            "speaker": "$recruit",
+            "line": "An oath is all a squire has. Why would I break mine for a stolen wagon and a story?",
+            "next": "backer"
+          },
+          {
+            "id": "backer",
+            "speaker": "$party:2",
+            "line": "It's no story. The Commander pulled the tithe out of the white wagon at Saltmoss, and the orb woke in their hand. Show them, Commander.",
+            "next": "orb"
+          },
+          {
+            "id": "orb",
+            "speaker": "$recruit",
+            "line": "An orb, awake, this close to the arches. The hum just changed. Listen. It's answering you.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The arch overhead hums lower, and the beam above it flickers.",
+            "choices": [
+              {
+                "text": "Your tithe goes up that beam. I mean to find out where.",
+                "next": "truth"
+              },
+              {
+                "text": "The Captain sold your oath before you swore it.",
+                "next": "oath"
+              },
+              {
+                "text": "Stand with us, and you won't stand alone.",
+                "next": "offer"
+              }
+            ]
+          },
+          {
+            "id": "truth",
+            "speaker": "$recruit",
+            "line": "Mine and my sister's and everyone's in the hold. I've watched it go up every night and never once asked where.",
+            "next": "sister"
+          },
+          {
+            "id": "oath",
+            "speaker": "$recruit",
+            "line": "Careful. That's my hold you're talking about. But I've heard the Captain laugh in our hall, and it wasn't a laugh for us.",
+            "next": "sister"
+          },
+          {
+            "id": "offer",
+            "speaker": "$recruit",
+            "line": "Standing alone is the whole job out here. You'd be surprised how heavy a hammer gets when nobody's beside you.",
+            "next": "sister"
+          },
+          {
+            "id": "sister",
+            "speaker": "$recruit",
+            "line": "Saltmoss paid the same tithe as my hold. If somebody's finally asking where it goes, I want to be there for the answer.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Saltmoss paid the same tithe as my hold. My shield is yours. I stand in front. It's what I'm for."
+            "line": "My shield is yours. I stand in front. It's what I'm for.",
+            "choices": [
+              {
+                "text": "Then stand in front, Knight. We'll stand behind you.",
+                "next": "welcome"
+              },
+              {
+                "text": "Thank the one who spoke for us.",
+                "next": "credit"
+              },
+              {
+                "text": "Your oath was to the hold. Don't forget it was the Captain who took it.",
+                "next": "terms"
+              }
+            ]
+          },
+          {
+            "id": "welcome",
+            "speaker": "$recruit",
+            "line": "Behind me is the safest place on this ice. Stay there and we'll get along fine."
+          },
+          {
+            "id": "credit",
+            "speaker": "$party:2",
+            "line": "You were going to swing that hammer. I'd rather it swung for us.",
+            "next": "thanks"
+          },
+          {
+            "id": "thanks",
+            "speaker": "$recruit",
+            "line": "Then it will. A hold knight remembers a debt like that. I'll keep you behind my shield."
+          },
+          {
+            "id": "terms",
+            "speaker": "$recruit",
+            "line": "I won't forget. I'll hold that oath against the Captain when we meet. Just don't ask me to like hearing it."
           }
         ]
       }
@@ -964,13 +1111,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:87f93fc3ea615330d95f7fe156fb1bb67059bd316d66627e13606f4d40824430",
+      "hash": "sha256:01faefc298712caff56a78f07d5ebc3e8088b7a52a118f16e173134dbed2d1ae",
       "about": [
+        "character-commander",
         "place-cityruins"
       ],
       "speakers": [
         "$recruit",
-        "$commander"
+        "character-commander",
+        "$party:2"
       ],
       "payload": {
         "title": "A healer in the underspire",
@@ -984,29 +1133,174 @@
           },
           {
             "id": "reply",
-            "speaker": "$commander",
-            "line": "You're far off the Lantern Road. What brings a sage under the spire?",
+            "speaker": "character-commander",
+            "line": "The healer is already reaching for a satchel of salves.",
             "choices": [
               {
-                "text": "Walk with us.",
-                "next": "joined"
+                "text": "Thank you. We'll sit.",
+                "next": "sit"
               },
               {
-                "text": "Where we're going is worse.",
+                "text": "We don't have time to sit.",
+                "next": "hurry"
+              },
+              {
+                "text": "Who are you?",
+                "next": "who"
+              }
+            ]
+          },
+          {
+            "id": "sit",
+            "speaker": "$recruit",
+            "line": "Good. Most people down here argue first and sit after they fall over. Hands out. Let me see.",
+            "next": "road"
+          },
+          {
+            "id": "hurry",
+            "speaker": "$recruit",
+            "line": "Then you have time to fall over. Sit, or I'll be mending you off the floor in an hour.",
+            "next": "road"
+          },
+          {
+            "id": "who",
+            "speaker": "$recruit",
+            "line": "Somebody who mends people. Down here that's all anybody needs to know about me, and more than most ask.",
+            "next": "road"
+          },
+          {
+            "id": "road",
+            "speaker": "character-commander",
+            "line": "The salve is warm, and smells of lantern oil.",
+            "choices": [
+              {
+                "text": "That's Lantern Road oil. You're far from the gorges.",
+                "next": "lantern"
+              },
+              {
+                "text": "Why mend strangers under the spire?",
+                "next": "strangers"
+              }
+            ]
+          },
+          {
+            "id": "lantern",
+            "speaker": "$recruit",
+            "line": "You know the road. Then you know the lanterns burn on mana, same as the neon up there. I came to see what the city does with it.",
+            "next": "stair"
+          },
+          {
+            "id": "strangers",
+            "speaker": "$recruit",
+            "line": "Because nobody else does. The Street patches its own and the Choir patches nobody. Somebody has to mend the rest.",
+            "next": "stair"
+          },
+          {
+            "id": "stair",
+            "speaker": "$recruit",
+            "line": "I counted the pilgrims who climbed the stair to the top of the spire. None came down. Now you mean to climb it too.",
+            "next": "doubt"
+          },
+          {
+            "id": "doubt",
+            "speaker": "$recruit",
+            "line": "Tell me why I should send three more up that stair with my salve still wet on them.",
+            "next": "backer"
+          },
+          {
+            "id": "backer",
+            "speaker": "$party:2",
+            "line": "Because the Commander came out of the Still, and the orbs wake when they're near. We've been mended by worse hands than yours, and we're still walking.",
+            "next": "orb"
+          },
+          {
+            "id": "orb",
+            "speaker": "$recruit",
+            "line": "Out of the Still. That's why the cold won't leave your skin. And the orb in your hand is glowing like a lantern.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The light in the orb pulses, slow as a heartbeat.",
+            "choices": [
+              {
+                "text": "Whatever's at the top drinks the tithe. We mean to stop it.",
+                "next": "stop"
+              },
+              {
+                "text": "Walk with us, and nobody climbs alone.",
+                "next": "walk"
+              },
+              {
+                "text": "Where we're going is worse than this.",
                 "next": "warned"
               }
             ]
           },
           {
+            "id": "stop",
+            "speaker": "$recruit",
+            "line": "Whatever drinks at the top of that spire has drunk enough. I've buried enough pilgrims to say so.",
+            "next": "wagon"
+          },
+          {
+            "id": "walk",
+            "speaker": "$recruit",
+            "line": "Nobody climbs alone. The road says that over every lantern. I didn't think I'd hear it under the spire.",
+            "next": "wagon"
+          },
+          {
             "id": "warned",
             "speaker": "$recruit",
-            "line": "I counted the pilgrims who climbed that stair. None came down. I'd rather climb with people who mean to.",
+            "line": "Worse than a stair nobody comes down? Then you'll need somebody at the back who means to come down again.",
+            "next": "wagon"
+          },
+          {
+            "id": "wagon",
+            "speaker": "$recruit",
+            "line": "If your wagon has no seat left, I'll walk behind it with the satchel and come forward when somebody bleeds.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Then I'll mend you on the way up. Whatever drinks at the top of that spire, it has drunk enough."
+            "line": "Then I'll mend you on the way up. A healer at the back is still a healer.",
+            "choices": [
+              {
+                "text": "Glad to have you, Sage.",
+                "next": "welcome"
+              },
+              {
+                "text": "Thank the one who vouched for us.",
+                "next": "credit"
+              },
+              {
+                "text": "Your salve is welcome. Your doubts can stay down here.",
+                "next": "terms"
+              }
+            ]
+          },
+          {
+            "id": "welcome",
+            "speaker": "$recruit",
+            "line": "Glad to be had. Now hold still, the cold's not out of you yet."
+          },
+          {
+            "id": "credit",
+            "speaker": "$party:2",
+            "line": "Someone had to. And I could use the mending, after the Still.",
+            "next": "thanks"
+          },
+          {
+            "id": "thanks",
+            "speaker": "$recruit",
+            "line": "Then you're first in line. Sit. The road looks after the ones who speak up for it."
+          },
+          {
+            "id": "terms",
+            "speaker": "$recruit",
+            "line": "My doubts come with me. They're what kept me off the stair. I'll mend you anyway."
           }
         ]
       }

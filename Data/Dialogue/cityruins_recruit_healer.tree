@@ -1,0 +1,104 @@
+dialogue cityruins_recruit_healer
+title: A healer in the underspire
+trigger: ThemeStart cityruins
+speaker commander $commander
+speaker recruit $recruit
+speaker backer $party:2
+
+node meet recruit
+  Sit down. You brought the Still's cold out with you. I can see it on your skin.
+  -> reply
+
+node reply commander
+  The healer is already reaching for a satchel of salves.
+  * Thank you. We'll sit. -> sit
+  * We don't have time to sit. -> hurry
+  * Who are you? -> who
+
+node sit recruit
+  Good. Most people down here argue first and sit after they fall over. Hands out. Let me see.
+  -> road
+
+node hurry recruit
+  Then you have time to fall over. Sit, or I'll be mending you off the floor in an hour.
+  -> road
+
+node who recruit
+  Somebody who mends people. Down here that's all anybody needs to know about me, and more than most ask.
+  -> road
+
+node road commander
+  The salve is warm, and smells of lantern oil.
+  * That's Lantern Road oil. You're far from the gorges. -> lantern
+  * Why mend strangers under the spire? -> strangers
+
+node lantern recruit
+  You know the road. Then you know the lanterns burn on mana, same as the neon up there. I came to see what the city does with it.
+  -> stair
+
+node strangers recruit
+  Because nobody else does. The Street patches its own and the Choir patches nobody. Somebody has to mend the rest.
+  -> stair
+
+node stair recruit
+  I counted the pilgrims who climbed the stair to the top of the spire. None came down. Now you mean to climb it too.
+  -> doubt
+
+node doubt recruit
+  Tell me why I should send three more up that stair with my salve still wet on them.
+  -> backer
+
+node backer backer
+  Because the Commander came out of the Still, and the orbs wake when they're near. We've been mended by worse hands than yours, and we're still walking.
+  -> orb
+
+node orb recruit
+  Out of the Still. That's why the cold won't leave your skin. And the orb in your hand is glowing like a lantern.
+  -> ask
+
+node ask commander
+  The light in the orb pulses, slow as a heartbeat.
+  * Whatever's at the top drinks the tithe. We mean to stop it. -> stop
+  * Walk with us, and nobody climbs alone. -> walk
+  * Where we're going is worse than this. -> warned
+
+node stop recruit
+  Whatever drinks at the top of that spire has drunk enough. I've buried enough pilgrims to say so.
+  -> wagon
+
+node walk recruit
+  Nobody climbs alone. The road says that over every lantern. I didn't think I'd hear it under the spire.
+  -> wagon
+
+node warned recruit
+  Worse than a stair nobody comes down? Then you'll need somebody at the back who means to come down again.
+  -> wagon
+
+node wagon recruit
+  If your wagon has no seat left, I'll walk behind it with the satchel and come forward when somebody bleeds.
+  -> joined
+
+node joined recruit
+  Then I'll mend you on the way up. A healer at the back is still a healer.
+  do: JoinHero sage role=Healer
+  * Glad to have you, Sage. -> welcome
+    do: AddTrust $recruit 10
+  * Thank the one who vouched for us. -> credit
+    do: AddTrust $recruit 5
+    do: AddCohesion $recruit $party:2 10
+  * Your salve is welcome. Your doubts can stay down here. -> terms
+    do: AddTrust $recruit -5
+    do: AddCohesion $recruit $party:2 5
+
+node welcome recruit
+  Glad to be had. Now hold still, the cold's not out of you yet.
+
+node credit backer
+  Someone had to. And I could use the mending, after the Still.
+  -> thanks
+
+node thanks recruit
+  Then you're first in line. Sit. The road looks after the ones who speak up for it.
+
+node terms recruit
+  My doubts come with me. They're what kept me off the stair. I'll mend you anyway.

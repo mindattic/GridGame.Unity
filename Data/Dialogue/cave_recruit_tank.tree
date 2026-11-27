@@ -1,0 +1,104 @@
+dialogue cave_recruit_tank
+title: A guard on the ice
+trigger: ThemeStart cave
+speaker commander $commander
+speaker recruit $recruit
+speaker backer $party:2
+
+node meet recruit
+  Halt. That's a Choir wagon on Anchor ice. Give me one reason my hammer stays on my back.
+  -> reply
+
+node reply commander
+  The hammer is bigger than the one holding it, and it hasn't moved yet.
+  * Because we stole it. -> stole
+  * Because you'd lose. -> threat
+  * Because we're not here for you. -> passing
+
+node stole recruit
+  Stole it. From the Choir. Out here people don't steal from the Choir, they kneel to it and pay.
+  -> post
+
+node threat recruit
+  Ha. Plenty of things have told me that on this ice. The Watch's dead knights told me that. I'm still standing.
+  -> post
+
+node passing recruit
+  Nobody passes the arches by accident. Either you're carrying the tithe or you're running from it.
+  -> post
+
+node post recruit
+  My hold sent me to guard these arches. Every night they hum, and our tithe rides the beam up into the dark.
+  -> beams
+
+node beams commander
+  The arches throw their light at the sky.
+  * We ran from the tithe at Saltmoss. We're following the beams. -> follow
+  * Guarding them for whom? -> whom
+
+node follow recruit
+  Following them where? The beams go up. There's nothing up there but the stone in the sky.
+  -> doubt
+
+node whom recruit
+  For my hold. For the oath. The Captain stood in our hall and swore the tithe would buy us peace. I swore to guard it.
+  -> doubt
+
+node doubt recruit
+  An oath is all a squire has. Why would I break mine for a stolen wagon and a story?
+  -> backer
+
+node backer backer
+  It's no story. The Commander pulled the tithe out of the white wagon at Saltmoss, and the orb woke in their hand. Show them, Commander.
+  -> orb
+
+node orb recruit
+  An orb, awake, this close to the arches. The hum just changed. Listen. It's answering you.
+  -> ask
+
+node ask commander
+  The arch overhead hums lower, and the beam above it flickers.
+  * Your tithe goes up that beam. I mean to find out where. -> truth
+  * The Captain sold your oath before you swore it. -> oath
+  * Stand with us, and you won't stand alone. -> offer
+
+node truth recruit
+  Mine and my sister's and everyone's in the hold. I've watched it go up every night and never once asked where.
+  -> sister
+
+node oath recruit
+  Careful. That's my hold you're talking about. But I've heard the Captain laugh in our hall, and it wasn't a laugh for us.
+  -> sister
+
+node offer recruit
+  Standing alone is the whole job out here. You'd be surprised how heavy a hammer gets when nobody's beside you.
+  -> sister
+
+node sister recruit
+  Saltmoss paid the same tithe as my hold. If somebody's finally asking where it goes, I want to be there for the answer.
+  -> joined
+
+node joined recruit
+  My shield is yours. I stand in front. It's what I'm for.
+  do: JoinHero knight role=Tank
+  * Then stand in front, Knight. We'll stand behind you. -> welcome
+    do: AddTrust $recruit 10
+  * Thank the one who spoke for us. -> credit
+    do: AddTrust $recruit 5
+    do: AddCohesion $recruit $party:2 10
+  * Your oath was to the hold. Don't forget it was the Captain who took it. -> terms
+    do: AddTrust $recruit -5
+    do: AddCohesion $recruit $party:2 5
+
+node welcome recruit
+  Behind me is the safest place on this ice. Stay there and we'll get along fine.
+
+node credit backer
+  You were going to swing that hammer. I'd rather it swung for us.
+  -> thanks
+
+node thanks recruit
+  Then it will. A hold knight remembers a debt like that. I'll keep you behind my shield.
+
+node terms recruit
+  I won't forget. I'll hold that oath against the Captain when we meet. Just don't ask me to like hearing it.
