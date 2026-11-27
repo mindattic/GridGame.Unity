@@ -158,14 +158,16 @@ def main():
         h.call("clicktext", text="Adventure"); time.sleep(0.8)
         t = texts()
         check("adventure lists the first stage", any("The Tithe Moors I" in x for x in t))
-        check("adventure groups battles into expeditions", any("The Tithe Moors Expedition" in x for x in t), str(t[:8]))
+        # GG-T1797: expeditions became travel (GG-T1786), so the region header is just the region name.
+        check("adventure groups battles under their region", any(x.strip() == "The Tithe Moors" for x in t), str(t[:8]))
         # GG-T388 ("Adventure is region then stage"): a fresh save has exactly one unlocked region, so Adventure opens
         # straight into that region's stage list (Stages(), MenuScreens.cs) and never the region picker (Regions())
         # where locked REGIONS collapse into "N more stages ahead" -- that teaser can't appear here by design until a
         # second region unlocks. What Stages() actually does with a locked future stage is list it on its own row
-        # with its gate reason (MetaServices.CanLaunch), so check that instead of the no-longer-reachable teaser.
-        check("locked stages in the open region are listed individually with their gate reason",
-              any("Expeditions start at battle 1" in x for x in t), str(t))
+        # marked Locked (MenuScreens.Stages: "<state> · Locked"), so check that instead of the no-longer-reachable teaser.
+        # GG-T1797: the old "Expeditions start at battle 1" gate reason went with expeditions (GG-T1786).
+        check("locked stages in the open region are listed individually as Locked",
+              any(x.endswith("· Locked") for x in t), str(t))
         h.enter_stage("The Tithe Moors I"); time.sleep(1.5)
         if h.call("state")["screen"] == "crawl":
             check("story crawl plays on first entry", True)
