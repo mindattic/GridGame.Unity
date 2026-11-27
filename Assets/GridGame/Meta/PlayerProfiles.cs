@@ -56,6 +56,8 @@ namespace GridGame.Meta
             public const string ResolutionHeight = "resolutionHeight";
             public const string ThumbMargin = "thumbMargin";
             public const string UiScale = "uiScale";
+            /// <summary>GG-T1618: the first-run commander-name prompt is done; a profile without the key but with save slots counts as done.</summary>
+            public const string FirstRunDone = "firstRunDone";
         }
 
         /// <summary>The most design px Display → Thumb margin may keep clear (GG-T1222).</summary>
@@ -80,7 +82,7 @@ namespace GridGame.Meta
         public static int ClampFrameRateCap(int fps) => fps == 30 || fps == -1 ? fps : 60;
 
         /// <summary>The settings a profile's settings.json holds, with defaults for anything missing.</summary>
-        public static SettingsSave Read(ProfileSettings ps)
+        public static SettingsSave Read(ProfileSettings ps, bool hasSaves = false)
         {
             var d = new SettingsSave();
             if (ps == null) return d;
@@ -144,6 +146,7 @@ namespace GridGame.Meta
             d.ResolutionHeight = ClampResolution(g.GetInt(Keys.ResolutionHeight, d.ResolutionHeight));
             d.ThumbMargin = ClampThumbMargin(g.GetInt(Keys.ThumbMargin, d.ThumbMargin));
             d.UiScale = ClampUiScale(g.GetInt(Keys.UiScale, d.UiScale));
+            d.FirstRunDone = g.GetBool(Keys.FirstRunDone, hasSaves);
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -190,6 +193,7 @@ namespace GridGame.Meta
             g.Set(Keys.ResolutionHeight, ClampResolution(s.ResolutionHeight));
             g.Set(Keys.ThumbMargin, ClampThumbMargin(s.ThumbMargin));
             g.Set(Keys.UiScale, ClampUiScale(s.UiScale));
+            g.Set(Keys.FirstRunDone, s.FirstRunDone);
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));
@@ -357,6 +361,7 @@ namespace GridGame.Meta
                     GameSettings.Write(profile.Settings, settings);
                     result.SeededFromSlot = recent;
                 }
+                profile.Settings.Game.Set(GameSettings.Keys.FirstRunDone, true);
                 profile.SaveSettings();
             }
 
@@ -481,10 +486,20 @@ namespace GridGame.Meta
             return Profile.TrySaveSettings();
         }
 
+        private static bool HasSlots(string folder)
+        {
+            for (int i = 0; i < SaveFiles.Slots; i++)
+            {
+                string f = SaveFiles.PathFor(folder, i);
+                if (File.Exists(f) || File.Exists(f + ".bak")) return true;
+            }
+            return false;
+        }
+
         private void Use(Profile p)
         {
             Profile = p;
-            Settings = GameSettings.Read(p.ReloadSettings());
+            Settings = GameSettings.Read(p.ReloadSettings(), HasSlots(p.EnsureSavesFolder()));
         }
     }
 }

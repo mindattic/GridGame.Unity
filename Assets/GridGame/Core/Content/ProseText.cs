@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -173,6 +174,10 @@ namespace GridGame.Core.Content
             return k;
         }
 
+        private static readonly System.Text.RegularExpressions.Regex TokenPattern = new System.Text.RegularExpressions.Regex(@"\{([^{}]*)\}");
+        /// <summary>The one {token} story text may carry (GG-T1618): the commander's name, filled in where it is shown.</summary>
+        public const string CommanderToken = "commander";
+
         /// <summary>Reads Content/Text and fills every narrative field from it. With no text file at all (a hand-built test
         /// fixture) nothing is joined and the records keep whatever they were given. Never throws on a missing or broken
         /// text: the field shows <see cref="Placeholder"/> and <see cref="ContentDb.TextProblems"/> says why.</summary>
@@ -202,6 +207,13 @@ namespace GridGame.Core.Content
             db.TextJoined = true;
 
             var keys = Keys(db);
+            foreach (var kv in texts)
+                foreach (var t in kv.Value.Payload?.DescendantsAndSelf().OfType<JValue>() ?? Enumerable.Empty<JValue>())
+                    if (t.Type == JTokenType.String)
+                        foreach (System.Text.RegularExpressions.Match m in TokenPattern.Matches((string)t))
+                            if (m.Groups[1].Value != CommanderToken)
+                                db.TextProblems.Add($"text {kv.Key}: unknown token {m.Value} (only {{{CommanderToken}}} is filled in)");
+
             foreach (var kv in texts)
             {
                 if (!keys.TryGetValue(kv.Key, out var kind)) db.TextProblems.Add($"text {kv.Key}: no gameplay record uses it (an orphan; retire it in Prose)");

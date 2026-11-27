@@ -143,7 +143,7 @@ namespace GridGame.App
                 backend.Read(name, data =>
                 {
                     if (settled) return;
-                    if (!CloudSave.TryDecode(data, app.Content, out var cloud, out var why))
+                    if (!CloudSave.TryDecode(data, app.Content, out var cloud, out var why, app.Profile?.Name))
                     {
                         Debug.LogWarning($"[Cloud] {name} unreadable: {why}");
                         Settle(local);
@@ -240,7 +240,7 @@ namespace GridGame.App
                     if (info == null || !info.HasData) { Next(); return; }
                     backend.Read(name, data =>
                     {
-                        if (CloudSave.TryDecode(data, app.Content, out var save, out var why))
+                        if (CloudSave.TryDecode(data, app.Content, out var save, out var why, app.Profile?.Name))
                         {
                             if (SharesPurchasesElsewhere(app, save, slot))
                                 Debug.LogWarning($"[Cloud] {name} holds purchases already in another slot on this device; not restored");

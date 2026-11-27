@@ -82,7 +82,7 @@ namespace GridGame.Meta
 
         /// <summary>A downloaded snapshot back into a save, checked and migrated exactly like an imported transfer code.
         /// False with the player-facing reason for an empty, damaged, foreign or newer-version snapshot. Never throws.</summary>
-        public static bool TryDecode(byte[] data, ContentDb content, out SaveData save, out string error)
+        public static bool TryDecode(byte[] data, ContentDb content, out SaveData save, out string error, string profileName = null)
         {
             save = null;
             if (data == null || data.Length == 0) { error = "The cloud save is empty."; return false; }
@@ -90,7 +90,7 @@ namespace GridGame.Meta
             string code;
             try { code = new UTF8Encoding(false, true).GetString(data); }
             catch (Exception) { error = "The cloud save is damaged."; return false; }
-            return SaveTransfer.TryImport(code, content, out save, out error);
+            return SaveTransfer.TryImport(code, content, out save, out error, profileName);
         }
 
         /// <summary>The snapshot description shown in Play Games' own saved-games list.</summary>
