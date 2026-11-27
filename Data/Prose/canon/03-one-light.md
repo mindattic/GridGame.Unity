@@ -10,6 +10,8 @@
 
 **Magic.** Magic is mana made to act. A mage, a hymn or a weapon gathers mana dust, concentrates it and channels it into a phenomenon or a change in a living body: lightning, fire, ice, sleep, poison. Because it is the same mana as the life in everyone, a spell can reach into a person as easily as into the air. All of it comes from the Manalith; without the Manalith there would be no mana to gather and no magic in the world.
 
+**Halcyon's key.** Halcyon keyed its machines to its own people's mana: the full, heavy thread that the first Lullaby braided into them. Twelve centuries of tithe and skim have thinned that thread in everyone born since, so present-day mana no longer turns the key, and Halcyon's orbs, doors and archives lie dead. **The Commander** carries Halcyon's own mana, and near the Commander Halcyon tech wakes: the party's Mana Orbs, an old door, an archive for a moment. It answers the Commander's presence, not the Commander's will, and it goes dark again when they leave.
+
 **What the bond means:**
 - **If the Manalith dies,** the mana in everyone goes out with it.
 - **If the Manalith wakes,** its mana flows back to it. That is the blanking.

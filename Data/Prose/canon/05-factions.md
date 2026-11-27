@@ -2,9 +2,9 @@ Every people in the world lives under the Moon and the Manalith, and every one o
 
 ## The heroes
 
-**Every hero is a present-day person, except the Warden.** They are people of this world as it is now: kids from the Underspire, hold squires, road-wardens, fen witches, sword-school students, pit fighters. They have paid the tithe like everyone else. What sets them apart is that they fight. Each hero is one single character named by role, "the Cleric", "the Thief" (see GG-ARC, Decisions). Recruiting and the Summon Circle are game systems with no special story meaning.
+**Every hero is a present-day person.** They are people of this world as it is now: kids from the Underspire, hold squires, road-wardens, fen witches, sword-school students, pit fighters. They have paid the tithe like everyone else. What sets them apart is that they fight. Each hero is one single character named by role, "the Cleric", "the Thief" (see GG-ARC, Decisions). Recruiting and the Summon Circle are game systems with no special story meaning.
 
-**The Warden is the Last Sleeper.** Halcyon's last guard, asleep in the Still on the night Halcyon fell, the Warden woke 1,200 years too late to a world that has forgotten Halcyon, and now must fix what Halcyon left broken. No one else came out of the Still. Because the Warden slept untouched by the tithe, the Warden's mana is wholly their own.
+**The Commander is not a hero.** The Commander was a person of Halcyon, one of the commanders who led its people, never a fighter, and died in the Still the night Halcyon fell. The Still kept the body unchanged for 1,200 years, and when the Choir's tithe ran through its tanks it did what Halcyon built it to do and brought one of its own back. No one else came out. Heroes come to the Commander for advice and leadership, and they follow for a plain reason: near the Commander, Halcyon tech wakes, the Mana Orbs they fight with included (GG-ONE-LIGHT, Halcyon's key). The Commander's memory is in pieces: they know how parts of Halcyon worked, not why it fell or what the Manalith is. Every other character is a present-day person looking back at a fallen world that has forgotten its own history, and what anyone knows is spread across the cast. The Warden is now an ordinary present-day hero, a Tank like the others.
 
 The heroes come from six peoples (factions.json):
 - **The Street:** the Underspire's own, couriers, fighters, thieves and techwear runners who have dodged the Choir's tithe under Halcyon's ruins for generations.
@@ -17,7 +17,7 @@ The heroes come from six peoples (factions.json):
 ## The world's powers
 
 - **Halcyon (gone).** Halcyon stopped the Manalith, sang the first Lullaby, and built the Anchors (taps), the Still (a sleep-vault) and the Arks (ships to escape the pull). It overdrew and fell 1,200 years ago. Its ruins are the Halcyon region: dead towers under a sky gone pink. Its ships lie inland in the Arkgrave.
-- **The Still.** Halcyon's sleep-vault at the foot of the spire, under an oculus that frames the Manalith, where the Warden slept. The Choir holds it now and fills its tanks with the tithe on its way up to the Cathedral.
+- **The Still.** Halcyon's sleep-vault at the foot of the spire, under an oculus that frames the Manalith, where the Commander lay dead for 1,200 years and was brought back. The Choir holds it now and fills its tanks with the tithe on its way up to the Cathedral.
 - **The Choir and the Hierarch.** The heirs of the singers who kept the Lullaby going the night Halcyon fell, seated in the Choir's Cathedral at the top of Halcyon's spire.
   - **The tithe:** once a year the Choir's white collectors take mana from every hold, "the colour", and the Lullaby sings it up to keep the Manalith asleep. Those who pay too much come back Hollow.
   - **The skim:** the Lullaby takes more than the Manalith needs, and the surplus fills the Cathedral organ's pipes, the reservoir the Hierarch drinks from.

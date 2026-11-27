@@ -1670,3 +1670,20 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   for a fight and can't hold it long. Every id is unchanged, so saves, purchases and Prose keys still resolve.
 - *Why:* owner, 2026-11-22: one word for the world's energy, mana, from the Manalith through the dust and orbs to the
   premium Shards, with a story reason for each.
+
+## 2026-11-27 — The Commander replaces the Warden as lead (owner, GG-T1305)
+
+- **Was ([BIBLE §25.11.2.2](BIBLE.md#251122-the-commander-rewritten-2026-11-27-owner-gg-t1305-was-warden-the-fixed-lead-gg-t533), GG-T533/GG-T577):**
+  the protagonist was the Warden, the Last Sleeper, Halcyon's last guard who slept in the Still and woke 1,200 years
+  late, the only sleeper in the story and a fixed fighting lead of the `warden` class.
+- **Now:** the player is **the Commander**, a person of Halcyon who died in the Still the night it fell and was brought
+  back by the Still. The Commander leads and advises but does not fight. Halcyon keyed its machines to its own people's
+  mana, so Halcyon tech, the party's Mana Orbs included, wakes only near the Commander; that is why present-day heroes
+  follow them and why the party can field orbs. The Commander's memory is fragmentary and no one holds all the
+  answers. Story text says "the Commander"; the profile name is for direct address only; text is gender-neutral. The
+  staged canon (`Data/Prose/canon/`) and STORY.md follow. Five decisions carry a default awaiting the owner
+  (`06-arc.md` Decisions): `warden` stays a recruitable present-day Tank, "Manalift" reads as the Manalith, the
+  Commander has female and male portraits, the Commander gives advice plus a few orders in battle, the Warden's
+  faction is the Lantern Road. Docs only: the fixed-lead code stays until GG-T1405.
+- *Why:* owner brief 2026-11-27: a non-combatant leader from the fallen world gives the party a reason to follow and
+  to fight with Halcyon's orbs, while keeping the world's history spread across the cast.
