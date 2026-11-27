@@ -206,6 +206,8 @@ GridGame (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time.
 
 **Play Billing Library (GG-T1517).** Play requires Billing Library 8 or newer for new apps and updates (version 7 ran out its extension on 1 Nov 2026; check the Play Console deprecation page for the current date). `com.unity.purchasing` 5.4.4 bundles **9.0.0** (`Plugins/UnityPurchasing/Android/IAPResolver/IAPAndroidDependencies.cs`, `com.android.billingclient:billing:9.0.0`), so no package upgrade is needed; re-check the bundled version on every Unity IAP bump. `GG_IAP` is defined by `GridGame.App.asmdef`'s `versionDefines` whenever `com.unity.purchasing` >= 5.0.0 is installed, in every build including the Android release, not by Player Settings.
 
+**One-command release (GG-T1513).** `pwsh tools/release.ps1` runs `release_lint`, the release AAB build, a bundletool `get-size total` gate (fails over 190 MB of Play's 200 MB), `tools/check_aab.py`, the target-SDK log check and `tools/release_notes.py`, then writes `Build/AndroidRelease/release.json` (version, buildNumber, sizes, sha256, notes) and tags `v<version>+<build>` locally. `-DryRun` skips the build and the tag.
+
 **Scripted upload (GG-T1514).** `python tools/play_upload.py` sends `Build/AndroidRelease/GridGame.aab` to Play through
 the Developer API (edit, bundle, track with the release notes, commit). Setup, once: `pip install
 google-api-python-client google-auth`; in Play Console > Setup > API access link a Google Cloud project, create a
