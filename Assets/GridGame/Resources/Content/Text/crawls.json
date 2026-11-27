@@ -317,7 +317,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e2c8d4d1a22a4c64275c0ef297c1154407c43eafb4c82ce3589c0ad00739981a",
+      "hash": "sha256:824626d13ab9b57153ba5f0d303cebb89e8f06d80c9e919f275133919db15a48",
       "about": [
         "place-bloom"
       ],
@@ -325,7 +325,8 @@
       "payload": {
         "title": "The Bloom",
         "paragraphs": [
-          "[placeholder] Where the Manalith's substance took root, the ground is alive and the Choir's armour is caught in it."
+          "The reservoir broke, and what the Hierarch stole came down: red blossom through the old white stone, moss over Halcyon's dead. The Manalith is a third larger here than it was over Halcyon, and for the first time, under it, something grows.",
+          "Nobody has held the Bloom since the Cathedral fell, so everything that came to feed on it is still here, in the numbers of a place left alone. Redline cuts the blossom to sell. The Choir's last Templars come to burn it. The moss stands up to fight them both."
         ]
       }
     },
@@ -335,7 +336,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:74ccb8004d170e31bc6b1852964780d7d2c64de3de00bd645deed388fc34e00e",
+      "hash": "sha256:bbda69559affc280c5423fe68957fda4a2cb5bd32018d8a18db3671e0b690bbb",
       "about": [
         "place-cathedral"
       ],
@@ -343,7 +344,8 @@
       "payload": {
         "title": "The Choir's Cathedral",
         "paragraphs": [
-          "[placeholder] The organ is the reservoir and the Hierarch drinks from it, on a floor that gives way."
+          "At the top of the spire the Choir sings the tithe up into the sky, and takes more than the Manalith needs. The rest fills the organ's pipes, and the Hierarch drinks from them.",
+          "The Manalith has never hung so large over anyone's head. The Choir's whole force is waiting, every order of it at once, and the floor above the pipes is already giving way. The spire was Halcyon's before it was theirs. Some of its doors still know you."
         ]
       }
     },
@@ -353,7 +355,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7f2fa5b0608e84dfcca5fcb417b4db5c460c8027adca363bea0e1a8b0179ab1a",
+      "hash": "sha256:9b2da652a8cf23a87abd58dea5743902b7459376b214cf477d0dd4697f8b7d0a",
       "about": [
         "place-cave"
       ],
@@ -361,7 +363,8 @@
       "payload": {
         "title": "The Anchor Wastes",
         "paragraphs": [
-          "[placeholder] The arches are taps and the draw is the pull, and the Watch still holds its posts."
+          "North of the last hold the world turns white, and the Anchors stand across it: arches bigger than mountains, humming so low you feel it in your teeth. They are not holding anything up. They are drawing mana down, and the Manalith follows the draw.",
+          "It hangs larger every day you walk toward it. The Watch still stands at every arch, long past the time it should have died, and the cold breeds its own. The ice will slide you past where you meant to stop, and the floor will crack, and then it is gone."
         ]
       }
     },
@@ -371,7 +374,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c9cf499dc0b6e867c76e20f8bf73fb76aecc263e3fe29642280ef81f7002ef20",
+      "hash": "sha256:449ecd0dde03303fc3d6a8238a7ebf305ad16c99c28177d495d259422ae1b0f6",
       "about": [
         "place-cave2"
       ],
@@ -379,7 +382,8 @@
       "payload": {
         "title": "Under the Anchors",
         "paragraphs": [
-          "[placeholder] The Ember march on the Anchors to open every tap, and the field itself moves the pieces."
+          "The arches were built on something. Under the Anchors the chains run down into the dark, and the Ember have come to pull every one of them open and bring the Manalith down. Only Halcyon's mana can open or close them. Only you have any left.",
+          "When an Anchor heaves, everything near it is dragged a step closer, friend and foe. Chain wardens and hook throwers pull you out of line between heaves. A pincer here closes or breaks by the field, not by your heroes."
         ]
       }
     },
@@ -389,7 +393,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8fc70bd799cb5e23059f9216dc06475a5a85582df44e507b7d0851d3dac7f543",
+      "hash": "sha256:c43f1a1be4ff775894396eb3c983961e382279758642d4fef5c427aa2b001366",
       "about": [
         "place-cityruins"
       ],
@@ -397,7 +401,8 @@
       "payload": {
         "title": "Halcyon",
         "paragraphs": [
-          "[placeholder] The dead city lies under a pink sky, where mana is thinnest and the echoes mock your every move."
+          "Out of the Still's back gate the dead towers of Halcyon rise under a pink sky. You knew these streets once. They have been dark for twelve hundred years, and the city's memory went dark with them.",
+          "Mana is thinnest here, so close under the Manalith that what lives in the towers has almost nothing of its own. Ghosts, the Hollow, and echoes that mock you by doing what you just did. Above it all the Hierarch's spire drinks."
         ]
       }
     },
@@ -407,7 +412,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bd30786177c8cd8455c56e4b8c22eb349388c2f28415ac83f3f780d687370498",
+      "hash": "sha256:807b28c5ca960f0eab377b3b689eb7e59f490a11fde9ba831f058439907321f8",
       "about": [
         "place-cityruins2"
       ],
@@ -415,7 +420,8 @@
       "payload": {
         "title": "The Underspire",
         "paragraphs": [
-          "[placeholder] The neon Underspire still draws on Halcyon's taps, and its foes dig and shove beneath a failing floor."
+          "Under the spire, Halcyon is holding its breath. The neon markets of the Underspire still run, on the old taps, and every light kept burning down here draws the Manalith a little closer.",
+          "Burrowers and pit lurkers live in the hollows beneath the streets. Shovers push whoever they can toward the holes. The floor cracks under every fight and does not mend. The Street will make you an offer. Count the tiles you are standing on first."
         ]
       }
     },
@@ -425,7 +431,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3722e0d5e82958003e3df54ea1613a9013f1f87625b52919f38362720e92e46c",
+      "hash": "sha256:717d6e78aaaa7ede86abbd491527508e22d0615e27a573ad6d1ce0c610eadda4",
       "about": [
         "place-desert"
       ],
@@ -433,7 +439,8 @@
       "payload": {
         "title": "The Shardfall",
         "paragraphs": [
-          "[placeholder] The first great pieces of the shell came down here, and the Ember came to feed the fire."
+          "Past the pass the grass gives out and the ground goes red. The first great pieces of the Manalith's shell came down here, and the Choir's walkers still dig at them.",
+          "The Manalith hangs a little larger now, and it did not let go of its shell alone. Things fell with it, and they move under the sand. The Ember drink from the red rivers and leave the ground burning behind them. Here, standing still is how you lose."
         ]
       }
     },
@@ -443,7 +450,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b94bd3804e45a1f9a53f86613fec66b5147e9924f2526625694271e90937a1a",
+      "hash": "sha256:1fb76d47c014eecfc359740487338d2d4f660b9ccf19838c972504afe405ee66",
       "about": [
         "place-desert2"
       ],
@@ -451,7 +458,8 @@
       "payload": {
         "title": "Deep Shardfall",
         "paragraphs": [
-          "[placeholder] The shell is breaking, and the pieces fall on friend and foe alike."
+          "Nobody digs in the deep Shardfall anymore, and nobody guards it. The shell lies thickest here, and the Manalith is still shedding it. The Ember have made this their heartland, and the Captain has followed the money.",
+          "The shard callers bring the strikes down on purpose. A piece of sky lands where the timeline says it will, on friend and foe alike. Read it and get clear. Read it well and you can stand them under it."
         ]
       }
     },
@@ -461,7 +469,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fb09a092d6501afd32ff832eb5ea4922b9a8fa3d8108df22bb4187365ddcf3d2",
+      "hash": "sha256:c27f16e9e44ac6f166b628354085e7af3cde65d5b87c42ade1d968fbe20bc3af",
       "about": [
         "place-greenvalley"
       ],
@@ -469,7 +477,8 @@
       "payload": {
         "title": "The Tithe Moors",
         "paragraphs": [
-          "[placeholder] The Manalith is a speck in the sky here, and the dangers are the hungry and the Captain's men."
+          "Saltmoss is behind you, and the Choir's white caravan rattles under your crew. Ahead the moors roll grey and green, stone wall after stone wall, and every hold you pass has paid the tithe for longer than it has kept records.",
+          "Overhead the Manalith is only a speck, a little larger than the old folk remember. Out here the danger is still the ordinary kind: things gone hungry under it, and the Captain's men on your trail. Stand in the slime and it holds you. Fire lets you go."
         ]
       }
     },
@@ -479,7 +488,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:84b0589cf2551c8f3d689fb056847b41ca7479021dcb9a959054309f8e2ed70a",
+      "hash": "sha256:b1d98894f356460fa5ed1e2994c56a1ada2e61172ef24c3cc80af380eacdab8b",
       "about": [
         "place-greenvalley2"
       ],
@@ -487,7 +496,8 @@
       "payload": {
         "title": "The Free Holds",
         "paragraphs": [
-          "[placeholder] The Free Holds are besieged, and every wave throws up walls to split your line."
+          "The gold hills again, and every gate barred. With the Hierarch gone, the Free Holds have stopped paying the tithe and started building walls. Everyone who wants the empty spire comes here first. So does the Captain, still collecting.",
+          "The Manalith hangs larger over the holds than it did over the moors where you started. The wrights throw up fresh walls every wave, and a wall between you and a foe is a pincer you do not get to close. Break them, or go around."
         ]
       }
     },
@@ -497,7 +507,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:907a52ef556001e1e55b96c7d8030bfc84bb5b422c15efac82bcd161dadb08e2",
+      "hash": "sha256:00cd32db4f1b1638a6d1568a3917702c7aa1bdd2eb450ce4828c8ce016d6b7a9",
       "about": [
         "place-lanternroad"
       ],
@@ -505,7 +515,8 @@
       "payload": {
         "title": "The Lantern Road",
         "paragraphs": [
-          "[placeholder] The road climbs out of the moors, and the foes come faster and from the side."
+          "The moors fall away and the pilgrim road climbs: stone stairs up the gorges, lanterns hung by hands no one will name, shrines painted with skies older than anyone's grandparents.",
+          "Look up and the Manalith has hardly moved. What makes the road harder is only the road. The oni hold the passes, and everything else comes fast and from the side, off the cliffs and out of the bamboo. Watch who moves next, or someone will move first."
         ]
       }
     },
@@ -515,7 +526,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f53f5ba98b27638e2820e085c961933dac8089019ace510bdffb695be213da09",
+      "hash": "sha256:e4db33eb41430aaece9bddac5d1e5d1b56c26fe50e0fd5f0ee31f37293bde1eb",
       "about": [
         "place-morrowsshadow"
       ],
@@ -523,7 +534,8 @@
       "payload": {
         "title": "Morrow's Shadow",
         "paragraphs": [
-          "[placeholder] The Manalith fills the sky, and every danger is at its peak and nothing can be seen coming."
+          "Past the last road, the Manalith fills the sky. You can count its crystals. The Moon hangs small and steady beside it, the way it always has, the way it did the night you first saw them both.",
+          "Its pull lifts the ground and thins the light, and anything more than two tiles from your heroes is lost in the dark. Every danger of the road is here at its worst, and none of it will be seen coming. The Anchors still hold. At the end of this road, the choice is yours."
         ]
       }
     },
@@ -533,7 +545,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5ea9c6c6dbdf314109d160ecd26e9d423e2a82a98fbcf1598a36bda3664b5301",
+      "hash": "sha256:0317490e7322f18d006684cee06e3a1cdf43ae62166033240dd17dc54d69a199",
       "about": [
         "place-still"
       ],
@@ -541,7 +553,8 @@
       "payload": {
         "title": "The Still",
         "paragraphs": [
-          "[placeholder] Under the oculus lies the Choir's tithe vault, where the Hollow wait and the Bulwark buries its mines."
+          "Every beam off the ice comes down in one place: a white dome at the foot of Halcyon's spire, and above it an oculus that frames the Manalith like a painting. This is the Still. You slept here through the night the city fell. No one else woke.",
+          "The Choir fills its tanks with the tithe now. The Hollow stand in its queues, the ones who paid too much, and the Bulwark has mined the floors you have to cross. Choose every step. Some of them are wrong."
         ]
       }
     },
@@ -551,7 +564,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bd82028fabd035b57162da82350e49a5ebfeaaeafa6b8c13e7f0a6b8a9797597",
+      "hash": "sha256:f753ac3cfc2b7d4fbaaa8773eaf56312ddf1cf04a9f8ad28184296bb17b442b2",
       "about": [
         "place-swamp"
       ],
@@ -559,7 +572,8 @@
       "payload": {
         "title": "The Arkgrave",
         "paragraphs": [
-          "[placeholder] Halcyon's ships lie rotting in the fen, thrown inland and kept by the dead."
+          "The road west drops into warm fog, and out of it rise the ribs of ships the size of towns. Halcyon built them to outrun the Manalith's pull. The tide brought them here instead, the night the city fell, and they never sailed again.",
+          "Nothing burns in the fen. It keeps. Lurkers, shamblers and the dead it has held on to wait among the hulls, and no single fight here is the one that ends you. It is the wet, and the next fight, and the one after that."
         ]
       }
     },
@@ -569,7 +583,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:662c3f5b900c4efc613fb9a377b8f7ce27baafe868f83a0ffce7bdb05e9abb19",
+      "hash": "sha256:63610963c7fd7b0479cdee69397920f3e7854b71529ab97b75c9a6b478c87d93",
       "about": [
         "place-swamp2"
       ],
@@ -577,7 +591,8 @@
       "payload": {
         "title": "The Drowned Arks",
         "paragraphs": [
-          "[placeholder] The Arkgrave again, with the water coming up and the board shrinking every wave."
+          "The Arkgrave again, and the fen is rising. The ships Halcyon built to run from the Manalith are going under at last, row by row, under a sky it fills more of every night.",
+          "The tide comes in on a clock. Whoever stands in the water is slowed and shocked, and storm callers ride the flood while drowners come up out of it. There is less ground every wave. Spend it well."
         ]
       }
     }
