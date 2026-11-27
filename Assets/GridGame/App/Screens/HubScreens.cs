@@ -993,10 +993,10 @@ namespace GridGame.App
                     ownLabel.name = "shop-own";
                     ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
                 }
-                var minus = Ui.Button("−", () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
+                var minus = RowIcon.IconButton("−", RowKind.Shop, () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
                 var n = Ui.Name(q.ToString(), row);
                 n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter; // grows with Text size (GG-T495)
-                var plus = Ui.Button("+", () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
+                var plus = RowIcon.IconButton("+", RowKind.Shop, () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
@@ -2626,16 +2626,16 @@ namespace GridGame.App
             {
                 int d = step;
                 if (d > 0) continue;
-                Ui.Button($"−{-d}", () => { buyAmount = Math.Max(1, buyAmount + d); Refresh(); }, "btn--small", pick).name = $"aetherist-buy-minus{-d}";
+                RowIcon.IconButton($"−{-d}", RowKind.Station, () => { buyAmount = Math.Max(1, buyAmount + d); Refresh(); }, "btn--small", pick).name = $"aetherist-buy-minus{-d}";
             }
             Ui.Name($"{buyAmount:N0}", pick, "gold").name = "aetherist-buy-amount";
             foreach (var step in Steps)
             {
                 int d = step;
                 if (d < 0) continue;
-                Ui.Button($"+{d}", () => { buyAmount += d; Refresh(); }, "btn--small", pick).name = $"aetherist-buy-plus{d}";
+                RowIcon.IconButton($"+{d}", RowKind.Station, () => { buyAmount += d; Refresh(); }, "btn--small", pick).name = $"aetherist-buy-plus{d}";
             }
-            var maxBuyBtn = Ui.Button("Max", () => { buyAmount = Math.Max(1, maxBuy); Refresh(); }, "btn--small", pick);
+            var maxBuyBtn = RowIcon.IconButton("Max", RowKind.Station, () => { buyAmount = Math.Max(1, maxBuy); Refresh(); }, "btn--small", pick);
             maxBuyBtn.name = "aetherist-buy-max";
             Ui.SetEnabled(maxBuyBtn, maxBuy > 0);
             Ui.Field("Costs", Ui.Gold(DustEconomy.GoldFor(buyAmount)), buy, S.Gold >= DustEconomy.GoldFor(buyAmount) ? null : "bad", "aetherist-buy-quote");
@@ -2650,16 +2650,16 @@ namespace GridGame.App
             {
                 int d = step;
                 if (d > 0) continue;
-                Ui.Button($"−{-d}", () => { refineAmount = Math.Max(1, refineAmount + d); Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-minus{-d}";
+                RowIcon.IconButton($"−{-d}", RowKind.Station, () => { refineAmount = Math.Max(1, refineAmount + d); Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-minus{-d}";
             }
             Ui.Name($"{refineAmount:N0}", rpick, "gold").name = "aetherist-refine-amount";
             foreach (var step in Steps)
             {
                 int d = step;
                 if (d < 0) continue;
-                Ui.Button($"+{d}", () => { refineAmount += d; Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-plus{d}";
+                RowIcon.IconButton($"+{d}", RowKind.Station, () => { refineAmount += d; Refresh(); }, "btn--small", rpick).name = $"aetherist-refine-plus{d}";
             }
-            var maxRefineBtn = Ui.Button("Max", () => { refineAmount = Math.Max(1, maxRefine); Refresh(); }, "btn--small", rpick);
+            var maxRefineBtn = RowIcon.IconButton("Max", RowKind.Station, () => { refineAmount = Math.Max(1, maxRefine); Refresh(); }, "btn--small", rpick);
             maxRefineBtn.name = "aetherist-refine-max";
             Ui.SetEnabled(maxRefineBtn, maxRefine > 0);
             Ui.Field("Needs", $"{refineAmount * DustEconomy.DustPerShard:N0} {DustEconomy.DustName}", refine,
