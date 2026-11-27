@@ -451,6 +451,11 @@ namespace GridGame.App
             ShowBanner(label);
             var mid = (BoardView.CenterOf(aAt.At) + BoardView.CenterOf(bAt.At)) / 2f;
             Text.Show(mid, CombatTextKind.Combo, label, Mathf.Clamp01(chainCount / 4f), color);
+            if (p.BondTier > 0) // §25.20 (GG-T1308): bonded attackers hit harder
+            {
+                Text.Show(mid + new Vector2(0f, 44f), CombatTextKind.Callout, $"Bond {p.BondTier}", 0f, new Color(1f, 0.6f, 0.8f));
+                Billboard($"Bond {p.BondTier}: +{Mathf.RoundToInt(p.BondTier * BattleConfig.PincerDamagePerCohesionTier * 100f)}% pincer damage", null, new Color(1f, 0.6f, 0.8f));
+            }
             if (board.Units.TryGetValue(a.Id, out var av)) App.StartCoroutine(Tween.Pop(av.Root, 1.15f, 0.2f));
             if (board.Units.TryGetValue(b.Id, out var bv)) App.StartCoroutine(Tween.Pop(bv.Root, 1.15f, 0.2f));
             // Cut-in modes keep a multi-attacker frenzy readable: the full sweep on the first link (with the supporters

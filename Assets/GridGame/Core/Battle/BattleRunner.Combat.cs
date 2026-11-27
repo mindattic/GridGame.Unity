@@ -255,7 +255,8 @@ namespace GridGame.Core.Battle
             var supporters = new List<Unit>();
             foreach (var x in p.SupportersA) if (!supporters.Contains(x)) supporters.Add(x);
             foreach (var x in p.SupportersB) if (!supporters.Contains(x)) supporters.Add(x);
-            var formed = new PincerFormedEvent { Team = team, Attacker1 = p.A.Id, Attacker2 = p.B.Id, ChainIndex = chainIndex };
+            int bondTier = team == Team.Hero ? CohesionTier(p.A, p.B) : 0; // §25.20 (GG-T1308)
+            var formed = new PincerFormedEvent { Team = team, Attacker1 = p.A.Id, Attacker2 = p.B.Id, ChainIndex = chainIndex, BondTier = bondTier };
             // Snapshot the geometry now: by the time the view plays this back the state is the end of the whole
             // command, and any member may have moved since (enemy turns, knockback, a later chain link — GG-T98).
             formed.Attacker1At = UnitFootprint.Of(p.A); formed.Attacker2At = UnitFootprint.Of(p.B);
@@ -308,7 +309,7 @@ namespace GridGame.Core.Battle
                     // GG-T867: the Speedster strikes from its afterimage too (its plate side is the afterimage's), and its
                     // weapon wears once however many ends it holds.
                     strikeFromAfterimage = p.IsAfterimageEnd(end == 0) ? (end == 0 ? p.AAfterimage : p.BAfterimage) : null;
-                    float mult = 1f + attacker.PincerDamageBonus;
+                    float mult = 1f + attacker.PincerDamageBonus + bondTier * BattleConfig.PincerDamagePerCohesionTier;
                     if (attacker == amplified) mult *= BattleConfig.AmplifierDamageMultiplier;
                     bool shatters = attacker.IsHero && attacker.WeaponId != null && attacker.WeaponDurability == 1;
                     if (shatters) mult *= BattleConfig.ShatterTargetMultiplier;

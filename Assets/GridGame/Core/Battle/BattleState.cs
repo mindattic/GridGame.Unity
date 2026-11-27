@@ -86,6 +86,10 @@ namespace GridGame.Core.Battle
         /// <summary>GG-T542: the guided first battle. Its lessons may stage their situations (<see cref="TutorialSceneCommand"/>);
         /// nothing else changes. Off for every other battle.</summary>
         public bool Tutorial;
+        /// <summary>§25.20 (GG-T1308): the party's cohesion tier per hero pair, keyed "a|b" as <see cref="BattleResults.PairCredits"/>;
+        /// a pair missing is tier 0. A hero pincer whose two ends are bonded deals
+        /// <see cref="BattleConfig.PincerDamagePerCohesionTier"/> more per tier.</summary>
+        public Dictionary<string, int> Cohesion = new Dictionary<string, int>();
     }
 
     /// <summary>Totals the meta layer commits after the battle (XP, coins, drops, kills, bestiary).</summary>
@@ -244,6 +248,8 @@ namespace GridGame.Core.Battle
         public int UnlockedSlots = 2;
         /// <summary><see cref="BattleSetup.Permadeath"/>.</summary>
         public bool Permadeath;
+        /// <summary><see cref="BattleSetup.Cohesion"/>, copied at setup (GG-T1308).</summary>
+        public Dictionary<string, int> Cohesion = new Dictionary<string, int>();
         public Rng Rng;
         public List<Unit> Units = new List<Unit>();
         public List<TimelineEntry> Timeline = new List<TimelineEntry>();

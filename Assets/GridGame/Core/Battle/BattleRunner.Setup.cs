@@ -23,6 +23,7 @@ namespace GridGame.Core.Battle
         {
             S.ExcludedGuests = setup.ExcludedGuests ?? new HashSet<string>();
             S.Permadeath = setup.Permadeath;
+            S.Cohesion = setup.Cohesion == null ? new Dictionary<string, int>() : new Dictionary<string, int>(setup.Cohesion); // GG-T1308
             S.UnlockedSlots = setup.UnlockedSlots;
             carriedOrbs = Math.Max(0, setup.StartOrbs);
             S.Purse = Math.Max(0, setup.Purse);

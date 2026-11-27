@@ -729,6 +729,15 @@ namespace GridGame.Meta
                 spec.ItemCounts = owned;
                 setup.Party.Add(spec);
             }
+            // §25.20 (GG-T1308): each bonded pair of the party's tier, for the pincer damage bonus.
+            for (int i = 0; i < s.Party.Count; i++)
+                for (int j = i + 1; j < s.Party.Count; j++)
+                {
+                    string key = Bonds.PairKey(s.Party[i], s.Party[j]);
+                    if (key == null || !Bonds.HasCohesion(s, s.Party[i]) || !Bonds.HasCohesion(s, s.Party[j])) continue;
+                    int tier = Bonds.CohesionTier(s, s.Party[i], s.Party[j]);
+                    if (tier > 0) setup.Cohesion[key] = tier;
+                }
             return setup;
         }
 

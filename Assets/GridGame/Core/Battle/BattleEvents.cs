@@ -157,6 +157,9 @@ namespace GridGame.Core.Battle
         public List<int> Opponents = new List<int>();
         public List<int> Supporters = new List<int>();
         public int ChainIndex;
+        /// <summary>§25.20 (GG-T1308): the two attackers' cohesion tier (<see cref="BattleSetup.Cohesion"/>); 0 = not bonded
+        /// or not a hero pincer. Each tier adds <see cref="BattleConfig.PincerDamagePerCohesionTier"/> to both ends' blows.</summary>
+        public int BondTier;
         /// <summary>Formation-time geometry (GG-T98): where each member stood the moment this pincer formed.
         /// <see cref="OpponentsAt"/>/<see cref="SupportersAt"/> run parallel to <see cref="Opponents"/>/<see cref="Supporters"/>.</summary>
         public UnitFootprint Attacker1At, Attacker2At;

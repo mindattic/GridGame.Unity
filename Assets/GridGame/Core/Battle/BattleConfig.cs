@@ -228,6 +228,11 @@ namespace GridGame.Core.Battle
         /// <summary>A pincer attacker standing on the amplifier strikes this much harder (and mints a bonus orb).</summary>
         public const float AmplifierDamageMultiplier = 1.75f;
 
+        // ── Bonded pincer partners (§25.20, GG-T1308) ────────────────────────────────
+        /// <summary>A hero pincer whose two attackers are bonded deals this much more damage per cohesion tier
+        /// (<see cref="BattleSetup.Cohesion"/>).</summary>
+        public const float PincerDamagePerCohesionTier = 0.03f;
+
         // ── Mana charge (§3.1.9, owner direction 2026-10-11: "mana needs to be a more rare resource … the number of
         //    participants in the attack increases the multiplier needed to earn a mana bubble") ─────────────────────
         /// <summary>Charge that makes one orb ("mana bubble").</summary>

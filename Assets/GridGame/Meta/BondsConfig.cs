@@ -42,7 +42,7 @@ namespace GridGame.Meta
         public const int ResolveTier = 5;
         public const int ResolveHp = 1;
         /// <summary>Bonded pincer partners (the two ends) deal this much more damage per cohesion tier.</summary>
-        public const float PincerDamagePerCohesionTier = 0.03f;
+        public const float PincerDamagePerCohesionTier = GridGame.Core.Battle.BattleConfig.PincerDamagePerCohesionTier;
         /// <summary>From this cohesion tier a supporter's reach is +<see cref="BondedReachBonus"/> toward its partner.</summary>
         public const int BondedReachTier = 3;
         public const int BondedReachBonus = 1;

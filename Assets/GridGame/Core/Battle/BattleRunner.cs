@@ -727,12 +727,26 @@ namespace GridGame.Core.Battle
         /// commanded roster heroes (never a wanderer, guest, tamed or domesticated beast, or a recruitable) and not the same unit.</summary>
         private void CreditPair(Unit a, Unit b)
         {
-            if (a == null || b == null || a == b || !FightsTogether(a) || !FightsTogether(b)) return;
-            string x = a.Def.Id.Trim().ToLowerInvariant(), y = b.Def.Id.Trim().ToLowerInvariant();
-            if (x == y) return;
-            string key = string.CompareOrdinal(x, y) < 0 ? x + "|" + y : y + "|" + x;
+            string key = PairKey(a, b);
+            if (key == null) return;
             S.Results.PairCredits.TryGetValue(key, out int n);
             S.Results.PairCredits[key] = n + 1;
+        }
+
+        /// <summary>The bond key "a|b" of two commanded roster heroes (as Meta's Bonds.PairKey); null for anyone else or one hero twice.</summary>
+        private static string PairKey(Unit a, Unit b)
+        {
+            if (a == null || b == null || a == b || !FightsTogether(a) || !FightsTogether(b)) return null;
+            string x = a.Def.Id.Trim().ToLowerInvariant(), y = b.Def.Id.Trim().ToLowerInvariant();
+            if (x == y) return null;
+            return string.CompareOrdinal(x, y) < 0 ? x + "|" + y : y + "|" + x;
+        }
+
+        /// <summary>§25.20 (GG-T1308): the cohesion tier of a and b from <see cref="BattleSetup.Cohesion"/>; 0 when not a bonded pair.</summary>
+        private int CohesionTier(Unit a, Unit b)
+        {
+            string key = PairKey(a, b);
+            return key != null && S.Cohesion != null && S.Cohesion.TryGetValue(key, out int t) ? Math.Max(0, t) : 0;
         }
 
         private static bool FightsTogether(Unit u) =>
