@@ -19,6 +19,10 @@ namespace GridGame.Core.Content
         public readonly Dictionary<string, TrapDef> Traps = new Dictionary<string, TrapDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, PickupDef> Pickups = new Dictionary<string, PickupDef>(StringComparer.OrdinalIgnoreCase);
         public readonly Dictionary<string, BountyDef> Bounties = new Dictionary<string, BountyDef>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>offers.json (GG-T1450): the Shop's offers, in file order (Offers tab order), and by id.</summary>
+        public readonly List<OfferDef> OfferOrder = new List<OfferDef>();
+        public readonly Dictionary<string, OfferDef> Offers = new Dictionary<string, OfferDef>(StringComparer.OrdinalIgnoreCase);
+        public OfferDef TryOffer(string id) => id != null && Offers.TryGetValue(id, out var o) ? o : null;
         public readonly Dictionary<string, EnchantDef> Enchants = new Dictionary<string, EnchantDef>(StringComparer.OrdinalIgnoreCase);
         /// <summary>armorenchants.json (GG-T179): passive-granting armor enchants, in file order, and by id.</summary>
         public readonly List<ArmorEnchantDef> ArmorEnchantOrder = new List<ArmorEnchantDef>();

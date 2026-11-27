@@ -63,6 +63,9 @@ namespace GridGame.Core.Content
             db.StageOrder.AddRange(stages);
             AddAll(db.Traps, ReadList<TrapDef>(readText, "traps"), c => c.Id);
             AddAll(db.Bounties, ReadList<BountyDef>(readText, "bounties"), c => c.Id);
+            var offers = ReadList<OfferDef>(readText, "offers");
+            AddAll(db.Offers, offers, x => x.Id);
+            db.OfferOrder.AddRange(offers);
             AddAll(db.Enchants, ReadList<EnchantDef>(readText, "enchants"), c => c.Id);
             var armorEnchants = ReadList<ArmorEnchantDef>(readText, "armorenchants");
             AddAll(db.ArmorEnchants, armorEnchants, x => x.Id);

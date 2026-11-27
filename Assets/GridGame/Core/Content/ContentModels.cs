@@ -1318,6 +1318,31 @@ namespace GridGame.Core.Content
         public int RewardSkillPoints;
     }
 
+    /// <summary>An offer in the Shop's Offers tab (offers.json, GG-T1450): sold either for real money as a store product
+    /// (<see cref="ProductId"/>, a <c>StoreCatalog</c> id whose contents these must match) or for Shards
+    /// (<see cref="ShardPrice"/>), never both. Rules in <c>Meta/Offers</c>.</summary>
+    public sealed class OfferDef
+    {
+        public string Id;
+        public string Name;
+        /// <summary>The real-money product it sells, or null for a Shard offer.</summary>
+        public string ProductId;
+        /// <summary>The Shards it costs; 0 for a real-money offer.</summary>
+        public int ShardPrice;
+        /// <summary>Shards paid into the account wallet.</summary>
+        public int Shards;
+        /// <summary>Summon Tickets paid into the account wallet.</summary>
+        public int Tickets;
+        /// <summary>Cosmetic ids the account owns once it is claimed.</summary>
+        public List<string> Cosmetics = new List<string>();
+        /// <summary>How many times one account may claim it; 0 is no limit.</summary>
+        public int AccountLimit;
+        /// <summary>Campaign stages the save must have cleared before it shows (0 shows from the start).</summary>
+        public int ShowsAfter;
+        /// <summary>When it leaves the Shop (UTC); null never ends.</summary>
+        public System.DateTime? EndUtc;
+    }
+
     public sealed class SummonDef
     {
         public List<string> Pool = new List<string>();

@@ -40,6 +40,9 @@ namespace GridGame.Meta
         /// <summary>GG-T1447: the cosmetic ids this login owns.</summary>
         public HashSet<string> Cosmetics = new HashSet<string>(StringComparer.Ordinal);
 
+        /// <summary>GG-T1450: offer id (<see cref="GridGame.Meta.Offers"/>) → how many times this login claimed it.</summary>
+        public Dictionary<string, int> OfferClaims = new Dictionary<string, int>(StringComparer.Ordinal);
+
         /// <summary>GG-T621: save identity (<see cref="WalletMigration.IdentityOf"/>) → what was carried in from that save,
         /// so a save, a copy of it or an older backup of it never pays its Diamonds into the wallet twice.</summary>
         public Dictionary<string, CarriedSave> Migrated = new Dictionary<string, CarriedSave>(StringComparer.Ordinal);
@@ -66,6 +69,8 @@ namespace GridGame.Meta
             foreach (var k in Migrated.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Migrated.Remove(k);
             Owned = Owned == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Owned.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
             Cosmetics = Cosmetics == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Cosmetics.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
+            OfferClaims = OfferClaims == null ? new Dictionary<string, int>(StringComparer.Ordinal)
+                : OfferClaims.Where(kv => !string.IsNullOrEmpty(kv.Key) && kv.Value > 0).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.Ordinal);
             if (Diamonds < 0) Diamonds = 0;
             if (Tickets < 0) Tickets = 0;
             if (MonthlyLimitCents < SpendLimits.NoLimit) MonthlyLimitCents = SpendLimits.NoLimit;

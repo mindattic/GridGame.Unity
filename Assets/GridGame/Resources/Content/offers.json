@@ -1,0 +1,12 @@
+[
+  {
+    "Id": "starter",
+    "Name": "Starter pack",
+    "ProductId": "starter_pack",
+    "Shards": 300,
+    "Tickets": 5,
+    "Cosmetics": [ "frame_starter" ],
+    "AccountLimit": 1,
+    "ShowsAfter": 5
+  }
+]
