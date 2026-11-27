@@ -31,6 +31,18 @@ floor is flat-lit, a ridge has bright and dark faces), averaged per cell; a cell
 region palette keys tune it: cell, slope_weight, slope_full, slope_sigma, water_grow (hysteresis), water_join,
 water_link, water_min_area, water_gap (bridge broken river reaches).
 
+    python tools/world_map.py crossings <image> --region <id> [--cell 4] [--out DIR]  (GG-T1787)
+
+crossings runs cost, then finds bridge/causeway candidates over the grid's water: rays from every shore cell in 32
+directions, kept when shorter than bridge_max px, within bridge_angle (25) degrees of the water's normal and over a
+straight reach (structure-tensor coherence >= bridge_coherence at the midpoint, integration scale bridge_rho px); per
+water body, non-max suppression by bridge_spacing px keeps the narrowest crossing of each reach. Palette keys: crossing
+(bridge, or causeway for the swamp), bridge_max, bridge_spacing, bridge_cost (route cost of building one). Writes
+    world_map-<region>-crossings.json   params plus each candidate's endpoints (px and grid cell), length, angle, cost
+    world_map-<region>-crossings.png    debug overlay: kept crossings bold, every valid ray before spacing in grey
+Water is otherwise impassable: passable_moves() gives routes their 8-neighbour moves with no step into water and no
+diagonal cut past a water corner.
+
 Later steps (routes, spots, tiles) are further subcommands on the same parser.
 """
 import argparse
@@ -535,6 +547,209 @@ def cmd_cost(args):
     return 0
 
 
+# ---------------------------------------------------------------- crossings
+
+# Grid moves for routes: 8-neighbourhood, (dy, dx, length in cells). A diagonal step needs both orthogonal neighbours
+# passable too, so a path never squeezes between two water cells that touch at a corner.
+MOVES = [(dy, dx, float(np.hypot(dy, dx))) for dy in (-1, 0, 1) for dx in (-1, 0, 1) if dy or dx]
+
+
+def passable_moves(cost):
+    """Per move in MOVES, a bool grid: True where stepping from that cell in that direction stays on land. Water is
+    never entered (no fording) and diagonals may not cut a water corner; crossings are the only way over water."""
+    land = np.isfinite(cost)
+    h, w = land.shape
+    pad = np.pad(land, 1, constant_values=False)
+
+    def at(dy, dx):
+        return pad[1 + dy:1 + dy + h, 1 + dx:1 + dx + w]
+    return [land & at(dy, dx) & (at(dy, 0) & at(0, dx) if dy and dx else True) for dy, dx, _ in MOVES]
+
+
+CROSSING = "bridge"      # crossing kind (swamp: "causeway")
+BRIDGE_MAX = 48          # px: longest crossing
+BRIDGE_SPACING = 120     # px: crossings on one water body closer than this compete; the shortest survives
+BRIDGE_COST = 30         # route cost of building a new crossing (read by routes, GG-T1784)
+BRIDGE_ANGLE = 25        # degrees: a crossing runs within this of the water's normal
+BRIDGE_COHERENCE = 0.7   # structure-tensor coherence at the midpoint (1 = perfectly straight reach)
+BRIDGE_RHO = 14.0        # px: structure-tensor integration scale
+RAY_DIRS = 32
+RAY_STEP = 0.25          # cells per ray sample
+
+
+def water_orientation(water, rho):
+    """Structure tensor of the water mask: per pixel the water's normal angle (radians, across the reach) and the
+    coherence (lambda1 - lambda2) / (lambda1 + lambda2), ~1 along a straight reach, low at bends, forks and pools."""
+    from scipy import ndimage
+    m = water.astype(np.float64)
+    gy = ndimage.gaussian_filter(m, 1.5, order=(1, 0))
+    gx = ndimage.gaussian_filter(m, 1.5, order=(0, 1))
+    jxx = ndimage.gaussian_filter(gx * gx, rho)
+    jyy = ndimage.gaussian_filter(gy * gy, rho)
+    jxy = ndimage.gaussian_filter(gx * gy, rho)
+    normal = 0.5 * np.arctan2(2 * jxy, jxx - jyy)
+    coherence = np.hypot(jxx - jyy, 2 * jxy) / np.maximum(jxx + jyy, 1e-9)
+    return normal, coherence
+
+
+def ray_march(water, starts, bridge_max_cells):
+    """Cast RAY_DIRS rays from each start cell (land on a shore) over the water grid. A ray counts when it leaves its
+    start, passes only water and reaches land within bridge_max_cells. Returns (start index, direction index, end
+    cell y, end cell x) for every ray that does, vectorised over starts x directions x samples."""
+    h, w = water.shape
+    ang = np.arange(RAY_DIRS) * (2 * np.pi / RAY_DIRS)
+    dy, dx = np.sin(ang), np.cos(ang)
+    t = np.arange(1, int(np.ceil(bridge_max_cells / RAY_STEP)) + 2) * RAY_STEP
+    out = []
+    for c0 in range(0, len(starts), 1500):
+        sy, sx = starts[c0:c0 + 1500, 0], starts[c0:c0 + 1500, 1]
+        yy = np.floor(sy[:, None, None] + 0.5 + dy[None, :, None] * t).astype(np.int32)
+        xx = np.floor(sx[:, None, None] + 0.5 + dx[None, :, None] * t).astype(np.int32)
+        inside = (yy >= 0) & (yy < h) & (xx >= 0) & (xx < w)
+        wet = water[np.clip(yy, 0, h - 1), np.clip(xx, 0, w - 1)] & inside
+        home = (yy == sy[:, None, None]) & (xx == sx[:, None, None])
+        stop = ~wet & ~home
+        k = np.argmax(stop, axis=2)
+        si, di = np.nonzero(stop.any(axis=2))
+        kk = k[si, di]
+        ok = inside[si, di, kk] & wet[si, di, :].cumsum(axis=1)[np.arange(len(si)), kk].astype(bool)
+        si, di, kk = si[ok], di[ok], kk[ok]
+        out.append((si + c0, di, yy[si, di, kk], xx[si, di, kk]))
+    cat = [np.concatenate(p) for p in zip(*out)] if out else [np.zeros(0, np.int64)] * 4
+    return cat
+
+
+def crossing_candidates(g):
+    """Bridge/causeway candidates over the cost grid's water: rays from every shore cell in RAY_DIRS directions; keep
+    a ray when it is shorter than bridge_max px, runs within bridge_angle degrees of the water's normal and the reach is
+    straight (structure-tensor coherence at its midpoint >= bridge_coherence); then per water body non-max suppression
+    by bridge_spacing px keeps only the narrowest crossing of each reach. Returns (kept, all valid rays, params)."""
+    from scipy import ndimage
+    entry, cost, cell, labels = g["entry"], g["cost"], g["cell"], g["labels"]
+    p = {"crossing": entry.get("crossing", CROSSING),
+         "bridge_max": entry.get("bridge_max", BRIDGE_MAX),
+         "bridge_spacing": entry.get("bridge_spacing", BRIDGE_SPACING),
+         "bridge_cost": entry.get("bridge_cost", BRIDGE_COST),
+         "bridge_angle": entry.get("bridge_angle", BRIDGE_ANGLE),
+         "bridge_coherence": entry.get("bridge_coherence", BRIDGE_COHERENCE),
+         "bridge_rho": entry.get("bridge_rho", BRIDGE_RHO)}
+    water = np.isinf(cost)
+    land = ~water
+    shore = land & ndimage.binary_dilation(water, np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], bool))
+    starts = np.argwhere(shore)
+    si, di, ey, ex = ray_march(water, starts, p["bridge_max"] / cell)
+    if len(si) == 0:
+        return [], [], p
+    a = (starts[si] + 0.5) * cell                              # px, (y, x) of the start cell centre
+    b = (np.stack([ey, ex], 1) + 0.5) * cell
+    length = np.hypot(*(b - a).T)
+    keep = length <= p["bridge_max"]
+    a, b, length, si = a[keep], b[keep], length[keep], si[keep]
+
+    normal, coherence = water_orientation(labels > 0, p["bridge_rho"])
+    h, w = labels.shape
+    mid = (a + b) / 2
+    my = np.clip(mid[:, 0].astype(int), 0, h - 1)
+    mx = np.clip(mid[:, 1].astype(int), 0, w - 1)
+    ray = np.arctan2(b[:, 0] - a[:, 0], b[:, 1] - a[:, 1])
+    off = np.degrees(np.abs((ray - normal[my, mx] + np.pi / 2) % np.pi - np.pi / 2))
+    coh = coherence[my, mx]
+    body = labels[my, mx]
+    if (body == 0).any():  # midpoint on a grid-only water cell: take the nearest water pixel's body
+        _, (iy, ix) = ndimage.distance_transform_edt(labels == 0, return_indices=True)
+        body = labels[iy[my, mx], ix[my, mx]]
+    valid = (off <= p["bridge_angle"]) & (coh >= p["bridge_coherence"])
+    rays = [{"a": a[i], "b": b[i], "length": length[i], "off": off[i], "coh": coh[i], "body": int(body[i])}
+            for i in np.flatnonzero(valid)]
+
+    kept = []
+    for r in sorted(rays, key=lambda r: (r["length"], -r["coh"], r["off"])):
+        m = (r["a"] + r["b"]) / 2
+        if all(k["body"] != r["body"] or np.hypot(*(k["mid"] - m)) >= p["bridge_spacing"] for k in kept):
+            r["mid"] = m
+            kept.append(r)
+    out = []
+    for n, r in enumerate(sorted(kept, key=lambda r: (r["body"], r["mid"][1], r["mid"][0])), start=1):
+        out.append({
+            "id": "%s-%d" % (p["crossing"], n),
+            "kind": p["crossing"],
+            "body": r["body"],
+            "a": [round(float(r["a"][1]), 1), round(float(r["a"][0]), 1)],
+            "b": [round(float(r["b"][1]), 1), round(float(r["b"][0]), 1)],
+            "cell_a": [int(r["a"][1] // cell), int(r["a"][0] // cell)],
+            "cell_b": [int(r["b"][1] // cell), int(r["b"][0] // cell)],
+            "length_px": round(float(r["length"]), 1),
+            "off_normal_deg": round(float(r["off"]), 1),
+            "coherence": round(float(r["coh"]), 3),
+            "cost": p["bridge_cost"],
+        })
+    return out, rays, p
+
+
+CROSSING_COLOURS = {"bridge": (255, 200, 40), "causeway": (255, 120, 220)}
+
+
+def draw_crossings_overlay(img, cost, labels, cell, crossings, rays, p):
+    from scipy import ndimage
+    art = np.asarray(img, dtype=np.float64)
+    h, w = art.shape[:2]
+    out = art * 0.6
+    blocked = np.repeat(np.repeat(np.isinf(cost), cell, 0), cell, 1)[:h, :w]
+    out[blocked] = out[blocked] * 0.4 + np.array([20, 60, 160]) * 0.6
+    edge = (labels > 0) & ~ndimage.binary_erosion(labels > 0, np.ones((3, 3)))
+    out[edge] = (0, 200, 220)
+    im = Image.fromarray(out.clip(0, 255).astype(np.uint8))
+    draw = ImageDraw.Draw(im)
+    try:
+        font = ImageFont.truetype("arial.ttf", 14)
+        big = ImageFont.truetype("arial.ttf", 18)
+    except OSError:
+        font = big = ImageFont.load_default()
+    for r in rays:
+        draw.line([(r["a"][1], r["a"][0]), (r["b"][1], r["b"][0])], fill=(150, 150, 150), width=1)
+    colour = CROSSING_COLOURS.get(p["crossing"], (255, 255, 255))
+    for c in crossings:
+        draw.line([tuple(c["a"]), tuple(c["b"])], fill=(0, 0, 0), width=7)
+        draw.line([tuple(c["a"]), tuple(c["b"])], fill=colour, width=4)
+        for e in (c["a"], c["b"]):
+            draw.ellipse([e[0] - 4, e[1] - 4, e[0] + 4, e[1] + 4], fill=(255, 255, 255), outline=(0, 0, 0))
+        mx, my = (c["a"][0] + c["b"][0]) / 2, (c["a"][1] + c["b"][1]) / 2
+        draw.text((mx + 7, my - 7), "%.0f" % c["length_px"], fill=(255, 255, 255), font=font,
+                  stroke_width=2, stroke_fill=(0, 0, 0))
+    x0, y0 = 16, 16
+    draw.rectangle([x0, y0, x0 + 430, y0 + 84], fill=(0, 0, 0))
+    draw.line([x0 + 12, y0 + 20, x0 + 52, y0 + 20], fill=colour, width=4)
+    draw.text((x0 + 62, y0 + 9), "%d %s candidates (length px)" % (len(crossings), p["crossing"]),
+              fill=(255, 255, 255), font=big)
+    draw.line([x0 + 12, y0 + 46, x0 + 52, y0 + 46], fill=(150, 150, 150), width=1)
+    draw.text((x0 + 62, y0 + 36), "%d valid rays before spacing" % len(rays), fill=(255, 255, 255), font=big)
+    draw.text((x0 + 12, y0 + 60), "max %d px, spacing %d px, <=%d deg off normal, coherence >= %.2f" % (
+        p["bridge_max"], p["bridge_spacing"], p["bridge_angle"], p["bridge_coherence"]), fill=(255, 255, 255),
+        font=font)
+    return im
+
+
+def cmd_crossings(args):
+    image = Path(args.image)
+    g = cost_grid(image, args.region, args.k, args.cell)
+    crossings, rays, p = crossing_candidates(g)
+    out = Path(args.out) if args.out else image.parent
+    out.mkdir(parents=True, exist_ok=True)
+    stem = "world_map-%s" % args.region
+    draw_crossings_overlay(g["img"], g["cost"], g["labels"], g["cell"], crossings, rays, p).save(
+        out / ("%s-crossings.png" % stem))
+    stats = {"region": args.region, "image": str(image), "cell": g["cell"], **p,
+             "valid_rays": len(rays), "crossings": crossings}
+    (out / ("%s-crossings.json" % stem)).write_text(json.dumps(stats, indent=2), encoding="utf-8")
+    lengths = [c["length_px"] for c in crossings]
+    print("%d %s candidates from %d valid rays (max %d px, spacing %d px)" % (
+        len(crossings), p["crossing"], len(rays), p["bridge_max"], p["bridge_spacing"]))
+    if lengths:
+        print("length px: min %.1f median %.1f max %.1f" % (min(lengths), float(np.median(lengths)), max(lengths)))
+    print("wrote %s" % (out / ("%s-crossings.png" % stem)))
+    return 0
+
+
 def rgb_of(lab):
     """Lab -> sRGB 0..255 (inverse of srgb_to_lab), for writing cluster colours as hex."""
     l, a, b = lab
@@ -566,6 +781,13 @@ def main(argv=None):
     c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
     c.add_argument("--out", help="output directory (default: the image's directory)")
     c.set_defaults(func=cmd_cost)
+    c = sub.add_parser("crossings", help="bridge/causeway candidates over the cost grid's water, with a debug overlay")
+    c.add_argument("image")
+    c.add_argument("--region", required=True, help="region id in world_map_palettes.json")
+    c.add_argument("--k", type=int, help="cluster count (default: the palette entry's k)")
+    c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
+    c.add_argument("--out", help="output directory (default: the image's directory)")
+    c.set_defaults(func=cmd_crossings)
     args = p.parse_args(argv)
     return args.func(args)
 

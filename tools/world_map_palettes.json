@@ -3,6 +3,10 @@
     "image": "starter-moors.png",
     "k": 10,
     "water_gap": 40,
+    "crossing": "bridge",
+    "bridge_max": 40,
+    "bridge_spacing": 120,
+    "bridge_cost": 30,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "grass", "cost": 1},
@@ -28,6 +32,11 @@
     "water_grow": 0.03,
     "water_min_area": 1500,
     "water_gap": 30,
+    "crossing": "causeway",
+    "bridge_max": 48,
+    "bridge_spacing": 100,
+    "bridge_cost": 20,
+    "bridge_coherence": 0.6,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "reeds", "cost": 4},
@@ -57,6 +66,10 @@
     "water_close": 7,
     "water_grow": 0.15,
     "water_gap": 150,
+    "crossing": "bridge",
+    "bridge_max": 32,
+    "bridge_spacing": 120,
+    "bridge_cost": 40,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "snow", "cost": 8},
