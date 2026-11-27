@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Overworld Design Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">GridGame Gaiden design, epic GG-T1652 / page GG-T1659</p>
+    <h1>The Overworld</h1>
+    <p class="sub">Review sheet for the caravan's travel map, camp and the Wilds, day and night, Mana Waystones, the battle library, onboarding and hero side stories. Sources: the owner-approved plan (2026-11-27) and docs/BIBLE.md &sect;28. Status: proposed, nothing built yet.</p>
+  </header>
+
+  <section>
+    <h2>Premise</h2>
+    <blockquote class="quote" id="quote"></blockquote>
+    <div class="prose" id="premise"></div>
+  </section>
+
+  <section>
+    <h2>The map</h2>
+    <dl class="rows" id="maplook"></dl>
+    <h3 class="sh">Owner reference images</h3>
+    <p class="note">Screenshots from Solasta, supplied by the owner as reference for layout and furniture. Not our art.</p>
+    <div class="figs" id="refs"></div>
+    <h3 class="sh">Starter region maps</h3>
+    <p class="note">The owner's paintings. The painting is the map art, shown as-is; tools/world_map.py only reads it and draws overlays. All three prove the tool together.</p>
+    <div class="figs" id="starters"></div>
+  </section>
+
+  <section>
+    <h2>Travel screen</h2>
+    <dl class="rows" id="travel"></dl>
+  </section>
+
+  <section>
+    <h2>Camp loop</h2>
+    <p class="note">In order, from stopping to waking up.</p>
+    <ol class="steps" id="camp"></ol>
+  </section>
+
+  <section>
+    <h2>Day, night and weather</h2>
+    <div class="swatches" id="periods" role="list"></div>
+    <p class="note small">Swatches are illustrative; the real HSV grades are data in GG-T1679.</p>
+    <div class="prose" id="daynight"></div>
+    <dl class="rows" id="weather"></dl>
+  </section>
+
+  <section>
+    <h2>Mana Waystones</h2>
+    <figure class="diagram">
+      <svg viewBox="0 0 640 260" role="img" aria-labelledby="wsTitle">
+        <title id="wsTitle">Three woken waystones whose circles overlap form a safe corridor along the road; the danger gauge rises only on the stretch outside every circle, where an ambush can fire.</title>
+        <rect class="land" x="0" y="0" width="640" height="260" rx="6"/>
+        <circle class="safe" cx="120" cy="140" r="78"/>
+        <circle class="safe" cx="230" cy="122" r="78"/>
+        <circle class="safe" cx="338" cy="138" r="72"/>
+        <circle class="dormant" cx="560" cy="110" r="64"/>
+        <path class="road risky" d="M20 160 C 80 150, 150 120, 230 122 S 330 150, 400 140 S 520 90, 620 100"/>
+        <path class="road" d="M20 160 C 80 150, 150 120, 230 122 S 330 150, 400 140" />
+        <g class="stone"><rect x="114" y="132" width="12" height="16" rx="2"/><rect x="224" y="114" width="12" height="16" rx="2"/><rect x="332" y="130" width="12" height="16" rx="2"/></g>
+        <g class="stone off"><rect x="554" y="102" width="12" height="16" rx="2"/></g>
+        <text class="lbl" x="230" y="34" text-anchor="middle">Safe corridor: no danger build-up, no ambush</text>
+        <text class="lbl warn" x="470" y="200" text-anchor="middle">Outside every circle: gauge rises</text>
+        <path class="tick" d="M452 108 l8 -14 l8 14 z"/>
+        <text class="lbl dim" x="560" y="196" text-anchor="middle">Dormant: faint glint</text>
+        <text class="lbl dim" x="120" y="236" text-anchor="middle">Woken waystone</text>
+      </svg>
+      <figcaption>Overlapping circles join into a safe road network. Waking the dormant stone on the right (after its guardian battle) would close the gap.</figcaption>
+    </figure>
+    <dl class="rows" id="waystones"></dl>
+  </section>
+
+  <section>
+    <h2>Battle library and Difficulty</h2>
+    <div class="prose" id="library"></div>
+    <h3 class="sh">Difficulty factors</h3>
+    <dl class="rows compact" id="factors"></dl>
+    <p class="out" id="diffout"></p>
+  </section>
+
+  <section>
+    <h2>New-game onboarding order</h2>
+    <p class="note">Each step taught by doing it, as the first stretch of the journey.</p>
+    <ol class="steps" id="onboarding"></ol>
+    <p class="note small" id="onbnote"></p>
+  </section>
+
+  <section>
+    <h2>Hero side stories</h2>
+    <div class="prose" id="side"></div>
+    <h3 class="sh">New quest objective kinds</h3>
+    <dl class="rows compact" id="objectives"></dl>
+  </section>
+
+  <section>
+    <h2>Open points for the owner</h2>
+    <dl class="rows" id="open"></dl>
+  </section>
+
+  <section>
+    <h2>Ticket tree</h2>
+    <p class="note">Epic GG-T1652, features &gt; stories &gt; tasks, built bottom-up: data and rules first, then the moors slice, then widen.</p>
+    <div id="tree"></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
