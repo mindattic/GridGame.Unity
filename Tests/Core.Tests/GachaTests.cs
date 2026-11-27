@@ -128,7 +128,7 @@ namespace GridGame.Tests
 
             var r1 = Gacha.Record(s, std, stdPool, owned[0], "100 Shards", T0);
             Gacha.Record(s, std, stdPool, owned[1], "100 Shards", T0.AddMinutes(1));
-            Assert.That(r1.Result, Is.EqualTo(PullResult.Duplicate));
+            Assert.That(r1.Result, Is.EqualTo(PullResult.Echo));
             Assert.That(s.Summon.Pulls[BannerKind.Standard], Is.EqualTo(2));
             Assert.That(Gacha.NewHeroMiss(s, BannerKind.Standard), Is.EqualTo(2));
             Assert.That(s.Summon.Pulls.ContainsKey(BannerKind.Featured), Is.False, "Standard pulls leave Featured alone");
@@ -193,6 +193,41 @@ namespace GridGame.Tests
             Assert.That(fixedUp.Summon.Pulls, Is.Not.Null);
             Assert.That(fixedUp.Summon.NewHeroMiss, Is.Not.Null);
             Assert.That(fixedUp.Summon.History, Is.Not.Null);
+        }
+
+        [Test]
+        public void An_owned_hero_pulled_again_is_an_echo_then_ticket_fragments()
+        {
+            var s = NewSave("G9");
+            var owned = Owned(s);
+            var std = Standard();
+            var hero = s.Hero(owned[0]);
+            int sp = hero.SkillPoints;
+            for (int i = 1; i <= Gacha.EchoCap; i++)
+            {
+                var rec = Gacha.Record(s, std, owned, owned[0], "1 Ticket", T0.AddMinutes(i));
+                Assert.That(rec.Result, Is.EqualTo(PullResult.Echo));
+                Assert.That(rec.Fragments, Is.EqualTo(0));
+                Assert.That(hero.Echoes, Is.EqualTo(i));
+                Assert.That(hero.SkillPoints, Is.EqualTo(sp + i * Gacha.EchoSp));
+            }
+            Assert.That(s.Roster.Count(h => h.ClassId == owned[0]), Is.EqualTo(1), "a duplicate never adds a second copy");
+
+            int pullsPerTicket = Gacha.FragmentsPerTicket / Gacha.FragmentsPerSpareEcho;
+            for (int i = 0; i < pullsPerTicket; i++)
+            {
+                var rec = Gacha.Record(s, std, owned, owned[0], "1 Ticket", T0.AddHours(1).AddMinutes(i));
+                Assert.That(rec.Result, Is.EqualTo(PullResult.Fragments));
+                Assert.That(rec.Fragments, Is.EqualTo(Gacha.FragmentsPerSpareEcho));
+            }
+            Assert.That(hero.Echoes, Is.EqualTo(Gacha.EchoCap), "Echoes stop at the cap");
+            Assert.That(hero.SkillPoints, Is.EqualTo(sp + Gacha.EchoCap * Gacha.EchoSp), "no SP past the cap");
+            Assert.That(s.Summon.Tickets, Is.EqualTo(1), "the fragments join into a Ticket");
+            Assert.That(s.Summon.Fragments, Is.EqualTo(0));
+
+            Assert.That(s.Hero(owned[1]).Echoes, Is.EqualTo(0), "Echoes are per hero");
+            Assert.That(Gacha.Record(s, std, owned.Concat(new[] { "x_new" }).ToList(), "x_new", "1 Ticket", T0.AddDays(1)).Result,
+                Is.EqualTo(PullResult.New));
         }
 
         [Test]

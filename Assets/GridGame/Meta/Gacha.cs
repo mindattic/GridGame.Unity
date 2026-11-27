@@ -17,6 +17,17 @@ namespace GridGame.Meta
         /// <summary>How many pulls the save keeps in <see cref="SummonState.History"/>; older ones roll off.</summary>
         public const int HistoryKeep = 200;
 
+        /// <summary>What a duplicate is called on screen (GG-T1421); the owner may rename it ("Resonance", decision D7).</summary>
+        public const string EchoName = "Echo";
+        /// <summary>Skill points each Echo gives the hero it echoes.</summary>
+        public const int EchoSp = 1;
+        /// <summary>Echoes a hero can hold; a duplicate past this gives Ticket fragments instead.</summary>
+        public const int EchoCap = 5;
+        /// <summary>Summon Ticket fragments a duplicate gives once its hero is at <see cref="EchoCap"/>.</summary>
+        public const int FragmentsPerSpareEcho = 2;
+        /// <summary>Fragments that join into one Summon Ticket (<see cref="SummonState.Tickets"/>).</summary>
+        public const int FragmentsPerTicket = 10;
+
         /// <summary>The always-open Standard banner, or null when the content has none.</summary>
         public static BannerDef Standard(ContentDb c) => c.BannerOrder.FirstOrDefault(b => b?.Kind == BannerKind.Standard);
 
@@ -125,13 +136,17 @@ namespace GridGame.Meta
         /// <summary>Records a pull of <paramref name="classId"/> on <paramref name="banner"/> from <paramref name="pool"/>, before the
         /// hero lands: the kind's pull count, its new-hero pity (reset by a new hero, or once the pool has no one left to be
         /// new), the Featured pity (reset by a featured hero; it carries from one Featured banner to the next) and the
-        /// history, newest first, capped at <see cref="HistoryKeep"/>.</summary>
+        /// history, newest first, capped at <see cref="HistoryKeep"/>. A hero already owned lands here and now as an
+        /// <see cref="Echo"/>.</summary>
         public static PullRecord Record(SaveData s, BannerDef banner, List<string> pool, string classId, string paid, DateTime now)
         {
             s.Summon ??= new SummonState();
             var st = s.Summon;
             var kind = banner?.Kind ?? BannerKind.Standard;
             bool isNew = s.Hero(classId) == null;
+            var result = PullResult.New;
+            int fragments = 0;
+            if (!isNew) result = Echo(s, classId, out fragments);
             st.Pulls[kind] = (st.Pulls.TryGetValue(kind, out var p) ? p : 0) + 1;
             bool noneLeft = pool.All(id => s.Hero(id) != null || string.Equals(id, classId, StringComparison.OrdinalIgnoreCase));
             st.NewHeroMiss[kind] = isNew || noneLeft ? 0 : NewHeroMiss(s, kind) + 1;
@@ -139,18 +154,41 @@ namespace GridGame.Meta
                 st.FeaturedMiss = banner.Featured.Contains(classId, StringComparer.OrdinalIgnoreCase) ? 0 : st.FeaturedMiss + 1;
             var rec = new PullRecord
             {
-                Utc = now, BannerId = banner?.Id, ClassId = classId, Result = isNew ? PullResult.New : PullResult.Duplicate, Paid = paid,
+                Utc = now, BannerId = banner?.Id, ClassId = classId, Result = result, Fragments = fragments, Paid = paid,
                 NewHeroMiss = st.NewHeroMiss[kind], FeaturedMiss = st.FeaturedMiss,
             };
             st.History.Insert(0, rec);
             if (st.History.Count > HistoryKeep) st.History.RemoveRange(HistoryKeep, st.History.Count - HistoryKeep);
             return rec;
         }
+
+        /// <summary>An owned hero pulled again: an Echo (+<see cref="EchoSp"/> SP to that hero) while it holds fewer than
+        /// <see cref="EchoCap"/>, else <see cref="FragmentsPerSpareEcho"/> Ticket fragments, every
+        /// <see cref="FragmentsPerTicket"/> of them joining into a Summon Ticket.</summary>
+        public static PullResult Echo(SaveData s, string classId, out int fragments)
+        {
+            fragments = 0;
+            var h = s.Hero(classId);
+            if (h == null) return PullResult.New;
+            if (h.Echoes < EchoCap)
+            {
+                h.Echoes++;
+                h.SkillPoints += EchoSp;
+                return PullResult.Echo;
+            }
+            s.Summon ??= new SummonState();
+            fragments = FragmentsPerSpareEcho;
+            s.Summon.Fragments += fragments;
+            s.Summon.Tickets += s.Summon.Fragments / FragmentsPerTicket;
+            s.Summon.Fragments %= FragmentsPerTicket;
+            return PullResult.Fragments;
+        }
     }
 
     public enum PityDue { None, NewHero, Featured }
 
-    public enum PullResult { New, Duplicate }
+    /// <summary>What a pull gave: a new hero, an Echo of an owned one, or Ticket fragments once its Echoes are full.</summary>
+    public enum PullResult { New, Echo, Fragments }
 
     /// <summary>One pull in <see cref="SummonState.History"/>: when, which banner, who came, new or not, what paid for it,
     /// and both pity counters after it.</summary>
@@ -160,6 +198,8 @@ namespace GridGame.Meta
         public string BannerId;
         public string ClassId;
         public PullResult Result;
+        /// <summary>Ticket fragments the pull gave (<see cref="PullResult.Fragments"/>), else 0.</summary>
+        public int Fragments;
         public string Paid;
         public int NewHeroMiss;
         public int FeaturedMiss;
@@ -176,5 +216,9 @@ namespace GridGame.Meta
         public int FeaturedMiss;
         /// <summary>The last <see cref="Gacha.HistoryKeep"/> pulls, newest first.</summary>
         public List<PullRecord> History = new List<PullRecord>();
+        /// <summary>Ticket fragments not yet joined into a Ticket (under <see cref="Gacha.FragmentsPerTicket"/>; GG-T1421).</summary>
+        public int Fragments;
+        /// <summary>Summon Tickets earned in play, never bought (GG-T1421: joined fragments).</summary>
+        public int Tickets;
     }
 }
