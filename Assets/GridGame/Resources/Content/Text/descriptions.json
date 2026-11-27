@@ -25178,6 +25178,34 @@
         "short": "Under the Anchors the arches are taps, and the field itself moves the pieces. An anchor is sunk somewhere on the field each wave. Every few seconds it heaves, and everyone within three tiles is dragged a step toward it. Set up a line the heave will close."
       }
     },
+    "rule:burrows": {
+      "key": "rule:burrows",
+      "id": "description-rule-burrows",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:1fd69dc27034e5d32c8c75356c59433dd870467e5ca439eba9456b59d3440df9",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Burrow Ambush",
+        "short": "Where the sand runs deep, the scorpions do not cross the field, they go under it. A burrowing scorpion vanishes into a mark that stays in sight for only half a second, and a moment and a half later it bursts up from that tile. Step on the burrow first and you dig it out before it strikes."
+      }
+    },
+    "rule:choirrunes": {
+      "key": "rule:choirrunes",
+      "id": "description-rule-choirrunes",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:1004415f35d93086398fe2db70e1704210d0adb7d22deb4cc82193b938dfbca4",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Choir Runes",
+        "short": "The Choir sings in circles, and the circle is drawn first. Its singers paint violet runes on the floor and stand on them. When a third singer steps on a rune while two others hold theirs, the circle closes: with fewer than five of the Choir standing it sings up a Cyber Zombie, otherwise it Empowers the three on the runes. A hero who steps on a rune scuffs it out."
+      }
+    },
     "rule:crackingfloor": {
       "key": "rule:crackingfloor",
       "id": "description-rule-crackingfloor",
@@ -25204,6 +25232,20 @@
       "payload": {
         "name": "Fire Trail",
         "short": "The Ember came to the Shardfall to feed the fire. Ember beasts leave burning ground behind them; it scorches whoever steps in or stands on it. Ice douses it, and it burns out on its own."
+      }
+    },
+    "rule:firewalls": {
+      "key": "rule:firewalls",
+      "id": "description-rule-firewalls",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:40ebd9b2eadf3bc2733b655e51e362ff98e798bb1b72b7a9ca1cafce82a93783",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Firewall",
+        "short": "A wall of fire does not tell friend from foe. A Firewall burns for 12 seconds: whoever steps on it takes 6 Fire and catches Burning, and whoever ends a turn there takes 4 more and burns again. The party is not spared, so route around it. Ice douses it."
       }
     },
     "rule:holds-barricades": {
@@ -25262,6 +25304,20 @@
         "short": "In the Choir's tithe vault the Bulwark fights with ordnance, so a step can be the wrong step. Bulwark gunners plant mines as they march. Step on one, shove a foe onto it, or hit it from range and it arms: the blast lands on the timeline a moment later. A Disarm Kit pulls it safely."
       }
     },
+    "rule:machinist-barricade": {
+      "key": "rule:machinist-barricade",
+      "id": "description-rule-machinist-barricade",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8056f1f2559a5aa375de28f04d8c1ccef34c442f4d6e7ca283e08ad1fe89f061",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Machinist's Barricade",
+        "short": "Halcyon's engineers built to hold a line, and the Machinist still does. The barricade blocks its tile for 20 seconds and stops a charge cold. Each foe that ends its turn beside it, and each charge into it, is one of the three hits that bring it down."
+      }
+    },
     "rule:morrows-dark": {
       "key": "rule:morrows-dark",
       "id": "description-rule-morrows-dark",
@@ -25274,6 +25330,34 @@
       "payload": {
         "name": "Morrow's Dark",
         "short": "In Morrow's Shadow the Manalith fills the sky, close enough to count its crystals, and there is no light but the braziers. A foe more than two tiles from every hero, and off the brazier-light, is hidden on the field and its timeline icon is a question mark."
+      }
+    },
+    "rule:ninjadecoy": {
+      "key": "rule:ninjadecoy",
+      "id": "description-rule-ninjadecoy",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ac24fe609706e23e8abe0c40a73476148da07787ebc184a7a40f95def1adf8f8",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Substitution Log",
+        "short": "A ninja's last trick is to be somewhere else. When a blow would drop the ninja, a wooden log takes it instead, and the log stays on the field as an obstacle for 4 seconds before it falls apart."
+      }
+    },
+    "rule:oilslicks": {
+      "key": "rule:oilslicks",
+      "id": "description-rule-oilslicks",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0a228afa78bf892989cce40082fda81917032740e63936366a9da57e85d72d64",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Oil Slick",
+        "short": "The Alchemist's flasks leave the floor slick and black. Oil lasts 15 seconds and slows any foe that steps in it; the party crosses it freely. Fire turns it into a Firewall, and Purifying Salts wipe it away."
       }
     },
     "rule:rising-tide": {
@@ -25304,6 +25388,20 @@
         "short": "In Deep Shardfall the Manalith's shell is breaking. Shards fall on the party: each strike shows on the timeline and its tiles light up before it lands. Where one lands it leaves a crystal; end a turn on it for a Ward."
       }
     },
+    "rule:slimeglobs": {
+      "key": "rule:slimeglobs",
+      "id": "description-rule-slimeglobs",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d9979927dda7bc0cab41cfcbad139e1f6712a4ae7254ed02587edbf784f816fb",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Slime Glob",
+        "short": "Slimes do not only leave trails, they lay what will hatch. A glob sits on the floor for 8 seconds, then hatches a slime a level lower than its painter. A hero who steps on it squishes it and gains 15 mana charge. Fire burns it away."
+      }
+    },
     "rule:slimetrail": {
       "key": "rule:slimetrail",
       "id": "description-rule-slimetrail",
@@ -25316,6 +25414,34 @@
       "payload": {
         "name": "Slime Trail",
         "short": "On the Tithe Moors the dangers are still ordinary, but a monster can change the floor. Slimes leave a sticky trail as they go; stepping in it slows you. Fire burns it away, and Purifying Salts wash it off."
+      }
+    },
+    "rule:smoke": {
+      "key": "rule:smoke",
+      "id": "description-rule-smoke",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:db43994afd1c63006d0e938c457afc6a7062bdf263c49750b22b3a598d02dd49",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Smoke Cloud",
+        "short": "A cloud the party can fight from and the foes cannot see through. Smoke lasts 8 seconds on the tiles it covers, and a foe's blow or charge aimed at a hero standing in it is rolled as if the foe were Blind. It hides the party only."
+      }
+    },
+    "rule:timebombs": {
+      "key": "rule:timebombs",
+      "id": "description-rule-timebombs",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:93cb30eb19c2176c9a399c4144c2337496afdd03c7f12c7b7d6f8d818f5827a0",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "name": "Time Bomb",
+        "short": "The Operative plants a bomb on a foe and steps back. After 4 seconds it blows for 16 Fire on every tile beside its carrier and the carrier's own, heroes included, and it rides the carrier wherever it is shoved or dragged. Push the carrier into its friends first."
       }
     }
   }

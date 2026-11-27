@@ -443,7 +443,6 @@
   },
   {
     "Id": "timebombs",
-    "Name": "Time Bomb",
     "Events": [
       {
         "Id": "timebomb",
