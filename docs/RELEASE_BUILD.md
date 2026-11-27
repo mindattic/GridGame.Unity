@@ -194,6 +194,15 @@ GridGame (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time.
    `diamonds_2500` "2,500 Aetherite Shards"; description "Mana Shards for GridGame: a random summon, an
    instant Rested refill or a lucky craft." Use the same titles on App Store Connect.
 
+**Scripted upload (GG-T1514).** `python tools/play_upload.py` sends `Build/AndroidRelease/GridGame.aab` to Play through
+the Developer API (edit, bundle, track with the release notes, commit). Setup, once: `pip install
+google-api-python-client google-auth`; in Play Console > Setup > API access link a Google Cloud project, create a
+service account and give it release permission on the app; download its JSON key and keep it outside git
+(`play-service-account*.json` is ignored); point `GG_PLAY_SERVICE_ACCOUNT` at it or put
+`GG_PLAY_SERVICE_ACCOUNT=<path>` in the git-ignored `play-publisher.env`. `--validate` does everything but commit (run
+it first); `--track closed|production` and `--rollout 0.1` pick another track and a staged rollout. It refuses when
+`release.json`'s sha256 does not match the .aab, and names the release `v<version>+<code>`.
+
 ### Cloud save: Play Games Saved Games (GG-T608)
 
 The game side is built and inert (BIBLE §15.2): `Meta/CloudSave` (names, snapshot body, which copy wins, the upload

@@ -43,6 +43,9 @@ Data/Prose/.kit/
 
 # GG-T478: Android signing secrets (docs/RELEASE_BUILD.md) — the upload keystore and its passwords never enter git
 android-signing.env
+# GG-T1514: Play API service-account key path (tools/play_upload.py)
+play-publisher.env
+play-service-account*.json
 *.keystore
 *.jks
 /_male_variants/
