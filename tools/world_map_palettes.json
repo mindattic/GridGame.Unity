@@ -47,9 +47,10 @@
   },
   "lanternroad": {
     "image": "starter-mountains-relief.png",
-    "k": 11,
-    "blur": 3,
-    "water_close": 5,
+    "k": 14,
+    "blur": 1,
+    "mode": 3,
+    "water_close": 7,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "snow", "cost": 8},
@@ -58,15 +59,17 @@
       {"label": "forest", "cost": 3}
     ],
     "clusters": [
-      {"rgb": "#3f7f80", "label": "water", "pin": true},
+      {"rgb": "#3e533e", "label": "water", "pin": true},
+      {"rgb": "#344337", "label": "water", "pin": true},
       {"rgb": "#dcd0b8", "label": "snow"},
       {"rgb": "#b99663", "label": "rock"},
-      {"rgb": "#997936", "label": "rock"},
       {"rgb": "#956e44", "label": "rock"},
       {"rgb": "#7a5b38", "label": "rock"},
       {"rgb": "#5f462d", "label": "rock"},
       {"rgb": "#3f3122", "label": "rock"},
       {"rgb": "#8a8a3a", "label": "grass"},
+      {"rgb": "#796625", "label": "grass"},
+      {"rgb": "#5d5320", "label": "grass"},
       {"rgb": "#42411b", "label": "forest"},
       {"rgb": "#293014", "label": "forest"}
     ]
