@@ -6124,9 +6124,9 @@ The Crucible stays reachable, moved **under the Caravan list** at camp, and beco
 
 ### 28.14 Roaming threats and the danger pulse
 
-Status: **Proposed** (GG-T1771, feature GG-T1770), design only; nothing here is built yet. Owner, 2026-11-27: *on the overworld, enemy icons wander the map and the player can intercept one to take on a particularly challenging fight; a danger pulse (screen-edge/heartbeat pulse that strengthens as a strong threat nears, in the spirit of FF Resonance) warns of them.* Every number below is a starting value in config (`ThreatConfig`, `PulseConfig`), not a balance claim. The choices marked *(owner)* are recommendations waiting on the owner ([§29.4](#294-overworld-threats)).
+Status: **Proposed** (GG-T1771, feature GG-T1770), design only; nothing here is built yet. Owner, 2026-11-27: *on the overworld, enemy icons wander the map and the player can intercept one to take on a particularly challenging fight; a danger pulse (screen-edge/heartbeat pulse that strengthens as a strong threat nears, in the spirit of FF Resonance) warns of them.* Every number below is a starting value in config (`ThreatConfig`, `PulseConfig`), not a balance claim. The open choices were answered by the owner on 2026-11-27 (GG-T1788): roamers don't start fights, random encounters do (below); bounties walk the map; respawn 3 and 7 days; the pulse capped at 0.3 inside a safe circle; a full haptic pattern library, **off by default**.
 
-**Where it sits.** §28.4's gauge stays what it is: route danger that ends in an unavoidable ambush. Roaming threats are the other kind of danger: things you can see on the map (or feel under the fog), steer around, or go and fight on purpose. Both feed **one danger pulse** (below), so the player reads one signal.
+**Where it sits.** §28.4's gauge stays what it is: route danger whose random encounters can fire anywhere outside a safe circle and become inevitable at a full pulse. Roaming threats are the other kind of danger: things you can see on the map (or feel under the fog), steer around, or go and fight on purpose. Both feed **one danger pulse** (below), so the player reads one signal.
 
 #### 28.14.1 What roams
 
@@ -6135,13 +6135,13 @@ Status: **Proposed** (GG-T1771, feature GG-T1770), design only; nothing here is 
 
 | Tier | Who | How many per region | Moves | Starts a fight? |
 |---|---|---|---|---|
-| **Prowler** (☠) | A regional pack a notch above an ambush: wolves, bandits, marsh lurkers (the §28.5 predator families and region foes) | 2–4 alive (+1 at night) | Wanders near a home point; **chases** a caravan it senses | Yes: a Prowler that catches the caravan **is** that stretch's ambush |
+| **Prowler** (☠) | A regional pack a notch above an ambush: wolves, bandits, marsh lurkers (the §28.5 predator families and region foes) | 2–4 alive (+1 at night) | Wanders near a home point; **chases** a caravan it senses | Only by catching you: a Prowler's contact **counts as a random encounter** (§28.4), fought with its own battle |
 | **Marauder** (☠☠) | An elite war band or a named beast: a Choir patrol, an oni warband, a buffalo bull with its herd | 0–2 alive | **Patrols** a road, bridge or pass, or wanders | Never on its own; the player intercepts it |
 | **Dread** (☠☠☠) | The region's apex: a titled, rule-breaking boss (§14.9) walking the map, the way a bounty target walks a stage | at most 1 | Slow wander through the Wilds, or a long patrol | Never on its own; the player intercepts it |
 
 - **Rosters are data:** `roamers.json` (`RoamerDef`: `Id`, `Region`, `Tier`, `Leader` class id, `Title` (Dread only), `Mode` (`Wander` / `Patrol`), `Patrol` node ids, `Battles` (library battle ids, kind `Roamer`), `NightOnly`, `Reward`). Validation: the leader is a real enemy class, the region a real region, patrol nodes real nodes of that region joined by edges, at least one battle, one Dread at most per region. Game animals (§28.5, `GameAnimal` tag) never roam as threats; they stay at hunt spots. Night-only families (bats, werewolves) appear only between dusk and dawn.
 - **Spawning** (`Threats.Spawn`, seeded by save seed, region and day like `WildEvents.Spawn`): on entering a region and at each dawn the region is topped up from its roster to the counts above, each threat at a seeded walkable spot **outside every safe circle** (§28.4's `SafeZones`), at least `MinSpawnDistance` (300 px) from the caravan and `MinSpacing` (96 px) from each other. Under fog is allowed: the icon is hidden but the pulse is felt, which is the point of the pulse.
-- **Bounties walk the map** *(owner)*: a hunted bounty (§22.4) becomes a named Marauder or Dread in its region instead of a mark inside one stage battle; the poster's clue becomes "Seen wandering *region*" and the kill is collected at the board as today.
+- **Bounties walk the map** (owner, 2026-11-27): a hunted bounty (§22.4) becomes a named Marauder or Dread in its region instead of a mark inside one stage battle; the poster's clue becomes "Seen wandering *region*" and the kill is collected at the board as today.
 
 #### 28.14.2 How they move
 
@@ -6149,20 +6149,24 @@ Threats move only while the world clock moves (travel, Interrupt, sleep), in wor
 
 - **Wander:** pick a seeded walkable waypoint within `Leash` (300 px) of home, walk to it, idle 30–90 minutes, pick again. Prowler 0.8 px/min, Dread 0.5.
 - **Patrol:** walk the authored patrol path along its graph edges, there and back, idling 60 minutes at each end. Marauders 1.0 px/min. A patrol on a bridge or pass is a chokepoint the player routes around, waits out, or fights; route choice again, as §28.4 wants.
-- **Chase (Prowlers only):** a Prowler that senses the caravan or the hunting party within `Sense` (160 px; 220 at night) turns and chases at **1.1×** the caravan's current speed. It gives up after 90 minutes of chasing, when its quarry is 1.5 × `Leash` from home, or the moment its quarry enters a safe circle, then walks home. *Marauders and Dreads never chase* *(owner)*: the hard fights are always chosen.
+- **Chase (Prowlers only):** a Prowler that senses the caravan or the hunting party within `Sense` (160 px; 220 at night) turns and chases at **1.1×** the caravan's current speed. It gives up after 90 minutes of chasing, when its quarry is 1.5 × `Leash` from home, or the moment its quarry enters a safe circle, then walks home. *Marauders and Dreads never chase* (owner, 2026-11-27: roamers don't start fights): the hard fights are always chosen.
 - **Safe circles are walls:** no threat steps into a camp or woken-waystone circle; a path that would cross one stops at the edge and replans. So a camped caravan and a chain of woken waystones (§28.8) are always safe, and sleep is never interrupted.
 - **Terrain:** threats walk the same walkable test the Wild spawner uses (no water, bridges and causeways allowed); they are not bound to roads, except a patrol.
 - **Grace after a fight:** every threat within 1.5 × `Sense` of a battle's spot holds still for 30 minutes afterward, so fights never chain.
 - **Night:** speeds +20 %, `Sense` as above, +1 Prowler; matches §28.7's "night is dangerous".
 - **Drawing:** icons move between steps with a short tween; under Reduce Motion they snap. A chasing Prowler's icon leans toward its quarry and its skull flashes once when the chase starts.
 
-#### 28.14.3 Intercept rules
+#### 28.14.3 Random encounters and intercepts
 
+- **Roamers never start a fight on their own** (owner, 2026-11-27). Unbidden fights are **random encounters** (§28.4): owner, *"random encounters are built out of enemies local to that region with maybe some surprises. random encounters can happen anywhere and become inevitable when threat pulse hits max."*
+  - **What they are:** a preassembled library battle (kind ambush, §28.9) of **1 to 5 waves** of the region's common monsters, now and then with a **surprise**: a rarer or neighbouring-region family arriving mid-battle with its `WaveDef.SurpriseSpeaker` line.
+  - **Where and when:** anywhere outside a safe circle, on a road or off it. While the caravan or the hunting party moves, a seeded check (save seed, region, world minute) fires one with a chance that rises with the pulse intensity *I* (§28.14.6): none below 0.15, then climbing with *I*. At a full pulse it is **inevitable**: the §28.4 unavoidable ambush ("Defend the caravan"), with `Danger.cs`'s full threshold unchanged. Inside a safe circle there are none.
+  - Each resolves like an ambush: the gauge resets, and the §28.14.2 grace keeps fights from chaining.
 - **Contact** is when a threat comes within `ContactRadius` (24 px) of the caravan marker or the hunting-party marker (§28.3). Steps longer than 10 minutes are split so a fast step can't pass through a threat.
-- **Unbidden contact (Prowler chase):** the battle is an **Ambush** ("Defend the caravan", §28.4) fought with that Prowler's battle. It replaces the gauge's ambush for that stretch: the gauge resets as an ambush resolution does.
+- **Unbidden contact (Prowler chase):** a Prowler that catches you **counts as a random encounter**: an **Ambush** ("Defend the caravan", §28.4) fought with that Prowler's own battle. It stands in for that stretch's random encounter, and the gauge resets as an ambush resolution does.
 - **Intercept (the player's choice):** tapping a visible threat opens its **threat card**, the location card's twin (§28.3): leader portrait, name or title, tier skulls, mode ("Patrols the Copperhead bridge"), **Challenge** rating (Easy / Medium / Hard / **Deadly**, from the Difficulty result below against party level) and the reward preview. **Intercept** plots a route (Dijkstra, §28.2) to the road point nearest the threat; once the caravan is within `Sense` of it, the threat is drawn in and contact fires wherever it stands. From camp the hunting party goes out to it on foot instead, as to a Wild event, and the caravan stays safe in its circle. Intercept is not offered for a threat under fog.
 - **Avoiding:** keep moving (a Prowler is only slightly faster, and gives up), turn back, make for a safe circle, or Interrupt and camp (a threat can't enter the camp circle).
-- **After the fight:** a win removes the threat (Prowlers come back with the dawn top-up; a slain Marauder's roster slot waits 3 days, a Dread's 7 *(owner)*). A loss or retreat follows the normal rule (no permadeath, §29.1): the caravan camps on the spot and heals by camp rest, and the threat walks home and won't chase for 2 hours. Either way the gauge resets.
+- **After the fight:** a win removes the threat (Prowlers come back with the dawn top-up; a slain Marauder's roster slot waits 3 days, a Dread's 7 (owner, 2026-11-27: designer's call); a claimed bounty roamer never returns). A loss or retreat follows the normal rule (no permadeath, §29.1): the caravan camps on the spot and heals by camp rest, and the threat walks home and won't chase for 2 hours. Either way the gauge resets.
 
 #### 28.14.4 Fight difficulty
 
@@ -6181,18 +6185,21 @@ The reward has to make the choice worth it, so it grows with the tier and is sho
 
 #### 28.14.6 The danger pulse
 
-- **One intensity, 0..1:** `I = max(gauge, threat)`, where *gauge* is §28.4's level and *threat* is the strongest single threat's pull, `w(tier) × (1 − d / R(tier))²` for each threat at distance *d* inside its range *R*. Defaults: Prowler w 0.5, R 250 px; Marauder 0.8, 350; Dread 1.0, 500. A chasing Prowler adds +0.25. Positions are the true ones, **fog or not**: the pulse is how you learn about what you can't see. Inside a safe circle the threat part is capped at **0.3** *(owner)*: you know something is out there, but you are safe. Below **0.15** there is no pulse.
+- **One intensity, 0..1:** `I = max(gauge, threat)`, where *gauge* is §28.4's level and *threat* is the strongest single threat's pull, `w(tier) × (1 − d / R(tier))²` for each threat at distance *d* inside its range *R*. Defaults: Prowler w 0.5, R 250 px; Marauder 0.8, 350; Dread 1.0, 500. A chasing Prowler adds +0.25. Positions are the true ones, **fog or not**: the pulse is how you learn about what you can't see. Inside a safe circle the threat part is capped at **0.3** (owner, 2026-11-27): you know something is out there, but you are safe. Below **0.15** there is no pulse.
 - **Rate:** one heartbeat every `DangerState.PulsePeriod(I)` seconds (3.0 s at 0 down to 0.5 s at 1; the existing curve, so the marker and the screen beat together).
 - **Screen edge** (the FF Resonance look): a soft vignette on the map screen's edges throbs on each beat. Its strength and width follow *I*; it is **biased toward the edge facing the strongest threat** (the gauge alone gives an even ring). Its colour is the foe colour, deeper with tier (Prowler amber, Marauder red, Dread a dark crimson), and under Colorblind palette the `CbFoe` / `CbBoss` oranges; strength and width carry the meaning, so the colour is never the only cue. The §28.4 marker pulse stays as it is.
 - **Audio:** a two-beat heartbeat cue **`world.heartbeat`** on each beat, volume `0.3 + 0.7 × I` of SFX volume; from `I ≥ 0.7` the map music ducks by 3 dB. One-shot stings: **`world.threat_near`** the first time a Marauder or Dread comes into pulse range, **`world.threat_chase`** when a Prowler starts a chase, **`world.threat_contact`** at contact. New cue files by the asset rule (`world-heartbeat-00` …, `make_sfx.py`).
-- **Haptics** (new; GridGame has none today): a light tick on each beat at `I ≥ 0.5`, a double tick at `I ≥ 0.85`, one strong pulse at contact. **Settings → Haptics**, on by default on phones *(owner)*, `SettingsSave.Haptics`; desktop and WebGL have none. Unity's `Handheld.Vibrate` is a single long buzz, too coarse for a tick, so this needs a small native bridge (Android `VibrationEffect`, iOS `UIImpactFeedbackGenerator`).
+- **Haptics** (new; GridGame has none today). Owner, 2026-11-27: *"no, not by default, there should be whole vibration library of sounds but have it off by default this is supposed to be a relaxing game not a bunch of vibrations."*
+  - **A pattern library**, named like the sound cues, one pattern per pulse or sting event: `beat` (a light tick on each beat at `I ≥ 0.5`), `double_beat` (a double tick at `I ≥ 0.85`), `threat_near`, `threat_chase`, `threat_contact` (one strong pulse at contact) and `encounter` (a random encounter firing). Patterns are data (`haptics.json`: steps of duration and amplitude), so new events add a pattern, not code.
+  - **Settings → Haptics is OFF by default on every platform**, `SettingsSave.Haptics` = false; the player opts in. Desktop and WebGL play nothing even when on.
+  - Unity's `Handheld.Vibrate` is a single long buzz, too coarse for a tick, so this needs a small native bridge (Android `VibrationEffect`, iOS `UIImpactFeedbackGenerator`).
 - **Accessibility:** every pulse event also has text (§31): the day dial's danger icon names the strongest threat ("Something stalks the road", "A Marauder patrols nearby", "The Dread of the moors is near") and the start of a chase is a Travel Journal line. **Reduce Motion:** the vignette holds a steady glow at the current strength instead of throbbing; the dial icon still beats. Sound and haptics follow their own settings.
 - The pulse runs only on the map screen; camp services and battles never show it.
 
 #### 28.14.7 How it fits the World core (GG-T1674)
 
 - **`Core/World/Threats.cs`** (new, pure, seeded with the `Rng` the Wild spawner uses): `ThreatConfig` (the numbers above), `RoamingThreat` {`Id`, `RoamerId`, `Tier`, `X`, `Y`, `Mode`, `HomeX`, `HomeY`, `Waypoint`, `IdleUntil`, `ChaseStarted`, `GraceUntil`}, `Threats.Spawn(seed, region, day, roster, safe, isWalkable, bounds, caravan)`, `Threats.Step(threats, minutes, clock, caravan, huntingParty, safe, isWalkable, config)` → contacts, and `Threats.Pull(threats, x, y, safe, config)` → the threat part of the pulse.
-- **`Core/World/DangerPulse.cs`** (new): `Intensity(gaugeLevel, threatPull)`, `Beat(intensity)` (period, vignette strength, bias bearing, haptic level). `Danger.cs` is unchanged; its `PulsePeriod` is reused.
+- **`Core/World/DangerPulse.cs`** (new): `Intensity(gaugeLevel, threatPull)`, `Beat(intensity)` (period, vignette strength, bias bearing, haptic pattern id), and `EncounterChance(intensity)` for the seeded random-encounter check (0 below 0.15, certain at a full pulse). `Danger.cs` is unchanged; its `PulsePeriod` is reused.
 - **`Difficulty`:** `BattleKind.Roamer`, `DifficultyInput.ThreatTier`, `DifficultyConfig.ThreatTierPush[]`. **`BattlePicker`** draws `Roamer` battles by id from the threat's roster entry.
 - **Travel loop:** each `Travel.Advance` step hands the same minutes to `Threats.Step` (in sub-steps of at most 10 minutes) and then to `DangerState.Rise`; a contact stops travel the way an ambush does.
 - **Save:** `WorldSave` gains a list of live threats per region and the roster cooldowns (slain-at day). The field is additive and empty on old saves, which get a fresh top-up at the next dawn, so no migration step is needed beyond the v26 one.
@@ -6219,12 +6226,12 @@ Resolve a question → write the answer into the right section → delete it her
    whether these should also get original names.
 
 ### 29.4 Overworld threats
-Proposed in [§28.14](#2814-roaming-threats-and-the-danger-pulse) (GG-T1771); each line is the recommendation written there.
-9. **Forced fights** — should any roaming threat start a fight on its own? Recommended: only Prowlers chase, and a Prowler's catch replaces that stretch's ambush; Marauders and Dreads are always the player's choice.
-10. **Bounties on the map** — should a hunted bounty become a named Marauder or Dread walking its region, instead of a mark inside one stage battle? Recommended: yes; the board, poster and claim stay.
-11. **Respawn** — how long until a slain Marauder or Dread's slot refills? Recommended: 3 and 7 days; a claimed bounty never returns.
-12. **Pulse inside a safe circle** — muted, or capped? Recommended: capped at 0.3, so the player still knows something is out there.
-13. **Haptics** — add a native haptics bridge, and is Haptics on by default on phones? Recommended: yes and yes.
+**Answered 2026-11-27 (owner, GG-T1788; written into [§28.4](#284-danger-and-ambushes) and [§28.14](#2814-roaming-threats-and-the-danger-pulse)):**
+9. **Forced fights** — answered: roamers don't start fights; random encounters (the region's foes plus the odd surprise, 1 to 5 waves) can happen anywhere outside a safe circle and are inevitable at a full pulse; a Prowler catching you counts as one (§28.14.3).
+10. **Bounties on the map** — answered: yes, a hunted bounty becomes a named roamer.
+11. **Respawn** — answered: designer's call, 3 and 7 days; a claimed bounty never returns.
+12. **Pulse inside a safe circle** — answered: capped at 0.3.
+13. **Haptics** — answered: a full haptic pattern library, but Haptics is OFF by default on every platform (a relaxing game).
 
 ## 30. Performance Budgets
 

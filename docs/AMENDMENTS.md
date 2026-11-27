@@ -1789,3 +1789,28 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
     ([§28.10](BIBLE.md#2810-new-game-onboarding-order)).
 - *Why:* owner (quoted above). Amended in the bible by GG-T1655 (§3, §28) and GG-T1656 (§22.3, §22.5, §22.11,
   §25.3.1, §25.11.2).
+
+## 2026-11-27 — Random encounters, 1 to 5 waves, and the roaming-threat answers (owner, GG-T1788, GG-T1791)
+
+- **Owner, 2026-11-27, answering [BIBLE §29.4](BIBLE.md#294-overworld-threats):** *"1. random encounters are built
+  out of enemies local to that region with maybe some surprises. random encounters can happen anywhere and become
+  inevitable when threat pulse hits max; 2. Yes; 3. build it your way; 4. yes, 5. no, not by default, there should
+  be whole vibration library of sounds but have it off by default this is supposed to be a relaxing game not a
+  bunch of vibrations; enemy encounters can be between 1-5 waves long, and it is preassembled based on common
+  regional monsters"*.
+- **Was ([§28.4](BIBLE.md#284-danger-and-ambushes), [§28.9](BIBLE.md#289-battles-a-library-and-the-difficulty-factors),
+  [§28.14](BIBLE.md#2814-roaming-threats-and-the-danger-pulse), proposed by GG-T1771):** the only overworld
+  randomness was the danger gauge's ambush at full; every library battle was exactly 5 waves; a Prowler's catch
+  replaced the gauge's ambush; Haptics was recommended on by default on phones.
+- **Now:**
+  - **Random encounters** (§28.4, §28.14.3): a preassembled library battle of the region's common monsters, now and
+    then with a surprise, can fire anywhere outside a safe circle, its seeded chance rising with the pulse; at a full
+    pulse it is inevitable (the unavoidable ambush). Roamers never start a fight on their own; a Prowler catching you
+    counts as a random encounter.
+  - **1 to 5 waves** (§28.9): `BattleLibrary.MinWaves`..`MaxWaves` replace the fixed `WaveCount` (built, 78f08952).
+  - **Bounties walk the map** as named roamers: confirmed. **Respawn** 3 days (Marauder) and 7 (Dread), a claimed
+    bounty never returns: the designer's call, as recommended. **Pulse inside a safe circle** capped at 0.3: confirmed.
+  - **Haptics** (§28.14.6): a full library of named patterns, one per pulse or sting event, but **Settings → Haptics
+    is OFF by default on every platform**.
+- *Why:* owner (quoted above): danger should be felt anywhere off the safe roads, encounters stay regional and
+  readable, and this is a relaxing game, so nothing vibrates unless the player asks for it.

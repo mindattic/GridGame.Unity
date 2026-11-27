@@ -14,7 +14,7 @@ window.Overworld = {
     ["Scale", "No zoom. One readable scale, one large area scrolled with drag and fling (PanZoomView, MinScale = MaxScale = 1), re-centre on the party."],
     ["Edges", "The land fades into fog, haze, mountains or sea at the scroll limits. No border, no “you are leaving” line, no world overview map."],
     ["Between regions", "Roadsigns at the far ends of roads are the only way across. One reads “To the Lantern Road”; taking it moves the caravan to that road's arrival sign on the next map. A locked road shows a sign the Commander can't read yet."],
-    ["Graph", "Hand-authored nodes (Stage, Settlement, Waystone, Camp, Bridge, Pass) and spline edges along roads, valleys, passes and bridges. Dijkstra over unlocked edges. The only randomness is the periodic danger check on an edge."],
+    ["Graph", "Hand-authored nodes (Stage, Settlement, Waystone, Camp, Bridge, Pass) and spline edges along roads, valleys, passes and bridges. Dijkstra over unlocked edges. The randomness is random encounters: region foes with the odd surprise, possible anywhere outside a safe circle, on a road or off it, more likely as the danger pulse strengthens."],
     ["Crossings", "Rivers only at bridges (no fording); swamp channels by causeways and boardwalks; ranges at passes."]
   ],
 
@@ -38,7 +38,7 @@ window.Overworld = {
     ["Route line", "A soft glowing line along the valleys. Line and markers are drawn in screen space at a constant size."],
     ["Hunting party", "When a group is out hunting: a second portrait cluster, joined to the caravan by a faint line back to camp."],
     ["Day dial", "At the top. Travel runs until dusk, then the prompt to set up camp. Slower at night."],
-    ["Danger gauge", "Beside the dial; pulses on the marker, faster as it fills. Rises by the edge's Danger rate, faster at night and in bad weather. Full means an unavoidable ambush (“Defend the caravan”). Camp or arrival resets it."],
+    ["Danger gauge", "Beside the dial; pulses on the marker, faster as it fills. Rises by the edge's Danger rate, faster at night and in bad weather. Before it is full a random encounter can fire anywhere outside a safe circle, likelier as it fills; full means the encounter is inevitable, an unavoidable ambush (“Defend the caravan”). Camp or arrival resets it."],
     ["Food", "A small count beside the danger gauge."],
     ["Navigate", "Pick a destination; the route preview appears."],
     ["Interrupt", "Stop now and camp on the spot."],
@@ -87,7 +87,7 @@ window.Overworld = {
 
   library: [
     "No more “Stage N”: captions and the Adventure list give way to location names.",
-    "Battles come from a library of hand-crafted battles, each the existing StageDef shape (5 waves of {Class, Level, X, Y, DelayTicks}, blocks, background), saved in Resources/Content/battles/<region>/*.json.",
+    "Battles come from a library of hand-crafted battles, each the existing StageDef shape (1 to 5 waves of {Class, Level, X, Y, DelayTicks}, preassembled from the region's common monsters; blocks, background), saved in Resources/Content/battles/<region>/*.json.",
     "Tags: region/biome, kind (ambush, hunt, game animals, Wild boss, waystone guardian, settlement defence, side story) and base tier.",
     "Authoring: EncounterGenerator drafts one from a tag set, the designer hand-tunes it, validation checks every battle (tiles in bounds, classes exist, wave counts). About 100 per starter region to begin.",
     "Story locations keep their authored battles, launched through StageLauncher.Launch (crawls, story beats and chapters unchanged)."
