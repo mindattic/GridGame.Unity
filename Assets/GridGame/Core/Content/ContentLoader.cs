@@ -910,12 +910,9 @@ namespace GridGame.Core.Content
                 if (ch?.Pages.Count > 0) p.Add($"campaign chapter '{ch.Id}': only the Opening has Pages");
         }
 
-        /// <summary>Campaign stages per chapter crawl (GG-T386): a chapter scroll plays after every fifth stage.</summary>
-        public const int StagesPerChapter = 5;
-
-        /// <summary>GG-T386: the chapter crawls. Each has an id, a title, text and a known backdrop, and follows a campaign
-        /// stage; in campaign order, every fifth campaign stage (5, 10, 15, ...) has exactly one, and no other stage has
-        /// one. None may follow the Ending's stage (that one scrolls the ending), so two crawls never play back to back.</summary>
+        /// <summary>GG-T386, GG-T1480: the chapter crawls. Each has an id, a title, text and a known backdrop, and follows a
+        /// campaign stage that closes a region (its theme's last stage, STORY_OUTLINE.md §2), in campaign order, one chapter
+        /// to a stage. A chapter on the Ending's stage waits for the next arrival at Camp after the credits.</summary>
         private static void ValidateChapters(ContentDb db, List<string> p)
         {
             var stages = db.CampaignStages();
@@ -936,16 +933,14 @@ namespace GridGame.Core.Content
                 if (ch.Backdrop != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, ch.Backdrop, StringComparison.OrdinalIgnoreCase)))
                     p.Add($"{w}: unknown backdrop theme '{ch.Backdrop}'");
                 if (ch.Stage == null || !index.TryGetValue(ch.Stage, out int i)) { p.Add($"{w}: needs a campaign Stage, has '{ch.Stage}'"); continue; }
-                if ((i + 1) % StagesPerChapter != 0) p.Add($"{w}: follows '{ch.Stage}', campaign stage {i + 1}, which is not a multiple of {StagesPerChapter}");
+                var region = db.ThemeOf(ch.Stage);
+                if (region == null || !string.Equals(region.Stages[region.Stages.Count - 1], ch.Stage, StringComparison.OrdinalIgnoreCase))
+                    p.Add($"{w}: follows '{ch.Stage}', which is not the last stage of its region");
                 if (byStage.TryGetValue(i, out var other)) p.Add($"{w}: '{ch.Stage}' already has chapter '{other}'");
                 else byStage[i] = ch.Id;
                 if (i <= last) p.Add($"{w}: out of campaign order");
                 last = Math.Max(last, i);
-                if (db.Campaign.Ending?.Stage != null && string.Equals(db.Campaign.Ending.Stage, ch.Stage, StringComparison.OrdinalIgnoreCase))
-                    p.Add($"{w}: follows the Ending's stage, which already scrolls the ending");
             }
-            for (int i = StagesPerChapter - 1; i < stages.Count; i += StagesPerChapter)
-                if (!byStage.ContainsKey(i)) p.Add($"campaign Chapters: campaign stage {i + 1} ('{stages[i].Id}') has no chapter crawl");
         }
 
         public const string NpcFlagPrefix = "npc:";

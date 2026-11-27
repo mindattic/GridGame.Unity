@@ -85,7 +85,7 @@ namespace GridGame.Tests
             var t = themes.Last();
             Assert.That(t.Name, Is.EqualTo("Morrow's Shadow"));
             Assert.That(t.Backgrounds, Is.EqualTo("morrows-shadow"));
-            Assert.That(db.Campaign.Chapters.Last().Stage, Is.EqualTo("morrowsshadow-03"), "GG-T386: per-theme crawls are retired; a chapter crawl follows every fifth stage");
+            Assert.That(db.Campaign.Chapters.Last().Stage, Is.EqualTo("cave-05"), "GG-T1480: the last chapter opens Morrow's Shadow");
             Assert.That(t.MilestoneReward, Is.EqualTo("chest_gilded"));
             Assert.That(t.Stages, Is.EqualTo(Stages));
 

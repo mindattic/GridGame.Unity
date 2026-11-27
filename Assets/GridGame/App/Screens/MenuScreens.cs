@@ -131,7 +131,7 @@ namespace GridGame.App
                 App.MoveToWallet(slot, chosen); // GG-T702: every load (a cloud copy too) moves into the account wallet
                 App.Save = chosen; App.Slot = slot;
                 App.ApplySettings();
-                App.Router.ResetTo(new HubScreen());
+                App.Router.ResetTo(StoryBeats.WithChapter(new HubScreen())); // GG-T1480: e.g. ch05, held past the ending's credits
             });
         }
     }

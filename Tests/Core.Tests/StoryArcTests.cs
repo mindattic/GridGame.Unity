@@ -138,17 +138,19 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void A_chapter_crawl_follows_every_fifth_campaign_stage()
+        public void Chapter_crawls_follow_the_outlines_region_boundaries()
         {
-            var stages = Real.CampaignStages();
             var chapters = Real.Campaign.Chapters;
-            Assert.That(chapters.Count, Is.EqualTo(stages.Count / ContentLoader.StagesPerChapter), "GG-T386: one per five stages");
-            for (int i = 0; i < chapters.Count; i++)
+            Assert.That(chapters.Select(c => c.Id), Is.EqualTo(new[] { "ch01", "ch02", "ch03", "ch04", "ch05", "ch06", "ch07", "ch08" }));
+            Assert.That(chapters.Select(c => c.Stage), Is.EqualTo(new[] { "greenvalley-03", "desert-03", "swamp-03", "still-03",
+                "cathedral-03", "bloom-03", "swamp-05", "cave-05" }), "GG-T1480: STORY_OUTLINE.md §2");
+            foreach (var ch in chapters)
             {
-                Assert.That(chapters[i].Stage, Is.EqualTo(stages[(i + 1) * ContentLoader.StagesPerChapter - 1].Id));
-                Assert.That(chapters[i].Crawl, Is.Not.Null.And.Not.Empty);
-                Assert.That(chapters[i].Stage, Is.Not.EqualTo(Real.Campaign.Ending.Stage), "never back to back with the ending");
+                var region = Real.ThemeOf(ch.Stage);
+                Assert.That(region.Stages.Last(), Is.EqualTo(ch.Stage), ch.Id + " closes a region");
+                Assert.That(ch.Crawl, Is.Not.Null.And.Not.Empty);
             }
+            Assert.That(chapters.Single(c => c.Stage == Real.Campaign.Ending.Stage).Id, Is.EqualTo("ch05"), "the one chapter held past the credits");
         }
 
         [Test]

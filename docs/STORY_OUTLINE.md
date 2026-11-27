@@ -48,9 +48,10 @@ The main campaign ends at The Choir's Cathedral III with the ending crawl (trigg
 | `ch08` | Morrow Holds | Under the Anchors II, `cave-05` (37) | Morrow's Shadow (38-40) |
 | Final | (one per ending) | Morrow's Shadow III, `morrowsshadow-03` (40) | (the chosen ending; credits) |
 
-*Today's data differs:* `campaign.json` `Chapters` still fires every fifth stage (`lanternroad-02`, `swamp-01`,
-`cave-03`, `cityruins-02`, `bloom-01`, `cityruins-04`, `desert-05`, `morrowsshadow-03`), cutting regions in half, and
-there is no final-choice slot. Recutting the data to this table is GG-T1480; the chapter ids and titles stay.
+`campaign.json` `Chapters` follows this table (GG-T1480; it fired every fifth stage before). The ids and titles kept
+their GG-T386 values, so saves need no SeenCrawls migration: every chapter now plays earlier than it did. `ch05` sits on
+the Ending's stage and plays on the next arrival at Camp (or the next stage launch) after the credits. The Final slot
+has no data yet: it waits on the ending choice.
 
 ## 3. The beats, chapter by chapter
 
@@ -163,7 +164,7 @@ and the Commander is the last of Halcyon's people to decide for the world.
 
 | Crawl | Count | Key | Where it falls |
 |---|---|---|---|
-| Prologue | 1 | `crawl:prologue` | after the party pick on a new campaign; where it sits in the front door is GG-T1258's |
+| Opening | 5 pages | `crawl:opening/<n>` (1 to 5) | after the party pick on a new campaign; where it sits in the front door is GG-T1258's |
 | Chapter | 8 | `crawl:chapter/<id>` | after the first victory named in §2, on the way back to Camp |
 | Region entry | 15 | `crawl:region/<themeId>` (engine GG-T1478) | once, when a region first unlocks: on the way back to Camp after the first victory on the previous region's last stage (the Tithe Moors' with the prologue) |
 | Ending | 1 | `crawl:ending` | after the first victory on The Choir's Cathedral III, then the credits |

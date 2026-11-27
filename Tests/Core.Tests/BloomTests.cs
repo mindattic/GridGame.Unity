@@ -40,7 +40,7 @@ namespace GridGame.Tests
             var bloom = db.Campaign.Themes.Single(t => t.Id == "bloom");
             Assert.That(bloom.Name, Is.EqualTo("The Bloom"));
             Assert.That(bloom.Backgrounds, Is.EqualTo("bloom"));
-            Assert.That(db.Campaign.Chapters.Any(c => c.Stage == "bloom-01"), "GG-T386: per-theme crawls are retired; a chapter crawl follows every fifth stage");
+            Assert.That(db.Campaign.Chapters.Any(c => c.Stage == "bloom-03"), "GG-T1480: a chapter crawl follows the Bloom's last stage");
             Assert.That(bloom.MilestoneReward, Is.EqualTo("chest_gilded"), "a postgame chapter's milestone");
             Assert.That(bloom.Stages, Is.EqualTo(Stages));
 

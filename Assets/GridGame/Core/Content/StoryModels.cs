@@ -5,8 +5,9 @@ namespace GridGame.Core.Content
     /// <summary>
     /// A story crawl (§27): campaign.json's <c>Opening</c> (GG-T1363: played once at the start of a new campaign, in
     /// <see cref="Pages"/>), its <c>Ending</c> (played after the first victory over <see cref="Stage"/>, then the
-    /// rolling credits, then the Title) and its <c>Chapters</c> (GG-T386: one after every fifth campaign stage, played
-    /// once after the first victory over <see cref="Stage"/>). The words are Prose's (<see cref="Key"/>).
+    /// rolling credits, then the Title) and its <c>Chapters</c> (GG-T386, GG-T1480: region-aligned, each played once after
+    /// the first victory over <see cref="Stage"/>, the last stage of a region; one on the Ending's stage waits for the
+    /// next arrival at Camp after the credits). The words are Prose's (<see cref="Key"/>).
     /// </summary>
     public sealed class CrawlDef
     {

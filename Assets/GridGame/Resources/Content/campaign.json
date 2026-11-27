@@ -19,49 +19,49 @@
     {
       "Id": "ch01",
       "Title": "Over the Pass",
-      "Stage": "lanternroad-02",
+      "Stage": "greenvalley-03",
       "Backdrop": "lanternroad"
     },
     {
       "Id": "ch02",
       "Title": "The Grounded Arks",
-      "Stage": "swamp-01",
+      "Stage": "desert-03",
       "Backdrop": "swamp"
     },
     {
       "Id": "ch03",
       "Title": "Where the Beams Go",
-      "Stage": "cave-03",
+      "Stage": "swamp-03",
       "Backdrop": "cave"
     },
     {
       "Id": "ch04",
       "Title": "The Spire Stair",
-      "Stage": "cityruins-02",
+      "Stage": "still-03",
       "Backdrop": "cityruins"
     },
     {
       "Id": "ch05",
       "Title": "What Came Down",
-      "Stage": "bloom-01",
+      "Stage": "cathedral-03",
       "Backdrop": "bloom"
     },
     {
       "Id": "ch06",
       "Title": "Claimants to the Spire",
-      "Stage": "cityruins-04",
-      "Backdrop": "cityruins2"
+      "Stage": "bloom-03",
+      "Backdrop": "greenvalley2"
     },
     {
       "Id": "ch07",
       "Title": "The March on the Anchors",
-      "Stage": "desert-05",
-      "Backdrop": "desert"
+      "Stage": "swamp-05",
+      "Backdrop": "desert2"
     },
     {
       "Id": "ch08",
       "Title": "Morrow Holds",
-      "Stage": "morrowsshadow-03",
+      "Stage": "cave-05",
       "Backdrop": "morrowsshadow"
     }
   ],
