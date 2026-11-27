@@ -1671,6 +1671,12 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
 - *Why:* owner, 2026-11-22: one word for the world's energy, mana, from the Manalith through the dust and orbs to the
   premium Shards, with a story reason for each.
 
+## 2026-11-27 — No duplicate page on the stack, no nav over a run (GG-T1341, GG-T1614)
+
+- **Was ([BIBLE §11.3](BIBLE.md#113-screen-navigation)):** a currency strip pushed the Shard Store even when it was already on the stack, and the bottom nav and Home showed on any `HubPage`, including one opened over results.
+- **Now:** `PushOrReturn` pops back to the copy already on the stack; the nav and Home show only on the hub trail (`OnHubTrail`). A finished Dialogue with nothing under it goes to the hub.
+- *Why:* a loop of stores and a Home tap mid-run stranded or abandoned the player.
+
 ## 2026-11-27 — The Commander replaces the Warden as lead (owner, GG-T1305)
 
 - **Was ([BIBLE §25.11.2.2](BIBLE.md#251122-the-commander-rewritten-2026-11-27-owner-gg-t1305-was-warden-the-fixed-lead-gg-t533), GG-T533/GG-T577):**

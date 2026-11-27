@@ -16,6 +16,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py repairall [RUN] [--nocapture]  # GG-T544: Repair all takes only gear below 60%, "Cheaper to wait", price hints; 9:23 and 3:4, recorded
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
+    python tools/harness.py navcheck [RUN]   # GG-T1614: every nav tab and Home from depth 3, Shard Store pop-back, no nav over results
     python tools/harness.py pause            # GG-T126: pause mid-chain freezes playback (two identical frames), resume finishes it
     python tools/harness.py outline          # GG-T128: frame-record a pincer; the outline must ride the camera twist/shake
     python tools/harness.py durability       # GG-T39: last-strike weapon badge + drag-preview shatter warning
@@ -2557,6 +2558,62 @@ def pause_check(run="pause", speed=1, timeout=240):
     return all(checks.values())
 
 
+def navcheck(run="navcheck"):
+    """GG-T1614 (GG-T1341 nav audit): the router rules of BIBLE 11.3 against a live player. From depth 3 (Hub, page, page)
+    every bottom-nav tab lands on [its page, Hub] and Home on [Hub]; the Shard Store opened from a currency strip over a
+    stack that already holds it pops back to it (no duplicate on the stack); a page opened over results (HeroScreen.Learn)
+    shows no nav-* tab and no Home. Uses `goto` for the deep stacks and a Preview save with every station joined."""
+    launch(run, fresh=True)
+    _wait_screen("title")
+    call("goto", screen="hub"); time.sleep(0.9)
+    checks = {}
+
+    def stack():
+        return call("state")["stack"]  # top first, so [-1] is the hub
+
+    def deep(*screens):
+        call("home"); time.sleep(0.6)
+        for sc in screens:
+            if not _goto(sc):
+                return False
+        return True
+
+    for tab, page in (("campaign", "stages"), ("heroes", "status"), ("summon", "summon"), ("shop", "shop")):
+        ok = deep("shop", "diamonds") and len(stack()) == 3
+        r = call("click", name=f"nav-{tab}"); time.sleep(0.9)
+        st = stack()
+        checks[f"nav-{tab} from depth 3 gives [page, hub]"] = ok and not _tap_failed(r) and len(st) == 2 and st[-1] == "hub" and (st[0] == page or tab == "heroes")
+    ok = deep("shop", "diamonds") and len(stack()) == 3
+    r = call("click", name="nav-home"); time.sleep(0.9)
+    checks["nav-home from depth 3 lands on the hub"] = ok and not _tap_failed(r) and stack() == ["hub"]
+    ok = deep("shop", "diamonds") and len(stack()) == 3
+    r = call("click", name="home"); time.sleep(0.9)
+    checks["header Home from depth 3 lands on the hub"] = ok and not _tap_failed(r) and stack() == ["hub"]
+
+    ok = deep("diamonds", "shop")
+    r = call("click", name="header-shards"); time.sleep(0.9)
+    st = stack()
+    checks["Shard Store from the strip pops back to the one on the stack"] = ok and not _tap_failed(r) and st == ["diamonds", "hub"]
+    r = call("click", name="header-shards"); time.sleep(0.5)
+    st = stack()
+    checks["no screen twice on the stack"] = len(set(st)) == len(st) and st == ["diamonds", "hub"]
+
+    call("home"); time.sleep(0.6)
+    call("goto", screen="results"); time.sleep(1.0)
+    learn = call("names", prefix="results-learn-")
+    if learn:
+        call("click", name=learn[0]); time.sleep(0.9)
+        checks["a page over results has no nav tabs"] = not call("names", prefix="nav-") and not call("names", prefix="navbar")
+        checks["a page over results has no Home"] = not call("names", prefix="home")
+    else:
+        print("navcheck: no results-learn-* button on the preview results; the Learn-over-results check was skipped")
+    logs = call("logs")
+    errors = [l[:300] for l in logs if l.startswith(("Error", "Exception"))]
+    checks["no errors logged"] = not errors
+    print(json.dumps({"checks": checks, "errors": errors}, indent=1))
+    return all(checks.values())
+
+
 def outline_frames(run="outline", speed=1, frames=48, every=3, timeout=240):
     """GG-T128: the pincer outline lives inside the board again, so it rides every camera twist/zoom/drift and
     screen shake. Autoplays random battles until a pincer's outline is drawn, then frame-records the pincer
@@ -3557,6 +3614,8 @@ def _dispatch(cmd):
         sys.exit(0 if a11y(names[0] if names else "a11y", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
     elif cmd == "camptips":
         sys.exit(0 if camptips() else 1)
+    elif cmd == "navcheck":
+        sys.exit(0 if navcheck(sys.argv[2] if len(sys.argv) > 2 else "navcheck") else 1)
     elif cmd in ("coach", "coachcamp", "coachskip"):
         names = [a for a in sys.argv[2:] if not a.startswith("--")]
         cap = "--nocapture" not in sys.argv

@@ -138,6 +138,50 @@ window.HUB_NAV = {
     ["Party strip", "The hub root keeps a party strip above the pillars (portraits, level, HP; tap opens Heroes on that hero). The Commander replacing Warden there belongs to GG-T1270."]
   ],
 
+  // GG-T1614: every Push / Replace / ResetTo in App/Screens, PostBattle, LevelUp and the battle pause menu, as audited
+  // for GG-T1341. [from, call, to, note]. Calls are Push (P), Replace (R), ResetTo (RT), PushOrReturn (PoR), Home.
+  routes: [
+    ["Splash", "RT", "Title", "after the studio logo"],
+    ["Title", "P", "SaveSlot / Profile / Settings / Credits", "Load Game, New Game, Profile, Settings, Credits rows"],
+    ["Title", "RT", "Hub", "Continue; GameApp.cs boot and slot load"],
+    ["SaveSlot", "R", "SaveSlot", "Turn mode row; Import restore"],
+    ["SaveSlot", "P", "CharacterSelect", "new game"],
+    ["SaveSlot", "RT", "Hub", "load; new game after the opening beats (StoryBeats.NewCampaign / WithChapter)"],
+    ["Profile select", "P", "ProfileName", "Rename, + New profile"],
+    ["Profile name", "RT", "Title", "done"],
+    ["Settings", "P", "WindowEditor / SaveExport / SaveImport / About", "rows; About pushes ThirdPartyNotices"],
+    ["Hub", "P", "Status / Respec / StageSelect / Crucible", "party card, Respec, Adventure and Continue fallback, Crucible card"],
+    ["Hub", "PoR", "every CampMenu destination", "tile grid via Ui.NavDestination; a tile never stacks a page already on the stack"],
+    ["Hub", "RT", "Title", "Save & Quit confirm (ToTitle)"],
+    ["Bottom nav tab", "Home + P", "its page", "Ui.NavGo: Home() then Push(dest); stack becomes [Hub, page]"],
+    ["Header Home", "Home", "Hub", "shown only on the hub trail and from page depth 2 up"],
+    ["HubPage header", "PoR", "DiamondStore", "currency strip Shards; pops back to a Shard Store already on the stack, no-op when it is the current page"],
+    ["StageSelect", "P", "StageConfirm", "Launch(stage)"],
+    ["StageConfirm / StageLauncher", "P or R", "StoryCrawl / Dialogue / Battle", "R when launched from the page itself (replaceCurrent), P otherwise"],
+    ["Battle pause menu", "P", "Settings (How to play)", "Close() then Push; awayOnSettings returns to the pause menu; the Settings page is not a HubPage child of the hub, so no nav"],
+    ["Battle", "R", "LevelUp or PostBattle", "results replace the battle"],
+    ["LevelUp", "R", "PostBattle", "Continue and the last page"],
+    ["LevelUp", "P", "HeroScreen.Learn", "Learn now, over the results (PostBattle replaced under it)"],
+    ["PostBattle", "P", "HeroScreen.Learn", "results-learn-<class>; over the results, no nav, no Home"],
+    ["PostBattle", "P", "Dialogue (ForRunner)", "a scene after the fight"],
+    ["PostBattle", "RT", "Hub", "Continue, Retreat early, demo auto-return"],
+    ["PostBattle", "R", "Battle", "Retry, Next stage (StageLauncher replaceCurrent)"],
+    ["Mercenary camp", "P", "MercenaryRenewal", "after results, once per pending renewal"],
+    ["Dialogue", "R", "its then screen", "finish: replaces itself with `then`"],
+    ["Dialogue", "Back, else RT", "caller, else Hub", "finish with nothing under it goes to the Hub, never strands"],
+    ["Talk / Journal", "P", "Dialogue", "a topic or NPC scene over the page"],
+    ["Crucible", "P", "Party (Change team)", "crucible-team-change"],
+    ["StoryCrawl", "RT", "Hub / next beat / Battle", "ends in ResetTo of its next screen"],
+    ["Ending", "RT", "Credits then Title", "first final victory"]
+  ],
+
+  // GG-T1341 / GG-T1614: the two router rules behind the nav.
+  routerRules: [
+    ["PushOrReturn", "ScreenRouter.PushOrReturn(s): when a screen of the same type and Id is already on the stack, pop back to it in one fade (nothing when it is the current screen); otherwise Push. Used for the Shard Store from every currency strip, DiamondStoreScreen.Open and the hub tiles, so the stack never holds the same page twice."],
+    ["OnHubTrail", "ScreenRouter.OnHubTrail: true only when every screen above the HubScreen is a HubPage. HubPage shows the bottom nav only on the trail, and the header Home only on the trail from two pages up (PagesAboveHub > 1). A page opened over a battle, its results or the pause menu's Settings (HeroScreen.Learn, Settings from Pause) is off the trail: no nav-*, no Home, so it cannot abandon the run."],
+    ["Dialogue finish", "A finished Dialogue Replaces itself with its next screen; with none, it Backs; with nothing to go back to, ResetTo(Hub)."]
+  ],
+
   bible: [
     {
       sec: "11.2.1 Screen transition graph",
