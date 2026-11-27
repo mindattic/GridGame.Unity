@@ -99,4 +99,18 @@ bool GGICloud_Set(const char* key, const char* value)
     }
 }
 
+bool GGICloud_Remove(const char* key)
+{
+    if (key == NULL || !GGICloud_Available()) return false;
+    @autoreleasepool
+    {
+        NSString* k = [NSString stringWithUTF8String:key];
+        if (k == nil) return false;
+        NSUbiquitousKeyValueStore* store = [NSUbiquitousKeyValueStore defaultStore];
+        [store removeObjectForKey:k];
+        [store synchronize];
+        return true;
+    }
+}
+
 }

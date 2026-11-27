@@ -28,6 +28,7 @@ namespace GridGame.App
         [DllImport("__Internal")] [return: MarshalAs(UnmanagedType.U1)] private static extern bool GGICloud_Synchronize();
         [DllImport("__Internal")] private static extern string GGICloud_Get(string key);
         [DllImport("__Internal")] [return: MarshalAs(UnmanagedType.U1)] private static extern bool GGICloud_Set(string key, string value);
+        [DllImport("__Internal")] [return: MarshalAs(UnmanagedType.U1)] private static extern bool GGICloud_Remove(string key);
 
         /// <summary>NSUbiquitousKeyValueStoreChangeReasonKey values.</summary>
         private const int ServerChange = 0, InitialSyncChange = 1, QuotaViolationChange = 2, AccountChange = 3;
@@ -106,6 +107,17 @@ namespace GridGame.App
             }
             bool ok = Set(key, value);
             if (ok) written[key] = value;
+            done(ok);
+        }
+
+        public void Delete(string name, Action<bool> done)
+        {
+            if (!SignedIn) { done(false); return; }
+            var key = CloudSave.ICloudKey(name);
+            written.Remove(key); // a removed value is never written back by a conflict
+            bool ok;
+            try { ok = GGICloud_Remove(key); }
+            catch (Exception e) { Debug.LogWarning("[Cloud] iCloud remove failed: " + e.Message); ok = false; }
             done(ok);
         }
 

@@ -21,6 +21,9 @@ namespace GridGame.App
         /// <summary>Uploads <paramref name="data"/>; <paramref name="savedUtc"/> is the save's own <c>UpdatedUtc</c>, kept
         /// by a store that holds its own metadata (iCloud, GG-T609) so the same save never reads back as newer.</summary>
         void Write(string name, byte[] data, string description, TimeSpan playTime, DateTime savedUtc, Action<bool> done);
+        /// <summary>Removes the snapshot from the cloud (GG-T1544, Delete all game data); <c>true</c> when it is gone or was
+        /// never there.</summary>
+        void Delete(string name, Action<bool> done);
     }
 
     /// <summary>
@@ -180,6 +183,30 @@ namespace GridGame.App
         {
             yield return new WaitForSecondsRealtime(LoadWaitSeconds);
             onTimeout();
+        }
+
+        /// <summary>Delete all game data (GG-T1544): every slot of every profile in <paramref name="profiles"/> is removed
+        /// from the cloud, and nothing waiting is uploaded afterwards. <paramref name="done"/> gets how many deletes failed
+        /// (0 also when there is no signed-in cloud, so nothing is held there).</summary>
+        public void DeleteAll(IEnumerable<string> profiles, Action<int> done)
+        {
+            pending = null; pendingName = null;
+            if (!Active || profiles == null) { done(0); return; }
+            var names = new Queue<string>();
+            foreach (var p in profiles)
+                for (int i = 0; i < SaveStore.Slots; i++) names.Enqueue(CloudSave.SnapshotName(p, i));
+            int failed = 0;
+            void Next()
+            {
+                if (names.Count == 0) { done(failed); return; }
+                var name = names.Dequeue();
+                backend.Delete(name, ok =>
+                {
+                    if (!ok) { failed++; Debug.LogWarning($"[Cloud] couldn't delete {name}"); }
+                    Next();
+                });
+            }
+            Next();
         }
 
         /// <summary>A new device: every empty slot of the active profile that has a save in the cloud gets it. A slot

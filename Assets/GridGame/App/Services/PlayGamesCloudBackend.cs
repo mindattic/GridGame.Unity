@@ -91,6 +91,17 @@ namespace GridGame.App
                 Client.CommitUpdate(meta, update, data, (status, _) => done(status == SavedGameRequestStatus.Success));
             });
         }
+
+        /// <summary>The plugin's snapshot delete has no callback: an opened snapshot handed to it counts as deleted.</summary>
+        public void Delete(string name, Action<bool> done)
+        {
+            Open(name, meta =>
+            {
+                if (meta == null) { done(false); return; }
+                Client.Delete(meta);
+                done(true);
+            });
+        }
     }
 }
 #endif
