@@ -4417,11 +4417,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5301553bedc974dec43ff1afc87e315de68d3f8dafbce06b2cccd22627dbffb9",
+      "hash": "sha256:e1179d1712828f76e3a285a71070a55b8e5207c544b3382db8048b4804a06dee",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The Choir's seat at the top of Halcyon's spire, where the tithe is sung up to keep the Manalith asleep. The Lullaby takes more mana than the Manalith needs, and the surplus fills the Cathedral organ's pipes: the reservoir the Hierarch drinks from."
+        "long": "The Choir's seat at the top of Halcyon's spire, where the tithe is sung up to keep the Manalith asleep. The Lullaby takes more mana than the Manalith needs, and the surplus fills the Cathedral organ's pipes: the reservoir the Hierarch drinks from. It is the worst of the road because the Choir's whole force fights here at once, the Bulwark, the Kiln Guard, its Templars and its singers, on a floor that gives way above the pipes, under a Manalith larger than it has ever hung. The spire was Halcyon's before it was the Choir's: near the Commander its sealed doors answer, and the organ's pipes stir in a way the Hierarch has never heard."
       }
     },
     "codex:place/cave": {
@@ -4430,11 +4430,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7a860a7e972d9f7cd88e825f389599124d71df7b7a0c407df0209df83fc63e9d",
+      "hash": "sha256:8a50d7c80cad557fbe188da9bb9e1f277b60ded49ca3090b13da0b8e809b0ac7",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "A waste crossed by Halcyon's great arches, the Anchors. The Watch, Halcyon's Anchor guard, still stands at every arch, long after it should have died."
+        "long": "A waste crossed by Halcyon's great arches, the Anchors. They are not supports but taps: each one draws mana down from the Manalith, and the draw is the pull that brings it closer. The Watch, Halcyon's Anchor guard, still stands at every arch long after it should have died, and the Kiln Guard's porcelain knights walk among them. The cold breeds its own: cyclopes, trolls, yetis and ice maulers. It is worse than the Arkgrave because the ground itself turns on the party: ice that slides a hero past where they meant to stop, and a floor that cracks and is gone. Near the Commander an arch wakes and hums louder, and the Watch's wraith knights salute."
       }
     },
     "codex:place/cave2": {
@@ -4456,11 +4456,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:83653f343be58d0a7a29b5821cb9ebd6c7bce3bbc239eac735ca6db0b00ac930",
+      "hash": "sha256:9220879149e9b5460f1a00536cd26bbc446c93b9feb89c2ea689d4bf00d8eea8",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The dead towers of Halcyon under a sky gone pink. Halcyon stopped the Manalith, sang the first Lullaby, and fell 1,200 years ago. Its archives ran on mana, so when the city went dark its memory went dark with it."
+        "long": "The dead towers of Halcyon under a sky gone pink. Halcyon stopped the Manalith, sang the first Lullaby, and fell 1,200 years ago. Its archives ran on mana, so when the city went dark its memory went dark with it. It is worse than the Still because mana is thinnest here: ghosts, phantoms and the Hollow have almost nothing of their own, mocking echoes turn the party's own moves back on it, and the Kiln Guard holds the stair to the Cathedral. Near the Commander a dead archive wakes for a moment and shows the stopping, the feeding and the fall, and among the commanders who chose to feed the Lullaby is a face the Commander knows."
       }
     },
     "codex:place/cityruins2": {
@@ -4482,11 +4482,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:777e3718669b4c4ece476609d9496edcfbf80d6b54d033973083bfec9cbe0c02",
+      "hash": "sha256:050325ead8e1420a26c63a493d0264e3b54b5dccbafad799603abb6028896737",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The waste where the first great pieces of the Manalith's shell came down. The Choir mines it. The Ember drink from its red rivers, and want the rest of the Manalith down."
+        "long": "The waste where the first great pieces of the Manalith's shell came down. The Choir mines it with Red Seal walkers in mecha armour. The Ember drink from its red rivers and want the rest of the Manalith down. It is worse than the road because things fell with the shell: sandmaws rise from under the dig, and the Ember's hellspawn leave the ground burning, the first hazard that punishes a party for standing still. The Manalith hangs larger here than over the moors. Half-buried Halcyon machinery, the tech gremlins' old nests and the shells of prototype walkers, flickers awake as the Commander passes, and the shard-glass under it is not stone."
       }
     },
     "codex:place/desert2": {
@@ -4508,11 +4508,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:16232d33aab8a99198267e643462dccff82d92615f70810caf5f1dd8f5a2a4e5",
+      "hash": "sha256:443de0882f7ef252bef9a670b16768d20616b12acf8ae2410610c66b805d7d05",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Moor and hill country of the Free Holds, where the Choir's white collectors come once a year to take the tithe of mana. In Saltmoss, on tithe day, a handful of present-day people stole the Choir's white tithe caravan and ran. The Warden, just woken from a sleep of 1,200 years, ran with them."
+        "long": "Moor and hill country of the Free Holds, where the Choir's white collectors come once a year to take the tithe of mana. In Saltmoss, on tithe day, a handful of present-day people stole the Choir's white tithe caravan and ran, and the Commander, brought back 1,200 years late, ran with them. The Manalith is still a speck over the moors, so the danger is ordinary: wolves, frogs and slimes under strain, and the Captain's soldiers on the caravan's trail. The slimes teach the first lesson of the road: a monster can change the floor, and fire answers it. Halcyon tech wakes here for the first time in twelve centuries: a dead lantern relights in the Commander's hand, and the Mana Orbs the party fights with come alive because the Commander is near."
       }
     },
     "codex:place/greenvalley2": {
@@ -4534,11 +4534,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a6c8f6879ca5572dfd0bed5530f3c4be39e35c621c6e0cc79db47929ecb4a60c",
+      "hash": "sha256:ae773f5e5e2ad893268365bf10466ce9ce5e024e8e2b0cadd7e486647b637483",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The pilgrim road through the gorges, lit by lanterns that the sword-schools, monks and ninja of the road keep burning. Its shrines hold old murals of the night sky."
+        "long": "The pilgrim road through the gorges, lit by lanterns that the sword-schools, monks and ninja of the road keep burning. Its shrines hold old murals of the night sky. The Manalith has barely grown since the moors, so what makes the road worse is distance: the climb is steep, the oni and their masked raiders hold the passes, and bats, flying monkeys and steppin razor gangers come in fast and from the side. Here the party learns to read the timeline before the floor ever asks it to. A shrine mural lights when the Commander touches it, and shows a night sky with the Moon alone: the oldest art has no Manalith."
       }
     },
     "codex:place/morrowsshadow": {
@@ -4560,11 +4560,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c3040f95d6dee3d4820f6bf7e507c37d4da6b2e02685d9ebd33073cb9badf6f6",
+      "hash": "sha256:6428302a4c5a65d27a0143890d65c973397d4964b146c89f24545fcc1563dfae",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Halcyon's sleep-vault at the foot of the spire, under an oculus that frames the Manalith. The Warden slept here through the night Halcyon fell, and no one else came out. The Choir holds it now and fills its tanks with the tithe on its way up to the Cathedral."
+        "long": "Halcyon's sleep-vault at the foot of the spire, under an oculus that frames the Manalith. The Commander lay dead here through the night Halcyon fell, and when the tithe ran through its tanks the Still brought them back. No one else came out. The Choir holds it now and fills its tanks with the tithe on its way up to the Cathedral. It is worse than the Anchor Wastes because the foes are what the tithe leaves behind: the Hollow, who paid too much, and Halcyon's chromed failures, guarded by the Bulwark, who fight with ordnance and bury mines where the party has to step. The vault's doors and tanks know the Commander, and open for them as they did once before."
       }
     },
     "codex:place/swamp": {
@@ -4573,11 +4573,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ddcf5beecbf85e0da50cc918fee4fa0ae265ea9b0484489c749fa98cebd4e02d",
+      "hash": "sha256:9cb3a45f503e8bb21ed433814c821d374379a26c72115cb0c4d97fcdf1181246",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "A fen where Halcyon's Arks lie grounded, far inland. They were ships, built to escape the Manalith's pull, and the tides threw them here the night Halcyon fell. The witches and healers of the Fen-dark live among the wrecks."
+        "long": "A fen where Halcyon's Arks lie grounded, far inland. They were ships, built to escape the Manalith's pull, and the tides threw them here the night Halcyon fell. The witches and healers of the Fen-dark live among the wrecks. It is worse than the Shardfall because the fen does not burn, it keeps: lurkers, marsh shamblers, tree golems and the dead it has held on to, a lich among the hulls and a swamp mistress with her coven, and every fight wears the party down in the wet. An Ark door that has not moved since Halcyon fell opens for the Commander, and the Choir hears of it."
       }
     },
     "codex:place/swamp2": {
@@ -24403,13 +24403,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0085a24b828dbfd32093afd8c6004da8691c65e29ee39b509d3dc29999f1fb8b",
+      "hash": "sha256:e9a27f83a36bac25facffdc7db757197606da9a901645b2bc0cce66de7a02b64",
       "about": [
         "place-cathedral"
       ],
       "speakers": [],
       "payload": {
-        "short": "At the top of Halcyon's spire, above the neon, stands the Choir's cathedral: rose windows, pews by the hundred, a window high in the vault that shows the sky, and an organ of mana pipes glowing cold cyan."
+        "short": "At the top of Halcyon's spire stands the Choir's cathedral: rose windows, pews by the hundred, a window high in the vault that shows the sky, and an organ of mana pipes glowing cold cyan. The Choir's whole force is here, and the Hierarch drinks from the organ."
       }
     },
     "place:cathedral-01": {
@@ -24418,13 +24418,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0d7ca0577387b48d6dd2832a5de449393c5c2a1158209e26f17784dc311c9e44",
+      "hash": "sha256:feb02d3dc08bb3a9301da8c3fa11e1cb8e473a82fac519446eb558edd6f9d97d",
       "about": [
         "place-cathedral-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Choir's Cathedral."
+        "short": "The nave, between the pews. The Bulwark and the Kiln Guard stand in the aisles while the Choir sings the tithe up into the organ."
       }
     },
     "place:cathedral-02": {
@@ -24433,13 +24433,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0d7ca0577387b48d6dd2832a5de449393c5c2a1158209e26f17784dc311c9e44",
+      "hash": "sha256:45bdf16b947180c3249b470fff63f422f26de40eb090038b0801dd16d53af356",
       "about": [
         "place-cathedral-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Choir's Cathedral."
+        "short": "The floor above the organ's pipes, worn thin by the cold cyan light. It cracks under every fight and gives way."
       }
     },
     "place:cathedral-03": {
@@ -24448,13 +24448,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0d7ca0577387b48d6dd2832a5de449393c5c2a1158209e26f17784dc311c9e44",
+      "hash": "sha256:bab960d59204a53ab06f3381ca55326ae163736d80af9ded6630fb1553158fa0",
       "about": [
         "place-cathedral-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Choir's Cathedral."
+        "short": "The organ itself, and the Hierarch before it. While the Choir sings the Hierarch does not stay down, so the singers fall first."
       }
     },
     "place:cave": {
@@ -24463,13 +24463,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:43b82ead19856baae30bc36a65786eb78964406fcba36385ad994bb2f337b7c4",
+      "hash": "sha256:8306d8f9106eeb2a87929e54330f4caf8c4315a1f06f3a98404dd58ffd4042e9",
       "about": [
         "place-cave"
       ],
       "speakers": [],
       "payload": {
-        "short": "North of the last hold the world goes white. Across the ice stand the Anchors -- stone arches bigger than mountains, humming so deep you feel it in your teeth."
+        "short": "North of the last hold the world goes white. Across the ice stand the Anchors, stone arches bigger than mountains, humming so deep you feel it in your teeth, and the Watch still guards every one."
       }
     },
     "place:cave-01": {
@@ -24478,13 +24478,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:21e5c61f99f138ed6a79b1666329018b7ff9d95e9f12f0536b749a219522b9a5",
+      "hash": "sha256:0dacb23f590c7d3ddc3f35b9675be709a9f5c6ce1a8a4c72783b14d684d0aad3",
       "about": [
         "place-cave-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Anchor Wastes."
+        "short": "The first Anchor, humming through the ice. Wraith knights of the Watch still hold the arch, and a void sentinel stands where the cold is deepest."
       }
     },
     "place:cave-02": {
@@ -24493,13 +24493,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:21e5c61f99f138ed6a79b1666329018b7ff9d95e9f12f0536b749a219522b9a5",
+      "hash": "sha256:0808b03f9e7370fafe0ff722e1a1ca991abebae13d8554d7f3c597f85411eb93",
       "about": [
         "place-cave-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Anchor Wastes."
+        "short": "Ice slick under the arches: a hero who steps on it slides on. Kiln Guard porcelain knights march north to the arches, and yetis come out of the drifts."
       }
     },
     "place:cave-03": {
@@ -24508,13 +24508,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:21e5c61f99f138ed6a79b1666329018b7ff9d95e9f12f0536b749a219522b9a5",
+      "hash": "sha256:7f1fa8c9f69c81d6e58e186065adbbc2b0e96467be5fba9edfd79387471c9e82",
       "about": [
         "place-cave-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Anchor Wastes."
+        "short": "The great Anchor, kept by a many-eyed white cyclops. Its stamp drags whoever is close in beside it, and the floor around the arch cracks and gives way."
       }
     },
     "place:cave-04": {
@@ -24568,13 +24568,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9b9979d61baecde509a1d8a86400a0f924034298b154dae618a372c4203f3361",
+      "hash": "sha256:680984d4ac65313867eb2b4081b586008dbf28df12b8fa5b5e3f246688892483",
       "about": [
         "place-cityruins"
       ],
       "speakers": [],
       "payload": {
-        "short": "Out of the Still's back gate and up into the Spire City: neon under a pink sky, towers stacked on towers, and above them all the Hierarch's spire, drinking the beams that run north to the Anchors."
+        "short": "Out of the Still's back gate and up into Halcyon: dead towers under a pink sky, ghosts in the windows, and above them all the Hierarch's spire, drinking the beams that run north to the Anchors."
       }
     },
     "place:cityruins-01": {
@@ -24583,13 +24583,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bee24fea3cf33d014ff7096902345b23ab652fca213d87e824f78e473b922dc0",
+      "hash": "sha256:0de2301bbc338974b699e26f82379fa4cf4250b3182d1045aaa24c35ce9a972c",
       "about": [
         "place-cityruins-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Halcyon."
+        "short": "The first dead towers. Ghosts and phantoms drift through the windows, and mocking echoes turn the party's own moves back on it."
       }
     },
     "place:cityruins-02": {
@@ -24598,13 +24598,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bee24fea3cf33d014ff7096902345b23ab652fca213d87e824f78e473b922dc0",
+      "hash": "sha256:fa26dd30ec520856082692ed27a485afd34651328455dfee00249ac1aeb5e4af",
       "about": [
         "place-cityruins-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Halcyon."
+        "short": "Halcyon's dead archive district, where a reaper walks the stacks and the Bulwark's heavy troopers hold the crossings."
       }
     },
     "place:cityruins-03": {
@@ -24613,13 +24613,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bee24fea3cf33d014ff7096902345b23ab652fca213d87e824f78e473b922dc0",
+      "hash": "sha256:1519ff9e1c61be809a58ac29163ff4b1b7abbbcbede1d00ddbc756e16adc7017",
       "about": [
         "place-cityruins-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Halcyon."
+        "short": "The foot of the spire stair, barred by a Kiln Guard captain. Side blows only scratch his glaze: strike top to bottom and keep cracking."
       }
     },
     "place:cityruins-04": {
@@ -24673,13 +24673,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:22fb4c8e073875440ed9b691f6a2e41027bf3b6b637f91c54d761b0406b0514c",
+      "hash": "sha256:d8ac0785e02a723bd09f49d3ff87c96a3815c4fbc0d481ec214b1b44b9475ce9",
       "about": [
         "place-desert"
       ],
       "speakers": [],
       "payload": {
-        "short": "South of the moors the grass gives out and the ground turns red. This is where the first great pieces of the Manalith's shell came down."
+        "short": "South of the moors the grass gives out and the ground turns red. This is where the first great pieces of the Manalith's shell came down, and what fell with them still moves under the sand."
       }
     },
     "place:desert-01": {
@@ -24688,13 +24688,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2f9d3af9be73519e1f8006a1ad155f355d7edd692614305c31360a4b0ff76ac0",
+      "hash": "sha256:db8e3b6d4dbc517a85e77449b336136789366f3c9267301f0bdbcb352ee8f290",
       "about": [
         "place-desert-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Shardfall."
+        "short": "The edge of the red ground, where the Choir's dig begins. Scorpions and vultures pick over the spoil, and the first infernalists come to see what the Choir is taking."
       }
     },
     "place:desert-02": {
@@ -24703,13 +24703,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2f9d3af9be73519e1f8006a1ad155f355d7edd692614305c31360a4b0ff76ac0",
+      "hash": "sha256:2bd0362a1104baa4d44fef94e70db49e61424ff0d135409dd93d697e9cb45f99",
       "about": [
         "place-desert-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Shardfall."
+        "short": "Along the red rivers the sand is loose, and a sandmaw rises from under it. Tech gremlins strip the dig's walkers for parts, and the walkers still fight."
       }
     },
     "place:desert-03": {
@@ -24718,13 +24718,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2f9d3af9be73519e1f8006a1ad155f355d7edd692614305c31360a4b0ff76ac0",
+      "hash": "sha256:2ee7c929b1120ec3d63f115193febeac0120d053f3aa54b57b4dd1bb9f4e02b1",
       "about": [
         "place-desert-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Shardfall."
+        "short": "The heart of the dig, guarded by a Red Seal walker in mecha armour. The Ember's hellspawn leave every tile they cross burning, so the party keeps moving or burns."
       }
     },
     "place:desert-04": {
@@ -24778,13 +24778,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d2894b1e32fd8c6195226e824a3114759547c87e88422b56390af582023f2d4a",
+      "hash": "sha256:3f8399d72222d9749a75f64f43898c56ea174b491961f9fcc10115271e17bca7",
       "about": [
         "place-greenvalley"
       ],
       "speakers": [],
       "payload": {
-        "short": "Grey-green moss country, cut by old stone walls and dotted with the white domes of the Tithe Moors' collection houses. Over it hangs the Manalith, lumpy and strange, a little larger than anyone's grandparents remember."
+        "short": "Grey-green moss country, cut by old stone walls and dotted with the white domes of the Choir's collection houses. Over it hangs the Manalith, lumpy and strange, a little larger than anyone's grandparents remember. Out here the danger is still ordinary: hungry creatures, and the Captain's men."
       }
     },
     "place:greenvalley-01": {
@@ -24793,13 +24793,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
+      "hash": "sha256:9e61ad7a4a7ba74090a077f0f436edd17551fb9247f5886633143e81305b012c",
       "about": [
         "place-greenvalley-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Tithe Moors."
+        "short": "Outside Saltmoss the white caravan's ruts are still fresh, and the Captain's soldiers follow them. So do the moor's wolves and goblin thugs, who know a loaded wagon when they see one."
       }
     },
     "place:greenvalley-02": {
@@ -24808,13 +24808,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
+      "hash": "sha256:3078cb42b0d82f5d1b3a943802e95833f52710a3774d097a872117cc78da76d1",
       "about": [
         "place-greenvalley-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Tithe Moors."
+        "short": "Low bog between the stone walls. Slimes leave a trail that slows whatever crosses it: burn it, or go round. Frogs, harpies and a werewolf hunt the slowed."
       }
     },
     "place:greenvalley-03": {
@@ -24823,13 +24823,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
+      "hash": "sha256:196dd147d6032bb0cd515426cfffa26f22361b27f7bd4565a9ecc8ea4fb9a938",
       "about": [
         "place-greenvalley-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Tithe Moors."
+        "short": "The last collection house on the moor, where the Captain catches up with the runaways. Left alone on the field the Captain strikes twice, so someone must stand beside the Captain every turn."
       }
     },
     "place:greenvalley-04": {
@@ -24883,13 +24883,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8d776b893828b975299ca135975ea254f2e6967635961842ed2b22c35cb46b53",
+      "hash": "sha256:bfa7893b6cbea6cb2ca3da07fa33e7edcd5751abfffd29fbbe82f630eebf208b",
       "about": [
         "place-lanternroad"
       ],
       "speakers": [],
       "payload": {
-        "short": "Out of the moors, the pilgrim road climbs into the gorges, stair after stone stair, lit by lanterns nobody admits to hanging."
+        "short": "Out of the moors, the pilgrim road climbs into the gorges, stair after stone stair, lit by lanterns nobody admits to hanging. Here foes come fast and from the side, off the cliffs and out of the bamboo."
       }
     },
     "place:lanternroad-01": {
@@ -24898,13 +24898,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:589ef036c54435c21cf06af5b3d8756997a36696e6f300e4fa5a5e0fcb606db8",
+      "hash": "sha256:f3b64f9267d3dd00f4dfb62d094c182c86bc7a6fda993e326241c08b4c929114",
       "about": [
         "place-lanternroad-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Lantern Road."
+        "short": "The lower stairs, where the first lanterns hang. Bats come off the cliffs and steppin razor gangers out of the bamboo, both from the side, and the oni wait higher up."
       }
     },
     "place:lanternroad-02": {
@@ -24913,13 +24913,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:589ef036c54435c21cf06af5b3d8756997a36696e6f300e4fa5a5e0fcb606db8",
+      "hash": "sha256:65822651dc4744ca7878d762db22021f9216ab879d8de3a61186b2963787db0b",
       "about": [
         "place-lanternroad-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Lantern Road."
+        "short": "A shrine terrace halfway up the gorge, its murals dark. Flying monkeys strike from above and Redline gangers work the road for pilgrims' coin."
       }
     },
     "place:lanternroad-03": {
@@ -24928,13 +24928,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:589ef036c54435c21cf06af5b3d8756997a36696e6f300e4fa5a5e0fcb606db8",
+      "hash": "sha256:2c1db9d9c86f6f1772a4b26045b547001522ad4a352386b70f9d574f6e72ff15",
       "about": [
         "place-lanternroad-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Lantern Road."
+        "short": "The pass at the top of the road. A masked oni and its raiders hold it and want the white wagon as their toll. The mask gets back up while its raiders stand, so cut them down first."
       }
     },
     "place:morrowsshadow": {
@@ -25003,13 +25003,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a08fbaa4fa5cc61cbed189c9ca70cdad339dc772afb5c6269e3382dfa8f10472",
+      "hash": "sha256:fda6f79340bbf015814eb71d708ef0d06d2981966435ab4370134e26dab12f4e",
       "about": [
         "place-still"
       ],
       "speakers": [],
       "payload": {
-        "short": "Follow the beams south off the ice and they all come down in one place: a white dome at the foot of Halcyon's spire, bigger than any hold, clean as a plate."
+        "short": "Follow the beams south off the ice and they all come down in one place: a white dome at the foot of Halcyon's spire, bigger than any hold, clean as a plate. The Hollow wait in its queues, and the Bulwark has mined its floors."
       }
     },
     "place:still-01": {
@@ -25018,13 +25018,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a958b0be49f411e688413f12bc81a2fa0e328686faf41d78a791972a80ad73c4",
+      "hash": "sha256:f8af09fb887e378bdb678f65139297cca580e49481698154f0a46d90e36ac68f",
       "about": [
         "place-still-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Still."
+        "short": "The queues outside the dome, where the Hollow wait to be stored. The Bulwark guards the gate, and Chromed Hollow carry the tithe's cans inside."
       }
     },
     "place:still-02": {
@@ -25033,13 +25033,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a958b0be49f411e688413f12bc81a2fa0e328686faf41d78a791972a80ad73c4",
+      "hash": "sha256:09ac3fbe7071251502e2c0b6e99c5bbe3e1ec97a0e4da3d7a8a7f75fb01317f8",
       "about": [
         "place-still-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Still."
+        "short": "The tank halls, cyan light over polished floors. Cultists tend the tanks, and cyclopes of Halcyon's making stand among the Hollow."
       }
     },
     "place:still-03": {
@@ -25048,13 +25048,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a958b0be49f411e688413f12bc81a2fa0e328686faf41d78a791972a80ad73c4",
+      "hash": "sha256:ef503b6479196016f44eb879ba24eee76982b0136dccf19f604cfb345df54b8e",
       "about": [
         "place-still-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Still."
+        "short": "Tank nine, where the Keeper of the Clocks minds a whole hold, drowned and turning. The Bulwark has mined the floor, and given room the keeper takes two turns."
       }
     },
     "place:swamp": {
@@ -25063,13 +25063,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d101268ebc1f1abe3e0ac14221aeb8ef1ff075f4a103e4fe51cabbad982900b8",
+      "hash": "sha256:370cd654229fbd99f154e31a43b6d89560c299be763dd794bf15c032b4a57435",
       "about": [
         "place-swamp"
       ],
       "speakers": [],
       "payload": {
-        "short": "The road west drops into fog -- warm, golden, smelling of rot and old varnish. Out of it rise the ribs of ships the size of towns."
+        "short": "The road west drops into fog, warm and golden, smelling of rot and old varnish. Out of it rise the ribs of ships the size of towns, and the fen keeps everything that dies in it."
       }
     },
     "place:swamp-01": {
@@ -25078,13 +25078,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f284776de3aa8e4d547f07f1a47e25b3dc55f5a1f5a59764c47ecd143b52da83",
+      "hash": "sha256:bfe86ab3f573088c8d23d02702846232929ae7417548c0318aba6853185cdd71",
       "about": [
         "place-swamp-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Arkgrave."
+        "short": "The fog's edge, where the first Ark's ribs rise out of the fen. Lurkers wait under the water, and a lich walks in the hull's shadow."
       }
     },
     "place:swamp-02": {
@@ -25093,13 +25093,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f284776de3aa8e4d547f07f1a47e25b3dc55f5a1f5a59764c47ecd143b52da83",
+      "hash": "sha256:060d8d02c7aa7f16f4b2f57bbc19f2bccb1f9cffb3cd265f5ae59e6cfacfb104",
       "about": [
         "place-swamp-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Arkgrave."
+        "short": "Deep among the grounded Arks. Tree golems take root between the ribs and marsh shamblers wade in after them, and every wave costs more than it seems to."
       }
     },
     "place:swamp-03": {
@@ -25108,13 +25108,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f284776de3aa8e4d547f07f1a47e25b3dc55f5a1f5a59764c47ecd143b52da83",
+      "hash": "sha256:53baba06933f2473eeef3243593f1201600e09228fb039a51de2accaed5648cf",
       "about": [
         "place-swamp-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Arkgrave."
+        "short": "The hull the swamp mistress claims as her own. Struck at, she trades places with one of her coven, so the coven falls first."
       }
     },
     "place:swamp-04": {
