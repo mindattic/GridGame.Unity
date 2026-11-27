@@ -667,6 +667,35 @@ namespace GridGame.App
             return veil;
         }
 
+        /// <summary>GG-T1401: a card with one answer, which Android Back also gives. It chimes as it opens, fades in and pops
+        /// its title, held still under Reduce Motion.</summary>
+        public static VisualElement Notice(string kicker, string title, string text, string ok, RowKind okKind, Action onOk, string name)
+        {
+            var app = GameApp.I;
+            var veil = Ui.El("fill veil col center", app.Overlay);
+            veil.name = VeilName;
+            veil.pickingMode = PickingMode.Position;
+            var w = Ui.Panel(veil, null, false, name);
+            w.style.width = Length.Percent(76);
+            Ui.Caption(kicker, w, "gold");
+            var head = Ui.Heading(title, w);
+            head.style.whiteSpace = WhiteSpace.Normal;
+            Ui.Text(text, "kit-text", w).style.whiteSpace = WhiteSpace.Normal;
+            var row = Ui.Actions(w);
+            row.style.justifyContent = Justify.FlexEnd;
+            Action a = () => { veil.RemoveFromHierarchy(); onOk?.Invoke(); };
+            veil.userData = a;
+            RowIcon.IconButton(ok, okKind, a, "btn--primary", row).name = "notice-ok";
+            app.Audio.Sfx("battle.powerup");
+            if (!Tween.Calm)
+            {
+                veil.style.opacity = 0f;
+                app.StartCoroutine(Tween.Fade(veil, 0f, 1f, Timing.Quick));
+                app.StartCoroutine(Tween.Pop(head, 1.15f, Timing.Emphasis));
+            }
+            return veil;
+        }
+
         /// <summary>Android Back with a question up: answers the topmost one Cancel. False when none is open.</summary>
         public static bool CancelTop()
         {

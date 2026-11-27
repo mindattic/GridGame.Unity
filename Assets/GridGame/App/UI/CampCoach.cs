@@ -49,7 +49,9 @@ namespace GridGame.App
             poller = null;
             var s = GameApp.I.Save;
             if (s == null || hub.Root == null) return;
-            if (Coach.Suppressed || Coach.Off(s)) { FinishHubIntro(s); return; }
+            // Bots, test saves and demos skip the graduation; a skipper (lessons off) still sees its card.
+            if (Coach.Suppressed || s.TestMode) { FinishHubIntro(s); return; }
+            if (Coach.Off(s) && s.Onboarding?.Step != OnboardingStep.HubIntro) return;
             // After one layout pass (rows have their size) and once any lesson that brought the player here has ended.
             int tries = 0;
             IVisualElementScheduledItem item = null;
@@ -57,21 +59,61 @@ namespace GridGame.App
             {
                 // Save & Quit nulls the save while Camp is still fading out (GG bughunt): stop, don't coach the Title.
                 if (GameApp.I.Save != s || GameApp.I.Router.Current != hub) { item.Pause(); return; }
-                if (hub.Root.panel != null && VariantPicker.Open) return; // GG-T532: a joining hero's look is picked first
+                // GG-T532: a joining hero's look is picked first; a Refresh under the graduation card waits for it.
+                if (hub.Root.panel != null && (VariantPicker.Open || GameApp.I.Overlay.Q(GraduationCard) != null)) return;
                 if (hub.Root.panel == null || ++tries > 30) { item.Pause(); return; }
                 if (Coach.Active) return;
                 item.Pause();
-                FinishHubIntro(s);
-                Next(s);
+                if (s.Onboarding?.Step == OnboardingStep.HubIntro) Graduate(s);
+                else Next(s);
             }).StartingIn(120).Every(100);
         }
 
-        /// <summary>GG-T1394: Camp's first visit ends the onboarding once its lesson is shown (or there is none to show).</summary>
+        /// <summary>GG-T1394: the onboarding ends on Camp's first visit.</summary>
         private static void FinishHubIntro(SaveData s)
         {
             if (s.Onboarding?.Step != OnboardingStep.HubIntro) return;
             Onboarding.Finish(s);
             GameApp.I.Persist();
+        }
+
+        /// <summary>GG-T1401: the graduation card's automation name, and the Adventure lesson's id (its save flag is
+        /// "lesson:hub-adventure").</summary>
+        public const string GraduationCard = "graduation-card", AdventureLesson = "hub-adventure";
+
+        /// <summary>GG-T1401: after the last drill (or a skip) Camp's first visit opens with the heroes telling the Commander
+        /// they're ready; then the Adventure lesson boxes the Adventure row, and the onboarding is done when it ends. With
+        /// lessons off there is no lesson, so the onboarding is done as the card shows.</summary>
+        private static void Graduate(SaveData s)
+        {
+            bool lesson = !Coach.Off(s);
+            if (!lesson) FinishHubIntro(s);
+            string text = Drills.Skipped(s)
+                ? "We know our work, Commander. The front line holds, the healer mends, and the rest of us hit hard. Say the word and we march."
+                : "Drills done, Commander. The front line holds, the healer mends, and the rest of us hit hard. Say the word and we march.";
+            Confirm.Notice("Camp", "Your heroes are ready", text, "Lead on", RowKind.Enter, () =>
+            {
+                if (GameApp.I.Save != s || !lesson) return;
+                if (!AdventureNow(s)) FinishHubIntro(s);
+            }, GraduationCard);
+        }
+
+        /// <summary>GG-T1401: the Adventure lesson; false when it can't show (seen already, or the row isn't on Camp).</summary>
+        private static bool AdventureNow(SaveData s)
+        {
+            const string row = "camp-adventure";
+            if (!Coach.Pending(s, AdventureLesson) || CampTipOverlay.Find(row) == null) return false;
+            var c = GameApp.I.Content;
+            string first = HubScreen.NextStage(c, s) is string id ? c.TryStage(id)?.Name : null;
+            return Coach.Run(new CoachLesson
+            {
+                Id = AdventureLesson, Kicker = "Camp", Title = "Adventure",
+                Text = (first != null ? $"The campaign starts at {first}. " : "") +
+                       "Adventure opens the map of stages; Continue above it marches straight to the next one.",
+                Image = "Tutorial/" + AdventureLesson,
+                Steps = TapSteps(s, row),
+                Finished = _ => { if (GameApp.I.Save == s) FinishHubIntro(s); },
+            });
         }
 
         private static void Next(SaveData s)
