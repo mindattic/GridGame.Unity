@@ -496,6 +496,40 @@ namespace GridGame.Meta
                 .ThenBy(x => x.i);
             return options.Select(x => x.d).FirstOrDefault();
         }
+
+        /// <summary>GG-T1298 (§27.1): the bond scenes Camp's Talk row offers, in file order: each unseen Trust scene whose hero
+        /// is in the party and each unseen Cohesion scene whose pair both are, its conditions holding ("$with" is the trigger
+        /// Id) and its tokens bindable. A scene is <see cref="BondScene.Unlocked"/> once the hero's Trust tier (the pair's
+        /// cohesion tier) has reached the trigger Level; each plays once, so a seen one drops out.</summary>
+        public static List<BondScene> BondScenes(ContentDb c, SaveData s)
+        {
+            var list = new List<BondScene>();
+            if (c == null || s == null) return list;
+            bool InParty(string id) => id != null && s.Party.Any(p => string.Equals(p, id, StringComparison.OrdinalIgnoreCase));
+            foreach (var d in c.DialogueOrder)
+            {
+                var t = d.Trigger;
+                if (t == null || t.Kind != DialogueTriggerKind.Trust && t.Kind != DialogueTriggerKind.Cohesion) continue;
+                if (s.SeenDialogues.Contains(d.Id) || !InParty(t.Id) || t.Kind == DialogueTriggerKind.Cohesion && !InParty(t.Other)) continue;
+                if (!All(c, s, d.Conditions, id => id == "$with" ? t.Id : id) || !CanBind(s, d)) continue;
+                int reached = t.Kind == DialogueTriggerKind.Trust ? Bonds.TrustTierReached(s, t.Id) : Bonds.CohesionTierReached(s, t.Id, t.Other);
+                list.Add(new BondScene { Def = d, Unlocked = reached >= t.Level });
+            }
+            return list;
+        }
+
+        /// <summary>The count Camp's Talk row shows as new: partners with an unseen topic, plus unlocked bond scenes (GG-T1598).</summary>
+        public static int NewTalkCount(ContentDb c, SaveData s) =>
+            TalkPartners(s).Count(p => { var t = TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); })
+            + BondScenes(c, s).Count(b => b.Unlocked);
+    }
+
+    /// <summary>A Trust / Cohesion scene on offer in the Talk row (<see cref="DialogueRunner.BondScenes"/>).</summary>
+    public sealed class BondScene
+    {
+        public DialogueDef Def;
+        /// <summary>The bond tier its trigger needs has been reached, so it can be played.</summary>
+        public bool Unlocked;
     }
 
     /// <summary>

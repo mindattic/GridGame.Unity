@@ -107,7 +107,7 @@ namespace GridGame.Meta
                     s.Bounty.Slain.Count > 0 ? $"☠ {s.Bounty.Slain.Count} to collect" : s.Bounty.Taken.Count > 0 ? $"Hunting {s.Bounty.Taken.Count}" : "", s.Bounty.Slain.Count > 0);
             Add(Mercenaries, "Mercenaries", CampGroup.Journal, GridGame.Meta.Mercenaries.Open(s), CampUnlocks.MilestoneHint(c, CampUnlocks.BountiesAfter),
                 s.Mercenaries.Contracts.Count > 0 ? $"{s.Mercenaries.Contracts.Count} hired" : "");
-            int newTalks = DialogueRunner.TalkPartners(s).Count(p => { var t = DialogueRunner.TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); });
+            int newTalks = DialogueRunner.NewTalkCount(c, s);
             Add(Talk, "Talk", CampGroup.Journal, value: newTalks > 0 ? $"{newTalks} new" : "", badge: newTalks > 0);
             int codexNew = GridGame.Meta.Codex.UnreadCount(c, s);
             Add(Codex, "Codex", CampGroup.Journal, value: codexNew > 0 ? $"{codexNew} new" : "", badge: codexNew > 0);

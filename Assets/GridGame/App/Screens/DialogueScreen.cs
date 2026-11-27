@@ -648,6 +648,7 @@ namespace GridGame.App
         protected override void BuildBody(VisualElement body)
         {
             var list = Ui.ListPanel(body, null, out var scroll, "talk-list");
+            var scenes = DialogueRunner.BondScenes(C, S);
             foreach (var who in DialogueRunner.TalkPartners(S))
             {
                 bool npc = who.StartsWith(ContentLoader.NpcFlagPrefix);
@@ -664,8 +665,31 @@ namespace GridGame.App
                 else row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(who) ? who : null);
                 row.name = "talk-" + (npc ? npcId : who);
                 if (topic != null && !S.SeenDialogues.Contains(topic.Id)) row.Q<Label>("value").AddToClassList("gold");
+                if (!npc)
+                    foreach (var b in scenes.Where(b => b.Def.Trigger.Kind == DialogueTriggerKind.Trust && string.Equals(b.Def.Trigger.Id, who, StringComparison.OrdinalIgnoreCase)))
+                        SceneRow(list, b, who);
+            }
+            var together = scenes.Where(b => b.Def.Trigger.Kind == DialogueTriggerKind.Cohesion).ToList();
+            if (together.Count > 0)
+            {
+                Ui.Section("Together", list).name = "talk-together";
+                foreach (var b in together) SceneRow(list, b, null);
             }
             Ui.SelectFirst(list);
+        }
+
+        /// <summary>GG-T1598 (§27.1): one bond scene's row, under its hero (<paramref name="hero"/>) or in Together: open, it
+        /// reads New! in gold and plays with "$with" as the trigger hero; locked, it's disabled and says the tier it needs.</summary>
+        private void SceneRow(VisualElement list, BondScene b, string hero)
+        {
+            var t = b.Def.Trigger;
+            string title = b.Def.Title ?? (hero != null ? "A word alone" : $"{C.TryClass(t.Id)?.Name ?? t.Id} and {C.TryClass(t.Other)?.Name ?? t.Other}");
+            string value = b.Unlocked ? "New!" : $"{(t.Kind == DialogueTriggerKind.Trust ? "Trust" : "Cohesion")} {t.Level} needed";
+            var row = Ui.MenuRow(title, value, () => App.Router.Push(new DialogueScreen(b.Def, t.Id, null)), list, null, b.Unlocked);
+            row.name = "talk-scene-" + b.Def.Id;
+            RowIcon.Badge(hero != null ? row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(hero) ? hero : null) : row.KindIcon(RowKind.Talk),
+                b.Unlocked ? RowKind.New : RowKind.Locked);
+            if (b.Unlocked) row.Q<Label>("value")?.AddToClassList("gold");
         }
     }
 }

@@ -675,7 +675,7 @@ namespace GridGame.App
             heroes.name = "camp-heroes";
             heroes.KindIcon(RowKind.Hero, s.Party.FirstOrDefault());
             // Talk (§27.1, GG-T117): chat with party members and joined Camp NPCs.
-            int newTalks = DialogueRunner.TalkPartners(s).Count(p => { var t = DialogueRunner.TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); });
+            int newTalks = DialogueRunner.NewTalkCount(c, s);
             Item("Talk", () => new TalkScreen(), newTalks > 0 ? $"{newTalks} new" : "").KindIcon(RowKind.Talk);
             // Camp NPCs (GG-T119): each station opens once its keeper has joined the caravan at a story beat (GG-T537: a stage clear).
             Station("Merchant", CampUnlocks.NpcOpen(s, CampNpcs.Merchant), CampUnlocks.JoinHint(c, CampNpcs.Merchant), () => new ShopScreen(), npc: CampNpcs.Merchant);
