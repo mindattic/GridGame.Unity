@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Hub Navigation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Hub Navigation</h1>
+    <p class="sub">The navigation model before code moves (GG-T1328, part of GG-T1325). Camp's long list of rows becomes a hub root with three pillars, Campaign, Crucible and Camp, and every hub page gets a bottom nav: Home, Campaign, Heroes, Summon, Shop. Tabs reset to the hub and push their screen, so the stack never goes deeper than Hub + 2. Design only; no code has changed.</p>
+  </header>
+
+  <section>
+    <h2>Graph: today and proposed</h2>
+    <div class="two">
+      <div class="card"><h3>Today (BIBLE 11.2.1 before this change)</h3><pre id="graph-old"></pre></div>
+      <div class="card"><h3>Proposed</h3><pre id="graph-new"></pre></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The hub root's three pillars</h2>
+    <div class="pillars" id="pillars"></div>
+  </section>
+
+  <section class="sim">
+    <div>
+      <h2>Try the rules</h2>
+      <p class="sub">Tap links, tabs, Back and Home. The breadcrumb is the router stack. <span id="depth" class="mono"></span></p>
+      <div class="controls"><button class="btn ghost" id="reset">Start at the hub</button><button class="btn ghost" id="fromtitle">Start at the title</button></div>
+      <div id="phone" class="phone"></div>
+    </div>
+    <div class="card">
+      <h2>Rules</h2>
+      <dl id="rules"></dl>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every screen, its group and its way back</h2>
+    <div class="controls"><select id="group-filter" aria-label="Filter by group"></select></div>
+    <div class="tablewrap">
+      <table class="screens">
+        <thead><tr><th>Screen</th><th>Group</th><th>Stack</th><th>Nav</th><th>Back</th></tr></thead>
+        <tbody id="screens"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>BIBLE amendments (applied)</h2>
+    <div id="bible" class="drafts"></div>
+  </section>
+
+  <section>
+    <h2>USER_STORIES entries (draft)</h2>
+    <p class="sub">USER_STORIES.md is rendered from the tickets database, so these are filed as stories there, not hand-edited into the file.</p>
+    <div class="tablewrap">
+      <table class="screens">
+        <thead><tr><th>Id</th><th>Story</th><th>BIBLE</th><th>Status</th></tr></thead>
+        <tbody id="stories"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Owned elsewhere</h2>
+    <p class="sub">The first-run hand-off into the hub and the coach-mark lessons for the pillars and tabs belong to GG-T1258 (front door). The Commander replacing Warden in the hub's party strip belongs to GG-T1270. The router's Home and the header Home button are GG-T1335; the Camp tiles and group menus as a model are GG-T1346.</p>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
