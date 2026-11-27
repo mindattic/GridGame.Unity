@@ -1476,15 +1476,19 @@ namespace GridGame.Core.Content
     /// <see cref="DialogueTrigger.Id"/>'s, offered while they're in the party and open once their Trust tier reaches
     /// <see cref="DialogueTrigger.Level"/>; Cohesion is the pair Id + <see cref="DialogueTrigger.Other"/>, offered while both
     /// are in the party and open at that cohesion tier. Shown locked (with the tier they need) until then; each plays
-    /// once, and "$with" is the hero Id.</summary>
-    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer, Trust, Cohesion }
+    /// once, and "$with" is the hero Id.
+    /// Founding (GG-T1318) plays once, after the opening crawl, with the starting party ("$party:N"); no Id.
+    /// Joined (GG-T1318) is a hero's first talk at Camp after joining by a non-story route (a hero not in
+    /// SaveData.MetHeroes): "$hero" is the joined hero, and <see cref="DialogueTrigger.Id"/> is their hero class, a
+    /// factions.json faction id, or null (the generic one), picked like a Wanderer talk.</summary>
+    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer, Trust, Cohesion, Founding, Joined }
 
     public sealed class DialogueTrigger
     {
         public DialogueTriggerKind Kind;
         /// <summary>ThemeStart: the theme id. StageCleared: the stage id. Talk: who it's with — a hero class id,
         /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC).
-        /// Trust / Cohesion: the hero class id (Cohesion: the pair's first hero).</summary>
+        /// Trust / Cohesion: the hero class id (Cohesion: the pair's first hero). Joined: a hero class id, a faction id or null.</summary>
         public string Id;
         /// <summary>Cohesion only: the pair's second hero class id.</summary>
         public string Other;

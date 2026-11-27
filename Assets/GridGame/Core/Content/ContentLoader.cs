@@ -1028,6 +1028,15 @@ namespace GridGame.Core.Content
                     }
                     if (trigger.Level < 1 || trigger.Level > MaxBondTier) p.Add($"{w}: {trigger.Kind} needs a tier Level of 1-{MaxBondTier}, has {trigger.Level}");
                     break;
+                case DialogueTriggerKind.Founding:
+                    // GG-T1318: once, after the opening crawl, with the starting party ("$party:N").
+                    if (trigger.Id != null) p.Add($"{w}: Founding takes no Id, has '{trigger.Id}'");
+                    break;
+                case DialogueTriggerKind.Joined:
+                    // GG-T1318: "$hero" is the hero who joined; the Id picks the scene like a Wanderer talk's.
+                    if (trigger.Id != null && !IsHero(trigger.Id) && !db.Factions.Exists(f => string.Equals(f.Id, trigger.Id, StringComparison.OrdinalIgnoreCase)))
+                        p.Add($"{w}: Joined needs a hero class, a faction or no Id, has '{trigger.Id}'");
+                    break;
             }
             bool bondScene = trigger.Kind == DialogueTriggerKind.Trust || trigger.Kind == DialogueTriggerKind.Cohesion;
             if (d.Crawl != null)
@@ -1039,13 +1048,14 @@ namespace GridGame.Core.Content
             bool talkWithHero = (trigger.Kind == DialogueTriggerKind.Talk || trigger.Kind == DialogueTriggerKind.Recruit) && trigger.Id != null && !trigger.Id.StartsWith(NpcFlagPrefix)
                 || trigger.Kind == DialogueTriggerKind.Wanderer || bondScene;
             bool wanderer = trigger.Kind == DialogueTriggerKind.Wanderer;
+            bool bindsHero = wanderer || trigger.Kind == DialogueTriggerKind.Joined;
             bool joinsHero = false;
             foreach (var e in d.AllEffects()) joinsHero |= e?.Type == DialogueEffectType.JoinHero;
 
             // GG-T1293: a hero a bond effect or condition names: a hero class, or a speaker token this dialogue binds.
             bool BondHero(string id, string where, string what)
             {
-                bool ok = id == "$with" ? talkWithHero : id == "$recruit" ? joinsHero : id == "$hero" ? wanderer
+                bool ok = id == "$with" ? talkWithHero : id == "$recruit" ? joinsHero : id == "$hero" ? bindsHero
                     : id == TrustedToken || PartySlot(id) > 0 || IsHero(id);
                 if (!ok) p.Add($"{where}: {what} needs a hero class, \"$party:1\"-\"$party:{MaxPartySlots}\", \"$trusted\", or \"$with\" / \"$recruit\" / \"$hero\" where this dialogue binds it, has '{id}'");
                 return ok;
@@ -1143,7 +1153,7 @@ namespace GridGame.Core.Content
                 if (s.Class == "$lead" || s.Class == CommanderToken || s.Class == TrustedToken || PartySlot(s.Class) > 0) { }
                 else if (s.Class != null && s.Class.StartsWith(PartyTokenPrefix, StringComparison.Ordinal)) p.Add($"{w} speaker {s.Id}: '{s.Class}' needs a party slot 1-{MaxPartySlots}");
                 else if (s.Class == "$with") { if (!talkWithHero) p.Add($"{w} speaker {s.Id}: \"$with\" only fits a Talk with a party member"); }
-                else if (s.Class == "$hero") { if (!wanderer) p.Add($"{w} speaker {s.Id}: \"$hero\" only fits a Wanderer talk"); }
+                else if (s.Class == "$hero") { if (!bindsHero) p.Add($"{w} speaker {s.Id}: \"$hero\" only fits a Wanderer talk or a Joined scene"); }
                 else if (s.Class == "$recruit") { if (!joinsHero) p.Add($"{w} speaker {s.Id}: \"$recruit\" needs a JoinHero effect in this dialogue"); }
                 else if (s.Class != null) { if (db.TryClass(s.Class) == null) p.Add($"{w} speaker {s.Id}: unknown class '{s.Class}'"); }
                 else if (string.IsNullOrEmpty(s.Portrait) || string.IsNullOrEmpty(s.Name)) p.Add($"{w} speaker {s.Id}: needs a Class, or a Name and a Portrait");

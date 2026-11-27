@@ -63,7 +63,7 @@ namespace GridGame.Meta
         public DialogueDef Def { get; }
         /// <summary>The party member a Talk dialogue is with ("$with"); null otherwise.</summary>
         public string With { get; }
-        /// <summary>The wanderer a Wanderer talk is with ("$hero", GG-T342); null otherwise.</summary>
+        /// <summary>The wanderer a Wanderer talk is with, or the hero a Joined scene greets ("$hero", GG-T342, GG-T1318); null otherwise.</summary>
         public string Hero { get; }
         /// <summary>Resolves <see cref="DialogueDef.OutcomeNext"/> to the node to go to (GG-T342: the wanderer's
         /// understanding rule, set by <c>Wanderers.Begin</c>); without one the marker ends the dialogue.</summary>
@@ -152,7 +152,7 @@ namespace GridGame.Meta
             if (id == null || !nodes.TryGetValue(id, out var n))
             {
                 Node = null;
-                s.SeenDialogues.Add(Def.Id);
+                Told();
                 Codex.Sync(c, s); // GG-T929: the dialogue told, and whoever and whatever it brought
                 return;
             }
@@ -161,6 +161,13 @@ namespace GridGame.Meta
             var (name, portrait) = Resolve(sp);
             Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = Commander.Fill(n.Text, s), Commander = sp?.Class == Commander.Token });
             foreach (var e in n.Effects) Apply(e, n.Id);
+        }
+
+        /// <summary>Counts the dialogue as told; a Joined scene's hero is met from now on (GG-T1318).</summary>
+        private void Told()
+        {
+            s.SeenDialogues.Add(Def.Id);
+            if (Def.Trigger?.Kind == DialogueTriggerKind.Joined && Bonds.Key(Hero) is string met) (s.MetHeroes ??= new HashSet<string>()).Add(met);
         }
 
         /// <summary>A speaker's display name and portrait id, with "$lead"/"$with"/"$party:N"/"$trusted" bound to this
@@ -243,12 +250,12 @@ namespace GridGame.Meta
 
         /// <summary>Plays a dialogue to the end with no screen, taking the first choice offered at every turn —
         /// how the bots (balance sims, Test Mode) live through story beats. Returns the effect log.</summary>
-        public static List<string> PlayHeadless(ContentDb c, SaveData s, DialogueDef def, string with = null)
+        public static List<string> PlayHeadless(ContentDb c, SaveData s, DialogueDef def, string with = null, string hero = null)
         {
-            var r = new DialogueRunner(c, s, def, with);
+            var r = new DialogueRunner(c, s, def, with, hero);
             for (int guard = 0; !r.Finished && guard < 500; guard++)
                 if (!r.Advance()) r.Choose(0);
-            if (!r.Finished) s.SeenDialogues.Add(def.Id); // a loop no first choice escapes — count it as told
+            if (!r.Finished) r.Told(); // a loop no first choice escapes — count it as told
             Codex.Sync(c, s); // GG-T929
             return r.Log;
         }
@@ -518,10 +525,67 @@ namespace GridGame.Meta
             return list;
         }
 
+        /// <summary>GG-T1318: the Founding scene to play after the opening crawl, or null: the first one (file order) not yet
+        /// seen whose conditions hold and whose "$party:N" speakers this party fills. Never on a Test Mode save.</summary>
+        public static DialogueDef PendingFounding(ContentDb c, SaveData s) =>
+            s == null || s.TestMode ? null : c.DialogueOrder.FirstOrDefault(d => d.Trigger?.Kind == DialogueTriggerKind.Founding
+                && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && CanBind(s, d));
+
+        /// <summary>GG-T1318: the next Joined scene to play at Camp, or null: for the first roster hero with Trust who isn't in
+        /// <see cref="SaveData.MetHeroes"/> (a hero who joined by a non-story route), the scene written for their class, else
+        /// their faction's (<see cref="ContentDb.FactionOf"/>), else the generic one (no Id), its conditions holding with
+        /// "$hero" bound to them. A seen scene still plays for another hero; the hero, once greeted, never repeats. Never on a
+        /// Test Mode save.</summary>
+        public static JoinedScene PendingJoined(ContentDb c, SaveData s) =>
+            s == null || s.TestMode ? null : NextJoined(c, s);
+
+        /// <summary>For the bots: plays every pending Joined scene headlessly (first choice each time), so each new hero
+        /// counts as met. Returns what the scenes did.</summary>
+        public static List<string> PlayPendingJoinedHeadless(ContentDb c, SaveData s)
+        {
+            var log = new List<string>();
+            if (s == null) return log;
+            for (var j = NextJoined(c, s); j != null; j = NextJoined(c, s))
+            {
+                log.AddRange(PlayHeadless(c, s, j.Def, null, j.Hero));
+                if (s.MetHeroes?.Contains(Bonds.Key(j.Hero)) != true) break; // never replay a hero the scene failed to greet
+            }
+            return log;
+        }
+
+        private static JoinedScene NextJoined(ContentDb c, SaveData s)
+        {
+            var scenes = c.DialogueOrder.Where(d => d.Trigger?.Kind == DialogueTriggerKind.Joined).ToList();
+            if (scenes.Count == 0) return null;
+            foreach (var h in s.Roster)
+            {
+                var hero = h?.ClassId;
+                if (hero == null || !Bonds.HasTrust(s, hero) || s.MetHeroes != null && s.MetHeroes.Contains(Bonds.Key(hero))) continue;
+                var fits = scenes.Where(d => All(c, s, d.Conditions, id => id == "$hero" ? hero : id) && CanBind(s, d)).ToList();
+                var faction = c.FactionOf(hero)?.Id;
+                var def = fits.FirstOrDefault(d => string.Equals(d.Trigger.Id, hero, StringComparison.OrdinalIgnoreCase))
+                    ?? (faction == null ? null : fits.FirstOrDefault(d => string.Equals(d.Trigger.Id, faction, StringComparison.OrdinalIgnoreCase)))
+                    ?? fits.FirstOrDefault(d => d.Trigger.Id == null);
+                if (def != null) return new JoinedScene { Def = def, Hero = hero };
+            }
+            return null;
+        }
+
         /// <summary>The count Camp's Talk row shows as new: partners with an unseen topic, plus unlocked bond scenes (GG-T1598).</summary>
         public static int NewTalkCount(ContentDb c, SaveData s) =>
             TalkPartners(s).Count(p => { var t = TalkTopic(c, s, p); return t != null && !s.SeenDialogues.Contains(t.Id); })
             + BondScenes(c, s).Count(b => b.Unlocked);
+    }
+
+    /// <summary>A Joined scene due at Camp (<see cref="DialogueRunner.PendingJoined"/>): the dialogue and the hero it greets.</summary>
+    public sealed class JoinedScene
+    {
+        public DialogueDef Def;
+        /// <summary>The joined hero's class id ("$hero").</summary>
+        public string Hero;
+
+        /// <summary>A runner for the scene with "$hero" bound; finishing it adds the hero to <see cref="SaveData.MetHeroes"/>.</summary>
+        public DialogueRunner Begin(ContentDb c, SaveData s) => new DialogueRunner(c, s, Def, null, Hero);
     }
 
     /// <summary>A Trust / Cohesion scene on offer in the Talk row (<see cref="DialogueRunner.BondScenes"/>).</summary>
