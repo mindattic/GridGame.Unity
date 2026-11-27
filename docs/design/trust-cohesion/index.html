@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Trust and Cohesion</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Trust and Cohesion</h1>
+    <p class="sub">Two lasting bonds (BIBLE 25.20). Trust is how far one hero trusts the Commander; cohesion is how well two heroes fight together. Both run 0 to 100 in six tiers and never lose a tier once reached.</p>
+  </header>
+
+  <section>
+    <h2>Tiers</h2>
+    <div class="ladder" id="ladder" aria-hidden="true"></div>
+    <p class="note" id="floorRule"></p>
+    <div class="tablewrap"><table id="tiers"><thead><tr><th class="n">Tier</th><th class="n">From</th><th>Trust gives</th><th>Cohesion gives</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <div class="tablewrap"><table id="sources"><thead><tr><th>Bond</th><th>Source</th><th class="n">Amount</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Payoffs</h2>
+    <div class="tablewrap"><table id="payoffs"><thead><tr><th>Bond</th><th>What</th><th>Value</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <div class="two">
+    <section>
+      <h2>Who has Trust</h2>
+      <ul class="who" id="who"></ul>
+    </section>
+    <section>
+      <h2>Core cast</h2>
+      <p class="note">Authored Trust scenes for each; pair scenes and a Duo support for every pair among them.</p>
+      <div class="cast" id="cast"></div>
+      <p class="note" id="pairs"></p>
+    </section>
+  </div>
+
+  <section>
+    <h2>Naming</h2>
+    <dl class="naming" id="naming"></dl>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

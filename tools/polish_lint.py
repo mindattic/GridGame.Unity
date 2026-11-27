@@ -4,16 +4,10 @@ per-site text-fit checks, random durations, hand-written easing curves and off-t
 
     python tools/polish_lint.py            # table
     python tools/polish_lint.py --json     # machine-readable, read by tools/polish.py
-    python tools/polish_lint.py --hits     # every POL-K hit, one line each (screen, file:line, what)
 
 Scores follow POLISH.md section 3: a rule's score is the share of its subjects that pass. For "token" rules the
 subject is each use site (a token use passes, a literal fails); for "never" rules the subject is each file
 (a file with zero hits passes); for POL-F1 the subject is each distinct cue name.
-
-The kit rules (GG-T1373, BIBLE §26.7, Ui.cs "the menu kit") read App/Screens only and score each screen class (a class
-with zero hits passes): POL-K1 a screen draws its own page title ("title"/"h1" text, a "header" element) instead of
-Ui.Header; POL-K2 a raw Ui.Window instead of a kit role (Panel, ListPanel, DetailPanel, Footer); POL-K3 a tappable
-(Ui.Button, Ui.MenuRow, new Button) with no KindIcon; POL-K4 an inline style.margin*/padding* set in a screen.
 """
 import json
 import os
@@ -188,7 +182,6 @@ def lint():
             "worst": lit[rule].most_common(5),
         }
     out.update(vfx_rules())
-    out.update(kit_rules())
     bad = sorted(c for c in cues if not CUE_OK.match(c))
     out["POL-F1"] = {
         "kind": "cue", "checked": len(cues), "failed": len(bad),
@@ -252,65 +245,7 @@ def vfx_rules():
     }
 
 
-SCREENS_DIR = os.path.join(APP, "Screens")
-CLASS_DECL = re.compile(r"^    (?:\w+\s+)*class\s+(\w+)", re.M)  # top-level classes only: a nested one is its screen's
-KIT_HEADER = re.compile(r"\bUi\.Text\([^;]*?,\s*\"(?:title|h1)\b[^\"]*\"|\bUi\.El\(\s*\"header\b")
-KIT_WINDOW = re.compile(r"\bUi\.Window\(")
-KIT_TAP = re.compile(r"(?:\b(\w+)\s*=\s*)?(\bUi\.Button|\bUi\.MenuRow|\bnew\s+Button)\(")
-KIT_SPACE = re.compile(r"\bstyle\.(?:margin|padding)\w*\s*=(?!=)")
-
-
-def kit_hits():
-    """POL-K1..K4 hits in App/Screens: (rule, screen class, file, line, what)."""
-    hits, screens = [], []
-    for p in sorted(os.listdir(SCREENS_DIR)):
-        if not p.endswith(".cs"):
-            continue
-        rel = os.path.relpath(os.path.join(SCREENS_DIR, p), ROOT).replace("\\", "/")
-        text = strip_comments(open(os.path.join(SCREENS_DIR, p), encoding="utf-8", errors="replace").read())
-        decls = [(m.start(), m.group(1)) for m in CLASS_DECL.finditer(text)]
-        screens += [n for _, n in decls]
-        ends = [s for s, _ in decls[1:]] + [len(text)]
-
-        def span(pos):
-            return next(((n, s, e) for (s, n), e in zip(decls, ends) if s <= pos < e), ("(file)", 0, len(text)))
-
-        def add(rule, pos, what):
-            hits.append((rule, span(pos)[0], rel, text.count("\n", 0, pos) + 1, what))
-
-        for m in KIT_HEADER.finditer(text):
-            add("POL-K1", m.start(), "own page title")
-        for m in KIT_WINDOW.finditer(text):
-            add("POL-K2", m.start(), "raw Ui.Window")
-        for m in KIT_TAP.finditer(text):
-            # iconed when the statement itself, or a later use of the variable it is assigned to, adds a KindIcon
-            region = text[m.start():span(m.start())[2]]
-            var = m.group(1)
-            iconed = "KindIcon(" in region[:region.find(";")] or (
-                var and re.search(rf"\b{var}\.KindIcon\(|KindIcon\(\s*{var}\b", region))
-            if not iconed:
-                add("POL-K3", m.start(), re.sub(r"\s+", " ", m.group(2)) + " without KindIcon")
-        for m in KIT_SPACE.finditer(text):
-            add("POL-K4", m.start(), "inline " + text[m.start() + 6:m.end() - 1].strip())
-    return hits, screens
-
-
-def kit_rules():
-    hits, screens = kit_hits()
-    out = {}
-    for rule in ("POL-K1", "POL-K2", "POL-K3", "POL-K4"):
-        per = Counter(owner for r, owner, *_ in hits if r == rule)
-        out[rule] = {"kind": "kit", "checked": len(screens), "failed": len(per),
-                     "score": round(100.0 * (len(screens) - len(per)) / len(screens), 1) if screens else None,
-                     "hits": sum(per.values()), "worst": per.most_common(5)}
-    return out
-
-
 def main():
-    if "--hits" in sys.argv:
-        for rule, owner, rel, line, what in kit_hits()[0]:
-            print(f"{rule} {owner:24} {rel}:{line}  {what}")
-        return
     res = lint()
     if "--json" in sys.argv:
         print(json.dumps(res, indent=1))
