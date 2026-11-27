@@ -52,10 +52,12 @@ namespace GridGame.App
         /// <summary>Builds the setup, the engine state and the recorder (once); Build starts the telemetry and playback.</summary>
         private void CreateState()
         {
-            // GG-T1377: a drill teaches its stage's lessons while any of them is unseen (Replay tutorials brings them back).
+            // GG-T1377: a drill teaches its stage's lessons while any of them is unseen (Replay tutorials brings them back);
+            // a practice drill (GG-T1647) teaches them every time, lessons off or not.
             var stage = App.Content.TryStage(stageId);
-            bool tutorial = setupOverride == null && !InCrucible && App.Save != null && Drills.IsDrill(stage) && !DrillLessonsSeen(App.Save, stage)
-                && !Coach.Off(App.Save) && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
+            bool tutorial = setupOverride == null && !InCrucible && App.Save != null && Drills.IsDrill(stage)
+                && (practice || (!DrillLessonsSeen(App.Save, stage) && !Coach.Off(App.Save)))
+                && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
             // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet; a drill plays on its
             // stage's own seed (BattleFactory.Build), so its lessons' set pieces land the same way every time.
             int seed = InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;

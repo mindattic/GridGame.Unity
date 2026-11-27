@@ -2523,6 +2523,11 @@ namespace GridGame.App
                 heroesStanding = State.Units.Count(u => u.IsHero && u.Alive),
             });
             yield return Tween.Wait(Timing.Dramatic);
+            if (practice)
+            {
+                EndPractice();
+                yield break;
+            }
             if (!CommitsToSave || App.Save == null)
             {
                 LeaveBattle(); // Router.Back() alone was swallowed by OnBack (it opens the pause menu)

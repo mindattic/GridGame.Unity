@@ -373,6 +373,8 @@ namespace GridGame.Meta
         public TurnMode CrucibleMode;
         /// <summary>GG-T1626: a tutorial drill (<see cref="Drills"/>): nothing earned, spent or worn.</summary>
         public bool Drill;
+        /// <summary>GG-T1647: a drill replayed from Settings for practice (<see cref="Drills.Report"/>): nothing was written.</summary>
+        public bool Practice;
         /// <summary>The battle's best combo window (§1.2.8, GG-T852): its rank (None when no combo ran) and score.</summary>
         public ComboRank BestComboRank;
         public int BestComboScore;

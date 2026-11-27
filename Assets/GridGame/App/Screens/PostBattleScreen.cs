@@ -36,6 +36,7 @@ namespace GridGame.App
 
         public override bool OnBack()
         {
+            if (report.Practice) return true;
             if (!continued && onContinue != null) { continued = true; onContinue(); }
             return false;
         }
@@ -288,7 +289,12 @@ namespace GridGame.App
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
-            if (!report.Victory)
+            if (report.Practice)
+            {
+                onContinue = () => App.Router.Back(); // GG-T1647: practice returns to Settings, never touching the onboarding
+                RowIcon.IconButton("Back to Settings", RowKind.Enter, Go, "btn--primary", row).name = "continue";
+            }
+            else if (!report.Victory)
             {
                 onContinue = () => StageLauncher.Launch(stageId, true);
                 RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";

@@ -44,7 +44,24 @@ namespace GridGame.Meta
         public static BattleReport Commit(ContentDb c, SaveData s, BattleState battle)
         {
             var r = battle.Results;
-            var rep = new BattleReport
+            var rep = Report(battle);
+            foreach (var id in r.Seen) BattleFactory.Entry(s, id).Seen = true;
+            foreach (var kv in r.Kills) BattleFactory.Entry(s, kv.Key).Defeated += kv.Value;
+            if (rep.Victory)
+            {
+                s.ClearedDrills ??= new HashSet<string>();
+                rep.FirstClear = s.ClearedDrills.Add(battle.Stage.Id);
+            }
+            Codex.Sync(c, s);
+            s.UpdatedUtc = DateTime.UtcNow;
+            return rep;
+        }
+
+        /// <summary>GG-T1647: a finished drill's report, written nowhere (a practice drill from Settings leaves the save as it was).</summary>
+        public static BattleReport Report(BattleState battle)
+        {
+            var r = battle.Results;
+            return new BattleReport
             {
                 Victory = battle.Phase == BattlePhase.Victory,
                 Escaped = battle.Phase == BattlePhase.Escaped,
@@ -60,16 +77,6 @@ namespace GridGame.Meta
                 Rounds = r.Rounds,
                 HeroTurns = r.HeroTurns,
             };
-            foreach (var id in r.Seen) BattleFactory.Entry(s, id).Seen = true;
-            foreach (var kv in r.Kills) BattleFactory.Entry(s, kv.Key).Defeated += kv.Value;
-            if (rep.Victory)
-            {
-                s.ClearedDrills ??= new HashSet<string>();
-                rep.FirstClear = s.ClearedDrills.Add(battle.Stage.Id);
-            }
-            Codex.Sync(c, s);
-            s.UpdatedUtc = DateTime.UtcNow;
-            return rep;
         }
     }
 }

@@ -53,6 +53,8 @@ namespace GridGame.App
         public Func<bool> Hold;
         /// <summary>Called once at the end: <see cref="CoachEnd"/> says how it ended.</summary>
         public Action<CoachEnd> Finished;
+        /// <summary>GG-T1647: a practice drill's lesson leaves the save alone: no seen flag, and Skip tutorial turns nothing off.</summary>
+        public bool Practice;
         /// <summary>Automation names for the popup card and its Next button (camp lessons keep the old camp-tip names).</summary>
         public string CardName = "coach-card", NextName = "coach-next", RingName = "coach-box";
     }
@@ -262,6 +264,11 @@ namespace GridGame.App
 
         private static void AskTurnOff()
         {
+            if (lesson?.Practice == true)
+            {
+                Confirm.Show("Stop this drill's lessons and play on?", "Stop", () => End(CoachEnd.TurnedOff));
+                return;
+            }
             Confirm.Show("Turn off every tutorial lesson? You can replay them from Settings › How to play.", "Turn off", () =>
             {
                 var s = GameApp.I.Save;
@@ -547,7 +554,7 @@ namespace GridGame.App
             layer = veil = card = box = catcher = caption = null;
             canvas = null;
             path = null; goal = null;
-            if (how == CoachEnd.Completed || how == CoachEnd.Aborted)
+            if ((how == CoachEnd.Completed || how == CoachEnd.Aborted) && !l.Practice)
             {
                 MarkSeen(GameApp.I?.Save, l.Id);
                 GameApp.I?.Persist();

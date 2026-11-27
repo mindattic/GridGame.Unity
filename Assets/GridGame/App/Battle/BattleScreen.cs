@@ -151,6 +151,13 @@ namespace GridGame.App
 
         public BattleScreen(string stageId) { this.stageId = stageId; }
         public BattleScreen(BattleSetup setup) { setupOverride = setup; stageId = setup.Stage.Id; }
+        private BattleScreen(string stageId, bool practice) { this.stageId = stageId; this.practice = practice; }
+
+        /// <summary>GG-T1647: a drill replayed for practice (Settings): its lessons always teach, and nothing is written to
+        /// the save (no Bestiary, clear, seen lesson or onboarding step); it ends on the drill card, whose Back returns.</summary>
+        public static BattleScreen Practice(string stageId) => new BattleScreen(stageId, true);
+
+        private readonly bool practice;
 
         /// <summary>Seeds the autoplay bot's RNG (null = the clock). `-demo -endless` sets it to the encounter seed
         /// (GG-T64) so the bot decides exactly as <c>EndlessEncounter.Bot(seed)</c> does in a headless replay.</summary>
@@ -159,7 +166,15 @@ namespace GridGame.App
         /// <summary>The end of this battle is committed to App.Save and routed to the results screen. A battle built
         /// from an explicit setup normally just pops back instead — except under `-demo -endless` (GG-T57), whose
         /// setup is a generated party fought on a throwaway slot -1 save, and whose loop runs through the results.</summary>
-        private bool CommitsToSave => setupOverride == null || DemoMode.Endless;
+        private bool CommitsToSave => !practice && (setupOverride == null || DemoMode.Endless);
+
+        /// <summary>GG-T1647: a practice drill's end: its results card, with nothing committed.</summary>
+        private void EndPractice()
+        {
+            var rep = Drills.Report(State);
+            rep.Practice = true;
+            PostBattleScreen.RouteFrom(rep, State.Stage.Id);
+        }
 
         /// <summary>A still-open pause veil lives on the global Overlay (see OpenMenu), which outlives this screen's
         /// own root — remove it explicitly so it doesn't linger on top of whatever screen comes next.</summary>
@@ -295,7 +310,7 @@ namespace GridGame.App
             if (!firstBuild) return;
             playRoutine = App.StartCoroutine(Play(initial, false));
             if (CommandLine.Has("-autobattle") || DemoMode.Active || TestMode.Active) AutoPlay = true;
-            else if (TutorialStep < 0 && App.Save != null && App.Save.Flags.Add("hint:inspect"))
+            else if (TutorialStep < 0 && !practice && App.Save != null && App.Save.Flags.Add("hint:inspect"))
             {
                 // GG-T252: a player who skipped the tutorial still learns the gesture once.
                 App.Persist();
@@ -1627,7 +1642,8 @@ namespace GridGame.App
                 xp = State.Results.Xp,
                 heroesStanding = State.Units.Count(u => u.IsHero && u.Alive),
             });
-            if (App.Save != null && CommitsToSave)
+            if (practice) EndPractice();
+            else if (App.Save != null && CommitsToSave)
             {
                 var rep = BattleFactory.Commit(App.Content, App.Save, State);
                 App.Persist();

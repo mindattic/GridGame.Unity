@@ -241,7 +241,7 @@ namespace GridGame.App
         {
             TutorialStep = -1;
             if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel();
-            if (App.Save != null)
+            if (App.Save != null && !practice)
             {
                 foreach (var l in Lessons) Coach.MarkSeen(App.Save, "battle-" + l.Id);
                 if ((App.Content.Campaign?.Tutorial ?? new List<string>()).All(id => DrillLessonsSeen(App.Save, App.Content.TryStage(id))))
@@ -252,11 +252,11 @@ namespace GridGame.App
         }
 
         /// <summary>GG-T1398: Skip tutorial (confirmed, lessons already off) in a drill leaves it for Camp's first visit;
-        /// the drills count as skipped and the battle is never committed.</summary>
+        /// the drills count as skipped and the battle is never committed. A practice drill only stops its lessons.</summary>
         private void SkipDrills()
         {
             FinishTutorial();
-            if (App.Save == null || !Drills.IsDrill(State?.Stage)) return;
+            if (practice || App.Save == null || !Drills.IsDrill(State?.Stage)) return;
             Drills.Skip(App.Save);
             App.Persist();
             App.Audio.Sfx("ui.cancel");
@@ -387,7 +387,7 @@ namespace GridGame.App
         /// player has turned the tutorial off.</summary>
         private bool CoachOn => CoachAvailable && !AutoPlay;
         /// <summary>Coach marks would be on but for autoplay.</summary>
-        private bool CoachAvailable => !Coach.Suppressed && App.Save != null && !Coach.Off(App.Save) && setupOverride == null;
+        private bool CoachAvailable => !Coach.Suppressed && App.Save != null && (practice || !Coach.Off(App.Save)) && setupOverride == null;
 
         private int commitCount, coachTriedAt = -1, coachPopupFor = -1, sceneStep = -1, sceneCommit = -1;
         /// <summary>GG-T1149: how often the current lesson's scene was staged again and its mark aborted, after its popup showed;
@@ -438,7 +438,7 @@ namespace GridGame.App
                 if (!LessonWaiting) StartTutorialCoach();
                 return;
             }
-            StartSystemLesson();
+            if (!practice) StartSystemLesson();
         }
 
         private void StartTutorialCoach()
@@ -477,6 +477,7 @@ namespace GridGame.App
                 Steps = marks,
                 SkipPopup = popupDone,
                 Hold = CoachHold,
+                Practice = practice,
                 Finished = how => TutorialCoachEnded(step, how, hadMarks),
             });
         }
@@ -497,6 +498,7 @@ namespace GridGame.App
                 Title = stage.Name,
                 Text = stage.Intro,
                 Hold = CoachHold,
+                Practice = practice,
                 Finished = how =>
                 {
                     if (how == CoachEnd.TurnedOff) SkipDrills();
