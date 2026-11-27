@@ -4651,11 +4651,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:73644eb486f5228f40633e47f5f19f86fd5493a1d8b4e19c8f11f2e98d6c538d",
+      "hash": "sha256:cc8258fa0cabcd4f78f5c297540814383a2fc453586f85e02a4dc4b4ddf309bc",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "What Came Down. In the Bloom, where pieces of the Manalith fell and took root, red life grows in a white ruin. What is coming is not only death."
+        "long": "What Came Down. After the Hierarch, the crew go into the Bloom, where pieces of the Manalith came down and took root: red blossom and moss over the Choir's broken white pillars, and the Wild living among them. The Red Seal's last wardens burn it. What is coming is not only death."
       }
     },
     "codex:story/chapter/ch06": {
@@ -4664,11 +4664,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:504dd07c58abb043ed42699b2d1af5f87b46c306581a999a8e7344bc7ae20591",
+      "hash": "sha256:d620e43128f8d8bde6ea9a4af40c4d54e9ecb1a88b7e1e3376920d7c19d85516",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Claimants to the Spire. Everyone wants the empty spire. The Underspire is still drawing mana off Halcyon's taps, and the Captain is still collecting."
+        "long": "Claimants to the Spire. With the spire empty, everyone wants it: the walled-up Free Holds, the Herd Boss in the Underspire's neon markets, what is left of the Choir. The Underspire still draws on Halcyon's taps, the Captain is still collecting, and the Arkgrave is flooding. Every claimant asks the price of the Commander."
       }
     },
     "codex:story/chapter/ch07": {
@@ -4677,11 +4677,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fee5440a0932c492d1e3f88642b0c00f3118f656e9d49801f8982149c7d54fbe",
+      "hash": "sha256:eaf7a539d97090e6cddc3257833e24c03a35fd6d20a20eddc790a75030090f7c",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The March on the Anchors. The Ember march out of the deep Shardfall to open every tap and drag the Manalith down."
+        "long": "The March on the Anchors. The Ember march out of the deep Shardfall, where the shell is still breaking, to open every tap on the Anchors at once and drag the Manalith down. The crew go under the arches to meet them."
       }
     },
     "codex:story/chapter/ch08": {
@@ -4690,11 +4690,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:39a319f6757fcff58df8990cf018598c6bd15eb4d0225ec964b0014a19cf4d29",
+      "hash": "sha256:292a61e5c81f0bbdc6b4e9f59f88f1d303edfe48d4ababe1be7c1f53667e53fa",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Morrow Holds. In Morrow's Shadow the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold."
+        "long": "Morrow Holds. In Morrow's Shadow the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Demon Lord calls it down. The Anchors hold, and what happens next is the Commander's to choose."
       }
     },
     "codex:story/dialogue/boss_intro_cathedral": {

@@ -92,7 +92,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:29bea82a1167f7b8c62defa2b23cccfb2ab58b2803b478292f51a7094192a39d",
+      "hash": "sha256:10bb790586e71d7957ef5ea8de6395267ce8874cc415f088934c153450236645",
       "about": [
         "place-bloom",
         "place-bloom-01"
@@ -101,9 +101,9 @@
       "payload": {
         "title": "What Came Down",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Hierarch is gone and the organ is broken. No one drinks the skim now. But above the empty spire the Manalith hangs where it hung, beside the Moon, and it is still coming.",
+          "Halcyon stopped it, fed it and ran from it, and you helped. Everything the crew have learned of it since the moors has been hunger: the tithe, the taps, the pull.",
+          "Past the Choir's fallen pillars lies country the Choir stopped watching, where pieces of the Manalith came down and red blossom grows over the white stone. The crew want to see what grows there. You go with them."
         ]
       }
     },
@@ -113,7 +113,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4660063a95f2a6deeb23c0cb87530d49bee16e070d34bc1c67427fd12a62e89e",
+      "hash": "sha256:c021684ab967b04d0e1374e568990d6ab716b91363cbaa731e2f2c48de59df7e",
       "about": [
         "place-cityruins-04",
         "place-cityruins2"
@@ -122,9 +122,10 @@
       "payload": {
         "title": "Claimants to the Spire",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "In the Bloom the crew found what the Manalith leaves where it lands: moss and red blossom, beasts come back changed, and the Wild living among them. Not everything that came down is hungry.",
+          "It was the first place you have stood where your being alive cost no one. The Red Seal's last warden tried to burn it anyway, and failed.",
+          "Now word of the empty spire has reached every road. The Free Holds have walled themselves up, and the Captain is still collecting. Under the spire the Underspire's neon still burns on Halcyon's taps, and the Arkgrave is filling with water.",
+          "Everyone wants the spire. And everyone who wants it asks the same question about you: what is the Commander worth?"
         ]
       }
     },
@@ -134,7 +135,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:cc624ff68d5d201f11d48e94315faff975465057124bad979b9461930dcc7141",
+      "hash": "sha256:cc92ac85c302369f32416a21b615ff0aa09efac4dff52a34bfc4df122081cc79",
       "about": [
         "place-desert",
         "place-desert-05"
@@ -143,9 +144,10 @@
       "payload": {
         "title": "The March on the Anchors",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Captain lost the holds, and the Herd Boss lost the markets under the spire. In the flooded Arkgrave the Swamp Mistress rose with the tide one more time.",
+          "Every claimant wanted the same thing in the end, and it was not the spire. It was you. The Choir wanted Halcyon's key. Now everyone does.",
+          "Out of the deep Shardfall, where the shell is still breaking, the Ember are marching. The whole red host is headed for the Anchors, to open every tap at once and drag the Manalith down.",
+          "Whoever reaches the arches first decides how close the sky comes."
         ]
       }
     },
@@ -155,20 +157,19 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:98f52d339d5cd669e1260b1d6e307bc594f682141d0b315006e33c2d3460e7f2",
+      "hash": "sha256:ea5696f225f6af5cfa4d51c0b821b2435070c40ab3f3c44dc00ea1e2c0720afe",
       "about": [
         "place-morrowsshadow",
         "place-morrowsshadow-03"
       ],
       "speakers": [],
       "payload": {
-        "title": "The Anchors Hold",
+        "title": "Morrow Holds",
         "paragraphs": [
-          "The Demon Lord falls under the Manalith he tried to call down. It doesn't come.",
-          "The Anchors hold. Their chains still hum in the cold, and the arches still stand over the snow. The Manalith stays in the sky, as close as it has ever been and no closer.",
-          "Nobody can say for how long. Keep it asleep, cut the lines, or let it come: that question is yours now, and it isn't answered today.",
-          "Which leaves the caravan. It was the Choir's, white from axle to awning, and you stole it on tithe day. It has been a home, a battlefield and a rumour on every road since.",
-          "Now you decide what it becomes."
+          "Under the arches the Watch's last captain lowered his blade and gave the Anchors back to a commander of Halcyon. The chains answer you now. Only Halcyon's mana can open or close them, and yours is the last of it.",
+          "The Ember did not get their taps. The Anchors hold, and the Manalith hangs as low as it ever has, and no lower.",
+          "Past the last arch lies Morrow's Shadow: cracked plains, rock floating loose in the air, and a sky the Manalith fills, its crystals close enough to count. Beside it the Moon is a small, steady disc, the same as it has always been.",
+          "Somewhere in that dark the Demon Lord is calling the Manalith down. Past him waits a choice that only you can make. Around the fire, the crew have already started telling you what they would keep."
         ]
       }
     },
