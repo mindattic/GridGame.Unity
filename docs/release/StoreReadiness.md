@@ -3,6 +3,7 @@
 What still stands between `main` and Google Play and the App Store: one row per item, with the status found in the
 repo on 2026-11-27. The final re-audit before submission is GG-T1510. Release-candidate gates stay in
 [RELEASE_CHECKLIST](../RELEASE_CHECKLIST.md); how to build is [RELEASE_BUILD](../RELEASE_BUILD.md).
+Filterable page: [design/store-readiness](../design/store-readiness/index.html) (regenerate its data with `python tools/store_readiness_page.py` after editing the tables here).
 
 Status: **done** (in the repo, verified by reading it), **partial** (started, a named gap remains), **missing**
 (nothing yet), **owner** (only the owner can do it: an account, a console, a device or a decision). Every row that is

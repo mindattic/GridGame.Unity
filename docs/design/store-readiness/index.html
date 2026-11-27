@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Store Readiness</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Store Readiness</h1>
+    <p class="sub">What still stands between <code>main</code> and Google Play and the App Store, one row per item (GG-T1509). Generated from <code>docs/release/StoreReadiness.md</code> by <code>tools/store_readiness_page.py</code>; edit the .md, then regenerate.</p>
+  </header>
+
+  <section>
+    <h2>Items</h2>
+    <div class="filters">
+      <div class="group" id="areaFilter" role="group" aria-label="Area"></div>
+      <div class="group" id="statusFilter" role="group" aria-label="Status"></div>
+    </div>
+    <p class="note" id="summary"></p>
+    <div class="tablewrap"><table id="rows"><thead><tr><th>#</th><th>Item</th><th>Status</th><th>Evidence</th><th>Gap ticket</th><th>Re-check after</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Owner-only</h2>
+    <p class="note">Only the owner can close these: an account, a console, a device or a decision. Rows outside the current filter are dimmed.</p>
+    <div class="tablewrap"><table id="owner"><thead><tr><th>Ticket</th><th>What</th><th>Unblocks rows</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section>
+    <h2>Depends on sibling slices (GG-T1256)</h2>
+    <p class="note">Re-check these rows after each slice lands; GG-T1510 re-runs the whole list before submission.</p>
+    <div class="tablewrap"><table id="siblings"><thead><tr><th>Slice</th><th>Rows to re-check</th><th>Why</th></tr></thead><tbody></tbody></table></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
