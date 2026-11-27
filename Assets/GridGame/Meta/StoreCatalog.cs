@@ -67,17 +67,17 @@ namespace GridGame.Meta
             new StoreProduct
             {
                 Id = "cosmetic_frames_1", Name = "Unit frames bundle", Type = ProductType.NonConsumable, Cents = 199, AccountLimit = 1,
-                Cosmetics = new[] { "frame_set1_1", "frame_set1_2", "frame_set1_3" },
+                Cosmetics = new[] { "frame_ember", "frame_tidal", "frame_verdant" },
             },
             new StoreProduct
             {
                 Id = "cosmetic_themes_1", Name = "Window themes bundle", Type = ProductType.NonConsumable, Cents = 299, AccountLimit = 1,
-                Cosmetics = new[] { "theme_set1_1", "theme_set1_2" },
+                Cosmetics = new[] { "theme_aurora", "theme_ironwood" },
             },
             new StoreProduct
             {
                 Id = "cosmetic_backdrops_1", Name = "Hub backdrops bundle", Type = ProductType.NonConsumable, Cents = 199, AccountLimit = 1,
-                Cosmetics = new[] { "backdrop_set1_1", "backdrop_set1_2" },
+                Cosmetics = new[] { "backdrop_dusk", "backdrop_starfield" },
             },
         }).ToArray();
 

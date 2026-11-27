@@ -528,6 +528,9 @@ namespace GridGame.Meta
         public int ThumbMargin;
         /// <summary>Accessibility → UI scale (GG-T1222): 80, 90 or 100 (default) percent of the screen the stage fills.</summary>
         public int UiScale = 100;
+        /// <summary>GG-T1456: the equipped cosmetic per <see cref="CosmeticKind"/> name (Frame, Theme, Backdrop); none = the
+        /// plain look. Ownership is on the account wallet; <see cref="Cosmetics.Reconcile"/> drops what it no longer owns.</summary>
+        public Dictionary<string, string> Cosmetics = new Dictionary<string, string>(StringComparer.Ordinal);
     }
 
     /// <summary>

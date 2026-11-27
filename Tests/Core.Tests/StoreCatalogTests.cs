@@ -123,19 +123,19 @@ namespace GridGame.Tests
         public void A_refund_removes_ownership_and_only_the_cosmetics_that_transaction_added()
         {
             var w = new AccountWallet();
-            w.Cosmetics.Add("frame_set1_1");
+            w.Cosmetics.Add("frame_ember");
             AccountWallets.Grant(w, "tx-f", "cosmetic_frames_1", When, "GooglePlay", out _);
             AccountWallets.Grant(w, "tx-t", "cosmetic_themes_1", When, "GooglePlay", out _);
-            Assert.That(w.Granted["tx-f"].Cosmetics, Is.EquivalentTo(new[] { "frame_set1_2", "frame_set1_3" }), "an owned cosmetic is not counted as added");
+            Assert.That(w.Granted["tx-f"].Cosmetics, Is.EquivalentTo(new[] { "frame_tidal", "frame_verdant" }), "an owned cosmetic is not counted as added");
             Assert.That(w.Granted["tx-f"].Ownership, Is.True);
 
             AccountWallets.Refund(w, "tx-f");
             Assert.That(StoreCatalog.Owns(w, "cosmetic_frames_1"), Is.False);
-            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_set1_1"), Is.True, "owned before the purchase, so kept");
-            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_set1_2"), Is.False);
-            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_set1_3"), Is.False);
+            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_ember"), Is.True, "owned before the purchase, so kept");
+            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_tidal"), Is.False);
+            Assert.That(StoreCatalog.OwnsCosmetic(w, "frame_verdant"), Is.False);
             Assert.That(StoreCatalog.Owns(w, "cosmetic_themes_1"), Is.True, "another product's ownership is untouched");
-            Assert.That(StoreCatalog.OwnsCosmetic(w, "theme_set1_1"), Is.True);
+            Assert.That(StoreCatalog.OwnsCosmetic(w, "theme_aurora"), Is.True);
             Assert.That(StoreCatalog.CanBuy(w, P("cosmetic_frames_1")), Is.True);
         }
 
