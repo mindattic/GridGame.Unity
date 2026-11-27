@@ -416,6 +416,38 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void CanBind_ignores_a_trusted_hero_named_only_behind_a_TrustAtLeast_choice()
+        {
+            DialogueDef Beat(bool unconditional) => new DialogueDef
+            {
+                Id = "trusted_gate",
+                Speakers = { new DialogueSpeaker { Id = "t", Class = "$trusted" } },
+                Nodes =
+                {
+                    new DialogueNode
+                    {
+                        Id = "a", Text = "Well?", Next = unconditional ? "t1" : null,
+                        Choices =
+                        {
+                            new DialogueChoice { Label = "Ask", Next = "t1", Conditions = { new DialogueCondition { Type = DialogueConditionType.TrustAtLeast, Id = "$trusted", Amount = 1 } } },
+                            new DialogueChoice { Label = "Leave" },
+                        },
+                    },
+                    new DialogueNode { Id = "t1", Speaker = "t", Text = "Commander." },
+                },
+            };
+            var none = NewSave();
+            none.Party.Clear();
+            Assert.That(DialogueRunner.TrustedHero(none), Is.Null);
+            Assert.That(DialogueRunner.CanBind(none, Beat(false)), Is.True, "$trusted only behind the Trust choice");
+            var r = new DialogueRunner(Real, none, Beat(false), null);
+            r.Advance();
+            Assert.That(r.Choices.Select(ch => ch.Label), Is.EqualTo(new[] { "Leave" }), "the Trust choice is hidden when nobody is trusted");
+
+            Assert.That(DialogueRunner.CanBind(none, Beat(true)), Is.False, "$trusted also reached unconditionally is still dropped");
+        }
+
+        [Test]
         public void Old_saves_without_dialogue_fields_migrate()
         {
             var s = NewSave(); s.Flags = null; s.SeenDialogues = null;

@@ -217,29 +217,53 @@ namespace GridGame.Meta
         }
 
         /// <summary>False when <paramref name="def"/> names a "$party:N" or "$trusted" hero (as a speaker or in a bond effect
-        /// or condition) this save can't fill, so the dialogue isn't offered.</summary>
+        /// or condition) this save can't fill, so the dialogue isn't offered. A "$trusted" that appears only behind a
+        /// TrustAtLeast "$trusted" choice (that choice and the nodes only it reaches) doesn't count: with nobody trusted the
+        /// choice is simply not offered (GG-T1631).</summary>
         public static bool CanBind(SaveData s, DialogueDef def)
         {
             if (s == null || def == null) return true;
-            bool trusted = false, haveTrusted = false;
-            bool Fits(string id)
+            bool trusted = TrustedHero(s) != null;
+            bool Fits(string id) => id == ContentLoader.TrustedToken ? trusted : ContentLoader.PartySlot(id) is var slot && (slot == 0 || slot <= s.Party.Count);
+            bool Gated(DialogueChoice ch) => !trusted && ch?.Conditions != null && ch.Conditions.Any(x => x != null && x.Type == DialogueConditionType.TrustAtLeast && x.Id == ContentLoader.TrustedToken);
+
+            var nodes = def.Nodes.Where(n => n != null).ToList();
+            var live = new HashSet<DialogueNode>(nodes);
+            if (!trusted && nodes.Any(n => n.Choices != null && n.Choices.Any(Gated)))
             {
-                if (id == ContentLoader.TrustedToken)
+                live.Clear();
+                var byId = new Dictionary<string, DialogueNode>();
+                foreach (var n in nodes) if (n.Id != null) byId[n.Id] = n;
+                var todo = new Stack<DialogueNode>();
+                void Visit(string id) { if (id != null && byId.TryGetValue(id, out var n) && live.Add(n)) todo.Push(n); }
+                Visit(def.Start ?? nodes.FirstOrDefault()?.Id);
+                while (todo.Count > 0)
                 {
-                    if (!haveTrusted) { trusted = TrustedHero(s) != null; haveTrusted = true; }
-                    return trusted;
+                    var n = todo.Pop();
+                    Visit(n.Next);
+                    if (n.Choices != null) foreach (var ch in n.Choices) if (ch != null && !Gated(ch)) Visit(ch.Next);
                 }
-                int slot = ContentLoader.PartySlot(id);
-                return slot == 0 || slot <= s.Party.Count;
             }
-            if (def.Speakers.Any(sp => sp != null && !Fits(sp.Class))) return false;
-            foreach (var e in def.AllEffects())
-                if ((e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) && (!Fits(e.Id) || !Fits(e.Other))) return false;
-            foreach (var n in def.Nodes)
-                if (n?.Choices != null)
-                    foreach (var ch in n.Choices)
-                        if (ch?.Conditions != null && ch.Conditions.Any(x => x != null && (!Fits(x.Id) || !Fits(x.Other)))) return false;
+
+            var used = new HashSet<string>(nodes.Where(live.Contains).Select(n => n.Speaker));
+            var unused = new HashSet<string>(nodes.Where(n => !live.Contains(n)).Select(n => n.Speaker));
+            if (def.Speakers.Any(sp => sp != null && !(unused.Contains(sp.Id) && !used.Contains(sp.Id)) && !Fits(sp.Class))) return false;
+            foreach (var n in nodes)
+            {
+                if (!live.Contains(n)) continue;
+                foreach (var e in n.Effects)
+                    if (BadBond(e)) return false;
+                if (n.Choices == null) continue;
+                foreach (var ch in n.Choices)
+                {
+                    if (ch == null || Gated(ch)) continue;
+                    if (ch.Effects.Any(BadBond)) return false;
+                    if (ch.Conditions != null && ch.Conditions.Any(x => x != null && (!Fits(x.Id) || !Fits(x.Other)))) return false;
+                }
+            }
             return true;
+
+            bool BadBond(DialogueEffect e) => (e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) && (!Fits(e.Id) || !Fits(e.Other));
         }
 
         /// <summary><paramref name="place"/> is where the effect sits ("&lt;node&gt;" or "&lt;node&gt;:&lt;choice&gt;"), which guards a bond change.</summary>
@@ -325,7 +349,7 @@ namespace GridGame.Meta
                 case DialogueConditionType.TrustAtLeast:
                 {
                     string a = Bound(x.Id);
-                    return Bonds.HasTrust(s, a) && Bonds.Trust(s, a) >= x.Amount;
+                    return a != null && Bonds.HasTrust(s, a) && Bonds.Trust(s, a) >= x.Amount;
                 }
                 case DialogueConditionType.CohesionAtLeast:
                 {
