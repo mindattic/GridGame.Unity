@@ -125,14 +125,14 @@ namespace GridGame.Tests
             var c = Real;
             var save = Progression.NewGame(c, "Swap");
             var weapons = c.Items.Values.Where(i => i.Slot == EquipmentSlot.Weapon && i.Durability > 0).Take(2).ToList();
-            var h = save.Hero("warden"); // the fixed lead (GG-T533)
+            var h = save.Hero("knight");
             save.AddItem(weapons[0].Id, 1);
             save.AddItem(weapons[1].Id, 1);
             Assert.That(Equipment.Equip(c, save, h, EquipmentSlot.Weapon, weapons[0].Id).Ok, Is.True);
             Assert.That(Abilities.Assign(c, save, h, 1, "weapon:" + weapons[1].Id).Ok, Is.True);
             var setup = BattleFactory.Build(c, save, c.CampaignStages()[0].Id, 3);
             var s = BattleEngine.Create(c, setup, new List<BattleEvent>());
-            var pal = s.Units.First(u => u.Def.Id == "warden");
+            var pal = s.Units.First(u => u.Def.Id == "knight");
             Assert.That(BattleEngine.GetSlotStatus(s, pal.Id, 1), Is.EqualTo(SlotStatus.Ready));
             var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = pal.Id, Slot = 1, Target = pal.Pos });
             Assert.That(ev.Any(e => e is WeaponSwappedEvent w && w.ToWeapon == weapons[1].Id), Is.True);

@@ -259,10 +259,10 @@ namespace GridGame.Tests
             var c = Real;
             var s = Progression.NewGame(c, "T");
             s.Gold = 5000;
-            s.Hero("warden").Hp = 10;
+            s.Hero("knight").Hp = 10;
             s.Inventory.Remove(CampRoutine.StopgapPotion);
             CampRoutine.Run(c, s);
-            Assert.That(s.Hero("warden").Hp, Is.EqualTo(10), "rested without an Innkeeper");
+            Assert.That(s.Hero("knight").Hp, Is.EqualTo(10), "rested without an Innkeeper");
             Assert.That(s.Count(CampRoutine.StopgapPotion), Is.EqualTo(0), "bought or brewed without a Merchant or Alchemist");
             Assert.That(s.StationXp.Values.Sum(), Is.EqualTo(0), "forged, repaired or salvaged without a Blacksmith");
         }
@@ -273,11 +273,11 @@ namespace GridGame.Tests
             var c = Real;
             var s = Progression.NewGame(c, "T");
             s.Gold = 5000;
-            s.Hero("warden").Hp = 10;
+            s.Hero("knight").Hp = 10;
             s.Inventory.Remove(CampRoutine.StopgapPotion);
             s.Flags.Add("npc:" + CampNpcs.Innkeeper);
             CampRoutine.Run(c, s);
-            Assert.That(s.Hero("warden").Hp, Is.EqualTo(0), "the Innkeeper lets it rest");
+            Assert.That(s.Hero("knight").Hp, Is.EqualTo(0), "the Innkeeper lets it rest");
             Assert.That(s.Count(CampRoutine.StopgapPotion), Is.EqualTo(0), "still no Merchant");
             s.Flags.Add("npc:" + CampNpcs.Merchant);
             CampRoutine.Run(c, s);

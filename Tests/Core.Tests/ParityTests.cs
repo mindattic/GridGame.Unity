@@ -503,13 +503,13 @@ namespace GridGame.Tests
             var save = Progression.NewGame(c, "W");
             var setup = BattleFactory.Build(c, save, c.CampaignStages()[0].Id, 4);
             var s = BattleEngine.Create(c, setup, new List<BattleEvent>());
-            var pal = s.Units.First(u => u.Def.Id == "warden"); // the fixed lead (GG-T533), a Tank with the old Paladin's Vitality
+            var pal = s.Units.First(u => u.Def.Id == "knight");
             var cle = s.Units.First(u => u.Def.Id == "cleric");
             pal.Hp = 40; cle.Hp = 0; cle.OnBoard = false;
             foreach (var e in s.Units.Where(u => !u.IsHero)) { e.Hp = 0; e.OnBoard = false; }
             s.Phase = BattlePhase.Victory;
             BattleFactory.Commit(c, save, s);
-            if (Progression.Level(save.Hero("warden")) == 1) Assert.That(save.Hero("warden").Hp, Is.EqualTo(40));
+            if (Progression.Level(save.Hero("knight")) == 1) Assert.That(save.Hero("knight").Hp, Is.EqualTo(40));
             if (Progression.Level(save.Hero("cleric")) == 1) Assert.That(save.Hero("cleric").Hp, Is.EqualTo(1));
         }
 
@@ -598,7 +598,7 @@ namespace GridGame.Tests
             var save = Progression.NewGame(c, "U");
             var weapon = c.Items.Values.First(i => i.Slot == EquipmentSlot.Weapon && i.Durability > 2);
             save.AddItem(weapon.Id, 1);
-            var h = save.Hero("warden");
+            var h = save.Hero("knight");
             Assert.That(Equipment.Equip(c, save, h, EquipmentSlot.Weapon, weapon.Id).Ok, Is.True);
             h.WeaponDurability = 1; h.WeaponRepairs = 2;
             Assert.That(Equipment.Unequip(c, save, h, EquipmentSlot.Weapon).Ok, Is.True);
@@ -698,11 +698,11 @@ namespace GridGame.Tests
             var save = Progression.NewGame(c, "NG");
             Assert.That(Progression.StartNewGamePlus(c, save).Ok, Is.False);
             save.HighestClearedStage = c.CampaignStages().Count - 1;
-            save.Hero("warden").TotalXp = 5000;
+            save.Hero("knight").TotalXp = 5000;
             Assert.That(Progression.StartNewGamePlus(c, save).Ok, Is.True);
             Assert.That(save.NewGamePlus, Is.EqualTo(1));
             Assert.That(save.HighestClearedStage, Is.EqualTo(-1));
-            Assert.That(save.Hero("warden").TotalXp, Is.EqualTo(5000));
+            Assert.That(save.Hero("knight").TotalXp, Is.EqualTo(5000));
             var setup = BattleFactory.Build(c, save, c.CampaignStages()[0].Id, 1);
             var s = BattleEngine.Create(c, setup, new List<BattleEvent>());
             foreach (var u in s.Units.Where(u => !u.IsHero)) Assert.That(u.Level >= 11, Is.True);
@@ -763,10 +763,10 @@ namespace GridGame.Tests
             var save = Progression.NewGame(c, "Camp");
             CampNpcs.JoinAll(save); // the Innkeeper and Merchant have joined (GG-T119)
             save.Gold = 5000;
-            save.Hero("warden").Hp = 10;
+            save.Hero("knight").Hp = 10;
             save.Inventory.Remove("healing_potion_basic");
             var log = CampRoutine.Run(c, save);
-            Assert.That(save.Hero("warden").Hp, Is.EqualTo(0));
+            Assert.That(save.Hero("knight").Hp, Is.EqualTo(0));
             Assert.That(save.Count("healing_potion_basic") > 0, Is.True);
             Assert.That(log, Is.Not.Empty);
         }

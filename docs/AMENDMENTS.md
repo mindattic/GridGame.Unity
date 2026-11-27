@@ -1697,3 +1697,16 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   mode, off in the bot by default), the orbs row framed as Halcyon tech that runs near the Commander (no rule change),
   and no unit in the lead's place. Spec only; nothing built.
 - *Why:* the Commander takes part in battle without becoming a unit, using only mechanics that exist.
+
+## 2026-11-27 — No fixed lead (GG-T1405)
+
+- **Was ([BIBLE §25.11.2.2](BIBLE.md#251122-the-commander-rewritten-2026-11-27-owner-gg-t1305-was-warden-the-fixed-lead-gg-t533), GG-T533):**
+  every new game started with the Warden locked into the first slot (the player picked two more), `StartingRoster` was
+  Warden, Barbarian, Cleric, `Party.Toggle` refused to bench the Warden, the Warden was in no recruit pool, and
+  `SaveMigrations.EnsureLead` added the Warden to old saves and moved them to the front of the party.
+- **Now:** the starting party is the three heroes picked at character select (§25.15, §25.17), with nothing pre-locked;
+  `StartingRoster` is Knight, Barbarian, Cleric; anyone can be benched; the Warden is in the Summon Circle pool (so the
+  Diamond draw), wanderers and story picks like any hero; `SaveMigrations.ReleaseLead` replaces `EnsureLead` and only
+  tidies an old party (each member once, a roster hero, within the cap), keeping the Warden as an ordinary hero; the
+  Roles & Taunt lesson focuses the party's first Tank.
+- *Why:* the player is the Commander (GG-T1305), who does not fight, so no hero holds the lead's slot.
