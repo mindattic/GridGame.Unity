@@ -14,6 +14,9 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py coach [RUN] --stage tutorial-01 [--nocapture]  # GG-T1386: one drill's intro and lessons, mark by mark
     python tools/harness.py coachcamp [RUN] [--nocapture]  # GG-T542: repair, Forge, armor, enchant and training lessons followed mark by mark
     python tools/harness.py coachskip [RUN] [--nocapture]  # GG-T542: Skip tutorial (and its confirm), then Settings > How to play > Replay tutorials
+    python tools/harness.py frontdoor [RUN] [--name NAME] [--nocapture]  # GG-T1408: fresh -saveRoot first run: splash, Create Profile, Main Menu,
+                                             #   Start Campaign, crawl Skip, drills 1-5 by coach mark, graduation, Camp's first lesson.
+                                             #   One game player, run when the owner asks; not a soak.
     python tools/harness.py repairall [RUN] [--nocapture]  # GG-T544: Repair all takes only gear below 60%, "Cheaper to wait", price hints; 9:23 and 3:4, recorded
     python tools/harness.py clips N          # generate N random-stage/random-wave battle clips
     python tools/harness.py boardaudit N     # GG-T97/T129: N autoplayed battles; fail if two tokens (or two items) are ever drawn on one tile
@@ -518,13 +521,9 @@ def _wait_screen(screen, timeout=6.0):
 PICK_STORY = []
 
 
-def pick_party(ids=STARTING_PARTY, timeout=10.0):
-    """Drives the New Game party-select screen (CharacterSelectScreen, id "charselect") through the real
-    UI: tap a hero's tile to preview it, tap it again to lock it in, once per starting hero. Picks the default
-    small starting party (GG-T118: three; the rest join at story beats) so every run gets the same squad the
-    2-arg Progression.NewGame gives. Each lock-in is
-    verified (a locked tile dims to 0.25 opacity); a tap that doesn't land fails the pick instead of being
-    retried blindly. Returns True once the screen has left for the camp hub."""
+def _lock_party(ids=STARTING_PARTY, timeout=10.0):
+    """The CharacterSelect taps of pick_party (preview, then lock in, per hero), each lock-in checked. True once every
+    hero is locked in (or the screen has already moved on)."""
     if not _wait_screen("charselect", timeout):
         return False
     time.sleep(0.5)  # let the screen's fade-in finish before the first tap
@@ -539,6 +538,18 @@ def pick_party(ids=STARTING_PARTY, timeout=10.0):
         if call("state")["screen"] == "charselect" and call("style", name=name).get("opacity", 1) >= 0.5:
             print(f"pick_party: {cid} wasn't locked in after preview + lock-in taps")
             return False
+    return True
+
+
+def pick_party(ids=STARTING_PARTY, timeout=10.0):
+    """Drives the New Game party-select screen (CharacterSelectScreen, id "charselect") through the real
+    UI: tap a hero's tile to preview it, tap it again to lock it in, once per starting hero. Picks the default
+    small starting party (GG-T118: three; the rest join at story beats) so every run gets the same squad the
+    2-arg Progression.NewGame gives. Each lock-in is
+    verified (a locked tile dims to 0.25 opacity); a tap that doesn't land fails the pick instead of being
+    retried blindly. Returns True once the screen has left for the camp hub."""
+    if not _lock_party(ids, timeout):
+        return False
     # A new game plays the prologue crawl (and any opening dialogue) before Camp (GG-T386); skip through to the hub.
     deadline = time.time() + timeout + 30
     PICK_STORY.clear()
@@ -1500,6 +1511,226 @@ def coachskip(run="coachskip", capture=True):
             pass
     print("FAILURES:" if fails else "COACH SKIP OK", *fails, sep="\n  ")
     return not fails
+
+
+def _tutorial_stages():
+    """campaign.json's Tutorial list (the drill stage ids, in order)."""
+    with open(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "campaign.json"), encoding="utf-8") as fh:
+        return list(json.load(fh).get("Tutorial") or ())
+
+
+def _slot_save(run, slot=0):
+    """The newest slotN.json under the run's own -saveRoot (any profile), parsed; None when there is none."""
+    files = glob.glob(os.path.join(ROOT, "artifacts", run, "saves", "**", f"slot{slot + 1}.json"), recursive=True)
+    if not files:
+        return None
+    with open(max(files, key=os.path.getmtime), encoding="utf-8-sig") as fh:
+        return json.load(fh)
+
+
+def _click_until_screen(name, leaves, tries=6, wait=6.0):
+    """Clicks the named control until the screen is no longer `leaves` (a results card's buttons wait for its reveal)."""
+    return _tap_until(lambda: call("click", name=name), lambda: call("state")["screen"] != leaves, tries=tries, wait=wait) > 0
+
+
+def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
+    """GG-T1408 (BIBLE 11.2 front door, 15.4, 9 drills, 27.0): the whole first run as a player meets it, on a fresh
+    -saveRoot (artifacts/<run>/saves, wiped first), one game player, with -coach so every lesson runs. Not a soak.
+      splash (-start splash: the boot a player gets; automation otherwise opens on the Title) -> Create Profile, all
+      three steps (name typed, Next, Next, Begin) -> Main Menu (the profile row shows the name) -> Start Campaign (no
+      slot picker: every slot is empty) -> team pick -> New to GridGame? -> Play the drills -> opening crawl, Skip ->
+      any Founding dialogue -> drills 1..5 played through coach_battle (each popup and mark followed, the bot's move
+      between lessons; a lost drill is retried) -> the last drill's To Camp -> the graduation card (Lead on) -> Camp's
+      first-visit lesson (hub-adventure) followed with coach_follow.
+    Checks: the splash hands off to Create Profile; the profile is created and active; each drill's lessons showed
+    marks; the save (slot1.json) has every drill cleared, the onboarding Done and CommanderName = the name; no log
+    errors. Screenshots (and the coach .coach.json files) land in artifacts/<run>/. Exit 1 on any failure."""
+    fails = []
+    del _COACH_SEEN[:]
+    del _COACH_SHOTS[:]
+    drills = _tutorial_stages()
+    launch(run, extra=("-start", "splash", "-coach") + (("-capture", "video", "hq") if capture else ()), fresh=True)
+    try:
+        # 1. Splash (about 3 s): the logo, then Create Profile because this -saveRoot has no profile that ran first.
+        _step("splash")
+        if _wait_screen("splash", 4):
+            shot("01-splash")
+        else:
+            print("[frontdoor] note: the splash had already handed off when the endpoint answered", flush=True)
+        if not _wait_screen("create-profile", 10):
+            fails.append(f"the splash didn't hand off to Create Profile (on {call('state')['screen']})")
+            raise RuntimeError("no Create Profile")
+
+        # 2. Create Profile: name, quick settings, summary, Begin.
+        _step("create-profile")
+        time.sleep(0.8)
+        shot("02-create-profile-name")
+        r = call("type", name="create-profile-name-field", text=name)
+        if _tap_failed(r):
+            fails.append(f"no name field: {r}")
+        time.sleep(0.4)
+        call("click", name="create-profile-next"); time.sleep(0.9)
+        if not any("Step 2 of 3" in t for t in call("texts")):
+            fails.append("Next on the name step didn't reach step 2")
+        shot("03-create-profile-settings")
+        call("click", name="create-profile-next"); time.sleep(0.9)
+        shot("04-create-profile-summary")
+        if not _click_until_screen("create-profile-begin", "create-profile"):
+            fails.append("Begin didn't leave Create Profile")
+        if not _wait_screen("title", 8):
+            fails.append(f"Begin didn't reach the Main Menu (on {call('state')['screen']})")
+        time.sleep(0.8)
+
+        # 3. Main Menu: the new profile is active and named on the Profile row.
+        _step("main-menu")
+        shot("05-main-menu")
+        prof = call("profile")
+        if prof.get("current") != name:
+            fails.append(f"the active profile isn't {name}: {prof.get('current')}")
+        if not any(name in t for t in call("texts")):
+            fails.append(f"the Main Menu doesn't show {name}")
+
+        # 4. Start Campaign: every slot is empty, so it goes straight to the team pick in slot 1.
+        _step("start-campaign")
+        _tap_until(lambda: call("click", name="title-start"), lambda: call("state")["screen"] != "title", tries=4)
+        scr = call("state")["screen"]
+        if scr == "newgame":
+            fails.append("Start Campaign opened the slot picker with every slot empty")
+            call("clicktext", text="Slot 1"); time.sleep(1.0)
+        shot("06-team-pick")
+        if not _lock_party():
+            fails.append("the team pick didn't lock in the starting party")
+
+        # 5. New to GridGame? -> Play the drills.
+        _step("new-to-gridgame")
+        end = time.time() + 15
+        while time.time() < end and not call("names", prefix="choose-first"):
+            if call("names", prefix="variant-female"):  # only with -variants; take the default look
+                call("click", name="variant-female")
+            time.sleep(0.5)
+        if call("names", prefix="choose-first"):
+            time.sleep(0.6)
+            shot("07-new-to-gridgame")
+            call("click", name="choose-first"); time.sleep(1.0)
+        else:
+            fails.append("New to GridGame? never asked")
+
+        # 6. The opening crawl (Skip), then any Founding dialogue.
+        _step("opening-crawl")
+        if _wait_screen("crawl", 10):
+            time.sleep(1.5)
+            shot("08-opening-crawl")
+            r = call("click", name="crawl-skip")
+            if _tap_failed(r):
+                call("clicktext", text="Skip")
+            time.sleep(1.2)
+        else:
+            fails.append(f"no opening crawl after Play the drills (on {call('state')['screen']})")
+        if call("state")["screen"] == "dialogue":
+            time.sleep(0.8)
+            shot("09-founding")
+            finish_dialogue()
+            time.sleep(1.0)
+
+        # 7. The drills, each lesson followed mark by mark; Next drill, and To Camp after the last.
+        for i, stage in enumerate(drills, 1):
+            _step(f"drill-{i}")
+            lessons = drill_lessons(stage)
+            won = False
+            for attempt in range(retries + 1):
+                if not _wait_screen("battle", 15):
+                    fails.append(f"drill {i} ({stage}) never started (on {call('state')['screen']})")
+                    break
+                time.sleep(1.5)
+                if attempt == 0:
+                    shot(f"10-drill{i}-start")
+                ended = coach_battle(f"d{i}", lessons=lessons)
+                coach_follow(f"d{i}r", settle=1.0)  # a lesson the results card may carry
+                shot(f"11-drill{i}-results" + (f"-try{attempt + 1}" if attempt else ""))
+                if ended != "postbattle":
+                    fails.append(f"drill {i} ({stage}) ended on {ended}, not its results card")
+                    break
+                if call("names", prefix="retry"):
+                    print(f"[frontdoor] drill {i} lost (try {attempt + 1}); Retry", flush=True)
+                    _click_until_screen("retry", "postbattle")
+                    continue
+                won = True
+                break
+            for l, (pop, marks) in lesson_report(lessons=lessons).items():
+                print(f"   drill {i} {l:10s} popup={'yes' if pop else 'NO '} marks={'yes' if marks else 'NO'}", flush=True)
+                if not marks:
+                    fails.append(f"drill {i} lesson {l}: no coach marks")
+            if not won:
+                fails.append(f"drill {i} ({stage}) not cleared")
+                raise RuntimeError("drill not cleared")
+            last = i == len(drills)
+            if not _click_until_screen("continue" if last else "next", "postbattle"):
+                fails.append(f"drill {i}: {'To Camp' if last else 'Next drill'} didn't leave the results card")
+
+        # 8. Graduation: To Camp (any chapter crawl first), the heroes' card, Lead on.
+        _step("graduation")
+        end = time.time() + 60
+        while time.time() < end and call("state")["screen"] != "hub":
+            if call("state")["screen"] in ("crawl", "dialogue"):
+                through_story(wait=1.0)
+            time.sleep(0.5)
+        if call("state")["screen"] != "hub":
+            fails.append(f"To Camp after the last drill didn't reach Camp (on {call('state')['screen']})")
+        end = time.time() + 10
+        while time.time() < end and not call("names", prefix="graduation-card"):
+            time.sleep(0.3)
+        if call("names", prefix="graduation-card"):
+            time.sleep(0.8)
+            shot("12-graduation")
+            call("click", name="notice-ok"); time.sleep(0.8)
+        else:
+            fails.append("no graduation card on Camp's first visit")
+
+        # 9. Camp's first-visit lesson (the Adventure row), followed; the onboarding ends with it.
+        _step("camp-first-visit")
+        c = _await_lesson(CAMP_FIRST_VISIT_LESSON, timeout=8)
+        shot("13-camp-first-visit")
+        if not c:
+            fails.append(f"no {CAMP_FIRST_VISIT_LESSON} lesson after the graduation card: {coach_info()}")
+        met = coach_follow("camp", settle=2.0)
+        print("[frontdoor] Camp lessons:", met, flush=True)
+        time.sleep(1.0)
+        shot("14-camp")
+
+        # 10. The save: every drill cleared, the onboarding done, the Commander named.
+        save = _slot_save(run)
+        if save is None:
+            fails.append("no slot1.json under the run's saves")
+        else:
+            cleared = set(save.get("ClearedDrills") or ())
+            if not set(drills) <= cleared:
+                fails.append(f"drills not marked cleared: {sorted(set(drills) - cleared)}")
+            step = (save.get("Onboarding") or {}).get("Step")
+            if step not in (3, "Done"):
+                fails.append(f"the onboarding isn't Done: {step}")
+            if save.get("CommanderName") != name:
+                fails.append(f"CommanderName is {save.get('CommanderName')!r}, not {name!r}")
+        errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        if errs:
+            fails.append(f"log errors {errs[:3]}")
+    except RuntimeError as e:
+        print(f"[frontdoor] stopped: {e}", flush=True)
+        try:
+            shot("99-stopped")
+        except Exception:
+            pass
+    finally:
+        print("shots:", len(_COACH_SHOTS))
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+    print("FAILURES:" if fails else "FRONT DOOR OK", *fails, sep="\n  ")
+    return not fails
+
+
+# GG-T1401: Camp's first-visit lesson after the graduation card (CampCoach.AdventureLesson).
+CAMP_FIRST_VISIT_LESSON = "hub-adventure"
 
 
 # GG-T542: the Camp-menu lessons a seeded vendor would open on the Camp menu (and Equip gear), marked seen by the
@@ -3777,6 +4008,11 @@ def _dispatch(cmd):
         else:
             ok = coachskip(names[0] if names else "coachskip", capture=cap)
         sys.exit(0 if ok else 1)
+    elif cmd == "frontdoor":
+        # frontdoor [RUN] [--name NAME] [--nocapture]  (GG-T1408: one player, the whole first run; not a soak)
+        nm = sys.argv[sys.argv.index("--name") + 1] if "--name" in sys.argv else "Rowan"
+        names = [a for a in sys.argv[2:] if not a.startswith("--") and a != nm]
+        sys.exit(0 if frontdoor(names[0] if names else "frontdoor", capture="--nocapture" not in sys.argv, name=nm) else 1)
     elif cmd == "smithrepair":
         sys.exit(0 if smithrepair() else 1)
     elif cmd == "repairall":

@@ -12,7 +12,7 @@
 <div class="wrap">
   <header>
     <h1>Front Door</h1>
-    <p class="sub">The first five minutes of GridGame, from the studio splash to the first Camp visit, as one click-through in the Manapunk look (BIBLE 11.5). Updated to the look as built (GG-T1406, GG-T1769): every screen below is built and not yet playtested, except the team pick and Camp stubs. Tap the buttons inside the phone, or use the arrows and the flow strip.</p>
+    <p class="sub">The first five minutes of GridGame, from the studio splash to the first Camp visit, as one click-through in the Manapunk look (BIBLE 11.5). Updated to the look as built (GG-T1406, GG-T1769): every screen below is built and not yet playtested, except the team pick stub (the team slice's screen). Final for the front door (GG-T1408): the order and names match the code, and <code>python tools/harness.py frontdoor</code> walks the same path on a fresh save root, as one game player, when the owner asks. Tap the buttons inside the phone, or use the arrows and the flow strip.</p>
   </header>
   <div class="controls">
     <label><input type="checkbox" id="firstRun" checked> First launch (no profile yet)</label>
@@ -34,9 +34,9 @@
       <div class="coord"><h2>Coordination points</h2>
         <ul>
           <li><b>{commander}</b> text token: crawl pages, dialogue and barks say the Commander's name through one token, filled from <code>SaveData.CommanderName</code> (GG-T1342). The story slice (GG-T1256) writes the words in Prose; this page only names the keys.</li>
-          <li><b>Team pick</b>: the step where the starting heroes are chosen is owned by the team slice (GG-T1257). Shown here as a dashed stub after the crawl.</li>
-          <li><b>Hub first-visit lesson</b>: the coach marks on the first Camp visit belong to the hub UX slice (GG-T1325 / GG-T1343). Shown here as a stub.</li>
-          <li><b>Drill content</b>: the five drill levels and their lessons are designed under GG-T1315; the names here are placeholders.</li>
+          <li><b>Team pick</b>: the step where the starting heroes are chosen is owned by the team slice (GG-T1257). Shown here as a dashed stub; as built it comes straight after Start Campaign, before New to GridGame? and the crawl.</li>
+          <li><b>Hub first-visit lesson</b>: owned by the hub UX slice (GG-T1325 / GG-T1343); built as <code>hub-adventure</code> (GG-T1401), after the graduation card.</li>
+          <li><b>Drill content</b>: the five drill levels and their lessons (GG-T1315, built GG-T1374) are First Steps, The Line, Mana, The Clock and Roles; boards and waves in <a href="../tutorial-drills/index.html">tutorial-drills</a>.</li>
         </ul>
       </div>
     </aside>

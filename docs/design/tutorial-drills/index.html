@@ -12,7 +12,7 @@
 <div class="wrap">
   <header>
     <h1>Tutorial Drills</h1>
-    <p class="sub">Today The Tithe Moors I carries all 18 coach-mark lessons (<code>BattleScreen.Tutorial.cs</code>) on one fixed seed with <code>TutorialSceneCommand</code> set pieces (GG-T539, GG-T542, GG-T731). This proposal splits them across five short drill levels, three or four lessons each, before the campaign starts. The Tithe Moors I then becomes the first real stage. Design only (GG-T1315); the stages are built in GG-T1374.</p>
+    <p class="sub">The 18 coach-mark lessons (<code>BattleScreen.Tutorial.cs</code>) that The Tithe Moors I used to carry on one fixed seed (GG-T539, GG-T542, GG-T731) now run across five short drill stages, three or four lessons each, before the campaign starts; The Tithe Moors I is the first real stage. Designed in GG-T1315, built in GG-T1374 (with GG-T1398 skip, GG-T1401 graduation, GG-T1626, GG-T1647 practice). Final (GG-T1408): the boards, waves, seeds and lesson order below match <code>stages.json</code>, and <code>python tools/harness.py frontdoor</code> plays all five, mark by mark, as part of the first run.</p>
   </header>
 
   <nav class="tabs" id="tabs" role="tablist" aria-label="Drills"></nav>
@@ -47,7 +47,7 @@
 
   <section class="panel">
     <h2>All 18 lessons, mapped</h2>
-    <p class="m">Today's order on The Tithe Moors I on the left; the drill and its place in it on the right. Every lesson keeps its id, popup, marks, Done test and scene. Only where it runs changes.</p>
+    <p class="m">The old order on The Tithe Moors I on the left; the drill and its place in it on the right. Every lesson keeps its id, popup, marks, Done test and scene. Only where it runs changes.</p>
     <div class="scroll"><table class="map" id="map"></table></div>
   </section>
 
@@ -63,7 +63,7 @@
   </section>
 
   <section class="panel">
-    <h2>Open questions for the owner</h2>
+    <h2>Questions, as built</h2>
     <ul class="rules" id="questions"></ul>
   </section>
 </div>

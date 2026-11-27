@@ -10,14 +10,14 @@ namespace GridGame.App.Automation
         {
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
-            "profiles", "newprofile", "createprofile", "diamonds",
+            "profiles", "newprofile", "createprofile", "splash", "diamonds",
         };
 
         public static bool TryGet(string id, out GameScreen screen)
         {
             screen = null;
             var app = GameApp.I;
-            bool needsSave = id != "title" && id != "credits" && id != "about" && id != "newgame" && id != "load" && id != "profiles" && id != "newprofile" && id != "createprofile";
+            bool needsSave = id != "title" && id != "credits" && id != "about" && id != "newgame" && id != "load" && id != "profiles" && id != "newprofile" && id != "createprofile" && id != "splash";
             if (needsSave && app.Save == null)
             {
                 app.Save = Meta.Progression.NewGame(app.Content, "Preview");
@@ -60,6 +60,9 @@ namespace GridGame.App.Automation
                 case "profiles": screen = new ProfileSelectScreen(); break; // GG-T99
                 case "newprofile": screen = new ProfileNameScreen(null); break;
                 case "createprofile": screen = new CreateProfileScreen(); break; // GG-T1625
+                // GG-T1408: `-start splash` boots the way a player's launch does (automation otherwise opens on the Title):
+                // the logo, then Create Profile when the profile's first run is due (a fresh -saveRoot), else the Main Menu.
+                case "splash": screen = new SplashScreen(); break;
                 // GG-T513/T514: a results screen without fighting for it. "results" ends an expedition with a long
                 // first-hour haul (a Tome among ~15 drops, a theme milestone, the completion bonus); "results-mid" is a
                 // battle won mid-expedition (To Camp / Retreat early / Next battle).

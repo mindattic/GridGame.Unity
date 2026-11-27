@@ -112,22 +112,22 @@ const DRILLS = [
 
 const RULES = [
   ["Where they live.", " A new Tutorial list in campaign.json names the five stage ids; the stages themselves sit in stages.json like any other. Campaign order (CampaignStages), HighestClearedStage, CampUnlocks milestones, chapter crawls and the Codex never see them."],
-  ["When they run.", " On a new profile, after the opening crawl and before The Tithe Moors I. Each drill ends on its results card with Next drill; drill 5 ends with To the Moors. A drill can be skipped from its first popup; Skip tutorial skips every drill left and sets TutorialDone."],
+  ["When they run.", " On a new campaign, after the team pick, New to GridGame? (Play the drills), the opening crawl and any Founding scene. Each drill ends on its results card with Next drill; drill 5 ends with To Camp, where the graduation card and the hub-adventure lesson finish the onboarding. Skip tutorial (the drill's Tutorial tab, with a confirm) skips every drill left, turns the lessons off and goes to Camp; Start Campaign's Skip to Camp does the same before drill 1."],
   ["One fight each.", " Two or three waves of level-1 foes, every placement fixed, a fixed seed per drill (StageDef.Seed, replacing the BattleScreen.TutorialSeed constant), no wanderer, no surprise speaker."],
   ["Lessons are stage data.", " A drill lists its lessons in order (StageDef.Lessons, each with the wave it waits for). The lesson code is unchanged; its Wave gate moves from the lesson to the drill. The popup reads Drill 2 · Lesson 1 of 3."],
   ["Roles, not classes.", " Lessons focus on a role (FocusRole: Tank, Healer), not a class id, so the Commander premise can retire the Warden lead without touching the drills. Heroes stand on the default starts in roster order."],
   ["Scenes stay.", " Each drill carries the StageDef.Scenes its lessons need. A scene foe is a prop at half HP, as today. The last wave waits for an unfinished lesson's scene before it can end."],
   ["Rewards.", " A drill pays no XP, no gold and no loot, and wears no durability, so the party reaches The Tithe Moors I exactly as a skipping player does. Bestiary defeats still count (the player met those foes)."],
-  ["Defeat costs nothing.", " Losing a drill shows Retry drill (same seed, from wave 1) and Skip drill. No gold, XP or durability is lost, and no defeat is recorded."],
-  ["Replay.", " Settings › How to play › Replay tutorials clears the lesson flags as today and lists the five drills to replay one by one."],
+  ["Defeat costs nothing.", " Losing a drill shows TRY AGAIN and Retry (same seed, from wave 1); the set is skipped with Skip tutorial, not from this card. No gold, XP or durability is lost, and no defeat is recorded."],
+  ["Replay.", " Settings › How to play › Replay tutorials clears the lesson flags, and the drill list there plays any drill as practice (GG-T1647): it never touches the save or the onboarding."],
   ["The Tithe Moors I.", " Drops its Scenes and its tutorial flag: it becomes the first real stage, on a random seed, with the First-battles hint still running."],
 ];
 
 const QUESTIONS = [
-  "Should drills pay a small first-clear gold gift? Today the plan is none, so a skipping player is not behind.",
-  "Does the hold-timer lesson belong in drill 1? Every drill-1 drag is coached and never forced by the timer, so it can wait for The Clock, but a free move in drill 1 already shows the bar.",
-  "A smaller board was considered. Cols and Rows are fixed constants (BattleConfig, 6 x 8), so a drill board would need new Core support; fixed placements on the normal board keep one layout from drill 1 to the Moors. Rocks (Blocks) are used only as props in drills 2 and 5.",
-  "The ticket counts 17 lessons; the code has 18 since GG-T731 added Mana orbs. All 18 are mapped here.",
+  "Should drills pay a small first-clear gold gift? Built with none, so a skipping player is not behind; the graduation card carries no reward either.",
+  "Does the hold-timer lesson belong in drill 1? Built in drill 4, The Clock: every drill-1 drag is coached and never forced by the timer.",
+  "A smaller board was considered; built on the normal board. Cols and Rows are fixed constants (BattleConfig, 6 x 8), so a drill board would need new Core support; fixed placements on the normal board keep one layout from drill 1 to the Moors. Rocks (Blocks) are used only as props in drills 2 and 5.",
+  "The ticket counted 17 lessons; the code has 18 since GG-T731 added Mana orbs. All 18 are mapped and built.",
 ];
 
 const $ = (id) => document.getElementById(id);

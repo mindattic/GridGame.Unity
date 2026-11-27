@@ -1722,11 +1722,18 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
 - **Was ([BIBLE §11.2.1](BIBLE.md#1121-screen-transition-graph), [§27.0](BIBLE.md#270-the-story-start-to-finish-gg-t231-owner-2026-11-05-make-the-story-from-start-to-finish-title-screen-new-campaign-text-scroll--a-story-crawl-at-a-certain-level--a-boss--roll-credits)):**
   Title → **New Game** → SaveSlot → CharacterSelect → the Prologue crawl (`campaign.json` `Prologue`, one scroll)
   → Camp.
-- **Now (⬜ not yet built; [`docs/design/front-door/`](design/front-door/index.html)):** Splash → (first launch)
-  Create Profile, a three-step wizard that names the Commander ([§15.4](BIBLE.md#154-player-profiles)) → the Main
-  Menu (the Title reworked) → **Start Campaign** (the renamed New Game; the slot picker only when a slot is in use)
-  → the **opening crawl**, paged Prose keys `crawl:opening/<n>` → team pick (GG-T1257) → tutorial Drill 1..5 →
-  graduation → Camp's first visit. The crawl no longer goes straight to Camp.
+- **Now (✅ built, closed out by GG-T1408; [`docs/design/front-door/`](design/front-door/index.html)):** Splash →
+  (first launch) Create Profile, a three-step wizard that names the Commander ([§15.4](BIBLE.md#154-player-profiles))
+  → the Main Menu (the Title reworked) → **Start Campaign** (the renamed New Game; the slot picker only when a slot
+  is in use) → team pick (GG-T1257) → **New to GridGame?** (Play the drills / Skip to Camp, GG-T1645) → the
+  **opening crawl**, paged Prose keys `crawl:opening/<n>` → the Founding scene when due → tutorial Drill 1..5 → the
+  graduation card (**Your heroes are ready**, on Camp's first visit, GG-T1401) → Camp's first-visit lesson
+  (`hub-adventure`). The crawl no longer goes straight to Camp.
+- **As built, against the spec (GG-T1408):** the team pick comes before the crawl, not after it (the team slice's
+  call, so the crawl and drills play with the chosen heroes); graduation is a Camp card with no starter reward, not
+  a results-style card; a lost drill offers Retry only (the set is skipped with Skip tutorial or Skip to Camp).
+  `python tools/harness.py frontdoor` walks the whole path on a fresh `-saveRoot` (`-start splash` gives automation
+  the player's boot); it runs as one game player when the owner asks, and is not a soak.
 - *Why:* the drills (GG-T1315) teach the board before the hub opens, and "Start Campaign" says what the button
   does now that Continue sits on the Main Menu.
 
