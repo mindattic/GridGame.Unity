@@ -361,7 +361,7 @@ namespace GridGame.App
         /// other side's go down.</summary>
         private void Speak(DialogueLine line)
         {
-            int side = SideFor(line.SpeakerId);
+            int side = SideFor(line);
             var s = sides[side];
             string speaker = line.SpeakerId ?? "";
             string portrait = HasPortrait(line.Portrait) ? line.Portrait : null;
@@ -389,10 +389,12 @@ namespace GridGame.App
         }
 
         /// <summary>The side a speaker stands on: theirs if they already have one, else a free one, else (a third
-        /// speaker) the side of whoever is not talking right now, so the one who just spoke stays put.</summary>
-        private int SideFor(string speakerId)
+        /// speaker) the side of whoever is not talking right now, so the one who just spoke stays put. GG-T1576: in a
+        /// dialogue with a Commander speaker, the Commander stands left and everyone else right.</summary>
+        private int SideFor(DialogueLine line)
         {
-            speakerId ??= "";
+            if (CommanderSpeaker != null) return line.Commander ? 0 : 1;
+            string speakerId = line.SpeakerId ?? "";
             for (int i = 0; i < 2; i++)
                 if ((sides[i].Pending ? sides[i].PendingSpeaker : sides[i].Speaker) == speakerId) return i;
             for (int i = 0; i < 2; i++)
@@ -404,13 +406,23 @@ namespace GridGame.App
         /// speaker's <c>Portrait</c> borrows, GG-T557). Dialogue always shows it whole (GG-T225).</summary>
         internal static bool HasPortrait(string id) => !string.IsNullOrEmpty(id) && !id.StartsWith("$") && Art.HasPortrait(id);
 
-        /// <summary>The line has fully typed out: offer its choices, or a Next button.</summary>
+        /// <summary>The dialogue's Commander speaker (GG-T1576), or null when the player doesn't speak in it.</summary>
+        private DialogueSpeaker CommanderSpeaker => run.Def.Speakers.FirstOrDefault(x => x?.Class == Commander.Token);
+
+        /// <summary>The line has fully typed out: offer its choices, or a Next button. GG-T1576: choices are the
+        /// Commander's lines, so in a dialogue with a Commander speaker their side lights (stepping on if not there yet).</summary>
         private void LineDone()
         {
             if (typing != null) typing.text = typingText;
             controls.Clear();
             if (run.AwaitingChoice)
             {
+                var commander = CommanderSpeaker;
+                if (commander != null)
+                {
+                    var (name, portrait) = run.Resolve(commander);
+                    Speak(new DialogueLine { SpeakerId = commander.Id, Name = name, Portrait = portrait, Commander = true });
+                }
                 var choices = run.Choices;
                 for (int i = 0; i < choices.Count; i++)
                 {
