@@ -9,6 +9,13 @@ namespace GridGame.Core.Content
     /// meets its <see cref="RecruitableDef.Conditions"/> and talks to it flips it to Hero (a guest ally).</summary>
     public enum Team { Hero, Enemy, Neutral }
 
+    /// <summary>GG-T1416: how a hero class comes into the roster. Starter: the default party
+    /// (<c>Progression.StartingRoster</c>). Story: a dialogue JoinHero/RecruitHero names it. Wanderer: met on the road
+    /// (<c>Wanderers.Pool</c>, so the Diamond draw too). Guest: an authored stage guest. Mercenary: hired (mercenaries.json).
+    /// Recruit: an authored stage recruitable. Summon: the Summon Circle's gold pool. CampNpc: a Camp keeper wears the
+    /// class's face (the Alchemist), so no recruit pool offers it. None = unset, which a hero class may not be.</summary>
+    public enum Acquire { None, Starter, Story, Wanderer, Guest, Mercenary, Recruit, Summon, CampNpc }
+
     /// <summary>How an enemy chooses which hero to go after (bible §14.1). Auto derives it from INT and tags.</summary>
     public enum Targeting { Auto, Closest, Weakest, Threat, Squishy, Erratic, Caster }
 
@@ -461,6 +468,8 @@ namespace GridGame.Core.Content
         public string Id;
         public string Name;
         public Team Team;
+        /// <summary>GG-T1416: how a hero class is acquired; every hero class sets it (enemies leave it None).</summary>
+        public Acquire Acquire;
         public List<string> Tags = new List<string>();
         public string Description;
         public string Lore;

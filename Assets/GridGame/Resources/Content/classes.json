@@ -3,6 +3,7 @@
     "Id": "alchemist",
     "Name": "Alchemist",
     "Team": "Hero",
+    "Acquire": "CampNpc",
     "Tags": [
       "Humanoid",
       "Healer"
@@ -137,6 +138,7 @@
     "Id": "assassain",
     "Name": "Assassin",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -277,6 +279,7 @@
     "Id": "barbarian",
     "Name": "Barbarian",
     "Team": "Hero",
+    "Acquire": "Starter",
     "Tags": [
       "Humanoid"
     ],
@@ -417,6 +420,7 @@
     "Id": "basher",
     "Name": "Basher",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -903,6 +907,7 @@
     "Id": "blackninja",
     "Name": "Black Ninja",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -1037,6 +1042,7 @@
     "Id": "blackwitch",
     "Name": "Hexer",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid",
       "Magic"
@@ -1182,6 +1188,7 @@
     "Id": "bluelion",
     "Name": "Blue Lion",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -1321,6 +1328,7 @@
     "Id": "blueninja",
     "Name": "Blue Ninja",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -1462,6 +1470,7 @@
     "Id": "bruiser",
     "Name": "Bruiser",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -2579,6 +2588,7 @@
     "Id": "chromaninja",
     "Name": "Chroma Ninja",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -2713,6 +2723,7 @@
     "Id": "cleric",
     "Name": "Cleric",
     "Team": "Hero",
+    "Acquire": "Starter",
     "Tags": [
       "Healer",
       "Humanoid"
@@ -2846,6 +2857,7 @@
     "Id": "courier",
     "Name": "Courier",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid"
     ],
@@ -4316,6 +4328,7 @@
     "Id": "darktemplar",
     "Name": "Dark Templar",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -4452,6 +4465,7 @@
     "Id": "defender",
     "Name": "Defender",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -4713,6 +4727,7 @@
     "Id": "dervish",
     "Name": "Dervish",
     "Team": "Hero",
+    "Acquire": "Guest",
     "Tags": [
       "Humanoid"
     ],
@@ -4844,6 +4859,7 @@
     "Id": "doctor",
     "Name": "Doctor",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid",
       "Healer"
@@ -4983,6 +4999,7 @@
     "Id": "drifter",
     "Name": "Drifter",
     "Team": "Hero",
+    "Acquire": "Guest",
     "Tags": [
       "Humanoid"
     ],
@@ -5120,6 +5137,7 @@
     "Id": "duelist",
     "Name": "Duelist",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -5260,6 +5278,7 @@
     "Id": "engineer",
     "Name": "Engineer",
     "Team": "Hero",
+    "Acquire": "Story",
     "Tags": [
       "Humanoid"
     ],
@@ -5400,6 +5419,7 @@
     "Id": "fencer",
     "Name": "Fencer",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -5533,6 +5553,7 @@
     "Id": "fighter",
     "Name": "Fighter",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -7312,6 +7333,7 @@
     "Id": "greenninja",
     "Name": "Green Ninja",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -7922,6 +7944,7 @@
     "Id": "harbinger",
     "Name": "Harbinger",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -8186,6 +8209,7 @@
     "Id": "jadeknight",
     "Name": "Jade Knight",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -8328,6 +8352,7 @@
     "Id": "knight",
     "Name": "Knight",
     "Team": "Hero",
+    "Acquire": "Starter",
     "Tags": [
       "Humanoid"
     ],
@@ -8470,6 +8495,7 @@
     "Id": "lancer",
     "Name": "Lancer",
     "Team": "Hero",
+    "Acquire": "Guest",
     "Tags": [
       "Humanoid"
     ],
@@ -8956,6 +8982,7 @@
     "Id": "machinist",
     "Name": "Machinist",
     "Team": "Hero",
+    "Acquire": "Guest",
     "Tags": [
       "Humanoid"
     ],
@@ -9555,6 +9582,7 @@
     "Id": "martialartist",
     "Name": "Martial Artist",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -10054,6 +10082,7 @@
     "Id": "monk",
     "Name": "Monk",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid",
       "Healer"
@@ -10312,6 +10341,7 @@
     "Id": "myrmidon",
     "Name": "Myrmidon",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid"
     ],
@@ -10574,6 +10604,7 @@
     "Id": "nighthunter",
     "Name": "Night Hunter",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -10709,6 +10740,7 @@
     "Id": "odachi",
     "Name": "Odachi",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -11200,6 +11232,7 @@
     "Id": "operative",
     "Name": "Operative",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -11344,6 +11377,7 @@
     "Id": "paladin",
     "Name": "Paladin",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -11486,6 +11520,7 @@
     "Id": "pandagirl",
     "Name": "Panda Keeper",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -11743,6 +11778,7 @@
     "Id": "prizefighter",
     "Name": "Prize Fighter",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid"
     ],
@@ -11882,6 +11918,7 @@
     "Id": "pugilist",
     "Name": "Pugilist",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -12599,6 +12636,7 @@
     "Id": "raider",
     "Name": "Raider",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid"
     ],
@@ -12847,6 +12885,7 @@
     "Id": "redmage",
     "Name": "Red Mage",
     "Team": "Hero",
+    "Acquire": "Story",
     "Tags": [
       "Humanoid",
       "Magic"
@@ -12991,6 +13030,7 @@
     "Id": "redninja",
     "Name": "Red Ninja",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -13134,6 +13174,7 @@
     "Id": "ripper",
     "Name": "Ripper",
     "Team": "Hero",
+    "Acquire": "Guest",
     "Tags": [
       "Humanoid"
     ],
@@ -13274,6 +13315,7 @@
     "Id": "ritualist",
     "Name": "Ritualist",
     "Team": "Hero",
+    "Acquire": "Mercenary",
     "Tags": [
       "Humanoid",
       "Magic"
@@ -13410,6 +13452,7 @@
     "Id": "ronin",
     "Name": "Ronin",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -13551,6 +13594,7 @@
     "Id": "sage",
     "Name": "Sage",
     "Team": "Hero",
+    "Acquire": "Story",
     "Tags": [
       "Humanoid",
       "Magic",
@@ -13926,6 +13970,7 @@
     "Id": "sellsword",
     "Name": "Sellsword",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -14066,6 +14111,7 @@
     "Id": "shieldmaiden",
     "Name": "Shieldguard",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -14207,6 +14253,7 @@
     "Id": "sister",
     "Name": "Acolyte",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid",
       "Healer"
@@ -14703,6 +14750,7 @@
     "Id": "slasher",
     "Name": "Slasher",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -15765,6 +15813,7 @@
     "Id": "speedster",
     "Name": "Speedster",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -16479,6 +16528,7 @@
     "Id": "streetfighter",
     "Name": "Street Fighter",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -16619,6 +16669,7 @@
     "Id": "striker",
     "Name": "Striker",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -16876,6 +16927,7 @@
     "Id": "swordmaster",
     "Name": "Sword Master",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -17016,6 +17068,7 @@
     "Id": "tank",
     "Name": "Tank",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -17503,6 +17556,7 @@
     "Id": "technician",
     "Name": "Technician",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -18345,6 +18399,7 @@
     "Id": "thief",
     "Name": "Thief",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -18480,6 +18535,7 @@
     "Id": "tinkerer",
     "Name": "Tinkerer",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -20077,6 +20133,7 @@
     "Id": "vampire",
     "Name": "Vampire",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid",
       "Undead",
@@ -20335,6 +20392,7 @@
     "Id": "warchief",
     "Name": "War Chief",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -20597,6 +20655,7 @@
     "Id": "whiteninja",
     "Name": "White Ninja",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid",
       "Healer"
@@ -20740,6 +20799,7 @@
     "Id": "whitewitch",
     "Name": "Lightweaver",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid",
       "Magic",
@@ -20883,6 +20943,7 @@
     "Id": "wildchild",
     "Name": "Wild Child",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -21495,6 +21556,7 @@
     "Id": "yellowninja",
     "Name": "Yellow Ninja",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -22219,6 +22281,7 @@
     "Id": "hexsniper",
     "Name": "Hex Sniper",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -22361,6 +22424,7 @@
     "Id": "hexwarden",
     "Name": "Hex Warden",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -22492,6 +22556,7 @@
     "Id": "hexstalker",
     "Name": "Hex Stalker",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -22725,6 +22790,7 @@
     "Id": "monstertamer",
     "Name": "Monster Tamer",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
@@ -22858,6 +22924,7 @@
     "Id": "druidbrawler",
     "Name": "Druid Brawler",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -22986,6 +23053,7 @@
     "Id": "herald",
     "Name": "Herald",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Healer",
       "Humanoid"
@@ -23126,6 +23194,7 @@
     "Id": "tactician",
     "Name": "Tactician",
     "Team": "Hero",
+    "Acquire": "Wanderer",
     "Tags": [
       "Humanoid"
     ],
@@ -28925,6 +28994,7 @@
     "Id": "warden",
     "Name": "Warden",
     "Team": "Hero",
+    "Acquire": "Summon",
     "Tags": [
       "Humanoid"
     ],
