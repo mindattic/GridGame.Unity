@@ -159,24 +159,25 @@ namespace GridGame.Core.Battle
                 foreach (var id in spec.Passives)
                     if (id != null && !u.Passives.Contains(id)) u.Passives.Add(id); // learned passives/reactives (GG-T296)
 
+            var counts = new Dictionary<string, int>(spec.ItemCounts); // local copy: MakeSlot draws it down, the caller setup must stay replayable (GG-T1243)
             for (int s = 0; s < MaxSlots; s++)
             {
                 string entry = s < spec.Bar.Count ? spec.Bar[s] : null;
-                u.Bar.Add(MakeSlot(entry, spec));
+                u.Bar.Add(MakeSlot(entry, counts));
             }
             if (!AddUnit(u)) { u.OnBoard = false; S.Units.Add(u); }
             return u;
         }
 
-        private AbilitySlot MakeSlot(string entry, HeroSpec spec)
+        private AbilitySlot MakeSlot(string entry, Dictionary<string, int> counts)
         {
             var slot = new AbilitySlot();
             if (string.IsNullOrEmpty(entry)) return slot;
             if (entry.StartsWith("weapon:", StringComparison.Ordinal))
             {
                 var w = C.TryItem(entry.Substring(7));
-                spec.ItemCounts.TryGetValue(entry.Substring(7), out var have);
-                if (w != null && w.Slot == EquipmentSlot.Weapon && have > 0) { slot.WeaponId = w.Id; slot.WeaponDurability = w.Durability; spec.ItemCounts[w.Id] = have - 1; }
+                counts.TryGetValue(entry.Substring(7), out var have);
+                if (w != null && w.Slot == EquipmentSlot.Weapon && have > 0) { slot.WeaponId = w.Id; slot.WeaponDurability = w.Durability; counts[w.Id] = have - 1; }
                 return slot;
             }
             if (entry.StartsWith("item:", StringComparison.Ordinal))
@@ -192,12 +193,12 @@ namespace GridGame.Core.Battle
                 }
                 else
                 {
-                    spec.ItemCounts.TryGetValue(item.Id, out var owned);
+                    counts.TryGetValue(item.Id, out var owned);
                     slot.MaxCharges = item.MaxStack;
                     slot.Charges = Math.Min(owned, item.MaxStack);
                     slot.FromInventory = true;
                     // Two slots of the same item split the owned stack rather than duplicating it.
-                    spec.ItemCounts[item.Id] = Math.Max(0, owned - slot.Charges);
+                    counts[item.Id] = Math.Max(0, owned - slot.Charges);
                 }
                 return slot;
             }
