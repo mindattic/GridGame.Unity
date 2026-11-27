@@ -44,13 +44,22 @@ namespace GridGame.Core.World
         public WorldPeriod Period => config.Periods[PeriodIndex];
 
         /// <summary>How far through the current period the clock is, 0 at its first minute up to (not including) 1.</summary>
-        public float PeriodProgress
+        public float PeriodProgress => MinutesIntoPeriod / (float)Period.LengthMinutes;
+
+        int MinutesIntoPeriod => ((MinuteOfDay - Period.FromHour * 60) % WorldTimeConfig.MinutesPerDay + WorldTimeConfig.MinutesPerDay) % WorldTimeConfig.MinutesPerDay;
+
+        /// <summary>The colour grade now (GG-T1679): the period's own grade, easing linearly into the next period's over the
+        /// last <see cref="WorldTimeConfig.BlendMinutes"/> of the period so the change at each boundary is continuous.</summary>
+        public ColorGrade CurrentGrade
         {
             get
             {
                 var period = Period;
-                int since = ((MinuteOfDay - period.FromHour * 60) % WorldTimeConfig.MinutesPerDay + WorldTimeConfig.MinutesPerDay) % WorldTimeConfig.MinutesPerDay;
-                return since / (float)period.LengthMinutes;
+                int blend = Math.Min(Math.Max(config.BlendMinutes, 0), period.LengthMinutes);
+                int left = period.LengthMinutes - MinutesIntoPeriod;
+                if (blend == 0 || left > blend) return period.Grade;
+                var next = config.Periods[(PeriodIndex + 1) % config.Periods.Count];
+                return ColorGrade.Lerp(period.Grade, next.Grade, 1f - left / (float)blend);
             }
         }
 

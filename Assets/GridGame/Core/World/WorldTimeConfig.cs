@@ -11,11 +11,15 @@ namespace GridGame.Core.World
         public int FromHour;
         public int ToHour;
 
-        public WorldPeriod(string name, int fromHour, int toHour)
+        /// <summary>The colour grade the world wears at the heart of this period (GG-T1679).</summary>
+        public ColorGrade Grade = ColorGrade.Neutral;
+
+        public WorldPeriod(string name, int fromHour, int toHour, ColorGrade? grade = null)
         {
             Name = name;
             FromHour = fromHour;
             ToHour = toHour;
+            if (grade.HasValue) Grade = grade.Value;
         }
 
         /// <summary>The period's length in minutes; a period whose two hours match is the whole day.</summary>
@@ -36,8 +40,7 @@ namespace GridGame.Core.World
         }
     }
 
-    /// <summary>The periods of the world's day as data (GG-T1678). Colour grades per period belong to the grade table
-    /// (GG-T1679), not here.</summary>
+    /// <summary>The periods of the world's day as data (GG-T1678), each with its colour grade (GG-T1679).</summary>
     public sealed class WorldTimeConfig
     {
         public const int MinutesPerDay = 24 * 60;
@@ -45,7 +48,11 @@ namespace GridGame.Core.World
         /// <summary>The hour of day the clock shows when a world begins.</summary>
         public int StartHour = 7;
 
-        public List<WorldPeriod> Periods = new List<WorldPeriod>();
+        /// <summary>Minutes at the end of each period over which its grade eases into the next period's, clamped to the
+        /// period's length: Day and Night hold their grade until their last half hour, Dawn and Dusk are mostly transition.</summary>
+        public int BlendMinutes = 30;
+
+        public List<WorldPeriod> Periods =new List<WorldPeriod>();
 
         public static WorldTimeConfig Default()
         {
@@ -54,10 +61,22 @@ namespace GridGame.Core.World
                 StartHour = 7,
                 Periods = new List<WorldPeriod>
                 {
-                    new WorldPeriod("Dawn", 5, 7),
+                    new WorldPeriod("Dawn", 5, 7, new ColorGrade
+                    {
+                        HueShift = -6f, Saturation = 1.05f, Brightness = 0.92f, Contrast = 0.9f,
+                        TintR = 1f, TintG = 0.72f, TintB = 0.78f, TintStrength = 0.22f,
+                    }),
                     new WorldPeriod("Day", 7, 18),
-                    new WorldPeriod("Dusk", 18, 20),
-                    new WorldPeriod("Night", 20, 5),
+                    new WorldPeriod("Dusk", 18, 20, new ColorGrade
+                    {
+                        HueShift = -10f, Saturation = 1.1f, Brightness = 0.85f, Contrast = 1.15f,
+                        TintR = 1f, TintG = 0.62f, TintB = 0.25f, TintStrength = 0.28f,
+                    }),
+                    new WorldPeriod("Night", 20, 5, new ColorGrade
+                    {
+                        HueShift = 12f, Saturation = 0.75f, Brightness = 0.6f, Contrast = 1f,
+                        TintR = 0x5a / 255f, TintG = 0x3f / 255f, TintB = 0x9e / 255f, TintStrength = 0.5f,
+                    }),
                 },
             };
         }
