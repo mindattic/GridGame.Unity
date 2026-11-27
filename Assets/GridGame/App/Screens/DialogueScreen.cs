@@ -39,6 +39,8 @@ namespace GridGame.App
         /// <summary>A wanderer talk's game-of-wits meter (GG-T387): one pip per point of standing, the joining mark ringed.</summary>
         private VisualElement[] witsPips;
         private Label witsCaption;
+        /// <summary>Where bond chips (GG-T1297) stack while they show.</summary>
+        private VisualElement bondChips;
 
         /// <summary>One side of the conversation: who stands there, their whole portrait and their name plate.
         /// <see cref="Lit"/> (talking 1 / listening 0) and <see cref="Present"/> (on stage 1 / off 0) ease toward
@@ -133,6 +135,13 @@ namespace GridGame.App
             skip.style.position = Position.Absolute; skip.style.right = Space.S24; skip.style.top = Space.S24;
 
             BuildWits(root);
+
+            bondChips = Ui.El(null, root);
+            bondChips.name = "dlg-bonds";
+            bondChips.pickingMode = PickingMode.Ignore;
+            bondChips.style.position = Position.Absolute;
+            bondChips.style.left = bondChips.style.right = Fit.Inset + Fit.Edge; bondChips.style.top = Fit.H(12f);
+            bondChips.style.alignItems = Align.Center;
 
             // The one shared text box: each line replaces the last in it; the choices sit in it too.
             var box = Ui.Window(null, root, "window--plain");
@@ -321,13 +330,19 @@ namespace GridGame.App
         private bool Typing => typing != null && typed < typingText.Length;
 
         /// <summary>Puts the newest transcript line in the box (one per Advance/Choose; lines rushed past by Skip
-        /// still claim their sides) and toasts what effects did.</summary>
+        /// still claim their sides) and toasts what effects did; a bond change shows as a bond chip instead.</summary>
         private void ShowNew()
         {
+            int chips = 0;
             while (shownLog < run.Log.Count)
             {
-                App.Toast(run.Log[shownLog++]);
-                App.Audio.Sfx("ui.buy");
+                int at = shownLog++;
+                if (run.BondChanges.TryGetValue(at, out var bond) && bondChips != null) ShowBond(bond, chips++);
+                else
+                {
+                    App.Toast(run.Log[at]);
+                    App.Audio.Sfx("ui.buy");
+                }
             }
             if (run.Finished) { Finish(); return; }
             if (shownLines >= run.Transcript.Count) return;
@@ -522,6 +537,59 @@ namespace GridGame.App
                 pip.style.scale = new Scale(Vector2.one * (1f + 0.4f * Ease.Arc(k)));
                 pip.style.backgroundColor = Color.Lerp(from, to, k);
             }, Tween.EaseOut));
+        }
+
+        // ── bond chips (GG-T1297) ───────────────────────────────────────────────────
+
+        /// <summary>A Trust or cohesion change that landed: the hero's (or the pair's) thumbnails and the amount slide in,
+        /// hold and fade; a tier-up adds a gold "Tier N!" line, a pop and the power-up cue (Law 5). Reduce Motion keeps
+        /// the text and sound and drops the slide and pop. <paramref name="order"/> staggers chips from one choice.</summary>
+        private void ShowBond(DialogueRunner.BondChange b, int order)
+        {
+            string Name(string id) => App.Content.TryClass(id)?.Name ?? id;
+            var chip = Ui.El(null, bondChips);
+            chip.name = "dlg-bond-" + (b.B == null ? b.A : b.A + "-" + b.B);
+            chip.pickingMode = PickingMode.Ignore;
+            chip.style.flexDirection = FlexDirection.Row;
+            chip.style.alignItems = Align.Center;
+            chip.style.marginTop = Space.S8;
+            chip.style.paddingLeft = chip.style.paddingRight = Space.S24;
+            chip.style.paddingTop = chip.style.paddingBottom = Space.S8;
+            chip.style.backgroundColor = Palette.Ink.WithA(0.85f);
+            SetRadius(chip, 28);
+            SetBorder(chip, b.TierUp ? 4 : 2);
+            var edge = b.TierUp ? Palette.Gold : Palette.TextDim;
+            chip.style.borderTopColor = chip.style.borderBottomColor = chip.style.borderLeftColor = chip.style.borderRightColor = edge;
+            chip.style.opacity = 0f;
+            foreach (var id in b.B == null ? new[] { b.A } : new[] { b.A, b.B })
+                Ui.Thumb(id, chip, Size.Icon).style.marginRight = Space.S8;
+            var col = Ui.El("col", chip);
+            col.style.marginLeft = Space.S8;
+            string what = b.B == null ? $"{Name(b.A)}'s Trust" : $"{Name(b.A)} & {Name(b.B)}";
+            var amount = Ui.Text($"{what} {b.Moved:+0;-0}", b.Moved > 0 ? null : "dim", col);
+            Fonts.UseHeavy(amount);
+            if (b.TierUp) Ui.Text($"Tier {b.TierAfter}!", "small gold", col);
+            App.StartCoroutine(PlayBond(chip, b, order * Timing.Emphasis));
+        }
+
+        private IEnumerator PlayBond(VisualElement chip, DialogueRunner.BondChange b, float delay)
+        {
+            if (delay > 0) yield return Tween.Wait(delay);
+            bool calm = App.Settings.ReduceMotion;
+            App.Audio.Sfx(b.TierUp ? "battle.powerup" : b.Moved > 0 ? "ui.buy" : "status.debuff");
+            yield return Tween.Run(Timing.Standard, k =>
+            {
+                chip.style.opacity = k;
+                if (!calm) chip.style.translate = new Translate(0, Mathf.Lerp(-40f, 0f, k));
+            }, Tween.EaseOut);
+            if (b.TierUp) yield return Tween.Pop(chip, 1.15f, Timing.Emphasis);
+            yield return Tween.Wait(b.TierUp ? Timing.Cinematic * 2f : Timing.Cinematic * 1.5f);
+            yield return Tween.Run(Timing.Standard, k =>
+            {
+                chip.style.opacity = 1f - k;
+                if (!calm) chip.style.translate = new Translate(0, Mathf.Lerp(0f, -20f, k));
+            });
+            chip.RemoveFromHierarchy();
         }
 
         /// <summary>Skip ›: rushes through lines up to the next choice (choices are never skipped — they can change the
