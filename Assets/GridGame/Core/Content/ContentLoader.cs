@@ -90,6 +90,7 @@ namespace GridGame.Core.Content
             db.FamiliesFileMissing = string.IsNullOrWhiteSpace(families);
             db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
             db.SkillHex = ReadOne<SkillHexDef>(readText, "skillhex"); // GG-T1022: optional; null skips its checks
+            db.World = ReadOne<WorldDef>(readText, "world"); // GG-T1667: optional; null skips its checks
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
             AddAll(db.Pickups, ReadList<PickupDef>(readText, "pickups"), x => x.Id);
             AddAll(db.SkillTrees, ReadList<SkillTreeDef>(readText, "skilltrees"), x => x.Id);

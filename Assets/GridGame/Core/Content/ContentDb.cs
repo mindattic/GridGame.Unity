@@ -71,6 +71,13 @@ namespace GridGame.Core.Content
         /// <summary>world.json (GG-T1666, BIBLE §28): the overworld's region maps. Optional: null when the file is absent,
         /// and then its checks are skipped.</summary>
         public WorldDef World;
+        public RegionDef Region(string id) => World?.TryRegion(id);
+        public NodeDef Node(string regionId, string nodeId) => Region(regionId)?.TryNode(nodeId);
+        public RoadsignDef Roadsign(string regionId, string id) => Region(regionId)?.TryRoadsign(id);
+        /// <summary>The region's edges that touch the node, either end.</summary>
+        public List<EdgeDef> EdgesOf(string regionId, string nodeId) =>
+            Region(regionId)?.Edges.FindAll(e => e != null && (string.Equals(e.A, nodeId, StringComparison.OrdinalIgnoreCase) || string.Equals(e.B, nodeId, StringComparison.OrdinalIgnoreCase)))
+            ?? new List<EdgeDef>();
         public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
         /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
         public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);
