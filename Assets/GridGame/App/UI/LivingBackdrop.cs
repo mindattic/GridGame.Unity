@@ -381,6 +381,7 @@ namespace GridGame.App
         private void Tick()
         {
             if (w <= 0f) return;
+            if (bg.panel != null) IdleFrameRate.Stir();
             var t2 = bg.resolvedStyle.unityBackgroundImageTintColor;
             if (t2 != tint)
             {

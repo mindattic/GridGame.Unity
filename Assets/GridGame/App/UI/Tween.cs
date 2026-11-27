@@ -59,6 +59,7 @@ namespace GridGame.App
                     step(ease != null ? ease(k) : k);
                 }
                 first = false;
+                IdleFrameRate.Stir();
                 yield return null;
                 t += Dt;
             }
