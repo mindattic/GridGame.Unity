@@ -45,7 +45,7 @@ namespace GridGame.Tests
             var c = Real;
             var s = Progression.NewGame(c, "W-" + id);
             Assert.That(Wanderers.Pool(c, s), Does.Contain(id), "met only as a wanderer (and the Diamond draw)");
-            Assert.That(c.Summon.Pool, Does.Not.Contain(id));
+            Assert.That(Summon.Ids(c), Does.Not.Contain(id));
             Assert.That(c.Mercenaries.Select(m => m.Class), Does.Not.Contain(id));
             Assert.That(c.FactionOf(id)?.Id, Is.EqualTo(faction), "its faction-mates bridge half trust");
             var scene = Wanderers.Scene(c, id);

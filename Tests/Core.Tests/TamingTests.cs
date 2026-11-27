@@ -288,7 +288,7 @@ namespace GridGame.Tests
             var tamer = c.Class("monstertamer");
             Assert.That(tamer.Team, Is.EqualTo(Team.Hero));
             Assert.That(tamer.DefaultLoadout, Does.Contain("tame"));
-            Assert.That(c.Summon.Pool, Does.Contain("monstertamer"), "summoned at the Summon Circle");
+            Assert.That(Summon.Ids(c), Does.Contain("monstertamer"), "summoned at the Summon Circle");
             Assert.That(c.Ability("tame").Tame, Is.GreaterThan(c.Ability("dog_whistle_call").Tame));
             var whistle = c.Item("dog_whistle");
             Assert.That(whistle.SoldByVendor && whistle.OnUseAbility == "dog_whistle_call", Is.True);

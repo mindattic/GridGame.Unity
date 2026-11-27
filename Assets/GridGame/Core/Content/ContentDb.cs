@@ -30,7 +30,6 @@ namespace GridGame.Core.Content
         public ArmorEnchantDef TryArmorEnchant(string id) => id != null && ArmorEnchants.TryGetValue(id, out var e) ? e : null;
         public readonly List<StageDef> StageOrder = new List<StageDef>();
         public CampaignDef Campaign = new CampaignDef();
-        public SummonDef Summon = new SummonDef();
         /// <summary>vfxstyle.json (GG-T253): the element/status look table.</summary>
         public VfxStyleSheet Vfx = new VfxStyleSheet();
         /// <summary>attacktypes.json (GG-T556): which hit sound a physical blow makes (weapon, monster, skill).</summary>

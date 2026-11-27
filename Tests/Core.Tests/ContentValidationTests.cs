@@ -67,6 +67,7 @@ namespace GridGame.Tests
                 Id = "knight",
                 Name = "Knight",
                 Team = Team.Hero,
+                Acquire = Acquire.Starter,
                 Role = "Tank",
                 Thumbnail = new Thumbnail(), Figure = new Figure(),
                 DropTable = "knightdrop",

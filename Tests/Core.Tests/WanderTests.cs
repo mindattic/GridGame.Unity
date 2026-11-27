@@ -51,7 +51,7 @@ namespace GridGame.Tests
             {
                 Assert.That(c.Class(id).Team, Is.EqualTo(Team.Hero), id);
                 Assert.That(s.Hero(id), Is.Null, id);
-                Assert.That(c.Summon.Pool, Does.Not.Contain(id));
+                Assert.That(Summon.Ids(c), Does.Not.Contain(id));
                 Assert.That(guests, Does.Not.Contain(id));
                 Assert.That(named, Does.Not.Contain(id));
                 Assert.That(c.Mercenaries.Select(m => m.Class), Does.Not.Contain(id));

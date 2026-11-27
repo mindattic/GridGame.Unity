@@ -125,7 +125,7 @@ namespace GridGame.Tests
             var light = Real.TryQuest("q_travel_light");
             Assert.That(light.Objective.MaxHeroes, Is.EqualTo(3));
             Quests.Start(Real, s, light.Id);
-            Summon.Join(Real, s, Real.Summon.Pool.First(id => s.Hero(id) == null));
+            Summon.Join(Real, s, Summon.Ids(Real).First(id => s.Hero(id) == null));
             Assert.That(s.Party.Count, Is.EqualTo(4));
             BattleFactory.Commit(Real, s, Won(s, light.Objective.Id));
             Assert.That(Quests.IsReady(Real, s, light), Is.False, "four heroes is too many");

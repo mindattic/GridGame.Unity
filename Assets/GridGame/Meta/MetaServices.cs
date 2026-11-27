@@ -2712,12 +2712,17 @@ namespace GridGame.Meta
         /// <summary>A paywall hook (§25.18, GG-T232): <see cref="Paywall.Cost"/>, no longer rising per recruit.</summary>
         public static int Price(ContentDb c, SaveData s) => Paywall.Cost(PaywallKind.Summon, s);
 
+        /// <summary>The Summon Circle's gold pool: every hero class whose <see cref="ClassDef.Acquire"/> is Summon (GG-T1416).</summary>
+        public static List<string> Ids(ContentDb c) =>
+            c.Classes.Values.Where(d => d.Team == Team.Hero && d.Acquire == Acquire.Summon).Select(d => d.Id).ToList();
+
         public static List<ClassDef> Pool(ContentDb c, SaveData s) =>
-            c.Summon.Pool.Where(id => !Permadeath.IsLost(s, id)).Select(c.TryClass).Where(d => d != null).ToList();
+            c.Classes.Values.Where(d => d.Team == Team.Hero && d.Acquire == Acquire.Summon && !Permadeath.IsLost(s, d.Id)).ToList();
 
         private static Result CanRecruit(ContentDb c, SaveData s, string classId)
         {
-            if (!c.Summon.Pool.Contains(classId)) return Result.Fail("Not summonable");
+            var def = c.TryClass(classId);
+            if (def == null || def.Team != Team.Hero || def.Acquire != Acquire.Summon) return Result.Fail("Not summonable");
             if (Permadeath.IsLost(s, classId)) return Result.Fail("Fell in battle for good");
             if (s.Hero(classId) != null) return Result.Fail("Already in your roster");
             if (Paywall.Pending(s, PaywallKind.Summon) != null) return Result.Fail("A summoning is already under way");
@@ -2777,8 +2782,7 @@ namespace GridGame.Meta
         {
             bool Free(ClassDef d) => d != null && d.Team == Team.Hero && !d.IsCut && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && (exclude == null || !exclude.Contains(d.Id));
             if (preferred != null && Free(c.TryClass(preferred))) return preferred;
-            var guests = new HashSet<string>(c.Stages.Values.SelectMany(st => st.Waves).SelectMany(w => w.Guests).Select(g => g.Class));
-            var pool = c.Classes.Values.Where(d => Free(d) && !c.Summon.Pool.Contains(d.Id) && !guests.Contains(d.Id))
+            var pool = c.Classes.Values.Where(d => Free(d) && d.Acquire != Acquire.Summon && d.Acquire != Acquire.Guest)
                 .OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase).ThenBy(d => d.Id, StringComparer.Ordinal).ToList();
             if (role != null && pool.FirstOrDefault(d => d.Role == role) is ClassDef byRole) return byRole.Id;
             var have = new HashSet<string>(s.Roster.Select(h => c.TryClass(h.ClassId)?.Role).Where(r => r != null));

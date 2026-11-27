@@ -39,7 +39,7 @@ namespace GridGame.Tests
             foreach (var m in c.Mercenaries)
             {
                 Assert.That(c.Class(m.Class).Team, Is.EqualTo(Team.Hero));
-                Assert.That(c.Summon.Pool, Does.Not.Contain(m.Class), m.Class);
+                Assert.That(Summon.Ids(c), Does.Not.Contain(m.Class), m.Class);
                 var odds = Mercenaries.Odds(m.Temperament);
                 Assert.That(odds.drop + odds.hold + odds.raise, Is.LessThanOrEqualTo(1.0));
             }

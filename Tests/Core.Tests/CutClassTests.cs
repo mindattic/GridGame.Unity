@@ -57,8 +57,8 @@ namespace GridGame.Tests
         {
             var db = Copy();
             var cut = CutIds(db).First();
-            db.Summon.Pool.Add(cut);
-            Assert.That(CutProblems(db), Has.Some.Contains("summon pool").And.Contains(cut));
+            db.Classes[cut].Acquire = Acquire.Summon;
+            Assert.That(CutProblems(db), Has.Some.Contains("Acquire Summon").And.Contains(cut));
         }
 
         [Test]

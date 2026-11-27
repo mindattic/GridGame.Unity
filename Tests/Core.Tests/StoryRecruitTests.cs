@@ -54,7 +54,7 @@ namespace GridGame.Tests
             {
                 var pick = Summon.StoryPick(c, s, null, i % 2 == 0 ? "Striker" : null);
                 if (pick == null) break;
-                Assert.That(c.Summon.Pool, Does.Not.Contain(pick));
+                Assert.That(Summon.Ids(c), Does.Not.Contain(pick));
                 Assert.That(guests, Does.Not.Contain(pick));
                 Assert.That(s.Hero(pick), Is.Null);
                 Summon.Join(c, s, pick);

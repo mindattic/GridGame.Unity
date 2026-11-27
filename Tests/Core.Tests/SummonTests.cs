@@ -56,7 +56,7 @@ namespace GridGame.Tests
             int roster = s.Roster.Count;
             Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
             Assert.That(pool, Does.Contain(job.Arg));
-            Assert.That(Real.Summon.Pool, Does.Not.Contain(job.Arg), "not one of the gold summons");
+            Assert.That(Summon.Ids(Real), Does.Not.Contain(job.Arg), "not one of the gold summons");
             Assert.That(Paywall.Finish(Real, s, job, T0.AddSeconds(0.5)).Ok, Is.False, "plays out over time");
             Assert.That(s.Hero(job.Arg), Is.Null);
             var r = Paywall.Finish(Real, s, job, T0.AddSeconds(1));

@@ -54,25 +54,15 @@ namespace GridGame.Meta
         }
 
         /// <summary>Every hero a wanderer may be — and the Summon Circle's Diamond draw (GG-T343) picks from: unowned, not
-        /// lost, and not already promised elsewhere — the Summon Circle's gold pool, authored guests and recruitables,
-        /// named story recruits and the mercenaries keep their own ways in. Id order, so a seed always names the same hero.
-        /// A wanderer who parts ways stays in it: owning the hero is the only thing that takes them out.</summary>
+        /// lost, and <see cref="ClassDef.Acquire"/> Wanderer or Starter (a custom party can leave a starter unowned) — every
+        /// other way in (the gold pool, guests, recruitables, story, mercenaries, the Camp NPC) keeps its own heroes (GG-T1416).
+        /// Id order, so a seed always names the same hero. A wanderer who parts ways stays in it: owning the hero is the only
+        /// thing that takes them out.</summary>
         public static List<string> Pool(ContentDb c, SaveData s)
         {
-            var taken = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var id in c.Summon.Pool) taken.Add(id);
-            foreach (var w in c.Stages.Values.SelectMany(st => st.Waves))
-            {
-                foreach (var g in w.Guests) taken.Add(g.Class);
-                foreach (var r in w.Recruitables) taken.Add(r.Class);
-            }
-            foreach (var e in c.Dialogues.Values.SelectMany(d => d.AllEffects()))
-                if (e != null && (e.Type == DialogueEffectType.JoinHero || e.Type == DialogueEffectType.RecruitHero) && e.Id != null) taken.Add(e.Id);
-            foreach (var m in c.Mercenaries) taken.Add(m.Class);
-            // A Camp NPC wears its hero class's face (the Alchemist), so a wanderer of that class would be the NPC's double.
-            foreach (var npc in CampNpcs.All) taken.Add(npc);
             return c.Classes.Values
-                .Where(d => d.Team == Team.Hero && !d.IsCut && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && !taken.Contains(d.Id))
+                .Where(d => d.Team == Team.Hero && (d.Acquire == Acquire.Wanderer || d.Acquire == Acquire.Starter)
+                    && !d.IsCut && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id))
                 .Select(d => d.Id).OrderBy(id => id, StringComparer.Ordinal).ToList();
         }
 

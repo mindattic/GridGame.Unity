@@ -458,7 +458,7 @@ namespace GridGame.Tests
             var c = Real; var s = Progression.NewGame(c, "G4");
             Assert.That(Permadeath.Enabled(s), Is.False);
             // A save from before GG-T114 that recorded a "lost forever" guest: nobody stays lost.
-            var poolId = c.Summon.Pool.First(id => s.Hero(id) == null && c.TryClass(id) != null);
+            var poolId = Summon.Ids(c).First(id => s.Hero(id) == null && c.TryClass(id) != null);
             s.LostGuests.Add("drifter");
             s.LostGuests.Add(poolId);
             Assert.That(Permadeath.IsLost(s, "drifter"), Is.False);
