@@ -8,7 +8,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c8f66fe76839219904b165861e4ac60f1f4ea4fc12817d46e83556b29a4d9f07",
+      "hash": "sha256:c074a060af575c0dcaf41211ce57bd1160bab302577262ecd3408bf3c5334914",
       "about": [
         "character-merchant",
         "place-bloom"
@@ -24,13 +24,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "Red flowers on white stone. It's beautiful. It shouldn't be here.",
+            "line": "Red flowers on the Choir's white stone. This came down from the Manalith, and it isn't taking anything. I can feel that it isn't.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "This is where a piece of the Manalith came down and took root. It's not only death up there. That's the strangest thing I've seen."
+            "line": "The Herald says it all fell here: moss, blossom, beasts come back changed. The Wild live in it and nobody tithes them. Look at you. Out here nobody paid for you to breathe, and you're standing like you know it."
           }
         ]
       }
@@ -779,7 +779,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b4a5909666c04397a2a35ba9996b14235ea8766e39b7aced4784a7e020b384f",
+      "hash": "sha256:02ac332932acb9eb88b917b8a21195909dd52a1b7eaf20d68be45f5e5a52c776",
       "about": [
         "character-blacksmith",
         "place-cave2"
@@ -789,19 +789,19 @@
         "character-blacksmith"
       ],
       "payload": {
-        "title": "Older than the arches",
+        "title": "Given back",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "There's something under the arches. Older stone.",
+            "line": "The Watch's last captain knelt and gave me the chains, and they answered my hand. Why mine?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-blacksmith",
-            "line": "Older than Halcyon. Whoever built this first knew exactly what they were holding in the sky."
+            "line": "Because only Halcyon's mana opens or closes them, and yours is the last of it. He held his post twelve hundred years for someone to hand them to. Every way this ends runs through you now. I'll forge whatever you need. You choose."
           }
         ]
       }
@@ -1045,7 +1045,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:058dad95616412eb652fc3288d53baaec38bd577a7a245bc7a281eb9f4e60a10",
+      "hash": "sha256:7025bac13183798d4f8c435f93de18f7645bcc2bb66f2052987b09cd61ac6630",
       "about": [
         "character-innkeeper",
         "place-cityruins2"
@@ -1061,13 +1061,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Underspire's lights are brighter than ever.",
+            "line": "The organ's broken and the Underspire's lights are brighter than ever. What are they burning?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-innkeeper",
-            "line": "They're still drawing off Halcyon's old taps. Now the spire's empty, everyone wants it. Including the people pulling the Manalith closer."
+            "line": "Halcyon's taps. Our runner wires those signs herself: every lamp down here drinks from the lines that pull the Manalith closer. Three crews want the empty spire, and every one has asked after you by name."
           }
         ]
       }
@@ -1311,7 +1311,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:69353086567c37a858d3134a035dfed3c0ab9eba44eab847c172332acaddafbb",
+      "hash": "sha256:0a6c5e9521fb8f47c172d2c3c01881ab081b103e64facb23a74c70629a815307",
       "about": [
         "character-alchemist",
         "place-desert2"
@@ -1327,13 +1327,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Ember are marching north. All of them.",
+            "line": "The shell's still breaking, and the whole red host is marching north. Toward the arches. My people's arches.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "To the Anchors. They want to open every tap and drag the Manalith down. We can't let them reach the arches."
+            "line": "Our deserter knows the banners. His own kin lead the march: open every tap at once and drag the Manalith down, the way their creed always wanted. If they reach the Anchors first, the sky decides for all of us."
           }
         ]
       }
@@ -1734,7 +1734,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:096718cc0af6603480f8ab22537d9a7a6d0aef7a9d449d64a89d88640935ba0f",
+      "hash": "sha256:1c194411f6cdd369c2d8746bfc3e336a55e4135d69dba0dee7316a7dc16c8b32",
       "about": [
         "character-merchant",
         "place-greenvalley2"
@@ -1744,19 +1744,19 @@
         "character-merchant"
       ],
       "payload": {
-        "title": "Where the rain missed",
+        "title": "Asking the price",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The holds look different. Walls everywhere.",
+            "line": "Walls on every hold, and the Captain's colours still on the gate. The Choir's gone. Who is he collecting for now?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "Without the Choir, nobody pays the tithe, so everyone's building walls. Funny how the rain always missed the rich holds."
+            "line": "Himself. The knight who rode with us swore her oath to that hold, and he sold it out from under her. And at every gate I trade at, someone asks me a price. Not for the spire. For you."
           }
         ]
       }
@@ -2396,7 +2396,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:39788cde7162d7a596511301c695e023ed1943fbb478ae19cd1a998309babbbe",
+      "hash": "sha256:290bf6bd4d1a85d0e3a510ec73a0ea81889fa3e1a088f46964366263edf50760",
       "about": [
         "character-enchantress",
         "place-morrowsshadow"
@@ -2412,13 +2412,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "It fills the whole sky. I can count the crystals.",
+            "line": "It fills the whole sky. I can count the crystals. The Anchors are holding, and the rest is mine to decide.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "And the Moon's still there beside it, small and steady. Whatever we decide, we decide here."
+            "line": "Ours to tell you, yours to choose. The Innkeeper would keep it asleep, without the skim, and pay for it in people as gently as anyone can. The Blacksmith would cut the lines, even if every forge burns dimmer. And I want to know what it is, and letting it come is the only way. The Moon's still beside it, small and steady. Whatever you choose costs everyone. We'll still be here."
           }
         ]
       }
@@ -4044,7 +4044,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a69dac95a268031e803bc87072f8dc54727584a39d50f4452df7cfaf0d7ea68c",
+      "hash": "sha256:415762fd53682ce546f4a9d8fd73feac8cf6f47049a249879387dc7f81bf9233",
       "about": [
         "character-enchantress",
         "place-swamp2"
@@ -4054,19 +4054,19 @@
         "character-enchantress"
       ],
       "payload": {
-        "title": "Passage offered",
+        "title": "The hand that opens them",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Arks are floating again. Someone's fixed them.",
+            "line": "The Arkgrave's going under. Those are the doors I opened. Who's floating the wrecks?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "Smugglers. They'll offer passage to anyone with coin. Nobody's asking where they think they're going."
+            "line": "Smugglers, and the Swamp Mistress riding the tide behind them. They don't want the Arks. They want the hand that opens them. Halcyon keyed its doors to its own, the same as the orbs. It's why they fight for you, and why every claimant is hunting you."
           }
         ]
       }
