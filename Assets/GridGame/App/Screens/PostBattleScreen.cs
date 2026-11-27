@@ -272,7 +272,7 @@ namespace GridGame.App
             var title = Ui.Text(report.Victory ? "DRILL CLEARED" : "TRY AGAIN", "t-display shadow", col);
             title.name = "drill-title";
             Fonts.UseDisplay(title);
-            title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
+            title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
             string where = idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId);
             Ui.Text(where, "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
 

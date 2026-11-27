@@ -131,7 +131,8 @@ namespace GridGame.App
             var w = Ui.ListPanel(body, "Quick settings", "create-profile-settings");
             void Row(string label, string value, Action set, string name)
             {
-                var row = Ui.MenuRow(label, value, () => { set(); Preview(); Refresh(); }, w).KindIcon(RowKind.Settings);
+                var row = Ui.MenuRow(label, value, () => { set(); Preview(); Refresh(); }, w);
+                row.KindIcon(RowKind.Settings);
                 row.name = name;
             }
             float Cycle(float[] opts, float value) => opts[(Array.FindIndex(opts, o => Mathf.Abs(o - value) < 0.01f) + 1) % opts.Length];

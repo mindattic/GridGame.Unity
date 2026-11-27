@@ -24,7 +24,7 @@ namespace GridGame.App
 
         protected override void Build(VisualElement root)
         {
-            root.style.backgroundColor = Color.black;
+            Ui.El("fill", root).style.backgroundColor = Palette.Ink;
             root.RegisterCallback<PointerDownEvent>(_ => Finish());
             col = Ui.El("fill col center", root);
             var logo = Ui.El(null, col);
@@ -37,8 +37,7 @@ namespace GridGame.App
                 logo.style.height = Fit.C(70f) * tex.height / Mathf.Max(1f, tex.width);
             }
             else Fonts.UseHeavy(Ui.Text("MINDATTIC LLC", "title", logo));
-            var copy = Ui.Text(Copyright, "tiny dim", col);
-            copy.style.marginTop = Space.S32;
+            Ui.Text(Copyright, "tiny dim splash-copy", col);
             col.style.opacity = Opacity();
         }
 

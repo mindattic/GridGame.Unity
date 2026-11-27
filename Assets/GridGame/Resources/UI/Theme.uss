@@ -255,6 +255,7 @@
 .card-tap.is-pressed { scale: 0.94 0.94; translate: 0 6px; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
 .title-conduit { height: 6px; margin-top: var(--space-8); border-radius: 3px; background-color: rgb(107, 199, 255); border-top-width: 2px; border-top-color: rgb(220, 240, 255); }
+.splash-copy { margin-top: var(--space-32); }
 .title-continue { align-items: flex-start; background-color: rgba(20, 24, 60, 0.75); border-width: 3px; border-color: rgb(107, 199, 255); }
 .slot { transition-property: scale, translate, opacity; transition-duration: 0.07s, 0.07s, 0.15s; }
 .slot--targeting { scale: 1.06 1.06; }

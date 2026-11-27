@@ -99,7 +99,7 @@ namespace GridGame.App
             var bg = Ui.El("fill", root);
             LivingBackdrop.Show(bg, "cityruins", 0);
             var shade = Ui.El("fill", root);
-            shade.style.backgroundColor = new Color(0, 0, 0.05f, 0.45f);
+            shade.style.backgroundColor = Palette.Ink.WithA(0.45f);
 
             staged.Clear();
             var col = Ui.El("fill col center", root);
@@ -113,8 +113,7 @@ namespace GridGame.App
             conduit.style.width = Fit.C(56f);
             Stage(conduit);
             var tag = Ui.Text("Slide. Flank. Strike.", "h2 shadow dim", col);
-            tag.style.marginTop = Space.S16;
-            tag.style.marginBottom = Fit.H(4f);
+            Ui.Margin(tag, top: Space.S16, bottom: Fit.H(4f));
             Stage(tag);
 
             int recent = App.Saves.MostRecent();
@@ -122,7 +121,7 @@ namespace GridGame.App
             var save = recent >= 0 ? App.Saves.Load(recent, App.Content) : null;
             if (save != null) Stage(ContinueCard(save, recent, col));
 
-            var menu = Ui.Window(null, col);
+            var menu = Ui.Panel(col);
             menu.style.width = Fit.C(66f);
             Stage(menu);
             // GG-T738 (§26.7): each Title row leads with its kind icon.
@@ -167,11 +166,11 @@ namespace GridGame.App
             if (stage != null) Ui.Caption(stage, card);
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():yyyy-MM-dd HH:mm}", card, "dim"); // GG-T566: explicit under the invariant culture
             var faces = Ui.El("row", card);
-            faces.style.marginTop = Space.S8;
+            Ui.Margin(faces, top: Space.S8);
             foreach (var id in s.Party)
             {
                 if (s.Hero(id) == null) continue;
-                Ui.Thumb(id, faces, Kit.Avatar * 0.6f).style.marginRight = Space.S8;
+                Ui.Margin(Ui.Thumb(id, faces, Kit.Avatar * 0.6f), right: Space.S8);
             }
             Ui.Tappable(card, () => Continue(slot), "ui.select");
             return card;
@@ -627,18 +626,19 @@ namespace GridGame.App
             var veil = Ui.El("fill veil col center", overlay);
             veil.name = VeilName;
             veil.pickingMode = PickingMode.Position;
-            var w = Ui.Window(null, veil);
+            var w = Ui.Panel(veil);
             w.style.width = Length.Percent(76);
             var q = Ui.Heading(question, w);
             q.style.whiteSpace = WhiteSpace.Normal;
-            var row = Ui.El("kit-footer", w);
+            var row = Ui.Actions(w);
             row.style.justifyContent = Justify.FlexEnd;
-            row.style.marginTop = Space.S16;
             Action cancel = () => { veil.RemoveFromHierarchy(); onNo?.Invoke(); };
             veil.userData = cancel; // Android Back answers Cancel (CancelTop)
             // GG-T738 (§26.7): Cancel leads with the Close cross, the answer with the Confirm check.
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, row).name = "confirm-no";
             RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
+            GameApp.I.Audio.Sfx("ui.select");
+            if (!Tween.Calm) { veil.style.opacity = 0f; GameApp.I.StartCoroutine(Tween.Fade(veil, 0f, 1f, Timing.Quick)); }
             return veil;
         }
 
@@ -1437,6 +1437,8 @@ namespace GridGame.App
         protected override void Build(VisualElement root)
         {
             backdrops = Ui.El("fill", root);
+            backdrops.style.top = -GameApp.SafeTop;
+            backdrops.style.bottom = -GameApp.SafeBottom;
             clip = Ui.El("fill", root);
             clip.style.overflow = Overflow.Hidden;
             // The scrolling text ends above the Skip button row, so it never runs under the button (GG-T397).
@@ -1464,7 +1466,7 @@ namespace GridGame.App
             {
                 var bg = Ui.El("fill", backdrops);
                 LivingBackdrop.Show(bg, p.Backdrop, 0);
-                bg.style.unityBackgroundImageTintColor = new Color(0.35f, 0.35f, 0.45f);
+                bg.style.unityBackgroundImageTintColor = Palette.ManaIndigo;
                 if (old != null)
                 {
                     if (App.Settings.ReduceMotion) old.RemoveFromHierarchy();
