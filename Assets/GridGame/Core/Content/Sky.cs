@@ -28,6 +28,16 @@ namespace GridGame.Core.Content
         /// largest). A theme with no entry uses its base theme's (cityruins2 → cityruins), then <see cref="Manalith"/>.</summary>
         public Dictionary<string, SkyRegionDef> Regions = new Dictionary<string, SkyRegionDef>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>ContentLoader's ObjectCreationHandling.Replace swaps in a case-sensitive Dictionary, so re-key
+        /// it case-insensitively after load (as AttackTypes does); Validate already matches keys that way (GG-T1234).</summary>
+        [System.Runtime.Serialization.OnDeserialized]
+        private void IgnoreRegionKeyCase(System.Runtime.Serialization.StreamingContext _)
+        {
+            var ci = new Dictionary<string, SkyRegionDef>(StringComparer.OrdinalIgnoreCase);
+            if (Regions != null) foreach (var kv in Regions) if (!ci.ContainsKey(kv.Key)) ci[kv.Key] = kv.Value;
+            Regions = ci;
+        }
+
         /// <summary>The Manalith's placement for <paramref name="theme"/>: its region entry, else its base theme's, else
         /// the default body's own numbers.</summary>
         public SkyRegionDef RegionFor(string theme)
