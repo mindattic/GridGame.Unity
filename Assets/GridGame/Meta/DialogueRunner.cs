@@ -138,7 +138,7 @@ namespace GridGame.Meta
             var offered = Choices;
             if (!AwaitingChoice || index < 0 || index >= offered.Count) return Result.Fail("No such choice");
             var ch = offered[index];
-            Current.Answer = ch.Label;
+            Current.Answer = Commander.Fill(ch.Label, s);
             Wits?.Score(ch.Wit);
             string place = $"{Node.Id}:{Node.Choices.IndexOf(ch)}";
             foreach (var e in ch.Effects) Apply(e, place);

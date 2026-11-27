@@ -427,7 +427,7 @@ namespace GridGame.App
                 for (int i = 0; i < choices.Count; i++)
                 {
                     int idx = i;
-                    var b = RowIcon.IconButton(choices[i].Label, RowKind.Talk, () => Choose(idx), i == 0 ? "btn--primary" : null, controls);
+                    var b = RowIcon.IconButton(Commander.Fill(choices[i].Label, App.Save, App.Profile?.Name), RowKind.Talk, () => Choose(idx), i == 0 ? "btn--primary" : null, controls);
                     b.name = "choice-" + i;
                     b.style.marginTop = Space.S8;
                     b.style.opacity = 0f;

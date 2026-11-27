@@ -1190,7 +1190,7 @@ namespace GridGame.App
         /// <summary>Any crawl (GG-T231): the prologue, a story beat's interlude, the ending.</summary>
         public StoryCrawlScreen(string title, string crawl, string backdrop, GameScreen next)
         {
-            this.title = title; this.crawl = crawl; this.next = next;
+            this.title = title; this.crawl = Commander.Fill(crawl, GameApp.I.Save, GameApp.I.Profile?.Name); this.next = next;
             this.backdrop = backdrop ?? HubScreen.ThemeFor(GameApp.I.Content, GameApp.I.Save);
         }
         public override string Id => "crawl";
