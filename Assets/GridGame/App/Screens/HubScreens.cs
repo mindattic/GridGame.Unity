@@ -1674,6 +1674,11 @@ namespace GridGame.App
         private void Banner(VisualElement body, BannerDef b, bool busy)
         {
             var w = Ui.Panel(body, b.Name, false, "summon-banner-" + b.Id);
+            // GG-T1789 (POL-C9): the banner window takes the column's spare height and spreads its blocks through it,
+            // so a tall phone has no dead band under the pull buttons; it never shrinks, so an open Rates list still fits.
+            w.style.flexGrow = 1;
+            w.style.flexShrink = 0;
+            w.style.justifyContent = Justify.SpaceBetween;
             var head = Ui.El("row", w);
             foreach (var id in b.Featured.Where(id => C.TryClass(id) != null)) Ui.Thumb(id, head, Kit.Thumb).name = "summon-featured-" + id;
             var col = Ui.El("col grow", head);
