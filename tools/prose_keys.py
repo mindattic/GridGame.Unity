@@ -28,6 +28,8 @@
     description   faction:<factionId>              description-faction-<factionId>      factions.json (wanderer talk, recruits)
     description   character:<crew>                 description-character-<crew>         caravan.json Crew (a named character with
                                                                                         no class; <crew> is its entity slug)
+    description   character:commander              description-character-commander      the Commander (GG-T1591: the player, who
+                                                                                        speaks story beats as $commander)
     quest         quest:<questId>                  quest-<questId>                      quests.json Name/Giver/Summary/TurnIn
     glossary      glossary:<glossaryId>            glossary-<glossaryId>                glossary.json Term/Aliases/Text
     bark          bark:caravan/<upgradeId>         bark-caravan-<upgradeId>             caravan.json Barks (the wagon's crew)
@@ -72,6 +74,9 @@ NPCS = {
     "aetherist": "Manasmith",  # GG-T570: the retired hero class, now the refinery's keeper; named Manasmith by GG-T675 (id kept)
 }
 NPC_BY_NAME = {v: k for k, v in NPCS.items()}
+
+# GG-T1591: the Commander (the player) as a Prose character; story beats speak as $commander.
+COMMANDER = "commander"
 
 # GG-T570: a Camp shop keeper's bark occasions, "<npcId>/<occasion>" -> key bark:shop/<npcId>/<occasion>. Mirrors the
 # game's DialogueDef.ShopBarks.
@@ -268,6 +273,7 @@ def description_keys(content: dict) -> dict:
     for u in content.get("caravan") or []:
         if isinstance(u, dict) and u.get("Crew"):
             out.setdefault(character_entity(u["Crew"]), "character:" + slug(u["Crew"]))
+    out[character_entity(COMMANDER)] = "character:" + COMMANDER  # GG-T1591
     return out
 
 

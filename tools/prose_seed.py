@@ -144,6 +144,7 @@ def entity_descriptions(content: dict, known: set) -> list:
         if u.get("Crew") and "character:" + K.slug(u["Crew"]) not in seen:
             seen.add("character:" + K.slug(u["Crew"]))
             add("character:" + K.slug(u["Crew"]), prose_map.crew_summary(u), K.character_entity(u["Crew"]))
+    add("character:" + K.COMMANDER, prose_map.COMMANDER_SUMMARY, K.character_entity(K.COMMANDER))  # GG-T1591
     return out
 
 

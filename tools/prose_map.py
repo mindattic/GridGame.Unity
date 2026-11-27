@@ -16,6 +16,7 @@ Entities (ids are the game's, stable and type-prefixed; a rename changes `name`,
                      and ADJACENCY's stated facts (the Still foot-of Halcyon, the Cathedral top-of it)
     place-<stage>    every campaign stage, part-of its theme (test stages are left out)
     character-<id>   the camp NPCs (innkeeper, blacksmith, alchemist, enchantress, merchant) and the caravan crew
+    character-commander  the Commander, the player (GG-T1591): speaker $commander, art the commander portraits
 
 Every place, faction and character entity has a description key (prose_keys.description_keys, GG-T374): its
 description text is `about` it, the way a class's is; main() refuses to write a file with one that has none.
@@ -95,6 +96,10 @@ NPC_SUMMARY = {
 # A class id (the NPC wears that class's art) or, GG-T570, a Portraits/ file of the NPC's own (aetherist-00).
 NPC_PORTRAIT_FALLBACK = {"merchant": "courier", "innkeeper": "pandagirl", "blacksmith": "tinkerer",
                          "alchemist": "alchemist", "enchantress": "whitewitch", "aetherist": "aetherist-00"}
+
+# GG-T1591: the Commander, the player; story beats speak as $commander. Portraits/ files (the first is the default).
+COMMANDER_SUMMARY = "The Commander: the player, who leads the caravan and speaks for the party in its story beats."
+COMMANDER_PORTRAITS = ["commander-00", "commander-male-00"]
 
 
 # Spatial facts the campaign states (theme id -> [(relation, theme id)]): the Still stands at the foot of Halcyon's
@@ -265,6 +270,13 @@ def build(content: dict) -> dict:
             "details": {"role": "camp NPC", "npcId": npc, "art": "Portraits/" + art},
             "tags": ["camp-npc"],
         })
+    entities.append({
+        "id": K.character_entity(K.COMMANDER), "type": "character", "name": "Commander",
+        "summary": COMMANDER_SUMMARY,
+        "details": {"role": "the player", "speaker": "$commander", "art": "Portraits/" + COMMANDER_PORTRAITS[0],
+                    "portraits": list(COMMANDER_PORTRAITS)},
+        "tags": ["commander"],
+    })
     for u in content["caravan"]:
         if not u.get("Crew"):
             continue

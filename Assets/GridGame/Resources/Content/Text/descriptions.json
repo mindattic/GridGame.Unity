@@ -317,6 +317,21 @@
         "short": "The caravan's cask-keeper, who keeps the Mana Casks wagon."
       }
     },
+    "character:commander": {
+      "key": "character:commander",
+      "id": "description-character-commander",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c5979b5c561fc8a392801b64b2e0991a3f2d3463d23f7f3f75afdcd2e8cb0570",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Commander: the player, who leads the caravan and speaks for the party in its story beats."
+      }
+    },
     "character:lio": {
       "key": "character:lio",
       "id": "description-character-lio",

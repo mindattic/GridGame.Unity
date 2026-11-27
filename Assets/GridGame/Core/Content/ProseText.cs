@@ -108,6 +108,7 @@ namespace GridGame.Core.Content
             foreach (var npc in DialogueDef.Npcs) k["npc:" + npc] = "description";
             foreach (var b in DialogueDef.ShopBarks) k["bark:shop/" + b] = "bark"; // GG-T570
             foreach (var key in DescribedKeys(db).Values) k[key] = "description"; // GG-T374
+            k[CommanderKey] = "description"; // GG-T1591
             foreach (var r in db.RegionRuleOrder) k["rule:" + r.Id] = "description"; // GG-T359: payload name + short
             foreach (var s in db.StageOrder)
                 for (int w = 0; w < s.Waves.Count; w++)
@@ -140,6 +141,10 @@ namespace GridGame.Core.Content
 
         /// <summary>Prefix of the GG-T374 description keys (tools/prose_keys.py description_keys).</summary>
         public const string PlaceKey = "place:", FactionKey = "faction:", CharacterKey = "character:";
+
+        /// <summary>GG-T1591: the Commander's description key (tools/prose_keys.py description_keys); story beats speak
+        /// as $commander.</summary>
+        public const string CommanderKey = CharacterKey + "commander";
 
         /// <summary>GG-T936: prefix of a Codex entry's body key, "codex:&lt;kind&gt;/&lt;id&gt;" (<see cref="CodexDef.TextKey"/>).</summary>
         public const string CodexKey = "codex:";
