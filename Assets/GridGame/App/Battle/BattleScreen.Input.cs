@@ -375,7 +375,7 @@ namespace GridGame.App
         private float heroTurnElapsed;
         private int heroTurnHero = -1;
 
-        /// <summary>GG-T1183 (ง2.13.3): a Mode C hero's 4 s starts when its icon arrives, held or not. Untouched at 0 s the turn
+        /// <summary>GG-T1183 (ยง2.13.3): a Mode C hero's 4 s starts when its icon arrives, held or not. Untouched at 0 s the turn
         /// resolves itself as a Guard; a pickup carries the elapsed time into the hold (BeginHold), which forces its own drop.</summary>
         private void TickHeroTurn(float dt)
         {
