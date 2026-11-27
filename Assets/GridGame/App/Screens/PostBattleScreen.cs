@@ -97,6 +97,7 @@ namespace GridGame.App
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
                 TurnsRow(list);
                 ComboRows(c, list);
+                BondRows(c, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
                     Tag(Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list), RowKind.Settings).name = "results-difficulty";
@@ -291,6 +292,78 @@ namespace GridGame.App
             if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
             string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
             Tag(Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list), RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+        }
+
+        /// <summary>At most this many bond rows; the rest fold into one "and N more" line.</summary>
+        private const int BondRowsShown = 4;
+
+        /// <summary>GG-T1302 (§25.20): the Bonds block, from <see cref="BattleReport.BondChanges"/>: each pair whose cohesion
+        /// grew (both thumbnails, +N) and each hero whose Trust reached a new tier, tier-ups first. The rows come in one at a
+        /// time, each with a cue; a tier-up gets a gold "Tier N!", a longer beat and the power-up cue (Law 5). Reduce Motion
+        /// keeps the text and sound and drops the slide and pop.</summary>
+        private void BondRows(ContentDb c, VisualElement list)
+        {
+            var bonds = report.BondChanges;
+            if (bonds == null) return;
+            var rows = new List<(string[] ids, BondChange change)>();
+            foreach (var b in bonds.Cohesion)
+            {
+                var ids = b.Key?.Split('|');
+                if (b.After > b.Before && ids != null && ids.Length == 2) rows.Add((ids, b));
+            }
+            foreach (var b in bonds.Trust)
+                if (b.Key != null && Bonds.Tier(b.After) > Bonds.Tier(b.Before)) rows.Add((new[] { b.Key }, b));
+            if (rows.Count == 0) return;
+            bool TierUp(BondChange b) => Bonds.Tier(b.After) > Bonds.Tier(b.Before);
+            rows = rows.OrderBy(r => TierUp(r.change) ? 0 : 1).ThenByDescending(r => r.change.After - r.change.Before).ToList();
+
+            string Name(string id) => c.TryClass(id)?.Name ?? id;
+            Ui.Text("Bonds", "small dim", list).name = "results-bonds-head";
+            var shown = new List<(VisualElement row, bool tierUp)>();
+            foreach (var (ids, b) in rows.Take(BondRowsShown))
+            {
+                bool up = TierUp(b);
+                var row = Ui.El("row", list);
+                row.name = "results-bond-" + b.Key.Replace('|', '-');
+                row.style.alignItems = Align.Center;
+                row.style.marginTop = row.style.marginBottom = Space.S8;
+                foreach (var id in ids) Ui.Thumb(id, row, Size.Icon).style.marginRight = Space.S8;
+                var text = Ui.El("col", row);
+                text.style.flexGrow = 1; text.style.flexShrink = 1;
+                text.style.marginLeft = Space.S8;
+                string what = ids.Length == 2 ? $"{Name(ids[0])} & {Name(ids[1])}" : $"{Name(ids[0])}'s Trust";
+                var head = Ui.Text($"{what} +{b.After - b.Before}", up ? "gold" : null, text);
+                head.style.whiteSpace = WhiteSpace.Normal;
+                Fonts.UseHeavy(head);
+                if (up) Ui.Text($"Tier {Bonds.Tier(b.After)}!", "small gold", text);
+                row.style.opacity = 0f;
+                shown.Add((row, up));
+            }
+            if (rows.Count > BondRowsShown)
+            {
+                var more = Ui.Text($"and {rows.Count - BondRowsShown} more", "small dim", list);
+                more.name = "results-bonds-more";
+                more.style.opacity = 0f;
+                shown.Add((more, false));
+            }
+            reveals.Add(App.StartCoroutine(RevealBonds(shown)));
+        }
+
+        private IEnumerator RevealBonds(List<(VisualElement row, bool tierUp)> rows)
+        {
+            yield return Tween.Wait(Timing.Emphasis);
+            bool calm = App.Settings.ReduceMotion;
+            foreach (var (row, up) in rows)
+            {
+                App.Audio.Sfx(up ? "battle.powerup" : "ui.buy", up ? 1f : 0.6f);
+                yield return Tween.Run(Timing.Standard, k =>
+                {
+                    row.style.opacity = k;
+                    if (!calm) row.style.translate = new Translate(Mathf.Lerp(-40f, 0f, k), 0);
+                }, Tween.EaseOut);
+                if (up && !calm) yield return Tween.Pop(row, 1.12f, Timing.Emphasis);
+                yield return Tween.Wait(up ? Timing.Emphasis : Timing.Quick);
+            }
         }
 
         private static VisualElement Tag(VisualElement row, RowKind kind, Texture2D tex = null) { row.KindIcon(kind, tex); return row; }
