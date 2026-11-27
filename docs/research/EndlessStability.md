@@ -23,6 +23,16 @@ That is the same climb of about 1.5 MB per encounter that the first run showed. 
 objects are lower than in the first run (219 against 636 at enc 20) and almost flat. Only a full run,
 which needs one uninterrupted ~6-8 h night window, can settle the flatness criterion.
 
+**Third attempt (GG-T1253, 2026-11-27 01:52, PARTIAL, 7 / 300).** Same command, same build. Free RAM
+was 6.2 GB at start. At about 02:00, Claude Code's background-shell memory reaper killed the harness
+shell, and GridGame.exe went with it. 7 / 7 victories with no crash, hang or stall before the kill.
+The outside sampler read working set / private bytes of 265 / 416 MB at 01:52 and 346 / 522 MB at
+01:57, while free RAM fell from 5.5 to 4.4 GB. Player.log grew to 40 MB in 7 encounters (about
+5.5 MB per encounter), so a full run would write about 1.6 GB of log. The next attempt needs a host
+that is not under memory pressure from other CLIs. Run it from a plain terminal, outside a Claude
+Code background shell, or with `CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1` set when Claude Code
+starts.
+
 ## Run
 
 - Command: `python tools/harness.py endless 300 --seed 61000 --speed 8 --headless --leakprobe --run gg-t589-endless300`
