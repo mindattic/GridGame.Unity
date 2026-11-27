@@ -1247,8 +1247,12 @@ namespace GridGame.App
             if (app.Save != null)
             {
                 if (!Expeditions.CanLaunch(app.Content, app.Save, stageId, out var why)) { app.Toast(why); return; }
-                if (!RestedGate.Check(() => Launch(stageId, replaceCurrent))) return;
-                RestedGate.Spend();
+                // GG-T1379: a drill is practice, so launching or retrying one costs no Rested.
+                if (!Drills.IsDrill(app.Content.TryStage(stageId)))
+                {
+                    if (!RestedGate.Check(() => Launch(stageId, replaceCurrent))) return;
+                    RestedGate.Spend();
+                }
                 Expeditions.Begin(app.Content, app.Save, stageId);
                 app.Persist();
             }

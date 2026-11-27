@@ -64,6 +64,7 @@ namespace GridGame.App
             Ui.El("", col).style.height = Fit.H(5.5f);
 
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
+            if (Drills.IsDrill(c.TryStage(stageId))) { BuildDrill(col, c); return; }
             var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
             Fonts.UseDisplay(title);
             title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
@@ -256,6 +257,80 @@ namespace GridGame.App
             Ui.SetEnabled(again, Crucible.CanLaunch(c, App.Save, out _));
             Ui.El("", col).style.height = Space.S48;
             if (DemoMode.Active) root.schedule.Execute(() => App.Router.ResetTo(new HubScreen())).ExecuteLater(1500);
+        }
+
+        /// <summary>GG-T1379: a drill's results are one short card, since a drill earns nothing. A win goes on to the next
+        /// drill (Next drill ›), or after the last one to Camp, recording the onboarding step either way. A loss, retreat or
+        /// escape offers Retry, which replays the drill from its start at no cost; Back does the same.</summary>
+        private void BuildDrill(VisualElement col, ContentDb c)
+        {
+            var drills = c.Campaign?.Tutorial ?? new List<string>();
+            int idx = drills.IndexOf(stageId);
+            string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
+
+            var title = Ui.Text(report.Victory ? "DRILL CLEARED" : "TRY AGAIN", "t-display shadow", col);
+            title.name = "drill-title";
+            Fonts.UseDisplay(title);
+            title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
+            string where = idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId);
+            Ui.Text(where, "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+
+            var w = Ui.Panel(col, null, true);
+            Ui.Margin(w, top: Space.S48);
+            var list = Ui.List(w).contentContainer;
+            var t = Ui.Text(!report.Victory ? "Drills are practice: nothing is lost. Run it again from the start."
+                : nextId != null ? "Lesson learned. On to the next drill."
+                : "Every drill cleared. The caravan is ready for the road.", "kit-text", list);
+            t.name = "drill-line";
+            t.style.whiteSpace = WhiteSpace.Normal;
+            TurnsRow(list);
+            ComboRows(c, list);
+
+            var row = Ui.El("row", col);
+            row.style.justifyContent = Justify.Center;
+            if (!report.Victory)
+            {
+                onContinue = () => StageLauncher.Launch(stageId, true);
+                RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
+            }
+            else if (nextId != null)
+            {
+                onContinue = () =>
+                {
+                    Onboarding.Begin(App.Save, OnboardingStep.Drill, idx + 1);
+                    App.Persist();
+                    StageLauncher.Launch(nextId, true);
+                };
+                RowIcon.IconButton("Next drill", RowKind.Enter, Go, "btn--primary", row).name = "next";
+            }
+            else
+            {
+                onContinue = () =>
+                {
+                    Onboarding.Begin(App.Save, OnboardingStep.HubIntro);
+                    App.Persist();
+                    StoryBeats.AfterResults(true, stageId);
+                };
+                RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
+            }
+            Ui.El("", col).style.height = Space.S48;
+            reveals.Add(App.StartCoroutine(DrillCue(title, report.Victory)));
+
+            void Go()
+            {
+                if (continued) return;
+                continued = true;
+                onContinue();
+            }
+        }
+
+        /// <summary>The drill card's cue (Law 5): a chime and a pop on the title once the card is up; Reduce Motion keeps
+        /// the sound and drops the pop.</summary>
+        private IEnumerator DrillCue(VisualElement title, bool cleared)
+        {
+            yield return Tween.Wait(Timing.Quick);
+            App.Audio.Sfx(cleared ? "battle.powerup" : "ui.cancel");
+            if (!App.Settings.ReduceMotion) yield return Tween.Pop(title, 1.15f, Timing.Emphasis);
         }
 
         private IEnumerator NewBest(VisualElement label)
