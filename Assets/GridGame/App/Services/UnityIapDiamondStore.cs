@@ -86,8 +86,18 @@ namespace GridGame.App
             done?.Invoke(PurchaseResult.Of(PurchaseKind.Pending, message, id));
         }
 
+        private Action<PurchaseResult> restoreDone;
+        private float restoreSince;
+        public const float RestoreTimeout = 30f;
+
         internal void Tick(float dt)
         {
+            if (restoreDone != null && Time.realtimeSinceStartup - restoreSince > RestoreTimeout)
+            {
+                var d = restoreDone;
+                restoreDone = null;
+                d(PurchaseResult.Of(PurchaseKind.Failed, "The store hasn't answered. Check your connection and try again."));
+            }
             if (inFlightId != null && Time.realtimeSinceStartup - inFlightSince > InFlightTimeout)
                 ReleaseInFlight($"The store hasn't answered yet. If the purchase went through, the {ShardText.ShortPlural} arrive on their own.");
 
@@ -521,9 +531,13 @@ namespace GridGame.App
             // Either way anything found arrives through OnPurchasePending and the ledger grants it at most once.
             // GG-T1574: once Apple has restored, fetch purchases so owned non-consumables (finished long ago) come back as
             // confirmed orders and land in the wallet (OnPurchasesFetched).
+            restoreDone = done;
+            restoreSince = Time.realtimeSinceStartup;
             store.RestoreTransactions((ok, error) =>
             {
                 if (ok) store.FetchPurchases();
+                if (restoreDone != done) return; // already answered by the timeout
+                restoreDone = null;
                 done?.Invoke(ok
                     ? PurchaseResult.Of(PurchaseKind.Granted, "Purchases checked. Anything unfinished or owned has been delivered.")
                     : PurchaseResult.Of(PurchaseKind.Failed, "Couldn't check purchases" + (string.IsNullOrEmpty(error) ? "." : ": " + error)));

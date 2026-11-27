@@ -38,6 +38,8 @@ namespace GridGame.App
     {
         /// <summary>How long a load waits on the cloud before playing the local save anyway.</summary>
         public const float LoadWaitSeconds = 8f;
+        /// <summary>How long Restore from cloud waits (sign-in sheet included) before it reports what it has.</summary>
+        public const float RestoreWaitSeconds = 45f;
 
         private readonly ICloudSaveBackend backend;
         private readonly CloudUploadThrottle throttle = new CloudUploadThrottle();
@@ -129,7 +131,7 @@ namespace GridGame.App
             if (!Active || app?.Profile == null) { play(local); return; }
             bool settled = false;
             void Settle(SaveData s) { if (settled) return; settled = true; play(s); }
-            app.StartCoroutine(Timeout(() => { if (!settled) Debug.LogWarning("[Cloud] no answer; playing the local save"); Settle(local); }));
+            app.StartCoroutine(Timeout(() => { if (!settled) Debug.LogWarning("[Cloud] no answer; playing the local save"); Settle(local); }, LoadWaitSeconds));
 
             var name = CloudSave.SnapshotName(app.Profile.Name, slot);
             backend.ReadInfo(name, info =>
@@ -179,9 +181,9 @@ namespace GridGame.App
             return SaveTransfer.SharesPurchasesWith(cloud, others);
         }
 
-        private static IEnumerator Timeout(Action onTimeout)
+        private static IEnumerator Timeout(Action onTimeout, float seconds)
         {
-            yield return new WaitForSecondsRealtime(LoadWaitSeconds);
+            yield return new WaitForSecondsRealtime(seconds);
             onTimeout();
         }
 
@@ -214,6 +216,12 @@ namespace GridGame.App
         public void RestoreEmptySlots(GameApp app, Action<int> done)
         {
             if (backend == null || app?.Profile == null || app.Saves == null) { done(0); return; }
+            // No network or a captive portal: sign-in and reads may never answer, so the screen gets an answer anyway.
+            bool answered = false;
+            int restoredSoFar = 0;
+            var final = done;
+            done = n => { if (answered) return; answered = true; final(n); };
+            app.StartCoroutine(Timeout(() => { if (!answered) Debug.LogWarning("[Cloud] restore: no answer"); done(restoredSoFar); }, RestoreWaitSeconds));
             if (!backend.SignedIn)
             {
                 backend.SignIn(true, ok => { if (ok) RestoreEmptySlots(app, done); else done(0); });
@@ -236,7 +244,7 @@ namespace GridGame.App
                         {
                             if (SharesPurchasesElsewhere(app, save, slot))
                                 Debug.LogWarning($"[Cloud] {name} holds purchases already in another slot on this device; not restored");
-                            else if (app.Saves.Write(slot, save)) restored++;
+                            else if (app.Saves.Write(slot, save)) restoredSoFar = ++restored;
                         }
                         else Debug.LogWarning($"[Cloud] {name} unreadable: {why}");
                         Next();
