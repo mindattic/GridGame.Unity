@@ -1,0 +1,92 @@
+dialogue cohesion_redmage_engineer
+title: A gauge for the coal
+trigger: Cohesion redmage engineer level=2
+once
+speaker commander $commander
+speaker redmage redmage
+speaker engineer engineer
+
+node open commander
+  The Engineer is lying on one elbow a careful arm's length from the Red Mage's tin, holding a brass gauge on a chain and not quite pointing it at the coal.
+  -> nine
+
+node nine engineer
+  Nine years, you said. A coal doesn't last nine nights, not without feeding. You feed it peat, I've watched. That doesn't add up. Something in there is wrong in a way I'd like to understand.
+  -> wrong
+
+node wrong redmage
+  Nothing in there is wrong. It's my aunt's hearth. Put the brass away before I melt it into a ring for you.
+  -> warm
+
+node warm engineer
+  I'm not trying to take it. Halcyon seals run warm for a hundred years on nothing. If your coal does the same, that's a question with an answer. Commander, tell the Red Mage I'm harmless.
+  * Let the Engineer measure it. Gauge only. The lid stays where the Red Mage puts it. -> measure
+    do: AddCohesion redmage engineer 10
+    do: AddTrust redmage -3
+    do: SetFlag redmage_engineer:coal_measured
+  * Ask the Red Mage, not the tin. The coal answers to one person. -> ask
+    do: AddCohesion redmage engineer 6
+    do: SetFlag redmage_engineer:coal_asked
+  * A fire near the wagons is everyone's business. Measure it, Engineer. -> business
+    do: AddCohesion redmage engineer -4
+    do: AddTrust redmage -2
+    do: SetFlag redmage_engineer:coal_business
+  * I let the Engineer open the orb, and nothing broke. A gauge on a tin is less than that. -> orb
+    if: FlagSet engineer:orb_lent
+    do: AddCohesion redmage engineer 8
+    do: AddTrust engineer 2
+    do: SetFlag redmage_engineer:coal_orb
+
+node measure redmage
+  Gauge only. Fine. If that needle so much as twitches toward the lid, Engineer, I'm keeping it. Well? What does it say?
+  -> seal
+
+node ask engineer
+  Ask. All right. Red Mage, may I? Please? I've a whole page for it. Page sixty. It's been empty since the fen.
+  -> seal
+
+node business redmage
+  Everyone's business. It's been my business alone for nine years and the wagons are still here. Measure, then. I'll be over there, not watching.
+  -> seal
+
+node orb redmage
+  The orb. And it's still glowing, I suppose. Fine. One look. One. My aunt would have liked you, Engineer. She liked people who asked first.
+  -> seal
+
+node seal engineer
+  It reads like a seal. Old warmth, not fire warmth. Tap Seven ran like this until it didn't, and Redline put that on my account. If your coal is the same thing, it's worth more than the fish market.
+  * Redline gets nothing, and the coal isn't for sale. Say it together and mean it. -> nothing
+    if: FlagSet engineer:debt_defied
+    do: AddCohesion redmage engineer 8
+    do: SetFlag redmage_engineer:seal_nothing
+  * The coal goes home to the aunt's hearth. Build it a grate that will hold it. -> grate
+    if: FlagSet redmage:fire_home
+    do: AddCohesion redmage engineer 10
+    do: AddTrust redmage 2
+    do: SetFlag redmage_engineer:seal_grate
+  * Build the Red Mage a better tin. Vented, hinged, and never opened by anyone else. -> tin
+    do: AddCohesion redmage engineer 8
+    do: SetFlag redmage_engineer:seal_tin
+  * Whatever it's worth, it stays a coal. No more questions about it. -> stays
+    do: AddCohesion redmage engineer 2
+    do: AddTrust engineer -2
+    do: SetFlag redmage_engineer:seal_stays
+
+node nothing redmage
+  Nothing. Not one ember. If Redline asks, Engineer, tell them it went out years ago. I'll look very sad.
+  -> close
+
+node grate engineer
+  A grate. Iron, not brass, brass goes soft. Draw me the hearth, Red Mage, and I'll have the fitting ready by the time we pass the fens.
+  -> close
+
+node tin engineer
+  Double-walled. Vent in the lid, latch only you can work. I'll make the latch backwards. Nobody ever thinks to try it backwards.
+  -> close
+
+node stays engineer
+  No more questions. Page sixty stays half full, then. That's harder for me than it sounds, Commander.
+  -> close
+
+node close commander
+  The gauge goes back on its chain. The Red Mage turns the tin a little toward the Engineer, so the light from the dent falls on the open notebook.

@@ -1,0 +1,91 @@
+dialogue cohesion_cleric_knight
+title: Behind the shield
+trigger: Cohesion cleric knight level=2
+once
+speaker commander $commander
+speaker cleric cleric
+speaker knight knight
+
+node open commander
+  The Knight sits with the shield arm held out stiff while the Cleric works a strap of linen round it. The bruise runs from wrist to elbow, and neither of them is pretending it doesn't.
+  -> stayed
+
+node stayed cleric
+  You stayed in front of me for three hits that weren't yours. I called you back twice. You heard me.
+  -> before
+
+node before knight
+  I heard. Stand before the hold. It doesn't say step aside when the healer asks. If I'd moved, they'd have been on you.
+  -> spare
+
+node spare cleric
+  And if you'd dropped, they'd have been on both of us, and I'd have had nobody to wrap. Commander, settle this. Who stands where?
+  * The Cleric calls the Knight back, and the Knight goes. That's an order. -> order
+    do: AddCohesion cleric knight 10
+    do: AddTrust knight -3
+    do: SetFlag cleric_knight:line_order
+  * The Knight stands in front. The Cleric keeps the Knight standing. -> front
+    do: AddCohesion cleric knight 6
+    do: SetFlag cleric_knight:line_front
+  * Keep the Cleric out of the line. The Knight holds it alone. -> alone
+    do: AddCohesion cleric knight -4
+    do: AddTrust knight 2
+    do: SetFlag cleric_knight:line_alone
+  * The oath was to the hold's people. The Cleric is one of them now. Stand before, and listen. -> people
+    if: FlagSet knight:oath_people
+    do: AddCohesion cleric knight 8
+    do: SetFlag cleric_knight:line_people
+
+node order knight
+  Back when called. I'll go. I'll hate it, and I'll go. Call early, Cleric. I'm slow to turn with this much shield.
+  -> levy
+
+node front cleric
+  Keep you standing. That's a job I know. I'll stand closer, then, so I don't have to shout.
+  -> levy
+
+node alone knight
+  Alone, then. I've held a line alone before. Never liked it. Mind your distance, Cleric.
+  -> levy
+
+node people knight
+  One of the hold's. I never thought of it like that. Before you, and listening. I can try both at once.
+  -> levy
+
+node levy knight
+  You wore the white. The levy came through the holds with collectors behind it. My sister carries water at the well there. If they took her to a table, would you know her colour on sight?
+  * We go to the sister first, before anything. The Cleric comes, to see her colour before anyone else does. -> first
+    if: FlagSet knight:sister_promised
+    do: AddCohesion cleric knight 10
+    do: AddTrust knight 2
+    do: SetFlag cleric_knight:sister_first
+  * Write the sister in the book of names, on the living page. -> living
+    do: AddCohesion cleric knight 8
+    do: SetFlag cleric_knight:sister_living
+  * Read the Knight one name from the book, the way you read me one. -> read
+    if: FlagSet cleric:thread_read
+    do: AddCohesion cleric knight 8
+    do: AddTrust cleric 2
+    do: SetFlag cleric_knight:sister_read
+  * She isn't lost. She doesn't belong in that book. -> not
+    do: AddCohesion cleric knight 2
+    do: SetFlag cleric_knight:sister_not
+
+node first cleric
+  First. I'll know. A water carrier has strong hands and a straight back, and the colour sits in the cheeks. If it's still there, I'll tell you before you've finished asking.
+  -> close
+
+node living cleric
+  The living page has three names on it. She'll be the fourth. Tell me how she spells it. Slowly.
+  -> close
+
+node read cleric
+  One name. A boy from the river holds who drew horses on the table with his finger. I never knew if it was a good sign. I'd like it to be.
+  -> close
+
+node not knight
+  No. She isn't. Leave the book shut. If she ever goes in it, it'll be because we were too slow, and we won't be.
+  -> close
+
+node close commander
+  The Cleric ties off the linen. The Knight flexes the arm, picks up the shield, and sets it down again on the Cleric's side of the fire.

@@ -1,0 +1,91 @@
+dialogue cohesion_cleric_sage
+title: Book and cord
+trigger: Cohesion cleric sage level=2
+once
+speaker commander $commander
+speaker cleric cleric
+speaker sage sage
+
+node open commander
+  The Cleric's book of names lies open on a flat stone. The Sage's knotted cord lies coiled beside it. Neither of them has said a word for some time.
+  -> count
+
+node count sage
+  How many in yours? I've thirty-one knots. The road counts in knots. You count in ink.
+  -> ink
+
+node ink cleric
+  Two hundred and six. I took most of them. You lost yours. I've never decided whether that makes your cord heavier or mine.
+  -> wick
+
+node wick sage
+  The first knot is Wick. My apprentice. Wick climbed the stair to the Choir alone. Is there a Wick in your book, Cleric? Commander, should I even ask?
+  * Ask. And Cleric, look. If Wick's there, the Sage should know tonight. -> look
+    do: AddCohesion cleric sage 10
+    do: AddTrust cleric -3
+    do: SetFlag cleric_sage:wick_look
+  * Read the book and the cord side by side. They count the same people. -> side
+    do: AddCohesion cleric sage 6
+    do: SetFlag cleric_sage:wick_side
+  * Counting the lost won't win the road. Both of you, sleep. -> sleep
+    do: AddCohesion cleric sage -4
+    do: SetFlag cleric_sage:wick_sleep
+  * I told the Sage it was never the Sage's to carry. That's true of the Cleric's book too. -> carry
+    if: FlagSet sage:wick_absolved
+    do: AddCohesion cleric sage 8
+    do: AddTrust sage 2
+    do: SetFlag cleric_sage:wick_carry
+
+node look cleric
+  I'll look. There's no Wick. There's a pilgrim from the stair with no name, only "lantern, small hands". I'm sorry. That's what I wrote, in those days.
+  -> loose
+
+node side sage
+  Side by side. Your thirty-fourth name was from the Lantern Road. That's my ninth knot, I think. Same week. Hm.
+  -> loose
+
+node sleep cleric
+  Sleep. The Commander's right. We could count till morning and the numbers wouldn't move.
+  -> loose
+
+node carry cleric
+  Not mine to carry. I've heard that said kindly once already. It sounds different when someone else is carrying a cord.
+  -> loose
+
+node loose cleric
+  I don't write the ones I'd have saved and didn't. I only write the ones I took. Do you tie knots for those? The ones you were nearly in time for?
+  * Clean end. Both of you stop on a clean page and a clean cord. -> clean
+    if: FlagSet sage:cord_down
+    do: AddCohesion cleric sage 10
+    do: SetFlag cleric_sage:end_clean
+  * Tie a knot for Wren, the Cleric's last one, loose, so it can be carried home. -> wren
+    if: FlagSet cleric:thread_girl
+    do: AddCohesion cleric sage 8
+    do: AddTrust cleric 2
+    do: SetFlag cleric_sage:end_wren
+  * Swap for one night. The Sage holds the book, the Cleric holds the cord. -> swap
+    do: AddCohesion cleric sage 8
+    do: AddTrust sage -2
+    do: SetFlag cleric_sage:end_swap
+  * Some people don't belong in ink or knots. Let those be. -> let
+    do: AddCohesion cleric sage 2
+    do: SetFlag cleric_sage:end_let
+
+node clean sage
+  A clean end and a clean page. You'll make a pair of liars of us, Commander. I'd quite like that.
+  -> close
+
+node wren sage
+  Wren. Loose. There. A child's knot, small enough to undo with a fingernail. You can do it, Cleric, when you're ready.
+  -> close
+
+node swap sage
+  The book's heavier than it looks. And you're holding the cord too tight, Cleric. Loose. Like that.
+  -> close
+
+node let cleric
+  Let them be. I'll try. I've never been good at leaving a page empty.
+  -> close
+
+node close commander
+  The cord ends up across the open book, its knots resting on the names. Neither of them moves it, and the lantern burns down between them.

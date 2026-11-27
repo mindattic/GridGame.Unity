@@ -4713,5 +4713,220 @@
       { "Id": "none", "Speaker": "barbarian", "Next": "close" },
       { "Id": "close", "Speaker": "commander" }
     ]
+  },
+  {
+    "Id": "cohesion_cleric_redmage",
+    "Title": "Salve and coal",
+    "Trigger": { "Kind": "Cohesion", "Id": "cleric", "Other": "redmage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "redmage", "Class": "redmage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "old" },
+      { "Id": "old", "Speaker": "cleric", "Next": "morning" },
+      { "Id": "morning", "Speaker": "redmage", "Next": "places" },
+      {
+        "Id": "places", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "all", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 10 }, { "Type": "AddTrust", "Id": "cleric", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric_redmage:morning_told" } ] },
+          { "Next": "tables", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric_redmage:morning_tables" } ] },
+          { "Next": "hand", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": -2 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_redmage:morning_hand" } ] },
+          { "Next": "judged", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_forgiven" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 8 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_redmage:morning_judged" } ] }
+        ]
+      },
+      { "Id": "all", "Speaker": "cleric", "Next": "apron" },
+      { "Id": "tables", "Speaker": "redmage", "Next": "apron" },
+      { "Id": "hand", "Speaker": "redmage", "Next": "apron" },
+      { "Id": "judged", "Speaker": "redmage", "Next": "apron" },
+      {
+        "Id": "apron", "Speaker": "redmage",
+        "Choices": [
+          { "Next": "three", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_redmage:try_three" } ] },
+          { "Next": "stop", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric_redmage:try_stop" } ] },
+          { "Next": "close_by", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric_redmage:try_close" } ] },
+          { "Next": "none", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "redmage", "Amount": -4 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_redmage:try_none" } ] }
+        ]
+      },
+      { "Id": "three", "Speaker": "cleric", "Next": "wrap" },
+      { "Id": "stop", "Speaker": "redmage", "Next": "wrap" },
+      { "Id": "close_by", "Speaker": "cleric", "Next": "wrap" },
+      { "Id": "none", "Speaker": "redmage", "Next": "wrap" },
+      { "Id": "wrap", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_cleric_engineer",
+    "Title": "Questions for the white",
+    "Trigger": { "Kind": "Cohesion", "Id": "cleric", "Other": "engineer", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "engineer", "Class": "engineer" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "page" },
+      { "Id": "page", "Speaker": "engineer", "Next": "hands" },
+      { "Id": "hands", "Speaker": "cleric", "Next": "pipes" },
+      {
+        "Id": "pipes", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "every", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 10 }, { "Type": "AddTrust", "Id": "cleric", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric_engineer:white_every" } ] },
+          { "Next": "one", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric_engineer:white_one" } ] },
+          { "Next": "away", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": -4 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_engineer:white_away" } ] },
+          { "Next": "better", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_used" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric_engineer:white_better" } ] }
+        ]
+      },
+      { "Id": "every", "Speaker": "cleric", "Next": "ledger" },
+      { "Id": "one", "Speaker": "cleric", "Next": "ledger" },
+      { "Id": "away", "Speaker": "engineer", "Next": "ledger" },
+      { "Id": "better", "Speaker": "engineer", "Next": "ledger" },
+      {
+        "Id": "ledger", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "crew", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_shared" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 10 }, { "Type": "AddTrust", "Id": "engineer", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_engineer:ledger_crew" } ] },
+          { "Next": "living", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:kept_crew" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric_engineer:ledger_living" } ] },
+          { "Next": "trade", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 8 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "cleric_engineer:ledger_trade" } ] },
+          { "Next": "apart", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "engineer", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_engineer:ledger_apart" } ] }
+        ]
+      },
+      { "Id": "crew", "Speaker": "engineer", "Next": "close" },
+      { "Id": "living", "Speaker": "engineer", "Next": "close" },
+      { "Id": "trade", "Speaker": "engineer", "Next": "close" },
+      { "Id": "apart", "Speaker": "cleric", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_cleric_knight",
+    "Title": "Behind the shield",
+    "Trigger": { "Kind": "Cohesion", "Id": "cleric", "Other": "knight", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "stayed" },
+      { "Id": "stayed", "Speaker": "cleric", "Next": "before" },
+      { "Id": "before", "Speaker": "knight", "Next": "spare" },
+      {
+        "Id": "spare", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "order", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric_knight:line_order" } ] },
+          { "Next": "front", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric_knight:line_front" } ] },
+          { "Next": "alone", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": -4 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_knight:line_alone" } ] },
+          { "Next": "people", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_people" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric_knight:line_people" } ] }
+        ]
+      },
+      { "Id": "order", "Speaker": "knight", "Next": "levy" },
+      { "Id": "front", "Speaker": "cleric", "Next": "levy" },
+      { "Id": "alone", "Speaker": "knight", "Next": "levy" },
+      { "Id": "people", "Speaker": "knight", "Next": "levy" },
+      {
+        "Id": "levy", "Speaker": "knight",
+        "Choices": [
+          { "Next": "first", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_knight:sister_first" } ] },
+          { "Next": "living", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric_knight:sister_living" } ] },
+          { "Next": "read", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:thread_read" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_knight:sister_read" } ] },
+          { "Next": "not", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_knight:sister_not" } ] }
+        ]
+      },
+      { "Id": "first", "Speaker": "cleric", "Next": "close" },
+      { "Id": "living", "Speaker": "cleric", "Next": "close" },
+      { "Id": "read", "Speaker": "cleric", "Next": "close" },
+      { "Id": "not", "Speaker": "knight", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_cleric_sage",
+    "Title": "Book and cord",
+    "Trigger": { "Kind": "Cohesion", "Id": "cleric", "Other": "sage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "cleric", "Class": "cleric" },
+      { "Id": "sage", "Class": "sage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "count" },
+      { "Id": "count", "Speaker": "sage", "Next": "ink" },
+      { "Id": "ink", "Speaker": "cleric", "Next": "wick" },
+      {
+        "Id": "wick", "Speaker": "sage",
+        "Choices": [
+          { "Next": "look", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "cleric", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric_sage:wick_look" } ] },
+          { "Next": "side", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric_sage:wick_side" } ] },
+          { "Next": "sleep", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": -4 }, { "Type": "SetFlag", "Id": "cleric_sage:wick_sleep" } ] },
+          { "Next": "carry", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_absolved" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_sage:wick_carry" } ] }
+        ]
+      },
+      { "Id": "look", "Speaker": "cleric", "Next": "loose" },
+      { "Id": "side", "Speaker": "sage", "Next": "loose" },
+      { "Id": "sleep", "Speaker": "cleric", "Next": "loose" },
+      { "Id": "carry", "Speaker": "cleric", "Next": "loose" },
+      {
+        "Id": "loose", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "clean", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_down" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 10 }, { "Type": "SetFlag", "Id": "cleric_sage:end_clean" } ] },
+          { "Next": "wren", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:thread_girl" } ], "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_sage:end_wren" } ] },
+          { "Next": "swap", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "sage", "Amount": -2 }, { "Type": "SetFlag", "Id": "cleric_sage:end_swap" } ] },
+          { "Next": "let", "Effects": [ { "Type": "AddCohesion", "Id": "cleric", "Other": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "cleric_sage:end_let" } ] }
+        ]
+      },
+      { "Id": "clean", "Speaker": "sage", "Next": "close" },
+      { "Id": "wren", "Speaker": "sage", "Next": "close" },
+      { "Id": "swap", "Speaker": "sage", "Next": "close" },
+      { "Id": "let", "Speaker": "cleric", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_redmage_engineer",
+    "Title": "A gauge for the coal",
+    "Trigger": { "Kind": "Cohesion", "Id": "redmage", "Other": "engineer", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "engineer", "Class": "engineer" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "nine" },
+      { "Id": "nine", "Speaker": "engineer", "Next": "wrong" },
+      { "Id": "wrong", "Speaker": "redmage", "Next": "warm" },
+      {
+        "Id": "warm", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "measure", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -3 }, { "Type": "SetFlag", "Id": "redmage_engineer:coal_measured" } ] },
+          { "Next": "ask", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage_engineer:coal_asked" } ] },
+          { "Next": "business", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": -4 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -2 }, { "Type": "SetFlag", "Id": "redmage_engineer:coal_business" } ] },
+          { "Next": "orb", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:orb_lent" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 8 }, { "Type": "AddTrust", "Id": "engineer", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_engineer:coal_orb" } ] }
+        ]
+      },
+      { "Id": "measure", "Speaker": "redmage", "Next": "seal" },
+      { "Id": "ask", "Speaker": "engineer", "Next": "seal" },
+      { "Id": "business", "Speaker": "redmage", "Next": "seal" },
+      { "Id": "orb", "Speaker": "redmage", "Next": "seal" },
+      {
+        "Id": "seal", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "nothing", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_defied" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage_engineer:seal_nothing" } ] },
+          { "Next": "grate", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:fire_home" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_engineer:seal_grate" } ] },
+          { "Next": "tin", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage_engineer:seal_tin" } ] },
+          { "Next": "stays", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "engineer", "Amount": 2 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "redmage_engineer:seal_stays" } ] }
+        ]
+      },
+      { "Id": "nothing", "Speaker": "redmage", "Next": "close" },
+      { "Id": "grate", "Speaker": "engineer", "Next": "close" },
+      { "Id": "tin", "Speaker": "engineer", "Next": "close" },
+      { "Id": "stays", "Speaker": "engineer", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
   }
 ]

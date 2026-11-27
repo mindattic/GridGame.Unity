@@ -1,0 +1,91 @@
+dialogue cohesion_cleric_engineer
+title: Questions for the white
+trigger: Cohesion cleric engineer level=2
+once
+speaker commander $commander
+speaker cleric cleric
+speaker engineer engineer
+
+node open commander
+  The Engineer has the notebook open on the wagon tailboard and a pencil behind each ear. The Cleric is sat across from it, very straight, like someone waiting for a verdict.
+  -> page
+
+node page engineer
+  Page fifty-one. How does a table take colour out of a person? Is it the table, the cloth, the words, or the hands? Nobody in the Underspire could tell me. You sat at one.
+  -> hands
+
+node hands cleric
+  The hands. And the words. I'm not sure there's a difference by the end. You ask it like a question about pipes.
+  -> pipes
+
+node pipes engineer
+  Because it is one. Something goes in, something comes out, there's a fitting in the middle. If I know the fitting, I can break it. Commander, tell the Cleric it's not an accusation.
+  * Answer every question in that notebook, Cleric. That's how we break the tables. -> every
+    do: AddCohesion cleric engineer 10
+    do: AddTrust cleric -3
+    do: SetFlag cleric_engineer:white_every
+  * One question a night, and the Cleric picks which. -> one
+    do: AddCohesion cleric engineer 6
+    do: SetFlag cleric_engineer:white_one
+  * The Cleric isn't a fitting. Put the notebook away. -> away
+    do: AddCohesion cleric engineer -4
+    do: AddTrust cleric 2
+    do: SetFlag cleric_engineer:white_away
+  * I asked the Cleric for everything about the collectors once. The Engineer just asks it better. -> better
+    if: FlagSet cleric:white_used
+    do: AddCohesion cleric engineer 8
+    do: SetFlag cleric_engineer:white_better
+
+node every cleric
+  Every question. Then sharpen both pencils, Engineer. I'll start with the cloth. It was never white. It was bleached every night.
+  -> ledger
+
+node one cleric
+  One a night. Tonight's is the hands. Write slowly. I'd like to hear how it sounds read back.
+  -> ledger
+
+node away engineer
+  Away. Fine. It's still page fifty-one, Commander. Pages don't forget, they just wait.
+  -> ledger
+
+node better engineer
+  Better? I'll take that. I ask in order, that's all. Collectors first, then tables, then whoever wrote the words.
+  -> ledger
+
+node ledger cleric
+  You keep a book of questions. I keep a book of names. Redline keeps a book of sums with you in it, the Barbarian says. Whose names are in yours, from Tap Seven?
+  * The crew pays the Engineer's debt together. The Cleric is crew. -> crew
+    if: FlagSet engineer:debt_shared
+    do: AddCohesion cleric engineer 10
+    do: AddTrust engineer 2
+    do: SetFlag cleric_engineer:ledger_crew
+  * The Cleric is writing all of us in that book. The Engineer goes in too, as living. -> living
+    if: FlagSet cleric:kept_crew
+    do: AddCohesion cleric engineer 8
+    do: SetFlag cleric_engineer:ledger_living
+  * Trade books for an evening. Names for questions. -> trade
+    do: AddCohesion cleric engineer 8
+    do: AddTrust engineer -2
+    do: SetFlag cleric_engineer:ledger_trade
+  * Debts and names are different books. Keep them that way. -> apart
+    do: AddCohesion cleric engineer 2
+    do: SetFlag cleric_engineer:ledger_apart
+
+node crew engineer
+  The Cleric too. Redline counts in fish and people. I'd like to see the clerk's face when a healer in old white asks to see the sum.
+  -> close
+
+node living engineer
+  As living. Good. Then I'm on a page somewhere that isn't Redline's. Spell it right, Cleric, they never do.
+  -> close
+
+node trade engineer
+  My questions? Most of them are about you lot. Fine. Read it. But I'm reading the names first, and I'm counting them.
+  -> close
+
+node apart cleric
+  Different books. As you like. The offer stays open, Engineer. The page doesn't fill itself.
+  -> close
+
+node close commander
+  The Engineer slides the notebook across the tailboard. The Cleric pushes the book of names the other way, and for a while there is only the sound of two people reading.

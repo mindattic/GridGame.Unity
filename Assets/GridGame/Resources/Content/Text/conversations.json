@@ -2067,6 +2067,753 @@
         ]
       }
     },
+    "dialogue:cohesion_cleric_engineer": {
+      "key": "dialogue:cohesion_cleric_engineer",
+      "id": "conversation-cohesion-cleric-engineer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2c623cbc250711ce4512572ade4edafabf9ecaedf23fb7b5159918301cfa6900",
+      "about": [
+        "character-commander",
+        "class-cleric",
+        "class-engineer"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-engineer",
+        "class-cleric"
+      ],
+      "payload": {
+        "title": "Questions for the white",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer has the notebook open on the wagon tailboard and a pencil behind each ear. The Cleric is sat across from it, very straight, like someone waiting for a verdict.",
+            "next": "page"
+          },
+          {
+            "id": "page",
+            "speaker": "class-engineer",
+            "line": "Page fifty-one. How does a table take colour out of a person? Is it the table, the cloth, the words, or the hands? Nobody in the Underspire could tell me. You sat at one.",
+            "next": "hands"
+          },
+          {
+            "id": "hands",
+            "speaker": "class-cleric",
+            "line": "The hands. And the words. I'm not sure there's a difference by the end. You ask it like a question about pipes.",
+            "next": "pipes"
+          },
+          {
+            "id": "pipes",
+            "speaker": "class-engineer",
+            "line": "Because it is one. Something goes in, something comes out, there's a fitting in the middle. If I know the fitting, I can break it. Commander, tell the Cleric it's not an accusation.",
+            "choices": [
+              {
+                "text": "Answer every question in that notebook, Cleric. That's how we break the tables.",
+                "next": "every"
+              },
+              {
+                "text": "One question a night, and the Cleric picks which.",
+                "next": "one"
+              },
+              {
+                "text": "The Cleric isn't a fitting. Put the notebook away.",
+                "next": "away"
+              },
+              {
+                "text": "I asked the Cleric for everything about the collectors once. The Engineer just asks it better.",
+                "next": "better",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "every",
+            "speaker": "class-cleric",
+            "line": "Every question. Then sharpen both pencils, Engineer. I'll start with the cloth. It was never white. It was bleached every night.",
+            "next": "ledger"
+          },
+          {
+            "id": "one",
+            "speaker": "class-cleric",
+            "line": "One a night. Tonight's is the hands. Write slowly. I'd like to hear how it sounds read back.",
+            "next": "ledger"
+          },
+          {
+            "id": "away",
+            "speaker": "class-engineer",
+            "line": "Away. Fine. It's still page fifty-one, Commander. Pages don't forget, they just wait.",
+            "next": "ledger"
+          },
+          {
+            "id": "better",
+            "speaker": "class-engineer",
+            "line": "Better? I'll take that. I ask in order, that's all. Collectors first, then tables, then whoever wrote the words.",
+            "next": "ledger"
+          },
+          {
+            "id": "ledger",
+            "speaker": "class-cleric",
+            "line": "You keep a book of questions. I keep a book of names. Redline keeps a book of sums with you in it, the Barbarian says. Whose names are in yours, from Tap Seven?",
+            "choices": [
+              {
+                "text": "The crew pays the Engineer's debt together. The Cleric is crew.",
+                "next": "crew",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The Cleric is writing all of us in that book. The Engineer goes in too, as living.",
+                "next": "living",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Trade books for an evening. Names for questions.",
+                "next": "trade"
+              },
+              {
+                "text": "Debts and names are different books. Keep them that way.",
+                "next": "apart"
+              }
+            ]
+          },
+          {
+            "id": "crew",
+            "speaker": "class-engineer",
+            "line": "The Cleric too. Redline counts in fish and people. I'd like to see the clerk's face when a healer in old white asks to see the sum.",
+            "next": "close"
+          },
+          {
+            "id": "living",
+            "speaker": "class-engineer",
+            "line": "As living. Good. Then I'm on a page somewhere that isn't Redline's. Spell it right, Cleric, they never do.",
+            "next": "close"
+          },
+          {
+            "id": "trade",
+            "speaker": "class-engineer",
+            "line": "My questions? Most of them are about you lot. Fine. Read it. But I'm reading the names first, and I'm counting them.",
+            "next": "close"
+          },
+          {
+            "id": "apart",
+            "speaker": "class-cleric",
+            "line": "Different books. As you like. The offer stays open, Engineer. The page doesn't fill itself.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Engineer slides the notebook across the tailboard. The Cleric pushes the book of names the other way, and for a while there is only the sound of two people reading."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_cleric_knight": {
+      "key": "dialogue:cohesion_cleric_knight",
+      "id": "conversation-cohesion-cleric-knight",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7ee25b0d07561c7a2e0fcf2165ae62b164d6488acee3ca985d46c4556ad161ff",
+      "about": [
+        "character-commander",
+        "class-cleric",
+        "class-knight"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-cleric",
+        "class-knight"
+      ],
+      "payload": {
+        "title": "Behind the shield",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Knight sits with the shield arm held out stiff while the Cleric works a strap of linen round it. The bruise runs from wrist to elbow, and neither of them is pretending it doesn't.",
+            "next": "stayed"
+          },
+          {
+            "id": "stayed",
+            "speaker": "class-cleric",
+            "line": "You stayed in front of me for three hits that weren't yours. I called you back twice. You heard me.",
+            "next": "before"
+          },
+          {
+            "id": "before",
+            "speaker": "class-knight",
+            "line": "I heard. Stand before the hold. It doesn't say step aside when the healer asks. If I'd moved, they'd have been on you.",
+            "next": "spare"
+          },
+          {
+            "id": "spare",
+            "speaker": "class-cleric",
+            "line": "And if you'd dropped, they'd have been on both of us, and I'd have had nobody to wrap. Commander, settle this. Who stands where?",
+            "choices": [
+              {
+                "text": "The Cleric calls the Knight back, and the Knight goes. That's an order.",
+                "next": "order"
+              },
+              {
+                "text": "The Knight stands in front. The Cleric keeps the Knight standing.",
+                "next": "front"
+              },
+              {
+                "text": "Keep the Cleric out of the line. The Knight holds it alone.",
+                "next": "alone"
+              },
+              {
+                "text": "The oath was to the hold's people. The Cleric is one of them now. Stand before, and listen.",
+                "next": "people",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "order",
+            "speaker": "class-knight",
+            "line": "Back when called. I'll go. I'll hate it, and I'll go. Call early, Cleric. I'm slow to turn with this much shield.",
+            "next": "levy"
+          },
+          {
+            "id": "front",
+            "speaker": "class-cleric",
+            "line": "Keep you standing. That's a job I know. I'll stand closer, then, so I don't have to shout.",
+            "next": "levy"
+          },
+          {
+            "id": "alone",
+            "speaker": "class-knight",
+            "line": "Alone, then. I've held a line alone before. Never liked it. Mind your distance, Cleric.",
+            "next": "levy"
+          },
+          {
+            "id": "people",
+            "speaker": "class-knight",
+            "line": "One of the hold's. I never thought of it like that. Before you, and listening. I can try both at once.",
+            "next": "levy"
+          },
+          {
+            "id": "levy",
+            "speaker": "class-knight",
+            "line": "You wore the white. The levy came through the holds with collectors behind it. My sister carries water at the well there. If they took her to a table, would you know her colour on sight?",
+            "choices": [
+              {
+                "text": "We go to the sister first, before anything. The Cleric comes, to see her colour before anyone else does.",
+                "next": "first",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Write the sister in the book of names, on the living page.",
+                "next": "living"
+              },
+              {
+                "text": "Read the Knight one name from the book, the way you read me one.",
+                "next": "read",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "She isn't lost. She doesn't belong in that book.",
+                "next": "not"
+              }
+            ]
+          },
+          {
+            "id": "first",
+            "speaker": "class-cleric",
+            "line": "First. I'll know. A water carrier has strong hands and a straight back, and the colour sits in the cheeks. If it's still there, I'll tell you before you've finished asking.",
+            "next": "close"
+          },
+          {
+            "id": "living",
+            "speaker": "class-cleric",
+            "line": "The living page has three names on it. She'll be the fourth. Tell me how she spells it. Slowly.",
+            "next": "close"
+          },
+          {
+            "id": "read",
+            "speaker": "class-cleric",
+            "line": "One name. A boy from the river holds who drew horses on the table with his finger. I never knew if it was a good sign. I'd like it to be.",
+            "next": "close"
+          },
+          {
+            "id": "not",
+            "speaker": "class-knight",
+            "line": "No. She isn't. Leave the book shut. If she ever goes in it, it'll be because we were too slow, and we won't be.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Cleric ties off the linen. The Knight flexes the arm, picks up the shield, and sets it down again on the Cleric's side of the fire."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_cleric_redmage": {
+      "key": "dialogue:cohesion_cleric_redmage",
+      "id": "conversation-cohesion-cleric-redmage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:af481c8971cd423d9bf192dfa99621eec96088c5afe007c4eec2821ee6d8982d",
+      "about": [
+        "character-commander",
+        "class-cleric",
+        "class-redmage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-cleric",
+        "class-redmage"
+      ],
+      "payload": {
+        "title": "Salve and coal",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Cleric has a jar of salve open on one knee and the Red Mage's left hand palm up on the other. The old burns there are shiny and tight, and the Red Mage is looking anywhere but at them.",
+            "next": "old"
+          },
+          {
+            "id": "old",
+            "speaker": "class-cleric",
+            "line": "These are years old. Nobody dressed them, did they? You let them close on their own, and they closed badly.",
+            "next": "morning"
+          },
+          {
+            "id": "morning",
+            "speaker": "class-redmage",
+            "line": "Nine years. I did them myself, the winter after the tithe. You wore the white then, Cleric. Were you at the Saltmoss tables that morning? I've always wanted to ask someone who was.",
+            "next": "places"
+          },
+          {
+            "id": "places",
+            "speaker": "class-cleric",
+            "line": "I don't know. I sat at a lot of tables and I never learned the places, only the faces. I could tell you what I remember of that winter. It may be nothing. Commander, should I?",
+            "choices": [
+              {
+                "text": "Tell the Red Mage all of it, even the parts that might be Saltmoss.",
+                "next": "all"
+              },
+              {
+                "text": "The tables took the aunt, not the Cleric. Start from there.",
+                "next": "tables"
+              },
+              {
+                "text": "Not tonight. The hand first, the past after.",
+                "next": "hand"
+              },
+              {
+                "text": "I told the Cleric that walking away was what counted. Let the Red Mage judge whether I was right.",
+                "next": "judged",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "all",
+            "speaker": "class-cleric",
+            "line": "A grey morning. A long line. A woman who asked if she could keep her apron on. I don't know if she was yours. I'm sorry that's the most I have.",
+            "next": "apron"
+          },
+          {
+            "id": "tables",
+            "speaker": "class-redmage",
+            "line": "Not the Cleric. The tables. I've had nine years to hate a face. I suppose a table is harder to hate, and fairer.",
+            "next": "apron"
+          },
+          {
+            "id": "hand",
+            "speaker": "class-redmage",
+            "line": "The hand, then. Gently. I'll ask again when I've worked out whether I want the answer.",
+            "next": "apron"
+          },
+          {
+            "id": "judged",
+            "speaker": "class-redmage",
+            "line": "Me, the judge? Hm. Walked away, and now walks toward the burned ones with a jar of salve. I'll allow it. Provisionally.",
+            "next": "apron"
+          },
+          {
+            "id": "apron",
+            "speaker": "class-redmage",
+            "line": "The orb wakes up near the grey ones, and the coal is what's left of her hearth. If I try again, Cleric, with the Commander there, would you stand close? Healer on one side, fire on the other?",
+            "choices": [
+              {
+                "text": "We said we'd try on a Hollow, together. The Cleric is the third pair of hands.",
+                "next": "three",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The Cleric calls the stop, not the fire. If the Cleric says stop, it stops.",
+                "next": "stop"
+              },
+              {
+                "text": "Stand close, both of you, but nobody burns for a guess.",
+                "next": "close_by"
+              },
+              {
+                "text": "No more fire on anyone. Not with a healer beside it, not without one.",
+                "next": "none"
+              }
+            ]
+          },
+          {
+            "id": "three",
+            "speaker": "class-cleric",
+            "line": "Three pairs of hands. I've only ever been the one that took colour away. I'd like to be in the room once when someone tries to give it back.",
+            "next": "wrap"
+          },
+          {
+            "id": "stop",
+            "speaker": "class-redmage",
+            "line": "The Cleric's word over the coal. I don't like it. I like it better than another nine years of these hands. Agreed, Cleric. Say stop loudly.",
+            "next": "wrap"
+          },
+          {
+            "id": "close_by",
+            "speaker": "class-cleric",
+            "line": "Close by, and no guesses. That I can do. I've a lot of practice standing next to things I can't mend.",
+            "next": "wrap"
+          },
+          {
+            "id": "none",
+            "speaker": "class-redmage",
+            "line": "None. You'd both rather I sat on my hands. Well, they're sat on now, Commander. Covered in salve.",
+            "next": "wrap"
+          },
+          {
+            "id": "wrap",
+            "speaker": "character-commander",
+            "line": "The Cleric works the salve into the old scars with a thumb. The Red Mage's free hand finds the tin and sets it on the ground between them, lid open, where it warms them both."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_cleric_sage": {
+      "key": "dialogue:cohesion_cleric_sage",
+      "id": "conversation-cohesion-cleric-sage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b422bdbfa2b5582def456d725a91122db31977f1fa7d58f1eb8118ac5e03178a",
+      "about": [
+        "character-commander",
+        "class-cleric",
+        "class-sage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-sage",
+        "class-cleric"
+      ],
+      "payload": {
+        "title": "Book and cord",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Cleric's book of names lies open on a flat stone. The Sage's knotted cord lies coiled beside it. Neither of them has said a word for some time.",
+            "next": "count"
+          },
+          {
+            "id": "count",
+            "speaker": "class-sage",
+            "line": "How many in yours? I've thirty-one knots. The road counts in knots. You count in ink.",
+            "next": "ink"
+          },
+          {
+            "id": "ink",
+            "speaker": "class-cleric",
+            "line": "Two hundred and six. I took most of them. You lost yours. I've never decided whether that makes your cord heavier or mine.",
+            "next": "wick"
+          },
+          {
+            "id": "wick",
+            "speaker": "class-sage",
+            "line": "The first knot is Wick. My apprentice. Wick climbed the stair to the Choir alone. Is there a Wick in your book, Cleric? Commander, should I even ask?",
+            "choices": [
+              {
+                "text": "Ask. And Cleric, look. If Wick's there, the Sage should know tonight.",
+                "next": "look"
+              },
+              {
+                "text": "Read the book and the cord side by side. They count the same people.",
+                "next": "side"
+              },
+              {
+                "text": "Counting the lost won't win the road. Both of you, sleep.",
+                "next": "sleep"
+              },
+              {
+                "text": "I told the Sage it was never the Sage's to carry. That's true of the Cleric's book too.",
+                "next": "carry",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "look",
+            "speaker": "class-cleric",
+            "line": "I'll look. There's no Wick. There's a pilgrim from the stair with no name, only \"lantern, small hands\". I'm sorry. That's what I wrote, in those days.",
+            "next": "loose"
+          },
+          {
+            "id": "side",
+            "speaker": "class-sage",
+            "line": "Side by side. Your thirty-fourth name was from the Lantern Road. That's my ninth knot, I think. Same week. Hm.",
+            "next": "loose"
+          },
+          {
+            "id": "sleep",
+            "speaker": "class-cleric",
+            "line": "Sleep. The Commander's right. We could count till morning and the numbers wouldn't move.",
+            "next": "loose"
+          },
+          {
+            "id": "carry",
+            "speaker": "class-cleric",
+            "line": "Not mine to carry. I've heard that said kindly once already. It sounds different when someone else is carrying a cord.",
+            "next": "loose"
+          },
+          {
+            "id": "loose",
+            "speaker": "class-cleric",
+            "line": "I don't write the ones I'd have saved and didn't. I only write the ones I took. Do you tie knots for those? The ones you were nearly in time for?",
+            "choices": [
+              {
+                "text": "Clean end. Both of you stop on a clean page and a clean cord.",
+                "next": "clean",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Tie a knot for Wren, the Cleric's last one, loose, so it can be carried home.",
+                "next": "wren",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Swap for one night. The Sage holds the book, the Cleric holds the cord.",
+                "next": "swap"
+              },
+              {
+                "text": "Some people don't belong in ink or knots. Let those be.",
+                "next": "let"
+              }
+            ]
+          },
+          {
+            "id": "clean",
+            "speaker": "class-sage",
+            "line": "A clean end and a clean page. You'll make a pair of liars of us, Commander. I'd quite like that.",
+            "next": "close"
+          },
+          {
+            "id": "wren",
+            "speaker": "class-sage",
+            "line": "Wren. Loose. There. A child's knot, small enough to undo with a fingernail. You can do it, Cleric, when you're ready.",
+            "next": "close"
+          },
+          {
+            "id": "swap",
+            "speaker": "class-sage",
+            "line": "The book's heavier than it looks. And you're holding the cord too tight, Cleric. Loose. Like that.",
+            "next": "close"
+          },
+          {
+            "id": "let",
+            "speaker": "class-cleric",
+            "line": "Let them be. I'll try. I've never been good at leaving a page empty.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The cord ends up across the open book, its knots resting on the names. Neither of them moves it, and the lantern burns down between them."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_redmage_engineer": {
+      "key": "dialogue:cohesion_redmage_engineer",
+      "id": "conversation-cohesion-redmage-engineer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:24983987540c4259be8845647513b8fc3b0b124ef3880c5ad96c2606356c22b0",
+      "about": [
+        "character-commander",
+        "class-engineer",
+        "class-redmage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-engineer",
+        "class-redmage"
+      ],
+      "payload": {
+        "title": "A gauge for the coal",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer is lying on one elbow a careful arm's length from the Red Mage's tin, holding a brass gauge on a chain and not quite pointing it at the coal.",
+            "next": "nine"
+          },
+          {
+            "id": "nine",
+            "speaker": "class-engineer",
+            "line": "Nine years, you said. A coal doesn't last nine nights, not without feeding. You feed it peat, I've watched. That doesn't add up. Something in there is wrong in a way I'd like to understand.",
+            "next": "wrong"
+          },
+          {
+            "id": "wrong",
+            "speaker": "class-redmage",
+            "line": "Nothing in there is wrong. It's my aunt's hearth. Put the brass away before I melt it into a ring for you.",
+            "next": "warm"
+          },
+          {
+            "id": "warm",
+            "speaker": "class-engineer",
+            "line": "I'm not trying to take it. Halcyon seals run warm for a hundred years on nothing. If your coal does the same, that's a question with an answer. Commander, tell the Red Mage I'm harmless.",
+            "choices": [
+              {
+                "text": "Let the Engineer measure it. Gauge only. The lid stays where the Red Mage puts it.",
+                "next": "measure"
+              },
+              {
+                "text": "Ask the Red Mage, not the tin. The coal answers to one person.",
+                "next": "ask"
+              },
+              {
+                "text": "A fire near the wagons is everyone's business. Measure it, Engineer.",
+                "next": "business"
+              },
+              {
+                "text": "I let the Engineer open the orb, and nothing broke. A gauge on a tin is less than that.",
+                "next": "orb",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "measure",
+            "speaker": "class-redmage",
+            "line": "Gauge only. Fine. If that needle so much as twitches toward the lid, Engineer, I'm keeping it. Well? What does it say?",
+            "next": "seal"
+          },
+          {
+            "id": "ask",
+            "speaker": "class-engineer",
+            "line": "Ask. All right. Red Mage, may I? Please? I've a whole page for it. Page sixty. It's been empty since the fen.",
+            "next": "seal"
+          },
+          {
+            "id": "business",
+            "speaker": "class-redmage",
+            "line": "Everyone's business. It's been my business alone for nine years and the wagons are still here. Measure, then. I'll be over there, not watching.",
+            "next": "seal"
+          },
+          {
+            "id": "orb",
+            "speaker": "class-redmage",
+            "line": "The orb. And it's still glowing, I suppose. Fine. One look. One. My aunt would have liked you, Engineer. She liked people who asked first.",
+            "next": "seal"
+          },
+          {
+            "id": "seal",
+            "speaker": "class-engineer",
+            "line": "It reads like a seal. Old warmth, not fire warmth. Tap Seven ran like this until it didn't, and Redline put that on my account. If your coal is the same thing, it's worth more than the fish market.",
+            "choices": [
+              {
+                "text": "Redline gets nothing, and the coal isn't for sale. Say it together and mean it.",
+                "next": "nothing",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The coal goes home to the aunt's hearth. Build it a grate that will hold it.",
+                "next": "grate",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Build the Red Mage a better tin. Vented, hinged, and never opened by anyone else.",
+                "next": "tin"
+              },
+              {
+                "text": "Whatever it's worth, it stays a coal. No more questions about it.",
+                "next": "stays"
+              }
+            ]
+          },
+          {
+            "id": "nothing",
+            "speaker": "class-redmage",
+            "line": "Nothing. Not one ember. If Redline asks, Engineer, tell them it went out years ago. I'll look very sad.",
+            "next": "close"
+          },
+          {
+            "id": "grate",
+            "speaker": "class-engineer",
+            "line": "A grate. Iron, not brass, brass goes soft. Draw me the hearth, Red Mage, and I'll have the fitting ready by the time we pass the fens.",
+            "next": "close"
+          },
+          {
+            "id": "tin",
+            "speaker": "class-engineer",
+            "line": "Double-walled. Vent in the lid, latch only you can work. I'll make the latch backwards. Nobody ever thinks to try it backwards.",
+            "next": "close"
+          },
+          {
+            "id": "stays",
+            "speaker": "class-engineer",
+            "line": "No more questions. Page sixty stays half full, then. That's harder for me than it sounds, Commander.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The gauge goes back on its chain. The Red Mage turns the tin a little toward the Engineer, so the light from the dent falls on the open notebook."
+          }
+        ]
+      }
+    },
     "dialogue:desert2_party_talk": {
       "key": "dialogue:desert2_party_talk",
       "id": "conversation-desert2-party-talk",

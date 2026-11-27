@@ -1,0 +1,92 @@
+dialogue cohesion_cleric_redmage
+title: Salve and coal
+trigger: Cohesion cleric redmage level=2
+once
+speaker commander $commander
+speaker cleric cleric
+speaker redmage redmage
+
+node open commander
+  The Cleric has a jar of salve open on one knee and the Red Mage's left hand palm up on the other. The old burns there are shiny and tight, and the Red Mage is looking anywhere but at them.
+  -> old
+
+node old cleric
+  These are years old. Nobody dressed them, did they? You let them close on their own, and they closed badly.
+  -> morning
+
+node morning redmage
+  Nine years. I did them myself, the winter after the tithe. You wore the white then, Cleric. Were you at the Saltmoss tables that morning? I've always wanted to ask someone who was.
+  -> places
+
+node places cleric
+  I don't know. I sat at a lot of tables and I never learned the places, only the faces. I could tell you what I remember of that winter. It may be nothing. Commander, should I?
+  * Tell the Red Mage all of it, even the parts that might be Saltmoss. -> all
+    do: AddCohesion cleric redmage 10
+    do: AddTrust cleric -3
+    do: SetFlag cleric_redmage:morning_told
+  * The tables took the aunt, not the Cleric. Start from there. -> tables
+    do: AddCohesion cleric redmage 6
+    do: SetFlag cleric_redmage:morning_tables
+  * Not tonight. The hand first, the past after. -> hand
+    do: AddCohesion cleric redmage -2
+    do: AddTrust redmage 2
+    do: SetFlag cleric_redmage:morning_hand
+  * I told the Cleric that walking away was what counted. Let the Red Mage judge whether I was right. -> judged
+    if: FlagSet cleric:white_forgiven
+    do: AddCohesion cleric redmage 8
+    do: AddTrust cleric 2
+    do: SetFlag cleric_redmage:morning_judged
+
+node all cleric
+  A grey morning. A long line. A woman who asked if she could keep her apron on. I don't know if she was yours. I'm sorry that's the most I have.
+  -> apron
+
+node tables redmage
+  Not the Cleric. The tables. I've had nine years to hate a face. I suppose a table is harder to hate, and fairer.
+  -> apron
+
+node hand redmage
+  The hand, then. Gently. I'll ask again when I've worked out whether I want the answer.
+  -> apron
+
+node judged redmage
+  Me, the judge? Hm. Walked away, and now walks toward the burned ones with a jar of salve. I'll allow it. Provisionally.
+  -> apron
+
+node apron redmage
+  The orb wakes up near the grey ones, and the coal is what's left of her hearth. If I try again, Cleric, with the Commander there, would you stand close? Healer on one side, fire on the other?
+  * We said we'd try on a Hollow, together. The Cleric is the third pair of hands. -> three
+    if: FlagSet redmage:test_promised
+    do: AddCohesion cleric redmage 10
+    do: AddTrust redmage 2
+    do: SetFlag cleric_redmage:try_three
+  * The Cleric calls the stop, not the fire. If the Cleric says stop, it stops. -> stop
+    do: AddCohesion cleric redmage 10
+    do: AddTrust redmage -3
+    do: SetFlag cleric_redmage:try_stop
+  * Stand close, both of you, but nobody burns for a guess. -> close_by
+    do: AddCohesion cleric redmage 6
+    do: SetFlag cleric_redmage:try_close
+  * No more fire on anyone. Not with a healer beside it, not without one. -> none
+    do: AddCohesion cleric redmage -4
+    do: AddTrust cleric 2
+    do: SetFlag cleric_redmage:try_none
+
+node three cleric
+  Three pairs of hands. I've only ever been the one that took colour away. I'd like to be in the room once when someone tries to give it back.
+  -> wrap
+
+node stop redmage
+  The Cleric's word over the coal. I don't like it. I like it better than another nine years of these hands. Agreed, Cleric. Say stop loudly.
+  -> wrap
+
+node close_by cleric
+  Close by, and no guesses. That I can do. I've a lot of practice standing next to things I can't mend.
+  -> wrap
+
+node none redmage
+  None. You'd both rather I sat on my hands. Well, they're sat on now, Commander. Covered in salve.
+  -> wrap
+
+node wrap commander
+  The Cleric works the salve into the old scars with a thumb. The Red Mage's free hand finds the tin and sets it on the ground between them, lid open, where it warms them both.
