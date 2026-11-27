@@ -689,28 +689,34 @@ namespace GridGame.App
                 if (!crucible.Open) Subline(row, crucible.Hint);
             }
 
-            // Every other destination is a tile, named for its old Camp row.
+            // Every other destination is a tile, named for its old Camp row. Craft and Journal collapse into one group tile
+            // each (camp-craft / camp-journal, locked-* when nothing in the group is open) that opens a CampGroupScreen of
+            // their members (GG-T1613). The members' old names live on as hidden full-size markers inside the group tile, so
+            // camp tips, the coach and the harness still find them on the hub:
+            //   camp-craft:   camp-items, camp-blacksmith, camp-alchemist, camp-manasmith, camp-enchantress, camp-caravan
+            //   camp-journal: camp-quests, camp-bounties, camp-mercenaries, camp-talk, camp-codex, camp-bestiary
+            // (each locked-<name> while that member is closed).
             var grid = Ui.El("kit-pillar", page);
             grid.name = "camp-tiles";
+            var groups = new Dictionary<CampGroup, VisualElement>();
             foreach (var d in dests)
             {
                 switch (d.Id)
                 {
                     case CampMenu.Campaign: case CampMenu.Crucible: case CampMenu.Inn: case CampMenu.Respec: case CampMenu.NewGamePlus: case CampMenu.Quit: continue;
                 }
-                string slug = d.Id == CampMenu.Diamonds ? "diamonds" : d.Label.ToLowerInvariant().Replace(' ', '-');
-                var tile = Ui.El("kit-tile", grid);
-                tile.name = (d.Open ? "camp-" : "locked-") + slug;
-                tile.EnableInClassList("kit-tile--locked", !d.Open);
-                var icon = d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
-                if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
-                else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
-                Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
-                if (!string.IsNullOrEmpty(d.Value)) Ui.Text(d.Value, "kit-tile-value", tile).name = "value";
-                else if (!d.Open && !string.IsNullOrEmpty(d.Hint)) Ui.Text(d.Hint, "kit-tile-value", tile).name = "hint";
-                string id = d.Id, hint = d.Hint;
-                if (d.Open) Ui.Tappable(tile, () => { var dest = Ui.NavDestination(App.Save, id); if (dest != null) App.Router.PushOrReturn(dest); }, "ui.select");
-                else Ui.Tappable(tile, () => App.Toast(hint), "ui.error");
+                if (d.Group == CampGroup.Craft || d.Group == CampGroup.Journal)
+                {
+                    if (!groups.TryGetValue(d.Group, out var groupTile)) groups[d.Group] = groupTile = GroupTile(grid, dests, d.Group);
+                    var marker = Ui.El(null, groupTile);
+                    marker.name = TileName(d);
+                    marker.style.position = Position.Absolute;
+                    marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = 0;
+                    marker.style.visibility = Visibility.Hidden;
+                    marker.pickingMode = PickingMode.Ignore;
+                    continue;
+                }
+                Tile(grid, d);
             }
             var quit = Ui.El("kit-tile", grid);
             quit.name = "camp-save-&-quit";
@@ -759,6 +765,47 @@ namespace GridGame.App
             return theme != null && theme.Stages.Count > 0 ? theme.Stages[0] : first.Id;
         }
 
+        /// <summary>A destination's tile name: camp-&lt;old row&gt; when open, locked-&lt;old row&gt; when closed.</summary>
+        internal static string TileName(CampDestination d) =>
+            (d.Open ? "camp-" : "locked-") + (d.Id == CampMenu.Diamonds ? "diamonds" : d.Label.ToLowerInvariant().Replace(' ', '-'));
+
+        /// <summary>One destination's tile in <paramref name="grid"/>: opens its screen, or toasts why it's closed.</summary>
+        internal static VisualElement Tile(VisualElement grid, CampDestination d)
+        {
+            var tile = Ui.El("kit-tile", grid);
+            tile.name = TileName(d);
+            tile.EnableInClassList("kit-tile--locked", !d.Open);
+            var icon = d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
+            else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
+            Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
+            if (!string.IsNullOrEmpty(d.Value)) Ui.Text(d.Value, "kit-tile-value", tile).name = "value";
+            else if (!d.Open && !string.IsNullOrEmpty(d.Hint)) Ui.Text(d.Hint, "kit-tile-value", tile).name = "hint";
+            string id = d.Id, hint = d.Hint;
+            if (d.Open) Ui.Tappable(tile, () => { var dest = Ui.NavDestination(App.Save, id); if (dest != null) App.Router.PushOrReturn(dest); }, "ui.select");
+            else Ui.Tappable(tile, () => App.Toast(hint), "ui.error");
+            return tile;
+        }
+
+        /// <summary>The Craft or Journal tile: open if any member is, badged if any member waits, else dimmed with the
+        /// group's first hint; it opens the group's <see cref="CampGroupScreen"/>.</summary>
+        private static VisualElement GroupTile(VisualElement grid, List<CampDestination> dests, CampGroup group)
+        {
+            bool open = CampMenu.GroupOpen(dests, group);
+            string label = group == CampGroup.Craft ? "Craft" : "Journal", hint = CampMenu.GroupHint(dests, group);
+            var tile = Ui.El("kit-tile", grid);
+            tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
+            tile.EnableInClassList("kit-tile--locked", !open);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Station : RowKind.Codex);
+            if (!open) RowIcon.Badge(icon, RowKind.Locked);
+            else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
+            Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
+            if (!open && !string.IsNullOrEmpty(hint)) Ui.Text(hint, "kit-tile-value", tile).name = "hint";
+            if (open) Ui.Tappable(tile, () => App.Router.PushOrReturn(new CampGroupScreen(group)), "ui.select");
+            else Ui.Tappable(tile, () => App.Toast(hint), "ui.error");
+            return tile;
+        }
+
         private static RowKind TileKind(string id)
         {
             switch (id)
@@ -802,6 +849,25 @@ namespace GridGame.App
             if (list.Count == 0) return "greenvalley";
             var st = list[Mathf.Clamp(s.HighestClearedStage + 1, 0, list.Count - 1)];
             return st.Theme ?? "greenvalley";
+        }
+    }
+
+    /// <summary>The hub's Craft or Journal group (GG-T1613): that group's CampMenu destinations as tiles, named and opened as
+    /// they were on the hub's flat grid.</summary>
+    public sealed class CampGroupScreen : HubPage
+    {
+        private readonly CampGroup group;
+        public CampGroupScreen(CampGroup group) { this.group = group; }
+
+        public override string Id => "camp-group-" + group.ToString().ToLowerInvariant();
+        protected override string Title => group.ToString();
+        protected override string Backdrop => HubScreen.ThemeFor(C, S);
+
+        protected override void BuildBody(VisualElement body)
+        {
+            var grid = Ui.El("kit-pillar", body);
+            grid.name = "camp-group-tiles";
+            foreach (var d in CampMenu.In(CampMenu.Build(C, S, App.Settings), group)) HubScreen.Tile(grid, d);
         }
     }
 
