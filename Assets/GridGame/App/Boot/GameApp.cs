@@ -613,7 +613,7 @@ namespace GridGame.App
                 Debug.LogError($"[Profiles] -profile \"{requested}\": {e.Message} Using the last profile instead.");
                 Profile = new ProfileSession(store);
             }
-            Saves = new SaveStore(Profile.SavesFolder);
+            Saves = new SaveStore(Profile.SavesFolder, Profile.Name);
             SaveStore.SyncFiles();
             Debug.Log($"[Profiles] profile '{Profile.Name}' ({store.Root})");
         }
@@ -638,7 +638,7 @@ namespace GridGame.App
                 foreach (var folder in folders)
                 {
                     if (!System.IO.Directory.Exists(folder) || !seen.Add(System.IO.Path.GetFullPath(folder))) continue;
-                    var saves = string.Equals(System.IO.Path.GetFullPath(folder), System.IO.Path.GetFullPath(Saves.Root), StringComparison.OrdinalIgnoreCase) ? Saves : new SaveStore(folder);
+                    var saves = string.Equals(System.IO.Path.GetFullPath(folder), System.IO.Path.GetFullPath(Saves.Root), StringComparison.OrdinalIgnoreCase) ? Saves : new SaveStore(folder, System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(folder)));
                     for (int i = 0; i < SaveStore.Slots; i++)
                     {
                         if (!saves.Exists(i)) continue;
@@ -764,7 +764,7 @@ namespace GridGame.App
 
         private void ProfileChanged()
         {
-            Saves = new SaveStore(Profile.SavesFolder);
+            Saves = new SaveStore(Profile.SavesFolder, Profile.Name);
             SaveStore.SyncFiles();
             ApplySettings();
         }

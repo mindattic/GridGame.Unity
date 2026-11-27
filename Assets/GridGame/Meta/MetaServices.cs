@@ -53,7 +53,7 @@ namespace GridGame.Meta
         /// <summary>A custom party (e.g. from the character-select screen) in place of the default <see cref="StartingRoster"/>.</summary>
         public static SaveData NewGame(ContentDb c, string name, IReadOnlyList<string> party)
         {
-            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), Gold = StartingGold, OwnedOrbs = BattleConfig.StartOwnedOrbs };
+            var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), CommanderName = Commander.Name(null, name), Gold = StartingGold, OwnedOrbs = BattleConfig.StartOwnedOrbs };
             var ids = new List<string>();
             foreach (var id in party ?? Array.Empty<string>())
                 if (id != null && !ids.Contains(id, StringComparer.OrdinalIgnoreCase)) ids.Add(id);

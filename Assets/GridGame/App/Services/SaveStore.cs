@@ -15,6 +15,8 @@ namespace GridGame.App
     {
         public const int Slots = SaveFiles.Slots;
         public readonly string Root;
+        /// <summary>The profile these slots belong to: an old save without a Commander name takes it (GG-T1342).</summary>
+        public readonly string ProfileName;
 
         /// <summary>
         /// Save files get their own settings rather than reusing <see cref="ContentLoader.Settings"/>: that one's
@@ -27,10 +29,11 @@ namespace GridGame.App
 
         /// <summary><paramref name="root"/> is required: the old default (persistentDataPath/Saves) is the pre-profile
         /// folder LegacySaveMigration moves away, and recreating it would migrate it again on the next launch.</summary>
-        public SaveStore(string root)
+        public SaveStore(string root, string profileName = null)
         {
             if (string.IsNullOrEmpty(root)) throw new ArgumentException("A save folder is needed.", nameof(root));
             Root = root;
+            ProfileName = profileName;
             Directory.CreateDirectory(Root);
         }
 
@@ -76,7 +79,7 @@ namespace GridGame.App
             return restored;
         }
 
-        private static SaveData TryRead(string path, int slot, GridGame.Core.Content.ContentDb content, out string error, out bool keepFiles)
+        private SaveData TryRead(string path, int slot, GridGame.Core.Content.ContentDb content, out string error, out bool keepFiles)
         {
             error = null;
             keepFiles = false;
@@ -84,7 +87,7 @@ namespace GridGame.App
             {
                 var s = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(path), SaveSettings);
                 if (s == null) { error = "empty file"; return null; }
-                var migrated = SaveMigrations.Migrate(s, content);
+                var migrated = SaveMigrations.Migrate(s, content, ProfileName);
                 foreach (var note in SaveMigrations.Notes) Debug.LogWarning($"[Save] slot {slot + 1}: {note}"); // GG-T531
                 return migrated;
             }

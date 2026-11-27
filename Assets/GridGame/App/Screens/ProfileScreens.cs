@@ -303,7 +303,7 @@ namespace GridGame.App
             if (App.Saves == null) why = "No profile is open.";
             else if (slot < 0) why = "Pick an empty slot.";
             else if (App.Saves.Exists(slot)) why = "That slot is in use; an import never overwrites a save.";
-            else if (!SaveTransfer.TryImport(field?.value, App.Content, out save, out why)) { }
+            else if (!SaveTransfer.TryImport(field?.value, App.Content, out save, out why, App.Profile?.Name)) { }
             else if (SaveTransfer.SharesPurchasesWith(save, SaveTransferUi.AllSlotPaths(App)))
                 why = "That save is already on this device. A save with purchases can be moved to another device, not copied here.";
             if (why == null && !App.Saves.Write(slot, save)) why = "Couldn't save!";

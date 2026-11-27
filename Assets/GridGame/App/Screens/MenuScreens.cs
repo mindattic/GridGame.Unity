@@ -243,7 +243,7 @@ namespace GridGame.App
         {
             App.Router.Push(new CharacterSelectScreen(party =>
             {
-                App.Save = Progression.NewGame(App.Content, "Player", party);
+                App.Save = Progression.NewGame(App.Content, App.Profile?.Name, party);
                 TurnModeSetting.Lock(App.Save, turnModeLock is TurnMode m && TurnModes.IsBuilt(m) ? m : (TurnMode?)null); // §2.13 (GG-T774)
                 App.Slot = slot;
                 App.MoveToWallet(-1, App.Save); // GG-T702: a new game spends from the account wallet from its first Shard

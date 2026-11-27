@@ -89,7 +89,7 @@ namespace GridGame.Meta
 
         /// <summary>A transfer code read back into a save, version-checked and run through <see cref="SaveMigrations.Migrate"/>
         /// like any slot loaded from disk. False with the reason for anything unreadable, foreign or from a newer build.</summary>
-        public static bool TryImport(string code, ContentDb content, out SaveData save, out string error)
+        public static bool TryImport(string code, ContentDb content, out SaveData save, out string error, string profileName = null)
         {
             save = null;
             if (!TryUnpack(code, out var json, out error)) return false;
@@ -99,7 +99,7 @@ namespace GridGame.Meta
             if (s == null || s.Roster == null) { error = "That code doesn't hold a save."; return false; }
             if (s.Version > SaveData.CurrentVersion)
             { error = "That save was made by a newer version of the game. Update the game, then import it."; return false; }
-            try { save = SaveMigrations.Migrate(s, content); }
+            try { save = SaveMigrations.Migrate(s, content, profileName); }
             catch (Exception e) { error = "That save couldn't be read: " + e.Message; save = null; return false; }
             if (save == null) { error = "That code doesn't hold a save."; return false; }
             return true;
