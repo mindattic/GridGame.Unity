@@ -1710,3 +1710,16 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   tidies an old party (each member once, a roster hero, within the cap), keeping the Warden as an ordinary hero; the
   Roles & Taunt lesson focuses the party's first Tank.
 - *Why:* the player is the Commander (GG-T1305), who does not fight, so no hero holds the lead's slot.
+
+## 2026-11-27 — The front door: Start Campaign, and the opening crawl leads into the drills (GG-T1550)
+
+- **Was ([BIBLE §11.2.1](BIBLE.md#1121-screen-transition-graph), [§27.0](BIBLE.md#270-the-story-start-to-finish-gg-t231-owner-2026-11-05-make-the-story-from-start-to-finish-title-screen-new-campaign-text-scroll--a-story-crawl-at-a-certain-level--a-boss--roll-credits)):**
+  Title → **New Game** → SaveSlot → CharacterSelect → the Prologue crawl (`campaign.json` `Prologue`, one scroll)
+  → Camp.
+- **Now (⬜ not yet built; [`docs/design/front-door/`](design/front-door/index.html)):** Splash → (first launch)
+  Create Profile, a three-step wizard that names the Commander ([§15.4](BIBLE.md#154-player-profiles)) → the Main
+  Menu (the Title reworked) → **Start Campaign** (the renamed New Game; the slot picker only when a slot is in use)
+  → the **opening crawl**, paged Prose keys `crawl:opening/<n>` → team pick (GG-T1257) → tutorial Drill 1..5 →
+  graduation → Camp's first visit. The crawl no longer goes straight to Camp.
+- *Why:* the drills (GG-T1315) teach the board before the hub opens, and "Start Campaign" says what the button
+  does now that Continue sits on the Main Menu.
