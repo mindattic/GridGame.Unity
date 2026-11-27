@@ -37,7 +37,7 @@ def check(d):
     expected = 3 * n * (n + 1) + 1
     if len(seen) != expected:
         errs.append(f"{len(seen)} nodes, the lattice has {expected}")
-    for ab, c in Counter(x["Ability"] for x in d["Nodes"] if x["Kind"] == "Ability").items():
+    for ab, c in Counter(x.get("Ability") for x in d["Nodes"] if x["Kind"] == "Ability" and x.get("Ability")).items():
         if c > 1:
             errs.append(f"ability {ab} is placed {c} times")
     for h in d["Heroes"]:
