@@ -1353,11 +1353,6 @@ namespace GridGame.Core.Content
         public System.DateTime? EndUtc;
     }
 
-    public sealed class SummonDef
-    {
-        public List<string> Pool = new List<string>();
-    }
-
     public sealed class EnchantDef
     {
         public string Id;
@@ -1476,16 +1471,24 @@ namespace GridGame.Core.Content
     /// GG-T387 (the owner's "game of wits"): it is a contest of <see cref="DialogueDef.WitsExchanges"/> exchanges, each a
     /// question from the wanderer with three replies for the companion, one per <see cref="DialogueChoice.Wit"/> (+1 wins
     /// the point, 0 is neutral, -1 loses it); a later node goes on to <see cref="DialogueDef.OutcomeNext"/>, where the meta
-    /// layer's rule (the standing) picks <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.</summary>
-    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer }
+    /// layer's rule (the standing) picks <see cref="DialogueDef.JoinNode"/> or <see cref="DialogueDef.PartNode"/>.
+    /// Trust and Cohesion (GG-T1298, §27.1) are bond scenes in Camp's Talk row: Trust is the hero
+    /// <see cref="DialogueTrigger.Id"/>'s, offered while they're in the party and open once their Trust tier reaches
+    /// <see cref="DialogueTrigger.Level"/>; Cohesion is the pair Id + <see cref="DialogueTrigger.Other"/>, offered while both
+    /// are in the party and open at that cohesion tier. Shown locked (with the tier they need) until then; each plays
+    /// once, and "$with" is the hero Id.</summary>
+    public enum DialogueTriggerKind { ThemeStart, StageCleared, Talk, Recruit, LevelReached, StageStart, Wanderer, Trust, Cohesion }
 
     public sealed class DialogueTrigger
     {
         public DialogueTriggerKind Kind;
         /// <summary>ThemeStart: the theme id. StageCleared: the stage id. Talk: who it's with — a hero class id,
-        /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC).</summary>
+        /// "party" (any party member; speaker class "$with" is them) or "npc:&lt;id&gt;" (a joined Camp NPC).
+        /// Trust / Cohesion: the hero class id (Cohesion: the pair's first hero).</summary>
         public string Id;
-        /// <summary>LevelReached only: the hero level (2+) that fires it.</summary>
+        /// <summary>Cohesion only: the pair's second hero class id.</summary>
+        public string Other;
+        /// <summary>LevelReached: the hero level (2+) that fires it. Trust / Cohesion: the bond tier (1-5) that opens it.</summary>
         public int Level;
     }
 

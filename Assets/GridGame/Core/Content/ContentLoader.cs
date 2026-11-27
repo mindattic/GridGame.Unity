@@ -71,7 +71,6 @@ namespace GridGame.Core.Content
             AddAll(db.ArmorEnchants, armorEnchants, x => x.Id);
             db.ArmorEnchantOrder.AddRange(armorEnchants);
             db.Campaign = ReadOne<CampaignDef>(readText, "campaign") ?? new CampaignDef();
-            db.Summon = ReadOne<SummonDef>(readText, "summon") ?? new SummonDef();
             db.Vfx = ReadOne<VfxStyleSheet>(readText, "vfxstyle") ?? new VfxStyleSheet();
             db.VfxPrefabs = ReadOne<VfxCatalog>(readText, "vfx") ?? new VfxCatalog();
             db.AttackTypes = ReadOne<AttackTypeSheet>(readText, "attacktypes") ?? new AttackTypeSheet(); // GG-T556
@@ -543,7 +542,9 @@ namespace GridGame.Core.Content
                 else if (b.Wave < 0 || b.Wave >= bs.Waves.Count) p.Add($"bounty {b.Id}: wave {b.Wave} is not a wave of {b.Stage}");
                 if (b.RewardSkillPoints < 0) p.Add($"bounty {b.Id}: skill points can't be negative");
             }
-            foreach (var c in db.Summon.Pool) NeedClass(c, "summon pool");
+            // GG-T1416: every hero class says how it joins the roster.
+            foreach (var c in db.Classes.Values)
+                if (c.Team == Team.Hero && c.Acquire == Acquire.None) p.Add($"class {c.Id}: a hero class needs Acquire set");
             // GG-T1037: a cut class becomes a placed hero, and nobody meets it again (summon pool, guests, recruitables).
             foreach (var c in db.Classes.Values)
             {
@@ -553,7 +554,7 @@ namespace GridGame.Core.Content
                     p.Add($"class {c.Id}: CutInto '{c.CutInto}' must be a hero class still in play");
             }
             bool Cut(string id) => id != null && db.Classes.TryGetValue(id, out var cd) && cd.IsCut;
-            foreach (var c in db.Summon.Pool) if (Cut(c)) p.Add($"summon pool: '{c}' is a cut class (GG-T1037)");
+            foreach (var c in db.Classes.Values) if (c.IsCut && c.Acquire == Acquire.Summon) p.Add($"class {c.Id}: a cut class can't be Acquire Summon (GG-T1037)");
             foreach (var st in db.Stages.Values)
                 foreach (var w in st.Waves)
                 {
@@ -964,6 +965,8 @@ namespace GridGame.Core.Content
             && n >= 1 && n <= MaxPartySlots ? n : 0;
         /// <summary>GG-T1293: the most one AddTrust / AddCohesion effect may move a bond, either way.</summary>
         public const int DialogueBondMax = 20;
+        /// <summary>GG-T1298: the highest bond tier a Trust / Cohesion scene may need (Meta's BondsConfig.MaxTier).</summary>
+        public const int MaxBondTier = 5;
 
         /// <summary>GG-T570: a speaker Portrait that names a Portraits/ file rather than a class (<c>aetherist-00</c>: an
         /// asset stem plus its two-digit number), accepted as such when validation can't look on disk.</summary>
@@ -1015,15 +1018,27 @@ namespace GridGame.Core.Content
                     // GG-T342: "$hero" is the wanderer, "$with" the companion talking; the shape is WandererContent's.
                     WandererContent.ValidateDialogue(db, d, p);
                     break;
+                case DialogueTriggerKind.Trust:
+                case DialogueTriggerKind.Cohesion:
+                    // GG-T1298: a bond scene in the Talk row, opened by the hero's (or pair's) bond tier.
+                    if (!IsHero(trigger.Id)) p.Add($"{w}: {trigger.Kind} needs a hero class Id, has '{trigger.Id}'");
+                    if (trigger.Kind == DialogueTriggerKind.Cohesion)
+                    {
+                        if (!IsHero(trigger.Other)) p.Add($"{w}: Cohesion needs a hero class Other, has '{trigger.Other}'");
+                        else if (string.Equals(trigger.Id, trigger.Other, StringComparison.OrdinalIgnoreCase)) p.Add($"{w}: Cohesion needs two different heroes, has '{trigger.Id}' twice");
+                    }
+                    if (trigger.Level < 1 || trigger.Level > MaxBondTier) p.Add($"{w}: {trigger.Kind} needs a tier Level of 1-{MaxBondTier}, has {trigger.Level}");
+                    break;
             }
+            bool bondScene = trigger.Kind == DialogueTriggerKind.Trust || trigger.Kind == DialogueTriggerKind.Cohesion;
             if (d.Crawl != null)
             {
-                if (trigger.Kind == DialogueTriggerKind.Talk || trigger.Kind == DialogueTriggerKind.Recruit) p.Add($"{w}: only a story beat can open with a Crawl");
+                if (trigger.Kind == DialogueTriggerKind.Talk || trigger.Kind == DialogueTriggerKind.Recruit || bondScene) p.Add($"{w}: only a story beat can open with a Crawl");
                 if (string.IsNullOrWhiteSpace(d.Crawl)) p.Add($"{w}: empty Crawl");
                 if (string.IsNullOrWhiteSpace(d.Title)) p.Add($"{w}: a Crawl needs a Title to head it");
             }
             bool talkWithHero = (trigger.Kind == DialogueTriggerKind.Talk || trigger.Kind == DialogueTriggerKind.Recruit) && trigger.Id != null && !trigger.Id.StartsWith(NpcFlagPrefix)
-                || trigger.Kind == DialogueTriggerKind.Wanderer;
+                || trigger.Kind == DialogueTriggerKind.Wanderer || bondScene;
             bool wanderer = trigger.Kind == DialogueTriggerKind.Wanderer;
             bool joinsHero = false;
             foreach (var e in d.AllEffects()) joinsHero |= e?.Type == DialogueEffectType.JoinHero;
