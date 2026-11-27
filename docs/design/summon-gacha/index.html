@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Summon Banners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Summon Banners</h1>
+    <p class="sub">How a hero is summoned at random: a Standard banner that is always open, a Featured banner that runs for two weeks, published rates, hard pity, duplicates as Echoes, Summon Tickets earned in play, x1 and x10, a pull history, and a free path to every hero. Every hero is equally strong (base 8, growth 0.45 per stat; classes differ by board path, BIBLE Â§25.6.7), so a summon-only hero is a choice of style, never a power wall. Every number is a named default the owner can change (GG-T1414).</p>
+    <span class="status">Proposed 2026-11-27 Â· GG-T1413 Â· BIBLE Â§25.10.3 Â· design only, nothing built</span>
+  </header>
+
+  <section>
+    <h2>Where heroes come from</h2>
+    <p class="m">Seven ways in. Only the two banners are random and only they take Shards; both also take Summon Tickets that play hands out. Other pages own their rows.</p>
+    <div class="tablewrap"><table id="sources"></table></div>
+  </section>
+
+  <section>
+    <h2>The rules</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>Banners</h3>
+        <ul>
+          <li><b>Standard</b> is always open. Its pool is every summonable hero: the current Summon Circle draw pool plus every summon-only hero whose Featured run has ended. Each hero is equally likely.</li>
+          <li><b>Featured</b> runs <span class="num">14</span> days with <span class="num">1</span> featured hero. <span class="num">50%</span> of its pulls bring that hero; the rest are a Standard pull.</li>
+          <li>A summon-only hero <b>debuts Featured</b>, then joins Standard for good. No hero is ever pulled from the game.</li>
+          <li>Featured banners rotate on a published calendar; the next one is shown a banner ahead. No countdown pressure inside the screen beyond the end date.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Rates and hard pity</h3>
+        <ul>
+          <li>Every pull is a hero. There are no rarity tiers and no filler: equal power leaves nothing to tier.</li>
+          <li><b>New-hero pity:</b> the <span class="num">10th</span> pull in a row without a new hero brings one you don't have, while that banner has any. So a x10 always holds a new hero until the banner is complete.</li>
+          <li><b>Featured pity:</b> the <span class="num">5th</span> Featured pull without the featured hero brings them. The counter carries to the next Featured banner.</li>
+          <li><b>Spark:</b> every <span class="num">25</span> pulls on a banner kind earn a pick of any hero on that banner. Unspent Sparks keep.</li>
+          <li>Odds are shown before every pull and computed by the same code that rolls (as `DiamondSummon.Odds` does today, GG-T503), pity included: when pity is due the odds list says so.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Duplicates: Echoes</h3>
+        <ul>
+          <li>A hero you already have arrives as an <b>Echo</b>: <span class="num">+1 SP</span> for that hero to spend on the skill board, up to <span class="num">5</span> Echoes (5 SP, about five levels of nodes).</li>
+          <li>Past the cap, a duplicate gives <span class="num">2</span> Ticket fragments; <span class="num">10</span> fragments become a Summon Ticket on their own.</li>
+          <li>An Echo never adds a stat the board can't give, so a fully Echoed hero is the same hero five levels sooner, not a stronger one.</li>
+          <li class="m">Naming: "Echo" is already a Support wanderer and the Mocking Echo foe (Â§25.11.2). If the owner wants one meaning per word, "Resonance" is the fallback.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Paying: Tickets, Shards, x1 and x10</h3>
+        <ul>
+          <li>A pull costs <span class="num">1</span> Summon Ticket or <span class="num">100</span> Mana Shards ($1.00, or 600 G through the exchange, Â§25.18.1). Tickets are spent first; the confirm names the split.</li>
+          <li><b>x10</b> is ten pulls in one tap for exactly ten times the price: no discount and no bonus pull, so x1 is never the worse deal.</li>
+          <li>Tickets are earned, never sold: <span class="num">10</span> on the first Summon Circle visit, <span class="num">1</span> per campaign stage first cleared, <span class="num">5</span> per chapter finished, <span class="num">1</span> per <span class="num">5</span> battles won, and fragments.</li>
+          <li>The summoning rides the Summon paywall job (1 s); a x10 reveals ten cards in one sequence, new heroes first-lit.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Pull history</h3>
+        <ul>
+          <li>The save keeps the last <span class="num">500</span> pulls: time, banner, hero, New / Echo / fragments, what was paid (Tickets, Shards, gold exchanged) and both pity counters after it.</li>
+          <li>A History tab on the Summon screen lists them newest first and totals Shards and Tickets spent.</li>
+          <li>Real-money Shard purchases stay in the account wallet's ledger (Â§25.18.1); the history only says which pull spent them.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>A free path to every hero</h3>
+        <ul>
+          <li>Every summon-only hero is reachable on Tickets earned in play: the campaign alone pays about <span class="num" id="freeTotal">102</span> Tickets.</li>
+          <li>Pity bounds the worst case: one new hero per 10 pulls plus one Spark per 25. The check below fails if the summon-only roster outgrows the campaign's Tickets.</li>
+          <li>Featured heroes join Standard, and Sparks keep, so a missed banner costs nothing but time.</li>
+          <li>Bots and Test Mode saves never pull (as with the Diamond draw today).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Try it</h2>
+    <p class="m">A live model of the rules above with sample heroes (names belong to GG-T1270). You start with the 10 starter Tickets; Shards are unlimited here and only counted.</p>
+    <div class="sim">
+      <div>
+        <div class="bar">
+          <button id="bStd" class="on">Standard</button>
+          <button id="bFeat">Featured</button>
+          <span class="m">Â·</span>
+          <button id="pull1" class="go">Pull x1</button>
+          <button id="pull10" class="go">Pull x10</button>
+          <button id="spark">Use Spark</button>
+          <button id="reset">Reset</button>
+        </div>
+        <div class="wallet" id="wallet"></div>
+        <div class="meters" id="meters"></div>
+        <div class="reveal" id="reveal"></div>
+        <div class="roster" id="roster"></div>
+      </div>
+      <div class="card">
+        <h3>Next pull odds</h3>
+        <ul class="odds" id="odds"></ul>
+        <h3 style="margin-top:14px">History</h3>
+        <div class="history"><table id="history"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Free-path check</h2>
+    <p class="m">Can a player who never buys Shards own every hero on the Standard banner by the end of the campaign? Worst case uses only pity and Sparks; the average comes from 2,000 simulated players.</p>
+    <div class="calc">
+      <label>Heroes on the Standard banner <input type="number" id="cPool" min="1" max="60" value="14"></label>
+      <label>Battles won in a campaign <input type="number" id="cWins" min="0" max="500" value="60"></label>
+      <label>New-hero pity <input type="number" id="cPity" min="1" max="100" value="10"></label>
+      <label>Spark every N pulls <input type="number" id="cSpark" min="1" max="300" value="25"></label>
+    </div>
+    <div class="verdict" id="verdict"></div>
+  </section>
+
+  <section>
+    <h2>Every number, with its default</h2>
+    <p class="m">One config (`SummonConfig`, beside `Paywall` and `DiamondExchange`), so each can be dialled without touching the rules.</p>
+    <div class="tablewrap"><table id="config"></table></div>
+  </section>
+
+  <section>
+    <h2>Coordinated elsewhere</h2>
+    <div class="grid2">
+      <div class="card"><h3>GG-T1257</h3><p>Trust recruitment and the wanderer pool. Which heroes are wanderer-only, summon-only or both is decided there; this page only needs the summonable list.</p></div>
+      <div class="card"><h3>GG-T1270</h3><p>Hero names and lore, including each summon-only hero's debut banner art and line.</p></div>
+      <div class="card"><h3>Store-launch slice</h3><p>Store listings, the "In-app purchases (includes random items)" disclosure and the age rating. Odds stay disclosed in game as today (GG-T503).</p></div>
+      <div class="card"><h3>GG-T1414 / GG-T1416</h3><p>The owner approves these numbers; each hero then gets an Acquire field naming its ways in.</p></div>
+    </div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
