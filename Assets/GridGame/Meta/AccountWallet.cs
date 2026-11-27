@@ -215,12 +215,20 @@ namespace GridGame.Meta
         public static bool LimitGated(AccountWallet w) => w?.AgeBand != AgeBand.Adult;
 
         /// <summary>Why buying <paramref name="pack"/> now would break the monthly limit, or null when it fits.</summary>
-        public static string Refusal(AccountWallet w, DiamondPack pack, DateTime utc)
+        public static string Refusal(AccountWallet w, DiamondPack pack, DateTime utc) =>
+            pack == null ? null : Refusal(w, pack.Cents, utc);
+
+        /// <summary>Why buying the catalogue product <paramref name="product"/> now would break the monthly limit, or null
+        /// when it fits.</summary>
+        public static string Refusal(AccountWallet w, StoreProduct product, DateTime utc) =>
+            product == null ? null : Refusal(w, product.Cents, utc);
+
+        private static string Refusal(AccountWallet w, int cents, DateTime utc)
         {
             int limit = LimitCents(w);
-            if (w == null || pack == null || limit < 0) return null;
+            if (w == null || limit < 0) return null;
             int spent = SpentCents(w, utc);
-            if ((long)spent + pack.Cents <= limit) return null;
+            if ((long)spent + cents <= limit) return null;
             return limit == 0
                 ? "Purchases are turned off. A parent can change the spending limit in Settings."
                 : $"That would pass this month's spending limit of {Money(limit)} ({Money(Math.Max(0, limit - spent))} left). A parent can change it in Settings.";
