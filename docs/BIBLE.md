@@ -2370,7 +2370,7 @@ Title ──▶ SaveSlot (New / Load) ──▶ Camp (HubScreen) ◀────
                                       ├─ Settings                                   │ (Continue → Camp,
                                       └─ Save & Quit ─▶ Title                       │  Retry / Next stage
                                                                                     └── → Battle)
-New Game: SaveSlot → CharacterSelect → StoryCrawl (Prologue) → Camp.
+Start Campaign (was New Game, GG-T1358): SaveSlot (skipped into slot 1 when every slot is empty; turn mode under More options) → CharacterSelect and VariantPicker (the team pick) → StoryCrawl (Opening) → Founding dialogue (when due) → the first tutorial drill (`campaign.json` `Tutorial[0]`, when its stage exists), else Camp. `StoryBeats.NewCampaign()` is the one sequencer: an ordered list of steps, each playing its screen or passing to the next.
 Final victory (first time, §27.0): PostBattle → Continue → StoryCrawl (Ending) → Credits (rolling) → Title.
 ```
 

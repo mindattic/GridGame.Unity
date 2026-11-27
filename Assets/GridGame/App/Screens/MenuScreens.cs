@@ -116,7 +116,7 @@ namespace GridGame.App
             menu.style.width = Fit.C(66f);
             Stage(menu);
             // GG-T738 (§26.7): each Title row leads with its kind icon.
-            var start = Ui.MenuRow("Start Campaign", "", () => App.Router.Push(new SaveSlotScreen(true)), menu);
+            var start = Ui.MenuRow("Start Campaign", "", SaveSlotScreen.StartCampaign, menu);
             start.name = "title-start";
             start.KindIcon(RowKind.New);
             var load = Ui.MenuRow("Load", "", () => App.Router.Push(new SaveSlotScreen(false)), menu, null, recent >= 0 || App.Cloud.Available); // GG-T608: a new device restores from the cloud there
@@ -223,8 +223,20 @@ namespace GridGame.App
         /// <summary>New Game's turn-mode choice (§2.13, GG-T774): null follows the profile setting, a mode locks the save
         /// to it (<see cref="TurnModeSetting.Lock"/>). Only <see cref="TurnModes.Available"/> modes are offered.</summary>
         private readonly TurnMode? turnModeLock;
-        public SaveSlotScreen(bool newGame, TurnMode? turnModeLock = null) { this.newGame = newGame; this.turnModeLock = turnModeLock; }
+        /// <summary>Whether Start Campaign's More options fold (the turn-mode row) is open.</summary>
+        private readonly bool moreOptions;
+        public SaveSlotScreen(bool newGame, TurnMode? turnModeLock = null, bool moreOptions = false)
+        { this.newGame = newGame; this.turnModeLock = turnModeLock; this.moreOptions = moreOptions; }
         public override string Id => newGame ? "newgame" : "load";
+
+        /// <summary>The Main Menu's Start Campaign (GG-T1358): with every slot empty (none saved, none damaged) the
+        /// campaign starts in slot 1 without the picker; otherwise the slot picker opens.</summary>
+        public static void StartCampaign()
+        {
+            for (int i = 0; i < SaveStore.Slots; i++)
+                if (App.Saves.Exists(i)) { App.Router.Push(new SaveSlotScreen(true)); return; }
+            Start(0, null);
+        }
 
         protected override void Build(VisualElement root)
         {
@@ -232,7 +244,7 @@ namespace GridGame.App
             LivingBackdrop.Show(bg, "cityruins", 0);
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
-            Ui.Header(newGame ? "New Game" : "Load Game", () => App.Router.Back(), col, out _);
+            Ui.Header(newGame ? "Start Campaign" : "Load", () => App.Router.Back(), col, out _);
             var w = Ui.Panel(Ui.PageBody(col), newGame ? "Choose a slot" : "Choose a save");
             for (int i = 0; i < SaveStore.Slots; i++)
             {
@@ -250,7 +262,7 @@ namespace GridGame.App
                     Ui.Note($"{s.Roster.Count} heroes · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm} played · {s.UpdatedUtc.ToLocalTime():yyyy-MM-dd HH:mm}", w); // GG-T566: explicit under the invariant culture
                 }
             }
-            if (newGame) TurnModeChoice(w);
+            if (newGame) MoreOptions(w);
             // GG-T608: on a new device (or after a reinstall) the empty slots fill from the Play Games cloud.
             if (!newGame && App.Cloud.Available)
             {
@@ -260,7 +272,26 @@ namespace GridGame.App
             }
         }
 
-        /// <summary>New Game's turn mode (§2.13, GG-T774): "Settings" (the save follows Settings → Turn mode) or one
+        /// <summary>GG-T1358: the turn-mode row, folded under a More options row that opens and closes it.</summary>
+        private void MoreOptions(VisualElement w)
+        {
+            VisualElement fold = null;
+            Label value = null;
+            void Set(bool open)
+            {
+                fold.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+                if (value != null) value.text = open ? "Hide" : "Show";
+            }
+            var row = Ui.MenuRow("More options", "", () => Set(fold.style.display == DisplayStyle.None), w);
+            row.name = "newgame-more-options";
+            row.KindIcon(RowKind.Settings);
+            value = row.Q<Label>("value");
+            fold = Ui.El("col", w);
+            TurnModeChoice(fold);
+            Set(moreOptions);
+        }
+
+        /// <summary>Start Campaign's turn mode (§2.13, GG-T774): "Settings" (the save follows Settings → Turn mode) or one
         /// built mode the save keeps for good. Tapping cycles Settings, then each of <see cref="TurnModes.Available"/>.</summary>
         private void TurnModeChoice(VisualElement w)
         {
@@ -271,7 +302,7 @@ namespace GridGame.App
             TurnMode? next = locked == null ? TurnModes.Available[0]
                 : TurnModes.Next(locked.Value) == TurnModes.Available[0] ? (TurnMode?)null : TurnModes.Next(locked.Value);
             string value = locked == null ? $"Settings ({TurnModes.Name(c, profile)})" : TurnModes.Name(c, locked.Value);
-            var row = Ui.MenuRow("Turn mode", value, () => App.Router.Replace(new SaveSlotScreen(true, next)), w);
+            var row = Ui.MenuRow("Turn mode", value, () => App.Router.Replace(new SaveSlotScreen(true, next, true)), w);
             row.name = "newgame-turn-mode";
             row.KindIcon(RowKind.Settings);
             var shown = locked ?? profile;
@@ -307,22 +338,25 @@ namespace GridGame.App
             }
             if (existing != null)
             {
-                Confirm.Show($"Overwrite slot {slot + 1}?", "Overwrite", () => Start(slot));
+                Confirm.Show($"Overwrite slot {slot + 1}?", "Overwrite", () => Start(slot, turnModeLock));
                 return;
             }
             if (damaged)
             {
-                Confirm.Show($"Slot {slot + 1}'s save can't be read. Starting a new game here replaces it for good, along with anything it held. Overwrite it?", "Overwrite", () => Start(slot));
+                Confirm.Show($"Slot {slot + 1}'s save can't be read. Starting a new campaign here replaces it for good, along with anything it held. Overwrite it?", "Overwrite", () => Start(slot, turnModeLock));
                 return;
             }
-            Start(slot);
+            Start(slot, turnModeLock);
         }
 
-        private void Start(int slot)
+        /// <summary>A new campaign in <paramref name="slot"/>: the team pick (CharacterSelect, then each hero's look in the
+        /// VariantPicker) is the team slice's step, then <see cref="StoryBeats.NewCampaign"/>. The save is named for the
+        /// Commander.</summary>
+        private static void Start(int slot, TurnMode? turnModeLock)
         {
             App.Router.Push(new CharacterSelectScreen(party =>
             {
-                App.Save = Progression.NewGame(App.Content, App.Profile?.Name, party);
+                App.Save = Progression.NewGame(App.Content, Commander.Name(null, App.Profile?.Name), party);
                 TurnModeSetting.Lock(App.Save, turnModeLock is TurnMode m && TurnModes.IsBuilt(m) ? m : (TurnMode?)null); // §2.13 (GG-T774)
                 App.Slot = slot;
                 App.MoveToWallet(-1, App.Save); // GG-T702: a new game spends from the account wallet from its first Shard
@@ -1527,16 +1561,39 @@ namespace GridGame.App
             return joined == null ? (GameScreen)new HubScreen() : DialogueScreen.ForRunner(joined.Begin(app.Content, app.Save), JoinedThenCamp);
         }
 
-        /// <summary>A new campaign's first screen: the opening crawl (if any), then the Founding scene (GG-T1594, if one is
-        /// due), then Camp.</summary>
-        public static GameScreen NewCampaign()
+        /// <summary>The onboarding after the team pick (SaveSlotScreen.Start), in order: each step returns its screen,
+        /// leading to the next step's, or the next step's screen when it has nothing to play. After the last, Camp.</summary>
+        private static readonly Func<Func<GameScreen>, GameScreen>[] NewCampaignSteps = { OpeningCrawl, Founding, Drill };
+
+        /// <summary>A new campaign's first screen (GG-T1358, the one onboarding sequencer): the opening crawl (if any),
+        /// then the Founding scene (GG-T1594, if one is due), then the first tutorial drill when drills exist, else Camp.</summary>
+        public static GameScreen NewCampaign() => NewCampaignStep(0);
+
+        private static GameScreen NewCampaignStep(int i) =>
+            i >= NewCampaignSteps.Length ? new HubScreen() : NewCampaignSteps[i](() => NewCampaignStep(i + 1));
+
+        private static string OpeningBackdrop(CrawlDef p) =>
+            p == null ? null : p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null);
+
+        private static GameScreen OpeningCrawl(Func<GameScreen> next)
+        {
+            var p = GameApp.I.Content.Campaign.Opening;
+            return p == null ? next() : new StoryCrawlScreen(p.Title, p.Crawl, OpeningBackdrop(p), next());
+        }
+
+        private static GameScreen Founding(Func<GameScreen> next)
         {
             var app = GameApp.I;
-            var p = app.Content.Campaign.Opening;
-            var backdrop = p == null ? null : p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null);
             var founding = DialogueRunner.PendingFounding(app.Content, app.Save);
-            var camp = founding == null ? new HubScreen() : Play(founding, () => new HubScreen(), backdrop);
-            return p == null ? camp : new StoryCrawlScreen(p.Title, p.Crawl, backdrop, camp);
+            return founding == null ? next() : Play(founding, next, OpeningBackdrop(app.Content.Campaign.Opening));
+        }
+
+        /// <summary>The first tutorial drill (campaign.json Tutorial, GG-T1374) when its stage exists.</summary>
+        private static GameScreen Drill(Func<GameScreen> next)
+        {
+            var c = GameApp.I.Content;
+            var first = c.Campaign.Tutorial.Count > 0 ? c.TryStage(c.Campaign.Tutorial[0]) : null;
+            return first == null ? next() : new BattleScreen(first.Id);
         }
     }
 }
