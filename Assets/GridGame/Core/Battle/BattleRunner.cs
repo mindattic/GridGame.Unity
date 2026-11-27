@@ -1042,6 +1042,7 @@ namespace GridGame.Core.Battle
         private void DropBuffTempo(string buffId)
         {
             foreach (var h in S.Living(Team.Hero)) if (h.HasBuff(buffId)) return;
+            tempoThisCommand.Remove("buff:" + buffId); // GG-T1252: a later Slow in the same command must count again
             if (S.Tempo.RemoveAll(t => t.Source == "buff:" + buffId) > 0) EmitTempo("cleansed");
         }
 
