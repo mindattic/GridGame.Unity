@@ -1,0 +1,39 @@
+dialogue greenvalley_road_merchant
+title: A lantern on the road
+trigger: StageCleared greenvalley-01
+speaker merchant - name='Lantern Merchant' portrait=courier
+speaker commander $commander
+
+node hail merchant
+  A white wagon with no white collectors on it. Now there's something you don't see.
+  -> reply
+
+node reply commander
+  We're not Choir. Are you going to tell anyone?
+  -> ask
+
+node ask merchant
+  Not if you let me ride along. I've got lanterns, oil, and a very good map for twenty gold.
+  * Come with us. -> joined
+    do: JoinNpc merchant
+  * We'll buy the map. -> map
+    if: GoldAtLeast 20
+    do: GrantGold -20
+    do: SetFlag bought_map
+  * We don't need you. -> snubbed
+    do: SetFlag merchant_snubbed
+
+node map merchant
+  Sold. And a potion for good faith. Now, about that ride?
+  do: GrantItem healing_potion_basic 1
+  * Come along. -> joined
+    do: JoinNpc merchant
+  * We're fine. -> snubbed
+    do: SetFlag merchant_snubbed
+
+node snubbed merchant
+  Rude. I'm coming anyway. You'll need me.
+  do: JoinNpc merchant
+
+node joined merchant
+  Splendid. I'll set up shop in the back.

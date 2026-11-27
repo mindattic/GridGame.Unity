@@ -1,0 +1,18 @@
+dialogue talk_quiz_knight
+title: Advice
+trigger: Talk knight
+speaker hero $with
+
+node ask hero
+  Guard protects the ally I back. What's my real job?
+  * Winning duels on my own. -> wrong
+  * Making sure the others can keep fighting. -> right
+    do: GrantSkillPoint $with
+    do: AddTrust $with 5
+  * Standing at the back. -> wrong
+
+node right hero
+  Yes. A knight is measured by who's still standing.
+
+node wrong hero
+  I'm not here for glory. I'm here so the others last.
