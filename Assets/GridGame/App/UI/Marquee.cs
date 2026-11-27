@@ -258,7 +258,7 @@ namespace GridGame.App
 
         private static IEnumerator Hold(TextElement e, State st, float seconds)
         {
-            for (float t = 0f; t < seconds && st.Clip != null; t += Tween.Dt) { Place(e, st); yield return null; }
+            for (float t = 0f; t < seconds && st.Clip != null; t += Tween.Dt) { Place(e, st); IdleFrameRate.Stir(); yield return null; }
         }
 
         /// <summary>Wait at the left → scroll to the end → flash ×3 → snap back to the left → again.</summary>
@@ -279,6 +279,7 @@ namespace GridGame.App
                 {
                     inner.style.translate = new Translate(-over * Tween.EaseInOut(t / dur), 0);
                     Place(e, st);
+                    IdleFrameRate.Stir();
                     yield return null;
                 }
                 if (!Alive(e, st, inner)) break;
@@ -286,8 +287,8 @@ namespace GridGame.App
                 yield return Hold(e, st, HoldEnd);
                 for (int i = 0; i < Flashes && Alive(e, st, inner); i++)
                 {
-                    for (float t = 0f; t < FlashHalf; t += Tween.Dt) { inner.style.opacity = Mathf.Lerp(1f, FlashLow, t / FlashHalf); yield return null; }
-                    for (float t = 0f; t < FlashHalf; t += Tween.Dt) { inner.style.opacity = Mathf.Lerp(FlashLow, 1f, t / FlashHalf); yield return null; }
+                    for (float t = 0f; t < FlashHalf; t += Tween.Dt) { inner.style.opacity = Mathf.Lerp(1f, FlashLow, t / FlashHalf); IdleFrameRate.Stir(); yield return null; }
+                    for (float t = 0f; t < FlashHalf; t += Tween.Dt) { inner.style.opacity = Mathf.Lerp(FlashLow, 1f, t / FlashHalf); IdleFrameRate.Stir(); yield return null; }
                     inner.style.opacity = 1f;
                 }
                 yield return Hold(e, st, AfterFlash);

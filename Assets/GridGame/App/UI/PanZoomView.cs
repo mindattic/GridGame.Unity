@@ -322,6 +322,7 @@ namespace GridGame.App
                 float now = Time.realtimeSinceStartup;
                 float dt = Mathf.Min(now - last, 0.05f);
                 last = now;
+                IdleFrameRate.Stir();
                 var before = State.Pan;
                 Apply(State.Pan + velocity * dt);
                 velocity = PanZoomMath.Decay(velocity, dt);

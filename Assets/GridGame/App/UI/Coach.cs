@@ -382,6 +382,7 @@ namespace GridGame.App
             bool hold = lesson.Hold != null && SafeTrue(lesson.Hold);
             layer.style.display = hold ? DisplayStyle.None : DisplayStyle.Flex;
             if (hold || !InSteps) return;
+            IdleFrameRate.Stir();
             // The marks stay on top of anything opened since (a tapped unit's card, a toast), but under a confirm dialog.
             var ov = layer.parent;
             if (ov != null && ov.IndexOf(layer) != ov.childCount - 1 && ov.Q("confirm-veil") == null) layer.BringToFront();

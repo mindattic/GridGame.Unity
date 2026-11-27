@@ -48,6 +48,7 @@ namespace GridGame.App
             veil.schedule.Execute(() =>
             {
                 if (finished) return;
+                IdleFrameRate.Stir();
                 var now = DateTime.UtcNow;
                 float p = (float)Paywall.Progress(job, now);
                 Ui.SetGauge(gauge, p);
