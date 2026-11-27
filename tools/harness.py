@@ -2928,12 +2928,12 @@ def _report_death(art, returncode, n, extra_note=""):
         lines.append(f"could not query event log: {e}")
     log_path = os.path.join(art, "player.log")
     if os.path.exists(log_path):
-        with open(log_path, "r", errors="replace") as f:
+        with open(log_path, "r", encoding="utf-8", errors="replace") as f:
             tail = f.readlines()[-40:]
         lines.append("Player.log tail:")
         lines.append("".join(tail))
     text = "\n".join(lines)
-    with open(report, "w") as f:
+    with open(report, "w", encoding="utf-8", errors="replace") as f:
         f.write(text)
     print(text)
     print(f"\nfull report: {report}")
@@ -3337,9 +3337,9 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
                 try:
                     report = os.path.join(art, f"crash-report-{k}.txt")
                     os.replace(os.path.join(art, "crash-report.txt"), report)
-                    with open(log_path, "r", errors="replace") as f:
+                    with open(log_path, "r", encoding="utf-8", errors="replace") as f:
                         tail = f.readlines()[-40:]
-                    with open(report, "a") as f:
+                    with open(report, "a", encoding="utf-8", errors="replace") as f:
                         f.write(f"\n{os.path.basename(log_path)} tail:\n" + "".join(tail))
                 except OSError:
                     pass
