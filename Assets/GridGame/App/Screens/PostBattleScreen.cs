@@ -60,28 +60,27 @@ namespace GridGame.App
             LivingBackdrop.Show(bg, ThemeOf(c, report, stageId), 3);
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.45f, 0.55f);
             var col = Ui.El("fill col", root);
-            col.style.paddingTop = Fit.H(5.5f); col.style.paddingBottom = Space.S48;
             Fit.Columnize(col, Space.S32); // the results sit in the centred content column (GG-T398)
+            Ui.El("", col).style.height = Fit.H(5.5f);
 
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
-            var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "title shadow", col);
+            var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
             Fonts.UseDisplay(title);
             title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
-            Ui.Text(NameOf(c, report, stageId), "h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
 
-            var w = Ui.Window(null, col);
-            w.style.marginTop = Space.S48;
-            w.style.flexGrow = 1;
+            var w = Ui.Panel(col, null, true);
+            Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
             if (report.Victory)
             {
-                Tag(Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
+                Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
                 // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
                 // GG-T676: orbs left in the row settle back into Dust; the row says how much of it came from them.
                 if (report.DustEarned > 0)
-                    Tag(Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
+                    Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
                         ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "orb" : "orbs")})"
-                        : $"+{report.DustEarned:N0}", null, list), RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
+                        : $"+{report.DustEarned:N0}", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
                 TicketsRow(list);
                 // GG-T677: an owned Mana Orb gained here is one more orb to fill in every battle from now on.
                 if (report.OrbsGained > 0)
@@ -94,7 +93,7 @@ namespace GridGame.App
                     Ui.Text(string.Join(" · ", report.OrbsGainedFrom), "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
                 if (report.BrokenOrbFound)
-                    Tag(Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list), RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
+                    Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
                 NextAbilityRows(c, list);
                 TurnsRow(list);
@@ -102,14 +101,14 @@ namespace GridGame.App
                 BondRows(c, list);
                 // Higher difficulty, greater rewards (GG-T309): name the dial the gold, XP and drops above were scaled by.
                 if (report.Difficulty > GridGame.Core.Battle.DifficultyTable.Neutral)
-                    Tag(Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list), RowKind.Settings).name = "results-difficulty";
+                    Ui.MenuRow($"Difficulty {report.Difficulty}", "rewards " + GridGame.Core.Battle.DifficultyTable.RewardLabel(report.Difficulty), null, list).WithKindIcon(RowKind.Settings).name = "results-difficulty";
                 // GG-T514: milestones, unlocks and decisions (a joining hero, a tame or wanderer offer, a tome's
                 // "Teach to…") come before the loot list. A first-hour stage drops ~15 rows, which pushed all of
                 // these off the bottom, so a player tapping on past the results never saw them.
-                if (report.CampaignComplete) Tag(Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list), RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
+                if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
                 if (report.ExpeditionComplete)
                 {
-                    Tag(Ui.MenuRow($"{report.ExpeditionName} expedition complete!", "+" + Ui.Gold(report.ExpeditionBonus), null, list), RowKind.Place).Q<Label>("label").AddToClassList("gold");
+                    Ui.MenuRow($"{report.ExpeditionName} expedition complete!", "+" + Ui.Gold(report.ExpeditionBonus), null, list).WithKindIcon(RowKind.Place).Q<Label>("label").AddToClassList("gold");
                     Ui.Text("The caravan makes camp — everyone rests.", "small good", list);
                 }
                 else if (report.ExpeditionName != null)
@@ -120,11 +119,11 @@ namespace GridGame.App
                     Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
                 if (report.Milestone != null) // GG-T301: a theme's first full clear
-                    Tag(Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list), RowKind.Item, Art.ItemIcon(report.MilestoneItem)).name = "results-milestone";
-                if (report.UnlockedStage != null) Tag(Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list), RowKind.Stage).Q<Label>("value").AddToClassList("gold");
-                if (report.NewSlots > 0) Tag(Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list), RowKind.Ability).Q<Label>("label").AddToClassList("good");
+                    Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(report.MilestoneItem)).name = "results-milestone";
+                if (report.UnlockedStage != null) Ui.MenuRow("New stage unlocked", report.UnlockedStage, null, list).WithKindIcon(RowKind.Stage).Q<Label>("value").AddToClassList("gold");
+                if (report.NewSlots > 0) Ui.MenuRow("Ability slot unlocked!", $"+{report.NewSlots}", null, list).WithKindIcon(RowKind.Ability).Q<Label>("label").AddToClassList("good");
                 foreach (var g in report.GuestsJoined)
-                    Tag(Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list), RowKind.Hero, g).Q<Label>("label").AddToClassList("good");
+                    Ui.MenuRow($"{c.Class(g).Name} joins the caravan!", "New hero", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("good");
                 // GG-T537: a vendor whose story beat is this clear arrives at Camp (its join scene plays on the way there).
                 foreach (var arrival in CampUnlocks.Arrivals(c, App.Save, stageId))
                 {
@@ -151,11 +150,11 @@ namespace GridGame.App
                 t.style.whiteSpace = WhiteSpace.Normal;
                 if (report.Retreated)
                 {
-                    Tag(Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
+                    Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
                     RevealItems(report.Items, c, list);
                 }
                 if (!report.Escaped && report.XpEach > 0)
-                    Tag(Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "defeat-xp";
+                    Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list).WithKindIcon(RowKind.Hero).name = "defeat-xp";
                 NextAbilityRows(c, list);
                 TurnsRow(list);
                 ComboRows(c, list);
@@ -163,12 +162,12 @@ namespace GridGame.App
 
             // A guest down at the end isn't lost (GG-T114) — they'll be met on this stage again.
             foreach (var g in report.GuestsFell)
-                Tag(Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Will return", null, list), RowKind.Hero, g).Q<Label>("label").AddToClassList("dim");
+                Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Will return", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("dim");
             // A wanderer who fell (or saw a defeat) goes back to the road: still out there to be met again (GG-T342).
             if (report.Wanderer != null && report.WandererOffer == null && App.Save.Hero(report.Wanderer) == null && c.TryClass(report.Wanderer) != null)
-                Tag(Ui.MenuRow($"The wandering {c.Class(report.Wanderer).Name} goes on their way", "May be met again", null, list), RowKind.Hero, report.Wanderer).Q<Label>("label").AddToClassList("dim");
+                Ui.MenuRow($"The wandering {c.Class(report.Wanderer).Name} goes on their way", "May be met again", null, list).WithKindIcon(RowKind.Hero, report.Wanderer).Q<Label>("label").AddToClassList("dim");
             foreach (var g in report.GuestsLost) // permadeath only (a future Ironman mode) — never in the normal game
-                Tag(Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Gone for good", null, list), RowKind.Hero, g).Q<Label>("label").AddToClassList("bad");
+                Ui.MenuRow($"{c.Class(g).Name} fell in battle", "Gone for good", null, list).WithKindIcon(RowKind.Hero, g).Q<Label>("label").AddToClassList("bad");
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
             if (!report.Victory)
@@ -203,6 +202,7 @@ namespace GridGame.App
                     RowIcon.IconButton("Next expedition", RowKind.Stage, () => StageLauncher.Launch(stages[idx + 1].Id, true), null, row).name = "next";
             }
 
+            Ui.El("", col).style.height = Space.S48;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
         }
@@ -211,13 +211,13 @@ namespace GridGame.App
         /// keeps however it ended. Again › starts the save's next gauntlet; Continue goes back to camp.</summary>
         private void BuildCrucible(VisualElement root, VisualElement col, ContentDb c)
         {
-            var title = Ui.Text("CRUCIBLE", "title shadow", col);
+            var title = Ui.Text("CRUCIBLE", "t-display shadow", col);
             Fonts.UseDisplay(title);
             title.style.color = new Color(1f, 0.6f, 0.3f);
-            var waves = Ui.Text($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", "h1 shadow gold", col);
+            var waves = Ui.Text($"Survived {report.CrucibleWaves} wave{(report.CrucibleWaves == 1 ? "" : "s")}", "t-h1 shadow gold", col);
             waves.name = "crucible-waves";
             waves.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var best = Ui.Text(report.CrucibleNewBest ? "New best!" : $"Best: {report.CrucibleBest} waves", report.CrucibleNewBest ? "h2 shadow good" : "h2 shadow dim", col);
+            var best = Ui.Text(report.CrucibleNewBest ? "New best!" : $"Best: {report.CrucibleBest} waves", report.CrucibleNewBest ? "t-h2 shadow good" : "t-h2 shadow dim", col);
             best.name = "crucible-best";
             best.style.unityTextAlign = TextAnchor.MiddleCenter;
             if (report.CrucibleNewBest)
@@ -227,19 +227,18 @@ namespace GridGame.App
                 reveals.Add(App.StartCoroutine(NewBest(best)));
             }
 
-            var w = Ui.Window(null, col);
-            w.style.marginTop = Space.S32;
-            w.style.flexGrow = 1;
+            var w = Ui.Panel(col, null, true);
+            Ui.Margin(w, top: Space.S32);
             var list = Ui.List(w).contentContainer;
             var t = Ui.Text(report.Victory ? "Every wave falls. The Crucible is silent, and the whole haul is yours." :
                 report.Retreated || report.Escaped ? "The party steps out of the Crucible with everything it earned, and recovers." :
                 "The party falls in the Crucible, but every coin, drop and point of experience earned is kept. Everyone recovers.", "small", list);
             t.style.whiteSpace = WhiteSpace.Normal;
-            Tag(Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
+            Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
             // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
-            Tag(Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
+            Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list).WithKindIcon(RowKind.Crucible).name = "crucible-best-gold";
             TicketsRow(list);
-            Tag(Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "crucible-xp";
+            Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).WithKindIcon(RowKind.Hero).name = "crucible-xp";
             NextAbilityRows(c, list);
             TurnsRow(list);
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
@@ -255,6 +254,7 @@ namespace GridGame.App
             var again = RowIcon.IconButton("Again", RowKind.Crucible, () => CrucibleLauncher.Launch(true), null, row);
             again.name = "crucible-again";
             Ui.SetEnabled(again, Crucible.CanLaunch(c, App.Save, out _));
+            Ui.El("", col).style.height = Space.S48;
             if (DemoMode.Active) root.schedule.Execute(() => App.Router.ResetTo(new HubScreen())).ExecuteLater(1500);
         }
 
@@ -273,8 +273,6 @@ namespace GridGame.App
 
         private static string SoldCount(int n) => n == 1 ? "1 item" : $"{n} items";
 
-        /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
-        /// <c>.Q&lt;Label&gt;</c> or <c>.name</c> still lands on the row (KindIcon itself returns the icon).</summary>
         /// <summary>GG-T944 (§2.13.1): how long the battle ran, "N turns" or "N turns, M actions" when several heroes acted
         /// in a turn (<see cref="BattleReport.TurnsLabel"/>), "N hero turns" under HeroTimeline (GG-T1111); the turn mode
         /// itself is never read here.</summary>
@@ -282,7 +280,7 @@ namespace GridGame.App
         {
             string value = report.TurnsLabel();
             if (value.Length == 0) return;
-            Tag(Ui.MenuRow("Battle length", value, null, list), RowKind.Hero).name = "results-turns";
+            Ui.MenuRow("Battle length", value, null, list).WithKindIcon(RowKind.Hero).name = "results-turns";
         }
 
         /// <summary>GG-T852 (§1.2.8): the battle's best combo (rank and score) and its top supporter (the hero with the most
@@ -296,7 +294,7 @@ namespace GridGame.App
             best.Q<Label>("value")?.AddToClassList(report.BestComboRank >= GridGame.Core.Battle.ComboRank.S ? "gold" : "good");
             if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
             string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
-            Tag(Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list), RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+            Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list).WithKindIcon(RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
         }
 
         /// <summary>GG-T1556 (§22.8): each hero who leveled up this battle, with <see cref="NextAbility.Line"/> and a Learn button
@@ -313,7 +311,7 @@ namespace GridGame.App
                 var row = Ui.El("row", list);
                 row.name = "results-next-ability-" + classId;
                 row.style.alignItems = Align.Center;
-                var info = Tag(Ui.MenuRow(c.TryClass(classId)?.Name ?? classId, NextAbility.Line(c, h), null, row), RowKind.Hero, classId);
+                var info = Ui.MenuRow(c.TryClass(classId)?.Name ?? classId, NextAbility.Line(c, h), null, row).WithKindIcon(RowKind.Hero, classId);
                 info.style.flexGrow = 1; info.style.flexShrink = 1;
                 RowIcon.IconButton("Learn", RowKind.Ability, () => App.Router.Push(HeroScreen.Learn(classId, next)), "btn--small", row).name = "results-learn-" + classId;
             }
@@ -351,11 +349,11 @@ namespace GridGame.App
                 var row = Ui.El("row", list);
                 row.name = "results-bond-" + b.Key.Replace('|', '-');
                 row.style.alignItems = Align.Center;
-                row.style.marginTop = row.style.marginBottom = Space.S8;
-                foreach (var id in ids) Ui.Thumb(id, row, Size.Icon).style.marginRight = Space.S8;
+                Ui.Margin(row, top: Space.S8, bottom: Space.S8);
+                foreach (var id in ids) Ui.Margin(Ui.Thumb(id, row, Size.Icon), right: Space.S8);
                 var text = Ui.El("col", row);
                 text.style.flexGrow = 1; text.style.flexShrink = 1;
-                text.style.marginLeft = Space.S8;
+                Ui.Margin(text, left: Space.S8);
                 string what = ids.Length == 2 ? $"{Name(ids[0])} & {Name(ids[1])}" : $"{Name(ids[0])}'s Trust";
                 var head = Ui.Text($"{what} +{b.After - b.Before}", up ? "gold" : null, text);
                 head.style.whiteSpace = WhiteSpace.Normal;
@@ -395,13 +393,8 @@ namespace GridGame.App
         private void TicketsRow(VisualElement list)
         {
             if (report.TicketsEarned <= 0) return;
-            Tag(Ui.MenuRow(TicketText.Plural, "+" + report.TicketsEarned.ToString("N0"), null, list), RowKind.Item, Art.ItemIcon("mat_summon_ticket")).name = "results-tickets";
+            Ui.MenuRow(TicketText.Plural, "+" + report.TicketsEarned.ToString("N0"), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon("mat_summon_ticket")).name = "results-tickets";
         }
-
-        private static VisualElement Tag(VisualElement row, RowKind kind, Texture2D tex = null) { row.KindIcon(kind, tex); return row; }
-
-        /// <summary>GG-T749: <see cref="Tag(VisualElement, RowKind, Texture2D)"/> with the art found from an id (a hero's class id).</summary>
-        private static VisualElement Tag(VisualElement row, RowKind kind, string id) { row.KindIcon(kind, id); return row; }
 
         private void RevealItems(Dictionary<string, int> items, ContentDb c, VisualElement list)
         {
@@ -432,14 +425,14 @@ namespace GridGame.App
         private VisualElement ChestBlock(ItemDef chest, ContentDb c, VisualElement list)
         {
             var box = Ui.El("col", list);
-            box.style.marginLeft = Space.S16; box.style.marginBottom = Space.S8;
+            Ui.Margin(box, left: Space.S16, bottom: Space.S8);
             var row = Ui.El("row", box);
             TomeUi.OpenButton(row, chest, (r, haul) =>
             {
                 if (!r.Ok || haul == null) return;
                 box.Clear();
                 var inner = Ui.El("col", box);
-                if (haul.Gold > 0) Tag(Ui.MenuRow("Gold", "+" + Ui.Gold(haul.Gold), null, inner), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
+                if (haul.Gold > 0) Ui.MenuRow("Gold", "+" + Ui.Gold(haul.Gold), null, inner).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
                 RevealItems(haul.Items, c, inner);
                 if (App.Save.Count(chest.Id) > 0) ChestBlock(chest, c, box);
             });
@@ -455,16 +448,16 @@ namespace GridGame.App
             var box = Ui.El("row", list);
             box.name = "tame-offer-" + offer.ClassId;
             box.style.alignItems = Align.Center;
-            box.style.marginTop = Space.S8; box.style.marginBottom = Space.S8;
-            Ui.Thumb(def.Id, box, 96).style.marginRight = Space.S16;
+            Ui.Margin(box, top: Space.S8, bottom: Space.S8);
+            Ui.Margin(Ui.Thumb(def.Id, box, 96), right: Space.S16);
             var text = Ui.El("col", box);
             text.style.flexGrow = 1; text.style.flexShrink = 1;
-            var head = Ui.Text($"{def.Name} wants to join you!", "h2 good", text);
+            var head = Ui.Text($"{def.Name} wants to join you!", "t-h2 good", text);
             head.style.whiteSpace = WhiteSpace.Normal;
             var sub = Ui.Text($"Lv {offer.Level} - fights on its own with the Pincer keyword. No gear or skills; grows slowly (max Lv {Domestication.LevelCap}).", "small dim", text);
             sub.style.whiteSpace = WhiteSpace.Normal;
             var buttons = Ui.El("row", text);
-            buttons.style.marginTop = Space.S8;
+            Ui.Margin(buttons, top: Space.S8);
             void Show(string msg, bool good)
             {
                 buttons.Clear();
@@ -510,8 +503,8 @@ namespace GridGame.App
             var box = Ui.El("row", list);
             box.name = "wanderer-offer";
             box.style.alignItems = Align.FlexStart;
-            box.style.marginTop = Space.S8; box.style.marginBottom = Space.S8;
-            Ui.Thumb(def.Id, box, 96).style.marginRight = Space.S16;
+            Ui.Margin(box, top: Space.S8, bottom: Space.S8);
+            Ui.Margin(Ui.Thumb(def.Id, box, 96), right: Space.S16);
             var text = Ui.El("col", box);
             text.style.flexGrow = 1; text.style.flexShrink = 1;
             if (wandererTalked)
@@ -526,7 +519,7 @@ namespace GridGame.App
             head.style.color = Palette.Wanderer;
             var trust = Ui.El("row", text);
             trust.style.alignItems = Align.Center;
-            Ui.Text($"Trust {offer.Trust}/{offer.TrustNeeded}", "small", trust).style.marginRight = Space.S16;
+            Ui.Margin(Ui.Text($"Trust {offer.Trust}/{offer.TrustNeeded}", "small", trust), right: Space.S16);
             Ui.Gauge(offer.TrustNeeded <= 0 ? 1f : Mathf.Clamp01(offer.Trust / (float)offer.TrustNeeded), trust, 220).name = "wanderer-trust";
             var faction = c.FactionOf(def.Id);
             var factionBlurb = ContentDb.Blurb(c.FactionBlurbs, faction?.Id); // GG-T374: Prose "faction:<id>"
@@ -539,7 +532,7 @@ namespace GridGame.App
             var rule = Ui.Text(Wanderers.Outlook(c, offer, null), "small dim", text);
             rule.name = "wanderer-outlook";
             rule.style.whiteSpace = WhiteSpace.Normal;
-            Ui.Text("Who talks with them?", "small", text).style.marginTop = Space.S8;
+            Ui.Margin(Ui.Text("Who talks with them?", "small", text), top: Space.S8);
             var buttons = Ui.El("row", text);
             buttons.style.flexWrap = Wrap.Wrap;
             foreach (var id in App.Save.Party)
@@ -551,7 +544,7 @@ namespace GridGame.App
                 bool kin = Wanderers.Fits(c, def.Id, who);
                 var b = RowIcon.IconButton(kin && faction != null ? $"{hd.Name} ({faction.Name})" : hd.Name, RowKind.Talk, () => Talk(offer, who), kin ? "btn--primary btn--small" : "btn--small", buttons);
                 b.name = "wanderer-talk-" + who;
-                b.style.marginTop = Space.S8; b.style.marginRight = Space.S8;
+                Ui.Margin(b, top: Space.S8, right: Space.S8);
             }
             box.style.opacity = 0f;
             reveals.Add(App.StartCoroutine(RevealRow(box, 0.25f)));
@@ -574,5 +567,14 @@ namespace GridGame.App
             row.style.opacity = 1f;
             yield return Tween.Pop(row, 1.12f, 0.18f);
         }
+    }
+
+    internal static class ResultRows
+    {
+        /// <summary>GG-T749: lead a results row with its kind icon (BIBLE §26.7) and hand the row back, so a chained
+        /// <c>.Q&lt;Label&gt;</c> or <c>.name</c> still lands on the row (KindIcon itself returns the icon).</summary>
+        public static VisualElement WithKindIcon(this VisualElement row, RowKind kind, Texture2D tex = null) { row.KindIcon(kind, tex); return row; }
+
+        public static VisualElement WithKindIcon(this VisualElement row, RowKind kind, string id) { row.KindIcon(kind, id); return row; }
     }
 }
