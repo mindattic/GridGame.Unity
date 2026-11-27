@@ -11204,6 +11204,439 @@
         ]
       }
     },
+    "dialogue:trust_sage_1": {
+      "key": "dialogue:trust_sage_1",
+      "id": "conversation-trust-sage-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2da4da6de2f7e00736f03ba2e57f3eff9b00a7430607a6d4df9796749dc8ebb3",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The cord",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The camp is asleep. At the back of the wagon, where the Sage sleeps nearest the satchel, a lantern is still lit, and the Sage is turning a length of knotted cord through both hands.",
+            "choices": [
+              {
+                "text": "Still mending, this late?",
+                "next": "mending"
+              },
+              {
+                "text": "Put the lantern out. It can be seen from the ridge.",
+                "next": "lantern"
+              },
+              {
+                "text": "Couldn't sleep either. Mind the company?",
+                "next": "company"
+              }
+            ]
+          },
+          {
+            "id": "mending",
+            "speaker": "$with",
+            "line": "Not mending. Nothing to mend tonight, for once. I'm counting.",
+            "next": "cord"
+          },
+          {
+            "id": "lantern",
+            "speaker": "$with",
+            "line": "It's Lantern Road oil. It burns low and it doesn't carry. Sit down, if you're up. I'm counting.",
+            "next": "cord"
+          },
+          {
+            "id": "company",
+            "speaker": "$with",
+            "line": "The company's welcome. The counting isn't much to watch, but sit.",
+            "next": "cord"
+          },
+          {
+            "id": "cord",
+            "speaker": "character-commander",
+            "line": "The cord is old and dark with handling. Every finger's width or so there is a knot, pulled tight, and there are a great many of them.",
+            "next": "knots"
+          },
+          {
+            "id": "knots",
+            "speaker": "$with",
+            "line": "One knot for every pilgrim who climbed the stair under the spire and didn't come down. I told you I counted them. I didn't say I counted them like this.",
+            "next": "why"
+          },
+          {
+            "id": "why",
+            "speaker": "$with",
+            "line": "On the Lantern Road, when somebody dies far from home, the healer who saw them last ties a knot and carries it back to their lantern. So the road knows. Nobody carries these back. So I carry them.",
+            "next": "us"
+          },
+          {
+            "id": "us",
+            "speaker": "$with",
+            "line": "Here's what keeps me up, Commander. We're going up that stair. On the road, you tie the knot before the climb, not after, so nobody's forgotten if it goes wrong. Do I tie knots for us?",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Sage holds out the free end of the cord, the part with no knots in it yet.",
+            "choices": [
+              {
+                "text": "Tie one for each of us. If we don't come down, someone should know.",
+                "next": "tie"
+              },
+              {
+                "text": "No knots for us. We're coming down, and you're coming with us.",
+                "next": "down"
+              },
+              {
+                "text": "Put the cord away. Counting the dead won't mend anyone.",
+                "next": "away"
+              }
+            ]
+          },
+          {
+            "id": "tie",
+            "speaker": "$with",
+            "line": "Honest. Most people want me to say it'll be fine. I'll tie them loose, then. A loose knot can come undone on the way back down.",
+            "next": "close_line"
+          },
+          {
+            "id": "down",
+            "speaker": "$with",
+            "line": "Coming down. You say it like you've already been up and back. I'll hold you to it. The end of this cord stays clean until you prove me wrong.",
+            "next": "close_line"
+          },
+          {
+            "id": "away",
+            "speaker": "$with",
+            "line": "It doesn't mend anyone. You're right about that much. But it isn't for mending. It's so somebody remembers they were here. I'll keep it, Commander. I'll just keep it where you don't have to look at it.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "Go and sleep. Somebody bled today and somebody will bleed tomorrow, and I'd like the both of us awake for it.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Sage winds the cord round one wrist, three turns, and blows the lantern out."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_sage_3": {
+      "key": "dialogue:trust_sage_3",
+      "id": "conversation-trust-sage-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:14c9b28f42c1c8b7a60ddf2179ece67bca7eef8d4dd17c77884abfce5cb51e23",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The first knot",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Sage has the satchel open on a flat stone and every jar out of it in a row, and is sorting them again, though they were sorted at dusk.",
+            "choices": [
+              {
+                "text": "Something missing from the satchel?",
+                "next": "missing"
+              },
+              {
+                "text": "You sorted those an hour ago.",
+                "next": "sorted"
+              },
+              {
+                "text": "Leave the jars. Tell me what's wrong.",
+                "next": "wrong"
+              }
+            ]
+          },
+          {
+            "id": "missing",
+            "speaker": "$with",
+            "line": "No. Everything's here. That's the trouble with a satchel. It's always got everything in it except the one thing.",
+            "next": "first"
+          },
+          {
+            "id": "sorted",
+            "speaker": "$with",
+            "line": "I did. Hands like to be busy when the head won't be. You'd know, if you ever sat still.",
+            "next": "first"
+          },
+          {
+            "id": "wrong",
+            "speaker": "$with",
+            "line": "Straight to it. All right. Nothing's wrong tonight. Something was wrong a long time ago, and tonight it's loud.",
+            "next": "first"
+          },
+          {
+            "id": "first",
+            "speaker": "character-commander",
+            "line": "The Sage pulls the cord from a sleeve and holds up the first knot on it, the oldest, worn almost smooth.",
+            "next": "wick"
+          },
+          {
+            "id": "wick",
+            "speaker": "$with",
+            "line": "This one's Wick. My apprentice, off the Lantern Road. Wick came to the city with me to learn what the neon does with mana. Quick hands. Better at the salves than I ever was.",
+            "next": "thin"
+          },
+          {
+            "id": "thin",
+            "speaker": "$with",
+            "line": "Then Wick's colour started going thin. You'll have seen it in the cities. The glow in the heartbeat fades a little more each week, and nothing in this satchel puts it back. I tried every jar. Twice.",
+            "next": "stair"
+          },
+          {
+            "id": "stair",
+            "speaker": "$with",
+            "line": "The Choir told Wick the Lullaby at the top of the spire would make it whole again. So Wick climbed. I tied the knot the morning after. I didn't tie it before. I was so sure I'd mend it first.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Sage turns the knot between finger and thumb and doesn't look up.",
+            "choices": [
+              {
+                "text": "If there's any trace of Wick at the top, we bring it down. I promise you that.",
+                "next": "promised"
+              },
+              {
+                "text": "You couldn't mend what the Choir did. That was never yours to carry.",
+                "next": "absolved"
+              },
+              {
+                "text": "Wick chose the stair. Let Wick's choice be Wick's.",
+                "next": "chose"
+              }
+            ]
+          },
+          {
+            "id": "promised",
+            "speaker": "$with",
+            "line": "A promise. From somebody climbing the same stair. That's either the bravest thing I've heard or the most foolish, and on the road those come out the same. I'll hold you to it.",
+            "next": "after"
+          },
+          {
+            "id": "absolved",
+            "speaker": "$with",
+            "line": "Never mine. I've said that to a hundred people at a hundred bedsides. It's strange how little it helps when it's turned round. But it helps a little. Thank you.",
+            "next": "after"
+          },
+          {
+            "id": "chose",
+            "speaker": "$with",
+            "line": "Wick's choice. Yes, it was. Wick was grown, and stubborn, and wanted to be whole. I just thought I'd have the last word. Healers always think that. I'll climb with you anyway, Commander.",
+            "next": "after"
+          },
+          {
+            "id": "after",
+            "speaker": "character-commander",
+            "line": "The Sage puts the jars back one by one, the right way round this time, and buckles the satchel shut.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "$with",
+            "line": "Nobody climbs alone. The road says it over every lantern. Wick did, though. I don't mean to let that happen twice."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_sage_5": {
+      "key": "dialogue:trust_sage_5",
+      "id": "conversation-trust-sage-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a71949dec133c03bdf4f61c2dec70da81192db3c7da6d36a0de7ac9a949fa452",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The clean end",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Sage sits by the fire with the cord laid out straight along the ground, from the oldest knot to the free end, and is running a thumb along it, knot by knot.",
+            "choices": [
+              {
+                "text": "You tied us in loose, the way you said. Still loose?",
+                "next": "tied_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The end's still clean. I told you it would stay that way.",
+                "next": "down_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you to put that away. I was wrong. Show me.",
+                "next": "away_mended",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Counting again?",
+                "next": "counting"
+              }
+            ]
+          },
+          {
+            "id": "tied_kept",
+            "speaker": "$with",
+            "line": "Still loose. Every one of you. I check them every night, like a pulse. Sit down.",
+            "next": "count"
+          },
+          {
+            "id": "down_kept",
+            "speaker": "$with",
+            "line": "Still clean. I keep waiting to need it, and you keep not letting me. Sit down.",
+            "next": "count"
+          },
+          {
+            "id": "away_mended",
+            "speaker": "$with",
+            "line": "You were half wrong. It doesn't mend anyone. But you asked to see it, and that's the half that counts. Sit down.",
+            "next": "count"
+          },
+          {
+            "id": "counting",
+            "speaker": "$with",
+            "line": "Not counting. Finishing. Sit down.",
+            "next": "count"
+          },
+          {
+            "id": "count",
+            "speaker": "$with",
+            "line": "I counted them again tonight. The same number as under the spire. Not one new knot since I've been walking behind this wagon. On the road, that's the longest I've ever gone.",
+            "next": "wick"
+          },
+          {
+            "id": "wick",
+            "speaker": "character-commander",
+            "line": "The Sage's thumb stops on the first knot, the one worn smooth.",
+            "choices": [
+              {
+                "text": "I promised we'd bring Wick down. That promise hasn't moved.",
+                "next": "promised_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You told me it helped a little. Does it still?",
+                "next": "absolved_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I said Wick's choice was Wick's. I said it too easily.",
+                "next": "chose_mended",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Wick would know you never stopped counting.",
+                "next": "remembered"
+              }
+            ]
+          },
+          {
+            "id": "promised_kept",
+            "speaker": "$with",
+            "line": "I know it hasn't. I've watched you keep every other promise on this road. I stopped bracing for the morning you'd take it back.",
+            "next": "ask"
+          },
+          {
+            "id": "absolved_kept",
+            "speaker": "$with",
+            "line": "More than a little, now. I mended a child in the last town whose colour was going thin, the same as Wick's. Not all the way. But I stopped blaming my hands while I did it, and my hands were steadier.",
+            "next": "ask"
+          },
+          {
+            "id": "chose_mended",
+            "speaker": "$with",
+            "line": "Too easily. Maybe. But you said it straight, and I was angry, and then I kept thinking about it. Wick did choose. I can grieve a choice without having to have stopped it. That took me a long while.",
+            "next": "ask"
+          },
+          {
+            "id": "remembered",
+            "speaker": "$with",
+            "line": "Never stopped. No. That's what the knot's for. So Wick isn't one more name the stair swallowed without anyone noticing.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "So. The clean end. On the road, when a healer's cord is done, they tie one last knot and hang it on their own lantern. I don't know what the last knot should be. You're the one I'm walking behind, Commander. You pick.",
+            "choices": [
+              {
+                "text": "Tie one for the first pilgrim who comes back down. It'll be us.",
+                "next": "first_down"
+              },
+              {
+                "text": "Hang it on the wagon's lantern. This is your road now.",
+                "next": "wagon"
+              },
+              {
+                "text": "Leave it undone. You've carried enough of the dead.",
+                "next": "undone"
+              }
+            ]
+          },
+          {
+            "id": "first_down",
+            "speaker": "$with",
+            "line": "The first one down. Nobody's ever tied that knot. I'll tie it now and leave it loose, and pull it tight the morning we walk off that stair."
+          },
+          {
+            "id": "wagon",
+            "speaker": "$with",
+            "line": "The wagon's lantern. There's no road oil in it, and it's never once gone out. Wick would have laughed at that. Yes. Hold the light still, and I'll hang it."
+          },
+          {
+            "id": "undone",
+            "speaker": "$with",
+            "line": "Undone. No. A cord with no end is just string. I'll leave it for now, since you asked. But I'll finish it someday, Commander, and the last knot will be yours whether you like it or not."
+          }
+        ]
+      }
+    },
     "dialogue:wanderer_darktemplar": {
       "key": "dialogue:wanderer_darktemplar",
       "id": "conversation-wanderer-darktemplar",

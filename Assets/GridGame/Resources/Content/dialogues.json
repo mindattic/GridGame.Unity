@@ -4366,5 +4366,135 @@
       { "Id": "blank", "Speaker": "hero" },
       { "Id": "watch", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "trust_sage_1",
+    "Title": "The cord",
+    "Trigger": { "Kind": "Trust", "Id": "sage", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "mending", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] },
+          { "Next": "lantern", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "company", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "mending", "Speaker": "hero", "Next": "cord" },
+      { "Id": "lantern", "Speaker": "hero", "Next": "cord" },
+      { "Id": "company", "Speaker": "hero", "Next": "cord" },
+      { "Id": "cord", "Speaker": "commander", "Next": "knots" },
+      { "Id": "knots", "Speaker": "hero", "Next": "why" },
+      { "Id": "why", "Speaker": "hero", "Next": "us" },
+      { "Id": "us", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "tie", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "sage:cord_tied" } ] },
+          { "Next": "down", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "sage:cord_down" } ] },
+          { "Next": "away", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "sage:cord_away" } ] }
+        ]
+      },
+      { "Id": "tie", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "down", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "away", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_sage_3",
+    "Title": "The first knot",
+    "Trigger": { "Kind": "Trust", "Id": "sage", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "missing", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] },
+          { "Next": "sorted", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "wrong", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "missing", "Speaker": "hero", "Next": "first" },
+      { "Id": "sorted", "Speaker": "hero", "Next": "first" },
+      { "Id": "wrong", "Speaker": "hero", "Next": "first" },
+      { "Id": "first", "Speaker": "commander", "Next": "wick" },
+      { "Id": "wick", "Speaker": "hero", "Next": "thin" },
+      { "Id": "thin", "Speaker": "hero", "Next": "stair" },
+      { "Id": "stair", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "sage:wick_promised" } ] },
+          { "Next": "absolved", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "sage:wick_absolved" } ] },
+          { "Next": "chose", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "sage:wick_chose" } ] }
+        ]
+      },
+      { "Id": "promised", "Speaker": "hero", "Next": "after" },
+      { "Id": "absolved", "Speaker": "hero", "Next": "after" },
+      { "Id": "chose", "Speaker": "hero", "Next": "after" },
+      { "Id": "after", "Speaker": "commander", "Next": "close" },
+      { "Id": "close", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "trust_sage_5",
+    "Title": "The clean end",
+    "Trigger": { "Kind": "Trust", "Id": "sage", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "tied_kept", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_tied" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "down_kept", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_down" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 } ] },
+          { "Next": "away_mended", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_away" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 } ] },
+          { "Next": "counting", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "tied_kept", "Speaker": "hero", "Next": "count" },
+      { "Id": "down_kept", "Speaker": "hero", "Next": "count" },
+      { "Id": "away_mended", "Speaker": "hero", "Next": "count" },
+      { "Id": "counting", "Speaker": "hero", "Next": "count" },
+      { "Id": "count", "Speaker": "hero", "Next": "wick" },
+      {
+        "Id": "wick", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised_kept", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_promised" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "sage:thread_carried" } ] },
+          { "Next": "absolved_kept", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_absolved" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "sage:thread_eased" } ] },
+          { "Next": "chose_mended", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_chose" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "sage:thread_mended" } ] },
+          { "Next": "remembered", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "sage:thread_remembered" } ] }
+        ]
+      },
+      { "Id": "promised_kept", "Speaker": "hero", "Next": "ask" },
+      { "Id": "absolved_kept", "Speaker": "hero", "Next": "ask" },
+      { "Id": "chose_mended", "Speaker": "hero", "Next": "ask" },
+      { "Id": "remembered", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "first_down", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "sage:end_first_down" } ] },
+          { "Next": "wagon", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "sage:end_wagon" } ] },
+          { "Next": "undone", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "sage:end_undone" } ] }
+        ]
+      },
+      { "Id": "first_down", "Speaker": "hero" },
+      { "Id": "wagon", "Speaker": "hero" },
+      { "Id": "undone", "Speaker": "hero" }
+    ]
   }
 ]

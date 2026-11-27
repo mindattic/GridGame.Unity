@@ -1,0 +1,74 @@
+dialogue trust_sage_3
+title: The first knot
+trigger: Trust sage level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Sage has the satchel open on a flat stone and every jar out of it in a row, and is sorting them again, though they were sorted at dusk.
+  * Something missing from the satchel? -> missing
+    do: AddTrust $with 4
+  * You sorted those an hour ago. -> sorted
+    do: AddTrust $with -2
+  * Leave the jars. Tell me what's wrong. -> wrong
+    do: AddTrust $with 5
+
+node missing hero
+  No. Everything's here. That's the trouble with a satchel. It's always got everything in it except the one thing.
+  -> first
+
+node sorted hero
+  I did. Hands like to be busy when the head won't be. You'd know, if you ever sat still.
+  -> first
+
+node wrong hero
+  Straight to it. All right. Nothing's wrong tonight. Something was wrong a long time ago, and tonight it's loud.
+  -> first
+
+node first commander
+  The Sage pulls the cord from a sleeve and holds up the first knot on it, the oldest, worn almost smooth.
+  -> wick
+
+node wick hero
+  This one's Wick. My apprentice, off the Lantern Road. Wick came to the city with me to learn what the neon does with mana. Quick hands. Better at the salves than I ever was.
+  -> thin
+
+node thin hero
+  Then Wick's colour started going thin. You'll have seen it in the cities. The glow in the heartbeat fades a little more each week, and nothing in this satchel puts it back. I tried every jar. Twice.
+  -> stair
+
+node stair hero
+  The Choir told Wick the Lullaby at the top of the spire would make it whole again. So Wick climbed. I tied the knot the morning after. I didn't tie it before. I was so sure I'd mend it first.
+  -> ask
+
+node ask commander
+  The Sage turns the knot between finger and thumb and doesn't look up.
+  * If there's any trace of Wick at the top, we bring it down. I promise you that. -> promised
+    do: AddTrust $with 10
+    do: SetFlag sage:wick_promised
+  * You couldn't mend what the Choir did. That was never yours to carry. -> absolved
+    do: AddTrust $with 6
+    do: SetFlag sage:wick_absolved
+  * Wick chose the stair. Let Wick's choice be Wick's. -> chose
+    do: AddTrust $with -4
+    do: SetFlag sage:wick_chose
+
+node promised hero
+  A promise. From somebody climbing the same stair. That's either the bravest thing I've heard or the most foolish, and on the road those come out the same. I'll hold you to it.
+  -> after
+
+node absolved hero
+  Never mine. I've said that to a hundred people at a hundred bedsides. It's strange how little it helps when it's turned round. But it helps a little. Thank you.
+  -> after
+
+node chose hero
+  Wick's choice. Yes, it was. Wick was grown, and stubborn, and wanted to be whole. I just thought I'd have the last word. Healers always think that. I'll climb with you anyway, Commander.
+  -> after
+
+node after commander
+  The Sage puts the jars back one by one, the right way round this time, and buckles the satchel shut.
+  -> close
+
+node close hero
+  Nobody climbs alone. The road says it over every lantern. Wick did, though. I don't mean to let that happen twice.

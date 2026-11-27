@@ -1,0 +1,74 @@
+dialogue trust_sage_1
+title: The cord
+trigger: Trust sage level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The camp is asleep. At the back of the wagon, where the Sage sleeps nearest the satchel, a lantern is still lit, and the Sage is turning a length of knotted cord through both hands.
+  * Still mending, this late? -> mending
+    do: AddTrust $with 4
+  * Put the lantern out. It can be seen from the ridge. -> lantern
+    do: AddTrust $with -2
+  * Couldn't sleep either. Mind the company? -> company
+    do: AddTrust $with 5
+
+node mending hero
+  Not mending. Nothing to mend tonight, for once. I'm counting.
+  -> cord
+
+node lantern hero
+  It's Lantern Road oil. It burns low and it doesn't carry. Sit down, if you're up. I'm counting.
+  -> cord
+
+node company hero
+  The company's welcome. The counting isn't much to watch, but sit.
+  -> cord
+
+node cord commander
+  The cord is old and dark with handling. Every finger's width or so there is a knot, pulled tight, and there are a great many of them.
+  -> knots
+
+node knots hero
+  One knot for every pilgrim who climbed the stair under the spire and didn't come down. I told you I counted them. I didn't say I counted them like this.
+  -> why
+
+node why hero
+  On the Lantern Road, when somebody dies far from home, the healer who saw them last ties a knot and carries it back to their lantern. So the road knows. Nobody carries these back. So I carry them.
+  -> us
+
+node us hero
+  Here's what keeps me up, Commander. We're going up that stair. On the road, you tie the knot before the climb, not after, so nobody's forgotten if it goes wrong. Do I tie knots for us?
+  -> ask
+
+node ask commander
+  The Sage holds out the free end of the cord, the part with no knots in it yet.
+  * Tie one for each of us. If we don't come down, someone should know. -> tie
+    do: AddTrust $with 6
+    do: SetFlag sage:cord_tied
+  * No knots for us. We're coming down, and you're coming with us. -> down
+    do: AddTrust $with 9
+    do: SetFlag sage:cord_down
+  * Put the cord away. Counting the dead won't mend anyone. -> away
+    do: AddTrust $with -4
+    do: SetFlag sage:cord_away
+
+node tie hero
+  Honest. Most people want me to say it'll be fine. I'll tie them loose, then. A loose knot can come undone on the way back down.
+  -> close_line
+
+node down hero
+  Coming down. You say it like you've already been up and back. I'll hold you to it. The end of this cord stays clean until you prove me wrong.
+  -> close_line
+
+node away hero
+  It doesn't mend anyone. You're right about that much. But it isn't for mending. It's so somebody remembers they were here. I'll keep it, Commander. I'll just keep it where you don't have to look at it.
+  -> close_line
+
+node close_line hero
+  Go and sleep. Somebody bled today and somebody will bleed tomorrow, and I'd like the both of us awake for it.
+  -> close
+
+node close commander
+  The Sage winds the cord round one wrist, three turns, and blows the lantern out.

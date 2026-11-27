@@ -1,0 +1,95 @@
+dialogue trust_sage_5
+title: The clean end
+trigger: Trust sage level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Sage sits by the fire with the cord laid out straight along the ground, from the oldest knot to the free end, and is running a thumb along it, knot by knot.
+  * You tied us in loose, the way you said. Still loose? -> tied_kept
+    if: FlagSet sage:cord_tied
+    do: AddTrust $with 5
+  * The end's still clean. I told you it would stay that way. -> down_kept
+    if: FlagSet sage:cord_down
+    do: AddTrust $with 7
+  * I told you to put that away. I was wrong. Show me. -> away_mended
+    if: FlagSet sage:cord_away
+    do: AddTrust $with 8
+  * Counting again? -> counting
+    do: AddTrust $with 3
+
+node tied_kept hero
+  Still loose. Every one of you. I check them every night, like a pulse. Sit down.
+  -> count
+
+node down_kept hero
+  Still clean. I keep waiting to need it, and you keep not letting me. Sit down.
+  -> count
+
+node away_mended hero
+  You were half wrong. It doesn't mend anyone. But you asked to see it, and that's the half that counts. Sit down.
+  -> count
+
+node counting hero
+  Not counting. Finishing. Sit down.
+  -> count
+
+node count hero
+  I counted them again tonight. The same number as under the spire. Not one new knot since I've been walking behind this wagon. On the road, that's the longest I've ever gone.
+  -> wick
+
+node wick commander
+  The Sage's thumb stops on the first knot, the one worn smooth.
+  * I promised we'd bring Wick down. That promise hasn't moved. -> promised_kept
+    if: FlagSet sage:wick_promised
+    do: AddTrust $with 9
+    do: SetFlag sage:thread_carried
+  * You told me it helped a little. Does it still? -> absolved_kept
+    if: FlagSet sage:wick_absolved
+    do: AddTrust $with 8
+    do: SetFlag sage:thread_eased
+  * I said Wick's choice was Wick's. I said it too easily. -> chose_mended
+    if: FlagSet sage:wick_chose
+    do: AddTrust $with 10
+    do: SetFlag sage:thread_mended
+  * Wick would know you never stopped counting. -> remembered
+    do: AddTrust $with 6
+    do: SetFlag sage:thread_remembered
+
+node promised_kept hero
+  I know it hasn't. I've watched you keep every other promise on this road. I stopped bracing for the morning you'd take it back.
+  -> ask
+
+node absolved_kept hero
+  More than a little, now. I mended a child in the last town whose colour was going thin, the same as Wick's. Not all the way. But I stopped blaming my hands while I did it, and my hands were steadier.
+  -> ask
+
+node chose_mended hero
+  Too easily. Maybe. But you said it straight, and I was angry, and then I kept thinking about it. Wick did choose. I can grieve a choice without having to have stopped it. That took me a long while.
+  -> ask
+
+node remembered hero
+  Never stopped. No. That's what the knot's for. So Wick isn't one more name the stair swallowed without anyone noticing.
+  -> ask
+
+node ask hero
+  So. The clean end. On the road, when a healer's cord is done, they tie one last knot and hang it on their own lantern. I don't know what the last knot should be. You're the one I'm walking behind, Commander. You pick.
+  * Tie one for the first pilgrim who comes back down. It'll be us. -> first_down
+    do: AddTrust $with 8
+    do: SetFlag sage:end_first_down
+  * Hang it on the wagon's lantern. This is your road now. -> wagon
+    do: AddTrust $with 6
+    do: SetFlag sage:end_wagon
+  * Leave it undone. You've carried enough of the dead. -> undone
+    do: AddTrust $with -2
+    do: SetFlag sage:end_undone
+
+node first_down hero
+  The first one down. Nobody's ever tied that knot. I'll tie it now and leave it loose, and pull it tight the morning we walk off that stair.
+
+node wagon hero
+  The wagon's lantern. There's no road oil in it, and it's never once gone out. Wick would have laughed at that. Yes. Hold the light still, and I'll hang it.
+
+node undone hero
+  Undone. No. A cord with no end is just string. I'll leave it for now, since you asked. But I'll finish it someday, Commander, and the last knot will be yours whether you like it or not.
