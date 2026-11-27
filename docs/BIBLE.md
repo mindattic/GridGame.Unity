@@ -50,7 +50,7 @@ GridGame is **NOT**:
 - **Not a grid-puzzle** — no match-3 piece-color matching; tile state is "who's standing there".
 - **Not free-form movement** — one tile at a time, cardinal only, no pathfinding or diagonals.
 - **Not a stat-spreadsheet** — if a player needs a wiki to build, the design failed.
-- **No world map.** Narrative is a skippable per-theme text crawl ([§27](#27-story-crawl-no-dialog)) plus portrait dialogue at story beats between battles and from Camp's Talk row ([§27.1](#271-dialogue-gg-t117)); stage navigation is the Adventure list ([§28](#28-no-overworld)). **Amended 2026-10-19 (owner, GG-T117):** "no dialog system" withdrawn. **Confirmed 2026-10-20 (owner, GG-T115):** the separate overworld pitch ([design-draft-overworld-and-dialogue.md §2](design-draft-overworld-and-dialogue.md)) is withdrawn — a world map "takes away from a quick sit-down game." The game is four kinds of screen: fighting, in-town buying/upgrading, reading a text crawl, or talking with people (NPCs, party). **Amended 2026-11-02 (GG-T75):** the caravan crew's one-line barks on Camp and the Caravan screen ([§25.12.1](#25121-the-caravan-crew-and-their-barks-gg-t75-added-2026-11-02-owner-direction-2026-10-16)) are flavor text, not a fifth kind of screen and not dialogue: no branching, no choices, no overworld.
+- ~~**No world map.**~~ Narrative is a skippable per-theme text crawl ([§27](#27-story-crawl-no-dialog)) plus portrait dialogue at story beats between battles and from Camp's Talk row ([§27.1](#271-dialogue-gg-t117)); ~~stage navigation is the Adventure list ([§28](#28-the-overworld)).~~ **Amended 2026-10-19 (owner, GG-T117):** "no dialog system" withdrawn. **Confirmed 2026-10-20 (owner, GG-T115):** the separate overworld pitch ([design-draft-overworld-and-dialogue.md §2](design-draft-overworld-and-dialogue.md)) is withdrawn — a world map "takes away from a quick sit-down game." The game is four kinds of screen: fighting, in-town buying/upgrading, reading a text crawl, or talking with people (NPCs, party). **Amended 2026-11-02 (GG-T75):** the caravan crew's one-line barks on Camp and the Caravan screen ([§25.12.1](#25121-the-caravan-crew-and-their-barks-gg-t75-added-2026-11-02-owner-direction-2026-10-16)) are flavor text, not a fifth kind of screen and not dialogue: no branching, no choices, no overworld. **Amended 2026-11-27 (owner, GG-T1655):** *"the overworld is the only thing that makes this thing make sense."* The GG-T115 ruling is reversed: the caravan travels region maps between battles and the map is campaign advancement ([§28](#28-the-overworld), proposed, epic GG-T1652); the Adventure list stays until the map screen lands.
 
 ## 4. Architecture canon {#GG-§4}
 
@@ -3979,7 +3979,7 @@ PostBattle — gold, items, unlocks, bounty ════════════
 
 - **Stage = waves.** Clearing a wave spawns the next immediately inside the same action; clearing the last wave is victory.
 - **Reward beat.** `BattleFactory.Commit` writes XP, gold, items, kills, unlocks and slain bounty targets, then the save is persisted and `PostBattleScreen.RouteFrom` opens `LevelUpScreen` first if anyone leveled, else `PostBattleScreen` directly.
-- **No Overworld** ([§28](#28-no-overworld)).
+- ~~**No Overworld** ([§28](#28-the-overworld)).~~ **Amended 2026-11-27 (owner, GG-T1655):** the caravan travels an overworld map between battles; camp, hunting and the Wilds happen on it ([§28](#28-the-overworld), proposed).
 - **Test Mode loop (GG-T93):** `-testmode` runs this same loop with the bot at every seat — Camp → Battle → LevelUp → PostBattle → **Camp, where `CampRoutine` spends before every launch** — skipping Title/CharacterSelect/StoryCrawl/tutorial, on a party-scaled save whose enemy level tracks the party's level (see [§6](#GG-§6)).
 
 ### 22.1 Per-transition state contract
@@ -6004,9 +6004,108 @@ the rule that no text says what the Manalith is for still holds. At most, things
 the Manalith tumbles like a body rather than a stone, and "more literal than anyone knows" is allowed to cut both ways.
 It is one horror among many. There are always more, so nothing here closes the question.
 
-## 28. No Overworld
+## 28. The Overworld
 
-There is no world map. Stage navigation is the Adventure list ([§22.3](#223-adventure--the-stage-list)). **Confirmed 2026-10-20 (owner, GG-T115):** permanent, not contingent on GridGameCaravan's traversal prototype picking a demo — the earlier pitch for a navigable overworld and terrain gates (design-draft-overworld-and-dialogue.md §2/§2.1, withdrawn; the draft is deleted in GG-T341, git keeps it) is not coming back. The journey is understood without one: the party is travelling, and the story is told by text crawls ([§27](#27-story-crawl-no-dialog)) and dialogue ([§27.1](#271-dialogue-gg-t117)). GridGameCaravan, the traversal lab that would have fed this, is spun off as its own project ("TownWalker"), not a Gaiden prototype.
+Status: **Proposed**, owner-approved 2026-11-27, epic GG-T1652. Design only; nothing here is built yet. The Adventure list ([§22.3](#223-adventure--the-stage-list)) stays the live stage navigation until the map screen lands; the amendments to §22.3/§22.5, the Inn, §25.11.2 and §22.11 follow in GG-T1656.
+
+~~**28 (old). No Overworld.** There is no world map. Stage navigation is the Adventure list ([§22.3](#223-adventure--the-stage-list)). **Confirmed 2026-10-20 (owner, GG-T115):** permanent, not contingent on GridGameCaravan's traversal prototype picking a demo — the earlier pitch for a navigable overworld and terrain gates (design-draft-overworld-and-dialogue.md §2/§2.1, withdrawn; the draft is deleted in GG-T341, git keeps it) is not coming back. The journey is understood without one: the party is travelling, and the story is told by text crawls ([§27](#27-story-crawl-no-dialog)) and dialogue ([§27.1](#271-dialogue-gg-t117)). GridGameCaravan, the traversal lab that would have fed this, is spun off as its own project ("TownWalker"), not a Gaiden prototype.~~ **Amended 2026-11-27 (owner, GG-T1655):** *"the overworld is the only thing that makes this thing make sense."* The GG-T115 ruling is reversed. The caravan travels a simple overworld map, the Commander decides where it goes, and everything else (campaign stages, recruiting, bounties, bosses, treasure, grinding) happens at places on that map. The map **is** campaign advancement.
+
+### 28.1 Region maps
+
+- **The art is the owner's painted relief map**, one per region (15 regions, one per `ThemeDef.Id`), shown as-is at native resolution, never upscaled. Shaded relief in the Solasta travel-screen style, not contour parchment: green lowlands, ochre and brown uplands, dark gorges, rivers as thin lines in their valleys, settlements as small clusters of roofs. Region, road and area names ("Copperhead Road", "Duchy of …") are lore lettered on the land, never borders. Starter maps: relief/mountains, the swamp (Arkgrave / Drowned Arks) and the moors (Tithe Moors, region 1).
+- **No zoom is needed.** Each region is drawn at one readable scale as one large area the player scrolls (drag and fling, re-centre on the party) through the shared `PanZoomView` with zoom off (`MinScale = MaxScale = 1`), so scrolling feels the same as the Skill Hex.
+- **Haze edges, no visible border.** At the scroll limits the land fades into fog, haze, mountains or sea; a region never visibly ends and there is no "you are leaving" line.
+- **Roadsigns are the only way between regions.** They stand at the far ends of roads. The party travels to one, it says where the road leads ("To the Lantern Road"), and taking it moves the caravan onto the next region's map at that road's arrival sign. A road the story hasn't opened shows a sign the Commander can't read yet (a dormant waystone). Roadsigns sit near a waystone.
+- **The world's shape is a mystery.** There is no world overview map.
+- **Map tool** (`tools/world_map.py`): reads a painting's colours (per-map k-means clusters labelled in `tools/world_map_palettes.json`: water, reeds, forest, rock, snow… each with a travel cost), finds rivers, passes and least-resistance routes, proposes bridges, causeways, roadsign and waystone spots, emits a draft region for `world.json` plus a debug overlay, and cuts the art into scroll tiles. The draft is then hand-edited; re-runs keep hand edits.
+
+### 28.2 The authored node graph
+
+- **Solasta-style hand-authored graph** over the illustration, in `Resources/Content/world.json` (`Core/Content/WorldModels.cs`, validated in `ContentLoader`). Per region: the map image; **nodes** `{Id, Kind (Stage | Settlement | Waystone | Camp | Bridge | Pass), X, Y, StageId?}`; **edges** `{A, B, Points[], Length, Danger, Encounters, RevealedBy}` drawn as splines along roads, valleys, passes and bridges; **roadsigns** `{Id, X, Y, Leads, Arrives, RequiresStage?}`. Stage nodes point at `stages.json` stages, so `HighestClearedStage` stays the progress index.
+- **Crossings are bridges, causeways and passes.** Rivers are crossed only at bridges (placed at the narrowest, straightest reach; no fording). Swamp channels are crossed by causeways and boardwalks. Mountain ranges are crossed at passes (the saddles between ridges).
+- **Routing is Dijkstra** (`Core/World/WorldGraph`) over the unlocked edges. The only randomness on the road is the periodic danger check along an edge.
+
+### 28.3 Travel
+
+- **Navigate** picks a destination; the route preview is a soft glowing line along the valleys. The party marker is the party's portraits in a small cluster on a pin (no caravan sprite).
+- **The route line and the markers are constant on screen:** drawn in screen space at one width and size whatever the scroll, so it's always clear where the caravan is. When a group is out hunting there are two markers, the caravan and the hunting party's portrait cluster, joined by a faint line back to camp.
+- **The day dial** sits at the top. The world clock runs dawn, day, dusk, night; travel is **slower at night**, and travel **stops at dusk** with the prompt to set up camp.
+- **Interrupt** stops now and camps on the spot.
+- `Core/World/Travel` advances the marker along the splines; seeded like `Wanderers.SeedFor`.
+- **Travel Journal:** a short log of what heroes do on the road and at camp, by name (forages food, finds ingredients, trains, cooks, tells war stories, meets a stranger), seeded from a per-faction/role table; a line can carry a small reward (an item, gold, a bond tick).
+- **Location card:** tapping a location opens a side card with its art (the stage's backdrop), name, kind (FORTRESS, SETTLEMENT, RUIN, CAMP…), two or three lines of lore and a **Challenge** rating (Easy / Medium / Hard from recommended level against party level). When the party is there, **Enter** starts it through `StageLauncher.Launch` (crawls, story beats and chapters unchanged).
+
+### 28.4 Danger and ambushes
+
+- **Danger is route choice only.** A danger gauge sits with the day dial and **pulses on the marker**, faster as it fills; it rises by the edge's `Danger` rate, faster at night and in bad weather. At full an ambush is unavoidable: "Defend the caravan", region foes at party level, the heroes defending the caravan.
+- Setting up camp or arriving at a destination resets it. Inside a camp circle or a woken waystone's circle it does not rise at all (§28.7).
+
+### 28.5 Camp, hunting and the Wilds
+
+- **Services only when camped.** Nothing opens while the caravan moves. It travels until it must stop, then **Set up camp**; camp is today's Camp hub ([§25](#25-the-camp-merged-hub)) and its services (Forge, Alchemist, Enchantress…) open there. Camp rest replaces the Inn (GG-T1656).
+- **The camp circle** is the caravan's zone of influence (`Core/World/HuntZone`), drawn with the pixel icon-generator dither style. Inside it are forage spots (herbs, crafting ingredients) and **hunt spots**: safe, familiar regional foes and game animals whose level rises slowly with how often that region has been hunted.
+- **Game animals** (new Bestiary families): deer, buffalo, boar, plus regional ones (marsh fowl, mountain goats). A hunt is a short battle; they flee rather than fight, except boar and buffalo, which charge. They yield **Food** and hides or horn for crafting.
+- **The Wilds** lie beyond the circle: unpredictable, seeded events (`Core/World/Wilds`) pop up as icons for a recruitable hero, a stronger boss, treasure or another adventure, only outside every circle, and despawn when camp breaks.
+- **Predators** (wolves and regional predators) may join a hunt: rarely inside the circle, likely in the Wilds, more at night.
+
+### 28.6 Food, meals, sleep and Well Rested
+
+- A small **Food** count sits beside the danger gauge. Eating a meal at camp spends Food.
+- **A meal plus a full 8 hours of sleep** (the clock advances to morning) gives **Well Rested** for the next day: a buff in every battle until the next nightfall (default +10% HP and one extra starting mana orb; numbers in config).
+- Skipping the meal or breaking camp early just gives no buff. There is no starvation penalty; gentle by design. The Travel Journal shows who cooked, who kept watch and the night's events.
+- The stamina pool's player text (`Meta/RestedPool.cs`, today "Rested") gets a new name (proposed "Stamina", owner to confirm) so "Well Rested" means only the camp buff.
+
+### 28.7 Fog of war, clouds, weather, day and night
+
+- **Fog of war:** unexplored land is under fog. Travel reveals a band around the route, camp reveals its circle, a woken waystone its surroundings. Saved as a low-res reveal mask per region. Wild events and locations under fog are hidden.
+- **Clouds:** soft cloud shadows drift across the map, never hiding the route line or markers.
+- **Weather** per region and season: clear, overcast, rain, fog banks, storm, snow (mountains), drifting mist (swamp). Weather slows travel a little, nudges danger, and carries into battle as a backdrop overlay (rain, snow, mist) and, for storm and fog, a light rule (such as reduced range).
+- **Day/night grade:** each period (dawn, day, dusk, night) has an HSV grade (hue, saturation, brightness, contrast) that drives the map, the camp backdrop (`LivingBackdrop`) and the backdrop of a battle started at that hour. **Night is the classic jRPG purple, not black.** At night travel is slower, danger rises faster and foes are stronger (a level bonus, more elites), so camping for the night is often the smart move.
+- Clock and weather are ported as pure C# into `Core/World/` from `Unity.Rea.Overworld` (`WorldClock`, `Clock`, `time.json`, `Weather`, `Clouds`, their tests), with the RGB tint replaced by the HSV grade.
+
+### 28.8 Mana Waystones
+
+- **Lore:** Halcyon machines that slow the Manalith's descent, long dormant. **Only the Commander sees and wakes them**: the unseen player, the last sleeper of Halcyon who woke too late. That is why the caravan goes where the Commander says. Nobody else's maps have them.
+- **On the map:** a dormant waystone shows only as a faint glint once the fog near it lifts. Reaching one usually means clearing what has settled around it (a guardian battle: beasts drawn to the mana, or Choir/claimant forces).
+- **Waking one gives:**
+  - **A permanent protective circle:** no ambushes and no danger build-up inside it, and camping inside is safe. **Overlapping circles form safe corridors**, so a chain of woken waystones makes a safe road network through a region; the danger gauge rises only outside every circle.
+  - **Fog lifted** inside the circle and the roads it touches revealed.
+  - **Mana Dust** gathering at the stone over time, collected when the caravan passes or camps there. It is the existing `Meta/DustEconomy.cs` Mana Dust, refined into **Shards** at the Aetherist (`DustPerShard` = 10), so there is no new currency; a per-stone cap keeps earned Shards in balance with the store.
+  - **The Manalith eases:** each woken stone lowers that region's sky Manalith a touch (`sky.json` `Size`) and counts toward the story's waystone tally.
+- Waystones are the natural stopping points between campaign locations.
+
+### 28.9 Battles: a library and the Difficulty factors
+
+- **No more "Stage N."** Captions and the Adventure list give way to location names. Battles come from a **library of hand-crafted battles**, each the existing `StageDef` shape (5 waves of `{Class, Level, X, Y, DelayTicks}`, blocks, background), saved in `Resources/Content/battles/<region>/*.json` and tagged by region/biome, kind (ambush, hunt, game animals, Wild boss, waystone guardian, settlement defence, side story) and base tier. `EncounterGenerator` drafts one from a tag set, the designer hand-tunes it, and validation checks every battle (tiles in bounds, classes exist, wave counts). About 100 per starter region to begin.
+- **One `Difficulty` function** combines the factors: region, distance from roads and outside any waystone or camp circle, the danger gauge when it fired, night, weather, party level and size, how often the area has been hunted, story progress and nearby woken waystones. It picks a tier band from the library and a level offset; foes scale slowly as in the Crucible (`Meta/Crucible.cs`).
+- **Story locations keep their authored battles**, launched through `StageLauncher.Launch`.
+
+### 28.10 New-game onboarding order
+
+The onboarding becomes the first stretch of the journey, each step taught by doing it:
+
+1. **Who you are:** the Commander, the last sleeper of Halcyon who woke too late (the opening crawl, kept short).
+2. **Why they follow you:** the Founding scene, where the heroes see Halcyon tech wake near you.
+3. **How to fight:** the five drills, kept.
+4. **How to travel:** the first leg on the map (Navigate, the route line, the day dial, the danger pulse, a scripted ambush, Interrupt and set up camp).
+5. **Camp:** eat, sleep, wake Well Rested, the circle, a first hunt.
+6. **Why you seek Mana Waystones:** the first dormant stone only the Commander can see, its guardian fight, waking it (the circle appears, the Manalith eases).
+
+`Meta/Onboarding.cs` gains steps after `Crawl`, `Drill(n)` and `HubIntro`: `Travel`, `Camp`, `Waystone`, resumed through `StoryBeats.Resume` as today.
+
+### 28.11 Hero side stories (replace the wits quiz)
+
+- The wanderer "game of wits" quiz is dropped. A hero is met as a **Wild hero icon in their own faction's regions** (`factions.json`, `Wanderers.Local`), found doing their own thing, often a battle the party joins (the in-battle wanderer and Rapport stay, as "they've noticed you").
+- Each hero has a short **side story**: a `QuestDef` chain ending in `RewardHero` (the `ronin_recruit` and `forge_iron` → lancer pattern), with new objective kinds `PayGold`, `Defend` (hold a settlement node's battle), `SlayBoss` (a Wild boss), `Treasure` (dig at a map node) and `Escort` (travel to a node with them as a guest). Meeting and resolution lines are small dialogues ([§27.1](#271-dialogue-gg-t117)).
+- Removed with it: `WitsExchanges`, `Wanderers.Judge/Threshold/Outlook`, the PostBattle talk block, the eight `wanderer_*` talks and the quiz rules in `WandererContent.ValidateDialogue`. Content comes in batches per faction (Holds first, for the moors).
+
+### 28.12 The Crucible
+
+The Crucible stays reachable, moved **under the Caravan list** at camp, and becomes region-based: its foes come from the region the caravan is in.
+
+### 28.13 Save
+
+`SaveData.World` (save v26, `Meta/World.cs`): region, node or edge position, day and clock, danger, camped, woken waystones, reveal masks and revealed edges, active Wild events, hunt counts per region. Migration places the caravan at the furthest cleared stage's node, camped. Expeditions fold into travel (wounds and orbs carry between battles while travelling; camp rest heals).
 
 ## 29. Open Design Questions
 
