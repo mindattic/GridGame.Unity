@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core;
 using GridGame.Core.Battle;
+using GridGame.Core.Content;
 using GridGame.Meta;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
@@ -211,6 +213,66 @@ namespace GridGame.Tests
             BattleEngine.Apply(s, new UseSlotCommand { HeroId = cleric.Id, Slot = 0, Target = knight.Pos });
             Assert.That(knight.Hp, Is.GreaterThan(knight.MaxHp / 2));
             Assert.That(s.Results.PairCredits.TryGetValue("cleric|knight", out int n) ? n : 0, Is.EqualTo(1));
+        }
+
+        // ── Core: bonded pincer partners (§25.20, GG-T1308) ──
+
+        private static (int bondTier, int damage) KnightClericPincer(int? tier)
+        {
+            var (s, _) = Battle(Mini(), Stage(("tank", 1, 0)), ("knight", 0, 0), ("cleric", 2, 0));
+            if (tier.HasValue) s.Cohesion["cleric|knight"] = tier.Value;
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "knight").Id, Path = P((0, 1), (0, 0)) });
+            var formed = ev.OfType<PincerFormedEvent>().Single();
+            return (formed.BondTier, ev.OfType<DamagedEvent>().Where(d => d.Hit != HitKind.Miss).Sum(d => d.Amount));
+        }
+
+        [Test]
+        public void A_bonded_hero_pincer_hits_harder_and_carries_its_tier()
+        {
+            var plain = KnightClericPincer(null);
+            var bonded = KnightClericPincer(2);
+            Assert.That(plain.bondTier, Is.EqualTo(0));
+            Assert.That(bonded.bondTier, Is.EqualTo(2));
+            Assert.That(bonded.damage, Is.GreaterThan(plain.damage));
+        }
+
+        [Test]
+        public void An_explicit_tier_0_pair_is_unbonded()
+        {
+            Assert.That(KnightClericPincer(0), Is.EqualTo(KnightClericPincer(null)));
+        }
+
+        [Test]
+        public void An_enemy_pincer_has_no_bond_tier()
+        {
+            var db = Mini();
+            var st = new Stats { Strength = 5, Vitality = 2, Agility = 10, Speed = 10, Intelligence = 10 };
+            db.Classes["frog"] = new ClassDef { Id = "frog", Name = "Frog", Team = Team.Enemy, Tags = { "Aquatic", "Sentient" }, BaseStats = st, MoveRange = 0 };
+            var setup = new BattleSetup { Stage = Stage(("frog", 0, 3), ("frog", 2, 3)), Seed = 7, UnlockedSlots = 5 };
+            setup.Cohesion["cleric|knight"] = 3;
+            setup.Cohesion["frog|frog"] = 3;
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(1, 3) });
+            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(5, 7) });
+            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
+            s.TurnEntryOf(At(s, 0, 3).Id).Ip = BattleConfig.BarLength - 1;
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+            var formed = ev.OfType<PincerFormedEvent>().Where(p => p.Team == Team.Enemy).ToList();
+            Assert.That(formed, Is.Not.Empty);
+            Assert.That(formed.All(p => p.BondTier == 0), Is.True);
+        }
+
+        [Test]
+        public void The_factory_fills_setup_cohesion_only_for_bonded_party_pairs()
+        {
+            var c = Real; var s = Progression.NewGame(c, "Bonds");
+            Assert.That(BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 5).Cohesion, Is.Empty);
+
+            var party = s.Party.Where(id => Bonds.HasCohesion(s, id)).ToList();
+            Assert.That(party.Count, Is.GreaterThanOrEqualTo(2));
+            Bonds.AddCohesion(s, party[0], party[1], 30);
+            var setup = BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 5);
+            Assert.That(setup.Cohesion.Keys, Is.EquivalentTo(new[] { Bonds.PairKey(party[0], party[1]) }));
+            Assert.That(setup.Cohesion[Bonds.PairKey(party[0], party[1])], Is.EqualTo(Bonds.CohesionTier(s, party[0], party[1])).And.GreaterThan(0));
         }
     }
 }
