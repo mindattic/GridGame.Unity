@@ -1763,24 +1763,21 @@ namespace GridGame.App
             return btn;
         }
 
-        /// <summary>Pays and starts the pull, then reveals each new hero in pull order; Echoes are in the landing toast.</summary>
+        /// <summary>Pays and starts the pull, then reveals every result in pull order (<see cref="SummonReveal"/>) and
+        /// offers the new heroes' looks.</summary>
         private void Pull(BannerDef b, int count)
         {
-            List<string> fresh = null;
+            List<PullRecord> pulls = null;
             TimedJobView.Begin(now =>
             {
                 var r = Gacha.Pull(C, S, b, count, now, out var job);
-                fresh = job?.Batch?.Where(id => S.Hero(id) == null).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                if (r.Ok) pulls = S.Summon.History.Take(count).Reverse().ToList();
                 return (r, job);
-            }, count == 1 ? "The circle reaches out…" : $"The circle reaches out {count} times…", r => Reveal(r.Ok ? fresh : null, 0));
-        }
-
-        private void Reveal(List<string> ids, int i)
-        {
-            if (ids == null) { Refresh(); return; }
-            if (i >= ids.Count) { VariantPicker.ShowPending(Refresh); return; } // GG-T532: then pick their look
-            if (S.Hero(ids[i]) == null) { Reveal(ids, i + 1); return; } // fizzled and refunded
-            SummonReveal.Show(ids[i], () => Reveal(ids, i + 1));
+            }, count == 1 ? "The circle reaches out…" : $"The circle reaches out {count} times…", r =>
+            {
+                if (!r.Ok || pulls == null) { Refresh(); return; }
+                SummonReveal.Show(pulls, b, () => VariantPicker.ShowPending(Refresh)); // GG-T532: then pick their look
+            });
         }
 
         /// <summary>The next pull's odds in a line: the pity due, the featured share, or the even chance of each hero.</summary>
@@ -1851,46 +1848,173 @@ namespace GridGame.App
         }
     }
 
-    /// <summary>The Diamond draw's reveal (GG-T343): the summoned hero's portrait swells out of the light with a fanfare
-    /// cue and their name, then a tap closes it.</summary>
+    /// <summary>A banner pull's reveal (GG-T343, GG-T1429): each result in pull order plays over time — the portrait swells
+    /// out of the light, a <b>New</b> or <b>Echo</b> badge lands with its own cue, and a featured hero gets a gold flash
+    /// and a bigger fanfare. A tap finishes the playing result, the next tap moves on. <b>Skip</b> (multi-pulls) and the
+    /// end of a multi-pull open a summary grid of every result; Continue closes it. Under Reduce Motion each result
+    /// fades in at full size with no swell, pop or flash. A new hero whose pull fizzled (refunded) isn't shown.</summary>
     internal static class SummonReveal
     {
-        public static void Show(string classId, Action onClose)
+        private const float PortraitSize = 420;
+
+        public static void Show(IReadOnlyList<PullRecord> pulls, BannerDef banner, Action onClose)
         {
             var app = GameApp.I;
-            var def = app.Content.TryClass(classId);
-            if (def == null) { onClose?.Invoke(); return; }
+            var shown = pulls.Where(p => app.Content.TryClass(p.ClassId) != null && (p.Result != PullResult.New || app.Save.Hero(p.ClassId) != null)).ToList();
+            if (shown.Count == 0) { onClose?.Invoke(); return; }
+            bool calm = app.Settings.ReduceMotion;
+            var dim = Palette.Ink.WithA(0.9f);
             var veil = Ui.El("fill veil col center", app.Overlay);
             veil.name = "summon-reveal";
             veil.pickingMode = PickingMode.Position;
             // The reveal's name and role are bare text, not a window: the plain veil left the Summon Circle's own text
             // showing through them. Dim the page almost out so the hero carries the moment.
-            veil.style.backgroundColor = Palette.Ink.WithA(0.9f);
-            var thumb = Ui.Thumb(def.Id, veil, 420);
-            thumb.style.scale = new Scale(Vector2.zero);
-            var name = Ui.Text(def.Name, "title shadow gold", veil);
-            name.style.marginTop = Space.S24;
-            name.style.opacity = 0f;
-            var role = Ui.Text($"{def.Role} · answers the circle", "h2 shadow", veil);
-            role.style.opacity = 0f;
-            var tap = Ui.Text("Tap to continue", "small dim", veil);
-            tap.style.marginTop = Space.S48;
-            tap.style.opacity = 0f;
-            bool ready = false;
-            veil.RegisterCallback<ClickEvent>(_ => { if (!ready) return; veil.RemoveFromHierarchy(); onClose?.Invoke(); });
-            app.StartCoroutine(Play());
-            System.Collections.IEnumerator Play()
+            veil.style.backgroundColor = dim;
+            var stage = Ui.El("col center", veil);
+            stage.name = "summon-reveal-stage";
+            int at = -1;
+            bool ready = false, summary = false;
+            Coroutine playing = null;
+            Action settle = null;
+            Button skip = null;
+            if (shown.Count > 1)
             {
-                app.Audio.Sfx("camp.summon", 0.9f);
-                yield return Tween.Run(Timing.Standard, k => thumb.style.scale = new Scale(Vector2.one * (k < 0.7f ? k / 0.7f * 1.12f : 1.12f - 0.12f * (k - 0.7f) / 0.3f)), Tween.EaseOut);
+                skip = Ui.Button("Skip", () => Summary(), "btn--small", veil);
+                skip.name = "summon-reveal-skip";
+                skip.style.position = Position.Absolute;
+                skip.style.top = skip.style.right = Space.S24;
+                skip.RegisterCallback<ClickEvent>(e => e.StopPropagation());
+            }
+
+            veil.RegisterCallback<ClickEvent>(_ =>
+            {
+                if (summary) return;
+                if (!ready) { Stop(); settle?.Invoke(); ready = true; return; }
+                Next();
+            });
+            Next();
+
+            void Stop()
+            {
+                if (playing != null) app.StopCoroutine(playing);
+                playing = null;
+            }
+
+            void Close()
+            {
+                Stop();
+                veil.RemoveFromHierarchy();
+                onClose?.Invoke();
+            }
+
+            void Next()
+            {
+                if (++at >= shown.Count) { if (shown.Count > 1) Summary(); else Close(); return; }
+                ready = false;
+                stage.Clear();
+                veil.style.backgroundColor = dim;
+                var p = shown[at];
+                var def = app.Content.TryClass(p.ClassId);
+                bool featured = IsFeatured(banner, p);
+                var thumb = Ui.Thumb(def.Id, stage, PortraitSize);
+                thumb.name = "summon-reveal-hero";
+                var badge = Ui.Text(Badge(p, featured), "h2 shadow " + (p.Result == PullResult.New ? "gold" : "good"), stage);
+                badge.name = "summon-reveal-badge";
+                badge.style.marginTop = Space.S16;
+                var name = Ui.Text(def.Name, "title shadow" + (featured ? " gold" : ""), stage);
+                name.style.marginTop = Space.S8;
+                var role = Ui.Text(Line(def, p), "h2 shadow", stage);
+                var tap = Ui.Text(shown.Count > 1 ? $"{at + 1} of {shown.Count} · Tap to continue" : "Tap to continue", "small dim", stage);
+                tap.name = "summon-reveal-tap";
+                tap.style.marginTop = Space.S48;
+                settle = () =>
+                {
+                    thumb.style.scale = new Scale(Vector2.one);
+                    thumb.style.opacity = badge.style.opacity = name.style.opacity = role.style.opacity = tap.style.opacity = 1f;
+                    badge.style.scale = name.style.scale = new Scale(Vector2.one);
+                    veil.style.backgroundColor = dim;
+                };
+                thumb.style.scale = new Scale(calm ? Vector2.one : Vector2.zero);
+                thumb.style.opacity = calm ? 0f : 1f;
+                badge.style.opacity = name.style.opacity = role.style.opacity = tap.style.opacity = 0f;
+                playing = app.StartCoroutine(Play(p, featured, thumb, badge, name, role, tap));
+            }
+
+            System.Collections.IEnumerator Play(PullRecord p, bool featured, VisualElement thumb, Label badge, Label name, Label role, Label tap)
+            {
+                bool isNew = p.Result == PullResult.New;
+                app.Audio.Sfx(isNew ? "camp.summon" : "ui.select", isNew ? 0.9f : 0.7f);
+                if (calm) yield return Tween.Run(Timing.Quick, k => thumb.style.opacity = k);
+                else
+                {
+                    float peak = featured ? 1.2f : 1.12f;
+                    yield return Tween.Run(featured ? Timing.Emphasis : Timing.Standard,
+                        k => thumb.style.scale = new Scale(Vector2.one * (k < 0.7f ? k / 0.7f * peak : peak - (peak - 1f) * (k - 0.7f) / 0.3f)), Tween.EaseOut);
+                }
                 thumb.style.scale = new Scale(Vector2.one);
-                app.Audio.Sfx("battle.victory", 0.6f);
-                yield return Tween.Run(Timing.Quick, k => { name.style.opacity = k; role.style.opacity = k; });
-                yield return Tween.Pop(name, 1.15f, 0.2f);
+                if (featured)
+                {
+                    app.Audio.Sfx("battle.victory");
+                    app.Audio.Sfx("battle.warcry", 0.6f);
+                    if (!calm) yield return Tween.Run(Timing.Dramatic, k => veil.style.backgroundColor = Color.Lerp(Palette.Gold.WithA(0.55f), dim, k), Tween.EaseOut);
+                }
+                else app.Audio.Sfx(isNew ? "battle.powerup" : "ui.diamond", isNew ? 0.7f : 0.6f);
+                yield return Tween.Run(Timing.Quick, k => badge.style.opacity = name.style.opacity = role.style.opacity = k);
+                if (!calm) yield return Tween.Pop(isNew ? name : badge, featured ? 1.3f : 1.15f, featured ? Timing.Standard : 0.2f);
                 tap.style.opacity = 1f;
+                playing = null;
                 ready = true;
             }
+
+            void Summary()
+            {
+                if (summary) return;
+                summary = true;
+                Stop();
+                stage.Clear();
+                veil.style.backgroundColor = dim;
+                skip?.RemoveFromHierarchy();
+                stage.name = "summon-reveal-summary";
+                Ui.Text("The circle answered", "h2 shadow gold", stage).style.marginBottom = Space.S16;
+                var grid = Ui.El("row", stage);
+                grid.style.flexWrap = Wrap.Wrap;
+                grid.style.justifyContent = Justify.Center;
+                for (int i = 0; i < shown.Count; i++)
+                {
+                    var p = shown[i];
+                    bool featured = IsFeatured(banner, p);
+                    var cell = Ui.El("col center", grid);
+                    cell.name = "summon-summary-" + i;
+                    cell.style.marginLeft = cell.style.marginRight = cell.style.marginBottom = Space.S8;
+                    var t = Ui.Thumb(p.ClassId, cell, Kit.Thumb);
+                    if (featured)
+                    {
+                        t.style.borderTopWidth = t.style.borderBottomWidth = t.style.borderLeftWidth = t.style.borderRightWidth = 3;
+                        t.style.borderTopColor = t.style.borderBottomColor = t.style.borderLeftColor = t.style.borderRightColor = Palette.Gold;
+                    }
+                    Ui.Caption(app.Content.TryClass(p.ClassId)?.Name ?? p.ClassId, cell, featured ? "gold" : null);
+                    Ui.Caption(Badge(p, featured), cell, p.Result == PullResult.New ? "gold" : "dim");
+                }
+                var done = Ui.Button("Continue", Close, "btn--primary", Ui.Actions(stage));
+                done.name = "summon-reveal-done";
+                done.RegisterCallback<ClickEvent>(e => e.StopPropagation());
+                if (!calm) app.StartCoroutine(Tween.Fade(grid, 0f, 1f, Timing.Standard));
+            }
         }
+
+        private static bool IsFeatured(BannerDef banner, PullRecord p) =>
+            banner?.Kind == BannerKind.Featured && banner.Featured.Contains(p.ClassId, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>"New", "New · Featured", "Echo +1 SP", "+5 Ticket fragments".</summary>
+        private static string Badge(PullRecord p, bool featured) => p.Result switch
+        {
+            PullResult.New => featured ? "New · Featured" : "New",
+            PullResult.Echo => $"{Gacha.EchoName} +{Gacha.EchoSp} SP",
+            _ => $"+{p.Fragments} {TicketText.Fragments}",
+        };
+
+        private static string Line(ClassDef def, PullRecord p) =>
+            p.Result == PullResult.New ? $"{def.Role} · answers the circle" : $"{def.Role} · answers again";
     }
 
     // ── The Crucible (§22.10) ────────────────────────────────────────────────────
