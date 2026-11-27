@@ -929,6 +929,13 @@ namespace GridGame.Meta
             if (finalWeapon != h.WeaponId) { Delta(h.WeaponId, +1); Delta(finalWeapon, -1); }
             if (shatteredWeapons != null) foreach (var id in shatteredWeapons) Delta(id, -1);
             foreach (var kv in bagDelta) if (kv.Value != 0) s.AddItem(kv.Key, kv.Value);
+            if (finalWeapon != h.WeaponId && h.WeaponId != null && bagDelta.TryGetValue(h.WeaponId, out var back) && back > 0)
+            {
+                // The displaced hand weapon returns to the bag with its pre-battle wear, repairs and Masterwork roll,
+                // as Equipment.Unequip stows it (GG-T1247), not as a factory-fresh copy.
+                if (!s.Worn.TryGetValue(h.WeaponId, out var worn)) s.Worn[h.WeaponId] = worn = new List<WornGear>();
+                worn.Add(new WornGear { Durability = h.WeaponDurability, Repairs = h.WeaponRepairs, Mastery = h.WeaponMastery });
+            }
             if (finalWeapon != h.WeaponId && finalWeapon != null)
             {
                 // A bar swap: the hand now holds the bar's weapon (bag already settled above).
