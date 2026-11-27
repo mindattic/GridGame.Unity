@@ -209,6 +209,7 @@ namespace GridGame.Core.Battle
                 (gone ??= new List<Coord>()).Add(kv.Key);
             }
             if (gone == null) return;
+            gone.Sort((a, b) => a.Y != b.Y ? a.Y.CompareTo(b.Y) : a.X.CompareTo(b.X)); // row-major, so OnExpire spawns/Rng draws are order-stable across clones (GG-T1242)
             var byState = new Dictionary<string, RegionTilesEvent>();
             foreach (var c in gone)
             {
