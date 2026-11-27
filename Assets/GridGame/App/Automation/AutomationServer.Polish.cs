@@ -186,10 +186,12 @@ namespace GridGame.App.Automation
                 Tally("POL-C8", issues.Count == 0, TargetName(parent), string.Join("; ", issues));
             }
 
+            static bool InBackdrop(VisualElement e) { for (var p = e.parent; p != null; p = p.parent) if (p.ClassListContains(LivingBackdrop.RootClass)) return true; return false; }
             // POL-C9 fill: no dead bands. Content = visible text, targets and pictures smaller than the backdrop.
             var content = stage.Query<VisualElement>().ToList().Where(e => (e is TextElement te && !string.IsNullOrWhiteSpace(te.text)) || e is Button
                     || e.ClassListContains("pressable") || e.resolvedStyle.backgroundImage.texture != null)
-                .Where(Shown).Select(e => D(e.worldBound))
+                .Where(Shown).Where(e => !InBackdrop(e) && !e.ClassListContains("corner-tag")) // GG-T1794: the drifting sky shards and Manalith are scenery, not content: one at the stage edge read as a 165/0 side margin on a centred Title
+                .Select(e => D(e.worldBound))
                 .Where(r => r.width >= 1 && r.height >= 1 && r.width * r.height < 0.85f * GameApp.StageWidth * GameApp.StageHeight)
                 .ToList();
             object fill = null;
