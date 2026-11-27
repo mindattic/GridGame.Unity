@@ -36,7 +36,7 @@ namespace GridGame.Core.Battle
             if (!Copyable(a)) return null;
             if (a.Revives)
             {
-                bool fallen = s.Units.Exists(u => u.Team == caster.Team && !u.Alive && u.Hp <= 0 && !u.IsWildTamed && !u.IsCorpse);
+                bool fallen = s.Units.Exists(u => u.Team == caster.Team && !u.Alive && u.Hp <= 0 && !u.IsWildTamed && !u.IsCorpse && !u.IsRemains && !u.IsEgg && !u.IsSnakeSegment && !u.IsMultiTile);
                 return fallen ? new Plan(a, TargetResolver.AutoAnchor(caster)) : (Plan?)null;
             }
             if (a.Mode == TargetMode.Auto)

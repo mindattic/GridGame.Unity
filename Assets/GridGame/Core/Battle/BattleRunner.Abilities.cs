@@ -496,6 +496,7 @@ namespace GridGame.Core.Battle
             if (HeldFast(t, t.Pos, caster) || RootsHold(caster, caster.Pos)) return false; // GG-T912: neither half of a swap is uprooted (GG-T882: nor a braced target)
             if (!Budges(t) || !MovesItself(caster)) { Announce(t.IsHeavy ? "Too heavy!" : "Won't budge", t.Id); return false; }
             Coord a = caster.Pos, b = t.Pos;
+            if (!S.WalkableFor(b, caster) || !S.WalkableFor(a, t)) { Announce("Won't budge", t.Id); return false; } // GG-T1250: a swap with a floater over a hole never drops the other on the pit
             caster.Pos = b;
             t.Pos = a;
             Emit(new DisplacedEvent { UnitId = caster.Id, From = a, To = b, ByUnitId = caster.Id });
@@ -590,7 +591,7 @@ namespace GridGame.Core.Battle
         {
             // The caster's own fallen (an enemy echoing a revive raises a foe, never a hero — Echo.For plans on caster.Team).
             // A wild tamed beast stays down (GG-T303); a corpse/remains marker is never "revived".
-            var fallen = S.Units.Find(u => u.Team == user.Team && !u.Alive && u.Hp <= 0 && !u.IsWildTamed && !u.IsCorpse && !u.IsRemains);
+            var fallen = S.Units.Find(u => u.Team == user.Team && !u.Alive && u.Hp <= 0 && !u.IsWildTamed && !u.IsCorpse && !u.IsRemains && !u.IsEgg && !u.IsSnakeSegment && !u.IsMultiTile);
             if (fallen == null) { Announce("Nobody to revive"); return; }
             var spot = ReviveSpot(user);
             if (spot == null || !Relocate(fallen, spot.Value)) { Announce("No room!"); return; }
