@@ -460,6 +460,14 @@ namespace GridGame.Meta
         /// <summary>This profile's save-slot folder (made if missing).</summary>
         public string SavesFolder => Profile.EnsureSavesFolder();
 
+        /// <summary>GG-T1345: the active profile has neither finished its first run nor any save slot, so a launch opens
+        /// Create Profile after the splash.</summary>
+        public bool FirstRunDue => !Settings.FirstRunDone && !HasSlots(SavesFolder);
+
+        /// <summary>GG-T1345: the empty <see cref="ProfileStore.DefaultName"/> profile the store makes on its own, which
+        /// the first run's Create Profile renames instead of leaving it behind.</summary>
+        public bool IsUnclaimedDefault => FirstRunDue && string.Equals(Name, ProfileStore.DefaultName, StringComparison.OrdinalIgnoreCase);
+
         public IReadOnlyList<string> List() => Store.List();
 
         /// <summary>Makes <paramref name="name"/> the active profile and loads its settings.</summary>

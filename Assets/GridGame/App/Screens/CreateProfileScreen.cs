@@ -11,7 +11,8 @@ namespace GridGame.App
     /// <see cref="ProfileNameScreen.Problem"/>), 2 quick settings, previewed live on the active settings and restored if the
     /// wizard is left, 3 a summary and Begin, which creates the profile, switches to it, writes the picks into its
     /// settings.json and marks its first run done. Back steps back a page; on step 1 it cancels only when the active
-    /// profile has finished its own first run (there is a profile to go back to).
+    /// profile has finished its own first run (there is a profile to go back to). On the first launch (GG-T1345) the
+    /// store's own empty Default profile is renamed to the Commander's name instead of a second profile being made.
     /// </summary>
     public sealed class CreateProfileScreen : GameScreen
     {
@@ -46,6 +47,7 @@ namespace GridGame.App
         private string commander = "";
         private Quick pick;
         private Quick original;
+        private readonly string claim;
         private bool begun;
         private TextField field;
         private Label problem;
@@ -55,6 +57,7 @@ namespace GridGame.App
         {
             original = Quick.From(App.Settings);
             pick = original;
+            claim = App.Profile.IsUnclaimedDefault ? App.Profile.Name : null;
         }
 
         private bool CanCancel => App.Settings.FirstRunDone;
@@ -111,14 +114,14 @@ namespace GridGame.App
 
         private void Validate()
         {
-            var why = ProfileNameScreen.Problem(field.value, null);
+            var why = ProfileNameScreen.Problem(field.value, claim);
             problem.text = string.IsNullOrWhiteSpace(field.value) ? "" : why ?? "";
             Ui.SetEnabled(next, why == null);
         }
 
         private void SubmitName()
         {
-            var why = ProfileNameScreen.Problem(field.value, null);
+            var why = ProfileNameScreen.Problem(field.value, claim);
             if (why != null) { App.Audio.Sfx("ui.error"); problem.text = why; return; }
             Go(2);
         }
@@ -179,13 +182,17 @@ namespace GridGame.App
 
         private void Begin()
         {
-            var why = ProfileNameScreen.Problem(commander, null);
+            var why = ProfileNameScreen.Problem(commander, claim);
             if (why != null) { App.Audio.Sfx("ui.error"); App.Toast(why); Go(1); return; }
             try
             {
-                original.To(App.Settings); // the previews were on the old profile's settings; it keeps what it had
-                App.CreateProfile(commander);
-                App.SwitchProfile(commander);
+                if (claim != null) App.RenameProfile(claim, commander);
+                else
+                {
+                    original.To(App.Settings); // the previews were on the old profile's settings; it keeps what it had
+                    App.CreateProfile(commander);
+                    App.SwitchProfile(commander);
+                }
                 begun = true;
                 pick.To(App.Settings);
                 App.Settings.FirstRunDone = true;

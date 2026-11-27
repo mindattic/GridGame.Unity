@@ -6,8 +6,9 @@ namespace GridGame.App
 {
     /// <summary>
     /// GG-T1322 (bible §11.2): every launch opens on the MindAttic LLC logo and the copyright line, fading in and out
-    /// over <see cref="Seconds"/> with a soft cue, then the Title. A tap anywhere (or Back) skips; Reduce Motion shows it
-    /// without the fade. The logo (UI/mindattic-logo-00) is a placeholder until the owner picks one (GG-T1333).
+    /// over <see cref="Seconds"/> with a soft cue, then the Title, or Create Profile when the active profile's first run
+    /// is due (GG-T1345, <see cref="GridGame.Meta.ProfileSession.FirstRunDue"/>). A tap anywhere (or Back) skips; Reduce
+    /// Motion shows it without the fade. The logo (UI/mindattic-logo-00) is a placeholder until the owner picks one (GG-T1333).
     /// Automation, -start, -testmode, -demo and headless runs never see it (GameApp.Awake).
     /// </summary>
     public sealed class SplashScreen : GameScreen
@@ -67,7 +68,7 @@ namespace GridGame.App
         {
             if (done) return;
             done = true;
-            App.Router.ResetTo(new TitleScreen());
+            App.Router.ResetTo(App.Profile.FirstRunDue ? new CreateProfileScreen() : new TitleScreen());
         }
     }
 }
