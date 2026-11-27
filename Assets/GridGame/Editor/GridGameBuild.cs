@@ -13,7 +13,7 @@ namespace GridGame.EditorTools
     /// The one scene is an empty shell — GameApp builds everything at runtime — so this file is the
     /// only "scene authoring" the project has.
     /// </summary>
-    public static class GridGameBuild
+    public static partial class GridGameBuild
     {
         public const string ScenePath = "Assets/GridGame/Scenes/Main.unity";
 

@@ -80,6 +80,14 @@ Vorbis 0.25 or 32 kHz (~-5 MB), then **Play Asset Delivery** install-time asset 
 Changing the import rules: bump `GridGameImport.GetVersion()` so Unity re-imports what they touch, then build Android
 once and commit the rewritten `.meta` files (they record the Android override) with the rule change.
 
+**System splash (GG-T1519).** Android 12+ shows its own splash on every cold start (Unity's splash is off). Every
+Android build runs `GridGameAndroidSplash` (`Assets/GridGame/Editor/GridGameAndroidSplash.cs`), which calls
+`GridGameBuild.ApplyAndroidSplash` on the generated `unityLibrary`: it copies
+`Assets/GridGame/AppIcon/app-icon-adaptive-fore-432-00.png` to `res/drawable-nodpi/gg_splash_icon.png`, points
+`windowSplashScreenAnimatedIcon` in `res/values-v31/styles.xml` at it, and writes the Player splash background
+colour (`m_SplashScreenBackgroundColor`, #1F1F20, the in-game boot colour) into `staticSplashScreenBackgroundColor`
+in `res/values/colors.xml`. Nothing is set in the Editor; a missing file or item only logs a warning in the build log.
+
 ### Signing (one-time setup, the owner)
 
 Google Play uses **Play App Signing**: Google holds the key that signs what players download; you sign uploads with
