@@ -233,6 +233,15 @@ namespace GridGame.Core.Battle
         /// (<see cref="BattleSetup.Cohesion"/>).</summary>
         public const float PincerDamagePerCohesionTier = 0.03f;
 
+        // ── Trust payoffs (§25.20, GG-T1581) ─────────────────────────────────────────
+        /// <summary>Crit chance (0.02 = +2 points) a hero gains per Trust tier (<see cref="Unit.TrustTier"/>).</summary>
+        public const float CritPerTrustTier = 0.02f;
+        /// <summary>Evasion (0.02 = +2 points) a hero gains per Trust tier.</summary>
+        public const float EvasionPerTrustTier = 0.02f;
+        /// <summary>Trust tier that grants Resolve: once per battle, survive a lethal blow at <see cref="ResolveHp"/>.</summary>
+        public const int ResolveTier = 5;
+        public const int ResolveHp = 1;
+
         // ── Mana charge (§3.1.9, owner direction 2026-10-11: "mana needs to be a more rare resource … the number of
         //    participants in the attack increases the multiplier needed to earn a mana bubble") ─────────────────────
         /// <summary>Charge that makes one orb ("mana bubble").</summary>

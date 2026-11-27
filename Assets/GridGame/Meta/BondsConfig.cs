@@ -36,11 +36,11 @@ namespace GridGame.Meta
         public const int PairCreditCapPerBattle = 5;
 
         // ── Battle payoffs ─────────────────────────────────────────────────────────
-        public const float CritPerTrustTier = 0.02f;
-        public const float EvasionPerTrustTier = 0.02f;
+        public const float CritPerTrustTier = GridGame.Core.Battle.BattleConfig.CritPerTrustTier;
+        public const float EvasionPerTrustTier = GridGame.Core.Battle.BattleConfig.EvasionPerTrustTier;
         /// <summary>Trust tier that grants Resolve: once per battle, survive a lethal blow at <see cref="ResolveHp"/>.</summary>
-        public const int ResolveTier = 5;
-        public const int ResolveHp = 1;
+        public const int ResolveTier = GridGame.Core.Battle.BattleConfig.ResolveTier;
+        public const int ResolveHp = GridGame.Core.Battle.BattleConfig.ResolveHp;
         /// <summary>Bonded pincer partners (the two ends) deal this much more damage per cohesion tier.</summary>
         public const float PincerDamagePerCohesionTier = GridGame.Core.Battle.BattleConfig.PincerDamagePerCohesionTier;
         /// <summary>From this cohesion tier a supporter's reach is +<see cref="BondedReachBonus"/> toward its partner.</summary>

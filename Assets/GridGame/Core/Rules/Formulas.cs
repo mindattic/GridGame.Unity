@@ -121,7 +121,8 @@ namespace GridGame.Core.Rules
         /// <see cref="BuffDef.EvasionBonus"/> and gear <see cref="ItemDef.EvasionBonus"/> it carries, clamped 0..40.
         /// A level-1 hero sits near 3.6 (AGI 12, Luck 12), a ninja near 5, a level-30 skirmisher near 9–12.
         /// </summary>
-        public static float Evasion(Unit defender) => defender == null ? 0f : Evasion(defender.Effective, defender.EvasionBonus);
+        public static float Evasion(Unit defender) => defender == null ? 0f
+            : Evasion(defender.Effective, defender.EvasionBonus + defender.TrustTier * BattleConfig.EvasionPerTrustTier * 100f);
 
         /// <summary>Evasion from bare stats plus <paramref name="bonus"/> points (the Bestiary reads a class's base stats).</summary>
         public static float Evasion(Stats d, float bonus = 0f)
@@ -146,7 +147,7 @@ namespace GridGame.Core.Rules
             float hit = Clamp(HitPercent(a) + adv * HitShiftPerLevel, 5f, 95f);
             float acc = attacker.AccuracyMultiplier;
             if (acc < 1f) hit = Clamp(hit * acc, 5f, 95f);
-            float crit = CritPercent(a);
+            float crit = CritPercent(a) + attacker.TrustTier * BattleConfig.CritPerTrustTier * 100f; // GG-T1581
             if (attacker.SupportCritBonus > 0f) crit = Clamp(crit + attacker.SupportCritBonus * 100f, 0f, SupportDef.MaxSupportedCritPercent); // GG-T298
             // Blind cuts the crit chance by the same factor as the hit chance (GG-T566, owner: "if a character is blind their
             // chance to crit is lower"). Hit-before-crit alone only caps crit at the Blind hit chance, which a crit below it

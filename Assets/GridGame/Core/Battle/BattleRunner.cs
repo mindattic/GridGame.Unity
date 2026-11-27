@@ -651,6 +651,14 @@ namespace GridGame.Core.Battle
                 RemoveBuffsWhere(target, b => b.Def.BreaksOnDamage, "woke");
             int hpBeforeBlow = target.Hp;
             if (tutorialSpare) amount = Math.Min(amount, Math.Max(0, target.Hp - 1));
+            // GG-T1581 Resolve: a hero at ResolveTier Trust survives its first lethal blow of the battle at ResolveHp.
+            bool resolve = hit != HitKind.Miss && amount > 0 && amount >= target.Hp && target.IsHero
+                && target.TrustTier >= BattleConfig.ResolveTier && !target.ResolveUsed && target.Hp > BattleConfig.ResolveHp;
+            if (resolve)
+            {
+                target.ResolveUsed = true;
+                amount = target.Hp - BattleConfig.ResolveHp;
+            }
             target.Hp = Math.Max(0, target.Hp - amount);
             var echoTo = LinkEchoTarget(target, hpBeforeBlow - target.Hp, hit); // GG-T873: Curse Link, read before a Kill clears it
             Emit(new DamagedEvent
@@ -658,6 +666,11 @@ namespace GridGame.Core.Battle
                 TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = amount, Hit = hit, Type = type, HpAfter = target.Hp, Note = note,
                 Overkill = HitRead.Overkill(amount, hpBeforeBlow), Effectiveness = hit == HitKind.Miss ? HitEffectiveness.Normal : HitRead.Of(target, type), // GG-T827
             });
+            if (resolve)
+            {
+                Emit(new ResolveEvent { UnitId = target.Id, SourceId = source?.Id ?? -1, HpAfter = target.Hp });
+                Clutch(target, ClutchKind.Resolve);
+            }
             if (source != null && source.IsHero && target.Team == Team.Enemy) source.DamageDealt += amount;
             // Damage triggers (GG-T296), before WearArmor: the blow that breaks an enchanted piece still pricks (Thorns).
             if (hit != HitKind.Miss && amount > 0)

@@ -39,6 +39,8 @@ namespace GridGame.Core.Battle
         public bool Domesticated;
         /// <summary>The hero's level-up stat picks (GG-T591), added to its level stats. Null = none.</summary>
         public Stats StatBonus;
+        /// <summary>GG-T1581: the hero's Trust tier from the save (0 = none or no Trust).</summary>
+        public int TrustTier;
     }
 
     /// <summary>One equipped armor piece carried from the save into a battle (§24.2, GG-T89).</summary>

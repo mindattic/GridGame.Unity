@@ -415,6 +415,9 @@ namespace GridGame.Core.Battle
         HazardKill,
         /// <summary>GG-T571: a hero interrupts a foe's charge within <see cref="BattleConfig.ClutchLastTickSeconds"/> of it landing.</summary>
         LastTickInterrupt,
+        /// <summary>GG-T1581: a hero at <see cref="BattleConfig.ResolveTier"/> Trust survives a lethal blow at
+        /// <see cref="BattleConfig.ResolveHp"/> (once per battle).</summary>
+        Resolve,
     }
 
     /// <summary>GG-T571: each <see cref="ClutchKind"/>'s stable id and its glossary entry (<c>clutch_&lt;id&gt;</c>).</summary>
@@ -431,12 +434,20 @@ namespace GridGame.Core.Battle
                 case ClutchKind.DoublePincer: return "double_pincer";
                 case ClutchKind.HazardKill: return "hazard_kill";
                 case ClutchKind.LastTickInterrupt: return "last_tick";
+                case ClutchKind.Resolve: return "resolve";
                 default: return k.ToString().ToLowerInvariant();
             }
         }
 
         /// <summary>The glossary entry naming and defining the kind (Content/glossary.json; its words come from Prose).</summary>
         public static string GlossaryId(ClutchKind k) => "clutch_" + Id(k);
+    }
+
+    /// <summary>GG-T1581: a hero's Trust Resolve left it at <see cref="HpAfter"/> instead of falling to a lethal blow.</summary>
+    public sealed class ResolveEvent : BattleEvent
+    {
+        public int UnitId; public int SourceId = -1; public int HpAfter;
+        public override string ToString() => $"Resolve {UnitId} hp={HpAfter}";
     }
 
     public sealed class ClutchEvent : BattleEvent

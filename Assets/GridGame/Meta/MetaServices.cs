@@ -663,7 +663,8 @@ namespace GridGame.Meta
 
     public static class BattleFactory
     {
-        public static HeroSpec SpecFor(ContentDb c, HeroSave h)
+        /// <summary>The battle spec for <paramref name="h"/>; <paramref name="s"/> (when given) supplies its Trust tier (GG-T1581).</summary>
+        public static HeroSpec SpecFor(ContentDb c, HeroSave h, SaveData s = null)
         {
             var spec = new HeroSpec
             {
@@ -685,6 +686,7 @@ namespace GridGame.Meta
             spec.Domesticated = h.Domesticated; // fights on its own AI (GG-T303)
             var boardStats = HeroBoard.BoardStats(c, h); // owned skill hexagon passives (GG-T1057; was StatPoints picks, GG-T591)
             if (!HeroBoard.IsZero(boardStats)) spec.StatBonus = boardStats;
+            if (s != null) spec.TrustTier = Bonds.HasTrust(s, h.ClassId) ? Bonds.TrustTier(s, h.ClassId) : 0;
             return spec;
         }
 
@@ -727,7 +729,7 @@ namespace GridGame.Meta
             {
                 var h = s.Hero(id);
                 if (h == null) continue;
-                var spec = SpecFor(c, h);
+                var spec = SpecFor(c, h, s);
                 spec.ItemCounts = owned;
                 setup.Party.Add(spec);
             }

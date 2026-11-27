@@ -125,6 +125,11 @@ namespace GridGame.Core.Battle
         public int RuleBreakCount;
         /// <summary>Damage this hero has dealt this battle (enemy threat targeting, US-080).</summary>
         public int DamageDealt;
+        /// <summary>GG-T1581: the hero's Trust tier (§25.20) — +<see cref="BattleConfig.CritPerTrustTier"/> crit and
+        /// +<see cref="BattleConfig.EvasionPerTrustTier"/> evasion per tier; Resolve from <see cref="BattleConfig.ResolveTier"/>.</summary>
+        public int TrustTier;
+        /// <summary>GG-T1581: this battle's Resolve (survive one lethal blow) has been spent.</summary>
+        public bool ResolveUsed;
 
         public bool Alive => Hp > 0 && OnBoard;
         public bool IsHero => Team == Team.Hero;
