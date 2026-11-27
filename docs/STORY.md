@@ -7,7 +7,7 @@ screen crawls, everything is sourced from prose ... the Game handles gameplay, a
   ("GridGame") in the Prose narrative engine (`D:\Projects\MindAttic\Prose`): its UniverseCanon sections, staged in
   `Data/Prose/canon/`. The premise is the owner's *the Manalith* (2026-11-21, amended GG-T577): an ancient thing, not a
   moon, stopped long ago and hanging in the sky beside the Moon, now coming closer; its mana is the life in every
-  person; the player is the Commander (GG-T1305, replacing the Warden, the Last Sleeper), a person of Halcyon
+  person; the player is the Commander (GG-T1305, replacing the Warden), a person of Halcyon
   brought back from the dead who leads present-day heroes but does not fight, and near whom Halcyon tech wakes; the
   Hierarch is the villain.
   *Under Morrow* (v1 to v3) and *A War in Heaven* (v4) are RETIRED and kept in Prose as history.

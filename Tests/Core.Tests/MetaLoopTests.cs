@@ -433,7 +433,7 @@ namespace GridGame.Tests
         [Test] // GG-T140: a downed hero is still on the roster (no permadeath) and must still block a same-class guest
         public void A_downed_heros_class_still_blocks_a_later_wave_guest_of_that_class()
         {
-            var c = Real; var s = Progression.NewGame(c, "G5"); // default trio includes "barbarian" (GG-T533: Warden, Barbarian, Cleric)
+            var c = Real; var s = Progression.NewGame(c, "G5"); // default trio includes "barbarian"
             var setup = BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 1);
             setup.Stage = TwoWaveGuestStage("barbarian");
             var ev = new List<BattleEvent>();

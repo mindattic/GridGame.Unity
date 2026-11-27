@@ -61,8 +61,8 @@ UNIVERSE_RECORD = {
         "and keeps a share for its leader, the Hierarch. Halcyon, the city that first stopped it, fell 1,200 years ago."
     ),
     "logline": (
-        "The Warden, the Last Sleeper, wakes in Halcyon's old vault 1,200 years too late and must fix what Halcyon left "
-        "broken. With present-day people who stole the Choir's tithe caravan on tithe day, the Warden follows the road "
+        "The Commander, a person of Halcyon brought back from the dead, must fix what Halcyon left "
+        "broken. With present-day people who stole the Choir's tithe caravan on tithe day, the Commander follows the road "
         "to the Choir's Cathedral, where the Hierarch drinks the skimmed mana, while the Manalith fills more of the "
         "sky every chapter."
     ),
@@ -78,7 +78,7 @@ UNIVERSE_RECORD = {
         "that is the Manafall.",  # GG-T670, GG-T675
         "Mana Shards are mana made stable (refined from Mana Dust, they don't dissipate); Mana Orbs are scavenged "
         "Halcyon batteries that capture Mana Dust for a fight and can't hold it long.",  # GG-T675
-        "Every hero is a present-day person except the Warden, the only sleeper; heroes are named by role with the article.",
+        "Every hero is a present-day person, no one a sleeper; heroes are named by role with the article.",
         "The Hierarch, the villain, alone knows the whole truth. No text says what the Manalith is for.",
     ],
 }

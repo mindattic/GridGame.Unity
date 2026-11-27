@@ -122,7 +122,7 @@ def main():
         skip_prologue("new game plays the prologue crawl (GG-T231)")
         on_screen("new game lands at camp", "hub")
         party = (h.call("state").get("save") or {}).get("party") or []
-        check("new game starts with the small party (GG-T118)", party == ["warden", *h.STARTING_PARTY], str(party))  # GG-T533: the fixed lead first
+        check("new game starts with the small party (GG-T118)", party == list(h.STARTING_PARTY), str(party))
         # GG-T456/GG-T546: Camp draws from campaign.json's HubMusic shuffle bag, not one fixed track.
         track = h.call("music")["track"]
         check("camp music", track in CAMPAIGN.get("HubMusic", []), f"{track} not in HubMusic {CAMPAIGN.get('HubMusic')}")

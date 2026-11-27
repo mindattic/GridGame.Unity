@@ -381,7 +381,7 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "As4");
-            var hero = s.Hero(s.Party[0]); // warden, the fixed lead (GG-T533)
+            var hero = s.Hero(s.Party[0]); // warden, an ordinary hero (GG-T1405)
             Assert.That(hero.Known, Does.Not.Contain("heal")); // learnable, but not known out of the gate
             var result = Abilities.Assign(c, s, hero, 0, "heal");
             Assert.That(result.Ok, Is.False);

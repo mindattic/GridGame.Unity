@@ -191,7 +191,7 @@ namespace GridGame.Tests
         public void The_bar_can_be_reordered_within_unlocked_slots()
         {
             var c = Real; var save = Progression.NewGame(c, "Org");
-            var h = save.Hero("warden"); // the fixed lead (GG-T533)
+            var h = save.Hero("warden"); // an ordinary hero (GG-T1405)
             var first = h.Bar[0]; var second = h.Bar[1];
             Assert.That(Abilities.Swap(save, h, 0, 1).Ok, Is.True);
             Assert.That(h.Bar[0], Is.EqualTo(second));

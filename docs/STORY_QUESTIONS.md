@@ -10,7 +10,7 @@ From the Prose canon `Data/Prose/canon/` (05-factions, 06-arc) and BIBLE §27:
 
 - Premise: the Manalith, an ancient thing stopped long ago and hanging beside the one Moon, now coming closer. Its mana
   is the life in every person (GG-T526, GG-T575, GG-T577). One word: mana, never essence.
-- Lead: the Warden, the Last Sleeper, wakes 1,200 years after Halcyon fell. Every other hero is a present-day person.
+- Lead: the Commander (GG-T1305), a person of Halcyon brought back from the dead. Every hero is a present-day person.
   Heroes are named by role with the article, no personal names (GG-T565). Each class has a female and a male version.
 - Villain: the Hierarch, the Choir's human leader, who alone knows the whole truth and drinks the skim.
 - Tone: bittersweet. Keep it simple (owner, GG-T577: "its a video game so dont make it too complex").
@@ -61,7 +61,7 @@ barks only. Recruits join at story beats (4th after Tithe Moors I, 5th at Shardf
 - B. Promote a few caravan crew to speaking parts in crawls and the ending (they live or die by the ending chosen).
 - C. Add the "bittersweet" losses to the crew: decide which, if any, can be lost mid-campaign (the game currently has no
   permadeath rule, so this needs a design check).
-- Sub-questions: Does the Warden speak, or is the Warden a silent lead whom others address? Is the Herald (the winged
+- Sub-questions: Does the Commander speak, or is the Commander a silent lead whom others address? Is the Herald (the winged
   Wild girl in the art) cut, or reused as a Wild hero/NPC with no Host link? Does the Captain survive the Free Holds
   (he still appears in Deep Shardfall)? Options for the Captain: killed at Tithe Moors III; spared and later an ally;
   returns as a postgame foe.

@@ -12,7 +12,7 @@ namespace GridGame.Tests
     /// builds, shares one bag and spawns legally on the 6×8 board.</summary>
     public class PartyCapTests
     {
-        // The fixed lead (GG-T533) always sets out first, so a full pick of six names them plus five.
+        // A full pick of six heroes.
         private static readonly string[] Six = { "warden", "barbarian", "cleric", "redmage", "engineer", "knight" };
 
         [Test]

@@ -80,7 +80,7 @@ namespace GridGame.Tests
             var s = NewSave();
             s.AddItem("tome_thorns", 2);
             Assert.That(Tomes.Candidates(Real, s, "tome_thorns").Count, Is.EqualTo(s.Roster.Count));
-            var r = Tomes.Teach(Real, s, "tome_thorns", "warden"); // the fixed lead (GG-T533)
+            var r = Tomes.Teach(Real, s, "tome_thorns", "warden"); // an ordinary hero (GG-T1405)
             Assert.That(r.Ok, Is.True, r.Message);
             Assert.That(s.Hero("warden").Known, Does.Contain("thorns"));
             Assert.That(s.Count("tome_thorns"), Is.EqualTo(1));

@@ -491,9 +491,11 @@ def drag_tiles(*tiles, step=0.12):
     return call("drag", path=pts, step=step)
 
 
-# Meta.Progression.StartingRoster less its fixed lead: Warden is pre-locked in the first slot, the player picks the other
-# two (StartingPartySize 3, GG-T118, GG-T533).
-STARTING_PARTY = ("barbarian", "cleric")
+# Meta.Progression.StartingRoster: the player locks in all three (StartingPartySize 3, GG-T118; no hero is pre-locked
+# since GG-T1405).
+STARTING_PARTY = ("knight", "barbarian", "cleric")
+# The variants run locks in Warden, the only class with male art, as an ordinary pick.
+VARIANT_PARTY = ("warden", "barbarian", "cleric")
 
 
 def _wait_screen(screen, timeout=6.0):
@@ -1802,7 +1804,7 @@ def vendortiers(run="vendortiers", capture=True):
 
 
 def variants(run="t532-variants", capture=True):
-    """GG-T532: the female/male pick. A fresh -variants profile: New Game, lock in the party; the picker asks the locked
+    """GG-T532: the female/male pick. A fresh -variants profile: New Game, lock in the party (Warden among them); the picker asks
     Warden's look (the only class with male art so far) with both portraits side by side and nobody else (no male art:
     silently female); pick Male, play through the prologue to Camp, where the Warden's thumbnail is the male art; the
     hero screen's Change look opens the same picker (current look marked) and Cancel leaves it. Recorded with -capture
@@ -1815,7 +1817,7 @@ def variants(run="t532-variants", capture=True):
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
     time.sleep(0.6)
     shot("02-charselect")
-    for cid in STARTING_PARTY:
+    for cid in VARIANT_PARTY:
         call("scrollto", name=f"tile-{cid}"); time.sleep(0.25)
         call("click", name=f"tile-{cid}"); time.sleep(0.4)
         call("click", name=f"tile-{cid}"); time.sleep(0.4)
@@ -1828,7 +1830,7 @@ def variants(run="t532-variants", capture=True):
         time.sleep(0.6)
         texts = " ".join(str(t) for t in call("texts"))
         if "Warden" not in texts:
-            fails.append("the picker doesn't name the Warden")
+            fails.append("the picker doesn't name Warden")
         shot("03-picker-warden")
         call("click", name="variant-male"); time.sleep(1.2)
         if call("names", prefix="variant-male"):
@@ -1837,8 +1839,8 @@ def variants(run="t532-variants", capture=True):
     variants_now = (call("state").get("save") or {}).get("variants") or {}
     print(f"[variants] after the pick: {variants_now}", flush=True)
     if variants_now.get("warden") != "Male":
-        fails.append(f"the Warden should be Male, is {variants_now.get('warden')}")
-    for cid in STARTING_PARTY:
+        fails.append(f"Warden should be Male, is {variants_now.get('warden')}")
+    for cid in VARIANT_PARTY[1:]:
         if variants_now.get(cid) != "Female":
             fails.append(f"{cid} has no male art and should be Female, is {variants_now.get(cid)}")
     deadline = time.time() + 60
@@ -2073,7 +2075,7 @@ def story_recruits(run="recruits", speed=3):
     pick_party()
     shot("02-hub")
     party0 = list(call("state").get("save", {}).get("party") or [])
-    ok["starts_with_three"] = party0 == ["warden", *STARTING_PARTY]  # the fixed lead first (GG-T533)
+    ok["starts_with_three"] = party0 == list(STARTING_PARTY)
     call("speed", x=speed)
     call("clicktext", text="Adventure"); time.sleep(0.8)
     enter_stage("The Tithe Moors I"); time.sleep(1.5)
