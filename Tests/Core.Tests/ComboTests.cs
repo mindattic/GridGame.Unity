@@ -15,11 +15,12 @@ namespace GridGame.Tests
             new Unit { Id = id, Team = team, Def = new ClassDef { Id = cls, Team = team }, Level = 1, W = 1, H = 1 };
 
         /// <summary>knight(1,3) and the cleric dropping on (3,3) pincer the target on (2,3); the mage on (1,4) supports with Crit.</summary>
-        private static (BattleState s, List<BattleEvent> ev) Pincer(TurnMode mode, string target, bool viaTurn)
+        private static (BattleState s, List<BattleEvent> ev) Pincer(TurnMode mode, string target, bool viaTurn, int mageKnightTier = 0)
         {
             var db = Mini();
             db.Classes["mage"].Support = new SupportDef { Effect = SupportEffect.Crit, Magnitude = 0.3f, Range = 1, Label = "Shadow Edge" };
             var setup = new BattleSetup { Stage = Stage((target, 2, 3)), Seed = 7, UnlockedSlots = 5, TurnMode = mode };
+            if (mageKnightTier > 0) setup.Cohesion["knight|mage"] = mageKnightTier;
             setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(1, 3) });
             setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(3, 4) });
             setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(1, 4) });
@@ -40,6 +41,33 @@ namespace GridGame.Tests
             Assert.That(knight.AttackerPoints, Is.GreaterThan(0));
             Assert.That(knight.SupporterPoints, Is.EqualTo(0));
             Assert.That(ev.OfType<ComboChangedEvent>().Any(c => c.Kind == ComboKind.Support && c.ContributorId == mage.UnitId), Is.True);
+        }
+
+        [Test]
+        public void A_bonded_supporter_earns_a_bond_credit_as_supporter_points()
+        {
+            var (s, ev) = Pincer(TurnMode.PartyWindow, "tank", false, mageKnightTier: 2);
+            int mage = Hero(s, "mage").Id;
+            var bond = ev.OfType<ComboChangedEvent>().Single(c => c.Kind == ComboKind.Bond);
+            Assert.That(bond.ContributorId, Is.EqualTo(mage));
+            Assert.That(bond.Label, Is.EqualTo("Bond 2"));
+            Assert.That(bond.Points, Is.GreaterThanOrEqualTo(BattleConfig.ComboBondPoints));
+            Assert.That(s.Combo.Shares.Single(x => x.UnitId == mage).AttackerPoints, Is.EqualTo(0));
+
+            var (_, plain) = Pincer(TurnMode.PartyWindow, "tank", false);
+            Assert.That(plain.OfType<ComboChangedEvent>().Any(c => c.Kind == ComboKind.Bond), Is.False);
+        }
+
+        [Test]
+        public void A_repeated_bond_credit_halves_like_any_other()
+        {
+            var b = Fake(2, Team.Hero, "mage");
+            var t = new ComboTracker();
+            var first = t.Credit(b, ComboKind.Bond, "1", "Bond 3");
+            var again = t.Credit(b, ComboKind.Bond, "1", "Bond 3");
+            Assert.That(first.Points, Is.EqualTo(BattleConfig.ComboBondPoints));
+            Assert.That(again.Points, Is.EqualTo(System.Math.Max(1, BattleConfig.ComboBondPoints / 2)));
+            Assert.That(t.Shares.Single().SupporterPoints, Is.EqualTo(first.Points + again.Points));
         }
 
         [Test]

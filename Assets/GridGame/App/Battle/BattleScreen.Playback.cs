@@ -683,7 +683,8 @@ namespace GridGame.App
             var sup = State.UnitById(sa.SupporterId);
             if (sup == null || !board.Units.TryGetValue(sup.Id, out var sv)) yield break;
             string label = string.IsNullOrEmpty(sa.Label) ? sa.Effect.ToString() : sa.Label;
-            SupporterPop(sup, sup.Team, label.ToUpperInvariant());
+            // §25.20 (GG-T1309): a bonded supporter's card names its bond.
+            SupporterPop(sup, sup.Team, sa.BondTier > 0 ? $"{label.ToUpperInvariant()} · BOND {sa.BondTier}" : label.ToUpperInvariant());
             // The support strikes, and Volley's thrown hits (GG-T915), animate themselves.
             if (sa.Effect == SupportEffect.Strike || sa.Effect == SupportEffect.Volley) yield break;
             var color = SupportColor(sa.Effect);

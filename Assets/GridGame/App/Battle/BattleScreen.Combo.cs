@@ -196,7 +196,7 @@ namespace GridGame.App
                 if (comboAttackers.Count >= 2) comboAttackers.Clear();
                 comboAttackers.Add(e.ContributorId);
             }
-            bool support = e.Kind == ComboKind.Support || (e.Kind == ComboKind.FollowUp && !comboAttackers.Contains(e.ContributorId));
+            bool support = e.Kind == ComboKind.Support || e.Kind == ComboKind.Bond || (e.Kind == ComboKind.FollowUp && !comboAttackers.Contains(e.ContributorId));
 
             if (e.Rank != comboShownRank)
             {

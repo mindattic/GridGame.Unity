@@ -8,7 +8,7 @@ namespace GridGame.Core.Battle
     public enum ComboRank { None, D, C, B, A, S, SS, SSS }
 
     /// <summary>What a combo credit was for (§1.2.8).</summary>
-    public enum ComboKind { Pincer, ChainLink, Support, FollowUp, Status, Kill, TileKill }
+    public enum ComboKind { Pincer, ChainLink, Support, FollowUp, Status, Kill, TileKill, Bond }
 
     /// <summary>One hero's share of a combo: points earned as a pincer attacker and as a supporter.</summary>
     public sealed class ComboShare
@@ -60,6 +60,7 @@ namespace GridGame.Core.Battle
                 case ComboKind.Status: return BattleConfig.ComboStatusPoints;
                 case ComboKind.Kill: return BattleConfig.ComboKillPoints;
                 case ComboKind.TileKill: return BattleConfig.ComboTileKillPoints;
+                case ComboKind.Bond: return BattleConfig.ComboBondPoints;
                 default: return 0;
             }
         }
@@ -73,11 +74,11 @@ namespace GridGame.Core.Battle
             return r;
         }
 
-        /// <summary>Is <paramref name="unitId"/> crediting as a supporter here? Support always; Pincer and ChainLink never;
+        /// <summary>Is <paramref name="unitId"/> crediting as a supporter here? Support and Bond always; Pincer and ChainLink never;
         /// anything else when it happens inside a hero pincer by someone other than its two attackers.</summary>
         private bool AsSupporter(int unitId, ComboKind kind)
         {
-            if (kind == ComboKind.Support) return true;
+            if (kind == ComboKind.Support || kind == ComboKind.Bond) return true;
             if (kind == ComboKind.Pincer || kind == ComboKind.ChainLink) return false;
             return InHeroPincer && unitId != PincerA && unitId != PincerB;
         }
@@ -165,7 +166,7 @@ namespace GridGame.Core.Battle
     /// <summary>Runner glue for the combo (§1.2.8, GG-T849): event observation, kills, statuses and the window close.</summary>
     internal sealed partial class BattleRunner
     {
-        /// <summary>Called for every emitted event: pincers, chain links, supporter actions and follow-ups.</summary>
+        /// <summary>Called for every emitted event: pincers, chain links, supporter actions (and their bonds) and follow-ups.</summary>
         private void ObserveCombo(BattleEvent e)
         {
             var c = S.Combo;
@@ -188,6 +189,9 @@ namespace GridGame.Core.Battle
                 case SupportActionEvent sa when c.InHeroPincer:
                     EmitCombo(c.Credit(S.UnitById(sa.SupporterId), c.Phase == PincerPhase.FollowUp ? ComboKind.FollowUp : ComboKind.Support,
                         sa.Effect.ToString(), sa.Label ?? sa.Effect.ToString()));
+                    // §25.20 (GG-T1309): a supporter bonded to the attacker it backs earns a Bond credit on top.
+                    if (sa.BondTier > 0)
+                        EmitCombo(c.Credit(S.UnitById(sa.SupporterId), ComboKind.Bond, sa.AttackerId.ToString(), "Bond " + sa.BondTier));
                     break;
                 case TriggeredEvent t when c.InHeroPincer && c.Phase == PincerPhase.FollowUp && (t.UnitId == c.PincerA || t.UnitId == c.PincerB):
                     EmitCombo(c.Credit(S.UnitById(t.UnitId), ComboKind.FollowUp, t.AbilityId, t.Callout ?? "Follow-up"));

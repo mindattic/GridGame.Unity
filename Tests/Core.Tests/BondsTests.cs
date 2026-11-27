@@ -261,6 +261,66 @@ namespace GridGame.Tests
             Assert.That(formed.All(p => p.BondTier == 0), Is.True);
         }
 
+        // ── Core: bonded supporters (§25.20, GG-T1309) ──
+
+        /// <summary>knight(1,3) and cleric(3,3) flank the tank on (2,3); a scout on (1,4) links the mage (Range 1) on (1,5),
+        /// two tiles along the chain from the knight.</summary>
+        private static (BattleState s, Unit knight, Unit cleric) ReachChain(int? tier)
+        {
+            var db = Mini();
+            db.Classes["scout"] = new ClassDef { Id = "scout", Name = "Scout", Team = Team.Hero, Tags = { "Humanoid" }, BaseStats = db.Classes["knight"].BaseStats };
+            db.Classes["mage"].Support = new SupportDef { Effect = SupportEffect.Heal, Magnitude = 0.1f, Range = 1 };
+            var setup = new BattleSetup { Stage = Stage(("tank", 2, 3)), Seed = 7, UnlockedSlots = 5 };
+            if (tier.HasValue) setup.Cohesion["knight|mage"] = tier.Value;
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(1, 3) });
+            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(3, 3) });
+            setup.Party.Add(new HeroSpec { ClassId = "scout", Start = new Coord(1, 4) });
+            setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(1, 5) });
+            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
+            return (s, Hero(s, "knight"), Hero(s, "cleric"));
+        }
+
+        [Test]
+        public void A_tier_3_bonded_supporter_reaches_one_tile_further()
+        {
+            foreach (var (tier, reaches) in new (int?, bool)[] { (null, false), (BattleConfig.BondedReachTier - 1, false), (BattleConfig.BondedReachTier, true), (5, true) })
+            {
+                var (s, knight, cleric) = ReachChain(tier);
+                var found = GridGame.Core.Rules.PincerDetector.FindSupporters(s, knight, cleric);
+                Assert.That(found.Any(u => u.Def.Id == "scout"), Is.True, $"tier {tier}: the scout touches the knight");
+                Assert.That(found.Any(u => u.Def.Id == "mage"), Is.EqualTo(reaches), $"tier {tier}");
+            }
+        }
+
+        /// <summary>The cleric closes a pincer on the tank with the knight; the mage on (1,4) lends the knight 30% crit.</summary>
+        private static SupportActionEvent CritSupport(int? tier)
+        {
+            var db = Mini();
+            db.Classes["mage"].Support = new SupportDef { Effect = SupportEffect.Crit, Magnitude = 0.3f, Range = 1 };
+            var setup = new BattleSetup { Stage = Stage(("tank", 2, 3)), Seed = 7, UnlockedSlots = 5 };
+            if (tier.HasValue) setup.Cohesion["knight|mage"] = tier.Value;
+            setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(1, 3) });
+            setup.Party.Add(new HeroSpec { ClassId = "cleric", Start = new Coord(3, 4) });
+            setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(1, 4) });
+            var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
+            var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
+            return ev.OfType<SupportActionEvent>().Single(e => e.SupporterId == Hero(s, "mage").Id);
+        }
+
+        [Test]
+        public void A_tier_4_bonded_supporter_supports_at_the_bonded_magnitude()
+        {
+            var plain = CritSupport(null);
+            var three = CritSupport(BattleConfig.BondedSupportTier - 1);
+            var four = CritSupport(BattleConfig.BondedSupportTier);
+            Assert.That(plain.BondTier, Is.EqualTo(0));
+            Assert.That(plain.Amount, Is.EqualTo(0.3f).Within(1e-4));
+            Assert.That(three.BondTier, Is.EqualTo(BattleConfig.BondedSupportTier - 1));
+            Assert.That(three.Amount, Is.EqualTo(0.3f).Within(1e-4));
+            Assert.That(four.BondTier, Is.EqualTo(BattleConfig.BondedSupportTier));
+            Assert.That(four.Amount, Is.EqualTo(0.3f * (1f + BattleConfig.BondedSupportBonus)).Within(1e-4));
+        }
+
         [Test]
         public void The_factory_fills_setup_cohesion_only_for_bonded_party_pairs()
         {

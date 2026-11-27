@@ -402,6 +402,8 @@ namespace GridGame.Core.Battle
         public static int ComboStatusPoints = 6;
         public static int ComboKillPoints = 12;
         public static int ComboTileKillPoints = 18;
+        /// <summary>§25.20 (GG-T1309): a supporter bonded to the attacker it backs earns this on top of its Support credit.</summary>
+        public static int ComboBondPoints = 6;
         /// <summary>Variety: a contributor, a kind, or an effect new to the window adds these (not on the first credit).</summary>
         public static int ComboNewContributorBonus = 6;
         public static int ComboNewKindBonus = 4;
