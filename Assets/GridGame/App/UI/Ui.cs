@@ -467,6 +467,16 @@ namespace GridGame.App
         /// <summary>A heading (48): a window-level or detail pane's title. <paramref name="tone"/>: gold, dim, good, bad, a rarity class.</summary>
         public static Label Heading(string text, VisualElement parent, string tone = null) => Text(text, "kit-heading " + (tone ?? ""), parent);
 
+        /// <summary>Display text (GG-T1769): a front-door wordmark (the Title's, the Splash's fallback) or a story's title (the
+        /// crawl's), in the display face (Cinzel). Not a page title: a page's title is <see cref="Header"/>.
+        /// <paramref name="wordmark"/> = the wordmark size, else a story heading. <paramref name="tone"/>: shadow, gold, dim, a USS class.</summary>
+        public static Label Display(string text, VisualElement parent, string tone = null, bool wordmark = true)
+        {
+            var l = Text(text, (wordmark ? "title " : "h1 ") + (tone ?? ""), parent);
+            Fonts.UseDisplay(l);
+            return l;
+        }
+
         /// <summary>A card's name (body size, heavy).</summary>
         public static Label Name(string text, VisualElement parent, string tone = null) => Text(text, "kit-name " + (tone ?? ""), parent);
 

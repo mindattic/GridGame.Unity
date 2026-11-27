@@ -350,17 +350,17 @@ namespace GridGame.App
                 var ex = Ui.Text(l.Example, "tiny", col);
                 ex.name = "tutorial-example";
                 ex.style.whiteSpace = WhiteSpace.Normal;
-                ex.style.color = new Color(0.62f, 0.9f, 1f);
+                ex.style.color = Palette.Term;
             }
             var btns = Ui.El("col", row);
             btns.style.flexShrink = 0;
             // 24 px from the tab hit areas above (window padding 8 + 16) and between the two buttons (GG-T656, POL-C3).
-            btns.style.paddingTop = Space.S16;
+            Ui.Pad(btns, top: Space.S16);
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
             if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
             else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
-            if (first != null) first.style.marginBottom = Space.S24;
+            if (first != null) Ui.Margin(first, bottom: Space.S24);
             RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";
         }
 

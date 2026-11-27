@@ -64,7 +64,7 @@ namespace GridGame.App
 
         public override bool OnBack()
         {
-            if (step > 1) { Go(step - 1); return false; }
+            if (step > 1) { App.Audio.Sfx("ui.cancel"); Go(step - 1); return false; }
             return CanCancel;
         }
 

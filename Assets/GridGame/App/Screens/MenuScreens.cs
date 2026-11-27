@@ -104,9 +104,8 @@ namespace GridGame.App
             staged.Clear();
             var col = Ui.El("fill col center", root);
             // GG-T1350 (§11.2): the Main Menu's code-drawn wordmark, Cinzel over a mana conduit underline.
-            var title = Ui.Text(GameApp.Title.ToUpperInvariant(), "title shadow", col);
+            var title = Ui.Display(GameApp.Title.ToUpperInvariant(), col, "shadow");
             title.name = "title-wordmark";
-            Fonts.UseDisplay(title);
             Stage(title);
             var conduit = Ui.El("title-conduit", col);
             conduit.name = "title-conduit";
@@ -1477,13 +1476,8 @@ namespace GridGame.App
             text = Ui.El("col", clip);
             text.style.position = Position.Absolute;
             text.style.left = text.style.right = Fit.Inset + Space.S96;
-            if (page == 0 && !string.IsNullOrEmpty(title))
-            {
-                var h = Ui.Text(title, "h1 shadow gold", text);
-                Fonts.UseDisplay(h);
-                h.style.unityTextAlign = TextAnchor.MiddleCenter;
-                h.style.marginBottom = Space.S64;
-            }
+            if (page == 0 && !string.IsNullOrEmpty(title)) Ui.Display(title, text, "shadow gold crawl-title", false);
+            else if (page > 0) App.Audio.Sfx("ui.select", 0.5f);
             var body = Ui.Text(p.Text ?? "", "h2 shadow", text);
             body.style.whiteSpace = WhiteSpace.Normal;
             body.style.unityTextAlign = TextAnchor.UpperCenter;
