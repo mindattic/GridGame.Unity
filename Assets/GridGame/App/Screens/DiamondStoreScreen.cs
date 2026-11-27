@@ -78,8 +78,7 @@ namespace GridGame.App
             var veil = Ui.El("fill veil col center", GameApp.I.Overlay);
             veil.name = VeilName;
             veil.pickingMode = PickingMode.Position;
-            var w = Ui.Window(null, veil);
-            w.name = name;
+            var w = Ui.Panel(veil, null, false, name);
             w.style.width = Length.Percent(76);
             Ui.Heading(question, w).style.whiteSpace = WhiteSpace.Normal;
             Action cancel = () => veil.RemoveFromHierarchy();
@@ -92,12 +91,11 @@ namespace GridGame.App
         public static void AskAge(AccountWallet wallet, Action then)
         {
             var (veil, w, cancel) = Veil("Before your first purchase: how old are you?", "age-question");
-            var row = Ui.El("col", w);
-            row.style.marginTop = Space.S16;
+            var row = Ui.El("col kit-gate", w);
             foreach (AgeBand band in Enum.GetValues(typeof(AgeBand)))
             {
                 var b = band;
-                Ui.Button(SpendLimits.BandName(b), () =>
+                RowIcon.IconButton(SpendLimits.BandName(b), RowKind.Enter, () =>
                 {
                     veil.RemoveFromHierarchy();
                     wallet.AgeBand = b;
@@ -106,9 +104,7 @@ namespace GridGame.App
                     then?.Invoke();
                 }, "btn--primary", row).name = "age-" + b.ToString().ToLowerInvariant();
             }
-            var foot = Ui.El("kit-footer", w);
-            foot.style.justifyContent = Justify.FlexEnd;
-            foot.style.marginTop = Space.S16;
+            var foot = Ui.El("kit-footer kit-footer--end", w);
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, foot).name = "confirm-no";
         }
 
@@ -119,12 +115,11 @@ namespace GridGame.App
             var options = SpendLimits.GateQuestion(Rng, out int a, out int b);
             int answer = a * b;
             var (veil, w, cancel) = Veil($"Ask a grown-up. What is {a} × {b}?", "parental-gate");
-            var row = Ui.El("kit-footer", w);
-            row.style.marginTop = Space.S16;
+            var row = Ui.El("kit-footer kit-gate", w);
             foreach (var o in options)
             {
                 int pick = o;
-                Ui.Button(pick.ToString(), () =>
+                RowIcon.IconButton(pick.ToString(), RowKind.Enter, () =>
                 {
                     veil.RemoveFromHierarchy();
                     if (pick == answer) { onPass?.Invoke(); return; }
@@ -132,9 +127,7 @@ namespace GridGame.App
                     GameApp.I.Audio?.Sfx("ui.error");
                 }, null, row).name = "gate-answer-" + pick;
             }
-            var foot = Ui.El("kit-footer", w);
-            foot.style.justifyContent = Justify.FlexEnd;
-            foot.style.marginTop = Space.S16;
+            var foot = Ui.El("kit-footer kit-footer--end", w);
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, foot).name = "confirm-no";
         }
     }
@@ -166,7 +159,7 @@ namespace GridGame.App
             var icon = Art.ItemIcon(Crafting.DiamondId);
             var img = head.KindIcon(RowKind.Diamond, icon);
             img.style.width = img.style.height = Size.Icon;
-            img.style.marginRight = Space.S16;
+            img.AddToClassList("icon-gap");
             Ui.Heading(ShardText.Of(have), head, "gold").name = "diamond-count";
             Ui.Caption($"1 {ShardText.Short} = {DiamondExchange.GoldPerDiamond} G · {ShardText.ShortOf(DiamondExchange.DiamondsPerDollar)} = $1.00", bal, "dim");
             Ui.Para($"{ShardText.Plural} pay for a random summon, an instant Rested refill and a lucky craft. Anything priced in {ShardText.ShortPlural} can also be paid in gold at the same rate.", bal, "dim");
@@ -178,7 +171,7 @@ namespace GridGame.App
             {
                 int d = step;
                 if (d > 0) continue;
-                Ui.Button($"−{-d}", () => { amount = Math.Max(1, amount + d); Refresh(); }, "btn--small", pick).name = $"diamond-amount-minus{-d}";
+                RowIcon.IconButton($"−{-d}", RowKind.Diamond, () => { amount = Math.Max(1, amount + d); Refresh(); }, "btn--small", pick).name = $"diamond-amount-minus{-d}";
             }
             var amt = Ui.Name($"{amount:N0}", pick, "gold");
             amt.name = "diamond-amount";
@@ -186,9 +179,9 @@ namespace GridGame.App
             {
                 int d = step;
                 if (d < 0) continue;
-                Ui.Button($"+{d}", () => { amount += d; Refresh(); }, "btn--small", pick).name = $"diamond-amount-plus{d}";
+                RowIcon.IconButton($"+{d}", RowKind.Diamond, () => { amount += d; Refresh(); }, "btn--small", pick).name = $"diamond-amount-plus{d}";
             }
-            var maxB = Ui.Button("Max", () => { amount = Math.Max(1, max); Refresh(); }, "btn--small", pick);
+            var maxB = RowIcon.IconButton("Max", RowKind.Diamond, () => { amount = Math.Max(1, max); Refresh(); }, "btn--small", pick);
             maxB.name = "diamond-amount-max";
             Ui.SetEnabled(maxB, max > 0);
             Ui.Field("Costs", Ui.Gold(DiamondExchange.GoldFor(amount)), ex, S.Gold >= DiamondExchange.GoldFor(amount) ? null : "bad", "diamond-quote");

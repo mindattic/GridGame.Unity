@@ -62,7 +62,7 @@ namespace GridGame.App
                 if (adj != 0) Ui.Caption(adj < 0 ? $"Haggled down {-adj}%" : $"Price up {adj}%", col, adj < 0 ? "gold" : "bad");
                 if (walked) { Ui.Para("Walked off. Back after the next battle.", col, "bad"); continue; }
                 var terms = Ui.Actions(col);
-                terms.style.flexShrink = 0; terms.style.marginTop = Space.TargetHalfGap; // GG-T700: a clear 24 px (12 + the card's gap) above the hire/Haggle row, and the row keeps its height
+                terms.style.flexShrink = 0; terms.AddToClassList("merc-terms"); // GG-T700: a clear 24 px (12 + the card's gap) above the hire/Haggle row, and the row keeps its height
                 foreach (var t in m.Terms.OrderBy(x => x))
                 {
                     int term = t, price = Mercenaries.Price(C, S, m.Class, t);
@@ -75,12 +75,12 @@ namespace GridGame.App
                             Done(Mercenaries.Hire(C, S, merc.Class, term));
                         }), "btn--small", terms);
                     b.name = $"merc-hire-{m.Class}-{term}";
-                    b.style.marginTop = Space.TargetHalfGap; b.style.marginBottom = Space.TargetHalfGap; b.style.marginLeft = Space.TargetHalfGap; b.style.marginRight = Space.TargetHalfGap; // GG-T700: 24 px to the next target, wrapped or not
+                    b.AddToClassList("target-gap"); // GG-T700: 24 px to the next target, wrapped or not
                     Ui.SetEnabled(b, S.Gold >= price && !haggling);
                 }
                 var haggle = RowIcon.IconButton(Mercenaries.Haggled(S, m.Class) ? "Haggled" : "Haggle", RowKind.Shop, () => App.StartCoroutine(Haggle(merc, card)), "btn--small", terms);
                 haggle.name = "merc-haggle-" + m.Class;
-                haggle.style.marginTop = Space.TargetHalfGap; haggle.style.marginBottom = Space.TargetHalfGap; haggle.style.marginLeft = Space.TargetHalfGap; haggle.style.marginRight = Space.TargetHalfGap;
+                haggle.AddToClassList("target-gap");
                 Ui.SetEnabled(haggle, !Mercenaries.Haggled(S, m.Class) && !haggling);
             }
         }
@@ -115,7 +115,7 @@ namespace GridGame.App
             if (k == null) return;
             var tag = Ui.Caption($"MERC · {k.BattlesLeft} left", parent, "gold");
             tag.name = "merc-tag-" + classId;
-            tag.style.marginLeft = Space.S8;
+            tag.AddToClassList("merc-tag");
         }
 
         /// <summary>Called from Camp's Build: settle spent contracts, toast who left, then open the reoffer for a merc
@@ -184,8 +184,7 @@ namespace GridGame.App
             portrait.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
             portrait.style.opacity = 0f;
 
-            var box = Ui.Window(null, root);
-            box.name = "merc-renewal-box";
+            var box = Ui.Panel(root, null, false, "merc-renewal-box");
             box.style.position = Position.Absolute;
             box.style.left = box.style.right = Fit.Inset + Fit.Edge; box.style.bottom = Space.S64;
             var plate = Ui.El("row", box);
@@ -195,8 +194,7 @@ namespace GridGame.App
             line.style.minHeight = Size.Thumb; // the line types out into a box already its height
             string speech = m?.Renewal ?? "My contract's nearly up. Renew, or do we part ways?";
 
-            var choices = Ui.El("col", box);
-            choices.style.marginTop = Space.S16;
+            var choices = Ui.El("col kit-gate", box);
             choices.style.opacity = 0f;
             if (m != null && k != null)
             {

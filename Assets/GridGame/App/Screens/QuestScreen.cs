@@ -108,7 +108,9 @@ namespace GridGame.App
         /// <summary>The giver's thanks, sliding in at the top of the journal after a hand-in (no single-frame swap).</summary>
         private void TurnInCard(QuestDef q, VisualElement body)
         {
-            var w = Ui.Window($"{q.Name} — complete!", body, "quest-turnin is-hidden");
+            var w = Ui.Panel(body, $"{q.Name} — complete!");
+            w.AddToClassList("quest-turnin");
+            w.AddToClassList("is-hidden");
             if (!string.IsNullOrEmpty(q.TurnIn)) Ui.Para($"\"{q.TurnIn}\"", w);
             Ui.Caption($"— {q.Giver}", w, "dim");
             Ui.Para("Received: " + Quests.RewardText(C, q), w, "gold");

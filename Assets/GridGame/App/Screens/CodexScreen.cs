@@ -84,12 +84,12 @@ namespace GridGame.App
                 {
                     var locked = Ui.MenuRow("???", "", null, list, null, false);
                     locked.name = "codex-locked-" + id;
-                    Silhouette(locked, t.Kind, id);
+                    LockedKindIcon(locked, t.Kind, id);
                     continue;
                 }
                 var row = Ui.MenuRow(e.Title, "", () => Read(id, detail), list);
                 row.name = "codex-" + id;
-                var icon = EntryIcon(row, t.Kind, id);
+                var icon = EntryKindIcon(row, t.Kind, id);
                 if (Codex.IsNew(S, t.Kind, id)) RowIcon.Badge(icon, RowKind.New);
                 rowIcons[id] = icon;
             }
@@ -119,7 +119,7 @@ namespace GridGame.App
                 el.pickingMode = PickingMode.Position;
                 var icon = el.KindIcon(t.Icon);
                 icon.style.width = icon.style.height = Size.IconS;
-                icon.style.marginRight = Space.S8;
+                icon.AddToClassList("tab-icon");
                 tabIcons[i] = icon;
                 var label = Ui.Text($"{t.Label} {TabCount(t)}", null, el);
                 label.pickingMode = PickingMode.Ignore;
@@ -189,7 +189,7 @@ namespace GridGame.App
 
         /// <summary>The kind icon an entry's row leads with: its own art (board tile, portrait, item or ability icon) where
         /// there is one, else its kind's emblem.</summary>
-        private VisualElement EntryIcon(VisualElement row, string kind, string id)
+        private VisualElement EntryKindIcon(VisualElement row, string kind, string id)
         {
             switch (kind)
             {
@@ -206,9 +206,9 @@ namespace GridGame.App
 
         /// <summary>A locked entry's icon: its art blacked out (the Bestiary's unseen silhouette), or the padlock where it
         /// has only an emblem.</summary>
-        private void Silhouette(VisualElement row, string kind, string id)
+        private void LockedKindIcon(VisualElement row, string kind, string id)
         {
-            var icon = EntryIcon(row, kind, id);
+            var icon = EntryKindIcon(row, kind, id);
             if (icon is KindEmblem) { row.KindIcon(RowKind.Locked); return; }
             icon.style.unityBackgroundImageTintColor = Shadow;
             icon.Query<VisualElement>().ForEach(e => e.style.unityBackgroundImageTintColor = Shadow);
@@ -243,13 +243,13 @@ namespace GridGame.App
                 {
                     var locked = Ui.MenuRow("???", KindName(rk), null, w, null, false);
                     locked.name = "codex-link-" + rk + "-" + rid;
-                    Silhouette(locked, rk, rid);
+                    LockedKindIcon(locked, rk, rid);
                     continue;
                 }
                 string kind = rk, target = rid;
                 var link = Ui.MenuRow(C.CodexEntry(rk, rid).Title, KindName(rk), () => Jump(kind, target), w);
                 link.name = "codex-link-" + rk + "-" + rid;
-                var icon = EntryIcon(link, rk, rid);
+                var icon = EntryKindIcon(link, rk, rid);
                 if (Codex.IsNew(S, rk, rid)) RowIcon.Badge(icon, RowKind.New);
             }
         }

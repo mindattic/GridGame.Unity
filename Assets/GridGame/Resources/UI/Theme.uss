@@ -399,6 +399,14 @@
 /* The action bar at the foot of a screen: what it costs or does on the left, the buttons on the right. */
 .kit-footer { flex-direction: row; align-items: center; }
 .kit-footer > .btn { margin-top: 0; margin-bottom: 0; }
+.kit-footer--end { justify-content: flex-end; }
+.kit-gate { margin-top: var(--space-16); }
+.icon-gap { margin-right: var(--space-16); }
+.tab-icon { margin-right: var(--space-8); }
+.enter-mark { margin-left: var(--space-16); }
+.target-gap { margin: var(--space-12); }
+.merc-terms { margin-top: var(--space-12); }
+.merc-tag { margin-left: var(--space-8); }
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) 0 0 0; padding: 0 var(--space-12); } /* row padding + each button's 12-px margin: edge = gap = 24 from the text column (GG-T662) */
 .kit-actions.kit-note { margin-left: var(--kit-note-actions); padding-left: 0; }

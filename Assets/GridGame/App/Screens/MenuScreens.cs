@@ -1120,7 +1120,11 @@ namespace GridGame.App
                     Ui.Note($"Drops: {drops}", list);
                 }
             }
-            if (onIt) Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list).KindIcon(RowKind.Close);
+            if (onIt)
+            {
+                var abandon = Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list);
+                abandon.KindIcon(RowKind.Close);
+            }
         }
 
         /// <summary>The Enter arrow at the right end of an enterable stage row (GG-T715), after its value.</summary>
@@ -1130,7 +1134,7 @@ namespace GridGame.App
             go.AddToClassList(RowIcon.Class);
             go.style.width = go.style.height = Size.IconS;
             go.style.flexShrink = 0f;
-            go.style.marginLeft = Space.S16;
+            go.AddToClassList("enter-mark");
             go.style.alignSelf = Align.Center;
             row.Add(go);
         }
