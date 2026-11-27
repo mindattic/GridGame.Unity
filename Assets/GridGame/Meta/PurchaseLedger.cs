@@ -15,6 +15,12 @@ namespace GridGame.Meta
     {
         public string ProductId;
         public int Diamonds;
+        /// <summary>GG-T1447: Summon Tickets it granted.</summary>
+        public int Tickets;
+        /// <summary>GG-T1447: cosmetic ids it newly granted (taken back on a refund).</summary>
+        public string[] Cosmetics;
+        /// <summary>GG-T1447: it made the account the owner of its non-consumable product.</summary>
+        public bool Ownership;
         public DateTime Utc;
         /// <summary>"GooglePlay", "AppleAppStore", … (informational).</summary>
         public string Store;
@@ -121,6 +127,6 @@ namespace GridGame.Meta
         /// price, refunds excluded. Feeds the monthly spending limit (<see cref="SpendLimits"/>).</summary>
         public static int MonthCents(IEnumerable<PurchaseRecord> records, DateTime utc) =>
             records?.Where(r => r != null && !r.Refunded && r.Utc.Year == utc.Year && r.Utc.Month == utc.Month)
-                .Sum(r => PackOf(r.ProductId)?.Cents ?? 0) ?? 0;
+                .Sum(r => StoreCatalog.Of(r.ProductId)?.Cents ?? 0) ?? 0;
     }
 }

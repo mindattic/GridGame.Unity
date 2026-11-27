@@ -31,6 +31,15 @@ namespace GridGame.Meta
         /// <summary>Store transaction id (Google Play's purchase token, Apple's transaction id) → what it granted.</summary>
         public Dictionary<string, PurchaseRecord> Granted = new Dictionary<string, PurchaseRecord>(StringComparer.Ordinal);
 
+        /// <summary>GG-T1447: Summon Tickets bought with real money. Never negative.</summary>
+        public int Tickets;
+
+        /// <summary>GG-T1447: the non-consumable products this login owns (<see cref="StoreCatalog"/> ids).</summary>
+        public HashSet<string> Owned = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>GG-T1447: the cosmetic ids this login owns.</summary>
+        public HashSet<string> Cosmetics = new HashSet<string>(StringComparer.Ordinal);
+
         /// <summary>GG-T621: save identity (<see cref="WalletMigration.IdentityOf"/>) → what was carried in from that save,
         /// so a save, a copy of it or an older backup of it never pays its Diamonds into the wallet twice.</summary>
         public Dictionary<string, CarriedSave> Migrated = new Dictionary<string, CarriedSave>(StringComparer.Ordinal);
@@ -55,7 +64,10 @@ namespace GridGame.Meta
             if (Migrated.Comparer != StringComparer.Ordinal)
                 Migrated = new Dictionary<string, CarriedSave>(Migrated, StringComparer.Ordinal);
             foreach (var k in Migrated.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Migrated.Remove(k);
+            Owned = Owned == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Owned.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
+            Cosmetics = Cosmetics == null ? new HashSet<string>(StringComparer.Ordinal) : new HashSet<string>(Cosmetics.Where(id => !string.IsNullOrEmpty(id)), StringComparer.Ordinal);
             if (Diamonds < 0) Diamonds = 0;
+            if (Tickets < 0) Tickets = 0;
             if (MonthlyLimitCents < SpendLimits.NoLimit) MonthlyLimitCents = SpendLimits.NoLimit;
             if (Version < CurrentVersion) Version = CurrentVersion;
             return this;
@@ -72,20 +84,30 @@ namespace GridGame.Meta
         public static bool Has(AccountWallet w, string transactionId) =>
             w?.Granted != null && !string.IsNullOrEmpty(transactionId) && w.Granted.ContainsKey(transactionId);
 
-        /// <summary>Grants <paramref name="productId"/>'s Diamonds for <paramref name="transactionId"/> unless this wallet
-        /// granted it before. Paid Diamonds ignore any cap: the money was taken, so they always land.</summary>
+        /// <summary>Grants <paramref name="productId"/>'s contents (<see cref="StoreCatalog"/>: Shards, Summon Tickets,
+        /// cosmetics, ownership) for <paramref name="transactionId"/> unless this wallet granted it before. Paid contents
+        /// ignore any cap or account limit: the money was taken, so they always land. A non-consumable the wallet already
+        /// owns (a restore under a new transaction id) is recorded but grants nothing again (AlreadyGranted).
+        /// <paramref name="diamonds"/> is the Shards added.</summary>
         public static GrantOutcome Grant(AccountWallet w, string transactionId, string productId, DateTime utc, string store, out int diamonds)
         {
             diamonds = 0;
             if (w == null || string.IsNullOrEmpty(transactionId)) return GrantOutcome.Invalid;
             w.Normalize();
             if (Has(w, transactionId)) return GrantOutcome.AlreadyGranted;
-            var pack = PurchaseLedger.PackOf(productId);
-            if (pack == null) return GrantOutcome.UnknownProduct;
-            w.Diamonds = Sum(w.Diamonds, pack.Diamonds);
-            w.Granted[transactionId] = new PurchaseRecord { ProductId = productId, Diamonds = pack.Diamonds, Utc = utc, Store = store };
+            var product = StoreCatalog.Of(productId);
+            if (product == null) return GrantOutcome.UnknownProduct;
+            var record = new PurchaseRecord { ProductId = productId, Utc = utc, Store = store };
+            w.Granted[transactionId] = record;
             w.UpdatedUtc = utc;
-            diamonds = pack.Diamonds;
+            if (product.Type == ProductType.NonConsumable && StoreCatalog.Owns(w, product.Id)) return GrantOutcome.AlreadyGranted;
+            w.Diamonds = Sum(w.Diamonds, product.Shards);
+            w.Tickets = Sum(w.Tickets, product.Tickets);
+            record.Diamonds = Math.Max(0, product.Shards);
+            record.Tickets = Math.Max(0, product.Tickets);
+            record.Cosmetics = product.Cosmetics.Where(c => !string.IsNullOrEmpty(c) && w.Cosmetics.Add(c)).ToArray();
+            if (product.Type == ProductType.NonConsumable) record.Ownership = w.Owned.Add(product.Id);
+            diamonds = record.Diamonds;
             return GrantOutcome.Granted;
         }
 
@@ -110,16 +132,20 @@ namespace GridGame.Meta
             return true;
         }
 
-        /// <summary>A granted purchase was refunded: takes its Diamonds back, but only what's still in the wallet (never
-        /// below zero, never touching any save's gold). Idempotent; an unknown transaction does nothing. Returns the
-        /// Diamonds taken.</summary>
+        /// <summary>A granted purchase was refunded: takes its Diamonds and Summon Tickets back, but only what's still in the
+        /// wallet (never below zero, never touching any save's gold), and the cosmetics and ownership it granted.
+        /// Idempotent; an unknown transaction does nothing. Returns the Diamonds taken.</summary>
         public static int Refund(AccountWallet w, string transactionId)
         {
             if (!Has(w, transactionId)) return 0;
             var r = w.Granted[transactionId];
             if (r.Refunded) return 0;
+            w.Normalize();
             int take = Math.Min(Math.Max(0, r.Diamonds), Math.Max(0, w.Diamonds));
             w.Diamonds -= take;
+            w.Tickets -= Math.Min(Math.Max(0, r.Tickets), w.Tickets);
+            foreach (var c in r.Cosmetics ?? Array.Empty<string>()) w.Cosmetics.Remove(c);
+            if (r.Ownership) w.Owned.Remove(r.ProductId);
             r.Refunded = true;
             r.ClawedBack = take;
             return take;
