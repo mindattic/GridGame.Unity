@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Tutorial Drills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Tutorial Drills</h1>
+    <p class="sub">Today The Tithe Moors I carries all 18 coach-mark lessons (<code>BattleScreen.Tutorial.cs</code>) on one fixed seed with <code>TutorialSceneCommand</code> set pieces (GG-T539, GG-T542, GG-T731). This proposal splits them across five short drill levels, three or four lessons each, before the campaign starts. The Tithe Moors I then becomes the first real stage. Design only (GG-T1315); the stages are built in GG-T1374.</p>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Drills"></nav>
+
+  <div class="main">
+    <section class="board-col">
+      <div class="wave-bar" id="waves" role="tablist" aria-label="Waves"></div>
+      <div class="board" id="board" aria-label="Drill board, 6 by 8"></div>
+      <div class="legend">
+        <span><i class="k hero"></i>Hero (by role)</span>
+        <span><i class="k foe"></i>Foe of this wave</span>
+        <span><i class="k block"></i>Rock (StageDef.Blocks)</span>
+        <span><i class="k ghost"></i>Scene prop, only if needed</span>
+      </div>
+    </section>
+    <aside>
+      <div>
+        <div class="kicker" id="dkicker"></div>
+        <h2 id="dtitle"></h2>
+        <p id="dpitch"></p>
+      </div>
+      <div>
+        <h3>Lesson order</h3>
+        <ol class="lessons" id="lessons"></ol>
+      </div>
+      <div>
+        <h3>Stage data</h3>
+        <dl class="facts" id="facts"></dl>
+      </div>
+    </aside>
+  </div>
+
+  <section class="panel">
+    <h2>All 18 lessons, mapped</h2>
+    <p class="m">Today's order on The Tithe Moors I on the left; the drill and its place in it on the right. Every lesson keeps its id, popup, marks, Done test and scene. Only where it runs changes.</p>
+    <div class="scroll"><table class="map" id="map"></table></div>
+  </section>
+
+  <section class="panel two">
+    <div>
+      <h2>Rules for every drill</h2>
+      <ul class="rules" id="rules"></ul>
+    </div>
+    <div>
+      <h2>Data shape</h2>
+      <pre id="json"></pre>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Open questions for the owner</h2>
+    <ul class="rules" id="questions"></ul>
+  </section>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
