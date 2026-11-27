@@ -118,6 +118,7 @@ namespace GridGame.Core.Rules
                 case Brain.Stalker: return "Slips past the front line to reach your casters";
                 case Brain.Sentinel: return "Never moves";
                 case Brain.Relentless: return "Never retreats, whatever its wounds";
+                case Brain.Flee: return "Bolts from every hero, never cornered by choice";
                 default: return "Closes in on its prey";
             }
         }
@@ -163,6 +164,7 @@ namespace GridGame.Core.Rules
             {
                 case Brain.Scavenger: return 0.5f;
                 case Brain.Berserker: case Brain.Relentless: case Brain.Bomber: case Brain.Sentinel: return -1f;
+                case Brain.Flee: return 2f; // GG-T1777: always below it, so it always runs
                 default: return BattleConfig.RetreatHpThreshold;
             }
         }

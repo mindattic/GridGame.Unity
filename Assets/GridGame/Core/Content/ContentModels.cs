@@ -28,6 +28,8 @@ namespace GridGame.Core.Content
     {
         Hunter, Pack, Ambusher, Skirmisher, Kiter, Guardian, Berserker, Scavenger, Trapper, Sluggish,
         Hopper, Blinker, Burrower, Bomber, Medic, Commander, Duelist, Stalker, Sentinel, Relentless,
+        /// <summary>GG-T1777: game that always runs (the deer) - every step breaks contact, as a wounded foe's does.</summary>
+        Flee,
     }
 
 

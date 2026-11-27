@@ -3077,5 +3077,23 @@
         "Max": 1
       }
     ]
+  },
+  {
+    "Id": "deer",
+    "CoinsMin": 0,
+    "CoinsMax": 0,
+    "Entries": []
+  },
+  {
+    "Id": "buffalo",
+    "CoinsMin": 0,
+    "CoinsMax": 0,
+    "Entries": []
+  },
+  {
+    "Id": "boar",
+    "CoinsMin": 0,
+    "CoinsMax": 0,
+    "Entries": []
   }
 ]

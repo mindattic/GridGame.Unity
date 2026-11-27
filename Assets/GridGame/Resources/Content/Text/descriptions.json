@@ -630,6 +630,22 @@
         "long": "Years of quiet training forged a will that moves faster than thought."
       }
     },
+    "class:boar": {
+      "key": "class:boar",
+      "id": "description-class-boar",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:059b3c63b00bbb53440c69ddb8e86c92a60c6ff498244b7517e766d9ad307872",
+      "about": [
+        "class-boar"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A bristled wild boar with yellowed tusks.",
+        "long": "Forest boar root under the oaks and charge anything that comes too close. Hunters prize the meat and respect the tusks."
+      }
+    },
     "class:bonepile": {
       "key": "class:bonepile",
       "id": "description-class-bonepile",
@@ -660,6 +676,22 @@
       "payload": {
         "short": "A flexible fighter with no single defining specialty.",
         "long": "Walks many roads, never lost for lack of a single path."
+      }
+    },
+    "class:buffalo": {
+      "key": "class:buffalo",
+      "id": "description-class-buffalo",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3021e15c57ff41be3d262a6842117b76e2a9dc426098147da475b0028ab19897",
+      "about": [
+        "class-buffalo"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A shaggy buffalo, head low, breath steaming.",
+        "long": "Plains buffalo graze in herds and fear little. Startle one and it charges, and no shove, pull or swap will turn its bulk."
       }
     },
     "class:captain": {
@@ -1140,6 +1172,22 @@
       "payload": {
         "short": "A stalwart defender that anchors the line and absorbs pressure.",
         "long": "Built on vows and iron patience, they stand where others fall back."
+      }
+    },
+    "class:deer": {
+      "key": "class:deer",
+      "id": "description-class-deer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:437868ca0632236ad323f125b2f483c89be114f4a0706df143fbeed3a645b7d8",
+      "about": [
+        "class-deer"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A red deer, ears turned to every sound, ready to bolt.",
+        "long": "The valley's deer graze the verges of the road and run at the first footfall. A hunter who means to eat tonight must corner one before it clears the board."
       }
     },
     "class:defender": {
