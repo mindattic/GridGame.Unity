@@ -66,6 +66,79 @@ namespace GridGame.App
         }
     }
 
+    /// <summary>The age question and the parental gate (§25.18.1, GG-T1437/GG-T1559): modal veils on the overlay, named like
+    /// <see cref="Confirm"/>'s so Android Back cancels them and a navigation clears them.</summary>
+    public static class SpendGate
+    {
+        private const string VeilName = "confirm-veil";
+        private static readonly System.Random Rng = new System.Random();
+
+        private static (VisualElement veil, VisualElement window, Action cancel) Veil(string question, string name)
+        {
+            var veil = Ui.El("fill veil col center", GameApp.I.Overlay);
+            veil.name = VeilName;
+            veil.pickingMode = PickingMode.Position;
+            var w = Ui.Window(null, veil);
+            w.name = name;
+            w.style.width = Length.Percent(76);
+            Ui.Heading(question, w).style.whiteSpace = WhiteSpace.Normal;
+            Action cancel = () => veil.RemoveFromHierarchy();
+            veil.userData = cancel;
+            return (veil, w, cancel);
+        }
+
+        /// <summary>Asks the wallet's age band once, stores and writes it, then runs <paramref name="then"/>. Cancel asks again
+        /// next purchase.</summary>
+        public static void AskAge(AccountWallet wallet, Action then)
+        {
+            var (veil, w, cancel) = Veil("Before your first purchase: how old are you?", "age-question");
+            var row = Ui.El("col", w);
+            row.style.marginTop = Space.S16;
+            foreach (AgeBand band in Enum.GetValues(typeof(AgeBand)))
+            {
+                var b = band;
+                Ui.Button(SpendLimits.BandName(b), () =>
+                {
+                    veil.RemoveFromHierarchy();
+                    wallet.AgeBand = b;
+                    DiamondExchange.WalletDirty = true;
+                    GameApp.I.PersistWallet();
+                    then?.Invoke();
+                }, "btn--primary", row).name = "age-" + b.ToString().ToLowerInvariant();
+            }
+            var foot = Ui.El("kit-footer", w);
+            foot.style.justifyContent = Justify.FlexEnd;
+            foot.style.marginTop = Space.S16;
+            RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, foot).name = "confirm-no";
+        }
+
+        /// <summary>The parental gate: a multiplication a young child can't easily answer. The right product runs
+        /// <paramref name="onPass"/>; a wrong one closes the gate and nothing happens.</summary>
+        public static void Parental(Action onPass)
+        {
+            var options = SpendLimits.GateQuestion(Rng, out int a, out int b);
+            int answer = a * b;
+            var (veil, w, cancel) = Veil($"Ask a grown-up. What is {a} × {b}?", "parental-gate");
+            var row = Ui.El("kit-footer", w);
+            row.style.marginTop = Space.S16;
+            foreach (var o in options)
+            {
+                int pick = o;
+                Ui.Button(pick.ToString(), () =>
+                {
+                    veil.RemoveFromHierarchy();
+                    if (pick == answer) { onPass?.Invoke(); return; }
+                    GameApp.I.Toast("That's not right. Ask a grown-up to help.", 2.5f);
+                    GameApp.I.Audio?.Sfx("ui.error");
+                }, null, row).name = "gate-answer-" + pick;
+            }
+            var foot = Ui.El("kit-footer", w);
+            foot.style.justifyContent = Justify.FlexEnd;
+            foot.style.marginTop = Space.S16;
+            RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, foot).name = "confirm-no";
+        }
+    }
+
     /// <summary>
     /// The Diamond Store (§25.18.1, GG-T455): the balance, the gold exchange (pick an amount, see the gold, exchange at once)
     /// and the real-money packs at the flat 100 Diamonds = $1.00. Reached from Camp's Diamonds row and from every Diamond
@@ -239,6 +312,22 @@ namespace GridGame.App
                 Show(PurchaseResult.Of(PurchaseKind.Unavailable, store.Status, pack.ProductId));
                 return;
             }
+            // GG-T1559 (§25.18.1): the age band once per wallet, then the monthly limit, then an under-13's parental gate.
+            var wallet = DiamondExchange.Wallet;
+            if (SpendLimits.NeedsAge(wallet)) { SpendGate.AskAge(wallet, () => Buy(store, pack)); return; }
+            var refusal = SpendLimits.Refusal(wallet, pack, DateTime.UtcNow);
+            if (refusal != null)
+            {
+                Show(PurchaseResult.Of(PurchaseKind.Unavailable, refusal, pack.ProductId));
+                return;
+            }
+            if (SpendLimits.NeedsParentalGate(wallet)) { SpendGate.Parental(() => Purchase(store, pack)); return; }
+            Purchase(store, pack);
+        }
+
+        private void Purchase(IDiamondStore store, DiamondPack pack)
+        {
+            if (DiamondStores.InFlight != null) return;
             DiamondStores.InFlight = pack.ProductId;
             last = null;
             App.Audio.Sfx("ui.select");

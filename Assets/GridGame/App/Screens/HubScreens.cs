@@ -2028,6 +2028,30 @@ namespace GridGame.App
             Ui.Note(text, parent).name = "settings-turn-mode-text";
         }
 
+        /// <summary>A parent passed the gate this visit, so the limit cycles freely until Settings closes.</summary>
+        private bool limitUnlocked;
+
+        /// <summary>The monthly spending limit (§25.18.1, GG-T1559): the wallet's limit and this month's spend, cycled through
+        /// <see cref="SpendLimits.Choices"/> behind the parental gate unless the wallet answered adult.</summary>
+        private void SpendingLimitRow(AccountWallet wallet, VisualElement parent)
+        {
+            void Cycle()
+            {
+                wallet.MonthlyLimitCents = SpendLimits.Next(wallet.MonthlyLimitCents);
+                DiamondExchange.WalletDirty = true;
+                App.PersistWallet();
+                Refresh();
+            }
+            string spent = SpendLimits.Money(SpendLimits.SpentCents(wallet, DateTime.UtcNow));
+            var row = Ui.MenuRow("Spending limit", $"{SpendLimits.Describe(wallet)} · {spent} this month", () =>
+            {
+                if (limitUnlocked || !SpendLimits.LimitGated(wallet)) Cycle();
+                else SpendGate.Parental(() => { limitUnlocked = true; Cycle(); });
+            }, parent);
+            row.name = "settings-spending-limit";
+            row.KindIcon(RowKind.Settings);
+        }
+
         protected override void BuildBody(VisualElement body)
         {
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
@@ -2142,6 +2166,7 @@ namespace GridGame.App
             var importRow = Ui.MenuRow("Import save", "Paste code", () => App.Router.Push(new SaveImportScreen()), w);
             importRow.name = "settings-import-save";
             importRow.KindIcon(RowKind.Save);
+            if (Features.DiamondStore && DiamondExchange.Wallet != null) SpendingLimitRow(DiamondExchange.Wallet, w);
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
