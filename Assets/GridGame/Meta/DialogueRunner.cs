@@ -159,7 +159,7 @@ namespace GridGame.Meta
             Node = n;
             var sp = Def.Speakers.FirstOrDefault(x => string.Equals(x.Id, n.Speaker, StringComparison.OrdinalIgnoreCase));
             var (name, portrait) = Resolve(sp);
-            Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = n.Text, Commander = sp?.Class == Commander.Token });
+            Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = Commander.Fill(n.Text, s), Commander = sp?.Class == Commander.Token });
             foreach (var e in n.Effects) Apply(e, n.Id);
         }
 
@@ -168,7 +168,7 @@ namespace GridGame.Meta
         public (string name, string portrait) Resolve(DialogueSpeaker sp)
         {
             if (sp == null) return ("", null);
-            if (sp.Class == Commander.Token) return (sp.Name ?? Commander.Name, sp.Portrait ?? Commander.Portrait);
+            if (sp.Class == Commander.Token) return (sp.Name ?? Commander.Name(s), sp.Portrait ?? Commander.Portrait);
             string cls = sp.Class == "$lead" ? s.Party.FirstOrDefault() : Who(sp.Class);
             var def = c.TryClass(cls);
             return (sp.Name ?? def?.Name ?? sp.Id, sp.Portrait ?? def?.Id);

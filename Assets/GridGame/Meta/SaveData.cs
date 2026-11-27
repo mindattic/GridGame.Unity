@@ -24,10 +24,12 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 20;
+        public const int CurrentVersion = 21;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
+        /// <summary>The player's own name (GG-T1342): what <see cref="Commander.Name"/> and the {commander} text token say.</summary>
+        public string CommanderName;
         public DateTime CreatedUtc = DateTime.UtcNow;
         public DateTime UpdatedUtc = DateTime.UtcNow;
         public double PlaySeconds;
@@ -735,8 +737,9 @@ namespace GridGame.Meta
 
         /// <summary>Upgrades an older save in place. Unknown future versions are rejected. <paramref name="c"/>
         /// is optional (version-shape fixups below don't need content) but drives the GG-T52 proficiency
-        /// grandfather clause at the end: without it that step is simply skipped.</summary>
-        public static SaveData Migrate(SaveData s, ContentDb c = null)
+        /// grandfather clause at the end: without it that step is simply skipped. <paramref name="profileName"/> names the
+        /// Commander of a save from before v21.</summary>
+        public static SaveData Migrate(SaveData s, ContentDb c = null, string profileName = null)
         {
             if (s == null) return null;
             if (s.Version > SaveData.CurrentVersion) throw new SaveTooNewException(s.Version);
@@ -925,6 +928,13 @@ namespace GridGame.Meta
             if (s.Version < 19) s.Version = 19;
             // GG-T1292: Trust and cohesion (§25.20). An older save has neither, so every hero and pair starts at 0.
             if (s.Version < 20) s.Version = 20;
+            if (s.Version < 21)
+            {
+                // GG-T1342: the Commander's name. An older save takes its profile's name, else the plain title.
+                if (string.IsNullOrWhiteSpace(s.CommanderName))
+                    s.CommanderName = string.IsNullOrWhiteSpace(profileName) ? Commander.Fallback : profileName.Trim();
+                s.Version = 21;
+            }
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
