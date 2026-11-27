@@ -1,0 +1,65 @@
+/* Night-sky review sheet: stacked panels, the region table carries a to-scale Moon/Manalith glyph. */
+*,*::before,*::after{box-sizing:border-box}
+:root {
+  --bg: #eef0f6;
+  --panel: #ffffff;
+  --line: #d5d8e6;
+  --fg: #1b1d2b;
+  --muted: #5d6280;
+  --accent: #5b3fd6;
+  --flush: #b8324a;
+  --moon: #c9ccd8;
+  --wait: #9a6400;
+  --wait-bg: #fff1d6;
+  --display: "Marcellus", Georgia, serif;
+  --body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e0f1a; --panel: #171927; --line: #2b2e45; --fg: #e5e6f0; --muted: #9a9ebb;
+  --accent: #a28cff; --flush: #ff6b84; --moon: #e8e9f0; --wait: #ffcf6b; --wait-bg: #3a2c0c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e0f1a; --panel: #171927; --line: #2b2e45; --fg: #e5e6f0; --muted: #9a9ebb;
+  --accent: #a28cff; --flush: #ff6b84; --moon: #e8e9f0; --wait: #ffcf6b; --wait-bg: #3a2c0c; color-scheme: dark }
+html, body { background: var(--bg); color: var(--fg); margin: 0; }
+body { font-family: var(--body); font-size: 15px; line-height: 1.55; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 48px; }
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; color: var(--muted); margin: 0; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(30px, 5vw, 48px); margin: 4px 0 0; text-wrap: balance; }
+h2 { font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--accent); margin: 0 0 8px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; font-weight: 700; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 70ch; }
+.note { color: var(--muted); margin: 0 0 12px; max-width: 80ch; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; min-width: 0; }
+.prose { display: grid; gap: 10px; max-width: 72ch; }
+.prose p { margin: 0; }
+.decisions, .chapters { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+.decision { border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; min-width: 0; }
+.dhead { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; margin-bottom: 8px; }
+.dhead h3 { flex: 1 1 12ch; }
+.did { font-family: var(--mono); font-weight: 600; color: var(--accent); }
+.pill { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--wait); background: var(--wait-bg); border-radius: 999px; padding: 1px 9px; }
+.decision dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; }
+.decision dt { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.decision dd { margin: 0; min-width: 0; }
+.decision dd.src { font-size: 13px; color: var(--muted); }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 900px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+tbody th { font-weight: 700; white-space: nowrap; }
+tr.post th { color: var(--accent); }
+.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.n, th.n { text-align: right; }
+.mono { font-family: var(--mono); font-size: 12px; }
+.skycell { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+.sky { display: inline-flex; align-items: flex-end; gap: 3px; height: 48px; width: 58px; }
+.lith { display: block; border-radius: 46% 54% 40% 60% / 55% 45% 55% 45%; background: radial-gradient(circle at 35% 35%, var(--accent), var(--flush)); flex: none; }
+.moon { display: block; border-radius: 50%; background: var(--moon); border: 1px solid var(--line); flex: none; }
+.chapter { border-left: 3px solid var(--line); padding: 4px 0 4px 12px; min-width: 0; }
+.chapter.mark { border-left-color: var(--flush); }
+.chead { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.slot { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); }
+.chapter p { margin: 4px 0 0; }
+.chapter .meta { font-size: 13px; color: var(--muted); }
+.chapter .who { font-size: 14px; }
