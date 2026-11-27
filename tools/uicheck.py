@@ -17,7 +17,9 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import atexit  # noqa: E402
 import harness as h  # noqa: E402
+atexit.register(h._quit_launched)  # GG-T1227: harness registers this only under its own __main__
 
 results = []
 CAMPAIGN = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),

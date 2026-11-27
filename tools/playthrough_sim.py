@@ -30,7 +30,9 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import atexit
 import harness as H
+atexit.register(H._quit_launched)  # GG-T1227: no-op under --keep (main clears H._launched)
 from harness import call
 
 RUN = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "playthrough"

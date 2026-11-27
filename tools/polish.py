@@ -146,7 +146,9 @@ def sweep_at(h, run, tag, width, height):
 def live_sweep(tally, out, quick):
     """The layout audit on every screen at every `harness.py aspects` shape (9:23 -> 3:4), or the default window
     only with --quick. Returns per-aspect tallies so dimension C can be scored at its worst aspect."""
+    import atexit
     import harness as h
+    atexit.register(h._quit_launched)  # GG-T1227: harness registers this only under its own __main__; an exception here must not leave GridGame.exe running
     run = os.path.relpath(out, os.path.join(ROOT, "artifacts")).replace("\\", "/")
     shapes = [("default", 585, 1266)] if quick else [(label, int(round(1200 * a)), 1200) for label, a in h.ASPECTS]
     per_aspect, shots, fills, errors = {}, {}, {}, []
