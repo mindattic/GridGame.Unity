@@ -1,0 +1,29 @@
+*, *::before, *::after { box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14; --panel: #151821; --line: #2a2f3d; --fg: #e6e8ee; --muted: #9097a8; --accent: #7fd1ff; --hot: #ff7a6b;
+  --mono: ui-monospace, Consolas, monospace;
+}
+html, body { background: var(--bg); color: var(--fg); margin: 0; }
+body { font: 14px/1.5 "Segoe UI", system-ui, sans-serif; padding: 20px max(16px, env(safe-area-inset-left, 0px)) 40px; }
+.wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 14px; }
+h1 { font-size: clamp(22px, 3.2vw, 30px); letter-spacing: .04em; text-transform: uppercase; margin: 0; }
+.sub { color: var(--muted); margin: 4px 0 0; max-width: 80ch; }
+.controls { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: 13px; align-items: center; }
+.key i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; vertical-align: -1px; }
+.key .new, .strip .n { background: var(--accent); }
+.key .gap, .strip .g { background: var(--hot); }
+details { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+details.flag { border-color: var(--hot); }
+summary { display: grid; grid-template-columns: 150px minmax(0, 1fr) 90px; gap: 10px; align-items: center; padding: 8px 12px; cursor: pointer; }
+summary .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+summary .ct { color: var(--muted); font-family: var(--mono); font-size: 12px; text-align: right; }
+.strip { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 1px; height: 14px; }
+.strip span { background: #1f2430; border-radius: 1px; }
+.strip .g.n { background: linear-gradient(var(--accent) 50%, var(--hot) 50%); }
+.body { padding: 4px 12px 12px; font-size: 13px; }
+.body ol { margin: 0; padding: 0; list-style: none; columns: 2 260px; }
+.body li { break-inside: avoid; }
+.body b { font-family: var(--mono); color: var(--muted); font-weight: 400; display: inline-block; width: 46px; }
+.body .gp { color: var(--hot); }
+@media (max-width: 600px) { summary { grid-template-columns: minmax(0, 1fr) 70px; } summary .strip { grid-column: 1 / -1; grid-row: 2; } }
