@@ -1,0 +1,25 @@
+THIRD-PARTY NOTICES
+
+GridGame includes software and assets from the parties below, used under the licenses named. Art, music and sound credits are on the Credits screen.
+
+UNITY
+Made with Unity. Unity engine, Input System, UI Toolkit, In-App Purchasing and Test Framework packages are copyright Unity Technologies, used under the Unity Terms of Service and the Unity Companion License (https://unity.com/legal).
+
+NEWTONSOFT JSON (com.unity.nuget.newtonsoft-json)
+Copyright (c) 2007 James Newton-King
+Licensed under the MIT License:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+FONTS
+M PLUS Rounded 1c, Outfit, Cinzel, Noto Sans and Noto Sans Symbols 2 are licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+
+MUSIC
+Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0 (http://creativecommons.org/licenses/by/4.0/). Loudness-normalized for in-game playback.
+
+ICONS
+Status, ability and item icons are pixel-art renditions of silhouettes from game-icons.net by Lorc, Delapouite, Carl Olsen, Zeromancer, Skoll, sbed, darkzaitzev, faithtoken and contributors, licensed under Creative Commons Attribution 3.0 (https://creativecommons.org/licenses/by/3.0/).

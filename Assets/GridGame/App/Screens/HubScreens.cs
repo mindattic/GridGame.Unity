@@ -2294,6 +2294,10 @@ namespace GridGame.App
             importRow.KindIcon(RowKind.Save);
             if (Features.DiamondStore && DiamondExchange.Wallet != null) SpendingLimitRow(DiamondExchange.Wallet, w);
             DeleteAllDataRow(w);
+            // GG-T1330: version, legal links and third-party notices.
+            var about = Ui.MenuRow("About", "", () => App.Router.Push(new AboutScreen()), w);
+            about.name = "settings-about";
+            about.KindIcon(RowKind.Settings);
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);

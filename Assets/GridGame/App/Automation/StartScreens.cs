@@ -17,7 +17,7 @@ namespace GridGame.App.Automation
         {
             screen = null;
             var app = GameApp.I;
-            bool needsSave = id != "title" && id != "credits" && id != "newgame" && id != "load" && id != "profiles" && id != "newprofile";
+            bool needsSave = id != "title" && id != "credits" && id != "about" && id != "newgame" && id != "load" && id != "profiles" && id != "newprofile";
             if (needsSave && app.Save == null)
             {
                 app.Save = Meta.Progression.NewGame(app.Content, "Preview");
@@ -53,6 +53,7 @@ namespace GridGame.App.Automation
                 case "bestiary": screen = new BestiaryScreen(); break;
                 case "settings": screen = new SettingsScreen(); break;
                 case "credits": screen = new CreditsScreen(); break;
+                case "about": screen = new AboutScreen(); break; // GG-T1330
                 case "newgame": screen = new SaveSlotScreen(true); break;
                 case "load": screen = new SaveSlotScreen(false); break;
                 case "profiles": screen = new ProfileSelectScreen(); break; // GG-T99
