@@ -1668,6 +1668,7 @@ namespace GridGame.App
                 unplayedCasts.Clear();
                 actingEntry = -1;
                 pendingItemUser = -1; pendingItemId = null;
+                ResetPincerBeats(); ResetRampage(); EndEnemyBeats(); // GG-T1233: tempo and trap drawing back to the state's own
                 RefreshRecoverView();
                 playing = false;
                 SyncAll();
