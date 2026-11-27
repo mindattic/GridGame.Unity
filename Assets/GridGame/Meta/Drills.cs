@@ -19,6 +19,19 @@ namespace GridGame.Meta
 
         public static bool IsCleared(SaveData s, string stageId) => s?.ClearedDrills != null && stageId != null && s.ClearedDrills.Contains(stageId);
 
+        /// <summary>GG-T1398: the save flag Skip tutorial in a drill leaves: the drills were skipped, not cleared.</summary>
+        public const string SkippedFlag = "drills:skipped";
+
+        public static bool Skipped(SaveData s) => s?.Flags != null && s.Flags.Contains(SkippedFlag);
+
+        /// <summary>GG-T1398: the drills are skipped as a set; the onboarding moves on to Camp's first visit.</summary>
+        public static void Skip(SaveData s)
+        {
+            if (s == null) return;
+            s.Flags.Add(SkippedFlag);
+            Onboarding.Begin(s, OnboardingStep.HubIntro);
+        }
+
         /// <summary>Marks every drill cleared: a save that finished the tutorial, and Test Mode.</summary>
         public static void MarkAllCleared(ContentDb c, SaveData s)
         {

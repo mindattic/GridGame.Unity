@@ -251,6 +251,18 @@ namespace GridGame.App
             SyncPanel();
         }
 
+        /// <summary>GG-T1398: Skip tutorial (confirmed, lessons already off) in a drill leaves it for Camp's first visit;
+        /// the drills count as skipped and the battle is never committed.</summary>
+        private void SkipDrills()
+        {
+            FinishTutorial();
+            if (App.Save == null || !Drills.IsDrill(State?.Stage)) return;
+            Drills.Skip(App.Save);
+            App.Persist();
+            App.Audio.Sfx("ui.cancel");
+            App.Router.ResetTo(new HubScreen());
+        }
+
         private void AdvanceTutorial(int to)
         {
             if (!TutorialActive || to <= TutorialStep) return;
@@ -487,7 +499,7 @@ namespace GridGame.App
                 Hold = CoachHold,
                 Finished = how =>
                 {
-                    if (how == CoachEnd.TurnedOff) FinishTutorial();
+                    if (how == CoachEnd.TurnedOff) SkipDrills();
                     else if (how == CoachEnd.Cancelled) drillIntroShown = false;
                 },
             });
@@ -498,7 +510,7 @@ namespace GridGame.App
         private void TutorialCoachEnded(int step, CoachEnd how, bool hadMarks)
         {
             DisarmCoach();
-            if (how == CoachEnd.TurnedOff) { FinishTutorial(); return; }
+            if (how == CoachEnd.TurnedOff) { SkipDrills(); return; }
             if (how == CoachEnd.Cancelled) { coachPopupFor = -1; return; }
             if (TutorialStep != step) return;
             var l = Lessons[step];
@@ -666,7 +678,7 @@ namespace GridGame.App
             Coach.Run(new CoachLesson
             {
                 Id = id, Kicker = "New", Title = title, Text = text, Image = "Tutorial/" + id.Substring("battle-".Length),
-                Steps = marks, Hold = CoachHold, Finished = how => { DisarmCoach(); if (how == CoachEnd.TurnedOff) FinishTutorial(); },
+                Steps = marks, Hold = CoachHold, Finished = how => { DisarmCoach(); if (how == CoachEnd.TurnedOff) SkipDrills(); },
             });
         }
 
