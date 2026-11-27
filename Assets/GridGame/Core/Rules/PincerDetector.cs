@@ -124,7 +124,8 @@ namespace GridGame.Core.Rules
         /// <summary>
         /// Supporters (§1.2.3, GG-T187): every living ally (not the partner) connected to <paramref name="attacker"/> by an
         /// uninterrupted cardinal chain of allies — any gap breaks it — whose distance along that chain (1 = adjacent) is
-        /// within its class's <see cref="SupportDef.Range"/>. Every ally is a link, whatever its own range.
+        /// within its class's <see cref="SupportDef.Range"/> (+<see cref="BattleConfig.BondedReachBonus"/> when bonded to
+        /// <paramref name="attacker"/> at <see cref="BattleConfig.BondedReachTier"/>+, §25.20). Every ally is a link, whatever its own range.
         /// <paramref name="links"/> (optional) records which unit each one connects through.
         /// </summary>
         public static List<Unit> FindSupporters(BattleState s, Unit attacker, Unit partner, Dictionary<Unit, Unit> links = null)
@@ -149,6 +150,7 @@ namespace GridGame.Core.Rules
                     queue.Enqueue(u);
                     if (links != null) links[u] = cur;
                     int range = SupportOf(u).Range;
+                    if (range > 0 && BattleRunner.CohesionTier(s, u, attacker) >= BattleConfig.BondedReachTier) range += BattleConfig.BondedReachBonus;
                     if (range <= 0 || d <= range) list.Add(u);
                 }
             }

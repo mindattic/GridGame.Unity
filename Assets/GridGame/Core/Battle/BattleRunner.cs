@@ -756,10 +756,13 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>§25.20 (GG-T1308): the cohesion tier of a and b from <see cref="BattleSetup.Cohesion"/>; 0 when not a bonded pair.</summary>
-        private int CohesionTier(Unit a, Unit b)
+        private int CohesionTier(Unit a, Unit b) => CohesionTier(S, a, b);
+
+        /// <summary><see cref="CohesionTier(Unit, Unit)"/> on any state (the supporter search reads it too, GG-T1309).</summary>
+        internal static int CohesionTier(BattleState s, Unit a, Unit b)
         {
             string key = PairKey(a, b);
-            return key != null && S.Cohesion != null && S.Cohesion.TryGetValue(key, out int t) ? Math.Max(0, t) : 0;
+            return key != null && s?.Cohesion != null && s.Cohesion.TryGetValue(key, out int t) ? Math.Max(0, t) : 0;
         }
 
         private static bool FightsTogether(Unit u) =>

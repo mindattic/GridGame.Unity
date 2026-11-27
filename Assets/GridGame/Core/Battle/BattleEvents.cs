@@ -255,6 +255,9 @@ namespace GridGame.Core.Battle
         public string AbilityId; public string BuffId;
         /// <summary>GG-T298: the effect's magnitude as played (crit fraction, haste/pushback seconds, chance, power).</summary>
         public float Amount;
+        /// <summary>§25.20 (GG-T1309): the supporter and attacker's cohesion tier; 0 = not bonded. At
+        /// <see cref="BattleConfig.BondedSupportTier"/>+ <see cref="Amount"/> already carries the bonded bonus.</summary>
+        public int BondTier;
         public List<int> Targets = new List<int>();
         public override string ToString() => $"Support {SupporterId}->{AttackerId} {Effect} '{Label}' [{string.Join(",", Targets)}]";
     }

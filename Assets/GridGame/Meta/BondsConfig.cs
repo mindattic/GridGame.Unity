@@ -44,11 +44,11 @@ namespace GridGame.Meta
         /// <summary>Bonded pincer partners (the two ends) deal this much more damage per cohesion tier.</summary>
         public const float PincerDamagePerCohesionTier = GridGame.Core.Battle.BattleConfig.PincerDamagePerCohesionTier;
         /// <summary>From this cohesion tier a supporter's reach is +<see cref="BondedReachBonus"/> toward its partner.</summary>
-        public const int BondedReachTier = 3;
-        public const int BondedReachBonus = 1;
+        public const int BondedReachTier = GridGame.Core.Battle.BattleConfig.BondedReachTier;
+        public const int BondedReachBonus = GridGame.Core.Battle.BattleConfig.BondedReachBonus;
         /// <summary>From this cohesion tier heals, shields and buffs one partner gives the other are +<see cref="BondedSupportBonus"/>.</summary>
-        public const int BondedSupportTier = 4;
-        public const float BondedSupportBonus = 0.10f;
+        public const int BondedSupportTier = GridGame.Core.Battle.BattleConfig.BondedSupportTier;
+        public const float BondedSupportBonus = GridGame.Core.Battle.BattleConfig.BondedSupportBonus;
         /// <summary>Cohesion tier that unlocks a pair's authored Duo support.</summary>
         public const int DuoTier = 5;
 

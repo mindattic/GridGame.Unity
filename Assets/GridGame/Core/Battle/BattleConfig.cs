@@ -232,6 +232,14 @@ namespace GridGame.Core.Battle
         /// <summary>A hero pincer whose two attackers are bonded deals this much more damage per cohesion tier
         /// (<see cref="BattleSetup.Cohesion"/>).</summary>
         public const float PincerDamagePerCohesionTier = 0.03f;
+        /// <summary>GG-T1309: from this cohesion tier with the attacker it would support, a supporter reaches
+        /// <see cref="BondedReachBonus"/> tiles further along the chain (<see cref="Rules.PincerDetector.FindSupporters"/>).</summary>
+        public const int BondedReachTier = 3;
+        public const int BondedReachBonus = 1;
+        /// <summary>GG-T1309: from this cohesion tier with its attacker, a supporter's support magnitude is
+        /// ×(1 + <see cref="BondedSupportBonus"/>).</summary>
+        public const int BondedSupportTier = 4;
+        public const float BondedSupportBonus = 0.10f;
 
         // ── Trust payoffs (§25.20, GG-T1581) ─────────────────────────────────────────
         /// <summary>Crit chance (0.02 = +2 points) a hero gains per Trust tier (<see cref="Unit.TrustTier"/>).</summary>

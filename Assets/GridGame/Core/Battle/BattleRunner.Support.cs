@@ -34,9 +34,10 @@ namespace GridGame.Core.Battle
         {
             var attacker = p.AttackerOf(sup);
             if (!attacker.Alive) return;
-            float bonus = Math.Min(SupportDef.MaxCritBonus, Math.Max(0f, def.Magnitude));
+            int bondTier = CohesionTier(sup, attacker);
+            float bonus = Math.Min(SupportDef.MaxCritBonus, Math.Max(0f, def.Magnitude * BondedSupportScale(bondTier)));
             attacker.SupportCritBonus += bonus;
-            var ev = new SupportActionEvent { SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel, Amount = bonus };
+            var ev = new SupportActionEvent { SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel, Amount = bonus, BondTier = bondTier };
             ev.Targets.Add(attacker.Id);
             Emit(ev);
             CreditPair(sup, attacker);
@@ -69,6 +70,8 @@ namespace GridGame.Core.Battle
         {
             var def = PincerDetector.SupportOf(sup);
             var attacker = p.AttackerOf(sup);
+            int bondTier = CohesionTier(sup, attacker);
+            float mag = def.Magnitude * BondedSupportScale(bondTier);
             var targets = new List<Unit>();
             AbilityDef spell = null;
             if (HitsTrapped(def.Effect)) { foreach (var o in p.Opponents) if (o.Alive && !wardedThisPincer.Contains(o)) targets.Add(o); }
@@ -88,7 +91,8 @@ namespace GridGame.Core.Battle
             var ev = new SupportActionEvent
             {
                 SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel,
-                AbilityId = spell?.Id, BuffId = def.Effect == SupportEffect.Status || def.Effect == SupportEffect.Volley ? def.Buff : null, Amount = def.Magnitude,
+                AbilityId = spell?.Id, BuffId = def.Effect == SupportEffect.Status || def.Effect == SupportEffect.Volley ? def.Buff : null, Amount = mag,
+                BondTier = bondTier,
             };
             foreach (var t in targets) ev.Targets.Add(t.Id);
             Emit(ev);
@@ -99,13 +103,13 @@ namespace GridGame.Core.Battle
             switch (def.Effect)
             {
                 case SupportEffect.Strike:
-                    float frac = def.Magnitude > 0f ? def.Magnitude : BattleConfig.SupporterDamageFraction;
+                    float frac = def.Magnitude > 0f ? mag : BattleConfig.SupporterDamageFraction * BondedSupportScale(bondTier);
                     foreach (var target in targets)
                         if (sup.Alive && target.Alive) Strike(sup, target, frac, BlowKind.Support);
                     break;
                 case SupportEffect.Heal:
                     foreach (var t in targets)
-                        if (t.Alive && t.Hp < t.MaxHp) Heal(t, Math.Max(1, (int)Math.Round(t.MaxHp * def.Magnitude)), sup);
+                        if (t.Alive && t.Hp < t.MaxHp) Heal(t, Math.Max(1, (int)Math.Round(t.MaxHp * mag)), sup);
                     break;
                 case SupportEffect.Buff:
                     var buff = C.TryBuff(def.Buff);
@@ -118,22 +122,22 @@ namespace GridGame.Core.Battle
                         }
                     break;
                 case SupportEffect.Haste:
-                    foreach (var t in targets) if (t.Alive) HastenSeconds(t, def.Magnitude, "support:" + sup.Id);
+                    foreach (var t in targets) if (t.Alive) HastenSeconds(t, mag, "support:" + sup.Id);
                     break;
                 case SupportEffect.Mana:
-                    if (team == Team.Hero) AddCharge(Math.Max(1, (int)Math.Round(def.Magnitude * BattleConfig.SupportManaFactor)), sup.Id, "support");
+                    if (team == Team.Hero) AddCharge(Math.Max(1, (int)Math.Round(mag * BattleConfig.SupportManaFactor)), sup.Id, "support");
                     break;
                 case SupportEffect.Cleanse:
                     foreach (var t in targets) RemoveBuffsWhere(t, b => b.Def.Kind == BuffKind.Debuff, "cleansed");
                     break;
                 case SupportEffect.Cast:
                     foreach (var t in targets)
-                        if (sup.Alive && t.Alive && !S.IsOver) SupportSpellHit(sup, spell, t, def.Magnitude);
+                        if (sup.Alive && t.Alive && !S.IsOver) SupportSpellHit(sup, spell, t, mag);
                     break;
                 case SupportEffect.Status:
                     var status = C.TryBuff(def.Buff);
                     if (status == null) break;
-                    float chance = Math.Min(1f, def.Magnitude);
+                    float chance = Math.Min(1f, mag);
                     foreach (var t in targets)
                         if (t.Alive && (chance >= 1f || S.Rng.Chance(chance))) ApplyBuff(t, status, status.Duration);
                     break;
@@ -143,7 +147,7 @@ namespace GridGame.Core.Battle
                     foreach (var t in targets)
                     {
                         if (!sup.Alive || !t.Alive || S.IsOver) continue;
-                        bool landed = Strike(sup, t, def.Magnitude, BlowKind.Support, thrown: true);
+                        bool landed = Strike(sup, t, mag, BlowKind.Support, thrown: true);
                         if (landed && rider != null && odds > 0f && t.Alive && (odds >= 1f || S.Rng.Chance(odds))) ApplyBuff(t, rider, rider.Duration);
                     }
                     break;
@@ -151,11 +155,15 @@ namespace GridGame.Core.Battle
                     foreach (var t in targets)
                     {
                         push.TryGetValue(t, out var had);
-                        push[t] = had + def.Magnitude;
+                        push[t] = had + mag;
                     }
                     break;
             }
         }
+
+        /// <summary>§25.20 (GG-T1309): a supporter bonded to its attacker at <see cref="BattleConfig.BondedSupportTier"/>+ supports harder.</summary>
+        private static float BondedSupportScale(int bondTier) =>
+            bondTier >= BattleConfig.BondedSupportTier ? 1f + BattleConfig.BondedSupportBonus : 1f;
 
         /// <summary>Effects aimed at the trapped opponents rather than at allies.</summary>
         public static bool HitsTrapped(SupportEffect e) =>
