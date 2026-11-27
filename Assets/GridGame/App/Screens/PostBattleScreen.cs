@@ -309,6 +309,11 @@ namespace GridGame.App
                 {
                     Onboarding.Begin(App.Save, OnboardingStep.HubIntro);
                     App.Persist();
+                    if (App.Settings != null && !App.Settings.DrillsFinished)
+                    {
+                        App.Settings.DrillsFinished = true; // GG-T1645: Start Campaign's New to GridGame? now defaults to Skip
+                        App.SaveSettings();
+                    }
                     StoryBeats.AfterResults(true, stageId);
                 };
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";

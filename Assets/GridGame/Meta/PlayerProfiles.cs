@@ -58,6 +58,8 @@ namespace GridGame.Meta
             public const string UiScale = "uiScale";
             /// <summary>GG-T1618: the first-run commander-name prompt is done; a profile without the key but with save slots counts as done.</summary>
             public const string FirstRunDone = "firstRunDone";
+            /// <summary>GG-T1645: this profile pressed To Camp after the last drill on some slot; Start Campaign then defaults to Skip.</summary>
+            public const string DrillsFinished = "drillsFinished";
         }
 
         /// <summary>The most design px Display → Thumb margin may keep clear (GG-T1222).</summary>
@@ -147,6 +149,7 @@ namespace GridGame.Meta
             d.ThumbMargin = ClampThumbMargin(g.GetInt(Keys.ThumbMargin, d.ThumbMargin));
             d.UiScale = ClampUiScale(g.GetInt(Keys.UiScale, d.UiScale));
             d.FirstRunDone = g.GetBool(Keys.FirstRunDone, hasSaves);
+            d.DrillsFinished = g.GetBool(Keys.DrillsFinished, d.DrillsFinished);
             // GG-T309: {"level": 1..10}. A file from before it still holds the §22.9 preset: map it once (it is
             // rewritten as a level on the next save); a missing block is a new profile, at the default 10.
             var diff = g.GetObject(Keys.Difficulty);
@@ -194,6 +197,7 @@ namespace GridGame.Meta
             g.Set(Keys.ThumbMargin, ClampThumbMargin(s.ThumbMargin));
             g.Set(Keys.UiScale, ClampUiScale(s.UiScale));
             g.Set(Keys.FirstRunDone, s.FirstRunDone);
+            g.Set(Keys.DrillsFinished, s.DrillsFinished);
             var themes = new JsonArray();
             foreach (var t in s.CustomThemes ?? new List<WindowThemeDef>())
                 if (t != null) themes.Add(JsonObject.Parse(t.ToJson()));

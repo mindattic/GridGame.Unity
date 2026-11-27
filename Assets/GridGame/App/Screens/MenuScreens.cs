@@ -373,8 +373,30 @@ namespace GridGame.App
                 App.ApplySettings();
                 App.Persist();
                 // GG-T532: the party picks its looks before the story starts.
-                VariantPicker.ShowPending(() => App.Router.ResetTo(StoryBeats.NewCampaign()));
+                VariantPicker.ShowPending(() => AskDrills(() => App.Router.ResetTo(StoryBeats.NewCampaign())));
             }));
+        }
+
+        /// <summary>GG-T1645: asked once per new campaign, when drills exist: play them, or skip to Camp (every lesson off,
+        /// the drills skipped, <see cref="Drills.Skip"/>). Skip is the default once this profile has finished the drills
+        /// on any slot (<see cref="SettingsSave.DrillsFinished"/>); Android Back answers the default.</summary>
+        private static void AskDrills(Action go)
+        {
+            var c = App.Content;
+            bool any = c.Campaign?.Tutorial?.Any(id => c.TryStage(id) != null) == true;
+            if (!any || DemoMode.Active) { go(); return; }
+            bool veteran = App.Settings?.DrillsFinished == true;
+            void Skip()
+            {
+                Coach.TurnOff(App.Save);
+                Drills.Skip(App.Save);
+                App.Persist();
+                go();
+            }
+            Confirm.Choose("New to GridGame?",
+                veteran ? "You've run the drills before, Commander. Skip them and go straight to Camp, or run them again."
+                        : "A few short drills teach the board before the campaign begins. Skip them if you know the game.",
+                "Play the drills", RowKind.Enter, go, "Skip to Camp", RowKind.Station, Skip, veteran, "newgame-drills");
         }
     }
 
@@ -617,6 +639,31 @@ namespace GridGame.App
             // GG-T738 (§26.7): Cancel leads with the Close cross, the answer with the Confirm check.
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, row).name = "confirm-no";
             RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
+            return veil;
+        }
+
+        /// <summary>GG-T1645: a question with two answers and no Cancel. <paramref name="secondIsDefault"/> picks which one is
+        /// primary and which Android Back answers. It sounds as it opens and fades in, held still under Reduce Motion.</summary>
+        public static VisualElement Choose(string question, string note, string first, RowKind firstKind, Action onFirst,
+            string second, RowKind secondKind, Action onSecond, bool secondIsDefault, string name = null)
+        {
+            var app = GameApp.I;
+            var veil = Ui.El("fill veil col center", app.Overlay);
+            veil.name = VeilName;
+            veil.pickingMode = PickingMode.Position;
+            var w = Ui.Panel(veil, null, false, name);
+            w.style.width = Length.Percent(76);
+            Ui.Heading(question, w).style.whiteSpace = WhiteSpace.Normal;
+            if (!string.IsNullOrEmpty(note)) Ui.Note(note, w);
+            var row = Ui.Actions(w);
+            row.style.justifyContent = Justify.FlexEnd;
+            Action a = () => { veil.RemoveFromHierarchy(); onFirst?.Invoke(); };
+            Action b = () => { veil.RemoveFromHierarchy(); onSecond?.Invoke(); };
+            veil.userData = secondIsDefault ? b : a;
+            RowIcon.IconButton(first, firstKind, a, secondIsDefault ? null : "btn--primary", row).name = "choose-first";
+            RowIcon.IconButton(second, secondKind, b, secondIsDefault ? "btn--primary" : null, row).name = "choose-second";
+            app.Audio.Sfx("ui.select");
+            if (!Tween.Calm) { veil.style.opacity = 0f; app.StartCoroutine(Tween.Fade(veil, 0f, 1f, Timing.Quick)); }
             return veil;
         }
 
@@ -1695,7 +1742,14 @@ namespace GridGame.App
         /// <summary>The first tutorial drill (campaign.json Tutorial, GG-T1374) when its stage exists.</summary>
         private static GameScreen Drill(Func<GameScreen> next)
         {
-            var c = GameApp.I.Content;
+            var app = GameApp.I;
+            var c = app.Content;
+            if (Drills.Skipped(app.Save))
+            {
+                Onboarding.Begin(app.Save, OnboardingStep.HubIntro); // GG-T1645: Start Campaign's Skip to Camp
+                app.Persist();
+                return next();
+            }
             var first = c.Campaign.Tutorial.Count > 0 ? c.TryStage(c.Campaign.Tutorial[0]) : null;
             return first == null ? next() : DrillAt(0, first.Id);
         }

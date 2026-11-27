@@ -550,6 +550,9 @@ namespace GridGame.Meta
         public int UiScale = 100;
         /// <summary>GG-T1618: the first-run commander-name prompt has been answered (or never applies) for this profile.</summary>
         public bool FirstRunDone;
+        /// <summary>GG-T1645: the last drill's To Camp was pressed on some slot of this profile; Start Campaign's
+        /// New to GridGame? question then defaults to Skip to Camp.</summary>
+        public bool DrillsFinished;
         /// <summary>GG-T1456: the equipped cosmetic per <see cref="CosmeticKind"/> name (Frame, Theme, Backdrop); none = the
         /// plain look. Ownership is on the account wallet; <see cref="Cosmetics.Reconcile"/> drops what it no longer owns.</summary>
         public Dictionary<string, string> Cosmetics = new Dictionary<string, string>(StringComparer.Ordinal);
