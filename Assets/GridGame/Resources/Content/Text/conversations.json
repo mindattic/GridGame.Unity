@@ -2279,6 +2279,542 @@
         ]
       }
     },
+    "dialogue:joined_generic": {
+      "key": "dialogue:joined_generic",
+      "id": "conversation-joined-generic",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7b30b1ff6a0033cf7024f38bc3c8cce58f1ac999bef209da4771ef8cc54c8b52",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "A new face at the fire",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The caravan's newest hero sits apart from the others, near the edge of the firelight, not quite sure of their place yet.",
+            "choices": [
+              {
+                "text": "You chose us after a long look. That counts for something.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You're one of us now. Come closer to the fire.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "I watched you long enough to know you weren't another collector with a kinder face. That's more than most get from me.",
+            "next": "why"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "One of you. I've been one of a lot of things. A caravan running from the Choir is new.",
+            "next": "why"
+          },
+          {
+            "id": "why",
+            "speaker": "$hero",
+            "line": "The others say the old tech wakes when you're near. The orbs we fight with, the Halcyon doors. Is that true?",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "The orb at the Commander's belt brightens a little, as if it heard the question.",
+            "choices": [
+              {
+                "text": "It's true. I don't know why yet. I'd like you to help me find out.",
+                "next": "help"
+              },
+              {
+                "text": "I came out of the Still. Halcyon's machines remember me, even if I don't.",
+                "next": "still"
+              },
+              {
+                "text": "It's true, and it's why you're safer with me than without me.",
+                "next": "safer"
+              }
+            ]
+          },
+          {
+            "id": "help",
+            "speaker": "$hero",
+            "line": "Help. Not follow. Nobody's asked me to help with anything that big before.",
+            "next": "tithe"
+          },
+          {
+            "id": "still",
+            "speaker": "$hero",
+            "line": "The Still. They say nothing that goes in comes out. And here you are, by a fire, talking to me.",
+            "next": "tithe"
+          },
+          {
+            "id": "safer",
+            "speaker": "$hero",
+            "line": "Maybe. Safe is what the Choir promises too, every time the collectors come.",
+            "next": "tithe"
+          },
+          {
+            "id": "tithe",
+            "speaker": "$hero",
+            "line": "I paid the tithe like everyone. I know people who paid too much and came back Hollow. I want to know where it goes.",
+            "next": "promise"
+          },
+          {
+            "id": "promise",
+            "speaker": "character-commander",
+            "line": "Across the fire, someone laughs at a story, and the sound carries out over the dark.",
+            "choices": [
+              {
+                "text": "Then we find out together. That's the whole reason we ride.",
+                "next": "together"
+              },
+              {
+                "text": "Fight beside us and you'll see where it goes.",
+                "next": "fight"
+              },
+              {
+                "text": "Some answers aren't worth the price. Be ready for that.",
+                "next": "warn"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "$hero",
+            "line": "Together, then. I'll hold you to that, Commander."
+          },
+          {
+            "id": "fight",
+            "speaker": "$hero",
+            "line": "Fighting I can do. Point me at it."
+          },
+          {
+            "id": "warn",
+            "speaker": "$hero",
+            "line": "I've paid prices before. At least this time I'll know what I'm buying."
+          }
+        ]
+      }
+    },
+    "dialogue:joined_holds": {
+      "key": "dialogue:joined_holds",
+      "id": "conversation-joined-holds",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:267fca47bfd7b2378253a515d868324866da8dc35a47a803317faaa3bc67ce7a",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "A word given",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The newcomer from the Free Holds has polished their gear twice since supper and is starting a third time.",
+            "choices": [
+              {
+                "text": "You took your time deciding. I'm glad you decided on us.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You've joined the caravan. Before you march with us, talk with me.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "In the holds you don't give your word to strangers. I watched how you treat the ones who follow you. That was what decided it.",
+            "next": "oath"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "I took the place that was offered. Where I come from, that isn't nothing. A hold remembers who opened the gate.",
+            "next": "oath"
+          },
+          {
+            "id": "oath",
+            "speaker": "$hero",
+            "line": "I swore an oath to my hold once. Then the Captain sold our tithe to the Choir and called it peace. So I ask you plainly: what do you want sworn?",
+            "next": "swear"
+          },
+          {
+            "id": "swear",
+            "speaker": "character-commander",
+            "line": "The fire pops. Somewhere behind the wagons a horse stamps in its sleep.",
+            "choices": [
+              {
+                "text": "Nothing. Stay because you choose to, every morning.",
+                "next": "choose"
+              },
+              {
+                "text": "Swear to the people in the holds, not to me.",
+                "next": "people"
+              },
+              {
+                "text": "Swear to follow my orders. That's all I need.",
+                "next": "orders"
+              }
+            ]
+          },
+          {
+            "id": "choose",
+            "speaker": "$hero",
+            "line": "No oath at all. My grandfather would call that dangerous. I think it might be the most honest offer anyone's made me.",
+            "next": "captain"
+          },
+          {
+            "id": "people",
+            "speaker": "$hero",
+            "line": "The holds. The ones who paid and paid and got Hollow neighbours back for it. Yes. That I can swear to.",
+            "next": "captain"
+          },
+          {
+            "id": "orders",
+            "speaker": "$hero",
+            "line": "The Captain wanted that too. I'll follow your orders, Commander, but I won't swear to them. Not again.",
+            "next": "captain"
+          },
+          {
+            "id": "captain",
+            "speaker": "$hero",
+            "line": "You should know one thing. The Captain is still out there, hunting the runaways who took the Choir's caravan. Hunting you. Hunting me now.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "The hold-knight's hand rests on their sword hilt, without gripping it.",
+            "choices": [
+              {
+                "text": "Then we face the Captain together, when the time comes.",
+                "next": "together"
+              },
+              {
+                "text": "The Captain broke the holds' word. We'll make it right.",
+                "next": "right"
+              },
+              {
+                "text": "Let the Captain hunt. We'll be gone before the dogs catch the scent.",
+                "next": "gone"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "$hero",
+            "line": "Together. Good. I'd rather stand in that line beside someone than hear about it later from the road."
+          },
+          {
+            "id": "right",
+            "speaker": "$hero",
+            "line": "Make it right. You say it like you mean it. Then my shield goes where you go."
+          },
+          {
+            "id": "gone",
+            "speaker": "$hero",
+            "line": "Running isn't the holds' way. But I've seen what the Captain brings, so I'll run with you, for now."
+          }
+        ]
+      }
+    },
+    "dialogue:joined_lantern": {
+      "key": "dialogue:joined_lantern",
+      "id": "conversation-joined-lantern",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3158784ce6f4b6340752317d75d80c8320cabbf5ee542d3312085e63f75ace1c",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "Off the lantern road",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The traveller from the Lantern Road has hung a small paper lantern on the wagon's hook and lit it, though the camp has fires enough.",
+            "choices": [
+              {
+                "text": "You walked the road beside us for days before you joined.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You've joined us. Sit a while. I'd like to know who rides with me.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "The road teaches patience. I wanted to see where you walked when no one was watching. You walked toward people, not away from them.",
+            "next": "lantern"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "I came to the caravan because the road turned this way. On the Lantern Road that is reason enough.",
+            "next": "lantern"
+          },
+          {
+            "id": "lantern",
+            "speaker": "$hero",
+            "line": "We keep the lanterns lit through the gorges, all the way to the pilgrim shrines. We do not ask why the Manalith hangs there. You ask a great deal, I think.",
+            "next": "asks"
+          },
+          {
+            "id": "asks",
+            "speaker": "character-commander",
+            "line": "The little lantern's flame leans toward the Commander, though there is no wind.",
+            "choices": [
+              {
+                "text": "Somebody has to. The Choir counts on nobody asking.",
+                "next": "asking"
+              },
+              {
+                "text": "I ask because I lost most of what I knew. I'm trying to find it again.",
+                "next": "lost"
+              },
+              {
+                "text": "I ask the questions. You keep the light. That's how this works.",
+                "next": "roles"
+              }
+            ]
+          },
+          {
+            "id": "asking",
+            "speaker": "$hero",
+            "line": "The schools say a question is a blade without a guard. Still. I have carried this lantern for years and never once asked who it is lit for.",
+            "next": "master"
+          },
+          {
+            "id": "lost",
+            "speaker": "$hero",
+            "line": "Lost. Then you are a pilgrim too, walking toward something you cannot see. The road is kind to those.",
+            "next": "master"
+          },
+          {
+            "id": "roles",
+            "speaker": "$hero",
+            "line": "Simple roles. The sword-schools like them. I will keep the light, Commander. Mind that it does not show you only what you want to see.",
+            "next": "master"
+          },
+          {
+            "id": "master",
+            "speaker": "$hero",
+            "line": "My master told me to walk the road and serve whoever needed the light. I did not expect it to lead to the Choir's tithe road.",
+            "next": "serve"
+          },
+          {
+            "id": "serve",
+            "speaker": "character-commander",
+            "line": "The traveller sets one hand flat on the wagon boards, the way the monks greet a shrine.",
+            "choices": [
+              {
+                "text": "Then serve the ones on the road behind us. They need the light most.",
+                "next": "behind"
+              },
+              {
+                "text": "Serve how you see fit. I won't tell you how to keep a lantern.",
+                "next": "free"
+              },
+              {
+                "text": "Keep up and keep quiet. The road ahead is not for pilgrims.",
+                "next": "quiet"
+              }
+            ]
+          },
+          {
+            "id": "behind",
+            "speaker": "$hero",
+            "line": "Behind us. Yes. That is the oldest teaching of the road, and you found it without being told. I will keep it lit."
+          },
+          {
+            "id": "free",
+            "speaker": "$hero",
+            "line": "A Commander who leaves the lantern to its keeper. I will remember that when the road grows dark."
+          },
+          {
+            "id": "quiet",
+            "speaker": "$hero",
+            "line": "Quiet I can do. The road taught me that before it taught me anything else."
+          }
+        ]
+      }
+    },
+    "dialogue:joined_street": {
+      "key": "dialogue:joined_street",
+      "id": "conversation-joined-street",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:48c1a63705cc1555f354f102ecbc5d35b54e1ddf847be0abad53116c6129afed",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "Under the same ruins",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The new one from the Underspire sits on the wagon's tailboard, watching the camp the way a runner watches a street: every exit counted.",
+            "choices": [
+              {
+                "text": "You walked beside us a long way before you said yes.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You're with the caravan now. I wanted to hear it from you, not the roster.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "I wanted to see if you'd sell me out first. Everybody up top does, sooner or later. You had three chances and didn't take one.",
+            "next": "ruins"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "The roster's right. Food, a wagon, and somebody pointing the swords the same way. That's a better deal than the Underspire ever gave me.",
+            "next": "ruins"
+          },
+          {
+            "id": "ruins",
+            "speaker": "$hero",
+            "line": "Where I grew up, we lived under Halcyon's dead towers and stole light off its old taps. Then you show up and the dead tech starts humming. Who are you?",
+            "next": "who"
+          },
+          {
+            "id": "who",
+            "speaker": "character-commander",
+            "line": "The orb at the Commander's belt glows a little brighter, as it always does near Halcyon metal.",
+            "choices": [
+              {
+                "text": "I was a commander of Halcyon. I died in the Still, and it brought me back.",
+                "next": "truth"
+              },
+              {
+                "text": "Someone the old machines remember. I don't remember much else.",
+                "next": "pieces"
+              },
+              {
+                "text": "Someone who pays you to fight. That's enough to know.",
+                "next": "boss"
+              }
+            ]
+          },
+          {
+            "id": "truth",
+            "speaker": "$hero",
+            "line": "Died. In the Still. And walked out. Everyone in the Underspire has a story about that vault, and none of them end with somebody walking out.",
+            "next": "tithe"
+          },
+          {
+            "id": "pieces",
+            "speaker": "$hero",
+            "line": "Straight answer. I'll take a straight answer over a pretty one. Half the gangs down there lie about where they come from.",
+            "next": "tithe"
+          },
+          {
+            "id": "boss",
+            "speaker": "$hero",
+            "line": "Fine. Bosses I understand. Redline had bosses. They all said that right before they asked for something worse.",
+            "next": "tithe"
+          },
+          {
+            "id": "tithe",
+            "speaker": "$hero",
+            "line": "We dodged the Choir's collectors our whole lives. Ran the roofs when the white wagons came. Now I'm riding toward them on purpose.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The runner turns a stolen coin over and over between two fingers.",
+            "choices": [
+              {
+                "text": "Then teach the rest of us how to dodge them. We'll need it.",
+                "next": "teach"
+              },
+              {
+                "text": "You don't have to run anymore. Not while you're with us.",
+                "next": "safe"
+              },
+              {
+                "text": "Keep your eyes open. If this goes bad, I need to know first.",
+                "next": "watch"
+              }
+            ]
+          },
+          {
+            "id": "teach",
+            "speaker": "$hero",
+            "line": "Ha. Nobody up top ever asked a Street kid to teach them anything. First lesson: never stand where the light's good."
+          },
+          {
+            "id": "safe",
+            "speaker": "$hero",
+            "line": "Everybody runs, Commander. But I'll run in your direction for a while, and we'll see."
+          },
+          {
+            "id": "watch",
+            "speaker": "$hero",
+            "line": "Eyes are the one thing the Street gave me for free. You'll hear it from me before anyone else does."
+          }
+        ]
+      }
+    },
     "dialogue:lanternroad_bounties": {
       "key": "dialogue:lanternroad_bounties",
       "id": "conversation-lanternroad-bounties",

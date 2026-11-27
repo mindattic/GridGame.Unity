@@ -1,0 +1,66 @@
+dialogue joined_holds
+title: A word given
+trigger: Joined holds
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The newcomer from the Free Holds has polished their gear twice since supper and is starting a third time.
+  * You took your time deciding. I'm glad you decided on us. -> walked
+    if: TrustAtLeast $hero 15
+  * You've joined the caravan. Before you march with us, talk with me. -> signed
+
+node walked hero
+  In the holds you don't give your word to strangers. I watched how you treat the ones who follow you. That was what decided it.
+  -> oath
+
+node signed hero
+  I took the place that was offered. Where I come from, that isn't nothing. A hold remembers who opened the gate.
+  -> oath
+
+node oath hero
+  I swore an oath to my hold once. Then the Captain sold our tithe to the Choir and called it peace. So I ask you plainly: what do you want sworn?
+  -> swear
+
+node swear commander
+  The fire pops. Somewhere behind the wagons a horse stamps in its sleep.
+  * Nothing. Stay because you choose to, every morning. -> choose
+    do: AddTrust $hero 8
+  * Swear to the people in the holds, not to me. -> people
+    do: AddTrust $hero 6
+  * Swear to follow my orders. That's all I need. -> orders
+    do: AddTrust $hero -5
+
+node choose hero
+  No oath at all. My grandfather would call that dangerous. I think it might be the most honest offer anyone's made me.
+  -> captain
+
+node people hero
+  The holds. The ones who paid and paid and got Hollow neighbours back for it. Yes. That I can swear to.
+  -> captain
+
+node orders hero
+  The Captain wanted that too. I'll follow your orders, Commander, but I won't swear to them. Not again.
+  -> captain
+
+node captain hero
+  You should know one thing. The Captain is still out there, hunting the runaways who took the Choir's caravan. Hunting you. Hunting me now.
+  -> answer
+
+node answer commander
+  The hold-knight's hand rests on their sword hilt, without gripping it.
+  * Then we face the Captain together, when the time comes. -> together
+    do: AddTrust $hero 6
+  * The Captain broke the holds' word. We'll make it right. -> right
+    do: AddTrust $hero 8
+  * Let the Captain hunt. We'll be gone before the dogs catch the scent. -> gone
+    do: AddTrust $hero 2
+
+node together hero
+  Together. Good. I'd rather stand in that line beside someone than hear about it later from the road.
+
+node right hero
+  Make it right. You say it like you mean it. Then my shield goes where you go.
+
+node gone hero
+  Running isn't the holds' way. But I've seen what the Captain brings, so I'll run with you, for now.

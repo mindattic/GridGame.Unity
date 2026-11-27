@@ -3342,5 +3342,181 @@
       { "Id": "yes", "Speaker": "with" },
       { "Id": "no", "Speaker": "with" }
     ]
+  },
+  {
+    "Id": "joined_generic",
+    "Title": "A new face at the fire",
+    "Trigger": { "Kind": "Joined" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "why" },
+      { "Id": "signed", "Speaker": "hero", "Next": "why" },
+      { "Id": "why", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "help", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "still", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 5 } ] },
+          { "Next": "safer", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "help", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "still", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "safer", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "tithe", "Speaker": "hero", "Next": "promise" },
+      {
+        "Id": "promise", "Speaker": "commander",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "fight", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 5 } ] },
+          { "Next": "warn", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "hero" },
+      { "Id": "fight", "Speaker": "hero" },
+      { "Id": "warn", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "joined_street",
+    "Title": "Under the same ruins",
+    "Trigger": { "Kind": "Joined", "Id": "street" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "ruins" },
+      { "Id": "signed", "Speaker": "hero", "Next": "ruins" },
+      { "Id": "ruins", "Speaker": "hero", "Next": "who" },
+      {
+        "Id": "who", "Speaker": "commander",
+        "Choices": [
+          { "Next": "truth", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 5 } ] },
+          { "Next": "pieces", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 3 } ] },
+          { "Next": "boss", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -5 } ] }
+        ]
+      },
+      { "Id": "truth", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "pieces", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "boss", "Speaker": "hero", "Next": "tithe" },
+      { "Id": "tithe", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "teach", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "safe", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 4 } ] },
+          { "Next": "watch", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] }
+        ]
+      },
+      { "Id": "teach", "Speaker": "hero" },
+      { "Id": "safe", "Speaker": "hero" },
+      { "Id": "watch", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "joined_holds",
+    "Title": "A word given",
+    "Trigger": { "Kind": "Joined", "Id": "holds" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "oath" },
+      { "Id": "signed", "Speaker": "hero", "Next": "oath" },
+      { "Id": "oath", "Speaker": "hero", "Next": "swear" },
+      {
+        "Id": "swear", "Speaker": "commander",
+        "Choices": [
+          { "Next": "choose", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "people", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "orders", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -5 } ] }
+        ]
+      },
+      { "Id": "choose", "Speaker": "hero", "Next": "captain" },
+      { "Id": "people", "Speaker": "hero", "Next": "captain" },
+      { "Id": "orders", "Speaker": "hero", "Next": "captain" },
+      { "Id": "captain", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "right", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "gone", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 2 } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "hero" },
+      { "Id": "right", "Speaker": "hero" },
+      { "Id": "gone", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "joined_lantern",
+    "Title": "Off the lantern road",
+    "Trigger": { "Kind": "Joined", "Id": "lantern" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "lantern" },
+      { "Id": "signed", "Speaker": "hero", "Next": "lantern" },
+      { "Id": "lantern", "Speaker": "hero", "Next": "asks" },
+      {
+        "Id": "asks", "Speaker": "commander",
+        "Choices": [
+          { "Next": "asking", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "lost", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "roles", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -4 } ] }
+        ]
+      },
+      { "Id": "asking", "Speaker": "hero", "Next": "master" },
+      { "Id": "lost", "Speaker": "hero", "Next": "master" },
+      { "Id": "roles", "Speaker": "hero", "Next": "master" },
+      { "Id": "master", "Speaker": "hero", "Next": "serve" },
+      {
+        "Id": "serve", "Speaker": "commander",
+        "Choices": [
+          { "Next": "behind", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "free", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "quiet", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "behind", "Speaker": "hero" },
+      { "Id": "free", "Speaker": "hero" },
+      { "Id": "quiet", "Speaker": "hero" }
+    ]
   }
 ]

@@ -1,0 +1,66 @@
+dialogue joined_generic
+title: A new face at the fire
+trigger: Joined
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The caravan's newest hero sits apart from the others, near the edge of the firelight, not quite sure of their place yet.
+  * You chose us after a long look. That counts for something. -> walked
+    if: TrustAtLeast $hero 15
+  * You're one of us now. Come closer to the fire. -> signed
+
+node walked hero
+  I watched you long enough to know you weren't another collector with a kinder face. That's more than most get from me.
+  -> why
+
+node signed hero
+  One of you. I've been one of a lot of things. A caravan running from the Choir is new.
+  -> why
+
+node why hero
+  The others say the old tech wakes when you're near. The orbs we fight with, the Halcyon doors. Is that true?
+  -> answer
+
+node answer commander
+  The orb at the Commander's belt brightens a little, as if it heard the question.
+  * It's true. I don't know why yet. I'd like you to help me find out. -> help
+    do: AddTrust $hero 6
+  * I came out of the Still. Halcyon's machines remember me, even if I don't. -> still
+    do: AddTrust $hero 5
+  * It's true, and it's why you're safer with me than without me. -> safer
+    do: AddTrust $hero -2
+
+node help hero
+  Help. Not follow. Nobody's asked me to help with anything that big before.
+  -> tithe
+
+node still hero
+  The Still. They say nothing that goes in comes out. And here you are, by a fire, talking to me.
+  -> tithe
+
+node safer hero
+  Maybe. Safe is what the Choir promises too, every time the collectors come.
+  -> tithe
+
+node tithe hero
+  I paid the tithe like everyone. I know people who paid too much and came back Hollow. I want to know where it goes.
+  -> promise
+
+node promise commander
+  Across the fire, someone laughs at a story, and the sound carries out over the dark.
+  * Then we find out together. That's the whole reason we ride. -> together
+    do: AddTrust $hero 8
+  * Fight beside us and you'll see where it goes. -> fight
+    do: AddTrust $hero 5
+  * Some answers aren't worth the price. Be ready for that. -> warn
+    do: AddTrust $hero 3
+
+node together hero
+  Together, then. I'll hold you to that, Commander.
+
+node fight hero
+  Fighting I can do. Point me at it.
+
+node warn hero
+  I've paid prices before. At least this time I'll know what I'm buying.

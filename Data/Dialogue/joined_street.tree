@@ -1,0 +1,66 @@
+dialogue joined_street
+title: Under the same ruins
+trigger: Joined street
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The new one from the Underspire sits on the wagon's tailboard, watching the camp the way a runner watches a street: every exit counted.
+  * You walked beside us a long way before you said yes. -> walked
+    if: TrustAtLeast $hero 15
+  * You're with the caravan now. I wanted to hear it from you, not the roster. -> signed
+
+node walked hero
+  I wanted to see if you'd sell me out first. Everybody up top does, sooner or later. You had three chances and didn't take one.
+  -> ruins
+
+node signed hero
+  The roster's right. Food, a wagon, and somebody pointing the swords the same way. That's a better deal than the Underspire ever gave me.
+  -> ruins
+
+node ruins hero
+  Where I grew up, we lived under Halcyon's dead towers and stole light off its old taps. Then you show up and the dead tech starts humming. Who are you?
+  -> who
+
+node who commander
+  The orb at the Commander's belt glows a little brighter, as it always does near Halcyon metal.
+  * I was a commander of Halcyon. I died in the Still, and it brought me back. -> truth
+    do: AddTrust $hero 5
+  * Someone the old machines remember. I don't remember much else. -> pieces
+    do: AddTrust $hero 3
+  * Someone who pays you to fight. That's enough to know. -> boss
+    do: AddTrust $hero -5
+
+node truth hero
+  Died. In the Still. And walked out. Everyone in the Underspire has a story about that vault, and none of them end with somebody walking out.
+  -> tithe
+
+node pieces hero
+  Straight answer. I'll take a straight answer over a pretty one. Half the gangs down there lie about where they come from.
+  -> tithe
+
+node boss hero
+  Fine. Bosses I understand. Redline had bosses. They all said that right before they asked for something worse.
+  -> tithe
+
+node tithe hero
+  We dodged the Choir's collectors our whole lives. Ran the roofs when the white wagons came. Now I'm riding toward them on purpose.
+  -> ask
+
+node ask commander
+  The runner turns a stolen coin over and over between two fingers.
+  * Then teach the rest of us how to dodge them. We'll need it. -> teach
+    do: AddTrust $hero 8
+  * You don't have to run anymore. Not while you're with us. -> safe
+    do: AddTrust $hero 4
+  * Keep your eyes open. If this goes bad, I need to know first. -> watch
+    do: AddTrust $hero 6
+
+node teach hero
+  Ha. Nobody up top ever asked a Street kid to teach them anything. First lesson: never stand where the light's good.
+
+node safe hero
+  Everybody runs, Commander. But I'll run in your direction for a while, and we'll see.
+
+node watch hero
+  Eyes are the one thing the Street gave me for free. You'll hear it from me before anyone else does.

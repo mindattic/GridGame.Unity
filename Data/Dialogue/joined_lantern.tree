@@ -1,0 +1,66 @@
+dialogue joined_lantern
+title: Off the lantern road
+trigger: Joined lantern
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The traveller from the Lantern Road has hung a small paper lantern on the wagon's hook and lit it, though the camp has fires enough.
+  * You walked the road beside us for days before you joined. -> walked
+    if: TrustAtLeast $hero 15
+  * You've joined us. Sit a while. I'd like to know who rides with me. -> signed
+
+node walked hero
+  The road teaches patience. I wanted to see where you walked when no one was watching. You walked toward people, not away from them.
+  -> lantern
+
+node signed hero
+  I came to the caravan because the road turned this way. On the Lantern Road that is reason enough.
+  -> lantern
+
+node lantern hero
+  We keep the lanterns lit through the gorges, all the way to the pilgrim shrines. We do not ask why the Manalith hangs there. You ask a great deal, I think.
+  -> asks
+
+node asks commander
+  The little lantern's flame leans toward the Commander, though there is no wind.
+  * Somebody has to. The Choir counts on nobody asking. -> asking
+    do: AddTrust $hero 6
+  * I ask because I lost most of what I knew. I'm trying to find it again. -> lost
+    do: AddTrust $hero 8
+  * I ask the questions. You keep the light. That's how this works. -> roles
+    do: AddTrust $hero -4
+
+node asking hero
+  The schools say a question is a blade without a guard. Still. I have carried this lantern for years and never once asked who it is lit for.
+  -> master
+
+node lost hero
+  Lost. Then you are a pilgrim too, walking toward something you cannot see. The road is kind to those.
+  -> master
+
+node roles hero
+  Simple roles. The sword-schools like them. I will keep the light, Commander. Mind that it does not show you only what you want to see.
+  -> master
+
+node master hero
+  My master told me to walk the road and serve whoever needed the light. I did not expect it to lead to the Choir's tithe road.
+  -> serve
+
+node serve commander
+  The traveller sets one hand flat on the wagon boards, the way the monks greet a shrine.
+  * Then serve the ones on the road behind us. They need the light most. -> behind
+    do: AddTrust $hero 8
+  * Serve how you see fit. I won't tell you how to keep a lantern. -> free
+    do: AddTrust $hero 6
+  * Keep up and keep quiet. The road ahead is not for pilgrims. -> quiet
+    do: AddTrust $hero -3
+
+node behind hero
+  Behind us. Yes. That is the oldest teaching of the road, and you found it without being told. I will keep it lit.
+
+node free hero
+  A Commander who leaves the lantern to its keeper. I will remember that when the road grows dark.
+
+node quiet hero
+  Quiet I can do. The road taught me that before it taught me anything else.
