@@ -43,7 +43,20 @@ water body, non-max suppression by bridge_spacing px keeps the narrowest crossin
 Water is otherwise impassable: passable_moves() gives routes their 8-neighbour moves with no step into water and no
 diagonal cut past a water corner.
 
-Later steps (routes, spots, tiles) are further subcommands on the same parser.
+    python tools/world_map.py routes <image> --region <id> --points a=x,y b=x,y ... [--pairs a-b,...]  (GG-T1784)
+
+routes runs crossings, snaps each point to the nearest land cell and finds least-cost paths (Dijkstra) over land
+steps (passable_moves; step cost = mean cell cost x step length in cells) plus a jump edge per crossing (bridge_cost
++ its length in cells when new, only its length once a route has used it). Pairs default to the minimum spanning tree
+over pairwise costs, routed cheapest first; cells an earlier route uses cost road_discount (0.5) as much, so routes
+share roads and bridges. A route's run through pass_classes (rock, snow) longer than pass_min px is a pass, its node at
+the run's highest-cost cell. Each land stretch is Douglas-Peucker simplified (simplify px) then centripetal
+Catmull-Rom splined, retried with less simplification if a sample lands in water; bridges stay straight. Writes
+    world_map-<region>-routes.json      Nodes (Point, Bridge/Causeway, Pass) and Edges (A, B, Points, Spline, Length px,
+                                        Cost, Crossings, NewCrossings, Passes)
+    world_map-<region>-routes.png       debug overlay: routes, used crossings bold, unused grey, passes as red triangles
+
+Later steps (spots, tiles) are further subcommands on the same parser.
 """
 import argparse
 import json
@@ -750,6 +763,362 @@ def cmd_crossings(args):
     return 0
 
 
+# ---------------------------------------------------------------- routes
+
+ROAD_DISCOUNT = 0.5      # cost multiplier on cells an earlier route already uses, so routes share roads and bridges
+PASS_CLASSES = ["rock", "snow"]
+PASS_MIN = 48            # px: a route's run through pass classes longer than this is a pass
+SIMPLIFY = 6.0           # px: Douglas-Peucker tolerance before splining (halved on retry when a sample lands in water)
+SPLINE_STEP = 4.0        # px between spline samples
+
+
+def parse_points(spec):
+    """--points as name=x,y words, or one JSON file: {"name": [x, y]} or [{"Id"/"name", "X"/"x", "Y"/"y"}]."""
+    if len(spec) == 1 and spec[0].lower().endswith(".json"):
+        data = json.loads(Path(spec[0]).read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return [(str(k), float(v[0]), float(v[1])) for k, v in data.items()]
+        return [(str(d.get("Id", d.get("name"))), float(d.get("X", d.get("x"))), float(d.get("Y", d.get("y"))))
+                for d in data]
+    out = []
+    for word in spec:
+        name, xy = word.split("=", 1)
+        x, y = xy.split(",")
+        out.append((name, float(x), float(y)))
+    return out
+
+
+def snap_to_land(cost, cell, points):
+    """Each (name, x px, y px) -> (name, cell y, cell x, snap distance px) at the nearest land cell."""
+    from scipy import ndimage
+    h, w = cost.shape
+    _, (iy, ix) = ndimage.distance_transform_edt(~np.isfinite(cost), return_indices=True)
+    out = []
+    for name, x, y in points:
+        cy, cx = min(h - 1, max(0, int(y // cell))), min(w - 1, max(0, int(x // cell)))
+        sy, sx = int(iy[cy, cx]), int(ix[cy, cx])
+        out.append((name, sy, sx, round(float(np.hypot(sy - cy, sx - cx)) * cell, 1)))
+    return out
+
+
+def route_graph(cost, moves, crossings, road, used, discount, cell):
+    """Sparse directed graph over grid cells: land steps from passable_moves (mean cell cost x step length in cells,
+    road cells discounted) plus a jump edge per crossing (bridge_cost + length in cells when new, only the length once
+    a route has used it). Returns (csr matrix, {(u, v): crossing index})."""
+    from scipy import sparse
+    h, w = cost.shape
+    c = np.where(np.isfinite(cost), cost, 0).astype(np.float64)
+    c = np.where(road, c * discount, c).ravel()
+    rows, cols, data = [], [], []
+    for (dy, dx, step), ok in zip(MOVES, moves):
+        u = np.flatnonzero(ok)
+        v = u + dy * w + dx
+        rows.append(u)
+        cols.append(v)
+        data.append(0.5 * (c[u] + c[v]) * step)
+    jump = {}
+    for i, k in enumerate(crossings):
+        (ax, ay), (bx, by) = k["cell_a"], k["cell_b"]
+        if max(abs(ax - bx), abs(ay - by)) <= 1 or not (np.isfinite(cost[ay, ax]) and np.isfinite(cost[by, bx])):
+            continue
+        u, v = ay * w + ax, by * w + bx
+        wgt = k["length_px"] / cell + (0 if i in used else k["cost"])
+        for e in ((u, v), (v, u)):
+            if e not in jump or wgt < jump[e][1]:
+                jump[e] = (i, wgt)
+    for (u, v), (_, wgt) in jump.items():
+        rows.append(np.array([u]))
+        cols.append(np.array([v]))
+        data.append(np.array([wgt]))
+    g = sparse.csr_matrix((np.concatenate(data), (np.concatenate(rows), np.concatenate(cols))), shape=(h * w, h * w))
+    return g, {e: i for e, (i, _) in jump.items()}
+
+
+def trace(pred, src, dst):
+    path = [dst]
+    while path[-1] != src:
+        p = pred[path[-1]]
+        if p < 0:
+            return None
+        path.append(int(p))
+    return path[::-1]
+
+
+def mst(n, weights):
+    """Kruskal over (cost, i, j) with finite costs; a forest when points are cut off from each other."""
+    parent = list(range(n))
+
+    def root(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+    out = []
+    for wgt, i, j in sorted(weights):
+        if np.isfinite(wgt) and root(i) != root(j):
+            parent[root(i)] = root(j)
+            out.append((wgt, i, j))
+    return out
+
+
+def douglas_peucker(pts, eps):
+    if eps <= 0 or len(pts) < 3:
+        return pts
+    a, b = pts[0], pts[-1]
+    ab = b - a
+    n = np.hypot(*ab)
+    rel = pts[1:-1] - a
+    d = np.abs(ab[0] * rel[:, 1] - ab[1] * rel[:, 0]) / n if n > 0 else np.hypot(rel[:, 0], rel[:, 1])
+    i = int(np.argmax(d))
+    if d[i] <= eps:
+        return np.array([a, b])
+    left = douglas_peucker(pts[:i + 2], eps)
+    return np.vstack([left[:-1], douglas_peucker(pts[i + 1:], eps)])
+
+
+def catmull_rom(pts, step):
+    """Centripetal Catmull-Rom through pts (px), about one sample per `step` px, ends included; no overshoot loops."""
+    if len(pts) < 3:
+        return pts
+    p = np.vstack([2 * pts[0] - pts[1], pts, 2 * pts[-1] - pts[-2]])
+    out = [pts[0]]
+    for i in range(1, len(p) - 2):
+        p0, p1, p2, p3 = p[i - 1], p[i], p[i + 1], p[i + 2]
+        t1 = np.hypot(*(p1 - p0)) ** 0.5 + 1e-6
+        t2 = t1 + np.hypot(*(p2 - p1)) ** 0.5 + 1e-6
+        t3 = t2 + np.hypot(*(p3 - p2)) ** 0.5 + 1e-6
+        k = max(2, int(np.ceil(np.hypot(*(p2 - p1)) / step)))
+        t = np.linspace(t1, t2, k + 1)[1:, None]
+        a1 = (t1 - t) / t1 * p0 + t / t1 * p1
+        a2 = (t2 - t) / (t2 - t1) * p1 + (t - t1) / (t2 - t1) * p2
+        a3 = (t3 - t) / (t3 - t2) * p2 + (t - t2) / (t3 - t2) * p3
+        b1 = (t2 - t) / t2 * a1 + t / t2 * a2
+        b2 = (t3 - t) / (t3 - t1) * a2 + (t - t1) / (t3 - t1) * a3
+        out.extend((t2 - t) / (t2 - t1) * b1 + (t - t1) / (t2 - t1) * b2)
+    return np.array(out)
+
+
+def smooth_stretch(pts, cost, cell, eps, step):
+    """Simplify then spline one land stretch; if a sample lands in a water cell, retry with half the tolerance, then
+    with none, then keep the raw cell path. Returns (simplified points, spline, tolerance used or None)."""
+    h, w = cost.shape
+    tries = [eps, eps / 2, eps / 4, 0.0]
+    for e in tries:
+        simple = douglas_peucker(pts, e)
+        spline = catmull_rom(simple, step)
+        gy = np.clip((spline[:, 1] // cell).astype(int), 0, h - 1)
+        gx = np.clip((spline[:, 0] // cell).astype(int), 0, w - 1)
+        if np.isfinite(cost[gy, gx]).all():
+            return simple, spline, e
+    return pts, pts, None
+
+
+def pass_runs(path, pass_grid, cost, w, cell, pass_min):
+    """Runs of consecutive land cells through pass classes longer than pass_min px -> (crest cell, run px). The crest
+    is the run's highest-cost cell. Crossing jumps break a run."""
+    runs, cur, run_px = [], [], 0.0
+    for k, u in enumerate(path):
+        y, x = divmod(u, w)
+        prev = path[k - 1] if k else None
+        jump = prev is not None and max(abs(prev // w - y), abs(prev % w - x)) > 1
+        if pass_grid[y, x] and not jump and cur:
+            py, px_ = divmod(prev, w)
+            run_px += float(np.hypot(y - py, x - px_)) * cell
+            cur.append(u)
+        else:
+            if cur and run_px > pass_min:
+                runs.append((max(cur, key=lambda c: cost.flat[c]), run_px))
+            cur, run_px = ([u], 0.0) if pass_grid[y, x] else ([], 0.0)
+    if cur and run_px > pass_min:
+        runs.append((max(cur, key=lambda c: cost.flat[c]), run_px))
+    return runs
+
+
+def plan_routes(g, crossings, points, pairs_spec=None):
+    """Least-cost routes between snapped points. Returns a dict with nodes, edges and the params used."""
+    from scipy.sparse import csgraph
+    entry, cost, cell = g["entry"], g["cost"], g["cell"]
+    h, w = cost.shape
+    p = {"road_discount": entry.get("road_discount", ROAD_DISCOUNT),
+         "pass_classes": entry.get("pass_classes", PASS_CLASSES),
+         "pass_min": entry.get("pass_min", PASS_MIN),
+         "simplify": entry.get("simplify", SIMPLIFY),
+         "spline_step": entry.get("spline_step", SPLINE_STEP)}
+    moves = passable_moves(cost)
+    pass_ids = [i for i, n in enumerate(g["names"]) if n in p["pass_classes"]]
+    pass_grid = block_reduce(np.isin(g["index"], pass_ids).astype(np.float64), cell, np.mean)[:h, :w] >= 0.5
+    pass_grid &= np.isfinite(cost)
+
+    snapped = snap_to_land(cost, cell, points)
+    names = [s[0] for s in snapped]
+    idx = np.array([s[1] * w + s[2] for s in snapped])
+    road = np.zeros(cost.shape, bool)
+    used = set()
+    graph, _ = route_graph(cost, moves, crossings, road, used, p["road_discount"], cell)
+    dist = csgraph.dijkstra(graph, directed=True, indices=idx)[:, idx]
+    if pairs_spec:
+        order = []
+        for pair in pairs_spec.split(","):
+            a, b = pair.split("-")
+            i, j = names.index(a.strip()), names.index(b.strip())
+            order.append((float(dist[i, j]), i, j))
+        order.sort()
+    else:
+        order = mst(len(names), [(float(dist[i, j]), i, j) for i in range(len(names)) for j in range(i + 1, len(names))])
+
+    crossing_kind = {"bridge": "Bridge", "causeway": "Causeway"}
+    nodes = [{"Id": n, "Kind": "Point", "X": round((sx + 0.5) * cell, 1), "Y": round((sy + 0.5) * cell, 1),
+              "Requested": [x, y], "SnapPx": snap}
+             for (n, sy, sx, snap), (_, x, y) in zip(snapped, points)]
+    passes, edges, unreachable = [], [], []
+    for _, i, j in order:
+        graph, jump = route_graph(cost, moves, crossings, road, used, p["road_discount"], cell)
+        d, pred = csgraph.dijkstra(graph, directed=True, indices=int(idx[i]), return_predecessors=True)
+        path = trace(pred, int(idx[i]), int(idx[j])) if np.isfinite(d[idx[j]]) else None
+        if path is None:
+            unreachable.append([names[i], names[j]])
+            continue
+        stretches, cur, bridges = [], [path[0]], []
+        for u, v in zip(path, path[1:]):
+            if max(abs(u // w - v // w), abs(u % w - v % w)) > 1:
+                k = jump[(u, v)]
+                bridges.append(k)
+                stretches.append(cur)
+                cur = [v]
+            else:
+                cur.append(v)
+        stretches.append(cur)
+        for u in path:
+            road.flat[u] = True
+        new_bridges = [k for k in bridges if k not in used]
+        used.update(bridges)
+
+        pts_all, spline_all, eps_used = [], [], []
+        for s_i, s in enumerate(stretches):
+            yx = np.array([divmod(u, w) for u in s], dtype=np.float64)
+            pts = (yx[:, ::-1] + 0.5) * cell
+            simple, spline, e = smooth_stretch(pts, cost, cell, p["simplify"], p["spline_step"])
+            eps_used.append(e)
+            pts_all.extend(simple)
+            spline_all.extend(spline)  # consecutive stretches join with the straight bridge segment between them
+        spline_all = np.array(spline_all)
+        length = float(np.hypot(*np.diff(spline_all, axis=0).T).sum())
+
+        edge_passes = []
+        for crest, run_px in pass_runs(path, pass_grid, cost, w, cell, p["pass_min"]):
+            cy, cx = divmod(crest, w)
+            xy = np.array([(cx + 0.5) * cell, (cy + 0.5) * cell])
+            near = [q for q in passes if np.hypot(q["X"] - xy[0], q["Y"] - xy[1]) < p["pass_min"]]
+            if near:
+                q = near[0]
+                q["RunPx"] = max(q["RunPx"], round(run_px, 1))
+            else:
+                q = {"Id": "pass-%d" % (len(passes) + 1), "Kind": "Pass", "X": round(float(xy[0]), 1),
+                     "Y": round(float(xy[1]), 1), "RunPx": round(run_px, 1), "CrestCost": round(float(cost[cy, cx]), 2)}
+                passes.append(q)
+            edge_passes.append(q["Id"])
+        edges.append({
+            "A": names[i], "B": names[j],
+            "Points": [[round(float(x), 1), round(float(y), 1)] for x, y in pts_all],
+            "Spline": [[round(float(x), 1), round(float(y), 1)] for x, y in spline_all],
+            "Length": round(length, 1),
+            "Cost": round(float(d[idx[j]]), 1),
+            "Crossings": [crossings[k]["id"] for k in bridges],
+            "NewCrossings": [crossings[k]["id"] for k in new_bridges],
+            "Passes": edge_passes,
+            "Simplify": [None if e is None else round(e, 2) for e in eps_used],
+        })
+    for k in sorted(used):
+        c = crossings[k]
+        nodes.append({"Id": c["id"], "Kind": crossing_kind.get(c["kind"], c["kind"].title()),
+                      "X": round((c["a"][0] + c["b"][0]) / 2, 1), "Y": round((c["a"][1] + c["b"][1]) / 2, 1),
+                      "A": c["a"], "B": c["b"], "LengthPx": c["length_px"]})
+    nodes.extend(passes)
+    return {"params": p, "nodes": nodes, "edges": edges, "unreachable": unreachable, "used": sorted(used)}
+
+
+def draw_routes_overlay(img, cost, cell, crossings, r):
+    art = np.asarray(img, dtype=np.float64)
+    h, w = art.shape[:2]
+    out = art * 0.7
+    blocked = np.repeat(np.repeat(np.isinf(cost), cell, 0), cell, 1)[:h, :w]
+    out[blocked] = out[blocked] * 0.5 + np.array([20, 60, 160]) * 0.5
+    im = Image.fromarray(out.clip(0, 255).astype(np.uint8))
+    draw = ImageDraw.Draw(im)
+    try:
+        font = ImageFont.truetype("arial.ttf", 16)
+        big = ImageFont.truetype("arial.ttf", 18)
+    except OSError:
+        font = big = ImageFont.load_default()
+    for c in crossings:  # unused candidates, faint
+        draw.line([tuple(c["a"]), tuple(c["b"])], fill=(120, 120, 120), width=2)
+    for e in r["edges"]:
+        line = [tuple(q) for q in e["Spline"]]
+        draw.line(line, fill=(0, 0, 0), width=7, joint="curve")
+        draw.line(line, fill=(255, 245, 200), width=3, joint="curve")
+    colour = None
+    for n in r["nodes"]:
+        x, y = n["X"], n["Y"]
+        if n["Kind"] in ("Bridge", "Causeway"):
+            colour = CROSSING_COLOURS.get(n["Kind"].lower(), (255, 255, 255))
+            draw.line([tuple(n["A"]), tuple(n["B"])], fill=(0, 0, 0), width=9)
+            draw.line([tuple(n["A"]), tuple(n["B"])], fill=colour, width=5)
+        elif n["Kind"] == "Pass":
+            draw.polygon([(x, y - 10), (x - 9, y + 7), (x + 9, y + 7)], fill=(240, 80, 60), outline=(0, 0, 0))
+            draw.text((x + 10, y - 8), n["Id"], fill=(255, 255, 255), font=font, stroke_width=2, stroke_fill=(0, 0, 0))
+        else:
+            rx, ry = n["Requested"]
+            if n["SnapPx"] > 0:
+                draw.line([(rx, ry), (x, y)], fill=(255, 255, 255), width=1)
+            draw.ellipse([x - 8, y - 8, x + 8, y + 8], fill=(255, 255, 255), outline=(0, 0, 0), width=2)
+            draw.text((x + 11, y - 9), n["Id"], fill=(255, 255, 255), font=big, stroke_width=3, stroke_fill=(0, 0, 0))
+    kinds = {}
+    for n in r["nodes"]:
+        kinds[n["Kind"]] = kinds.get(n["Kind"], 0) + 1
+    total = sum(e["Length"] for e in r["edges"])
+    lines = ["%d routes, %.0f px total" % (len(r["edges"]), total),
+             ", ".join("%d %s" % (v, k.lower()) for k, v in kinds.items()),
+             "road discount %.2f, pass >%d px through %s" % (r["params"]["road_discount"], r["params"]["pass_min"],
+                                                            "/".join(r["params"]["pass_classes"]) or "-")]
+    if r["unreachable"]:
+        lines.append("unreachable: " + ", ".join("%s-%s" % tuple(u) for u in r["unreachable"]))
+    x0, y0 = 16, 16
+    draw.rectangle([x0, y0, x0 + 440, y0 + 12 + 24 * len(lines)], fill=(0, 0, 0))
+    for i, t in enumerate(lines):
+        draw.text((x0 + 12, y0 + 6 + 24 * i), t, fill=(255, 255, 255), font=big if i == 0 else font)
+    return im
+
+
+def cmd_routes(args):
+    image = Path(args.image)
+    g = cost_grid(image, args.region, args.k, args.cell)
+    crossings, _, cp = crossing_candidates(g)
+    points = parse_points(args.points)
+    r = plan_routes(g, crossings, points, args.pairs)
+    out = Path(args.out) if args.out else image.parent
+    out.mkdir(parents=True, exist_ok=True)
+    stem = "world_map-%s" % args.region
+    draw_routes_overlay(g["img"], g["cost"], g["cell"], crossings, r).save(out / ("%s-routes.png" % stem))
+    doc = {"region": args.region, "image": str(image), "cell": g["cell"], "crossing": cp["crossing"],
+           "bridge_cost": cp["bridge_cost"], **r["params"], "unreachable": r["unreachable"],
+           "Nodes": r["nodes"], "Edges": r["edges"]}
+    (out / ("%s-routes.json" % stem)).write_text(json.dumps(doc, indent=1), encoding="utf-8")
+    for n in r["nodes"]:
+        if n["Kind"] == "Point" and n["SnapPx"] > 0:
+            print("%s snapped %.0f px to land" % (n["Id"], n["SnapPx"]))
+    for e in r["edges"]:
+        print("%-12s %-12s length %7.1f px  cost %7.1f  crossings %s  passes %s" % (
+            e["A"], e["B"], e["Length"], e["Cost"], ",".join(e["Crossings"]) or "-", ",".join(e["Passes"]) or "-"))
+    kinds = [n["Kind"] for n in r["nodes"]]
+    print("%d routes, %.0f px total; %d %s used of %d candidates; %d passes" % (
+        len(r["edges"]), sum(e["Length"] for e in r["edges"]), len(r["used"]), cp["crossing"], len(crossings),
+        kinds.count("Pass")))
+    if r["unreachable"]:
+        print("unreachable: %s" % ", ".join("%s-%s" % tuple(u) for u in r["unreachable"]))
+    print("wrote %s" % (out / ("%s-routes.png" % stem)))
+    return 0
+
+
 def rgb_of(lab):
     """Lab -> sRGB 0..255 (inverse of srgb_to_lab), for writing cluster colours as hex."""
     l, a, b = lab
@@ -788,6 +1157,15 @@ def main(argv=None):
     c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
     c.add_argument("--out", help="output directory (default: the image's directory)")
     c.set_defaults(func=cmd_crossings)
+    c = sub.add_parser("routes", help="least-cost routes between points over land and crossings, with passes")
+    c.add_argument("image")
+    c.add_argument("--region", required=True, help="region id in world_map_palettes.json")
+    c.add_argument("--points", nargs="+", required=True, help="name=x,y ... (px), or one JSON file of points")
+    c.add_argument("--pairs", help="a-b,c-d: route these pairs instead of the minimum spanning tree")
+    c.add_argument("--k", type=int, help="cluster count (default: the palette entry's k)")
+    c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
+    c.add_argument("--out", help="output directory (default: the image's directory)")
+    c.set_defaults(func=cmd_routes)
     args = p.parse_args(argv)
     return args.func(args)
 
