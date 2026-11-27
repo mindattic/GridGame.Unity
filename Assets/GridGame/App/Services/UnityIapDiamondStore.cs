@@ -172,7 +172,8 @@ namespace GridGame.App
         private void FetchProducts()
         {
             productsFailed = false;
-            store.FetchProducts(DiamondStore.Packs.Select(p => new ProductDefinition(p.ProductId, ProductType.Consumable)).ToList());
+            store.FetchProducts(StoreCatalog.Products.Select(p => new ProductDefinition(p.Id,
+                p.Type == GridGame.Meta.ProductType.NonConsumable ? UnityEngine.Purchasing.ProductType.NonConsumable : UnityEngine.Purchasing.ProductType.Consumable)).ToList());
         }
 
         private void OnStoreConnected()
@@ -364,6 +365,21 @@ namespace GridGame.App
                 Debug.LogWarning("[IAP] unknown product in a pending order: " + id);
                 store.ConfirmPurchase(order);
                 Answer(id, PurchaseResult.Of(PurchaseKind.Failed, "That product isn't sold any more.", id));
+                return;
+            }
+            if (outcome == GrantOutcome.AlreadyGranted)
+            {
+                // A non-consumable the wallet already owns, restored under a new transaction id: the record is new, so
+                // save it, then finish the order so the store stops re-sending it.
+                DiamondExchange.WalletDirty = true;
+                if (!app.PersistWallet())
+                {
+                    Debug.LogWarning($"[IAP] {tx} restores an owned product but the wallet isn't saved; leaving it unfinished");
+                    NeedRefetch();
+                    return;
+                }
+                store.ConfirmPurchase(order);
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"{StoreCatalog.Of(id)?.Name ?? "That purchase"} is already yours.", id));
                 return;
             }
             if (outcome != GrantOutcome.Granted) return;
