@@ -1,9 +1,9 @@
-# Store listing copy (GG-T489, 2026-11-20)
+# Store listing copy (GG-T489, launch update GG-T1523, 2026-11-27)
 
-Draft copy for the Google Play and App Store listings. It describes only systems that ship: the **KEEP** rows of
+Launch copy for the Google Play and App Store listings (GG-T1256 slices: Commander story, front door and onboarding, Summon). It describes only systems that ship: the **KEEP** rows of
 [RELEASE_SCOPE.md](RELEASE_SCOPE.md) "Verdicts". Hidden or disabled systems are never mentioned: the Enchantress, taming,
-the menu-theme/font presets and the Inn respec row. Story lines stay inside the premise of
-[STORY_OUTLINE.md](STORY_OUTLINE.md) §1 and are marked *(pending the story pass)*, because every player-facing story
+the menu-theme/font presets and the Inn respec row. Story lines stay inside the Commander premise of
+[STORY_OUTLINE.md](STORY_OUTLINE.md) and BIBLE 25.11.2.2 (GG-T1305) and are marked *(pending the story pass)*, because every player-facing story
 word is still being written in Prose (BIBLE §27.2). Region and faction names are current game data, and the writer may
 rename them. No other game is named or imitated anywhere in the copy.
 
@@ -11,18 +11,20 @@ Character counts were measured with Python `len()` on the exact strings below. R
 
 ## 1. App name
 
-The current product name is **`GridGame Gaiden`** (`ProjectSettings/ProjectSettings.asset`, `productName`, company
-`MindAttic`, package `com.mindattic.gridgame`).
+**Status of the name (GG-T573 is still open, no name has been chosen).** `productName` is now **`GridGame`** (GG-T696 dropped
+"Gaiden"; company `MindAttic`, package `com.mindattic.gridgame`). The listing below uses the recommended **Pincer Moon** as its
+working name. When GG-T573 closes, change the name once here and in `productName`; no copy in sections 2 to 7 contains the
+name, so nothing else needs rewording. Keep the store name field to 30 characters (both stores).
 
 | Candidate | Length | Conflict check (web search, 2026-11-20) | Notes |
 |---|---|---|---|
-| **GridGame Gaiden** (current) | 15 | No app or game with this exact name found. Close names exist: a "Grid Game" roguelike deckbuilder on Steam (listed for 2026) and a "Grid Game Arcade" puzzle app on iOS | Risk of confusion on the "Grid Game" prefix. "Gaiden" (a side story) is a common word in game titles and reads as a sequel to something players can't find |
+| **GridGame Gaiden** (former working title) | 15 | No app or game with this exact name found. Close names exist: a "Grid Game" roguelike deckbuilder on Steam (listed for 2026) and a "Grid Game Arcade" puzzle app on iOS | Risk of confusion on the "Grid Game" prefix. "Gaiden" (a side story) is a common word in game titles and reads as a sequel to something players can't find |
 | **Pincer Moon** | 11 | No exact match found. The nearest is "Pincer", a 2010 tabletop dice game | Names the core verb and the moon that is over every region. Short and easy to search |
 | **Tithe Runners** | 13 | No exact match found | Fits the premise (runaways from the tithe). *Pending the story pass*: "tithe" may be renamed in Prose |
 | **Under Morrow** | 12 | No exact match. A "Morrow" survival RPG on Steam and an "Overmorrow" listing exist | It was the retired story's title. Morrow is still current data (Morrow's Shadow), but the name is *pending the story pass* |
 | **Pincer Moon: Tactics** | 20 | As Pincer Moon | Spells out the genre where the store shows only the name |
 
-Recommendation: **Pincer Moon** (or **Pincer Moon: Tactics**). The owner should run a trademark search (USPTO/EUIPO)
+Recommendation, used for the listing: **Pincer Moon** (or **Pincer Moon: Tactics**). The owner should run a trademark search (USPTO/EUIPO)
 and an exact-name search in both store consoles before committing. A web search is not a clearance. Changing the name
 means changing `productName`. The package id can stay as it is, since it is never shown to players.
 
@@ -32,9 +34,11 @@ means changing `productName`. The package id can stay as it is, since it is neve
 - `Tactics on a ticking timeline` (29)
 - `Pincer tactics under the moon` (29)
 
+Measured 2026-11-27: 30, 29, 29. If the name is Pincer Moon, the third repeats it; prefer the first.
+
 ## 3. Short description (Google Play, max 80)
 
-- **`Drag heroes to trap foes in pincers, beat the timeline and recruit 69 heroes.`** (77) ← recommended
+- **`Lead a crew as the Commander: drag heroes into pincers and beat the timeline.`** (77) ← recommended
 - `Position is your only weapon: drag, flank and pincer foes on a live timeline.` (77)
 
 ## 4. Promotional text (App Store, max 170, editable without review)
@@ -51,6 +55,10 @@ POSITION IS YOUR ONLY WEAPON
 
 Moving never deals damage. Drag a hero across the grid one tile at a time and slide anyone in your way aside. Then close the trap: when two of your heroes flank an unbroken line of enemies, everyone on that line takes the hit. Every drop asks one question: does this finish the line?
 
+LEARN IT IN A FEW MINUTES
+
+Make a profile, name your Commander and play a handful of short drill stages that teach the grid one step at a time. Skip them any time and pick up where you left off.
+
 A TIMELINE THAT WAITS FOR YOU, UNTIL YOU MOVE
 
 Every turn and every spell rides a single timeline. The clock stands still while you look. Pick up a hero and it runs in real time until the next enemy reaches the front. Pincers push your foes' turns back. Hits on a caster can break a charging spell before it lands. Speed decides who acts first, and you decide what to do with it.
@@ -63,14 +71,14 @@ BOSSES THAT BREAK THE RULES
 
 Each region of the main campaign ends in a boss that breaks one rule of battle. One takes a second turn when nobody stands beside it, one gets back up after it falls, and another shrugs off pincers from the side. Learn how each one is beaten before it beats you.
 
-A WORLD UNDER TWO MOONS
+YOU ARE THE COMMANDER
 (pending the story pass)
 
-Two moons hang over every land: the old, familiar Moon, and beside it a misshapen second moon that grows larger the further the road goes. A white order owns the world's light. You lead a crew of runaways in a stolen caravan, out of the storm moors and up the lantern road, through the red Shardfall, past grounded ships and colossal stone arches, toward a white spire. A new chapter of the story opens every five stages.
+You wake from the dead: a person of the Halcyon, who never lifts a blade. You lead the heroes who fight, and where you stand, forgotten Halcyon tech and the Mana Orbs wake. Two moons hang over every land: the old, familiar Moon, and beside it a misshapen second moon that grows larger the further the road goes. A white order owns the world's light. March from the storm moors, up the lantern road and through the red Shardfall, toward a white spire. A new chapter of the story opens every five stages.
 
 GATHER A CREW OF 69 HEROES
 
-Recruit fighters from six factions: neon street crews, hill-fort knights, lantern-road swordsmen, fen witches and healers, a deserter in red and black, and the wild things of the world itself. Win over wanderers with trust and a game of wits, summon heroes at the Summon Circle, or hire mercenaries on contract. Every hero has a class, talents to spend skill points in, and abilities to learn.
+Recruit fighters from six factions: neon street crews, hill-fort knights, lantern-road swordsmen, fen witches and healers, a deserter in red and black, and the wild things of the world itself. Every hero who joins gets a meeting scene with you. Choose your words, earn their trust and watch the bonds between your heroes grow as you fight side by side. Summon heroes at the Summon Circle, or hire mercenaries on contract. Every hero has a class, talents to spend skill points in, and abilities to learn.
 
 MAKE CAMP
 
@@ -98,12 +106,10 @@ Portrait mode, one hand, in short sessions. Adjustable battle speed, an optional
 
 FAIR TO YOUR WALLET
 
-Everything in the game can be earned with gold. Mana Shards are an optional shortcut: a random hero draw, a lucky forge craft, or an instant refill of the party's Rested energy. Every Shard price can also be paid in gold.
+Everything in the game can be earned with gold. Mana Shards are an optional shortcut: a random hero draw at the Summon Circle, a lucky forge craft, or an instant refill of the party's Rested energy. Every Shard price can also be paid in gold.
 ```
 
-*(3,514 characters, including the "(pending the story pass)" marker line. Before submitting, re-check that the boss rule examples (TwinTurn, Undying, AxisWard) are
-still in stage content, and remove the "A world under two moons" block or replace it with Prose-approved text once
-the story pass lands.)*
+*(3,920 characters. Re-check before submitting that the boss rule examples (TwinTurn, Undying, AxisWard) are still in stage content, and that the story block matches the Prose-approved text once the story pass lands; drop the marker line then.)*
 
 ## 6. Feature bullets (for screenshots, the website or press)
 
@@ -120,12 +126,49 @@ the story pass lands.)*
 
 ## 7. Keywords (App Store, 100 characters, comma-separated, no spaces)
 
-`tactics,tactical,rpg,strategy,grid,pincer,timeline,turn,heroes,anime,fantasy,offline,party,squad` (96)
+`tactics,rpg,strategy,grid,timeline,turn,heroes,fantasy,offline,party,squad,summon,story,commander` (97)
 
-Leave out words already in the name or subtitle if the name changes (Apple indexes those already). Google Play has no
+Apple already indexes the name and subtitle, so `pincer` was dropped from the keywords (it is in the subtitle), and `tactical` and `anime` were dropped to fit 100. If the name changes, drop any word it now contains. Google Play has no
 keyword field. The same terms should appear naturally in the full description, which they do.
 
-**Category:** Games › Role Playing (primary), Strategy (secondary).
+**Category:** Games › Role Playing (primary), Strategy (secondary). Google Play takes one category: Role Playing, with the
+tags Strategy and Turn-based.
+
+## 7a. What's new (launch; Play 500, App Store 4000)
+
+```
+Meet the Commander: a new opening, a first-run profile and short drill stages that teach the grid, then straight into the story. Heroes now join in their own meeting scenes and grow to trust you and each other. Summon heroes at the Summon Circle.
+```
+
+(246 characters.)
+
+## 7b. Contact and URLs
+
+None of these exist in the repo yet. They are owner inputs, tracked with the publishing checklist (GG-T1476). Fill them
+in before submission, and use the same addresses in [legal/privacy-policy.md](legal/privacy-policy.md) and
+[legal/terms.md](legal/terms.md), which still read `[privacy contact email]`, `[support email]` and `[URL]`.
+
+| Field | Where used | Value |
+|---|---|---|
+| Developer name | Play, App Store | MindAttic |
+| Support email | Play (required), App Store | *owner to supply* |
+| Privacy contact email | privacy policy, Play data safety | *owner to supply* |
+| Privacy policy URL | Play (required), App Store (required) | *owner to host `legal/privacy-policy.md`* |
+| Support URL | App Store (required) | *owner to supply* |
+| Marketing URL | App Store (optional) | *owner to supply* |
+| Terms URL | App Store EULA field (optional) | *owner to host `legal/terms.md`* |
+
+## 7c. Limits re-measured (GG-T1523, Python `len()`, 2026-11-27)
+
+| Field | Limit | Used |
+|---|---|---|
+| App name | 30 | 11 (Pincer Moon) |
+| Subtitle (App Store) | 30 | 30 |
+| Short description (Play) | 80 | 77 |
+| Promotional text (App Store) | 170 | 151 |
+| Full description | 4000 | 3,920 |
+| Keywords (App Store) | 100 | 97 |
+| What's new (Play) | 500 | 246 |
 
 ## 8. Content-rating and monetisation notes
 
