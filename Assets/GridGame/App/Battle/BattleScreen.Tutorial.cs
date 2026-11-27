@@ -49,8 +49,9 @@ namespace GridGame.App
             public bool DemoMove;
             /// <summary>Done when this returns true for a committed command's events.</summary>
             public Func<BattleScreen, BattleCommand, List<BattleEvent>, bool> Done;
-            /// <summary>Highlight on show: (hero class, bar slot) to pulse.</summary>
-            public string FocusHero; public int FocusSlot = -1;
+            /// <summary>Highlight on show: (hero class, bar slot) to pulse; <see cref="FocusRole"/> names the party's first
+            /// hero of that role instead of a class (GG-T1405: no fixed lead to point at).</summary>
+            public string FocusHero, FocusRole; public int FocusSlot = -1;
             /// <summary>Actions after which the lesson moves on by itself.</summary>
             public int Patience = 5;
             /// <summary>Done the moment the player holds something to read it (GG-T252).</summary>
@@ -147,7 +148,7 @@ namespace GridGame.App
                 Example = "Example: pincer the gold-ringed foe before it reaches the left edge.",
                 Done = (b, c, e) => e.Exists(x => x is PushedBackEvent),
                 Marks = b => b.TimelineMarks() },
-            new Lesson { Id = "taunt", Title = "Roles & Taunt", Wave = 3, FocusHero = "warden", FocusSlot = 0, Waits = true, Scene = "taunt", SceneFirst = true,
+            new Lesson { Id = "taunt", Title = "Roles & Taunt", Wave = 3, FocusRole = "Tank", FocusSlot = 0, Waits = true, Scene = "taunt", SceneFirst = true,
                 Short = "Each hero has a role. A Tank's Taunt pulls every foe in reach onto it, so your casters can finish their spells.",
                 Text = "Each hero has a role. A Tank (your Warden) taunts: Taunt makes every enemy in reach come for it, so your casters can finish their spells. Strikers hit hardest, Healers mend.",
                 Example = "Example: Warden → Taunt → Go.",
@@ -266,8 +267,8 @@ namespace GridGame.App
         private void FocusLesson()
         {
             var l = CurrentLesson;
-            if (l == null || LessonWaiting || l.FocusHero == null || CoachOn) return;
-            var hero = State.Units.FirstOrDefault(u => u.IsHero && u.Alive && u.Def.Id == l.FocusHero);
+            if (l == null || LessonWaiting || (l.FocusHero == null && l.FocusRole == null) || CoachOn) return;
+            var hero = State.Units.FirstOrDefault(u => u.IsHero && u.Alive && (l.FocusHero != null ? u.Def.Id == l.FocusHero : u.Def.Role == l.FocusRole));
             if (hero == null) return;
             SelectHero(hero.Id);
             if (l.FocusSlot >= 0 && l.FocusSlot < slotViews.Count)

@@ -120,17 +120,17 @@ namespace GridGame.Tests
 
         // ── saves ──
 
-        /// <summary>A v16 save (written before aliases existed) whose lead knows abilities that were later merged.</summary>
+        /// <summary>A v16 save (written before aliases existed) whose Warden knows abilities that were later merged.</summary>
         private static SaveData OldSave() => SaveFiles.Deserialize(@"{
   ""Version"": 16,
   ""Roster"": [ {
-    ""ClassId"": """ + Progression.LeadClass + @""",
+    ""ClassId"": ""warden"",
     ""Known"": [ ""old_fireball"", ""heal"", ""fireball"", ""old_passive"" ],
     ""Bar"": [ ""old_fireball"", null, ""old_heal"", ""heal"", ""item:potion"" ],
     ""ActivePassives"": [ ""old_passive"" ],
     ""PassivesChosen"": true
   } ],
-  ""Party"": [ """ + Progression.LeadClass + @""" ],
+  ""Party"": [ ""warden"" ],
   ""Codex"": [ ""ability:old_fireball"" ],
   ""CodexRead"": [ ""ability:old_fireball"" ]
 }");
@@ -146,7 +146,7 @@ namespace GridGame.Tests
         {
             var db = MergedDb(out var passive);
             var s = SaveMigrations.Migrate(OldSave(), db);
-            var h = s.Hero(Progression.LeadClass);
+            var h = s.Hero("warden");
             Assert.That(s.Version, Is.EqualTo(SaveData.CurrentVersion));
             // Known: rewritten in place and deduped (old_fireball became fireball, so the later fireball goes).
             Assert.That(h.Known.Take(3), Is.EqualTo(new[] { "fireball", "heal", passive }));
@@ -172,22 +172,22 @@ namespace GridGame.Tests
         {
             var db = MergedDb(out _);
             var s = SaveMigrations.Migrate(OldSave(), db);
-            var known = s.Hero(Progression.LeadClass).Known.ToList();
-            var bar = s.Hero(Progression.LeadClass).Bar.ToList();
+            var known = s.Hero("warden").Known.ToList();
+            var bar = s.Hero("warden").Bar.ToList();
             Assert.That(SaveMigrations.ResolveAbilityAliases(s, db.AbilityAliases), Is.EqualTo(0));
             SaveMigrations.Migrate(s, db);
-            Assert.That(s.Hero(Progression.LeadClass).Known, Is.EqualTo(known));
-            Assert.That(s.Hero(Progression.LeadClass).Bar, Is.EqualTo(bar));
+            Assert.That(s.Hero("warden").Known, Is.EqualTo(known));
+            Assert.That(s.Hero("warden").Bar, Is.EqualTo(bar));
         }
 
         [Test]
         public void A_current_save_still_resolves_a_later_merge()
         {
             // A merge after v17 adds an alias without a version bump: the rewrite runs on every load.
-            var s = new SaveData { Roster = { new HeroSave { ClassId = Progression.LeadClass, Known = { "old_heal" }, Bar = { [1] = "old_heal" } } } };
+            var s = new SaveData { Roster = { new HeroSave { ClassId = "warden", Known = { "old_heal" }, Bar = { [1] = "old_heal" } } } };
             Assert.That(s.Version, Is.EqualTo(SaveData.CurrentVersion));
             SaveMigrations.Migrate(s, WithRows(Alias("old_heal", "heal")));
-            var h = s.Hero(Progression.LeadClass);
+            var h = s.Hero("warden");
             Assert.That(h.Known, Does.Contain("heal").And.Not.Contain("old_heal"));
             Assert.That(h.Bar[1], Is.EqualTo("heal"));
         }
@@ -208,8 +208,8 @@ namespace GridGame.Tests
             s.Roster[0].Known.Add("scan");
             s.Roster[0].Bar[1] = "scan";
             SaveMigrations.Migrate(s, MergedDb(out _));
-            Assert.That(s.Hero(Progression.LeadClass).Known, Does.Not.Contain("scan"));
-            Assert.That(s.Hero(Progression.LeadClass).Bar[1], Is.Null);
+            Assert.That(s.Hero("warden").Known, Does.Not.Contain("scan"));
+            Assert.That(s.Hero("warden").Bar[1], Is.Null);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace GridGame.Tests
         public void New_game_has_starting_trio_gold_and_loadouts()
         {
             var s = Progression.NewGame(Real, "Test");
-            Assert.That(s.Party, Is.EqualTo(new[] { "warden", "barbarian", "cleric" })); // a small start led by the fixed lead (GG-T533); the rest join at story beats (GG-T118)
+            Assert.That(s.Party, Is.EqualTo(Progression.StartingRoster)); // a small start (GG-T1405: no fixed lead); the rest join at story beats (GG-T118)
             Assert.That(s.Party.Select(id => Real.Classes[id].Role), Is.EqualTo(new[] { "Tank", "Striker", "Healer" }));
             Assert.That(s.Gold, Is.EqualTo(Progression.StartingGold));
             foreach (var h in s.Roster) Assert.That(h.Bar.Any(e => e != null), Is.True);

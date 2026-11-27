@@ -28,18 +28,9 @@ namespace GridGame.Meta
         /// The default starting party. Owner 2026-10-11 made it five ("a 5 player team seems about right for max");
         /// owner 2026-10-19 (GG-T118) shrank the start to a small party — Tank, Striker, Healer — with the rest of
         /// the party joining at story beats (dialogue JoinHero), on top of rescued guests and the Summon Circle.
+        /// GG-T1405: there is no fixed lead any more (the player is the Commander), so the warden is an ordinary hero.
         /// </summary>
-        public static readonly string[] StartingRoster = { LeadClass, "barbarian", "cleric" };
-        /// <summary>
-        /// The fixed lead (GG-T533, owner 2026-11-21): Warden, the First Sleeper, Halcyon's last guard on watch over the
-        /// Still. Every campaign starts with them, character select locks them in as the first pick, they can't be moved to
-        /// the reserve, and they are in no recruit pool (Summon Circle, Diamond draw, wanderers, story JoinHero, guests).
-        /// A save from before them gets them on load (<see cref="SaveMigrations.EnsureLead"/>).
-        /// </summary>
-        public const string LeadClass = "warden";
-
-        /// <summary>Is <paramref name="classId"/> the fixed lead (GG-T533)?</summary>
-        public static bool IsLead(string classId) => string.Equals(classId, LeadClass, StringComparison.OrdinalIgnoreCase);
+        public static readonly string[] StartingRoster = { "knight", "barbarian", "cleric" };
         /// <summary>Heroes a new game starts with (character select locks in this many; GG-T118).</summary>
         public const int StartingPartySize = 3;
         public const int StartingGold = 200;
@@ -63,9 +54,7 @@ namespace GridGame.Meta
         public static SaveData NewGame(ContentDb c, string name, IReadOnlyList<string> party)
         {
             var s = new SaveData { Name = string.IsNullOrWhiteSpace(name) ? "Lightbearer" : name.Trim(), Gold = StartingGold, OwnedOrbs = BattleConfig.StartOwnedOrbs };
-            // GG-T533: the lead always sets out, first, whatever the pick (a content set without the class skips it).
             var ids = new List<string>();
-            if (c.TryClass(LeadClass) != null) ids.Add(LeadClass);
             foreach (var id in party ?? Array.Empty<string>())
                 if (id != null && !ids.Contains(id, StringComparer.OrdinalIgnoreCase)) ids.Add(id);
             foreach (var id in ids)
@@ -2676,7 +2665,6 @@ namespace GridGame.Meta
             if (s.Hero(classId) == null) return Result.Fail("Not in roster");
             if (s.Party.Contains(classId))
             {
-                if (Progression.IsLead(classId)) return Result.Fail("Warden leads the party"); // GG-T533: the fixed lead never sits out
                 if (s.Party.Count <= 1) return Result.Fail("Someone has to go");
                 s.Party.Remove(classId);
                 return Result.Success("Moved to reserve");
@@ -2773,7 +2761,7 @@ namespace GridGame.Meta
         /// earlier JoinHero effects of the same dialogue.</summary>
         public static string StoryPick(ContentDb c, SaveData s, string preferred, string role, ICollection<string> exclude = null)
         {
-            bool Free(ClassDef d) => d != null && d.Team == Team.Hero && !d.IsCut && !Progression.IsLead(d.Id) && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && (exclude == null || !exclude.Contains(d.Id));
+            bool Free(ClassDef d) => d != null && d.Team == Team.Hero && !d.IsCut && s.Hero(d.Id) == null && !Permadeath.IsLost(s, d.Id) && (exclude == null || !exclude.Contains(d.Id));
             if (preferred != null && Free(c.TryClass(preferred))) return preferred;
             var guests = new HashSet<string>(c.Stages.Values.SelectMany(st => st.Waves).SelectMany(w => w.Guests).Select(g => g.Class));
             var pool = c.Classes.Values.Where(d => Free(d) && !c.Summon.Pool.Contains(d.Id) && !guests.Contains(d.Id))

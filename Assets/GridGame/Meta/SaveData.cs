@@ -957,7 +957,7 @@ namespace GridGame.Meta
             }
             if (c != null) DropRetiredHeroes(s, c);
             if (c != null) ConvertCutHeroes(s, c);
-            if (c != null) EnsureLead(s, c);
+            ReleaseLead(s);
             if (c != null && beforeBoard) PlaceOnBoard(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             JoinNewKeepers(s);
@@ -1444,29 +1444,27 @@ namespace GridGame.Meta
             catch (Exception e) { Notes.Add($"couldn't bring the Manasmith: {e.Message}"); }
         }
 
-        /// <summary>GG-T533: every save holds the fixed lead (<see cref="Progression.LeadClass"/>), first in the party. A save
-        /// from before the Warden existed gets them on load the way a summon joins (the roster's average experience, trained
-        /// to that level, <see cref="Summon.Join"/>); they then go to the front of the party, and if that makes it more than
-        /// the cap the last member steps back to the reserve (no one leaves the roster). Idempotent; never throws on a bad
-        /// save (a content set without the class, or a roster that can't take them, is left as it is).</summary>
-        public static void EnsureLead(SaveData s, ContentDb c)
+        /// <summary>GG-T1405: the fixed lead is gone. A save made under GG-T533 keeps its Warden in the roster as an ordinary
+        /// hero who can now sit in the reserve, and nothing holds slot 0 for them any more. This only tidies the party the
+        /// old lead rule shuffled: each member once, each one a roster hero, no more than the cap (extras step back to the
+        /// reserve; no one leaves the roster). Idempotent; never throws.</summary>
+        public static void ReleaseLead(SaveData s)
         {
-            if (s == null || c == null || c.TryClass(Progression.LeadClass) == null) return;
+            if (s == null) return;
             try
             {
                 s.Roster ??= new List<HeroSave>();
                 s.Party ??= new List<string>();
-                if (s.Hero(Progression.LeadClass) == null)
-                {
-                    Summon.Join(c, s, Progression.LeadClass);
-                    Notes.Add("Warden (the fixed lead, GG-T533) joined this save's roster");
-                }
-                if (s.Party.Count > 0 && Progression.IsLead(s.Party[0])) return;
-                s.Party.RemoveAll(Progression.IsLead);
-                s.Party.Insert(0, Progression.LeadClass);
-                while (s.Party.Count > Progression.MaxPartySize) s.Party.RemoveAt(s.Party.Count - 1);
+                var party = new List<string>();
+                foreach (var id in s.Party)
+                    if (id != null && s.Hero(id) != null && !party.Exists(p => string.Equals(p, id, StringComparison.OrdinalIgnoreCase))) party.Add(id);
+                if (party.Count > Progression.MaxPartySize) party.RemoveRange(Progression.MaxPartySize, party.Count - Progression.MaxPartySize);
+                if (party.Count == s.Party.Count) return; // only ever drops members, so the same count is the same party
+                s.Party.Clear();
+                s.Party.AddRange(party);
+                Notes.Add("the party no longer holds a slot for a fixed lead (GG-T1405)");
             }
-            catch (Exception e) { Notes.Add($"couldn't add the lead: {e.Message}"); }
+            catch (Exception e) { Notes.Add($"couldn't tidy the party: {e.Message}"); }
         }
 
         /// <summary>GG-T537: every Camp vendor whose story beat's stage this save has cleared is with the caravan: a save past

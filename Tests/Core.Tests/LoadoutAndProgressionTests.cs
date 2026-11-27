@@ -480,48 +480,49 @@ namespace GridGame.Tests
             Assert.That(s.Roster.Count, Is.EqualTo(3));
         }
 
-        /// <summary>GG-T533: the lead is added once, first, even when the pick names them or would overflow the cap.</summary>
+        /// <summary>GG-T1405: a new game sets out with exactly the picked heroes, in pick order, no one added; the cap still holds.</summary>
         [Test]
-        public void NewGame_puts_the_lead_first_once_and_keeps_the_party_cap()
+        public void NewGame_starts_with_the_pick_alone_and_keeps_the_party_cap()
         {
             var c = Real;
-            var s = Progression.NewGame(c, "Lead", new[] { "paladin", "warden", "barbarian", "cleric", "redmage", "engineer", "knight" });
-            Assert.That(s.Party[0], Is.EqualTo(Progression.LeadClass));
-            Assert.That(s.Party.Count(id => id == Progression.LeadClass), Is.EqualTo(1));
-            Assert.That(s.Party.Count, Is.EqualTo(Progression.MaxPartySize));
-            Assert.That(s.Party, Does.Not.Contain("knight"), "the pick past the cap is dropped");
+            var s = Progression.NewGame(c, "Pick", new[] { "paladin", "barbarian", "cleric" });
+            Assert.That(s.Party, Is.EqualTo(new[] { "paladin", "barbarian", "cleric" }));
+            Assert.That(s.Hero("warden"), Is.Null, "no fixed lead joins on its own");
+            var big = Progression.NewGame(c, "Big", new[] { "paladin", "warden", "barbarian", "cleric", "redmage", "engineer", "knight" });
+            Assert.That(big.Party.Count, Is.EqualTo(Progression.MaxPartySize));
+            Assert.That(big.Party, Does.Not.Contain("knight"), "the pick past the cap is dropped");
         }
 
-        /// <summary>GG-T533: the lead can't be moved to the reserve; anyone else still can.</summary>
+        /// <summary>GG-T1405: anyone, the warden too, can be moved to the reserve.</summary>
         [Test]
-        public void Party_Toggle_refuses_to_bench_the_lead()
+        public void Party_Toggle_benches_the_warden_like_anyone()
         {
-            var s = Progression.NewGame(Real, "Lock");
-            Assert.That(Party.Toggle(s, Progression.LeadClass).Ok, Is.False);
-            Assert.That(s.Party[0], Is.EqualTo(Progression.LeadClass));
-            Assert.That(Party.Toggle(s, "cleric").Ok, Is.True);
+            var s = Progression.NewGame(Real, "Bench", new[] { "warden", "barbarian", "cleric" });
+            Assert.That(Party.Toggle(s, "warden").Ok, Is.True);
+            Assert.That(s.Party, Does.Not.Contain("warden"));
+            Assert.That(s.Hero("warden"), Is.Not.Null);
         }
 
-        /// <summary>GG-T533: a save from before the Warden gets them on load, first in the party; a full party benches its
-        /// last member (who stays on the roster). Running it again changes nothing.</summary>
+        /// <summary>GG-T1405: a GG-T533 save keeps its Warden on the roster; the party loses duplicates and non-roster ids and
+        /// anyone past the cap steps back to the reserve. Running it again changes nothing.</summary>
         [Test]
-        public void EnsureLead_adds_the_lead_to_an_old_full_party_and_benches_the_last()
+        public void ReleaseLead_tidies_an_old_party_and_keeps_the_warden()
         {
             var c = Real;
             var old = new SaveData { Name = "Old" };
-            foreach (var id in new[] { "paladin", "barbarian", "cleric", "redmage", "engineer", "knight" })
+            foreach (var id in new[] { "warden", "paladin", "barbarian", "cleric", "redmage", "engineer", "knight" })
             {
                 old.Roster.Add(Progression.NewHero(c, id));
                 old.Party.Add(id);
             }
-            SaveMigrations.EnsureLead(old, c);
+            old.Party.Add("warden");
+            old.Party.Add("ghost");
+            SaveMigrations.ReleaseLead(old);
             Assert.That(old.Party, Is.EqualTo(new[] { "warden", "paladin", "barbarian", "cleric", "redmage", "engineer" }));
-            Assert.That(old.Hero("warden"), Is.Not.Null);
             Assert.That(old.Hero("knight"), Is.Not.Null, "benched, not dropped");
             Assert.That(old.Roster.Count, Is.EqualTo(7));
-            SaveMigrations.EnsureLead(old, c);
+            SaveMigrations.ReleaseLead(old);
             Assert.That(old.Party, Is.EqualTo(new[] { "warden", "paladin", "barbarian", "cleric", "redmage", "engineer" }));
-            Assert.That(old.Roster.Count, Is.EqualTo(7));
         }
 
         /// <summary>GG-T532: a new hero waits for the female/male pick; a v13 save's heroes become female with nothing to
