@@ -55,5 +55,33 @@ namespace GridGame.Meta
         {
             foreach (var ch in c.Campaign.Chapters) if (ch?.Id != null) s.SeenCrawls.Add(ch.SeenMark);
         }
+
+        /// <summary>GG-T1478: the theme whose region-entry crawl is due on this save, or null: one with a crawl that
+        /// hasn't played. Never on a Test Mode save (bots never see story).</summary>
+        public static ThemeDef RegionDue(ContentDb c, SaveData s, string themeId)
+        {
+            if (c == null || s == null || s.TestMode || themeId == null) return null;
+            foreach (var t in c.Campaign.Themes)
+                if (t != null && string.Equals(t.Id, themeId, StringComparison.OrdinalIgnoreCase))
+                    return t.HasCrawl && !string.IsNullOrEmpty(t.Crawl) && !s.SeenCrawls.Contains(t.SeenMark) ? t : null;
+            return null;
+        }
+
+        /// <summary>GG-T1478: the theme that follows <paramref name="stageId"/>'s theme in campaign order when the stage is
+        /// its theme's last (the stop that opens the next region), else null.</summary>
+        public static ThemeDef RegionOpenedBy(ContentDb c, string stageId)
+        {
+            if (c == null || stageId == null) return null;
+            var themes = c.Campaign.Themes;
+            for (int i = 0; i < themes.Count - 1; i++)
+            {
+                var st = themes[i]?.Stages;
+                if (st != null && st.Count > 0 && string.Equals(st[st.Count - 1], stageId, StringComparison.OrdinalIgnoreCase))
+                    return themes[i + 1];
+            }
+            return null;
+        }
+
+        public static void MarkRegionSeen(SaveData s, ThemeDef region) => s.SeenCrawls.Add(region.SeenMark);
     }
 }

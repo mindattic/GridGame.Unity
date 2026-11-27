@@ -1252,6 +1252,17 @@ namespace GridGame.Core.Content
         /// <summary>GG-T456: the closest-sounding tracks from other regions, added to the bag while the region has fewer
         /// than <c>MusicPlaylist.MinSize</c> tracks of its own. Drop them as the region gets its own music.</summary>
         public List<string> MusicBorrow = new List<string>();
+        /// <summary>GG-T1478: the region has an entry crawl, Prose key <see cref="CrawlKey"/>, played once on the first
+        /// arrival (merged with a chapter crawl due at the same stop).</summary>
+        public bool HasCrawl;
+        /// <summary>The region-entry crawl's words, joined from Prose at load (never in gameplay JSON).</summary>
+        public string Crawl;
+
+        /// <summary>A region-entry crawl's Prose key (GG-T1478).</summary>
+        public static string CrawlKey(string id) => "crawl:region/" + id;
+
+        /// <summary>What <c>SaveData.SeenCrawls</c> records once the region-entry crawl has played (GG-T1478).</summary>
+        public string SeenMark => "region:" + Id;
     }
 
     public sealed class CampaignDef

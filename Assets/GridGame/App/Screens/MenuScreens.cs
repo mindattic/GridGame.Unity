@@ -1072,12 +1072,20 @@ namespace GridGame.App
                 var beat = DialogueRunner.PendingBeat(app.Content, app.Save, stageId);
                 return beat == null ? new BattleScreen(stageId) : StoryBeats.Play(beat, BeatsThenBattle, theme?.Id);
             }
-            GameScreen next = BeatsThenBattle();
-            // GG-T386: a chapter crawl the results screen didn't get to play ("Next stage ›", or a save from before
-            // chapters) plays now, unless a beat opening with its own crawl is up next: it waits for the next stop, so
-            // two scrolls never play back to back.
             var beatFirst = app.Save == null ? null : DialogueRunner.PendingBeat(app.Content, app.Save, stageId);
-            if (string.IsNullOrEmpty(beatFirst?.Crawl)) next = StoryBeats.WithChapter(next);
+            // GG-T1478: the region-entry crawl the results screen didn't get to play plays before the theme's beats, in
+            // one scroll with any due chapter crawl and the first beat's own crawl.
+            var region = Story.RegionDue(app.Content, app.Save, theme?.Id);
+            GameScreen next;
+            if (region != null) next = StoryBeats.WithRegion(region, beatFirst, BeatsThenBattle);
+            else
+            {
+                next = BeatsThenBattle();
+                // GG-T386: a chapter crawl the results screen didn't get to play ("Next stage ›", or a save from before
+                // chapters) plays now, unless a beat opening with its own crawl is up next: it waits for the next stop, so
+                // two scrolls never play back to back.
+                if (string.IsNullOrEmpty(beatFirst?.Crawl)) next = StoryBeats.WithChapter(next);
+            }
             if (replaceCurrent) app.Router.Replace(next); else app.Router.Push(next);
         }
     }
@@ -1308,11 +1316,46 @@ namespace GridGame.App
             }
             // GG-T386: the chapter crawl this victory earned, then Camp. GG-T537: a vendor's join beat (no crawl of its own)
             // still plays between the scroll and Camp, so the vendor arrives with the party; a level interlude waits.
+            // GG-T1478: the first victory over a region's last stage also plays the next region's entry crawl, inside the
+            // chapter's scroll (same stop) or alone.
             var ch = Story.ChapterDue(app.Content, app.Save);
-            if (ch == null) { app.Router.ResetTo(Camp()); return; }
-            Story.MarkChapterSeen(app.Content, app.Save, ch);
+            var region = victory ? Story.RegionDue(app.Content, app.Save, Story.RegionOpenedBy(app.Content, stageId)?.Id) : null;
+            if (ch == null && region == null) { app.Router.ResetTo(Camp()); return; }
+            if (ch != null) Story.MarkChapterSeen(app.Content, app.Save, ch);
+            if (region != null) Story.MarkRegionSeen(app.Save, region);
             app.Persist();
-            app.Router.ResetTo(new StoryCrawlScreen(ch, VendorsThenCamp()));
+            app.Router.ResetTo(Scroll(ch, region, null, VendorsThenCamp()));
+        }
+
+        /// <summary>GG-T1478: the region-entry crawl due on a launch into <paramref name="region"/>, as one scroll with the
+        /// chapter crawl due (if any) and the first beat's own crawl (if it has one), so two scrolls never play back to
+        /// back; then <paramref name="beats"/> (that beat's conversation first). Marks the crawls played and saves.</summary>
+        public static GameScreen WithRegion(ThemeDef region, DialogueDef beatFirst, Func<GameScreen> beats)
+        {
+            var app = GameApp.I;
+            var ch = Story.ChapterDue(app.Content, app.Save);
+            if (ch != null) Story.MarkChapterSeen(app.Content, app.Save, ch);
+            Story.MarkRegionSeen(app.Save, region);
+            app.Persist();
+            bool beatCrawl = !string.IsNullOrEmpty(beatFirst?.Crawl);
+            return Scroll(ch, region, beatCrawl ? beatFirst : null, beatCrawl ? new DialogueScreen(beatFirst, beats, region.Id) : beats());
+        }
+
+        /// <summary>One scroll of the given crawls in order (chapter, region, beat), each after the first headed by its
+        /// title, over the region's backdrop when there is one.</summary>
+        private static GameScreen Scroll(CrawlDef chapter, ThemeDef region, DialogueDef beat, GameScreen next)
+        {
+            string title = null, text = null;
+            void Add(string heading, string body)
+            {
+                if (string.IsNullOrEmpty(body)) return;
+                if (text == null) { title = heading; text = body; }
+                else text += string.IsNullOrEmpty(heading) ? "\n\n" + body : "\n\n" + heading + "\n\n" + body;
+            }
+            Add(chapter?.Title, chapter?.Crawl);
+            Add(region?.Name, region?.Crawl);
+            Add(beat?.Title, beat?.Crawl);
+            return text == null ? next : new StoryCrawlScreen(title, text, region?.Id ?? chapter?.Backdrop ?? beat?.Backdrop, next);
         }
 
         /// <summary>GG-T537: Camp, after every vendor join beat that's due (one after another), then any Joined scene (GG-T1594).</summary>

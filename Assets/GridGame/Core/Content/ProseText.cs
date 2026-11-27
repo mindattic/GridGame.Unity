@@ -93,6 +93,7 @@ namespace GridGame.Core.Content
                 for (int n = 1; n <= db.Campaign.Opening.Pages.Count; n++) k[CrawlDef.OpeningKey(n)] = "crawl"; // GG-T1363
             if (db.Campaign.Ending != null) k["crawl:ending"] = "crawl";
             foreach (var ch in db.Campaign.Chapters) if (ch?.Id != null) k[CrawlDef.ChapterKey(ch.Id)] = "crawl"; // GG-T386
+            foreach (var t in db.Campaign.Themes) if (t?.Id != null && t.HasCrawl) k[ThemeDef.CrawlKey(t.Id)] = "crawl"; // GG-T1478
             foreach (var c in db.Classes.Values)
             {
                 k["class:" + c.Id] = "description";
@@ -291,6 +292,12 @@ namespace GridGame.Core.Content
             // GG-T386: a chapter crawl after every fifth stage replaced the per-theme crawls (crawl:<themeId>, retired).
             foreach (var ch in db.Campaign.Chapters)
                 if (ch?.Id != null) JoinCrawl(ch, CrawlDef.ChapterKey(ch.Id), $"campaign.json chapter {ch.Id} Crawl");
+            foreach (var t in db.Campaign.Themes) // GG-T1478: region-entry crawls (crawl:region/<theme>)
+            {
+                if (t?.Id == null) continue;
+                Leftover(t.Crawl, $"campaign.json theme {t.Id} Crawl");
+                t.Crawl = t.HasCrawl ? Crawl(Get(ThemeDef.CrawlKey(t.Id), "crawl"), ThemeDef.CrawlKey(t.Id)) : null;
+            }
             foreach (var q in db.QuestOrder)
             {
                 string key = "quest:" + q.Id;
