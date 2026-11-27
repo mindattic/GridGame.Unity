@@ -96,13 +96,11 @@ namespace GridGame.App
         /// highlighted. It scrolls sideways when the roster is wider than the column and its cards share the row when not.</summary>
         private void Picker(VisualElement body)
         {
-            var w = Ui.Window(null, body);
-            w.name = "hero-picker";
-            w.style.marginTop = Space.S0; // sits on the tab strip
+            var w = Ui.Panel(body, name: "hero-picker");
+            Ui.Margin(w, top: Space.S0); // sits on the tab strip
             // Edge = gap = 24 (row padding 12 + card margin 12): the Camp party window's even gutters (POL-C8). The 12 sits
             // on the scrolled row, not the window, so the row's own box shows it and scrolled cards reach the window edge.
-            w.style.paddingLeft = w.style.paddingRight = Space.S0;
-            w.style.paddingTop = w.style.paddingBottom = Space.S8;
+            Ui.Pad(w, Space.S0, Space.S8, Space.S0, Space.S8);
             var strip = new ScrollView(ScrollViewMode.Vertical) { name = "hero-strip" };  // GG-T760: wraps to more rows instead of scrolling sideways
             strip.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             strip.verticalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -111,7 +109,7 @@ namespace GridGame.App
             row.style.flexDirection = FlexDirection.Row;
             row.style.flexWrap = Wrap.Wrap;
             row.style.minWidth = Length.Percent(100);
-            row.style.paddingLeft = row.style.paddingRight = Space.TargetHalfGap;
+            Ui.Pad(row, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
 
             var heroes = S.Party.Select(S.Hero).Where(h => h != null)
                 .Concat(S.Roster.Where(h => !S.Party.Contains(h.ClassId))).ToList();
@@ -124,13 +122,13 @@ namespace GridGame.App
                 var card = Ui.El("card" + (sel ? " card--selected" : ""), row);
                 card.name = "hero-pick-" + id;
                 card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = Length.Percent(26); // three to a row, more wrap below (GG-T760)
-                card.style.marginTop = card.style.marginBottom = card.style.marginLeft = card.style.marginRight = Space.TargetHalfGap;
-                card.style.paddingTop = card.style.paddingBottom = card.style.paddingLeft = card.style.paddingRight = Space.S8;
+                Ui.Margin(card, Space.TargetHalfGap, Space.TargetHalfGap, Space.TargetHalfGap, Space.TargetHalfGap);
+                Ui.Pad(card, Space.S8, Space.S8, Space.S8, Space.S8);
                 var bw = sel ? 4f : 0f;
                 card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
                 card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = Palette.Gold;
                 var thumb = Ui.Thumb(id, card, Kit.Avatar);
-                thumb.style.marginRight = Space.S16;
+                Ui.Margin(thumb, right: Space.S16);
                 bool ready = NextAbility.Ready(C, S, id);
                 if (ready) RowIcon.Badge(thumb, RowKind.New);
                 var info = Ui.El("col grow", card);
@@ -142,7 +140,7 @@ namespace GridGame.App
                 meta.style.alignItems = Align.Center;
                 Ui.Caption($"Lv {Progression.Level(h)}", meta, "gold");
                 var tag = Ui.Caption(inParty ? "Party" : "Reserve", meta, inParty ? "good" : "dim");
-                tag.style.marginLeft = Space.S8;
+                Ui.Margin(tag, left: Space.S8);
                 Ui.Marquee(tag);
                 if (ready)
                 {

@@ -41,7 +41,7 @@ namespace GridGame.App
             var col = Ui.El("col", row);
             col.name = "party-board-" + h.ClassId;
             col.style.flexGrow = 1; col.style.flexBasis = 0; col.style.minWidth = 0;
-            col.style.marginLeft = col.style.marginRight = Space.S4;
+            Ui.Margin(col, left: Space.S4, right: Space.S4);
             col.style.alignItems = Align.Stretch;
 
             // GG-T1112: one line through the shared marquee (POL-C5), so a long class name scrolls instead of clipping.
@@ -61,7 +61,7 @@ namespace GridGame.App
             // The bar: one square per slot, the entry's icon or an empty (dim) square; locked slots faded.
             var bar = Ui.El("row", col);
             bar.name = "party-bar-" + h.ClassId;
-            bar.style.marginTop = Space.S4;
+            Ui.Margin(bar, top: Space.S4);
             bar.style.flexWrap = Wrap.Wrap;
             bar.style.justifyContent = Justify.Center;
             var cells = new VisualElement[Progression.MaxBarSlots];
@@ -70,8 +70,7 @@ namespace GridGame.App
                 var cell = Ui.El(null, bar);
                 cells[i] = cell;
                 cell.style.flexShrink = 0;
-                cell.style.marginLeft = cell.style.marginRight = CellGap / 2f;
-                cell.style.marginBottom = CellGap;
+                Ui.Margin(cell, left: CellGap / 2f, right: CellGap / 2f, bottom: CellGap);
                 cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 4;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 1;
                 var bc = Palette.Text.WithA(0.4f);

@@ -57,10 +57,10 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col center", root);
 
-            var head = Ui.Text("LEVEL UP!", "title shadow", col);
+            var head = Ui.Text("LEVEL UP!", "t-display shadow", col);
             Fonts.UseDisplay(head);
             head.style.color = Palette.Gold;
-            head.style.marginBottom = Space.S32;
+            Ui.Margin(head, bottom: Space.S32);
 
             portraitRow = Ui.El("row", col);
             portraitRow.style.opacity = 0f;
@@ -74,16 +74,16 @@ namespace GridGame.App
             frame.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
 
             var info = Ui.El("col", portraitRow);
-            info.style.marginLeft = Space.S24; info.style.width = Fit.C(27f);
-            var nm = Ui.Text(def.Name, "h1 shadow", info);
+            Ui.Margin(info, left: Space.S24); info.style.width = Fit.C(27f);
+            var nm = Ui.Text(def.Name, "t-h1 shadow", info);
             Fonts.UseDisplay(nm);
-            Ui.RoleBadge(def.Role, info).style.marginBottom = Space.S8;
-            levelLabel = Ui.Text($"Lv {from}", "h1 shadow gold", info);
+            Ui.Margin(Ui.RoleBadge(def.Role, info), bottom: Space.S8);
+            levelLabel = Ui.Text($"Lv {from}", "t-h1 shadow gold", info);
             xpGauge = Ui.Gauge(0f, info, 300);
-            xpGauge.style.marginTop = Space.S8;
+            Ui.Margin(xpGauge, top: Space.S8);
 
             statColumn = Ui.El("col", col);
-            statColumn.style.marginTop = Space.S24;
+            Ui.Margin(statColumn, top: Space.S24);
 
             // GG-T1556 (§22.8): the hero's next ability on the skill hexagon, with Learn to its Board route. Learn leaves the
             // fanfare for the results and opens the Board on top of them, so Back from the Board lands on the results.
@@ -93,8 +93,8 @@ namespace GridGame.App
             {
                 var nextRow = Ui.El("row", col);
                 nextRow.name = "levelup-next-ability";
-                nextRow.style.marginTop = Space.S24; nextRow.style.alignItems = Align.Center;
-                Ui.Text(NextAbility.Line(c, heroSave), "small gold", nextRow).style.marginRight = Space.S16;
+                Ui.Margin(nextRow, top: Space.S24); nextRow.style.alignItems = Align.Center;
+                Ui.Margin(Ui.Text(NextAbility.Line(c, heroSave), "small gold", nextRow), right: Space.S16);
                 RowIcon.IconButton("Learn", RowKind.Ability, () => Learn(classId, next), "btn--small", nextRow).name = "levelup-learn";
             }
 
