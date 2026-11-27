@@ -316,13 +316,6 @@ namespace GridGame.Meta
         }
     }
 
-    /// <summary>Whether a summon pull may be sold here (GG-T1424): the hook every pull asks first. Allows every pull until
-    /// the region rules land (GG-T1433).</summary>
-    public static class LootBoxPolicy
-    {
-        public static Result Allows(SaveData s, BannerDef banner, int count) => Result.Success();
-    }
-
     public enum PityDue { None, NewHero, Featured }
 
     /// <summary>What a pull gave: a new hero, an Echo of an owned one, or Ticket fragments once its Echoes are full.</summary>

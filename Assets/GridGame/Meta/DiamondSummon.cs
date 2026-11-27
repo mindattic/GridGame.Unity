@@ -44,6 +44,8 @@ namespace GridGame.Meta
         public static Result CanDraw(ContentDb c, SaveData s)
         {
             if (s.TestMode) return Result.Fail("Not in Test Mode");
+            var allowed = LootBoxPolicy.AllowsDraw(s);
+            if (!allowed.Ok) return allowed;
             if (Pool(c, s).Count == 0) return Result.Fail("No one is left to answer");
             if (Paywall.Pending(s, PaywallKind.Summon) != null) return Result.Fail("A summoning is already under way");
             if (SummonTickets.Have(s) > 0) return Result.Success();

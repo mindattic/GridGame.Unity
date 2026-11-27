@@ -1700,7 +1700,8 @@ namespace GridGame.App
             var row = Ui.Actions(w);
             PullButton(row, b, 1, busy, "btn--small btn--primary").name = "summon-draw";
             PullButton(row, b, b.MultiCount, busy, "btn--small").name = "summon-draw-multi";
-            if (Gacha.Price(S, b, 1).shards > 0 && diamonds < b.PullShards)
+            if (!LootBoxPolicy.PaidAllowed) Ui.Para(LootBoxPolicy.OffLine, w, "dim").name = "summon-paid-off"; // GG-T1433
+            else if (Gacha.Price(S, b, 1).shards > 0 && diamonds < b.PullShards)
             {
                 Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate.", w, "dim");
                 RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
@@ -1759,7 +1760,7 @@ namespace GridGame.App
                 }
                 Confirm.Show($"Pay {pay} for {(count == 1 ? "a pull" : $"{count} pulls")} on {b.Name}? {RatesLine(b, Gacha.Odds(C, S, b))}.", "Summon", () => Pull(b, count));
             }, classes, row);
-            Ui.SetEnabled(btn, !busy && !S.TestMode && Gacha.Pool(C, S, b).Count > 0);
+            Ui.SetEnabled(btn, !busy && !S.TestMode && Gacha.Pool(C, S, b).Count > 0 && LootBoxPolicy.Allows(S, b, count).Ok);
             return btn;
         }
 

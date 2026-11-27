@@ -37,6 +37,13 @@ namespace GridGame.App
             odds.name = "lucky-odds";
             odds.style.marginTop = Space.S8;
 
+            var allowed = LootBoxPolicy.AllowsLuckyCraft(); // GG-T1433
+            if (!allowed.Ok)
+            {
+                Ui.Para(allowed.Message, box, "dim").name = "lucky-off";
+                return;
+            }
+
             bool can = Crafting.CanLucky(c, s, r);
             var lucky = RowIcon.IconButton($"Lucky craft · {DiamondExchange.Label(Crafting.LuckyDiamondCost)} · ★ {OddsText.Percent(withDiamond)}", RowKind.Confirm, () =>
             {

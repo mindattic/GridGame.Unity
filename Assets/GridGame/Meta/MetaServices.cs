@@ -371,6 +371,8 @@ namespace GridGame.Meta
         public int CrucibleBestGold;
         /// <summary>The turn mode this run's record is kept under (GG-T945, <see cref="TurnRules.RecordMode"/>).</summary>
         public TurnMode CrucibleMode;
+        /// <summary>GG-T1626: a tutorial drill (<see cref="Drills"/>): nothing earned, spent or worn.</summary>
+        public bool Drill;
         /// <summary>The battle's best combo window (§1.2.8, GG-T852): its rank (None when no combo ran) and score.</summary>
         public ComboRank BestComboRank;
         public int BestComboScore;
@@ -706,10 +708,12 @@ namespace GridGame.Meta
         {
             Mercenaries.Settle(c, s); // a spent contract never fights an unpaid battle (GG-T233)
             bool crucible = Crucible.IsStage(stage.Id);
+            bool drill = Drills.IsDrill(stage);
             var setup = new BattleSetup
             {
                 Stage = stage,
-                Seed = seed,
+                Seed = drill && stage.Seed is int fixedSeed ? fixedSeed : seed,
+                Tutorial = drill, // GG-T1626: every drill stages its lessons' situations (TutorialSceneCommand)
                 UnlockedSlots = Progression.UnlockedSlots(s),
                 // A Crucible run authors every wave's level from the party's own (§22.10), so neither the campaign
                 // curve nor New Game+'s step may lift it further.
@@ -751,6 +755,7 @@ namespace GridGame.Meta
         /// <summary>Commits a finished battle into the save (XP, gold, loot, wounds, durability, kills, bestiary, unlocks).</summary>
         public static BattleReport Commit(ContentDb c, SaveData s, BattleState battle)
         {
+            if (Drills.IsDrill(battle.Stage)) return Drills.Commit(c, s, battle);
             // Gold paid to a recruitable mid-battle (GG-T132) left the purse at that moment, whatever the outcome.
             if (battle.Results.CoinsSpent > 0) s.Gold = Math.Max(0, s.Gold - battle.Results.CoinsSpent);
             Mercenaries.CountBattle(s); // every contract loses a battle, fought in or not (GG-T233)
@@ -1418,9 +1423,10 @@ namespace GridGame.Meta
             r != null && r.Station == CraftStation.Forge && r.ResultCount == 1 && c.TryItem(r.Result) is ItemDef it && MasterworkEligible(it);
 
         /// <summary>A lucky craft is on offer: an eligible recipe, and <see cref="LuckyDiamondCost"/> Diamonds payable (in
-        /// Diamonds, or gold through the exchange beyond the recipe's own gold).</summary>
+        /// Diamonds, or gold through the exchange beyond the recipe's own gold), where paid random items are sold
+        /// (<see cref="LootBoxPolicy.AllowsLuckyCraft"/>, GG-T1433).</summary>
         public static bool CanLucky(ContentDb c, SaveData s, RecipeDef r) =>
-            LuckyEligible(c, r) && DiamondExchange.CanPay(s, LuckyDiamondCost, r.Gold).Ok;
+            LuckyEligible(c, r) && LootBoxPolicy.AllowsLuckyCraft().Ok && DiamondExchange.CanPay(s, LuckyDiamondCost, r.Gold).Ok;
 
         private static bool MasterworkEligible(ItemDef item) =>
             item.Type == ItemType.Equipment && item.Durability > 0 && (item.Slot == EquipmentSlot.Weapon || Array.IndexOf(BattleEngine.ArmorSlots, item.Slot) >= 0);
@@ -1436,6 +1442,7 @@ namespace GridGame.Meta
             if (!Forging.ArmorOpen(c, s, r)) return Result.Fail(Forging.ArmorLockedHint);
             if (potency && r.PotencyResult == null) return Result.Fail("No greater version");
             if (lucky && (potency || !LuckyEligible(c, r))) return Result.Fail("No lucky craft for this recipe");
+            if (lucky && LootBoxPolicy.AllowsLuckyCraft() is var luckyAllowed && !luckyAllowed.Ok) return luckyAllowed;
             if (lucky && DiamondExchange.CanPay(s, LuckyDiamondCost, r.Gold) is var luckyPay && !luckyPay.Ok) return luckyPay;
             var inputs = potency ? r.PotencyInputs : r.Inputs;
             var resultId = potency ? r.PotencyResult : r.Result;
