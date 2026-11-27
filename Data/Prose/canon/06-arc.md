@@ -1,21 +1,30 @@
 The campaign follows the Manalith's approach, from the Commander's return to the final choice. The Moon is drawn the same size over every region, the fixed measure. The Manalith beside it is drawn larger and closer in each region as the chapters go on, smallest over the Tithe Moors and largest over Morrow's Shadow, where it fills the sky.
 
+## The Commander's arc
+
+The Commander wakes in the Still with a body 1,200 years out of its time and a memory in pieces: how a door opens, how an orb is held, the faces of other commanders, but not why Halcyon fell or what the Manalith is. The road gives that back one piece at a time, and every piece is someone else's to tell. The Commander wakes the tech that shows each truth (a mural lit, an Ark door opened, an archive stirred) but does not remember it; a present-day hero or a Camp keeper reads it out. What the Commander learns, chapter by chapter, is what Halcyon did, and that they were part of it.
+
+The same thing that makes the Commander the party's strength makes them hunted. Halcyon keyed its machines to its own people's mana, so near the Commander the orbs fight, the doors open and the Anchors answer. To the Choir that makes the Commander a stolen key: first a runaway with the caravan, then, once the Choir learns what came out of the Still, the one living person who could open or close the taps. Every claimant after the Hierarch wants that key too, which is why the final choice is the Commander's to give and the player's to make.
+
 ## The road, in the game's order
 
-| Region | Chapter crawl | What the party learns |
-|---|---|---|
-| The Tithe Moors | Prologue | The Commander is brought back 1,200 years late and walks into Saltmoss on tithe day. A handful of present-day people steal the Choir's white tithe caravan and run, and the Commander goes with them. The Captain gives chase. |
-| The Lantern Road | 1 | A shrine mural shows a night sky with the Moon alone. Why does the oldest art have no Manalith? |
-| The Shardfall | | The Manalith is shedding its shell, and some of what fell is its body. The Choir mines it; the Ember want the rest of it down. |
-| The Arkgrave | 2 | Halcyon's Arks, thrown inland by the tides the night Halcyon fell. Halcyon tried to run. |
-| The Anchor Wastes | 3 | The arches are taps, not supports. The draw is the pull. |
-| The Still | | The vault the Commander came back from, now the Choir's: its tanks hold the tithe, and more of it than the Lullaby needs. |
-| Halcyon | 4 | A dead archive, woken for a moment by mana, shows the stopping, the feeding and the fall. The mana in everyone is the Manalith's. |
-| The Choir's Cathedral | | The organ is the reservoir, and the Hierarch drinks from it. The Hierarch falls here (the ending crawl), and the skim ends, but the Manalith is still coming. |
-| The Bloom | 5 | Where the Manalith's substance took root. It is not only death. |
-| The Free Holds, the Underspire, the Drowned Arks | 6 | Everyone wants the empty spire. The Underspire is still drawing, and the Captain is still collecting. |
-| Deep Shardfall, Under the Anchors | 7 | The Ember march on the Anchors to open every tap and drag the Manalith down. |
-| Morrow's Shadow | 8 | The Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold, and the choice is the player's. |
+Each chapter is one or more whole regions. Its crawl plays after the first victory on the last stage before its regions, on the way back to Camp. The main campaign ends at The Choir's Cathedral III with the ending crawl; the postgame runs from the Bloom to Morrow's Shadow and the player's chosen ending.
+
+| Chapter | Plays after | Regions it opens | The revelation | Who carries it | What the Commander gains or loses |
+|---|---|---|---|---|---|
+| Prologue: Tithe Day | the new campaign | The Tithe Moors (1-3) | The Commander is brought back 1,200 years late and walks into Saltmoss on tithe day. A handful of present-day people steal the Choir's white tithe caravan and run, and the Commander goes with them. The Captain gives chase. | the Merchant, who sees a dead lantern relight in the Commander's hand; the Innkeeper, whose village was tithed empty | Gains a crew and the orbs that wake near them. Has nothing else: no name anyone knows, no home that still stands. |
+| 1: Over the Pass | The Tithe Moors III (3) | The Lantern Road (4-6), the Shardfall (7-9) | A shrine mural, lit when the Commander touches it, shows a night sky with the Moon alone: the oldest art has no Manalith. In the Shardfall the Manalith is shedding its shell, and some of what fell is its body; the Choir mines it and the Ember want the rest of it down. | a Lantern Road sage reads the mural; the Alchemist notices the Commander's mana is whole where everyone else's is thin; the Blacksmith says the shard-glass is not stone; an Ember deserter names the Ember's creed | Recognises the sky on the mural without knowing why. Learns their own mana is not like anyone else's. |
+| 2: The Grounded Arks | The Shardfall III (9) | The Arkgrave (10-12) | Halcyon's Arks, thrown inland by the tides the night Halcyon fell. Halcyon tried to run. | the Enchantress, taught from Halcyon scraps; the Fen-dark, who live among the wrecks | Remembers boarding orders, and that they were not on a ship. An Ark door opens for them, and the Choir hears of it: from here it hunts the Commander, not only the caravan. |
+| 3: Where the Beams Go | The Arkgrave III (12) | The Anchor Wastes (13-15), the Still (16-18) | The arches are taps, not supports; the draw is the pull. The Still, the vault the Commander came back from, is the Choir's: its tanks hold the tithe, and more of it than the Lullaby needs. | the Watch, who salute the Commander; a Street engineer who reads the woken arch; the Innkeeper, who finds her village's colour in a tank | Learns where they died, and that the tithe running through the tanks is what brought them back. Their life was paid for by other people's. |
+| 4: The Spire Stair | The Still III (18) | Halcyon (19-21), the Choir's Cathedral (22-24) | A dead archive, woken for a moment by the Commander, shows the stopping, the feeding and the fall: the mana in everyone is the Manalith's. At the top of the spire the organ is the reservoir, and the Hierarch drinks from it. | a Fen-dark witch reads the archive; a Choir runaway names the skim; the Hierarch, who knows the whole truth, tells the rest | Sees their own face among the commanders who chose to feed the Lullaby. Learns what Halcyon did and that they helped do it. |
+| Ending: Still Here | The Choir's Cathedral III (24) | (the postgame opens) | The Hierarch falls and the skim ends, but the Manalith is still coming. | the whole Camp | Has broken what their people built, and kept the crew. |
+| 5: What Came Down | the ending (24) | The Bloom (25-27) | Where the Manalith's substance took root. It is not only death. | the Herald and the Wild | Finds something of the Manalith that is not hungry, and the first place where their being here costs no one. |
+| 6: Claimants to the Spire | The Bloom III (27) | The Free Holds (28-29), the Underspire (30-31), the Drowned Arks (32-33) | Everyone wants the empty spire. The Underspire is still drawing, and the Captain is still collecting. | a Free Holds knight, whose oath the Captain sold; a Street runner, whose lights run on the taps; the Merchant, who hears every claimant ask the price of the Commander | Learns they are now the prize: every claimant wants the key the Choir wanted. |
+| 7: The March on the Anchors | The Drowned Arks II (33) | Deep Shardfall (34-35), Under the Anchors (36-37) | The Ember march on the Anchors to open every tap and drag the Manalith down. | the Ember deserter, whose own people lead the march; the Watch's last captain, who gives the Anchors back to a commander of Halcyon | Gains the Anchors: only Halcyon's mana can open or close them, so every ending now runs through the Commander. |
+| 8: Morrow Holds | Under the Anchors II (37) | Morrow's Shadow (38-40) | The Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. The Anchors hold, and the choice is the player's. | the Camp keepers, each speaking for what they would keep | Has every piece they will get. Chooses, and pays with everyone else. |
+| The final choice | Morrow's Shadow III (40) | (the chosen ending) | Keep it asleep, cut the lines, or let it come (below). | the Commander | Whichever ending, the Commander is the last of Halcyon's people to decide for the world. |
+
+The beats under each chapter, the region-entry crawls and the rule for chaining crawls at one stop are in the story outline (`docs/STORY_OUTLINE.md`).
 
 ## Endings
 
