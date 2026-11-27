@@ -14,13 +14,13 @@ namespace GridGame.Meta
         /// <summary>The loaded board, or null when the content has none.</summary>
         public static SkillHexBoard Board(ContentDb c) => c?.SkillHex == null ? null : new SkillHexBoard(c.SkillHex);
 
-        public static string Key((int Q, int R) pt) => $"{pt.Q},{pt.R}";
+        public static string Key((int Q, int R) pt) => string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0},{1}", pt.Q, pt.R);
 
         public static bool TryParse(string key, out (int Q, int R) pt)
         {
             pt = default;
             var parts = key?.Split(',');
-            if (parts == null || parts.Length != 2 || !int.TryParse(parts[0], out var q) || !int.TryParse(parts[1], out var r)) return false;
+            if (parts == null || parts.Length != 2 || !int.TryParse(parts[0], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var q) || !int.TryParse(parts[1], System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var r)) return false;
             pt = (q, r);
             return true;
         }
