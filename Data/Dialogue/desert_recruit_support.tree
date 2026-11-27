@@ -1,0 +1,100 @@
+dialogue desert_recruit_support
+title: Stranded in the red
+trigger: ThemeStart desert
+speaker commander $commander
+speaker recruit $recruit
+speaker backer $party:2
+
+node meet recruit
+  Hey! White wagon! Don't run me down, I'm not with the Choir. I just look this dusty.
+  -> reply
+
+node reply commander
+  You're a long way from the Underspire. What are you doing out in the red?
+  * Climb aboard. Explain on the way. -> aboard
+  * It's rough out here. -> warned
+  * Who left you out here? -> stiffed
+
+node aboard recruit
+  Not so fast. I don't climb into anything I haven't looked under first.
+  -> inspect
+
+node warned recruit
+  Rough? The Choir's dig hired me to fix their walkers, then stiffed me. They're cracking the Manalith's fallen shell open out there.
+  -> inspect
+
+node stiffed recruit
+  The Choir's dig. Hired me to keep their walkers walking, paid me in blessings, and left me a canteen and a direction.
+  -> inspect
+
+node inspect recruit
+  Your axle's cracked, by the way. And there's an orb bolted under the bench that's humming. Those don't hum. Nothing from Halcyon hums anymore.
+  -> orb
+
+node orb commander
+  The Engineer is already halfway under the wagon.
+  * It does that near me. -> near
+  * Can you fix the axle? -> axle
+
+node near recruit
+  Near you. Step back. Further. It's gone quiet. Come closer. It's humming again. That's not possible, and I'd like to take it apart.
+  -> backer
+
+node axle recruit
+  Of course I can fix the axle. The question is whether you can pay better than the Choir did.
+  -> pay
+
+node pay commander
+  The Engineer waits, wrench in hand.
+  * Water, and a ride out of the red. -> fair
+  * Nothing yet. But we won't leave you stranded. -> promise
+
+node fair recruit
+  Water is the only coin out here that nobody fakes. Done.
+  -> backer
+
+node promise recruit
+  Everyone says that. The Choir said it. Still, you stopped the wagon, which is more than they did.
+  -> backer
+
+node backer backer
+  It's not only the bench orb. In a fight our orbs wake around the Commander. Every one of them.
+  -> believe
+
+node believe recruit
+  Every orb in a fight? The dig would kill for that. They're breaking open a fallen shell for a fraction of it.
+  -> stakes
+
+node stakes commander
+  The Commander looks out over the red, toward the dig.
+  * Then come keep it out of their hands. -> joined
+  * The Ember will want it too. -> ember
+
+node ember recruit
+  The Ember? Then you're driving the whitest wagon in the red past the people who burn white things. You'll need it to run faster than it does.
+  -> joined
+
+node joined recruit
+  Deal. I'll fix your axle on the move. And keep the wagon moving. The Ember hates anything white.
+  do: JoinHero engineer role=Support
+  * Welcome aboard, Engineer. -> welcome
+    do: AddTrust $recruit 10
+  * Thank the one who vouched for us. -> credit
+    do: AddTrust $recruit 5
+    do: AddCohesion $recruit $party:2 10
+  * Fix the axle first. The orb can wait. -> terms
+    do: AddTrust $recruit -5
+    do: AddCohesion $recruit $party:2 5
+
+node welcome recruit
+  Aboard and under it. Wake me if anything else starts humming.
+
+node credit backer
+  I only said what I saw. You'd have climbed under the wagon either way.
+  -> thanks
+
+node thanks recruit
+  Probably. But it's nice to be asked for once, instead of hired.
+
+node terms recruit
+  Fine. Axle first. But I'm keeping a list of questions, and it's getting long.

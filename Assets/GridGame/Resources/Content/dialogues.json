@@ -401,19 +401,59 @@
     "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-01" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
-      { "Id": "recruit", "Class": "$recruit" }
+      { "Id": "recruit", "Class": "$recruit" },
+      { "Id": "backer", "Class": "$party:2" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
         "Id": "reply", "Speaker": "commander",
         "Choices": [
-          { "Next": "joined" },
+          { "Next": "bold" },
+          { "Next": "wary" },
+          { "Next": "hands" }
+        ]
+      },
+      { "Id": "bold", "Speaker": "recruit", "Next": "purpose" },
+      { "Id": "wary", "Speaker": "recruit", "Next": "purpose" },
+      { "Id": "hands", "Speaker": "recruit", "Next": "purpose" },
+      { "Id": "purpose", "Speaker": "recruit", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "cause" },
+          { "Next": "honest" }
+        ]
+      },
+      { "Id": "cause", "Speaker": "recruit", "Next": "doubt" },
+      { "Id": "honest", "Speaker": "recruit", "Next": "doubt" },
+      { "Id": "doubt", "Speaker": "recruit", "Next": "backer" },
+      { "Id": "backer", "Speaker": "backer", "Next": "orb" },
+      { "Id": "orb", "Speaker": "recruit", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "truth" },
+          { "Next": "offer" },
           { "Next": "warned" }
         ]
       },
+      { "Id": "truth", "Speaker": "recruit", "Next": "aunt" },
+      { "Id": "offer", "Speaker": "recruit", "Next": "aunt" },
+      { "Id": "aunt", "Speaker": "recruit", "Next": "joined" },
       { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
-      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "redmage", "Role": "Mage" } ] }
+      {
+        "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "redmage", "Role": "Mage" } ],
+        "Choices": [
+          { "Next": "welcome", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": 10 } ] },
+          { "Next": "credit", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": 5 }, { "Type": "AddCohesion", "Id": "$recruit", "Other": "$party:2", "Amount": 10 } ] },
+          { "Next": "terms", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": -5 }, { "Type": "AddCohesion", "Id": "$recruit", "Other": "$party:2", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "welcome", "Speaker": "recruit" },
+      { "Id": "credit", "Speaker": "backer", "Next": "thanks" },
+      { "Id": "thanks", "Speaker": "recruit" },
+      { "Id": "terms", "Speaker": "recruit" }
     ]
   },
   {
@@ -466,19 +506,63 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
-      { "Id": "recruit", "Class": "$recruit" }
+      { "Id": "recruit", "Class": "$recruit" },
+      { "Id": "backer", "Class": "$party:2" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
         "Id": "reply", "Speaker": "commander",
         "Choices": [
-          { "Next": "joined" },
-          { "Next": "warned" }
+          { "Next": "aboard" },
+          { "Next": "warned" },
+          { "Next": "stiffed" }
         ]
       },
-      { "Id": "warned", "Speaker": "recruit", "Next": "joined" },
-      { "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "engineer", "Role": "Support" } ] }
+      { "Id": "aboard", "Speaker": "recruit", "Next": "inspect" },
+      { "Id": "warned", "Speaker": "recruit", "Next": "inspect" },
+      { "Id": "stiffed", "Speaker": "recruit", "Next": "inspect" },
+      { "Id": "inspect", "Speaker": "recruit", "Next": "orb" },
+      {
+        "Id": "orb", "Speaker": "commander",
+        "Choices": [
+          { "Next": "near" },
+          { "Next": "axle" }
+        ]
+      },
+      { "Id": "near", "Speaker": "recruit", "Next": "backer" },
+      { "Id": "axle", "Speaker": "recruit", "Next": "pay" },
+      {
+        "Id": "pay", "Speaker": "commander",
+        "Choices": [
+          { "Next": "fair" },
+          { "Next": "promise" }
+        ]
+      },
+      { "Id": "fair", "Speaker": "recruit", "Next": "backer" },
+      { "Id": "promise", "Speaker": "recruit", "Next": "backer" },
+      { "Id": "backer", "Speaker": "backer", "Next": "believe" },
+      { "Id": "believe", "Speaker": "recruit", "Next": "stakes" },
+      {
+        "Id": "stakes", "Speaker": "commander",
+        "Choices": [
+          { "Next": "joined" },
+          { "Next": "ember" }
+        ]
+      },
+      { "Id": "ember", "Speaker": "recruit", "Next": "joined" },
+      {
+        "Id": "joined", "Speaker": "recruit", "Effects": [ { "Type": "JoinHero", "Id": "engineer", "Role": "Support" } ],
+        "Choices": [
+          { "Next": "welcome", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": 10 } ] },
+          { "Next": "credit", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": 5 }, { "Type": "AddCohesion", "Id": "$recruit", "Other": "$party:2", "Amount": 10 } ] },
+          { "Next": "terms", "Effects": [ { "Type": "AddTrust", "Id": "$recruit", "Amount": -5 }, { "Type": "AddCohesion", "Id": "$recruit", "Other": "$party:2", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "welcome", "Speaker": "recruit" },
+      { "Id": "credit", "Speaker": "backer", "Next": "thanks" },
+      { "Id": "thanks", "Speaker": "recruit" },
+      { "Id": "terms", "Speaker": "recruit" }
     ]
   },
   {

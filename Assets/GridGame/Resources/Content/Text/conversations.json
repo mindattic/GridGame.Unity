@@ -1241,13 +1241,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a6a492446b834e80879ae3d701b0eb45b56ce03c4063ffd24ae33c9479762732",
+      "hash": "sha256:e0191285185ddfab7d87b71ca3c2e07ff3464e68906c4d6e7d5979bfbf2843d4",
       "about": [
+        "character-commander",
         "place-desert"
       ],
       "speakers": [
         "$recruit",
-        "$commander"
+        "character-commander",
+        "$party:2"
       ],
       "payload": {
         "title": "Stranded in the red",
@@ -1261,29 +1263,173 @@
           },
           {
             "id": "reply",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "You're a long way from the Underspire. What are you doing out in the red?",
             "choices": [
               {
-                "text": "Climb aboard.",
-                "next": "joined"
+                "text": "Climb aboard. Explain on the way.",
+                "next": "aboard"
               },
               {
                 "text": "It's rough out here.",
                 "next": "warned"
+              },
+              {
+                "text": "Who left you out here?",
+                "next": "stiffed"
               }
             ]
+          },
+          {
+            "id": "aboard",
+            "speaker": "$recruit",
+            "line": "Not so fast. I don't climb into anything I haven't looked under first.",
+            "next": "inspect"
           },
           {
             "id": "warned",
             "speaker": "$recruit",
             "line": "Rough? The Choir's dig hired me to fix their walkers, then stiffed me. They're cracking the Manalith's fallen shell open out there.",
+            "next": "inspect"
+          },
+          {
+            "id": "stiffed",
+            "speaker": "$recruit",
+            "line": "The Choir's dig. Hired me to keep their walkers walking, paid me in blessings, and left me a canteen and a direction.",
+            "next": "inspect"
+          },
+          {
+            "id": "inspect",
+            "speaker": "$recruit",
+            "line": "Your axle's cracked, by the way. And there's an orb bolted under the bench that's humming. Those don't hum. Nothing from Halcyon hums anymore.",
+            "next": "orb"
+          },
+          {
+            "id": "orb",
+            "speaker": "character-commander",
+            "line": "The Engineer is already halfway under the wagon.",
+            "choices": [
+              {
+                "text": "It does that near me.",
+                "next": "near"
+              },
+              {
+                "text": "Can you fix the axle?",
+                "next": "axle"
+              }
+            ]
+          },
+          {
+            "id": "near",
+            "speaker": "$recruit",
+            "line": "Near you. Step back. Further. It's gone quiet. Come closer. It's humming again. That's not possible, and I'd like to take it apart.",
+            "next": "backer"
+          },
+          {
+            "id": "axle",
+            "speaker": "$recruit",
+            "line": "Of course I can fix the axle. The question is whether you can pay better than the Choir did.",
+            "next": "pay"
+          },
+          {
+            "id": "pay",
+            "speaker": "character-commander",
+            "line": "The Engineer waits, wrench in hand.",
+            "choices": [
+              {
+                "text": "Water, and a ride out of the red.",
+                "next": "fair"
+              },
+              {
+                "text": "Nothing yet. But we won't leave you stranded.",
+                "next": "promise"
+              }
+            ]
+          },
+          {
+            "id": "fair",
+            "speaker": "$recruit",
+            "line": "Water is the only coin out here that nobody fakes. Done.",
+            "next": "backer"
+          },
+          {
+            "id": "promise",
+            "speaker": "$recruit",
+            "line": "Everyone says that. The Choir said it. Still, you stopped the wagon, which is more than they did.",
+            "next": "backer"
+          },
+          {
+            "id": "backer",
+            "speaker": "$party:2",
+            "line": "It's not only the bench orb. In a fight our orbs wake around the Commander. Every one of them.",
+            "next": "believe"
+          },
+          {
+            "id": "believe",
+            "speaker": "$recruit",
+            "line": "Every orb in a fight? The dig would kill for that. They're breaking open a fallen shell for a fraction of it.",
+            "next": "stakes"
+          },
+          {
+            "id": "stakes",
+            "speaker": "character-commander",
+            "line": "The Commander looks out over the red, toward the dig.",
+            "choices": [
+              {
+                "text": "Then come keep it out of their hands.",
+                "next": "joined"
+              },
+              {
+                "text": "The Ember will want it too.",
+                "next": "ember"
+              }
+            ]
+          },
+          {
+            "id": "ember",
+            "speaker": "$recruit",
+            "line": "The Ember? Then you're driving the whitest wagon in the red past the people who burn white things. You'll need it to run faster than it does.",
             "next": "joined"
           },
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Deal. I'll fix your axle on the move. And keep the wagon moving. The Ember hates anything white."
+            "line": "Deal. I'll fix your axle on the move. And keep the wagon moving. The Ember hates anything white.",
+            "choices": [
+              {
+                "text": "Welcome aboard, Engineer.",
+                "next": "welcome"
+              },
+              {
+                "text": "Thank the one who vouched for us.",
+                "next": "credit"
+              },
+              {
+                "text": "Fix the axle first. The orb can wait.",
+                "next": "terms"
+              }
+            ]
+          },
+          {
+            "id": "welcome",
+            "speaker": "$recruit",
+            "line": "Aboard and under it. Wake me if anything else starts humming."
+          },
+          {
+            "id": "credit",
+            "speaker": "$party:2",
+            "line": "I only said what I saw. You'd have climbed under the wagon either way.",
+            "next": "thanks"
+          },
+          {
+            "id": "thanks",
+            "speaker": "$recruit",
+            "line": "Probably. But it's nice to be asked for once, instead of hired."
+          },
+          {
+            "id": "terms",
+            "speaker": "$recruit",
+            "line": "Fine. Axle first. But I'm keeping a list of questions, and it's getting long."
           }
         ]
       }
@@ -1420,13 +1566,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:94c3e57a45bda04b91fdb661638429658dbd18ea317b6cd48eb987dbcd7b3c23",
+      "hash": "sha256:d94e60ee580bfc0bd45acc05f9f0db49a6c1575f20549a672dc9564b13fc7c12",
       "about": [
+        "character-commander",
         "place-greenvalley-01"
       ],
       "speakers": [
         "$recruit",
-        "$commander"
+        "character-commander",
+        "$party:2"
       ],
       "payload": {
         "title": "A caster on the ridge",
@@ -1440,18 +1588,128 @@
           },
           {
             "id": "reply",
-            "speaker": "$commander",
-            "line": "We are, and they'll want it back. Three of us against the whole moor. We could use a fourth.",
+            "speaker": "character-commander",
+            "line": "That depends on who's asking, and why there's fire in your hand.",
             "choices": [
               {
-                "text": "Then ride with us.",
-                "next": "joined"
+                "text": "We did. Want to help us keep it?",
+                "next": "bold"
               },
               {
-                "text": "It won't be safe.",
+                "text": "Who's asking?",
+                "next": "wary"
+              },
+              {
+                "text": "Put the fire out first.",
+                "next": "hands"
+              }
+            ]
+          },
+          {
+            "id": "bold",
+            "speaker": "$recruit",
+            "line": "Help? I've wanted to set that wagon alight since I was old enough to spell \"tithe\". Keeping it is a new idea.",
+            "next": "purpose"
+          },
+          {
+            "id": "wary",
+            "speaker": "$recruit",
+            "line": "Someone from the fens. Someone the tithe line has missed twice, and I don't plan to give it a third go.",
+            "next": "purpose"
+          },
+          {
+            "id": "hands",
+            "speaker": "$recruit",
+            "line": "That's not a threat, it's a habit. Fen folk keep a spark lit the way you'd keep a hand on a purse. There. Out.",
+            "next": "purpose"
+          },
+          {
+            "id": "purpose",
+            "speaker": "$recruit",
+            "line": "So what's a white wagon for, once it isn't the Choir's?",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "It was full of the tithe when we took it.",
+            "choices": [
+              {
+                "text": "Getting the tithe out of the Choir's hands.",
+                "next": "cause"
+              },
+              {
+                "text": "It was the fastest thing in Saltmoss.",
+                "next": "honest"
+              }
+            ]
+          },
+          {
+            "id": "cause",
+            "speaker": "$recruit",
+            "line": "Good answer. Everyone on the moor gives that answer, right up until the Captain's riders crest the hill.",
+            "next": "doubt"
+          },
+          {
+            "id": "honest",
+            "speaker": "$recruit",
+            "line": "Ha. At least you don't dress it up. The last people who stole from the Choir called it a holy war.",
+            "next": "doubt"
+          },
+          {
+            "id": "doubt",
+            "speaker": "$recruit",
+            "line": "Three of you against the whole moor, and the Captain on your heels. Why would anyone throw in with that?",
+            "next": "backer"
+          },
+          {
+            "id": "backer",
+            "speaker": "$party:2",
+            "line": "Show them the orb, Commander. Out here an orb is a dead stone, but near you they wake. We saw it at Saltmoss.",
+            "next": "orb"
+          },
+          {
+            "id": "orb",
+            "speaker": "$recruit",
+            "line": "That orb's been dead since before my grandmother was born. It's glowing. How is it glowing?",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The light steadies in the Commander's palm.",
+            "choices": [
+              {
+                "text": "It wakes near me. I don't know why yet.",
+                "next": "truth"
+              },
+              {
+                "text": "Ride with us and find out.",
+                "next": "offer"
+              },
+              {
+                "text": "Riding with us won't be safe.",
                 "next": "warned"
               }
             ]
+          },
+          {
+            "id": "truth",
+            "speaker": "$recruit",
+            "line": "Nobody on this moor admits to not knowing things. The Choir knows everything, and look where that got us.",
+            "next": "aunt"
+          },
+          {
+            "id": "offer",
+            "speaker": "$recruit",
+            "line": "You're bargaining with my curiosity. It's working, and I'm annoyed that it's working.",
+            "next": "aunt"
+          },
+          {
+            "id": "aunt",
+            "speaker": "$recruit",
+            "line": "The tithe took my aunt. She walked out of the line white as chalk and never warmed again. If that orb can wake, maybe other things can too.",
+            "next": "joined"
           },
           {
             "id": "warned",
@@ -1462,7 +1720,42 @@
           {
             "id": "joined",
             "speaker": "$recruit",
-            "line": "Then I'm in. In the fens we know what the tithe really takes, and how to make it burn back."
+            "line": "Then I'm in. In the fens we know what the tithe really takes, and how to make it burn back.",
+            "choices": [
+              {
+                "text": "Glad to have you, Red Mage.",
+                "next": "welcome"
+              },
+              {
+                "text": "You can thank the one who spoke for you.",
+                "next": "credit"
+              },
+              {
+                "text": "Keep that fire pointed at the Choir, not at us.",
+                "next": "terms"
+              }
+            ]
+          },
+          {
+            "id": "welcome",
+            "speaker": "$recruit",
+            "line": "Glad to be had. Don't make me regret it before supper."
+          },
+          {
+            "id": "credit",
+            "speaker": "$party:2",
+            "line": "Someone had to. You'd have talked yourself out of it otherwise.",
+            "next": "thanks"
+          },
+          {
+            "id": "thanks",
+            "speaker": "$recruit",
+            "line": "Then I owe you a spark when you need one. Fen folk pay their debts. It's the Choir we don't pay."
+          },
+          {
+            "id": "terms",
+            "speaker": "$recruit",
+            "line": "Fair. I'll aim. I can't promise where it lands when the Captain's riders come."
           }
         ]
       }

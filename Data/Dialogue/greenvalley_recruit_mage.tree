@@ -1,0 +1,104 @@
+dialogue greenvalley_recruit_mage
+title: A caster on the ridge
+trigger: StageCleared greenvalley-01
+speaker commander $commander
+speaker recruit $recruit
+speaker backer $party:2
+
+node meet recruit
+  Easy, I'm not with the Choir. I followed the smoke from Saltmoss. You're the ones who stole their white wagon?
+  -> reply
+
+node reply commander
+  That depends on who's asking, and why there's fire in your hand.
+  * We did. Want to help us keep it? -> bold
+  * Who's asking? -> wary
+  * Put the fire out first. -> hands
+
+node bold recruit
+  Help? I've wanted to set that wagon alight since I was old enough to spell "tithe". Keeping it is a new idea.
+  -> purpose
+
+node wary recruit
+  Someone from the fens. Someone the tithe line has missed twice, and I don't plan to give it a third go.
+  -> purpose
+
+node hands recruit
+  That's not a threat, it's a habit. Fen folk keep a spark lit the way you'd keep a hand on a purse. There. Out.
+  -> purpose
+
+node purpose recruit
+  So what's a white wagon for, once it isn't the Choir's?
+  -> answer
+
+node answer commander
+  It was full of the tithe when we took it.
+  * Getting the tithe out of the Choir's hands. -> cause
+  * It was the fastest thing in Saltmoss. -> honest
+
+node cause recruit
+  Good answer. Everyone on the moor gives that answer, right up until the Captain's riders crest the hill.
+  -> doubt
+
+node honest recruit
+  Ha. At least you don't dress it up. The last people who stole from the Choir called it a holy war.
+  -> doubt
+
+node doubt recruit
+  Three of you against the whole moor, and the Captain on your heels. Why would anyone throw in with that?
+  -> backer
+
+node backer backer
+  Show them the orb, Commander. Out here an orb is a dead stone, but near you they wake. We saw it at Saltmoss.
+  -> orb
+
+node orb recruit
+  That orb's been dead since before my grandmother was born. It's glowing. How is it glowing?
+  -> ask
+
+node ask commander
+  The light steadies in the Commander's palm.
+  * It wakes near me. I don't know why yet. -> truth
+  * Ride with us and find out. -> offer
+  * Riding with us won't be safe. -> warned
+
+node truth recruit
+  Nobody on this moor admits to not knowing things. The Choir knows everything, and look where that got us.
+  -> aunt
+
+node offer recruit
+  You're bargaining with my curiosity. It's working, and I'm annoyed that it's working.
+  -> aunt
+
+node aunt recruit
+  The tithe took my aunt. She walked out of the line white as chalk and never warmed again. If that orb can wake, maybe other things can too.
+  -> joined
+
+node warned recruit
+  Safe is the tithe line. I watched my aunt walk out of one white as chalk. I'll take the moor.
+  -> joined
+
+node joined recruit
+  Then I'm in. In the fens we know what the tithe really takes, and how to make it burn back.
+  do: JoinHero redmage role=Mage
+  * Glad to have you, Red Mage. -> welcome
+    do: AddTrust $recruit 10
+  * You can thank the one who spoke for you. -> credit
+    do: AddTrust $recruit 5
+    do: AddCohesion $recruit $party:2 10
+  * Keep that fire pointed at the Choir, not at us. -> terms
+    do: AddTrust $recruit -5
+    do: AddCohesion $recruit $party:2 5
+
+node welcome recruit
+  Glad to be had. Don't make me regret it before supper.
+
+node credit backer
+  Someone had to. You'd have talked yourself out of it otherwise.
+  -> thanks
+
+node thanks recruit
+  Then I owe you a spark when you need one. Fen folk pay their debts. It's the Choir we don't pay.
+
+node terms recruit
+  Fair. I'll aim. I can't promise where it lands when the Captain's riders come.
