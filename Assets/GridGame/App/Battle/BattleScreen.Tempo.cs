@@ -17,7 +17,7 @@ namespace GridGame.App
 
         private void EnsureTempoLabel()
         {
-            if (tempoLabel != null && tempoLabel.parent != null) return;
+            if (tempoLabel != null && tempoLabel.panel != null && tempoLabel.parent == timelineFrame) return; // a rebuilt timelineFrame orphans the old label (GG-T1232)
             tempoLabel = Ui.Text("", "tiny shadow", timelineFrame);
             tempoLabel.name = "timeline-tempo";
             tempoLabel.pickingMode = PickingMode.Ignore;
