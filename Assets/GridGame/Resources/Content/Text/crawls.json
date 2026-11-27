@@ -8,7 +8,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:600d27c33ba28755d934e5fa64eeecb28c49917503775d256d5f7a5bf2bf7c8a",
+      "hash": "sha256:7bdc0d659b162a4265c411a1d0b81153665f7a4b3b066164c69116af9492272d",
       "about": [
         "place-lanternroad",
         "place-lanternroad-02"
@@ -17,9 +17,9 @@
       "payload": {
         "title": "Over the Pass",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Captain is beaten, for now, and the white caravan is yours. Behind it the moors are grey with rain, and Saltmoss will be made to pay the tithe you took.",
+          "Ahead, the pilgrim road climbs out of the moors: stone stairs up night gorges, and paper lanterns no one has lit in a long time. Past the pass lies red country, where pieces of the sky have come down and the Ember wait.",
+          "The orbs fight for your crew, and a dead lantern burns in your hand. No one on the moors could say why. Someone on the road might."
         ]
       }
     },
@@ -29,7 +29,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:552e2b1c03f0abbf25361f26f42278c94067ca326e29ad26254cbb5142e38a6a",
+      "hash": "sha256:bd046109b3ffd21dbab00511ef50334da4dbbfd97ff418f78d49fd3ff9968988",
       "about": [
         "place-swamp",
         "place-swamp-01"
@@ -38,9 +38,9 @@
       "payload": {
         "title": "The Grounded Arks",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The mural on the pilgrim road showed a sky with the Moon alone in it. You knew that sky, and could not say how.",
+          "In the Shardfall the crew learned what the red horns are: the Manalith's shell, shed as it comes closer, and some of it not shell at all. The Choir digs it out. The Ember pray for the rest to follow.",
+          "Now the road drops into a gold-hazed fen where great hulls lie broken among the reeds, a long way from any sea. Nobody has opened them in twelve hundred years. Nobody has tried with you there."
         ]
       }
     },
@@ -50,7 +50,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5ebb8dbd3bd419991f9ebfbb960df532022a08c6cfd9f9bf43e5b9a5913e4372",
+      "hash": "sha256:7ffa766f0ff7b2577c08985496e05d7aa464caa5b09b802eb1548a1ac2d51686",
       "about": [
         "place-cave",
         "place-cave-03"
@@ -59,9 +59,9 @@
       "payload": {
         "title": "Where the Beams Go",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Arks were Halcyon's, and Halcyon tried to run in them. The tide that night threw them here, and most of the people aboard never left.",
+          "You remember the boarding orders. You remember that you were not on a ship. And the door that opened for you has been noticed: the Choir is no longer chasing a stolen caravan. It is hunting you.",
+          "North, colossal arches stand over pink-lit snow, their chains humming in the cold. Past them is the white dome where you woke. The crew have never asked where you came from. Soon they will not need to."
         ]
       }
     },
@@ -71,7 +71,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2251a93f6fe19894cbbdb9a78ab9a6651f612dd459035ef070cb914d9ba82e50",
+      "hash": "sha256:8d07367bccc96737fb2501933c0081e4d0607565a1dbfd5c3c016e01beeb9cdf",
       "about": [
         "place-cityruins",
         "place-cityruins-02"
@@ -80,9 +80,9 @@
       "payload": {
         "title": "The Spire Stair",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Anchors hold nothing up. They are taps, and every draw down their lines pulls the Manalith a little closer.",
+          "Under the white dome of the Still the crew found where the tithe goes: tanks of it, far more than any Lullaby needs. They found the tank you woke in, too. The colour that brought you back was taken from people like the ones who stole the caravan with you.",
+          "Above Halcyon's dead city the Choir's spire climbs into a pink sky. At the top waits the Hierarch, and whatever all that tithe is for. Nobody in the crew asks you to pay it back. They just keep walking beside you."
         ]
       }
     },
@@ -196,7 +196,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:079e156f47f83a4caeaa93a13ca42b4f24de4993ed915359715015f101bd730c",
+      "hash": "sha256:9806aa0fa3a0371362414703f5ee0c9301cd344acc3038ebdef2bb3e1929320f",
       "about": [
         "place-cathedral",
         "place-cathedral-03"
@@ -205,9 +205,10 @@
       "payload": {
         "title": "Still Here",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The Hierarch falls, and the organ breaks. The tithe that ran up the spire for twelve hundred years runs nowhere now, and no one will drink the skim again.",
+          "You saw your own face in the archive, among the commanders who chose to feed the Lullaby. Halcyon built all of this, and you helped. Today you broke the last of what your people made.",
+          "The Manalith does not fall. The Anchors still hold it, as low in the sky as it has ever been, and it is still coming.",
+          "But the crew are still here. So are you."
         ]
       }
     },
@@ -217,7 +218,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:80a72035290267eb18fea03742f5ac46bb8c8f57d4d6d1cccc47d0db16386f58",
+      "hash": "sha256:7c32aabf866c42ff2bc30093788cb5f9ae1541e1842ff7507e8eeccf8e90bd0c",
       "about": [
         "place-cityruins"
       ],
@@ -225,7 +226,8 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "The world before was Halcyon: towers of light, orbs in every hand. Halcyon fell in a single night. [placeholder]"
+          "Once there was Halcyon. Its towers burned with light, its Arks rode the tides, and in every hand an orb held a little of the sky.",
+          "Halcyon fell in a single night, twelve hundred years ago. The tides rose higher than its towers, its lights went out, and by dawn most of its people were gone."
         ]
       }
     },
@@ -235,7 +237,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e438210612cf5afceb15e2cbc1722e64ddbd274dfbae40d4bdce9ce5787b6d76",
+      "hash": "sha256:07ef9cc1f613d758b59f232812a1b0ef639203a3700a74810763132852c5861d",
       "about": [
         "place-morrowsshadow"
       ],
@@ -243,7 +245,8 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "Above it all hangs the Manalith, beside the Moon, and every year a little closer. [placeholder]"
+          "Above the world, beside the Moon, hangs the Manalith: a vast crusted stone, bristling with crystal, with a faint light leaking out between the cracks. It is not a moon.",
+          "The Moon never changes. The Manalith does. Every year it fills a little more of the sky, and every year the Choir has to sing a little harder to keep it asleep."
         ]
       }
     },
@@ -253,7 +256,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:020d2421f4da9ac37e16b933b45c89cd7b3c1b4bfe31c17e9b36db7d9c3ad17b",
+      "hash": "sha256:51b1320a4bf9ab3dbed90554d3ded6c55b3427e7e7a1eba9ab15f7cb86fe13e9",
       "about": [
         "place-still"
       ],
@@ -261,7 +264,9 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "Twelve hundred years of tithes and hymns, and the world forgot what Halcyon was, and why it fell. [placeholder]"
+          "The song is the Lullaby, and it is paid for. Once a year the Choir's white collectors come for the tithe: a share of the colour, the mana, the life in every person.",
+          "Those tithed too hard come back white and empty, and walk behind the caravans. People call them the Hollow.",
+          "Twelve hundred years of tithes and hymns, and the world forgot what Halcyon was, and why it fell. The Choir has never wanted it remembered."
         ]
       }
     },
@@ -271,7 +276,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:eeeb96c5af5880fc5b55e0c9d097400a9ba7e2cbd2148f1f10562abf005b41f2",
+      "hash": "sha256:a0fa266b9985b537eb85e72cf4f85064f7176d1f0a79b6c0797417b55489ada5",
       "about": [
         "place-greenvalley"
       ],
@@ -279,7 +284,9 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "On the Tithe Moors, a handful of ordinary people are about to steal a caravan. They do not know they are heroes yet. [placeholder]"
+          "Today is tithe day in Saltmoss, on the Tithe Moors. The white caravan waits in the square, and the Captain's militia keep the queue straight.",
+          "A handful of ordinary people have decided they will not stand in it. They have nothing left to give and nowhere to run to. They do not know they are heroes yet.",
+          "They only know they are going to steal that caravan."
         ]
       }
     },
@@ -289,7 +296,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fedce4092574dc02f4128c33a60df5c991d94ec2f311f8f817f36590611a8069",
+      "hash": "sha256:e57bef1922e9b1b4f5b3d8b1c977fdc38e3e66dfa79a176fe48b13c166daaaad",
       "about": [
         "place-still"
       ],
@@ -297,7 +304,9 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "In a cold tank in the Still, {commander} opens their eyes, twelve hundred years late. [placeholder]"
+          "Far from Saltmoss, in a cold tank in the Still, the tithe runs through someone who died the night Halcyon fell.",
+          "A heart starts. Eyes open on white walls and cyan light, and nothing is familiar but the weight of an orb in an empty hand.",
+          "Wake up, {commander}. You are twelve hundred years late, and by dawn you will be standing in Saltmoss, beside a caravan that is about to be stolen."
         ]
       }
     }
