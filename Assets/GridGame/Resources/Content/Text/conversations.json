@@ -1728,6 +1728,200 @@
         ]
       }
     },
+    "dialogue:founding": {
+      "key": "dialogue:founding",
+      "id": "conversation-founding",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:b8135100a09cfb1362f8c435723298207f9a350514b015b06157c3502f08de96",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-cleric",
+        "class-knight"
+      ],
+      "speakers": [
+        "character-commander",
+        "$party:1",
+        "$party:2",
+        "$party:3",
+        "class-knight",
+        "class-barbarian",
+        "class-cleric"
+      ],
+      "payload": {
+        "title": "The first fire",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Night, a day's ride past Saltmoss. The stolen tithe wagon stands in a ring of gorse with its white paint already scraped with mud, and the three who ran with the Commander sit around a fire they are afraid to make any bigger.",
+            "next": "first_word"
+          },
+          {
+            "id": "first_word",
+            "speaker": "$party:1",
+            "line": "The Captain's riders turned back at the ford. They'll be out again at first light, with more of them. Before then I'd like to know who I just stole a wagon for.",
+            "next": "who"
+          },
+          {
+            "id": "who",
+            "speaker": "character-commander",
+            "line": "The orb at the Commander's belt brightens a little in the dark, as it has since the dead lantern in Saltmoss lit again.",
+            "choices": [
+              {
+                "text": "The truth, then. I died in the Still, a long time ago, and woke there this morning.",
+                "next": "truth"
+              },
+              {
+                "text": "I don't know much more than you do. My memory comes back in pieces.",
+                "next": "pieces"
+              },
+              {
+                "text": "Someone the Choir wants back. That should be enough for tonight.",
+                "next": "guarded"
+              }
+            ]
+          },
+          {
+            "id": "truth",
+            "speaker": "$party:2",
+            "line": "Died. In the Still. And walked out. Every child on the moors has a story about that vault, and none of them end with somebody walking out.",
+            "next": "watch"
+          },
+          {
+            "id": "pieces",
+            "speaker": "$party:1",
+            "line": "Pieces. Fine. I'll take a straight answer with holes in it over a whole one that's lying.",
+            "next": "watch"
+          },
+          {
+            "id": "guarded",
+            "speaker": "$party:3",
+            "line": "Good. What we don't know, the Captain can't squeeze out of us. Keep the rest until we're somewhere with walls.",
+            "next": "watch"
+          },
+          {
+            "id": "watch",
+            "speaker": "character-commander",
+            "line": "Someone has to sit up with the fire while the others sleep.",
+            "choices": [
+              {
+                "text": "Knight. You put yourself between the riders and the wagon at the ford. The watch is yours.",
+                "next": "watch_knight",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Barbarian. You'll hear them coming before any of us. Take the watch.",
+                "next": "watch_barbarian",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Cleric, you've mended every cut since the ford. Sleep. Someone else can watch tonight.",
+                "next": "watch_cleric",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I'll take the first watch myself. None of you asked for any of this.",
+                "next": "watch_self"
+              }
+            ]
+          },
+          {
+            "id": "watch_knight",
+            "speaker": "class-knight",
+            "line": "Gladly. A wall that sleeps isn't much of a wall. Rest, all of you. Nothing comes over that ridge without going through me first.",
+            "next": "plan"
+          },
+          {
+            "id": "watch_barbarian",
+            "speaker": "class-barbarian",
+            "line": "Good. I'd not have slept anyway, not in a Choir wagon with the Captain's dogs on our scent. If anything moves out there, you'll hear me before you hear it.",
+            "next": "plan"
+          },
+          {
+            "id": "watch_cleric",
+            "speaker": "class-cleric",
+            "line": "Kind of you to notice. Healers get thanked after the fight, hardly ever before it. I'll sleep, but wake me if anyone so much as sneezes.",
+            "next": "plan"
+          },
+          {
+            "id": "watch_self",
+            "speaker": "$party:3",
+            "line": "A commander who stands watch. Where I'm from, the ones giving orders sleep warm. I'll sit up with you a while anyway.",
+            "next": "plan"
+          },
+          {
+            "id": "plan",
+            "speaker": "$party:2",
+            "line": "At first light we run hard down the moor road. It's fast, and every hour we stay near Saltmoss is an hour the Captain gets closer.",
+            "next": "plan_other"
+          },
+          {
+            "id": "plan_other",
+            "speaker": "$party:3",
+            "line": "And every rider the Captain has knows that road. The peat cuts are slow, but no white wagon has ever gone that way. Nobody would think to look.",
+            "next": "decide"
+          },
+          {
+            "id": "decide",
+            "speaker": "character-commander",
+            "line": "Both of them look to the Commander.",
+            "choices": [
+              {
+                "text": "We take the road, and we take it fast.",
+                "next": "road"
+              },
+              {
+                "text": "The peat cuts. Slow and unseen beats fast and caught.",
+                "next": "cuts"
+              },
+              {
+                "text": "Neither of you is wrong. The road by night, the cuts by day.",
+                "next": "both"
+              }
+            ]
+          },
+          {
+            "id": "road",
+            "speaker": "$party:2",
+            "line": "That's the answer I wanted. Get the wheels greased; we're gone before the frost lifts.",
+            "next": "close"
+          },
+          {
+            "id": "cuts",
+            "speaker": "$party:3",
+            "line": "Then pack light. The peat swallows anything heavy, and I'd rather it didn't swallow us.",
+            "next": "close"
+          },
+          {
+            "id": "both",
+            "speaker": "$party:1",
+            "line": "Riding at night with a stolen wagon. Either that's very clever or we'll find out soon that it isn't.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "$party:1",
+            "line": "Whatever we are now, a crew, a caravan, a band of thieves, we're it. We may as well make a proper camp of it.",
+            "next": "camp"
+          },
+          {
+            "id": "camp",
+            "speaker": "character-commander",
+            "line": "By the time the fire burns low there is a pit dug for it, a lookout on the ridge and a wagon nobody calls stolen any more. It is the first Camp."
+          }
+        ]
+      }
+    },
     "dialogue:greenvalley2_party_talk": {
       "key": "dialogue:greenvalley2_party_talk",
       "id": "conversation-greenvalley2-party-talk",

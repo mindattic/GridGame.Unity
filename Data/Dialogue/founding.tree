@@ -1,0 +1,122 @@
+dialogue founding
+title: The first fire
+trigger: Founding
+speaker commander $commander
+speaker first $party:1
+speaker second $party:2
+speaker third $party:3
+speaker knight knight
+speaker barbarian barbarian
+speaker cleric cleric
+
+node open commander
+  Night, a day's ride past Saltmoss. The stolen tithe wagon stands in a ring of gorse with its white paint already scraped with mud, and the three who ran with the Commander sit around a fire they are afraid to make any bigger.
+  -> first_word
+
+node first_word first
+  The Captain's riders turned back at the ford. They'll be out again at first light, with more of them. Before then I'd like to know who I just stole a wagon for.
+  -> who
+
+node who commander
+  The orb at the Commander's belt brightens a little in the dark, as it has since the dead lantern in Saltmoss lit again.
+  * The truth, then. I died in the Still, a long time ago, and woke there this morning. -> truth
+    do: AddTrust $party:2 6
+    do: AddTrust $party:1 2
+    do: SetFlag founding:truth
+  * I don't know much more than you do. My memory comes back in pieces. -> pieces
+    do: AddTrust $party:1 6
+    do: AddTrust $party:3 2
+    do: SetFlag founding:pieces
+  * Someone the Choir wants back. That should be enough for tonight. -> guarded
+    do: AddTrust $party:3 5
+    do: AddTrust $party:1 -3
+    do: SetFlag founding:guarded
+
+node truth second
+  Died. In the Still. And walked out. Every child on the moors has a story about that vault, and none of them end with somebody walking out.
+  -> watch
+
+node pieces first
+  Pieces. Fine. I'll take a straight answer with holes in it over a whole one that's lying.
+  -> watch
+
+node guarded third
+  Good. What we don't know, the Captain can't squeeze out of us. Keep the rest until we're somewhere with walls.
+  -> watch
+
+node watch commander
+  Someone has to sit up with the fire while the others sleep.
+  * Knight. You put yourself between the riders and the wagon at the ford. The watch is yours. -> watch_knight
+    if: PartyHas knight
+    do: AddTrust knight 7
+    do: SetFlag founding:watch_knight
+  * Barbarian. You'll hear them coming before any of us. Take the watch. -> watch_barbarian
+    if: PartyHas barbarian
+    do: AddTrust barbarian 7
+    do: SetFlag founding:watch_barbarian
+  * Cleric, you've mended every cut since the ford. Sleep. Someone else can watch tonight. -> watch_cleric
+    if: PartyHas cleric
+    do: AddTrust cleric 7
+    do: SetFlag founding:watch_cleric
+  * I'll take the first watch myself. None of you asked for any of this. -> watch_self
+    do: AddTrust $party:3 5
+    do: AddTrust $party:2 2
+    do: SetFlag founding:watch_commander
+
+node watch_knight knight
+  Gladly. A wall that sleeps isn't much of a wall. Rest, all of you. Nothing comes over that ridge without going through me first.
+  -> plan
+
+node watch_barbarian barbarian
+  Good. I'd not have slept anyway, not in a Choir wagon with the Captain's dogs on our scent. If anything moves out there, you'll hear me before you hear it.
+  -> plan
+
+node watch_cleric cleric
+  Kind of you to notice. Healers get thanked after the fight, hardly ever before it. I'll sleep, but wake me if anyone so much as sneezes.
+  -> plan
+
+node watch_self third
+  A commander who stands watch. Where I'm from, the ones giving orders sleep warm. I'll sit up with you a while anyway.
+  -> plan
+
+node plan second
+  At first light we run hard down the moor road. It's fast, and every hour we stay near Saltmoss is an hour the Captain gets closer.
+  -> plan_other
+
+node plan_other third
+  And every rider the Captain has knows that road. The peat cuts are slow, but no white wagon has ever gone that way. Nobody would think to look.
+  -> decide
+
+node decide commander
+  Both of them look to the Commander.
+  * We take the road, and we take it fast. -> road
+    do: AddTrust $party:2 6
+    do: AddTrust $party:3 -2
+    do: SetFlag founding:plan_road
+  * The peat cuts. Slow and unseen beats fast and caught. -> cuts
+    do: AddTrust $party:3 6
+    do: AddTrust $party:2 -2
+    do: SetFlag founding:plan_cuts
+  * Neither of you is wrong. The road by night, the cuts by day. -> both
+    do: AddTrust $party:2 3
+    do: AddTrust $party:3 3
+    do: SetFlag founding:plan_both
+
+node road second
+  That's the answer I wanted. Get the wheels greased; we're gone before the frost lifts.
+  -> close
+
+node cuts third
+  Then pack light. The peat swallows anything heavy, and I'd rather it didn't swallow us.
+  -> close
+
+node both first
+  Riding at night with a stolen wagon. Either that's very clever or we'll find out soon that it isn't.
+  -> close
+
+node close first
+  Whatever we are now, a crew, a caravan, a band of thieves, we're it. We may as well make a proper camp of it.
+  -> camp
+
+node camp commander
+  By the time the fire burns low there is a pit dug for it, a lookout on the ridge and a wagon nobody calls stolen any more. It is the first Camp.

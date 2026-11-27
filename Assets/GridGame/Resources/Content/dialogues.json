@@ -3650,5 +3650,62 @@
       { "Id": "honest", "Speaker": "hero" },
       { "Id": "further", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "founding",
+    "Title": "The first fire",
+    "Trigger": { "Kind": "Founding" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "first", "Class": "$party:1" },
+      { "Id": "second", "Class": "$party:2" },
+      { "Id": "third", "Class": "$party:3" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "cleric", "Class": "cleric" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "first_word" },
+      { "Id": "first_word", "Speaker": "first", "Next": "who" },
+      {
+        "Id": "who", "Speaker": "commander",
+        "Choices": [
+          { "Next": "truth", "Effects": [ { "Type": "AddTrust", "Id": "$party:2", "Amount": 6 }, { "Type": "AddTrust", "Id": "$party:1", "Amount": 2 }, { "Type": "SetFlag", "Id": "founding:truth" } ] },
+          { "Next": "pieces", "Effects": [ { "Type": "AddTrust", "Id": "$party:1", "Amount": 6 }, { "Type": "AddTrust", "Id": "$party:3", "Amount": 2 }, { "Type": "SetFlag", "Id": "founding:pieces" } ] },
+          { "Next": "guarded", "Effects": [ { "Type": "AddTrust", "Id": "$party:3", "Amount": 5 }, { "Type": "AddTrust", "Id": "$party:1", "Amount": -3 }, { "Type": "SetFlag", "Id": "founding:guarded" } ] }
+        ]
+      },
+      { "Id": "truth", "Speaker": "second", "Next": "watch" },
+      { "Id": "pieces", "Speaker": "first", "Next": "watch" },
+      { "Id": "guarded", "Speaker": "third", "Next": "watch" },
+      {
+        "Id": "watch", "Speaker": "commander",
+        "Choices": [
+          { "Next": "watch_knight", "Conditions": [ { "Type": "PartyHas", "Id": "knight" } ], "Effects": [ { "Type": "AddTrust", "Id": "knight", "Amount": 7 }, { "Type": "SetFlag", "Id": "founding:watch_knight" } ] },
+          { "Next": "watch_barbarian", "Conditions": [ { "Type": "PartyHas", "Id": "barbarian" } ], "Effects": [ { "Type": "AddTrust", "Id": "barbarian", "Amount": 7 }, { "Type": "SetFlag", "Id": "founding:watch_barbarian" } ] },
+          { "Next": "watch_cleric", "Conditions": [ { "Type": "PartyHas", "Id": "cleric" } ], "Effects": [ { "Type": "AddTrust", "Id": "cleric", "Amount": 7 }, { "Type": "SetFlag", "Id": "founding:watch_cleric" } ] },
+          { "Next": "watch_self", "Effects": [ { "Type": "AddTrust", "Id": "$party:3", "Amount": 5 }, { "Type": "AddTrust", "Id": "$party:2", "Amount": 2 }, { "Type": "SetFlag", "Id": "founding:watch_commander" } ] }
+        ]
+      },
+      { "Id": "watch_knight", "Speaker": "knight", "Next": "plan" },
+      { "Id": "watch_barbarian", "Speaker": "barbarian", "Next": "plan" },
+      { "Id": "watch_cleric", "Speaker": "cleric", "Next": "plan" },
+      { "Id": "watch_self", "Speaker": "third", "Next": "plan" },
+      { "Id": "plan", "Speaker": "second", "Next": "plan_other" },
+      { "Id": "plan_other", "Speaker": "third", "Next": "decide" },
+      {
+        "Id": "decide", "Speaker": "commander",
+        "Choices": [
+          { "Next": "road", "Effects": [ { "Type": "AddTrust", "Id": "$party:2", "Amount": 6 }, { "Type": "AddTrust", "Id": "$party:3", "Amount": -2 }, { "Type": "SetFlag", "Id": "founding:plan_road" } ] },
+          { "Next": "cuts", "Effects": [ { "Type": "AddTrust", "Id": "$party:3", "Amount": 6 }, { "Type": "AddTrust", "Id": "$party:2", "Amount": -2 }, { "Type": "SetFlag", "Id": "founding:plan_cuts" } ] },
+          { "Next": "both", "Effects": [ { "Type": "AddTrust", "Id": "$party:2", "Amount": 3 }, { "Type": "AddTrust", "Id": "$party:3", "Amount": 3 }, { "Type": "SetFlag", "Id": "founding:plan_both" } ] }
+        ]
+      },
+      { "Id": "road", "Speaker": "second", "Next": "close" },
+      { "Id": "cuts", "Speaker": "third", "Next": "close" },
+      { "Id": "both", "Speaker": "first", "Next": "close" },
+      { "Id": "close", "Speaker": "first", "Next": "camp" },
+      { "Id": "camp", "Speaker": "commander" }
+    ]
   }
 ]
