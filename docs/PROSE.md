@@ -62,6 +62,50 @@ prose --texts-approve-all gridgame --kind crawl --by <name> --publish
 # likewise --kind conversation | description | quest | glossary | bark; narrow with --prefix item: or --about class-lich
 ```
 
+## Dialogue trees (GG-T1295, GG-T1589)
+
+A conversation is authored in one readable file, `Data/Dialogue/<id>.tree`, and `tools/dialogue_tree.py` (standard
+library only) moves it between that file and the game's data. The tool's docstring is the format reference; this is the summary.
+
+| Command | Does |
+|---|---|
+| `python tools/dialogue_tree.py compile [TREE ...] [--drafts DIR]` | Tree to its `dialogues.json` entry (merged by `Id`, the rest of the file untouched), its words as **seed** texts in `Content/Text`, and `prose-text/1` drafts in `DIR` (default `Data/Prose/drafts/dialogue`). Lints first and refuses a tree with an error. |
+| `python tools/dialogue_tree.py decompile ID [ID ...] [--out Data/Dialogue]` | A `dialogues.json` entry plus its texts back to `<out>/<id>.tree`. |
+| `python tools/dialogue_tree.py lint [TREE ...]` | Unreachable nodes, dangling `next`, stranded choices, farmable effects on a loop, the Trust and cohesion range each path reaches, orphaned Prose dialogue keys. |
+
+With no `TREE`, every `Data/Dialogue/*.tree`.
+
+```
+dialogue talk_quiz_knight
+title: Advice
+trigger: Talk knight                 Kind [Id] [level=N]
+when: QuestAvailable q_bridge         a dialogue condition (one per line)
+once                                  Talk only: play once
+backdrop: desert
+crawl: A paragraph of the opening crawl (one per line; any crawl line sets HasCrawl)
+speaker hero $with                    Id Class [name="Display name"] [portrait=class]; Class "-" for none
+start: ask                            defaults to the first node
+
+node ask hero                         Id Speaker
+  The line, wrapped over as many lines as it needs.
+  do: AddTrust $with 5                an effect when the node is reached
+  -> next                             auto-advance (no choices); none ends the dialogue
+  * A reply -> right                  a choice: label, then where it goes (no arrow ends the dialogue)
+    if: TrustAtLeast $with 20         a condition for offering it
+    do: GrantSkillPoint $with         an effect of taking it
+    wit: 1                            Wanderer talks only
+```
+
+Indentation is two spaces; `#` starts a comment line. A condition or effect is `Type [Id] [Other] [Amount] [role=Role]`:
+the first word is `Id`, a second is `Other` (the pair's second hero for `AddCohesion` / `CohesionAtLeast`), an integer
+is `Amount`. The words are the game's (`DialogueRunner`, `ContentModels`; BIBLE 27.1). A node's text and a choice's label
+go to Prose, never to `dialogues.json`.
+
+Trigger kinds: `ThemeStart`, `StageCleared`, `Talk`, `Recruit`, `LevelReached`, `StageStart`, `Wanderer`, and the bond
+and roster kinds `Trust` (`Id` hero, tier in `level=`, GG-T1298), `Cohesion` (`Id` and `Other`, tier in `level=`,
+GG-T1298), `Founding` (no `Id`) and `Joined` (`Id` a hero class or faction, or none; binds `$hero`, GG-T1593). The tool's
+trigger set currently lists only the first seven, so a tree for the last four needs it extended first.
+
 ## Placeholder conversations (GG-T387, 2026-11-16)
 
 Owner: "set up all the lorem ipsum for story crawls and conversations". Every `dialogue:<id>` text (story beats, Camp
