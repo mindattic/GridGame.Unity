@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 25;
+        public const int CurrentVersion = 26;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -146,6 +146,9 @@ namespace GridGame.Meta
         /// <summary>GG-T1392: the onboarding step this campaign is on (<see cref="GridGame.Meta.Onboarding"/>). Save v25: an
         /// older save is Done.</summary>
         public OnboardingSave Onboarding = new OnboardingSave();
+        /// <summary>GG-T1778: the overworld (<see cref="WorldSave"/>, BIBLE §28.13). Save v26: an older save starts camped at
+        /// its furthest cleared stage's node.</summary>
+        public WorldSave World = new WorldSave();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -983,6 +986,11 @@ namespace GridGame.Meta
                 s.Version = 25;
             }
             s.Onboarding ??= new OnboardingSave { Step = OnboardingStep.Done };
+            // GG-T1778: the overworld. An older save is placed at its frontier (below, after Notes.Clear).
+            bool beforeWorld = s.Version < 26;
+            if (s.Version < 26) s.Version = 26;
+            s.World ??= new WorldSave();
+            s.World.FillNulls();
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
@@ -1025,6 +1033,7 @@ namespace GridGame.Meta
             if (c != null) GrantOwnedOrbs(s, c);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null && beforeDrills && s.TutorialDone) Drills.MarkAllCleared(c, s);
+            if (c != null && beforeWorld) WorldSaveAdapter.PlaceAtFrontier(s, c);
             // GG-T923: every load catches the Codex up with what the save shows (idempotent); only the v16 back-fill marks it read.
             Codex.Sync(c, s, markRead: beforeCodex);
             if (c != null && beforeGearGate)

@@ -6115,7 +6115,7 @@ The Crucible stays reachable, moved **under the Caravan list** at camp, and beco
 
 ### 28.13 Save
 
-`SaveData.World` (save v26, `Meta/World.cs`): region, node or edge position, day and clock, danger, camped, woken waystones, reveal masks and revealed edges, active Wild events, hunt counts per region. Migration places the caravan at the furthest cleared stage's node, camped. Expeditions fold into travel (wounds and orbs carry between battles while travelling; camp rest heals).
+`SaveData.World` (save v26, `Meta/WorldSave.cs`, `Meta/WorldSaveAdapter.cs`): region, node or edge position, day and clock, danger, camped, woken waystones, reveal masks and revealed edges, active Wild events, hunt counts per region. Migration places the caravan at the furthest cleared stage's node, camped. Expeditions fold into travel (wounds and orbs carry between battles while travelling; camp rest heals).
 
 ## 29. Open Design Questions
 
