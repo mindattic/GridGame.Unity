@@ -33,6 +33,7 @@ namespace GridGame.Meta
             s.TestMode = true;
             s.TutorialDone = true;
             Drills.MarkAllCleared(c, s); // GG-T1626
+            Onboarding.Finish(s); // GG-T1392
             Story.MarkAllChaptersSeen(c, s); // GG-T386 (theme crawls are retired)
             // Every Camp NPC joins up front (GG-T119): Test Mode shows no story, and although TestCycle.Begin's headless
             // beats would bring them along the way, the loop should exercise repair, rest, buying and brewing from cycle 1.

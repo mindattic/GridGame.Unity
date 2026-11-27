@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 24;
+        public const int CurrentVersion = 25;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -143,6 +143,9 @@ namespace GridGame.Meta
         /// <summary>GG-T1626: tutorial drills won (<see cref="Drills"/>). Save v24: an older save that finished the tutorial
         /// counts every drill cleared.</summary>
         public HashSet<string> ClearedDrills = new HashSet<string>();
+        /// <summary>GG-T1392: the onboarding step this campaign is on (<see cref="GridGame.Meta.Onboarding"/>). Save v25: an
+        /// older save is Done.</summary>
+        public OnboardingSave Onboarding = new OnboardingSave();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -970,6 +973,13 @@ namespace GridGame.Meta
             bool beforeDrills = s.Version < 24;
             if (s.Version < 24) s.Version = 24;
             s.ClearedDrills ??= new HashSet<string>();
+            // GG-T1392: the onboarding checkpoint. An older save is past onboarding.
+            if (s.Version < 25)
+            {
+                Onboarding.Finish(s);
+                s.Version = 25;
+            }
+            s.Onboarding ??= new OnboardingSave { Step = OnboardingStep.Done };
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
