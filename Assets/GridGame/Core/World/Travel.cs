@@ -55,6 +55,10 @@ namespace GridGame.Core.World
             legSegments = new double[legs.Length][];
             legDrawn = new double[legs.Length];
             legLength = new double[legs.Length];
+            int expected = 1;
+            foreach (var leg in legs) expected += (leg.Edge.Points != null && leg.Edge.Points.Count > 0 ? leg.Edge.Points.Count : 2) - 1;
+            if (legs.Length > 0 && points.Length != expected)
+                throw new InvalidOperationException($"The route's polyline has {points.Length} points but its roads need {expected}; a road names a node with no position, so its legs can't be split.");
             int start = 0;
             for (int i = 0; i < legs.Length; i++)
             {
@@ -180,7 +184,8 @@ namespace GridGame.Core.World
 
     /// <summary>Moves the caravan along its route by elapsed world time (BIBLE 28.3, GG-T1681). Speed is set minute by
     /// minute from the clock's period and the weather, so the same state, clock and config always give the same walk.
-    /// Stopping at dusk, Interrupt and roadsigns are the caller's (GG-T1682).</summary>
+    /// Stopping at dusk, Interrupt, a stalled caravan and roadsigns are <see cref="Journey"/> and <see cref="Roadsigns"/>
+    /// (GG-T1682).</summary>
     public static class Travel
     {
         /// <summary>Walks up to <paramref name="minutes"/> world minutes, advancing <paramref name="clock"/> by the whole

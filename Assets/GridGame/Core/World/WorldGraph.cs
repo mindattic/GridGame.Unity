@@ -78,7 +78,8 @@ namespace GridGame.Core.World
         }
 
         /// <summary>The cheapest route between two nodes over unlocked edges, or null when there is none or a node is unknown.
-        /// From a node to itself is an empty route.</summary>
+        /// From a node to itself is an empty route. Throws when a road on the route names a node the region doesn't have,
+        /// since its polyline can't be placed (GG-T1682).</summary>
         public Route Find(string fromNodeId, string toNodeId)
         {
             if (fromNodeId == null || toNodeId == null) return null;
@@ -123,6 +124,9 @@ namespace GridGame.Core.World
             var points = new List<WorldPoint>();
             foreach (var leg in legs)
             {
+                foreach (var end in new[] { leg.Edge.A, leg.Edge.B })
+                    if (region.TryNode(end) == null)
+                        throw new InvalidOperationException($"Region '{region.Id}': the road {leg.Edge.A} - {leg.Edge.B} names node '{end}', which is not in the region.");
                 length += WorldContent.LengthOf(region, leg.Edge);
                 var pts = LegPoints(leg);
                 for (int i = 0; i < pts.Count; i++)
