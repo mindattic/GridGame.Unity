@@ -5202,6 +5202,8 @@ Nothing in battle, progression or the skill trees reads `Family` yet: `HomeTree`
 
 **Bots.** `Meta.BoardBot` (the camp routine, MetaBot, balance soaks, auto-manage, HeroBots) replaces `BotStatSpend` and the talent auto-spend. Each roster hero joins the board free, then `PickTarget` picks the ability node with the best `Value` (what the party is short of: Heal, Cleanse, Damage, Area, Support, Control; `Importance / (1 + abilities already covering it)`, plus `BaseValue` 0.5) per planner cost, and `Spend` walks `CheapestRoute` one node at a time with banked SP, banking the rest. Deterministic per seed; the seed only breaks ties.
 
+**Cadence rule (GG-T1400).** Every hero class gets a new ability at least every 4 levels from Lv 1 through Lv 40, measured by `tools/skillhex/cadence.py` (which walks each class from its Start path at 1 SP a level the way `BoardBot.Spend` does; its flagged-gap list must be empty) and kept valid by `tools/skillhex/validate.py`. A class that is flagged is fixed in `skillhex.json` by moving an Ability node, or filling an Open slot, onto its route, never by changing the 1 SP per level cost. Fighter, Odachi and Pugilist had a Lv 8-13 gap; `brawler_second_wind` moved from [-5, 13] to the Open slot [-6, 12], which closed it. The picture is `docs/design/ability-cadence/index.html`.
+
 **Retired with it.** Talent trees (GG-T1099: content and `HomeTree` data removed), stat picks, the Talents sub-tab, Stamina.
 
 **Open.** GG-T1054: the Wild hero has 22 Open slots and auto-picked signatures, awaiting an owner decision.

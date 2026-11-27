@@ -611,15 +611,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 5,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 6,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
+      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 7,
+     "Level": 8,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -629,15 +630,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
-     "Id": "quicken",
-     "Name": "Quicken",
+     "Level": 9,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
      "Covers": [
       "Support"
      ]
     },
     {
-     "Level": 10,
+     "Level": 11,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -647,7 +648,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 12,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -657,16 +658,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
+     "Level": 13,
+     "Id": "quicken",
+     "Name": "Quicken",
      "Covers": [
-      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 16,
+     "Level": 14,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -675,7 +675,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 15,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -684,7 +684,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 16,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -693,7 +693,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 19,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -701,7 +701,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
+     "Level": 21,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -709,7 +709,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 25,
+     "Level": 23,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -719,7 +719,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 26,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -729,7 +729,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 27,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -738,7 +738,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 29,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -746,7 +746,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 30,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -755,7 +755,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 32,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -765,7 +765,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 33,
      "Id": "duelist_exploit_opening",
      "Name": "Exploit the Opening",
      "Covers": [
@@ -773,7 +773,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 34,
      "Id": "duelist_decisivecut",
      "Name": "Decisive Cut",
      "Covers": [
@@ -781,7 +781,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 35,
      "Id": "thief_snatch",
      "Name": "Snatch",
      "Covers": [
@@ -789,11 +789,21 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 37,
      "Id": "taunt",
      "Name": "Taunt",
      "Covers": [
       "Support"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "frost",
+     "Name": "Frost",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
      ]
     }
    ],
@@ -988,47 +998,52 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
+     "Level": 31,
+     "Id": "heal",
+     "Name": "Heal",
      "Covers": [
-      "Heal",
-      "Support"
+      "Heal"
      ]
     },
     {
      "Level": 33,
-     "Id": "fighter_bell_ringer",
-     "Name": "Bell Ringer",
+     "Id": "fieldcaster_resupplydrone",
+     "Name": "Resupply Drone",
      "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 34,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 36,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
+      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 40,
-     "Id": "rejuvenate",
-     "Name": "Rejuvenate",
+     "Level": 35,
+     "Id": "mass_heal",
+     "Name": "Mass Heal",
      "Covers": [
-      "Heal",
-      "Cleanse"
+      "Heal"
+     ]
+    },
+    {
+     "Level": 36,
+     "Id": "raider_plunder",
+     "Name": "Plunder Strike",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 37,
+     "Id": "combobrawler_onetwoflurry",
+     "Name": "One-Two Flurry",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "guard_stance",
+     "Name": "Guard Stance",
+     "Covers": [
+      "Support"
      ]
     }
    ],
@@ -1251,16 +1266,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
+     "Level": 32,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
+     "Covers": [
+      "Heal",
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 33,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 31,
+     "Level": 34,
      "Id": "raider_plunder",
      "Name": "Plunder Strike",
      "Covers": [
@@ -1268,15 +1292,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "mass_heal",
-     "Name": "Mass Heal",
+     "Level": 35,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
-      "Heal"
+      "Damage"
      ]
     },
     {
-     "Level": 35,
+     "Level": 37,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -1285,32 +1309,13 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 39,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
       "Damage",
       "Area",
       "Control"
-     ]
-    },
-    {
-     "Level": 39,
-     "Id": "attrition_bloodletting",
-     "Name": "Bloodletting Bite",
-     "Covers": [
-      "Heal",
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "attrition_soulfeast",
-     "Name": "Soul Feast",
-     "Covers": [
-      "Heal",
-      "Damage"
      ]
     }
    ],
@@ -1388,39 +1393,21 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 6,
-     "Id": "skirmisher_runningriot",
-     "Name": "Running Riot",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 9,
-     "Id": "rejuvenate",
-     "Name": "Rejuvenate",
+     "Level": 8,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
       "Heal",
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 10,
-     "Id": "quicken",
-     "Name": "Quicken",
-     "Covers": [
       "Support"
      ]
     },
     {
      "Level": 11,
-     "Id": "streetfighter_sucker_punch",
-     "Name": "Sucker Punch",
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
      "Covers": [
-      "Damage",
-      "Control"
+      "Heal",
+      "Cleanse"
      ]
     },
     {
@@ -1435,41 +1422,25 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 14,
-     "Id": "opportunist_chain_the_opening",
-     "Name": "Chain the Opening",
+     "Id": "streetfighter_sucker_punch",
+     "Name": "Sucker Punch",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 15,
-     "Id": "opportunist_exploit",
-     "Name": "Exploit",
+     "Level": 16,
+     "Id": "skirmisher_runningriot",
+     "Name": "Running Riot",
      "Covers": [
       "Damage",
+      "Area",
       "Control"
      ]
     },
     {
      "Level": 17,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 18,
-     "Id": "slasher_rending_slash",
-     "Name": "Rending Slash",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 20,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -1479,33 +1450,74 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 25,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 27,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Level": 18,
+     "Id": "opportunist_chain_the_opening",
+     "Name": "Chain the Opening",
      "Covers": [
       "Damage",
-      "Area",
       "Control"
      ]
     },
     {
-     "Level": 30,
+     "Level": 20,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 21,
+     "Id": "quicken",
+     "Name": "Quicken",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 22,
+     "Id": "opportunist_exploit",
+     "Name": "Exploit",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 23,
+     "Id": "slasher_rending_slash",
+     "Name": "Rending Slash",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 24,
+     "Id": "marksman_execution_shot",
+     "Name": "Execution Shot",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 25,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 28,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 31,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -1515,7 +1527,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 32,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -1525,14 +1537,33 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 33,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 34,
+     "Level": 35,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 37,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 38,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -1541,31 +1572,11 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
-     "Id": "taunt",
-     "Name": "Taunt",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "fieldcaster_trapline",
-     "Name": "Trapline",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
      "Level": 40,
-     "Id": "frost",
-     "Name": "Frost",
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
+      "Heal"
      ]
     }
    ],
@@ -1946,7 +1957,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 12,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -1955,7 +1975,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 14,
      "Id": "opportunist_exploit",
      "Name": "Exploit",
      "Covers": [
@@ -1964,7 +1984,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -1973,7 +1993,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 16,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -1982,15 +2002,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 17,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
-      "Support"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 17,
+     "Level": 19,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -2000,33 +2021,39 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
+     "Level": 21,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
      "Covers": [
-      "Heal"
+      "Support"
      ]
     },
     {
      "Level": 22,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
+     "Id": "ninja_fang",
+     "Name": "Ninja Fang",
      "Covers": [
-      "Heal"
+      "Damage"
      ]
     },
     {
-     "Level": 24,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Level": 23,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
+      "Damage"
      ]
     },
     {
-     "Level": 27,
+     "Level": 26,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 29,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -2036,7 +2063,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 30,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -2045,15 +2072,34 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 31,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 31,
+     "Level": 33,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 35,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 36,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -2062,46 +2108,20 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Level": 38,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Support"
+      "Heal"
      ]
     },
     {
-     "Level": 35,
-     "Id": "frost",
-     "Name": "Frost",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 37,
+     "Level": 40,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
       "Damage",
       "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "ninja_fang",
-     "Name": "Ninja Fang",
-     "Covers": [
-      "Damage"
-     ]
-    },
-    {
-     "Level": 39,
-     "Id": "sleep",
-     "Name": "Sleep",
-     "Covers": [
       "Control"
      ]
     }
@@ -2239,7 +2259,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 19,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
+     "Covers": [
+      "Heal",
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 21,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -2249,7 +2278,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 22,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 23,
+     "Id": "berserker_skullrattle",
+     "Name": "Skull Rattle",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 26,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -2259,44 +2306,9 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 27,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 23,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 25,
-     "Id": "antidote",
-     "Name": "Antidote",
-     "Covers": [
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 26,
-     "Id": "skirmishmenders_guardiansrush",
-     "Name": "Guardian's Rush",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 27,
-     "Id": "berserker_skullrattle",
-     "Name": "Skull Rattle",
      "Covers": [
       "Damage",
       "Control"
@@ -2313,7 +2325,32 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 31,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 32,
+     "Id": "skirmishmenders_guardiansrush",
+     "Name": "Guardian's Rush",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 33,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 34,
      "Id": "raider_plunder",
      "Name": "Plunder Strike",
      "Covers": [
@@ -2321,7 +2358,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 36,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -2330,7 +2367,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 38,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
@@ -2340,31 +2377,13 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 40,
      "Id": "attrition_bloodletting",
      "Name": "Bloodletting Bite",
      "Covers": [
       "Heal",
       "Damage",
       "Control"
-     ]
-    },
-    {
-     "Level": 37,
-     "Id": "attrition_soulfeast",
-     "Name": "Soul Feast",
-     "Covers": [
-      "Heal",
-      "Damage"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "cross_hit",
-     "Name": "CrossHit",
-     "Covers": [
-      "Damage",
-      "Area"
      ]
     }
    ],
@@ -2469,7 +2488,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 12,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 14,
      "Id": "flame_lance",
      "Name": "Flame Lance",
      "Covers": [
@@ -2479,7 +2507,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 16,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -2488,7 +2525,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 17,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -2497,7 +2534,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
+     "Level": 18,
      "Id": "opportunist_exploit",
      "Name": "Exploit",
      "Covers": [
@@ -2506,24 +2543,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 17,
-     "Id": "streetfighter_sucker_punch",
-     "Name": "Sucker Punch",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 19,
+     "Level": 20,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -2533,33 +2553,40 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 24,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 26,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Level": 21,
+     "Id": "streetfighter_sucker_punch",
+     "Name": "Sucker Punch",
      "Covers": [
       "Damage",
-      "Area",
       "Control"
      ]
     },
     {
-     "Level": 29,
+     "Level": 23,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 24,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 27,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 30,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -2569,7 +2596,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 31,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 32,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -2578,15 +2614,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 34,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Area",
+      "Control"
      ]
     },
     {
-     "Level": 33,
+     "Level": 36,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 37,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -2595,39 +2641,11 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
-     "Id": "taunt",
-     "Name": "Taunt",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 37,
-     "Id": "frost",
-     "Name": "Frost",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
      "Level": 39,
-     "Id": "fieldcaster_trapline",
-     "Name": "Trapline",
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "ninja_fang",
-     "Name": "Ninja Fang",
-     "Covers": [
-      "Damage"
+      "Heal"
      ]
     }
    ],
@@ -3886,16 +3904,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
+     "Level": 23,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
+     "Covers": [
+      "Heal",
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 24,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 23,
+     "Level": 26,
      "Id": "flame_lance",
      "Name": "Flame Lance",
      "Covers": [
@@ -3905,7 +3932,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 25,
+     "Level": 28,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -3915,33 +3942,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
-     "Id": "rejuvenate",
-     "Name": "Rejuvenate",
-     "Covers": [
-      "Heal",
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 29,
-     "Id": "quicken",
-     "Name": "Quicken",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
      "Level": 30,
-     "Id": "streetfighter_sucker_punch",
-     "Name": "Sucker Punch",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 32,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -3951,7 +3952,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 31,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -3961,7 +3962,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 32,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 33,
      "Id": "cleave",
      "Name": "Cleave",
      "Covers": [
@@ -3969,7 +3978,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 34,
      "Id": "marksman_execution_shot",
      "Name": "Execution Shot",
      "Covers": [
@@ -3977,12 +3986,31 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 36,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
       "Damage",
       "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "hexweaver_bloodharvest",
+     "Name": "Blood Harvest",
+     "Covers": [
+      "Heal",
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "hexweaver_festeringmark",
+     "Name": "Festering Mark",
+     "Covers": [
+      "Damage",
       "Control"
      ]
     }
@@ -4842,7 +4870,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 5,
+     "Level": 4,
      "Id": "brawler_second_wind",
      "Name": "Second Wind",
      "Covers": [
@@ -4851,7 +4879,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 7,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -4861,7 +4889,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 9,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -4871,7 +4899,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 10,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -4881,7 +4909,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 11,
      "Id": "quicken",
      "Name": "Quicken",
      "Covers": [
@@ -4889,7 +4917,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 12,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -4899,14 +4927,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 14,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 16,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -4916,7 +4936,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 15,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -4925,7 +4945,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 18,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -4933,7 +4953,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 20,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -4941,7 +4961,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 22,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -4951,7 +4971,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 25,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -4961,7 +4981,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 26,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -4970,7 +4990,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 28,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -4978,7 +4998,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 29,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -4987,7 +5007,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 31,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -4997,7 +5017,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 33,
      "Id": "focus_breath",
      "Name": "Focus Breath",
      "Covers": [
@@ -5005,7 +5025,23 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 35,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 36,
+     "Id": "skirmisher_hitandrun",
+     "Name": "Hit and Run",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 38,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -5014,7 +5050,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 40,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
@@ -5373,15 +5409,26 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 3,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 4,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
+      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 6,
+     "Level": 7,
+     "Id": "skirmisher_runningriot",
+     "Name": "Running Riot",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 9,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -5391,7 +5438,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 10,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -5402,25 +5449,14 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 11,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
      "Covers": [
-      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 13,
-     "Id": "skirmisher_runningriot",
-     "Name": "Running Riot",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 14,
+     "Level": 12,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -5429,7 +5465,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
+     "Level": 13,
      "Id": "quicken",
      "Name": "Quicken",
      "Covers": [
@@ -5437,7 +5473,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 15,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -5447,7 +5483,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 16,
+     "Id": "streetfighter_sucker_punch",
+     "Name": "Sucker Punch",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 17,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -5456,15 +5501,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 22,
+     "Level": 20,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -5472,7 +5509,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 22,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -5480,7 +5517,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 26,
+     "Level": 24,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -5490,7 +5527,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 27,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -5500,7 +5537,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 28,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -5509,7 +5546,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 30,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -5517,7 +5554,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 31,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -5526,7 +5563,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 33,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -5536,7 +5573,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 34,
      "Id": "skirmisher_hitandrun",
      "Name": "Hit and Run",
      "Covers": [
@@ -5544,22 +5581,28 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 36,
+     "Id": "war_cry",
+     "Name": "War Cry",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 37,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 39,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
       "Damage",
       "Area"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "attrition_dreadaura",
-     "Name": "Dread Aura",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
      ]
     }
    ],
@@ -5612,7 +5655,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 4,
+     "Level": 5,
      "Id": "brawler_second_wind",
      "Name": "Second Wind",
      "Covers": [
@@ -5621,7 +5664,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 6,
+     "Level": 7,
      "Id": "mug",
      "Name": "Mug",
      "Covers": [
@@ -5630,24 +5673,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 7,
-     "Id": "regen",
-     "Name": "Regen",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 8,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 13,
+     "Level": 10,
      "Id": "rejuvenate",
      "Name": "Rejuvenate",
      "Covers": [
@@ -5656,7 +5682,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
+     "Level": 11,
+     "Id": "regen",
+     "Name": "Regen",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 12,
      "Id": "duelist_probingthrust",
      "Name": "Probing Thrust",
      "Covers": [
@@ -5665,7 +5699,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
+     "Level": 13,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -5675,14 +5709,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 16,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 19,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -5692,7 +5718,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 18,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -5702,7 +5728,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 19,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -5712,7 +5738,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
+     "Level": 20,
      "Id": "quicken",
      "Name": "Quicken",
      "Covers": [
@@ -5720,7 +5746,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 21,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -5729,7 +5755,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 26,
+     "Level": 23,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -5739,7 +5765,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 26,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -5747,7 +5773,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 28,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -5755,7 +5781,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 30,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -5765,7 +5791,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 33,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -5775,7 +5801,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 34,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -5784,7 +5810,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 36,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -5792,23 +5818,34 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 40,
+     "Level": 37,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
       "Damage",
       "Control"
      ]
+    },
+    {
+     "Level": 39,
+     "Id": "fieldcaster_trapline",
+     "Name": "Trapline",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
     }
    ],
-   "Gaps": [
-    {
-     "From": 8,
-     "To": 13,
-     "Length": 5,
-     "Closed": true
-    }
-   ]
+   "Gaps": []
   },
   {
    "Class": "greenninja",
@@ -5947,7 +5984,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
+     "Level": 18,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 19,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 20,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -5956,16 +6011,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
-     "Id": "opportunist_exploit",
-     "Name": "Exploit",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 19,
+     "Level": 22,
      "Id": "ranged_suppressingfire",
      "Name": "Suppressing Fire",
      "Covers": [
@@ -5975,7 +6021,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 23,
+     "Id": "opportunist_exploit",
+     "Name": "Exploit",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 24,
      "Id": "pinning_shot",
      "Name": "Pinning Shot",
      "Covers": [
@@ -5984,7 +6039,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 26,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -5994,49 +6049,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
-     "Id": "primalpack_rally",
-     "Name": "Pack Rally",
+     "Level": 29,
+     "Id": "antidote",
+     "Name": "Antidote",
      "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 25,
-     "Id": "ninja_fang",
-     "Name": "Ninja Fang",
-     "Covers": [
-      "Damage"
-     ]
-    },
-    {
-     "Level": 28,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 30,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
+      "Cleanse"
      ]
     },
     {
      "Level": 32,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 35,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -6046,7 +6067,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 33,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -6055,20 +6076,47 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 34,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 39,
+     "Level": 36,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 37,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
       "Damage",
       "Control"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
      ]
     }
    ],
@@ -6856,29 +6904,31 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
-     "Id": "mass_heal",
-     "Name": "Mass Heal",
+     "Level": 36,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
-      "Heal"
+      "Heal",
+      "Support"
      ]
     },
     {
      "Level": 37,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 39,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
       "Damage",
       "Area",
       "Control"
-     ]
-    },
-    {
-     "Level": 39,
-     "Id": "heal",
-     "Name": "Heal",
-     "Covers": [
-      "Heal"
      ]
     }
    ],
@@ -8287,7 +8337,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 9,
+     "Level": 11,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 12,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -8296,32 +8355,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
-     "Id": "mass_heal",
-     "Name": "Mass Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 15,
-     "Id": "fieldcaster_resupplydrone",
-     "Name": "Resupply Drone",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 16,
-     "Id": "heal",
-     "Name": "Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 17,
+     "Level": 13,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -8330,7 +8364,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 14,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 16,
      "Id": "ranged_suppressingfire",
      "Name": "Suppressing Fire",
      "Covers": [
@@ -8340,7 +8383,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 18,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -8350,7 +8393,49 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
+     "Level": 21,
+     "Id": "mass_heal",
+     "Name": "Mass Heal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
      "Level": 23,
+     "Id": "heal",
+     "Name": "Heal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 25,
+     "Id": "fieldcaster_resupplydrone",
+     "Name": "Resupply Drone",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 26,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 28,
+     "Id": "ranged_calledshot",
+     "Name": "Called Shot",
+     "Covers": [
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 29,
      "Id": "dervish_whirl",
      "Name": "Whirling Ward",
      "Covers": [
@@ -8358,34 +8443,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
-     "Id": "pressure_point",
-     "Name": "Pressure Point",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 27,
-     "Id": "primalpack_denmother",
-     "Name": "Den Mother's Guard",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 28,
-     "Id": "pinning_shot",
-     "Name": "Pinning Shot",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 30,
+     "Level": 31,
      "Id": "wildchild_howl",
      "Name": "Feral Howl",
      "Covers": [
@@ -8395,7 +8453,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 33,
      "Id": "tempoweave_swap",
      "Name": "Swift Swap",
      "Covers": [
@@ -8403,7 +8461,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 34,
      "Id": "whiteninja_moonlit",
      "Name": "Moonlit Recovery",
      "Covers": [
@@ -8411,24 +8469,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
-     "Id": "silence",
-     "Name": "Silence",
-     "Covers": [
-      "Control"
-     ]
-    },
-    {
      "Level": 36,
-     "Id": "ranged_calledshot",
-     "Name": "Called Shot",
-     "Covers": [
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 38,
      "Id": "bolt",
      "Name": "Bolt",
      "Covers": [
@@ -8437,9 +8478,17 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 40,
-     "Id": "primalpack_rally",
-     "Name": "Pack Rally",
+     "Level": 38,
+     "Id": "war_cry",
+     "Name": "War Cry",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
      "Covers": [
       "Support"
      ]
@@ -9168,16 +9217,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 24,
+     "Level": 21,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -9186,16 +9226,34 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 25,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
+     "Level": 24,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 27,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
+     "Covers": [
+      "Heal",
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 28,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 26,
+     "Level": 29,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -9204,7 +9262,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 31,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -9213,7 +9271,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 33,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
@@ -9223,7 +9281,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 35,
      "Id": "attrition_bloodletting",
      "Name": "Bloodletting Bite",
      "Covers": [
@@ -9233,7 +9291,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 36,
      "Id": "attrition_soulfeast",
      "Name": "Soul Feast",
      "Covers": [
@@ -9242,21 +9300,12 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 39,
      "Id": "aegiswardens_sanctuaryrite",
      "Name": "Sanctuary Rite",
      "Covers": [
       "Heal",
       "Support"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "drain_life",
-     "Name": "Drain Life",
-     "Covers": [
-      "Heal",
-      "Damage"
      ]
     }
    ],
@@ -10137,7 +10186,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 12,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "shadowstep_vanishing_cut",
      "Name": "Vanishing Cut",
      "Covers": [
@@ -10146,7 +10204,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
      "Id": "shadowstep_smoke_veil",
      "Name": "Smoke Veil",
      "Covers": [
@@ -10156,7 +10214,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 16,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -10166,23 +10224,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 17,
-     "Id": "primalpack_denmother",
-     "Name": "Den Mother's Guard",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 18,
-     "Id": "primalpack_rally",
-     "Name": "Pack Rally",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 19,
      "Id": "feint",
      "Name": "Feint",
      "Covers": [
@@ -10191,7 +10232,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 18,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 19,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -10201,15 +10251,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 21,
-     "Id": "opportunist_chain_the_opening",
-     "Name": "Chain the Opening",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 23,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -10219,7 +10260,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 22,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -10229,37 +10270,45 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 25,
-     "Id": "marksman_execution_shot",
-     "Name": "Execution Shot",
+     "Level": 23,
+     "Id": "opportunist_chain_the_opening",
+     "Name": "Chain the Opening",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 27,
+     "Id": "primalpack_denmother",
+     "Name": "Den Mother's Guard",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 28,
+     "Id": "primalpack_rally",
+     "Name": "Pack Rally",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 29,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
       "Damage"
      ]
     },
     {
-     "Level": 28,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 30,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
      "Level": 32,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Id": "antidote",
+     "Name": "Antidote",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
+      "Cleanse"
      ]
     },
     {
@@ -10282,15 +10331,26 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 37,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Control"
      ]
     },
     {
      "Level": 39,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 40,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -10311,15 +10371,6 @@ window.ABILITY_CADENCE = {
    "Status": "Placed",
    "Signature": "odachi_long_draw",
    "Abilities": [
-    {
-     "Level": 1,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
     {
      "Level": 1,
      "Id": "brawler_guard_break",
@@ -10346,7 +10397,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 2,
+     "Level": 3,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 4,
      "Id": "combobrawler_openingjab",
      "Name": "Opening Jab",
      "Covers": [
@@ -10355,33 +10415,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 5,
-     "Id": "mug",
-     "Name": "Mug",
-     "Covers": [
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 6,
-     "Id": "duelist_riposte",
-     "Name": "Riposte",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
      "Level": 7,
-     "Id": "regen",
-     "Name": "Regen",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 12,
      "Id": "rejuvenate",
      "Name": "Rejuvenate",
      "Covers": [
@@ -10390,33 +10424,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
-     "Id": "fighter_bell_ringer",
-     "Name": "Bell Ringer",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 14,
-     "Id": "duelist_probingthrust",
-     "Name": "Probing Thrust",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 15,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 18,
+     "Level": 10,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -10426,7 +10434,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 12,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -10436,7 +10444,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 13,
+     "Id": "quicken",
+     "Name": "Quicken",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 15,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -10446,7 +10462,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
+     "Level": 16,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -10456,15 +10472,24 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
-     "Id": "quicken",
-     "Name": "Quicken",
+     "Level": 17,
+     "Id": "war_cry",
+     "Name": "War Cry",
      "Covers": [
       "Support"
      ]
     },
     {
-     "Level": 25,
+     "Level": 18,
+     "Id": "duelist_riposte",
+     "Name": "Riposte",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 19,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -10473,7 +10498,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 20,
+     "Id": "fighter_bell_ringer",
+     "Name": "Bell Ringer",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 21,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 24,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -10481,7 +10524,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 26,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -10489,7 +10532,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 28,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -10499,7 +10542,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 31,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -10509,7 +10552,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 32,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -10518,7 +10561,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 34,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -10526,23 +10569,42 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 35,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
       "Damage",
       "Control"
      ]
+    },
+    {
+     "Level": 37,
+     "Id": "fieldcaster_trapline",
+     "Name": "Trapline",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 38,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
+     "Covers": [
+      "Support"
+     ]
     }
    ],
-   "Gaps": [
-    {
-     "From": 7,
-     "To": 12,
-     "Length": 5,
-     "Closed": true
-    }
-   ]
+   "Gaps": []
   },
   {
    "Class": "operative",
@@ -11456,16 +11518,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
+     "Level": 17,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
+     "Covers": [
+      "Heal",
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 18,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 16,
+     "Level": 19,
      "Id": "martialartist_palm",
      "Name": "Flowing Palm",
      "Covers": [
@@ -11474,7 +11545,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 21,
      "Id": "mug",
      "Name": "Mug",
      "Covers": [
@@ -11483,7 +11554,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 22,
      "Id": "regen",
      "Name": "Regen",
      "Covers": [
@@ -11491,7 +11562,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 23,
      "Id": "vanguard_bulwark",
      "Name": "Bulwark",
      "Covers": [
@@ -11499,7 +11570,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 25,
      "Id": "warlord_battle_cry",
      "Name": "Battle Cry of the Warlord",
      "Covers": [
@@ -11509,7 +11580,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
+     "Level": 26,
      "Id": "grappling_hook",
      "Name": "Grappling Hook",
      "Covers": [
@@ -11518,7 +11589,43 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 26,
+     "Level": 27,
+     "Id": "taunt",
+     "Name": "Taunt",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 29,
+     "Id": "berserker_wildswing",
+     "Name": "Wild Swing",
+     "Covers": [
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 31,
+     "Id": "berserker_lastmanswinging",
+     "Name": "Last Man Swinging",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 32,
+     "Id": "berserker_skullrattle",
+     "Name": "Skull Rattle",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 35,
      "Id": "aegisguard_hands_of_mercy",
      "Name": "Hands of Mercy",
      "Covers": [
@@ -11527,7 +11634,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 37,
      "Id": "shieldmaiden_valkyrie",
      "Name": "Valkyrie's Call",
      "Covers": [
@@ -11535,7 +11642,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 38,
      "Id": "aegisguard_judgment_of_warding",
      "Name": "Judgment of Warding",
      "Covers": [
@@ -11544,55 +11651,9 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 40,
      "Id": "juggernaut_war_stomp",
      "Name": "War Stomp",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 33,
-     "Id": "deathguard_dark_communion",
-     "Name": "Dark Communion",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 35,
-     "Id": "fieldeng_patch",
-     "Name": "Field Patch",
-     "Covers": [
-      "Heal",
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 37,
-     "Id": "fieldeng_mine",
-     "Name": "Suppression Mine",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "taunt",
-     "Name": "Taunt",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "meteor",
-     "Name": "Meteor",
      "Covers": [
       "Damage",
       "Area",
@@ -11646,15 +11707,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 3,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 5,
      "Id": "mug",
      "Name": "Mug",
      "Covers": [
@@ -11663,7 +11715,23 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 6,
+     "Level": 4,
+     "Id": "regen",
+     "Name": "Regen",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 7,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 8,
      "Id": "fighter_bell_ringer",
      "Name": "Bell Ringer",
      "Covers": [
@@ -11672,95 +11740,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 7,
-     "Id": "regen",
-     "Name": "Regen",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 8,
-     "Id": "duelist_riposte",
-     "Name": "Riposte",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 13,
-     "Id": "rejuvenate",
-     "Name": "Rejuvenate",
-     "Covers": [
-      "Heal",
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 14,
-     "Id": "duelist_probingthrust",
-     "Name": "Probing Thrust",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 15,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 16,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 19,
-     "Id": "berserker_lastmanswinging",
-     "Name": "Last Man Swinging",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 21,
-     "Id": "berserker_wildswing",
-     "Name": "Wild Swing",
-     "Covers": [
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 22,
-     "Id": "berserker_skullrattle",
-     "Name": "Skull Rattle",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 25,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 27,
+     "Level": 10,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -11768,7 +11748,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 12,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -11778,7 +11758,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 15,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -11788,16 +11768,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "hexweaver_festeringmark",
-     "Name": "Festering Mark",
+     "Level": 16,
+     "Id": "duelist_riposte",
+     "Name": "Riposte",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 35,
+     "Level": 19,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -11805,16 +11785,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
-     "Id": "skirmishmenders_guardiansrush",
-     "Name": "Guardian's Rush",
+     "Level": 22,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
-      "Damage",
-      "Control"
+      "Heal",
+      "Support"
      ]
     },
     {
-     "Level": 38,
+     "Level": 24,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -11824,30 +11804,90 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
-     "Id": "raider_plunder",
-     "Name": "Plunder Strike",
+     "Level": 27,
+     "Id": "rejuvenate",
+     "Name": "Rejuvenate",
      "Covers": [
-      "Damage"
+      "Heal",
+      "Cleanse"
      ]
     },
     {
-     "Level": 40,
-     "Id": "odachi_long_draw",
-     "Name": "Long Draw",
+     "Level": 28,
+     "Id": "skirmishmenders_guardiansrush",
+     "Name": "Guardian's Rush",
      "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 29,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 30,
+     "Id": "hexweaver_festeringmark",
+     "Name": "Festering Mark",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 31,
+     "Id": "brawler_guard_break",
+     "Name": "Guard Break",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 33,
+     "Id": "shock_wave",
+     "Name": "ShockWave",
+     "Covers": [
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 35,
+     "Id": "attrition_dreadaura",
+     "Name": "Dread Aura",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 37,
+     "Id": "attrition_bloodletting",
+     "Name": "Bloodletting Bite",
+     "Covers": [
+      "Heal",
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 38,
+     "Id": "attrition_soulfeast",
+     "Name": "Soul Feast",
+     "Covers": [
+      "Heal",
       "Damage"
      ]
     }
    ],
-   "Gaps": [
-    {
-     "From": 8,
-     "To": 13,
-     "Length": 5,
-     "Closed": true
-    }
-   ]
+   "Gaps": []
   },
   {
    "Class": "raider",
@@ -11932,33 +11972,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
-     "Id": "mug",
-     "Name": "Mug",
-     "Covers": [
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 9,
-     "Id": "quicken",
-     "Name": "Quicken",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
      "Level": 10,
-     "Id": "slasher_rending_slash",
-     "Name": "Rending Slash",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 14,
      "Id": "brawler_second_wind",
      "Name": "Second Wind",
      "Covers": [
@@ -11967,7 +11981,33 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
+     "Level": 11,
+     "Id": "mug",
+     "Name": "Mug",
+     "Covers": [
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 12,
+     "Id": "slasher_rending_slash",
+     "Name": "Rending Slash",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 13,
+     "Id": "quicken",
+     "Name": "Quicken",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 14,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -11976,7 +12016,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
+     "Level": 15,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -11985,7 +12025,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 16,
      "Id": "combobrawler_openingjab",
      "Name": "Opening Jab",
      "Covers": [
@@ -11994,16 +12034,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
-     "Id": "brawler_guard_break",
-     "Name": "Guard Break",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 19,
+     "Level": 17,
      "Id": "fighter_bell_ringer",
      "Name": "Bell Ringer",
      "Covers": [
@@ -12012,7 +12043,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 18,
+     "Id": "combobrawler_knockoutcombo",
+     "Name": "Knockout Combo",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 20,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -12022,16 +12062,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
-     "Id": "combobrawler_knockoutcombo",
-     "Name": "Knockout Combo",
+     "Level": 21,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 25,
+     "Level": 24,
      "Id": "mass_heal",
      "Name": "Mass Heal",
      "Covers": [
@@ -12039,7 +12079,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 26,
      "Id": "heal",
      "Name": "Heal",
      "Covers": [
@@ -12047,7 +12087,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 28,
      "Id": "fieldcaster_resupplydrone",
      "Name": "Resupply Drone",
      "Covers": [
@@ -12056,7 +12096,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 30,
      "Id": "berserker_lastmanswinging",
      "Name": "Last Man Swinging",
      "Covers": [
@@ -12066,7 +12106,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 31,
      "Id": "berserker_skullrattle",
      "Name": "Skull Rattle",
      "Covers": [
@@ -12075,7 +12115,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 33,
      "Id": "shadowstep_smoke_veil",
      "Name": "Smoke Veil",
      "Covers": [
@@ -12085,7 +12125,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 36,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -12093,12 +12133,22 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 37,
      "Id": "martialartist_palm",
      "Name": "Flowing Palm",
      "Covers": [
       "Damage",
       "Control"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "hexweaver_bloodharvest",
+     "Name": "Blood Harvest",
+     "Covers": [
+      "Heal",
+      "Damage",
+      "Area"
      ]
     }
    ],
@@ -12465,7 +12515,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 12,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -12474,7 +12533,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 14,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -12483,7 +12542,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -12492,7 +12551,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 16,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 17,
      "Id": "opportunist_exploit",
      "Name": "Exploit",
      "Covers": [
@@ -12501,15 +12569,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 17,
+     "Level": 19,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -12519,33 +12579,39 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
+     "Level": 21,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
      "Covers": [
-      "Heal"
+      "Support"
      ]
     },
     {
      "Level": 22,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
-      "Heal"
+      "Damage"
      ]
     },
     {
-     "Level": 24,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Level": 23,
+     "Id": "skirmisher_hitandrun",
+     "Name": "Hit and Run",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
+      "Damage"
      ]
     },
     {
-     "Level": 27,
+     "Level": 26,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 29,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -12555,7 +12621,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 30,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 31,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -12564,15 +12639,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 33,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Area",
+      "Control"
      ]
     },
     {
-     "Level": 31,
+     "Level": 35,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 36,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -12581,47 +12666,21 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Level": 38,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Support"
+      "Heal"
      ]
     },
     {
-     "Level": 35,
+     "Level": 40,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
       "Damage",
       "Area",
       "Control"
-     ]
-    },
-    {
-     "Level": 37,
-     "Id": "frost",
-     "Name": "Frost",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "ninja_fang",
-     "Name": "Ninja Fang",
-     "Covers": [
-      "Damage"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "guard_stance",
-     "Name": "Guard Stance",
-     "Covers": [
-      "Support"
      ]
     }
    ],
@@ -12720,7 +12779,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 9,
+     "Level": 10,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 12,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -12730,7 +12798,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 13,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -12739,7 +12807,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 14,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -12748,7 +12816,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 16,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -12757,15 +12834,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 16,
+     "Level": 18,
      "Id": "flame_lance",
      "Name": "Flame Lance",
      "Covers": [
@@ -12775,7 +12844,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 19,
      "Id": "shadowstep_vanishing_cut",
      "Name": "Vanishing Cut",
      "Covers": [
@@ -12784,33 +12853,31 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
+     "Level": 21,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
      "Covers": [
-      "Heal"
+      "Support"
      ]
     },
     {
      "Level": 22,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
-      "Heal"
+      "Damage"
      ]
     },
     {
-     "Level": 24,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
+     "Level": 25,
+     "Id": "antidote",
+     "Name": "Antidote",
      "Covers": [
-      "Damage",
-      "Area",
-      "Control"
+      "Cleanse"
      ]
     },
     {
-     "Level": 27,
+     "Level": 28,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -12820,7 +12887,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 29,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 30,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -12829,15 +12905,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "antidote",
-     "Name": "Antidote",
+     "Level": 32,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
      "Covers": [
-      "Cleanse"
+      "Damage",
+      "Area",
+      "Control"
      ]
     },
     {
-     "Level": 31,
+     "Level": 34,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 35,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -12846,15 +12932,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Level": 37,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Support"
+      "Heal"
      ]
     },
     {
-     "Level": 35,
+     "Level": 39,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -12864,29 +12950,11 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
-     "Id": "frost",
-     "Name": "Frost",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 38,
+     "Level": 40,
      "Id": "ninja_fang",
      "Name": "Ninja Fang",
      "Covers": [
       "Damage"
-     ]
-    },
-    {
-     "Level": 39,
-     "Id": "sleep",
-     "Name": "Sleep",
-     "Covers": [
-      "Control"
      ]
     }
    ],
@@ -13056,7 +13124,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 20,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 21,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 23,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -13066,7 +13152,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 24,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -13074,7 +13160,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 26,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -13084,15 +13170,23 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 27,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
      "Covers": [
-      "Support"
+      "Damage"
      ]
     },
     {
-     "Level": 26,
+     "Level": 28,
+     "Id": "marksman_execution_shot",
+     "Name": "Execution Shot",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 30,
      "Id": "shieldmaiden_valkyrie",
      "Name": "Valkyrie's Call",
      "Covers": [
@@ -13100,7 +13194,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 31,
      "Id": "aegisguard_judgment_of_warding",
      "Name": "Judgment of Warding",
      "Covers": [
@@ -13109,7 +13203,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 34,
      "Id": "warden_lantern",
      "Name": "Lantern of the Still",
      "Covers": [
@@ -13118,7 +13212,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 35,
+     "Id": "aegisguard_sacred_challenge",
+     "Name": "Sacred Challenge",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 37,
      "Id": "last_stand",
      "Name": "Last Stand",
      "Covers": [
@@ -13127,15 +13229,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "aegisguard_sacred_challenge",
-     "Name": "Sacred Challenge",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 34,
+     "Level": 38,
      "Id": "warden_anchorstance",
      "Name": "Anchor Stance",
      "Covers": [
@@ -13143,31 +13237,13 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 40,
      "Id": "juggernaut_war_stomp",
      "Name": "War Stomp",
      "Covers": [
       "Damage",
       "Area",
       "Control"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "deathguard_dark_communion",
-     "Name": "Dark Communion",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "fieldeng_patch",
-     "Name": "Field Patch",
-     "Covers": [
-      "Heal",
-      "Cleanse"
      ]
     }
    ],
@@ -13237,6 +13313,15 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 7,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 9,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -13246,7 +13331,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 10,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -13257,15 +13342,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 11,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 12,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -13274,7 +13350,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 12,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -13283,15 +13359,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
-     "Id": "war_cry",
-     "Name": "War Cry",
+     "Level": 13,
+     "Id": "quicken",
+     "Name": "Quicken",
      "Covers": [
       "Support"
      ]
     },
     {
-     "Level": 16,
+     "Level": 15,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -13301,15 +13377,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
-     "Id": "quicken",
-     "Name": "Quicken",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 20,
+     "Level": 18,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -13317,7 +13385,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 20,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -13325,7 +13393,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 22,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -13335,7 +13403,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 25,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -13345,7 +13413,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 26,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -13354,7 +13422,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 28,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -13362,7 +13430,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 29,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -13371,7 +13439,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 31,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -13381,7 +13449,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 32,
      "Id": "skirmisher_hitandrun",
      "Name": "Hit and Run",
      "Covers": [
@@ -13389,7 +13457,25 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
+     "Level": 34,
+     "Id": "taunt",
+     "Name": "Taunt",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
      "Level": 36,
+     "Id": "frost",
+     "Name": "Frost",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 38,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -13398,22 +13484,12 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 40,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
       "Damage",
       "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "attrition_bloodletting",
-     "Name": "Bloodletting Bite",
-     "Covers": [
-      "Heal",
-      "Damage",
       "Control"
      ]
     }
@@ -13745,7 +13821,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 7,
+     "Level": 6,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 9,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -13755,7 +13840,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 10,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -13764,15 +13849,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 9,
-     "Id": "taunt",
-     "Name": "Taunt",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 11,
+     "Level": 12,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -13782,7 +13859,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 13,
      "Id": "combobrawler_openingjab",
      "Name": "Opening Jab",
      "Covers": [
@@ -13791,16 +13868,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
+     "Level": 14,
+     "Id": "taunt",
+     "Name": "Taunt",
      "Covers": [
-      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 17,
+     "Level": 16,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -13810,7 +13886,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 17,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -13819,15 +13895,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 20,
+     "Level": 18,
      "Id": "martialartist_palm",
      "Name": "Flowing Palm",
      "Covers": [
@@ -13836,7 +13904,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 20,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -13844,7 +13912,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
+     "Level": 21,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -13853,7 +13921,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 25,
+     "Level": 23,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -13863,7 +13931,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 26,
+     "Level": 24,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -13873,7 +13941,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 25,
      "Id": "combobrawler_onetwoflurry",
      "Name": "One-Two Flurry",
      "Covers": [
@@ -13881,15 +13949,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 31,
+     "Level": 27,
      "Id": "guard_stance",
      "Name": "Guard Stance",
      "Covers": [
@@ -13897,7 +13957,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 29,
+     "Id": "second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 30,
      "Id": "juggernaut_overrun",
      "Name": "Overrun",
      "Covers": [
@@ -13906,7 +13974,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 33,
      "Id": "aegisguard_hands_of_mercy",
      "Name": "Hands of Mercy",
      "Covers": [
@@ -13915,7 +13983,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 35,
      "Id": "shieldmaiden_valkyrie",
      "Name": "Valkyrie's Call",
      "Covers": [
@@ -13923,7 +13991,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 36,
      "Id": "aegisguard_judgment_of_warding",
      "Name": "Judgment of Warding",
      "Covers": [
@@ -13932,13 +14000,22 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 40,
+     "Level": 38,
      "Id": "juggernaut_war_stomp",
      "Name": "War Stomp",
      "Covers": [
       "Damage",
       "Area",
       "Control"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "deathguard_dark_communion",
+     "Name": "Dark Communion",
+     "Covers": [
+      "Heal",
+      "Support"
      ]
     }
    ],
@@ -14236,15 +14313,6 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 1,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 1,
      "Id": "brawler_guard_break",
      "Name": "Guard Break",
      "Covers": [
@@ -14262,6 +14330,15 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 3,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 5,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -14271,7 +14348,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 6,
+     "Level": 8,
      "Id": "rejuvenate",
      "Name": "Rejuvenate",
      "Covers": [
@@ -14280,7 +14357,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 10,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -14290,7 +14367,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 11,
+     "Id": "war_cry",
+     "Name": "War Cry",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -14300,7 +14385,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 14,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -14310,7 +14395,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -14319,7 +14404,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 16,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -14328,7 +14413,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
+     "Level": 17,
      "Id": "fighter_bell_ringer",
      "Name": "Bell Ringer",
      "Covers": [
@@ -14337,15 +14422,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
-     "Id": "war_cry",
-     "Name": "War Cry",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 17,
+     "Level": 18,
      "Id": "combobrawler_openingjab",
      "Name": "Opening Jab",
      "Covers": [
@@ -14354,7 +14431,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
+     "Level": 21,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -14362,7 +14439,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 23,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -14370,7 +14447,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 25,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -14380,7 +14457,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 27,
+     "Level": 28,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -14390,7 +14467,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 29,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -14399,7 +14476,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 31,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -14407,7 +14484,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 32,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -14416,7 +14493,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 34,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -14426,7 +14503,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 36,
      "Id": "regen",
      "Name": "Regen",
      "Covers": [
@@ -14434,7 +14511,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 37,
      "Id": "duelist_decisivecut",
      "Name": "Decisive Cut",
      "Covers": [
@@ -14442,7 +14519,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 38,
+     "Level": 39,
      "Id": "focus_breath",
      "Name": "Focus Breath",
      "Covers": [
@@ -14450,7 +14527,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 40,
      "Id": "quicken",
      "Name": "Quicken",
      "Covers": [
@@ -14571,7 +14648,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 14,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 15,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -14580,7 +14666,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 13,
+     "Level": 16,
      "Id": "opportunist_exploit",
      "Name": "Exploit",
      "Covers": [
@@ -14589,7 +14675,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
+     "Level": 17,
      "Id": "feint",
      "Name": "Feint",
      "Covers": [
@@ -14598,7 +14684,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 15,
+     "Level": 18,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 19,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -14607,7 +14702,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
+     "Level": 20,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -14616,7 +14711,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 21,
      "Id": "shadowstep_vanishing_cut",
      "Name": "Vanishing Cut",
      "Covers": [
@@ -14625,32 +14720,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 20,
-     "Id": "mass_heal",
-     "Name": "Mass Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 22,
-     "Id": "heal",
-     "Name": "Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 24,
-     "Id": "fieldcaster_resupplydrone",
-     "Name": "Resupply Drone",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 26,
+     "Level": 23,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -14660,7 +14730,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 26,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -14668,16 +14738,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
-     "Id": "martialartist_palm",
-     "Name": "Flowing Palm",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 33,
+     "Level": 29,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -14687,7 +14748,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
+     "Level": 30,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -14696,7 +14757,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 31,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 33,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -14706,7 +14776,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 35,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 36,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -14715,19 +14793,21 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
+     "Level": 38,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
       "Heal"
      ]
     },
     {
      "Level": 40,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
+     "Id": "fieldcaster_trapline",
+     "Name": "Trapline",
      "Covers": [
-      "Heal"
+      "Damage",
+      "Area",
+      "Control"
      ]
     }
    ],
@@ -14818,7 +14898,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 7,
+     "Level": 9,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 10,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -14827,32 +14916,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
-     "Id": "mass_heal",
-     "Name": "Mass Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 13,
-     "Id": "fieldcaster_resupplydrone",
-     "Name": "Resupply Drone",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 14,
-     "Id": "heal",
-     "Name": "Heal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 16,
+     "Level": 12,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -14862,7 +14926,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 13,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 15,
      "Id": "shadowstep_smoke_veil",
      "Name": "Smoke Veil",
      "Covers": [
@@ -14872,7 +14945,40 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
+     "Level": 18,
+     "Id": "mass_heal",
+     "Name": "Mass Heal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
      "Level": 20,
+     "Id": "heal",
+     "Name": "Heal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 22,
+     "Id": "fieldcaster_resupplydrone",
+     "Name": "Resupply Drone",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 23,
+     "Id": "duelist_decisivecut",
+     "Name": "Decisive Cut",
+     "Covers": [
+      "Damage"
+     ]
+    },
+    {
+     "Level": 25,
      "Id": "bolt",
      "Name": "Bolt",
      "Covers": [
@@ -14881,24 +14987,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 24,
-     "Id": "martialartist_palm",
-     "Name": "Flowing Palm",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 26,
+     "Level": 28,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -14907,6 +14996,15 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 29,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 32,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -14916,7 +15014,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 33,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -14925,7 +15023,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 35,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -14935,28 +15033,12 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 36,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
       "Damage",
       "Control"
-     ]
-    },
-    {
-     "Level": 35,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 36,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
      ]
     },
     {
@@ -14971,10 +15053,10 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 40,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
      "Covers": [
-      "Support"
+      "Heal"
      ]
     }
    ],
@@ -15082,7 +15164,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 10,
+     "Level": 12,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "opportunist_exploit",
      "Name": "Exploit",
      "Covers": [
@@ -15091,7 +15182,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 14,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -15100,7 +15191,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
+     "Level": 15,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -15109,15 +15200,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 16,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
      "Covers": [
-      "Support"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 15,
+     "Level": 17,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -15126,16 +15218,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
-     "Id": "feint",
-     "Name": "Feint",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 18,
+     "Level": 19,
      "Id": "flame_lance",
      "Name": "Flame Lance",
      "Covers": [
@@ -15145,7 +15228,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 20,
      "Id": "shadowstep_vanishing_cut",
      "Name": "Vanishing Cut",
      "Covers": [
@@ -15154,77 +15237,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 24,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 26,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 29,
-     "Id": "hexweaver_bloodharvest",
-     "Name": "Blood Harvest",
-     "Covers": [
-      "Heal",
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 30,
-     "Id": "hexweaver_festeringmark",
-     "Name": "Festering Mark",
+     "Level": 21,
+     "Id": "feint",
+     "Name": "Feint",
      "Covers": [
       "Damage",
       "Control"
      ]
     },
     {
-     "Level": 32,
-     "Id": "antidote",
-     "Name": "Antidote",
-     "Covers": [
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 33,
-     "Id": "skirmishmenders_guardiansrush",
-     "Name": "Guardian's Rush",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 35,
-     "Id": "taunt",
-     "Name": "Taunt",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 37,
+     "Level": 23,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -15234,9 +15256,61 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
-     "Id": "fieldcaster_trapline",
-     "Name": "Trapline",
+     "Level": 25,
+     "Id": "war_cry",
+     "Name": "War Cry",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 26,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 29,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 32,
+     "Id": "hexweaver_bloodharvest",
+     "Name": "Blood Harvest",
+     "Covers": [
+      "Heal",
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 33,
+     "Id": "hexweaver_festeringmark",
+     "Name": "Festering Mark",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 34,
+     "Id": "martialartist_palm",
+     "Name": "Flowing Palm",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 36,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
      "Covers": [
       "Damage",
       "Area",
@@ -15244,11 +15318,20 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 40,
-     "Id": "ninja_fang",
-     "Name": "Ninja Fang",
+     "Level": 38,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
      "Covers": [
-      "Damage"
+      "Heal"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "skirmishmenders_guardiansrush",
+     "Name": "Guardian's Rush",
+     "Covers": [
+      "Damage",
+      "Control"
      ]
     }
    ],
@@ -15308,15 +15391,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 3,
-     "Id": "duelist_guardstance",
-     "Name": "Guard Stance",
+     "Level": 4,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
      "Covers": [
+      "Heal",
       "Support"
      ]
     },
     {
-     "Level": 6,
+     "Level": 7,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -15326,7 +15410,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
+     "Level": 9,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -15336,7 +15420,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 9,
+     "Level": 10,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -15346,16 +15430,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 12,
-     "Id": "brawler_second_wind",
-     "Name": "Second Wind",
-     "Covers": [
-      "Heal",
-      "Support"
-     ]
-    },
-    {
-     "Level": 13,
+     "Level": 11,
      "Id": "quicken",
      "Name": "Quicken",
      "Covers": [
@@ -15363,7 +15438,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
+     "Level": 12,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 13,
      "Id": "duelist_riposte",
      "Name": "Riposte",
      "Covers": [
@@ -15372,7 +15455,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 16,
+     "Level": 15,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -15382,7 +15465,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 16,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -15391,7 +15474,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 17,
      "Id": "war_cry",
      "Name": "War Cry",
      "Covers": [
@@ -15399,7 +15482,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 18,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -15408,7 +15491,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 22,
+     "Level": 21,
      "Id": "skirmishmenders_flowingcurrent",
      "Name": "Flowing Current",
      "Covers": [
@@ -15416,7 +15499,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 24,
+     "Level": 23,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -15424,7 +15507,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 26,
+     "Level": 25,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -15434,7 +15517,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 28,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -15444,7 +15527,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 30,
+     "Level": 29,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -15453,7 +15536,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 31,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -15461,7 +15544,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
+     "Level": 32,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -15470,7 +15553,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 35,
+     "Level": 34,
      "Id": "fieldcaster_trapline",
      "Name": "Trapline",
      "Covers": [
@@ -15480,7 +15563,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 36,
      "Id": "shock_wave",
      "Name": "ShockWave",
      "Covers": [
@@ -15489,12 +15572,22 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 39,
+     "Level": 38,
      "Id": "attrition_dreadaura",
      "Name": "Dread Aura",
      "Covers": [
       "Damage",
       "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 40,
+     "Id": "attrition_bloodletting",
+     "Name": "Bloodletting Bite",
+     "Covers": [
+      "Heal",
+      "Damage",
       "Control"
      ]
     }
@@ -16390,6 +16483,15 @@ window.ABILITY_CADENCE = {
     },
     {
      "Level": 4,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 6,
      "Id": "poison",
      "Name": "Poison",
      "Covers": [
@@ -16399,15 +16501,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 5,
-     "Id": "quicken",
-     "Name": "Quicken",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 7,
+     "Level": 8,
      "Id": "brawler_wide_cleave",
      "Name": "Wide Cleave",
      "Covers": [
@@ -16417,15 +16511,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 8,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
+     "Level": 9,
+     "Id": "quicken",
+     "Name": "Quicken",
      "Covers": [
       "Support"
      ]
     },
     {
-     "Level": 10,
+     "Level": 11,
      "Id": "undertow",
      "Name": "Undertow",
      "Covers": [
@@ -16435,7 +16529,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 11,
+     "Level": 12,
      "Id": "slasher_rending_slash",
      "Name": "Rending Slash",
      "Covers": [
@@ -16444,97 +16538,15 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 14,
-     "Id": "skirmishmenders_flowingcurrent",
-     "Name": "Flowing Current",
+     "Level": 13,
+     "Id": "focus_breath",
+     "Name": "Focus Breath",
      "Covers": [
-      "Heal"
+      "Support"
      ]
     },
     {
-     "Level": 16,
-     "Id": "skirmishmenders_coveringwithdrawal",
-     "Name": "Covering Withdrawal",
-     "Covers": [
-      "Heal"
-     ]
-    },
-    {
-     "Level": 18,
-     "Id": "hexweaver_curseoffate",
-     "Name": "Curse of Fate",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 21,
-     "Id": "hexweaver_bloodharvest",
-     "Name": "Blood Harvest",
-     "Covers": [
-      "Heal",
-      "Damage",
-      "Area"
-     ]
-    },
-    {
-     "Level": 22,
-     "Id": "duelist_riposte",
-     "Name": "Riposte",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 23,
-     "Id": "streetfighter_sucker_punch",
-     "Name": "Sucker Punch",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 24,
-     "Id": "hexweaver_festeringmark",
-     "Name": "Festering Mark",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 26,
-     "Id": "antidote",
-     "Name": "Antidote",
-     "Covers": [
-      "Cleanse"
-     ]
-    },
-    {
-     "Level": 27,
-     "Id": "skirmishmenders_guardiansrush",
-     "Name": "Guardian's Rush",
-     "Covers": [
-      "Damage",
-      "Control"
-     ]
-    },
-    {
-     "Level": 29,
-     "Id": "fieldcaster_trapline",
-     "Name": "Trapline",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 31,
+     "Level": 15,
      "Id": "skirmisher_runningriot",
      "Name": "Running Riot",
      "Covers": [
@@ -16544,17 +16556,43 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 33,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Level": 16,
+     "Id": "duelist_riposte",
+     "Name": "Riposte",
      "Covers": [
-      "Support"
+      "Damage",
+      "Control"
      ]
     },
     {
-     "Level": 35,
-     "Id": "frost",
-     "Name": "Frost",
+     "Level": 17,
+     "Id": "streetfighter_sucker_punch",
+     "Name": "Sucker Punch",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 20,
+     "Id": "skirmishmenders_flowingcurrent",
+     "Name": "Flowing Current",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 22,
+     "Id": "skirmishmenders_coveringwithdrawal",
+     "Name": "Covering Withdrawal",
+     "Covers": [
+      "Heal"
+     ]
+    },
+    {
+     "Level": 24,
+     "Id": "hexweaver_curseoffate",
+     "Name": "Curse of Fate",
      "Covers": [
       "Damage",
       "Area",
@@ -16562,7 +16600,53 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 36,
+     "Level": 27,
+     "Id": "hexweaver_bloodharvest",
+     "Name": "Blood Harvest",
+     "Covers": [
+      "Heal",
+      "Damage",
+      "Area"
+     ]
+    },
+    {
+     "Level": 28,
+     "Id": "hexweaver_festeringmark",
+     "Name": "Festering Mark",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 30,
+     "Id": "antidote",
+     "Name": "Antidote",
+     "Covers": [
+      "Cleanse"
+     ]
+    },
+    {
+     "Level": 31,
+     "Id": "skirmishmenders_guardiansrush",
+     "Name": "Guardian's Rush",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 33,
+     "Id": "fieldcaster_trapline",
+     "Name": "Trapline",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 34,
      "Id": "duelist_exploit_opening",
      "Name": "Exploit the Opening",
      "Covers": [
@@ -16570,11 +16654,29 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 37,
+     "Level": 35,
      "Id": "duelist_decisivecut",
      "Name": "Decisive Cut",
      "Covers": [
       "Damage"
+     ]
+    },
+    {
+     "Level": 37,
+     "Id": "taunt",
+     "Name": "Taunt",
+     "Covers": [
+      "Support"
+     ]
+    },
+    {
+     "Level": 39,
+     "Id": "frost",
+     "Name": "Frost",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
      ]
     }
    ],
@@ -18357,7 +18459,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 17,
+     "Level": 19,
+     "Id": "brawler_second_wind",
+     "Name": "Second Wind",
+     "Covers": [
+      "Heal",
+      "Support"
+     ]
+    },
+    {
+     "Level": 20,
      "Id": "streetfighter_sucker_punch",
      "Name": "Sucker Punch",
      "Covers": [
@@ -18366,7 +18477,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 18,
+     "Level": 21,
      "Id": "skirmisher_blindside",
      "Name": "Blindside",
      "Covers": [
@@ -18375,7 +18486,16 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 19,
+     "Level": 22,
+     "Id": "duelist_probingthrust",
+     "Name": "Probing Thrust",
+     "Covers": [
+      "Damage",
+      "Control"
+     ]
+    },
+    {
+     "Level": 23,
      "Id": "opportunist_chain_the_opening",
      "Name": "Chain the Opening",
      "Covers": [
@@ -18384,7 +18504,27 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 21,
+     "Level": 25,
+     "Id": "poison",
+     "Name": "Poison",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 27,
+     "Id": "undertow",
+     "Name": "Undertow",
+     "Covers": [
+      "Damage",
+      "Area",
+      "Control"
+     ]
+    },
+    {
+     "Level": 29,
      "Id": "skirmishmenders_coveringwithdrawal",
      "Name": "Covering Withdrawal",
      "Covers": [
@@ -18392,15 +18532,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 23,
-     "Id": "focus_breath",
-     "Name": "Focus Breath",
-     "Covers": [
-      "Support"
-     ]
-    },
-    {
-     "Level": 25,
+     "Level": 31,
      "Id": "hexweaver_curseoffate",
      "Name": "Curse of Fate",
      "Covers": [
@@ -18410,7 +18542,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 28,
+     "Level": 34,
      "Id": "hexweaver_bloodharvest",
      "Name": "Blood Harvest",
      "Covers": [
@@ -18420,7 +18552,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 29,
+     "Level": 35,
      "Id": "hexweaver_festeringmark",
      "Name": "Festering Mark",
      "Covers": [
@@ -18429,7 +18561,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 31,
+     "Level": 37,
      "Id": "antidote",
      "Name": "Antidote",
      "Covers": [
@@ -18437,7 +18569,7 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 32,
+     "Level": 38,
      "Id": "skirmishmenders_guardiansrush",
      "Name": "Guardian's Rush",
      "Covers": [
@@ -18446,41 +18578,11 @@ window.ABILITY_CADENCE = {
      ]
     },
     {
-     "Level": 34,
-     "Id": "fieldcaster_trapline",
-     "Name": "Trapline",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 36,
-     "Id": "taunt",
-     "Name": "Taunt",
+     "Level": 40,
+     "Id": "duelist_guardstance",
+     "Name": "Guard Stance",
      "Covers": [
       "Support"
-     ]
-    },
-    {
-     "Level": 38,
-     "Id": "frost",
-     "Name": "Frost",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
-     ]
-    },
-    {
-     "Level": 40,
-     "Id": "poison",
-     "Name": "Poison",
-     "Covers": [
-      "Damage",
-      "Area",
-      "Control"
      ]
     }
    ],
