@@ -63,9 +63,9 @@ namespace GridGame.App.Automation
                 // GG-T1408: `-start splash` boots the way a player's launch does (automation otherwise opens on the Title):
                 // the logo, then Create Profile when the profile's first run is due (a fresh -saveRoot), else the Main Menu.
                 case "splash": screen = new SplashScreen(); break;
-                // GG-T513/T514: a results screen without fighting for it. "results" ends an expedition with a long
-                // first-hour haul (a Tome among ~15 drops, a theme milestone, the completion bonus); "results-mid" is a
-                // battle won mid-expedition (To Camp / Retreat early / Next battle).
+                // GG-T513/T514: a results screen without fighting for it. "results" is a win at camp with a long
+                // first-hour haul (a Tome among ~15 drops, a theme milestone); "results-mid" is a battle won on the road
+                // (GG-T1786: orbs carried, the Medic Wagon, To Camp / Next battle).
                 case "results": screen = new PostBattleScreen(PreviewReport(app, false), PreviewStage(app)); break;
                 case "results-mid": screen = new PostBattleScreen(PreviewReport(app, true), PreviewStage(app)); break;
             }
@@ -82,12 +82,12 @@ namespace GridGame.App.Automation
             var r = new Meta.BattleReport
             {
                 Victory = true, StageId = PreviewStage(app), Gold = 214, XpEach = 38,
-                ExpeditionName = theme?.Name ?? "Preview", ExpeditionLength = theme?.Stages.Count ?? 3,
             };
-            if (mid) { r.ExpeditionStep = 1; r.CarriedOrbs = 4; r.NextStageId = theme?.Stages.Count > 1 ? theme.Stages[1] : null; }
+            // GG-T1786: "results-mid" is a win on the road (orbs carried, the Medic Wagon's patch); the other a win back at camp.
+            if (mid) { Meta.TravelRules.SetOut(app.Save); app.Save.World.CarriedOrbs = 4; r.CarriedOrbs = 4; r.MedicHealed = 18; }
             else
             {
-                r.ExpeditionStep = r.ExpeditionLength; r.ExpeditionComplete = true; r.ExpeditionBonus = 342;
+                Meta.TravelRules.MakeCamp(app.Save);
                 r.Milestone = theme?.Name ?? "Preview";
                 var milestoneItem = items.FirstOrDefault(i => i.Type == Core.Content.ItemType.Consumable);
                 r.MilestoneItem = milestoneItem?.Id;

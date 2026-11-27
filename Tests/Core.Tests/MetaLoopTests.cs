@@ -240,6 +240,26 @@ namespace GridGame.Tests
             Assert.That(BattleFactory.Build(c, s, theme.Stages[0], 3).StartOrbs, Is.EqualTo(0));
         }
 
+        [Test]
+        public void Camps_Rest_row_and_the_respec_follow_travel()
+        {
+            // GG-T1786: the Inn row is camp rest ("Rest", Food on hand); on the road it reads "Make camp" and the respec waits.
+            var c = Real; var s = Progression.NewGame(c, "Rr");
+            CampNpcs.JoinAll(s);
+            var rest = CampMenu.Build(c, s, new SettingsSave()).First(d => d.Id == CampMenu.Inn);
+            Assert.That(rest.Label, Is.EqualTo("Rest"));
+            Assert.That(rest.Value, Is.EqualTo($"{s.World.Food} Food"));
+            Assert.That(SkillHexProgress.RespecClosed(s), Is.Null);
+            s.World.Food = 0;
+            Assert.That(CampMenu.RestValue(s), Does.Contain("no meal"));
+            TravelRules.SetOut(s);
+            Assert.That(CampMenu.Build(c, s, new SettingsSave()).First(d => d.Id == CampMenu.Inn).Value, Is.EqualTo("Make camp"));
+            Assert.That(CampMenu.Build(c, s, new SettingsSave()).Any(d => d.Id == CampMenu.Respec), Is.False);
+            Assert.That(SkillHexProgress.RespecClosed(s), Does.Contain("On the road"));
+            Assert.That(Crucible.CanLaunch(c, s, out var why), Is.False);
+            Assert.That(why, Is.EqualTo("Closed on the road"));
+        }
+
         // ── Voluntary retreat (§22.2, FFIV-style partial loss, owner direction 2026-10-11) ──
 
         private static BattleState DirectBattle(ContentDb c, SaveData s, string stageId, int seed = 11) =>

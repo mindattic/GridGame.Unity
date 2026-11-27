@@ -44,6 +44,16 @@ namespace GridGame.Meta
             Caravan = "caravan", Talk = "talk", Quests = "quests", Bounties = "bounties", Bestiary = "bestiary",
             Codex = "codex", Settings = "settings", NewGamePlus = "newgameplus", Quit = "quit";
 
+        /// <summary>GG-T1786: the Rest row's value: "Make camp" on the road, else the Food on hand, and "no meal" when it
+        /// can't feed the party tonight (rest still heals; only Well Rested needs the meal).</summary>
+        public static string RestValue(SaveData s)
+        {
+            if (TravelRules.OnTheRoad(s)) return "Make camp";
+            int food = s.World?.Food ?? 0;
+            bool fed = s.World != null && (s.World.AteMeal || food >= GridGame.Core.World.CampRest.MealCost(s.Party.Count));
+            return fed ? $"{food} Food" : $"{food} Food · no meal";
+        }
+
         public static List<CampDestination> Build(ContentDb c, SaveData s, SettingsSave settings)
         {
             var list = new List<CampDestination>();
@@ -73,11 +83,12 @@ namespace GridGame.Meta
             Add(Heroes, "Heroes", CampGroup.Heroes, value: heroesValue, badge: training || partyPoints > 0);
             if (CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
             {
-                // GG-T1790: the Inn is camp rest, free (CampRestService); on the road resting makes camp first.
-                bool rest = Expeditions.InnOpen(s);
+                // GG-T1786: the Inn row is camp rest (CampRestService), free: the party eats a meal from Food if it can and
+                // sleeps to morning. On the road it reads "Make camp" (resting makes camp first); the respec waits for camp.
+                bool camped = !TravelRules.OnTheRoad(s);
                 bool hurt = s.Roster.Any(h => GridGame.Meta.Inn.MissingHp(c, s, h) > 0);
-                Add(Inn, "Inn", CampGroup.Heroes, value: !rest ? "On the road" : hurt ? "Rest" : "Rested", npc: CampNpcs.Innkeeper);
-                if (Features.InnRespecRow && rest) Add(Respec, "Inn: Respec", CampGroup.Heroes, npc: CampNpcs.Innkeeper);
+                Add(Inn, "Rest", CampGroup.Heroes, value: RestValue(s), badge: hurt, npc: CampNpcs.Innkeeper);
+                if (Features.InnRespecRow && camped) Add(Respec, "Inn: Respec", CampGroup.Heroes, npc: CampNpcs.Innkeeper);
             }
             else Keeper(Inn, "Inn", CampGroup.Heroes, CampNpcs.Innkeeper);
 

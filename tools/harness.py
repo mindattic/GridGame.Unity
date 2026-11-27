@@ -906,9 +906,8 @@ def campaign(run="campaign", stages=6, speed=3, extra=(), max_loss_retries=3):
         results.append({"stage": n, "screen": st["screen"], "gold": st.get("save", {}).get("Gold"), "levels": st.get("save", {}).get("levels")})
         if st["screen"] != "postbattle":
             break
-        # PostBattleScreen (owner's Expedition rework) names its continuation button "next" whether
-        # its text reads "Next battle ›" (mid-expedition) or "Next expedition ›" (crossing into the
-        # next one) — there is no literal "Next stage" button. Only a dead-end (last unlocked content)
+        # PostBattleScreen names its continuation button "next" ("Next battle", the next unlocked
+        # campaign stage; GG-T1786 travel) — there is no literal "Next stage" button. Only a dead-end (last unlocked content)
         # lacks a "next" element, in which case "Continue" is the only way forward (back to the Hub).
         #
         # AutomationServer's click/clicktext could occasionally go silently unresponsive on a
@@ -3287,7 +3286,7 @@ def crucible(run="crucible", leave_after=3, speed=4, timeout=600):
     out["taps"]["continue"] = _tap_until(lambda: call("click", name="continue"), lambda: screen() == "hub", wait=6.0)
     out["back_at"] = screen()
     shot("08-camp-after")
-    out["after"] = {k: after[k] for k in ("Gold", "inventory", "xp", "hp", "crucible", "HighestClearedStage", "expedition")}
+    out["after"] = {k: after[k] for k in ("Gold", "inventory", "xp", "hp", "crucible", "HighestClearedStage", "onTheRoad")}
     gained = {k: v - before["inventory"].get(k, 0) for k, v in after["inventory"].items() if v != before["inventory"].get(k, 0)}
     out["checks"] = {
         "gold_gained": after["Gold"] - before["Gold"],
@@ -3295,7 +3294,7 @@ def crucible(run="crucible", leave_after=3, speed=4, timeout=600):
         "xp_gained": {k: after["xp"][k] - before["xp"].get(k, 0) for k in after["xp"]},
         "party_full_hp": all(after["hp"][k] == 0 for k in before["party"]),
         "best_recorded": after["crucible"]["Best"],
-        "campaign_untouched": after["HighestClearedStage"] == before["HighestClearedStage"] and after["expedition"] is None,
+        "campaign_untouched": after["HighestClearedStage"] == before["HighestClearedStage"] and not after["onTheRoad"],
         "camp_row_after": [t for t in texts() if t == "Crucible" or t.startswith("Best:")],
         "crucible_cues": sorted({c for c in call("cues") if c.rsplit(".", 1)[-1].startswith("crucible")}),
     }

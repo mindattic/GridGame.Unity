@@ -104,7 +104,7 @@ namespace GridGame.Meta
         public static string RespecClosed(SaveData s)
         {
             if (!CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper)) return "The Innkeeper hasn't joined yet";
-            if (!Expeditions.InnOpen(s)) return "On the road — the Inn opens at camp";
+            if (TravelRules.OnTheRoad(s)) return "On the road — make camp to respec"; // GG-T1786
             return null;
         }
 

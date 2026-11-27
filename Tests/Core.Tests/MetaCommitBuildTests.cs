@@ -372,13 +372,16 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Abandon_fails_at_camp_and_makes_camp_on_the_road()
+        public void Making_camp_on_the_road_lets_the_carried_orbs_go()
         {
+            // GG-T1786: the results screen's To Camp (and the Rest row) make camp through TravelRules.MakeCamp.
             var c = Real; var s = Progression.NewGame(c, "AB");
-            Assert.That(Expeditions.Abandon(s).Ok, Is.False);
             TravelRules.SetOut(s);
-            Assert.That(Expeditions.Abandon(s).Ok, Is.True);
+            s.World.CarriedOrbs = 3;
+            TravelRules.MakeCamp(s);
             Assert.That(s.World.Camped, Is.True);
+            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(0));
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
         }
 
         [Test]

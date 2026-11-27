@@ -323,7 +323,7 @@ namespace GridGame.Meta
         /// <summary>GG-T673: mana orbs still in the row when the battle ended (GG-T676 converts them at stage end).</summary>
         public int OrbsLeft;
         /// <summary>GG-T676: the Mana Dust <see cref="OrbsLeft"/> settled back into at the end of a won stage (already counted
-        /// in <see cref="DustEarned"/>); 0 when the orbs carried on with an expedition or the stage was lost.</summary>
+        /// in <see cref="DustEarned"/>); 0 when the orbs carried on along the road or the stage was lost.</summary>
         public int OrbDust;
         /// <summary>GG-T677: owned Mana Orbs this victory added, and why (a milestone, a Halcyon find).</summary>
         public int OrbsGained;
@@ -338,18 +338,11 @@ namespace GridGame.Meta
         /// <summary>Campaign milestone (GG-T301): the theme whose first full clear this was, and the reward it paid (also in <see cref="Items"/>).</summary>
         public string Milestone;
         public string MilestoneItem;
-        // Expedition (§22.5)
-        public string ExpeditionName;
-        public int ExpeditionStep;      // battles won so far on this expedition
-        public int ExpeditionLength;
-        public bool ExpeditionComplete;
-        public bool ExpeditionFailed;
-        public int ExpeditionBonus;
+        // Travel (§28, GG-T1786: replaces the expedition fields)
         /// <summary>GG-T1790: orbs carried into the next battle on the road (<see cref="TravelRules.AfterBattle"/>); 0 at camp.</summary>
         public int CarriedOrbs;
         /// <summary>GG-T1790: HP the Medic Wagon patched up after this win on the road (<see cref="MedicWagon"/>).</summary>
         public int MedicHealed;
-        public string NextStageId;
         // Guests (§25.11)
         public List<string> GuestsJoined = new List<string>();
         /// <summary>Tamed monsters standing at this victory with a full bond (GG-T303): each asks to join — the results
@@ -413,46 +406,7 @@ namespace GridGame.Meta
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // Expeditions (§22.5): retired by travel (GG-T1785/GG-T1790, <see cref="TravelRules"/>). A thin shim keeps the App's
-    // callers compiling until the travel UI (GG-T1786) replaces them; nothing here reads or writes SaveData.Expedition.
-    // ─────────────────────────────────────────────────────────────────────────────
-
-    public static class Expeditions
-    {
-        /// <summary>The old expedition completion bonus share. Unused since travel: kept for the owner TODO in
-        /// <see cref="TravelRules"/> (GG-T1705: a bonus on making camp, on reaching a location, or none).</summary>
-        public const float CompletionBonus = 0.5f;
-
-        public static ThemeDef Theme(ContentDb c, string themeId) => c.Campaign.Themes.Find(t => t.Id == themeId);
-
-        /// <summary>Camp services (rest, respec) are open at camp, closed on the road.</summary>
-        public static bool InnOpen(SaveData s) => !TravelRules.OnTheRoad(s);
-
-        /// <summary>Travel has no fixed battle order inside a theme: stage gating is <see cref="Progression.IsStageUnlocked"/>'s.</summary>
-        public static bool CanLaunch(ContentDb c, SaveData s, string stageId, out string why)
-        {
-            why = null;
-            return true;
-        }
-
-        /// <summary>A hunt (GG-T388): a stage already cleared, fought again for its XP, coins and drops.</summary>
-        public static bool IsHunt(SaveData s, string stageId) =>
-            s != null && stageId != null && s.ClearedStages.Contains(stageId);
-
-        /// <summary>Called when a battle is launched: sets out from camp (<see cref="TravelRules.SetOut"/>).</summary>
-        public static void Begin(ContentDb c, SaveData s, string stageId) => TravelRules.SetOut(s);
-
-        /// <summary>Turns back to camp (<see cref="TravelRules.MakeCamp"/>).</summary>
-        public static Result Abandon(SaveData s)
-        {
-            if (!TravelRules.OnTheRoad(s)) return Result.Fail("Already at camp");
-            TravelRules.MakeCamp(s);
-            return Result.Success("The caravan makes camp");
-        }
-    }
-
-    // ─────────────────────────────────────────────────────────────────────────────
-    // Caravan upgrades (§25.12): the long-run gold sink that changes how expeditions play
+    // Caravan upgrades (§25.12): the long-run gold sink that changes how travel plays
     // ─────────────────────────────────────────────────────────────────────────────
 
     public static class CaravanUpgrades

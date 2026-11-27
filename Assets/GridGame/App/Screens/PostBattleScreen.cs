@@ -108,17 +108,14 @@ namespace GridGame.App
                 // "Teach to…") come before the loot list. A first-hour stage drops ~15 rows, which pushed all of
                 // these off the bottom, so a player tapping on past the results never saw them.
                 if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
-                if (report.ExpeditionComplete)
+                if (TravelRules.OnTheRoad(App.Save)) // GG-T1786: travel (§28) replaces the expedition rows
                 {
-                    Ui.MenuRow($"{report.ExpeditionName} expedition complete!", "+" + Ui.Gold(report.ExpeditionBonus), null, list).WithKindIcon(RowKind.Place).Q<Label>("label").AddToClassList("gold");
-                    Ui.Text("The caravan makes camp — everyone rests.", "small good", list);
-                }
-                else if (report.ExpeditionName != null)
-                {
-                    var er = Ui.MenuRow($"Expedition: battle {report.ExpeditionStep} of {report.ExpeditionLength} won", report.CarriedOrbs == 0 ? "no orbs carry over" : report.CarriedOrbs == 1 ? "1 orb carries over" : $"{report.CarriedOrbs} orbs carry over", null, list);
-                    er.name = "expedition-progress";
-                    er.KindIcon(RowKind.Stage);
-                    Ui.Text("Wounds carry to the next battle; the inn stays closed until the expedition ends.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+                    var tr = Ui.MenuRow("On the road", report.CarriedOrbs == 0 ? "no orbs carry over" : report.CarriedOrbs == 1 ? "1 orb carries over" : $"{report.CarriedOrbs} orbs carry over", null, list);
+                    tr.name = "travel-orbs";
+                    tr.KindIcon(RowKind.Stage);
+                    if (report.MedicHealed > 0)
+                        Ui.MenuRow("Medic Wagon", $"+{report.MedicHealed} HP patched", null, list).WithKindIcon(RowKind.Hero).name = "travel-medic";
+                    Ui.Text("Wounds carry to the next battle. Set up camp to rest.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
                 if (report.Milestone != null) // GG-T301: a theme's first full clear
                     Ui.MenuRow($"{report.Milestone} cleared!", "Milestone: " + (c.TryItem(report.MilestoneItem)?.Name ?? report.MilestoneItem), null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(report.MilestoneItem)).name = "results-milestone";
@@ -147,7 +144,6 @@ namespace GridGame.App
             {
                 var t = Ui.Text(report.Retreated ? "You fall back with part of your spoils — safer than risking the whole party. The stage is yours to retry." :
                     report.Escaped ? "The party slips away in the smoke. Wounds remain; no rewards." :
-                    report.ExpeditionFailed ? $"{WithThe(report.ExpeditionName)} expedition has failed. The party falls back to the caravan and recovers — the expedition restarts from battle 1." :
                     "The party retreats to camp and recovers. The gold and loot are lost — but every hero keeps the experience they earned. The stage is yours to retry.", "kit-text", list);
                 t.style.whiteSpace = WhiteSpace.Normal;
                 if (report.Retreated)
@@ -174,39 +170,38 @@ namespace GridGame.App
             row.style.justifyContent = Justify.Center;
             if (!report.Victory)
             {
-                // A failed expedition restarts from its first battle.
-                var theme = c.ThemeOf(stageId);
-                string retryId = report.ExpeditionFailed && theme != null ? theme.Stages[0] : stageId;
                 // A pruned generated stage can't be retried. GG-T749: named "retry" (tools/playthrough_sim.py looks for that name).
-                if (c.TryStage(retryId) != null) RowIcon.IconButton("Retry", RowKind.NewGamePlus, () => StageLauncher.Launch(retryId, true), null, row).name = "retry";
+                if (c.TryStage(stageId) != null) RowIcon.IconButton("Retry", RowKind.NewGamePlus, () => StageLauncher.Launch(stageId, true), null, row).name = "retry";
             }
             bool ending = Story.EndingDue(c, App.Save, report.Victory, stageId);
-            // GG-T513: mid-expedition, "Continue" beside "Next battle ›" read as "carry on" though it goes back to Camp
-            // (the expedition is kept), and it wore the same orange. There it says where it goes and steps back to a
-            // plain button, leaving Next battle the one primary. Its automation name stays "continue" either way.
-            bool midExpedition = !ending && report.Victory && report.NextStageId != null;
-            onContinue = () => StoryBeats.AfterResults(report.Victory, stageId);
-            var cont = RowIcon.IconButton(midExpedition ? "To Camp" : "Continue", midExpedition ? RowKind.Station : RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, midExpedition ? null : "btn--primary", row);
+            // GG-T1786 (travel, §28): a win on the road offers "To Camp", which sets up camp (the orbs carried are let go)
+            // then goes back to Camp, beside "Next battle", which stays on the road; GG-T513's rule holds: To Camp steps
+            // back to a plain button, leaving Next battle the one primary. Its automation name stays "continue" either way.
+            string nextId = !ending && report.Victory ? NextBattle(c, stageId) : null;
+            bool toCamp = !ending && report.Victory && TravelRules.OnTheRoad(App.Save);
+            onContinue = () =>
+            {
+                if (toCamp) { TravelRules.MakeCamp(App.Save); App.Persist(); }
+                StoryBeats.AfterResults(report.Victory, stageId);
+            };
+            bool primaryNext = nextId != null;
+            var cont = RowIcon.IconButton(toCamp ? "To Camp" : "Continue", toCamp ? RowKind.Station : RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, primaryNext ? null : "btn--primary", row);
             cont.name = "continue";
             if (ending) Ui.Text("The road ahead is quiet, for now. Continue to see how the story closes.", "small gold", list).style.whiteSpace = WhiteSpace.Normal;
-            if (midExpedition)
-            {
-                RowIcon.IconButton("Retreat early", RowKind.Back, () => Confirm.Show(
-                    "Stop the expedition here? You keep everything you've earned so far — you just give up the completion bonus for pushing on.",
-                    "Retreat early", () => { Expeditions.Abandon(App.Save); App.Persist(); App.Router.ResetTo(new HubScreen()); }), null, row);
-                RowIcon.IconButton("Next battle", RowKind.Enter, () => StageLauncher.Launch(report.NextStageId, true), "btn--primary", row).name = "next";
-            }
-            else if (!ending && report.Victory)
-            {
-                var stages = c.CampaignStages();
-                int idx = stages.FindIndex(s => s.Id == stageId);
-                if (idx >= 0 && idx + 1 < stages.Count && Progression.IsStageUnlocked(App.Save, idx + 1) && Expeditions.CanLaunch(c, App.Save, stages[idx + 1].Id, out _))
-                    RowIcon.IconButton("Next expedition", RowKind.Stage, () => StageLauncher.Launch(stages[idx + 1].Id, true), null, row).name = "next";
-            }
+            if (nextId != null)
+                RowIcon.IconButton("Next battle", RowKind.Enter, () => StageLauncher.Launch(nextId, true), "btn--primary", row).name = "next";
 
             Ui.El("", col).style.height = Space.S48;
             if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
             else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+        }
+
+        /// <summary>GG-T1786: the campaign stage after <paramref name="stageId"/> when it is unlocked, else null.</summary>
+        internal static string NextBattle(ContentDb c, string stageId)
+        {
+            var stages = c.CampaignStages();
+            int idx = stages.FindIndex(s => s.Id == stageId);
+            return idx >= 0 && idx + 1 < stages.Count && Progression.IsStageUnlocked(App.Save, idx + 1) ? stages[idx + 1].Id : null;
         }
 
         /// <summary>Crucible results (§22.10): waves survived, the record, and the whole haul, which a Crucible run
@@ -352,11 +347,7 @@ namespace GridGame.App
             yield return Tween.Pop(label, 1.25f, 0.3f);
         }
 
-        /// <summary>Items pop in one at a time instead of dumping the whole list at once (owner direction
-        /// 2026-10-11: the same tempo and pause that makes a results screen enjoyable to read).</summary>
         /// <summary>Overflow past an item's stack cap auto-sells (US-245); "1 item", not "1 items".</summary>
-        private static string WithThe(string name) => name.StartsWith("The ", System.StringComparison.OrdinalIgnoreCase) ? name : "The " + name;
-
         private static string SoldCount(int n) => n == 1 ? "1 item" : $"{n} items";
 
         /// <summary>GG-T944 (§2.13.1): how long the battle ran, "N turns" or "N turns, M actions" when several heroes acted

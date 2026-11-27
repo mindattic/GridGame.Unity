@@ -339,7 +339,7 @@ namespace GridGame.Tests
             Assert.That(rep.FirstClear, Is.False);
             Assert.That(rep.UnlockedStage, Is.Null);
             Assert.That(rep.CampaignComplete, Is.False);
-            Assert.That(rep.ExpeditionName, Is.Null);
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(0)); // GG-T1786: a Crucible run carries nothing on the road
             Assert.That(rep.CrucibleWaves, Is.EqualTo(phase == BattlePhase.Victory ? Crucible.MaxWaves : 3));
         }
 

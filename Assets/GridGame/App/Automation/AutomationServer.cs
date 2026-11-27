@@ -404,16 +404,14 @@ namespace GridGame.App.Automation
                 }
                 case "devstage":
                 {
-                    // Test-only (GG-T241): jump the campaign to `stage` — every earlier stage cleared, its expedition
-                    // under way at that battle — so a biome finale or the ending stage can be launched directly.
+                    // Test-only (GG-T241): jump the campaign to `stage` — every earlier stage cleared, at camp (GG-T1786:
+                    // travel has no per-region run to fast-forward) — so a biome finale or the ending stage can be launched directly.
                     if (app.Save == null) return new { error = "no save" };
                     var stages = app.Content.CampaignStages();
                     int idx = stages.FindIndex(x => x.Id == q["stage"]);
                     if (idx < 0) return new { error = "unknown stage" };
                     app.Save.HighestClearedStage = Math.Max(app.Save.HighestClearedStage, idx - 1);
-                    var theme = app.Content.ThemeOf(stages[idx].Id);
-                    int at = theme.Stages.IndexOf(stages[idx].Id);
-                    app.Save.Expedition = at == 0 ? null : new ExpeditionSave { ThemeId = theme.Id, Next = at };
+                    TravelRules.MakeCamp(app.Save);
                     app.Persist();
                     return new { ok = true, cleared = app.Save.HighestClearedStage };
                 }
@@ -1127,7 +1125,7 @@ namespace GridGame.App.Automation
                 ["slot"] = app.Save != null ? app.Slot : -1, // GG-T116: which of the profile's slots is loaded (0-based)
             };
             if (app.Save != null)
-                dump["save"] = new { app.Save.Gold, app.Save.HighestClearedStage, party = app.Save.Party, inventory = app.Save.Inventory, levels = app.Save.Roster.ToDictionary(h => h.ClassId, Progression.Level), xp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.TotalXp), hp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.Hp), crucible = new { app.Save.Crucible.Best, app.Save.Crucible.Runs, app.Save.Crucible.TotalWaves }, expedition = app.Save.Expedition?.ThemeId,
+                dump["save"] = new { app.Save.Gold, app.Save.HighestClearedStage, party = app.Save.Party, inventory = app.Save.Inventory, levels = app.Save.Roster.ToDictionary(h => h.ClassId, Progression.Level), xp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.TotalXp), hp = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.Hp), crucible = new { app.Save.Crucible.Best, app.Save.Crucible.Runs, app.Save.Crucible.TotalWaves }, onTheRoad = TravelRules.OnTheRoad(app.Save), carriedOrbs = TravelRules.StartOrbs(app.Save),
                     // GG-T241: story arc checks (seen beats, the ending flag, Rested, the roster, mercenary contracts).
                     seen = app.Save.SeenDialogues, flags = app.Save.Flags, rested = app.Save.Rested.Points,
                     roster = app.Save.Roster.Select(h => h.ClassId).ToList(), mercs = app.Save.Mercenaries.Contracts.Select(k => k.ClassId).ToList(),

@@ -4226,7 +4226,7 @@ Tithe Moors I is **5 waves**, levels 1 → 5, each wave outweighing the one befo
 
 ### 22.5 Expeditions (added 2026-10-10, owner direction)
 
-**Amended 2026-11-27 (owner, GG-T1656): expeditions fold into travel** ([§28.13](#2813-save), [§28.5](#285-camp-hunting-and-the-wilds)). Wounds and orbs still carry between battles while the caravan travels, and camp rest heals; the Adventure expedition headers and the Inn rule go with the map. **Proposed until the epic's tasks build it** (epic GG-T1652): the text below is the live behaviour until then.
+**Amended 2026-11-27 (owner, GG-T1656): expeditions fold into travel** ([§28.13](#2813-save), [§28.5](#285-camp-hunting-and-the-wilds)). Wounds and orbs still carry between battles while the caravan travels, and camp rest heals; the Adventure expedition headers and the Inn rule go with the map. **Built (GG-T1785, GG-T1790, GG-T1786):** the text below is history. As built: `TravelRules` (Meta/TravelRules.cs) keeps the caravan **on the road** whenever `WorldSave.Camped` is false; any campaign battle launched from camp sets out (`StageLauncher` → `TravelRules.SetOut`), a win on the road carries the bank's orbs into the next battle (`WorldSave.CarriedOrbs`, `BattleReport.CarriedOrbs`) with wounds kept, and a defeat falls back to camp with no orbs. There is no fixed battle order, completion bonus, Abandon or "Retreat early": Adventure lists each region's stages under a plain region header (unlocked stages launch in any order, a cleared one as a hunt), the camp card reads "On the road · N orbs carried", the stage confirm shows a **Travel** field, and the results show **On the road — N orbs carry over** (plus the Medic Wagon's patch) with **To Camp** (makes camp, letting the orbs go) beside **Next battle**. `SaveData.Expedition` survives only for migration (save v27, §28.13); the `Expeditions` class is gone. The completion bonus and the Strongbox stay an owner TODO (GG-T1705, `TravelRules`). *(Tests: `MetaLoopTests.A_win_on_the_road_carries_its_orbs_and_wounds_into_the_next_battle_with_rest_closed`, `A_defeat_on_the_road_falls_back_to_camp_with_no_orbs`, `TravelRulesTests`.)*
 
 Owner: "the game should be grouped in sets of battles, where a battle has X battles to fight and each battle has Y waves, so there is a survival element and a reason to hold onto consumables and use mana sparingly because the challenge is going to get bigger."
 
@@ -4911,7 +4911,7 @@ meaningful but optional share for facilities and summons. A piece repaired over 
 
 ### 25.3.1 Inn
 
-**Amended 2026-11-27 (owner, GG-T1656): camp rest replaces the Inn** ([§28.5](#285-camp-hunting-and-the-wilds), [§28.6](#286-food-meals-sleep-and-well-rested)). Services open only when the caravan is camped, and resting is part of camp (a meal and a night's sleep heal and give Well Rested), so there is no separate Inn row or Innkeeper service and the Innkeeper's Inn gate goes with it; the Respec price stays ([§25.6.3](#2563-talents-screen-and-inn-respec-gg-t53)). **Proposed until the epic's tasks build it** (epic GG-T1652): the text below is the live behaviour until then.
+**Amended 2026-11-27 (owner, GG-T1656): camp rest replaces the Inn** ([§28.5](#285-camp-hunting-and-the-wilds), [§28.6](#286-food-meals-sleep-and-well-rested)). Services open only when the caravan is camped, and resting is part of camp (a meal and a night's sleep heal and give Well Rested), so there is no separate Inn row or Innkeeper service and the Innkeeper's Inn gate goes with it; the Respec price stays ([§25.6.3](#2563-talents-screen-and-inn-respec-gg-t53)). **Built (GG-T1790, GG-T1786):** the gold heal below is gone. As built: Camp's Inn row is now **Rest** (`CampMenu.Inn` id kept), free: `CampRestService.Rest` eats the party's meal from Food when it can (`CampRest.Eat`) and sleeps to morning (`CampRest.Sleep`; Well Rested only with the meal), and the whole roster wakes at full HP. Its value reads the Food on hand ("N Food", "N Food · no meal" when Food can't feed the party; `CampMenu.RestValue`), or **Make camp** on the road, where tapping it makes camp first. The Respec row and `SkillHexProgress.RespecClosed` close on the road ("make camp to respec"), as does the Crucible (§28.12). Deviation from the amendment: the row still waits for the Innkeeper to join (her join scene), pending the map's camp screen. `Inn.MissingHp` remains only as the "anyone hurt" check. *(Tests: `MetaLoopTests.Camps_Rest_row_and_the_respec_follow_travel`, `TravelRulesTests`.)*
 
 **Amended 2026-10-09 (new):** ~~`Meta.Inn` — the Camp's rest service~~ (hub "Inn" row; ~~and the Alchemist Heal tab~~ — removed 2026-10-19, GG-T119: the Inn is the Innkeeper's, shown once she joins, §25.0.1). Cost = `ceil(total missing HP × 0.5 G)` across the **whole roster** (reserves included); resting sets every hero to full. "Everyone is healthy" when nothing is missing.
 
@@ -5543,7 +5543,7 @@ The caravan is the party's moving base — a Choir supply caravan the crew stole
 | Upgrade | Levels | Effect |
 |---|---|---|
 | Mana Casks | 400 / 900 / 1800 | every battle starts with +1 / +2 / +3 orbs (`BattleSetup.StartOrbs`) |
-| Medic Wagon | 600 / 1400 | the inn opens **on the road** mid-expedition at ×2 / ×1.5 price |
+| Medic Wagon | 600 / 1400 | after each battle won **on the road**, the wagon medic heals 25 % / 40 % of each standing party hero's missing HP, rounded up (`MedicWagon.Patch`, shown on the results; GG-T1790, replaced "the inn opens on the road at ×2 / ×1.5 price") |
 | Armory Wagon | 350 / 800 / 1500 | repairs −20 / −35 / −50 % (`Repair.Cost(c, s, …)`) |
 | Strongbox | 500 / 1200 | expedition completion bonus +25 / +50 % |
 | Scouts | 300 | Adventure lists each battle's foes |
@@ -6121,6 +6121,8 @@ The Crucible stays reachable, moved **under the Caravan list** at camp, and beco
 ### 28.13 Save
 
 `SaveData.World` (save v26, `Meta/WorldSave.cs`, `Meta/WorldSaveAdapter.cs`): region, node or edge position, day and clock, danger, camped, woken waystones, reveal masks and revealed edges, active Wild events, hunt counts per region. Migration places the caravan at the furthest cleared stage's node, camped. Expeditions fold into travel (wounds and orbs carry between battles while travelling; camp rest heals).
+
+Status: **Built** (GG-T1785, GG-T1790, GG-T1786). Save v27 adds `WorldSave.CarriedOrbs` (orbs carried on the road; 0 at camp) and `Camped` defaults true (a new game starts at camp). Older saves load camped; a legacy `SaveData.Expedition` is drained after placement (`SaveMigrations.DrainExpedition`: its orbs become `CarriedOrbs`, the caravan on the road) and cleared, and nothing else reads it. *(Tests: `WorldSaveTests`.)*
 
 ### 28.14 Roaming threats and the danger pulse
 

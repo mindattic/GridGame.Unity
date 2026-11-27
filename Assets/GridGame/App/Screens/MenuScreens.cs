@@ -851,11 +851,8 @@ namespace GridGame.App
                 if (st != null) Ui.Caption(st.Name, campaign, "gold");
                 if (!RestedPool.Exempt(s)) Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim");
             }
-            if (s.Expedition != null)
-            {
-                var th = Expeditions.Theme(c, s.Expedition.ThemeId);
-                Ui.Caption($"Expedition: {th?.Name ?? ""}, battle {s.Expedition.Next + 1}/{th?.Stages.Count ?? 0}, {s.Expedition.CarriedOrbs} orbs carried", campaign, "dim");
-            }
+            if (TravelRules.OnTheRoad(s)) // GG-T1786: travel (§28) replaces the expedition line
+                Ui.Caption(TravelLine(s), campaign, "dim").name = "camp-travel";
             var adv = Dest(CampMenu.Campaign);
             var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
             advRow.name = "camp-adventure";
@@ -948,19 +945,16 @@ namespace GridGame.App
             CampCoach.OnHub(this); // GG-T539: a vendor who just joined, or a first piece of gear to put on, gets its lesson
         }
 
-        /// <summary>The stage Continue launches: the expedition's next battle while one is under way, else the first uncleared
-        /// campaign stage, or its theme's opener when that stage sits mid-theme (an expedition starts at a theme's first stage).</summary>
-        internal static string NextStage(ContentDb c, SaveData s)
+        /// <summary>The stage Continue launches: the first uncleared campaign stage. Travel (§28, GG-T1786) has no fixed
+        /// battle order inside a region, so a stage mid-region is fought directly once it is unlocked.</summary>
+        internal static string NextStage(ContentDb c, SaveData s) =>
+            c.CampaignStages().FirstOrDefault(st => !s.ClearedStages.Contains(st.Id))?.Id;
+
+        /// <summary>GG-T1786: "On the road · N orbs carried": the caravan has set out and has not made camp.</summary>
+        internal static string TravelLine(SaveData s)
         {
-            if (s.Expedition != null)
-            {
-                var th = Expeditions.Theme(c, s.Expedition.ThemeId);
-                return th != null && s.Expedition.Next < th.Stages.Count ? th.Stages[s.Expedition.Next] : null;
-            }
-            var first = c.CampaignStages().FirstOrDefault(st => !s.ClearedStages.Contains(st.Id));
-            if (first == null) return null;
-            var theme = c.ThemeOf(first.Id);
-            return theme != null && theme.Stages.Count > 0 ? theme.Stages[0] : first.Id;
+            int n = TravelRules.StartOrbs(s);
+            return "On the road · " + (n == 0 ? "no orbs carried" : n == 1 ? "1 orb carried" : $"{n} orbs carried");
         }
 
         /// <summary>A destination's tile name: camp-&lt;old row&gt; when open, locked-&lt;old row&gt; when closed.</summary>
@@ -1113,47 +1107,44 @@ namespace GridGame.App
                 if (!Progression.IsStageUnlocked(S, first)) { locked += theme.Stages.Count; continue; }
                 regions.Add(theme);
             }
-            // Opens on the region under way: the active expedition's, else the only one there is.
+            // Opens on the only region there is; with several, on the list.
             if (!opened)
             {
                 opened = true;
-                region = S.Expedition?.ThemeId ?? (regions.Count == 1 ? regions[0].Id : null);
+                region = regions.Count == 1 ? regions[0].Id : null;
             }
             var open = region == null ? null : regions.Find(t => t.Id == region);
             if (open == null) Regions(regions, locked, list);
             else Stages(open, stages, regions.Count > 1, list);
             Ui.SelectFirst(list);
-            // The hand rests on the next stage that can be entered, never a locked one (GG-T1155): after a defeat the
-            // expedition is back at battle 1, so the later rows stay locked until it is replayed.
+            // The hand rests on the next stage that can be entered, never a locked one (GG-T1155).
             if (open != null)
                 foreach (var row in list.Children())
                     if (row.name != null && row.name.StartsWith("stage-") && !row.ClassListContains("menu-row--disabled")) { Ui.Select(row); break; }
         }
 
-        /// <summary>Step one: every unlocked region with its state — the expedition under way, a stage not yet won (New), or
-        /// every stage cleared (huntable).</summary>
+        /// <summary>Step one: every unlocked region with its state — a stage not yet won (New), or every stage cleared
+        /// (huntable). Travel (GG-T1786) shows no per-region progress: the road is one journey, not a region's run.</summary>
         private void Regions(List<ThemeDef> regions, int locked, VisualElement list)
         {
             Ui.Para("Pick a region. Cleared stages stay open: hunt them for XP, loot and wanderers.", list, "dim");
             foreach (var theme in regions)
             {
                 var t = theme;
-                bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
                 int cleared = theme.Stages.Count(id => S.ClearedStages.Contains(id));
-                string status = onIt ? $"▶ Battle {S.Expedition.Next + 1}/{theme.Stages.Count}"
-                    : cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
+                string status = cleared < theme.Stages.Count ? $"New · {cleared}/{theme.Stages.Count} cleared" : $"Cleared {cleared}/{theme.Stages.Count}";
                 if (Features.Bounties && theme.Stages.Any(id => Bounties.OnStage(C, S, id).Count > 0)) status = "☠ " + status; // a hunted target roams here (GG-T431)
                 var row = Ui.MenuRow(theme.Name, status, () => { region = t.Id; Refresh(); }, list, null, true);
                 row.name = "expedition-" + theme.Id;
                 // GG-T715: the region's board tile leads the row, badged Cleared (every stage won) or New (one still to win).
                 RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
-                if (onIt || cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
+                if (cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
             }
             if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead…", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
         }
 
-        /// <summary>Step two: one region's stages, each Cleared or New. A new region is fought in order as an expedition;
-        /// a cleared stage can be fought alone as a hunt (<see cref="Expeditions.IsHunt"/>) whenever no expedition is under way.</summary>
+        /// <summary>Step two: one region's stages, each Cleared or New (a cleared one can be fought again as a hunt). Any
+        /// unlocked stage launches; from camp that sets out on the road (<see cref="TravelRules.SetOut"/>, GG-T1786).</summary>
         private void Stages(ThemeDef theme, List<StageDef> stages, bool canGoBack, VisualElement list)
         {
             if (canGoBack)
@@ -1162,10 +1153,9 @@ namespace GridGame.App
                 back.name = "regions-back";
                 back.KindIcon(RowKind.Back);
             }
-            bool onIt = S.Expedition != null && S.Expedition.ThemeId == theme.Id;
             bool done = theme.Stages.All(id => S.ClearedStages.Contains(id));
-            string status = onIt ? $"Battle {S.Expedition.Next + 1}/{theme.Stages.Count} · {S.Expedition.CarriedOrbs} orbs carried" : done ? "Completed" : $"{theme.Stages.Count} battles";
-            var head = Ui.MenuRow(theme.Name + " Expedition", status, null, list, null, true);
+            string status = done ? "Completed" : $"{theme.Stages.Count} battles";
+            var head = Ui.MenuRow(theme.Name, status, null, list, null, true);
             var headIcon = head.KindIcon(RowKind.Place, theme.Id);
             if (done) RowIcon.Badge(headIcon, RowKind.Cleared);
             head.Q<Label>("label").AddToClassList("gold");
@@ -1182,13 +1172,13 @@ namespace GridGame.App
                 if (st == null) continue;
                 int index = stages.FindIndex(x => x.Id == st.Id);
                 bool cleared = S.ClearedStages.Contains(st.Id);
-                bool can = Expeditions.CanLaunch(C, S, st.Id, out var why) && Progression.IsStageUnlocked(S, index);
+                bool can = Progression.IsStageUnlocked(S, index);
                 // Same level BattleFactory.Build actually fights it at: the postgame bonus stages carry a
                 // LevelOverride, so the index-based curve alone advertised the wrong level for them (GG-T70).
                 int recommended = st.LevelOverride ?? Progression.RecommendedLevel(index);
-                string state = cleared ? (k > 0 && Expeditions.IsHunt(S, st.Id) ? "Cleared · hunt" : "Cleared") : "New";
+                string state = cleared ? (k > 0 ? "Cleared · hunt" : "Cleared") : "New";
                 if (Features.Bounties && Bounties.OnStage(C, S, st.Id).Count > 0) state = "☠ " + state; // a hunted target roams here (GG-T431)
-                var row = Ui.MenuRow(st.Name, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · {why ?? "Locked"}", () => Launch(st, index), list, null, can);
+                var row = Ui.MenuRow(st.Name, can ? $"{state} · Lv {recommended} · {RestedPool.LaunchCost} Rested" : $"{state} · Locked", () => Launch(st, index), list, null, can);
                 row.name = "stage-" + st.Id;
                 // GG-T715: the region's tile leads every stage, badged Cleared / New / Locked (was a star, open star or
                 // diamond in the text); an enterable stage ends in the Enter arrow so it reads as a way in, not a line of text.
@@ -1205,11 +1195,6 @@ namespace GridGame.App
                 {
                     Ui.Note($"Drops: {drops}", list);
                 }
-            }
-            if (onIt)
-            {
-                var abandon = Ui.MenuRow("Abandon expedition", "", () => Confirm.Show("Abandon the expedition? Progress on it is lost; wounds remain.", "Abandon", () => { App.Toast(Expeditions.Abandon(S).Message); App.Persist(); Refresh(); }), list);
-                abandon.KindIcon(RowKind.Close);
             }
         }
 
@@ -1277,7 +1262,8 @@ namespace GridGame.App
             Ui.Field("Waves", st.Waves.Count.ToString(), info);
             // The level BattleFactory.Build fights it at (a postgame stage's LevelOverride, else the curve; GG-T70).
             Ui.Field("Enemy level", $"Lv {st.LevelOverride ?? Progression.RecommendedLevel(Math.Max(0, index))}", info);
-            Ui.Field("State", cleared ? (k > 0 && Expeditions.IsHunt(S, stageId) ? "Cleared · hunt" : "Cleared") : "New", info, cleared ? null : "gold", "stage-confirm-state");
+            Ui.Field("State", cleared ? (k > 0 ? "Cleared · hunt" : "Cleared") : "New", info, cleared ? null : "gold", "stage-confirm-state");
+            if (theme != null) Ui.Field("Travel", TravelRules.OnTheRoad(S) ? HubScreen.TravelLine(S) : "Sets out from camp", info, null, "stage-confirm-travel"); // GG-T1786
             if (!RestedPool.Exempt(S)) Ui.Field("Rested", $"Costs {RestedPool.LaunchCost} (have {S.Rested.Points}/{RestedPool.Max})", info, null, "stage-confirm-rested");
             if (Features.Bounties)
             {
@@ -1303,8 +1289,8 @@ namespace GridGame.App
             if (S.Party.Count == 0) Ui.Empty("No one is in the party.", party);
             RowIcon.IconButton("Change party", RowKind.Hero, () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(party)).name = "stage-party-change";
 
-            bool can = Expeditions.CanLaunch(C, S, stageId, out var why) && (index < 0 || Progression.IsStageUnlocked(S, index));
-            if (!can && why == null) why = "Locked";
+            bool can = index < 0 || Progression.IsStageUnlocked(S, index);
+            string why = can ? null : "Locked";
             if (can && S.Party.Count == 0) { can = false; why = "Put someone in the party first."; }
             Foot(body, can, why);
         }
@@ -1332,7 +1318,6 @@ namespace GridGame.App
             var app = GameApp.I;
             if (app.Save != null)
             {
-                if (!Expeditions.CanLaunch(app.Content, app.Save, stageId, out var why)) { app.Toast(why); return; }
                 // GG-T1379: a drill is practice, so launching or retrying one costs no Rested.
                 if (!Drills.IsDrill(app.Content.TryStage(stageId)))
                 {

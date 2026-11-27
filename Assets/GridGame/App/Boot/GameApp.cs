@@ -861,17 +861,13 @@ namespace GridGame.App
             var c = app.Content;
             if (!report.Victory)
             {
-                var theme = c.ThemeOf(stageId);
-                string retryId = report.ExpeditionFailed && theme != null ? theme.Stages[0] : stageId;
-                StageLauncher.Launch(retryId, true);
+                StageLauncher.Launch(stageId, true); // GG-T1786: a loss falls back to camp; the retry sets out again
                 return;
             }
-            if (report.NextStageId != null) { StageLauncher.Launch(report.NextStageId, true); return; }
-            var stages = c.CampaignStages();
-            int idx = stages.FindIndex(s => s.Id == stageId);
-            if (idx >= 0 && idx + 1 < stages.Count && Progression.IsStageUnlocked(app.Save, idx + 1) && Expeditions.CanLaunch(c, app.Save, stages[idx + 1].Id, out _))
+            var next = PostBattleScreen.NextBattle(c, stageId);
+            if (next != null)
             {
-                StageLauncher.Launch(stages[idx + 1].Id, true);
+                StageLauncher.Launch(next, true);
                 return;
             }
             Restart(); // campaign complete, or nothing left to launch — loop with a fresh save
@@ -1055,12 +1051,6 @@ namespace GridGame.App
             var app = GameApp.I;
             var c = app.Content; var s = app.Save;
             string stageId = TestLoop.PickStage(c, s, losses);
-            if (stageId != null && !Expeditions.CanLaunch(c, s, stageId, out var why))
-            {
-                Debug.Log($"[TestMode] can't launch {stageId} ({why}) — abandoning the expedition");
-                Expeditions.Abandon(s);
-                stageId = TestLoop.PickStage(c, s, losses);
-            }
             if (stageId == null) { Debug.LogError("[TestMode] no launchable stage"); return; }
             current = TestCycle.Begin(c, s, stageId, Completed + 1);
             Debug.Log($"[TestMode] cycle {current.Number} launch {stageId} | party Lv {current.PartyLevel} | enemy Lv {current.EnemyMin}-{current.EnemyMax}");
