@@ -81,7 +81,7 @@ namespace GridGame.EditorTools
 
         private static string Version()
         {
-            try { return File.ReadAllText("version.txt").Trim(); } catch { return "1"; }
+            try { return File.ReadAllText("version.txt").Trim(); } catch { return "1.0.0"; }
         }
 
         [MenuItem("GridGame/Build Windows (Development)")]
@@ -151,6 +151,7 @@ namespace GridGame.EditorTools
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel31;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, true);
+            CheckPlayTargets();
             int oldCode = PlayerSettings.Android.bundleVersionCode;
             PlayerSettings.Android.bundleVersionCode = AndroidVersionCode();
             EditorUserBuildSettings.buildAppBundle = true;
@@ -194,6 +195,46 @@ namespace GridGame.EditorTools
                 AssetDatabase.SaveAssets();
             }
             if (Application.isBatchMode) EditorApplication.Exit(lastResult == BuildResult.Succeeded ? 0 : 1);
+        }
+
+        /// <summary>Google Play's current target API level for new apps and updates (API 36 from 31 Aug 2026; confirm on
+        /// Google's "Target API level requirements" page and raise it each year).</summary>
+        public const int PlayRequiredTargetSdk = 36;
+        private const int PlayMinSdk = 31;
+
+        /// <summary>
+        /// GG-T1515: the release bundle's SDK levels are checked before the build, so a stale Android SDK install can't ship
+        /// a bundle Play rejects. "Automatic" target SDK resolves to the highest platform installed in the SDK, so that
+        /// level is logged and must reach <see cref="PlayRequiredTargetSdk"/>; min SDK must be 31 and the only ABI ARM64.
+        /// </summary>
+        private static void CheckPlayTargets()
+        {
+            if (PlayerSettings.Android.minSdkVersion != (AndroidSdkVersions)PlayMinSdk)
+                throw new UnityEditor.Build.BuildFailedException($"[Build] Android release: min SDK is {PlayerSettings.Android.minSdkVersion}, expected API {PlayMinSdk}");
+            if (PlayerSettings.Android.targetArchitectures != AndroidArchitecture.ARM64)
+                throw new UnityEditor.Build.BuildFailedException($"[Build] Android release: architectures are {PlayerSettings.Android.targetArchitectures}, expected ARM64 only");
+
+            int target = (int)PlayerSettings.Android.targetSdkVersion;
+            if (target == 0) target = HighestInstalledPlatform();
+            Debug.Log($"[Build] Android: min SDK {PlayMinSdk}, target SDK {target} (Play requires {PlayRequiredTargetSdk}), ARM64 only");
+            if (target < PlayRequiredTargetSdk)
+                throw new UnityEditor.Build.BuildFailedException($"[Build] Android release: target SDK {(target > 0 ? target.ToString() : "unknown (no installed platform found)")} is below Play's required API {PlayRequiredTargetSdk}. Install the Android API {PlayRequiredTargetSdk} platform in Unity Hub (or the SDK Manager) and rebuild (docs/RELEASE_BUILD.md).");
+        }
+
+        /// <summary>The highest android-N under the Android SDK's platforms folder (Unity's configured SDK, else ANDROID_SDK_ROOT / ANDROID_HOME), 0 when none.</summary>
+        private static int HighestInstalledPlatform()
+        {
+            var roots = new[] { EditorPrefs.GetString("AndroidSdkRoot", ""), Environment.GetEnvironmentVariable("ANDROID_SDK_ROOT"), Environment.GetEnvironmentVariable("ANDROID_HOME") };
+            int best = 0;
+            foreach (var root in roots)
+            {
+                var dir = string.IsNullOrEmpty(root) ? null : Path.Combine(root, "platforms");
+                if (dir == null || !Directory.Exists(dir)) continue;
+                foreach (var p in Directory.GetDirectories(dir, "android-*"))
+                    if (int.TryParse(Path.GetFileName(p).Substring("android-".Length), out int n) && n > best) best = n;
+                if (best > 0) break;
+            }
+            return best;
         }
 
         /// <summary>
