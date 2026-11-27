@@ -66,6 +66,9 @@ namespace GridGame.Core.Content
             var offers = ReadList<OfferDef>(readText, "offers");
             AddAll(db.Offers, offers, x => x.Id);
             db.OfferOrder.AddRange(offers);
+            var banners = ReadList<BannerDef>(readText, "banners"); // GG-T1418
+            AddAll(db.Banners, banners, x => x.Id);
+            db.BannerOrder.AddRange(banners);
             AddAll(db.Enchants, ReadList<EnchantDef>(readText, "enchants"), c => c.Id);
             var armorEnchants = ReadList<ArmorEnchantDef>(readText, "armorenchants");
             AddAll(db.ArmorEnchants, armorEnchants, x => x.Id);
@@ -634,6 +637,7 @@ namespace GridGame.Core.Content
             foreach (var set in db.ArmorSetOrder) ValidateArmorSet(db, set, p);
             EncounterCatalog.Validate(db, p);
             MercenaryContent.Validate(db, p);
+            BannerContent.Validate(db, p); // GG-T1418
             WandererContent.ValidateFactions(db, p);
             FamilyContent.Validate(db, p); // GG-T971
             ValidateAbilityAliases(db, p); // GG-T973

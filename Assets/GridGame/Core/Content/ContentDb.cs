@@ -23,6 +23,10 @@ namespace GridGame.Core.Content
         public readonly List<OfferDef> OfferOrder = new List<OfferDef>();
         public readonly Dictionary<string, OfferDef> Offers = new Dictionary<string, OfferDef>(StringComparer.OrdinalIgnoreCase);
         public OfferDef TryOffer(string id) => id != null && Offers.TryGetValue(id, out var o) ? o : null;
+        /// <summary>banners.json (GG-T1418, §25.10.3): the summon banners, in file order, and by id.</summary>
+        public readonly List<BannerDef> BannerOrder = new List<BannerDef>();
+        public readonly Dictionary<string, BannerDef> Banners = new Dictionary<string, BannerDef>(StringComparer.OrdinalIgnoreCase);
+        public BannerDef TryBanner(string id) => id != null && Banners.TryGetValue(id, out var b) ? b : null;
         public readonly Dictionary<string, EnchantDef> Enchants = new Dictionary<string, EnchantDef>(StringComparer.OrdinalIgnoreCase);
         /// <summary>armorenchants.json (GG-T179): passive-granting armor enchants, in file order, and by id.</summary>
         public readonly List<ArmorEnchantDef> ArmorEnchantOrder = new List<ArmorEnchantDef>();

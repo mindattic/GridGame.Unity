@@ -1,0 +1,53 @@
+[
+  {
+    "Id": "standard",
+    "Name": "Standard Summon",
+    "Kind": "Standard",
+    "NewHeroPity": 10,
+    "SparkPulls": 25,
+    "AcceptsTickets": true,
+    "PullTickets": 1,
+    "PullShards": 100,
+    "MultiCount": 10,
+    "MultiTickets": 10,
+    "MultiShards": 1000
+  },
+  {
+    "Id": "featured_monstertamer",
+    "Name": "Featured: Monster Tamer",
+    "Kind": "Featured",
+    "Featured": [ "monstertamer" ],
+    "FeaturedShare": 0.5,
+    "StartUtc": "2026-12-01T00:00:00Z",
+    "Rotation": 1,
+    "Days": 14,
+    "NewHeroPity": 10,
+    "FeaturedPity": 5,
+    "SparkPulls": 25,
+    "AcceptsTickets": true,
+    "PullTickets": 1,
+    "PullShards": 100,
+    "MultiCount": 10,
+    "MultiTickets": 10,
+    "MultiShards": 1000
+  },
+  {
+    "Id": "featured_vampire",
+    "Name": "Featured: Vampire",
+    "Kind": "Featured",
+    "Featured": [ "vampire" ],
+    "FeaturedShare": 0.5,
+    "StartUtc": "2026-12-15T00:00:00Z",
+    "Rotation": 2,
+    "Days": 14,
+    "NewHeroPity": 10,
+    "FeaturedPity": 5,
+    "SparkPulls": 25,
+    "AcceptsTickets": true,
+    "PullTickets": 1,
+    "PullShards": 100,
+    "MultiCount": 10,
+    "MultiTickets": 10,
+    "MultiShards": 1000
+  }
+]

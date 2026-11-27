@@ -5311,6 +5311,7 @@ Status: **proposed**, design only, nothing built. Design page: `docs/design/summ
 - **Free path:** pity and Sparks bound the worst case to own a banner of N heroes (N = 14: 100 pulls), which must stay within the campaign's Tickets. A test pins it: if the summon-only roster outgrows the earned Tickets, it fails.
 - **Pull history:** the save keeps the last `HistoryKeep` **500** pulls (time, banner, hero, New / Echo / fragments, what was paid, both pity counters); a History tab lists them newest first with totals. Real-money purchases stay in the wallet ledger (§25.18.1).
 - **Bots and Test Mode** never pull, as with the Diamond draw today.
+- **Content (GG-T1418, built):** `banners.json` → `BannerDef` (`ContentDb.Banners`/`BannerOrder`): Id, Name, `Kind` Standard or Featured, `Featured` classes (each uncut, `Acquire` Summon), `FeaturedShare`, dated (`StartUtc`/`EndUtc`) or rotating (`Rotation` slot 1..n of `Days` each, back to back from slot 1's `StartUtc`), `NewHeroPity`/`FeaturedPity`/`SparkPulls`, `AcceptsTickets`, x1 (`PullTickets`, `PullShards`) and x`MultiCount` prices (exactly `MultiCount` pulls). `BannerContent.Validate` (in `ContentLoader.Validate`) checks all of it and exactly one Standard banner. Seeded: Standard, then Featured Monster Tamer (slot 1, from 2026-12-01) and Vampire (slot 2). Nothing rolls yet (GG-T1419).
 - **Coordinated by name:** the wanderer pool and Trust recruitment (GG-T1257), hero names and lore (GG-T1270), store listing and age rating (the store-launch slice), each hero's Acquire field (GG-T1416).
 
 ### 25.11 Bestiary
