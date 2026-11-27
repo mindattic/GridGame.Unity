@@ -60,8 +60,8 @@ namespace GridGame.App
             int seed = tutorial ? TutorialSeed : InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
             setup = setupOverride ?? BattleFactory.Build(App.Content, App.Save, stageId, seed, App.Settings?.Difficulty?.Level ?? DifficultyTable.Default,
                 App.Settings?.TurnMode ?? TurnMode.PartyWindow); // §2.13 (GG-T773): the save's lock, else the profile's
-            setup.Tutorial = tutorial;
-            if (setupOverride == null && !tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
+            setup.Tutorial |= tutorial; // a drill stage is a tutorial battle from BattleFactory.Build (GG-T1626)
+            if (setupOverride == null && !setup.Tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
             if (setupOverride == null && DevNextWanderer != null) { setup.Wanderer = new WandererSpec { Class = DevNextWanderer, Wave = 0 }; DevNextWanderer = null; }
             // GG-T532: a wanderer shows either version of its class (when the male art exists), the same for this battle's
             // replay and its talk after; the player still picks when they join.

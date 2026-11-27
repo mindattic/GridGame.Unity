@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 23;
+        public const int CurrentVersion = 24;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -140,6 +140,9 @@ namespace GridGame.Meta
         /// <summary>GG-T1419: summon pity per banner kind and the pull history (<see cref="Gacha"/>). Save v23: an older save
         /// starts with no pulls.</summary>
         public SummonState Summon = new SummonState();
+        /// <summary>GG-T1626: tutorial drills won (<see cref="Drills"/>). Save v24: an older save that finished the tutorial
+        /// counts every drill cleared.</summary>
+        public HashSet<string> ClearedDrills = new HashSet<string>();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -963,6 +966,10 @@ namespace GridGame.Meta
             s.Summon.Pulls ??= new Dictionary<BannerKind, int>();
             s.Summon.NewHeroMiss ??= new Dictionary<BannerKind, int>();
             s.Summon.History ??= new List<PullRecord>();
+            // GG-T1626: drill progress. An older save that finished the tutorial has, in effect, cleared every drill.
+            bool beforeDrills = s.Version < 24;
+            if (s.Version < 24) s.Version = 24;
+            s.ClearedDrills ??= new HashSet<string>();
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
@@ -1004,6 +1011,7 @@ namespace GridGame.Meta
             JoinNewKeepers(s);
             if (c != null) GrantOwnedOrbs(s, c);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
+            if (c != null && beforeDrills && s.TutorialDone) Drills.MarkAllCleared(c, s);
             // GG-T923: every load catches the Codex up with what the save shows (idempotent); only the v16 back-fill marks it read.
             Codex.Sync(c, s, markRead: beforeCodex);
             if (c != null && beforeGearGate)

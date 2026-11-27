@@ -1,0 +1,62 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using GridGame.Core.Battle;
+using GridGame.Core.Content;
+
+namespace GridGame.Meta
+{
+    /// <summary>
+    /// The tutorial drills (GG-T1374, GG-T1626): campaign.json's Tutorial stages, each a stage with Lessons. A drill plays
+    /// on its own fixed seed as a tutorial battle, so its lessons may stage their situations. It is practice: nothing is
+    /// earned, spent or worn (no XP, gold, loot, item use or durability wear; wounds stay as they were) and campaign
+    /// progress never moves. The Bestiary still counts the foes seen and defeated, and a win marks the drill cleared
+    /// (<see cref="SaveData.ClearedDrills"/>).
+    /// </summary>
+    public static class Drills
+    {
+        public static bool IsDrill(StageDef stage) => stage?.Lessons != null && stage.Lessons.Count > 0;
+
+        public static bool IsCleared(SaveData s, string stageId) => s?.ClearedDrills != null && stageId != null && s.ClearedDrills.Contains(stageId);
+
+        /// <summary>Marks every drill cleared: a save that finished the tutorial, and Test Mode.</summary>
+        public static void MarkAllCleared(ContentDb c, SaveData s)
+        {
+            s.ClearedDrills ??= new HashSet<string>();
+            foreach (var id in c?.Campaign?.Tutorial ?? Enumerable.Empty<string>())
+                if (id != null) s.ClearedDrills.Add(id);
+        }
+
+        /// <summary>Commits a finished drill: only the Bestiary and, on a win, the drill's clear.</summary>
+        public static BattleReport Commit(ContentDb c, SaveData s, BattleState battle)
+        {
+            var r = battle.Results;
+            var rep = new BattleReport
+            {
+                Victory = battle.Phase == BattlePhase.Victory,
+                Escaped = battle.Phase == BattlePhase.Escaped,
+                Retreated = battle.Phase == BattlePhase.Retreated,
+                StageId = battle.Stage.Id,
+                StageName = battle.Stage.Name,
+                StageTheme = battle.Stage.Theme,
+                Difficulty = battle.Difficulty,
+                BestComboRank = r.BestComboRank,
+                BestComboScore = r.BestComboScore,
+                PartyTurns = r.PartyTurns,
+                Actions = r.ActionsTaken,
+                Rounds = r.Rounds,
+                HeroTurns = r.HeroTurns,
+            };
+            foreach (var id in r.Seen) BattleFactory.Entry(s, id).Seen = true;
+            foreach (var kv in r.Kills) BattleFactory.Entry(s, kv.Key).Defeated += kv.Value;
+            if (rep.Victory)
+            {
+                s.ClearedDrills ??= new HashSet<string>();
+                rep.FirstClear = s.ClearedDrills.Add(battle.Stage.Id);
+            }
+            Codex.Sync(c, s);
+            s.UpdatedUtc = DateTime.UtcNow;
+            return rep;
+        }
+    }
+}
