@@ -1743,3 +1743,42 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   until GG-T1499 writes the real ones.
 - *Why:* the chapter crawls come every fifth stage and cannot say where the road has just arrived; a region's
   rule, foes and sky change at its door, so the door is where the story names it.
+
+## 2026-11-27 — The Overworld returns: the map is campaign advancement (owner, GG-T1655, GG-T1657; epic GG-T1652)
+
+- **Reverses the GG-T115 ruling above ("no world map").** Owner: *"the overworld is the only thing that makes
+  this thing make sense."* [BIBLE §28](BIBLE.md#28-the-overworld) was "No Overworld" and is now "The Overworld"
+  (old text struck, with the amendment beside it); [§3](BIBLE.md) carries the same amendment. **Proposed**: the
+  Adventure list stays the live stage navigation until the epic's tasks build the map.
+- **Today's decisions (owner, 2026-11-27):**
+  - **The map is campaign advancement.** The caravan travels a painted region map ([§28.1](BIBLE.md#281-region-maps)),
+    the Commander decides where; stages, recruiting, bounties, bosses, treasure and grinding are places on it
+    ([§28.2](BIBLE.md#282-the-authored-node-graph), [§28.3](BIBLE.md#283-travel)).
+  - **No services while moving.** Camp ([§25](BIBLE.md)) and its services open only once the caravan sets up camp
+    ([§28.5](BIBLE.md#285-camp-hunting-and-the-wilds)).
+  - **The camp circle and the Wilds.** Safe forage and hunt spots inside the circle; seeded events (a hero, a
+    stronger boss, treasure) only outside it.
+  - **Danger is route choice only.** A danger gauge rises along an edge, faster at night and in bad weather; at
+    full, an unavoidable ambush ([§28.4](BIBLE.md#284-danger-and-ambushes)).
+  - **The wits quiz is dropped.** Heroes are recruited through short side-story quest chains with new objective
+    kinds PayGold, Defend, SlayBoss, Treasure and Escort ([§28.11](BIBLE.md#2811-hero-side-stories-replace-the-wits-quiz);
+    [§25.11.2](BIBLE.md#25112-random-rescues-added-2026-11-05-owner-the-random-character-recruitment-for-saving-them-gg-t236),
+    [§22.11](BIBLE.md#2211-side-quests-added-2026-11-05-owner-direction-gg-t237) amended).
+  - **Camp rest replaces the Inn** ([§25.3.1](BIBLE.md#2531-inn), [§28.5](BIBLE.md#285-camp-hunting-and-the-wilds)).
+  - **The Commander reads the old roads; Mana Waystones.** Only the Commander sees and wakes the dormant Halcyon
+    waystones; a woken one gives a permanent safe circle, lifts fog, gathers Mana Dust and eases the Manalith
+    ([§28.8](BIBLE.md#288-mana-waystones)).
+  - **No zoom; roadsigns between regions.** Each region is one scrolled map at one scale with haze edges; the only
+    way between regions is a roadsign at a road's far end; there is no world overview.
+  - **Fog, weather, day and night.** Fog of war, drifting clouds, weather per region, a day dial, and a purple
+    (not black) night that slows travel, raises danger and strengthens foes
+    ([§28.7](BIBLE.md#287-fog-of-war-clouds-weather-day-and-night)).
+  - **Food, sleep and Well Rested.** A meal plus a full night's sleep gives the Well Rested buff for the next day;
+    no starvation ([§28.6](BIBLE.md#286-food-meals-sleep-and-well-rested)).
+  - **A battle library replaces "Stage N".** Hand-crafted battles tagged by region and kind, picked by one
+    `Difficulty` function; story locations keep their authored battles
+    ([§28.9](BIBLE.md#289-battles-a-library-and-the-difficulty-factors)).
+  - **Onboarding order.** Commander, Founding scene, the five drills, first leg of travel, camp, first waystone
+    ([§28.10](BIBLE.md#2810-new-game-onboarding-order)).
+- *Why:* owner (quoted above). Amended in the bible by GG-T1655 (§3, §28) and GG-T1656 (§22.3, §22.5, §22.11,
+  §25.3.1, §25.11.2).
