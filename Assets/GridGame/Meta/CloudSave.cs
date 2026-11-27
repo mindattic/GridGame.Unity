@@ -52,11 +52,25 @@ namespace GridGame.Meta
         public static string SnapshotName(string profile, int slot)
         {
             var suffix = "-slot" + (slot + 1);
+            var name = string.IsNullOrWhiteSpace(profile) ? "Default" : profile.Trim();
             var sb = new StringBuilder();
-            foreach (var c in string.IsNullOrWhiteSpace(profile) ? "Default" : profile.Trim())
-                sb.Append(IsNameChar(c) ? c : '_');
+            bool changed = false;
+            foreach (var c in name)
+            {
+                if (IsNameChar(c)) sb.Append(c);
+                else { sb.Append('_'); changed = true; }
+            }
             int room = MaxNameLength - suffix.Length;
-            if (sb.Length > room) sb.Length = room;
+            if (changed)
+            {
+                // Distinct names must not share a snapshot: tag the sanitised stem with a stable hash of the original.
+                uint h = 2166136261;
+                foreach (var c in name) { h ^= c; h *= 16777619; }
+                var tag = "-" + h.ToString("x8");
+                if (sb.Length > room - tag.Length) sb.Length = room - tag.Length;
+                sb.Append(tag);
+            }
+            else if (sb.Length > room) sb.Length = room;
             return sb + suffix;
         }
 
