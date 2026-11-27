@@ -1270,12 +1270,13 @@ namespace GridGame.App
             return string.IsNullOrEmpty(beat.Crawl) ? talk : new StoryCrawlScreen(beat.Title, beat.Crawl, beat.Backdrop ?? backdrop, talk);
         }
 
-        /// <summary>Camp, after any level interlude that's due (one after another, each chosen when the last ends).</summary>
+        /// <summary>Camp, after any level interlude that's due (one after another, each chosen when the last ends), then
+        /// any Joined scene (GG-T1594).</summary>
         public static GameScreen Camp()
         {
             var app = GameApp.I;
             var beat = DialogueRunner.PendingInterlude(app.Content, app.Save);
-            return beat == null ? new HubScreen() : Play(beat, Camp, null);
+            return beat == null ? JoinedThenCamp() : Play(beat, Camp, null);
         }
 
         /// <summary>GG-T386: <paramref name="next"/>, preceded by the chapter crawl that is due (if any), which is marked
@@ -1314,19 +1315,34 @@ namespace GridGame.App
             app.Router.ResetTo(new StoryCrawlScreen(ch, VendorsThenCamp()));
         }
 
-        /// <summary>GG-T537: Camp, after every vendor join beat that's due (one after another).</summary>
+        /// <summary>GG-T537: Camp, after every vendor join beat that's due (one after another), then any Joined scene (GG-T1594).</summary>
         private static GameScreen VendorsThenCamp()
         {
             var app = GameApp.I;
             var beat = DialogueRunner.PendingVendorBeat(app.Content, app.Save);
-            return beat == null ? new HubScreen() : Play(beat, VendorsThenCamp, null);
+            return beat == null ? JoinedThenCamp() : Play(beat, VendorsThenCamp, null);
         }
 
-        /// <summary>A new campaign's first screen: the opening crawl (if any), then Camp.</summary>
+        /// <summary>GG-T1594: Camp, after a Joined scene for each new hero who hasn't been greeted (one after another, each
+        /// chosen when the last ends). Reached from the results screen's Continue, so the VariantPicker has already asked
+        /// each joiner's look on the results screen.</summary>
+        private static GameScreen JoinedThenCamp()
+        {
+            var app = GameApp.I;
+            var joined = DialogueRunner.PendingJoined(app.Content, app.Save);
+            return joined == null ? (GameScreen)new HubScreen() : DialogueScreen.ForRunner(joined.Begin(app.Content, app.Save), JoinedThenCamp);
+        }
+
+        /// <summary>A new campaign's first screen: the opening crawl (if any), then the Founding scene (GG-T1594, if one is
+        /// due), then Camp.</summary>
         public static GameScreen NewCampaign()
         {
-            var p = GameApp.I.Content.Campaign.Opening;
-            return p == null ? new HubScreen() : new StoryCrawlScreen(p.Title, p.Crawl, p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null), new HubScreen());
+            var app = GameApp.I;
+            var p = app.Content.Campaign.Opening;
+            var backdrop = p == null ? null : p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null);
+            var founding = DialogueRunner.PendingFounding(app.Content, app.Save);
+            var camp = founding == null ? new HubScreen() : Play(founding, () => new HubScreen(), backdrop);
+            return p == null ? camp : new StoryCrawlScreen(p.Title, p.Crawl, backdrop, camp);
         }
     }
 }
