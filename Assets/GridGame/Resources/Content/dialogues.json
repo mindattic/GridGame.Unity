@@ -979,7 +979,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1000,7 +1000,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1021,7 +1021,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1040,7 +1040,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1059,7 +1059,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1080,7 +1080,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1101,7 +1101,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1119,7 +1119,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1140,7 +1140,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1161,7 +1161,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1179,7 +1179,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1200,7 +1200,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1221,7 +1221,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1239,7 +1239,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1260,7 +1260,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1281,7 +1281,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1299,7 +1299,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1320,7 +1320,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1341,7 +1341,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1359,7 +1359,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1380,7 +1380,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1401,7 +1401,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1419,7 +1419,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1440,7 +1440,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1461,7 +1461,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1479,7 +1479,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1500,7 +1500,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1521,7 +1521,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1539,7 +1539,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1560,7 +1560,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1581,7 +1581,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1599,7 +1599,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1620,7 +1620,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1641,7 +1641,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1659,7 +1659,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1680,7 +1680,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1701,7 +1701,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1719,7 +1719,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1740,7 +1740,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1761,7 +1761,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1779,7 +1779,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1800,7 +1800,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1821,7 +1821,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1839,7 +1839,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1860,7 +1860,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1881,7 +1881,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1899,7 +1899,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1920,7 +1920,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -1941,7 +1941,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -1959,7 +1959,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -1980,7 +1980,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2001,7 +2001,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -2019,7 +2019,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -2040,7 +2040,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2061,7 +2061,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -2079,7 +2079,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -2100,7 +2100,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2120,7 +2120,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2140,7 +2140,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2161,7 +2161,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -2195,6 +2195,11 @@
               {
                 "Type": "GrantSkillPoint",
                 "Id": "$with"
+              },
+              {
+                "Type": "AddTrust",
+                "Id": "$with",
+                "Amount": 5
               }
             ]
           },
@@ -2240,6 +2245,11 @@
               {
                 "Type": "GrantSkillPoint",
                 "Id": "$with"
+              },
+              {
+                "Type": "AddTrust",
+                "Id": "$with",
+                "Amount": 5
               }
             ]
           },
@@ -2269,7 +2279,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -2290,7 +2300,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2311,7 +2321,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -2329,7 +2339,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -2350,7 +2360,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
@@ -2371,7 +2381,7 @@
         "Choices": [
           { "Next": "wrong" },
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] }
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
         ]
       },
       { "Id": "right", "Speaker": "hero" },
@@ -2389,7 +2399,7 @@
       {
         "Id": "ask", "Speaker": "hero",
         "Choices": [
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" },
           { "Next": "wrong" }
         ]
@@ -2410,7 +2420,7 @@
         "Id": "ask", "Speaker": "hero",
         "Choices": [
           { "Next": "wrong" },
-          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" } ] },
+          { "Next": "right", "Effects": [ { "Type": "GrantSkillPoint", "Id": "$with" }, { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
           { "Next": "wrong" }
         ]
       },
