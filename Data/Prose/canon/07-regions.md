@@ -35,3 +35,35 @@ Levels are the recommended level (a stage's place on the road plus one; the post
 - **Rules climb with the sky.** The first region rules are one monster's trick (slime, fire, ice, mines). The postgame rules belong to the region, not the foe: siege, crack, tide, strike, heave, dark. The last has the biggest sky and the biggest change to what the party can see.
 - **Monster families climb with the sky.** Natural creatures dominate until the Arkgrave, the Hollow and Halcyon's failures from the Still to the Cathedral, then the shell's fallen and the Ember at their most numerous, ending in the things that live in the dark.
 - **The sky never lies about it.** A player who looks up sees the same Moon and a bigger Manalith, so the danger is one they were shown, not one that was sprung. The Anchors hold in Morrow's Shadow, and the final choice belongs to the player (GG-ARC).
+
+## Mana Waystones
+
+*(GG-T1663, owner 2026-11-27, epic GG-T1652; BIBLE §28.8.)* Halcyon laid its roads with Mana Waystones: machines that slow the Manalith's descent, keyed, like everything Halcyon built, to its own people's mana. They have been dormant since Halcyon fell. **Only the Commander sees them and wakes them** (GG-ARC); to everyone else there is nothing there, and nobody else's maps have them. A dormant stone shows only as a faint glint the Commander notices once the fog near it lifts.
+
+- **Guarded by what the mana drew.** A dormant stone still leaks a little mana, so something has always settled around it: beasts drawn to it, or the Choir's and the claimants' forces holding the ground. Reaching one means clearing them first.
+- **A circle of safety.** A woken stone casts a protective circle: no ambush and no danger inside it, and a camp there is safe. Where circles overlap they make a safe road, so a chain of woken stones becomes a safe road network through a region. Danger rises only outside every circle.
+- **Mana Dust.** Mana Dust gathers at a woken stone over time, and the caravan collects it when it passes or camps there.
+- **The Manalith eases.** Each woken stone slows the Manalith a little: over that region it hangs a touch smaller in the sky than the Sky column above, which is its size with every stone asleep. It never stops coming (GG-WHY-NOW); the stones buy time, not an ending.
+- **Roadsigns.** A region's roads leave it only by roadsigns, each standing near a waystone at the far end of a road. A sign says where its road leads. A road the story has not opened yet shows a sign the Commander cannot read: a dormant stone.
+
+## Roads and waystones, region by region
+
+The roadsigns lead on in story order, and every road also leads back the way the caravan came.
+
+| Region | Where its roads lead | What guards its waystones |
+|---|---|---|
+| **The Tithe Moors** | Out of the moors by the old pilgrim road, up to the Lantern Road. | Wolves and slimes drawn to the leak, and the Captain's men camped on the high ground. |
+| **The Lantern Road** | Over the pass and down into the Shardfall. | Bats and flying monkeys roosting on the warm stones, and steppin razor gangers who toll the road. |
+| **The Shardfall** | Inland into the fen, to the Arkgrave. | Sandmaws that came down with the shell, and Ember infernalists who feed the stones' heat to their fires. |
+| **The Arkgrave** | Out of the wrecks along the beams, to the Anchor Wastes. | Lurkers and marsh shamblers in the pools around the stones, and a lich among the wrecks. |
+| **The Anchor Wastes** | Under the arches and down to the Still. | Yetis and ice maulers that den in the stones' warmth, and the Watch's wraith knights at their posts. |
+| **The Still** | Out from under the oculus to Halcyon. | The Hollow, which gathers where mana pools, and Bulwark troopers who have mined the ground. |
+| **Halcyon** | Up the spire stair to the Choir's Cathedral. | Ghosts and mocking echoes that cling to the city's last mana, and Templars on watch. |
+| **The Choir's Cathedral** | Down from the spire and out to the Bloom, when the postgame opens. | The Kiln Guard's ceramic knights and the Choir's cultists, guarding what feeds the organ. |
+| **The Bloom** | Out of the growth to the Free Holds. | Tree golems rooted around the stones, and Choir heavy troopers caught in the living ground. |
+| **The Free Holds** | Past the siege lines and down to the Underspire. | The Holds' own wrights and marksmen, who wall off any ground they mean to keep, and the Captain. |
+| **The Underspire** | Down the old drains to the Drowned Arks. | Spire burrowers that dig towards the leak, and Street gangers who tap the stones for light. |
+| **The Drowned Arks** | Back into the Shardfall, to Deep Shardfall. | Storm callers and tide striders in the rising water, with bloat drowners under it. |
+| **Deep Shardfall** | Down to Under the Anchors. | Crystal brutes and shard callers drawn to the falling shell, and the Captain, still collecting. |
+| **Under the Anchors** | Out from under the last Anchors into Morrow's Shadow. | The Ember's chain wardens and anchor hulks, who mean to open every tap, and the Watch. |
+| **Morrow's Shadow** | Nowhere further. The last roadsign is the end of the road. | Things that live in the dark (dusk stalkers, lamp snuffers, void sentinels) around stones that hold the last light. |
