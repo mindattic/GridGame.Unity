@@ -2585,6 +2585,9 @@ namespace GridGame.App
                 // the next time it comes up, and every Camp and vendor lesson. It also turns lessons back on after Skip tutorial.
                 var replay = RowIcon.IconButton("Replay tutorials", RowKind.NewGamePlus, () => { Coach.ResetAll(S); Done(Result.Success("Every lesson will show again")); }, "btn--small", Ui.Actions(help));
                 replay.name = "replay-camp-tips";
+                // GG-T1648: practice a drill from Settings; not from the pause menu, which opens Settings mid-battle.
+                if (!App.Router.Stack.Any(x => x is BattleScreen))
+                    RowIcon.IconButton("Play a drill", RowKind.Stage, () => App.Router.Push(new DrillPickerScreen()), "btn--small", replay.parent).name = "settings-play-drill";
             }
         }
     }
