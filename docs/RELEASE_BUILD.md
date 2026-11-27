@@ -2,6 +2,7 @@
 
 How to produce the store builds. Everything runs from the command line through `tools/build.ps1`, which drives Unity
 in batchmode through `Assets/GridGame/Editor/GridGameBuild.cs`. The Unity Editor must be closed while it runs.
+What still stands between these builds and the stores: [release/StoreReadiness.md](release/StoreReadiness.md).
 
 | Command | Output | What it is |
 |---|---|---|

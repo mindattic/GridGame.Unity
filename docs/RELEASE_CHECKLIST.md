@@ -28,6 +28,8 @@ Ground rules (the owner's):
 
 ## 2. Owner-only
 
+Every store item and its status, owner-only ones included: [release/StoreReadiness.md](release/StoreReadiness.md) (GG-T1509).
+
 Each is already ticketed; this list only gathers them. None blocks the build gates above, but none of them can be closed by an agent.
 
 - **(owner)** Choose the game's name: GG-T573. Then re-check gate 8.
