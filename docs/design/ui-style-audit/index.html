@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame UI Style Audit</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>UI Style Audit</h1>
+    <p class="sub">Every hub screen's kit findings from <code>python tools/polish_lint.py --hits</code> (GG-T1555), with the ticket that fixes each group. Header, body and footer, icons and type map to POL-K1 to POL-K4; empty state and confirm are not linted per screen.</p>
+  </header>
+  <section>
+    <h2>Summary</h2>
+    <div class="tablewrap"><table><thead id="sumHead"></thead><tbody id="sumRows"></tbody></table></div>
+    <p class="note" id="scope"></p>
+  </section>
+  <div id="groups"></div>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
