@@ -25,6 +25,7 @@ namespace GridGame.App
         protected virtual string Npc => null;
         /// <summary>The camp tip this page shows (GG-T173): its own Id, unless a tab has its own tip (the Blacksmith's Forge, GG-T177).</summary>
         protected virtual string TipStation => Id;
+        public override bool ShowsNav => true;
 
         protected override void Build(VisualElement root)
         {
@@ -32,7 +33,9 @@ namespace GridGame.App
             LivingBackdrop.Show(bg, Backdrop, 1);
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
             var col = Ui.El("fill col", root);
-            var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel, Subtitle);
+            // GG-T1335: a page more than one step from the hub also gets Home, back to the hub in one fade.
+            var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel, Subtitle,
+                App.Save != null && App.Router.PagesAboveHub > 1 ? () => App.Router.Home() : (Action)null);
             if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
             var topic = Npc != null && CampNpcs.Joined(S, Npc) ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + Npc) : null;
@@ -731,7 +734,7 @@ namespace GridGame.App
                     App.Toast(r.Message);
                     if (r.Ok) { App.Persist(); Refresh(); }
                 }), list.contentContainer).KindIcon(RowKind.NewGamePlus).parent.Q<Label>("label").AddToClassList("gold");
-            Ui.MenuRow("Save & Quit", "", () => { App.Persist(); App.Save = null; App.Slot = -1; App.Router.ResetTo(new TitleScreen()); }, list.contentContainer).KindIcon(RowKind.Quit);
+            Ui.MenuRow("Save & Quit", "", ToTitle, list.contentContainer).KindIcon(RowKind.Quit);
             Ui.Select(list.contentContainer[0]);
 
             var side = Ui.El("col", lower);
@@ -774,6 +777,18 @@ namespace GridGame.App
             App.Toast(r.Message);
             App.Audio.Sfx(r.Ok ? "battle.heal" : "ui.error");
             if (r.Ok) { App.Persist(); Refresh(); }
+        }
+
+        /// <summary>GG-T1335: Back at the hub root asks before it saves and goes to the Title; a second Back answers Cancel.</summary>
+        public override bool OnBack()
+        {
+            Confirm.Show("Return to the title? Your progress is saved.", "Title", ToTitle);
+            return false;
+        }
+
+        private static void ToTitle()
+        {
+            App.Persist(); App.Save = null; App.Slot = -1; App.Router.ResetTo(new TitleScreen());
         }
 
         public static string ThemeFor(ContentDb c, SaveData s)

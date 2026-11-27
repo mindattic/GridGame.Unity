@@ -73,6 +73,8 @@ namespace GridGame.App
         Lore,
         /// <summary>A faction (GG-T925): a banner on a pole.</summary>
         Faction,
+        /// <summary>Home, back to the hub root (GG-T1335): the house emblem.</summary>
+        Home,
     }
 
     /// <summary>
@@ -361,6 +363,21 @@ namespace GridGame.App
                     Rect(p, P(-0.8f, -0.8f), P(0.8f, 0.8f));
                     Rect(p, P(-0.42f, -0.8f), P(0.42f, -0.3f), Disc);
                     Rect(p, P(-0.5f, 0.15f), P(0.5f, 0.8f), Disc);
+                    break;
+                case RowKind.Home: // a house in outline: a pitched roof with a chimney over walls and a door
+                    p.BeginPath();
+                    p.MoveTo(P(-0.95f, -0.05f));
+                    p.LineTo(P(0f, -0.9f));
+                    p.LineTo(P(0.95f, -0.05f));
+                    p.Stroke();
+                    Line(p, P(0.5f, -0.45f), P(0.5f, -0.8f));
+                    p.BeginPath();
+                    p.MoveTo(P(-0.65f, -0.25f));
+                    p.LineTo(P(-0.65f, 0.85f));
+                    p.LineTo(P(0.65f, 0.85f));
+                    p.LineTo(P(0.65f, -0.25f));
+                    p.Stroke();
+                    Rect(p, P(-0.2f, 0.25f), P(0.2f, 0.85f));
                     break;
                 case RowKind.Quit: // power: an open ring with a bar through the gap
                     p.BeginPath();

@@ -77,19 +77,6 @@ namespace GridGame.Meta
         public List<DialogueLine> Transcript { get; } = new List<DialogueLine>();
         /// <summary>What each effect did, in order ("Sellsword joins you!", "+50 G") — the screen toasts them.</summary>
         public List<string> Log { get; } = new List<string>();
-        /// <summary>GG-T1297: the bond changes among <see cref="Log"/>, keyed by their line's index there, so the screen
-        /// shows them as bond chips rather than toasts.</summary>
-        public Dictionary<int, BondChange> BondChanges { get; } = new Dictionary<int, BondChange>();
-
-        /// <summary>One Trust (<see cref="B"/> null) or cohesion change that landed: who, by how much, and the tier it moved
-        /// from and to.</summary>
-        public sealed class BondChange
-        {
-            public string A, B;
-            public int Moved, Value, TierBefore, TierAfter;
-            public bool TierUp => TierAfter > TierBefore;
-        }
-
         /// <summary>The hero this dialogue's first JoinHero brings ("$recruit"), fixed when the dialogue opens so
         /// the face that speaks is the hero who joins (GG-T118); null if it has none or nobody is left to join.</summary>
         public string Recruit => recruits.Values.FirstOrDefault(v => v != null);
@@ -232,13 +219,10 @@ namespace GridGame.Meta
         private void Apply(DialogueEffect e, string place)
         {
             string msg;
-            BondChange bond = null;
             if (e?.Type == DialogueEffectType.JoinHero && recruits.TryGetValue(e, out var who)) msg = JoinStoryHero(c, s, who);
-            else if (e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) msg = ApplyBond(c, s, e, Def.Id, place, Who(e.Id), Who(e.Other), out bond);
+            else if (e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) msg = ApplyBond(c, s, e, Def.Id, place, Who(e.Id), Who(e.Other));
             else msg = ApplyEffect(c, s, e, Def.Id, With);
-            if (msg == null) return;
-            if (bond != null) BondChanges[Log.Count] = bond;
-            Log.Add(msg);
+            if (msg != null) Log.Add(msg);
         }
 
         /// <summary>Plays a dialogue to the end with no screen, taking the first choice offered at every turn —
@@ -369,32 +353,23 @@ namespace GridGame.Meta
         /// for these heroes (<see cref="Bonds.PayChoiceOnce"/>, a list ClearFlag can't reach and New Game+ keeps), so a replayed
         /// Talk can't farm it. A hero without Trust, or a pair without cohesion, is skipped without spending the guard.
         /// Returns the toast ("The Cleric's Trust +5"), or null when nothing moved.</summary>
-        public static string ApplyBond(ContentDb c, SaveData s, DialogueEffect e, string dialogueId, string place, string a, string b = null) =>
-            ApplyBond(c, s, e, dialogueId, place, a, b, out _);
-
-        /// <summary>As above; <paramref name="change"/> is what moved (GG-T1297), or null when nothing did.</summary>
-        public static string ApplyBond(ContentDb c, SaveData s, DialogueEffect e, string dialogueId, string place, string a, string b, out BondChange change)
+        public static string ApplyBond(ContentDb c, SaveData s, DialogueEffect e, string dialogueId, string place, string a, string b = null)
         {
-            change = null;
             if (e == null || e.Amount == 0) return null;
             string Name(string id) => c.TryClass(id)?.Name ?? id;
             if (e.Type == DialogueEffectType.AddTrust)
             {
                 if (!Bonds.HasTrust(s, a) || !Bonds.PayChoiceOnce(s, dialogueId ?? "-", $"{place ?? "-"}:trust:{Bonds.Key(a)}")) return null;
-                int before = Bonds.Trust(s, a), after = Bonds.AddTrust(s, a, e.Amount), moved = after - before;
-                if (moved == 0) return null;
-                change = new BondChange { A = a, Moved = moved, Value = after, TierBefore = Bonds.Tier(before), TierAfter = Bonds.Tier(after) };
-                return $"The {Name(a)}'s Trust {moved:+0;-0}";
+                int before = Bonds.Trust(s, a), moved = Bonds.AddTrust(s, a, e.Amount) - before;
+                return moved == 0 ? null : $"The {Name(a)}'s Trust {moved:+0;-0}";
             }
             if (e.Type == DialogueEffectType.AddCohesion)
             {
                 var pair = Bonds.PairKey(a, b);
                 if (pair == null || !Bonds.HasCohesion(s, a) || !Bonds.HasCohesion(s, b)
                     || !Bonds.PayChoiceOnce(s, dialogueId ?? "-", $"{place ?? "-"}:cohesion:{pair}")) return null;
-                int before = Bonds.Cohesion(s, a, b), after = Bonds.AddCohesion(s, a, b, e.Amount), moved = after - before;
-                if (moved == 0) return null;
-                change = new BondChange { A = a, B = b, Moved = moved, Value = after, TierBefore = Bonds.Tier(before), TierAfter = Bonds.Tier(after) };
-                return $"The {Name(a)} and the {Name(b)}: cohesion {moved:+0;-0}";
+                int before = Bonds.Cohesion(s, a, b), moved = Bonds.AddCohesion(s, a, b, e.Amount) - before;
+                return moved == 0 ? null : $"The {Name(a)} and the {Name(b)}: cohesion {moved:+0;-0}";
             }
             return null;
         }

@@ -68,6 +68,9 @@ namespace GridGame.App
         public virtual bool HoldsScreenArt => false;
         internal int ArtToken;
 
+        /// <summary>GG-T1335: true for a page that shows the hub's bottom nav bar (every <see cref="HubPage"/>).</summary>
+        public virtual bool ShowsNav => false;
+
         /// <summary>Rebuilds in place (after a purchase etc.).</summary>
         public void Refresh()
         {
@@ -118,6 +121,30 @@ namespace GridGame.App
         public void Push(GameScreen s) => Go(() => stack.Push(s));
         public void Replace(GameScreen s) => Go(() => { if (stack.Count > 0) Leave(stack.Pop()); stack.Push(s); });
         public void ResetTo(GameScreen s) => Go(() => { while (stack.Count > 0) Leave(stack.Pop()); stack.Push(s); });
+
+        /// <summary>GG-T1335: back to the hub root in one fade, the stack left as just <see cref="HubScreen"/>. Refused
+        /// (false) while a timed paywall job plays out on screen, which must finish where it was started.</summary>
+        public bool Home()
+        {
+            if (GameApp.I.Overlay?.Q(TimedJobView.VeilName) != null) return false;
+            ResetTo(new HubScreen());
+            return true;
+        }
+
+        /// <summary>How many screens sit above the <see cref="HubScreen"/> on the stack, or -1 with no hub on it.</summary>
+        public int PagesAboveHub
+        {
+            get
+            {
+                int n = 0;
+                foreach (var s in stack)
+                {
+                    if (s is HubScreen) return n;
+                    n++;
+                }
+                return -1;
+            }
+        }
 
         public void Pop()
         {

@@ -311,6 +311,7 @@ namespace GridGame.App.Automation
                     return new { ok = true, value = field.value };
                 }
                 case "back": app.Router.Back(); return new { ok = true };
+                case "home": return app.Router.Home() ? (object)new { ok = true } : new { error = "a timed job is playing out" }; // GG-T1335
                 case "wait":
                     StartCoroutine(WaitIdle(F(q["ms"], 0) / 1000f, reply));
                     return Pending;

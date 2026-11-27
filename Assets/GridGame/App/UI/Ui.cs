@@ -180,8 +180,9 @@ namespace GridGame.App
         }
 
         /// <summary>The page title (kit role, GG-T454): back button, title (with an optional one-line subtitle under it, e.g. a
-        /// station's level), live gold. The bar spans the stage; its contents line up with the windows below (Kit.Gutter).</summary>
-        public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold, string subtitle = null)
+        /// station's level), live gold. The bar spans the stage; its contents line up with the windows below (Kit.Gutter).
+        /// <paramref name="onHome"/> adds the Home emblem button after Back (GG-T1335).</summary>
+        public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold, string subtitle = null, Action onHome = null)
         {
             var h = El("header", parent);
             // The bar spans the stage; its back button, title and gold line up with the content column (GG-T398).
@@ -195,6 +196,7 @@ namespace GridGame.App
             }
             // GG-T738 (§26.7): the back button is the Back kind emblem, not a "‹" glyph.
             if (onBack != null) RowIcon.IconButton(null, RowKind.Back, onBack, "btn--small btn--icon", h).name = "back";
+            if (onHome != null) RowIcon.IconButton(null, RowKind.Home, onHome, "btn--small btn--icon", h).name = "home";
             if (subtitle == null) Text(title, "header-title shadow", h);
             else
             {
