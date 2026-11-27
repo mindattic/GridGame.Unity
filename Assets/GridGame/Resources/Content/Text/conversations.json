@@ -2279,6 +2279,274 @@
         ]
       }
     },
+    "dialogue:joined_ember": {
+      "key": "dialogue:joined_ember",
+      "id": "conversation-joined-ember",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d21191c1f1dc3ccfd3f3645fabe076e42bbb695fa866b2b9d27a43a5d2203a46",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "Red water",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The knight from the Ember sits with their back to the fire, red-and-black armour still on, facing the dark where the Manalith hangs.",
+            "choices": [
+              {
+                "text": "You fought beside us a long while before you joined. Why now?",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You've joined the caravan. Before we march, I want to talk.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "I was waiting to see whether you'd turn and kneel to the thing in the sky. You haven't yet. That's rarer than you think.",
+            "next": "rivers"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "You fight the Choir. So do we. That's enough of an oath for the Shardfall.",
+            "next": "rivers"
+          },
+          {
+            "id": "rivers",
+            "speaker": "$hero",
+            "line": "Where I come from we drink from the red rivers under the fallen shards. It burns going down. It's the Manalith's own body, and we take it into ours.",
+            "next": "want"
+          },
+          {
+            "id": "want",
+            "speaker": "character-commander",
+            "line": "The knight's gauntlet tightens on a cup that isn't there.",
+            "choices": [
+              {
+                "text": "Then tell me what you want. I'd rather know than guess.",
+                "next": "want_truth"
+              },
+              {
+                "text": "I don't know what the Manalith is. I'm not ready to decide its fate.",
+                "next": "unsure"
+              },
+              {
+                "text": "Whatever the Ember wants, here you follow my lead.",
+                "next": "lead"
+              }
+            ]
+          },
+          {
+            "id": "want_truth",
+            "speaker": "$hero",
+            "line": "Most of us want it down. All the way down, broken open, done. I'm still deciding whether I'm most of us.",
+            "next": "cult"
+          },
+          {
+            "id": "unsure",
+            "speaker": "$hero",
+            "line": "An honest answer. The Shardfall's full of people who decided too early. Some of them are still burning.",
+            "next": "cult"
+          },
+          {
+            "id": "lead",
+            "speaker": "$hero",
+            "line": "Leaders. The Infernalists have those too. I'll walk behind you, Commander, but I'll keep my own eyes on the sky.",
+            "next": "cult"
+          },
+          {
+            "id": "cult",
+            "speaker": "$hero",
+            "line": "You should know the Infernalists are Ember too. They'd open the Anchors wide to drag it here. Some of them were my friends.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "Far off over the Shardfall, a red glow pulses once and fades.",
+            "choices": [
+              {
+                "text": "Then we stop them, and we bring your friends home if we can.",
+                "next": "home"
+              },
+              {
+                "text": "You chose differently. That's what matters to me.",
+                "next": "chose"
+              },
+              {
+                "text": "If they come for us, I'll need to know you won't hesitate.",
+                "next": "hesitate"
+              }
+            ]
+          },
+          {
+            "id": "home",
+            "speaker": "$hero",
+            "line": "Home. I haven't heard anyone say that word kindly in years. My blade's yours, Commander."
+          },
+          {
+            "id": "chose",
+            "speaker": "$hero",
+            "line": "I did choose. Some nights I'm not sure I chose right. Ask me again when we've seen the Shardfall together."
+          },
+          {
+            "id": "hesitate",
+            "speaker": "$hero",
+            "line": "I won't. That's the worst thing about the Ember, Commander. We never hesitate."
+          }
+        ]
+      }
+    },
+    "dialogue:joined_fendark": {
+      "key": "dialogue:joined_fendark",
+      "id": "conversation-joined-fendark",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ff86586c1c0d774f1653b88e40b0e7da299314596a84f894d78032b3730f1391",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "What the fen knows",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The newcomer from the Fen-dark has hung a bundle of drying reeds from the wagon's hoop and keeps glancing at the orb on the Commander's belt.",
+            "choices": [
+              {
+                "text": "You watched us from the reeds for a long time. I'm glad you came out.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You've joined the caravan. I'd like to know who's riding with us.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "In the fen you learn to wait and see what a stranger does with a wounded thing. You stopped for every one of them. So here I am.",
+            "next": "colour"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "A healer goes where the hurt is, and the hurt is following your caravan. That's reason enough to ride with it.",
+            "next": "colour"
+          },
+          {
+            "id": "colour",
+            "speaker": "$hero",
+            "line": "You should know I can see it. The colour in people. Yours is wrong, Commander. Too old, and too bright for how tired you look.",
+            "next": "who"
+          },
+          {
+            "id": "who",
+            "speaker": "character-commander",
+            "line": "Somewhere past the firelight, frogs start up all at once, then fall silent together.",
+            "choices": [
+              {
+                "text": "I was a commander of Halcyon. I died in the Still, and it brought me back.",
+                "next": "truth"
+              },
+              {
+                "text": "I don't know what I am. I'd be grateful if you'd help me find out.",
+                "next": "help"
+              },
+              {
+                "text": "What you see in me is my business. Keep it to yourself.",
+                "next": "shut"
+              }
+            ]
+          },
+          {
+            "id": "truth",
+            "speaker": "$hero",
+            "line": "Halcyon. We live in its ships, you know. Its Arks, lying in the mud where the tides threw them. Some nights the old doors still hum.",
+            "next": "runaways"
+          },
+          {
+            "id": "help",
+            "speaker": "$hero",
+            "line": "An honest question. The Choir never asked one. Yes. I'll look, carefully, and tell you what I find, even if you won't like it.",
+            "next": "runaways"
+          },
+          {
+            "id": "shut",
+            "speaker": "$hero",
+            "line": "As you like. But the fen keeps secrets for a reason, Commander, and it's usually because the secret is dangerous.",
+            "next": "runaways"
+          },
+          {
+            "id": "runaways",
+            "speaker": "$hero",
+            "line": "Half the Fen-dark ran from the Choir's choirs. They taught the tithe songs once. They know what the Lullaby really takes, and they don't sing anymore.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The healer turns a small glass vial in their fingers. Something cyan glows inside it, faintly.",
+            "choices": [
+              {
+                "text": "Then help us understand it. We'll need everything you know.",
+                "next": "know"
+              },
+              {
+                "text": "Your people are safe with us. The Choir won't take them back.",
+                "next": "safe"
+              },
+              {
+                "text": "Keep that vial away from the others until I know what it is.",
+                "next": "vial"
+              }
+            ]
+          },
+          {
+            "id": "know",
+            "speaker": "$hero",
+            "line": "Everything I know. That's a long night, Commander. Bring tea, and don't let it go cold."
+          },
+          {
+            "id": "safe",
+            "speaker": "$hero",
+            "line": "Brave thing to promise. I'll hold you to it, gently, the way you hold a cut closed."
+          },
+          {
+            "id": "vial",
+            "speaker": "$hero",
+            "line": "Fair. Careful is how the fen stays alive. It's only a little of someone's colour. I'm keeping it safe until they want it back."
+          }
+        ]
+      }
+    },
     "dialogue:joined_generic": {
       "key": "dialogue:joined_generic",
       "id": "conversation-joined-generic",
@@ -2811,6 +3079,140 @@
             "id": "watch",
             "speaker": "$hero",
             "line": "Eyes are the one thing the Street gave me for free. You'll hear it from me before anyone else does."
+          }
+        ]
+      }
+    },
+    "dialogue:joined_wild": {
+      "key": "dialogue:joined_wild",
+      "id": "conversation-joined-wild",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:48f814d0d24c915b9e50b8af1ffe09edacf4d86fe78bbfffdec900b315a89779",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero"
+      ],
+      "payload": {
+        "title": "Things that grow",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The newcomer from the Wild hasn't come near the fire. They sit in the long grass at the camp's edge, where a small red flower has opened between two stones.",
+            "choices": [
+              {
+                "text": "You followed the caravan for days. I hoped you'd come in.",
+                "next": "walked",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You've joined us. Come sit where it's warm, and talk with me.",
+                "next": "signed"
+              }
+            ]
+          },
+          {
+            "id": "walked",
+            "speaker": "$hero",
+            "line": "Animals follow a herd before they join it. You have to see if the herd eats its weak ones. Yours doesn't.",
+            "next": "grow"
+          },
+          {
+            "id": "signed",
+            "speaker": "$hero",
+            "line": "Warm is fine. Walls are not. If you want me close, don't put a roof over me.",
+            "next": "grow"
+          },
+          {
+            "id": "grow",
+            "speaker": "$hero",
+            "line": "Out in the Wild, things grow where the sky's pieces fell. Red things, in the white. The Choir says they're poison. They're not. They're just alive.",
+            "next": "listen"
+          },
+          {
+            "id": "listen",
+            "speaker": "character-commander",
+            "line": "The red flower turns, very slightly, toward the orb on the Commander's belt.",
+            "choices": [
+              {
+                "text": "I'd like to see where they grow. Will you show me?",
+                "next": "show"
+              },
+              {
+                "text": "I don't understand any of it yet. I'll listen.",
+                "next": "ears"
+              },
+              {
+                "text": "Whatever's growing out there, it isn't safe. Stay close to camp.",
+                "next": "camp"
+              }
+            ]
+          },
+          {
+            "id": "show",
+            "speaker": "$hero",
+            "line": "You'd come? Most people want to burn it. Yes. When the moon's right. You have to be quiet, though.",
+            "next": "touched"
+          },
+          {
+            "id": "ears",
+            "speaker": "$hero",
+            "line": "Good. Listening is the first thing the beasts teach you. Talking is the last, and most people never get there.",
+            "next": "touched"
+          },
+          {
+            "id": "camp",
+            "speaker": "$hero",
+            "line": "Safe. The white things in the Choir's halls are safe. Nothing grows on them at all. I'll stay close, but I won't stay tame.",
+            "next": "touched"
+          },
+          {
+            "id": "touched",
+            "speaker": "$hero",
+            "line": "Some of us have been touched by it. Changed a little. The Choir calls us Bloom-touched like it's a sickness. Does it scare you?",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "The wild child's eyes catch the firelight and hold it, a shade too red.",
+            "choices": [
+              {
+                "text": "No. You're one of us now, changed or not.",
+                "next": "ours"
+              },
+              {
+                "text": "A little. But I'd rather understand it than fear it.",
+                "next": "honest"
+              },
+              {
+                "text": "It might. Tell me if it ever changes you further.",
+                "next": "further"
+              }
+            ]
+          },
+          {
+            "id": "ours",
+            "speaker": "$hero",
+            "line": "One of us. The beasts will like hearing that. I'll tell them tonight."
+          },
+          {
+            "id": "honest",
+            "speaker": "$hero",
+            "line": "Scared and still sitting here. That's how a good tamer starts, Commander."
+          },
+          {
+            "id": "further",
+            "speaker": "$hero",
+            "line": "I'll tell you. I tell everyone I trust when something new grows. You're on the list now."
           }
         ]
       }

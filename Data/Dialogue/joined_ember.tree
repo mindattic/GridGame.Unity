@@ -1,0 +1,66 @@
+dialogue joined_ember
+title: Red water
+trigger: Joined ember
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The knight from the Ember sits with their back to the fire, red-and-black armour still on, facing the dark where the Manalith hangs.
+  * You fought beside us a long while before you joined. Why now? -> walked
+    if: TrustAtLeast $hero 15
+  * You've joined the caravan. Before we march, I want to talk. -> signed
+
+node walked hero
+  I was waiting to see whether you'd turn and kneel to the thing in the sky. You haven't yet. That's rarer than you think.
+  -> rivers
+
+node signed hero
+  You fight the Choir. So do we. That's enough of an oath for the Shardfall.
+  -> rivers
+
+node rivers hero
+  Where I come from we drink from the red rivers under the fallen shards. It burns going down. It's the Manalith's own body, and we take it into ours.
+  -> want
+
+node want commander
+  The knight's gauntlet tightens on a cup that isn't there.
+  * Then tell me what you want. I'd rather know than guess. -> want_truth
+    do: AddTrust $hero 6
+  * I don't know what the Manalith is. I'm not ready to decide its fate. -> unsure
+    do: AddTrust $hero 3
+  * Whatever the Ember wants, here you follow my lead. -> lead
+    do: AddTrust $hero -5
+
+node want_truth hero
+  Most of us want it down. All the way down, broken open, done. I'm still deciding whether I'm most of us.
+  -> cult
+
+node unsure hero
+  An honest answer. The Shardfall's full of people who decided too early. Some of them are still burning.
+  -> cult
+
+node lead hero
+  Leaders. The Infernalists have those too. I'll walk behind you, Commander, but I'll keep my own eyes on the sky.
+  -> cult
+
+node cult hero
+  You should know the Infernalists are Ember too. They'd open the Anchors wide to drag it here. Some of them were my friends.
+  -> answer
+
+node answer commander
+  Far off over the Shardfall, a red glow pulses once and fades.
+  * Then we stop them, and we bring your friends home if we can. -> home
+    do: AddTrust $hero 8
+  * You chose differently. That's what matters to me. -> chose
+    do: AddTrust $hero 6
+  * If they come for us, I'll need to know you won't hesitate. -> hesitate
+    do: AddTrust $hero 2
+
+node home hero
+  Home. I haven't heard anyone say that word kindly in years. My blade's yours, Commander.
+
+node chose hero
+  I did choose. Some nights I'm not sure I chose right. Ask me again when we've seen the Shardfall together.
+
+node hesitate hero
+  I won't. That's the worst thing about the Ember, Commander. We never hesitate.

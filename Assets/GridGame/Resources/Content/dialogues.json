@@ -3518,5 +3518,137 @@
       { "Id": "free", "Speaker": "hero" },
       { "Id": "quiet", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "joined_fendark",
+    "Title": "What the fen knows",
+    "Trigger": { "Kind": "Joined", "Id": "fendark" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "colour" },
+      { "Id": "signed", "Speaker": "hero", "Next": "colour" },
+      { "Id": "colour", "Speaker": "hero", "Next": "who" },
+      {
+        "Id": "who", "Speaker": "commander",
+        "Choices": [
+          { "Next": "truth", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "help", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "shut", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -5 } ] }
+        ]
+      },
+      { "Id": "truth", "Speaker": "hero", "Next": "runaways" },
+      { "Id": "help", "Speaker": "hero", "Next": "runaways" },
+      { "Id": "shut", "Speaker": "hero", "Next": "runaways" },
+      { "Id": "runaways", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "know", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "safe", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 5 } ] },
+          { "Next": "vial", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 2 } ] }
+        ]
+      },
+      { "Id": "know", "Speaker": "hero" },
+      { "Id": "safe", "Speaker": "hero" },
+      { "Id": "vial", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "joined_ember",
+    "Title": "Red water",
+    "Trigger": { "Kind": "Joined", "Id": "ember" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "rivers" },
+      { "Id": "signed", "Speaker": "hero", "Next": "rivers" },
+      { "Id": "rivers", "Speaker": "hero", "Next": "want" },
+      {
+        "Id": "want", "Speaker": "commander",
+        "Choices": [
+          { "Next": "want_truth", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "unsure", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 3 } ] },
+          { "Next": "lead", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -5 } ] }
+        ]
+      },
+      { "Id": "want_truth", "Speaker": "hero", "Next": "cult" },
+      { "Id": "unsure", "Speaker": "hero", "Next": "cult" },
+      { "Id": "lead", "Speaker": "hero", "Next": "cult" },
+      { "Id": "cult", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "home", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "chose", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "hesitate", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 2 } ] }
+        ]
+      },
+      { "Id": "home", "Speaker": "hero" },
+      { "Id": "chose", "Speaker": "hero" },
+      { "Id": "hesitate", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "joined_wild",
+    "Title": "Things that grow",
+    "Trigger": { "Kind": "Joined", "Id": "wild" },
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "walked", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$hero", "Amount": 15 } ] },
+          { "Next": "signed" }
+        ]
+      },
+      { "Id": "walked", "Speaker": "hero", "Next": "grow" },
+      { "Id": "signed", "Speaker": "hero", "Next": "grow" },
+      { "Id": "grow", "Speaker": "hero", "Next": "listen" },
+      {
+        "Id": "listen", "Speaker": "commander",
+        "Choices": [
+          { "Next": "show", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "ears", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 5 } ] },
+          { "Next": "camp", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": -5 } ] }
+        ]
+      },
+      { "Id": "show", "Speaker": "hero", "Next": "touched" },
+      { "Id": "ears", "Speaker": "hero", "Next": "touched" },
+      { "Id": "camp", "Speaker": "hero", "Next": "touched" },
+      { "Id": "touched", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "ours", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 8 } ] },
+          { "Next": "honest", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 6 } ] },
+          { "Next": "further", "Effects": [ { "Type": "AddTrust", "Id": "$hero", "Amount": 2 } ] }
+        ]
+      },
+      { "Id": "ours", "Speaker": "hero" },
+      { "Id": "honest", "Speaker": "hero" },
+      { "Id": "further", "Speaker": "hero" }
+    ]
   }
 ]

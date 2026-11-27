@@ -1,0 +1,66 @@
+dialogue joined_wild
+title: Things that grow
+trigger: Joined wild
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The newcomer from the Wild hasn't come near the fire. They sit in the long grass at the camp's edge, where a small red flower has opened between two stones.
+  * You followed the caravan for days. I hoped you'd come in. -> walked
+    if: TrustAtLeast $hero 15
+  * You've joined us. Come sit where it's warm, and talk with me. -> signed
+
+node walked hero
+  Animals follow a herd before they join it. You have to see if the herd eats its weak ones. Yours doesn't.
+  -> grow
+
+node signed hero
+  Warm is fine. Walls are not. If you want me close, don't put a roof over me.
+  -> grow
+
+node grow hero
+  Out in the Wild, things grow where the sky's pieces fell. Red things, in the white. The Choir says they're poison. They're not. They're just alive.
+  -> listen
+
+node listen commander
+  The red flower turns, very slightly, toward the orb on the Commander's belt.
+  * I'd like to see where they grow. Will you show me? -> show
+    do: AddTrust $hero 8
+  * I don't understand any of it yet. I'll listen. -> ears
+    do: AddTrust $hero 5
+  * Whatever's growing out there, it isn't safe. Stay close to camp. -> camp
+    do: AddTrust $hero -5
+
+node show hero
+  You'd come? Most people want to burn it. Yes. When the moon's right. You have to be quiet, though.
+  -> touched
+
+node ears hero
+  Good. Listening is the first thing the beasts teach you. Talking is the last, and most people never get there.
+  -> touched
+
+node camp hero
+  Safe. The white things in the Choir's halls are safe. Nothing grows on them at all. I'll stay close, but I won't stay tame.
+  -> touched
+
+node touched hero
+  Some of us have been touched by it. Changed a little. The Choir calls us Bloom-touched like it's a sickness. Does it scare you?
+  -> answer
+
+node answer commander
+  The wild child's eyes catch the firelight and hold it, a shade too red.
+  * No. You're one of us now, changed or not. -> ours
+    do: AddTrust $hero 8
+  * A little. But I'd rather understand it than fear it. -> honest
+    do: AddTrust $hero 6
+  * It might. Tell me if it ever changes you further. -> further
+    do: AddTrust $hero 2
+
+node ours hero
+  One of us. The beasts will like hearing that. I'll tell them tonight.
+
+node honest hero
+  Scared and still sitting here. That's how a good tamer starts, Commander.
+
+node further hero
+  I'll tell you. I tell everyone I trust when something new grows. You're on the list now.

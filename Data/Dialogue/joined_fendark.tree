@@ -1,0 +1,66 @@
+dialogue joined_fendark
+title: What the fen knows
+trigger: Joined fendark
+speaker commander $commander
+speaker hero $hero
+
+node open commander
+  The newcomer from the Fen-dark has hung a bundle of drying reeds from the wagon's hoop and keeps glancing at the orb on the Commander's belt.
+  * You watched us from the reeds for a long time. I'm glad you came out. -> walked
+    if: TrustAtLeast $hero 15
+  * You've joined the caravan. I'd like to know who's riding with us. -> signed
+
+node walked hero
+  In the fen you learn to wait and see what a stranger does with a wounded thing. You stopped for every one of them. So here I am.
+  -> colour
+
+node signed hero
+  A healer goes where the hurt is, and the hurt is following your caravan. That's reason enough to ride with it.
+  -> colour
+
+node colour hero
+  You should know I can see it. The colour in people. Yours is wrong, Commander. Too old, and too bright for how tired you look.
+  -> who
+
+node who commander
+  Somewhere past the firelight, frogs start up all at once, then fall silent together.
+  * I was a commander of Halcyon. I died in the Still, and it brought me back. -> truth
+    do: AddTrust $hero 6
+  * I don't know what I am. I'd be grateful if you'd help me find out. -> help
+    do: AddTrust $hero 8
+  * What you see in me is my business. Keep it to yourself. -> shut
+    do: AddTrust $hero -5
+
+node truth hero
+  Halcyon. We live in its ships, you know. Its Arks, lying in the mud where the tides threw them. Some nights the old doors still hum.
+  -> runaways
+
+node help hero
+  An honest question. The Choir never asked one. Yes. I'll look, carefully, and tell you what I find, even if you won't like it.
+  -> runaways
+
+node shut hero
+  As you like. But the fen keeps secrets for a reason, Commander, and it's usually because the secret is dangerous.
+  -> runaways
+
+node runaways hero
+  Half the Fen-dark ran from the Choir's choirs. They taught the tithe songs once. They know what the Lullaby really takes, and they don't sing anymore.
+  -> ask
+
+node ask commander
+  The healer turns a small glass vial in their fingers. Something cyan glows inside it, faintly.
+  * Then help us understand it. We'll need everything you know. -> know
+    do: AddTrust $hero 8
+  * Your people are safe with us. The Choir won't take them back. -> safe
+    do: AddTrust $hero 5
+  * Keep that vial away from the others until I know what it is. -> vial
+    do: AddTrust $hero 2
+
+node know hero
+  Everything I know. That's a long night, Commander. Bring tea, and don't let it go cold.
+
+node safe hero
+  Brave thing to promise. I'll hold you to it, gently, the way you hold a cut closed.
+
+node vial hero
+  Fair. Careful is how the fen stays alive. It's only a little of someone's colour. I'm keeping it safe until they want it back.
