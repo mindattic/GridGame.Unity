@@ -352,6 +352,7 @@ namespace GridGame.Core.Battle
                 var o = s.UnitById(e.OwnerId);
                 int first = TicksUntilAct(s, e);
                 if (o == null || first < 0) continue;
+                if (o.IsIndependent) continue; // GG-T1241: RunAllyTurn never ends the party's turn
                 int rate = TurnRatePerTick(s, o);
                 int lap = System.Math.Max(1, NeedTicks(BattleConfig.RecoverBaseSeconds) + (BattleConfig.BarLength - EntryIp(o) + rate - 1) / rate);
                 for (int tick = first; tick < t; tick += lap) if (tick >= 1) earlier.Add(tick);
