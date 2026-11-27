@@ -4717,5 +4717,172 @@
       }
     ],
     "LevelOverride": 40
+  },
+  {
+    "Id": "tutorial-01",
+    "Name": "First Steps",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13151,
+    "Lessons": [
+      { "Id": "move", "Wave": 0 },
+      { "Id": "read", "Wave": 0 },
+      { "Id": "pincer", "Wave": 0 }
+    ],
+    "Scenes": [
+      { "Id": "pincer", "Class": "slime00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 2, "Y": 4 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 1, "Y": 3 },
+          { "Class": "slime01", "Level": 1, "X": 4, "Y": 3 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "tutorial-02",
+    "Name": "The Line",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13152,
+    "Lessons": [
+      { "Id": "shove", "Wave": 0 },
+      { "Id": "chain", "Wave": 1 },
+      { "Id": "support", "Wave": 1 }
+    ],
+    "Blocks": [ { "X": 0, "Y": 2 }, { "X": 5, "Y": 2 } ],
+    "Scenes": [
+      { "Id": "shove", "Class": "slime00", "Level": 1 },
+      { "Id": "chain", "Class": "slime00", "Level": 1 },
+      { "Id": "support", "Class": "slime00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 3, "Y": 4 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 1, "Y": 3 },
+          { "Class": "slime01", "Level": 1, "X": 3, "Y": 3 },
+          { "Class": "slime00", "Level": 1, "X": 4, "Y": 2 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "tutorial-03",
+    "Name": "Mana",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13153,
+    "Lessons": [
+      { "Id": "orbs", "Wave": 0 },
+      { "Id": "mana", "Wave": 0 },
+      { "Id": "spell", "Wave": 1, "FocusRole": "Healer" },
+      { "Id": "buffs", "Wave": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 2, "Y": 3 },
+          { "Class": "slime00", "Level": 1, "X": 3, "Y": 3 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "bat00", "Level": 1, "X": 1, "Y": 2 },
+          { "Class": "slime02", "Level": 1, "X": 4, "Y": 2 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "tutorial-04",
+    "Name": "The Clock",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13154,
+    "Lessons": [
+      { "Id": "hold", "Wave": 0 },
+      { "Id": "timeline", "Wave": 0 },
+      { "Id": "guard", "Wave": 0 },
+      { "Id": "interrupt", "Wave": 1 }
+    ],
+    "Scenes": [
+      { "Id": "interrupt", "Class": "wolf00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "slime00", "Level": 1, "X": 1, "Y": 3 },
+          { "Class": "bat00", "Level": 1, "X": 4, "Y": 3 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "wolf00", "Level": 1, "X": 2, "Y": 2 },
+          { "Class": "slime01", "Level": 1, "X": 4, "Y": 3 }
+        ]
+      }
+    ]
+  },
+  {
+    "Id": "tutorial-05",
+    "Name": "Roles",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Seed": 13155,
+    "Lessons": [
+      { "Id": "taunt", "Wave": 0, "FocusRole": "Tank" },
+      { "Id": "pickup", "Wave": 0 },
+      { "Id": "plate", "Wave": 1 },
+      { "Id": "ready", "Wave": 2 }
+    ],
+    "Blocks": [ { "X": 0, "Y": 4 } ],
+    "Scenes": [
+      { "Id": "taunt", "Class": "goblinthug00", "Level": 1 },
+      { "Id": "pickup", "Pickup": "pk_potion" },
+      { "Id": "plate", "Class": "soldier00", "Level": 1 }
+    ],
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "goblinthug00", "Level": 1, "X": 2, "Y": 3 },
+          { "Class": "slime00", "Level": 1, "X": 4, "Y": 3 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "soldier00", "Level": 1, "X": 3, "Y": 2 },
+          { "Class": "wolf00", "Level": 1, "X": 1, "Y": 3 }
+        ]
+      },
+      {
+        "Enemies": [
+          { "Class": "goblinthug00", "Level": 1, "X": 1, "Y": 2 },
+          { "Class": "ganger00", "Level": 1, "X": 4, "Y": 2 },
+          { "Class": "slime02", "Level": 1, "X": 2, "Y": 1 }
+        ]
+      }
+    ]
   }
 ]

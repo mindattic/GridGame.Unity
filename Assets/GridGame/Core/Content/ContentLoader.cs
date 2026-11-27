@@ -486,6 +486,27 @@ namespace GridGame.Core.Content
                     else if (stageThemeOwner.TryGetValue(s, out var owner)) p.Add($"theme {t.Id}: stage '{s}' already belongs to theme '{owner}'");
                     else stageThemeOwner[s] = t.Id;
                 }
+            // GG-T1374: the tutorial drills: real stages, never in a theme, each with its lessons; lessons only on a drill.
+            var drills = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var d in db.Campaign.Tutorial ?? new List<string>())
+            {
+                if (d == null || !db.Stages.ContainsKey(d)) { p.Add($"campaign Tutorial: unknown stage '{d}'"); continue; }
+                if (!drills.Add(d)) p.Add($"campaign Tutorial: stage '{d}' listed twice");
+                if (stageThemeOwner.TryGetValue(d, out var owner)) p.Add($"campaign Tutorial: stage '{d}' also belongs to theme '{owner}'");
+                if (db.Stages[d].Lessons.Count == 0) p.Add($"campaign Tutorial: stage '{d}' has no Lessons");
+            }
+            foreach (var s in db.Stages.Values)
+            {
+                if (s.Lessons.Count > 0 && !drills.Contains(s.Id)) p.Add($"stage {s.Id}: Lessons on a stage not in campaign Tutorial");
+                var seen = new HashSet<string>();
+                foreach (var l in s.Lessons)
+                {
+                    if (Array.IndexOf(StageLessonDef.Ids, l.Id) < 0) p.Add($"stage {s.Id}: unknown lesson '{l.Id}'");
+                    else if (!seen.Add(l.Id)) p.Add($"stage {s.Id}: lesson '{l.Id}' listed twice");
+                    if (l.Wave < 0 || l.Wave >= s.Waves.Count) p.Add($"stage {s.Id} lesson {l.Id}: Wave {l.Wave} outside its {s.Waves.Count} waves");
+                    if (l.FocusRole != null && !new List<ClassDef>(db.Classes.Values).Exists(cl => cl.Role == l.FocusRole)) p.Add($"stage {s.Id} lesson {l.Id}: no class has role '{l.FocusRole}'");
+                }
+            }
             // GG-T677: every orb source is finite, so the most a save can ever own is fixed by content; it may not pass the cap.
             int orbSources = Battle.BattleConfig.StartOwnedOrbs + Battle.BattleConfig.MaxBrokenOrbs;
             foreach (var t in db.Campaign.Themes)

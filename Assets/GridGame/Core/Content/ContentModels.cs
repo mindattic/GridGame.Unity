@@ -1168,6 +1168,27 @@ namespace GridGame.Core.Content
         /// <summary>GG-T542: the tutorial battle's lesson set-ups: which foe a lesson brings on when its situation isn't on
         /// the board (a <see cref="TutorialSceneDef"/> per lesson id). Read only in a tutorial battle.</summary>
         public List<TutorialSceneDef> Scenes = new List<TutorialSceneDef>();
+        /// <summary>GG-T1374: a fixed battle seed (the tutorial drills); null plays on the caller's seed.</summary>
+        public int? Seed;
+        /// <summary>GG-T1374: a drill's coach-mark lessons in order, each with the wave it waits for. Non-empty only on a
+        /// drill (campaign.json <see cref="CampaignDef.Tutorial"/>).</summary>
+        public List<StageLessonDef> Lessons = new List<StageLessonDef>();
+    }
+
+    /// <summary>GG-T1374: one lesson of a tutorial drill: its id (<see cref="Ids"/>), the wave (0-based) it waits for, and
+    /// the role its marks focus on (Tank, Healer), when it points at one hero.</summary>
+    public sealed class StageLessonDef
+    {
+        public string Id;
+        public int Wave;
+        public string FocusRole;
+
+        /// <summary>The battle lessons (BattleScreen.Tutorial.cs), in their first-battle order.</summary>
+        public static readonly string[] Ids =
+        {
+            "move", "pincer", "read", "shove", "hold", "orbs", "mana", "chain", "support", "spell", "buffs", "timeline",
+            "taunt", "guard", "pickup", "interrupt", "plate", "ready",
+        };
     }
 
     /// <summary>GG-T542: one lesson's set-up in the tutorial battle: the lesson id (chain, interrupt, plate ...) and the
@@ -1274,6 +1295,9 @@ namespace GridGame.Core.Content
         /// an empty or missing list keeps the screen's fallback.</summary>
         public Dictionary<string, List<string>> MomentMusic = new Dictionary<string, List<string>>();
         public List<ThemeDef> Themes = new List<ThemeDef>();
+        /// <summary>GG-T1374: the tutorial drill stages, in play order. Never in a theme, so campaign order,
+        /// HighestClearedStage, CampUnlocks, chapter crawls and the Codex do not see them.</summary>
+        public List<string> Tutorial = new List<string>();
         /// <summary>GG-T231: the crawl that starts a new campaign (GG-T1363: the Opening, paged; was the Prologue), and
         /// the one after the final boss.</summary>
         public CrawlDef Opening;
