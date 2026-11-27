@@ -4,6 +4,25 @@
 orchestrator's work-unit budget said to stop, not because the game failed. GG-T1191 stays open for
 a full rerun.
 
+**Second attempt (2026-11-27 00:45, PARTIAL, 21 / 300).** Same command, same build. It was stopped at
+01:17 after 21 encounters (about 1.5 min each) because the work-unit budget ran out, not because the
+game failed. Free RAM was 4.1 GB at start and fell as low as 0.9 GB at 00:56-01:01 from other host load,
+yet the game kept running. 21 / 21 victories, 0 crashes, hangs, stalls or relaunches, and no thrown
+exceptions: the 145 "Exception" matches in Player.log are stack frames of the capture and telemetry
+log helpers. 21 / 21 `records/*.json` parse, `saves` again holds only the throwaway profile's
+`current.txt` and `settings.json`, `liveOldScreens` stays 0-1, and there are no growth warnings.
+
+| enc | min | managedMB | nativeAllocMB | privateMB | workingSetMB | unityObjects | textures |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 0.1 | 14.1 | 49.7 | 375 | 219 | 1857 | 78 |
+| 10 | 16.0 | 32.0 | 79.7 | 538 | 189 | 2131 | 212 |
+| 20 | 28.6 | 50.9 | 82.1 | 556 | 236 | 2132 | 219 |
+
+The outside sampler read private bytes of 513, 522, 523, 539, 554 and 570 MB at five-minute intervals.
+That is the same climb of about 1.5 MB per encounter that the first run showed. Textures and Unity
+objects are lower than in the first run (219 against 636 at enc 20) and almost flat. Only a full run,
+which needs one uninterrupted ~6-8 h night window, can settle the flatness criterion.
+
 ## Run
 
 - Command: `python tools/harness.py endless 300 --seed 61000 --speed 8 --headless --leakprobe --run gg-t589-endless300`
