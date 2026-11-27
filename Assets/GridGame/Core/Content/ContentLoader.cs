@@ -495,7 +495,8 @@ namespace GridGame.Core.Content
             if (orbSources > Battle.BattleConfig.MaxOrbCapacity)
                 p.Add($"campaign.json: {orbSources} Mana Orbs can be owned, past the cap of {Battle.BattleConfig.MaxOrbCapacity} (GG-T677)");
             SkyDef.Validate(db, p); // GG-T576
-            ValidateCrawl(db, db.Campaign.Prologue, "campaign Prologue", false, p);
+            ValidateCrawl(db, db.Campaign.Opening, "campaign Opening", false, p);
+            ValidatePages(db, db.Campaign.Opening, "campaign Opening", p);
             ValidateCrawl(db, db.Campaign.Ending, "campaign Ending", true, p);
             ValidateChapters(db, p);
             foreach (var t in db.Traps.Values) NeedBuff(t.ApplyBuff, $"trap {t.Id}");
@@ -874,7 +875,7 @@ namespace GridGame.Core.Content
             }
         }
 
-        /// <summary>GG-T231: a campaign crawl (Prologue/Ending) is optional, but one that exists needs text, a known
+        /// <summary>GG-T231: a campaign crawl (Opening/Ending) is optional, but one that exists needs text, a known
         /// backdrop theme, and (the Ending) a campaign stage to follow.</summary>
         private static void ValidateCrawl(ContentDb db, CrawlDef crawl, string w, bool needsStage, List<string> p)
         {
@@ -884,6 +885,28 @@ namespace GridGame.Core.Content
             if (crawl.Backdrop != null && !db.Campaign.Themes.Exists(t => string.Equals(t.Id, crawl.Backdrop, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: unknown backdrop theme '{crawl.Backdrop}'");
             if (needsStage && (crawl.Stage == null || db.ThemeOf(crawl.Stage) == null)) p.Add($"{w}: needs a campaign Stage, has '{crawl.Stage}'");
             if (!needsStage && crawl.Stage != null) p.Add($"{w}: only the Ending names a Stage");
+        }
+
+        /// <summary>GG-T1363: the Opening is paged (at least one page, each with a known backdrop theme and words under
+        /// its key <c>crawl:opening/&lt;n&gt;</c>); no other crawl has pages.</summary>
+        private static void ValidatePages(ContentDb db, CrawlDef opening, string w, List<string> p)
+        {
+            if (opening != null)
+            {
+                if (opening.Pages.Count == 0) p.Add($"{w}: needs Pages");
+                for (int i = 0; i < opening.Pages.Count; i++)
+                {
+                    var pg = opening.Pages[i];
+                    string wp = $"{w} page {i + 1} ({CrawlDef.OpeningKey(i + 1)})";
+                    if (pg == null) { p.Add($"{wp}: null entry"); continue; }
+                    if (string.IsNullOrWhiteSpace(pg.Backdrop)) p.Add($"{wp}: needs a Backdrop");
+                    else if (!db.Campaign.Themes.Exists(t => string.Equals(t.Id, pg.Backdrop, StringComparison.OrdinalIgnoreCase))) p.Add($"{wp}: unknown backdrop theme '{pg.Backdrop}'");
+                    if (string.IsNullOrWhiteSpace(pg.Text) || pg.Text == ProseText.Placeholder(CrawlDef.OpeningKey(i + 1))) p.Add($"{wp}: no text under its key");
+                }
+            }
+            if (db.Campaign.Ending?.Pages.Count > 0) p.Add("campaign Ending: only the Opening has Pages");
+            foreach (var ch in db.Campaign.Chapters)
+                if (ch?.Pages.Count > 0) p.Add($"campaign chapter '{ch.Id}': only the Opening has Pages");
         }
 
         /// <summary>Campaign stages per chapter crawl (GG-T386): a chapter scroll plays after every fifth stage.</summary>

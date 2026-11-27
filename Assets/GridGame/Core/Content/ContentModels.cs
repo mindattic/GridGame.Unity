@@ -1254,8 +1254,9 @@ namespace GridGame.Core.Content
         /// an empty or missing list keeps the screen's fallback.</summary>
         public Dictionary<string, List<string>> MomentMusic = new Dictionary<string, List<string>>();
         public List<ThemeDef> Themes = new List<ThemeDef>();
-        /// <summary>GG-T231: the crawl after New Campaign's party pick, and the one after the final boss.</summary>
-        public CrawlDef Prologue;
+        /// <summary>GG-T231: the crawl that starts a new campaign (GG-T1363: the Opening, paged; was the Prologue), and
+        /// the one after the final boss.</summary>
+        public CrawlDef Opening;
         public CrawlDef Ending;
         /// <summary>GG-T386: the chapter crawls, in campaign order, one after every fifth campaign stage (each names the
         /// stage it follows). They replace the per-theme crawls, so the player never sees two scrolls back to back.</summary>

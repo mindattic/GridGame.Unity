@@ -8,7 +8,9 @@
 
     kind          key                              text id                              from
     conversation  dialogue:<dialogueId>            conversation-<dialogueId>            dialogues.json (every dialogue)
-    crawl         crawl:prologue                   crawl-prologue                       campaign.json Prologue.Crawl
+    crawl         crawl:opening/<n>                crawl-opening-<n>                    campaign.json Opening.Pages[n-1] (GG-T1363:
+                                                                                        the paged opening, n from 1; the retired
+                                                                                        Prologue's crawl:prologue is still read)
     crawl         crawl:ending                     crawl-ending                         campaign.json Ending.Crawl
     crawl         crawl:chapter/<chapterId>        crawl-chapter-<chapterId>            campaign.json Chapters[] (GG-T386: one after
                                                                                         every fifth stage; the per-theme crawls
@@ -176,6 +178,9 @@ def game_keys(content: dict) -> dict:
     if isinstance(camp, dict):
         if isinstance(camp.get("Prologue"), dict):
             keys["crawl:prologue"] = "crawl"
+        if isinstance(camp.get("Opening"), dict):  # GG-T1363: one key per page
+            for n in range(1, len(camp["Opening"].get("Pages") or []) + 1):
+                keys[f"crawl:opening/{n}"] = "crawl"
         if isinstance(camp.get("Ending"), dict):
             keys["crawl:ending"] = "crawl"
         for ch in camp.get("Chapters") or []:  # GG-T386 (replaces the retired crawl:<themeId>)

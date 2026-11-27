@@ -34,7 +34,7 @@ namespace GridGame.Core.Content
         {
             ["classes"] = new[] { "*/Description", "*/Lore", "*/BossPhases/*/Announce" },
             ["dialogues"] = new[] { "*/Crawl", "*/Nodes/*/Text", "*/Nodes/*/Choices/*/Label" },
-            ["campaign"] = new[] { "Prologue/Crawl", "Ending/Crawl", "Themes/*/Crawl", "Chapters/*/Crawl" },
+            ["campaign"] = new[] { "Opening/Crawl", "Opening/Pages/*/Text", "Ending/Crawl", "Themes/*/Crawl", "Chapters/*/Crawl" },
             ["quests"] = new[] { "*/Summary", "*/TurnIn" },
             ["glossary"] = new[] { "*/Text" },
             ["items"] = new[] { "*/Description" },
@@ -89,7 +89,8 @@ namespace GridGame.Core.Content
                 k["dialogue:" + d.Id] = "conversation";
                 if (d.HasCrawl) k["crawl:dialogue/" + d.Id] = "crawl";
             }
-            if (db.Campaign.Prologue != null) k["crawl:prologue"] = "crawl";
+            if (db.Campaign.Opening != null)
+                for (int n = 1; n <= db.Campaign.Opening.Pages.Count; n++) k[CrawlDef.OpeningKey(n)] = "crawl"; // GG-T1363
             if (db.Campaign.Ending != null) k["crawl:ending"] = "crawl";
             foreach (var ch in db.Campaign.Chapters) if (ch?.Id != null) k[CrawlDef.ChapterKey(ch.Id)] = "crawl"; // GG-T386
             foreach (var c in db.Classes.Values)
@@ -268,7 +269,19 @@ namespace GridGame.Core.Content
                 Leftover(cd.Crawl, where);
                 cd.Crawl = Crawl(Get(key, "crawl"), key);
             }
-            JoinCrawl(db.Campaign.Prologue, "crawl:prologue", "campaign.json Prologue Crawl");
+            if (db.Campaign.Opening is CrawlDef op) // GG-T1363: one key per page; the Crawl is the pages joined
+            {
+                Leftover(op.Crawl, "campaign.json Opening Crawl");
+                for (int n = 1; n <= op.Pages.Count; n++)
+                {
+                    var pg = op.Pages[n - 1];
+                    if (pg == null) continue;
+                    string key = CrawlDef.OpeningKey(n);
+                    Leftover(pg.Text, $"campaign.json Opening Pages[{n - 1}] Text");
+                    pg.Text = Crawl(Get(key, "crawl"), key);
+                }
+                op.Crawl = string.Join("\n\n", op.Pages.FindAll(x => x != null).ConvertAll(x => x.Text));
+            }
             JoinCrawl(db.Campaign.Ending, "crawl:ending", "campaign.json Ending Crawl");
             // GG-T386: a chapter crawl after every fifth stage replaced the per-theme crawls (crawl:<themeId>, retired).
             foreach (var ch in db.Campaign.Chapters)

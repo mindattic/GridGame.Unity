@@ -1323,11 +1323,11 @@ namespace GridGame.App
             return beat == null ? new HubScreen() : Play(beat, VendorsThenCamp, null);
         }
 
-        /// <summary>A new campaign's first screen: the prologue crawl (if any), then Camp.</summary>
+        /// <summary>A new campaign's first screen: the opening crawl (if any), then Camp.</summary>
         public static GameScreen NewCampaign()
         {
-            var p = GameApp.I.Content.Campaign.Prologue;
-            return p == null ? new HubScreen() : new StoryCrawlScreen(p.Title, p.Crawl, p.Backdrop, new HubScreen());
+            var p = GameApp.I.Content.Campaign.Opening;
+            return p == null ? new HubScreen() : new StoryCrawlScreen(p.Title, p.Crawl, p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null), new HubScreen());
         }
     }
 }

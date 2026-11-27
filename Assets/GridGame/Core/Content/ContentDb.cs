@@ -197,13 +197,13 @@ namespace GridGame.Core.Content
             if (id.StartsWith("chapter/", StringComparison.OrdinalIgnoreCase))
                 return Campaign.Chapters.Find(c => Same(c?.Id, id.Substring("chapter/".Length)));
             if (Same(id, "ending")) return Campaign.Ending;
-            if (Same(id, "prologue")) return Campaign.Prologue;
+            if (Same(id, "opening") || Same(id, "prologue")) return Campaign.Opening; // GG-T1363: the Codex's prologue is the Opening
             return null;
         }
 
         /// <summary>GG-T936: whether a Codex entry's record exists: a known <see cref="CodexKinds"/> kind naming a campaign
         /// region or stage, a faction, a hero class / Camp NPC / caravan crew slug, any class (a foe), an item, an ability, a
-        /// glossary id, or a story beat ("chapter/&lt;id&gt;", "dialogue/&lt;id&gt;", "ending", "prologue").</summary>
+        /// glossary id, or a story beat ("chapter/&lt;id&gt;", "dialogue/&lt;id&gt;", "ending", "opening" or "prologue").</summary>
         public bool CodexRecordExists(string kind, string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return false;

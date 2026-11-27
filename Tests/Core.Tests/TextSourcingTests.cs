@@ -55,7 +55,7 @@ namespace GridGame.Tests
                 foreach (var n in d.Nodes) { Need(n.Text, $"dialogue {d.Id} node {n.Id}"); foreach (var ch in n.Choices) Need(ch.Label, $"dialogue {d.Id} node {n.Id} choice"); }
                 if (d.HasCrawl) Need(d.Crawl, $"dialogue {d.Id} crawl");
             }
-            Need(db.Campaign.Prologue?.Crawl, "prologue"); Need(db.Campaign.Ending?.Crawl, "ending");
+            Need(db.Campaign.Opening?.Crawl, "opening"); Need(db.Campaign.Ending?.Crawl, "ending");
             foreach (var ch in db.Campaign.Chapters) Need(ch.Crawl, $"chapter {ch.Id}"); // GG-T386
             foreach (var q in db.QuestOrder) { Need(q.Summary, $"quest {q.Id} brief"); Need(q.TurnIn, $"quest {q.Id} turn-in"); }
             foreach (var g in db.GlossaryOrder) Need(g.Text, $"glossary {g.Id}");
@@ -160,7 +160,7 @@ namespace GridGame.Tests
         [Test]
         public void Resolved_texts_expose_their_Prose_id_guid_and_version()
         {
-            var t = Real.TryText("crawl:prologue");
+            var t = Real.TryText("crawl:opening/1");
             Assert.That(t, Is.Not.Null);
             Assert.That(t.Missing, Is.False);
             Assert.That(t.Kind, Is.EqualTo("crawl"));

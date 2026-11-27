@@ -1,7 +1,14 @@
 {
-  "Prologue": {
+  "Opening": {
     "Title": "Tithe Day",
-    "Backdrop": "greenvalley"
+    "Backdrop": "greenvalley",
+    "Pages": [
+      { "Name": "the fallen Halcyon world", "Backdrop": "cityruins" },
+      { "Name": "the Manalith", "Backdrop": "morrowsshadow" },
+      { "Name": "the forgetting", "Backdrop": "still" },
+      { "Name": "the heroes", "Backdrop": "greenvalley" },
+      { "Name": "the Commander wakes", "Backdrop": "still" }
+    ]
   },
   "Ending": {
     "Title": "Still Here",

@@ -28,7 +28,7 @@ namespace GridGame.Tests
         [Test]
         public void The_campaign_has_a_prologue_and_an_ending_after_the_hierarch()
         {
-            Assert.That(Real.Campaign.Prologue?.Crawl, Is.Not.Null.And.Not.Empty);
+            Assert.That(Real.Campaign.Opening?.Crawl, Is.Not.Null.And.Not.Empty);
             Assert.That(Real.Campaign.Ending?.Crawl, Is.Not.Null.And.Not.Empty);
             Assert.That(Real.Campaign.Ending.Stage, Is.EqualTo("cathedral-03"), "GG-T350: the cathedral is the finale");
             Assert.That(Real.Stage("cathedral-03").Waves.Last().Enemies.Any(e => e.Class == "hierarch"), "the ending follows the Hierarch's stage");
@@ -174,12 +174,12 @@ namespace GridGame.Tests
         public void Validation_checks_the_prologue_and_ending()
         {
             var db = Fixture(Beat(new DialogueTrigger { Kind = DialogueTriggerKind.StageStart, Id = "s1" }));
-            db.Campaign.Prologue = new CrawlDef { Title = "P", Crawl = "x", Backdrop = "vale" };
+            db.Campaign.Opening = new CrawlDef { Title = "P", Crawl = "x", Backdrop = "vale", Pages = { new CrawlPage { Backdrop = "vale", Text = "x" } } };
             db.Campaign.Ending = new CrawlDef { Title = "E", Crawl = "y", Stage = "s1" };
             Assert.That(Problems(db), Is.Empty);
             db.Campaign.Ending.Stage = "nope";
-            db.Campaign.Prologue.Backdrop = "mars";
-            db.Campaign.Prologue.Stage = "s1";
+            db.Campaign.Opening.Backdrop = "mars";
+            db.Campaign.Opening.Stage = "s1";
             var p = Problems(db);
             Assert.That(p, Has.Some.Contains("campaign Ending: needs a campaign Stage"));
             Assert.That(p, Has.Some.Contains("unknown backdrop theme"));

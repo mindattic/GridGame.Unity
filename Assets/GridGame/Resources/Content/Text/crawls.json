@@ -211,13 +211,67 @@
         ]
       }
     },
-    "crawl:prologue": {
-      "key": "crawl:prologue",
-      "id": "crawl-prologue",
+    "crawl:opening/1": {
+      "key": "crawl:opening/1",
+      "id": "crawl-opening-1",
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fca7f309222ab23a1a8ec2f19b3359d2aa3e2e5c915d83186088b7742c66d360",
+      "hash": "sha256:80a72035290267eb18fea03742f5ac46bb8c8f57d4d6d1cccc47d0db16386f58",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Tithe Day",
+        "paragraphs": [
+          "The world before was Halcyon: towers of light, orbs in every hand. Halcyon fell in a single night. [placeholder]"
+        ]
+      }
+    },
+    "crawl:opening/2": {
+      "key": "crawl:opening/2",
+      "id": "crawl-opening-2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e438210612cf5afceb15e2cbc1722e64ddbd274dfbae40d4bdce9ce5787b6d76",
+      "about": [
+        "place-morrowsshadow"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Tithe Day",
+        "paragraphs": [
+          "Above it all hangs the Manalith, beside the Moon, and every year a little closer. [placeholder]"
+        ]
+      }
+    },
+    "crawl:opening/3": {
+      "key": "crawl:opening/3",
+      "id": "crawl-opening-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:020d2421f4da9ac37e16b933b45c89cd7b3c1b4bfe31c17e9b36db7d9c3ad17b",
+      "about": [
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Tithe Day",
+        "paragraphs": [
+          "Twelve hundred years of tithes and hymns, and the world forgot what Halcyon was, and why it fell. [placeholder]"
+        ]
+      }
+    },
+    "crawl:opening/4": {
+      "key": "crawl:opening/4",
+      "id": "crawl-opening-4",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:eeeb96c5af5880fc5b55e0c9d097400a9ba7e2cbd2148f1f10562abf005b41f2",
       "about": [
         "place-greenvalley"
       ],
@@ -225,9 +279,25 @@
       "payload": {
         "title": "Tithe Day",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "On the Tithe Moors, a handful of ordinary people are about to steal a caravan. They do not know they are heroes yet. [placeholder]"
+        ]
+      }
+    },
+    "crawl:opening/5": {
+      "key": "crawl:opening/5",
+      "id": "crawl-opening-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fedce4092574dc02f4128c33a60df5c991d94ec2f311f8f817f36590611a8069",
+      "about": [
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Tithe Day",
+        "paragraphs": [
+          "In a cold tank in the Still, {commander} opens their eyes, twelve hundred years late. [placeholder]"
         ]
       }
     }

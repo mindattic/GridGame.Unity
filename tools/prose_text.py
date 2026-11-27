@@ -57,7 +57,7 @@ SEED = "seed"
 NARRATIVE = {
     "classes": [("*", "Description"), ("*", "Lore"), ("*", "BossPhases", "*", "Announce")],
     "dialogues": [("*", "Crawl"), ("*", "Nodes", "*", "Text"), ("*", "Nodes", "*", "Choices", "*", "Label")],
-    "campaign": [("Prologue", "Crawl"), ("Ending", "Crawl"), ("Themes", "*", "Crawl"), ("Chapters", "*", "Crawl")],
+    "campaign": [("Prologue", "Crawl"), ("Opening", "Crawl"), ("Opening", "Pages", "*", "Text"), ("Ending", "Crawl"), ("Themes", "*", "Crawl"), ("Chapters", "*", "Crawl")],
     "quests": [("*", "Summary"), ("*", "TurnIn")],
     "glossary": [("*", "Text")],
     "items": [("*", "Description")],
@@ -174,6 +174,11 @@ def hydrate(content: dict, texts: dict) -> dict:
         p = pay(key)
         if p is not None and isinstance(camp.get(part), dict):
             camp[part]["Crawl"] = _crawl(p)
+    opening = camp.get("Opening") if isinstance(camp.get("Opening"), dict) else {}
+    for n, pg in enumerate(opening.get("Pages") or [], 1):  # GG-T1363: one key per page
+        p = pay(f"crawl:opening/{n}") if isinstance(pg, dict) else None
+        if p is not None:
+            pg["Text"] = _crawl(p)
     for ch in camp.get("Chapters") or []:  # GG-T386: chapter crawls replaced the per-theme crawls
         p = pay("crawl:chapter/" + ch.get("Id", "")) if isinstance(ch, dict) else None
         if p is not None:
