@@ -1,0 +1,68 @@
+dialogue cohesion_generic_support_any
+title: Small mercies
+trigger: Cohesion role:Support any level=4
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  The Support has been up before everyone again: boots oiled, water skins filled, a spare strap laid by every bedroll. Tonight one hero is still awake to catch the Support at it.
+  -> caught
+
+node caught hero
+  So it's you. Every morning my gear's better than I left it. I thought the caravan had a ghost.
+  -> ghost
+
+node ghost with
+  A ghost would do it better. I just don't sleep much. And a loose strap in a fight is worse than any blade.
+  -> thanks
+
+node thanks hero
+  Nobody thanks you for it. I've never heard anyone say a word. Commander, have you?
+  * I've seen it. I should have said so sooner. Thank you, both of you, for noticing. -> seen
+    do: AddCohesion $with $hero 8
+  * Then say it now. It means more from the one whose straps got fixed. -> now
+    do: AddCohesion $with $hero 10
+  * The Support doesn't do it for thanks. Leave it be. -> leave
+    do: AddCohesion $with $hero -3
+
+node seen with
+  Noticing's plenty. More than plenty. I'd go on doing it either way.
+  -> fight
+
+node now hero
+  Thank you, then. For the straps, and the boots, and whatever else I never caught.
+  -> fight
+
+node leave hero
+  Maybe not. But it should still be said.
+  -> fight
+
+node fight with
+  You want to know the truth? I watch you in a fight, every time. When you stumble, I'm already moving. It's easier when I know someone's watching back.
+  -> back
+
+node back hero
+  Then I'll watch back. Every fight. And some mornings, I'll be up first.
+  * Up first together. Two pairs of hands, half the time. -> together
+    do: AddCohesion $with $hero 9
+  * Watch back, yes. But let the Support sleep in once in a while. -> sleep
+    do: AddCohesion $with $hero 7
+  * Your own gear is your own work. Look to that first. -> own
+    do: AddCohesion $with $hero -2
+
+node together with
+  Half the time. I don't know what I'll do with the other half. Sleep, maybe.
+  -> close
+
+node sleep with
+  Sleep in. That'd be something. I'll try it once and see if the caravan falls apart.
+  -> close
+
+node own hero
+  My own gear. Fine. But I'm still saying thank you.
+  -> close
+
+node close commander
+  Before dawn, two figures move between the bedrolls with oil and spare straps, whispering, and the work is done in half the time.

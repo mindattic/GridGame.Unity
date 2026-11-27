@@ -1,0 +1,68 @@
+dialogue cohesion_generic_other_faction
+title: Strange customs
+trigger: Cohesion faction:other faction:other level=2
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  At the cook pot, two heroes who grew up under different banners are fighting over a spoon, quietly, the way people fight when they don't know each other well enough to shout.
+  -> salt
+
+node salt with
+  Salt goes in at the start. Everyone knows that. Where I come from you'd be laughed out of the kitchen.
+  -> end
+
+node end hero
+  Where I come from, salt at the start means you can't fix it after. You add it last, a pinch at a time, and you taste.
+  -> ask
+
+node ask with
+  Commander. Settle it. Somebody's stew is going to be wrong tonight.
+  * One pot each way, side by side. The camp can vote with spoons. -> vote
+    do: AddCohesion $with $hero 7
+  * You're both wrong. Teach each other the rest of it while it boils. -> teach
+    do: AddCohesion $with $hero 5
+  * I'm not choosing between your homes over a stew. Work it out. -> out
+    do: AddCohesion $with $hero -3
+
+node vote hero
+  A vote. Fine. And when mine wins, you're scrubbing both pots.
+  -> banners
+
+node teach with
+  The rest of it. All right. What do your people put in for the sour?
+  -> banners
+
+node out hero
+  Worked out it is. Hand me the spoon. Last, a pinch at a time.
+  -> banners
+
+node banners with
+  You know, I was told your people were cold. Proud, and not much for sharing a fire.
+  -> told
+
+node told hero
+  I was told the same of yours. Nobody told me you'd fight this hard over salt.
+  * Whoever told you both was a long way from this fire. -> far
+    do: AddCohesion $with $hero 8
+  * Keep the stories. Just don't let them choose who you stand beside. -> stories
+    do: AddCohesion $with $hero 6
+  * Some of those stories are true. Keep your guard up. -> guard
+    do: AddCohesion $with $hero -4
+
+node far with
+  A long way. Aye. They never sat at a pot with you.
+  -> close
+
+node stories hero
+  We'll keep them for the jokes, then. And stand where we like.
+  -> close
+
+node guard with
+  Guard up. I've had it up so long I barely notice it any more.
+  -> close
+
+node close commander
+  Two pots go on the fire. Later, the whole camp tastes both, and the argument starts over, louder, and more friendly.

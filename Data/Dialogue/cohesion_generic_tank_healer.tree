@@ -1,0 +1,68 @@
+dialogue cohesion_generic_tank_healer
+title: The count of wounds
+trigger: Cohesion role:Tank role:Healer level=4
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  The Healer sits beside the Tank with a lamp and a needle, closing the last cut of the day. Neither says much. They've done this many times now.
+  -> count
+
+node count hero
+  Eleven today. I count them, every one. Eleven blows that would have landed on someone else if you hadn't stepped in front.
+  -> sure
+
+node sure with
+  That's the work. You stand at the back and keep us breathing. I stand at the front and keep them busy. It's a fair trade.
+  -> fair
+
+node fair hero
+  It isn't fair. You take the wound and I take the thanks. Commander, tell the Tank to stop stepping in front of everything.
+  * The Tank stands there because the Healer is behind. That's the whole trust between you. -> trust
+    do: AddCohesion $with $hero 10
+  * Fewer steps forward, then. I'd rather the Tank whole for the next fight. -> fewer
+    do: AddCohesion $with $hero 6
+  * Counting wounds won't help anyone. Let it go. -> letgo
+    do: AddCohesion $with $hero -4
+
+node trust with
+  Behind me. Aye. I don't look back to check. I never have to.
+  -> mark
+
+node fewer with
+  Fewer. I can try fewer. Not none.
+  -> mark
+
+node letgo hero
+  I can't let it go. It's the only way I know what you cost.
+  -> mark
+
+node mark with
+  Here. You've been saying the count out loud for weeks. Mark it somewhere, if you need it marked. On the shield, where I'll see it.
+  -> shield
+
+node shield hero
+  On the shield. A notch for every one I closed.
+  * Do it. Let the shield carry what the two of you carry. -> notch
+    do: AddCohesion $with $hero 8
+  * Mark the ones you both came home from, not the wounds. -> home
+    do: AddCohesion $with $hero 9
+  * A shield is no ledger. Keep it clean. -> clean
+    do: AddCohesion $with $hero -2
+
+node notch with
+  Eleven, then. Start tonight. I'll wear the count into every fight.
+  -> close
+
+node home hero
+  The ones we came home from. That's a better count. That one I'd like to see grow.
+  -> close
+
+node clean with
+  Clean it stays. The count can live with you, then. I trust you to keep it.
+  -> close
+
+node close commander
+  The lamp burns low. The Healer ties off the last stitch, and the Tank flexes the arm and calls it good as new, which it isn't, quite.

@@ -1,0 +1,72 @@
+dialogue cohesion_generic_any_any
+title: The long watch
+trigger: Cohesion any any level=4
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  Two heroes share the last watch of the night. The fire is down to coals, and the dark past the wagons is very quiet.
+  -> quiet
+
+node quiet with
+  I used to hate the last watch. Too long, too dark, nothing to do but think.
+  -> used
+
+node used hero
+  Used to?
+  -> now
+
+node now with
+  It's different with someone who doesn't need talking to. You don't fill the quiet. I like that.
+  -> after
+
+node after hero
+  Commander, can I ask you something? When this is done, all of it, what happens to the caravan? Do we just scatter?
+  * Nobody has to scatter. Whatever comes after, you two will have this. -> keep
+    do: AddCohesion $with $hero 9
+  * I don't know. That's why tonight matters. -> tonight
+    do: AddCohesion $with $hero 7
+  * It's a long way off. Keep your eyes on the dark. -> eyes
+    do: AddCohesion $with $hero -2
+
+node keep with
+  This. A cold watch and a quiet fire. I'd keep that.
+  -> plan
+
+node tonight hero
+  Tonight, then. I can do tonight.
+  -> plan
+
+node eyes with
+  Eyes on the dark. Aye. The dark isn't going anywhere, at least.
+  -> plan
+
+node plan hero
+  If we did scatter, I'd come looking. Just so you know. I'm not much for letters, but I'd come.
+  -> come
+
+node come with
+  Then I'd leave a fire banked, wherever I ended up. So you'd know which one was mine.
+  * A banked fire and a long walk. That's a promise. Hold each other to it. -> promise
+    do: AddCohesion $with $hero 10
+  * Leave word with the caravan too. I'll want to find you both. -> word
+    do: AddCohesion $with $hero 8
+  * Promises made on the last watch don't always last till morning. -> morning
+    do: AddCohesion $with $hero -3
+
+node promise hero
+  Held. I don't make many. This one I'll keep.
+  -> close
+
+node word with
+  Word with the caravan. Then we'd all be looking for each other. That's not a bad way to scatter.
+  -> close
+
+node morning hero
+  Maybe not. Ask me again at breakfast, Commander. It'll still be true.
+  -> close
+
+node close commander
+  The sky greys in the east. The two of them stay sitting by the coals a while after the watch ends, saying nothing, which seems to be enough.

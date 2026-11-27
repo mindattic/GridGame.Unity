@@ -1,0 +1,68 @@
+dialogue cohesion_generic_striker_mage
+title: Half a breath
+trigger: Cohesion role:Striker role:Mage level=4
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  Behind the wagons the Striker is drawing lines in the dirt with a stick, and the Mage is rubbing them out with a boot as fast as they go down.
+  -> lines
+
+node lines hero
+  Every fight you run into my circle half a breath before it closes. Half a breath. I've held a spell back three times this week for you.
+  -> breath
+
+node breath with
+  And three times the thing in the circle was still standing because you waited. If I don't go in, it walks out of your circle and onto whoever's behind us.
+  -> stick
+
+node stick hero
+  Commander, one of us is going to get the other killed. I'd rather it was settled out here, with a stick.
+  * Call it out loud. The Mage says the count, the Striker goes on the last word. -> count
+    do: AddCohesion $with $hero 10
+  * The Mage casts on time, every time. The Striker learns the circle. -> circle
+    do: AddCohesion $with $hero 6
+  * Hold back, both of you. I'll call every fight myself. -> hold
+    do: AddCohesion $with $hero -3
+
+node count with
+  A count. Three, two, and I'm gone on one. I can hear a count over anything.
+  -> trust
+
+node circle with
+  Learn the circle. All right. Draw it for me again, slower, and don't rub it out this time.
+  -> trust
+
+node hold hero
+  Then we wait on you every time. Fine. But the fights won't.
+  -> trust
+
+node trust hero
+  The truth is, I've never had anyone fast enough to be in the circle at all. Most people run away from it.
+  -> away
+
+node away with
+  Running away from a spell is sense. Running into one is trust. You've never once dropped it on me.
+  * That's the closest thing to a promise either of you has made. Keep it. -> promise
+    do: AddCohesion $with $hero 9
+  * Trust is good. Practice is better. Again tomorrow, at first light. -> practice
+    do: AddCohesion $with $hero 7
+  * Don't make it sound grander than it is. It's timing. -> timing
+    do: AddCohesion $with $hero -2
+
+node promise hero
+  Then here's mine. I'll never close the circle while you're inside it. Not once.
+  -> close
+
+node practice with
+  First light. Bring the stick. I'll bring the feet.
+  -> close
+
+node timing hero
+  Timing, then. Mine's good. Yours is getting there.
+  -> close
+
+node close commander
+  The Mage draws one more circle in the dirt. This time the Striker stands in the middle of it, grinning, and the Mage counts aloud, slowly, down to one.

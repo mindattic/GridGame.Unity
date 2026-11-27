@@ -5271,5 +5271,246 @@
       { "Id": "alone", "Speaker": "knight", "Next": "close" },
       { "Id": "close", "Speaker": "commander" }
     ]
+  },
+  {
+    "Id": "cohesion_generic_any_any",
+    "Title": "The long watch",
+    "Trigger": { "Kind": "Cohesion", "Id": "any", "Other": "any", "Level": 4 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "quiet" },
+      { "Id": "quiet", "Speaker": "with", "Next": "used" },
+      { "Id": "used", "Speaker": "hero", "Next": "now" },
+      { "Id": "now", "Speaker": "with", "Next": "after" },
+      {
+        "Id": "after", "Speaker": "hero",
+        "Choices": [
+          { "Next": "keep", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 9 } ] },
+          { "Next": "tonight", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 7 } ] },
+          { "Next": "eyes", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "keep", "Speaker": "with", "Next": "plan" },
+      { "Id": "tonight", "Speaker": "hero", "Next": "plan" },
+      { "Id": "eyes", "Speaker": "with", "Next": "plan" },
+      { "Id": "plan", "Speaker": "hero", "Next": "come" },
+      {
+        "Id": "come", "Speaker": "with",
+        "Choices": [
+          { "Next": "promise", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 10 } ] },
+          { "Next": "word", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "morning", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "promise", "Speaker": "hero", "Next": "close" },
+      { "Id": "word", "Speaker": "with", "Next": "close" },
+      { "Id": "morning", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_generic_other_faction",
+    "Title": "Strange customs",
+    "Trigger": { "Kind": "Cohesion", "Id": "faction:other", "Other": "faction:other", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "salt" },
+      { "Id": "salt", "Speaker": "with", "Next": "end" },
+      { "Id": "end", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "with",
+        "Choices": [
+          { "Next": "vote", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 7 } ] },
+          { "Next": "teach", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 5 } ] },
+          { "Next": "out", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "vote", "Speaker": "hero", "Next": "banners" },
+      { "Id": "teach", "Speaker": "with", "Next": "banners" },
+      { "Id": "out", "Speaker": "hero", "Next": "banners" },
+      { "Id": "banners", "Speaker": "with", "Next": "told" },
+      {
+        "Id": "told", "Speaker": "hero",
+        "Choices": [
+          { "Next": "far", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "stories", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 6 } ] },
+          { "Next": "guard", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -4 } ] }
+        ]
+      },
+      { "Id": "far", "Speaker": "with", "Next": "close" },
+      { "Id": "stories", "Speaker": "hero", "Next": "close" },
+      { "Id": "guard", "Speaker": "with", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_generic_same_faction",
+    "Title": "The same banner",
+    "Trigger": { "Kind": "Cohesion", "Id": "faction:same", "Other": "faction:same", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "fire" },
+      { "Id": "fire", "Speaker": "with", "Next": "others" },
+      { "Id": "others", "Speaker": "hero", "Next": "strange" },
+      {
+        "Id": "strange", "Speaker": "with",
+        "Choices": [
+          { "Next": "found", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 6 } ] },
+          { "Next": "share", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "road", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "found", "Speaker": "hero", "Next": "square" },
+      { "Id": "share", "Speaker": "hero", "Next": "square" },
+      { "Id": "road", "Speaker": "with", "Next": "square" },
+      { "Id": "square", "Speaker": "with", "Next": "stood" },
+      {
+        "Id": "stood", "Speaker": "hero",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "behind", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 4 } ] },
+          { "Next": "leave", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "with", "Next": "close" },
+      { "Id": "behind", "Speaker": "hero", "Next": "close" },
+      { "Id": "leave", "Speaker": "with", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_generic_striker_mage",
+    "Title": "Half a breath",
+    "Trigger": { "Kind": "Cohesion", "Id": "role:Striker", "Other": "role:Mage", "Level": 4 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "lines" },
+      { "Id": "lines", "Speaker": "hero", "Next": "breath" },
+      { "Id": "breath", "Speaker": "with", "Next": "stick" },
+      {
+        "Id": "stick", "Speaker": "hero",
+        "Choices": [
+          { "Next": "count", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 10 } ] },
+          { "Next": "circle", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 6 } ] },
+          { "Next": "hold", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "count", "Speaker": "with", "Next": "trust" },
+      { "Id": "circle", "Speaker": "with", "Next": "trust" },
+      { "Id": "hold", "Speaker": "hero", "Next": "trust" },
+      { "Id": "trust", "Speaker": "hero", "Next": "away" },
+      {
+        "Id": "away", "Speaker": "with",
+        "Choices": [
+          { "Next": "promise", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 9 } ] },
+          { "Next": "practice", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 7 } ] },
+          { "Next": "timing", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "promise", "Speaker": "hero", "Next": "close" },
+      { "Id": "practice", "Speaker": "with", "Next": "close" },
+      { "Id": "timing", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_generic_support_any",
+    "Title": "Small mercies",
+    "Trigger": { "Kind": "Cohesion", "Id": "role:Support", "Other": "any", "Level": 4 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "caught" },
+      { "Id": "caught", "Speaker": "hero", "Next": "ghost" },
+      { "Id": "ghost", "Speaker": "with", "Next": "thanks" },
+      {
+        "Id": "thanks", "Speaker": "hero",
+        "Choices": [
+          { "Next": "seen", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "now", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 10 } ] },
+          { "Next": "leave", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -3 } ] }
+        ]
+      },
+      { "Id": "seen", "Speaker": "with", "Next": "fight" },
+      { "Id": "now", "Speaker": "hero", "Next": "fight" },
+      { "Id": "leave", "Speaker": "hero", "Next": "fight" },
+      { "Id": "fight", "Speaker": "with", "Next": "back" },
+      {
+        "Id": "back", "Speaker": "hero",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 9 } ] },
+          { "Next": "sleep", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 7 } ] },
+          { "Next": "own", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "with", "Next": "close" },
+      { "Id": "sleep", "Speaker": "with", "Next": "close" },
+      { "Id": "own", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_generic_tank_healer",
+    "Title": "The count of wounds",
+    "Trigger": { "Kind": "Cohesion", "Id": "role:Tank", "Other": "role:Healer", "Level": 4 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "with", "Class": "$with" },
+      { "Id": "hero", "Class": "$hero" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "count" },
+      { "Id": "count", "Speaker": "hero", "Next": "sure" },
+      { "Id": "sure", "Speaker": "with", "Next": "fair" },
+      {
+        "Id": "fair", "Speaker": "hero",
+        "Choices": [
+          { "Next": "trust", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 10 } ] },
+          { "Next": "fewer", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 6 } ] },
+          { "Next": "letgo", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -4 } ] }
+        ]
+      },
+      { "Id": "trust", "Speaker": "with", "Next": "mark" },
+      { "Id": "fewer", "Speaker": "with", "Next": "mark" },
+      { "Id": "letgo", "Speaker": "hero", "Next": "mark" },
+      { "Id": "mark", "Speaker": "with", "Next": "shield" },
+      {
+        "Id": "shield", "Speaker": "hero",
+        "Choices": [
+          { "Next": "notch", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 8 } ] },
+          { "Next": "home", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": 9 } ] },
+          { "Next": "clean", "Effects": [ { "Type": "AddCohesion", "Id": "$with", "Other": "$hero", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "notch", "Speaker": "with", "Next": "close" },
+      { "Id": "home", "Speaker": "hero", "Next": "close" },
+      { "Id": "clean", "Speaker": "with", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
   }
 ]

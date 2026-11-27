@@ -1,0 +1,68 @@
+dialogue cohesion_generic_same_faction
+title: The same banner
+trigger: Cohesion faction:same faction:same level=2
+once
+speaker commander $commander
+speaker with $with
+speaker hero $hero
+
+node open commander
+  Two of the caravan's heroes have pulled their bedrolls close tonight. They grew up under the same banner, and it shows in small ways: the same knot in a boot lace, the same way of banking a fire.
+  -> fire
+
+node fire with
+  You bank it the way we did back home. Ash on the windward side, so the wind can't get under it. I haven't seen anyone do that in years.
+  -> others
+
+node others hero
+  Nobody else here does it right. I fix the others' fires when they aren't looking.
+  -> strange
+
+node strange with
+  Commander, we came from the same place and never once met there. You'd think we'd have crossed paths a hundred times.
+  * Home's big. You found each other out here. That's what counts. -> found
+    do: AddCohesion $with $hero 6
+  * Then trade it back and forth. The streets, the songs, the people. -> share
+    do: AddCohesion $with $hero 8
+  * Old loyalties get in the way on the road. Don't lean on them. -> road
+    do: AddCohesion $with $hero -3
+
+node found hero
+  Out past every map we grew up with. Aye. That's something.
+  -> square
+
+node share hero
+  Start with the bakery by the gate, then. If you knew the bakery, you knew everyone.
+  -> square
+
+node road with
+  We won't lean. But we'll still bank the fire the right way.
+  -> square
+
+node square with
+  The collectors came through twice a year. I always wondered who else stood in the square while they read the names out.
+  -> stood
+
+node stood hero
+  I did. Every time. We might have stood a shoulder apart and never known it.
+  * Next time a collector reads a name, you'll stand together on purpose. -> together
+    do: AddCohesion $with $hero 8
+  * That square is behind you both now. -> behind
+    do: AddCohesion $with $hero 4
+  * Some memories are better left in the square. -> leave
+    do: AddCohesion $with $hero -2
+
+node together with
+  On purpose. Aye. Shoulder to shoulder, and loud about it.
+  -> close
+
+node behind hero
+  Behind us. It doesn't feel like it some nights. Tonight it does.
+  -> close
+
+node leave with
+  Left, then. Pass the salt, and we'll talk about something lighter.
+  -> close
+
+node close commander
+  The two of them fall to arguing over the name of a hill outside home, and neither will give it up, and both are smiling.

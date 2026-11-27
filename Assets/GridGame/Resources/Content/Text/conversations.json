@@ -3084,6 +3084,762 @@
         ]
       }
     },
+    "dialogue:cohesion_generic_any_any": {
+      "key": "dialogue:cohesion_generic_any_any",
+      "id": "conversation-cohesion-generic-any-any",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f959690ced680797b641cdd63eee7b3edbe3d5130d35f93c9d161fc280fe3a77",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with",
+        "$hero"
+      ],
+      "payload": {
+        "title": "The long watch",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Two heroes share the last watch of the night. The fire is down to coals, and the dark past the wagons is very quiet.",
+            "next": "quiet"
+          },
+          {
+            "id": "quiet",
+            "speaker": "$with",
+            "line": "I used to hate the last watch. Too long, too dark, nothing to do but think.",
+            "next": "used"
+          },
+          {
+            "id": "used",
+            "speaker": "$hero",
+            "line": "Used to?",
+            "next": "now"
+          },
+          {
+            "id": "now",
+            "speaker": "$with",
+            "line": "It's different with someone who doesn't need talking to. You don't fill the quiet. I like that.",
+            "next": "after"
+          },
+          {
+            "id": "after",
+            "speaker": "$hero",
+            "line": "Commander, can I ask you something? When this is done, all of it, what happens to the caravan? Do we just scatter?",
+            "choices": [
+              {
+                "text": "Nobody has to scatter. Whatever comes after, you two will have this.",
+                "next": "keep"
+              },
+              {
+                "text": "I don't know. That's why tonight matters.",
+                "next": "tonight"
+              },
+              {
+                "text": "It's a long way off. Keep your eyes on the dark.",
+                "next": "eyes"
+              }
+            ]
+          },
+          {
+            "id": "keep",
+            "speaker": "$with",
+            "line": "This. A cold watch and a quiet fire. I'd keep that.",
+            "next": "plan"
+          },
+          {
+            "id": "tonight",
+            "speaker": "$hero",
+            "line": "Tonight, then. I can do tonight.",
+            "next": "plan"
+          },
+          {
+            "id": "eyes",
+            "speaker": "$with",
+            "line": "Eyes on the dark. Aye. The dark isn't going anywhere, at least.",
+            "next": "plan"
+          },
+          {
+            "id": "plan",
+            "speaker": "$hero",
+            "line": "If we did scatter, I'd come looking. Just so you know. I'm not much for letters, but I'd come.",
+            "next": "come"
+          },
+          {
+            "id": "come",
+            "speaker": "$with",
+            "line": "Then I'd leave a fire banked, wherever I ended up. So you'd know which one was mine.",
+            "choices": [
+              {
+                "text": "A banked fire and a long walk. That's a promise. Hold each other to it.",
+                "next": "promise"
+              },
+              {
+                "text": "Leave word with the caravan too. I'll want to find you both.",
+                "next": "word"
+              },
+              {
+                "text": "Promises made on the last watch don't always last till morning.",
+                "next": "morning"
+              }
+            ]
+          },
+          {
+            "id": "promise",
+            "speaker": "$hero",
+            "line": "Held. I don't make many. This one I'll keep.",
+            "next": "close"
+          },
+          {
+            "id": "word",
+            "speaker": "$with",
+            "line": "Word with the caravan. Then we'd all be looking for each other. That's not a bad way to scatter.",
+            "next": "close"
+          },
+          {
+            "id": "morning",
+            "speaker": "$hero",
+            "line": "Maybe not. Ask me again at breakfast, Commander. It'll still be true.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The sky greys in the east. The two of them stay sitting by the coals a while after the watch ends, saying nothing, which seems to be enough."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_generic_other_faction": {
+      "key": "dialogue:cohesion_generic_other_faction",
+      "id": "conversation-cohesion-generic-other-faction",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5f837f87bbfce578848e29299d9ed592880ac8ca1e5bd7bb685b0970e20b016b",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with",
+        "$hero"
+      ],
+      "payload": {
+        "title": "Strange customs",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "At the cook pot, two heroes who grew up under different banners are fighting over a spoon, quietly, the way people fight when they don't know each other well enough to shout.",
+            "next": "salt"
+          },
+          {
+            "id": "salt",
+            "speaker": "$with",
+            "line": "Salt goes in at the start. Everyone knows that. Where I come from you'd be laughed out of the kitchen.",
+            "next": "end"
+          },
+          {
+            "id": "end",
+            "speaker": "$hero",
+            "line": "Where I come from, salt at the start means you can't fix it after. You add it last, a pinch at a time, and you taste.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "Commander. Settle it. Somebody's stew is going to be wrong tonight.",
+            "choices": [
+              {
+                "text": "One pot each way, side by side. The camp can vote with spoons.",
+                "next": "vote"
+              },
+              {
+                "text": "You're both wrong. Teach each other the rest of it while it boils.",
+                "next": "teach"
+              },
+              {
+                "text": "I'm not choosing between your homes over a stew. Work it out.",
+                "next": "out"
+              }
+            ]
+          },
+          {
+            "id": "vote",
+            "speaker": "$hero",
+            "line": "A vote. Fine. And when mine wins, you're scrubbing both pots.",
+            "next": "banners"
+          },
+          {
+            "id": "teach",
+            "speaker": "$with",
+            "line": "The rest of it. All right. What do your people put in for the sour?",
+            "next": "banners"
+          },
+          {
+            "id": "out",
+            "speaker": "$hero",
+            "line": "Worked out it is. Hand me the spoon. Last, a pinch at a time.",
+            "next": "banners"
+          },
+          {
+            "id": "banners",
+            "speaker": "$with",
+            "line": "You know, I was told your people were cold. Proud, and not much for sharing a fire.",
+            "next": "told"
+          },
+          {
+            "id": "told",
+            "speaker": "$hero",
+            "line": "I was told the same of yours. Nobody told me you'd fight this hard over salt.",
+            "choices": [
+              {
+                "text": "Whoever told you both was a long way from this fire.",
+                "next": "far"
+              },
+              {
+                "text": "Keep the stories. Just don't let them choose who you stand beside.",
+                "next": "stories"
+              },
+              {
+                "text": "Some of those stories are true. Keep your guard up.",
+                "next": "guard"
+              }
+            ]
+          },
+          {
+            "id": "far",
+            "speaker": "$with",
+            "line": "A long way. Aye. They never sat at a pot with you.",
+            "next": "close"
+          },
+          {
+            "id": "stories",
+            "speaker": "$hero",
+            "line": "We'll keep them for the jokes, then. And stand where we like.",
+            "next": "close"
+          },
+          {
+            "id": "guard",
+            "speaker": "$with",
+            "line": "Guard up. I've had it up so long I barely notice it any more.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "Two pots go on the fire. Later, the whole camp tastes both, and the argument starts over, louder, and more friendly."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_generic_same_faction": {
+      "key": "dialogue:cohesion_generic_same_faction",
+      "id": "conversation-cohesion-generic-same-faction",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bf91461fa1724f2673bec06962d28b62bfab15cbf3f29185844dab263a297684",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with",
+        "$hero"
+      ],
+      "payload": {
+        "title": "The same banner",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Two of the caravan's heroes have pulled their bedrolls close tonight. They grew up under the same banner, and it shows in small ways: the same knot in a boot lace, the same way of banking a fire.",
+            "next": "fire"
+          },
+          {
+            "id": "fire",
+            "speaker": "$with",
+            "line": "You bank it the way we did back home. Ash on the windward side, so the wind can't get under it. I haven't seen anyone do that in years.",
+            "next": "others"
+          },
+          {
+            "id": "others",
+            "speaker": "$hero",
+            "line": "Nobody else here does it right. I fix the others' fires when they aren't looking.",
+            "next": "strange"
+          },
+          {
+            "id": "strange",
+            "speaker": "$with",
+            "line": "Commander, we came from the same place and never once met there. You'd think we'd have crossed paths a hundred times.",
+            "choices": [
+              {
+                "text": "Home's big. You found each other out here. That's what counts.",
+                "next": "found"
+              },
+              {
+                "text": "Then trade it back and forth. The streets, the songs, the people.",
+                "next": "share"
+              },
+              {
+                "text": "Old loyalties get in the way on the road. Don't lean on them.",
+                "next": "road"
+              }
+            ]
+          },
+          {
+            "id": "found",
+            "speaker": "$hero",
+            "line": "Out past every map we grew up with. Aye. That's something.",
+            "next": "square"
+          },
+          {
+            "id": "share",
+            "speaker": "$hero",
+            "line": "Start with the bakery by the gate, then. If you knew the bakery, you knew everyone.",
+            "next": "square"
+          },
+          {
+            "id": "road",
+            "speaker": "$with",
+            "line": "We won't lean. But we'll still bank the fire the right way.",
+            "next": "square"
+          },
+          {
+            "id": "square",
+            "speaker": "$with",
+            "line": "The collectors came through twice a year. I always wondered who else stood in the square while they read the names out.",
+            "next": "stood"
+          },
+          {
+            "id": "stood",
+            "speaker": "$hero",
+            "line": "I did. Every time. We might have stood a shoulder apart and never known it.",
+            "choices": [
+              {
+                "text": "Next time a collector reads a name, you'll stand together on purpose.",
+                "next": "together"
+              },
+              {
+                "text": "That square is behind you both now.",
+                "next": "behind"
+              },
+              {
+                "text": "Some memories are better left in the square.",
+                "next": "leave"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "$with",
+            "line": "On purpose. Aye. Shoulder to shoulder, and loud about it.",
+            "next": "close"
+          },
+          {
+            "id": "behind",
+            "speaker": "$hero",
+            "line": "Behind us. It doesn't feel like it some nights. Tonight it does.",
+            "next": "close"
+          },
+          {
+            "id": "leave",
+            "speaker": "$with",
+            "line": "Left, then. Pass the salt, and we'll talk about something lighter.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The two of them fall to arguing over the name of a hill outside home, and neither will give it up, and both are smiling."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_generic_striker_mage": {
+      "key": "dialogue:cohesion_generic_striker_mage",
+      "id": "conversation-cohesion-generic-striker-mage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:cbbe6c0952dced0963620841b404102f2647177eaf46239d93dc52d15d4896b3",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero",
+        "$with"
+      ],
+      "payload": {
+        "title": "Half a breath",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Behind the wagons the Striker is drawing lines in the dirt with a stick, and the Mage is rubbing them out with a boot as fast as they go down.",
+            "next": "lines"
+          },
+          {
+            "id": "lines",
+            "speaker": "$hero",
+            "line": "Every fight you run into my circle half a breath before it closes. Half a breath. I've held a spell back three times this week for you.",
+            "next": "breath"
+          },
+          {
+            "id": "breath",
+            "speaker": "$with",
+            "line": "And three times the thing in the circle was still standing because you waited. If I don't go in, it walks out of your circle and onto whoever's behind us.",
+            "next": "stick"
+          },
+          {
+            "id": "stick",
+            "speaker": "$hero",
+            "line": "Commander, one of us is going to get the other killed. I'd rather it was settled out here, with a stick.",
+            "choices": [
+              {
+                "text": "Call it out loud. The Mage says the count, the Striker goes on the last word.",
+                "next": "count"
+              },
+              {
+                "text": "The Mage casts on time, every time. The Striker learns the circle.",
+                "next": "circle"
+              },
+              {
+                "text": "Hold back, both of you. I'll call every fight myself.",
+                "next": "hold"
+              }
+            ]
+          },
+          {
+            "id": "count",
+            "speaker": "$with",
+            "line": "A count. Three, two, and I'm gone on one. I can hear a count over anything.",
+            "next": "trust"
+          },
+          {
+            "id": "circle",
+            "speaker": "$with",
+            "line": "Learn the circle. All right. Draw it for me again, slower, and don't rub it out this time.",
+            "next": "trust"
+          },
+          {
+            "id": "hold",
+            "speaker": "$hero",
+            "line": "Then we wait on you every time. Fine. But the fights won't.",
+            "next": "trust"
+          },
+          {
+            "id": "trust",
+            "speaker": "$hero",
+            "line": "The truth is, I've never had anyone fast enough to be in the circle at all. Most people run away from it.",
+            "next": "away"
+          },
+          {
+            "id": "away",
+            "speaker": "$with",
+            "line": "Running away from a spell is sense. Running into one is trust. You've never once dropped it on me.",
+            "choices": [
+              {
+                "text": "That's the closest thing to a promise either of you has made. Keep it.",
+                "next": "promise"
+              },
+              {
+                "text": "Trust is good. Practice is better. Again tomorrow, at first light.",
+                "next": "practice"
+              },
+              {
+                "text": "Don't make it sound grander than it is. It's timing.",
+                "next": "timing"
+              }
+            ]
+          },
+          {
+            "id": "promise",
+            "speaker": "$hero",
+            "line": "Then here's mine. I'll never close the circle while you're inside it. Not once.",
+            "next": "close"
+          },
+          {
+            "id": "practice",
+            "speaker": "$with",
+            "line": "First light. Bring the stick. I'll bring the feet.",
+            "next": "close"
+          },
+          {
+            "id": "timing",
+            "speaker": "$hero",
+            "line": "Timing, then. Mine's good. Yours is getting there.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Mage draws one more circle in the dirt. This time the Striker stands in the middle of it, grinning, and the Mage counts aloud, slowly, down to one."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_generic_support_any": {
+      "key": "dialogue:cohesion_generic_support_any",
+      "id": "conversation-cohesion-generic-support-any",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ea9ab3c8ee3cd4aae1cff964cd8266d419a6561032aef392c7306d0794d01e60",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero",
+        "$with"
+      ],
+      "payload": {
+        "title": "Small mercies",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Support has been up before everyone again: boots oiled, water skins filled, a spare strap laid by every bedroll. Tonight one hero is still awake to catch the Support at it.",
+            "next": "caught"
+          },
+          {
+            "id": "caught",
+            "speaker": "$hero",
+            "line": "So it's you. Every morning my gear's better than I left it. I thought the caravan had a ghost.",
+            "next": "ghost"
+          },
+          {
+            "id": "ghost",
+            "speaker": "$with",
+            "line": "A ghost would do it better. I just don't sleep much. And a loose strap in a fight is worse than any blade.",
+            "next": "thanks"
+          },
+          {
+            "id": "thanks",
+            "speaker": "$hero",
+            "line": "Nobody thanks you for it. I've never heard anyone say a word. Commander, have you?",
+            "choices": [
+              {
+                "text": "I've seen it. I should have said so sooner. Thank you, both of you, for noticing.",
+                "next": "seen"
+              },
+              {
+                "text": "Then say it now. It means more from the one whose straps got fixed.",
+                "next": "now"
+              },
+              {
+                "text": "The Support doesn't do it for thanks. Leave it be.",
+                "next": "leave"
+              }
+            ]
+          },
+          {
+            "id": "seen",
+            "speaker": "$with",
+            "line": "Noticing's plenty. More than plenty. I'd go on doing it either way.",
+            "next": "fight"
+          },
+          {
+            "id": "now",
+            "speaker": "$hero",
+            "line": "Thank you, then. For the straps, and the boots, and whatever else I never caught.",
+            "next": "fight"
+          },
+          {
+            "id": "leave",
+            "speaker": "$hero",
+            "line": "Maybe not. But it should still be said.",
+            "next": "fight"
+          },
+          {
+            "id": "fight",
+            "speaker": "$with",
+            "line": "You want to know the truth? I watch you in a fight, every time. When you stumble, I'm already moving. It's easier when I know someone's watching back.",
+            "next": "back"
+          },
+          {
+            "id": "back",
+            "speaker": "$hero",
+            "line": "Then I'll watch back. Every fight. And some mornings, I'll be up first.",
+            "choices": [
+              {
+                "text": "Up first together. Two pairs of hands, half the time.",
+                "next": "together"
+              },
+              {
+                "text": "Watch back, yes. But let the Support sleep in once in a while.",
+                "next": "sleep"
+              },
+              {
+                "text": "Your own gear is your own work. Look to that first.",
+                "next": "own"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "$with",
+            "line": "Half the time. I don't know what I'll do with the other half. Sleep, maybe.",
+            "next": "close"
+          },
+          {
+            "id": "sleep",
+            "speaker": "$with",
+            "line": "Sleep in. That'd be something. I'll try it once and see if the caravan falls apart.",
+            "next": "close"
+          },
+          {
+            "id": "own",
+            "speaker": "$hero",
+            "line": "My own gear. Fine. But I'm still saying thank you.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "Before dawn, two figures move between the bedrolls with oil and spare straps, whispering, and the work is done in half the time."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_generic_tank_healer": {
+      "key": "dialogue:cohesion_generic_tank_healer",
+      "id": "conversation-cohesion-generic-tank-healer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7b882c69c8533d4c01f141491ffe11e894c4c700d931024bd4c0d2fac081be26",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$hero",
+        "$with"
+      ],
+      "payload": {
+        "title": "The count of wounds",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Healer sits beside the Tank with a lamp and a needle, closing the last cut of the day. Neither says much. They've done this many times now.",
+            "next": "count"
+          },
+          {
+            "id": "count",
+            "speaker": "$hero",
+            "line": "Eleven today. I count them, every one. Eleven blows that would have landed on someone else if you hadn't stepped in front.",
+            "next": "sure"
+          },
+          {
+            "id": "sure",
+            "speaker": "$with",
+            "line": "That's the work. You stand at the back and keep us breathing. I stand at the front and keep them busy. It's a fair trade.",
+            "next": "fair"
+          },
+          {
+            "id": "fair",
+            "speaker": "$hero",
+            "line": "It isn't fair. You take the wound and I take the thanks. Commander, tell the Tank to stop stepping in front of everything.",
+            "choices": [
+              {
+                "text": "The Tank stands there because the Healer is behind. That's the whole trust between you.",
+                "next": "trust"
+              },
+              {
+                "text": "Fewer steps forward, then. I'd rather the Tank whole for the next fight.",
+                "next": "fewer"
+              },
+              {
+                "text": "Counting wounds won't help anyone. Let it go.",
+                "next": "letgo"
+              }
+            ]
+          },
+          {
+            "id": "trust",
+            "speaker": "$with",
+            "line": "Behind me. Aye. I don't look back to check. I never have to.",
+            "next": "mark"
+          },
+          {
+            "id": "fewer",
+            "speaker": "$with",
+            "line": "Fewer. I can try fewer. Not none.",
+            "next": "mark"
+          },
+          {
+            "id": "letgo",
+            "speaker": "$hero",
+            "line": "I can't let it go. It's the only way I know what you cost.",
+            "next": "mark"
+          },
+          {
+            "id": "mark",
+            "speaker": "$with",
+            "line": "Here. You've been saying the count out loud for weeks. Mark it somewhere, if you need it marked. On the shield, where I'll see it.",
+            "next": "shield"
+          },
+          {
+            "id": "shield",
+            "speaker": "$hero",
+            "line": "On the shield. A notch for every one I closed.",
+            "choices": [
+              {
+                "text": "Do it. Let the shield carry what the two of you carry.",
+                "next": "notch"
+              },
+              {
+                "text": "Mark the ones you both came home from, not the wounds.",
+                "next": "home"
+              },
+              {
+                "text": "A shield is no ledger. Keep it clean.",
+                "next": "clean"
+              }
+            ]
+          },
+          {
+            "id": "notch",
+            "speaker": "$with",
+            "line": "Eleven, then. Start tonight. I'll wear the count into every fight.",
+            "next": "close"
+          },
+          {
+            "id": "home",
+            "speaker": "$hero",
+            "line": "The ones we came home from. That's a better count. That one I'd like to see grow.",
+            "next": "close"
+          },
+          {
+            "id": "clean",
+            "speaker": "$with",
+            "line": "Clean it stays. The count can live with you, then. I trust you to keep it.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The lamp burns low. The Healer ties off the last stitch, and the Tank flexes the arm and calls it good as new, which it isn't, quite."
+          }
+        ]
+      }
+    },
     "dialogue:cohesion_knight_sage": {
       "key": "dialogue:cohesion_knight_sage",
       "id": "conversation-cohesion-knight-sage",
