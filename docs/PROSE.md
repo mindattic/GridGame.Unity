@@ -78,7 +78,7 @@ With no `TREE`, every `Data/Dialogue/*.tree`.
 ```
 dialogue talk_quiz_knight
 title: Advice
-trigger: Talk knight                 Kind [Id] [level=N]
+trigger: Talk knight                 Kind [Id] [Other] [level=N]
 when: QuestAvailable q_bridge         a dialogue condition (one per line)
 once                                  Talk only: play once
 backdrop: desert
@@ -103,8 +103,8 @@ go to Prose, never to `dialogues.json`.
 
 Trigger kinds: `ThemeStart`, `StageCleared`, `Talk`, `Recruit`, `LevelReached`, `StageStart`, `Wanderer`, and the bond
 and roster kinds `Trust` (`Id` hero, tier in `level=`, GG-T1298), `Cohesion` (`Id` and `Other`, tier in `level=`,
-GG-T1298), `Founding` (no `Id`) and `Joined` (`Id` a hero class or faction, or none; binds `$hero`, GG-T1593). The tool's
-trigger set currently lists only the first seven, so a tree for the last four needs it extended first.
+GG-T1298), `Founding` (no `Id`) and `Joined` (`Id` a hero class or faction, or none; binds `$hero`, GG-T1593).  A `Cohesion` tree writes
+`trigger: Cohesion knight mage level=2`.
 
 ## Placeholder conversations (GG-T387, 2026-11-16)
 

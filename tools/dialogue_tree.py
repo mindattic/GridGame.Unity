@@ -16,7 +16,7 @@ The format (indentation is two spaces; '#' starts a comment line):
 
     dialogue talk_quiz_knight
     title: Advice
-    trigger: Talk knight                 Kind [Id] [level=N]
+    trigger: Talk knight                 Kind [Id] [Other] [level=N]
     when: QuestAvailable q_bridge         a dialogue condition (one per line)
     once                                  Talk only: play once
     backdrop: desert
@@ -63,7 +63,8 @@ UNIVERSE = os.path.join("Data", "Prose", "gridgame.universe.json")
 DRAFTS = os.path.join("Data", "Prose", "drafts", "dialogue")
 
 # ContentModels.cs: DialogueTriggerKind, DialogueConditionType, DialogueEffectType.
-TRIGGERS = {"ThemeStart", "StageCleared", "Talk", "Recruit", "LevelReached", "StageStart", "Wanderer"}
+TRIGGERS = {"ThemeStart", "StageCleared", "Talk", "Recruit", "LevelReached", "StageStart", "Wanderer",
+            "Trust", "Cohesion", "Founding", "Joined"}
 CONDITIONS = {"FlagSet", "FlagNotSet", "HasItem", "GoldAtLeast", "PartyHas", "RosterHas", "RosterLacks", "NpcJoined",
               "QuestAvailable", "QuestActive", "QuestDone", "TrustAtLeast", "CohesionAtLeast"}
 EFFECTS = {"SetFlag", "ClearFlag", "GrantGold", "GrantItem", "RecruitHero", "JoinNpc", "JoinHero", "GrantSkillPoint",
@@ -134,11 +135,18 @@ def parse(text: str, path: str = "<tree>") -> dict:
                 if not w or w[0] not in TRIGGERS:
                     raise TreeError(f"{where}: unknown trigger {rest!r}")
                 d["Trigger"] = {"Kind": w[0]}
+                names = []
                 for x in w[1:]:
                     if x.startswith("level="):
                         d["Trigger"]["Level"] = int(x[6:])
                     else:
-                        d["Trigger"]["Id"] = x
+                        names.append(x)
+                if len(names) > 2:
+                    raise TreeError(f"{where}: too many ids in trigger {rest!r}")
+                if names:
+                    d["Trigger"]["Id"] = names[0]
+                if len(names) > 1:
+                    d["Trigger"]["Other"] = names[1]
             elif head == "when:":
                 d["Conditions"].append(parse_op(rest, CONDITIONS, where))
             elif s == "once":
@@ -207,7 +215,7 @@ def clean(d: dict) -> dict:
     def op(o, order=("Type", "Id", "Other", "Amount", "Role")):
         return {k: o[k] for k in order if o.get(k) not in (None, "")}
 
-    out = {"Id": d["Id"], "Title": d.get("Title") or d["Id"], "Trigger": op(d["Trigger"], ("Kind", "Id", "Level"))}
+    out = {"Id": d["Id"], "Title": d.get("Title") or d["Id"], "Trigger": op(d["Trigger"], ("Kind", "Id", "Other", "Level"))}
     if d.get("Conditions"):
         out["Conditions"] = [op(c) for c in d["Conditions"]]
     for k in ("Once", "Backdrop", "HasCrawl"):
@@ -403,6 +411,13 @@ def lint_def(d: dict) -> tuple:
         if n["Id"] in nodes:
             errs.append(f"node {n['Id']}: defined twice")
         nodes[n["Id"]] = n
+    t = d.get("Trigger") or {}
+    if t.get("Kind") in ("Trust", "Cohesion") and not (t.get("Id") and 1 <= (t.get("Level") or 0) <= 5):
+        errs.append(f"trigger {t['Kind']}: needs a hero Id and level=1..5")
+    if t.get("Kind") == "Cohesion" and not t.get("Other"):
+        errs.append("trigger Cohesion: needs the pair's second hero (Other)")
+    if t.get("Kind") == "Founding" and t.get("Id"):
+        errs.append("trigger Founding: takes no Id")
     spk = {s["Id"] for s in d["Speakers"]}
     start = d.get("Start") or (d["Nodes"][0]["Id"] if d["Nodes"] else None)
     if not nodes:
@@ -570,7 +585,7 @@ def decompile(d: dict, texts: dict) -> str:
     h = prose_text.hydrate({"dialogues": [json.loads(json.dumps(d))]}, texts)["dialogues"][0]
     t = d.get("Trigger") or {}
     out = [f"dialogue {d['Id']}", f"title: {d.get('Title') or d['Id']}",
-           "trigger: " + " ".join([t.get("Kind", "")] + ([t["Id"]] if t.get("Id") else [])
+           "trigger: " + " ".join([t.get("Kind", "")] + [t[k] for k in ("Id", "Other") if t.get(k)]
                                   + ([f"level={t['Level']}"] if t.get("Level") else []))]
     out += [f"when: {_op_text(c)}" for c in d.get("Conditions") or []]
     if d.get("Once"):
