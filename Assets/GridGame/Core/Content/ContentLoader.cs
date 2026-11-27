@@ -77,6 +77,9 @@ namespace GridGame.Core.Content
             db.Elements = elements ?? new ElementTableDef();
             db.Mercenaries.AddRange(ReadList<MercenaryDef>(readText, "mercenaries"));
             db.Factions.AddRange(ReadList<FactionDef>(readText, "factions"));
+            var breeds = ReadList<BreedDef>(readText, "breeds"); // GG-T1774
+            AddAll(db.Breeds, breeds, x => x.Id);
+            db.BreedOrder.AddRange(breeds);
             var families = readText("families"); // GG-T971: only a missing file is reported, not a hand-built ContentDb
             db.FamiliesFileMissing = string.IsNullOrWhiteSpace(families);
             db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
@@ -524,6 +527,7 @@ namespace GridGame.Core.Content
             if (orbSources > Battle.BattleConfig.MaxOrbCapacity)
                 p.Add($"campaign.json: {orbSources} Mana Orbs can be owned, past the cap of {Battle.BattleConfig.MaxOrbCapacity} (GG-T677)");
             SkyDef.Validate(db, p); // GG-T576
+            Breeds.Validate(db, p); // GG-T1774
             ValidateCrawl(db, db.Campaign.Opening, "campaign Opening", false, p);
             ValidatePages(db, db.Campaign.Opening, "campaign Opening", p);
             ValidateCrawl(db, db.Campaign.Ending, "campaign Ending", true, p);

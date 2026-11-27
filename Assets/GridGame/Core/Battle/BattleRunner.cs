@@ -883,6 +883,7 @@ namespace GridGame.Core.Battle
                 // A body in the way (§14.7): no turn, never rises, rots after a few actions.
                 S.Timeline.RemoveAll(e => e.OwnerId == r.Id);
                 r.CorpseOf = u.Def.Id;
+                r.Breed = u.Breed; // GG-T1774: the body keeps its colours
                 r.DecayIn = BattleConfig.CorpseDecayActions;
                 r.NoLoot = true;
                 Emit(new RemainsLeftEvent { RemainsId = r.Id, FromUnitId = u.Id, At = at });

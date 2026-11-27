@@ -47,6 +47,7 @@ namespace GridGame.Core.Battle
                 TurnMode = setup.TurnMode,
                 PartySize = setup.Party.Count,
                 Rng = new Rng(setup.Seed),
+                Seed = setup.Seed,
                 Blocks = new HashSet<Coord>(setup.Stage?.Blocks ?? new List<Coord>()),
                 Tutorial = setup.Tutorial,
             }, events);

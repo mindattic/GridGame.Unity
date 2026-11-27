@@ -202,6 +202,7 @@ namespace GridGame.App
         {
             var db = ContentLoader.Load(name => Resources.Load<TextAsset>("Content/" + name)?.text);
             ContentProblems = ContentLoader.Validate(db, file => Art.Exists(Art.PortraitFolder + file));
+            db.HasBreedMask = classId => BreedArt.ClassHasMask(db, classId); // GG-T1774: only masked art rolls a breed
             foreach (var p in ContentProblems) Debug.LogWarning("[Content] " + p);
             Debug.Log($"[GameApp] content: {db.Classes.Count} classes, {db.Abilities.Count} abilities, {db.Items.Count} items, {db.Stages.Count} stages");
             return db;

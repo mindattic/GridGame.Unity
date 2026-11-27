@@ -79,7 +79,8 @@ namespace GridGame.App
             if (!u.IsHero && !u.IsNeutral) artHost.style.scale = new Scale(new Vector2(-1, 1)); // enemies face the party
             Frame.Add(artHost);
             // A corpse shows the fallen unit's own art, upright and greyed (§14.7; owner 2026-10-19: never turn art sideways).
-            Art = Ui.PortraitThumb(artHost, u.IsCorpse && u.CorpseOf != null ? u.CorpseOf : u.Def.Id);
+            // GG-T1774: a foe's rolled breed draws recoloured; a corpse keeps its living colours (the same unit, same breed).
+            Art = Ui.PortraitThumb(artHost, u.IsCorpse && u.CorpseOf != null ? u.CorpseOf : u.Def.Id, breed: u.Breed);
             if (u.IsCorpse)
             {
                 Art.style.unityBackgroundImageTintColor = new Color(0.42f, 0.38f, 0.38f);

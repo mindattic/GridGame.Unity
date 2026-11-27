@@ -253,6 +253,8 @@ namespace GridGame.Core.Battle
         /// <summary><see cref="BattleSetup.Cohesion"/>, copied at setup (GG-T1308).</summary>
         public Dictionary<string, int> Cohesion = new Dictionary<string, int>();
         public Rng Rng;
+        /// <summary>GG-T1774: the battle's seed (<see cref="BattleSetup.Seed"/>), for rolls kept off <see cref="Rng"/>'s stream (a foe's breed).</summary>
+        public int Seed;
         public List<Unit> Units = new List<Unit>();
         public List<TimelineEntry> Timeline = new List<TimelineEntry>();
         public List<Trap> Traps = new List<Trap>();

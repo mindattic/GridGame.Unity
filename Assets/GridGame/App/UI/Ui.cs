@@ -679,8 +679,10 @@ namespace GridGame.App
         /// so at rest it shows exactly the owner's framing, as the live fallback does (the portrait itself is the margin
         /// there); both framed paths get the shared handheld drift (<see cref="ThumbWobble"/>).
         /// <paramref name="thumbOnly"/>: never load the full portrait (grids of 100+); no baked thumb draws nothing.
+        /// <paramref name="breed"/> (GG-T1774): a foe's rolled breed, drawn recoloured (<see cref="BreedArt"/>) through the
+        /// thumb's own mask, else through the portrait's on the live framing; art with neither mask draws as it is.
         /// </summary>
-        public static VisualElement PortraitThumb(VisualElement host, string classId, bool useThumb = true, bool thumbOnly = false)
+        public static VisualElement PortraitThumb(VisualElement host, string classId, bool useThumb = true, bool thumbOnly = false, string breed = null)
         {
             host.style.overflow = Overflow.Hidden;
             var clip = host.Q("thumb-clip");
@@ -700,6 +702,15 @@ namespace GridGame.App
                 clip.Add(art);
             }
             var thumb = useThumb || thumbOnly ? Art.Thumb(classId) : null;
+            Texture2D bredPortrait = null;
+            if (thumb != null && !string.IsNullOrEmpty(breed))
+            {
+                // GG-T1774: the thumb recoloured through its own mask; a thumb with none falls back to the recoloured
+                // portrait (its mask lines up with the full canvas, not the baked crop), else stays as drawn.
+                var bred = BreedArt.Recolor(thumb, Art.ThumbFolder, breed);
+                if (bred != null) thumb = bred;
+                else if (!thumbOnly && (bredPortrait = BreedArt.Recolor(Art.Portrait(classId), Art.PortraitFolder, breed)) != null) thumb = null;
+            }
             if (thumb != null)
             {
                 // The crop is baked in (tools/make_thumbs.py) with ThumbMargin spare on every side: drawn at 120%,
@@ -718,6 +729,7 @@ namespace GridGame.App
                 return art;
             }
             var tex = string.IsNullOrEmpty(classId) ? null : Art.Portrait(classId);
+            if (tex != null && !string.IsNullOrEmpty(breed)) tex = bredPortrait ?? BreedArt.Recolor(tex, Art.PortraitFolder, breed) ?? tex; // GG-T1774
             art.style.backgroundImage = new StyleBackground(tex);
             var th = string.IsNullOrEmpty(classId) ? null : Art.ThumbnailFor(classId, tex); // the male art's own framing (GG-T532)
             if (th == null || tex == null || tex.width <= 0)

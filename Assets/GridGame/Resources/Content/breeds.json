@@ -1,0 +1,32 @@
+[
+  { "Id": "normal", "Weight": 800 },
+  {
+    "Id": "red", "Weight": 120,
+    "BodyRamp": [ "#3A0F2A", "#8E1B2A", "#E0574A", "#F6D8B4" ],
+    "SecondaryRamp": [ "#5A2A38", "#B86A72", "#F0CCC8" ]
+  },
+  {
+    "Id": "albino", "Weight": 50,
+    "BodyRamp": [ "#A88E9A", "#E8DCCB", "#FBF7F0" ],
+    "SecondaryRamp": [ "#B98C96", "#F0D0CE", "#FCEFEE" ],
+    "LightLift": 0.45, "KeepTint": "#E0505A", "KeepMix": 1
+  },
+  {
+    "Id": "shadow", "Weight": 20,
+    "BodyRamp": [ "#0C0A1C", "#3B3560", "#9A93B5" ],
+    "SecondaryRamp": [ "#1E0E24", "#4A2147", "#7A4A72" ],
+    "LightLift": -0.25, "KeepTint": "#40F0FF", "KeepMix": 1
+  },
+  {
+    "Id": "gilded", "Weight": 8,
+    "BodyRamp": [ "#3D2410", "#B8862B", "#F2D77A", "#FFF6C8" ],
+    "SecondaryRamp": [ "#5A3410", "#C77E1E", "#F5C46A" ],
+    "Aura": "shimmer"
+  },
+  {
+    "Id": "spectral", "Weight": 2,
+    "BodyRamp": [ "#0E3346", "#2E8FA8", "#8FE6E6", "#F2FFFF" ],
+    "SecondaryRamp": [ "#2A6E80", "#A6E8F0", "#E8FFFF" ],
+    "LightLift": 0.15, "Alpha": 0.8, "Aura": "glow"
+  }
+]

@@ -56,6 +56,12 @@ namespace GridGame.Core.Content
         /// <summary>mercenaries.json (GG-T233), in file order.</summary>
         public readonly List<MercenaryDef> Mercenaries = new List<MercenaryDef>();
         public MercenaryDef TryMercenary(string classId) => Mercenaries.Find(m => string.Equals(m.Class, classId, StringComparison.OrdinalIgnoreCase));
+        /// <summary>breeds.json (GG-T1774): creature breeds by id, and in file order (the roll walks the order).</summary>
+        public readonly Dictionary<string, BreedDef> Breeds = new Dictionary<string, BreedDef>(StringComparer.OrdinalIgnoreCase);
+        public readonly List<BreedDef> BreedOrder = new List<BreedDef>();
+        /// <summary>GG-T1774: whether a class's art has a breed region mask, so its foes may roll a breed
+        /// (<see cref="Content.Breeds.Roll"/>). Set by the App (Core can't see the art); null, as in tests and tools, means none.</summary>
+        public Func<string, bool> HasBreedMask;
         /// <summary>factions.json (GG-T342): the STORY.md factions and the hero classes in each, in file order.</summary>
         public readonly List<FactionDef> Factions = new List<FactionDef>();
         /// <summary>The faction a hero class belongs to, or null.</summary>

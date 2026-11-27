@@ -416,6 +416,7 @@ namespace GridGame.Core.Battle
                 W = w,
                 H = h,
             };
+            u.Breed = Breeds.Roll(C, def, S.Seed, u.Id); // GG-T1774: looks only, off the battle's Rng stream
             u.LevelStats = Formulas.StatsAtLevel(def, u.Level);
             // The difficulty dial (GG-T309) scales HP and plates; 1.0 at level 10 and on test stages.
             float hpScale = BattleConfig.EnemyHpScale * BattleEngine.PartyScale(S) * (S.Stage != null && S.Stage.IsTest ? 1f : DifficultyTable.At(S.Difficulty).EnemyHp);
@@ -458,6 +459,7 @@ namespace GridGame.Core.Battle
                     SnakeHeadId = head.Id,
                     SnakeIndex = i,
                     LevelStats = head.LevelStats.Clone(),
+                    Breed = head.Breed,
                 };
                 seg.MaxHp = seg.Hp = Math.Max(1, head.MaxHp / 2);
                 if (!AddUnit(seg)) break;
