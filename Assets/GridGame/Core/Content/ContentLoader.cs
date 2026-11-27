@@ -988,6 +988,26 @@ namespace GridGame.Core.Content
         /// <summary>GG-T1298: the highest bond tier a Trust / Cohesion scene may need (Meta's BondsConfig.MaxTier).</summary>
         public const int MaxBondTier = 5;
 
+        /// <summary>GG-T1623: Cohesion trigger selectors. "role:&lt;Role&gt;" a hero of that Role, "faction:&lt;id&gt;" a hero
+        /// of that faction, "faction:same" / "faction:other" a pair that shares / doesn't share a faction, "any" anyone.</summary>
+        public const string CohesionRolePrefix = "role:";
+        public const string CohesionFactionPrefix = "faction:";
+        public const string CohesionSameFaction = "faction:same";
+        public const string CohesionOtherFaction = "faction:other";
+        public const string CohesionAny = "any";
+        /// <summary>GG-T1623: save-flag prefix marking a generic Cohesion scene told for one pair
+        /// ("pair:&lt;dialogue&gt;:&lt;a|b&gt;"); ClearFlag can't touch it.</summary>
+        public const string PairSceneFlagPrefix = "pair:";
+
+        /// <summary>A Cohesion trigger Id / Other that's a selector rather than a hero class.</summary>
+        public static bool IsCohesionSelector(string id) => id != null
+            && (id == CohesionAny || id.StartsWith(CohesionRolePrefix, StringComparison.Ordinal) || id.StartsWith(CohesionFactionPrefix, StringComparison.Ordinal));
+
+        /// <summary>GG-T1623: a Cohesion scene with a selector on either side, played by any matching pair ("$with" the
+        /// first hero, "$hero" the second) rather than one named pair.</summary>
+        public static bool IsGenericCohesion(DialogueDef d) => d?.Trigger?.Kind == DialogueTriggerKind.Cohesion
+            && (IsCohesionSelector(d.Trigger.Id) || IsCohesionSelector(d.Trigger.Other));
+
         /// <summary>GG-T570: a speaker Portrait that names a Portraits/ file rather than a class (<c>aetherist-00</c>: an
         /// asset stem plus its two-digit number), accepted as such when validation can't look on disk.</summary>
         public static readonly System.Text.RegularExpressions.Regex OwnPortraitName =
@@ -1041,11 +1061,31 @@ namespace GridGame.Core.Content
                 case DialogueTriggerKind.Trust:
                 case DialogueTriggerKind.Cohesion:
                     // GG-T1298: a bond scene in the Talk row, opened by the hero's (or pair's) bond tier.
-                    if (!IsHero(trigger.Id)) p.Add($"{w}: {trigger.Kind} needs a hero class Id, has '{trigger.Id}'");
-                    if (trigger.Kind == DialogueTriggerKind.Cohesion)
+                    if (trigger.Kind == DialogueTriggerKind.Trust)
                     {
-                        if (!IsHero(trigger.Other)) p.Add($"{w}: Cohesion needs a hero class Other, has '{trigger.Other}'");
-                        else if (string.Equals(trigger.Id, trigger.Other, StringComparison.OrdinalIgnoreCase)) p.Add($"{w}: Cohesion needs two different heroes, has '{trigger.Id}' twice");
+                        if (!IsHero(trigger.Id)) p.Add($"{w}: Trust needs a hero class Id, has '{trigger.Id}'");
+                    }
+                    else
+                    {
+                        // GG-T1623: either side may be a selector, making a generic scene any matching pair can play.
+                        bool CohesionSide(string id, string side)
+                        {
+                            if (IsHero(id)) return true;
+                            if (id == CohesionAny || id == CohesionSameFaction || id == CohesionOtherFaction) return false;
+                            if (id != null && id.StartsWith(CohesionRolePrefix, StringComparison.Ordinal))
+                            {
+                                if (!HeroRoles.Contains(id.Substring(CohesionRolePrefix.Length))) p.Add($"{w}: Cohesion {side} names unknown Role '{id}'");
+                            }
+                            else if (id != null && id.StartsWith(CohesionFactionPrefix, StringComparison.Ordinal))
+                            {
+                                string f = id.Substring(CohesionFactionPrefix.Length);
+                                if (!db.Factions.Exists(x => string.Equals(x.Id, f, StringComparison.OrdinalIgnoreCase))) p.Add($"{w}: Cohesion {side} names unknown faction '{id}'");
+                            }
+                            else p.Add($"{w}: Cohesion needs a hero class or a selector ({CohesionRolePrefix}<Role>, {CohesionFactionPrefix}<id>, {CohesionSameFaction}, {CohesionOtherFaction}, {CohesionAny}) {side}, has '{id}'");
+                            return false;
+                        }
+                        if (CohesionSide(trigger.Id, "Id") & CohesionSide(trigger.Other, "Other") && string.Equals(trigger.Id, trigger.Other, StringComparison.OrdinalIgnoreCase))
+                            p.Add($"{w}: Cohesion needs two different heroes, has '{trigger.Id}' twice");
                     }
                     if (trigger.Level < 1 || trigger.Level > MaxBondTier) p.Add($"{w}: {trigger.Kind} needs a tier Level of 1-{MaxBondTier}, has {trigger.Level}");
                     break;
@@ -1069,7 +1109,7 @@ namespace GridGame.Core.Content
             bool talkWithHero = (trigger.Kind == DialogueTriggerKind.Talk || trigger.Kind == DialogueTriggerKind.Recruit) && trigger.Id != null && !trigger.Id.StartsWith(NpcFlagPrefix)
                 || trigger.Kind == DialogueTriggerKind.Wanderer || bondScene;
             bool wanderer = trigger.Kind == DialogueTriggerKind.Wanderer;
-            bool bindsHero = wanderer || trigger.Kind == DialogueTriggerKind.Joined;
+            bool bindsHero = wanderer || trigger.Kind == DialogueTriggerKind.Joined || IsGenericCohesion(d);
             bool joinsHero = false;
             foreach (var e in d.AllEffects()) joinsHero |= e?.Type == DialogueEffectType.JoinHero;
 
@@ -1127,6 +1167,7 @@ namespace GridGame.Core.Content
                         if (string.IsNullOrEmpty(e.Id)) p.Add($"{where}: {e.Type} needs a flag Id");
                         else if (e.Id.StartsWith(NpcFlagPrefix)) p.Add($"{where}: flag '{e.Id}' is reserved — use JoinNpc");
                         else if (e.Id.StartsWith("sp:")) p.Add($"{where}: flag '{e.Id}' is reserved — use GrantSkillPoint");
+                        else if (e.Id.StartsWith(PairSceneFlagPrefix)) p.Add($"{where}: flag '{e.Id}' is reserved — a generic Cohesion scene sets it");
                         break;
                     case DialogueEffectType.GrantSkillPoint:
                         if (e.Id == null || e.Id == "$with") { if (!talkWithHero) p.Add($"{where}: GrantSkillPoint to \"$with\" only fits a Talk with a party member — name a hero class otherwise"); }
@@ -1174,7 +1215,7 @@ namespace GridGame.Core.Content
                 if (s.Class == "$lead" || s.Class == CommanderToken || s.Class == TrustedToken || PartySlot(s.Class) > 0) { }
                 else if (s.Class != null && s.Class.StartsWith(PartyTokenPrefix, StringComparison.Ordinal)) p.Add($"{w} speaker {s.Id}: '{s.Class}' needs a party slot 1-{MaxPartySlots}");
                 else if (s.Class == "$with") { if (!talkWithHero) p.Add($"{w} speaker {s.Id}: \"$with\" only fits a Talk with a party member"); }
-                else if (s.Class == "$hero") { if (!bindsHero) p.Add($"{w} speaker {s.Id}: \"$hero\" only fits a Wanderer talk or a Joined scene"); }
+                else if (s.Class == "$hero") { if (!bindsHero) p.Add($"{w} speaker {s.Id}: \"$hero\" only fits a Wanderer talk, a Joined scene or a generic Cohesion scene"); }
                 else if (s.Class == "$recruit") { if (!joinsHero) p.Add($"{w} speaker {s.Id}: \"$recruit\" needs a JoinHero effect in this dialogue"); }
                 else if (s.Class != null) { if (db.TryClass(s.Class) == null) p.Add($"{w} speaker {s.Id}: unknown class '{s.Class}'"); }
                 else if (string.IsNullOrEmpty(s.Portrait) || string.IsNullOrEmpty(s.Name)) p.Add($"{w} speaker {s.Id}: needs a Class, or a Name and a Portrait");
