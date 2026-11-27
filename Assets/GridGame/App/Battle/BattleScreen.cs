@@ -187,10 +187,6 @@ namespace GridGame.App
         private bool Colorblind => App.Settings.ColorblindMode;
         /// <summary>This battle is a Crucible run (§22.10): open-ended wave count, keep-everything retreat.</summary>
         private bool InCrucible => Crucible.IsStage(stageId);
-        /// <summary>The campaign's first stage (the tutorial battle, The Tithe Moors I).</summary>
-        private bool IsFirstStage => App.Content.CampaignStages().FirstOrDefault()?.Id == stageId;
-        /// <summary>GG-T542: the tutorial battle's fixed seed: the same board, the same foes' choices, every time.</summary>
-        private const int TutorialSeed = 542;
         private bool ReduceMotion => App.Settings.ReduceMotion;
 
         protected override void Build(VisualElement root)
@@ -293,7 +289,7 @@ namespace GridGame.App
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
             SelectedHeroId = State.Units.FirstOrDefault(u => u.IsCommandable && u.Alive)?.Id ?? -1;
-            if (firstBuild && State.Tutorial) TutorialStep = 0;
+            if (firstBuild && State.Tutorial && Lessons.Length > 0) TutorialStep = 0;
             if (!firstBuild) SyncDarkness();
             SyncAll();
             if (!firstBuild) return;

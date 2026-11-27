@@ -7,6 +7,7 @@ using GridGame.Core.Battle;
 using GridGame.Core.Bot;
 using GridGame.Core.Content;
 using GridGame.Core.Rules;
+using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -43,15 +44,15 @@ namespace GridGame.App
             public string ShortHeroTimeline;
             /// <summary>The popup's one or two lines (GG-T539); the Tutorial tab keeps the longer <see cref="Text"/>.</summary>
             public string Short;
-            /// <summary>The wave (0-based) the lesson needs on the board.</summary>
+            /// <summary>The wave (0-based) the lesson needs on the board: the drill's (<see cref="StageLessonDef.Wave"/>).</summary>
             public int Wave;
             /// <summary>Show the bot's move as a glowing demo while idle (the Tutorial tab mode, without coach marks).</summary>
             public bool DemoMove;
             /// <summary>Done when this returns true for a committed command's events.</summary>
             public Func<BattleScreen, BattleCommand, List<BattleEvent>, bool> Done;
-            /// <summary>Highlight on show: (hero class, bar slot) to pulse; <see cref="FocusRole"/> names the party's first
-            /// hero of that role instead of a class (GG-T1405: no fixed lead to point at).</summary>
-            public string FocusHero, FocusRole; public int FocusSlot = -1;
+            /// <summary>Highlight on show: the party's first hero of the drill's role (<see cref="StageLessonDef.FocusRole"/>;
+            /// GG-T1405: no fixed lead to point at) and its bar slot to pulse.</summary>
+            public string FocusRole; public int FocusSlot = -1;
             /// <summary>Actions after which the lesson moves on by itself.</summary>
             public int Patience = 5;
             /// <summary>Done the moment the player holds something to read it (GG-T252).</summary>
@@ -65,9 +66,19 @@ namespace GridGame.App
             public string Scene;
             /// <summary>Stage the scene as the lesson opens even when marks exist (Taunt: a foe closes on the Cleric).</summary>
             public bool SceneFirst;
+
+            /// <summary>GG-T1377: this catalogue lesson as a drill places it (its wave and focus role).</summary>
+            public Lesson For(StageLessonDef d)
+            {
+                var l = (Lesson)MemberwiseClone();
+                l.Wave = d.Wave;
+                l.FocusRole = d.FocusRole;
+                return l;
+            }
         }
 
-        private static readonly Lesson[] Lessons =
+        /// <summary>GG-T1377: the battle lessons by id, in their first-battle order; a drill's stage picks and places them.</summary>
+        private static readonly Lesson[] AllLessons =
         {
             new Lesson { Id = "move", Title = "Moving", DemoMove = true, Waits = true,
                 Short = "Drag a hero tile by tile. Anyone in the way swaps into the tile you leave, and moving never hurts.",
@@ -117,44 +128,44 @@ namespace GridGame.App
                 Example = "Example: two heroes taking half a foe's HP earn 60 of the 100.",
                 Done = (b, c, e) => e.Exists(x => x is OrbMintedEvent o && o.Reason == "pincer"), Patience = 3,
                 Marks = b => b.ManaMarks() },
-            new Lesson { Id = "chain", Title = "Chains", Wave = 1, DemoMove = true, Waits = true, Scene = "chain",
+            new Lesson { Id = "chain", Title = "Chains", DemoMove = true, Waits = true, Scene = "chain",
                 Short = "One drag can set off several pincers at once: a CHAIN. Every link strikes and earns more mana.",
                 Text = "One drag can set off several pincers in a row — a CHAIN. Every link strikes, and every link earns more mana than the last.",
                 Example = "Example: line both foes up between your heroes, then drag the last hero in.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.ChainIndex >= 1),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Count(p => p.A.IsHero) >= 2), "Drag the {0} along the dotted line: the drop closes two pincers at once.") },
-            new Lesson { Id = "support", Title = "Supporters", Wave = 1, Waits = true, Patience = 4, Scene = "support",
+            new Lesson { Id = "support", Title = "Supporters", Waits = true, Patience = 4, Scene = "support",
                 Short = "A hero touching an attacker joins the pincer as a supporter, linked in blue, adds its class's support and earns its own share on the combo meter.",
                 Text = "Heroes linked to a pincer's attacker by an unbroken line of allies join in as supporters: the blue links in the drag preview. Each adds its class's support action — a Cleric heals, a Barbarian adds a blow — and its own points on the combo meter at the board's top right, in mana blue.",
                 Example = "Example: pincer with a third hero standing next to one of the attackers.",
                 Done = (b, c, e) => e.Exists(x => x is PincerFormedEvent p && p.Team == Team.Hero && p.Supporters.Count > 0),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.SupportersA.Count + p.SupportersB.Count > 0)), "Drag the {0} along the dotted line: the third hero joins in as a supporter.") },
-            new Lesson { Id = "spell", Title = "Spells", Wave = 2, FocusHero = "cleric", FocusSlot = 0, Waits = true, Scene = "spell",
+            new Lesson { Id = "spell", Title = "Spells", FocusSlot = 0, Waits = true, Scene = "spell",
                 Short = "Tap a hero, a lit spell, a target, then Cast. A spell charges on the timeline, then lands.",
                 Text = "Tap a hero, a lit spell, then a target, then Cast. A spell charges first — its bar fills as time moves — then it flies and lands.",
                 Example = "Example: Cleric → Heal → a hurt ally → Cast.",
                 Done = (b, c, e) => e.Exists(x => x is CastQueuedEvent q && !q.IsCharge),
                 Marks = b => b.SlotMarks(a => a.Kind == AbilityKind.Spell, preferHeal: true) },
-            new Lesson { Id = "buffs", Title = "Buffs & debuffs", Wave = 2, Patience = 3, Waits = true, Scene = "buffs",
+            new Lesson { Id = "buffs", Title = "Buffs & debuffs", Patience = 3, Waits = true, Scene = "buffs",
                 Short = "Coloured pips on a token are its buffs (blue) and debuffs (purple). Tap the unit to read them.",
                 Text = "Coloured pips on a token are its buffs (blue) and debuffs (purple): poison, haste, shields, slows. Hold a unit, or a pip in the panel, to read exactly what each does and how long it lasts.",
                 Example = "Example: hold a hero after the Cleric's spell lands.",
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent),
                 Marks = b => b.BuffMarks() },
-            new Lesson { Id = "timeline", Title = "The timeline", Wave = 2, Patience = 3,
+            new Lesson { Id = "timeline", Title = "The timeline", Patience = 3,
                 Short = "Time moves only when you act. Icons flow left, and whoever reaches the left edge acts. Speed decides who gets there first.",
                 TextHeroTimeline = "Time moves only when you act. Every hero and foe has an icon that flows left; whoever reaches the left edge acts, and a hero's icon arriving makes it that hero's turn. Speed sets where each icon enters. Spells ride the bar from their cast time. Pincers and Pushback skills shove a foe back anywhere on the bar. GUARD gives up the acting hero's turn, shielded.",
                 Text = "Time moves only when you act. Icons flow left; whoever reaches the left edge acts. The big diamond on the left shows who is next, ringed gold on the bar and on the board, and a foe glows (icon and tile alike) in its last 3 seconds. Spells ride the bar from their cast time. Pincers and Pushback skills shove a foe back anywhere on the bar. GUARD skips ahead with everyone shielded.",
                 Example = "Example: pincer the gold-ringed foe before it reaches the left edge.",
                 Done = (b, c, e) => e.Exists(x => x is PushedBackEvent),
                 Marks = b => b.TimelineMarks() },
-            new Lesson { Id = "taunt", Title = "Roles & Taunt", Wave = 3, FocusRole = "Tank", FocusSlot = 0, Waits = true, Scene = "taunt", SceneFirst = true,
+            new Lesson { Id = "taunt", Title = "Roles & Taunt", FocusSlot = 0, Waits = true, Scene = "taunt", SceneFirst = true,
                 Short = "Each hero has a role. A Tank's Taunt pulls every foe in reach onto it, so your casters can finish their spells.",
                 Text = "Each hero has a role. A Tank (your Warden) taunts: Taunt makes every enemy in reach come for it, so your casters can finish their spells. Strikers hit hardest, Healers mend.",
                 Example = "Example: Warden → Taunt → Go.",
                 Done = (b, c, e) => e.Exists(x => x is BuffAppliedEvent a && a.BuffId == "taunting"),
                 Marks = b => b.SlotMarks(a => (a.Id ?? "").Contains("taunt")) },
-            new Lesson { Id = "guard", Title = "Guard", Wave = 3, Patience = 2,
+            new Lesson { Id = "guard", Title = "Guard", Patience = 2,
                 Short = "GUARD gives up the party's turn: time skips to the next enemy with every hero shielded. Use it when there's no good move or no time.",
                 Text = "GUARD gives up what is left of the party's turn: the clock skips to the next enemy turn with every hero shielded. Use it when there is no good move, or when the gap before the next enemy is too short for any action.",
                 ShortHeroTimeline = "GUARD gives up the acting hero's turn: it is shielded and the clock runs on to the next hero's icon. Use it when there's no good move or no time.",
@@ -162,25 +173,25 @@ namespace GridGame.App
                 Example = "Example: tap GUARD at the top right.",
                 Done = (b, c, e) => c is ShieldCommand,
                 Marks = b => b.GuardMarks() },
-            new Lesson { Id = "pickup", Title = "Pickups", Wave = 3, Waits = true, Scene = "pickup",
+            new Lesson { Id = "pickup", Title = "Pickups", Waits = true, Scene = "pickup",
                 Short = "Fallen foes sometimes drop a pickup. Walk a hero over it before its ring runs out.",
                 Text = "Fallen enemies sometimes drop a pickup: a tonic, a mana shard, quicksilver or a might rune. Walk a hero over it before its ring runs out.",
                 Example = "Example: drag any hero onto the glowing token.",
                 Done = (b, c, e) => e.Exists(x => x is PickupCollectedEvent),
                 Marks = b => b.MoveMarks(b.FindMove(pv => b.State.Pickups.Exists(k => pv.Positions.TryGetValue(b.findHero, out var at) && at == k.At)), "Drag the {0} along the dotted line onto the pickup.") },
-            new Lesson { Id = "interrupt", Title = "Interrupting", Wave = 4, Waits = true, Scene = "interrupt",
+            new Lesson { Id = "interrupt", Title = "Interrupting", Waits = true, Scene = "interrupt",
                 Short = "A charging foe wears a ring and marks its target. Pincer it to stagger the cast; enough blows cancel it.",
                 Text = "A charging enemy wears a ring and marks its target. Hit it with a pincer to stagger the cast — enough blows cancel it and earn mana.",
                 Example = "Example: pincer the wolf while it howls.",
                 Done = (b, c, e) => e.Exists(x => x is CastStaggeredEvent || (x is CastCancelledEvent cc && cc.Reason == "interrupted")),
                 Marks = b => b.MoveMarks(b.FindMove(pv => pv.Pincers.Exists(p => p.A.IsHero && p.Opponents.Exists(o => b.State.CastEntryOf(o.Id) != null))), "Drag the {0} along the dotted line to pincer the charging foe.") },
-            new Lesson { Id = "plate", Title = "Armor plates", Wave = 4, Patience = 2, Waits = true, Scene = "plate",
+            new Lesson { Id = "plate", Title = "Armor plates", Patience = 2, Waits = true, Scene = "plate",
                 Short = "A thick edge on a foe is an armor plate. Strike from the sides, break it head-on, or use spells, which ignore it.",
                 Text = "Some foes wear an armor plate on one side, drawn as a thick edge. Blows into the plate chip it instead of the foe: strike from the sides, break it head-on, or use spells, which ignore it.",
                 Example = "Example: hold an armored foe later on to see its plate and which way it faces.",
                 Done = (b, c, e) => e.Exists(x => x is PlateBrokenEvent),
                 Marks = b => b.PlateMarks() },
-            new Lesson { Id = "ready", Title = "Ready", Wave = 4, Patience = 99,
+            new Lesson { Id = "ready", Title = "Ready", Patience = 99,
                 Short = "That's the whole toolkit: move, pincer, chain for mana, cast with care, let your tank take the hits. Clear the last wave!",
                 Text = "That's the whole toolkit: move, pincer, chain for mana, cast with care, let your tank take the hits. Clear the last wave!",
                 Example = "Tip: Settings → How to play has all of this, and can replay the lessons.",
@@ -201,6 +212,23 @@ namespace GridGame.App
             return false;
         }
 
+        /// <summary>GG-T1377: this drill's lessons, in its order; empty when the battle teaches none.</summary>
+        private Lesson[] Lessons = new Lesson[0];
+
+        /// <summary>GG-T1377: the lessons <paramref name="stage"/> (a drill) lists, each placed on its wave and focus role.</summary>
+        private static Lesson[] DrillLessons(StageDef stage) => (stage?.Lessons ?? new List<StageLessonDef>())
+            .Select(d => AllLessons.FirstOrDefault(l => l.Id == d.Id)?.For(d)).Where(l => l != null).ToArray();
+
+        private static bool DrillLessonsSeen(SaveData s, StageDef stage) => stage?.Lessons == null || stage.Lessons.All(l => Coach.Seen(s, "battle-" + l.Id));
+
+        /// <summary>GG-T1377: "Drill n of 5": this stage's place among campaign.json's Tutorial drills.</summary>
+        private string DrillLabel()
+        {
+            var drills = App.Content.Campaign?.Tutorial ?? new List<string>();
+            int n = drills.FindIndex(id => string.Equals(id, State.Stage?.Id, StringComparison.OrdinalIgnoreCase));
+            return n < 0 ? "" : $"Drill {n + 1} of {drills.Count} · ";
+        }
+
         public int TutorialStep { get; private set; } = -1;
         private int tutorialActions;
         private bool TutorialActive => TutorialStep >= 0;
@@ -208,11 +236,18 @@ namespace GridGame.App
         private bool LessonWaiting => CurrentLesson != null && State.Wave < CurrentLesson.Wave;
         private bool TutorialDemoMove => CurrentLesson != null && CurrentLesson.DemoMove && !LessonWaiting && !CoachOn;
 
+        /// <summary>GG-T1377: this drill's lessons count as seen; the tutorial is done once every drill's lessons are.</summary>
         private void FinishTutorial()
         {
             TutorialStep = -1;
             if (Coach.Active && (Coach.LessonId ?? "").StartsWith("battle-")) Coach.Cancel();
-            if (App.Save != null) { App.Save.TutorialDone = true; App.Persist(); }
+            if (App.Save != null)
+            {
+                foreach (var l in Lessons) Coach.MarkSeen(App.Save, "battle-" + l.Id);
+                if ((App.Content.Campaign?.Tutorial ?? new List<string>()).All(id => DrillLessonsSeen(App.Save, App.Content.TryStage(id))))
+                    App.Save.TutorialDone = true;
+                App.Persist();
+            }
             SyncPanel();
         }
 
@@ -267,8 +302,8 @@ namespace GridGame.App
         private void FocusLesson()
         {
             var l = CurrentLesson;
-            if (l == null || LessonWaiting || (l.FocusHero == null && l.FocusRole == null) || CoachOn) return;
-            var hero = State.Units.FirstOrDefault(u => u.IsHero && u.Alive && (l.FocusHero != null ? u.Def.Id == l.FocusHero : u.Def.Role == l.FocusRole));
+            if (l == null || LessonWaiting || l.FocusRole == null || CoachOn) return;
+            var hero = State.Units.FirstOrDefault(u => u.IsHero && u.Alive && u.Def.Role == l.FocusRole);
             if (hero == null) return;
             SelectHero(hero.Id);
             if (l.FocusSlot >= 0 && l.FocusSlot < slotViews.Count)
@@ -288,7 +323,7 @@ namespace GridGame.App
             row.style.alignItems = Align.Center;
             var col = Ui.El("col grow", row);
             col.style.flexShrink = 1;
-            var title = Ui.Text($"Tutorial {TutorialStep + 1}/{Lessons.Length} · {l.Title}", "small gold", col);
+            var title = Ui.Text($"{DrillLabel()}Lesson {TutorialStep + 1} of {Lessons.Length} · {l.Title}", "small gold", col);
             title.name = "tutorial-title";
             if (LessonWaiting)
             {
@@ -422,7 +457,7 @@ namespace GridGame.App
             Coach.Run(new CoachLesson
             {
                 Id = "battle-" + l.Id,
-                Kicker = $"Lesson {step + 1} of {Lessons.Length}",
+                Kicker = $"{DrillLabel()}Lesson {step + 1} of {Lessons.Length}",
                 Title = l.Title,
                 Text = (l.ShortHeroTimeline != null && TurnRules.HeroesOnTimeline(State) ? l.ShortHeroTimeline : l.Short) ?? LessonText(l), // GG-T815
                 Image = "Tutorial/" + l.Id,

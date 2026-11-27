@@ -52,15 +52,16 @@ namespace GridGame.App
         /// <summary>Builds the setup, the engine state and the recorder (once); Build starts the telemetry and playback.</summary>
         private void CreateState()
         {
-            // GG-T539: Settings › How to play › Replay tutorials brings the lessons back on the first stage too.
-            bool tutorial = setupOverride == null && !InCrucible && App.Save != null && !App.Save.TutorialDone && (App.Save.HighestClearedStage < 0 || IsFirstStage)
-                && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
-            // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet; the tutorial battle
-            // always plays the same (GG-T542), so its lessons' set pieces land the same way every time.
-            int seed = tutorial ? TutorialSeed : InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
+            // GG-T1377: a drill teaches its stage's lessons while any of them is unseen (Replay tutorials brings them back).
+            var stage = App.Content.TryStage(stageId);
+            bool tutorial = setupOverride == null && !InCrucible && App.Save != null && Drills.IsDrill(stage) && !DrillLessonsSeen(App.Save, stage)
+                && !Coach.Off(App.Save) && !CommandLine.Has("-autobattle") && !DemoMode.Active && !TestMode.Active;
+            // A Crucible run is seeded by the save (§22.10) so the same save replays the same gauntlet; a drill plays on its
+            // stage's own seed (BattleFactory.Build), so its lessons' set pieces land the same way every time.
+            int seed = InCrucible && App.Save != null ? Crucible.SeedFor(App.Save) : Environment.TickCount;
             setup = setupOverride ?? BattleFactory.Build(App.Content, App.Save, stageId, seed, App.Settings?.Difficulty?.Level ?? DifficultyTable.Default,
                 App.Settings?.TurnMode ?? TurnMode.PartyWindow); // §2.13 (GG-T773): the save's lock, else the profile's
-            setup.Tutorial |= tutorial; // a drill stage is a tutorial battle from BattleFactory.Build (GG-T1626)
+            Lessons = tutorial ? DrillLessons(stage) : new Lesson[0];
             if (setupOverride == null && !setup.Tutorial) Wanderers.Apply(App.Content, App.Save, setup); // GG-T342: maybe a wanderer to win over
             if (setupOverride == null && DevNextWanderer != null) { setup.Wanderer = new WandererSpec { Class = DevNextWanderer, Wave = 0 }; DevNextWanderer = null; }
             // GG-T532: a wanderer shows either version of its class (when the male art exists), the same for this battle's
