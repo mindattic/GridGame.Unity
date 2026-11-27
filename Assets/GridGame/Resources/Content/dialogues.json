@@ -4928,5 +4928,220 @@
       { "Id": "stays", "Speaker": "engineer", "Next": "close" },
       { "Id": "close", "Speaker": "commander" }
     ]
+  },
+  {
+    "Id": "cohesion_redmage_knight",
+    "Title": "Warm iron",
+    "Trigger": { "Kind": "Cohesion", "Id": "redmage", "Other": "knight", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "fingers" },
+      { "Id": "fingers", "Speaker": "redmage", "Next": "holds" },
+      { "Id": "holds", "Speaker": "knight", "Next": "heat" },
+      {
+        "Id": "heat", "Speaker": "redmage",
+        "Choices": [
+          { "Next": "hands", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": -3 }, { "Type": "SetFlag", "Id": "redmage_knight:warm_hands" } ] },
+          { "Next": "iron", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage_knight:warm_iron" } ] },
+          { "Next": "field", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": -4 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -2 }, { "Type": "SetFlag", "Id": "redmage_knight:warm_field" } ] },
+          { "Next": "together", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_knight:warm_together" } ] }
+        ]
+      },
+      { "Id": "hands", "Speaker": "knight", "Next": "tin" },
+      { "Id": "iron", "Speaker": "redmage", "Next": "tin" },
+      { "Id": "field", "Speaker": "knight", "Next": "tin" },
+      { "Id": "together", "Speaker": "redmage", "Next": "tin" },
+      {
+        "Id": "tin", "Speaker": "redmage",
+        "Choices": [
+          { "Next": "beside", "Conditions": [ { "Type": "FlagSet", "Id": "knight:line_beside" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_knight:tin_beside" } ] },
+          { "Next": "home", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:fire_home" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_knight:tin_home" } ] },
+          { "Next": "carries", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -2 }, { "Type": "SetFlag", "Id": "redmage_knight:tin_carried" } ] },
+          { "Next": "stays", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_knight:tin_stays" } ] }
+        ]
+      },
+      { "Id": "beside", "Speaker": "knight", "Next": "close" },
+      { "Id": "home", "Speaker": "knight", "Next": "close" },
+      { "Id": "carries", "Speaker": "redmage", "Next": "close" },
+      { "Id": "stays", "Speaker": "knight", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_redmage_sage",
+    "Title": "Salve for old burns",
+    "Trigger": { "Kind": "Cohesion", "Id": "redmage", "Other": "sage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "redmage", "Class": "redmage" },
+      { "Id": "sage", "Class": "sage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "healed" },
+      { "Id": "healed", "Speaker": "redmage", "Next": "mended" },
+      { "Id": "mended", "Speaker": "sage", "Next": "stare" },
+      {
+        "Id": "stare", "Speaker": "redmage",
+        "Choices": [
+          { "Next": "tend", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -3 }, { "Type": "SetFlag", "Id": "redmage_sage:salve_tended" } ] },
+          { "Next": "trade", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage_sage:salve_traded" } ] },
+          { "Next": "away", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": -4 }, { "Type": "AddTrust", "Id": "sage", "Amount": -2 }, { "Type": "SetFlag", "Id": "redmage_sage:salve_away" } ] },
+          { "Next": "aunt", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_questioned" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_sage:salve_aunt" } ] }
+        ]
+      },
+      { "Id": "tend", "Speaker": "sage", "Next": "doors" },
+      { "Id": "trade", "Speaker": "redmage", "Next": "doors" },
+      { "Id": "away", "Speaker": "sage", "Next": "doors" },
+      { "Id": "aunt", "Speaker": "redmage", "Next": "doors" },
+      {
+        "Id": "doors", "Speaker": "sage",
+        "Choices": [
+          { "Next": "promise", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_sage:doors_promise" } ] },
+          { "Next": "hearth", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:fire_home" } ], "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage_sage:doors_hearth" } ] },
+          { "Next": "lists", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage_sage:doors_lists" } ] },
+          { "Next": "apart", "Effects": [ { "Type": "AddCohesion", "Id": "redmage", "Other": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "redmage_sage:doors_apart" } ] }
+        ]
+      },
+      { "Id": "promise", "Speaker": "redmage", "Next": "close" },
+      { "Id": "hearth", "Speaker": "sage", "Next": "close" },
+      { "Id": "lists", "Speaker": "redmage", "Next": "close" },
+      { "Id": "apart", "Speaker": "sage", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_engineer_knight",
+    "Title": "The teacher's rivets",
+    "Trigger": { "Kind": "Cohesion", "Id": "engineer", "Other": "knight", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "engineer", "Class": "engineer" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "shear" },
+      { "Id": "shear", "Speaker": "engineer", "Next": "teacher" },
+      { "Id": "teacher", "Speaker": "knight", "Next": "worse" },
+      {
+        "Id": "worse", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "fix", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": -3 }, { "Type": "SetFlag", "Id": "engineer_knight:rivet_fixed" } ] },
+          { "Next": "talk", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 6 }, { "Type": "SetFlag", "Id": "engineer_knight:rivet_taught" } ] },
+          { "Next": "leave", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": -4 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "engineer_knight:rivet_left" } ] },
+          { "Next": "notice", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:list_axle" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "engineer", "Amount": 2 }, { "Type": "SetFlag", "Id": "engineer_knight:rivet_noticed" } ] }
+        ]
+      },
+      { "Id": "fix", "Speaker": "knight", "Next": "debt" },
+      { "Id": "talk", "Speaker": "engineer", "Next": "debt" },
+      { "Id": "leave", "Speaker": "knight", "Next": "debt" },
+      { "Id": "notice", "Speaker": "knight", "Next": "debt" },
+      {
+        "Id": "debt", "Speaker": "knight",
+        "Choices": [
+          { "Next": "shield", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_defied" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "engineer_knight:debt_shield" } ] },
+          { "Next": "people", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_people" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 8 }, { "Type": "SetFlag", "Id": "engineer_knight:debt_people" } ] },
+          { "Next": "both", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 8 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "engineer_knight:debt_both" } ] },
+          { "Next": "own", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "engineer_knight:debt_own" } ] }
+        ]
+      },
+      { "Id": "shield", "Speaker": "engineer", "Next": "close" },
+      { "Id": "people", "Speaker": "engineer", "Next": "close" },
+      { "Id": "both", "Speaker": "knight", "Next": "close" },
+      { "Id": "own", "Speaker": "knight", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_engineer_sage",
+    "Title": "Why the lantern burns",
+    "Trigger": { "Kind": "Cohesion", "Id": "engineer", "Other": "sage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "engineer", "Class": "engineer" },
+      { "Id": "sage", "Class": "sage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "oil" },
+      { "Id": "oil", "Speaker": "engineer", "Next": "road" },
+      { "Id": "road", "Speaker": "sage", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "open_it", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": -3 }, { "Type": "SetFlag", "Id": "engineer_sage:lantern_opened" } ] },
+          { "Next": "outside", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 6 }, { "Type": "SetFlag", "Id": "engineer_sage:lantern_measured" } ] },
+          { "Next": "bed", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": -4 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "engineer_sage:lantern_left" } ] },
+          { "Next": "knot", "Conditions": [ { "Type": "FlagSet", "Id": "sage:end_wagon" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "engineer_sage:lantern_knot" } ] }
+        ]
+      },
+      { "Id": "open_it", "Speaker": "sage", "Next": "reads" },
+      { "Id": "outside", "Speaker": "engineer", "Next": "reads" },
+      { "Id": "bed", "Speaker": "sage", "Next": "reads" },
+      { "Id": "knot", "Speaker": "sage", "Next": "reads" },
+      {
+        "Id": "reads", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "wick", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "engineer_sage:warm_wick" } ] },
+          { "Next": "together", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_shared" } ], "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "engineer_sage:warm_together" } ] },
+          { "Next": "records", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "engineer_sage:warm_records" } ] },
+          { "Next": "enough", "Effects": [ { "Type": "AddCohesion", "Id": "engineer", "Other": "sage", "Amount": 2 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -2 }, { "Type": "SetFlag", "Id": "engineer_sage:warm_enough" } ] }
+        ]
+      },
+      { "Id": "wick", "Speaker": "sage", "Next": "close" },
+      { "Id": "together", "Speaker": "engineer", "Next": "close" },
+      { "Id": "records", "Speaker": "sage", "Next": "close" },
+      { "Id": "enough", "Speaker": "engineer", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_knight_sage",
+    "Title": "The third watch",
+    "Trigger": { "Kind": "Cohesion", "Id": "knight", "Other": "sage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "knight", "Class": "knight" },
+      { "Id": "sage", "Class": "sage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "third" },
+      { "Id": "third", "Speaker": "sage", "Next": "sleep" },
+      { "Id": "sleep", "Speaker": "knight", "Next": "before" },
+      {
+        "Id": "before", "Speaker": "sage",
+        "Choices": [
+          { "Next": "swap", "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": -3 }, { "Type": "SetFlag", "Id": "knight_sage:watch_swapped" } ] },
+          { "Next": "split", "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 6 }, { "Type": "SetFlag", "Id": "knight_sage:watch_split" } ] },
+          { "Next": "keeps", "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": -4 }, { "Type": "AddTrust", "Id": "sage", "Amount": -2 }, { "Type": "SetFlag", "Id": "knight_sage:watch_kept" } ] },
+          { "Next": "ford", "Conditions": [ { "Type": "FlagSet", "Id": "knight:line_watch" } ], "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "knight_sage:watch_ford" } ] }
+        ]
+      },
+      { "Id": "swap", "Speaker": "knight", "Next": "ends" },
+      { "Id": "split", "Speaker": "sage", "Next": "ends" },
+      { "Id": "keeps", "Speaker": "sage", "Next": "ends" },
+      { "Id": "ford", "Speaker": "knight", "Next": "ends" },
+      {
+        "Id": "ends", "Speaker": "knight",
+        "Choices": [
+          { "Next": "clean", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_down" } ], "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "knight_sage:ends_clean" } ] },
+          { "Next": "sister", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 8 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "knight_sage:ends_sister" } ] },
+          { "Next": "trade", "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "knight_sage:ends_traded" } ] },
+          { "Next": "alone", "Effects": [ { "Type": "AddCohesion", "Id": "knight", "Other": "sage", "Amount": 2 }, { "Type": "AddTrust", "Id": "sage", "Amount": -2 }, { "Type": "SetFlag", "Id": "knight_sage:ends_alone" } ] }
+        ]
+      },
+      { "Id": "clean", "Speaker": "sage", "Next": "close" },
+      { "Id": "sister", "Speaker": "sage", "Next": "close" },
+      { "Id": "trade", "Speaker": "knight", "Next": "close" },
+      { "Id": "alone", "Speaker": "knight", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
   }
 ]

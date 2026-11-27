@@ -1,0 +1,91 @@
+dialogue cohesion_redmage_sage
+title: Salve for old burns
+trigger: Cohesion redmage sage level=2
+once
+speaker commander $commander
+speaker redmage redmage
+speaker sage sage
+
+node open commander
+  The Sage has the satchel open and a jar of something green in one hand, and keeps looking at the back of the Red Mage's ungloved hand as if it were a wound still open.
+  -> healed
+
+node healed redmage
+  They're healed, Sage. Years ago. You can stop measuring them by eye. I can see you doing it.
+  -> mended
+
+node mended sage
+  Healed isn't the same as mended. That skin's tight as a drum. It pulls when you make a fist, doesn't it? This jar won't take the marks away, but it'll give you your grip back.
+  -> stare
+
+node stare redmage
+  I did these to myself. On purpose. I'm not sure I want good salve spent on them. Commander, tell the Sage to put the lid back on.
+  * Let the Sage tend them. Tonight, the glove stays off. -> tend
+    do: AddCohesion redmage sage 10
+    do: AddTrust redmage -3
+    do: SetFlag redmage_sage:salve_tended
+  * Trade. The Red Mage warms the Sage's jars on cold mornings. The Sage keeps the hand supple. -> trade
+    do: AddCohesion redmage sage 6
+    do: SetFlag redmage_sage:salve_traded
+  * Scars are the Red Mage's own business. Put the jar away. -> away
+    do: AddCohesion redmage sage -4
+    do: AddTrust sage -2
+    do: SetFlag redmage_sage:salve_away
+  * The aunt asked the Red Mage to stop, for the Red Mage's own sake. Let the Sage finish what she asked. -> aunt
+    if: FlagSet redmage:test_questioned
+    do: AddCohesion redmage sage 8
+    do: AddTrust redmage 2
+    do: SetFlag redmage_sage:salve_aunt
+
+node tend sage
+  Hold still. Cold first, then it warms. You of all people will feel the turn. There. Make a fist. Slowly.
+  -> doors
+
+node trade redmage
+  Warm jars. That I can do without thinking. Your salves set like candle wax by dawn, Sage. I've watched you chip at them.
+  -> doors
+
+node away sage
+  Away it goes. I'll leave it at the top of the satchel. Jars don't mind waiting. Healers do, but we're used to it.
+  -> doors
+
+node aunt redmage
+  She did ask. For my sake. Not because it hurt, because she could see me hoping. Go on, then, Sage. Before I think better of it.
+  -> doors
+
+node doors sage
+  Your aunt went Hollow at the tithe. Wick's colour went thin in the city, a little more each week. Same Choir, I think. Different doors. I don't know what to do with that, Red Mage. Do you?
+  * We promised to bring Wick down. The aunt comes into that promise too. -> promise
+    if: FlagSet sage:wick_promised
+    do: AddCohesion redmage sage 10
+    do: AddTrust sage 2
+    do: SetFlag redmage_sage:doors_promise
+  * The coal goes home to the aunt's hearth. The Sage walks it there with the Red Mage. -> hearth
+    if: FlagSet redmage:fire_home
+    do: AddCohesion redmage sage 8
+    do: SetFlag redmage_sage:doors_hearth
+  * Compare everything. Every jar the Sage tried, every night the Red Mage tried. Two lists are better than one. -> lists
+    do: AddCohesion redmage sage 8
+    do: SetFlag redmage_sage:doors_lists
+  * Different doors. Don't make one grief out of two. -> apart
+    do: AddCohesion redmage sage 2
+    do: SetFlag redmage_sage:doors_apart
+
+node promise redmage
+  The same promise. Wick and her both. That's a bigger stair than it was this morning, Sage. Good. I wanted a reason to climb faster.
+  -> close
+
+node hearth sage
+  The hearth. I'd like to meet a coal that's outlasted every jar in this satchel. And the person who lit it.
+  -> close
+
+node lists redmage
+  Every night. I can give you every night. How much heat, how long, what she said. I never wrote any of it down. I remember all of it.
+  -> close
+
+node apart sage
+  Two griefs. You're right. I'd only have made yours fit the shape of mine. That's a healer's worst habit.
+  -> close
+
+node close commander
+  The jar ends up open on the stone between them. The Red Mage holds it near the fire until the salve goes soft, and passes it back without being asked.

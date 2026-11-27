@@ -2664,6 +2664,456 @@
         ]
       }
     },
+    "dialogue:cohesion_engineer_knight": {
+      "key": "dialogue:cohesion_engineer_knight",
+      "id": "conversation-cohesion-engineer-knight",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:24c60dff5cf3b8c4aebb006a11aacbac6088a7e9db1e8395954cd5e701e4460d",
+      "about": [
+        "character-commander",
+        "class-engineer",
+        "class-knight"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-engineer",
+        "class-knight"
+      ],
+      "payload": {
+        "title": "The teacher's rivets",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer is crouched beside the Knight's shield with a lamp, a thumbnail pressed to the back of the strap where it meets the iron. The Knight stands over both of them with arms folded.",
+            "next": "shear"
+          },
+          {
+            "id": "shear",
+            "speaker": "class-engineer",
+            "line": "This rivet's walking. See the shine round the head? It's been rocking every time you take a hit. Two more good ones and the strap comes off in your hand.",
+            "next": "teacher"
+          },
+          {
+            "id": "teacher",
+            "speaker": "class-knight",
+            "line": "My teacher set those rivets the winter I took the oath. Nobody's touched them since. They've held through worse than two good hits.",
+            "next": "worse"
+          },
+          {
+            "id": "worse",
+            "speaker": "class-engineer",
+            "line": "They held through worse when they were new. Metal gets tired. It doesn't care who set it. Commander, I can have a new one in before the fire's down. Tell the Knight.",
+            "choices": [
+              {
+                "text": "Fix it tonight, Engineer. The rim and the old line stay untouched.",
+                "next": "fix"
+              },
+              {
+                "text": "The Knight does the work. Engineer, hand over the tools and talk it through.",
+                "next": "talk"
+              },
+              {
+                "text": "It's held this long. Leave the shield alone.",
+                "next": "leave"
+              },
+              {
+                "text": "I stopped the wagon for the Engineer because a cracked axle needed someone to notice. Let the Engineer notice this.",
+                "next": "notice",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "fix",
+            "speaker": "class-knight",
+            "line": "Untouched. You hear that, Engineer? Not a scratch on the rim. Go on, then. I'll hold the lamp, so I can watch your hands.",
+            "next": "debt"
+          },
+          {
+            "id": "talk",
+            "speaker": "class-engineer",
+            "line": "Punch here. No, square to it. Tap, don't swing, it's not a ganger's head. There. You've got good hands for this, Knight. Wasted on hitting things.",
+            "next": "debt"
+          },
+          {
+            "id": "leave",
+            "speaker": "class-knight",
+            "line": "It'll hold. And if it doesn't, I'll learn something about my teacher I'd rather not know. Thank you for looking, though.",
+            "next": "debt"
+          },
+          {
+            "id": "notice",
+            "speaker": "class-knight",
+            "line": "Noticing's a kind of standing watch, I suppose. All right. Show me the shine first. I want to see what you saw.",
+            "next": "debt"
+          },
+          {
+            "id": "debt",
+            "speaker": "class-knight",
+            "line": "In the holds, a debt follows the family. My father's father owed a hall for a cow that died in the snow, and we paid it till I was ten. Is yours like that? This Redline debt?",
+            "choices": [
+              {
+                "text": "Redline gets nothing. If they come to collect, they meet the shield first.",
+                "next": "shield",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The Knight's oath was to the hold's people. The Engineer is one of them now.",
+                "next": "people",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Work it out together, numbers and shield. Redline respects both.",
+                "next": "both"
+              },
+              {
+                "text": "That debt is the Engineer's to settle. The Knight has enough to stand before.",
+                "next": "own"
+              }
+            ]
+          },
+          {
+            "id": "shield",
+            "speaker": "class-engineer",
+            "line": "The shield first. With a new rivet in it, which I'd point out to them. Ha. I'd like to see a ganger read hold script.",
+            "next": "close"
+          },
+          {
+            "id": "people",
+            "speaker": "class-engineer",
+            "line": "One of the hold's. I've never been anybody's people. Redline had me on a list, and the list was all numbers. I think I'd rather be on yours, Knight.",
+            "next": "close"
+          },
+          {
+            "id": "both",
+            "speaker": "class-knight",
+            "line": "Numbers and a shield. I'll do the standing, you do the sums. If they argue with the sums, I stand closer.",
+            "next": "close"
+          },
+          {
+            "id": "own",
+            "speaker": "class-knight",
+            "line": "Your own to settle. All right. But if you go to settle it, Engineer, tell me first. I'd like to stand somewhere nearby, not doing anything.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The old rivet goes into the Engineer's notebook, pressed flat between two pages. The Knight straps the shield on, works the arm twice, and doesn't say anything about how much better it sits."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_engineer_sage": {
+      "key": "dialogue:cohesion_engineer_sage",
+      "id": "conversation-cohesion-engineer-sage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ea4b1411ca4e0154dcbfcf336a8cfaf4ab79d68a9fe2d77f6972019366dfa2f6",
+      "about": [
+        "character-commander",
+        "class-engineer",
+        "class-sage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-engineer",
+        "class-sage"
+      ],
+      "payload": {
+        "title": "Why the lantern burns",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer is on the wagon's step with a screwdriver, staring up at the lantern on its hook. The Sage sits on the step below, holding the Engineer's ankle in a way that is not quite friendly.",
+            "next": "oil"
+          },
+          {
+            "id": "oil",
+            "speaker": "class-engineer",
+            "line": "There's no oil in it. I checked the well twice. No wick either, not a proper one. It's been burning since the spire and it doesn't flicker. Sage, let go of my foot.",
+            "next": "road"
+          },
+          {
+            "id": "road",
+            "speaker": "class-sage",
+            "line": "On the Lantern Road there's one rule older than the rest. You don't open a lantern to ask it why it burns. It might answer. Then you'd have to live with what it said.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "class-engineer",
+            "line": "I'd love it to answer. That's the whole point of opening things. Commander, the Sage is sitting on my question.",
+            "choices": [
+              {
+                "text": "Open it, Engineer. The Sage holds the light steady.",
+                "next": "open_it"
+              },
+              {
+                "text": "Measure it from outside. Nobody opens a road lantern.",
+                "next": "outside"
+              },
+              {
+                "text": "Leave the lantern be. Both of you, to bed.",
+                "next": "bed"
+              },
+              {
+                "text": "The Sage hung a knot on that lantern. It's the Sage's to say.",
+                "next": "knot",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "open_it",
+            "speaker": "class-sage",
+            "line": "Steady. Fine. If it says anything, Engineer, you're the one writing it down, and I'm not hearing it. Go on. Gently.",
+            "next": "reads"
+          },
+          {
+            "id": "outside",
+            "speaker": "class-engineer",
+            "line": "From outside. The gauge'll still read through glass if I hold it close. Sage, you can keep the ankle. I suppose it helps.",
+            "next": "reads"
+          },
+          {
+            "id": "bed",
+            "speaker": "class-sage",
+            "line": "Bed. I'll sleep under it, so nobody climbs up in the night. Nobody, Engineer. One look, from the ground, and then bed.",
+            "next": "reads"
+          },
+          {
+            "id": "knot",
+            "speaker": "class-sage",
+            "line": "Mine to say. Then the gauge can look. The screwdriver can't. And if the needle so much as wobbles near my knot, we stop.",
+            "next": "reads"
+          },
+          {
+            "id": "reads",
+            "speaker": "class-engineer",
+            "line": "It reads warm. Old warm. Same as the orb near the Commander. Same as Tap Seven before it closed. Whatever the Choir runs on, this is a cousin of it, burning on our wagon. What do we do with that?",
+            "choices": [
+              {
+                "text": "If the Choir's work runs on the same warmth, this is a road up the stair. Write it for Wick.",
+                "next": "wick",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Together, like the debt. The Engineer writes the numbers, the Sage writes what it mends.",
+                "next": "together",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Two records, same night. A page in the notebook and a knot on the cord.",
+                "next": "records"
+              },
+              {
+                "text": "Some things work, and that's enough. Close the notebook.",
+                "next": "enough"
+              }
+            ]
+          },
+          {
+            "id": "wick",
+            "speaker": "class-sage",
+            "line": "For Wick. Wick would have had the lid off before you'd finished the sentence, Engineer. You'd have got on. I'd have despaired of you both.",
+            "next": "close"
+          },
+          {
+            "id": "together",
+            "speaker": "class-engineer",
+            "line": "Numbers on the left page, mending on the right. Sage, your handwriting had better be better than your knots.",
+            "next": "close"
+          },
+          {
+            "id": "records",
+            "speaker": "class-sage",
+            "line": "A knot for a lantern. I've never tied one for a thing that wasn't a person. Loose, I think. It's still burning.",
+            "next": "close"
+          },
+          {
+            "id": "enough",
+            "speaker": "class-engineer",
+            "line": "Enough. It works. That's the sentence I hate most in the world, Commander. I'll say it. I won't write it.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The lantern goes on burning. The Engineer's pencil and the Sage's cord lie side by side on the step, and above them the light doesn't flicker once."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_knight_sage": {
+      "key": "dialogue:cohesion_knight_sage",
+      "id": "conversation-cohesion-knight-sage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bea2626ce6ae0ca23df958ac33aa45e4d9ddd426fddbf91724e56e73d7f75a49",
+      "about": [
+        "character-commander",
+        "class-knight",
+        "class-sage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-sage",
+        "class-knight"
+      ],
+      "payload": {
+        "title": "The third watch",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "It is past the middle of the night. The Knight is still on watch at the edge of the firelight, shield grounded, and the Sage has come out with a blanket and a cup and no intention of going back.",
+            "next": "third"
+          },
+          {
+            "id": "third",
+            "speaker": "class-sage",
+            "line": "That's your third watch running, Knight. On the road we'd call that a slow knot. Not tied yet. Just a matter of time.",
+            "next": "sleep"
+          },
+          {
+            "id": "sleep",
+            "speaker": "class-knight",
+            "line": "I'll sleep when the road's quiet. It isn't. There's something two hills back that keeps not quite following us. Somebody has to stand before the camp.",
+            "next": "before"
+          },
+          {
+            "id": "before",
+            "speaker": "class-sage",
+            "line": "Somebody. Not the same somebody every night. A tired shield is a door left open. Commander, you're the one the Knight listens to.",
+            "choices": [
+              {
+                "text": "The Knight sleeps tonight. The Sage takes the watch.",
+                "next": "swap"
+              },
+              {
+                "text": "Split it. Half the night each, and sit together at the change.",
+                "next": "split"
+              },
+              {
+                "text": "The Knight keeps the watch. That's what the shield is for.",
+                "next": "keeps"
+              },
+              {
+                "text": "I took the Knight's watch once, the way the Knight took it for us at the ford. Now the Sage takes it.",
+                "next": "ford",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "swap",
+            "speaker": "class-knight",
+            "line": "Fine. The shield stays here, by your foot, and you wake me if anything on that hill so much as coughs. Promise, Sage.",
+            "next": "ends"
+          },
+          {
+            "id": "split",
+            "speaker": "class-sage",
+            "line": "Half each. I'll take the second half. Healers are good at the hour before dawn. That's when people need us.",
+            "next": "ends"
+          },
+          {
+            "id": "keeps",
+            "speaker": "class-sage",
+            "line": "Then I'll sit here and keep the watch company. You can't order me to bed, Knight. You're not the Commander.",
+            "next": "ends"
+          },
+          {
+            "id": "ford",
+            "speaker": "class-knight",
+            "line": "The ford. I'd nearly forgotten that was the same thing. All right. Two watches to give back, then, and I'll take the third.",
+            "next": "ends"
+          },
+          {
+            "id": "ends",
+            "speaker": "class-knight",
+            "line": "You've a clean end to tie on that cord, and I've a second line on the rim I can't get past the first word of. Both of us stuck at the last bit. Do you ever think we're afraid to finish?",
+            "choices": [
+              {
+                "text": "No knots for anyone here. The Knight stands before, so the cord stays clean.",
+                "next": "clean",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "When we reach the holds, the Sage looks at the sister first, before anyone.",
+                "next": "sister",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Trade. The Sage helps pick the Knight's second line. The Knight helps pick the last knot.",
+                "next": "trade"
+              },
+              {
+                "text": "Those ends are each of yours to finish alone.",
+                "next": "alone"
+              }
+            ]
+          },
+          {
+            "id": "clean",
+            "speaker": "class-sage",
+            "line": "A clean cord because there's a shield in front of it. I'll take that. But you sleep sometimes, Knight. A shield on its face in the mud covers nobody.",
+            "next": "close"
+          },
+          {
+            "id": "sister",
+            "speaker": "class-sage",
+            "line": "First. A water carrier, you said. I'll know her colour before she's set the bucket down. And then I'll want to meet the stubborn one with the spears in the well.",
+            "next": "close"
+          },
+          {
+            "id": "trade",
+            "speaker": "class-knight",
+            "line": "You pick my word, I pick your knot. That's a fair trade. Fair warning, Sage, I'll pick something plain. Holds don't do fancy.",
+            "next": "close"
+          },
+          {
+            "id": "alone",
+            "speaker": "class-knight",
+            "line": "Alone. Yes. Some things are. I'll stand my watch, and you count your knots, and we'll both pretend we're not counting each other.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The blanket ends up round both their shoulders. The Knight's shield stays grounded between them, and the thing two hills back never does follow."
+          }
+        ]
+      }
+    },
     "dialogue:cohesion_redmage_engineer": {
       "key": "dialogue:cohesion_redmage_engineer",
       "id": "conversation-cohesion-redmage-engineer",
@@ -2810,6 +3260,306 @@
             "id": "close",
             "speaker": "character-commander",
             "line": "The gauge goes back on its chain. The Red Mage turns the tin a little toward the Engineer, so the light from the dent falls on the open notebook."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_redmage_knight": {
+      "key": "dialogue:cohesion_redmage_knight",
+      "id": "conversation-cohesion-redmage-knight",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:a828ee474237b5c263ae9795a615264a55e9a03478424483c1af8488403af8f9",
+      "about": [
+        "character-commander",
+        "class-knight",
+        "class-redmage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-redmage",
+        "class-knight"
+      ],
+      "payload": {
+        "title": "Warm iron",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "After the ford the Knight sits with the shield across both knees, working the strap buckle with fingers gone white and slow. The Red Mage watches from across the fire and has already pulled one glove off.",
+            "next": "fingers"
+          },
+          {
+            "id": "fingers",
+            "speaker": "class-redmage",
+            "line": "You've been at that buckle since the water. Your fingers aren't working, Knight. Give them here. I can have them warm before the kettle is.",
+            "next": "holds"
+          },
+          {
+            "id": "holds",
+            "speaker": "class-knight",
+            "line": "In the holds, you warm your own hands or you lose them. Nobody puts heat into you. It goes in one door and out another, and then there's two cold people.",
+            "next": "heat"
+          },
+          {
+            "id": "heat",
+            "speaker": "class-redmage",
+            "line": "I know how heat goes in and doesn't stay. I did that for a whole winter. This isn't that. This is a buckle and a pair of hands. Commander, tell the Knight to hold still.",
+            "choices": [
+              {
+                "text": "Hold your hands out, Knight. The Red Mage knows exactly how much.",
+                "next": "hands"
+              },
+              {
+                "text": "Warm the shield, not the Knight. Iron keeps heat longer than skin.",
+                "next": "iron"
+              },
+              {
+                "text": "The Knight's fine. Red Mage, keep your fire for the field.",
+                "next": "field"
+              },
+              {
+                "text": "We said fire would be tried together, never alone. Try it here, with the Knight.",
+                "next": "together",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "hands",
+            "speaker": "class-knight",
+            "line": "Fine. Fine. There. That's, huh. That's not a fire at all. That's like a hearth through a wall. You've done this before, Red Mage.",
+            "next": "tin"
+          },
+          {
+            "id": "iron",
+            "speaker": "class-redmage",
+            "line": "Iron, then. Hold the rim. Not the face, I won't touch the old line. There. Now when you grip, it gives the heat back slowly.",
+            "next": "tin"
+          },
+          {
+            "id": "field",
+            "speaker": "class-knight",
+            "line": "The field. Right. Thank you anyway, Red Mage. I'll sit closer to the kettle. That much I can manage myself.",
+            "next": "tin"
+          },
+          {
+            "id": "together",
+            "speaker": "class-redmage",
+            "line": "Together. Then you tell me when it's enough, Knight. That's the part I never had. Someone telling me when to stop.",
+            "next": "tin"
+          },
+          {
+            "id": "tin",
+            "speaker": "class-redmage",
+            "line": "While I've got you. When we fight, I'm the one nearest whatever's burning, and the tin rides on my coat. If I go down, it goes in the mud. You stand behind that shield all day. Would you carry it?",
+            "choices": [
+              {
+                "text": "Beside, not in front. The tin rides between the two of you.",
+                "next": "beside",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "It's going home to the aunt's hearth. Knight, see it gets there whatever happens to the rest of us.",
+                "next": "home",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The Knight carries it. Nothing gets past that shield.",
+                "next": "carries"
+              },
+              {
+                "text": "It stays on the Red Mage. Some things you don't hand over.",
+                "next": "stays"
+              }
+            ]
+          },
+          {
+            "id": "beside",
+            "speaker": "class-knight",
+            "line": "Between us. I like that better than in front. Strap it to my belt on your side, Red Mage, and stay where you can reach it.",
+            "next": "close"
+          },
+          {
+            "id": "home",
+            "speaker": "class-knight",
+            "line": "To the hearth. I've carried worse promises over worse ground. If the tin and I get there alone, I'll knock and say who sent me.",
+            "next": "close"
+          },
+          {
+            "id": "carries",
+            "speaker": "class-redmage",
+            "line": "Behind the shield. It's never been out of my reach in nine years. I'll hate every minute. Don't drop it, Knight. Don't you dare.",
+            "next": "close"
+          },
+          {
+            "id": "stays",
+            "speaker": "class-knight",
+            "line": "Then I'll stand where the tin is. Same thing, from my side. Keep your coat buttoned, Red Mage.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The buckle comes loose on the next try. The Knight sets the shield down on the Red Mage's side of the fire, face up, close enough to catch the warmth."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_redmage_sage": {
+      "key": "dialogue:cohesion_redmage_sage",
+      "id": "conversation-cohesion-redmage-sage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:de81bf115541ad1692943522841c10f821c210084c05fb2c40c9e67123b91edd",
+      "about": [
+        "character-commander",
+        "class-redmage",
+        "class-sage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-redmage",
+        "class-sage"
+      ],
+      "payload": {
+        "title": "Salve for old burns",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Sage has the satchel open and a jar of something green in one hand, and keeps looking at the back of the Red Mage's ungloved hand as if it were a wound still open.",
+            "next": "healed"
+          },
+          {
+            "id": "healed",
+            "speaker": "class-redmage",
+            "line": "They're healed, Sage. Years ago. You can stop measuring them by eye. I can see you doing it.",
+            "next": "mended"
+          },
+          {
+            "id": "mended",
+            "speaker": "class-sage",
+            "line": "Healed isn't the same as mended. That skin's tight as a drum. It pulls when you make a fist, doesn't it? This jar won't take the marks away, but it'll give you your grip back.",
+            "next": "stare"
+          },
+          {
+            "id": "stare",
+            "speaker": "class-redmage",
+            "line": "I did these to myself. On purpose. I'm not sure I want good salve spent on them. Commander, tell the Sage to put the lid back on.",
+            "choices": [
+              {
+                "text": "Let the Sage tend them. Tonight, the glove stays off.",
+                "next": "tend"
+              },
+              {
+                "text": "Trade. The Red Mage warms the Sage's jars on cold mornings. The Sage keeps the hand supple.",
+                "next": "trade"
+              },
+              {
+                "text": "Scars are the Red Mage's own business. Put the jar away.",
+                "next": "away"
+              },
+              {
+                "text": "The aunt asked the Red Mage to stop, for the Red Mage's own sake. Let the Sage finish what she asked.",
+                "next": "aunt",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "tend",
+            "speaker": "class-sage",
+            "line": "Hold still. Cold first, then it warms. You of all people will feel the turn. There. Make a fist. Slowly.",
+            "next": "doors"
+          },
+          {
+            "id": "trade",
+            "speaker": "class-redmage",
+            "line": "Warm jars. That I can do without thinking. Your salves set like candle wax by dawn, Sage. I've watched you chip at them.",
+            "next": "doors"
+          },
+          {
+            "id": "away",
+            "speaker": "class-sage",
+            "line": "Away it goes. I'll leave it at the top of the satchel. Jars don't mind waiting. Healers do, but we're used to it.",
+            "next": "doors"
+          },
+          {
+            "id": "aunt",
+            "speaker": "class-redmage",
+            "line": "She did ask. For my sake. Not because it hurt, because she could see me hoping. Go on, then, Sage. Before I think better of it.",
+            "next": "doors"
+          },
+          {
+            "id": "doors",
+            "speaker": "class-sage",
+            "line": "Your aunt went Hollow at the tithe. Wick's colour went thin in the city, a little more each week. Same Choir, I think. Different doors. I don't know what to do with that, Red Mage. Do you?",
+            "choices": [
+              {
+                "text": "We promised to bring Wick down. The aunt comes into that promise too.",
+                "next": "promise",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The coal goes home to the aunt's hearth. The Sage walks it there with the Red Mage.",
+                "next": "hearth",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Compare everything. Every jar the Sage tried, every night the Red Mage tried. Two lists are better than one.",
+                "next": "lists"
+              },
+              {
+                "text": "Different doors. Don't make one grief out of two.",
+                "next": "apart"
+              }
+            ]
+          },
+          {
+            "id": "promise",
+            "speaker": "class-redmage",
+            "line": "The same promise. Wick and her both. That's a bigger stair than it was this morning, Sage. Good. I wanted a reason to climb faster.",
+            "next": "close"
+          },
+          {
+            "id": "hearth",
+            "speaker": "class-sage",
+            "line": "The hearth. I'd like to meet a coal that's outlasted every jar in this satchel. And the person who lit it.",
+            "next": "close"
+          },
+          {
+            "id": "lists",
+            "speaker": "class-redmage",
+            "line": "Every night. I can give you every night. How much heat, how long, what she said. I never wrote any of it down. I remember all of it.",
+            "next": "close"
+          },
+          {
+            "id": "apart",
+            "speaker": "class-sage",
+            "line": "Two griefs. You're right. I'd only have made yours fit the shape of mine. That's a healer's worst habit.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The jar ends up open on the stone between them. The Red Mage holds it near the fire until the salve goes soft, and passes it back without being asked."
           }
         ]
       }

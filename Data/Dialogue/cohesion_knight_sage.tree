@@ -1,0 +1,93 @@
+dialogue cohesion_knight_sage
+title: The third watch
+trigger: Cohesion knight sage level=2
+once
+speaker commander $commander
+speaker knight knight
+speaker sage sage
+
+node open commander
+  It is past the middle of the night. The Knight is still on watch at the edge of the firelight, shield grounded, and the Sage has come out with a blanket and a cup and no intention of going back.
+  -> third
+
+node third sage
+  That's your third watch running, Knight. On the road we'd call that a slow knot. Not tied yet. Just a matter of time.
+  -> sleep
+
+node sleep knight
+  I'll sleep when the road's quiet. It isn't. There's something two hills back that keeps not quite following us. Somebody has to stand before the camp.
+  -> before
+
+node before sage
+  Somebody. Not the same somebody every night. A tired shield is a door left open. Commander, you're the one the Knight listens to.
+  * The Knight sleeps tonight. The Sage takes the watch. -> swap
+    do: AddCohesion knight sage 10
+    do: AddTrust knight -3
+    do: SetFlag knight_sage:watch_swapped
+  * Split it. Half the night each, and sit together at the change. -> split
+    do: AddCohesion knight sage 6
+    do: SetFlag knight_sage:watch_split
+  * The Knight keeps the watch. That's what the shield is for. -> keeps
+    do: AddCohesion knight sage -4
+    do: AddTrust sage -2
+    do: SetFlag knight_sage:watch_kept
+  * I took the Knight's watch once, the way the Knight took it for us at the ford. Now the Sage takes it. -> ford
+    if: FlagSet knight:line_watch
+    do: AddCohesion knight sage 8
+    do: AddTrust knight 2
+    do: SetFlag knight_sage:watch_ford
+
+node swap knight
+  Fine. The shield stays here, by your foot, and you wake me if anything on that hill so much as coughs. Promise, Sage.
+  -> ends
+
+node split sage
+  Half each. I'll take the second half. Healers are good at the hour before dawn. That's when people need us.
+  -> ends
+
+node keeps sage
+  Then I'll sit here and keep the watch company. You can't order me to bed, Knight. You're not the Commander.
+  -> ends
+
+node ford knight
+  The ford. I'd nearly forgotten that was the same thing. All right. Two watches to give back, then, and I'll take the third.
+  -> ends
+
+node ends knight
+  You've a clean end to tie on that cord, and I've a second line on the rim I can't get past the first word of. Both of us stuck at the last bit. Do you ever think we're afraid to finish?
+  * No knots for anyone here. The Knight stands before, so the cord stays clean. -> clean
+    if: FlagSet sage:cord_down
+    do: AddCohesion knight sage 10
+    do: AddTrust sage 2
+    do: SetFlag knight_sage:ends_clean
+  * When we reach the holds, the Sage looks at the sister first, before anyone. -> sister
+    if: FlagSet knight:sister_promised
+    do: AddCohesion knight sage 8
+    do: AddTrust knight 2
+    do: SetFlag knight_sage:ends_sister
+  * Trade. The Sage helps pick the Knight's second line. The Knight helps pick the last knot. -> trade
+    do: AddCohesion knight sage 8
+    do: SetFlag knight_sage:ends_traded
+  * Those ends are each of yours to finish alone. -> alone
+    do: AddCohesion knight sage 2
+    do: AddTrust sage -2
+    do: SetFlag knight_sage:ends_alone
+
+node clean sage
+  A clean cord because there's a shield in front of it. I'll take that. But you sleep sometimes, Knight. A shield on its face in the mud covers nobody.
+  -> close
+
+node sister sage
+  First. A water carrier, you said. I'll know her colour before she's set the bucket down. And then I'll want to meet the stubborn one with the spears in the well.
+  -> close
+
+node trade knight
+  You pick my word, I pick your knot. That's a fair trade. Fair warning, Sage, I'll pick something plain. Holds don't do fancy.
+  -> close
+
+node alone knight
+  Alone. Yes. Some things are. I'll stand my watch, and you count your knots, and we'll both pretend we're not counting each other.
+  -> close
+
+node close commander
+  The blanket ends up round both their shoulders. The Knight's shield stays grounded between them, and the thing two hills back never does follow.

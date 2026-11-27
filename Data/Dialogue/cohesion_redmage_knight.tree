@@ -1,0 +1,93 @@
+dialogue cohesion_redmage_knight
+title: Warm iron
+trigger: Cohesion redmage knight level=2
+once
+speaker commander $commander
+speaker redmage redmage
+speaker knight knight
+
+node open commander
+  After the ford the Knight sits with the shield across both knees, working the strap buckle with fingers gone white and slow. The Red Mage watches from across the fire and has already pulled one glove off.
+  -> fingers
+
+node fingers redmage
+  You've been at that buckle since the water. Your fingers aren't working, Knight. Give them here. I can have them warm before the kettle is.
+  -> holds
+
+node holds knight
+  In the holds, you warm your own hands or you lose them. Nobody puts heat into you. It goes in one door and out another, and then there's two cold people.
+  -> heat
+
+node heat redmage
+  I know how heat goes in and doesn't stay. I did that for a whole winter. This isn't that. This is a buckle and a pair of hands. Commander, tell the Knight to hold still.
+  * Hold your hands out, Knight. The Red Mage knows exactly how much. -> hands
+    do: AddCohesion redmage knight 10
+    do: AddTrust knight -3
+    do: SetFlag redmage_knight:warm_hands
+  * Warm the shield, not the Knight. Iron keeps heat longer than skin. -> iron
+    do: AddCohesion redmage knight 6
+    do: SetFlag redmage_knight:warm_iron
+  * The Knight's fine. Red Mage, keep your fire for the field. -> field
+    do: AddCohesion redmage knight -4
+    do: AddTrust redmage -2
+    do: SetFlag redmage_knight:warm_field
+  * We said fire would be tried together, never alone. Try it here, with the Knight. -> together
+    if: FlagSet redmage:test_promised
+    do: AddCohesion redmage knight 8
+    do: AddTrust redmage 2
+    do: SetFlag redmage_knight:warm_together
+
+node hands knight
+  Fine. Fine. There. That's, huh. That's not a fire at all. That's like a hearth through a wall. You've done this before, Red Mage.
+  -> tin
+
+node iron redmage
+  Iron, then. Hold the rim. Not the face, I won't touch the old line. There. Now when you grip, it gives the heat back slowly.
+  -> tin
+
+node field knight
+  The field. Right. Thank you anyway, Red Mage. I'll sit closer to the kettle. That much I can manage myself.
+  -> tin
+
+node together redmage
+  Together. Then you tell me when it's enough, Knight. That's the part I never had. Someone telling me when to stop.
+  -> tin
+
+node tin redmage
+  While I've got you. When we fight, I'm the one nearest whatever's burning, and the tin rides on my coat. If I go down, it goes in the mud. You stand behind that shield all day. Would you carry it?
+  * Beside, not in front. The tin rides between the two of you. -> beside
+    if: FlagSet knight:line_beside
+    do: AddCohesion redmage knight 10
+    do: AddTrust knight 2
+    do: SetFlag redmage_knight:tin_beside
+  * It's going home to the aunt's hearth. Knight, see it gets there whatever happens to the rest of us. -> home
+    if: FlagSet redmage:fire_home
+    do: AddCohesion redmage knight 8
+    do: AddTrust redmage 2
+    do: SetFlag redmage_knight:tin_home
+  * The Knight carries it. Nothing gets past that shield. -> carries
+    do: AddCohesion redmage knight 8
+    do: AddTrust redmage -2
+    do: SetFlag redmage_knight:tin_carried
+  * It stays on the Red Mage. Some things you don't hand over. -> stays
+    do: AddCohesion redmage knight 2
+    do: SetFlag redmage_knight:tin_stays
+
+node beside knight
+  Between us. I like that better than in front. Strap it to my belt on your side, Red Mage, and stay where you can reach it.
+  -> close
+
+node home knight
+  To the hearth. I've carried worse promises over worse ground. If the tin and I get there alone, I'll knock and say who sent me.
+  -> close
+
+node carries redmage
+  Behind the shield. It's never been out of my reach in nine years. I'll hate every minute. Don't drop it, Knight. Don't you dare.
+  -> close
+
+node stays knight
+  Then I'll stand where the tin is. Same thing, from my side. Keep your coat buttoned, Red Mage.
+  -> close
+
+node close commander
+  The buckle comes loose on the next try. The Knight sets the shield down on the Red Mage's side of the fire, face up, close enough to catch the warmth.

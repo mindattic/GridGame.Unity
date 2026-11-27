@@ -1,0 +1,92 @@
+dialogue cohesion_engineer_knight
+title: The teacher's rivets
+trigger: Cohesion engineer knight level=2
+once
+speaker commander $commander
+speaker engineer engineer
+speaker knight knight
+
+node open commander
+  The Engineer is crouched beside the Knight's shield with a lamp, a thumbnail pressed to the back of the strap where it meets the iron. The Knight stands over both of them with arms folded.
+  -> shear
+
+node shear engineer
+  This rivet's walking. See the shine round the head? It's been rocking every time you take a hit. Two more good ones and the strap comes off in your hand.
+  -> teacher
+
+node teacher knight
+  My teacher set those rivets the winter I took the oath. Nobody's touched them since. They've held through worse than two good hits.
+  -> worse
+
+node worse engineer
+  They held through worse when they were new. Metal gets tired. It doesn't care who set it. Commander, I can have a new one in before the fire's down. Tell the Knight.
+  * Fix it tonight, Engineer. The rim and the old line stay untouched. -> fix
+    do: AddCohesion engineer knight 10
+    do: AddTrust knight -3
+    do: SetFlag engineer_knight:rivet_fixed
+  * The Knight does the work. Engineer, hand over the tools and talk it through. -> talk
+    do: AddCohesion engineer knight 6
+    do: SetFlag engineer_knight:rivet_taught
+  * It's held this long. Leave the shield alone. -> leave
+    do: AddCohesion engineer knight -4
+    do: AddTrust engineer -2
+    do: SetFlag engineer_knight:rivet_left
+  * I stopped the wagon for the Engineer because a cracked axle needed someone to notice. Let the Engineer notice this. -> notice
+    if: FlagSet engineer:list_axle
+    do: AddCohesion engineer knight 8
+    do: AddTrust engineer 2
+    do: SetFlag engineer_knight:rivet_noticed
+
+node fix knight
+  Untouched. You hear that, Engineer? Not a scratch on the rim. Go on, then. I'll hold the lamp, so I can watch your hands.
+  -> debt
+
+node talk engineer
+  Punch here. No, square to it. Tap, don't swing, it's not a ganger's head. There. You've got good hands for this, Knight. Wasted on hitting things.
+  -> debt
+
+node leave knight
+  It'll hold. And if it doesn't, I'll learn something about my teacher I'd rather not know. Thank you for looking, though.
+  -> debt
+
+node notice knight
+  Noticing's a kind of standing watch, I suppose. All right. Show me the shine first. I want to see what you saw.
+  -> debt
+
+node debt knight
+  In the holds, a debt follows the family. My father's father owed a hall for a cow that died in the snow, and we paid it till I was ten. Is yours like that? This Redline debt?
+  * Redline gets nothing. If they come to collect, they meet the shield first. -> shield
+    if: FlagSet engineer:debt_defied
+    do: AddCohesion engineer knight 10
+    do: AddTrust knight 2
+    do: SetFlag engineer_knight:debt_shield
+  * The Knight's oath was to the hold's people. The Engineer is one of them now. -> people
+    if: FlagSet knight:oath_people
+    do: AddCohesion engineer knight 8
+    do: SetFlag engineer_knight:debt_people
+  * Work it out together, numbers and shield. Redline respects both. -> both
+    do: AddCohesion engineer knight 8
+    do: AddTrust engineer -2
+    do: SetFlag engineer_knight:debt_both
+  * That debt is the Engineer's to settle. The Knight has enough to stand before. -> own
+    do: AddCohesion engineer knight 2
+    do: SetFlag engineer_knight:debt_own
+
+node shield engineer
+  The shield first. With a new rivet in it, which I'd point out to them. Ha. I'd like to see a ganger read hold script.
+  -> close
+
+node people engineer
+  One of the hold's. I've never been anybody's people. Redline had me on a list, and the list was all numbers. I think I'd rather be on yours, Knight.
+  -> close
+
+node both knight
+  Numbers and a shield. I'll do the standing, you do the sums. If they argue with the sums, I stand closer.
+  -> close
+
+node own knight
+  Your own to settle. All right. But if you go to settle it, Engineer, tell me first. I'd like to stand somewhere nearby, not doing anything.
+  -> close
+
+node close commander
+  The old rivet goes into the Engineer's notebook, pressed flat between two pages. The Knight straps the shield on, works the arm twice, and doesn't say anything about how much better it sits.

@@ -1,0 +1,92 @@
+dialogue cohesion_engineer_sage
+title: Why the lantern burns
+trigger: Cohesion engineer sage level=2
+once
+speaker commander $commander
+speaker engineer engineer
+speaker sage sage
+
+node open commander
+  The Engineer is on the wagon's step with a screwdriver, staring up at the lantern on its hook. The Sage sits on the step below, holding the Engineer's ankle in a way that is not quite friendly.
+  -> oil
+
+node oil engineer
+  There's no oil in it. I checked the well twice. No wick either, not a proper one. It's been burning since the spire and it doesn't flicker. Sage, let go of my foot.
+  -> road
+
+node road sage
+  On the Lantern Road there's one rule older than the rest. You don't open a lantern to ask it why it burns. It might answer. Then you'd have to live with what it said.
+  -> answer
+
+node answer engineer
+  I'd love it to answer. That's the whole point of opening things. Commander, the Sage is sitting on my question.
+  * Open it, Engineer. The Sage holds the light steady. -> open_it
+    do: AddCohesion engineer sage 10
+    do: AddTrust sage -3
+    do: SetFlag engineer_sage:lantern_opened
+  * Measure it from outside. Nobody opens a road lantern. -> outside
+    do: AddCohesion engineer sage 6
+    do: SetFlag engineer_sage:lantern_measured
+  * Leave the lantern be. Both of you, to bed. -> bed
+    do: AddCohesion engineer sage -4
+    do: AddTrust engineer -2
+    do: SetFlag engineer_sage:lantern_left
+  * The Sage hung a knot on that lantern. It's the Sage's to say. -> knot
+    if: FlagSet sage:end_wagon
+    do: AddCohesion engineer sage 8
+    do: AddTrust sage 2
+    do: SetFlag engineer_sage:lantern_knot
+
+node open_it sage
+  Steady. Fine. If it says anything, Engineer, you're the one writing it down, and I'm not hearing it. Go on. Gently.
+  -> reads
+
+node outside engineer
+  From outside. The gauge'll still read through glass if I hold it close. Sage, you can keep the ankle. I suppose it helps.
+  -> reads
+
+node bed sage
+  Bed. I'll sleep under it, so nobody climbs up in the night. Nobody, Engineer. One look, from the ground, and then bed.
+  -> reads
+
+node knot sage
+  Mine to say. Then the gauge can look. The screwdriver can't. And if the needle so much as wobbles near my knot, we stop.
+  -> reads
+
+node reads engineer
+  It reads warm. Old warm. Same as the orb near the Commander. Same as Tap Seven before it closed. Whatever the Choir runs on, this is a cousin of it, burning on our wagon. What do we do with that?
+  * If the Choir's work runs on the same warmth, this is a road up the stair. Write it for Wick. -> wick
+    if: FlagSet sage:wick_promised
+    do: AddCohesion engineer sage 10
+    do: AddTrust sage 2
+    do: SetFlag engineer_sage:warm_wick
+  * Together, like the debt. The Engineer writes the numbers, the Sage writes what it mends. -> together
+    if: FlagSet engineer:debt_shared
+    do: AddCohesion engineer sage 8
+    do: SetFlag engineer_sage:warm_together
+  * Two records, same night. A page in the notebook and a knot on the cord. -> records
+    do: AddCohesion engineer sage 8
+    do: SetFlag engineer_sage:warm_records
+  * Some things work, and that's enough. Close the notebook. -> enough
+    do: AddCohesion engineer sage 2
+    do: AddTrust engineer -2
+    do: SetFlag engineer_sage:warm_enough
+
+node wick sage
+  For Wick. Wick would have had the lid off before you'd finished the sentence, Engineer. You'd have got on. I'd have despaired of you both.
+  -> close
+
+node together engineer
+  Numbers on the left page, mending on the right. Sage, your handwriting had better be better than your knots.
+  -> close
+
+node records sage
+  A knot for a lantern. I've never tied one for a thing that wasn't a person. Loose, I think. It's still burning.
+  -> close
+
+node enough engineer
+  Enough. It works. That's the sentence I hate most in the world, Commander. I'll say it. I won't write it.
+  -> close
+
+node close commander
+  The lantern goes on burning. The Engineer's pencil and the Sage's cord lie side by side on the step, and above them the light doesn't flicker once.
