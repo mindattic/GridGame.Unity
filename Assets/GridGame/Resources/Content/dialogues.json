@@ -352,11 +352,11 @@
     "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-01" },
     "Speakers": [
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "hail", "Speaker": "merchant", "Next": "reply" },
-      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      { "Id": "reply", "Speaker": "commander", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "merchant",
         "Choices": [
@@ -387,11 +387,11 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "greenvalley" },
     "Conditions": [ { "Type": "NpcJoined", "Id": "merchant" } ],
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "merchant" }
     ]
   },
@@ -400,13 +400,13 @@
     "Title": "A caster on the ridge",
     "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-01" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "recruit", "Class": "$recruit" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
-        "Id": "reply", "Speaker": "lead",
+        "Id": "reply", "Speaker": "commander",
         "Choices": [
           { "Next": "joined" },
           { "Next": "warned" }
@@ -421,11 +421,11 @@
     "Title": "The innkeeper catches up",
     "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-02" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
-      { "Id": "one", "Speaker": "lead", "Next": "two" },
+      { "Id": "one", "Speaker": "commander", "Next": "two" },
       { "Id": "two", "Speaker": "innkeeper", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "innkeeper",
@@ -444,11 +444,11 @@
     "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-03" },
     "Speakers": [
       { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "hail", "Speaker": "smith", "Next": "reply" },
-      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      { "Id": "reply", "Speaker": "commander", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "smith",
         "Choices": [
@@ -465,13 +465,13 @@
     "Title": "Stranded in the red",
     "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "recruit", "Class": "$recruit" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
-        "Id": "reply", "Speaker": "lead",
+        "Id": "reply", "Speaker": "commander",
         "Choices": [
           { "Next": "joined" },
           { "Next": "warned" }
@@ -487,11 +487,11 @@
     "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-01" },
     "Speakers": [
       { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "hail", "Speaker": "alchemist", "Next": "reply" },
-      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      { "Id": "reply", "Speaker": "commander", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "alchemist",
         "Choices": [
@@ -508,13 +508,13 @@
     "Title": "A calling circle",
     "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-02" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "alchemist", "Next": "c" },
-      { "Id": "c", "Speaker": "lead", "Effects": [ { "Type": "OpenStation", "Id": "summon" } ] }
+      { "Id": "c", "Speaker": "commander", "Effects": [ { "Type": "OpenStation", "Id": "summon" } ] }
     ]
   },
   {
@@ -522,12 +522,12 @@
     "Title": "Names on the board",
     "Trigger": { "Kind": "StageCleared", "Id": "lanternroad-03" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "innkeeper", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "innkeeper", "Effects": [ { "Type": "OpenStation", "Id": "bounties" } ] }
     ]
   },
@@ -536,12 +536,12 @@
     "Title": "Glass that remembers",
     "Trigger": { "Kind": "StageCleared", "Id": "desert-01" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "smith", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "smith", "Effects": [ { "Type": "OpenStation", "Id": "crucible" } ] }
     ]
   },
@@ -551,11 +551,11 @@
     "Trigger": { "Kind": "StageCleared", "Id": "desert-02" },
     "Speakers": [
       { "Id": "aetherist", "Name": "Manasmith", "Portrait": "aetherist-00" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "hail", "Speaker": "aetherist", "Next": "reply" },
-      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      { "Id": "reply", "Speaker": "commander", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "aetherist",
         "Choices": [
@@ -572,12 +572,12 @@
     "Title": "Wheels from the wrecks",
     "Trigger": { "Kind": "StageCleared", "Id": "swamp-02" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "merchant", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "merchant", "Effects": [ { "Type": "OpenStation", "Id": "caravan" } ] }
     ]
   },
@@ -586,11 +586,11 @@
     "Title": "Lanterns on the stairs",
     "Trigger": { "Kind": "ThemeStart", "Id": "lanternroad" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "merchant" }
     ]
   },
@@ -599,11 +599,11 @@
     "Title": "What the shards are",
     "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "alchemist" }
     ]
   },
@@ -612,13 +612,13 @@
     "Title": "A guard on the ice",
     "Trigger": { "Kind": "ThemeStart", "Id": "cave" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "recruit", "Class": "$recruit" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
-        "Id": "reply", "Speaker": "lead",
+        "Id": "reply", "Speaker": "commander",
         "Choices": [
           { "Next": "joined" },
           { "Next": "warned" }
@@ -633,11 +633,11 @@
     "Title": "Where the light goes",
     "Trigger": { "Kind": "ThemeStart", "Id": "cave" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "smith" }
     ]
   },
@@ -646,13 +646,13 @@
     "Title": "What the tanks hold",
     "Trigger": { "Kind": "ThemeStart", "Id": "still" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress", "Next": "c" },
-      { "Id": "c", "Speaker": "lead", "Next": "d" },
+      { "Id": "c", "Speaker": "commander", "Next": "d" },
       { "Id": "d", "Speaker": "enchantress" }
     ]
   },
@@ -661,13 +661,13 @@
     "Title": "A healer in the underspire",
     "Trigger": { "Kind": "ThemeStart", "Id": "cityruins" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "recruit", "Class": "$recruit" }
     ],
     "Nodes": [
       { "Id": "meet", "Speaker": "recruit", "Next": "reply" },
       {
-        "Id": "reply", "Speaker": "lead",
+        "Id": "reply", "Speaker": "commander",
         "Choices": [
           { "Next": "joined" },
           { "Next": "warned" }
@@ -682,11 +682,11 @@
     "Title": "Give it back",
     "Trigger": { "Kind": "ThemeStart", "Id": "cityruins" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "innkeeper" }
     ]
   },
@@ -695,11 +695,11 @@
     "Title": "The organ",
     "Trigger": { "Kind": "ThemeStart", "Id": "cathedral" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress" }
     ]
   },
@@ -708,11 +708,11 @@
     "Title": "Where it came down",
     "Trigger": { "Kind": "ThemeStart", "Id": "bloom" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "merchant" }
     ]
   },
@@ -721,11 +721,11 @@
     "Title": "Where the rain missed",
     "Trigger": { "Kind": "ThemeStart", "Id": "greenvalley2" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "merchant" }
     ]
   },
@@ -734,11 +734,11 @@
     "Title": "Marching north",
     "Trigger": { "Kind": "ThemeStart", "Id": "desert2" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "alchemist" }
     ]
   },
@@ -747,11 +747,11 @@
     "Title": "Passage offered",
     "Trigger": { "Kind": "ThemeStart", "Id": "swamp2" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress" }
     ]
   },
@@ -760,11 +760,11 @@
     "Title": "Older than the arches",
     "Trigger": { "Kind": "ThemeStart", "Id": "cave2" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "smith" }
     ]
   },
@@ -773,11 +773,11 @@
     "Title": "Everyone wants the spire",
     "Trigger": { "Kind": "ThemeStart", "Id": "cityruins2" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "innkeeper" }
     ]
   },
@@ -786,11 +786,11 @@
     "Title": "Under the face",
     "Trigger": { "Kind": "ThemeStart", "Id": "morrowsshadow" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress" }
     ]
   },
@@ -800,11 +800,11 @@
     "Trigger": { "Kind": "StageCleared", "Id": "swamp-01" },
     "Speakers": [
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "hail", "Speaker": "enchantress", "Next": "reply" },
-      { "Id": "reply", "Speaker": "lead", "Next": "ask" },
+      { "Id": "reply", "Speaker": "commander", "Next": "ask" },
       {
         "Id": "ask", "Speaker": "enchantress",
         "Choices": [
@@ -821,11 +821,11 @@
     "Title": "The ships' logs",
     "Trigger": { "Kind": "ThemeStart", "Id": "swamp" },
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
-      { "Id": "a", "Speaker": "lead", "Next": "b" },
+      { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress" }
     ]
   },
@@ -2435,12 +2435,12 @@
     "HasCrawl": true,
     "Backdrop": "cave",
     "Speakers": [
-      { "Id": "lead", "Class": "$lead" },
+      { "Id": "commander", "Class": "$commander" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "innkeeper", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "innkeeper",
         "Choices": [
           { "Next": "coin", "Effects": [ { "Type": "SetFlag", "Id": "motive:coin" } ] },
@@ -2453,7 +2453,7 @@
       { "Id": "people", "Speaker": "innkeeper", "Next": "close" },
       { "Id": "truth", "Speaker": "innkeeper", "Next": "close" },
       { "Id": "crew", "Speaker": "innkeeper", "Next": "close" },
-      { "Id": "close", "Speaker": "lead" }
+      { "Id": "close", "Speaker": "commander" }
     ]
   },
   {
@@ -2462,13 +2462,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "greenvalley-03" },
     "Speakers": [
       { "Id": "boss", "Class": "captain" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2477,11 +2477,11 @@
     "Trigger": { "Kind": "StageStart", "Id": "lanternroad-03" },
     "Speakers": [
       { "Id": "boss", "Class": "oni02" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead" }
+      { "Id": "b", "Speaker": "commander" }
     ]
   },
   {
@@ -2490,13 +2490,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "desert-03" },
     "Speakers": [
       { "Id": "boss", "Class": "mechaarmor01" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2505,13 +2505,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "swamp-03" },
     "Speakers": [
       { "Id": "boss", "Class": "swampmistress00" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2520,13 +2520,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "cave-03" },
     "Speakers": [
       { "Id": "boss", "Class": "cyclops02" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2535,13 +2535,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "still-03" },
     "Speakers": [
       { "Id": "boss", "Class": "chronomancer" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2550,11 +2550,11 @@
     "Trigger": { "Kind": "StageStart", "Id": "cityruins-03" },
     "Speakers": [
       { "Id": "boss", "Class": "ceramicknight06" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead" }
+      { "Id": "b", "Speaker": "commander" }
     ]
   },
   {
@@ -2563,13 +2563,13 @@
     "Trigger": { "Kind": "StageStart", "Id": "cathedral-03" },
     "Speakers": [
       { "Id": "boss", "Class": "hierarch", "Portrait": "mannequin" },
-      { "Id": "lead", "Class": "$lead" }
+      { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "boss", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "boss", "Next": "d" },
-      { "Id": "d", "Speaker": "lead" }
+      { "Id": "d", "Speaker": "commander" }
     ]
   },
   {
@@ -2650,10 +2650,10 @@
     "Trigger": { "Kind": "Talk", "Id": "npc:blacksmith" },
     "Conditions": [ { "Type": "FlagSet", "Id": "quest:smith_cogs" } ],
     "Once": true,
-    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }, { "Id": "lead", "Class": "$lead" } ],
+    "Speakers": [ { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }, { "Id": "commander", "Class": "$commander" } ],
     "Nodes": [
       { "Id": "a", "Speaker": "smith", "Next": "b" },
-      { "Id": "b", "Speaker": "lead", "Next": "c" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
       { "Id": "c", "Speaker": "smith" }
     ]
   },

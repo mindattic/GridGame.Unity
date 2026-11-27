@@ -62,6 +62,8 @@ def paragraphs(s: str) -> list:
 
 def speaker_token(spk: dict, known: set) -> str:
     cls, name, sid = spk.get("Class"), spk.get("Name"), spk.get("Id") or "speaker"
+    if cls == "$commander" and K.character_entity("commander") in known:  # GG-T1434: the Commander, once Prose has it
+        return K.character_entity("commander")
     if cls and cls.startswith("$"):
         return cls
     if cls and K.class_entity(cls) in known:

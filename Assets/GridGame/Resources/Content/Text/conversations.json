@@ -8,13 +8,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f55444eec5b1dc90930f7c1119a6f709727e03dbc69382ab36510881fe28ac52",
+      "hash": "sha256:c8f66fe76839219904b165861e4ac60f1f4ea4fc12817d46e83556b29a4d9f07",
       "about": [
         "character-merchant",
         "place-bloom"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-merchant"
       ],
       "payload": {
@@ -23,7 +23,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Red flowers on white stone. It's beautiful. It shouldn't be here.",
             "next": "b"
           },
@@ -41,14 +41,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b7e604c0f72d7e8d530a1b15b1fb88806e2fefe9aae7f841f5862c93f78375a3",
+      "hash": "sha256:66023b8abb24a399c18e94ed5b0608deef646fc2cef583bff02be460f966daca",
       "about": [
         "class-hierarch",
         "place-cathedral-03"
       ],
       "speakers": [
         "class-hierarch",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Hierarch",
@@ -62,7 +62,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Lullaby needs a thread of the tithe. You drank everything else.",
             "next": "c"
           },
@@ -74,7 +74,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Silence the Choir first. Everything every hold ever paid is in that organ. Let's give it back!"
           }
         ]
@@ -86,14 +86,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:aff62130e4b4e21785cdfe7b704617ca7767e4a59eda1f45a8046b87ef797c50",
+      "hash": "sha256:c8f2a90022411edf95dda85da3fbc0553768a4e39bc1e07d65abbee4a507fe7d",
       "about": [
         "class-cyclops02",
         "place-cave-03"
       ],
       "speakers": [
         "class-cyclops02",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Keeper of the Great Anchor",
@@ -107,7 +107,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Came down with the shell? So you fell out of the Manalith's own crust. And now you guard an Anchor.",
             "next": "c"
           },
@@ -119,7 +119,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "When it lifts its foot, get clear, or stand ready. Whoever it drags in starts the first pincer."
           }
         ]
@@ -131,14 +131,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ba8f00c0664f27fed3a17a4f335efc404bf7e74fe03c403e68b0952a11ffdee1",
+      "hash": "sha256:894064aac73150a0d17f8db1bf9f4c5e1fa1a78b459497192a0be6e381c12e38",
       "about": [
         "class-ceramicknight06",
         "place-cityruins-03"
       ],
       "speakers": [
         "class-ceramicknight06",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Kiln Guard on the Stair",
@@ -152,7 +152,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Then we come at you top to bottom, and keep cracking until the porcelain gives."
           }
         ]
@@ -164,14 +164,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1002d64fc14840eeefb3058c888aa885901364095ac167f1a08dadff830e85cc",
+      "hash": "sha256:9608eb1d17b44ebf51330e06ba0f84cb6ab721e3535bbfda276ef66572a683f0",
       "about": [
         "class-mechaarmor01",
         "place-desert-03"
       ],
       "speakers": [
         "class-mechaarmor01",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Walker at the Dig",
@@ -185,7 +185,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Look at the crates, they're glowing. They're digging mana out of the Manalith's fallen shell.",
             "next": "c"
           },
@@ -197,7 +197,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Side hits glance off that shield. Pincer it top to bottom, or keep cracking it until it breaks."
           }
         ]
@@ -209,14 +209,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f6f641a8452962c35e4b5cf1aa68eaceefbad862faa3c1394e4c13dc44028845",
+      "hash": "sha256:d5522ca8c706f00ae3240d6d5ba24cf63c5ceedadfa99a01b56d4cf9db6a2196",
       "about": [
         "class-captain",
         "place-greenvalley-03"
       ],
       "speakers": [
         "class-captain",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Captain's Field",
@@ -230,7 +230,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You stood there while they took the colour out of your own people. Don't call us thieves.",
             "next": "c"
           },
@@ -242,7 +242,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Then no room. Stay close to the Captain, everyone. Never let the Captain end a turn alone."
           }
         ]
@@ -254,14 +254,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5b11a04597c49a9ca7c3372fd937d0a13eaf22153617f532783130eea2ef2712",
+      "hash": "sha256:42a0278daa16d86085e271a0a38d981bbcd833f85612cb54b1df5c0708d85b0b",
       "about": [
         "class-oni02",
         "place-lanternroad-03"
       ],
       "speakers": [
         "class-oni02",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Mask on the Pass",
@@ -275,7 +275,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Then we cut down its raiders first. With no one left standing beside it, that mask stays down."
           }
         ]
@@ -287,14 +287,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ca8b420add3d8ba58c8f279fe57cd2c0d99e798996af57ff522e74d867a2a3ed",
+      "hash": "sha256:6492517b66f1206b4c0fed202673a7af2d7152e5c50422102c99f96391c199d4",
       "about": [
         "class-chronomancer",
         "place-still-03"
       ],
       "speakers": [
         "class-chronomancer",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Keeper of the Clocks",
@@ -308,7 +308,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "A glow, cyan, tank after tank. That's mana, and far more than the Lullaby needs. ...Where does the rest go?",
             "next": "c"
           },
@@ -320,7 +320,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Then no room. Close in on her, everyone. Someone stays beside her, every turn."
           }
         ]
@@ -332,14 +332,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:73e727efa22f9c2d791b96cf3c626a3b3f7737e6d18edcee71c6d3e91c820fb9",
+      "hash": "sha256:6a6c2ce7aa3dc15de90eb365400c915ad7aee23c9701e7287dfc4b94b5f9fe1f",
       "about": [
         "class-swampmistress00",
         "place-swamp-03"
       ],
       "speakers": [
         "class-swampmistress00",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The Mistress of the Arkgrave",
@@ -353,7 +353,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "It's a wreck in a swamp. Nobody's flying anything. You could walk away.",
             "next": "c"
           },
@@ -365,7 +365,7 @@
           },
           {
             "id": "d",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "She trades places with her coven. Cut them down first, and she has nowhere left to go."
           }
         ]
@@ -746,13 +746,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b6542af0d6c9339d61b59317235e598c503d21f6a4f2fd1d3f5cb379d60c3a4",
+      "hash": "sha256:3881065e95a98dcafe1a3ebb3fc8813188cef4b4d59312aec3a4bce107989e18",
       "about": [
         "character-enchantress",
         "place-cathedral"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-enchantress"
       ],
       "payload": {
@@ -761,7 +761,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Listen. That music. It's coming from the walls.",
             "next": "b"
           },
@@ -779,13 +779,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3aea1060fe8a0ad0440c878ec9f0a55bbcbf5ce59ff9e0dc2b64d8e7546e64ab",
+      "hash": "sha256:8b4a5909666c04397a2a35ba9996b14235ea8766e39b7aced4784a7e020b384f",
       "about": [
         "character-blacksmith",
         "place-cave2"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-blacksmith"
       ],
       "payload": {
@@ -794,7 +794,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "There's something under the arches. Older stone.",
             "next": "b"
           },
@@ -812,13 +812,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2f4b2c87909879db52502428a019b86848b88ed1d6b853996194594b22dd479f",
+      "hash": "sha256:7b22e51fd5d8bfba2dfc2b863866f462e083772c7358cd0f4dfef266ac678eec",
       "about": [
         "character-blacksmith",
         "place-cave"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-blacksmith"
       ],
       "payload": {
@@ -827,7 +827,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "These arches go on forever. What are they holding up?",
             "next": "b"
           },
@@ -845,13 +845,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b4d08df915ccec65674e2f5ddafd5f242c706b6b66fa6cb4eb5469cf02e41bb",
+      "hash": "sha256:5e1883524f4f13bf58c45630016d1a2cc3d94d49fddb03cf1ac030698ff632dc",
       "about": [
         "place-cave"
       ],
       "speakers": [
         "$recruit",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A guard on the ice",
@@ -865,7 +865,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Because we stole it. We ran from the tithe at Saltmoss, and we're following the beams.",
             "choices": [
               {
@@ -898,13 +898,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7f0db45baae60c31cf5ad6a3b65d6a32afa2ea58f4720e3fe6ccf467f771ec5d",
+      "hash": "sha256:058dad95616412eb652fc3288d53baaec38bd577a7a245bc7a281eb9f4e60a10",
       "about": [
         "character-innkeeper",
         "place-cityruins2"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-innkeeper"
       ],
       "payload": {
@@ -913,7 +913,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Underspire's lights are brighter than ever.",
             "next": "b"
           },
@@ -931,13 +931,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:731c45742e9d08d20b914d1ee0b59881ddd56b9994f48fec4d6a23cf86ba23f1",
+      "hash": "sha256:4c1ecc58cc83adeddf2622dd35fb73454f1804f76d9619b04e28fe6d5c9d5cb4",
       "about": [
         "character-innkeeper",
         "place-cityruins"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-innkeeper"
       ],
       "payload": {
@@ -946,7 +946,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Halcyon. It's so quiet. Where did everyone go?",
             "next": "b"
           },
@@ -964,13 +964,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5d24dde32e09c44ba0379b6457fc732daf8116bc9c8cdc28bc59ffb43e2ea2c9",
+      "hash": "sha256:87f93fc3ea615330d95f7fe156fb1bb67059bd316d66627e13606f4d40824430",
       "about": [
         "place-cityruins"
       ],
       "speakers": [
         "$recruit",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A healer in the underspire",
@@ -984,7 +984,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You're far off the Lantern Road. What brings a sage under the spire?",
             "choices": [
               {
@@ -1017,13 +1017,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:99c0cdf2ce6f16f3e772be338469f59d3be0646cc9e9e3f39a89ee207043a753",
+      "hash": "sha256:69353086567c37a858d3134a035dfed3c0ab9eba44eab847c172332acaddafbb",
       "about": [
         "character-alchemist",
         "place-desert2"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-alchemist"
       ],
       "payload": {
@@ -1032,7 +1032,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Ember are marching north. All of them.",
             "next": "b"
           },
@@ -1050,14 +1050,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:019e18d7b719f711377a10affb209e7e8898fc00b9e927dc05b8365e3a9afcb1",
+      "hash": "sha256:5ceceb46a2ec419177c79b16af61d216093d060cd8b3d73e6a897c593b067086",
       "about": [
         "character-aetherist",
         "place-desert-02"
       ],
       "speakers": [
         "character-aetherist",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "The dust-sifter",
@@ -1071,7 +1071,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You're sifting the Shardfall? The Choir punishes anyone who steals from its dig.",
             "next": "ask"
           },
@@ -1110,13 +1110,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b786f30637d6cbf183c1c988d4f985f502009183ccaa4a9e892ef824ec88779f",
+      "hash": "sha256:b42ea56e7499627abe6b6fda4305af700de5439e2919142de8f2e437596c1f5f",
       "about": [
         "character-alchemist"
       ],
       "speakers": [
         "character-alchemist",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A splice-cutter",
@@ -1130,7 +1130,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "A splice-cutter? Out here?",
             "next": "ask"
           },
@@ -1169,14 +1169,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:449e0ad02f65de078d40ca6ed7f4ee2dce183238ef97ac6c6d95c60a3c02e9b3",
+      "hash": "sha256:d9f3cbbfbb6685d804d8c1d757b9fe4e67d2894ac6bc2a719e4d77db7485ed58",
       "about": [
         "character-blacksmith",
         "place-desert-01"
       ],
       "speakers": [
         "character-blacksmith",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "Glass that remembers",
@@ -1190,7 +1190,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Can it remember an edge? We're losing blades faster than we find them.",
             "next": "c"
           },
@@ -1208,13 +1208,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8448efa3b871895de755cfff5387bac092377d9f7129fa14c9f5548c42afab27",
+      "hash": "sha256:94776c9fa00f7ace167e34584bba8e31b9fbdf4252b02e928cffabff1dac121d",
       "about": [
         "character-alchemist",
         "place-desert"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-alchemist"
       ],
       "payload": {
@@ -1223,7 +1223,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The whole desert's covered in spikes. Did they grow here?",
             "next": "b"
           },
@@ -1241,13 +1241,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fef13782f6808235ecb2218cf1fc3a3021e3869c390375df74a92338d84ebb76",
+      "hash": "sha256:a6a492446b834e80879ae3d701b0eb45b56ce03c4063ffd24ae33c9479762732",
       "about": [
         "place-desert"
       ],
       "speakers": [
         "$recruit",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "Stranded in the red",
@@ -1261,7 +1261,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You're a long way from the Underspire. What are you doing out in the red?",
             "choices": [
               {
@@ -1294,13 +1294,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c6959d38b92e58f91a5fca9a03ff5bed960afec8b6f6ba5fbd2f2debfef424f6",
+      "hash": "sha256:096718cc0af6603480f8ab22537d9a7a6d0aef7a9d449d64a89d88640935ba0f",
       "about": [
         "character-merchant",
         "place-greenvalley2"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-merchant"
       ],
       "payload": {
@@ -1309,7 +1309,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The holds look different. Walls everywhere.",
             "next": "b"
           },
@@ -1327,13 +1327,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0b9c0ba59419f5d40757ec0fc5283c71ff6d6662fb48d5aef8af6d3bf7cf0425",
+      "hash": "sha256:f5b27bbd9da66089b81da7e24282b4b72bb0fb7595be28c6e46a987f629dcc56",
       "about": [
         "character-innkeeper",
         "place-greenvalley-01"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-innkeeper"
       ],
       "payload": {
@@ -1342,7 +1342,7 @@
         "nodes": [
           {
             "id": "one",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You're the innkeeper from Saltmoss. You followed us?",
             "next": "two"
           },
@@ -1387,13 +1387,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:499e3702eaaa7b4b0b6243ee947f93aab35de6c6f86d84cd6861dd7dd3c71f4b",
+      "hash": "sha256:13c1ba1c576995aff70bb1be2b2ff3e7df586909ea9d06a39f21d09cd6f96592",
       "about": [
         "character-merchant",
         "place-greenvalley"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-merchant"
       ],
       "payload": {
@@ -1402,7 +1402,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Tithe Moors. Every hold's already paid, and the white wagons are still coming.",
             "next": "b"
           },
@@ -1420,13 +1420,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:aea9b9792939e984b09d7285cdbefceac29a8304bb98e0d06bc9b6a808258be6",
+      "hash": "sha256:94c3e57a45bda04b91fdb661638429658dbd18ea317b6cd48eb987dbcd7b3c23",
       "about": [
         "place-greenvalley-01"
       ],
       "speakers": [
         "$recruit",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A caster on the ridge",
@@ -1440,7 +1440,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "We are, and they'll want it back. Three of us against the whole moor. We could use a fourth.",
             "choices": [
               {
@@ -1473,14 +1473,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0a5c410cdf91bcfdb0be3f24d59e0f31e59f899e6490735e74bc9790bcc13996",
+      "hash": "sha256:f9d9029a61b942279e8179bdf1792bd6aa85779730c76a66798b1b1cb6f2d709",
       "about": [
         "character-merchant",
         "place-greenvalley"
       ],
       "speakers": [
         "character-merchant",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A lantern on the road",
@@ -1494,7 +1494,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "We're not Choir. Are you going to tell anyone?",
             "next": "ask"
           },
@@ -1554,13 +1554,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:56c32d96e3d60e834a18dccf0514432cabb334321b73e01a623df683f836d32b",
+      "hash": "sha256:9f2983a6bcad80a4653f7679f14eb6dccf745d625edb26b12366314fb4c2fce2",
       "about": [
         "character-blacksmith"
       ],
       "speakers": [
         "character-blacksmith",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A smith who said no",
@@ -1574,7 +1574,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "You noticed. Are you going to turn us in?",
             "next": "ask"
           },
@@ -1613,13 +1613,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5983d3d9448e5d03368d7234cf72627fe2152e31de89aa2533d1779914b0bc19",
+      "hash": "sha256:6319dd45bdbc24833fbabff04c52772be161e3f5d91b2a152eff3fcdd3a204d0",
       "about": [
         "character-innkeeper"
       ],
       "speakers": [
         "character-innkeeper",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "Why We Ran",
@@ -1633,7 +1633,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Ask.",
             "next": "c"
           },
@@ -1686,7 +1686,7 @@
           },
           {
             "id": "close",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Whatever the reason, we keep going."
           }
         ]
@@ -1698,14 +1698,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f3d9711b91addaabee5dfd4a5a6a58ae6dfa236c32875b0b7d8873a74ad41a4a",
+      "hash": "sha256:8ba17cdaba135995986d2d296a84a597745ef414bf4714ec0f12030a2e51c84e",
       "about": [
         "character-innkeeper",
         "place-lanternroad-03"
       ],
       "speakers": [
         "character-innkeeper",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "Names on the board",
@@ -1719,7 +1719,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "And somebody pays for those names?",
             "next": "c"
           },
@@ -1737,13 +1737,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:db114c5bd12f4df7622c7f12bdeaab7020f2b1e48ec4ba45bc340295e3bcf770",
+      "hash": "sha256:9fc452eb164516ba9550c7966677b2d74f97b024bf237a07a0b12723732d3f12",
       "about": [
         "character-merchant",
         "place-lanternroad"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-merchant"
       ],
       "payload": {
@@ -1752,7 +1752,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "So many lanterns on the stairs. Who keeps them lit?",
             "next": "b"
           },
@@ -1770,13 +1770,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:373d3116853d4248ea0a01cabc5df64d5a5aac56eb7cfe39fc590638e2e303f6",
+      "hash": "sha256:68bc95ab0c4979c4707793ba3707a7f7e72977d2f79f68e7bbf45b095b36b4a4",
       "about": [
         "character-alchemist",
         "place-lanternroad-02"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-alchemist"
       ],
       "payload": {
@@ -1785,7 +1785,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "There's a ring burned into the shrine floor, and every lantern on the wall leans toward it.",
             "next": "b"
           },
@@ -1797,7 +1797,7 @@
           },
           {
             "id": "c",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Then we'll carry it back to camp. We need every hand we can get."
           }
         ]
@@ -1809,13 +1809,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:1596b0b45670fe442b5341ed16373e9367aaf0592a9b735f7322f9924cb63cd3",
+      "hash": "sha256:39788cde7162d7a596511301c695e023ed1943fbb478ae19cd1a998309babbbe",
       "about": [
         "character-enchantress",
         "place-morrowsshadow"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-enchantress"
       ],
       "payload": {
@@ -1824,7 +1824,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "It fills the whole sky. I can count the crystals.",
             "next": "b"
           },
@@ -1842,13 +1842,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7f616d1d616f72ab35585ee21ea1a5050be1b5133dde6ceba679c71648db54e7",
+      "hash": "sha256:be37cc9a7f9bdc867db564a4d2700cf0940ad5bde157c1a118c6a462aaf3a13f",
       "about": [
         "character-blacksmith"
       ],
       "speakers": [
         "character-blacksmith",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "What the cogs mean",
@@ -1862,7 +1862,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Grew? Out of what?",
             "next": "c"
           },
@@ -3412,13 +3412,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:03b88c70a1d57c2b46424eb54dc96a293e4070bbb80e8eed540a343156da9aef",
+      "hash": "sha256:6b3dd52aec6c69944a46ca00978b99181725c482468ed09a237f1bd1ec317df8",
       "about": [
         "character-enchantress",
         "place-still"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-enchantress"
       ],
       "payload": {
@@ -3427,7 +3427,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Still. This is where the Warden slept.",
             "next": "b"
           },
@@ -3439,7 +3439,7 @@
           },
           {
             "id": "c",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "More than the Lullaby needs. I can see it from here.",
             "next": "d"
           },
@@ -3457,13 +3457,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:195dab42a3bd95444d8a799e9cee1762bcbe08a9240fe5f96d8276fc012c215a",
+      "hash": "sha256:a69dac95a268031e803bc87072f8dc54727584a39d50f4452df7cfaf0d7ea68c",
       "about": [
         "character-enchantress",
         "place-swamp2"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-enchantress"
       ],
       "payload": {
@@ -3472,7 +3472,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "The Arks are floating again. Someone's fixed them.",
             "next": "b"
           },
@@ -3490,14 +3490,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f903123b563e0190fe7f292f6b73198ee1f29bd808b2a8387b2cfb0ad33afb02",
+      "hash": "sha256:9e579a84dbd94491c43a99e8c6c9e180efafe3b98d66ed7ce86b7f0bf62cfcf3",
       "about": [
         "character-merchant",
         "place-swamp-02"
       ],
       "speakers": [
         "character-merchant",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "Wheels from the wrecks",
@@ -3511,7 +3511,7 @@
           },
           {
             "id": "b",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Our wagon is held together with rope and stubbornness. Can you use them?",
             "next": "c"
           },
@@ -3529,13 +3529,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:77e3262a1e7ef0578c0ce60657debe12e824e13fe116c31f8f721d58eb076640",
+      "hash": "sha256:0c3dc0da0dd047e0d5e4e2afefffbf4ec696e26d1b57c6c59b9e1773064720b4",
       "about": [
         "character-enchantress"
       ],
       "speakers": [
         "character-enchantress",
-        "$lead"
+        "$commander"
       ],
       "payload": {
         "title": "A voice in the fog",
@@ -3549,7 +3549,7 @@
           },
           {
             "id": "reply",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Who's there? Show yourself.",
             "next": "ask"
           },
@@ -3588,13 +3588,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8d54687d735b94cf32354e1d0213765dbfc9435e4ff9e5100027ede8407ab05f",
+      "hash": "sha256:752094c3011738935bfc4f4cd8d6f5b2e9def82fbea61b3c45071cf7eed6cde5",
       "about": [
         "character-enchantress",
         "place-swamp"
       ],
       "speakers": [
-        "$lead",
+        "$commander",
         "character-enchantress"
       ],
       "payload": {
@@ -3603,7 +3603,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$lead",
+            "speaker": "$commander",
             "line": "Ships, out here? There's no sea for miles.",
             "next": "b"
           },
