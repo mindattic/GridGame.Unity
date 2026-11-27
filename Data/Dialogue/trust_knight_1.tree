@@ -1,0 +1,74 @@
+dialogue trust_knight_1
+title: Words on the rim
+trigger: Trust knight level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The camp is asleep except for the Knight, who sits by the coals with the shield face down across both knees, working a whetstone round the inside of the rim.
+  * You'll wear that rim through before the Captain ever gets a swing at it. -> rim
+    do: AddTrust $with -2
+  * You took the worst of it today. Let me see the arm. -> arm
+    do: AddTrust $with 5
+  * Mind if I sit up with you a while? -> sit
+    do: AddTrust $with 4
+
+node rim hero
+  It won't wear through. Hold iron's thicker than Choir iron. I'm not sharpening it, anyway. I'm cleaning the words.
+  -> words
+
+node arm hero
+  The arm's fine. Bruised, that's all. A shield arm's meant to be bruised. Sit, if you like. I'm cleaning the words.
+  -> words
+
+node sit hero
+  Sit. The fire's better with two. You can watch me clean the words, if that's your idea of company.
+  -> words
+
+node words commander
+  The Knight tilts the shield to the coals. Cut into the inside of the rim, worn smooth in places by a thumb, runs a single line of old hold script.
+  -> oath
+
+node oath hero
+  Stand before the hold, and the hold stands. Every squire cuts it into the first shield they carry. You say it in the hall, with your hand on the iron and the whole hold watching.
+  -> hall
+
+node hall hero
+  The Captain stood at the front of the hall the night I swore it. Nodded at every word. Then the same night, the tithe went up the beam, and the Captain went back to counting.
+  -> doubt
+
+node doubt hero
+  So here's what keeps me sitting up, Commander. I swore it in the Captain's hall, in front of the Captain. If the Captain's sold the hold, what's left of the oath? Who am I standing in front of now?
+  -> ask
+
+node ask commander
+  The whetstone stops. The Knight waits, thumb resting on the first word.
+  * The oath was to the hold, not the hall. The people are still there. So is the oath. -> people
+    do: AddTrust $with 9
+    do: SetFlag knight:oath_people
+  * Keep it until you know for certain. An oath shouldn't be put down in the dark. -> kept
+    do: AddTrust $with 5
+    do: SetFlag knight:oath_kept
+  * The Captain broke it first. You owe that oath nothing now. Scratch it out. -> cut
+    do: AddTrust $with -4
+    do: SetFlag knight:oath_cut
+
+node people hero
+  The hold, not the hall. My sister's in that hold. The old smith who made this rim. The children who carry water up from the well. I never once swore anything to the Captain. I just thought I had.
+  -> close_line
+
+node kept hero
+  Not in the dark. That's fair. That's how my teacher would have said it. I'll carry it a while longer, then, and see where it points.
+  -> close_line
+
+node cut hero
+  Scratch it out. Easy to say when it isn't cut into your own iron. I won't. If I do that, I'm just a hammer somebody's pointing. I'll keep it, Commander, even if you think it's spent.
+  -> close_line
+
+node close_line hero
+  Go on and sleep. Somebody has to be the first thing in front of the wagon in the morning, and it's me.
+  -> close
+
+node close commander
+  The Knight turns the shield over, face out, and leans it against the wagon wheel where the first light will catch it.

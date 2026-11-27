@@ -4235,5 +4235,136 @@
       { "Id": "axle", "Speaker": "hero" },
       { "Id": "unknown", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "trust_knight_1",
+    "Title": "Words on the rim",
+    "Trigger": { "Kind": "Trust", "Id": "knight", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "rim", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "arm", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "sit", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "rim", "Speaker": "hero", "Next": "words" },
+      { "Id": "arm", "Speaker": "hero", "Next": "words" },
+      { "Id": "sit", "Speaker": "hero", "Next": "words" },
+      { "Id": "words", "Speaker": "commander", "Next": "oath" },
+      { "Id": "oath", "Speaker": "hero", "Next": "hall" },
+      { "Id": "hall", "Speaker": "hero", "Next": "doubt" },
+      { "Id": "doubt", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "people", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "knight:oath_people" } ] },
+          { "Next": "kept", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 }, { "Type": "SetFlag", "Id": "knight:oath_kept" } ] },
+          { "Next": "cut", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "knight:oath_cut" } ] }
+        ]
+      },
+      { "Id": "people", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "kept", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "cut", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_knight_3",
+    "Title": "The water carrier",
+    "Trigger": { "Kind": "Trust", "Id": "knight", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "news", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] },
+          { "Next": "tenth", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "guard", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "news", "Speaker": "hero", "Next": "letter" },
+      { "Id": "tenth", "Speaker": "hero", "Next": "letter" },
+      { "Id": "guard", "Speaker": "hero", "Next": "letter" },
+      { "Id": "letter", "Speaker": "hero", "Next": "levy" },
+      { "Id": "levy", "Speaker": "hero", "Next": "spear" },
+      { "Id": "spear", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "knight:sister_promised" } ] },
+          { "Next": "warned", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "knight:sister_warned" } ] },
+          { "Next": "denied", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "knight:sister_denied" } ] }
+        ]
+      },
+      { "Id": "promised", "Speaker": "hero", "Next": "after" },
+      { "Id": "warned", "Speaker": "hero", "Next": "after" },
+      { "Id": "denied", "Speaker": "hero", "Next": "after" },
+      { "Id": "after", "Speaker": "commander", "Next": "close" },
+      { "Id": "close", "Speaker": "hero" }
+    ]
+  },
+  {
+    "Id": "trust_knight_5",
+    "Title": "Before the hold",
+    "Trigger": { "Kind": "Trust", "Id": "knight", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "people_kept", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_people" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "kept_kept", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_kept" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "cut_kept", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_cut" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 } ] },
+          { "Next": "new_line", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "people_kept", "Speaker": "hero", "Next": "line" },
+      { "Id": "kept_kept", "Speaker": "hero", "Next": "line" },
+      { "Id": "cut_kept", "Speaker": "hero", "Next": "line" },
+      { "Id": "new_line", "Speaker": "hero", "Next": "line" },
+      { "Id": "line", "Speaker": "hero", "Next": "sister" },
+      {
+        "Id": "sister", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised_kept", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_promised" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "knight:thread_home" } ] },
+          { "Next": "warned_kept", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_warned" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "knight:thread_warned" } ] },
+          { "Next": "denied_mended", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_denied" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "knight:thread_mended" } ] },
+          { "Next": "standing", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "knight:thread_standing" } ] }
+        ]
+      },
+      { "Id": "promised_kept", "Speaker": "hero", "Next": "ask" },
+      { "Id": "warned_kept", "Speaker": "hero", "Next": "ask" },
+      { "Id": "denied_mended", "Speaker": "hero", "Next": "ask" },
+      { "Id": "standing", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "hero",
+        "Choices": [
+          { "Next": "beside", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "knight:line_beside" } ] },
+          { "Next": "road", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 }, { "Type": "SetFlag", "Id": "knight:line_road" } ] },
+          { "Next": "blank", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "knight:line_blank" } ] },
+          { "Next": "watch", "Conditions": [ { "Type": "FlagSet", "Id": "founding:watch_knight" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "knight:line_watch" } ] }
+        ]
+      },
+      { "Id": "beside", "Speaker": "hero" },
+      { "Id": "road", "Speaker": "hero" },
+      { "Id": "blank", "Speaker": "hero" },
+      { "Id": "watch", "Speaker": "hero" }
+    ]
   }
 ]

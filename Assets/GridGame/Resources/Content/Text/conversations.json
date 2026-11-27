@@ -10326,6 +10326,445 @@
         ]
       }
     },
+    "dialogue:trust_knight_1": {
+      "key": "dialogue:trust_knight_1",
+      "id": "conversation-trust-knight-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5f6710befc92b730db43bfd843474d2e8a9b468a4cb2c4d1e601c64da0b2d94b",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Words on the rim",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The camp is asleep except for the Knight, who sits by the coals with the shield face down across both knees, working a whetstone round the inside of the rim.",
+            "choices": [
+              {
+                "text": "You'll wear that rim through before the Captain ever gets a swing at it.",
+                "next": "rim"
+              },
+              {
+                "text": "You took the worst of it today. Let me see the arm.",
+                "next": "arm"
+              },
+              {
+                "text": "Mind if I sit up with you a while?",
+                "next": "sit"
+              }
+            ]
+          },
+          {
+            "id": "rim",
+            "speaker": "$with",
+            "line": "It won't wear through. Hold iron's thicker than Choir iron. I'm not sharpening it, anyway. I'm cleaning the words.",
+            "next": "words"
+          },
+          {
+            "id": "arm",
+            "speaker": "$with",
+            "line": "The arm's fine. Bruised, that's all. A shield arm's meant to be bruised. Sit, if you like. I'm cleaning the words.",
+            "next": "words"
+          },
+          {
+            "id": "sit",
+            "speaker": "$with",
+            "line": "Sit. The fire's better with two. You can watch me clean the words, if that's your idea of company.",
+            "next": "words"
+          },
+          {
+            "id": "words",
+            "speaker": "character-commander",
+            "line": "The Knight tilts the shield to the coals. Cut into the inside of the rim, worn smooth in places by a thumb, runs a single line of old hold script.",
+            "next": "oath"
+          },
+          {
+            "id": "oath",
+            "speaker": "$with",
+            "line": "Stand before the hold, and the hold stands. Every squire cuts it into the first shield they carry. You say it in the hall, with your hand on the iron and the whole hold watching.",
+            "next": "hall"
+          },
+          {
+            "id": "hall",
+            "speaker": "$with",
+            "line": "The Captain stood at the front of the hall the night I swore it. Nodded at every word. Then the same night, the tithe went up the beam, and the Captain went back to counting.",
+            "next": "doubt"
+          },
+          {
+            "id": "doubt",
+            "speaker": "$with",
+            "line": "So here's what keeps me sitting up, Commander. I swore it in the Captain's hall, in front of the Captain. If the Captain's sold the hold, what's left of the oath? Who am I standing in front of now?",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The whetstone stops. The Knight waits, thumb resting on the first word.",
+            "choices": [
+              {
+                "text": "The oath was to the hold, not the hall. The people are still there. So is the oath.",
+                "next": "people"
+              },
+              {
+                "text": "Keep it until you know for certain. An oath shouldn't be put down in the dark.",
+                "next": "kept"
+              },
+              {
+                "text": "The Captain broke it first. You owe that oath nothing now. Scratch it out.",
+                "next": "cut"
+              }
+            ]
+          },
+          {
+            "id": "people",
+            "speaker": "$with",
+            "line": "The hold, not the hall. My sister's in that hold. The old smith who made this rim. The children who carry water up from the well. I never once swore anything to the Captain. I just thought I had.",
+            "next": "close_line"
+          },
+          {
+            "id": "kept",
+            "speaker": "$with",
+            "line": "Not in the dark. That's fair. That's how my teacher would have said it. I'll carry it a while longer, then, and see where it points.",
+            "next": "close_line"
+          },
+          {
+            "id": "cut",
+            "speaker": "$with",
+            "line": "Scratch it out. Easy to say when it isn't cut into your own iron. I won't. If I do that, I'm just a hammer somebody's pointing. I'll keep it, Commander, even if you think it's spent.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "Go on and sleep. Somebody has to be the first thing in front of the wagon in the morning, and it's me.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Knight turns the shield over, face out, and leans it against the wagon wheel where the first light will catch it."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_knight_3": {
+      "key": "dialogue:trust_knight_3",
+      "id": "conversation-trust-knight-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:ae40252867116a97ea8f63cebeae3391343330ed02a012add457a9362043979c",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The water carrier",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "A peddler's cart passed the camp at dusk, heading for the holds. Since then the Knight has stood at the edge of the firelight with a folded scrap of bark paper, reading it over and over.",
+            "choices": [
+              {
+                "text": "Bad news from the road?",
+                "next": "news"
+              },
+              {
+                "text": "Whatever it says, it won't read any different the tenth time.",
+                "next": "tenth"
+              },
+              {
+                "text": "You've been standing guard over a letter for an hour. Come and sit.",
+                "next": "guard"
+              }
+            ]
+          },
+          {
+            "id": "news",
+            "speaker": "$with",
+            "line": "News from home. The peddler carried it two holds over before anyone found a cart going our way. It's from my sister.",
+            "next": "letter"
+          },
+          {
+            "id": "tenth",
+            "speaker": "$with",
+            "line": "No. It reads the same every time. I keep hoping one of the words will change. It's from my sister.",
+            "next": "letter"
+          },
+          {
+            "id": "guard",
+            "speaker": "$with",
+            "line": "Guarding it. Ha. I suppose I am. Old habit. It's from my sister.",
+            "next": "letter"
+          },
+          {
+            "id": "letter",
+            "speaker": "$with",
+            "line": "She carries water for the hold. Up from the well, every morning, since we were small. She was carrying it the day I left for the arches. She waved with the bucket.",
+            "next": "levy"
+          },
+          {
+            "id": "levy",
+            "speaker": "$with",
+            "line": "The Captain's calling a levy. Everyone old enough to hold a spear, marched out to hunt the runaways who stole the Choir's caravan. That's us, Commander. That's this wagon.",
+            "next": "spear"
+          },
+          {
+            "id": "spear",
+            "speaker": "$with",
+            "line": "She's old enough now. If they put a spear in her hands and point her at this camp, I don't know what I do. I've thought about it all night and I still don't know.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Knight folds the letter once more and holds it out, as though the Commander should be the one to keep it.",
+            "choices": [
+              {
+                "text": "When the road reaches the holds, we go to her first. Before anything else.",
+                "next": "promised"
+              },
+              {
+                "text": "Send word back with the next cart. Tell her to get out before the levy reaches her.",
+                "next": "warned"
+              },
+              {
+                "text": "We can't turn this wagon round for one hold. Not with the Captain behind us.",
+                "next": "denied"
+              }
+            ]
+          },
+          {
+            "id": "promised",
+            "speaker": "$with",
+            "line": "First. You'd do that. For a water carrier you've never met. Then I'll hold you to it, Commander, the way the hold holds me to the oath.",
+            "next": "after"
+          },
+          {
+            "id": "warned",
+            "speaker": "$with",
+            "line": "Get out. She won't, she's too stubborn. But she'll read it, and she'll know I'm still standing, and that's something. I'll find a cart at first light.",
+            "next": "after"
+          },
+          {
+            "id": "denied",
+            "speaker": "$with",
+            "line": "One hold. That's my whole world you're counting there. But you're not wrong about the Captain. I'll stand where you need me. I'll just be looking back over my shoulder while I do.",
+            "next": "after"
+          },
+          {
+            "id": "after",
+            "speaker": "character-commander",
+            "line": "The Knight tucks the letter inside the shield's strap, flat against the iron, next to the words on the rim.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "$with",
+            "line": "Stand before the hold. I used to think that meant the gate. Maybe it means wherever she is."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_knight_5": {
+      "key": "dialogue:trust_knight_5",
+      "id": "conversation-trust-knight-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:467052cc804127b58c8d6f3144f70c2165bc20d0fa69f8e61ecbe4d4e92edb7a",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Before the hold",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Knight has a chisel and a mallet out beside the fire. The shield lies face down, and the old line of hold script on the rim has a fresh scrape under it, as if a second line has been started and stopped.",
+            "choices": [
+              {
+                "text": "You kept the oath. Hold, not hall. I can see it in how you fight.",
+                "next": "people_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You said you'd carry it until you knew. Do you know now?",
+                "next": "kept_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you to scratch it out. You didn't. You were right not to.",
+                "next": "cut_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "That's a new line.",
+                "next": "new_line"
+              }
+            ]
+          },
+          {
+            "id": "people_kept",
+            "speaker": "$with",
+            "line": "Hold, not hall. I've said it to myself every morning since. It's the only reason I could stand to look at the Captain across a field. Sit down.",
+            "next": "line"
+          },
+          {
+            "id": "kept_kept",
+            "speaker": "$with",
+            "line": "I think I do. It took a long road to point anywhere, but it points. Sit down.",
+            "next": "line"
+          },
+          {
+            "id": "cut_kept",
+            "speaker": "$with",
+            "line": "I know. You said it to me straight, and I was angry, and then I kept the words anyway, partly to spite you. It turned out spite holds iron as well as faith does. Sit down.",
+            "next": "line"
+          },
+          {
+            "id": "new_line",
+            "speaker": "$with",
+            "line": "It's meant to be. I can't get past the first word. Sit down.",
+            "next": "line"
+          },
+          {
+            "id": "line",
+            "speaker": "$with",
+            "line": "The old line says stand before the hold. I swore it to people I'd die for. Then I followed this wagon off the ice, and the people I'd die for got bigger. I don't know how to cut that into iron.",
+            "next": "sister"
+          },
+          {
+            "id": "sister",
+            "speaker": "character-commander",
+            "line": "The Knight's hand goes to the strap, where the folded letter still rides flat against the iron.",
+            "choices": [
+              {
+                "text": "I promised we'd go to her first. That hasn't moved an inch, whatever else has.",
+                "next": "promised_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You sent the warning on the next cart. Did anything ever come back?",
+                "next": "warned_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I wouldn't turn the wagon for one hold. I was wrong. It was never one hold.",
+                "next": "denied_mended",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Wherever she is, she knows you're still standing.",
+                "next": "standing"
+              }
+            ]
+          },
+          {
+            "id": "promised_kept",
+            "speaker": "$with",
+            "line": "I know it hasn't. I've watched you keep every other promise on this road, and I've stopped counting the days till the holds. Nobody in a hall ever kept anything for me.",
+            "next": "ask"
+          },
+          {
+            "id": "warned_kept",
+            "speaker": "$with",
+            "line": "One line, scratched on the back of my own letter. Not leaving. Hiding the spears in the well. Too stubborn to run and smart enough to make the levy short a few. That's her.",
+            "next": "ask"
+          },
+          {
+            "id": "denied_mended",
+            "speaker": "$with",
+            "line": "No. It never was. You saying so now is worth more than the detour would have been. I mean that.",
+            "next": "ask"
+          },
+          {
+            "id": "standing",
+            "speaker": "$with",
+            "line": "Still standing. Yes. That's what I'd want her to know, more than anything. That's what the shield's for.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "$with",
+            "line": "So. The second line. I've thought of a hundred words for it and none of them fit. You're the one I stand in front of now, Commander. You pick.",
+            "choices": [
+              {
+                "text": "Stand beside the ones who stand.",
+                "next": "beside"
+              },
+              {
+                "text": "Stand before the road, and the road holds.",
+                "next": "road"
+              },
+              {
+                "text": "Leave it blank. You've earned not swearing anything to anyone.",
+                "next": "blank"
+              },
+              {
+                "text": "Cut it later. Tonight, let me take the watch, the way you took it for us at the ford.",
+                "next": "watch",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "beside",
+            "speaker": "$with",
+            "line": "Beside. Not in front. Huh. A squire would never say that. I think I'm done being a squire. Hold the lamp, and I'll cut it now."
+          },
+          {
+            "id": "road",
+            "speaker": "$with",
+            "line": "The road holds. That's the hold's way of saying it, just longer. It'll fit on the rim. I'll cut it small and neat, the way my teacher did."
+          },
+          {
+            "id": "blank",
+            "speaker": "$with",
+            "line": "Blank. No. A knight without a line is just someone holding iron. I'll leave it for now, since you asked. But I'll fill it in someday, Commander, and it'll be about you whether you like it or not."
+          },
+          {
+            "id": "watch",
+            "speaker": "$with",
+            "line": "You. Taking the watch. Nobody's ever stood in front of me. I don't think I know how to sleep behind somebody. I'll try. Wake me if anything comes over the ridge."
+          }
+        ]
+      }
+    },
     "dialogue:trust_redmage_1": {
       "key": "dialogue:trust_redmage_1",
       "id": "conversation-trust-redmage-1",

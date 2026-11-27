@@ -1,0 +1,70 @@
+dialogue trust_knight_3
+title: The water carrier
+trigger: Trust knight level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  A peddler's cart passed the camp at dusk, heading for the holds. Since then the Knight has stood at the edge of the firelight with a folded scrap of bark paper, reading it over and over.
+  * Bad news from the road? -> news
+    do: AddTrust $with 4
+  * Whatever it says, it won't read any different the tenth time. -> tenth
+    do: AddTrust $with -2
+  * You've been standing guard over a letter for an hour. Come and sit. -> guard
+    do: AddTrust $with 5
+
+node news hero
+  News from home. The peddler carried it two holds over before anyone found a cart going our way. It's from my sister.
+  -> letter
+
+node tenth hero
+  No. It reads the same every time. I keep hoping one of the words will change. It's from my sister.
+  -> letter
+
+node guard hero
+  Guarding it. Ha. I suppose I am. Old habit. It's from my sister.
+  -> letter
+
+node letter hero
+  She carries water for the hold. Up from the well, every morning, since we were small. She was carrying it the day I left for the arches. She waved with the bucket.
+  -> levy
+
+node levy hero
+  The Captain's calling a levy. Everyone old enough to hold a spear, marched out to hunt the runaways who stole the Choir's caravan. That's us, Commander. That's this wagon.
+  -> spear
+
+node spear hero
+  She's old enough now. If they put a spear in her hands and point her at this camp, I don't know what I do. I've thought about it all night and I still don't know.
+  -> ask
+
+node ask commander
+  The Knight folds the letter once more and holds it out, as though the Commander should be the one to keep it.
+  * When the road reaches the holds, we go to her first. Before anything else. -> promised
+    do: AddTrust $with 10
+    do: SetFlag knight:sister_promised
+  * Send word back with the next cart. Tell her to get out before the levy reaches her. -> warned
+    do: AddTrust $with 6
+    do: SetFlag knight:sister_warned
+  * We can't turn this wagon round for one hold. Not with the Captain behind us. -> denied
+    do: AddTrust $with -4
+    do: SetFlag knight:sister_denied
+
+node promised hero
+  First. You'd do that. For a water carrier you've never met. Then I'll hold you to it, Commander, the way the hold holds me to the oath.
+  -> after
+
+node warned hero
+  Get out. She won't, she's too stubborn. But she'll read it, and she'll know I'm still standing, and that's something. I'll find a cart at first light.
+  -> after
+
+node denied hero
+  One hold. That's my whole world you're counting there. But you're not wrong about the Captain. I'll stand where you need me. I'll just be looking back over my shoulder while I do.
+  -> after
+
+node after commander
+  The Knight tucks the letter inside the shield's strap, flat against the iron, next to the words on the rim.
+  -> close
+
+node close hero
+  Stand before the hold. I used to think that meant the gate. Maybe it means wherever she is.

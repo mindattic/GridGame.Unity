@@ -1,0 +1,102 @@
+dialogue trust_knight_5
+title: Before the hold
+trigger: Trust knight level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Knight has a chisel and a mallet out beside the fire. The shield lies face down, and the old line of hold script on the rim has a fresh scrape under it, as if a second line has been started and stopped.
+  * You kept the oath. Hold, not hall. I can see it in how you fight. -> people_kept
+    if: FlagSet knight:oath_people
+    do: AddTrust $with 5
+  * You said you'd carry it until you knew. Do you know now? -> kept_kept
+    if: FlagSet knight:oath_kept
+    do: AddTrust $with 5
+  * I told you to scratch it out. You didn't. You were right not to. -> cut_kept
+    if: FlagSet knight:oath_cut
+    do: AddTrust $with 7
+  * That's a new line. -> new_line
+    do: AddTrust $with 3
+
+node people_kept hero
+  Hold, not hall. I've said it to myself every morning since. It's the only reason I could stand to look at the Captain across a field. Sit down.
+  -> line
+
+node kept_kept hero
+  I think I do. It took a long road to point anywhere, but it points. Sit down.
+  -> line
+
+node cut_kept hero
+  I know. You said it to me straight, and I was angry, and then I kept the words anyway, partly to spite you. It turned out spite holds iron as well as faith does. Sit down.
+  -> line
+
+node new_line hero
+  It's meant to be. I can't get past the first word. Sit down.
+  -> line
+
+node line hero
+  The old line says stand before the hold. I swore it to people I'd die for. Then I followed this wagon off the ice, and the people I'd die for got bigger. I don't know how to cut that into iron.
+  -> sister
+
+node sister commander
+  The Knight's hand goes to the strap, where the folded letter still rides flat against the iron.
+  * I promised we'd go to her first. That hasn't moved an inch, whatever else has. -> promised_kept
+    if: FlagSet knight:sister_promised
+    do: AddTrust $with 9
+    do: SetFlag knight:thread_home
+  * You sent the warning on the next cart. Did anything ever come back? -> warned_kept
+    if: FlagSet knight:sister_warned
+    do: AddTrust $with 8
+    do: SetFlag knight:thread_warned
+  * I wouldn't turn the wagon for one hold. I was wrong. It was never one hold. -> denied_mended
+    if: FlagSet knight:sister_denied
+    do: AddTrust $with 10
+    do: SetFlag knight:thread_mended
+  * Wherever she is, she knows you're still standing. -> standing
+    do: AddTrust $with 6
+    do: SetFlag knight:thread_standing
+
+node promised_kept hero
+  I know it hasn't. I've watched you keep every other promise on this road, and I've stopped counting the days till the holds. Nobody in a hall ever kept anything for me.
+  -> ask
+
+node warned_kept hero
+  One line, scratched on the back of my own letter. Not leaving. Hiding the spears in the well. Too stubborn to run and smart enough to make the levy short a few. That's her.
+  -> ask
+
+node denied_mended hero
+  No. It never was. You saying so now is worth more than the detour would have been. I mean that.
+  -> ask
+
+node standing hero
+  Still standing. Yes. That's what I'd want her to know, more than anything. That's what the shield's for.
+  -> ask
+
+node ask hero
+  So. The second line. I've thought of a hundred words for it and none of them fit. You're the one I stand in front of now, Commander. You pick.
+  * Stand beside the ones who stand. -> beside
+    do: AddTrust $with 8
+    do: SetFlag knight:line_beside
+  * Stand before the road, and the road holds. -> road
+    do: AddTrust $with 5
+    do: SetFlag knight:line_road
+  * Leave it blank. You've earned not swearing anything to anyone. -> blank
+    do: AddTrust $with -2
+    do: SetFlag knight:line_blank
+  * Cut it later. Tonight, let me take the watch, the way you took it for us at the ford. -> watch
+    if: FlagSet founding:watch_knight
+    do: AddTrust $with 10
+    do: SetFlag knight:line_watch
+
+node beside hero
+  Beside. Not in front. Huh. A squire would never say that. I think I'm done being a squire. Hold the lamp, and I'll cut it now.
+
+node road hero
+  The road holds. That's the hold's way of saying it, just longer. It'll fit on the rim. I'll cut it small and neat, the way my teacher did.
+
+node blank hero
+  Blank. No. A knight without a line is just someone holding iron. I'll leave it for now, since you asked. But I'll fill it in someday, Commander, and it'll be about you whether you like it or not.
+
+node watch hero
+  You. Taking the watch. Nobody's ever stood in front of me. I don't think I know how to sleep behind somebody. I'll try. Wake me if anything comes over the ridge.
