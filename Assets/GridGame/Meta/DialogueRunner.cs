@@ -14,6 +14,8 @@ namespace GridGame.Meta
         /// <summary>The class whose portrait shows (Art.Portrait resolves its file, GG-T557), or null for none.</summary>
         public string Portrait;
         public string Text;
+        /// <summary>The Commander (the player, <see cref="GridGame.Meta.Commander"/>) speaks this line.</summary>
+        public bool Commander;
         /// <summary>A choice the player picked to leave this line (null when it auto-advanced).</summary>
         public string Answer;
     }
@@ -79,10 +81,17 @@ namespace GridGame.Meta
         /// the face that speaks is the hero who joins (GG-T118); null if it has none or nobody is left to join.</summary>
         public string Recruit => recruits.Values.FirstOrDefault(v => v != null);
         private readonly Dictionary<DialogueEffect, string> recruits = new Dictionary<DialogueEffect, string>();
+        /// <summary>The party as it stood when the dialogue opened ("$party:N" is its Nth member, 1-based).</summary>
+        private readonly List<string> party;
+        /// <summary>The party hero who trusts the Commander most ("$trusted"), fixed when the dialogue opens; null if none
+        /// has Trust.</summary>
+        public string Trusted { get; }
 
         public DialogueRunner(ContentDb c, SaveData s, DialogueDef def, string with = null, string hero = null)
         {
             this.c = c; this.s = s; Def = def ?? throw new ArgumentNullException(nameof(def)); With = with; Hero = hero;
+            party = new List<string>(s.Party);
+            Trusted = TrustedHero(s);
             nodes = def.Nodes.Where(n => n?.Id != null).GroupBy(n => n.Id, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
             var promised = new List<string>();
             foreach (var e in def.AllEffects().Where(e => e?.Type == DialogueEffectType.JoinHero))
@@ -137,22 +146,74 @@ namespace GridGame.Meta
             Node = n;
             var sp = Def.Speakers.FirstOrDefault(x => string.Equals(x.Id, n.Speaker, StringComparison.OrdinalIgnoreCase));
             var (name, portrait) = Resolve(sp);
-            Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = n.Text });
+            Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = n.Text, Commander = sp?.Class == Commander.Token });
             foreach (var e in n.Effects) Apply(e, n.Id);
         }
 
-        /// <summary>A speaker's display name and portrait id, with "$lead"/"$with" bound to this save's heroes.</summary>
+        /// <summary>A speaker's display name and portrait id, with "$lead"/"$with"/"$party:N"/"$trusted" bound to this
+        /// save's heroes and "$commander" to the <see cref="Commander"/>.</summary>
         public (string name, string portrait) Resolve(DialogueSpeaker sp)
         {
             if (sp == null) return ("", null);
-            string cls = sp.Class == "$lead" ? s.Party.FirstOrDefault() : sp.Class == "$with" ? With : sp.Class == "$recruit" ? Recruit : sp.Class == "$hero" ? Hero : sp.Class;
+            if (sp.Class == Commander.Token) return (sp.Name ?? Commander.Name, sp.Portrait ?? Commander.Portrait);
+            string cls = sp.Class == "$lead" ? s.Party.FirstOrDefault() : Who(sp.Class);
             var def = c.TryClass(cls);
             return (sp.Name ?? def?.Name ?? sp.Id, sp.Portrait ?? def?.Id);
         }
 
-        /// <summary>The hero a bond effect or condition names: "$with", "$recruit" and "$hero" bound like speakers, else the
-        /// class id as written.</summary>
-        public string Who(string id) => id == "$with" ? With : id == "$recruit" ? Recruit : id == "$hero" ? Hero : id;
+        /// <summary>The hero a bond effect or condition names: "$with", "$recruit", "$hero", "$party:N" and "$trusted" bound
+        /// like speakers, else the class id as written.</summary>
+        public string Who(string id)
+        {
+            if (id == "$with") return With;
+            if (id == "$recruit") return Recruit;
+            if (id == "$hero") return Hero;
+            if (id == ContentLoader.TrustedToken) return Trusted;
+            int slot = ContentLoader.PartySlot(id);
+            if (slot > 0) return slot <= party.Count ? party[slot - 1] : null;
+            return id;
+        }
+
+        /// <summary>The party hero with the highest Trust among those that have it, ties to the earlier party slot; null if
+        /// none has Trust.</summary>
+        public static string TrustedHero(SaveData s)
+        {
+            string best = null;
+            int top = int.MinValue;
+            foreach (var h in s.Party)
+            {
+                if (!Bonds.HasTrust(s, h)) continue;
+                int t = Bonds.Trust(s, h);
+                if (t > top) { top = t; best = h; }
+            }
+            return best;
+        }
+
+        /// <summary>False when <paramref name="def"/> names a "$party:N" or "$trusted" hero (as a speaker or in a bond effect
+        /// or condition) this save can't fill, so the dialogue isn't offered.</summary>
+        public static bool CanBind(SaveData s, DialogueDef def)
+        {
+            if (s == null || def == null) return true;
+            bool trusted = false, haveTrusted = false;
+            bool Fits(string id)
+            {
+                if (id == ContentLoader.TrustedToken)
+                {
+                    if (!haveTrusted) { trusted = TrustedHero(s) != null; haveTrusted = true; }
+                    return trusted;
+                }
+                int slot = ContentLoader.PartySlot(id);
+                return slot == 0 || slot <= s.Party.Count;
+            }
+            if (def.Speakers.Any(sp => sp != null && !Fits(sp.Class))) return false;
+            foreach (var e in def.AllEffects())
+                if ((e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) && (!Fits(e.Id) || !Fits(e.Other))) return false;
+            foreach (var n in def.Nodes)
+                if (n?.Choices != null)
+                    foreach (var ch in n.Choices)
+                        if (ch?.Conditions != null && ch.Conditions.Any(x => x != null && (!Fits(x.Id) || !Fits(x.Other)))) return false;
+            return true;
+        }
 
         /// <summary><paramref name="place"/> is where the effect sits ("&lt;node&gt;" or "&lt;node&gt;:&lt;choice&gt;"), which guards a bond change.</summary>
         private void Apply(DialogueEffect e, string place)
@@ -351,7 +412,7 @@ namespace GridGame.Meta
             var theme = c.ThemeOf(stageId);
             foreach (var d in c.DialogueOrder)
             {
-                if (d.Trigger == null || s.SeenDialogues.Contains(d.Id) || !All(c, s, d.Conditions)) continue;
+                if (d.Trigger == null || s.SeenDialogues.Contains(d.Id) || !All(c, s, d.Conditions) || !CanBind(s, d)) continue;
                 bool fires = d.Trigger.Kind == DialogueTriggerKind.ThemeStart && theme != null && string.Equals(d.Trigger.Id, theme.Id, StringComparison.OrdinalIgnoreCase)
                     || d.Trigger.Kind == DialogueTriggerKind.StageCleared && s.ClearedStages.Contains(d.Trigger.Id)
                     || d.Trigger.Kind == DialogueTriggerKind.LevelReached && LevelReached(s, d.Trigger.Level)
@@ -371,14 +432,14 @@ namespace GridGame.Meta
         public static DialogueDef PendingInterlude(ContentDb c, SaveData s)
         {
             if (s == null || s.TestMode) return null;
-            return c.DialogueOrder.FirstOrDefault(d => d.Trigger != null && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions)
+            return c.DialogueOrder.FirstOrDefault(d => d.Trigger != null && !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && CanBind(s, d)
                 && (d.Trigger.Kind == DialogueTriggerKind.LevelReached && LevelReached(s, d.Trigger.Level) || VendorBeatDue(s, d)));
         }
 
         /// <summary>GG-T537: the first vendor join beat due on the way to Camp (its stage cleared, not yet played), or null.
         /// Never on a Test Mode save.</summary>
         public static DialogueDef PendingVendorBeat(ContentDb c, SaveData s) =>
-            s == null || s.TestMode ? null : c.DialogueOrder.FirstOrDefault(d => !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && VendorBeatDue(s, d));
+            s == null || s.TestMode ? null : c.DialogueOrder.FirstOrDefault(d => !s.SeenDialogues.Contains(d.Id) && All(c, s, d.Conditions) && CanBind(s, d) && VendorBeatDue(s, d));
 
         private static bool VendorBeatDue(SaveData s, DialogueDef d) => IsVendorBeat(d) && s.ClearedStages.Contains(d.Trigger.Id);
 
@@ -402,7 +463,8 @@ namespace GridGame.Meta
             var options = c.DialogueOrder.Where(d => d.Trigger?.Kind == DialogueTriggerKind.Talk
                     && (string.Equals(d.Trigger.Id, partner, StringComparison.OrdinalIgnoreCase) || !isNpc && d.Trigger.Id == "party")
                     && !(d.Once && s.SeenDialogues.Contains(d.Id))
-                    && All(c, s, d.Conditions))
+                    && All(c, s, d.Conditions)
+                    && CanBind(s, d))
                 .Select((d, i) => (d, i))
                 .OrderBy(x => s.SeenDialogues.Contains(x.d.Id) ? 1 : 0)
                 .ThenBy(x => x.d.Trigger.Id == "party" ? 1 : 0)

@@ -925,6 +925,20 @@ namespace GridGame.Core.Content
         }
 
         public const string NpcFlagPrefix = "npc:";
+        /// <summary>GG-T1575: the speaker class of the Commander (the player); a speaker only, never a bond hero.</summary>
+        public const string CommanderToken = "$commander";
+        /// <summary>GG-T1575: "$party:N" is the Nth party member (1-based) when the dialogue opens.</summary>
+        public const string PartyTokenPrefix = "$party:";
+        /// <summary>GG-T1575: the party hero who trusts the Commander most when the dialogue opens.</summary>
+        public const string TrustedToken = "$trusted";
+        /// <summary>The highest N a "$party:N" token may name: the party cap (Meta's Progression.MaxPartySize).</summary>
+        public const int MaxPartySlots = 6;
+
+        /// <summary>N for a "$party:N" token with N in 1..<see cref="MaxPartySlots"/>, else 0.</summary>
+        public static int PartySlot(string token) =>
+            token != null && token.StartsWith(PartyTokenPrefix, StringComparison.Ordinal)
+            && int.TryParse(token.Substring(PartyTokenPrefix.Length), System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out int n)
+            && n >= 1 && n <= MaxPartySlots ? n : 0;
         /// <summary>GG-T1293: the most one AddTrust / AddCohesion effect may move a bond, either way.</summary>
         public const int DialogueBondMax = 20;
 
@@ -994,8 +1008,9 @@ namespace GridGame.Core.Content
             // GG-T1293: a hero a bond effect or condition names: a hero class, or a speaker token this dialogue binds.
             bool BondHero(string id, string where, string what)
             {
-                bool ok = id == "$with" ? talkWithHero : id == "$recruit" ? joinsHero : id == "$hero" ? wanderer : IsHero(id);
-                if (!ok) p.Add($"{where}: {what} needs a hero class, or \"$with\" / \"$recruit\" / \"$hero\" where this dialogue binds it, has '{id}'");
+                bool ok = id == "$with" ? talkWithHero : id == "$recruit" ? joinsHero : id == "$hero" ? wanderer
+                    : id == TrustedToken || PartySlot(id) > 0 || IsHero(id);
+                if (!ok) p.Add($"{where}: {what} needs a hero class, \"$party:1\"-\"$party:{MaxPartySlots}\", \"$trusted\", or \"$with\" / \"$recruit\" / \"$hero\" where this dialogue binds it, has '{id}'");
                 return ok;
             }
             void BondPair(string a, string b, string where, string what)
@@ -1088,7 +1103,8 @@ namespace GridGame.Core.Content
             {
                 if (s == null || string.IsNullOrEmpty(s.Id)) { p.Add($"{w}: speaker with empty Id"); continue; }
                 if (!speakers.Add(s.Id)) p.Add($"{w}: duplicate speaker '{s.Id}'");
-                if (s.Class == "$lead") { }
+                if (s.Class == "$lead" || s.Class == CommanderToken || s.Class == TrustedToken || PartySlot(s.Class) > 0) { }
+                else if (s.Class != null && s.Class.StartsWith(PartyTokenPrefix, StringComparison.Ordinal)) p.Add($"{w} speaker {s.Id}: '{s.Class}' needs a party slot 1-{MaxPartySlots}");
                 else if (s.Class == "$with") { if (!talkWithHero) p.Add($"{w} speaker {s.Id}: \"$with\" only fits a Talk with a party member"); }
                 else if (s.Class == "$hero") { if (!wanderer) p.Add($"{w} speaker {s.Id}: \"$hero\" only fits a Wanderer talk"); }
                 else if (s.Class == "$recruit") { if (!joinsHero) p.Add($"{w} speaker {s.Id}: \"$recruit\" needs a JoinHero effect in this dialogue"); }

@@ -1483,7 +1483,7 @@ namespace GridGame.Core.Content
     /// Available = its unlock stage is cleared and it's neither under way nor handed in.
     /// TrustAtLeast / CohesionAtLeast (GG-T1293, §25.20): the hero <see cref="DialogueCondition.Id"/>'s Trust, or the cohesion of
     /// Id and <see cref="DialogueCondition.Other"/>, is at least <see cref="DialogueCondition.Amount"/>; each hero is a class id
-    /// or a speaker token ("$with", "$recruit", "$hero").</summary>
+    /// or a speaker token ("$with", "$recruit", "$hero", "$party:N", "$trusted"; not "$commander").</summary>
     public enum DialogueConditionType { FlagSet, FlagNotSet, HasItem, GoldAtLeast, PartyHas, RosterHas, RosterLacks, NpcJoined, QuestAvailable, QuestActive, QuestDone, TrustAtLeast, CohesionAtLeast }
 
     public sealed class DialogueCondition
@@ -1509,7 +1509,7 @@ namespace GridGame.Core.Content
     /// the station itself opens on the stage clear (Meta's CampUnlocks); the effect only announces it.
     /// AddTrust / AddCohesion (GG-T1293, §25.20) move the hero <see cref="DialogueEffect.Id"/>'s Trust, or the cohesion of Id
     /// and <see cref="DialogueEffect.Other"/>, by <see cref="DialogueEffect.Amount"/>; each hero is a class id or a speaker
-    /// token ("$with", "$recruit", "$hero"). Each pays once per save at its node (and choice): a replayed Talk can't farm it.</summary>
+    /// token ("$with", "$recruit", "$hero", "$party:N", "$trusted"; not "$commander"). Each pays once per save at its node (and choice): a replayed Talk can't farm it.</summary>
     public enum DialogueEffectType { SetFlag, ClearFlag, GrantGold, GrantItem, RecruitHero, JoinNpc, JoinHero, GrantSkillPoint, StartQuest, OpenStation, AddTrust, AddCohesion }
 
     public sealed class DialogueEffect
@@ -1530,7 +1530,10 @@ namespace GridGame.Core.Content
         public string Id;
         /// <summary>A class id (its name and portrait), or "$lead" (the first party member), "$with" (the
         /// party member a Talk dialogue is with) or "$recruit" (the hero this dialogue's first JoinHero brings, GG-T118), or
-        /// "$hero" (the wanderer a Wanderer talk is with, GG-T342).</summary>
+        /// "$hero" (the wanderer a Wanderer talk is with, GG-T342). GG-T1575: "$commander" (the player, named "the Commander"
+        /// with a silhouette until the canon fills them), "$party:N" (the Nth party member, 1-based, up to the party cap) or
+        /// "$trusted" (the party hero with the most Trust, ties to the earlier slot), bound when the dialogue opens; a
+        /// dialogue whose "$party:N" or "$trusted" this save can't fill isn't offered.</summary>
         public string Class;
         /// <summary>Display name; defaults to the class's name.</summary>
         public string Name;
