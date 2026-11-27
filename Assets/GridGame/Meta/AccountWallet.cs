@@ -211,11 +211,23 @@ namespace GridGame.Meta
                 if (!IsKey(w.Login)) w.Login = KeyOf(w.Login);
                 string p = Path.Combine(Folder, "wallet-" + w.Login + ".json");
                 Directory.CreateDirectory(Folder);
-                if (File.Exists(p) && TryRead(p) != null) File.Copy(p, p + BackupSuffix, true);
+                if (File.Exists(p))
+                {
+                    if (TryRead(p) != null) File.Copy(p, p + BackupSuffix, true);
+                    else KeepCorrupt(p); // an unreadable file is set aside, never overwritten, so the balance can be recovered
+                }
                 AtomicFile.WriteAllText(p, Serialize(w));
                 return true;
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is JsonException) { return false; }
+        }
+
+        /// <summary>Renames an unreadable wallet file to <c>.corrupt</c> (a numbered name when one is already there).</summary>
+        private static void KeepCorrupt(string p)
+        {
+            string dest = p + ".corrupt";
+            for (int i = 1; File.Exists(dest); i++) dest = p + ".corrupt" + i;
+            File.Move(p, dest);
         }
 
         public static string Serialize(AccountWallet w) => JsonConvert.SerializeObject(w, Formatting.Indented, SaveFiles.Settings);
