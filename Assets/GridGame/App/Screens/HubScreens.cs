@@ -2092,7 +2092,11 @@ namespace GridGame.App
                 var sizes = new List<(int w, int h)> { (0, 0) };
                 foreach (var r in UnityEngine.Screen.resolutions)
                     if (!sizes.Contains((r.width, r.height))) sizes.Add((r.width, r.height));
-                int at = Math.Max(0, sizes.IndexOf((st.ResolutionWidth, st.ResolutionHeight)));
+                // GG-T1238: a saved size missing from this monitor's list (other monitor, hand edit) is still applied by
+                // ApplyDisplay, so list it rather than show "As launched" for it.
+                var saved = (st.ResolutionWidth, st.ResolutionHeight);
+                if (saved.Item1 > 0 && saved.Item2 > 0 && !sizes.Contains(saved)) sizes.Add(saved);
+                int at = Math.Max(0, sizes.IndexOf(saved));
                 Row("Resolution", at == 0 ? "As launched" : $"{sizes[at].w}×{sizes[at].h}", () =>
                 {
                     var next = sizes[(at + 1) % sizes.Count];
