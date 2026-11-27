@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GridGame.Core.Content;
 
 namespace GridGame.Meta
@@ -213,9 +214,15 @@ namespace GridGame.Meta
         /// <summary>Whether a purchase can actually complete.</summary>
         bool Connected { get; }
         void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done);
+        /// <summary>GG-T1574: buys any <see cref="StoreCatalog"/> product (a pack, the starter offer, the season pass, a
+        /// cosmetic bundle). Refused, with nothing charged, when the account can't buy it again
+        /// (<see cref="StoreCatalog.CanBuy"/>).</summary>
+        void Purchase(ContentDb c, SaveData s, StoreProduct product, Action<PurchaseResult> done);
         /// <summary>The pack's price as the store shows it, in the player's currency ("₩1,400", "1,09 €"), or null when the
         /// store hasn't said (the screen falls back to <see cref="DiamondPack.Price"/>, the US-dollar list price). GG-T470.</summary>
         string PriceOf(DiamondPack pack);
+        /// <summary>The product's localized store price, or null (the screen falls back to <see cref="StoreProduct.Price"/>).</summary>
+        string PriceOf(StoreProduct product);
         /// <summary>A purchase that finished outside a <see cref="Purchase"/> call (the App toasts it and saves).</summary>
         event Action<PurchaseResult> Delivered;
         /// <summary>The platform offers a "Restore purchases" action (GG-T469: Apple's restore re-sends unfinished
@@ -235,6 +242,29 @@ namespace GridGame.Meta
         };
 
         public const string NotConnected = "Store not connected yet";
+
+        /// <summary>Whether <paramref name="productId"/> is one of the Shard packs (the only products a save's own ledger
+        /// can book; everything else lands in the account wallet).</summary>
+        public static bool IsPack(string productId) => Packs.Any(p => p.ProductId == productId);
+
+        /// <summary>Why this account can't buy <paramref name="p"/>, or null when it can.</summary>
+        public static string CantBuy(AccountWallet w, StoreProduct p) =>
+            p == null ? "No such product"
+            : StoreCatalog.CanBuy(w, p) ? null
+            : p.Type == ProductType.NonConsumable ? $"{p.Name} is already yours."
+            : $"{p.Name} is limited to {p.AccountLimit:N0} per account.";
+
+        /// <summary>What a granted purchase added, for its toast: "+300 Mana Shards, +5 Summon Tickets, 1 new cosmetic",
+        /// "Unit frames bundle unlocked".</summary>
+        public static string Gains(StoreProduct p, PurchaseRecord r)
+        {
+            var parts = new List<string>();
+            if (r != null && r.Diamonds > 0) parts.Add("+" + ShardText.Of(r.Diamonds));
+            if (r != null && r.Tickets > 0) parts.Add($"+{r.Tickets:N0} Summon Ticket{(r.Tickets == 1 ? "" : "s")}");
+            if (p?.Type == ProductType.NonConsumable) parts.Add($"{p.Name} unlocked");
+            else if (r?.Cosmetics?.Length > 0) parts.Add(r.Cosmetics.Length == 1 ? "1 new cosmetic" : $"{r.Cosmetics.Length} new cosmetics");
+            return parts.Count > 0 ? string.Join(", ", parts) : $"{p?.Name ?? "Purchase"} delivered";
+        }
     }
 
     /// <summary>DEV / EDITOR ONLY: grants the pack at once, charges nothing. Never selected in a release build.</summary>
@@ -246,6 +276,7 @@ namespace GridGame.Meta
         public bool CanRestore => false;
         public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, "Nothing to restore in the test store."));
         public string PriceOf(DiamondPack pack) => null;
+        public string PriceOf(StoreProduct product) => null;
 
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
         {
@@ -253,6 +284,24 @@ namespace GridGame.Meta
             done?.Invoke(r.Ok
                 ? PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] +{ShardText.Of(pack.Diamonds)}, no charge.", pack.ProductId, pack.Diamonds)
                 : PurchaseResult.Of(PurchaseKind.Failed, r.Message, pack?.ProductId));
+        }
+
+        /// <summary>A pack lands where the save keeps its Shards; any other product is granted into the bound account wallet
+        /// under a dev transaction id, exactly as a paid order would be.</summary>
+        public void Purchase(ContentDb c, SaveData s, StoreProduct product, Action<PurchaseResult> done)
+        {
+            var w = DiamondExchange.Wallet;
+            if (DiamondStore.CantBuy(w, product) is string no) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, no, product?.Id)); return; }
+            if (DiamondStore.IsPack(product.Id)) { Purchase(c, s, DiamondStore.Packs.First(p => p.ProductId == product.Id), done); return; }
+            if (w == null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{product.Name} needs a store account wallet, and none is loaded.", product.Id)); return; }
+            string tx = "dev-" + Guid.NewGuid().ToString("N");
+            if (AccountWallets.Grant(w, tx, product.Id, DateTime.UtcNow, "Dev", out int diamonds) != GrantOutcome.Granted)
+            {
+                done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, $"{product.Name} couldn't be granted.", product.Id));
+                return;
+            }
+            DiamondExchange.WalletDirty = true;
+            done?.Invoke(PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] {DiamondStore.Gains(product, w.Granted[tx])}, no charge.", product.Id, diamonds));
         }
     }
 
@@ -266,7 +315,10 @@ namespace GridGame.Meta
         public bool CanRestore => false;
         public void Restore(Action<PurchaseResult> done) => done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected));
         public string PriceOf(DiamondPack pack) => null;
+        public string PriceOf(StoreProduct product) => null;
         public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done) =>
             done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected, pack?.ProductId));
+        public void Purchase(ContentDb c, SaveData s, StoreProduct product, Action<PurchaseResult> done) =>
+            done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, DiamondStore.NotConnected, product?.Id));
     }
 }

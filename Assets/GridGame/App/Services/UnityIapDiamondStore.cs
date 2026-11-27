@@ -92,6 +92,7 @@ namespace GridGame.App
                 ReleaseInFlight($"The store hasn't answered yet. If the purchase went through, the {ShardText.ShortPlural} arrive on their own.");
 
             if (waiting.Count > 0) DrainWaiting();
+            if (restored.Count > 0) DrainRestored();
 
             if (!Connected && !connecting && (retryIn -= dt) <= 0f)
             {
@@ -141,7 +142,7 @@ namespace GridGame.App
                     controller.OnPurchaseConfirmed += OnPurchaseConfirmed;
                     controller.OnPurchaseFailed += OnPurchaseFailed;
                     controller.OnPurchaseDeferred += OnPurchaseDeferred;
-                    controller.OnPurchasesFetched += o => Debug.Log($"[IAP] purchases fetched: {o?.PendingOrders?.Count ?? 0} unfinished, {o?.DeferredOrders?.Count ?? 0} deferred");
+                    controller.OnPurchasesFetched += OnPurchasesFetched;
                     controller.OnPurchasesFetchFailed += f => { NeedRefetch(); Debug.LogWarning("[IAP] purchases fetch failed: " + f?.Message); };
                     // An order paid for but never finished (the app died before ConfirmPurchase) comes back through
                     // OnPurchasePending when purchases are fetched.
@@ -197,31 +198,44 @@ namespace GridGame.App
             store.FetchPurchases();
         }
 
-        private Product ProductOf(DiamondPack pack) => pack == null ? null : store?.GetProductById(pack.ProductId);
+        private Product ProductOf(StoreProduct p) => p == null ? null : store?.GetProductById(p.Id);
+
+        private static StoreProduct CatalogOf(DiamondPack pack) => pack == null ? null : StoreCatalog.Of(pack.ProductId) ?? StoreProduct.Of(pack);
 
         /// <summary>GG-T470: the store's own localized price string, once products are fetched.</summary>
-        public string PriceOf(DiamondPack pack)
+        public string PriceOf(DiamondPack pack) => PriceOf(CatalogOf(pack));
+
+        public string PriceOf(StoreProduct product)
         {
             if (!productsReady) return null;
-            var s = ProductOf(pack)?.metadata?.localizedPriceString;
+            var s = ProductOf(product)?.metadata?.localizedPriceString;
             return string.IsNullOrWhiteSpace(s) ? null : s;
         }
-        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done)
+
+        public void Purchase(ContentDb c, SaveData s, DiamondPack pack, Action<PurchaseResult> done) => Purchase(c, s, CatalogOf(pack), done);
+
+        public void Purchase(ContentDb c, SaveData s, StoreProduct product, Action<PurchaseResult> done)
         {
-            if (pack == null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, "No such pack")); return; }
-            if (!Connected) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, Status, pack.ProductId)); return; }
+            if (product == null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, "No such product")); return; }
+            if (!Connected) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, Status, product.Id)); return; }
             if (inFlightId != null && Time.realtimeSinceStartup - inFlightSince > InFlightTimeout) AbandonInFlight();
-            if (inFlightId != null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, "A purchase is already in progress.", pack.ProductId)); return; }
-            var product = ProductOf(pack);
-            if (product == null || !product.availableToPurchase)
+            if (inFlightId != null) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Failed, "A purchase is already in progress.", product.Id)); return; }
+            if (DiamondStore.CantBuy(DiamondExchange.Wallet, product) is string no) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, no, product.Id)); return; }
+            if (NeedsWallet(product.Id) && DiamondExchange.Wallet == null)
             {
-                done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{ShardText.Of(pack.Diamonds)} isn't on sale in this store right now.", pack.ProductId));
+                done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{product.Name} needs your store account, which isn't loaded yet. Nothing was charged.", product.Id));
                 return;
             }
-            inFlightId = pack.ProductId;
+            var p = ProductOf(product);
+            if (p == null || !p.availableToPurchase)
+            {
+                done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, $"{product.Name} isn't on sale in this store right now.", product.Id));
+                return;
+            }
+            inFlightId = product.Id;
             inFlightDone = done;
             inFlightSince = Time.realtimeSinceStartup;
-            store.PurchaseProduct(product);
+            store.PurchaseProduct(p);
         }
 
         private void Answer(string productId, PurchaseResult r)
@@ -248,17 +262,24 @@ namespace GridGame.App
         /// <summary>GG-T702: the account wallet is bound, so a paid order needs no save loaded: it lands in the wallet.</summary>
         private static bool HasWallet(GameApp app) => app != null && app.WalletStore != null && DiamondExchange.Wallet != null;
 
-        private static bool CanGrant(GameApp app) => HasWallet(app) || HasSave(app);
+        /// <summary>GG-T1574: a catalogue product other than a Shard pack (starter offer, pass, bundle): only the account
+        /// wallet can book it, never a save's ledger.</summary>
+        private static bool NeedsWallet(string productId) => StoreCatalog.Of(productId) != null && !DiamondStore.IsPack(productId);
+
+        private static bool CanGrant(GameApp app, string productId) => HasWallet(app) || (HasSave(app) && !NeedsWallet(productId));
 
         private void OnPurchasePending(PendingOrder order)
         {
             var app = GameApp.I;
-            if (!CanGrant(app))
+            var id = ProductIdOf(order);
+            if (!CanGrant(app, id))
             {
-                // GG-T469: nowhere to put the Diamonds yet. Hold the order (unfinished, so the store keeps it too) and grant
-                // it the moment a save is loaded: the pump (IapPump) drains it every frame, whether or not the app object
-                // existed when the order arrived.
+                // GG-T469: nowhere to put it yet. Hold the order (unfinished, so the store keeps it too) and grant it the
+                // moment a save (a pack) or the account wallet (anything else) is loaded: the pump (IapPump) drains it every
+                // frame, whether or not the app object existed when the order arrived.
                 if (!waiting.Contains(order)) waiting.Add(order);
+                if (inFlightId != null && id == inFlightId)
+                    ReleaseInFlight("Paid. It's delivered as soon as your store account is loaded.");
                 return;
             }
             Fulfil(app, order);
@@ -267,10 +288,49 @@ namespace GridGame.App
         private void DrainWaiting()
         {
             var app = GameApp.I;
-            if (!CanGrant(app) || waiting.Count == 0) return;
-            var batch = waiting.ToList();
-            waiting.Clear();
-            foreach (var o in batch) Fulfil(app, o);
+            var ready = waiting.Where(o => CanGrant(app, ProductIdOf(o))).ToList();
+            if (ready.Count == 0) return;
+            waiting.RemoveAll(ready.Contains);
+            foreach (var o in ready) Fulfil(app, o);
+        }
+
+        /// <summary>GG-T1574: non-consumables the store says this account owns, finished long ago (a new device, a
+        /// reinstall), waiting for the account wallet to be bound.</summary>
+        private readonly List<ConfirmedOrder> restored = new List<ConfirmedOrder>();
+
+        private void OnPurchasesFetched(Orders o)
+        {
+            Debug.Log($"[IAP] purchases fetched: {o?.PendingOrders?.Count ?? 0} unfinished, {o?.DeferredOrders?.Count ?? 0} deferred, {o?.ConfirmedOrders?.Count ?? 0} finished");
+            if (o?.ConfirmedOrders == null) return;
+            foreach (var order in o.ConfirmedOrders)
+                if (StoreCatalog.Of(ProductIdOf(order))?.Type == GridGame.Meta.ProductType.NonConsumable && !restored.Contains(order))
+                    restored.Add(order);
+            DrainRestored();
+        }
+
+        /// <summary>Grants each owned non-consumable the wallet hasn't booked (once per transaction id) and writes the
+        /// wallet. The orders are already finished with the store, so there is nothing to confirm.</summary>
+        private void DrainRestored()
+        {
+            var app = GameApp.I;
+            if (restored.Count == 0 || !HasWallet(app)) return;
+            var w = DiamondExchange.Wallet;
+            var batch = restored.ToList();
+            restored.Clear();
+            foreach (var order in batch)
+            {
+                var id = ProductIdOf(order);
+                var tx = order?.Info?.TransactionID;
+                if (string.IsNullOrEmpty(tx) || AccountWallets.Has(w, tx)) continue;
+                var outcome = AccountWallets.Grant(w, tx, id, DateTime.UtcNow, LedgerStore, out _);
+                if (outcome != GrantOutcome.Granted && outcome != GrantOutcome.AlreadyGranted) continue;
+                DiamondExchange.WalletDirty = true;
+                Debug.Log($"[IAP] restored {id} ({tx}): {outcome}");
+                if (outcome == GrantOutcome.Granted)
+                    Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Granted, $"Restored: {DiamondStore.Gains(StoreCatalog.Of(id), w.Granted[tx])}.", id));
+            }
+            if (DiamondExchange.WalletDirty && !app.PersistWallet())
+                Debug.LogWarning("[IAP] restored purchases granted but the wallet isn't saved yet; it is written again with the next save");
         }
 
         /// <summary>GG-T469: grant through the ledger (once per transaction id), write the save, and only then finish the
@@ -388,11 +448,11 @@ namespace GridGame.App
             {
                 Debug.LogWarning($"[IAP] wallet write failed after granting {tx}; leaving the order unfinished so it comes back");
                 NeedRefetch();
-                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
+                Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"{DiamondStore.Gains(StoreCatalog.Of(id), w.Granted[tx])}, but the game couldn't save. Keep playing; it will be saved again.", id, diamonds));
                 return;
             }
             store.ConfirmPurchase(order);
-            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"+{ShardText.Of(diamonds)}. Thank you!", id, diamonds));
+            Answer(id, PurchaseResult.Of(PurchaseKind.Granted, $"{DiamondStore.Gains(StoreCatalog.Of(id), w.Granted[tx])}. Thank you!", id, diamonds));
         }
 
         /// <summary>A re-delivered order granted in another save slot, of this profile or any other, before its confirm
@@ -459,10 +519,15 @@ namespace GridGame.App
             if (!Connected) { done?.Invoke(PurchaseResult.Of(PurchaseKind.Unavailable, Status)); return; }
             // Google Play re-sends unfinished orders on every fetch; Apple's restore re-sends unfinished transactions.
             // Either way anything found arrives through OnPurchasePending and the ledger grants it at most once.
-            store.FetchPurchases();
-            store.RestoreTransactions((ok, error) => done?.Invoke(ok
-                ? PurchaseResult.Of(PurchaseKind.Granted, "Purchases checked. Anything unfinished has been delivered.")
-                : PurchaseResult.Of(PurchaseKind.Failed, "Couldn't check purchases" + (string.IsNullOrEmpty(error) ? "." : ": " + error))));
+            // GG-T1574: once Apple has restored, fetch purchases so owned non-consumables (finished long ago) come back as
+            // confirmed orders and land in the wallet (OnPurchasesFetched).
+            store.RestoreTransactions((ok, error) =>
+            {
+                if (ok) store.FetchPurchases();
+                done?.Invoke(ok
+                    ? PurchaseResult.Of(PurchaseKind.Granted, "Purchases checked. Anything unfinished or owned has been delivered.")
+                    : PurchaseResult.Of(PurchaseKind.Failed, "Couldn't check purchases" + (string.IsNullOrEmpty(error) ? "." : ": " + error)));
+            });
         }
 
         private void OnPurchaseConfirmed(Order order)
