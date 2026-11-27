@@ -46,7 +46,7 @@ namespace GridGame.Meta
         }
 
         /// <param name="ledger">When given (the balance report, GG-T448), each phase's net gold spent is added under its
-        /// name — summon, repair, inn, loot, skills, gear, potions, counters, facilities — so a played-out campaign shows
+        /// name — bonds, summon, repair, inn, loot, skills, gear, potions, counters, facilities — so a played-out campaign shows
         /// where the purse went. Gains (chests) come out negative.</param>
         /// <param name="rng">Rolls each forge's Masterwork; null keeps <see cref="Crafting.Craft"/>'s clock-seeded roll, so
         /// a soak that needs the same campaign every run must pass a seeded one.</param>
@@ -60,6 +60,10 @@ namespace GridGame.Meta
                 if (ledger != null && s.Gold != mark) { ledger.TryGetValue(kind, out var had); ledger[kind] = had + (mark - s.Gold); }
                 mark = s.Gold;
             }
+
+            // GG-T1621: sit down for every bond scene the party has unlocked, answering for the bonds.
+            log.AddRange(DialogueRunner.PlayBondScenesHeadless(c, s));
+            Phase("bonds");
 
             // Summon Circle (GG-T87): fill an open party slot with a recruit when the gold is there and the
             // circle is actually open (GG-T174's milestone unlock). Checked first, before repair/rest/bounty

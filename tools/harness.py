@@ -26,6 +26,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py endless N [--seed S] [--capture] [--speed X] [--turn-mode M]  # GG-T62: -demo -endless run of N encounters, auto-relaunching on crash/hang
     python tools/harness.py testmode N       # GG-T93: -testmode self-play, N full battle→results→camp cycles
     python tools/harness.py profiles         # GG-T99: profile picker / new profile / Settings shots; settings follow the profile
+    python tools/harness.py bonds [RUN]      # GG-T1621: devbond a party hero to its Trust scene's tier, play it from Talk, check seen/chip/Trust
     python tools/harness.py shot NAME        # screenshot the running player
     python tools/harness.py call PATH [k=v]  # raw endpoint call, e.g. call state
 
@@ -2065,6 +2066,72 @@ def firstskill(run="firstskill"):
     return not fails
 
 
+def _trust_scene(party):
+    """The first party hero with a Trust scene in Data/Dialogue, its scene id and its trigger level, or None."""
+    for hero in party:
+        for path in sorted(glob.glob(os.path.join(ROOT, "Data", "Dialogue", f"trust_{hero}_*.tree"))):
+            with open(path, encoding="utf-8") as f:
+                head = f.read(400)
+            m = re.search(r"^dialogue (\S+)$.*?^trigger: Trust \S+ level=(\d+)$", head, re.M | re.S)
+            if m:
+                return hero, m.group(1), int(m.group(2))
+    return None
+
+
+def bonds(run="bonds"):
+    """GG-T1621 (GG-T1300): a Trust scene end to end. A new game; devbond lifts a party hero with a Trust scene to its
+    trigger tier's floor; Camp's Talk row offers the scene (talk-scene-<id>); playing it through counts it seen, shows a
+    bond chip (dlg-bond-*) and moves the hero's Trust in the state's save.trust."""
+    fails = []
+    launch(run, fresh=True)
+    call("newgame", slot=0, gold=100); time.sleep(1)
+    save = call("state").get("save") or {}
+    found = _trust_scene(save.get("party") or [])
+    if not found:
+        fails.append(f"no party hero has a Trust scene (party {save.get('party')})")
+    else:
+        hero, scene, tier = found
+        bonded = call("devbond", hero=hero, tier=tier)
+        if not bonded.get("ok"):
+            fails.append(f"devbond {hero} tier {tier}: {bonded}")
+        trust0 = (call("state").get("save") or {}).get("trust", {}).get(hero)
+        if not _goto("talk"):
+            fails.append("Talk didn't open")
+        shot("01-talk")
+        if not call("names", prefix=f"talk-scene-{scene}"):
+            fails.append(f"no talk-scene-{scene} row after devbond to tier {tier}")
+        else:
+            call("click", name=f"talk-scene-{scene}"); time.sleep(1.0)
+            if call("state")["screen"] != "dialogue":
+                fails.append(f"talk-scene-{scene} didn't open the dialogue")
+            chips = set()
+            end = time.time() + 40
+            while time.time() < end and call("state")["screen"] == "dialogue":
+                chips.update(call("names", prefix="dlg-bond-"))
+                choices = sorted(call("names", prefix="choice-"))
+                call("click", name=choices[-1] if choices else "dlg-skip")
+                time.sleep(0.7)
+            finish_dialogue()
+            shot("02-after-scene")
+            after = call("state").get("save") or {}
+            if scene not in (after.get("seen") or []):
+                fails.append(f"{scene} not in save.seen after playing it")
+            if not chips:
+                fails.append("no dlg-bond-* chip appeared during the scene")
+            trust1 = (after.get("trust") or {}).get(hero)
+            if trust1 == trust0:
+                fails.append(f"the {hero}'s Trust didn't move ({trust0} -> {trust1})")
+    errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+    if errs:
+        fails.append(f"log errors {errs[:3]}")
+    try:
+        call("quit", timeout=3)
+    except Exception:
+        pass
+    print("FAILURES:" if fails else "BONDS OK", *fails, sep="\n  ")
+    return not fails
+
+
 def story_recruits(run="recruits", speed=3):
     """GG-T118: a new game starts small and grows at story beats. Picks the starting three through the real
     party select, clears The Tithe Moors I on autoplay, then launches the next battle and checks that the
@@ -3692,6 +3759,8 @@ def _dispatch(cmd):
         sys.exit(0 if s["completed"] == a.count and not s["crashes"] and not s["stalls"] and not s["hangs"] else 1)
     elif cmd == "recruits":
         sys.exit(0 if story_recruits() else 1)
+    elif cmd == "bonds":
+        sys.exit(0 if bonds(sys.argv[2] if len(sys.argv) > 2 else "bonds") else 1)
     elif cmd == "storyarc":
         sys.exit(0 if storyarc(sys.argv[2] if len(sys.argv) > 2 else "storyarc", capture="--nocapture" not in sys.argv) else 1)
     elif cmd == "profiles":

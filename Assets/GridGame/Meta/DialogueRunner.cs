@@ -248,16 +248,46 @@ namespace GridGame.Meta
             Log.Add(msg);
         }
 
-        /// <summary>Plays a dialogue to the end with no screen, taking the first choice offered at every turn —
+        /// <summary>How <see cref="PlayHeadless"/> answers a choice: the first offered, or (GG-T1621) the offered choice whose
+        /// AddTrust / AddCohesion amounts sum highest, ties to the first.</summary>
+        public enum ChoicePolicy { First, BestBond }
+
+        /// <summary>Plays a dialogue to the end with no screen, answering every choice by <paramref name="policy"/> —
         /// how the bots (balance sims, Test Mode) live through story beats. Returns the effect log.</summary>
-        public static List<string> PlayHeadless(ContentDb c, SaveData s, DialogueDef def, string with = null, string hero = null)
+        public static List<string> PlayHeadless(ContentDb c, SaveData s, DialogueDef def, string with = null, string hero = null, ChoicePolicy policy = ChoicePolicy.First)
         {
             var r = new DialogueRunner(c, s, def, with, hero);
             for (int guard = 0; !r.Finished && guard < 500; guard++)
-                if (!r.Advance()) r.Choose(0);
-            if (!r.Finished) r.Told(); // a loop no first choice escapes — count it as told
+                if (!r.Advance()) r.Choose(policy == ChoicePolicy.BestBond ? BestBondChoice(r.Choices) : 0);
+            if (!r.Finished) r.Told(); // a loop no chosen answer escapes — count it as told
             Codex.Sync(c, s); // GG-T929
             return r.Log;
+        }
+
+        /// <summary>The index in <paramref name="offered"/> whose AddTrust / AddCohesion amounts sum highest, ties to the first.</summary>
+        private static int BestBondChoice(List<DialogueChoice> offered)
+        {
+            int best = 0, top = int.MinValue;
+            for (int i = 0; i < offered.Count; i++)
+            {
+                int sum = offered[i].Effects.Where(e => e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion).Sum(e => e.Amount);
+                if (sum > top) { top = sum; best = i; }
+            }
+            return best;
+        }
+
+        /// <summary>For the bots (GG-T1621): plays every unlocked <see cref="BondScenes"/> entry headlessly with "$with" as its
+        /// trigger hero, taking the choice that raises bonds most. Returns what the scenes did.</summary>
+        public static List<string> PlayBondScenesHeadless(ContentDb c, SaveData s)
+        {
+            var log = new List<string>();
+            if (s == null) return log;
+            for (var b = BondScenes(c, s).FirstOrDefault(x => x.Unlocked); b != null; b = BondScenes(c, s).FirstOrDefault(x => x.Unlocked))
+            {
+                log.AddRange(PlayHeadless(c, s, b.Def, b.Def.Trigger.Id, null, ChoicePolicy.BestBond));
+                if (!s.SeenDialogues.Contains(b.Def.Id)) break;
+            }
+            return log;
         }
 
         // ── the vocabulary ──────────────────────────────────────────────────────────
