@@ -153,11 +153,11 @@ namespace GridGame.App
             TextFit.Install(Document.rootVisualElement); // GG-T305: every wrapped line and every overflowing one-liner
             ApplySettings(); // the profile's settings hold on the title screen too, before any save is loaded
 
-            // GG-T775: `-turnMode <name>` plays that mode this run (in memory; settings.json is untouched). A save's New Game lock still wins.
+            // GG-T775: `-turnMode <name>` plays that mode this run (TurnModeSetting.LaunchOverride; never saved to settings.json). A save's New Game lock still wins.
             var turnModeArg = CommandLine.Value("-turnMode");
             if (turnModeArg != null)
             {
-                if (TurnModeSetting.TryParseBuilt(turnModeArg, out var launchMode, out var turnModeError)) Settings.TurnMode = launchMode;
+                if (TurnModeSetting.TryParseBuilt(turnModeArg, out var launchMode, out var turnModeError)) TurnModeSetting.LaunchOverride = launchMode;
                 else Debug.LogError($"[CommandLine] -turnMode ignored: {turnModeError}");
             }
 
@@ -538,8 +538,17 @@ namespace GridGame.App
             bool sized = st.ResolutionWidth > 0 && st.ResolutionHeight > 0;
             if (st.FullScreen < 0 && !sized) return;
             var mode = st.FullScreen < 0 ? Screen.fullScreenMode : st.FullScreen == 1 ? FullScreenMode.FullScreenWindow : FullScreenMode.Windowed;
-            int w = sized ? st.ResolutionWidth : Screen.width, h = sized ? st.ResolutionHeight : Screen.height;
-            if (mode != Screen.fullScreenMode || w != Screen.width || h != Screen.height) Screen.SetResolution(w, h, mode);
+            int w, h;
+            if (sized) { w = st.ResolutionWidth; h = st.ResolutionHeight; }
+            else if (mode == FullScreenMode.Windowed && Screen.fullScreenMode != FullScreenMode.Windowed)
+            {
+                // Coming from fullscreen the current size is the desktop's: a window that big spills off-screen, so use 80% of it.
+                w = Mathf.Max(960, Screen.width * 4 / 5); h = Mathf.Max(540, Screen.height * 4 / 5);
+            }
+            else { w = Screen.width; h = Screen.height; }
+            // A borderless fullscreen window always fills the desktop, so only its mode is compared, not the size.
+            bool sizeDiffers = mode != FullScreenMode.FullScreenWindow && (w != Screen.width || h != Screen.height);
+            if (mode != Screen.fullScreenMode || sizeDiffers) Screen.SetResolution(w, h, mode);
         }
 
         /// <summary>Writes the active profile's settings to its settings.json (a settings change, bible §15.2).</summary>

@@ -527,11 +527,15 @@ namespace GridGame.Meta
     /// </summary>
     public static class TurnModeSetting
     {
+        /// <summary>The `-turnMode` launch flag's mode (GG-T1237): wins over the profile but not a save's lock, and is never
+        /// written to settings.json, so a later Settings save cannot persist it.</summary>
+        public static TurnMode? LaunchOverride;
+
         /// <summary>The mode a battle on <paramref name="save"/> plays: its lock, else <paramref name="profile"/>.
         /// A value the enum doesn't know (a hand edit) reads as <see cref="TurnMode.PartyWindow"/>.</summary>
         public static TurnMode Resolve(SaveData save, TurnMode profile)
         {
-            var mode = save?.TurnModeLock ?? profile;
+            var mode = save?.TurnModeLock ?? LaunchOverride ?? profile;
             return Enum.IsDefined(typeof(TurnMode), mode) ? mode : TurnMode.PartyWindow;
         }
 
