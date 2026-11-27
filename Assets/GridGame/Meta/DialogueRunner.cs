@@ -163,12 +163,19 @@ namespace GridGame.Meta
             foreach (var e in n.Effects) Apply(e, n.Id);
         }
 
-        /// <summary>Counts the dialogue as told; a Joined scene's hero is met from now on (GG-T1318).</summary>
+        /// <summary>Counts the dialogue as told; a Joined scene's hero is met from now on (GG-T1318); a generic Cohesion scene
+        /// is told for its pair (GG-T1623).</summary>
         private void Told()
         {
             s.SeenDialogues.Add(Def.Id);
             if (Def.Trigger?.Kind == DialogueTriggerKind.Joined && Bonds.Key(Hero) is string met) (s.MetHeroes ??= new HashSet<string>()).Add(met);
+            if (ContentLoader.IsGenericCohesion(Def) && PairSceneFlag(Def.Id, With, Hero) is string pair) s.Flags.Add(pair);
         }
+
+        /// <summary>GG-T1623: the flag recording generic Cohesion scene <paramref name="dialogueId"/> told for the pair
+        /// <paramref name="a"/>+<paramref name="b"/> ("pair:&lt;dialogue&gt;:&lt;a|b&gt;"), or null for no pair.</summary>
+        public static string PairSceneFlag(string dialogueId, string a, string b) =>
+            Bonds.PairKey(a, b) is string key ? $"{ContentLoader.PairSceneFlagPrefix}{dialogueId}:{key}" : null;
 
         /// <summary>A speaker's display name and portrait id, with "$lead"/"$with"/"$party:N"/"$trusted" bound to this
         /// save's heroes and "$commander" to the <see cref="Commander"/>.</summary>
@@ -276,16 +283,18 @@ namespace GridGame.Meta
             return best;
         }
 
-        /// <summary>For the bots (GG-T1621): plays every unlocked <see cref="BondScenes"/> entry headlessly with "$with" as its
-        /// trigger hero, taking the choice that raises bonds most. Returns what the scenes did.</summary>
+        /// <summary>For the bots (GG-T1621): plays every unlocked <see cref="BondScenes"/> entry headlessly with its
+        /// <see cref="BondScene.With"/> / <see cref="BondScene.Other"/>, taking the choice that raises bonds most. Returns what
+        /// the scenes did.</summary>
         public static List<string> PlayBondScenesHeadless(ContentDb c, SaveData s)
         {
             var log = new List<string>();
             if (s == null) return log;
             for (var b = BondScenes(c, s).FirstOrDefault(x => x.Unlocked); b != null; b = BondScenes(c, s).FirstOrDefault(x => x.Unlocked))
             {
-                log.AddRange(PlayHeadless(c, s, b.Def, b.Def.Trigger.Id, null, ChoicePolicy.BestBond));
-                if (!s.SeenDialogues.Contains(b.Def.Id)) break;
+                log.AddRange(PlayHeadless(c, s, b.Def, b.With, b.Other, ChoicePolicy.BestBond));
+                bool told = ContentLoader.IsGenericCohesion(b.Def) ? s.Flags.Contains(PairSceneFlag(b.Def.Id, b.With, b.Other)) : s.SeenDialogues.Contains(b.Def.Id);
+                if (!told) break;
             }
             return log;
         }
@@ -339,7 +348,9 @@ namespace GridGame.Meta
             switch (e.Type)
             {
                 case DialogueEffectType.SetFlag: s.Flags.Add(e.Id); return null;
-                case DialogueEffectType.ClearFlag: if (!e.Id.StartsWith(ContentLoader.NpcFlagPrefix) && !e.Id.StartsWith(SkillPointFlagPrefix)) s.Flags.Remove(e.Id); return null;
+                case DialogueEffectType.ClearFlag:
+                    if (!e.Id.StartsWith(ContentLoader.NpcFlagPrefix) && !e.Id.StartsWith(SkillPointFlagPrefix) && !e.Id.StartsWith(ContentLoader.PairSceneFlagPrefix)) s.Flags.Remove(e.Id);
+                    return null;
                 case DialogueEffectType.GrantSkillPoint: return GrantSkillPoint(c, s, e, dialogueId, with);
                 case DialogueEffectType.GrantGold:
                 {
@@ -537,7 +548,11 @@ namespace GridGame.Meta
         /// <summary>GG-T1298 (§27.1): the bond scenes Camp's Talk row offers, in file order: each unseen Trust scene whose hero
         /// is in the party and each unseen Cohesion scene whose pair both are, its conditions holding ("$with" is the trigger
         /// Id) and its tokens bindable. A scene is <see cref="BondScene.Unlocked"/> once the hero's Trust tier (the pair's
-        /// cohesion tier) has reached the trigger Level; each plays once, so a seen one drops out.</summary>
+        /// cohesion tier) has reached the trigger Level; each plays once, so a seen one drops out. Then (GG-T1623) for each
+        /// party pair with cohesion and each Level generic Cohesion scenes use, unless the pair has an authored Cohesion scene
+        /// at that Level or has already been told a matching generic one there: the most specific matching generic scene
+        /// (<see cref="GenericMatch"/>, ties to file order) whose conditions hold with "$with" the first hero and "$hero" the
+        /// second.</summary>
         public static List<BondScene> BondScenes(ContentDb c, SaveData s)
         {
             var list = new List<BondScene>();
@@ -546,13 +561,66 @@ namespace GridGame.Meta
             foreach (var d in c.DialogueOrder)
             {
                 var t = d.Trigger;
-                if (t == null || t.Kind != DialogueTriggerKind.Trust && t.Kind != DialogueTriggerKind.Cohesion) continue;
+                if (t == null || t.Kind != DialogueTriggerKind.Trust && t.Kind != DialogueTriggerKind.Cohesion || ContentLoader.IsGenericCohesion(d)) continue;
                 if (s.SeenDialogues.Contains(d.Id) || !InParty(t.Id) || t.Kind == DialogueTriggerKind.Cohesion && !InParty(t.Other)) continue;
                 if (!All(c, s, d.Conditions, id => id == "$with" ? t.Id : id) || !CanBind(s, d)) continue;
                 int reached = t.Kind == DialogueTriggerKind.Trust ? Bonds.TrustTierReached(s, t.Id) : Bonds.CohesionTierReached(s, t.Id, t.Other);
-                list.Add(new BondScene { Def = d, Unlocked = reached >= t.Level });
+                list.Add(new BondScene { Def = d, With = t.Id, Other = t.Kind == DialogueTriggerKind.Cohesion ? t.Other : null, Unlocked = reached >= t.Level });
             }
+
+            var generic = c.DialogueOrder.Where(ContentLoader.IsGenericCohesion).ToList();
+            if (generic.Count == 0) return list;
+            var authored = c.DialogueOrder.Where(d => d.Trigger?.Kind == DialogueTriggerKind.Cohesion && !ContentLoader.IsGenericCohesion(d)).ToList();
+            var levels = generic.Select(d => d.Trigger.Level).Distinct().OrderBy(l => l).ToList();
+            var party = s.Party.Where(h => Bonds.HasCohesion(s, h)).ToList();
+            for (int i = 0; i < party.Count; i++)
+                for (int j = i + 1; j < party.Count; j++)
+                {
+                    string a = party[i], b = party[j], key = Bonds.PairKey(a, b);
+                    if (key == null) continue;
+                    int reached = Bonds.CohesionTierReached(s, a, b);
+                    foreach (int level in levels)
+                    {
+                        if (authored.Any(d => d.Trigger.Level == level && Bonds.PairKey(d.Trigger.Id, d.Trigger.Other) == key)) continue;
+                        var matches = new List<(DialogueDef d, int score, string first, string second)>();
+                        foreach (var d in generic)
+                            if (d.Trigger.Level == level && GenericMatch(c, d.Trigger, a, b) is var (score, first, second) && score >= 0)
+                                matches.Add((d, score, first, second));
+                        if (matches.Any(m => s.Flags.Contains(PairSceneFlag(m.d.Id, a, b)))) continue;
+                        var best = matches.Where(m => All(c, s, m.d.Conditions, id => id == "$with" ? m.first : id == "$hero" ? m.second : id) && CanBind(s, m.d))
+                            .OrderByDescending(m => m.score).FirstOrDefault(); // OrderBy is stable: ties keep file order
+                        if (best.d != null) list.Add(new BondScene { Def = best.d, With = best.first, Other = best.second, Unlocked = reached >= level });
+                    }
+                }
             return list;
+        }
+
+        /// <summary>GG-T1623: how specifically a generic Cohesion trigger fits the pair <paramref name="a"/>+<paramref name="b"/>,
+        /// in whichever orientation scores higher (Id-side hero first): per side a hero class is 4, "role:" / "faction:&lt;id&gt;"
+        /// 2, "faction:same" / "faction:other" 1, "any" 0. Score -1 when neither orientation fits.</summary>
+        public static (int score, string first, string second) GenericMatch(ContentDb c, DialogueTrigger t, string a, string b)
+        {
+            int Side(string sel, string hero, string mate)
+            {
+                if (sel == null) return -1;
+                if (sel == ContentLoader.CohesionAny) return 0;
+                string mine = c.FactionOf(hero)?.Id, theirs = c.FactionOf(mate)?.Id;
+                bool same = mine != null && string.Equals(mine, theirs, StringComparison.OrdinalIgnoreCase);
+                if (sel == ContentLoader.CohesionSameFaction) return same ? 1 : -1;
+                if (sel == ContentLoader.CohesionOtherFaction) return same ? -1 : 1;
+                if (sel.StartsWith(ContentLoader.CohesionRolePrefix, StringComparison.Ordinal))
+                    return string.Equals(c.TryClass(hero)?.Role, sel.Substring(ContentLoader.CohesionRolePrefix.Length), StringComparison.OrdinalIgnoreCase) ? 2 : -1;
+                if (sel.StartsWith(ContentLoader.CohesionFactionPrefix, StringComparison.Ordinal))
+                    return mine != null && string.Equals(mine, sel.Substring(ContentLoader.CohesionFactionPrefix.Length), StringComparison.OrdinalIgnoreCase) ? 2 : -1;
+                return string.Equals(sel, hero, StringComparison.OrdinalIgnoreCase) ? 4 : -1;
+            }
+            int Score(string first, string second)
+            {
+                int x = Side(t.Id, first, second), y = Side(t.Other, second, first);
+                return x < 0 || y < 0 ? -1 : x + y;
+            }
+            int ab = Score(a, b), ba = Score(b, a);
+            return ba > ab ? (ba, b, a) : (ab, a, b);
         }
 
         /// <summary>GG-T1318: the Founding scene to play after the opening crawl, or null: the first one (file order) not yet
@@ -622,8 +690,16 @@ namespace GridGame.Meta
     public sealed class BondScene
     {
         public DialogueDef Def;
+        /// <summary>"$with": the Trust hero, or the pair's first hero (an authored scene's trigger Id).</summary>
+        public string With;
+        /// <summary>The pair's second hero ("$hero" in a generic scene; an authored scene's trigger Other); null for Trust.</summary>
+        public string Other;
         /// <summary>The bond tier its trigger needs has been reached, so it can be played.</summary>
         public bool Unlocked;
+
+        /// <summary>A runner for the scene with <see cref="With"/> as "$with" and <see cref="Other"/> as "$hero"; finishing a
+        /// generic one sets its pair flag (<see cref="DialogueRunner.PairSceneFlag"/>).</summary>
+        public DialogueRunner Begin(ContentDb c, SaveData s) => new DialogueRunner(c, s, Def, With, Other);
     }
 
     /// <summary>

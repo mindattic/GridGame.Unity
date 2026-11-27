@@ -684,10 +684,12 @@ namespace GridGame.App
         private void SceneRow(VisualElement list, BondScene b, string hero)
         {
             var t = b.Def.Trigger;
-            string title = b.Def.Title ?? (hero != null ? "A word alone" : $"{C.TryClass(t.Id)?.Name ?? t.Id} and {C.TryClass(t.Other)?.Name ?? t.Other}");
+            bool generic = ContentLoader.IsGenericCohesion(b.Def);
+            string pair = $"{C.TryClass(b.With)?.Name ?? b.With} and {C.TryClass(b.Other)?.Name ?? b.Other}";
+            string title = generic ? (b.Def.Title != null ? $"{pair}: {b.Def.Title}" : pair) : b.Def.Title ?? (hero != null ? "A word alone" : pair);
             string value = b.Unlocked ? "New!" : $"{(t.Kind == DialogueTriggerKind.Trust ? "Trust" : "Cohesion")} {t.Level} needed";
-            var row = Ui.MenuRow(title, value, () => App.Router.Push(new DialogueScreen(b.Def, t.Id, null)), list, null, b.Unlocked);
-            row.name = "talk-scene-" + b.Def.Id;
+            var row = Ui.MenuRow(title, value, () => App.Router.Push(DialogueScreen.ForRunner(b.Begin(C, S), null)), list, null, b.Unlocked);
+            row.name = "talk-scene-" + b.Def.Id + (generic ? "-" + Bonds.PairKey(b.With, b.Other) : "");
             RowIcon.Badge(hero != null ? row.KindIcon(RowKind.Hero, DialogueScreen.HasPortrait(hero) ? hero : null) : row.KindIcon(RowKind.Talk),
                 b.Unlocked ? RowKind.New : RowKind.Locked);
             if (b.Unlocked) row.Q<Label>("value")?.AddToClassList("gold");
