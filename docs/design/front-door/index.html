@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Front Door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Front Door</h1>
+    <p class="sub">The first five minutes of GridGame, from the studio splash to the first Camp visit, as one click-through in the Manapunk look (BIBLE 11.5). Design only: nothing here is built yet (BIBLE 11.2, 11.2.1, 15.4 and 27.0, each marked Not yet built). Tap the buttons inside the phone, or use the arrows and the flow strip.</p>
+  </header>
+  <div class="controls">
+    <label><input type="checkbox" id="firstRun" checked> First launch (no profile yet)</label>
+    <label><input type="checkbox" id="hasSave"> A save slot is in use</label>
+    <button class="ctl" id="restart" type="button">Restart from Splash</button>
+  </div>
+  <nav class="flow" id="flow" aria-label="Flow"></nav>
+  <div class="main">
+    <div class="stagecol">
+      <button class="arrow" id="prev" type="button" aria-label="Previous screen">&#8249;</button>
+      <div class="phone"><div class="screen" id="screen"></div></div>
+      <button class="arrow" id="next" type="button" aria-label="Next screen">&#8250;</button>
+    </div>
+    <aside>
+      <div><h2 id="ntitle"></h2><p class="spec" id="nspec"></p></div>
+      <div><h2>Goes to</h2><ul class="links" id="nlinks"></ul></div>
+      <div><h2>Spec and tickets</h2><p class="refs" id="nrefs"></p></div>
+      <div class="coord"><h2>Coordination points</h2>
+        <ul>
+          <li><b>{commander}</b> text token: crawl pages, dialogue and barks say the Commander's name through one token, filled from <code>SaveData.CommanderName</code> (GG-T1342). The story slice (GG-T1256) writes the words in Prose; this page only names the keys.</li>
+          <li><b>Team pick</b>: the step where the starting heroes are chosen is owned by the team slice (GG-T1257). Shown here as a dashed stub after the crawl.</li>
+          <li><b>Hub first-visit lesson</b>: the coach marks on the first Camp visit belong to the hub UX slice (GG-T1325 / GG-T1343). Shown here as a stub.</li>
+          <li><b>Drill content</b>: the five drill levels and their lessons are designed under GG-T1315; the names here are placeholders.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
