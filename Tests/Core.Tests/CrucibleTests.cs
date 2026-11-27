@@ -138,15 +138,15 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Crucible_cannot_start_mid_expedition_and_says_why()
+        public void Crucible_cannot_start_on_the_road_and_says_why()
         {
             var c = Real;
             var s = Progression.NewGame(c, "Cru");
             Assert.That(Crucible.CanLaunch(c, s, out var why), Is.True, why);
-            Expeditions.Begin(c, s, c.CampaignStages()[0].Id);
+            TravelRules.SetOut(s);
             Assert.That(Crucible.CanLaunch(c, s, out why), Is.False);
-            Assert.That(why, Does.Contain("expedition"));
-            Expeditions.Abandon(s);
+            Assert.That(why, Does.Contain("road"));
+            TravelRules.MakeCamp(s);
             Assert.That(Crucible.CanLaunch(c, s, out _), Is.True);
         }
 
@@ -332,7 +332,7 @@ namespace GridGame.Tests
             Assert.That(s.HighestClearedStage, Is.EqualTo(1));
             Assert.That(s.ClearedStages, Is.EquivalentTo(cleared));
             Assert.That(s.LastStage, Is.EqualTo(c.CampaignStages()[1].Id));
-            Assert.That(s.Expedition, Is.Null);
+            Assert.That(s.World.Camped, Is.True);
             Assert.That(Progression.UnlockedSlots(s), Is.EqualTo(slots));
             Assert.That(s.SeenCrawls, Is.EquivalentTo(crawls));
             Assert.That(s.Roster.Count, Is.EqualTo(roster));

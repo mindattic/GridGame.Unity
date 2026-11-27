@@ -8,7 +8,8 @@ namespace GridGame.Meta
     /// camped (<see cref="WorldSave.Camped"/>); launching a battle from camp sets out. A win on the road carries the bank's
     /// orbs into the next battle and wounds stay; a loss falls back to camp with no orbs. Camp rest (<see cref="CampRestService"/>)
     /// heals the whole roster for free, and the Medic Wagon (<see cref="MedicWagon"/>) patches wounds after each win on the road.
-    /// Not wired into BattleFactory or the screens yet: the follow-up task swaps <see cref="Expeditions"/> for these.
+    /// Wired in GG-T1790: BattleFactory.Build/Commit, the Inn (camp rest) and the launcher; <see cref="Expeditions"/> is a
+    /// thin shim over these until the travel UI (GG-T1786) replaces its callers.
     /// TODO(owner, GG-T1705): the expedition completion bonus (<see cref="Expeditions.CompletionBonus"/>, a share of the
     /// expedition's coins) has no equivalent here, since travel has no fixed end. Owner question: is there a bonus on making
     /// camp, on reaching a location, or none? And with it, what the Strongbox upgrade (caravan.json "strongbox") means, or

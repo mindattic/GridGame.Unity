@@ -67,7 +67,7 @@ namespace GridGame.Tests
                         Add(visit, "#repairs", camp.Count(m => m.StartsWith("Repaired ")));
                         Add(visit, "#salvages", camp.Count(m => m.StartsWith("Salvaged ")));
                     }
-                    else if (CampNpcs.Joined(s, CampNpcs.Innkeeper) && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Inn.Rest(c, s);
+                    else if (CampNpcs.Joined(s, CampNpcs.Innkeeper) && s.Roster.Any(h => Inn.MissingHp(c, s, h) > 0)) { TravelRules.MakeCamp(s); CampRestService.Rest(s, out _); } // GG-T1790: free camp rest
                     var setup = BattleFactory.Build(c, s, stage.Id, battleSeed++, BotDifficulty.FromEnv()); // GG-T309
                     if (OrbsOverride > 0) setup.OrbCapacity = OrbsOverride; // GG-T276 experiment: GRIDGAME_ORBS_OVERRIDE pins orb capacity
                     var st = BotRunner.Play(c, setup, new HeroBot(battleSeed, randomness), 3000); // the first battle is a 20-wave gauntlet; GG-T311: forced Guards count

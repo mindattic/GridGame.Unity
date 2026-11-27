@@ -345,7 +345,10 @@ namespace GridGame.Meta
         public bool ExpeditionComplete;
         public bool ExpeditionFailed;
         public int ExpeditionBonus;
+        /// <summary>GG-T1790: orbs carried into the next battle on the road (<see cref="TravelRules.AfterBattle"/>); 0 at camp.</summary>
         public int CarriedOrbs;
+        /// <summary>GG-T1790: HP the Medic Wagon patched up after this win on the road (<see cref="MedicWagon"/>).</summary>
+        public int MedicHealed;
         public string NextStageId;
         // Guests (§25.11)
         public List<string> GuestsJoined = new List<string>();
@@ -410,94 +413,41 @@ namespace GridGame.Meta
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // Expeditions (§22.5): a theme's battles in order; wounds and mana carry; no inn until it ends
+    // Expeditions (§22.5): retired by travel (GG-T1785/GG-T1790, <see cref="TravelRules"/>). A thin shim keeps the App's
+    // callers compiling until the travel UI (GG-T1786) replaces them; nothing here reads or writes SaveData.Expedition.
     // ─────────────────────────────────────────────────────────────────────────────
 
     public static class Expeditions
     {
-        /// <summary>Share of the expedition's coins paid as a completion bonus.</summary>
+        /// <summary>The old expedition completion bonus share. Unused since travel: kept for the owner TODO in
+        /// <see cref="TravelRules"/> (GG-T1705: a bonus on making camp, on reaching a location, or none).</summary>
         public const float CompletionBonus = 0.5f;
 
         public static ThemeDef Theme(ContentDb c, string themeId) => c.Campaign.Themes.Find(t => t.Id == themeId);
 
-        /// <summary>The inn is open between expeditions — or on the road once the caravan has a Medic Wagon.</summary>
-        public static bool InnOpen(SaveData s) => s.Expedition == null || CaravanUpgrades.Level(s, "medic_wagon") > 0;
+        /// <summary>Camp services (rest, respec) are open at camp, closed on the road.</summary>
+        public static bool InnOpen(SaveData s) => !TravelRules.OnTheRoad(s);
 
-        /// <summary>A battle can start if it is the next one of the active expedition, the first battle of a theme when none
-        /// is active, or — with no expedition under way — any stage already cleared, fought alone as a hunt (GG-T388, owner
-        /// 2026-11-16: "travel to and from previous battles so you can 'hunt' existing grounds for XP or characters").</summary>
+        /// <summary>Travel has no fixed battle order inside a theme: stage gating is <see cref="Progression.IsStageUnlocked"/>'s.</summary>
         public static bool CanLaunch(ContentDb c, SaveData s, string stageId, out string why)
         {
             why = null;
-            var theme = c.ThemeOf(stageId);
-            if (theme == null) return true; // test/standalone stages
-            int idx = theme.Stages.IndexOf(stageId);
-            if (s.Expedition != null)
-            {
-                if (s.Expedition.ThemeId != theme.Id) { why = $"Finish (or abandon) the {Theme(c, s.Expedition.ThemeId)?.Name} expedition first"; return false; }
-                if (idx != s.Expedition.Next) { why = $"Next up: battle {s.Expedition.Next + 1} of {theme.Stages.Count}"; return false; }
-                return true;
-            }
-            if (idx != 0 && !IsHunt(s, stageId)) { why = "Expeditions start at battle 1"; return false; }
             return true;
         }
 
-        /// <summary>A hunt (GG-T388): a cleared stage past its theme's first, launched with no expedition under way. It is one
-        /// battle on its own — no expedition starts, so no orbs carry and no completion bonus — but it pays its XP, coins and
-        /// drops and can bring a wanderer like any battle.</summary>
+        /// <summary>A hunt (GG-T388): a stage already cleared, fought again for its XP, coins and drops.</summary>
         public static bool IsHunt(SaveData s, string stageId) =>
-            s != null && s.Expedition == null && stageId != null && s.ClearedStages.Contains(stageId);
+            s != null && stageId != null && s.ClearedStages.Contains(stageId);
 
-        /// <summary>Called when a battle is launched: starts an expedition on its theme's first battle.</summary>
-        public static void Begin(ContentDb c, SaveData s, string stageId)
-        {
-            var theme = c.ThemeOf(stageId);
-            if (theme == null || s.Expedition != null) return;
-            if (theme.Stages.IndexOf(stageId) == 0) s.Expedition = new ExpeditionSave { ThemeId = theme.Id };
-        }
+        /// <summary>Called when a battle is launched: sets out from camp (<see cref="TravelRules.SetOut"/>).</summary>
+        public static void Begin(ContentDb c, SaveData s, string stageId) => TravelRules.SetOut(s);
 
-        public static int StartOrbs(ContentDb c, SaveData s, string stageId)
-        {
-            var theme = c.ThemeOf(stageId);
-            return s.Expedition != null && theme != null && s.Expedition.ThemeId == theme.Id ? s.Expedition.CarriedOrbs : 0;
-        }
-
+        /// <summary>Turns back to camp (<see cref="TravelRules.MakeCamp"/>).</summary>
         public static Result Abandon(SaveData s)
         {
-            if (s.Expedition == null) return Result.Fail("No expedition under way");
-            s.Expedition = null;
-            return Result.Success("Expedition abandoned — the caravan turns back");
-        }
-
-        public static void AfterBattle(ContentDb c, SaveData s, BattleReport rep, BattleState battle)
-        {
-            var theme = c.ThemeOf(battle.Stage.Id);
-            if (theme == null || s.Expedition == null || s.Expedition.ThemeId != theme.Id) return;
-            rep.ExpeditionName = theme.Name;
-            rep.ExpeditionLength = theme.Stages.Count;
-            if (!rep.Victory)
-            {
-                rep.ExpeditionFailed = true;
-                rep.ExpeditionStep = s.Expedition.Next;
-                s.Expedition = null;
-                return;
-            }
-            s.Expedition.Next++;
-            s.Expedition.Coins += rep.Gold;
-            s.Expedition.CarriedOrbs = battle.Bank.Count;
-            rep.ExpeditionStep = s.Expedition.Next;
-            rep.CarriedOrbs = battle.Bank.Count;
-            if (s.Expedition.Next >= theme.Stages.Count)
-            {
-                rep.ExpeditionComplete = true;
-                rep.ExpeditionBonus = (int)Math.Round(s.Expedition.Coins * (CompletionBonus + CaravanUpgrades.Value(c, s, "strongbox")));
-                s.Gold += rep.ExpeditionBonus;
-                rep.Gold += rep.ExpeditionBonus;
-                foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; } // the caravan makes camp: everyone rests
-                s.Expedition = null;
-                rep.CarriedOrbs = 0;
-            }
-            else rep.NextStageId = theme.Stages[s.Expedition.Next];
+            if (!TravelRules.OnTheRoad(s)) return Result.Fail("Already at camp");
+            TravelRules.MakeCamp(s);
+            return Result.Success("The caravan makes camp");
         }
     }
 
@@ -722,7 +672,7 @@ namespace GridGame.Meta
                 RecommendedLevel = crucible ? 1 : Progression.StageRecommendedLevel(c, s, stage),
                 NewGamePlus = crucible ? 0 : s.NewGamePlus,
                 Difficulty = difficulty <= DifficultyTable.Neutral ? DifficultyTable.Neutral : DifficultyTable.Clamp(difficulty),
-                StartOrbs = Expeditions.StartOrbs(c, s, stage.Id) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
+                StartOrbs = (crucible || drill ? 0 : TravelRules.StartOrbs(s)) + (int)CaravanUpgrades.Value(c, s, "mana_casks"),
                 OrbCapacity = ManaOrbs.Owned(c, s), // GG-T677: owned Mana Orbs are how many the row can fill
                 TurnMode = TurnModeSetting.Resolve(s, profileTurnMode), // §2.13 (GG-T773): the save's lock, else the profile's
             };
@@ -892,9 +842,10 @@ namespace GridGame.Meta
             rep.Wanderer = battle.Wanderer;
             rep.WandererOffer = Wanderers.OfferFrom(s, battle);
             rep.BountyProgress = Bounties.RecordBattle(c, s, battle); // GG-T431: a marked target that fell is slain, whatever the ending
-            Expeditions.AfterBattle(c, s, rep, battle);
+            // GG-T1790 (§28): on the road a win carries the bank's orbs on and the Medic Wagon patches wounds; a loss camps.
+            rep.CarriedOrbs = TravelRules.AfterBattle(c, s, rep.Victory, battle.Bank?.Count ?? 0, out rep.MedicHealed);
             // GG-T676: the orbs are Halcyon batteries that can't hold mana for long: what's left in the row at the end of a
-            // won stage settles back into Mana Dust. Orbs an expedition carries to its next battle stay orbs; a lost stage's
+            // won stage settles back into Mana Dust. Orbs travel carries to its next battle stay orbs; a lost stage's
             // orbs simply discharge (no Dust, like every other reward of a loss).
             if (rep.Victory && rep.CarriedOrbs == 0 && rep.OrbsLeft > 0)
             {
@@ -1053,7 +1004,7 @@ namespace GridGame.Meta
             if (s.Count(itemId) < 1) return Result.Fail("None left");
             if (HealsWholeParty(item))
             {
-                if (Inn.Cost(c, s) == 0) return Result.Fail("Everyone is healthy");
+                if (s.Roster.All(h => Inn.MissingHp(c, s, h) == 0)) return Result.Fail("Everyone is healthy");
                 foreach (var h in s.Roster) h.Hp = 0;
                 s.AddItem(itemId, -1);
                 return Result.Success("The party is fully rested");
@@ -2191,34 +2142,14 @@ namespace GridGame.Meta
     // Inn / Heal party (§25.3)
     // ─────────────────────────────────────────────────────────────────────────────
 
+    /// <summary>GG-T1790: the Inn's gold heal is gone; camp rest (<see cref="CampRestService"/>) heals for free.</summary>
     public static class Inn
     {
-        public const float GoldPerHp = 0.5f;
-
         public static int MissingHp(ContentDb c, SaveData s, HeroSave h)
         {
             if (h.Hp <= 0) return 0;
             var max = Progression.Preview(c, h).MaxHp;
             return Math.Max(0, max - h.Hp);
-        }
-
-        public static int Cost(ContentDb c, SaveData s)
-        {
-            int missing = 0;
-            foreach (var h in s.Roster) missing += MissingHp(c, s, h);
-            float premium = s.Expedition != null ? CaravanUpgrades.Value(c, s, "medic_wagon", 1f) : 1f; // on the road: the Medic Wagon's price
-            return (int)Math.Ceiling(missing * GoldPerHp * premium);
-        }
-
-        public static Result Rest(ContentDb c, SaveData s)
-        {
-            if (!Expeditions.InnOpen(s)) return Result.Fail("On the road — the caravan's inn opens when the expedition ends");
-            int cost = Cost(c, s);
-            if (cost == 0) return Result.Fail("Everyone is healthy");
-            if (s.Gold < cost) return Result.Fail("Not enough gold");
-            s.Gold -= cost;
-            foreach (var h in s.Roster) h.Hp = 0;
-            return Result.Success("The party is fully rested");
         }
     }
 

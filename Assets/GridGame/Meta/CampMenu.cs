@@ -73,9 +73,10 @@ namespace GridGame.Meta
             Add(Heroes, "Heroes", CampGroup.Heroes, value: heroesValue, badge: training || partyPoints > 0);
             if (CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
             {
+                // GG-T1790: the Inn is camp rest, free (CampRestService); on the road resting makes camp first.
                 bool rest = Expeditions.InnOpen(s);
-                int cost = GridGame.Meta.Inn.Cost(c, s);
-                Add(Inn, s.Expedition != null && rest ? "Inn (Medic Wagon)" : "Inn", CampGroup.Heroes, rest, "On the road", rest ? (cost > 0 ? Gold(cost) : "Rested") : "", npc: CampNpcs.Innkeeper);
+                bool hurt = s.Roster.Any(h => GridGame.Meta.Inn.MissingHp(c, s, h) > 0);
+                Add(Inn, "Inn", CampGroup.Heroes, value: !rest ? "On the road" : hurt ? "Rest" : "Rested", npc: CampNpcs.Innkeeper);
                 if (Features.InnRespecRow && rest) Add(Respec, "Inn: Respec", CampGroup.Heroes, npc: CampNpcs.Innkeeper);
             }
             else Keeper(Inn, "Inn", CampGroup.Heroes, CampNpcs.Innkeeper);
@@ -139,6 +140,5 @@ namespace GridGame.Meta
         }
 
         private static string Count(int n) => n.ToString("N0", CultureInfo.InvariantCulture);
-        private static string Gold(int g) => Count(g) + " G";
     }
 }

@@ -113,7 +113,11 @@ namespace GridGame.Meta
                 }
             }
             Phase("repair");
-            if (inn && Inn.Cost(c, s) > 0 && Inn.Cost(c, s) <= s.Gold) Note(Inn.Rest(c, s));
+            if (inn && s.Roster.Any(h => Inn.MissingHp(c, s, h) > 0))
+            {
+                TravelRules.MakeCamp(s); // GG-T1790: rest is camp rest, free; on the road the caravan makes camp first
+                Note(CampRestService.Rest(s, out _));
+            }
             Phase("inn");
 
             // The Bounty Board is the player's own hunt (GG-T431): the routine never takes, hunts or claims a bounty.

@@ -120,11 +120,12 @@ namespace GridGame.Tests
                 }
             }
 
-            // Inn
+            // Inn: camp rest, free (GG-T1790)
             hero.Hp = 5;
-            Assert.That(Inn.Cost(c, s) > 0, Is.True);
-            Assert.That(Inn.Rest(c, s).Ok, Is.True);
+            int goldBeforeRest = s.Gold;
+            Assert.That(CampRestService.Rest(s, out _).Ok, Is.True);
             Assert.That(hero.Hp, Is.EqualTo(0));
+            Assert.That(s.Gold, Is.EqualTo(goldBeforeRest));
 
             // Learn + slot
             var learn = Abilities.Learnable(c, hero).First();
@@ -188,12 +189,11 @@ namespace GridGame.Tests
             Assert.That(s.HighestClearedStage, Is.EqualTo(-1));
         }
 
-        // ── Expeditions (§22.5) ──
+        // ── Travel (§28, GG-T1790; replaced expeditions §22.5) ──
 
         private static BattleState Fight(ContentDb c, SaveData s, string stageId, bool win)
         {
-            Assert.That(Expeditions.CanLaunch(c, s, stageId, out var why), Is.True, why);
-            Expeditions.Begin(c, s, stageId);
+            TravelRules.SetOut(s);
             var setup = BattleFactory.Build(c, s, stageId, 7);
             var st = BattleEngine.Create(c, setup, new List<BattleEvent>());
             st.Phase = win ? BattlePhase.Victory : BattlePhase.Defeat; // the meta rules don't care how it went
@@ -201,47 +201,43 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void An_expedition_runs_its_battles_in_order_carrying_mana_with_the_inn_closed()
+        public void A_win_on_the_road_carries_its_orbs_and_wounds_into_the_next_battle_with_rest_closed()
         {
             var c = Real; var s = Progression.NewGame(c, "Ex");
             s.OwnedOrbs = ManaBank.DefaultCapacity; // GG-T685: a new save owns 1 orb (GG-T677); room to carry the 4 below
+            Assert.That(s.World.Camped, Is.True, "a new game starts at camp");
             var theme = c.Campaign.Themes[0];
-            Assert.That(Expeditions.CanLaunch(c, s, theme.Stages[1], out _), Is.False, "expeditions start at battle 1");
             var b1 = Fight(c, s, theme.Stages[0], true);
             b1.Bank.Add(4);
             var rep = BattleFactory.Commit(c, s, b1);
-            Assert.That(s.Expedition, Is.Not.Null);
-            Assert.That(s.Expedition.Next, Is.EqualTo(1));
-            Assert.That(s.Expedition.CarriedOrbs, Is.EqualTo(b1.Bank.Count));
-            Assert.That(rep.NextStageId, Is.EqualTo(theme.Stages[1]));
-            Assert.That(Expeditions.CanLaunch(c, s, c.Campaign.Themes[1].Stages[0], out _), Is.False, "one expedition at a time");
+            Assert.That(TravelRules.OnTheRoad(s), Is.True);
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(b1.Bank.Count));
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(b1.Bank.Count));
+            Assert.That(rep.OrbDust, Is.EqualTo(0), "carried orbs stay orbs");
             s.Roster[0].Hp = 1;
-            Assert.That(Inn.Rest(c, s).Ok, Is.False, "no inn on the road");
+            Assert.That(CampRestService.Rest(s, out _).Ok, Is.False, "no camp rest on the road");
+            Assert.That(s.Roster[0].Hp, Is.EqualTo(1), "wounds stay on the road");
             var setup = BattleFactory.Build(c, s, theme.Stages[1], 3);
-            Assert.That(setup.StartOrbs, Is.EqualTo(s.Expedition.CarriedOrbs));
+            Assert.That(setup.StartOrbs, Is.EqualTo(s.World.CarriedOrbs));
             var b2 = BattleEngine.Create(c, setup, new List<BattleEvent>());
             Assert.That(b2.Bank.Count >= setup.StartOrbs, Is.True, "carried orbs seed the next battle's bank");
         }
 
         [Test]
-        public void Finishing_an_expedition_pays_a_bonus_and_rests_the_party_while_defeat_restarts_it()
+        public void A_defeat_on_the_road_falls_back_to_camp_with_no_orbs()
         {
-            var c = Real; var s = Progression.NewGame(c, "Ex2");
+            var c = Real; var s = Progression.NewGame(c, "Ex3");
+            s.OwnedOrbs = ManaBank.DefaultCapacity;
             var theme = c.Campaign.Themes[0];
-            BattleReport last = null;
-            foreach (var id in theme.Stages) last = BattleFactory.Commit(c, s, Fight(c, s, id, true));
-            Assert.That(last.ExpeditionComplete, Is.True);
-            Assert.That(last.ExpeditionBonus >= 0, Is.True);
-            Assert.That(s.Expedition, Is.Null);
-            foreach (var id in s.Party) Assert.That(s.Hero(id).Hp, Is.EqualTo(0));
-
-            var s2 = Progression.NewGame(c, "Ex3");
-            BattleFactory.Commit(c, s2, Fight(c, s2, theme.Stages[0], true));
-            var lost = BattleFactory.Commit(c, s2, Fight(c, s2, theme.Stages[1], false));
-            Assert.That(lost.ExpeditionFailed, Is.True);
-            Assert.That(s2.Expedition, Is.Null);
-            Assert.That(Expeditions.CanLaunch(c, s2, theme.Stages[0], out _), Is.True);
-            Assert.That(Expeditions.CanLaunch(c, s2, theme.Stages[1], out _), Is.False, "a failed expedition restarts from battle 1");
+            var b1 = Fight(c, s, theme.Stages[0], true);
+            b1.Bank.Add(2);
+            BattleFactory.Commit(c, s, b1);
+            Assume.That(TravelRules.OnTheRoad(s), Is.True);
+            var lost = BattleFactory.Commit(c, s, Fight(c, s, theme.Stages[1], false));
+            Assert.That(s.World.Camped, Is.True);
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(lost.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(BattleFactory.Build(c, s, theme.Stages[0], 3).StartOrbs, Is.EqualTo(0));
         }
 
         // ── Voluntary retreat (§22.2, FFIV-style partial loss, owner direction 2026-10-11) ──
@@ -282,7 +278,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Retreating_mid_expedition_ends_it_without_touching_already_banked_gold()
+        public void Retreating_on_the_road_makes_camp_without_touching_already_banked_gold()
         {
             var c = Real; var s = Progression.NewGame(c, "Retreat3");
             var theme = c.Campaign.Themes[0];
@@ -294,8 +290,7 @@ namespace GridGame.Tests
             b2.Phase = BattlePhase.Retreated;
             var rep = BattleFactory.Commit(c, s, b2);
 
-            Assert.That(rep.ExpeditionFailed, Is.True);
-            Assert.That(s.Expedition, Is.Null);
+            Assert.That(s.World.Camped, Is.True);
             int expectedKeep = (int)System.Math.Floor(60 * BattleConfig.RetreatKeepFraction);
             Assert.That(s.Gold, Is.EqualTo(goldAfterBattle1 + expectedKeep));
         }
@@ -491,15 +486,14 @@ namespace GridGame.Tests
             CaravanUpgrades.Buy(c, s, "armory");
             Assert.That(Repair.Cost(c, s, sword, 0, 0) < full, Is.True);
 
-            // Medic wagon: the inn opens on the road, at a premium.
-            BattleFactory.Commit(c, s, Fight(c, s, stage0, true));
-            Assert.That(s.Expedition, Is.Not.Null);
-            s.Roster[0].Hp = 1;
-            Assert.That(Inn.Rest(c, s).Ok, Is.False);
-            CaravanUpgrades.Buy(c, s, "medic_wagon");
-            int premium = Inn.Cost(c, s);
-            Assert.That(Inn.Rest(c, s).Ok, Is.True, "the Medic Wagon opens the inn on the road");
-            Assert.That(premium > 0, Is.True);
+            // Medic wagon (GG-T1790): after a win on the road the wagon medic patches up a share of missing HP.
+            Assert.That(CaravanUpgrades.Buy(c, s, "medic_wagon").Ok, Is.True);
+            TravelRules.SetOut(s);
+            var wounded = s.Hero(s.Party[0]);
+            wounded.Hp = 1;
+            TravelRules.AfterBattle(c, s, true, 0, out int patched);
+            Assert.That(patched, Is.GreaterThan(0));
+            Assert.That(wounded.Hp == 0 || wounded.Hp > 1, Is.True);
 
             // Maxing out.
             while (CaravanUpgrades.NextLevel(c, s, "scouts") != null) Assert.That(CaravanUpgrades.Buy(c, s, "scouts").Ok, Is.True);

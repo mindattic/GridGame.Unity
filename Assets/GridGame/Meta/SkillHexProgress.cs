@@ -100,11 +100,11 @@ namespace GridGame.Meta
         /// <summary>Respec price at the Inn: grows with the hero's level.</summary>
         public static int RespecCost(HeroSave h) => RespecBaseGold + RespecGoldPerLevel * Progression.Level(h);
 
-        /// <summary>Why the Inn can't respec right now (no Innkeeper yet / on the road without a Medic Wagon), or null.</summary>
+        /// <summary>Why the Inn can't respec right now (no Innkeeper yet / on the road), or null.</summary>
         public static string RespecClosed(SaveData s)
         {
             if (!CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper)) return "The Innkeeper hasn't joined yet";
-            if (!Expeditions.InnOpen(s)) return "On the road — the Inn opens when the expedition ends";
+            if (!Expeditions.InnOpen(s)) return "On the road — the Inn opens at camp";
             return null;
         }
 

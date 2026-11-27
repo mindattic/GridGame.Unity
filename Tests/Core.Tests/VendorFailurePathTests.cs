@@ -35,7 +35,7 @@ namespace GridGame.Tests
             c.Recipes["upgrade_warhammer"] = new RecipeDef { Id = "upgrade_warhammer", Station = CraftStation.Forge, Inputs = { new ItemCount { Item = "ore", Count = 1 } }, Gold = 20, BaseItem = "warhammer", Result = "finehammer", ResultCount = 1 };
 
             c.Caravan["armory"] = new CaravanUpgradeDef { Id = "armory", Levels = { new CaravanLevel { Cost = 100, Value = 0.3f, Text = "Cheaper repairs" } } };
-            c.Caravan["medic_wagon"] = new CaravanUpgradeDef { Id = "medic_wagon", Levels = { new CaravanLevel { Cost = 100, Value = 2f, Text = "Inn on the road" } } };
+            c.Caravan["medic_wagon"] = new CaravanUpgradeDef { Id = "medic_wagon", Levels = { new CaravanLevel { Cost = 100, Value = 2f, Text = "Out-of-range share, clamped to 1" } } };
             return c;
         }
 
@@ -408,7 +408,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Inn_cost_applies_the_medic_wagon_premium_only_while_on_an_expedition()
+        public void Medic_wagon_share_is_clamped_to_one_and_heals_only_on_the_road()
         {
             var c = BuildContent();
             var hero = Progression.NewHero(c, "knight");
@@ -417,15 +417,18 @@ namespace GridGame.Tests
             hero.Hp = max - missing;
             var s = NewSave(0);
             s.Roster.Add(hero);
+            s.Party.Add(hero.ClassId);
+            s.Caravan["medic_wagon"] = 1; // Levels[0].Value = 2: clamped to a full heal
 
-            int homeCost = Inn.Cost(c, s);
-            Assert.That(homeCost, Is.EqualTo((int)Math.Ceiling(missing * Inn.GoldPerHp)));
+            Assert.That(MedicWagon.Share(c, s), Is.EqualTo(1f));
+            TravelRules.AfterBattle(c, s, true, 0, out int atCamp);
+            Assert.That(atCamp, Is.EqualTo(0), "no wagon medic at camp");
+            Assert.That(Inn.MissingHp(c, s, hero), Is.EqualTo(missing));
 
-            s.Caravan["medic_wagon"] = 1; // Levels[0].Value = 2x premium
-            s.Expedition = new ExpeditionSave();
-            int roadCost = Inn.Cost(c, s);
-            Assert.That(roadCost, Is.EqualTo((int)Math.Ceiling(missing * Inn.GoldPerHp * 2f)));
-            Assert.That(roadCost > homeCost, Is.True);
+            TravelRules.SetOut(s);
+            TravelRules.AfterBattle(c, s, true, 0, out int onRoad);
+            Assert.That(onRoad, Is.EqualTo(missing));
+            Assert.That(hero.Hp, Is.EqualTo(0));
         }
     }
 }

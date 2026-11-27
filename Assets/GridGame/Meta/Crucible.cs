@@ -49,13 +49,13 @@ namespace GridGame.Meta
         /// <summary>Gold banked for clearing wave <paramref name="wave"/> (0-based), kept however the run ends.</summary>
         public static int WaveGold(int wave) => BattleConfig.CrucibleWaveGoldBase + BattleConfig.CrucibleWaveGoldPerWave * (wave + 1);
 
-        /// <summary>Not mid-expedition: the Crucible is fought from a settled camp, and its full-HP reset would
-        /// otherwise heal the party between an expedition's battles for free (§22.5).</summary>
+        /// <summary>Not on the road: the Crucible is fought from a settled camp, and its full-HP reset would
+        /// otherwise heal the party between battles on the road for free (§28, GG-T1790).</summary>
         public static bool CanLaunch(ContentDb c, SaveData s, out string why)
         {
             why = null;
             if (s == null) { why = "No save loaded"; return false; }
-            if (s.Expedition != null) { why = "Closed on an expedition"; return false; }
+            if (TravelRules.OnTheRoad(s)) { why = "Closed on the road"; return false; }
             if (!s.Party.Any(id => s.Hero(id) != null)) { why = "No party"; return false; }
             if (Families(c, s).Count == 0) { why = "No foes met yet"; return false; }
             return true;

@@ -41,16 +41,10 @@ namespace GridGame.Meta
             return s;
         }
 
-        /// <summary>The next stage to launch from camp: the active expedition's next battle; otherwise battle 1
-        /// of the highest unlocked theme, stepping back one theme per <see cref="LossesBeforeStepBack"/>
-        /// consecutive losses so a wall never stalls the loop (a lost expedition restarts its theme).</summary>
+        /// <summary>The next stage to launch from camp: battle 1 of the highest unlocked theme, stepping back one theme per
+        /// <see cref="LossesBeforeStepBack"/> consecutive losses so a wall never stalls the loop.</summary>
         public static string PickStage(ContentDb c, SaveData s, int consecutiveLosses = 0)
         {
-            if (s.Expedition != null)
-            {
-                var active = Expeditions.Theme(c, s.Expedition.ThemeId);
-                if (active != null && s.Expedition.Next < active.Stages.Count) return active.Stages[s.Expedition.Next];
-            }
             var stages = c.CampaignStages();
             var unlocked = c.Campaign.Themes
                 .Select(t => (theme: t, first: t.Stages.Count > 0 ? stages.FindIndex(x => x.Id == t.Stages[0]) : -1))

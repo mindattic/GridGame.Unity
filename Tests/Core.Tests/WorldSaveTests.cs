@@ -62,7 +62,7 @@ namespace GridGame.Tests
         public void A_v25_save_migrates_to_v26_with_a_filled_world()
         {
             var s = SaveMigrations.Migrate(V25());
-            Assert.That(s.Version, Is.EqualTo(26));
+            Assert.That(s.Version, Is.EqualTo(SaveData.CurrentVersion));
             Assert.That(s.World, Is.Not.Null);
             Assert.That(s.World.Route, Is.Not.Null.And.Empty);
             Assert.That(s.World.Danger, Is.Not.Null);
@@ -173,6 +173,69 @@ namespace GridGame.Tests
             SaveMigrations.Migrate(s, db);
             Assert.That(s.World.RegionId, Is.EqualTo("elsewhere"));
             Assert.That(s.World.NodeId, Is.EqualTo("somewhere"));
+        }
+
+        // ── Travel replaces expeditions (GG-T1790) ──
+
+        [Test]
+        public void A_new_world_starts_at_camp()
+        {
+            Assert.That(new WorldSave().Camped, Is.True);
+            Assert.That(new SaveData().World.Camped, Is.True);
+            Assert.That(TravelRules.OnTheRoad(new SaveData()), Is.False);
+        }
+
+        [Test]
+        public void A_save_mid_expedition_is_placed_then_drained_onto_the_road_with_its_orbs()
+        {
+            var db = WithFrontierRegion(2, out _);
+            var s = V25(2);
+            s.Expedition = new ExpeditionSave { ThemeId = "anything", Next = 1, CarriedOrbs = 3, Coins = 50 };
+            SaveMigrations.Migrate(s, db);
+            Assert.That(s.Expedition, Is.Null);
+            Assert.That(s.World.NodeId, Is.EqualTo("frontier"), "placed at the frontier first");
+            Assert.That(s.World.Camped, Is.False, "the drain runs after PlaceAtFrontier camps it");
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(3));
+            Assert.That(TravelRules.StartOrbs(s), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void A_v26_save_on_an_expedition_drains_and_one_without_loads_at_camp()
+        {
+            var away = new SaveData { Version = 26, Expedition = new ExpeditionSave { ThemeId = "t", CarriedOrbs = 2 } };
+            away.World.Camped = true;
+            SaveMigrations.Migrate(away);
+            Assert.That(away.Version, Is.EqualTo(SaveData.CurrentVersion));
+            Assert.That(away.Expedition, Is.Null);
+            Assert.That(away.World.Camped, Is.False);
+            Assert.That(away.World.CarriedOrbs, Is.EqualTo(2));
+
+            var home = new SaveData { Version = 26 };
+            home.World.Camped = false; // the old WorldSave default
+            SaveMigrations.Migrate(home);
+            Assert.That(home.World.Camped, Is.True);
+            Assert.That(home.World.CarriedOrbs, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void A_current_save_on_the_road_stays_on_the_road()
+        {
+            var s = new SaveData();
+            TravelRules.SetOut(s);
+            s.World.CarriedOrbs = 4;
+            var back = SaveMigrations.Migrate(JsonConvert.DeserializeObject<SaveData>(JsonConvert.SerializeObject(s)));
+            Assert.That(back.World.Camped, Is.False);
+            Assert.That(back.World.CarriedOrbs, Is.EqualTo(4));
+            Assert.That(back.Expedition, Is.Null);
+        }
+
+        [Test]
+        public void A_negative_legacy_orb_count_drains_as_none()
+        {
+            var s = new SaveData { Expedition = new ExpeditionSave { CarriedOrbs = -5 } };
+            SaveMigrations.DrainExpedition(s);
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(0));
+            Assert.That(s.World.Camped, Is.False);
         }
 
         // ── JSON ──

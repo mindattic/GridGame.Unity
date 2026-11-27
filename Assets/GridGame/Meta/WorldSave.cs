@@ -15,7 +15,8 @@ namespace GridGame.Meta
         public List<string> Route = new List<string>();
         /// <summary>How far along <see cref="Route"/> the caravan has come, in art pixels.</summary>
         public double Distance;
-        public bool Camped;
+        /// <summary>At camp, off the road (<see cref="TravelRules.OnTheRoad"/>). GG-T1790: a new game starts at camp.</summary>
+        public bool Camped = true;
         /// <summary>GG-T1785: orbs left in the bank after the last battle won on the road; they start the next battle while
         /// the caravan stays on the road (<see cref="TravelRules.StartOrbs"/>). 0 at camp.</summary>
         public int CarriedOrbs;

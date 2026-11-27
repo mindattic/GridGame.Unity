@@ -10,7 +10,7 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>Covers BattleFactory.Commit/Build branches, Expeditions.AfterBattle and CampRoutine.Run
+    /// <summary>Covers BattleFactory.Commit/Build branches, TravelRules.AfterBattle and CampRoutine.Run
     /// that MetaLoopTests' end-to-end flows don't happen to exercise (GG-T32).</summary>
     public class MetaCommitBuildTests
     {
@@ -23,7 +23,7 @@ namespace GridGame.Tests
 
         private static BattleState FightWithCoins(ContentDb c, SaveData s, string stageId, int coins)
         {
-            Expeditions.Begin(c, s, stageId);
+            TravelRules.SetOut(s);
             var st = DirectWin(c, s, stageId, 7);
             st.Results.Coins = coins;
             return st;
@@ -357,43 +357,43 @@ namespace GridGame.Tests
             Assert.That(BattleFactory.Build(c, s, stageId, 1).StartOrbs, Is.EqualTo(before + 1));
         }
 
-        // ── Expeditions ──
+        // ── Travel (GG-T1790) ──
 
         [Test]
-        public void AfterBattle_bonus_includes_the_strongbox_upgrade()
-        {
-            var c = Real; var s = Progression.NewGame(c, "SB");
-            s.Gold = 10000;
-            Assert.That(CaravanUpgrades.Buy(c, s, "strongbox").Ok, Is.True);
-            var theme = c.Campaign.Themes[0];
-            BattleReport last = null;
-            int totalCoins = 0;
-            foreach (var id in theme.Stages)
-            {
-                last = BattleFactory.Commit(c, s, FightWithCoins(c, s, id, 100));
-                totalCoins += 100;
-            }
-            Assert.That(last.ExpeditionComplete, Is.True);
-            int expected = (int)System.Math.Round(totalCoins * (Expeditions.CompletionBonus + CaravanUpgrades.Value(c, s, "strongbox")));
-            Assert.That(last.ExpeditionBonus, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void StartOrbs_is_zero_for_a_stage_outside_the_active_expeditions_theme()
+        public void StartOrbs_is_zero_at_camp_even_with_orbs_recorded()
         {
             var c = Real; var s = Progression.NewGame(c, "OT");
-            var theme0 = c.Campaign.Themes[0];
-            var theme1 = c.Campaign.Themes[1];
-            Expeditions.Begin(c, s, theme0.Stages[0]);
-            s.Expedition.CarriedOrbs = 5;
-            Assert.That(Expeditions.StartOrbs(c, s, theme1.Stages[0]), Is.EqualTo(0));
+            var stage = c.Campaign.Themes[0].Stages[0];
+            s.World.CarriedOrbs = 5; // a stale count at camp never seeds a battle
+            Assert.That(BattleFactory.Build(c, s, stage, 1).StartOrbs, Is.EqualTo(0));
+            TravelRules.SetOut(s);
+            s.World.CarriedOrbs = 5;
+            Assert.That(BattleFactory.Build(c, s, stage, 1).StartOrbs, Is.EqualTo(5));
         }
 
         [Test]
-        public void Abandon_fails_when_no_expedition_is_active()
+        public void Abandon_fails_at_camp_and_makes_camp_on_the_road()
         {
             var c = Real; var s = Progression.NewGame(c, "AB");
             Assert.That(Expeditions.Abandon(s).Ok, Is.False);
+            TravelRules.SetOut(s);
+            Assert.That(Expeditions.Abandon(s).Ok, Is.True);
+            Assert.That(s.World.Camped, Is.True);
+        }
+
+        [Test]
+        public void A_win_on_the_road_reports_the_carried_orbs_and_the_medic_heal()
+        {
+            var c = Real; var s = Progression.NewGame(c, "MW");
+            s.OwnedOrbs = ManaBank.DefaultCapacity;
+            s.Gold = 10000;
+            Assert.That(CaravanUpgrades.Buy(c, s, "medic_wagon").Ok, Is.True);
+            var st = FightWithCoins(c, s, c.Campaign.Themes[0].Stages[0], 10);
+            st.Bank.Add(3);
+            var rep = BattleFactory.Commit(c, s, st);
+            Assert.That(rep.CarriedOrbs, Is.EqualTo(st.Bank.Count));
+            Assert.That(s.World.CarriedOrbs, Is.EqualTo(st.Bank.Count));
+            Assert.That(rep.MedicHealed, Is.GreaterThanOrEqualTo(0));
         }
 
         // ── CampRoutine ──

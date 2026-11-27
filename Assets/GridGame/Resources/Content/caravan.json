@@ -28,19 +28,19 @@
     "Id": "medic_wagon",
     "Name": "Medic Wagon",
     "Icon": "healing_potion_basic",
-    "Description": "The inn opens on the road, mid-expedition, at a premium.",
+    "Description": "The wagon medic patches up wounds after every battle won on the road.",
     "Crew": "Sister Ilsabet",
     "CrewRole": "wagon medic",
     "Levels": [
       {
         "Cost": 600,
-        "Value": 2.0,
-        "Text": "Inn on the road at ×2 price"
+        "Value": 0.25,
+        "Text": "Heals 25% of missing HP after each win on the road"
       },
       {
         "Cost": 1400,
-        "Value": 1.5,
-        "Text": "Inn on the road at ×1.5 price"
+        "Value": 0.4,
+        "Text": "Heals 40% of missing HP after each win on the road"
       }
     ]
   },

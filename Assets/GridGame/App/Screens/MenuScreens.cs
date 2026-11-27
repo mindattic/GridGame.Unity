@@ -1023,7 +1023,8 @@ namespace GridGame.App
 
         private void Rest()
         {
-            var r = Inn.Rest(App.Content, App.Save);
+            TravelRules.MakeCamp(App.Save); // GG-T1790: camp rest, free; on the road the caravan makes camp first
+            var r = CampRestService.Rest(App.Save, out _);
             App.Toast(r.Message);
             App.Audio.Sfx(r.Ok ? "battle.heal" : "ui.error");
             if (r.Ok) { App.Persist(); Refresh(); }
@@ -1338,7 +1339,7 @@ namespace GridGame.App
                     if (!RestedGate.Check(() => Launch(stageId, replaceCurrent))) return;
                     RestedGate.Spend();
                 }
-                Expeditions.Begin(app.Content, app.Save, stageId);
+                if (app.Content.ThemeOf(stageId) != null) TravelRules.SetOut(app.Save); // GG-T1790: a campaign battle sets out from camp
                 app.Persist();
             }
             var theme = app.Content.ThemeOf(stageId);

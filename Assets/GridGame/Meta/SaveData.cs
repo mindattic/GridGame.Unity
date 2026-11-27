@@ -10,7 +10,8 @@ namespace GridGame.Meta
     /// One save slot (bible §15). Plain data, JSON-serialized by the app's save store.
     /// Bump <see cref="CurrentVersion"/> and add a step to <see cref="SaveMigrations"/> when the shape changes.
     /// </summary>
-    /// <summary>An expedition in progress: a theme's battles fought in order, wounds and mana carried between them (§22.5).</summary>
+    /// <summary>Legacy shape (GG-T1790): an expedition in progress in an older save, drained into travel on load
+    /// (<see cref="SaveMigrations.DrainExpedition"/>).</summary>
     public sealed class ExpeditionSave
     {
         public string ThemeId;
@@ -24,7 +25,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 26;
+        public const int CurrentVersion = 27;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -101,7 +102,8 @@ namespace GridGame.Meta
         /// Save v15: an older save loads unlocked (and every profile defaults to PartyWindow, the only rule it knew).</summary>
         public TurnMode? TurnModeLock;
 
-        /// <summary>The expedition under way (null = at the caravan between expeditions) — §22.5.</summary>
+        /// <summary>Legacy (§22.5, retired by travel in GG-T1790): an expedition an older save was on. Only read by
+        /// <see cref="SaveMigrations.Migrate"/>, which drains it into <see cref="World"/> and clears it.</summary>
         public ExpeditionSave Expedition;
         public BountySave Bounty = new BountySave();
         /// <summary>Optional side quests (§22.11, GG-T237): under way (with progress) and handed in.</summary>
@@ -664,6 +666,17 @@ namespace GridGame.Meta
 
     public static class SaveMigrations
     {
+        /// <summary>GG-T1790: travel replaced expeditions. A save loaded mid-expedition is on the road with the orbs it
+        /// carried (wounds stay as saved); the legacy <see cref="SaveData.Expedition"/> is then cleared. Any version.</summary>
+        public static void DrainExpedition(SaveData s)
+        {
+            if (s.Expedition == null) return;
+            s.World ??= new WorldSave();
+            s.World.CarriedOrbs = Math.Max(0, s.Expedition.CarriedOrbs);
+            s.World.Camped = false;
+            s.Expedition = null;
+        }
+
         /// <summary>GG-T344: where The Still went into the campaign order, and how many stages it brought (save v5).</summary>
         public const int StillInsertedAt = 12, StillStageCount = 3;
 
@@ -991,6 +1004,13 @@ namespace GridGame.Meta
             if (s.Version < 26) s.Version = 26;
             s.World ??= new WorldSave();
             s.World.FillNulls();
+            // GG-T1790: travel. Before it the caravan was only ever away on an expedition (drained below), so an older save
+            // (a v26 one may hold the old Camped=false default) is at camp.
+            if (s.Version < 27)
+            {
+                s.World.Camped = true;
+                s.Version = 27;
+            }
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
@@ -1034,6 +1054,7 @@ namespace GridGame.Meta
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null && beforeDrills && s.TutorialDone) Drills.MarkAllCleared(c, s);
             if (c != null && beforeWorld) WorldSaveAdapter.PlaceAtFrontier(s, c);
+            DrainExpedition(s); // after PlaceAtFrontier, which camps the caravan
             // GG-T923: every load catches the Codex up with what the save shows (idempotent); only the v16 back-fill marks it read.
             Codex.Sync(c, s, markRead: beforeCodex);
             if (c != null && beforeGearGate)

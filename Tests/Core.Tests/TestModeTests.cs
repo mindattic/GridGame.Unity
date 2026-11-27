@@ -79,7 +79,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Stage_pick_follows_the_expedition_then_the_highest_unlocked_theme_and_steps_back_on_a_wall()
+        public void Stage_pick_follows_the_highest_unlocked_theme_and_steps_back_on_a_wall()
         {
             var c = Real; var s = TestLoop.NewSave(c);
             var themes = c.Campaign.Themes;
@@ -89,10 +89,6 @@ namespace GridGame.Tests
             Assert.That(TestLoop.PickStage(c, s), Is.EqualTo(themes[1].Stages[0]));
             Assert.That(TestLoop.PickStage(c, s, TestLoop.LossesBeforeStepBack), Is.EqualTo(themes[0].Stages[0]));
             Assert.That(TestLoop.PickStage(c, s, 100), Is.EqualTo(themes[0].Stages[0]), "never steps back past the first theme");
-            // Mid-expedition, the next battle of that expedition wins over everything.
-            Expeditions.Begin(c, s, themes[1].Stages[0]);
-            s.Expedition.Next = 1;
-            Assert.That(TestLoop.PickStage(c, s, 100), Is.EqualTo(themes[1].Stages[1]));
         }
 
         /// <summary>GG-T100: the owner's Test Mode bar includes "learn abilities". Over a 10-cycle run the starting
@@ -107,7 +103,7 @@ namespace GridGame.Tests
             for (int n = 1; n <= 10; n++)
             {
                 string stageId = TestLoop.PickStage(c, s, losses);
-                Expeditions.Begin(c, s, stageId);
+                TravelRules.SetOut(s);
                 var cycle = TestCycle.Begin(c, s, stageId, n);
                 var st = BotRunner.Play(c, BattleFactory.Build(c, s, stageId, seed++), new HeroBot(seed), 900);
                 var report = BattleFactory.Commit(c, s, st);
@@ -132,7 +128,7 @@ namespace GridGame.Tests
             for (int n = 1; n <= 4; n++)
             {
                 string stageId = TestLoop.PickStage(c, s, losses);
-                Expeditions.Begin(c, s, stageId);
+                TravelRules.SetOut(s);
                 var cycle = TestCycle.Begin(c, s, stageId, n);
                 Assert.That(cycle.EnemyMin, Is.GreaterThanOrEqualTo(cycle.PartyLevel));
                 var st = BotRunner.Play(c, BattleFactory.Build(c, s, stageId, seed++), new HeroBot(seed), 900);
