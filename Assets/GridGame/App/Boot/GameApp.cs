@@ -181,6 +181,7 @@ namespace GridGame.App
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Automation.AutomationServer.TryStart(this);
+            Automation.AutomationServer.TryStartWebBridge(); // GG-T1783: name taps for tools/webcheck.mjs in the browser
 #endif
         }
 

@@ -363,7 +363,8 @@ namespace GridGame.EditorTools
             // Uncompressed so any static file server (and Playwright) can serve it without special headers.
             PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
             PlayerSettings.WebGL.decompressionFallback = false;
-            PlayerSettings.WebGL.template = "APPLICATION:Minimal";
+            // GG-T1783: Unity's Minimal template plus window.unityInstance (Assets/WebGLTemplates/GridGame).
+            PlayerSettings.WebGL.template = "PROJECT:GridGame";
             PlayerSettings.defaultWebScreenWidth = 585;
             PlayerSettings.defaultWebScreenHeight = 1266;
             Build(BuildTarget.WebGL, "Build/WebGL", CommandLine("-dev"));
