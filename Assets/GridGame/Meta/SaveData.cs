@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 19;
+        public const int CurrentVersion = 20;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -121,6 +121,17 @@ namespace GridGame.Meta
         public HashSet<string> Codex = new HashSet<string>();
         /// <summary>GG-T923: Codex entries the player has opened; unlocked and not in here is "new".</summary>
         public HashSet<string> CodexRead = new HashSet<string>();
+        /// <summary>GG-T1292: each hero's Trust in the Commander, 0-100, by class id (§25.20, <see cref="Bonds"/>). Save v20: an
+        /// older save starts every hero at 0.</summary>
+        public Dictionary<string, int> Trust = new Dictionary<string, int>();
+        /// <summary>GG-T1292: cohesion between two heroes, 0-100, by <see cref="Bonds.PairKey"/> ("a|b", sorted).</summary>
+        public Dictionary<string, int> Cohesion = new Dictionary<string, int>();
+        /// <summary>GG-T1292: the highest Trust tier each hero has reached; Trust never drops below its floor.</summary>
+        public Dictionary<string, int> TrustTierReached = new Dictionary<string, int>();
+        /// <summary>GG-T1292: the highest cohesion tier each pair has reached; cohesion never drops below its floor.</summary>
+        public Dictionary<string, int> CohesionTierReached = new Dictionary<string, int>();
+        /// <summary>GG-T1292: bond-paying dialogue choices already paid, "dialogueId/choiceId". Kept through New Game+.</summary>
+        public HashSet<string> BondChoices = new HashSet<string>();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -909,6 +920,13 @@ namespace GridGame.Meta
             // knows, free, and every talent point it spent comes back as SP.
             bool beforeBoard = s.Version < 19;
             if (s.Version < 19) s.Version = 19;
+            // GG-T1292: Trust and cohesion (§25.20). An older save has neither, so every hero and pair starts at 0.
+            if (s.Version < 20) s.Version = 20;
+            s.Trust ??= new Dictionary<string, int>();
+            s.Cohesion ??= new Dictionary<string, int>();
+            s.TrustTierReached ??= new Dictionary<string, int>();
+            s.CohesionTierReached ??= new Dictionary<string, int>();
+            s.BondChoices ??= new HashSet<string>();
             // Any version: a lock the enum doesn't know (a hand-edited save) reads as unlocked.
             if (s.TurnModeLock is TurnMode lockMode && !Enum.IsDefined(typeof(TurnMode), lockMode)) s.TurnModeLock = null;
             // Any version: a variant the enum doesn't know (a hand-edited or future save) reads as the female default.
