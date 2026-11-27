@@ -1633,17 +1633,209 @@ namespace GridGame.App
     public sealed class SummonScreen : HubPage
     {
         public override string Id => "summon";
-        protected override string Title => "Summon Circle";
+        protected override string Title => "Summon";
         protected override string Backdrop => "cityruins";
+
+        /// <summary>The open tab: one per open banner (<see cref="Gacha.Open"/>), then Recruit.</summary>
+        private int tab;
+
+        /// <summary>The open Rates list's height in design px: about ten rows, the rest scrolls.</summary>
+        private const float OddsListMaxHeight = 560;
 
         protected override void BuildBody(VisualElement body)
         {
-            int price = Summon.Price(C, S);
-            var tag = Paywall.Tag(PaywallKind.Summon, S);
             bool busy = Paywall.Pending(S, PaywallKind.Summon) != null;
             int starter = SummonTickets.Starter(S); // GG-T1604: the first visit's Tickets
             if (starter > 0) { App.Persist(); App.Toast($"The circle gives you {TicketText.Of(starter)} to begin with."); }
-            RandomDraw(body, busy);
+            var banners = Gacha.Open(C, DateTime.UtcNow);
+            var names = banners.Select(TabName).Append("Recruit").ToArray();
+            if (tab >= names.Length) tab = 0;
+            Ui.Tabs(names, tab, i => { tab = i; Refresh(); }, body).name = "summon-tabs";
+            if (tab < banners.Count) Banner(body, banners[tab], busy);
+            else Recruit(body, busy);
+        }
+
+        private string TabName(BannerDef b) => b.Kind == BannerKind.Standard
+            ? "Standard"
+            : string.Join(" & ", b.Featured.Select(id => C.TryClass(id)?.Name ?? id));
+
+        /// <summary>"3d 4h", "5h 12m", "9m 30s": the time left on a Featured banner.</summary>
+        internal static string Left(TimeSpan t) =>
+            t.TotalDays >= 1 ? $"{(int)t.TotalDays}d {t.Hours}h"
+            : t.TotalHours >= 1 ? $"{(int)t.TotalHours}h {t.Minutes}m"
+            : $"{Math.Max(0, t.Minutes)}m {Math.Max(0, t.Seconds)}s";
+
+        /// <summary>A banner's tab (§25.10.3, GG-T1428): the featured portraits and the countdown to its close, the pity
+        /// meters, the Rates list, the wallet, and the x1 and x<see cref="BannerDef.MultiCount"/> pulls naming what they take.</summary>
+        private void Banner(VisualElement body, BannerDef b, bool busy)
+        {
+            var w = Ui.Panel(body, b.Name, false, "summon-banner-" + b.Id);
+            var head = Ui.El("row", w);
+            foreach (var id in b.Featured.Where(id => C.TryClass(id) != null)) Ui.Thumb(id, head, Kit.Thumb).name = "summon-featured-" + id;
+            var col = Ui.El("col grow", head);
+            int pool = Gacha.Pool(C, S, b).Count;
+            Ui.Para(b.Kind == BannerKind.Featured
+                ? $"{TabName(b)} answers {OddsText.Percent(b.FeaturedShare)} of the pulls here; the rest are any of {pool} heroes."
+                : $"Any of {pool} heroes may answer, each as likely as the next. A hero you already have comes as an {Gacha.EchoName}.", col, "dim");
+            var closes = Gacha.Closes(C, b, DateTime.UtcNow);
+            var ends = Ui.Caption(closes is DateTime at ? "Ends in " + Left(at - DateTime.UtcNow) : "Always open", col, "gold");
+            ends.name = "summon-ends";
+            if (closes is DateTime close)
+                ends.schedule.Execute(() =>
+                {
+                    var left = close - DateTime.UtcNow;
+                    if (left <= TimeSpan.Zero) { Refresh(); return; }
+                    ends.text = "Ends in " + Left(left);
+                }).Every(1000);
+            Pity(w, b);
+            RatesRow(w, b);
+
+            int diamonds = DiamondExchange.Have(S), tickets = SummonTickets.Have(S);
+            var wallet = Ui.Actions(w);
+            var img = wallet.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId)); // GG-T745 (§26.7)
+            img.style.width = img.style.height = Size.IconS;
+            img.style.marginLeft = Space.TargetHalfGap;
+            img.style.marginRight = 0;
+            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)} · {TicketText.Plural}: {Ui.Count(tickets)}", wallet, "grow").style.marginLeft = Space.S8;
+            var row = Ui.Actions(w);
+            PullButton(row, b, 1, busy, "btn--small btn--primary").name = "summon-draw";
+            PullButton(row, b, b.MultiCount, busy, "btn--small").name = "summon-draw-multi";
+            if (Gacha.Price(S, b, 1).shards > 0 && diamonds < b.PullShards)
+            {
+                Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate.", w, "dim");
+                RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
+            }
+        }
+
+        /// <summary>The pity meters: pulls toward a guaranteed new hero and, on a Featured banner, a guaranteed featured one.</summary>
+        private void Pity(VisualElement w, BannerDef b)
+        {
+            var box = Ui.El("col", w);
+            box.name = "summon-pity";
+            if (b.NewHeroPity > 0) Meter(box, "New hero", Gacha.NewHeroMiss(S, b.Kind), b.NewHeroPity, "summon-pity-new");
+            if (b.Kind == BannerKind.Featured && b.FeaturedPity > 0) Meter(box, "Featured", S.Summon?.FeaturedMiss ?? 0, b.FeaturedPity, "summon-pity-featured");
+            var due = Gacha.DueLine(Gacha.Due(S, b, Gacha.Pool(C, S, b)));
+            if (due != null) Ui.Para(due, box, "good");
+        }
+
+        private static void Meter(VisualElement parent, string label, int miss, int pity, string name)
+        {
+            var row = Ui.El("row", parent);
+            row.name = name;
+            Ui.Caption(label, row);
+            var g = Ui.Gauge(miss / (float)pity, row);
+            g.style.flexGrow = 1;
+            g.style.marginLeft = g.style.marginRight = Space.S8;
+            int left = Math.Max(1, pity - miss);
+            Ui.Caption(left == 1 ? "Next pull" : $"Within {left} pulls", row, "dim");
+        }
+
+        /// <summary>What a pull takes, as its button names it: "1 Summon Ticket", "1,000 Shards", "40 Shards + 360 G".</summary>
+        private string PayText(int tickets, int shards)
+        {
+            var parts = new List<string>();
+            if (tickets > 0) parts.Add(TicketText.Of(tickets));
+            if (shards > 0)
+            {
+                var (qd, qg) = DiamondExchange.Quote(S, shards);
+                if (qd > 0) parts.Add(ShardText.ShortOf(qd));
+                if (qg > 0) parts.Add(Ui.Gold(qg));
+            }
+            return string.Join(" + ", parts);
+        }
+
+        private Button PullButton(VisualElement row, BannerDef b, int count, bool busy, string classes)
+        {
+            var (tickets, shards) = Gacha.Price(S, b, count);
+            string pay = PayText(tickets, shards);
+            var btn = RowIcon.IconButton($"x{count} · {pay}", RowKind.Confirm, () =>
+            {
+                var can = Gacha.CanPull(C, S, b, count);
+                if (!can.Ok)
+                {
+                    if (shards > 0 && !DiamondExchange.CanPay(S, shards).Ok) DiamondStores.OfferStore(can.Message);
+                    else { App.Toast(can.Message); App.Audio.Sfx("ui.error"); }
+                    return;
+                }
+                Confirm.Show($"Pay {pay} for {(count == 1 ? "a pull" : $"{count} pulls")} on {b.Name}? {RatesLine(b, Gacha.Odds(C, S, b))}.", "Summon", () => Pull(b, count));
+            }, classes, row);
+            Ui.SetEnabled(btn, !busy && !S.TestMode && Gacha.Pool(C, S, b).Count > 0);
+            return btn;
+        }
+
+        /// <summary>Pays and starts the pull, then reveals each new hero in pull order; Echoes are in the landing toast.</summary>
+        private void Pull(BannerDef b, int count)
+        {
+            List<string> fresh = null;
+            TimedJobView.Begin(now =>
+            {
+                var r = Gacha.Pull(C, S, b, count, now, out var job);
+                fresh = job?.Batch?.Where(id => S.Hero(id) == null).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                return (r, job);
+            }, count == 1 ? "The circle reaches out…" : $"The circle reaches out {count} times…", r => Reveal(r.Ok ? fresh : null, 0));
+        }
+
+        private void Reveal(List<string> ids, int i)
+        {
+            if (ids == null) { Refresh(); return; }
+            if (i >= ids.Count) { VariantPicker.ShowPending(Refresh); return; } // GG-T532: then pick their look
+            if (S.Hero(ids[i]) == null) { Reveal(ids, i + 1); return; } // fizzled and refunded
+            SummonReveal.Show(ids[i], () => Reveal(ids, i + 1));
+        }
+
+        /// <summary>The next pull's odds in a line: the pity due, the featured share, or the even chance of each hero.</summary>
+        private string RatesLine(BannerDef b, List<DrawOdds> odds)
+        {
+            var due = Gacha.DueLine(Gacha.Due(S, b, Gacha.Pool(C, S, b)));
+            if (due != null) return due.TrimEnd('.');
+            if (odds.Count == 0) return "No one is left to answer";
+            if (b.Kind == BannerKind.Featured && b.Featured.Count > 0)
+                return $"Featured: {OddsText.Percent(b.FeaturedShare)} together; each other hero {odds[odds.Count - 1].Label}";
+            return $"Each of these {odds.Count} heroes: {odds[0].Label}";
+        }
+
+        /// <summary>The banner's odds, disclosed before purchase (GG-T503): one line (<c>summon-odds</c>) and a <b>Rates</b>
+        /// button (<c>summon-odds-btn</c>) that opens the full list (<c>summon-odds-list</c>, a row <c>summon-odds-{classId}</c>
+        /// per hero with its chance), all read from <see cref="Gacha.Odds"/>, the list the pull rolls from.</summary>
+        private void RatesRow(VisualElement w, BannerDef b)
+        {
+            var odds = Gacha.Odds(C, S, b);
+            var row = Ui.Actions(w);
+            var line = Ui.Name(RatesLine(b, odds), row, "gold grow");
+            line.name = "summon-odds";
+            line.style.whiteSpace = WhiteSpace.Normal;
+            // A bounded scroller: every row laid out in full pushed the pull buttons off a page that doesn't scroll (GG-T494).
+            var list = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
+            list.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            list.style.maxHeight = OddsListMaxHeight;
+            w.Add(list);
+            list.name = "summon-odds-list";
+            list.style.display = DisplayStyle.None;
+            foreach (var o in odds)
+            {
+                var def = C.TryClass(o.ClassId);
+                var r = Ui.El("row", list);
+                r.name = $"summon-odds-{o.ClassId}";
+                bool featured = b.Featured.Contains(o.ClassId, StringComparer.OrdinalIgnoreCase);
+                Ui.Caption((def != null ? $"{def.Name} · {def.Role}" : o.ClassId) + (featured ? " · Featured" : ""), r, featured ? "gold grow" : "grow");
+                Ui.Caption(o.Label, r, "dim");
+            }
+            Ui.Caption($"A hero you already have comes as an {Gacha.EchoName} (+{Gacha.EchoSp} SP).", list, "dim");
+            Button toggle = null;
+            toggle = RowIcon.IconButton("Rates", RowKind.Menu, () =>
+            {
+                bool open = list.style.display == DisplayStyle.None;
+                list.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
+                toggle.Q<Label>().text = open ? "Hide rates" : "Rates"; // GG-T750: the IconButton's label, not Button.text
+            }, "btn--small", row);
+            toggle.name = "summon-odds-btn";
+        }
+
+        /// <summary>The Recruit tab: the gold chosen summon, any hero from the pool by name.</summary>
+        private void Recruit(VisualElement body, bool busy)
+        {
+            int price = Summon.Price(C, S);
+            var tag = Paywall.Tag(PaywallKind.Summon, S);
             var list = Ui.ListPanel(body, "Heroes who answer", "summon-pool");
             Ui.Para($"Summon a hero to your side ({tag}). The circle takes a moment to answer.", list, "dim");
             foreach (var d in Summon.Pool(C, S).Where(d => Features.Offers(d.Id)))
@@ -1656,96 +1848,6 @@ namespace GridGame.App
                     TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
-        }
-
-        /// <summary>The random draw for Diamonds (§25.10.2, GG-T343): a stranger from the wanderer pool, revealed when the
-        /// summoning lands. Priced in Diamonds, payable in gold through the exchange (GG-T455).</summary>
-        private void RandomDraw(VisualElement body, bool busy)
-        {
-            var w = Ui.Panel(body, "Call a stranger", false, "summon-random");
-            int diamonds = DiamondExchange.Have(S); // GG-T702: the account wallet once the save was moved
-            int left = DiamondSummon.Pool(C, S).Count;
-            var t = Ui.Text(left > 0
-                ? $"Spend {ShardText.Plural} and the circle calls someone who has no other way to you: one of {left} heroes still out on the road. Who answers is up to the circle."
-                : "No one is left on the road to answer.", "kit-text", w);
-            if (left > 0) OddsRow(w);
-            var row = Ui.Actions(w);
-            // GG-T745 (§26.7): the Diamond's pixel icon, else the Diamond emblem, leads the balance.
-            var img = row.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId));
-            img.style.width = img.style.height = Size.IconS;
-            img.style.marginLeft = Space.TargetHalfGap;
-            img.style.marginRight = 0;
-            int tickets = SummonTickets.Have(S);
-            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)} · {TicketText.Plural}: {Ui.Count(tickets)}", row, "grow").style.marginLeft = Space.S8;
-            var b = RowIcon.IconButton($"Draw · {DiamondSummon.Tag(S)}", RowKind.Confirm, () =>
-            {
-                var can = DiamondSummon.CanDraw(C, S);
-                if (SummonTickets.Have(S) > 0)
-                {
-                    Confirm.Show($"Spend {TicketText.Of(1)} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () => Draw());
-                    return;
-                }
-                if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
-                var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
-                string pay = qg == 0 ? ShardText.Of(qd) : qd == 0 ? Ui.Gold(qg) : $"{ShardText.Of(qd)} and {Ui.Gold(qg)}";
-                Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () => Draw());
-            }, "btn--small btn--primary", row);
-            b.name = "summon-draw";
-            // Short of Diamonds and gold it stays tappable and offers the store (GG-T455); busy or no one left disables it.
-            Ui.SetEnabled(b, !busy && left > 0 && !S.TestMode);
-            if (tickets == 0 && diamonds < DiamondSummon.Price)
-            {
-                Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate. {ShardText.Plural} also pay for a lucky craft or an instant Rested refill.", w, "dim");
-                RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
-            }
-        }
-
-        private void Draw()
-        {
-            string drawn = null;
-            TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
-                "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, () => VariantPicker.ShowPending(Refresh)); else Refresh(); }); // GG-T532: then pick their look
-        }
-
-        /// <summary>The draw's odds, disclosed before purchase (GG-T503): one line ("Each of these 23 heroes: 1 in 23
-        /// (4.3%)", <c>summon-odds</c>) and an <b>Odds</b> button (<c>summon-odds-btn</c>) that opens the full list
-        /// (<c>summon-odds-list</c>, a row <c>summon-odds-{classId}</c> per hero with its chance). Both read
-        /// <see cref="DiamondSummon.Odds"/>, the list the draw picks from.</summary>
-        /// <summary>The open odds list's height in design px: about ten rows, the rest scrolls.</summary>
-        private const float OddsListMaxHeight = 560;
-
-        private void OddsRow(VisualElement w)
-        {
-            var odds = DiamondSummon.Odds(C, S);
-            var row = Ui.Actions(w);
-            var line = Ui.Name(DiamondSummon.OddsLine(C, S), row, "gold grow");
-            line.name = "summon-odds";
-            line.style.whiteSpace = WhiteSpace.Normal;
-            // A bounded scroller: 41 rows laid out in full pushed the Draw button and the hero list off the bottom of a
-            // page that doesn't scroll (GG-T494 fresh-player run).
-            var list = new ScrollView(ScrollViewMode.Vertical) { horizontalScrollerVisibility = ScrollerVisibility.Hidden };
-            list.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
-            list.style.maxHeight = OddsListMaxHeight;
-            w.Add(list);
-            list.name = "summon-odds-list";
-            list.style.display = DisplayStyle.None;
-            foreach (var o in odds)
-            {
-                var def = C.TryClass(o.ClassId);
-                var r = Ui.El("row", list);
-                r.name = $"summon-odds-{o.ClassId}";
-                Ui.Caption(def != null ? $"{def.Name} · {def.Role}" : o.ClassId, r, "grow");
-                Ui.Caption(o.Label, r, "dim");
-            }
-            Ui.Caption("Every hero listed is equally likely. Heroes you already have never come.", list, "dim");
-            Button toggle = null;
-            toggle = RowIcon.IconButton("Odds", RowKind.Menu, () =>
-            {
-                bool open = list.style.display == DisplayStyle.None;
-                list.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
-                toggle.Q<Label>().text = open ? "Hide odds" : "Odds"; // GG-T750: the IconButton's label, not Button.text
-            }, "btn--small", row);
-            toggle.name = "summon-odds-btn";
         }
     }
 

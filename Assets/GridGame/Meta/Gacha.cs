@@ -31,6 +31,27 @@ namespace GridGame.Meta
         /// <summary>The always-open Standard banner, or null when the content has none.</summary>
         public static BannerDef Standard(ContentDb c) => c.BannerOrder.FirstOrDefault(b => b?.Kind == BannerKind.Standard);
 
+        /// <summary>The banners open at <paramref name="now"/>: each Featured banner in its window, then the Standard banner.</summary>
+        public static List<BannerDef> Open(ContentDb c, DateTime now) =>
+            c.BannerOrder.Where(b => b?.Kind == BannerKind.Featured && Closes(c, b, now) != null)
+                .Concat(c.BannerOrder.Where(b => b?.Kind == BannerKind.Standard)).ToList();
+
+        /// <summary>When the window of <paramref name="banner"/> open at <paramref name="now"/> closes (UTC); null when it is
+        /// closed, or the always-open Standard banner. A rotation slot's windows repeat every full turn of the rotation.</summary>
+        public static DateTime? Closes(ContentDb c, BannerDef banner, DateTime now)
+        {
+            if (banner == null || banner.Kind == BannerKind.Standard || !(banner.StartUtc is DateTime start) || now < start) return null;
+            if (!banner.IsRotating) return banner.EndUtc is DateTime end && now < end ? end : (DateTime?)null;
+            var slots = c.BannerOrder.Where(b => b != null && b.Kind == BannerKind.Featured && b.IsRotating && b.StartUtc != null)
+                .OrderBy(b => b.Rotation).ToList();
+            int turn = slots.Sum(b => b.Days);
+            if (turn <= 0) return null;
+            var first = slots[0].StartUtc.Value;
+            double into = (now - first).TotalDays % turn, from = (start - first).TotalDays;
+            if (into < from || into >= from + banner.Days) return null;
+            return now.AddDays(from + banner.Days - into);
+        }
+
         /// <summary>Every summonable hero (Acquire Summon, Wanderer or Starter; uncut, not lost), owned or not, in id order.</summary>
         public static List<string> Summonable(ContentDb c, SaveData s) =>
             c.Classes.Values
