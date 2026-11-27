@@ -463,7 +463,7 @@ namespace GridGame.App
         public const int TalentsSub = 4;
         private static readonly string[] SubTabs = { "Known", "Items", "Passives", "Locked", "Board" };
 
-        public AbilitiesTab(int subTab = -1) { tab = subTab; }
+        public AbilitiesTab(int subTab = -1, (int Q, int R)? boardNode = null) { tab = subTab; talents.Select(boardNode); }
         public override void OnHeroChanged() => talents.OnHeroChanged();
         /// <summary>"talents" while the Talents sub-tab is up, so `-start talents` and the harness's goto check still match.</summary>
         public override string Id => tab == TalentsSub ? talents.Id : "abilities";

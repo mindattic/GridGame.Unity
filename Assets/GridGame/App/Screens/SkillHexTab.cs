@@ -34,6 +34,8 @@ namespace GridGame.App
 
         public override string Id => "talents";
         public override void OnHeroChanged() => selected = null;
+        /// <summary>Opens with this node tapped, its route previewed and Buy route ready (GG-T1404: a Learn button's next ability).</summary>
+        public void Select((int Q, int R)? pt) => selected = pt;
 
         public override void BuildBody(VisualElement body)
         {

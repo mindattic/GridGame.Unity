@@ -51,13 +51,17 @@ namespace GridGame.App
         private int tab;
         private readonly HeroTab[] tabs;
 
-        public HeroScreen(int tab = StatusTabIndex, string heroId = null, int abilitiesSubTab = -1)
+        public HeroScreen(int tab = StatusTabIndex, string heroId = null, int abilitiesSubTab = -1, (int Q, int R)? boardNode = null)
         {
             this.tab = Mathf.Clamp(tab, 0, TabNames.Length - 1);
             HeroId = heroId;
-            tabs = new HeroTab[] { new StatusTab(), new EquipTab(), new AbilitiesTab(abilitiesSubTab), new PartyTab() };
+            tabs = new HeroTab[] { new StatusTab(), new EquipTab(), new AbilitiesTab(abilitiesSubTab, boardNode), new PartyTab() };
             foreach (var t in tabs) t.Host = this;
         }
+
+        /// <summary>Heroes › Abilities › Board for this hero with the route to <paramref name="next"/> preselected (GG-T1404).</summary>
+        public static HeroScreen Learn(string heroId, NextAbility.Pick next) =>
+            new HeroScreen(AbilitiesTabIndex, heroId, AbilitiesTab.TalentsSub, next?.Node);
 
         private HeroTab Active => tabs[tab];
         internal HeroSave Hero => S.Hero(HeroId) ?? S.Roster.FirstOrDefault();
