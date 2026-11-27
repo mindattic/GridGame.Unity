@@ -4404,11 +4404,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:26fc7771956432f9fbb20f53dbe3d17cb0f930226c6aa5e05656a750c428b455",
+      "hash": "sha256:4249ad1d0e1883799b012f54e7d6bbb1460a1e0855418d493a02784093a0be7b",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Where pieces of the Manalith fell and took root: red life in a white ruin, the first sign that what is coming is not only death. The wild children and beast tamers of the Wild live out here."
+        "long": "Where the Hierarch's reservoir broke and the Manalith's substance came down and took root: red life in a white ruin, the first sign that what is coming is not only death. Nobody has held it since the Cathedral fell. Redline cuts the blossom to sell, Bulwark holdouts and the Choir's last Templars come to burn it, and moss grown over Halcyon's dead stands up to guard it, all in the numbers of a place left alone. The Manalith is a third larger here than over Halcyon. The wild children and beast tamers of the Wild live out here."
       }
     },
     "codex:place/cathedral": {
@@ -4443,11 +4443,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9eed0fa587d93aaea6ea5d1493d5465d080c93dd21242cc9c9baea95d1332946",
+      "hash": "sha256:eb8865b33083a39df8dc367b87ea3ede51e50d6f67452ca427094c88c73ae3c1",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Beneath Halcyon's arches, where the Anchors draw on the Manalith. The Ember mean to open every tap and drag it down."
+        "long": "Beneath Halcyon's arches, where the Anchors draw on the Manalith. The Ember march here to open every tap and drag it down. Only Halcyon's mana can open or close the Anchors, so every side wants the Commander. Chain wardens and hook throwers drag their foes out of line, and when an Anchor heaves, everything near it is pulled one step closer, so a pincer closes or breaks by the heave, not by the heroes."
       }
     },
     "codex:place/cityruins": {
@@ -4469,11 +4469,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f14fc6a0e05d54411c5aa09756ac61a46fbb85894f61583f7df34688147b3423",
+      "hash": "sha256:6b43f7aad6eea4fdd4f6e862c1fe2b04ea560bb8410debf131d00838a9a956bf",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The neon city under Halcyon's ruins, home of the Street and of gangs like Redline. It keeps its lights on with mana drawn off Halcyon's old taps, and so keeps pulling the Manalith closer."
+        "long": "The neon city under Halcyon's ruins, home of the Street and of gangs like Redline and the Herd. It keeps its lights on with mana drawn off Halcyon's old taps, and so keeps pulling the Manalith closer. Burrowers and pit lurkers live in the hollows under its streets, and shovers push whoever they can toward the holes. The floor cracks under every fight here and does not mend."
       }
     },
     "codex:place/desert": {
@@ -4495,11 +4495,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f6a73075858a686527e5b4459314b933175185122df4c08f76071e708b0bc201",
+      "hash": "sha256:9a1147d65f02d06f5b1bf2c56bd9ef105ed8adc68db1450642df4da3e6343969",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The deep Shardfall, where the Manalith's shed shell lies thickest and the Ember march on the Anchors."
+        "long": "The deep Shardfall, where the Manalith's shed shell lies thickest and is still falling. It is the Ember's heartland: their shard callers bring the strikes down on purpose, and crystal brutes and shard skitterers came down with the shell. The Captain is here too, still collecting. A strike lands where the timeline says it will, on friend and foe alike, so the party has to read it and can learn to use it. From here the Ember march on the Anchors."
       }
     },
     "codex:place/greenvalley": {
@@ -4521,11 +4521,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:f4cf3b7ee34629f67277e7a62585e33c42742c80769ca8145215e281bf355754",
+      "hash": "sha256:345b85c6886365fb053e9ee673f9d46f0d8a977490eb1c100d7451fdf89cacb6",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The Free Holds themselves: castles, keeps and villages that pay the Choir's tithe and live under a Manalith they worship and fear without understanding it. The Captain is still collecting."
+        "long": "The Free Holds themselves: castles, keeps and villages that paid the Choir's tithe for centuries and lived under a Manalith they worshipped and feared without understanding it. With the Hierarch gone, every hold has walled itself in and trades with whoever comes, and every claimant to the empty spire comes here first. The Captain is still collecting, and sold a knight's oath to do it. The holds fight a siege the old way: wrights throw up fresh walls every wave, splitting any line that tries to close around a foe."
       }
     },
     "codex:place/lanternroad": {
@@ -4547,11 +4547,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:462cacc860b8fb833a67647ede49d3ba9ed7e6a61b303ba37b5ac64671f1baf8",
+      "hash": "sha256:0016e82360b056ed08d8cb06a9a94149604965cbbffb188b012c3970eed13135",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The region named for tomorrow's shadow. Here the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it."
+        "long": "The region named for tomorrow's shadow, out past the last road. Here the Manalith fills the sky, its crystals close enough to count, with the Moon a small, steady disc beside it. Its pull lifts the ground and thins the light, so anything more than two tiles from a hero is lost in the dark. What lives here thrives in it: dusk stalkers, lamp snuffers, gloom menders, dusk mimics, and the Ember at their most numerous. The Anchors still hold. At the end of this road the Commander decides what happens next."
       }
     },
     "codex:place/still": {
@@ -4586,11 +4586,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8bd2a53676ad95f2fcf51925af682347da2519187adf08b39a7a09df8bf502ee",
+      "hash": "sha256:3eafd3c0714d29c40fbcdd4d41fb03f28e8fa05bbc2cf0c82dc85f2739a8e687",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "More of Halcyon's Arks, the ships it built to escape the Manalith's pull, lying drowned where the tides left them the night Halcyon fell."
+        "long": "More of Halcyon's Arks, the ships it built to run from the Manalith's pull, thrown inland the night Halcyon fell and now going under as the fen rises. Storm callers ride the flood, bloat drowners come up out of it, and the hags and the Swamp Mistress keep the wrecks. The tide comes in on a clock: rows of the field flood, anyone standing wet is slowed and shocked, and there is less ground every wave."
       }
     },
     "codex:story/chapter/ch01": {
@@ -24343,13 +24343,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:079c85272e3b855307ee7165b81013ae30125cc18f25bbb4493b492a825da029",
+      "hash": "sha256:30e3df100c71cfe6d92c912f91caa66a75f6de5438ff3e70a3ba1fea562c5f0a",
       "about": [
         "place-bloom"
       ],
       "speakers": [],
       "payload": {
-        "short": "Where the Hierarch's reservoir broke, the stolen mana came down hardest, and the Bloom came up through the old white stone: red blossom over broken pillars, moss in every crack."
+        "short": "Where the Hierarch's reservoir broke, the stolen mana came down hardest, and the Bloom came up through the old white stone: red blossom over broken pillars, moss in every crack. Nobody has held it since the Cathedral fell, so everything that came to feed on it is still here."
       }
     },
     "place:bloom-01": {
@@ -24358,13 +24358,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9e62373a4ca5bc80aa385a20cde579293d172b905c8ebc15c28cb618726f6444",
+      "hash": "sha256:f173d21a3f3a18068c8bc862d279b6e83157ffda63732a9b4508fc97aa30ed08",
       "about": [
         "place-bloom-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Bloom."
+        "short": "The outer terraces, where Redline cutters fill their sacks with red blossom and Bulwark troopers come to burn what they cannot hold. The moss-golems rise against them both."
       }
     },
     "place:bloom-02": {
@@ -24373,13 +24373,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9e62373a4ca5bc80aa385a20cde579293d172b905c8ebc15c28cb618726f6444",
+      "hash": "sha256:76362bd7ce6985310e67231f207d2c120f56e5eaf87ae781a747b8b7e8702ecc",
       "about": [
         "place-bloom-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Bloom."
+        "short": "Deeper in, the blossom stands shoulder high. Wolves hunt the paths the gangs have cut, and something bigger runs with them."
       }
     },
     "place:bloom-03": {
@@ -24388,13 +24388,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9e62373a4ca5bc80aa385a20cde579293d172b905c8ebc15c28cb618726f6444",
+      "hash": "sha256:c9da21160189644cb5cffea98aa41195e10e95a8744ecf96ce3aa3c56c30fd59",
       "about": [
         "place-bloom-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Bloom."
+        "short": "The heart of the Bloom, under the broken pillars of the reservoir. The Choir's last Templars hold it as if the Cathedral still stood, and they would rather burn it than let anyone else have it."
       }
     },
     "place:cathedral": {
@@ -24523,13 +24523,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:098a90755fe48f48e865dce247f7fb40a75a809b4558ec7b5e56fb7898860798",
+      "hash": "sha256:5a45fe6659b1be45cb420d55f1370bbee81ff5860884a4cdff045bef0c2ef562",
       "about": [
         "place-cave-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Under the Anchors."
+        "short": "The first chamber under the arches, where the chains are thicker than towers. Chain wardens and hook throwers drag heroes out of line, and when the Anchor heaves, the whole field slides toward it."
       }
     },
     "place:cave-05": {
@@ -24538,13 +24538,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:098a90755fe48f48e865dce247f7fb40a75a809b4558ec7b5e56fb7898860798",
+      "hash": "sha256:df332b37b9a72d8d3033d4f1714f29e5599a321a6721b1a992ccc266fe4a2ed8",
       "about": [
         "place-cave-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Under the Anchors."
+        "short": "The root of an Anchor, where the Ember's hulks strain at the chains to tear the tap open. Ice and stone from the Wastes have followed them down, and every heave pulls the fight closer together."
       }
     },
     "place:cave2": {
@@ -24553,13 +24553,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d69ff26b53754162fb7e6b6fb372e51adfc4eb5b684a5de6c4f80343bdf77aae",
+      "hash": "sha256:6aac2f8f5b62517f4e4f8dc76122a548cc1ec9cae441a35146d97453057e9fb3",
       "about": [
         "place-cave2"
       ],
       "speakers": [],
       "payload": {
-        "short": "The arches were built on something."
+        "short": "The arches were built on something. Under them the chains run down into the dark, and the Ember have come to pull every one of them open."
       }
     },
     "place:cityruins": {
@@ -24628,13 +24628,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b4a173e41f4dd936599fa83ab2e283af9a5755dcaef6faa80ac1d523117b122",
+      "hash": "sha256:cb393534c1b4a6fd2af2fb134fa388f0b322f1ba6879dff7330d4a120fb9b8e4",
       "about": [
         "place-cityruins-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Underspire."
+        "short": "The night markets under the cables, rain on neon. Burrowers dig beneath the stalls, and every crack they open is one more place a shover can push a hero."
       }
     },
     "place:cityruins-05": {
@@ -24643,13 +24643,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:8b4a173e41f4dd936599fa83ab2e283af9a5755dcaef6faa80ac1d523117b122",
+      "hash": "sha256:d9555bd4e15aaea8fbd99353e934f8e22a3db0f43e76c60b18fcbb11290e5ff2",
       "about": [
         "place-cityruins-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Underspire."
+        "short": "The lowest level of the Underspire, where what is left of the Choir still sings over the taps and minotaurs hold the stairs. The floor here has more holes than stone."
       }
     },
     "place:cityruins2": {
@@ -24658,13 +24658,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2628d41539641442ae64f17facc2c497f4c2971869c6d7628ee1216b72b5d561",
+      "hash": "sha256:323713fbd1087ce9c733a0e28430a851042fdab32dd088dce61ed8a7200de814",
       "about": [
         "place-cityruins2"
       ],
       "speakers": [],
       "payload": {
-        "short": "Halcyon without a Hierarch is a city holding its breath."
+        "short": "Halcyon without a Hierarch is a city holding its breath. Under the spire, the neon markets still run on the old taps, and the floor they stand on is giving way."
       }
     },
     "place:desert": {
@@ -24733,13 +24733,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b942c0b6e51b8ce98101fc88ac7321b4219d3dfe97896d848faebc880a5c603",
+      "hash": "sha256:b3e65ddc0b66db748cbba3d948705046598894c4ad5852f6ae21199bea050f79",
       "about": [
         "place-desert-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Deep Shardfall."
+        "short": "Glass dunes under a sky full of falling shell. Shard callers mark the ground for the next strike, and the Captain's soldiers dig for whatever lands."
       }
     },
     "place:desert-05": {
@@ -24748,13 +24748,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b942c0b6e51b8ce98101fc88ac7321b4219d3dfe97896d848faebc880a5c603",
+      "hash": "sha256:0bb36b2e582ee93408753290b461b91be3fe7b11756cf20ca1014a51314e262f",
       "about": [
         "place-desert-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Deep Shardfall."
+        "short": "The crater at the heart of the Shardfall, where the biggest pieces came down. Halcyon's old war machines wake in the glass, and the Captain holds the richest seam."
       }
     },
     "place:desert2": {
@@ -24763,13 +24763,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6f026fcf7ff3879073e924ca2df0e1f0ebe52f8dd4165ef4fe55010507ca1b3b",
+      "hash": "sha256:0ea78f5cf261bb659a3f890f271a2df2a14bd9d4909cebf77ae32b42e78e1537",
       "about": [
         "place-desert2"
       ],
       "speakers": [],
       "payload": {
-        "short": "With the Choir's collectors gone, nobody is digging in the Shardfall anymore. Nobody is guarding it, either."
+        "short": "With the Choir's collectors gone, nobody is digging in the Shardfall anymore. Nobody is guarding it either, and the shell is still coming down."
       }
     },
     "place:greenvalley": {
@@ -24838,13 +24838,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
+      "hash": "sha256:030aadb6f31a2a0cb90483e31fb3ab3ed4cb83b3cdb9070c4aa43787e284c3ed",
       "about": [
         "place-greenvalley-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Tithe Moors."
+        "short": "The outer holds have sold their walls to the Captain. Wrights raise a fresh barricade for every wave, marksmen shoot from behind it, and the rams wait for anyone who comes close."
       }
     },
     "place:greenvalley-05": {
@@ -24853,13 +24853,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3e394782a779a3b7e5aa10d9fc099efd4e9b1d905c976b51d5ccb710846717",
+      "hash": "sha256:a026f1f6f14edeec95eef2e518cd41ae4e9111cb4fc9dd45fe0e73e15afd5c4b",
       "about": [
         "place-greenvalley-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Tithe Moors."
+        "short": "The high keep, where the Captain commands the holds' soldiers from behind the last wall. Every wall the wrights raise splits the field again, and it has to be broken under fire."
       }
     },
     "place:greenvalley2": {
@@ -24868,13 +24868,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d0873f297d7f5ae9aa6802e17278582098f6cb34d82fc6456ad5c90247e51081",
+      "hash": "sha256:f79c75933ca1a20004611d29bae2c8fdf18edf3cbdda666fb127d85912038707",
       "about": [
         "place-greenvalley2"
       ],
       "speakers": [],
       "payload": {
-        "short": "The mana came down like rain. But rain never falls everywhere."
+        "short": "Walled hill-forts over gold grass, every gate barred. The Holds have stopped paying the tithe, and the Captain has come to collect it in person."
       }
     },
     "place:lanternroad": {
@@ -24943,13 +24943,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7bcd971ea2a11ea309af78187c7bc5f0d80382c241ebe4bc7afd4315addd22d5",
+      "hash": "sha256:ae8ead4e689b7e9d0bd9e71487001accd5e6ceb610811bda2879e768c5dc766f",
       "about": [
         "place-morrowsshadow"
       ],
       "speakers": [],
       "payload": {
-        "short": "Far out past the last road, the Manalith hangs so low it fills the sky, the old Moon a small disc beside it, and its pull lifts the ground: stones the size of houses drift over the cracked plain and never come down."
+        "short": "Far out past the last road, the Manalith hangs so low it fills the sky, the old Moon a small disc beside it, and its pull lifts the ground: stones the size of houses drift over the cracked plain and never come down. The light does not reach far here."
       }
     },
     "place:morrowsshadow-01": {
@@ -24958,13 +24958,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:735b58529cc215a296c8d3ef648553df27550d9c0093bbc936ffd83b1c26f639",
+      "hash": "sha256:831c0108b12d10a19af9208fb6a07862febe0e7cf364f0e1e41c008d6b23c63e",
       "about": [
         "place-morrowsshadow-01"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Morrow's Shadow."
+        "short": "The cracked plain at the edge of the shadow. Lamp snuffers put out whatever light the party carries, and dusk stalkers wait just past where it reaches."
       }
     },
     "place:morrowsshadow-02": {
@@ -24973,13 +24973,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:735b58529cc215a296c8d3ef648553df27550d9c0093bbc936ffd83b1c26f639",
+      "hash": "sha256:219353b21921510cda86f6ac14c9974695df4a6e29957d83874b9202bac662e6",
       "about": [
         "place-morrowsshadow-02"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Morrow's Shadow."
+        "short": "Under the floating stones, where the ground has lifted away in pieces. Gloom menders keep the dark whole, and something is always moving in it."
       }
     },
     "place:morrowsshadow-03": {
@@ -24988,13 +24988,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:735b58529cc215a296c8d3ef648553df27550d9c0093bbc936ffd83b1c26f639",
+      "hash": "sha256:bbe89ee2fcf7fb1449a2abe46d7b81800333555bb4083db40e6c04758e520e5d",
       "about": [
         "place-morrowsshadow-03"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of Morrow's Shadow."
+        "short": "The lowest ground under the Manalith, where its crystals can be counted one by one. The Ember's Demon Lord holds it, and past this battle there is no more road, only the choice."
       }
     },
     "place:still": {
@@ -25123,13 +25123,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:33842d4d46397b3855bd4a6bfad62509764be18400977612c5a1ea985bcdc61f",
+      "hash": "sha256:bf481f653ec32ceb6c8386044a0cb642c45a6b1ec56540ab2b34b7938263d866",
       "about": [
         "place-swamp-04"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Drowned Arks."
+        "short": "The outer wrecks, keel-deep and sinking. Tide striders walk the water as if it were floor, and storm callers wait for the flood to carry their lightning."
       }
     },
     "place:swamp-05": {
@@ -25138,13 +25138,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:33842d4d46397b3855bd4a6bfad62509764be18400977612c5a1ea985bcdc61f",
+      "hash": "sha256:0455fa2c0f97aaf306b43ef7eb27d9141cbe2dea308ad51334a1a760faaca0f3",
       "about": [
         "place-swamp-05"
       ],
       "speakers": [],
       "payload": {
-        "short": "A battlefield of The Drowned Arks."
+        "short": "The greatest Ark in the fen, half under water, with the Swamp Mistress still at its helm. The tide fills it row by row, and nothing that lives here minds getting wet."
       }
     },
     "place:swamp2": {
@@ -25153,13 +25153,13 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7f6f8759b1a63faa84d7b539836ff1cf107ef24553e423d4596f22eba89f169a",
+      "hash": "sha256:b1509bcda6e43bdda970b7939c1e33f94027b349d227a77b57088c044080d084",
       "about": [
         "place-swamp2"
       ],
       "speakers": [],
       "payload": {
-        "short": "The Long Patience still flies. A little. Its keel drags through the fog an arm's length above the fen, and its captain -- the Lich, horned and flame-lit -- has hung lanterns from the rails."
+        "short": "The Arkgrave again, with the water coming up. The fen is rising over Halcyon's wrecks, and every turn of the tide takes another row of solid ground."
       }
     },
     "rule:anchor-pull": {
