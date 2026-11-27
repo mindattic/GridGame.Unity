@@ -708,6 +708,59 @@ namespace GridGame.App
             ProfileChanged();
         }
 
+        /// <summary>Delete all game data (§15, GG-T1580): every profile's cloud slots (when the cloud is signed in), then
+        /// everything under the profiles folder on this device: each profile, <c>.trash</c>, the account wallet
+        /// (<c>.account</c>: Shards, owned products, cosmetics) and <c>current.txt</c>, plus the legacy
+        /// <c>Saves.migrated</c> folders when the profiles folder is the real one. The app then starts over on a fresh
+        /// Default profile at the title screen. <paramref name="done"/> gets true when nothing failed to delete.</summary>
+        public void DeleteAllData(Action<bool> done)
+        {
+            var store = Profile?.Store;
+            if (store == null) { done?.Invoke(false); return; }
+            Save = null; Slot = -1;
+            DiamondExchange.WalletDirty = false;
+            var names = new List<string>(store.List());
+            void Erase(int cloudFailed)
+            {
+                bool local = EraseLocalData(store);
+                Profile = new ProfileSession(store);
+                ProfileChanged();
+                if (WalletStore != null) DiamondExchange.Wallet = WalletStore.Load(WalletLogin);
+                DiamondExchange.WalletDirty = false;
+                Router.ResetTo(new TitleScreen());
+                Debug.Log($"[Profiles] deleted all game data: {names.Count} profiles, {cloudFailed} cloud deletes failed, local {(local ? "erased" : "partly left")}");
+                done?.Invoke(local && cloudFailed == 0);
+            }
+            if (Cloud != null && Cloud.Active) Cloud.DeleteAll(names, Erase);
+            else Erase(0);
+        }
+
+        /// <summary>Erases the profiles folder's contents (every profile, the trash, the account wallet, current.txt), and
+        /// the legacy Saves.migrated folders beside it only when it is persistentDataPath/Profiles. False if any is left.</summary>
+        private static bool EraseLocalData(Unity.Shared.Core.ProfileStore store)
+        {
+            bool ok = true;
+            void Remove(string path)
+            {
+                try
+                {
+                    if (System.IO.Directory.Exists(path)) System.IO.Directory.Delete(path, true);
+                    else if (System.IO.File.Exists(path)) System.IO.File.Delete(path);
+                }
+                catch (Exception e) { ok = false; Debug.LogError($"[Profiles] couldn't delete {path}: {e.Message}"); }
+            }
+            foreach (var name in store.List()) Remove(System.IO.Path.Combine(store.Root, name));
+            Remove(System.IO.Path.Combine(store.Root, Unity.Shared.Core.ProfileStore.TrashFolderName));
+            Remove(System.IO.Path.Combine(store.Root, AccountWalletStore.FolderName));
+            Remove(store.CurrentFile);
+            var data = Application.persistentDataPath;
+            var real = System.IO.Path.Combine(data, Unity.Shared.Core.ProfileStore.FolderName);
+            if (string.Equals(System.IO.Path.GetFullPath(store.Root).TrimEnd('\\', '/'), System.IO.Path.GetFullPath(real).TrimEnd('\\', '/'), StringComparison.OrdinalIgnoreCase)
+                && System.IO.Directory.Exists(data))
+                foreach (var dir in System.IO.Directory.GetDirectories(data, LegacySaveMigration.MigratedFolderName + "*")) Remove(dir);
+            return ok;
+        }
+
         private void ProfileChanged()
         {
             Saves = new SaveStore(Profile.SavesFolder);

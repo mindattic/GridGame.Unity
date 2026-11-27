@@ -9,7 +9,7 @@ Status: **done** (in the repo, verified by reading it), **partial** (started, a 
 (nothing yet), **owner** (only the owner can do it: an account, a console, a device or a decision). Every row that is
 not done names its ticket; "Re-check after" names the sibling slice of GG-T1256 that can change the answer.
 
-Today: 52 rows, 12 missing, 20 partial, 11 owner, 9 done.
+Today: 52 rows, 12 missing, 19 partial, 11 owner, 10 done.
 
 ## Android (Google Play)
 
@@ -62,7 +62,7 @@ Today: 52 rows, 12 missing, 20 partial, 11 owner, 9 done.
 |---|---|---|---|---|---|
 | S1 | Privacy policy and terms at public URLs | **missing** | `docs/legal/privacy-policy.md` and `docs/legal/terms.md` carry `[privacy contact email]` / `[URL]` placeholders and are not hosted (`docs/STORE_LISTING.md` 7b) | GG-T1540, GG-T1541, GG-T1542 | - |
 | S2 | GDPR / COPPA (target audience) | **partial** | Policy says the game is not directed at under-13s, pending the owner's confirmation; no personal data leaves the device except through the stores' purchase and cloud-save services | GG-T1541, GG-T1534 | GG-T1289 |
-| S3 | Account deletion / data erasure | **partial** | No accounts, so the account-deletion rules do not apply; but there is no in-game way to delete local and cloud save data | GG-T1544 | - |
+| S3 | Account deletion / data erasure | **done** | No accounts, so the account-deletion rules do not apply. Settings > Data > **Delete all game data** (GG-T1580, BIBLE §15.4) erases, after two confirms, every profile, save slot and setting on the device, the account wallet (Shards, owned products, cosmetics; not refunded) and every slot's cloud copy (Play Games snapshot delete, iCloud key removal, GG-T1544). GDPR erasure is self-service in the game; the privacy policy should name this row as the way to erase data | - | - |
 | S4 | Crash reporting and analytics consent | **partial** | `App/Services/CrashReporter.cs` writes C# exceptions to `Diagnostics/errors.jsonl` on the device only; native crashes reach Android vitals and the Xcode Organizer; no analytics, so no consent toggle yet | GG-T1545, GG-T1546, GG-T1543 | - |
 | S5 | Cloud save | **partial** | GG-T500 chain: `App/Services/PlayGamesCloudBackend.cs` (GG-T608) and `ICloudCloudBackend.cs` (GG-T609) are built and inert until the console and Apple steps are done | GG-T500, GG-T1115, GG-T1127, GG-T1128, GG-T1129 | - |
 | S6 | Localization | **missing** | English only: no Localization package, strings in code, content JSON and Prose; launch languages undecided | GG-T1551, GG-T1552 | GG-T1258, GG-T1270 |

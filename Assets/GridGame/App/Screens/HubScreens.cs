@@ -2166,6 +2166,18 @@ namespace GridGame.App
             row.KindIcon(RowKind.Settings);
         }
 
+        /// <summary>Delete all game data (§15, GG-T1580): two questions, then <see cref="GameApp.DeleteAllData"/> erases this
+        /// device's profiles, slots, settings and wallet, and the cloud copies, and the app starts over at the title.</summary>
+        private void DeleteAllDataRow(VisualElement parent)
+        {
+            var row = Ui.MenuRow("Delete all game data", "Erase", () =>
+                Confirm.Show("Delete all game data? Every profile, save slot and setting on this device is erased, and so are their cloud copies. This can't be undone.", "Continue", () =>
+                    Confirm.Show("Purchased Shards, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
+                        App.DeleteAllData(ok => App.Toast(ok ? "All game data deleted" : "Some game data couldn't be deleted")))), parent);
+            row.name = "settings-delete-all-data";
+            row.KindIcon(RowKind.Settings);
+        }
+
         protected override void BuildBody(VisualElement body)
         {
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
@@ -2281,6 +2293,7 @@ namespace GridGame.App
             importRow.name = "settings-import-save";
             importRow.KindIcon(RowKind.Save);
             if (Features.DiamondStore && DiamondExchange.Wallet != null) SpendingLimitRow(DiamondExchange.Wallet, w);
+            DeleteAllDataRow(w);
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);
