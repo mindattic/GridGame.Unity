@@ -635,7 +635,8 @@ namespace GridGame.App
             controls?.Clear();
             App.Persist();
             var then = next ?? nextFactory?.Invoke();
-            if (then != null) App.Router.Replace(then); else App.Router.Back();
+            if (then != null) App.Router.Replace(then);
+            else if (!App.Router.Back()) App.Router.ResetTo(new HubScreen()); // nothing under it: never strand on a finished scene
         }
     }
 

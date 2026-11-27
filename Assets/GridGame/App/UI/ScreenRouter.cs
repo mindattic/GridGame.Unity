@@ -131,6 +131,36 @@ namespace GridGame.App
             return true;
         }
 
+        /// <summary>GG-T1341: Push, unless a screen of the same kind is already on the stack: then pop back to it in one
+        /// fade, so the stack never holds two copies (the Shard Store from a currency strip over the Shard Store).</summary>
+        public void PushOrReturn(GameScreen s)
+        {
+            foreach (var on in stack)
+            {
+                if (on.GetType() != s.GetType() || on.Id != s.Id) continue;
+                if (on == Current) return;
+                var target = on;
+                Go(() => { while (stack.Count > 1 && stack.Peek() != target) Leave(stack.Pop()); });
+                return;
+            }
+            Push(s);
+        }
+
+        /// <summary>GG-T1341: true when every screen above the <see cref="HubScreen"/> is a <see cref="HubPage"/>, so the nav
+        /// and Home can drop back to the hub without abandoning a battle, its results or the pause menu's settings.</summary>
+        public bool OnHubTrail
+        {
+            get
+            {
+                foreach (var s in stack)
+                {
+                    if (s is HubScreen) return true;
+                    if (!(s is HubPage)) return false;
+                }
+                return false;
+            }
+        }
+
         /// <summary>How many screens sit above the <see cref="HubScreen"/> on the stack, or -1 with no hub on it.</summary>
         public int PagesAboveHub
         {

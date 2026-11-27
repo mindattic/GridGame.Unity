@@ -56,7 +56,7 @@ namespace GridGame.App
         private static string inFlight;
         public static float InFlightSince { get; private set; }
 
-        public static void Open() => GameApp.I.Router.Push(new DiamondStoreScreen());
+        public static void Open() => GameApp.I.Router.PushOrReturn(new DiamondStoreScreen());
 
         /// <summary>A Diamond price couldn't be paid: say why, and offer the store.</summary>
         public static void OfferStore(string why)

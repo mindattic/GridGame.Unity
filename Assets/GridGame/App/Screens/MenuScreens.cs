@@ -36,7 +36,7 @@ namespace GridGame.App
             var col = Ui.El("fill col", root);
             // GG-T1335: a page more than one step from the hub also gets Home, back to the hub in one fade.
             var header = Ui.Header(Title, () => App.Router.Back(), col, out CurrencyBar, Subtitle,
-                App.Save != null && App.Router.PagesAboveHub > 1 ? () => App.Router.Home() : (Action)null);
+                App.Save != null && App.Router.OnHubTrail && App.Router.PagesAboveHub > 1 ? () => App.Router.Home() : (Action)null);
             if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
             var topic = Npc != null && CampNpcs.Joined(S, Npc) ? DialogueRunner.TalkTopic(C, S, ContentLoader.NpcFlagPrefix + Npc) : null;
@@ -51,9 +51,9 @@ namespace GridGame.App
             BuildBody(Body);
             Typography.Watch(Body);
             // GG-T1590: the hub's bottom nav under the body.
-            if (App.Save != null) Ui.NavBar(col, this);
+            if (App.Save != null && App.Router.OnHubTrail) Ui.NavBar(col, this);
             // GG-T1361: Gold, Shards and Summon Tickets on every hub page; tapping Shards opens the Shard Store.
-            Ui.Currencies(CurrencyBar, App.Save, this is DiamondStoreScreen ? null : () => App.Router.Push(new DiamondStoreScreen()));
+            Ui.Currencies(CurrencyBar, App.Save, this is DiamondStoreScreen ? null : () => App.Router.PushOrReturn(new DiamondStoreScreen()));
             CampTipOverlay.ShowIfPending(this, TipStation);
         }
 
@@ -709,7 +709,7 @@ namespace GridGame.App
                 if (!string.IsNullOrEmpty(d.Value)) Ui.Text(d.Value, "kit-tile-value", tile).name = "value";
                 else if (!d.Open && !string.IsNullOrEmpty(d.Hint)) Ui.Text(d.Hint, "kit-tile-value", tile).name = "hint";
                 string id = d.Id, hint = d.Hint;
-                if (d.Open) Ui.Tappable(tile, () => { var dest = Ui.NavDestination(App.Save, id); if (dest != null) App.Router.Push(dest); }, "ui.select");
+                if (d.Open) Ui.Tappable(tile, () => { var dest = Ui.NavDestination(App.Save, id); if (dest != null) App.Router.PushOrReturn(dest); }, "ui.select");
                 else Ui.Tappable(tile, () => App.Toast(hint), "ui.error");
             }
             var quit = Ui.El("kit-tile", grid);
