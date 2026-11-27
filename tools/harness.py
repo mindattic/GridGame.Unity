@@ -2955,70 +2955,76 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
             "-screen-width", "585", "-screen-height", "1266", "-screen-fullscreen", "0",
             "-logFile", os.path.join(art, "player.log")]
     proc = subprocess.Popen(args, cwd=ROOT)
-    for _ in range(60):
-        if alive():
-            break
-        time.sleep(0.5)
-    else:
-        raise RuntimeError("player did not start")
-
-    class Died(Exception):
-        pass
-
-    def checked_call(endpoint, **params):
-        # Every call() in this loop goes through here so a process death is always caught and
-        # reported, instead of the exception from a refused connection escaping uncaught (as it
-        # did the first time this ran: the process died between a poll() check and the next call()
-        # one line later, and only the calls adjacent to an explicit poll() check were guarded).
-        if proc.poll() is not None:
-            raise Died()
-        try:
-            return call(endpoint, **params)
-        except Exception as e:
-            if proc.poll() is not None:
-                raise Died(str(e))
-            raise
-
-    checked_call("speed", x=speed)
-    deadline = time.time() + hours * 3600
-    clips = []
-    n = 0
+    _procs.append(proc)
+    global _launched
+    _launched = True
     try:
-        while time.time() < deadline:
-            info = checked_call("randombattle")
-            if not isinstance(info, dict) or not info.get("ok"):
-                print(f"clip{n}: randombattle failed: {info}")
+        for _ in range(60):
+            if alive():
                 break
-            for _ in range(20):
-                if checked_call("state")["screen"] == "battle":
+            time.sleep(0.5)
+        else:
+            raise RuntimeError("player did not start")
+
+        class Died(Exception):
+            pass
+
+        def checked_call(endpoint, **params):
+            # Every call() in this loop goes through here so a process death is always caught and
+            # reported, instead of the exception from a refused connection escaping uncaught (as it
+            # did the first time this ran: the process died between a poll() check and the next call()
+            # one line later, and only the calls adjacent to an explicit poll() check were guarded).
+            if proc.poll() is not None:
+                raise Died()
+            try:
+                return call(endpoint, **params)
+            except Exception as e:
+                if proc.poll() is not None:
+                    raise Died(str(e))
+                raise
+
+        checked_call("speed", x=speed)
+        deadline = time.time() + hours * 3600
+        clips = []
+        n = 0
+        try:
+            while time.time() < deadline:
+                info = checked_call("randombattle")
+                if not isinstance(info, dict) or not info.get("ok"):
+                    print(f"clip{n}: randombattle failed: {info}")
                     break
-                time.sleep(0.2)
-            checked_call("autoplay", on=1)
-            t0 = time.time(); last_clock = -1; stuck = 0; result = "TIMEOUT"
-            while time.time() - t0 < timeout:
-                time.sleep(1.0)
-                st = checked_call("state")
-                if st["screen"] != "battle":
-                    result = st["screen"]
-                    break
-                b = st["battle"]
-                stuck = stuck + 1 if b["clock"] == last_clock and not b["busy"] else 0
-                last_clock = b["clock"]
-                if stuck > 12:
-                    result = "STALLED"
-                    break
-            clips.append({**info, "result": result})
-            n += 1
-            if n % 10 == 0:
-                elapsed = time.time() - (deadline - hours * 3600)
-                print(f"stress: {n} clips done, {elapsed/3600:.2f}h elapsed, process alive")
-    except Died as e:
-        _report_death(art, proc.returncode, n, extra_note=str(e))
+                for _ in range(20):
+                    if checked_call("state")["screen"] == "battle":
+                        break
+                    time.sleep(0.2)
+                checked_call("autoplay", on=1)
+                t0 = time.time(); last_clock = -1; stuck = 0; result = "TIMEOUT"
+                while time.time() - t0 < timeout:
+                    time.sleep(1.0)
+                    st = checked_call("state")
+                    if st["screen"] != "battle":
+                        result = st["screen"]
+                        break
+                    b = st["battle"]
+                    stuck = stuck + 1 if b["clock"] == last_clock and not b["busy"] else 0
+                    last_clock = b["clock"]
+                    if stuck > 12:
+                        result = "STALLED"
+                        break
+                clips.append({**info, "result": result})
+                n += 1
+                if n % 10 == 0:
+                    elapsed = time.time() - (deadline - hours * 3600)
+                    print(f"stress: {n} clips done, {elapsed/3600:.2f}h elapsed, process alive")
+        except Died as e:
+            _report_death(art, proc.returncode, n, extra_note=str(e))
+            return clips
+        logs = call("logs")
+        errors = [l[:300] for l in logs if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        print(json.dumps({"clips_completed": n, "hours": hours, "errors": errors}, indent=1))
         return clips
-    logs = call("logs")
-    errors = [l[:300] for l in logs if l.startswith(("Error", "Exception")) and "first mouse" not in l]
-    print(json.dumps({"clips_completed": n, "hours": hours, "errors": errors}, indent=1))
-    return clips
+    finally:
+        _stop_player()
 
 
 # GG-T1213: --leakprobe drift report. EndlessStability logs one "[LeakProbe] encounter N: key=value ..." line per
