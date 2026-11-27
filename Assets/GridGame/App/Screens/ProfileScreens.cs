@@ -43,7 +43,7 @@ namespace GridGame.App
                 var delete = RowIcon.IconButton("Delete", RowKind.Close, () => AskDelete(n), "btn--small", actions);
                 delete.name = "delete-" + n;
             }
-            var create = Ui.MenuRow("+ New profile", "", () => App.Router.Push(new ProfileNameScreen(null)), list);
+            var create = Ui.MenuRow("+ New profile", "", () => App.Router.Push(new CreateProfileScreen()), list);
             create.name = "new-profile";
             create.KindIcon(RowKind.New);
             Ui.SelectFirst(list);
@@ -93,22 +93,9 @@ namespace GridGame.App
             var w = Ui.Panel(Ui.PageBody(col), renaming == null ? "Name your profile" : $"New name for \"{renaming}\"");
 
             // A resize rebuild keeps what was typed (the old field is still referenced here until replaced).
-            field = new TextField { name = "profile-name-field", maxLength = ProfileStore.MaxNameLength, value = field?.value ?? renaming ?? "" };
-            field.style.fontSize = TypeScale.Base;
-            field.style.marginTop = Space.S8; field.style.marginBottom = Space.S8;
-            field.style.minHeight = 96;
-            var input = field.Q(className: "unity-text-field__input") ?? field.Q(className: "unity-base-text-field__input");
-            if (input != null)
-            {
-                input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Color.white;
-                input.style.paddingLeft = input.style.paddingRight = Space.S16;
-                input.style.borderTopWidth = input.style.borderBottomWidth = input.style.borderLeftWidth = input.style.borderRightWidth = 3;
-                input.style.borderTopColor = input.style.borderBottomColor = input.style.borderLeftColor = input.style.borderRightColor = Palette.Neutral.WithA(0.8f);
-            }
+            field = NameField("profile-name-field", field?.value ?? renaming ?? "", w);
             field.RegisterValueChangedCallback(_ => Validate());
             field.RegisterCallback<KeyDownEvent>(e => { if (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter) Submit(); });
-            w.Add(field);
 
             problem = Ui.Para("", w, "warn");
             problem.name = "profile-name-problem";
@@ -120,6 +107,26 @@ namespace GridGame.App
             ok.name = "profile-name-ok";
             Validate();
             field.schedule.Execute(() => field.Focus()).ExecuteLater(200);
+        }
+
+        /// <summary>A one-line profile-name box (this screen and Create Profile's step 1, GG-T1344).</summary>
+        internal static TextField NameField(string name, string value, VisualElement parent)
+        {
+            var f = new TextField { name = name, maxLength = ProfileStore.MaxNameLength, value = value ?? "" };
+            f.style.fontSize = TypeScale.Base;
+            f.style.marginTop = Space.S8; f.style.marginBottom = Space.S8;
+            f.style.minHeight = Space.S96;
+            var input = f.Q(className: "unity-text-field__input") ?? f.Q(className: "unity-base-text-field__input");
+            if (input != null)
+            {
+                input.style.backgroundColor = Palette.Ink.WithA(0.9f);
+                input.style.color = Color.white;
+                input.style.paddingLeft = input.style.paddingRight = Space.S16;
+                input.style.borderTopWidth = input.style.borderBottomWidth = input.style.borderLeftWidth = input.style.borderRightWidth = Size.Hairline;
+                input.style.borderTopColor = input.style.borderBottomColor = input.style.borderLeftColor = input.style.borderRightColor = Palette.Neutral.WithA(0.8f);
+            }
+            parent.Add(f);
+            return f;
         }
 
         /// <summary>The reason <paramref name="name"/> can't be used, or null when it can.</summary>
