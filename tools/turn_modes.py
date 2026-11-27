@@ -100,7 +100,7 @@ def soak_filter(bots):
     return f"FullyQualifiedName~HeldTurnSoakReport&({names})"
 
 
-def run_one(args, mode, difficulty, out, scratch):
+def run_one(args, mode, difficulty, out, scratch, failed):
     """One dotnet test run: both requested bots for one mode at one difficulty. Returns the gathered JSON paths."""
     raw = os.path.join(scratch, f"{mode}-d{difficulty}")
     env = {
@@ -122,11 +122,13 @@ def run_one(args, mode, difficulty, out, scratch):
         r = subprocess.run(cmd, cwd=ROOT, env={**os.environ, **env}, stdout=f, stderr=subprocess.STDOUT)
     if r.returncode != 0:
         print(f"   dotnet test exited {r.returncode}; see {log}", file=sys.stderr)
+        failed.append(f"{mode}-d{difficulty}")
     gathered = []
     for bot in args.bots:
         src = os.path.join(raw, f"turn-mode-{mode}-{BOTS[bot]}.json")
         if not os.path.exists(src):
             print(f"   missing {src}", file=sys.stderr)
+            failed.append(f"{mode}-{bot}-d{difficulty}")
             continue
         dst = os.path.join(out, f"turn-mode-{mode}-{bot}-d{difficulty}.json")
         shutil.copyfile(src, dst)
@@ -137,9 +139,10 @@ def run_one(args, mode, difficulty, out, scratch):
     return gathered
 
 
-def load(out):
+def load(out, paths=None):
+    """Runs from the given paths, or (--table) every turn-mode-*-d*.json in out."""
     runs = []
-    for path in sorted(glob.glob(os.path.join(out, "turn-mode-*-d*.json"))):
+    for path in sorted(glob.glob(os.path.join(out, "turn-mode-*-d*.json")) if paths is None else paths):
         name = os.path.basename(path)[len("turn-mode-"):-len(".json")]
         mode, bot, diff = name.rsplit("-", 2)
         with open(path, encoding="utf-8") as f:
@@ -197,16 +200,20 @@ def main(argv=None):
           f"{', '.join(map(str, args.difficulties))}; out: {out}")
     if not args.dry_run:
         os.makedirs(out, exist_ok=True)
+    failed, gathered = [], []
     for mode in args.modes:
         for diff in args.difficulties:
-            run_one(args, mode, diff, out, scratch)
+            gathered += run_one(args, mode, diff, out, scratch, failed)
     if args.dry_run:
         return 0
-    md = table(load(out), args.per_stage)
+    md = table(load(out, gathered), args.per_stage)
     with open(os.path.join(out, "table.md"), "w", encoding="utf-8") as f:
         f.write(md + "\n")
     print()
     print(md)
+    if failed:
+        print("FAILED: " + ", ".join(failed), file=sys.stderr)
+        return 1
     return 0
 
 
