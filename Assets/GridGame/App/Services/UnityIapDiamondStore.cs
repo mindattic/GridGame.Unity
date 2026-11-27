@@ -196,6 +196,7 @@ namespace GridGame.App
                 store.AppleStoreExtendedPurchaseService.OnEntitlementRevoked += OnRevoked;
                 revokeHooked = true;
             }
+            StorefrontCountry.OnStoreConnected(store); // GG-T1635: the App Store storefront for LootBoxPolicy
             FetchProducts();
         }
 

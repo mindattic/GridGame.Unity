@@ -161,6 +161,10 @@ namespace GridGame.App
                 if (TurnModeSetting.TryParseBuilt(turnModeArg, out var launchMode, out var turnModeError)) TurnModeSetting.LaunchOverride = launchMode;
                 else Debug.LogError($"[CommandLine] -turnMode ignored: {turnModeError}");
             }
+            // GG-T1635: `-storefront XX` is the loot-box storefront country this run (any build); else release Android/iOS resolve it.
+            var storefrontArg = CommandLine.Value("-storefront");
+            if (storefrontArg != null) StorefrontCountry.Override(storefrontArg);
+            StorefrontCountry.Resolve();
 
             if (CommandLine.Has("-noDiagonalSlip")) BattleConfig.DiagonalSlipEnabled = false;
             var skill = CommandLine.Value("-skill");
