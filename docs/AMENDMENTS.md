@@ -1687,3 +1687,13 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   faction is the Lantern Road. Docs only: the fixed-lead code stays until GG-T1405.
 - *Why:* owner brief 2026-11-27: a non-combatant leader from the fallen world gives the party a reason to follow and
   to fight with Halcyon's orbs, while keeping the world's history spread across the cast.
+## 2026-11-27 — The Commander in battle (owner, GG-T1457)
+
+- **Was:** the Commander (GG-T1305) had a default "advice plus a few orders in battle" with no spec; the Warden's lead role
+  was removed in words only.
+- **Now:** [BIBLE §9.2](BIBLE.md#92-the-commander-in-battle-gg-t1457-owner-2026-11-27-gg-t1305) specifies advice (the idle
+  hint and an Ask button on a Commander card, Prose barks `bark:commander/advice/<kind>`) and four free orders (Rally,
+  Hold, Focus, Regroup; `orders.json`, `OrderCommand`, one charge per wave, no orbs, no clock, allowed in every turn
+  mode, off in the bot by default), the orbs row framed as Halcyon tech that runs near the Commander (no rule change),
+  and no unit in the lead's place. Spec only; nothing built.
+- *Why:* the Commander takes part in battle without becoming a unit, using only mechanics that exist.

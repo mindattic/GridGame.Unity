@@ -144,7 +144,7 @@ GridGame is **NOT**:
 
 ### 4.5 The command → event contract
 
-A **command** (`Core/Battle/Commands.cs`) is a player decision: `MoveCommand` (hero id + path of cardinal steps + drag-timer seconds left), `UseSlotCommand` (hero, slot, target tile) or `ShieldCommand`. `BattleEngine.Apply` resolves it synchronously and returns an ordered list of `BattleEvent`s (`Core/Battle/BattleEvents.cs`: `Stepped`, `Displaced`, `PincerFormed`, `Attack`, `Damaged`, `Healed`, `Died`, `Loot`, `OrbMinted`, `OrbsSpent`, `TimelineAdvanced`, `PushedBack`, `Hastened`, `TurnStarted`, `TurnSkipped`, `CastQueued`, `CastStaggered`, `CastCancelled`, `Clutch`, `AbilityResolved`, `AbilityRefused`, `ItemUsed`, `BuffApplied/Ticked/Removed`, `Announce`, `TrapPlaced/Triggered`, `WeaponWorn/Shattered`, `BossPhase`, `WaveStarted/Cleared`, `Revived`, `BattleEnded`, `PlayerControl`). The simulation has already finished when the view sees them; the view only plays them back (`BattleScreen.Play` in `App/Battle/BattleScreen.Playback.cs`, the event player). A refused command emits `AbilityRefusedEvent` and changes nothing — no clock, no cost. The same seed + content + command list always reproduces the same event list.
+A **command** (`Core/Battle/Commands.cs`) is a player decision: `MoveCommand` (hero id + path of cardinal steps + drag-timer seconds left), `UseSlotCommand` (hero, slot, target tile) `ShieldCommand` or (⬜, [§9.2.2](#922-orders)) `OrderCommand`. `BattleEngine.Apply resolves it synchronously and returns an ordered list of `BattleEvent`s (`Core/Battle/BattleEvents.cs`: `Stepped`, `Displaced`, `PincerFormed`, `Attack`, `Damaged`, `Healed`, `Died`, `Loot`, `OrbMinted`, `OrbsSpent`, `TimelineAdvanced`, `PushedBack`, `Hastened`, `TurnStarted`, `TurnSkipped`, `CastQueued`, `CastStaggered`, `CastCancelled`, `Clutch`, `AbilityResolved`, `AbilityRefused`, `ItemUsed`, `BuffApplied/Ticked/Removed`, `Announce`, `TrapPlaced/Triggered`, `WeaponWorn/Shattered`, `BossPhase`, `WaveStarted/Cleared`, `Revived`, `BattleEnded`, `PlayerControl`). The simulation has already finished when the view sees them; the view only plays them back (`BattleScreen.Play` in `App/Battle/BattleScreen.Playback.cs`, the event player). A refused command emits `AbilityRefusedEvent` and changes nothing — no clock, no cost. The same seed + content + command list always reproduces the same event list.
 
 ## 5. The Laws {#GG-§5}
 
@@ -2284,6 +2284,55 @@ Source (spell, item, charge, trap, expire chain, Shield) → `ApplyBuff` (refres
 - **Stacking.** Texts anchored on the same half-tile cell while another is still up take the lowest free slot: each slot steps up about a line and alternates sides, so simultaneous texts never overlap. A slot frees when its text ends.
 - **Reduce Motion and Battle speed.** Under Reduce Motion (`Tween.Calm`) every text still shows: travel, swell, hop and jitter shrink or stop. Every duration runs through `Tween`, so Battle speed scales it.
 
+### 9.2 The Commander in battle (GG-T1457, owner 2026-11-27, GG-T1305)
+
+**Added 2026-11-27. ⬜ Spec only, nothing built** (build tasks under GG-T1455: GG-T1461 the advice card, GG-T1465 orders in Core, plus the HUD, bot and test tasks). The Commander ([§25.11.2.2](#251122-the-commander-rewritten-2026-11-27-owner-gg-t1305-was-warden-the-fixed-lead-gg-t533)) is the player and is **not a unit**: no tile, no HP, no turn icon, never targeted or hit; a defeat is still "every hero down". They take part in battle in two ways and no more: **advice** (words, no effect on the sim) and **orders** (a small, free, rationed set of commands through `BattleEngine.Apply`), both in the Commander's voice.
+
+#### 9.2.1 Advice: the idle hint and Ask
+
+- **One source.** Advice is what the hint already is: the bot's best move, spell or GUARD. `BattleScreen.ShowHint` runs `HeroBot.Decide(State)` after `HintDelay` (5 s) idle ([§4.5](#45-the-command--event-contract)) and today prints "Hint: ..." in the banner. It now shows a **Commander card**: the Commander's portrait (the player's pick, female or male) and **one line**, in the info-tab area, never over the board or the timeline. The board marks stay as built (gold tile, route arrow, hero glow, slot pop); only the words move to the card. The card fades on any input (`ClearHint`) or after 6 s.
+- **Kinds and lines.** `AdviceKind`: `move` (a pincer is reachable), `position` (best positioning move, no pincer yet), `spell`, `guard` (nothing good to do), `order` (an order the bot would issue now, 9.2.2), `tip`. Each kind is a Prose bark, **`bark:commander/advice/<kind>`**, several lines, one chosen by a seeded pick that never touches the battle RNG; a line may use `{hero}` and `{ability}`. Lines are written as local seeds and drafted to Prose by the writing task; agents never approve them (RFC 0009).
+- **When the idle hint shows.** Unchanged: not on Auto, not while targeting or dragging, only under player control, and until the third campaign stage is cleared (`HighestClearedStage < 2`). **Amended here:** a Settings choice **Commander advice**: Idle (default, keeps that gate), Always (every stage), Off (silences the idle hint, keeps Ask).
+- **Ask.** An **Ask** button on the card, present whenever the player holds control. Tap shows the card at once from the same `Decide`. It costs **no orbs and no time**, is not a command, is never recorded by `BattleRecorder`, and has a 3 s cooldown; unavailable while the clock runs or an enemy beat plays. Asking again on an unchanged board gives the bot's next-best option, never the same line twice in a row. The advice is the shipped bot's pick, not an oracle.
+- **The coach-mark tutorial reuses the card** (front door GG-T1258, drills GG-T1315): a lesson's text is the Commander speaking on the same card ("Drill n · Lesson k of m" stays its header), and **Ask during a drill replays the current lesson**. The Moving lesson's forced demo path (`TutorialDemoMove`) is the `move` advice with its 0.8 s delay.
+
+#### 9.2.2 Orders
+
+Four **orders**, each built from a mechanic that already exists: no new buff stacking, no new damage path.
+
+| Order (`orders.json` id) | Target | Effect, built on | Default numbers (`BattleConfig`) |
+|---|---|---|---|
+| **Rally** (`rally`) | none | party tempo ([§2.11](#211-party-tempo-gg-t268)): one `TempoEffect`, source `order:rally` | `RallyTempo` +1, `RallyTurns` 2 |
+| **Hold** (`hold`) | none | every hero gains `protection` (damage in ×0.85, [§2.5](#25-auto-skip--shield)); the clock does not run, no turn is given up | `HoldTurns` 1 |
+| **Focus** (`focus`) | one living foe | a mark: a pincer that includes it deals more ([§1.2](#12-pincer-attacks)); shown on its frame | `FocusBonus` 0.25, `FocusTurns` 2 (ends when it dies) |
+| **Regroup** (`regroup`) | two heroes | the two swap tiles at no time cost, as `DisplacedEvent` for both (the swap the pincer planner already models); a trap under one springs | `RegroupSwaps` 1 |
+
+The numbers are settings in `BattleConfig`; the owner may retune each. A fifth order is a new `orders.json` row plus a resolver case, never a UI change (the HUD lists what `orders.json` holds, up to four).
+
+- **Data.** `Data/orders.json` (new): `id`, `name`, `text` (tooltip, Prose key `text:order/<id>`), `target` (`None`, `Foe`, `HeroPair`), `icon`. `ContentValidator` checks every id has an engine case, at most four exist, and each has its barks `bark:commander/order/<id>`.
+- **The command.** `OrderCommand` (`Core/Battle/Commands.cs`: order id, a foe id or two hero ids) is the fourth player command beside `MoveCommand`, `UseSlotCommand` and `ShieldCommand`. `BattleEngine.Apply` resolves it synchronously; a refused one (no charge, bad target, not the player's control) emits `OrderRefusedEvent` and changes nothing. `CommandCodec` gets a token (`O<orderId>[:<unit>[,<unit>]]`) and `BattleRecorder` stores it, so replays reproduce orders and old records still load.
+- **Charges.** **`OrderChargesPerWave` = 1**, restored at each `WaveStartedEvent` (the first included); an unspent charge **does not carry over**; any one order spends it. `BattleState.OrderCharges` is kept by the state clone. The drills (GG-T1315) give a charge only in the stage that teaches orders (drill 5).
+- **Cost and time.** No mana orbs and no clock: a free action, not a turn. It does not end the party's window, does not count as a hero's action for `ActedThisWindow` and does not touch the drag-timer bank ([§3.1.8](#318-time-banked-orbs)). Rally takes effect from the next tick; the timeline re-reads `TimelineScale` as for any tempo change.
+- **Turn modes ([§2.13](#213-turn-modes-gg-t762)).** Allowed whenever the player holds control and a charge is left, in **every** mode (inside the PartyWindow; between hero actions in AnyHeroEveryTurn; any time in the round in UnmovedThisRound; while a hero's turn is open in HeroTimeline). The `TurnRules` seam gets one more answer, `OrdersAllowed`, so no caller reads `TurnMode`; no mode changes what an order does.
+- **Events and callouts.** `OrderIssuedEvent` (order id, targets, charges left), then the events the effect already makes (`TempoChangedEvent`, `BuffAppliedEvent`, `DisplacedEvent`) and new `FocusMarkedEvent` / `FocusClearedEvent`. The view plays a `CombatTextKind.Callout` ("Rally!", "Hold!", "Focus the {foe}!", "Regroup!"), the Commander's line, a cue and a feed line; Reduce Motion keeps the text and drops the travel.
+- **HUD flow.** Up to four order buttons with a charge pip sit beside the Commander card, never over the board or timeline (§26 places them with the card). A no-target order issues on tap; Focus: tap it, then a glowing foe; Regroup: tap it, then two heroes (cancel as [§4.6](#46-cancel-paths)). A spent charge greys the row until the next wave ("Used. Back next wave."). On Auto the row is hidden and the bot issues orders.
+- **Bot policy (`HeroBot`).** `Decide` may return an `OrderCommand` only when `HeroBot.UseOrders` is set; default **off**, so every soak and balance baseline stays unchanged (GG-T276); the balance loop turns it on for comparison runs. With it on, the bot spends the wave's charge when a rule fires, checked before its move or spell, in this order: **Rally** when a foe icon is within one hero action of the left edge and no pincer is ready; **Hold** when the next foe turn would down a hero and no kill is available; **Focus** on the foe a ready pincer would kill, else the lowest-HP foe in a pincer it can form this turn; **Regroup** when a swap makes a pincer no walk does. The `order` advice kind is the same rule evaluated without issuing.
+- **Tests (for the build tasks).** An order spends the wave's charge and no more; a refused order changes nothing; each order applies exactly its effect; charges restore per wave and do not carry; no orbs and no clock in each turn mode; the codec round-trips an order and a recorded battle replays identically; with `UseOrders` off a seeded soak equals the old one.
+
+#### 9.2.3 The orbs row, framed
+
+No rule changes. The orbs row ([§3.1.4.1](#3141-the-orbs-row-orb-costs-and-regeneration-gg-t673-owner-2026-11-22)) and the economy stay as built. What changes is what they **say**: the row's tooltip ("Halcyon's batteries. They run because the Commander is here."), the Mana Orbs codex entry and the Manasmith's and Results' orb lines frame the orbs as Halcyon tech that wakes only near the Commander. The orbs stay the party's: the Commander is not on the bank and an order spends none. Copy lands with the writing task as local seeds.
+
+#### 9.2.4 What replaced the Warden's lead role
+
+The `warden` class is an ordinary recruitable Tank with its kit unchanged. The Commander replaces the lead as the **narrative** centre (they lead and advise); the lead's **mechanical** role is replaced by no unit at all: no fixed lead slot, no lead-only HUD treatment, no "lead falls" rule; the heroes on the board are equals and the Commander stands outside the grid. Anything that read "the lead" in a battle or drill reads "the Commander" in words or a **role** in code (`FocusRole`). Removing the fixed-lead code is GG-T1405, not this spec.
+
+#### 9.2.5 Interactions, and what this does not design
+
+- **Trust ([§25.20](#2520-trust-and-cohesion-proposed-2026-11-27-gg-t1290-owner-review-gg-t1291)).** A later task may let trust raise `OrderChargesPerWave` or unlock an order (named, **not designed**); no order effect depends on trust today.
+- **Duo supports (GG-T1257).** A duo support stays two heroes' own pairing. An order is never a duo support and spends no duo charge (named, not designed).
+- **Not here.** Card art, order icons, the Settings control, the Prose lines and the balance of the default numbers belong to their own tasks.
+
 ---
 
 ## 10. Equipment (summary — see §24)
@@ -2754,6 +2803,7 @@ Added 2026-10-11 (owner: "a tank should be able to taunt enemies"). While any he
 - **Casting enemies** — [§13.4](#134-the-interrupt-path).
 - **Supporter positioning** — `WouldSupportAllyPincer` (+25), reusing `PincerDetector` supporters; since GG-T306 the pincer planner also swaps allies into a chain ([§14.1.3](#1413-pincer-planning-gg-t306)).
 - **Boss scripted phases** — **Amended 2026-10-09:** `ClassDef.BossPhases` is data (`HpThreshold`, `PrefersCharge`, `OnEnterAbility`, `Announce`). At the **start of the boss's own turn**, every phase whose threshold the HP fraction has dropped to is entered in order: `BossPhaseEvent`, its announcement, and its on-enter ability resolved on itself. `cyclops00`: phase 0 at ≤ 100% ("Cyclops", on its first turn), phase 1 at ≤ 50% ("ENRAGED!" + `enrage`, self-Hasten 0.35). `PrefersCharge` lets a phase charge even in melee range (no content uses it yet).
+- **Orders** — the bot may issue the Commander's orders when `HeroBot.UseOrders` is set (default off): [§9.2.2](#922-orders).
 - **Threat tracking** — `Unit.DamageDealt` (hero damage dealt this battle) feeds `PickTarget`.
 - **Retreat** — below 30% HP.
 
@@ -5314,6 +5364,7 @@ The canon lead (`Data/Prose/canon/06-arc.md`, Decisions; GG-ONE-LIGHT "Halcyon's
 
 - **Naming:** story text says "the Commander" (article, capitalised role, like the heroes, GG-T565). The player-entered profile name (front door, GG-T1258) is a token a writer may use in direct address only. Text is gender-neutral; the Commander's look is the player's pick of a female or male portrait, like every hero.
 - **Decisions with a default, awaiting owner** (listed in `06-arc.md` Decisions): the `warden` class stays an ordinary present-day recruitable Tank with its kit unchanged; "Manalift" reads as the Manalith; the Commander has female and male portraits; in battle the Commander gives advice plus a few orders (spec in the battle feature); the Warden's present-day faction is the Lantern Road.
+- **In battle:** the Commander gives advice and a few free orders, specified in [§9.2](#92-the-commander-in-battle-gg-t1457-owner-2026-11-27-gg-t1305).
 - **Retired:** the Warden, the Last Sleeper, as lead, and the "only sleeper" rule.
 
 **Historical note: Warden, the fixed lead (2026-11-21, owner, GG-T533).** The text below is kept as written. The kit is still the `warden` class's; the fixed-lead mechanics are still in code until the retire-the-fixed-lead task (GG-T1405) removes them. The canon lead was **the Warden**, **the Last Sleeper**, Halcyon's last guard, asleep in the Still on the night Halcyon fell, who woke 1,200 years too late; the only sleeper in the story (GG-T577, replacing "the First Sleeper" who thawed the others). Story text names the Warden with the article, like every hero ("The Warden" at the start of a sentence, "the Warden" elsewhere; GG-T565, replacing the earlier bare-name rule); the class id and assets stay `warden`. A class of its own, separate from the Knight (the Knight is unchanged). The owner's female portrait ships (`Portraits/warden.png`, 1024 canvas with `Figure` and `Thumbnail`); the male variant ships with GG-T532 (below).
