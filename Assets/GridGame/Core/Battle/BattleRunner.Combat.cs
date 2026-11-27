@@ -30,6 +30,8 @@ namespace GridGame.Core.Battle
             var before = SnapshotPositions();
             int trapsBefore = S.Traps.Count, pickupsBefore = S.Pickups.Count;
             int hpBefore = hero.Hp;
+            int tilesBefore = S.Region.Tiles.Count, chargeBefore = S.ManaCharge, bankBefore = S.Bank.Count; // GG-T1249
+            int eventsBefore = ev.Count;
             // GG-T188 (§2.0): a hold that ran the whole turn window was a forced drop — the turn ends either way.
             bool timeUp = BattleEngine.IsTimeUp(S, m.HeldSeconds);
             Emit(new ActionBeganEvent { ActorId = hero.Id, Label = "Move" });
@@ -38,7 +40,8 @@ namespace GridGame.Core.Battle
             WalkPath(hero, m.Path, taken);
             bool nothingHappened = taken.Count == 0
                 || (hero.Alive && hero.Hp == hpBefore && S.Traps.Count == trapsBefore && S.Pickups.Count == pickupsBefore && SamePositions(before)
-                    && !WouldFormPincer(hero));
+                    && S.Region.Tiles.Count == tilesBefore && S.ManaCharge == chargeBefore && S.Bank.Count == bankBefore
+                    && !HadEffectEvent(eventsBefore) && !WouldFormPincer(hero));
             if (nothingHappened && timeUp) return true; // dropped where it stood: no move, but the turn is spent
             if (nothingHappened)
             {
@@ -54,6 +57,19 @@ namespace GridGame.Core.Battle
             ResolvePincers(Team.Hero, hero);
             CheckEnd();
             return true;
+        }
+
+        /// <summary>GG-T1249: did the walk emit anything beyond plain movement (a squish, a rune, a trap...)? Such a drag spends the turn.</summary>
+        private bool HadEffectEvent(int fromIndex)
+        {
+            for (int i = fromIndex; i < ev.Count; i++)
+            {
+                var e = ev[i];
+                if (e is ActionBeganEvent || e is SteppedEvent || e is DisplacedEvent || e is StepBlockedEvent || e is TurnTimeUpEvent
+                    || e is AbilityRefusedEvent || e is ComboChangedEvent || e is ComboEndedEvent) continue;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>Pure geometry check (no mutation): would resolving pincers right now actually strike something?</summary>
