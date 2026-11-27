@@ -9887,6 +9887,445 @@
         ]
       }
     },
+    "dialogue:trust_engineer_1": {
+      "key": "dialogue:trust_engineer_1",
+      "id": "conversation-trust-engineer-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:63770105f85b190cf45191693ef1b5926786395f571383f429868a138f1004b5",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The list of questions",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The wagon is jacked up on two stones, and a lamp hangs from the axle. The Engineer lies underneath with a stub of pencil, writing in a grease-black notebook instead of turning the wrench.",
+            "choices": [
+              {
+                "text": "The axle won't fix itself while you write about it.",
+                "next": "axle"
+              },
+              {
+                "text": "Is that the list you promised me back in the red?",
+                "next": "list"
+              },
+              {
+                "text": "Need a hand under there?",
+                "next": "hand"
+              }
+            ]
+          },
+          {
+            "id": "axle",
+            "speaker": "$with",
+            "line": "The axle's done. Has been for an hour. I'm under here because it's the only quiet spot in this camp, and because I'm writing about you.",
+            "next": "pages"
+          },
+          {
+            "id": "list",
+            "speaker": "$with",
+            "line": "You remembered. The Choir never remembered anything I said past the price. Yes. It's the list. It's getting long.",
+            "next": "pages"
+          },
+          {
+            "id": "hand",
+            "speaker": "$with",
+            "line": "Hold the lamp still, that'll do. Not there. There. Good. Now I can see what I've written about you.",
+            "next": "pages"
+          },
+          {
+            "id": "pages",
+            "speaker": "character-commander",
+            "line": "The Engineer rolls out on a sack and holds the notebook up to the lamp. Page after page, every line ends in a question mark.",
+            "next": "questions"
+          },
+          {
+            "id": "questions",
+            "speaker": "$with",
+            "line": "Question one. Why does it hum near you and nowhere else. Question two. Why does it go quiet at nine paces and not ten. Question three. Why does the needle on my gauge swing toward you when you walk past, like you're a tap.",
+            "next": "tap"
+          },
+          {
+            "id": "tap",
+            "speaker": "$with",
+            "line": "In the Underspire I kept a tap running. Tap Seven, under the old fish market. Halcyon pipe, older than anyone's grandmother. Nobody knew what it was pulling, and nobody asked, because it kept the lights on.",
+            "next": "needle"
+          },
+          {
+            "id": "needle",
+            "speaker": "$with",
+            "line": "Then I come up into the red, and a Halcyon orb wakes up for a stranger in a white wagon. And my needle swings the same way it used to swing at Tap Seven. I'd like to know why, Commander.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Engineer looks at the satchel where the orb rides, then back at the Commander, and waits.",
+            "choices": [
+              {
+                "text": "Take it. Open it up, carefully, and tell me what you find.",
+                "next": "lent"
+              },
+              {
+                "text": "Measure it all you like. But it stays shut, and it stays with me.",
+                "next": "watched"
+              },
+              {
+                "text": "No. That orb is the only reason any of us are still alive. Leave it be.",
+                "next": "refused"
+              }
+            ]
+          },
+          {
+            "id": "lent",
+            "speaker": "$with",
+            "line": "You're handing it to me. Just like that. Nobody hands me the good parts. I'll go slow, and I'll put every screw back where it came out, and I'll tell you everything, even the parts that don't make sense.",
+            "next": "close_line"
+          },
+          {
+            "id": "watched",
+            "speaker": "$with",
+            "line": "Fair. I'd do the same with a part I couldn't replace. I'll bring the gauge to you, then. You'll be the most measured commander in the red.",
+            "next": "close_line"
+          },
+          {
+            "id": "refused",
+            "speaker": "$with",
+            "line": "It's not alive because nobody looked inside it, Commander. It's alive because of you. That's the bit I'm trying to understand. But fine. I'll write that down too.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "Go on, I'll lower the wagon. Question four can wait till morning. Question four is a big one.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The jack creaks, the wagon settles onto the new axle, and the lamp swings once and goes still. The notebook goes into the Engineer's coat, a pencil tucked through the spine."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_engineer_3": {
+      "key": "dialogue:trust_engineer_3",
+      "id": "conversation-trust-engineer-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c1160c67a6b1e0a8ed65892656de37e421a8c92be5e3a654df44f8f7f4c17fd2",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Tap Seven",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "A trader's mule left a folded paper at the edge of camp, tied with red wire. The Engineer has read it twice and is now taking apart a perfectly good lantern, very fast.",
+            "choices": [
+              {
+                "text": "That lantern was working. What's in the paper?",
+                "next": "paper"
+              },
+              {
+                "text": "Bad news travels on red wire, does it?",
+                "next": "wire"
+              },
+              {
+                "text": "Put the lantern back together. We need the light.",
+                "next": "lantern"
+              }
+            ]
+          },
+          {
+            "id": "paper",
+            "speaker": "$with",
+            "line": "It was working. Now it isn't, and now I know why it was. That's how I calm down. The paper's from home. Read it if you like. It doesn't say much.",
+            "next": "redline"
+          },
+          {
+            "id": "wire",
+            "speaker": "$with",
+            "line": "It does if it's Redline sending it. Red wire is how they sign. Nobody else in the Underspire would waste good wire on a letter.",
+            "next": "redline"
+          },
+          {
+            "id": "lantern",
+            "speaker": "$with",
+            "line": "I'll put it back. Better than it was. It's how I think, Commander, with my hands in something. The paper's from home, and I'm thinking hard.",
+            "next": "redline"
+          },
+          {
+            "id": "redline",
+            "speaker": "$with",
+            "line": "Redline runs the fish market, and the fish market runs on Tap Seven, and Tap Seven ran on me. Every night for six years. Until the night it didn't.",
+            "next": "dark"
+          },
+          {
+            "id": "dark",
+            "speaker": "$with",
+            "line": "A seal went. A Halcyon seal, older than the market. The tap shut itself off, and half the lower city went dark for three days, and in the dark people got hurt. Redline decided that was a debt, and the debt was mine.",
+            "next": "dig"
+          },
+          {
+            "id": "dig",
+            "speaker": "$with",
+            "line": "That's why I took the Choir's dig job. It paid enough to clear it. Then the Choir paid me in blessings, and you found me in the red with a canteen. And now Redline knows where I am.",
+            "next": "demand"
+          },
+          {
+            "id": "demand",
+            "speaker": "character-commander",
+            "line": "The Engineer holds out the paper. In blunt capitals it names a sum, a place on the Underspire road, and a season. Underneath, smaller: bring the orb and we're square.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Engineer stops taking the lantern apart and waits.",
+            "choices": [
+              {
+                "text": "Your debt is the crew's debt now. When the road goes that way, we pay it together.",
+                "next": "shared"
+              },
+              {
+                "text": "A seal older than the market failed. That's no debt of yours. Redline gets nothing.",
+                "next": "defied"
+              },
+              {
+                "text": "The orb stays with me. If Redline wants you, that's yours to settle.",
+                "next": "sent"
+              }
+            ]
+          },
+          {
+            "id": "shared",
+            "speaker": "$with",
+            "line": "Together. With a whole crew behind me, Redline can count all it likes. I'm going to need a bigger notebook for what I owe you, though.",
+            "next": "close_line"
+          },
+          {
+            "id": "defied",
+            "speaker": "$with",
+            "line": "Nobody's said that to me. Not once in two years. I said it to myself plenty, but it doesn't count when you're the one who held the wrench.",
+            "next": "close_line"
+          },
+          {
+            "id": "sent",
+            "speaker": "$with",
+            "line": "Mine to settle. Right. I was hired here too, then. I'd started to forget. I won't hand them the orb, Commander, if that's what you're worried about. I'm not Redline.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "The seal. I still think about it. Halcyon parts don't just fail. Something told that tap to shut. I'd like to know what, someday.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The lantern goes back together in a dozen quick turns. When the Engineer strikes it, it burns brighter than it did before, and the red-wired paper goes into the fire."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_engineer_5": {
+      "key": "dialogue:trust_engineer_5",
+      "id": "conversation-trust-engineer-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:54594a9cba7bc84b466113de2532deb46687790b8a1b7d3170f2fd6d6389f33b",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Question four",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer sits on the wagon's tailboard with the grease-black notebook open across both knees. It is nearly full. The last written page has only one line on it.",
+            "choices": [
+              {
+                "text": "Did the orb ever tell you anything, after I let you open it?",
+                "next": "lent_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Still measuring me? The gauge must be worn out by now.",
+                "next": "watched_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you to leave the orb be. You did. I never thanked you for that.",
+                "next": "refused_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "That notebook's nearly done.",
+                "next": "notebook"
+              }
+            ]
+          },
+          {
+            "id": "lent_back",
+            "speaker": "$with",
+            "line": "It told me it was put together by people who never expected anyone else to open it. Every screw was a bit rude about it. I put them all back. Sit down.",
+            "next": "seal"
+          },
+          {
+            "id": "watched_back",
+            "speaker": "$with",
+            "line": "The gauge is fine. The needle's bent toward you permanently. I've stopped trying to straighten it. Sit down.",
+            "next": "seal"
+          },
+          {
+            "id": "refused_back",
+            "speaker": "$with",
+            "line": "I was annoyed for a month. Then I watched what you do with it in a fight, and I stopped. Sit down.",
+            "next": "seal"
+          },
+          {
+            "id": "notebook",
+            "speaker": "$with",
+            "line": "Nearly. I've been saving the last page. Sit down.",
+            "next": "seal"
+          },
+          {
+            "id": "seal",
+            "speaker": "$with",
+            "line": "Answers first. I worked out Tap Seven. Not what shut it. I still don't know that. But I worked out that the seal didn't fail. It closed, clean, the way it was built to. Nothing I did with a wrench could have made it do that, or stopped it.",
+            "next": "weight"
+          },
+          {
+            "id": "weight",
+            "speaker": "character-commander",
+            "line": "The Engineer says it twice more under the breath, as though checking the sum, and then looks up.",
+            "choices": [
+              {
+                "text": "Then there was never any debt. We'll walk into the fish market and say so, together.",
+                "next": "shared_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I said Redline gets nothing. Now you can prove it.",
+                "next": "defied_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you that debt was yours to settle. I was wrong. It was never yours, and it was never only yours to carry.",
+                "next": "sent_mended",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Then put it down. You've carried it long enough.",
+                "next": "put_down"
+              }
+            ]
+          },
+          {
+            "id": "shared_kept",
+            "speaker": "$with",
+            "line": "Together. You've said it twice now. I think that makes it a contract. Redline is going to hate the look of us.",
+            "next": "last_page"
+          },
+          {
+            "id": "defied_kept",
+            "speaker": "$with",
+            "line": "I can. With numbers. Redline respects numbers more than it respects anyone. I'll write it up so even a ganger can follow it.",
+            "next": "last_page"
+          },
+          {
+            "id": "sent_mended",
+            "speaker": "$with",
+            "line": "You didn't have to say that. You did anyway. That's worth more to me than the sum on the paper ever was.",
+            "next": "last_page"
+          },
+          {
+            "id": "put_down",
+            "speaker": "$with",
+            "line": "Put it down. Huh. I've been holding it so long my hand's shaped round it. Give me a while. I'll get there.",
+            "next": "last_page"
+          },
+          {
+            "id": "last_page",
+            "speaker": "$with",
+            "line": "So. Question four. I wrote it down the night you found me in the red, and I've never been able to answer it with a gauge. Why did you stop the wagon?",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Engineer turns the notebook round so the Commander can read the one line, and holds out the pencil.",
+            "choices": [
+              {
+                "text": "Because you asked us not to run you down. Nobody else out there was asking for anything.",
+                "next": "asked"
+              },
+              {
+                "text": "Because the axle was cracked, and I needed someone who'd notice.",
+                "next": "axle"
+              },
+              {
+                "text": "I don't know. I'm not sure I could tell you why I do most things.",
+                "next": "unknown"
+              }
+            ]
+          },
+          {
+            "id": "asked",
+            "speaker": "$with",
+            "line": "Because I asked. Not because I was useful. I'm going to write that down exactly the way you said it, and then I'm going to start a new notebook."
+          },
+          {
+            "id": "axle",
+            "speaker": "$with",
+            "line": "Ha. Useful, then. Fine. I'll take useful from you. You're the first one who ever said it to my face instead of paying me in blessings. Question five can wait."
+          },
+          {
+            "id": "unknown",
+            "speaker": "$with",
+            "line": "Then it stays a question. That's all right. Some of the best parts I own, I still can't say what they do. I'll leave the page open, Commander. You can fill it in when you know."
+          }
+        ]
+      }
+    },
     "dialogue:trust_redmage_1": {
       "key": "dialogue:trust_redmage_1",
       "id": "conversation-trust-redmage-1",

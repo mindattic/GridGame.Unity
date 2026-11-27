@@ -4104,5 +4104,136 @@
       { "Id": "home", "Speaker": "hero" },
       { "Id": "out", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "trust_engineer_1",
+    "Title": "The list of questions",
+    "Trigger": { "Kind": "Trust", "Id": "engineer", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "axle", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "list", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "hand", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "axle", "Speaker": "hero", "Next": "pages" },
+      { "Id": "list", "Speaker": "hero", "Next": "pages" },
+      { "Id": "hand", "Speaker": "hero", "Next": "pages" },
+      { "Id": "pages", "Speaker": "commander", "Next": "questions" },
+      { "Id": "questions", "Speaker": "hero", "Next": "tap" },
+      { "Id": "tap", "Speaker": "hero", "Next": "needle" },
+      { "Id": "needle", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "lent", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "engineer:orb_lent" } ] },
+          { "Next": "watched", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 }, { "Type": "SetFlag", "Id": "engineer:orb_watched" } ] },
+          { "Next": "refused", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "engineer:orb_refused" } ] }
+        ]
+      },
+      { "Id": "lent", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "watched", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "refused", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_engineer_3",
+    "Title": "Tap Seven",
+    "Trigger": { "Kind": "Trust", "Id": "engineer", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "paper", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] },
+          { "Next": "wire", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "lantern", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] }
+        ]
+      },
+      { "Id": "paper", "Speaker": "hero", "Next": "redline" },
+      { "Id": "wire", "Speaker": "hero", "Next": "redline" },
+      { "Id": "lantern", "Speaker": "hero", "Next": "redline" },
+      { "Id": "redline", "Speaker": "hero", "Next": "dark" },
+      { "Id": "dark", "Speaker": "hero", "Next": "dig" },
+      { "Id": "dig", "Speaker": "hero", "Next": "demand" },
+      { "Id": "demand", "Speaker": "commander", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "shared", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "engineer:debt_shared" } ] },
+          { "Next": "defied", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "engineer:debt_defied" } ] },
+          { "Next": "sent", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "engineer:debt_sent" } ] }
+        ]
+      },
+      { "Id": "shared", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "defied", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "sent", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_engineer_5",
+    "Title": "Question four",
+    "Trigger": { "Kind": "Trust", "Id": "engineer", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "lent_back", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:orb_lent" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "watched_back", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:orb_watched" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "refused_back", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:orb_refused" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 } ] },
+          { "Next": "notebook", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "lent_back", "Speaker": "hero", "Next": "seal" },
+      { "Id": "watched_back", "Speaker": "hero", "Next": "seal" },
+      { "Id": "refused_back", "Speaker": "hero", "Next": "seal" },
+      { "Id": "notebook", "Speaker": "hero", "Next": "seal" },
+      { "Id": "seal", "Speaker": "hero", "Next": "weight" },
+      {
+        "Id": "weight", "Speaker": "commander",
+        "Choices": [
+          { "Next": "shared_kept", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_shared" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "engineer:thread_together" } ] },
+          { "Next": "defied_kept", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_defied" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "engineer:thread_proved" } ] },
+          { "Next": "sent_mended", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_sent" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "engineer:thread_mended" } ] },
+          { "Next": "put_down", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "engineer:thread_free" } ] }
+        ]
+      },
+      { "Id": "shared_kept", "Speaker": "hero", "Next": "last_page" },
+      { "Id": "defied_kept", "Speaker": "hero", "Next": "last_page" },
+      { "Id": "sent_mended", "Speaker": "hero", "Next": "last_page" },
+      { "Id": "put_down", "Speaker": "hero", "Next": "last_page" },
+      { "Id": "last_page", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "asked", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "engineer:list_asked" } ] },
+          { "Next": "axle", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 }, { "Type": "SetFlag", "Id": "engineer:list_axle" } ] },
+          { "Next": "unknown", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "engineer:list_open" } ] }
+        ]
+      },
+      { "Id": "asked", "Speaker": "hero" },
+      { "Id": "axle", "Speaker": "hero" },
+      { "Id": "unknown", "Speaker": "hero" }
+    ]
   }
 ]

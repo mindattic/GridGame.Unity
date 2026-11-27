@@ -1,0 +1,74 @@
+dialogue trust_engineer_3
+title: Tap Seven
+trigger: Trust engineer level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  A trader's mule left a folded paper at the edge of camp, tied with red wire. The Engineer has read it twice and is now taking apart a perfectly good lantern, very fast.
+  * That lantern was working. What's in the paper? -> paper
+    do: AddTrust $with 3
+  * Bad news travels on red wire, does it? -> wire
+    do: AddTrust $with 5
+  * Put the lantern back together. We need the light. -> lantern
+    do: AddTrust $with -2
+
+node paper hero
+  It was working. Now it isn't, and now I know why it was. That's how I calm down. The paper's from home. Read it if you like. It doesn't say much.
+  -> redline
+
+node wire hero
+  It does if it's Redline sending it. Red wire is how they sign. Nobody else in the Underspire would waste good wire on a letter.
+  -> redline
+
+node lantern hero
+  I'll put it back. Better than it was. It's how I think, Commander, with my hands in something. The paper's from home, and I'm thinking hard.
+  -> redline
+
+node redline hero
+  Redline runs the fish market, and the fish market runs on Tap Seven, and Tap Seven ran on me. Every night for six years. Until the night it didn't.
+  -> dark
+
+node dark hero
+  A seal went. A Halcyon seal, older than the market. The tap shut itself off, and half the lower city went dark for three days, and in the dark people got hurt. Redline decided that was a debt, and the debt was mine.
+  -> dig
+
+node dig hero
+  That's why I took the Choir's dig job. It paid enough to clear it. Then the Choir paid me in blessings, and you found me in the red with a canteen. And now Redline knows where I am.
+  -> demand
+
+node demand commander
+  The Engineer holds out the paper. In blunt capitals it names a sum, a place on the Underspire road, and a season. Underneath, smaller: bring the orb and we're square.
+  -> ask
+
+node ask commander
+  The Engineer stops taking the lantern apart and waits.
+  * Your debt is the crew's debt now. When the road goes that way, we pay it together. -> shared
+    do: AddTrust $with 9
+    do: SetFlag engineer:debt_shared
+  * A seal older than the market failed. That's no debt of yours. Redline gets nothing. -> defied
+    do: AddTrust $with 7
+    do: SetFlag engineer:debt_defied
+  * The orb stays with me. If Redline wants you, that's yours to settle. -> sent
+    do: AddTrust $with -4
+    do: SetFlag engineer:debt_sent
+
+node shared hero
+  Together. With a whole crew behind me, Redline can count all it likes. I'm going to need a bigger notebook for what I owe you, though.
+  -> close_line
+
+node defied hero
+  Nobody's said that to me. Not once in two years. I said it to myself plenty, but it doesn't count when you're the one who held the wrench.
+  -> close_line
+
+node sent hero
+  Mine to settle. Right. I was hired here too, then. I'd started to forget. I won't hand them the orb, Commander, if that's what you're worried about. I'm not Redline.
+  -> close_line
+
+node close_line hero
+  The seal. I still think about it. Halcyon parts don't just fail. Something told that tap to shut. I'd like to know what, someday.
+  -> close
+
+node close commander
+  The lantern goes back together in a dozen quick turns. When the Engineer strikes it, it burns brighter than it did before, and the red-wired paper goes into the fire.

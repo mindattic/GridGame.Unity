@@ -1,0 +1,74 @@
+dialogue trust_engineer_1
+title: The list of questions
+trigger: Trust engineer level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The wagon is jacked up on two stones, and a lamp hangs from the axle. The Engineer lies underneath with a stub of pencil, writing in a grease-black notebook instead of turning the wrench.
+  * The axle won't fix itself while you write about it. -> axle
+    do: AddTrust $with -2
+  * Is that the list you promised me back in the red? -> list
+    do: AddTrust $with 5
+  * Need a hand under there? -> hand
+    do: AddTrust $with 4
+
+node axle hero
+  The axle's done. Has been for an hour. I'm under here because it's the only quiet spot in this camp, and because I'm writing about you.
+  -> pages
+
+node list hero
+  You remembered. The Choir never remembered anything I said past the price. Yes. It's the list. It's getting long.
+  -> pages
+
+node hand hero
+  Hold the lamp still, that'll do. Not there. There. Good. Now I can see what I've written about you.
+  -> pages
+
+node pages commander
+  The Engineer rolls out on a sack and holds the notebook up to the lamp. Page after page, every line ends in a question mark.
+  -> questions
+
+node questions hero
+  Question one. Why does it hum near you and nowhere else. Question two. Why does it go quiet at nine paces and not ten. Question three. Why does the needle on my gauge swing toward you when you walk past, like you're a tap.
+  -> tap
+
+node tap hero
+  In the Underspire I kept a tap running. Tap Seven, under the old fish market. Halcyon pipe, older than anyone's grandmother. Nobody knew what it was pulling, and nobody asked, because it kept the lights on.
+  -> needle
+
+node needle hero
+  Then I come up into the red, and a Halcyon orb wakes up for a stranger in a white wagon. And my needle swings the same way it used to swing at Tap Seven. I'd like to know why, Commander.
+  -> ask
+
+node ask commander
+  The Engineer looks at the satchel where the orb rides, then back at the Commander, and waits.
+  * Take it. Open it up, carefully, and tell me what you find. -> lent
+    do: AddTrust $with 9
+    do: SetFlag engineer:orb_lent
+  * Measure it all you like. But it stays shut, and it stays with me. -> watched
+    do: AddTrust $with 5
+    do: SetFlag engineer:orb_watched
+  * No. That orb is the only reason any of us are still alive. Leave it be. -> refused
+    do: AddTrust $with -4
+    do: SetFlag engineer:orb_refused
+
+node lent hero
+  You're handing it to me. Just like that. Nobody hands me the good parts. I'll go slow, and I'll put every screw back where it came out, and I'll tell you everything, even the parts that don't make sense.
+  -> close_line
+
+node watched hero
+  Fair. I'd do the same with a part I couldn't replace. I'll bring the gauge to you, then. You'll be the most measured commander in the red.
+  -> close_line
+
+node refused hero
+  It's not alive because nobody looked inside it, Commander. It's alive because of you. That's the bit I'm trying to understand. But fine. I'll write that down too.
+  -> close_line
+
+node close_line hero
+  Go on, I'll lower the wagon. Question four can wait till morning. Question four is a big one.
+  -> close
+
+node close commander
+  The jack creaks, the wagon settles onto the new axle, and the lamp swings once and goes still. The notebook goes into the Engineer's coat, a pencil tucked through the spine.

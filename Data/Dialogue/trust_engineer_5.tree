@@ -1,0 +1,99 @@
+dialogue trust_engineer_5
+title: Question four
+trigger: Trust engineer level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Engineer sits on the wagon's tailboard with the grease-black notebook open across both knees. It is nearly full. The last written page has only one line on it.
+  * Did the orb ever tell you anything, after I let you open it? -> lent_back
+    if: FlagSet engineer:orb_lent
+    do: AddTrust $with 5
+  * Still measuring me? The gauge must be worn out by now. -> watched_back
+    if: FlagSet engineer:orb_watched
+    do: AddTrust $with 5
+  * I told you to leave the orb be. You did. I never thanked you for that. -> refused_back
+    if: FlagSet engineer:orb_refused
+    do: AddTrust $with 7
+  * That notebook's nearly done. -> notebook
+    do: AddTrust $with 3
+
+node lent_back hero
+  It told me it was put together by people who never expected anyone else to open it. Every screw was a bit rude about it. I put them all back. Sit down.
+  -> seal
+
+node watched_back hero
+  The gauge is fine. The needle's bent toward you permanently. I've stopped trying to straighten it. Sit down.
+  -> seal
+
+node refused_back hero
+  I was annoyed for a month. Then I watched what you do with it in a fight, and I stopped. Sit down.
+  -> seal
+
+node notebook hero
+  Nearly. I've been saving the last page. Sit down.
+  -> seal
+
+node seal hero
+  Answers first. I worked out Tap Seven. Not what shut it. I still don't know that. But I worked out that the seal didn't fail. It closed, clean, the way it was built to. Nothing I did with a wrench could have made it do that, or stopped it.
+  -> weight
+
+node weight commander
+  The Engineer says it twice more under the breath, as though checking the sum, and then looks up.
+  * Then there was never any debt. We'll walk into the fish market and say so, together. -> shared_kept
+    if: FlagSet engineer:debt_shared
+    do: AddTrust $with 9
+    do: SetFlag engineer:thread_together
+  * I said Redline gets nothing. Now you can prove it. -> defied_kept
+    if: FlagSet engineer:debt_defied
+    do: AddTrust $with 8
+    do: SetFlag engineer:thread_proved
+  * I told you that debt was yours to settle. I was wrong. It was never yours, and it was never only yours to carry. -> sent_mended
+    if: FlagSet engineer:debt_sent
+    do: AddTrust $with 10
+    do: SetFlag engineer:thread_mended
+  * Then put it down. You've carried it long enough. -> put_down
+    do: AddTrust $with 6
+    do: SetFlag engineer:thread_free
+
+node shared_kept hero
+  Together. You've said it twice now. I think that makes it a contract. Redline is going to hate the look of us.
+  -> last_page
+
+node defied_kept hero
+  I can. With numbers. Redline respects numbers more than it respects anyone. I'll write it up so even a ganger can follow it.
+  -> last_page
+
+node sent_mended hero
+  You didn't have to say that. You did anyway. That's worth more to me than the sum on the paper ever was.
+  -> last_page
+
+node put_down hero
+  Put it down. Huh. I've been holding it so long my hand's shaped round it. Give me a while. I'll get there.
+  -> last_page
+
+node last_page hero
+  So. Question four. I wrote it down the night you found me in the red, and I've never been able to answer it with a gauge. Why did you stop the wagon?
+  -> ask
+
+node ask commander
+  The Engineer turns the notebook round so the Commander can read the one line, and holds out the pencil.
+  * Because you asked us not to run you down. Nobody else out there was asking for anything. -> asked
+    do: AddTrust $with 8
+    do: SetFlag engineer:list_asked
+  * Because the axle was cracked, and I needed someone who'd notice. -> axle
+    do: AddTrust $with 5
+    do: SetFlag engineer:list_axle
+  * I don't know. I'm not sure I could tell you why I do most things. -> unknown
+    do: AddTrust $with -2
+    do: SetFlag engineer:list_open
+
+node asked hero
+  Because I asked. Not because I was useful. I'm going to write that down exactly the way you said it, and then I'm going to start a new notebook.
+
+node axle hero
+  Ha. Useful, then. Fine. I'll take useful from you. You're the first one who ever said it to my face instead of paying me in blessings. Question five can wait.
+
+node unknown hero
+  Then it stays a question. That's all right. Some of the best parts I own, I still can't say what they do. I'll leave the page open, Commander. You can fill it in when you know.
