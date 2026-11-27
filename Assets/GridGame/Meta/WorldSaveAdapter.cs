@@ -8,10 +8,13 @@ namespace GridGame.Meta
     /// <summary>GG-T1778: <see cref="WorldSave"/> to and from the Core.World types (BIBLE §28.13).</summary>
     public static class WorldSaveAdapter
     {
+        /// <summary>The clock at the saved minute. A new clock already stands at its config's StartHour, so it is advanced only
+        /// by the difference (GG-T1781: advancing by the whole saved minute moved the clock StartHour on at every load); a save
+        /// that never stored a clock (0) starts at StartHour.</summary>
         public static WorldClock Clock(WorldSave w, WorldTimeConfig config = null)
         {
             var clock = new WorldClock(config);
-            if (w.ClockMinutes > 0) clock.Advance(w.ClockMinutes);
+            if (w.ClockMinutes > clock.Minutes) clock.Advance(w.ClockMinutes - clock.Minutes);
             return clock;
         }
 
