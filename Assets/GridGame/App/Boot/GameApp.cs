@@ -172,7 +172,8 @@ namespace GridGame.App
             else if (DemoMode.Active) DemoMode.Start();
             else if (!string.IsNullOrEmpty(start) && Automation.StartScreens.TryGet(start, out var startScreen)) Router.ResetTo(startScreen);
             else if (CommandLine.DebugOptionsAllowed && global::Unity.Shared.Core.Headless.IsActive) StartHeadlessSession(); // GG-T566: release needs -enableDebugOptions
-            else Router.ResetTo(new TitleScreen());
+            else if (CommandLine.Has("-automation")) Router.ResetTo(new TitleScreen());
+            else Router.ResetTo(new SplashScreen()); // GG-T1322: the studio logo, then the Title
 
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             Automation.AutomationServer.TryStart(this);
