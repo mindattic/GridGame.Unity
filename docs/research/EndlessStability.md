@@ -1,5 +1,44 @@
 # Endless stability: 300-encounter soak (GG-T589 / GG-T1191)
 
+## Fourth attempt: full run, criteria FAIL (GG-T1254 / GG-T1255, 2026-11-27 02:03-08:17)
+
+Same command, detached from Claude Code via WMI so the memory reaper could not kill it. The run
+finished, but **it does not pass the GG-T1253 criteria**, so GG-T61 is not closed by this run
+(it was already set to wont-do by the portfolio reset and is replaced by the RC stability check GG-T1569).
+
+| Criterion | Result |
+|---|---|
+| completed = 300 | **FAIL**: 295 / 300 (275 victories, 20 defeats) in 374.7 min over **6 launches** |
+| crashes = hangs = 0 | **FAIL**: harness counted 0 crashes, 4 hangs, 1 stall, 5 relaunches. Lost seeds 61053, 61128 (stall), 61138, 61149, 61161. Every one of the five ended in a Unity `Crash!!!` that the crash handler held open, which the harness then saw as a hang (see below). |
+| managedMB / privateMB flat after enc 10 | **FAIL** (launch 6, enc 162-299, the only launch with a CSV left): managed 31.9 → 91.6 MB (+0.47 MB/enc), privateMB 516 → 626 MB (+0.86 MB/enc), nativeAlloc flat at 78.7-80.2 until the final sample. |
+| liveOldScreens 0-1 | PASS (0 or 1 at every sample) |
+| No growth warnings | **FAIL**: `[EndlessStability] WARNING monotonic growth in privateMB` at encounters 60, 80, 90, 100 and 120 of launch 6 |
+| saves empty | PASS in the same sense as before: only `Profiles/current.txt` and `Profiles/Throwaway/settings.json` |
+| records/*.json parse | PASS: 296 / 296 parse with Python `json.load` |
+| Leak probe | **FAIL** on `artTextures` in all 6 launches (e.g. launch 6: 75 → 200, limit 20); `artStage` and `textureMB` pass. 1211 `[TextureScope]` warnings on 23 keys, all small icons (`StatusIcons/*-00`, `AbilityIcons/*-00`, `UI/pk-*-00`). |
+
+Outside sampler (WorkingSet64 / private MB every 5 min, `workingset.csv`): launch 6 climbed from
+302 / 449 MB at 05:24 to 450 / 625 MB at 08:14. Launch 2 read 365 / **2149 MB** private at 04:39, just
+before it crashed. Free RAM stayed between 3.0 and 14.5 GB.
+
+**Why the launches ended.** In launches 2, 3 and 5, the last lines before `Crash!!!` are
+`The file '.../Build/Windows/GridGame_Data/resources.assets' is corrupted! ... [Position out of bounds!]`
+from `Resources.Load` (`Art.ProbeBackground`, `VfxPrefabLayer.Take`). Launch 4 crashed in the same native
+`Resources.Load` frames. The player log's `EditorId` changes between launches 2, 3, 4, 5 and 6, so
+`Build/Windows` was rebuilt by other sessions while the soak ran from it (it was rebuilt again at
+15:11). A running player reading a `resources.assets` that is being overwritten explains those crashes. They
+are environment faults, not game faults, but they still void the run. Launch 1 hung on seed 61053
+(capture logging `This GfxDevice does not support asynchronous readback` every frame under
+`-nographics`) and crashed while quitting after the harness gave up on it.
+
+**What still has to change before a valid rerun** (filed as a fix ticket): the soak must run from a
+private copy of the player build that no other session can overwrite, and the harness must count a
+`Crash!!!` in Player.log as a crash, not a hang. The `artTextures` / TextureScope growth (GG-T1193) and
+the slow managed/private climb remain open. Evidence (not committed): `artifacts/gg-t589-endless300/`
+and `D:\Projects\MindAttic.worktrees\.scratch\GG-T1254\` (harness.log, workingset.csv).
+
+## Earlier attempts
+
 **Status: PARTIAL.** The run was stopped at 69 of 300 encounters (03:37, 2026-11-26) because the
 orchestrator's work-unit budget said to stop, not because the game failed. GG-T1191 stays open for
 a full rerun.
