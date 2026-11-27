@@ -52,12 +52,14 @@ namespace GridGame.App
             var bak = BackupPathFor(slot);
             if (File.Exists(p))
             {
-                var s = TryRead(p, slot, content, out var error);
+                var s = TryRead(p, slot, content, out var error, out var keep);
                 if (s != null) return s;
                 Debug.LogError($"[Save] slot {slot + 1} unreadable: {error}");
+                // GG-T1245: a newer-build save or a transient IO failure isn't corruption; leave every file as it is.
+                if (keep) return null;
             }
             if (!File.Exists(bak)) return null;
-            var restored = TryRead(bak, slot, content, out var bakError);
+            var restored = TryRead(bak, slot, content, out var bakError, out _);
             if (restored == null)
             {
                 Debug.LogError($"[Save] slot {slot + 1} backup unreadable too: {bakError}");
@@ -74,9 +76,10 @@ namespace GridGame.App
             return restored;
         }
 
-        private static SaveData TryRead(string path, int slot, GridGame.Core.Content.ContentDb content, out string error)
+        private static SaveData TryRead(string path, int slot, GridGame.Core.Content.ContentDb content, out string error, out bool keepFiles)
         {
             error = null;
+            keepFiles = false;
             try
             {
                 var s = JsonConvert.DeserializeObject<SaveData>(File.ReadAllText(path), SaveSettings);
@@ -88,6 +91,7 @@ namespace GridGame.App
             catch (Exception e)
             {
                 error = e.Message;
+                keepFiles = e is IOException || e is UnauthorizedAccessException || e is SaveMigrations.SaveTooNewException;
                 return null;
             }
         }

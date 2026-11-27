@@ -713,13 +713,19 @@ namespace GridGame.Meta
             return rewrites;
         }
 
+        /// <summary>GG-T1245: a save written by a newer build (a downgrade). Not corruption: SaveStore leaves its files alone.</summary>
+        public sealed class SaveTooNewException : InvalidOperationException
+        {
+            public SaveTooNewException(int version) : base($"Save version {version} is newer than this build") { }
+        }
+
         /// <summary>Upgrades an older save in place. Unknown future versions are rejected. <paramref name="c"/>
         /// is optional (version-shape fixups below don't need content) but drives the GG-T52 proficiency
         /// grandfather clause at the end: without it that step is simply skipped.</summary>
         public static SaveData Migrate(SaveData s, ContentDb c = null)
         {
             if (s == null) return null;
-            if (s.Version > SaveData.CurrentVersion) throw new InvalidOperationException($"Save version {s.Version} is newer than this build");
+            if (s.Version > SaveData.CurrentVersion) throw new SaveTooNewException(s.Version);
             // GG-T52's gear gate shipped while saves were v4: only a save that old can hold gear its hero was never gated on.
             bool beforeGearGate = s.Version <= GearGateShippedAtVersion;
             // v1 is the first shape.
