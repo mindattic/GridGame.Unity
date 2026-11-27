@@ -404,7 +404,7 @@ namespace GridGame.Meta
         private static string JoinStoryHero(ContentDb c, SaveData s, string classId)
         {
             if (classId == null || c.TryClass(classId) == null || s.Hero(classId) != null) return null;
-            Summon.Join(c, s, classId);
+            Summon.Join(c, s, classId, JoinRoute.StoryRecruit);
             return s.Party.Contains(classId) ? $"{c.Class(classId).Name} joins the party!" : $"{c.Class(classId).Name} joins you (in reserve)!";
         }
 

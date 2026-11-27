@@ -100,8 +100,9 @@ namespace GridGame.Meta
             if (s.Gold < price) return Result.Fail("Not enough gold");
             s.Gold -= price;
             s.Mercenaries.Hires++;
-            Summon.Join(c, s, classId);
+            // The contract goes in first, so the hire joins as a mercenary and gets no Trust (Bonds.HasTrust).
             s.Mercenaries.Contracts.Add(new MercContract { ClassId = m.Class, BattlesLeft = term, Term = term, Rate = PerBattle(m, term, HaggleAdjust(s, classId)) });
+            Summon.Join(c, s, classId);
             return Result.Success($"{c.Class(classId).Name} signs on for {term} battles");
         }
 

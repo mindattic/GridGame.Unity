@@ -110,6 +110,18 @@ namespace GridGame.Meta
             return AddTrust(s, classId, Seed(route));
         }
 
+        /// <summary>A hero joined the roster by <paramref name="route"/> (GG-T1592): seeds its Trust (<see cref="SeedTrust"/>),
+        /// and a starting hero or a story recruit, whose meeting the story itself tells, goes into
+        /// <see cref="SaveData.MetHeroes"/>.</summary>
+        public static void Joined(SaveData s, string classId, JoinRoute route)
+        {
+            var key = Key(classId);
+            if (s == null || key == null) return;
+            SeedTrust(s, classId, route);
+            if (route == JoinRoute.Starting || route == JoinRoute.StoryRecruit)
+                (s.MetHeroes ??= new HashSet<string>()).Add(key);
+        }
+
         // ── Cohesion ───────────────────────────────────────────────────────────────
 
         public static int Cohesion(SaveData s, string a, string b) => Read(s?.Cohesion, PairKey(a, b));

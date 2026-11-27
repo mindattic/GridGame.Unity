@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 21;
+        public const int CurrentVersion = 22;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -134,6 +134,9 @@ namespace GridGame.Meta
         public Dictionary<string, int> CohesionTierReached = new Dictionary<string, int>();
         /// <summary>GG-T1292: bond-paying dialogue choices already paid, "dialogueId/choiceId". Kept through New Game+.</summary>
         public HashSet<string> BondChoices = new HashSet<string>();
+        /// <summary>GG-T1592: heroes (class id, lower case) whose meeting the story has told: the starting party and story
+        /// recruits (<see cref="Bonds.Joined"/>). Save v22: an older save counts its whole roster as met.</summary>
+        public HashSet<string> MetHeroes = new HashSet<string>();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -934,6 +937,14 @@ namespace GridGame.Meta
                 if (string.IsNullOrWhiteSpace(s.CommanderName))
                     s.CommanderName = string.IsNullOrWhiteSpace(profileName) ? Commander.Fallback : profileName.Trim();
                 s.Version = 21;
+            }
+            s.MetHeroes ??= new HashSet<string>();
+            if (s.Version < 22)
+            {
+                // GG-T1592: heroes met by the story. Everyone already in an older save counts as met, so no Joined scene plays.
+                foreach (var h in s.Roster)
+                    if (Bonds.Key(h?.ClassId) is string key) s.MetHeroes.Add(key);
+                s.Version = 22;
             }
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();

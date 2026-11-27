@@ -214,10 +214,12 @@ namespace GridGame.Meta
         public static List<int> RightAnswers(DialogueDef def) =>
             def == null ? new List<int>() : def.Nodes.Where(n => n != null && n.Choices.Count > 0).Select(n => n.Choices.FindIndex(ch => ch != null && ch.Wit > 0)).ToList();
 
-        /// <summary>They join exactly like a freed guest: the roster, the party if there's room, at their battle level.</summary>
+        /// <summary>They join exactly like a freed guest: the roster, the party if there's room, at their battle level. One won
+        /// over by rapport (Trust met) arrives with the Rapport seed, else the Hire one.</summary>
         public static string Join(ContentDb c, SaveData s, Offer o)
         {
-            bool party = BattleFactory.JoinRoster(c, s, o.ClassId, o.Level, o.Hp, o.MaxHp);
+            var route = o.Trust >= o.TrustNeeded ? JoinRoute.Rapport : JoinRoute.Hire;
+            bool party = BattleFactory.JoinRoster(c, s, o.ClassId, o.Level, o.Hp, o.MaxHp, route);
             var name = c.Class(o.ClassId).Name;
             return party ? $"{name} joins the caravan!" : $"{name} joins the caravan (in reserve)";
         }

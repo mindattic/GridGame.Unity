@@ -63,6 +63,7 @@ namespace GridGame.Meta
                 var h = NewHero(c, id);
                 s.Roster.Add(h);
                 s.Party.Add(id);
+                Bonds.Joined(s, h.ClassId, JoinRoute.Starting);
             }
             // Every item slot on a starting bar is a full stack (two X-Potion stacks of 5 per hero).
             foreach (var h in s.Roster)
@@ -872,7 +873,7 @@ namespace GridGame.Meta
                     continue;
                 }
                 if (!rep.Victory || s.Hero(g.Def.Id) != null) continue;
-                JoinRoster(c, s, g.Def.Id, g.Level, g.Hp, g.MaxHp);
+                JoinRoster(c, s, g.Def.Id, g.Level, g.Hp, g.MaxHp, JoinRoute.Hire);
                 rep.GuestsJoined.Add(g.Def.Id);
             }
             // A wanderer (GG-T342) doesn't join on its own: standing at a victory it waits to talk on the results screen;
@@ -900,8 +901,9 @@ namespace GridGame.Meta
         }
 
         /// <summary>A hero met in battle joins the roster at <paramref name="level"/> with its wounds (a freed guest, a
-        /// wanderer won round — GG-T342), and the party when there's room. Returns whether it took a party slot.</summary>
-        public static bool JoinRoster(ContentDb c, SaveData s, string classId, int level, int hp, int maxHp)
+        /// wanderer won round — GG-T342), and the party when there's room, with the Trust of <paramref name="route"/>.
+        /// Returns whether it took a party slot.</summary>
+        public static bool JoinRoster(ContentDb c, SaveData s, string classId, int level, int hp, int maxHp, JoinRoute route)
         {
             if (s.Hero(classId) != null) return false;
             var h = Progression.NewHero(c, classId);
@@ -913,6 +915,7 @@ namespace GridGame.Meta
             Codex.UnlockHero(s, h); // GG-T929
             bool party = s.Party.Count < Progression.MaxPartySize;
             if (party) s.Party.Add(h.ClassId);
+            Bonds.Joined(s, h.ClassId, route);
             return party;
         }
 
@@ -2756,8 +2759,9 @@ namespace GridGame.Meta
         }
 
         /// <summary>Adds a hero to the roster (and the party, if there's room) at the roster's average experience —
-        /// shared by the Summon Circle and dialogue's RecruitHero effect (GG-T117). No-op if already owned.</summary>
-        public static HeroSave Join(ContentDb c, SaveData s, string classId)
+        /// shared by the Summon Circle and dialogue's RecruitHero effect (GG-T117). No-op if already owned. It arrives with
+        /// the Trust of <paramref name="route"/>.</summary>
+        public static HeroSave Join(ContentDb c, SaveData s, string classId, JoinRoute route = JoinRoute.Hire)
         {
             var existing = s.Hero(classId);
             if (existing != null) return existing;
@@ -2769,6 +2773,7 @@ namespace GridGame.Meta
             s.Roster.Add(h);
             Codex.UnlockHero(s, h); // GG-T929
             if (s.Party.Count < Progression.MaxPartySize) s.Party.Add(h.ClassId);
+            Bonds.Joined(s, h.ClassId, route);
             return h;
         }
 
