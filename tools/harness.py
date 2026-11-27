@@ -3074,6 +3074,20 @@ def crucible(run="crucible", leave_after=3, speed=4, timeout=600):
     print(json.dumps(out, indent=1))
 
 
+def _private_build(art):
+    """GG-T1782: copy the player build to artifacts/<run>/player-build and return that copy's exe. A soak runs for hours;
+    another session rebuilding Build/Windows mid-run overwrote resources.assets under the running players (GG-T1254: 5 of
+    300 launches died on 'resources.assets is corrupted'). The copy is private to the run, so nobody else's build touches it."""
+    import shutil
+    src = os.path.dirname(EXE)
+    dst = os.path.join(art, "player-build")
+    if os.path.isdir(dst):
+        shutil.rmtree(dst, ignore_errors=True)
+    print(f"soak: copying {src} -> {dst}")
+    shutil.copytree(src, dst)
+    return os.path.join(dst, os.path.basename(EXE))
+
+
 def _report_death(art, returncode, n, extra_note=""):
     """GG-T21: the player process can vanish mid-battle with no exception in Player.log and no
     Windows "Application Error" event — the only report from that incident was a human skimming
@@ -3125,8 +3139,9 @@ def stress(run="stress", hours=4.0, speed=3, timeout=240):
     art = os.path.join(ROOT, "artifacts", run)
     saves = os.path.join(art, "saves")
     os.makedirs(saves, exist_ok=True)
+    exe = _private_build(art)  # GG-T1782: never run a soak from the shared Build/Windows
     _ensure_port()
-    args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
+    args = [exe, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
             "-screen-width", "585", "-screen-height", "1266", "-screen-fullscreen", "0",
             "-logFile", os.path.join(art, "player.log")]
     proc = subprocess.Popen(args, cwd=ROOT)
@@ -3328,11 +3343,12 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
     if seed is None:
         seed = int(time.time()) % 1_000_000_000  # picked here, not by the player's clock, so a relaunch can resume it
 
+    exe = _private_build(art)  # GG-T1782: run from a private copy so concurrent rebuilds of Build/Windows can't corrupt it
     extra = []
     if turn_mode:  # GG-T775: -turnMode <name>; the player rejects (and logs) a mode that isn't built yet
         extra += ["-turnMode", turn_mode]
     if capture:
-        src = os.path.join(os.path.dirname(EXE), "GridGame_Data", "StreamingAssets", "capture.json")
+        src = os.path.join(os.path.dirname(exe), "GridGame_Data", "StreamingAssets", "capture.json")
         if not os.path.exists(src):
             src = os.path.join(ROOT, "Assets", "StreamingAssets", "capture.json")
         with open(src, encoding="utf-8") as f:
@@ -3382,7 +3398,7 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
             time.sleep(1.5)
         log_path = os.path.join(art, f"player-{k}.log")
         _ensure_port()
-        args = [EXE, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
+        args = [exe, "-automation", str(PORT), "-artifacts", art, "-saveRoot", saves,
                 "-screen-width", "585", "-screen-height", "1266", "-screen-fullscreen", "0",
                 "-logFile", log_path, "-muted", "-demo", "-endless", "-seed", str(base), "-count", str(remaining), *extra]
         if HEADLESS:
@@ -3397,6 +3413,7 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
         last_clock, stuck_since = None, None
         speed_set = speed is None
         done_seen = False
+        crash_seen = False          # GG-T1782: "Crash!!!" in the player log (the crash handler keeps the process alive)
         outcome = None              # None (clean), "crash", "stall", "hang"
 
         while True:
@@ -3415,6 +3432,8 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
                 partial = lines.pop()
                 for line in lines:
                     line = line.rstrip("\r")
+                    if "Crash!!!" in line:
+                        crash_seen = True
                     m = re_start.search(line)
                     if m:
                         current = (int(m.group(1)), int(m.group(2)), m.group(3))
@@ -3463,6 +3482,19 @@ def endless(count, seed=None, capture=False, run="endless", speed=None, turn_mod
             if proc.poll() is not None:
                 if not done_seen and consumed < count:
                     outcome = "crash"
+                break
+            if crash_seen and not done_seen:
+                # GG-T1782: the crash handler logged Crash!!! but left the process running; that is a crash, not a hang.
+                # Give it a few seconds to finish writing its dump, then kill it.
+                try:
+                    proc.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    try:
+                        proc.wait(timeout=30)
+                    except subprocess.TimeoutExpired:
+                        pass
+                outcome = "crash"
                 break
             if done_seen:
                 # The player quits itself after "done:"; give it a moment to finalize clips/telemetry, then insist.
