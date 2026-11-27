@@ -39,6 +39,7 @@ namespace GridGame.Core.Battle
             var ev = new SupportActionEvent { SupporterId = sup.Id, AttackerId = attacker.Id, Effect = def.Effect, Label = def.DisplayLabel, Amount = bonus };
             ev.Targets.Add(attacker.Id);
             Emit(ev);
+            CreditPair(sup, attacker);
         }
 
         /// <summary>
@@ -91,6 +92,9 @@ namespace GridGame.Core.Battle
             };
             foreach (var t in targets) ev.Targets.Add(t.Id);
             Emit(ev);
+            // §25.20: helping an ally counts once per support; a heal is credited by Heal itself.
+            if (!HitsTrapped(def.Effect) && def.Effect != SupportEffect.Heal)
+                foreach (var t in targets) CreditPair(sup, t);
 
             switch (def.Effect)
             {

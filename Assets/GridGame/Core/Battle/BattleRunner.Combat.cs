@@ -267,6 +267,11 @@ namespace GridGame.Core.Battle
             Emit(formed);
             if (team == Team.Hero) MarkPincerWitnesses(p); // a recruitable beside a striking hero fought with them (GG-T132)
             if (team == Team.Hero) TrustFromPincer(p, supporters); // a wanderer in a hero pincer trusts the party more (GG-T342)
+            if (team == Team.Hero) // §25.20: the two ends, and each supporter with each end, fought together
+            {
+                CreditPair(p.A, p.B);
+                foreach (var su in supporters) { CreditPair(su, p.A); CreditPair(su, p.B); }
+            }
             WardPincer(p, team);
 
             // Power Amplifier: a hero attacker standing on it strikes amplified and uses it up (§1.2.6).

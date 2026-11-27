@@ -136,6 +136,10 @@ namespace GridGame.Core.Battle
         /// <summary>Hero class → combo points earned as a pincer attacker / as a supporter, summed over every combo window.</summary>
         public Dictionary<string, int> ComboAttackerPoints = new Dictionary<string, int>();
         public Dictionary<string, int> ComboSupporterPoints = new Dictionary<string, int>();
+        /// <summary>§25.20 (GG-T1301): fighting together per commanded hero pair, keyed "a|b" (class ids, lower case, sorted
+        /// ordinal, as Meta's Bonds.PairKey): +1 per hero pincer both were part of and +1 each time one healed, shielded,
+        /// buffed, revived or Guarded the other. Raw counts; the meta layer applies the per-battle cap.</summary>
+        public Dictionary<string, int> PairCredits = new Dictionary<string, int>();
 
         private static Dictionary<string, List<string>> CloneListMap(Dictionary<string, List<string>> map)
         {
@@ -160,6 +164,7 @@ namespace GridGame.Core.Battle
                 BestComboRank = BestComboRank, BestComboScore = BestComboScore,
                 ComboAttackerPoints = new Dictionary<string, int>(ComboAttackerPoints),
                 ComboSupporterPoints = new Dictionary<string, int>(ComboSupporterPoints),
+                PairCredits = new Dictionary<string, int>(PairCredits),
                 Items = new Dictionary<string, int>(Items),
                 Kills = new Dictionary<string, int>(Kills),
                 Seen = new HashSet<string>(Seen),

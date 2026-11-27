@@ -620,6 +620,7 @@ namespace GridGame.Core.Battle
             {
                 RemoveBuffsWhere(target, b => b.Def.Intercepts, "intercepted");
                 Announce("Guarded!", guardian.Id);
+                CreditPair(guardian, target);
                 Damage(guardian, amount, source, hit, type, "Guarded");
                 return;
             }
@@ -719,7 +720,23 @@ namespace GridGame.Core.Battle
             Emit(new HealedEvent { TargetId = target.Id, SourceId = source?.Id ?? -1, Amount = target.Hp - before, HpAfter = target.Hp });
             if (target.IsNeutral && source != null && source.IsHero) MarkRecruit(target, "healed", source);
             if (target.Wanderer) TrustFromHeal(target, source, target.Hp - before); // GG-T342
+            if (target.Hp > before) CreditPair(source, target);
         }
+
+        /// <summary>§25.20 (GG-T1301): one credit to the pair a+b in <see cref="BattleResults.PairCredits"/> when both are
+        /// commanded roster heroes (never a wanderer, guest, tamed or domesticated beast, or a recruitable) and not the same unit.</summary>
+        private void CreditPair(Unit a, Unit b)
+        {
+            if (a == null || b == null || a == b || !FightsTogether(a) || !FightsTogether(b)) return;
+            string x = a.Def.Id.Trim().ToLowerInvariant(), y = b.Def.Id.Trim().ToLowerInvariant();
+            if (x == y) return;
+            string key = string.CompareOrdinal(x, y) < 0 ? x + "|" + y : y + "|" + x;
+            S.Results.PairCredits.TryGetValue(key, out int n);
+            S.Results.PairCredits[key] = n + 1;
+        }
+
+        private static bool FightsTogether(Unit u) =>
+            u.IsCommandable && !u.IsGuest && u.Recruitable == null && !string.IsNullOrWhiteSpace(u.Def?.Id);
 
         private void Kill(Unit u, Unit killer)
         {
@@ -935,6 +952,7 @@ namespace GridGame.Core.Battle
             }
             u.Buffs.Add(new BuffInstance { Def = def, Remaining = duration, Fresh = true, SourceId = sourceId });
             Emit(new BuffAppliedEvent { UnitId = u.Id, BuffId = def.Id, Duration = duration });
+            if (def.Kind == BuffKind.Buff && sourceId >= 0) CreditPair(S.UnitById(sourceId), u);
             if (def.PlateChip > 0) ChipPlate(u, def.PlateChip, sourceId); // GG-T857: Shredded bites the plate from any side
             if (def.Roots) SnapLineCharge(u); // GG-T881: a Line charge carries the caster down its lane; rooted, it can't
             ComboStatus(u, def, sourceId); // §1.2.8

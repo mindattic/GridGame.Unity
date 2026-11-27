@@ -600,6 +600,7 @@ namespace GridGame.Core.Battle
             if (fallen.IsIndependent || fallen.Team == Team.Enemy) EnsureTurnEntry(fallen); // a domesticated monster / a raised foe gets its turn icon back (GG-T303)
             else if (TurnRules.IsHeroIcon(S, fallen)) ScheduleHeroIcons(onlyMissing: true); // GG-T1075: back on the timeline mid-wave
             Emit(new RevivedEvent { UnitId = fallen.Id, At = fallen.Pos, Hp = fallen.Hp });
+            CreditPair(user, fallen);
         }
 
         /// <summary>Hasten/Quicken (§2.7.1): slide a turn icon forward, or rush a cast. A hasted hero also raises the
