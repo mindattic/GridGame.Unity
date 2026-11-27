@@ -12,7 +12,9 @@ namespace GridGame.Core.Content
     {
         public const string Folder = "battles";
         public const string IndexFile = Folder + "/index";
-        public const int WaveCount = 5;
+        /// <summary>A library battle is 1..5 waves (owner, GG-T1788): an encounter is preassembled from common regional
+        /// monsters and may be a single wave or a full five.</summary>
+        public const int MinWaves = 1, MaxWaves = 5;
         public const int MinTier = 1, MaxTier = 10;
         public const int MaxLevel = 99;
 
@@ -59,7 +61,7 @@ namespace GridGame.Core.Content
 
         static void ValidateStage(ContentDb db, StageDef s, string w, List<string> p)
         {
-            if (s.Waves.Count != WaveCount) p.Add($"{w}: needs {WaveCount} waves, has {s.Waves.Count}");
+            if (s.Waves.Count < MinWaves || s.Waves.Count > MaxWaves) p.Add($"{w}: needs {MinWaves}..{MaxWaves} waves, has {s.Waves.Count}");
             var blocks = new HashSet<(int, int)>();
             foreach (var c in s.Blocks)
             {

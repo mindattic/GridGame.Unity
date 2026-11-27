@@ -13,7 +13,7 @@ namespace GridGame.Tests
 {
     /// <summary>GG-T1780: the battle library (GG-T1709, BIBLE §28.9): battles/index.json's files load into ContentDb.Battles,
     /// and <see cref="BattleLibrary.Validate"/> rejects duplicate ids, unknown classes, non-library kinds, tiers outside
-    /// 1..10, off-board units and blocks, and a wave count other than 5.</summary>
+    /// 1..10, off-board units and blocks, and a wave count outside 1..5 (GG-T1788).</summary>
     public class BattleLibraryTests
     {
         const string TestFile = "greenvalley/_test";
@@ -33,7 +33,7 @@ namespace GridGame.Tests
         static LibraryBattle Valid(string id)
         {
             var stage = new StageDef { Blocks = { new Coord(0, 4) } };
-            for (int i = 0; i < BattleLibrary.WaveCount; i++)
+            for (int i = 0; i < BattleLibrary.MaxWaves; i++)
                 stage.Waves.Add(new WaveDef { Enemies = { new SpawnDef { Class = "wolf02", Level = 1, X = 1, Y = 1 } } });
             return new LibraryBattle { Id = id, Region = "greenvalley", Biome = "moor", Kind = BattleKind.Ambush, Tier = 3, Stage = stage };
         }
@@ -153,14 +153,30 @@ namespace GridGame.Tests
             Assert.That(Load(b), Has.Some.Contains($"block (0,{GridGame.Core.Battle.BattleConfig.Rows}) is off the board"));
         }
 
-        [TestCase(4)]
-        [TestCase(6)]
-        public void A_wave_count_other_than_5_fails(int waves)
+        static LibraryBattle WithWaves(string id, int waves)
         {
-            var b = Valid("t-waves");
+            var b = Valid(id);
             while (b.Stage.Waves.Count > waves) b.Stage.Waves.RemoveAt(b.Stage.Waves.Count - 1);
             while (b.Stage.Waves.Count < waves) b.Stage.Waves.Add(Valid("x").Stage.Waves[0]);
-            Assert.That(Load(b), Has.Some.Contains($"needs {BattleLibrary.WaveCount} waves, has {waves}"));
+            return b;
+        }
+
+        [TestCase(0)]
+        [TestCase(6)]
+        public void A_wave_count_outside_1_to_5_fails(int waves)
+        {
+            var b = WithWaves("t-waves", waves);
+            Assert.That(b.Stage.Waves.Count, Is.EqualTo(waves));
+            Assert.That(Load(b), Has.Some.Contains($"needs {BattleLibrary.MinWaves}..{BattleLibrary.MaxWaves} waves, has {waves}"));
+        }
+
+        [TestCase(1)]
+        [TestCase(5)]
+        public void Wave_counts_1_and_5_pass(int waves)
+        {
+            var b = WithWaves("t-waves-ok", waves);
+            Assert.That(b.Stage.Waves.Count, Is.EqualTo(waves));
+            Assert.That(Load(b), Is.Empty);
         }
     }
 }
