@@ -194,6 +194,8 @@ GridGame (min SDK 26); BlueStacks 5 (Android 9) can. Run one emulator at a time.
    `diamonds_2500` "2,500 Aetherite Shards"; description "Mana Shards for GridGame: a random summon, an
    instant Rested refill or a lucky craft." Use the same titles on App Store Connect.
 
+**Play Billing Library (GG-T1517).** Play requires Billing Library 8 or newer for new apps and updates (version 7 ran out its extension on 1 Nov 2026; check the Play Console deprecation page for the current date). `com.unity.purchasing` 5.4.4 bundles **9.0.0** (`Plugins/UnityPurchasing/Android/IAPResolver/IAPAndroidDependencies.cs`, `com.android.billingclient:billing:9.0.0`), so no package upgrade is needed; re-check the bundled version on every Unity IAP bump. `GG_IAP` is defined by `GridGame.App.asmdef`'s `versionDefines` whenever `com.unity.purchasing` >= 5.0.0 is installed, in every build including the Android release, not by Player Settings.
+
 **Scripted upload (GG-T1514).** `python tools/play_upload.py` sends `Build/AndroidRelease/GridGame.aab` to Play through
 the Developer API (edit, bundle, track with the release notes, commit). Setup, once: `pip install
 google-api-python-client google-auth`; in Play Console > Setup > API access link a Google Cloud project, create a
