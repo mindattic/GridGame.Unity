@@ -71,6 +71,8 @@ namespace GridGame.Core.Content
         /// <summary>world.json (GG-T1666, BIBLE §28): the overworld's region maps. Optional: null when the file is absent,
         /// and then its checks are skipped.</summary>
         public WorldDef World;
+        /// <summary>The battle library (GG-T1709, BIBLE §28.9): every battle of battles/index.json's files, in file order.</summary>
+        public readonly List<World.LibraryBattle> Battles = new List<World.LibraryBattle>();
         public RegionDef Region(string id) => World?.TryRegion(id);
         public NodeDef Node(string regionId, string nodeId) => Region(regionId)?.TryNode(nodeId);
         public RoadsignDef Roadsign(string regionId, string id) => Region(regionId)?.TryRoadsign(id);

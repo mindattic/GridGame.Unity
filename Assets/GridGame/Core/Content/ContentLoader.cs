@@ -49,16 +49,7 @@ namespace GridGame.Core.Content
             AddAll(db.Encounters, encounters, x => x.Id);
             db.EncounterOrder.AddRange(encounters);
             var stages = ReadList<StageDef>(readText, "stages");
-            // A wave that names a group (GG-T184) gets the group's foes, formation and level; Validate reports a bad id.
-            foreach (var st in stages)
-                for (int wi = 0; wi < st.Waves.Count; wi++)
-                {
-                    var w = st.Waves[wi];
-                    if (w.Group != null && w.Enemies.Count > 0)
-                        db.LoadProblems.Add($"stage {st.Id} wave {wi + 1}: names both Group '{w.Group}' and its own Enemies (the Group is ignored; use one)");
-                    else if (w.Group != null && db.TryEncounter(w.Group) is EncounterGroupDef g)
-                        w.Enemies = EncounterCatalog.Spawns(g, g.Level);
-                }
+            foreach (var st in stages) ResolveGroups(db, st, $"stage {st.Id}");
             AddAll(db.Stages, stages, c => c.Id);
             db.StageOrder.AddRange(stages);
             AddAll(db.Traps, ReadList<TrapDef>(readText, "traps"), c => c.Id);
@@ -91,6 +82,7 @@ namespace GridGame.Core.Content
             db.Families.AddRange(ReadList<FamilyDef>(readText, "families"));
             db.SkillHex = ReadOne<SkillHexDef>(readText, "skillhex"); // GG-T1022: optional; null skips its checks
             db.World = ReadOne<WorldDef>(readText, "world"); // GG-T1667: optional; null skips its checks
+            BattleLibrary.Load(db, readText); // GG-T1709
             AddAll(db.Caravan, ReadList<CaravanUpgradeDef>(readText, "caravan"), x => x.Id);
             AddAll(db.Pickups, ReadList<PickupDef>(readText, "pickups"), x => x.Id);
             AddAll(db.SkillTrees, ReadList<SkillTreeDef>(readText, "skilltrees"), x => x.Id);
@@ -199,7 +191,20 @@ namespace GridGame.Core.Content
         /// (<see cref="SkillHexContent.Validate"/>); skipped when the board is absent.</summary>
         public static void ValidateSkillHex(ContentDb db, List<string> p) => SkillHexContent.Validate(db, db.SkillHex, p);
 
-        private static List<T> ReadList<T>(Func<string, string> readText, string name)
+        /// <summary>A wave that names a group (GG-T184) gets the group's foes, formation and level; Validate reports a bad id.</summary>
+        internal static void ResolveGroups(ContentDb db, StageDef st, string where)
+        {
+            for (int wi = 0; wi < st.Waves.Count; wi++)
+            {
+                var w = st.Waves[wi];
+                if (w.Group != null && w.Enemies.Count > 0)
+                    db.LoadProblems.Add($"{where} wave {wi + 1}: names both Group '{w.Group}' and its own Enemies (the Group is ignored; use one)");
+                else if (w.Group != null && db.TryEncounter(w.Group) is EncounterGroupDef g)
+                    w.Enemies = EncounterCatalog.Spawns(g, g.Level);
+            }
+        }
+
+        internal static List<T> ReadList<T>(Func<string, string> readText, string name)
         {
             var text = readText(name);
             if (string.IsNullOrWhiteSpace(text)) return new List<T>();
@@ -662,6 +667,7 @@ namespace GridGame.Core.Content
             BannerContent.Validate(db, p); // GG-T1418
             WandererContent.ValidateFactions(db, p);
             WorldContent.Validate(db, db.World, p); // GG-T1666
+            BattleLibrary.Validate(db, p); // GG-T1709
             FamilyContent.Validate(db, p); // GG-T971
             ValidateAbilityAliases(db, p); // GG-T973
             ValidateSkillHex(db, p); // GG-T1022

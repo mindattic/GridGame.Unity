@@ -1,0 +1,219 @@
+[
+  {
+    "Id": "gv-ambush-wolves",
+    "Region": "greenvalley",
+    "Biome": "moor",
+    "Kind": "Ambush",
+    "Tier": 1,
+    "Stage": {
+      "Blocks": [
+        {
+          "X": 0,
+          "Y": 4
+        },
+        {
+          "X": 5,
+          "Y": 4
+        }
+      ],
+      "Waves": [
+        {
+          "Enemies": [
+            {
+              "Class": "wolf02",
+              "Level": 1,
+              "X": 1,
+              "Y": 1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "wolf03",
+              "Level": 1,
+              "X": 4,
+              "Y": 1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "slime01",
+              "Level": 1,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "slime02",
+              "Level": 1,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "frog00",
+              "Level": 1,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "frog01",
+              "Level": 1,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 20
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "harpy01",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "harpy02",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "wolf02",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "werewolf00",
+              "Level": 2,
+              "X": 2,
+              "Y": 0,
+              "DelayTicks": 0
+            }
+          ]
+        }
+      ],
+      "Rules": []
+    }
+  },
+  {
+    "Id": "gv-hunt-slimes",
+    "Region": "greenvalley",
+    "Kind": "Hunt",
+    "Tier": 2,
+    "Stage": {
+      "Blocks": [],
+      "Waves": [
+        {
+          "Enemies": [
+            {
+              "Class": "slime01",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "slime02",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "frog00",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "frog03",
+              "Level": 2,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "slime01",
+              "Level": 2,
+              "X": 2,
+              "Y": 2,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "slime02",
+              "Level": 2,
+              "X": 3,
+              "Y": 2,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "harpy01",
+              "Level": 3,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            }
+          ]
+        },
+        {
+          "Enemies": [
+            {
+              "Class": "frog01",
+              "Level": 3,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "frog03",
+              "Level": 3,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 0
+            },
+            {
+              "Class": "slime02",
+              "Level": 3,
+              "X": -1,
+              "Y": -1,
+              "DelayTicks": 30
+            }
+          ]
+        }
+      ],
+      "Rules": [
+        "slimetrail"
+      ],
+      "Seed": 7
+    }
+  }
+]
