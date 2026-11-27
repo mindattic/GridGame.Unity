@@ -5922,6 +5922,7 @@ Target: **60 fps** on a 4-year-old mid-tier phone; `GameApp.Awake` pins `targetF
 - **Presentation** plays one awaited beat at a time (budget ≤ 3 ms); **UI Toolkit** layout/render ≤ 8 ms — rebuild a screen only on change (`Refresh`), never per frame; keep ≥ 2 ms slack.
 - **Hygiene:** all playback runs through `Safe()` with a 20 s watchdog and a final `SyncAll`. **Amended 2026-10-09:** there is no per-battle static state to clear — everything lives on `BattleState`, which dies with the screen.
 - **Assets:** `Resources` loading is sanctioned (backdrops at the art's resolution, 1536×3072 JPEG, ~4.5 MB each as textures (GG-T353); thumbs 256², icons 64²; music mp3, SFX ogg/wav).
+- **Thermal step-down (GG-T1548):** on Android and iOS players `ThermalStepDown` polls every 2 s. Hot is Adaptive Performance's `ThrottlingImminent` or `Throttling` when a provider is active, otherwise iOS `NSProcessInfo.thermalState` serious or critical; while hot the frame cap is min(player's cap, 30) (Uncapped becomes 30) and the Effects amount is half the player's. Cool (AP `NoWarning`, iOS nominal or fair) for 30 s in a row restores the player's Settings choices; the step-down never raises either above them. No toast; one `[Thermal]` log line per change in development builds. Desktop and WebGL compile it out.
 - ⬜ Not yet built: the on-device profiling pass.
 
 ---

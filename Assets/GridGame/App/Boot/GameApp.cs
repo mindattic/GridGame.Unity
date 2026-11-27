@@ -511,9 +511,9 @@ namespace GridGame.App
             int cap = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
             if (mobileGfx && cap < 0) cap = Mathf.Max(60, Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value));
             QualitySettings.vSyncCount = !mobileGfx && st.VSync ? 1 : 0;
-            Application.targetFrameRate = cap;
+            // GG-T1548: the frame cap and Effects amount go through the thermal step-down, which only ever lowers them.
+            ThermalStepDown.Apply(cap, Mathf.Clamp01(st.VfxAmount));
             Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
-            VfxPrefabLayer.Amount = Mathf.Clamp01(st.VfxAmount);
             Tween.Speed = Mathf.Clamp(st.BattleSpeed, 0.5f, 3f);
             // GG-T392: with the look presets hidden (Features.LookPresets off) every profile draws with the defaults.
             bool presets = GridGame.Meta.Features.LookPresets;

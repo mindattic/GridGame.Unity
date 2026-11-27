@@ -151,6 +151,15 @@ oversized textures found. What needs a device (install the `-Dev` APK, `adb devi
 5. For hot spots, attach the Unity Profiler over USB to a development build (Autoconnect Profiler), or capture a
    Perfetto trace. File each finding as its own fix ticket with the numbers.
 
+### Thermal step-down (GG-T1548)
+
+While the phone reports thermal throttling the game drops its frame cap to 30 and halves the Effects amount, and
+puts the player's Settings back after 30 s of reading cool ([BIBLE §30](BIBLE.md#30-performance-budgets)). Thresholds:
+Adaptive Performance `ThrottlingImminent`/`Throttling` is hot and `NoWarning` cool, when a provider is active (Android
+needs the Adaptive Performance Android provider enabled in Project Settings > Adaptive Performance); otherwise iOS
+`NSProcessInfo.thermalState` serious/critical is hot and nominal/fair cool (`Plugins/iOS/GGThermal.mm`). To see it on a
+development build, watch the log for `[Thermal]` lines while the phone heats up.
+
 ### Playing on emulated devices: Android Emulator Suite (GG-T547)
 
 To play the whole game with the mouse as it looks on a given phone or tablet, use the **Android Emulator Suite**
