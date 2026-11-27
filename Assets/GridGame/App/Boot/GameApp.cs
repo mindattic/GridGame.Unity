@@ -506,8 +506,12 @@ namespace GridGame.App
             // GG-T1221 Graphics: quality level (-1 = the project's own), vsync, and the frame-rate cap (60 by default).
             int quality = st.QualityLevel >= 0 && st.QualityLevel < QualitySettings.names.Length ? st.QualityLevel : projectQualityLevel;
             if (QualitySettings.GetQualityLevel() != quality) QualitySettings.SetQualityLevel(quality, true);
-            QualitySettings.vSyncCount = st.VSync ? 1 : 0;
-            Application.targetFrameRate = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
+            // GG-T1240: on mobile vsync is not a setting and -1 means the platform default (often 30), so Uncapped runs at the display's refresh rate.
+            bool mobileGfx = Application.isMobilePlatform;
+            int cap = GridGame.Meta.GameSettings.ClampFrameRateCap(st.FrameRateCap);
+            if (mobileGfx && cap < 0) cap = Mathf.Max(60, Mathf.RoundToInt((float)Screen.currentResolution.refreshRateRatio.value));
+            QualitySettings.vSyncCount = !mobileGfx && st.VSync ? 1 : 0;
+            Application.targetFrameRate = cap;
             Tween.ShakeScale = Mathf.Clamp01(st.ScreenShake);
             VfxPrefabLayer.Amount = Mathf.Clamp01(st.VfxAmount);
             Tween.Speed = Mathf.Clamp(st.BattleSpeed, 0.5f, 3f);

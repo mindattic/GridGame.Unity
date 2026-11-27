@@ -2080,7 +2080,7 @@ namespace GridGame.App
                 Enumerable.Range(-1, qualities.Length + 1).ToArray(), q => q < 0 ? "Default" : qualities[q], v => st.QualityLevel = v, "settings-quality");
             CycleInt("Frame rate cap", GameSettings.ClampFrameRateCap(st.FrameRateCap), new[] { 30, 60, -1 },
                 f => f < 0 ? "Uncapped" : $"{f} fps", v => st.FrameRateCap = v, "settings-frame-cap");
-            Toggle("VSync", st.VSync, v => st.VSync = v, "settings-vsync");
+            if (!mobile) Toggle("VSync", st.VSync, v => st.VSync = v, "settings-vsync"); // GG-T1240: mobile ignores vsync
             Cycle("Screen shake", st.ScreenShake, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.ScreenShake = v, "settings-screen-shake");
             Cycle("Effects", st.VfxAmount, new[] { 0f, 0.5f, 1f }, "{0:0%}", v => st.VfxAmount = v, "settings-effects");
 
