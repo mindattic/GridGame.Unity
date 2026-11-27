@@ -746,14 +746,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0d78b060585f45df8862e613dab5ff643a52f5949077394a0184dc0fcf602992",
+      "hash": "sha256:5f10fd1c58e8f656fb6362fb0ea6063c026fe8fdbce1dc0a0719625d972490cf",
       "about": [
+        "character-commander",
         "character-enchantress",
         "place-cathedral"
       ],
       "speakers": [
-        "$commander",
-        "character-enchantress"
+        "character-commander",
+        "character-enchantress",
+        "$trusted"
       ],
       "payload": {
         "title": "The organ",
@@ -761,14 +763,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "That music is coming from the walls. I know this sound. We sang the Manalith to sleep with it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "Your Lullaby. The Choir built the organ around it. The runaway says every hold's tithe ends in those pipes, and the Hierarch drinks the skim. The Lullaby needs a little. He takes the rest. Let's make it stop."
+            "line": "Your Lullaby. The Choir built the organ around it. The runaway says every hold's tithe ends in those pipes, and the Hierarch drinks the skim. The Lullaby needs a little. He takes the rest. Let's make it stop.",
+            "choices": [
+              {
+                "text": "Before we go in. You've got something to say.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "We stop it. Today.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Only this. Whatever you sang in that room long ago, you walked us here to end it. I go in beside you.",
+            "choices": [
+              {
+                "text": "Beside me, then. The first pipe we break, we break together.",
+                "next": "together"
+              },
+              {
+                "text": "Stay close in there. I'll need someone who knows my voice.",
+                "next": "voice"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "$trusted",
+            "line": "Together. I'll be listening for it."
+          },
+          {
+            "id": "voice",
+            "speaker": "$trusted",
+            "line": "I know it. I'd know it through a whole choir."
           }
         ]
       }
@@ -812,14 +852,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:bc8bbaacd1e7aa7724959f5280860cd0f151739c67a9eae35d0a9aaf4399e115",
+      "hash": "sha256:3a75d165b3e0eba583093bb3fba8a4b77e0f5660dc95998956033898616b59e4",
       "about": [
         "character-blacksmith",
+        "character-commander",
         "place-cave"
       ],
       "speakers": [
-        "$commander",
-        "character-blacksmith"
+        "character-commander",
+        "character-blacksmith",
+        "$trusted"
       ],
       "payload": {
         "title": "Where the light goes",
@@ -827,14 +869,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "The wraith knights lowered their blades to me, then fought us anyway. And this arch hummed awake as I passed. What is it holding up?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-blacksmith",
-            "line": "Nothing. The Street's engineer read the arch you woke: it's a tap, not a support. It draws the Manalith's mana down, and the drawing is the pull that brings it closer. The Watch knew you for one of Halcyon's. They saluted their own."
+            "line": "Nothing. The Street's engineer read the arch you woke: it's a tap, not a support. It draws the Manalith's mana down, and the drawing is the pull that brings it closer. The Watch knew you for one of Halcyon's. They saluted their own.",
+            "choices": [
+              {
+                "text": "You looked at me differently when the Watch saluted. Tell me why.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Halcyon's, then. I'd still rather know than guess.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Because they saluted, and I didn't know if I should. Halcyon put the Manalith to sleep and drank the spill. Maybe you were one of them. I know who you've been out here. That's the one I'm following.",
+            "choices": [
+              {
+                "text": "Keep judging me by what I do out here. Hold me to it.",
+                "next": "hold"
+              },
+              {
+                "text": "I don't know what I was either. I'm glad you're still here.",
+                "next": "glad"
+              }
+            ]
+          },
+          {
+            "id": "hold",
+            "speaker": "$trusted",
+            "line": "I will. Every day, if I have to."
+          },
+          {
+            "id": "glad",
+            "speaker": "$trusted",
+            "line": "Still here. Ask me again after the next arch."
           }
         ]
       }
@@ -1078,14 +1158,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:329674b02d7b99411b336a3117bf9c4f66011ec5aaeef5d28158dec7b1e15688",
+      "hash": "sha256:c9ea9c60c76b7e01dc8d1143e7d965ca63a8f539e62814acb93f8c7dadd2fede",
       "about": [
+        "character-commander",
         "character-innkeeper",
         "place-cityruins"
       ],
       "speakers": [
-        "$commander",
-        "character-innkeeper"
+        "character-commander",
+        "character-innkeeper",
+        "$trusted"
       ],
       "payload": {
         "title": "The council in the archive",
@@ -1093,14 +1175,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "The archive woke for me. A council, a vote, a row of commanders. One of those faces was mine.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-innkeeper",
-            "line": "The witch read it while you stared. Halcyon couldn't stop the Manalith, so it fed it to sleep and drank what spilled. Every scrap of mana in us is the Manalith's. And you were in that room. I'm still deciding what I think of that."
+            "line": "The witch read it while you stared. Halcyon couldn't stop the Manalith, so it fed it to sleep and drank what spilled. Every scrap of mana in us is the Manalith's. And you were in that room. I'm still deciding what I think of that.",
+            "choices": [
+              {
+                "text": "And you? You saw that face as well.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Take the time you need. I'm still deciding too.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "I've decided. A face on a wall is who you were. I've watched who you are. If that council made you, you've spent every day since unmaking it. I'll stand with the one I've watched.",
+            "choices": [
+              {
+                "text": "Then watch me closely. If I start turning into that face, stop me.",
+                "next": "stop"
+              },
+              {
+                "text": "Thank you. That's more than I'd give myself today.",
+                "next": "thank"
+              }
+            ]
+          },
+          {
+            "id": "stop",
+            "speaker": "$trusted",
+            "line": "I'll stop you. Then I'll drag you back to the fire and we'll talk."
+          },
+          {
+            "id": "thank",
+            "speaker": "$trusted",
+            "line": "Then take mine until you can give it yourself."
           }
         ]
       }
@@ -3761,14 +3881,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e3786606da63125daf8d8bb2656cef21c4094303526cc400c3c8a64d8267a6bc",
+      "hash": "sha256:305a9e8bd1e0edf20acfbedc6b47d7f1e4fb5507ac0238115e8d34e415437444",
       "about": [
         "character-alchemist",
+        "character-commander",
         "place-desert"
       ],
       "speakers": [
-        "$commander",
-        "character-alchemist"
+        "character-commander",
+        "character-alchemist",
+        "$trusted"
       ],
       "payload": {
         "title": "What the shards are",
@@ -3776,14 +3898,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "Red earth, and horns taller than towers. Did these fall? My hand aches when I go near them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "Some of them are the Manalith's own shell, shed as it comes. The Choir digs it out and the Ember pray for the rest. And that ache is your mana answering. Everyone's runs thin. Yours is whole. I've never seen that."
+            "line": "Some of them are the Manalith's own shell, shed as it comes. The Choir digs it out and the Ember pray for the rest. And that ache is your mana answering. Everyone's runs thin. Yours is whole. I've never seen that.",
+            "choices": [
+              {
+                "text": "You've watched my hand all morning. Say it.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Whole, and I don't know why. Let's keep moving.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "The ache. I've seen people go near a shard and come back thin. You come back steadier. I don't understand it, and I don't need to. I just want to be close when it matters.",
+            "choices": [
+              {
+                "text": "Stay close, then. If my hand starts to shake, you'll be the one I tell.",
+                "next": "close"
+              },
+              {
+                "text": "Stay near. Whatever this is, I'd rather not find out alone.",
+                "next": "near"
+              }
+            ]
+          },
+          {
+            "id": "close",
+            "speaker": "$trusted",
+            "line": "The one you tell. I'll hold you to that, Commander."
+          },
+          {
+            "id": "near",
+            "speaker": "$trusted",
+            "line": "Not alone. That's an easy promise to keep."
           }
         ]
       }
@@ -4280,14 +4440,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b9028b136b14e63c0ff1f2dd27a36858b58166a1f42ecd2ac229d8dc6335d265",
+      "hash": "sha256:a037193f0b3a8c261bb6a63bd181c0a2fdd63b048e1bec4e20c1bf6b30ddb672",
       "about": [
+        "character-commander",
         "character-merchant",
         "place-greenvalley"
       ],
       "speakers": [
-        "$commander",
-        "character-merchant"
+        "character-commander",
+        "character-merchant",
+        "$trusted"
       ],
       "payload": {
         "title": "A lantern that should be dead",
@@ -4295,14 +4457,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "The Tithe Moors. Every hold has paid, and the white wagons still come. I don't know these hills. I don't know why I'm walking them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "Three times the quota this year, and nobody says why. And that lantern on the caravan had been dead longer than my grandmother. It lit in your hand. So when you remember who you are, I'd like to hear it."
+            "line": "Three times the quota this year, and nobody says why. And that lantern on the caravan had been dead longer than my grandmother. It lit in your hand. So when you remember who you are, I'd like to hear it.",
+            "choices": [
+              {
+                "text": "You've been quiet by the wagon. Say what you're thinking.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "When I remember, you'll be the first to hear it.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Everyone I know paid the tithe, and none of us asked where it went. You don't even know your own name, and you're already asking. I'd sooner follow that than wait for the next wagon.",
+            "choices": [
+              {
+                "text": "Then walk beside me, not behind. I'll need someone who knows these hills.",
+                "next": "beside"
+              },
+              {
+                "text": "Keep asking with me. Two people asking are harder to ignore.",
+                "next": "asking"
+              }
+            ]
+          },
+          {
+            "id": "beside",
+            "speaker": "$trusted",
+            "line": "Beside, then. I know which holds will feed us and which will sell us. That's a start."
+          },
+          {
+            "id": "asking",
+            "speaker": "$trusted",
+            "line": "Harder to ignore. And harder to tithe white, maybe."
           }
         ]
       }
@@ -5715,14 +5915,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:c2d6511f03738d46e7ab1112ca5987b0de8ba68e222023f2978c82de8bbf2880",
+      "hash": "sha256:13efb8919cbc7b3e98301c0317c973d69bbf9a0d3bc75d1a014508b0fca7d4c7",
       "about": [
+        "character-commander",
         "character-merchant",
         "place-lanternroad"
       ],
       "speakers": [
-        "$commander",
-        "character-merchant"
+        "character-commander",
+        "character-merchant",
+        "$trusted"
       ],
       "payload": {
         "title": "One moon on the wall",
@@ -5730,14 +5932,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "That mural lit when I touched it. One moon, and nothing beside it. I know that sky. I don't know how I know it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "The sage on the stair says it's the oldest painting on the road, older than the Choir. Before the Manalith there was only the Moon. The pilgrims light lanterns to keep it asleep. I sell them the oil, and lately I wonder what I'm selling."
+            "line": "The sage on the stair says it's the oldest painting on the road, older than the Choir. Before the Manalith there was only the Moon. The pilgrims light lanterns to keep it asleep. I sell them the oil, and lately I wonder what I'm selling.",
+            "choices": [
+              {
+                "text": "You've been staring at that moon longer than I have. What do you see?",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Keep selling. We'll learn what it buys.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Where I grew up there was a word for the sky before the Manalith. We used it to scare children. If you know that sky, Commander, you've been somewhere none of us can follow. I'd still like to try.",
+            "choices": [
+              {
+                "text": "Then don't follow. Walk it with me, and tell me what you see that I don't.",
+                "next": "walk"
+              },
+              {
+                "text": "Try, then. I'll tell you what I remember as it comes.",
+                "next": "tell"
+              }
+            ]
+          },
+          {
+            "id": "walk",
+            "speaker": "$trusted",
+            "line": "Two sets of eyes on one sky. All right. I'll start with that moon."
+          },
+          {
+            "id": "tell",
+            "speaker": "$trusted",
+            "line": "As it comes. I'll be listening, Commander."
           }
         ]
       }
@@ -7390,14 +7630,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:a38af75d30eb99b3734053c5c4fed0cef30094d7c18e56af70ce131c354be8f3",
+      "hash": "sha256:09733f7df5e6fabc49e34e17a925d723fe33c56a46cab7157d3fa4f58790f8f9",
       "about": [
+        "character-commander",
         "character-enchantress",
         "place-still"
       ],
       "speakers": [
-        "$commander",
-        "character-enchantress"
+        "character-commander",
+        "character-enchantress",
+        "$trusted"
       ],
       "payload": {
         "title": "What the tanks hold",
@@ -7405,7 +7647,7 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "The Still. I woke in one of these tanks. I think I died in one, too.",
             "next": "b"
           },
@@ -7417,14 +7659,52 @@
           },
           {
             "id": "c",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "Then I'm alive on their colour. And there's more here than any Lullaby needs. I can feel it.",
             "next": "d"
           },
           {
             "id": "d",
             "speaker": "character-enchantress",
-            "line": "The rest goes up the spire. To someone who's been drinking it for a very long time."
+            "line": "The rest goes up the spire. To someone who's been drinking it for a very long time.",
+            "choices": [
+              {
+                "text": "You haven't said a word since the tanks. Say it.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Then that's where we go.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Somewhere in those tanks is colour from a village I know. Maybe some of it is in you now. I should hate that. I don't. If it had to go somewhere, I'm glad it went into someone who'd come back here and ask where the rest went.",
+            "choices": [
+              {
+                "text": "Then I'll spend it well. On getting the rest back.",
+                "next": "spend"
+              },
+              {
+                "text": "I'll carry it carefully. Tell me whose it was, when you're ready.",
+                "next": "carry"
+              }
+            ]
+          },
+          {
+            "id": "spend",
+            "speaker": "$trusted",
+            "line": "Spend it well. That's all I'd ask of anyone."
+          },
+          {
+            "id": "carry",
+            "speaker": "$trusted",
+            "line": "When I'm ready. Not today. But thank you for asking."
           }
         ]
       }
@@ -7566,14 +7846,16 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b0c8aa0360b344f39b55f1cdbd277da2625d4f85264dc9121ee39298ffb6a9b1",
+      "hash": "sha256:f1e8843118febbc53179785b7a81cd8457a38f6f86e61725fa13e7295915fcf8",
       "about": [
+        "character-commander",
         "character-enchantress",
         "place-swamp"
       ],
       "speakers": [
-        "$commander",
-        "character-enchantress"
+        "character-commander",
+        "character-enchantress",
+        "$trusted"
       ],
       "payload": {
         "title": "The manifest",
@@ -7581,14 +7863,52 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "$commander",
+            "speaker": "character-commander",
             "line": "That door opened for me when none of you could force it. And I remember names being called for boarding. Mine wasn't one of them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "Halcyon's Arks. The manifest says they sailed the night the city fell, and the tides threw them here. Halcyon tried to run. And a door that knows your hand is news the Choir will hear. They'll hunt you now, not just the wagon."
+            "line": "Halcyon's Arks. The manifest says they sailed the night the city fell, and the tides threw them here. Halcyon tried to run. And a door that knows your hand is news the Choir will hear. They'll hunt you now, not just the wagon.",
+            "choices": [
+              {
+                "text": "They'll hunt you too, for riding with me. You can still walk away.",
+                "next": "speak",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Let them hunt. We keep the wagon moving.",
+                "next": ""
+              }
+            ]
+          },
+          {
+            "id": "speak",
+            "speaker": "$trusted",
+            "line": "Walk away to what? A hold that pays the tithe and waits for the wagons? I followed you before that door ever opened. The Choir caring about it doesn't change much.",
+            "choices": [
+              {
+                "text": "It changes one thing. When they come for me, I want you at my back.",
+                "next": "back"
+              },
+              {
+                "text": "Then stay. I'll try to make it worth the danger.",
+                "next": "worth"
+              }
+            ]
+          },
+          {
+            "id": "back",
+            "speaker": "$trusted",
+            "line": "At your back. That's where I'd have been anyway."
+          },
+          {
+            "id": "worth",
+            "speaker": "$trusted",
+            "line": "Don't promise that. Just don't make me regret it."
           }
         ]
       }

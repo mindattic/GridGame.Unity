@@ -1,0 +1,29 @@
+dialogue cathedral_party_talk
+title: The organ
+trigger: ThemeStart cathedral
+speaker commander $commander
+speaker trusted $trusted
+speaker enchantress - name=Enchantress portrait=whitewitch
+
+node a commander
+  That music is coming from the walls. I know this sound. We sang the Manalith to sleep with it.
+  -> b
+
+node b enchantress
+  Your Lullaby. The Choir built the organ around it. The runaway says every hold's tithe ends in those pipes, and the Hierarch drinks the skim. The Lullaby needs a little. He takes the rest. Let's make it stop.
+  * Before we go in. You've got something to say. -> speak
+    if: TrustAtLeast $trusted 25
+  * We stop it. Today.
+
+node speak trusted
+  Only this. Whatever you sang in that room long ago, you walked us here to end it. I go in beside you.
+  * Beside me, then. The first pipe we break, we break together. -> together
+    do: AddTrust $trusted 6
+  * Stay close in there. I'll need someone who knows my voice. -> voice
+    do: AddTrust $trusted 4
+
+node together trusted
+  Together. I'll be listening for it.
+
+node voice trusted
+  I know it. I'd know it through a whole choir.

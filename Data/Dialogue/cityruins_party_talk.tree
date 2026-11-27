@@ -1,0 +1,29 @@
+dialogue cityruins_party_talk
+title: The council in the archive
+trigger: ThemeStart cityruins
+speaker commander $commander
+speaker trusted $trusted
+speaker innkeeper - name=Innkeeper portrait=pandagirl
+
+node a commander
+  The archive woke for me. A council, a vote, a row of commanders. One of those faces was mine.
+  -> b
+
+node b innkeeper
+  The witch read it while you stared. Halcyon couldn't stop the Manalith, so it fed it to sleep and drank what spilled. Every scrap of mana in us is the Manalith's. And you were in that room. I'm still deciding what I think of that.
+  * And you? You saw that face as well. -> speak
+    if: TrustAtLeast $trusted 25
+  * Take the time you need. I'm still deciding too.
+
+node speak trusted
+  I've decided. A face on a wall is who you were. I've watched who you are. If that council made you, you've spent every day since unmaking it. I'll stand with the one I've watched.
+  * Then watch me closely. If I start turning into that face, stop me. -> stop
+    do: AddTrust $trusted 6
+  * Thank you. That's more than I'd give myself today. -> thank
+    do: AddTrust $trusted 4
+
+node stop trusted
+  I'll stop you. Then I'll drag you back to the fire and we'll talk.
+
+node thank trusted
+  Then take mine until you can give it yourself.

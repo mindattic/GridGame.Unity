@@ -1,0 +1,30 @@
+dialogue greenvalley_party_talk
+title: A lantern that should be dead
+trigger: ThemeStart greenvalley
+when: NpcJoined merchant
+speaker commander $commander
+speaker trusted $trusted
+speaker merchant - name='Lantern Merchant' portrait=courier
+
+node a commander
+  The Tithe Moors. Every hold has paid, and the white wagons still come. I don't know these hills. I don't know why I'm walking them.
+  -> b
+
+node b merchant
+  Three times the quota this year, and nobody says why. And that lantern on the caravan had been dead longer than my grandmother. It lit in your hand. So when you remember who you are, I'd like to hear it.
+  * You've been quiet by the wagon. Say what you're thinking. -> speak
+    if: TrustAtLeast $trusted 25
+  * When I remember, you'll be the first to hear it.
+
+node speak trusted
+  Everyone I know paid the tithe, and none of us asked where it went. You don't even know your own name, and you're already asking. I'd sooner follow that than wait for the next wagon.
+  * Then walk beside me, not behind. I'll need someone who knows these hills. -> beside
+    do: AddTrust $trusted 6
+  * Keep asking with me. Two people asking are harder to ignore. -> asking
+    do: AddTrust $trusted 3
+
+node beside trusted
+  Beside, then. I know which holds will feed us and which will sell us. That's a start.
+
+node asking trusted
+  Harder to ignore. And harder to tithe white, maybe.

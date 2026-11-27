@@ -1,0 +1,29 @@
+dialogue cave_party_talk
+title: Where the light goes
+trigger: ThemeStart cave
+speaker commander $commander
+speaker trusted $trusted
+speaker smith - name=Blacksmith portrait=tinkerer
+
+node a commander
+  The wraith knights lowered their blades to me, then fought us anyway. And this arch hummed awake as I passed. What is it holding up?
+  -> b
+
+node b smith
+  Nothing. The Street's engineer read the arch you woke: it's a tap, not a support. It draws the Manalith's mana down, and the drawing is the pull that brings it closer. The Watch knew you for one of Halcyon's. They saluted their own.
+  * You looked at me differently when the Watch saluted. Tell me why. -> speak
+    if: TrustAtLeast $trusted 25
+  * Halcyon's, then. I'd still rather know than guess.
+
+node speak trusted
+  Because they saluted, and I didn't know if I should. Halcyon put the Manalith to sleep and drank the spill. Maybe you were one of them. I know who you've been out here. That's the one I'm following.
+  * Keep judging me by what I do out here. Hold me to it. -> hold
+    do: AddTrust $trusted 6
+  * I don't know what I was either. I'm glad you're still here. -> glad
+    do: AddTrust $trusted 4
+
+node hold trusted
+  I will. Every day, if I have to.
+
+node glad trusted
+  Still here. Ask me again after the next arch.

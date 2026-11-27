@@ -1,0 +1,37 @@
+dialogue still_party_talk
+title: What the tanks hold
+trigger: ThemeStart still
+speaker commander $commander
+speaker trusted $trusted
+speaker enchantress - name=Enchantress portrait=whitewitch
+
+node a commander
+  The Still. I woke in one of these tanks. I think I died in one, too.
+  -> b
+
+node b enchantress
+  You did. They were Halcyon's tanks, and now the Choir runs the tithe through them. That's what brought you back: colour taken from the holds. The Innkeeper found her village's in the next tank.
+  -> c
+
+node c commander
+  Then I'm alive on their colour. And there's more here than any Lullaby needs. I can feel it.
+  -> d
+
+node d enchantress
+  The rest goes up the spire. To someone who's been drinking it for a very long time.
+  * You haven't said a word since the tanks. Say it. -> speak
+    if: TrustAtLeast $trusted 25
+  * Then that's where we go.
+
+node speak trusted
+  Somewhere in those tanks is colour from a village I know. Maybe some of it is in you now. I should hate that. I don't. If it had to go somewhere, I'm glad it went into someone who'd come back here and ask where the rest went.
+  * Then I'll spend it well. On getting the rest back. -> spend
+    do: AddTrust $trusted 6
+  * I'll carry it carefully. Tell me whose it was, when you're ready. -> carry
+    do: AddTrust $trusted 5
+
+node spend trusted
+  Spend it well. That's all I'd ask of anyone.
+
+node carry trusted
+  When I'm ready. Not today. But thank you for asking.

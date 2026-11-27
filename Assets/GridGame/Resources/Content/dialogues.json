@@ -383,16 +383,32 @@
   },
   {
     "Id": "greenvalley_party_talk",
-    "Title": "Three times the quota",
+    "Title": "A lantern that should be dead",
     "Trigger": { "Kind": "ThemeStart", "Id": "greenvalley" },
     "Conditions": [ { "Type": "NpcJoined", "Id": "merchant" } ],
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "merchant" }
+      {
+        "Id": "b", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "beside", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "asking", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "beside", "Speaker": "trusted" },
+      { "Id": "asking", "Speaker": "trusted" }
     ]
   },
   {
@@ -667,15 +683,31 @@
   },
   {
     "Id": "lanternroad_party_talk",
-    "Title": "Lanterns on the stairs",
+    "Title": "One moon on the wall",
     "Trigger": { "Kind": "ThemeStart", "Id": "lanternroad" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "merchant", "Name": "Lantern Merchant", "Portrait": "courier" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "merchant" }
+      {
+        "Id": "b", "Speaker": "merchant",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "walk", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "tell", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "walk", "Speaker": "trusted" },
+      { "Id": "tell", "Speaker": "trusted" }
     ]
   },
   {
@@ -684,11 +716,27 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "desert" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "alchemist", "Name": "Alchemist", "Portrait": "alchemist" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "alchemist" }
+      {
+        "Id": "b", "Speaker": "alchemist",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "close", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "near", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "close", "Speaker": "trusted" },
+      { "Id": "near", "Speaker": "trusted" }
     ]
   },
   {
@@ -758,11 +806,27 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "cave" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "smith", "Name": "Blacksmith", "Portrait": "tinkerer" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "smith" }
+      {
+        "Id": "b", "Speaker": "smith",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "hold", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "glad", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "hold", "Speaker": "trusted" },
+      { "Id": "glad", "Speaker": "trusted" }
     ]
   },
   {
@@ -771,13 +835,29 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "still" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
       { "Id": "b", "Speaker": "enchantress", "Next": "c" },
       { "Id": "c", "Speaker": "commander", "Next": "d" },
-      { "Id": "d", "Speaker": "enchantress" }
+      {
+        "Id": "d", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "spend", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "carry", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "spend", "Speaker": "trusted" },
+      { "Id": "carry", "Speaker": "trusted" }
     ]
   },
   {
@@ -843,15 +923,31 @@
   },
   {
     "Id": "cityruins_party_talk",
-    "Title": "Give it back",
+    "Title": "The council in the archive",
     "Trigger": { "Kind": "ThemeStart", "Id": "cityruins" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "innkeeper", "Name": "Innkeeper", "Portrait": "pandagirl" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "innkeeper" }
+      {
+        "Id": "b", "Speaker": "innkeeper",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "stop", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "thank", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "stop", "Speaker": "trusted" },
+      { "Id": "thank", "Speaker": "trusted" }
     ]
   },
   {
@@ -860,11 +956,27 @@
     "Trigger": { "Kind": "ThemeStart", "Id": "cathedral" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "enchantress" }
+      {
+        "Id": "b", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "voice", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "trusted" },
+      { "Id": "voice", "Speaker": "trusted" }
     ]
   },
   {
@@ -982,15 +1094,31 @@
   },
   {
     "Id": "swamp_party_talk",
-    "Title": "The ships' logs",
+    "Title": "The manifest",
     "Trigger": { "Kind": "ThemeStart", "Id": "swamp" },
     "Speakers": [
       { "Id": "commander", "Class": "$commander" },
+      { "Id": "trusted", "Class": "$trusted" },
       { "Id": "enchantress", "Name": "Enchantress", "Portrait": "whitewitch" }
     ],
     "Nodes": [
       { "Id": "a", "Speaker": "commander", "Next": "b" },
-      { "Id": "b", "Speaker": "enchantress" }
+      {
+        "Id": "b", "Speaker": "enchantress",
+        "Choices": [
+          { "Next": "speak", "Conditions": [ { "Type": "TrustAtLeast", "Id": "$trusted", "Amount": 25 } ] },
+          {}
+        ]
+      },
+      {
+        "Id": "speak", "Speaker": "trusted",
+        "Choices": [
+          { "Next": "back", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 6 } ] },
+          { "Next": "worth", "Effects": [ { "Type": "AddTrust", "Id": "$trusted", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "back", "Speaker": "trusted" },
+      { "Id": "worth", "Speaker": "trusted" }
     ]
   },
   {

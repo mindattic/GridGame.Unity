@@ -1,0 +1,29 @@
+dialogue swamp_party_talk
+title: The manifest
+trigger: ThemeStart swamp
+speaker commander $commander
+speaker trusted $trusted
+speaker enchantress - name=Enchantress portrait=whitewitch
+
+node a commander
+  That door opened for me when none of you could force it. And I remember names being called for boarding. Mine wasn't one of them.
+  -> b
+
+node b enchantress
+  Halcyon's Arks. The manifest says they sailed the night the city fell, and the tides threw them here. Halcyon tried to run. And a door that knows your hand is news the Choir will hear. They'll hunt you now, not just the wagon.
+  * They'll hunt you too, for riding with me. You can still walk away. -> speak
+    if: TrustAtLeast $trusted 25
+  * Let them hunt. We keep the wagon moving.
+
+node speak trusted
+  Walk away to what? A hold that pays the tithe and waits for the wagons? I followed you before that door ever opened. The Choir caring about it doesn't change much.
+  * It changes one thing. When they come for me, I want you at my back. -> back
+    do: AddTrust $trusted 6
+  * Then stay. I'll try to make it worth the danger. -> worth
+    do: AddTrust $trusted 3
+
+node back trusted
+  At your back. That's where I'd have been anyway.
+
+node worth trusted
+  Don't promise that. Just don't make me regret it.

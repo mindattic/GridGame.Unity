@@ -1,0 +1,29 @@
+dialogue lanternroad_party_talk
+title: One moon on the wall
+trigger: ThemeStart lanternroad
+speaker commander $commander
+speaker trusted $trusted
+speaker merchant - name='Lantern Merchant' portrait=courier
+
+node a commander
+  That mural lit when I touched it. One moon, and nothing beside it. I know that sky. I don't know how I know it.
+  -> b
+
+node b merchant
+  The sage on the stair says it's the oldest painting on the road, older than the Choir. Before the Manalith there was only the Moon. The pilgrims light lanterns to keep it asleep. I sell them the oil, and lately I wonder what I'm selling.
+  * You've been staring at that moon longer than I have. What do you see? -> speak
+    if: TrustAtLeast $trusted 25
+  * Keep selling. We'll learn what it buys.
+
+node speak trusted
+  Where I grew up there was a word for the sky before the Manalith. We used it to scare children. If you know that sky, Commander, you've been somewhere none of us can follow. I'd still like to try.
+  * Then don't follow. Walk it with me, and tell me what you see that I don't. -> walk
+    do: AddTrust $trusted 6
+  * Try, then. I'll tell you what I remember as it comes. -> tell
+    do: AddTrust $trusted 4
+
+node walk trusted
+  Two sets of eyes on one sky. All right. I'll start with that moon.
+
+node tell trusted
+  As it comes. I'll be listening, Commander.

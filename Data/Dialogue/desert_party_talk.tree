@@ -1,0 +1,29 @@
+dialogue desert_party_talk
+title: What the shards are
+trigger: ThemeStart desert
+speaker commander $commander
+speaker trusted $trusted
+speaker alchemist - name=Alchemist portrait=alchemist
+
+node a commander
+  Red earth, and horns taller than towers. Did these fall? My hand aches when I go near them.
+  -> b
+
+node b alchemist
+  Some of them are the Manalith's own shell, shed as it comes. The Choir digs it out and the Ember pray for the rest. And that ache is your mana answering. Everyone's runs thin. Yours is whole. I've never seen that.
+  * You've watched my hand all morning. Say it. -> speak
+    if: TrustAtLeast $trusted 25
+  * Whole, and I don't know why. Let's keep moving.
+
+node speak trusted
+  The ache. I've seen people go near a shard and come back thin. You come back steadier. I don't understand it, and I don't need to. I just want to be close when it matters.
+  * Stay close, then. If my hand starts to shake, you'll be the one I tell. -> close
+    do: AddTrust $trusted 6
+  * Stay near. Whatever this is, I'd rather not find out alone. -> near
+    do: AddTrust $trusted 4
+
+node close trusted
+  The one you tell. I'll hold you to that, Commander.
+
+node near trusted
+  Not alone. That's an easy promise to keep.
