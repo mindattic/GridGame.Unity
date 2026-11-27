@@ -1,0 +1,92 @@
+dialogue cohesion_barbarian_cleric
+title: Clean wraps
+trigger: Cohesion barbarian cleric level=2
+once
+speaker commander $commander
+speaker barbarian barbarian
+speaker cleric cleric
+
+node open commander
+  By the wagon wheel the Cleric has a roll of clean bandage out and is holding it toward the Barbarian, who has both fists tucked under both arms like a child hiding sweets.
+  -> wraps
+
+node wraps cleric
+  Your knuckles are split to the bone and you're wrapping them in that. Choir white, off a tithe wagon, that's been on a dozen cuts. Let me do it properly.
+  -> red
+
+node red barbarian
+  The white's mine. I bleed on it on purpose. And you were the one I couldn't tell from the slime, that day the red came up on me. You stood there. Why'd you stand there?
+  -> places
+
+node places cleric
+  Because I've stood closer to worse. I wore that white, Barbarian. Six years at the tables. I don't know if I was ever at Saltmoss. I never learned the places. Only the people.
+  * The Cleric walked away from the tables. That's the side that counts. -> vouched
+    do: AddCohesion barbarian cleric 10
+    do: AddTrust barbarian -3
+    do: SetFlag barbarian_cleric:tables_vouched
+  * Neither of you put anyone in that chair. The Choir did. -> shared
+    do: AddCohesion barbarian cleric 6
+    do: SetFlag barbarian_cleric:tables_shared
+  * That's between the two of you. I won't take a side on it. -> apart
+    do: AddCohesion barbarian cleric -4
+    do: AddTrust cleric 2
+    do: SetFlag barbarian_cleric:tables_apart
+  * When the red comes, I shout Saltmoss. Let the Cleric shout it too. -> word
+    if: FlagSet barbarian:rage_word
+    do: AddCohesion barbarian cleric 10
+    do: SetFlag barbarian_cleric:tables_word
+
+node vouched barbarian
+  Easy for you to say, Commander. You weren't sat by the door all winter. But aye. Walked away. That's more than the collector at our well ever did.
+  -> book
+
+node shared barbarian
+  The Choir. Aye. It's a big word to hate. Easier to hate one face. I'll try the big word for a while.
+  -> book
+
+node apart barbarian
+  Fine. We'll sort it ourselves, then. We usually do.
+  -> book
+
+node word barbarian
+  Saltmoss, from a healer's mouth. Huh. If you shout it, I'll know it's meant. Nobody shouts that word by accident.
+  -> book
+
+node book cleric
+  I keep a book of names. If there's anyone from Saltmoss in it, I'd like you to know who. If there isn't, I'd like to write someone down. You choose who.
+  * Look through it together, both of you, by the same lamp. -> together
+    do: AddCohesion barbarian cleric 8
+    do: AddTrust cleric -2
+    do: SetFlag barbarian_cleric:book_together
+  * Ash. Write Ash in it, as a living name and not a lost one. -> ash
+    if: FlagSet barbarian:thread_him
+    do: AddCohesion barbarian cleric 10
+    do: AddTrust barbarian 3
+    do: SetFlag barbarian_cleric:book_ash
+  * Tell the Barbarian about Wren. -> wren
+    if: FlagSet cleric:thread_girl
+    do: AddCohesion barbarian cleric 8
+    do: SetFlag barbarian_cleric:book_wren
+  * Some books are better left shut tonight. -> shut
+    do: AddCohesion barbarian cleric -2
+    do: AddTrust barbarian 2
+    do: SetFlag barbarian_cleric:book_shut
+
+node together barbarian
+  Same lamp. Go on, then. Read me the names slow. I'm not much for reading, but I'll know a Saltmoss name when I hear one.
+  -> close
+
+node ash barbarian
+  Living. Aye. Write it big. A-S-H. Not in the back with the lost ones. Up front, where you'd put someone you were going to see again.
+  -> close
+
+node wren barbarian
+  Twelve, and she asked if the colour went somewhere nice. Moors take it. Give me the bandage, Cleric. I'll wear it under the white, if that's how you want it.
+  -> close
+
+node shut barbarian
+  Shut's fine. I've no head for names tonight. My hands, though. You can have my hands.
+  -> close
+
+node close commander
+  The Barbarian holds out both fists. The Cleric wraps them in clean linen, then winds the white cloth back over the top, turn by turn, and ties it off with steady fingers.

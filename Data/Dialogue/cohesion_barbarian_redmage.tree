@@ -1,0 +1,97 @@
+dialogue cohesion_barbarian_redmage
+title: Two fires
+trigger: Cohesion barbarian redmage level=2
+once
+speaker commander $commander
+speaker barbarian barbarian
+speaker redmage redmage
+
+node open commander
+  The Red Mage sits on the upturned crate with the dented tin open. The Barbarian has dragged a log over to the same patch of dark and is watching the coal as if it might bite.
+  -> ask
+
+node ask barbarian
+  Every night, that tin. I've watched it since the fen. Let me hold it.
+  -> no
+
+node no redmage
+  No. Nobody holds it. It came out of my aunt's hearth the morning of her tithe, and it's been in my hands or my coat for nine years. That's the arrangement.
+  -> grey
+
+node grey barbarian
+  Tithe. Aye. Mine was my brother. Came home grey and sat by a door all winter. You carry a fire that won't go out. I carry one I'd put out tomorrow if I knew how.
+  -> fool
+
+node fool redmage
+  And I'd walk into the sea before I let mine go out. So which of us is the fool, Commander? The one who keeps it burning, or the one who wants it gone?
+  * Neither. You both kept something the Choir couldn't take. -> kept
+    do: AddCohesion barbarian redmage 10
+    do: SetFlag barbarian_redmage:fire_kept
+  * Let the Barbarian hold the tin, just for tonight. -> hold
+    do: AddCohesion barbarian redmage 10
+    do: AddTrust redmage -3
+    do: SetFlag barbarian_redmage:fire_held
+  * The Barbarian's right. A fire with no use is a risk to the wagons. -> risk
+    do: AddCohesion barbarian redmage -4
+    do: AddTrust redmage -2
+    do: SetFlag barbarian_redmage:fire_risk
+  * I said the coal was what the tithe couldn't take. The red is the same thing, burning the other way. -> honoured
+    if: FlagSet redmage:coal_honoured
+    do: AddCohesion barbarian redmage 8
+    do: AddTrust redmage 2
+    do: SetFlag barbarian_redmage:fire_honoured
+
+node kept redmage
+  Kept. Hm. I've never thought of a temper as a keepsake. You'd be a very bad tin, Barbarian.
+  -> brother
+
+node hold redmage
+  Tonight. Fine. Two hands, and level, and if you sneeze I'll set your eyebrows alight. There. It's lighter than you thought, isn't it?
+  -> brother
+
+node risk redmage
+  A risk. Everything worth carrying is. I'll keep the lid lower, Commander, the way I always do when someone tells me that.
+  -> brother
+
+node honoured redmage
+  Burning the other way. Outward instead of in. That's exactly it. My hands got the burns. Yours went out to a collector's arm.
+  -> brother
+
+node brother barbarian
+  That orb of the Commander's wakes up near dead things. You've been eyeing it. If fire near the Commander can reach a Hollow, could it reach a grey one? Could it reach him?
+  * We said we'd try on a Hollow, together. Saltmoss is where we try first. -> saltmoss
+    if: FlagSet redmage:test_promised
+    do: AddCohesion barbarian redmage 10
+    do: AddTrust barbarian 3
+    do: SetFlag barbarian_redmage:try_saltmoss
+  * Teach the Barbarian to bank the coal. Two keepers are better than one. -> keepers
+    do: AddCohesion barbarian redmage 8
+    do: SetFlag barbarian_redmage:try_keepers
+  * No promises tonight. Neither of you burns yourself for a guess. -> guess
+    do: AddCohesion barbarian redmage 4
+    do: AddTrust redmage -2
+    do: SetFlag barbarian_redmage:try_guess
+  * Your brother's still alive in Saltmoss. That's a road, and we'll walk it. -> road
+    if: FlagSet barbarian:tithe_home
+    do: AddCohesion barbarian redmage 6
+    do: AddTrust barbarian 2
+    do: SetFlag barbarian_redmage:try_road
+
+node saltmoss redmage
+  Saltmoss first. Then my aunt's kitchen. I'll hold the coal, you hold the door, and the Commander does whatever it is the Commander does. That's a plan, Barbarian. I like a plan.
+  -> close
+
+node keepers barbarian
+  Me? I'd smother it. Show me anyway. Peat and a breath, aye? Slow. Slower than that. I'm not good at slow.
+  -> close
+
+node guess barbarian
+  Guesses are all I've had for years. Fine. No burning. But I'm asking again, Commander, when there's more than a guess.
+  -> close
+
+node road redmage
+  A road. Then I'll carry the coal along it. A cold house is a cold house, wherever it is. Mine or yours.
+  -> close
+
+node close commander
+  The lid clicks half shut. For a while two faces sit in the small red glow through the dent, saying nothing, and neither one moves to leave.

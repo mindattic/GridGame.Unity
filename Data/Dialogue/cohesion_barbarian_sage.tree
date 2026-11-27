@@ -1,0 +1,95 @@
+dialogue cohesion_barbarian_sage
+title: A knot for the living
+trigger: Cohesion barbarian sage level=2
+once
+speaker commander $commander
+speaker barbarian barbarian
+speaker sage sage
+
+node open commander
+  The Sage is smearing salve into the Barbarian's split knuckles by lantern light. The knotted cord hangs from the Sage's wrist, and the Barbarian keeps glancing at it.
+  -> cord
+
+node cord barbarian
+  That string of yours. The Cleric says every knot's a dead pilgrim. Is there one in there for me yet?
+  -> wick
+
+node wick sage
+  Not dead. Lost. There's a difference on the Lantern Road. And no, not for you. The first one is Wick's. My apprentice. Wick's colour went thin, and Wick climbed the stair alone to fix it.
+  -> carried
+
+node carried barbarian
+  Alone? Nobody stopped them? I'd have carried Wick down that stair over one shoulder, kicking.
+  -> promise
+
+node promise sage
+  You'd have tried. So would I, if I'd been sure in time. Is that a promise anyone gets to make, Commander? Carrying people down?
+  * I made it already. The Barbarian just said it louder. -> shared
+    if: FlagSet sage:wick_promised
+    do: AddCohesion barbarian sage 10
+    do: SetFlag barbarian_sage:stair_shared
+  * Nobody climbs alone. Let the Barbarian carry it with you. -> climbs
+    do: AddCohesion barbarian sage 10
+    do: AddTrust sage -2
+    do: SetFlag barbarian_sage:stair_climbs
+  * Promises don't bring anyone down the stair. Plans do. -> plans
+    do: AddCohesion barbarian sage -4
+    do: AddTrust barbarian -3
+    do: SetFlag barbarian_sage:stair_plans
+  * Wick is the Sage's to carry, not the Barbarian's. -> own
+    do: AddCohesion barbarian sage -2
+    do: AddTrust sage 2
+    do: SetFlag barbarian_sage:stair_own
+
+node shared sage
+  Louder, yes. The Commander says it quietly and I half believe it. You say it like a door being kicked in and I believe all of it.
+  -> cloth
+
+node climbs sage
+  Carry it with me. I've had this cord to myself for a long time. I'm not sure I know how to hand any of it over. Hold this end, then. Just hold it.
+  -> cloth
+
+node plans barbarian
+  Plans. Fine. Make a plan, Commander, and put me at the top of the stair in it. That's my promise, then, written as a plan.
+  -> cloth
+
+node own barbarian
+  The Sage's to carry. Fine. But if I see anyone going up that stair alone again, I'm not asking whose they are.
+  -> cloth
+
+node cloth barbarian
+  Here. The white off the tithe wagon. Tie a knot in it. For me. If I don't come down, you'll have something to carry back.
+  * Tie it loose, the way you tied ours. A loose knot comes undone on the way down. -> loose
+    if: FlagSet sage:cord_tied
+    do: AddCohesion barbarian sage 8
+    do: SetFlag barbarian_sage:cloth_loose
+  * No knot. The end stays clean. We're all coming down. -> clean
+    if: FlagSet sage:cord_down
+    do: AddCohesion barbarian sage 10
+    do: SetFlag barbarian_sage:cloth_clean
+  * One knot in the cloth, one in the cord. Each of you carries the other. -> traded
+    do: AddCohesion barbarian sage 10
+    do: AddTrust sage -3
+    do: SetFlag barbarian_sage:cloth_traded
+  * Nobody ties knots for the living tonight. Put it away. -> none
+    do: AddCohesion barbarian sage -4
+    do: SetFlag barbarian_sage:cloth_none
+
+node loose sage
+  Loose. There. A thumb could pull it. Make sure it's yours that does, Barbarian, at the bottom of the stair.
+  -> close
+
+node clean sage
+  The end stays clean. I said I'd hold the Commander to that. I'll hold you to it too. Wrap your hand back up.
+  -> close
+
+node traded sage
+  A knot for the living. The road would call that bad luck. The road has had a lot of bad luck lately anyway. Hold still.
+  -> close
+
+node none barbarian
+  Away it goes, then. Back on the hand that swings. That's where it does most good.
+  -> close
+
+node close commander
+  The Sage ties off the salve wrap. The Barbarian flexes the hand, looks at the cord on the Sage's wrist a moment longer, and goes back to the fire without a word, which from the Barbarian is a great deal.

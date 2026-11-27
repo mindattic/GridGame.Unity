@@ -1,0 +1,90 @@
+dialogue cohesion_barbarian_engineer
+title: Hit it there
+trigger: Cohesion barbarian engineer level=2
+once
+speaker commander $commander
+speaker barbarian barbarian
+speaker engineer engineer
+
+node open commander
+  The Engineer has a smashed Halcyon housing in pieces on a cloth, fitting the shards together. The Barbarian, who smashed it, is eating a cold potato and pretending not to watch.
+  -> whole
+
+node whole engineer
+  This was a seal housing. Halcyon. Older than the Choir, possibly older than the road. I had seven questions for it. Now I've got a puzzle with no corners.
+  -> shooting
+
+node shooting barbarian
+  It was shooting at the Cleric. Things that shoot at the Cleric get hit. That's my whole list of questions.
+  -> there
+
+node there engineer
+  I'm not saying don't hit it. I'm saying hit it there, on the collar, not in the middle where the good parts are. Is that so much to ask?
+  * The Engineer calls the spot, the Barbarian hits it. That's a plan. -> called
+    do: AddCohesion barbarian engineer 10
+    do: SetFlag barbarian_engineer:fight_called
+  * In a fight, the Barbarian doesn't stop to take notes. Neither should you. -> notes
+    do: AddCohesion barbarian engineer -4
+    do: AddTrust engineer -3
+    do: SetFlag barbarian_engineer:fight_notes
+  * Argue this before the fight, both of you, not after. -> before
+    do: AddCohesion barbarian engineer 6
+    do: SetFlag barbarian_engineer:fight_before
+  * Learn the word. Saltmoss. If the red's up and you need a spot hit, shout that first. -> word
+    if: FlagSet barbarian:rage_word
+    do: AddCohesion barbarian engineer 10
+    do: AddTrust barbarian 2
+    do: SetFlag barbarian_engineer:fight_word
+
+node called barbarian
+  You shout, I swing. Aye. Shout loud. And don't shout "collar". I don't know which end's the collar.
+  -> redline
+
+node notes engineer
+  Notes are how I keep the lights on, Commander. Fine. I'll take them after. From the bits.
+  -> redline
+
+node before barbarian
+  Before. Over supper. With drawings, I suppose. Go on, then. Draw me a collar.
+  -> redline
+
+node word engineer
+  Saltmoss, then "collar". I'm writing that down. Page forty. You're on page forty now, Barbarian, with the good questions.
+  -> redline
+
+node redline barbarian
+  Somebody back home wants you square, I hear. When we get near your old city, I stand behind you. Close enough to be seen.
+  * We said the crew pays the debt together. The Barbarian's crew. -> together
+    if: FlagSet engineer:debt_shared
+    do: AddCohesion barbarian engineer 10
+    do: SetFlag barbarian_engineer:redline_together
+  * Redline gets nothing. Let them see the Barbarian and do the sum. -> stare
+    if: FlagSet engineer:debt_defied
+    do: AddCohesion barbarian engineer 8
+    do: SetFlag barbarian_engineer:redline_stare
+  * No fists in the Underspire. That's an order. -> order
+    do: AddCohesion barbarian engineer 4
+    do: AddTrust barbarian -3
+    do: SetFlag barbarian_engineer:redline_order
+  * Behind, then. Not in front. It's the Engineer's debt to close. -> behind
+    do: AddCohesion barbarian engineer 6
+    do: SetFlag barbarian_engineer:redline_behind
+
+node together engineer
+  Together. Redline sends letters on red wire and counts in fish. I'd like to see the sum when a whole crew walks in, and this one at the back.
+  -> close
+
+node stare engineer
+  Do the sum. Ha. Redline's good at sums. They'll get to the Barbarian and stop counting.
+  -> close
+
+node order barbarian
+  No fists. I heard. I'll stand there with my hands in my pockets and look at them, then. Nobody ever ordered me not to look.
+  -> close
+
+node behind engineer
+  My debt to close. Yes. But it's a lot easier to close with somebody standing where they can see you. Thank you, Barbarian.
+  -> close
+
+node close commander
+  The Engineer pushes a shard across the cloth. The Barbarian picks it up, turns it the wrong way, then the right way, and it fits.

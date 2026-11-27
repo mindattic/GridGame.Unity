@@ -1305,6 +1305,768 @@
         ]
       }
     },
+    "dialogue:cohesion_barbarian_cleric": {
+      "key": "dialogue:cohesion_barbarian_cleric",
+      "id": "conversation-cohesion-barbarian-cleric",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:66b0bccaeb9d82e04e0a3a8d8f6b9d3f05887aaeb16faff3cd5c5be3338cb786",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-cleric"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-cleric",
+        "class-barbarian"
+      ],
+      "payload": {
+        "title": "Clean wraps",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "By the wagon wheel the Cleric has a roll of clean bandage out and is holding it toward the Barbarian, who has both fists tucked under both arms like a child hiding sweets.",
+            "next": "wraps"
+          },
+          {
+            "id": "wraps",
+            "speaker": "class-cleric",
+            "line": "Your knuckles are split to the bone and you're wrapping them in that. Choir white, off a tithe wagon, that's been on a dozen cuts. Let me do it properly.",
+            "next": "red"
+          },
+          {
+            "id": "red",
+            "speaker": "class-barbarian",
+            "line": "The white's mine. I bleed on it on purpose. And you were the one I couldn't tell from the slime, that day the red came up on me. You stood there. Why'd you stand there?",
+            "next": "places"
+          },
+          {
+            "id": "places",
+            "speaker": "class-cleric",
+            "line": "Because I've stood closer to worse. I wore that white, Barbarian. Six years at the tables. I don't know if I was ever at Saltmoss. I never learned the places. Only the people.",
+            "choices": [
+              {
+                "text": "The Cleric walked away from the tables. That's the side that counts.",
+                "next": "vouched"
+              },
+              {
+                "text": "Neither of you put anyone in that chair. The Choir did.",
+                "next": "shared"
+              },
+              {
+                "text": "That's between the two of you. I won't take a side on it.",
+                "next": "apart"
+              },
+              {
+                "text": "When the red comes, I shout Saltmoss. Let the Cleric shout it too.",
+                "next": "word",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "vouched",
+            "speaker": "class-barbarian",
+            "line": "Easy for you to say, Commander. You weren't sat by the door all winter. But aye. Walked away. That's more than the collector at our well ever did.",
+            "next": "book"
+          },
+          {
+            "id": "shared",
+            "speaker": "class-barbarian",
+            "line": "The Choir. Aye. It's a big word to hate. Easier to hate one face. I'll try the big word for a while.",
+            "next": "book"
+          },
+          {
+            "id": "apart",
+            "speaker": "class-barbarian",
+            "line": "Fine. We'll sort it ourselves, then. We usually do.",
+            "next": "book"
+          },
+          {
+            "id": "word",
+            "speaker": "class-barbarian",
+            "line": "Saltmoss, from a healer's mouth. Huh. If you shout it, I'll know it's meant. Nobody shouts that word by accident.",
+            "next": "book"
+          },
+          {
+            "id": "book",
+            "speaker": "class-cleric",
+            "line": "I keep a book of names. If there's anyone from Saltmoss in it, I'd like you to know who. If there isn't, I'd like to write someone down. You choose who.",
+            "choices": [
+              {
+                "text": "Look through it together, both of you, by the same lamp.",
+                "next": "together"
+              },
+              {
+                "text": "Ash. Write Ash in it, as a living name and not a lost one.",
+                "next": "ash",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Tell the Barbarian about Wren.",
+                "next": "wren",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Some books are better left shut tonight.",
+                "next": "shut"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "class-barbarian",
+            "line": "Same lamp. Go on, then. Read me the names slow. I'm not much for reading, but I'll know a Saltmoss name when I hear one.",
+            "next": "close"
+          },
+          {
+            "id": "ash",
+            "speaker": "class-barbarian",
+            "line": "Living. Aye. Write it big. A-S-H. Not in the back with the lost ones. Up front, where you'd put someone you were going to see again.",
+            "next": "close"
+          },
+          {
+            "id": "wren",
+            "speaker": "class-barbarian",
+            "line": "Twelve, and she asked if the colour went somewhere nice. Moors take it. Give me the bandage, Cleric. I'll wear it under the white, if that's how you want it.",
+            "next": "close"
+          },
+          {
+            "id": "shut",
+            "speaker": "class-barbarian",
+            "line": "Shut's fine. I've no head for names tonight. My hands, though. You can have my hands.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Barbarian holds out both fists. The Cleric wraps them in clean linen, then winds the white cloth back over the top, turn by turn, and ties it off with steady fingers."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_barbarian_engineer": {
+      "key": "dialogue:cohesion_barbarian_engineer",
+      "id": "conversation-cohesion-barbarian-engineer",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:22698966e65c02dfdc5f8b79c49ccc02e3fc782d6090c9af70c9301a87576e1c",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-engineer"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-engineer",
+        "class-barbarian"
+      ],
+      "payload": {
+        "title": "Hit it there",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Engineer has a smashed Halcyon housing in pieces on a cloth, fitting the shards together. The Barbarian, who smashed it, is eating a cold potato and pretending not to watch.",
+            "next": "whole"
+          },
+          {
+            "id": "whole",
+            "speaker": "class-engineer",
+            "line": "This was a seal housing. Halcyon. Older than the Choir, possibly older than the road. I had seven questions for it. Now I've got a puzzle with no corners.",
+            "next": "shooting"
+          },
+          {
+            "id": "shooting",
+            "speaker": "class-barbarian",
+            "line": "It was shooting at the Cleric. Things that shoot at the Cleric get hit. That's my whole list of questions.",
+            "next": "there"
+          },
+          {
+            "id": "there",
+            "speaker": "class-engineer",
+            "line": "I'm not saying don't hit it. I'm saying hit it there, on the collar, not in the middle where the good parts are. Is that so much to ask?",
+            "choices": [
+              {
+                "text": "The Engineer calls the spot, the Barbarian hits it. That's a plan.",
+                "next": "called"
+              },
+              {
+                "text": "In a fight, the Barbarian doesn't stop to take notes. Neither should you.",
+                "next": "notes"
+              },
+              {
+                "text": "Argue this before the fight, both of you, not after.",
+                "next": "before"
+              },
+              {
+                "text": "Learn the word. Saltmoss. If the red's up and you need a spot hit, shout that first.",
+                "next": "word",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "called",
+            "speaker": "class-barbarian",
+            "line": "You shout, I swing. Aye. Shout loud. And don't shout \"collar\". I don't know which end's the collar.",
+            "next": "redline"
+          },
+          {
+            "id": "notes",
+            "speaker": "class-engineer",
+            "line": "Notes are how I keep the lights on, Commander. Fine. I'll take them after. From the bits.",
+            "next": "redline"
+          },
+          {
+            "id": "before",
+            "speaker": "class-barbarian",
+            "line": "Before. Over supper. With drawings, I suppose. Go on, then. Draw me a collar.",
+            "next": "redline"
+          },
+          {
+            "id": "word",
+            "speaker": "class-engineer",
+            "line": "Saltmoss, then \"collar\". I'm writing that down. Page forty. You're on page forty now, Barbarian, with the good questions.",
+            "next": "redline"
+          },
+          {
+            "id": "redline",
+            "speaker": "class-barbarian",
+            "line": "Somebody back home wants you square, I hear. When we get near your old city, I stand behind you. Close enough to be seen.",
+            "choices": [
+              {
+                "text": "We said the crew pays the debt together. The Barbarian's crew.",
+                "next": "together",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Redline gets nothing. Let them see the Barbarian and do the sum.",
+                "next": "stare",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "No fists in the Underspire. That's an order.",
+                "next": "order"
+              },
+              {
+                "text": "Behind, then. Not in front. It's the Engineer's debt to close.",
+                "next": "behind"
+              }
+            ]
+          },
+          {
+            "id": "together",
+            "speaker": "class-engineer",
+            "line": "Together. Redline sends letters on red wire and counts in fish. I'd like to see the sum when a whole crew walks in, and this one at the back.",
+            "next": "close"
+          },
+          {
+            "id": "stare",
+            "speaker": "class-engineer",
+            "line": "Do the sum. Ha. Redline's good at sums. They'll get to the Barbarian and stop counting.",
+            "next": "close"
+          },
+          {
+            "id": "order",
+            "speaker": "class-barbarian",
+            "line": "No fists. I heard. I'll stand there with my hands in my pockets and look at them, then. Nobody ever ordered me not to look.",
+            "next": "close"
+          },
+          {
+            "id": "behind",
+            "speaker": "class-engineer",
+            "line": "My debt to close. Yes. But it's a lot easier to close with somebody standing where they can see you. Thank you, Barbarian.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Engineer pushes a shard across the cloth. The Barbarian picks it up, turns it the wrong way, then the right way, and it fits."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_barbarian_knight": {
+      "key": "dialogue:cohesion_barbarian_knight",
+      "id": "conversation-cohesion-barbarian-knight",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:1fd6c93c7a61a4d75d0ce4a6932fad9512827c9a9309b19feb4e7fcb5b8e48e3",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-knight"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-knight",
+        "class-barbarian"
+      ],
+      "payload": {
+        "title": "First in",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Knight's shield lies face up by the fire with a fresh axe-bite in the rim. The Barbarian put it there, and the Knight has not stopped looking at it.",
+            "next": "bite"
+          },
+          {
+            "id": "bite",
+            "speaker": "class-knight",
+            "line": "You went through my line today. Straight through it. You're meant to be behind the shield, not on the other side of it swinging back.",
+            "next": "behind"
+          },
+          {
+            "id": "behind",
+            "speaker": "class-barbarian",
+            "line": "I've never been behind anyone. Not at home, not on the moors. First in. That's what I'm for.",
+            "next": "stand"
+          },
+          {
+            "id": "stand",
+            "speaker": "class-knight",
+            "line": "First in is what I'm for. Stand before the hold. It's cut in the rim, next to your axe mark. So which of us goes first, Commander? You decide, and we'll both hate it.",
+            "choices": [
+              {
+                "text": "The Knight. The shield's made for it. The Barbarian goes second and hits harder for the wait.",
+                "next": "knight_first"
+              },
+              {
+                "text": "The Barbarian. The Knight covers the flank.",
+                "next": "barbarian_first"
+              },
+              {
+                "text": "Side by side. Shield and axe on the same step.",
+                "next": "side"
+              },
+              {
+                "text": "The oath was to the hold, not the hall. The Barbarian's part of the hold now.",
+                "next": "hold",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "knight_first",
+            "speaker": "class-barbarian",
+            "line": "Second. Fine. But if I see the shield go down, I'm not waiting for permission.",
+            "next": "captain"
+          },
+          {
+            "id": "barbarian_first",
+            "speaker": "class-knight",
+            "line": "The flank. Fine. It's a good flank. I'll keep it, and I'll keep my opinions about it, too.",
+            "next": "captain"
+          },
+          {
+            "id": "side",
+            "speaker": "class-knight",
+            "line": "Same step. That's not in any drill I ever learned. We'll practise it. You'll keep time badly.",
+            "next": "captain"
+          },
+          {
+            "id": "hold",
+            "speaker": "class-knight",
+            "line": "Part of the hold. The well children would have run from you. Then they'd have followed you everywhere. All right. Before the hold means before you too.",
+            "next": "captain"
+          },
+          {
+            "id": "captain",
+            "speaker": "class-barbarian",
+            "line": "Your Captain sold your hold to the beam. My collector laughed at the well. If we ever get there and that Captain's in the hall, what then?",
+            "choices": [
+              {
+                "text": "We go to the Knight's sister first. Both of you at her door.",
+                "next": "sister",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Neither of you swings at the Captain without my word.",
+                "next": "word"
+              },
+              {
+                "text": "Then the Captain sees both of you coming, and does the sum.",
+                "next": "both"
+              },
+              {
+                "text": "Stand beside the ones who stand. You cut it yourself. That's the Barbarian.",
+                "next": "beside",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "sister",
+            "speaker": "class-knight",
+            "line": "My sister will take one look at you and hand you a bucket. That's how she says welcome. Carry it up from the well, and she'll never forget your name.",
+            "next": "close"
+          },
+          {
+            "id": "word",
+            "speaker": "class-barbarian",
+            "line": "Your word. Aye. Say it quick when the time comes, Commander. I'll be counting.",
+            "next": "close"
+          },
+          {
+            "id": "both",
+            "speaker": "class-knight",
+            "line": "Both of us. Shield in front, axe a step behind and to the left. The Captain never could count past two.",
+            "next": "close"
+          },
+          {
+            "id": "beside",
+            "speaker": "class-knight",
+            "line": "Beside. I did cut that. I didn't know I meant you. Hand me the whetstone, Barbarian. I'm not taking your mark out. I'm smoothing it, so it stays.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Knight works the whetstone round the axe-bite. The Barbarian holds the shield steady on both knees, and neither of them suggests changing places."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_barbarian_redmage": {
+      "key": "dialogue:cohesion_barbarian_redmage",
+      "id": "conversation-cohesion-barbarian-redmage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5a6e1b04f3ae4cd8c8bff0328638ddc013ef449543bf01e3f95fa959811c866c",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-redmage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-barbarian",
+        "class-redmage"
+      ],
+      "payload": {
+        "title": "Two fires",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Red Mage sits on the upturned crate with the dented tin open. The Barbarian has dragged a log over to the same patch of dark and is watching the coal as if it might bite.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "class-barbarian",
+            "line": "Every night, that tin. I've watched it since the fen. Let me hold it.",
+            "next": "no"
+          },
+          {
+            "id": "no",
+            "speaker": "class-redmage",
+            "line": "No. Nobody holds it. It came out of my aunt's hearth the morning of her tithe, and it's been in my hands or my coat for nine years. That's the arrangement.",
+            "next": "grey"
+          },
+          {
+            "id": "grey",
+            "speaker": "class-barbarian",
+            "line": "Tithe. Aye. Mine was my brother. Came home grey and sat by a door all winter. You carry a fire that won't go out. I carry one I'd put out tomorrow if I knew how.",
+            "next": "fool"
+          },
+          {
+            "id": "fool",
+            "speaker": "class-redmage",
+            "line": "And I'd walk into the sea before I let mine go out. So which of us is the fool, Commander? The one who keeps it burning, or the one who wants it gone?",
+            "choices": [
+              {
+                "text": "Neither. You both kept something the Choir couldn't take.",
+                "next": "kept"
+              },
+              {
+                "text": "Let the Barbarian hold the tin, just for tonight.",
+                "next": "hold"
+              },
+              {
+                "text": "The Barbarian's right. A fire with no use is a risk to the wagons.",
+                "next": "risk"
+              },
+              {
+                "text": "I said the coal was what the tithe couldn't take. The red is the same thing, burning the other way.",
+                "next": "honoured",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "kept",
+            "speaker": "class-redmage",
+            "line": "Kept. Hm. I've never thought of a temper as a keepsake. You'd be a very bad tin, Barbarian.",
+            "next": "brother"
+          },
+          {
+            "id": "hold",
+            "speaker": "class-redmage",
+            "line": "Tonight. Fine. Two hands, and level, and if you sneeze I'll set your eyebrows alight. There. It's lighter than you thought, isn't it?",
+            "next": "brother"
+          },
+          {
+            "id": "risk",
+            "speaker": "class-redmage",
+            "line": "A risk. Everything worth carrying is. I'll keep the lid lower, Commander, the way I always do when someone tells me that.",
+            "next": "brother"
+          },
+          {
+            "id": "honoured",
+            "speaker": "class-redmage",
+            "line": "Burning the other way. Outward instead of in. That's exactly it. My hands got the burns. Yours went out to a collector's arm.",
+            "next": "brother"
+          },
+          {
+            "id": "brother",
+            "speaker": "class-barbarian",
+            "line": "That orb of the Commander's wakes up near dead things. You've been eyeing it. If fire near the Commander can reach a Hollow, could it reach a grey one? Could it reach him?",
+            "choices": [
+              {
+                "text": "We said we'd try on a Hollow, together. Saltmoss is where we try first.",
+                "next": "saltmoss",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Teach the Barbarian to bank the coal. Two keepers are better than one.",
+                "next": "keepers"
+              },
+              {
+                "text": "No promises tonight. Neither of you burns yourself for a guess.",
+                "next": "guess"
+              },
+              {
+                "text": "Your brother's still alive in Saltmoss. That's a road, and we'll walk it.",
+                "next": "road",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "saltmoss",
+            "speaker": "class-redmage",
+            "line": "Saltmoss first. Then my aunt's kitchen. I'll hold the coal, you hold the door, and the Commander does whatever it is the Commander does. That's a plan, Barbarian. I like a plan.",
+            "next": "close"
+          },
+          {
+            "id": "keepers",
+            "speaker": "class-barbarian",
+            "line": "Me? I'd smother it. Show me anyway. Peat and a breath, aye? Slow. Slower than that. I'm not good at slow.",
+            "next": "close"
+          },
+          {
+            "id": "guess",
+            "speaker": "class-barbarian",
+            "line": "Guesses are all I've had for years. Fine. No burning. But I'm asking again, Commander, when there's more than a guess.",
+            "next": "close"
+          },
+          {
+            "id": "road",
+            "speaker": "class-redmage",
+            "line": "A road. Then I'll carry the coal along it. A cold house is a cold house, wherever it is. Mine or yours.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The lid clicks half shut. For a while two faces sit in the small red glow through the dent, saying nothing, and neither one moves to leave."
+          }
+        ]
+      }
+    },
+    "dialogue:cohesion_barbarian_sage": {
+      "key": "dialogue:cohesion_barbarian_sage",
+      "id": "conversation-cohesion-barbarian-sage",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:684f121b02c2731e91f10959ca2dcbfe06cfb751dbc5530b96ff39752ee61054",
+      "about": [
+        "character-commander",
+        "class-barbarian",
+        "class-sage"
+      ],
+      "speakers": [
+        "character-commander",
+        "class-barbarian",
+        "class-sage"
+      ],
+      "payload": {
+        "title": "A knot for the living",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Sage is smearing salve into the Barbarian's split knuckles by lantern light. The knotted cord hangs from the Sage's wrist, and the Barbarian keeps glancing at it.",
+            "next": "cord"
+          },
+          {
+            "id": "cord",
+            "speaker": "class-barbarian",
+            "line": "That string of yours. The Cleric says every knot's a dead pilgrim. Is there one in there for me yet?",
+            "next": "wick"
+          },
+          {
+            "id": "wick",
+            "speaker": "class-sage",
+            "line": "Not dead. Lost. There's a difference on the Lantern Road. And no, not for you. The first one is Wick's. My apprentice. Wick's colour went thin, and Wick climbed the stair alone to fix it.",
+            "next": "carried"
+          },
+          {
+            "id": "carried",
+            "speaker": "class-barbarian",
+            "line": "Alone? Nobody stopped them? I'd have carried Wick down that stair over one shoulder, kicking.",
+            "next": "promise"
+          },
+          {
+            "id": "promise",
+            "speaker": "class-sage",
+            "line": "You'd have tried. So would I, if I'd been sure in time. Is that a promise anyone gets to make, Commander? Carrying people down?",
+            "choices": [
+              {
+                "text": "I made it already. The Barbarian just said it louder.",
+                "next": "shared",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Nobody climbs alone. Let the Barbarian carry it with you.",
+                "next": "climbs"
+              },
+              {
+                "text": "Promises don't bring anyone down the stair. Plans do.",
+                "next": "plans"
+              },
+              {
+                "text": "Wick is the Sage's to carry, not the Barbarian's.",
+                "next": "own"
+              }
+            ]
+          },
+          {
+            "id": "shared",
+            "speaker": "class-sage",
+            "line": "Louder, yes. The Commander says it quietly and I half believe it. You say it like a door being kicked in and I believe all of it.",
+            "next": "cloth"
+          },
+          {
+            "id": "climbs",
+            "speaker": "class-sage",
+            "line": "Carry it with me. I've had this cord to myself for a long time. I'm not sure I know how to hand any of it over. Hold this end, then. Just hold it.",
+            "next": "cloth"
+          },
+          {
+            "id": "plans",
+            "speaker": "class-barbarian",
+            "line": "Plans. Fine. Make a plan, Commander, and put me at the top of the stair in it. That's my promise, then, written as a plan.",
+            "next": "cloth"
+          },
+          {
+            "id": "own",
+            "speaker": "class-barbarian",
+            "line": "The Sage's to carry. Fine. But if I see anyone going up that stair alone again, I'm not asking whose they are.",
+            "next": "cloth"
+          },
+          {
+            "id": "cloth",
+            "speaker": "class-barbarian",
+            "line": "Here. The white off the tithe wagon. Tie a knot in it. For me. If I don't come down, you'll have something to carry back.",
+            "choices": [
+              {
+                "text": "Tie it loose, the way you tied ours. A loose knot comes undone on the way down.",
+                "next": "loose",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "No knot. The end stays clean. We're all coming down.",
+                "next": "clean",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "One knot in the cloth, one in the cord. Each of you carries the other.",
+                "next": "traded"
+              },
+              {
+                "text": "Nobody ties knots for the living tonight. Put it away.",
+                "next": "none"
+              }
+            ]
+          },
+          {
+            "id": "loose",
+            "speaker": "class-sage",
+            "line": "Loose. There. A thumb could pull it. Make sure it's yours that does, Barbarian, at the bottom of the stair.",
+            "next": "close"
+          },
+          {
+            "id": "clean",
+            "speaker": "class-sage",
+            "line": "The end stays clean. I said I'd hold the Commander to that. I'll hold you to it too. Wrap your hand back up.",
+            "next": "close"
+          },
+          {
+            "id": "traded",
+            "speaker": "class-sage",
+            "line": "A knot for the living. The road would call that bad luck. The road has had a lot of bad luck lately anyway. Hold still.",
+            "next": "close"
+          },
+          {
+            "id": "none",
+            "speaker": "class-barbarian",
+            "line": "Away it goes, then. Back on the hand that swings. That's where it does most good.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Sage ties off the salve wrap. The Barbarian flexes the hand, looks at the cord on the Sage's wrist a moment longer, and goes back to the fire without a word, which from the Barbarian is a great deal."
+          }
+        ]
+      }
+    },
     "dialogue:desert2_party_talk": {
       "key": "dialogue:desert2_party_talk",
       "id": "conversation-desert2-party-talk",

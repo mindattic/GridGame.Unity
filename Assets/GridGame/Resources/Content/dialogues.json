@@ -4496,5 +4496,222 @@
       { "Id": "wagon", "Speaker": "hero" },
       { "Id": "undone", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "cohesion_barbarian_cleric",
+    "Title": "Clean wraps",
+    "Trigger": { "Kind": "Cohesion", "Id": "barbarian", "Other": "cleric", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "cleric", "Class": "cleric" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "wraps" },
+      { "Id": "wraps", "Speaker": "cleric", "Next": "red" },
+      { "Id": "red", "Speaker": "barbarian", "Next": "places" },
+      {
+        "Id": "places", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "vouched", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 10 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_cleric:tables_vouched" } ] },
+          { "Next": "shared", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian_cleric:tables_shared" } ] },
+          { "Next": "apart", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": -4 }, { "Type": "AddTrust", "Id": "cleric", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_cleric:tables_apart" } ] },
+          { "Next": "word", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_word" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_cleric:tables_word" } ] }
+        ]
+      },
+      { "Id": "vouched", "Speaker": "barbarian", "Next": "book" },
+      { "Id": "shared", "Speaker": "barbarian", "Next": "book" },
+      { "Id": "apart", "Speaker": "barbarian", "Next": "book" },
+      { "Id": "word", "Speaker": "barbarian", "Next": "book" },
+      {
+        "Id": "book", "Speaker": "cleric",
+        "Choices": [
+          { "Next": "together", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 8 }, { "Type": "AddTrust", "Id": "cleric", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian_cleric:book_together" } ] },
+          { "Next": "ash", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:thread_him" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 10 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": 3 }, { "Type": "SetFlag", "Id": "barbarian_cleric:book_ash" } ] },
+          { "Next": "wren", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:thread_girl" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian_cleric:book_wren" } ] },
+          { "Next": "shut", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "cleric", "Amount": -2 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_cleric:book_shut" } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "ash", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "wren", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "shut", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_barbarian_redmage",
+    "Title": "Two fires",
+    "Trigger": { "Kind": "Cohesion", "Id": "barbarian", "Other": "redmage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "redmage", "Class": "redmage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "ask" },
+      { "Id": "ask", "Speaker": "barbarian", "Next": "no" },
+      { "Id": "no", "Speaker": "redmage", "Next": "grey" },
+      { "Id": "grey", "Speaker": "barbarian", "Next": "fool" },
+      {
+        "Id": "fool", "Speaker": "redmage",
+        "Choices": [
+          { "Next": "kept", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_redmage:fire_kept" } ] },
+          { "Next": "hold", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 10 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_redmage:fire_held" } ] },
+          { "Next": "risk", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": -4 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian_redmage:fire_risk" } ] },
+          { "Next": "honoured", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:coal_honoured" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 8 }, { "Type": "AddTrust", "Id": "redmage", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_redmage:fire_honoured" } ] }
+        ]
+      },
+      { "Id": "kept", "Speaker": "redmage", "Next": "brother" },
+      { "Id": "hold", "Speaker": "redmage", "Next": "brother" },
+      { "Id": "risk", "Speaker": "redmage", "Next": "brother" },
+      { "Id": "honoured", "Speaker": "redmage", "Next": "brother" },
+      {
+        "Id": "brother", "Speaker": "barbarian",
+        "Choices": [
+          { "Next": "saltmoss", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 10 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": 3 }, { "Type": "SetFlag", "Id": "barbarian_redmage:try_saltmoss" } ] },
+          { "Next": "keepers", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian_redmage:try_keepers" } ] },
+          { "Next": "guess", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 4 }, { "Type": "AddTrust", "Id": "redmage", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian_redmage:try_guess" } ] },
+          { "Next": "road", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:tithe_home" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "redmage", "Amount": 6 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_redmage:try_road" } ] }
+        ]
+      },
+      { "Id": "saltmoss", "Speaker": "redmage", "Next": "close" },
+      { "Id": "keepers", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "guess", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "road", "Speaker": "redmage", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_barbarian_engineer",
+    "Title": "Hit it there",
+    "Trigger": { "Kind": "Cohesion", "Id": "barbarian", "Other": "engineer", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "engineer", "Class": "engineer" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "whole" },
+      { "Id": "whole", "Speaker": "engineer", "Next": "shooting" },
+      { "Id": "shooting", "Speaker": "barbarian", "Next": "there" },
+      {
+        "Id": "there", "Speaker": "engineer",
+        "Choices": [
+          { "Next": "called", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_engineer:fight_called" } ] },
+          { "Next": "notes", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": -4 }, { "Type": "AddTrust", "Id": "engineer", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_engineer:fight_notes" } ] },
+          { "Next": "before", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian_engineer:fight_before" } ] },
+          { "Next": "word", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_word" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 10 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_engineer:fight_word" } ] }
+        ]
+      },
+      { "Id": "called", "Speaker": "barbarian", "Next": "redline" },
+      { "Id": "notes", "Speaker": "engineer", "Next": "redline" },
+      { "Id": "before", "Speaker": "barbarian", "Next": "redline" },
+      { "Id": "word", "Speaker": "engineer", "Next": "redline" },
+      {
+        "Id": "redline", "Speaker": "barbarian",
+        "Choices": [
+          { "Next": "together", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_shared" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_engineer:redline_together" } ] },
+          { "Next": "stare", "Conditions": [ { "Type": "FlagSet", "Id": "engineer:debt_defied" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian_engineer:redline_stare" } ] },
+          { "Next": "order", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 4 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_engineer:redline_order" } ] },
+          { "Next": "behind", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "engineer", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian_engineer:redline_behind" } ] }
+        ]
+      },
+      { "Id": "together", "Speaker": "engineer", "Next": "close" },
+      { "Id": "stare", "Speaker": "engineer", "Next": "close" },
+      { "Id": "order", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "behind", "Speaker": "engineer", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_barbarian_knight",
+    "Title": "First in",
+    "Trigger": { "Kind": "Cohesion", "Id": "barbarian", "Other": "knight", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "knight", "Class": "knight" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "bite" },
+      { "Id": "bite", "Speaker": "knight", "Next": "behind" },
+      { "Id": "behind", "Speaker": "barbarian", "Next": "stand" },
+      {
+        "Id": "stand", "Speaker": "knight",
+        "Choices": [
+          { "Next": "knight_first", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 6 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_knight:first_knight" } ] },
+          { "Next": "barbarian_first", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 6 }, { "Type": "AddTrust", "Id": "knight", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_knight:first_barbarian" } ] },
+          { "Next": "side", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_knight:first_side" } ] },
+          { "Next": "hold", "Conditions": [ { "Type": "FlagSet", "Id": "knight:oath_people" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_knight:first_hold" } ] }
+        ]
+      },
+      { "Id": "knight_first", "Speaker": "barbarian", "Next": "captain" },
+      { "Id": "barbarian_first", "Speaker": "knight", "Next": "captain" },
+      { "Id": "side", "Speaker": "knight", "Next": "captain" },
+      { "Id": "hold", "Speaker": "knight", "Next": "captain" },
+      {
+        "Id": "captain", "Speaker": "barbarian",
+        "Choices": [
+          { "Next": "sister", "Conditions": [ { "Type": "FlagSet", "Id": "knight:sister_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_knight:captain_sister" } ] },
+          { "Next": "word", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 4 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian_knight:captain_word" } ] },
+          { "Next": "both", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian_knight:captain_both" } ] },
+          { "Next": "beside", "Conditions": [ { "Type": "FlagSet", "Id": "knight:line_beside" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "knight", "Amount": 10 }, { "Type": "AddTrust", "Id": "knight", "Amount": 3 }, { "Type": "SetFlag", "Id": "barbarian_knight:captain_beside" } ] }
+        ]
+      },
+      { "Id": "sister", "Speaker": "knight", "Next": "close" },
+      { "Id": "word", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "both", "Speaker": "knight", "Next": "close" },
+      { "Id": "beside", "Speaker": "knight", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "cohesion_barbarian_sage",
+    "Title": "A knot for the living",
+    "Trigger": { "Kind": "Cohesion", "Id": "barbarian", "Other": "sage", "Level": 2 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "barbarian", "Class": "barbarian" },
+      { "Id": "sage", "Class": "sage" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "cord" },
+      { "Id": "cord", "Speaker": "barbarian", "Next": "wick" },
+      { "Id": "wick", "Speaker": "sage", "Next": "carried" },
+      { "Id": "carried", "Speaker": "barbarian", "Next": "promise" },
+      {
+        "Id": "promise", "Speaker": "sage",
+        "Choices": [
+          { "Next": "shared", "Conditions": [ { "Type": "FlagSet", "Id": "sage:wick_promised" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_sage:stair_shared" } ] },
+          { "Next": "climbs", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian_sage:stair_climbs" } ] },
+          { "Next": "plans", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": -4 }, { "Type": "AddTrust", "Id": "barbarian", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_sage:stair_plans" } ] },
+          { "Next": "own", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": -2 }, { "Type": "AddTrust", "Id": "sage", "Amount": 2 }, { "Type": "SetFlag", "Id": "barbarian_sage:stair_own" } ] }
+        ]
+      },
+      { "Id": "shared", "Speaker": "sage", "Next": "cloth" },
+      { "Id": "climbs", "Speaker": "sage", "Next": "cloth" },
+      { "Id": "plans", "Speaker": "barbarian", "Next": "cloth" },
+      { "Id": "own", "Speaker": "barbarian", "Next": "cloth" },
+      {
+        "Id": "cloth", "Speaker": "barbarian",
+        "Choices": [
+          { "Next": "loose", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_tied" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian_sage:cloth_loose" } ] },
+          { "Next": "clean", "Conditions": [ { "Type": "FlagSet", "Id": "sage:cord_down" } ], "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": 10 }, { "Type": "SetFlag", "Id": "barbarian_sage:cloth_clean" } ] },
+          { "Next": "traded", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": 10 }, { "Type": "AddTrust", "Id": "sage", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian_sage:cloth_traded" } ] },
+          { "Next": "none", "Effects": [ { "Type": "AddCohesion", "Id": "barbarian", "Other": "sage", "Amount": -4 }, { "Type": "SetFlag", "Id": "barbarian_sage:cloth_none" } ] }
+        ]
+      },
+      { "Id": "loose", "Speaker": "sage", "Next": "close" },
+      { "Id": "clean", "Speaker": "sage", "Next": "close" },
+      { "Id": "traded", "Speaker": "sage", "Next": "close" },
+      { "Id": "none", "Speaker": "barbarian", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
   }
 ]

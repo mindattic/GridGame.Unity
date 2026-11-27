@@ -1,0 +1,92 @@
+dialogue cohesion_barbarian_knight
+title: First in
+trigger: Cohesion barbarian knight level=2
+once
+speaker commander $commander
+speaker barbarian barbarian
+speaker knight knight
+
+node open commander
+  The Knight's shield lies face up by the fire with a fresh axe-bite in the rim. The Barbarian put it there, and the Knight has not stopped looking at it.
+  -> bite
+
+node bite knight
+  You went through my line today. Straight through it. You're meant to be behind the shield, not on the other side of it swinging back.
+  -> behind
+
+node behind barbarian
+  I've never been behind anyone. Not at home, not on the moors. First in. That's what I'm for.
+  -> stand
+
+node stand knight
+  First in is what I'm for. Stand before the hold. It's cut in the rim, next to your axe mark. So which of us goes first, Commander? You decide, and we'll both hate it.
+  * The Knight. The shield's made for it. The Barbarian goes second and hits harder for the wait. -> knight_first
+    do: AddCohesion barbarian knight 6
+    do: AddTrust barbarian -3
+    do: SetFlag barbarian_knight:first_knight
+  * The Barbarian. The Knight covers the flank. -> barbarian_first
+    do: AddCohesion barbarian knight 6
+    do: AddTrust knight -3
+    do: SetFlag barbarian_knight:first_barbarian
+  * Side by side. Shield and axe on the same step. -> side
+    do: AddCohesion barbarian knight 10
+    do: SetFlag barbarian_knight:first_side
+  * The oath was to the hold, not the hall. The Barbarian's part of the hold now. -> hold
+    if: FlagSet knight:oath_people
+    do: AddCohesion barbarian knight 10
+    do: AddTrust knight 2
+    do: SetFlag barbarian_knight:first_hold
+
+node knight_first barbarian
+  Second. Fine. But if I see the shield go down, I'm not waiting for permission.
+  -> captain
+
+node barbarian_first knight
+  The flank. Fine. It's a good flank. I'll keep it, and I'll keep my opinions about it, too.
+  -> captain
+
+node side knight
+  Same step. That's not in any drill I ever learned. We'll practise it. You'll keep time badly.
+  -> captain
+
+node hold knight
+  Part of the hold. The well children would have run from you. Then they'd have followed you everywhere. All right. Before the hold means before you too.
+  -> captain
+
+node captain barbarian
+  Your Captain sold your hold to the beam. My collector laughed at the well. If we ever get there and that Captain's in the hall, what then?
+  * We go to the Knight's sister first. Both of you at her door. -> sister
+    if: FlagSet knight:sister_promised
+    do: AddCohesion barbarian knight 10
+    do: SetFlag barbarian_knight:captain_sister
+  * Neither of you swings at the Captain without my word. -> word
+    do: AddCohesion barbarian knight 4
+    do: AddTrust barbarian -2
+    do: SetFlag barbarian_knight:captain_word
+  * Then the Captain sees both of you coming, and does the sum. -> both
+    do: AddCohesion barbarian knight 8
+    do: SetFlag barbarian_knight:captain_both
+  * Stand beside the ones who stand. You cut it yourself. That's the Barbarian. -> beside
+    if: FlagSet knight:line_beside
+    do: AddCohesion barbarian knight 10
+    do: AddTrust knight 3
+    do: SetFlag barbarian_knight:captain_beside
+
+node sister knight
+  My sister will take one look at you and hand you a bucket. That's how she says welcome. Carry it up from the well, and she'll never forget your name.
+  -> close
+
+node word barbarian
+  Your word. Aye. Say it quick when the time comes, Commander. I'll be counting.
+  -> close
+
+node both knight
+  Both of us. Shield in front, axe a step behind and to the left. The Captain never could count past two.
+  -> close
+
+node beside knight
+  Beside. I did cut that. I didn't know I meant you. Hand me the whetstone, Barbarian. I'm not taking your mark out. I'm smoothing it, so it stays.
+  -> close
+
+node close commander
+  The Knight works the whetstone round the axe-bite. The Barbarian holds the shield steady on both knees, and neither of them suggests changing places.
