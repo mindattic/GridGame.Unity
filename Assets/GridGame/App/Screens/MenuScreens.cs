@@ -1296,8 +1296,8 @@ namespace GridGame.App
                 Ui.Card(party, id, def.Name, out var col, "stage-hero-" + id);
                 var meta = Ui.El("row", col);
                 meta.style.alignItems = Align.Center;
-                Ui.RoleBadge(Ui.RoleOf(h, def), meta).style.marginLeft = Space.S0;
-                Ui.Caption($"Lv {u.Level}  HP {hp}/{u.MaxHp}", meta, hp < u.MaxHp ? "warn" : "dim").style.marginLeft = Space.S8;
+                Ui.Margin(Ui.RoleBadge(Ui.RoleOf(h, def), meta), left: Space.S0);
+                Ui.Margin(Ui.Caption($"Lv {u.Level}  HP {hp}/{u.MaxHp}", meta, hp < u.MaxHp ? "warn" : "dim"), left: Space.S8);
             }
             if (S.Party.Count == 0) Ui.Empty("No one is in the party.", party);
             RowIcon.IconButton("Change party", RowKind.Hero, () => App.Router.Push(new PartyScreen()), "btn--small", Ui.Actions(party)).name = "stage-party-change";

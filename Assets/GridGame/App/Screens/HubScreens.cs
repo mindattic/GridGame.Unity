@@ -254,7 +254,7 @@ namespace GridGame.App
             if (!h.Domesticated && Art.HasMaleArt(h.ClassId))
                 RowIcon.IconButton("Change look", RowKind.Hero, () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
             var stats = Ui.El("col grow", top);
-            stats.style.marginLeft = Space.S24; stats.style.flexShrink = 1; stats.style.minWidth = 0;
+            Ui.Margin(stats, left: Space.S24); stats.style.flexShrink = 1; stats.style.minWidth = 0;
             int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
             Ui.RoleBadge(Ui.RoleOf(h, def), stats).style.alignSelf = Align.FlexStart;
             Ui.Para(Ui.RoleBlurb(Ui.RoleOf(h, def)), stats, "dim");
@@ -335,7 +335,8 @@ namespace GridGame.App
             {
                 var a = C.TryAbility(id);
                 if (a == null) continue;
-                var row = Ui.MenuRow(a.Name, a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString(), null, abilitiesBlock, Art.AbilityIcon(a));
+                var row = Ui.MenuRow(a.Name, a.Kind == AbilityKind.Passive ? "Passive" : a.Kind.ToString(), null, abilitiesBlock);
+                row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
                 InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450: tap or hold to read it
             }
 
@@ -615,14 +616,14 @@ namespace GridGame.App
             var barW = Ui.Panel(body, "Battle bar", false, "abilities-bar");
             var bar = Ui.El("row", barW);
             // Edge = row padding + cell margin = gap between cells = 24 (POL-C8 equal gutters; POL-C3 24 px between targets).
-            bar.style.paddingLeft = bar.style.paddingRight = Space.TargetHalfGap;
+            Ui.Pad(bar, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
             for (int i = 0; i < Progression.MaxBarSlots; i++)
             {
                 int idx = i;
                 var cell = Ui.El("col center", bar);
                 // Every bar slot shares the row with even gutters, however many slots or however wide the stage (POL-C8).
                 cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minHeight = Size.Cell; // GG-T1145: min, not fixed: a long name wraps to 3 lines and grows the cell instead of spilling onto the Supporter line
-                cell.style.marginLeft = cell.style.marginRight = Space.TargetHalfGap;
+                Ui.Margin(cell, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
                 cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 14;
                 cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = i == slot ? 6 : 3;
                 var bc = i == slot ? Palette.Gold : Palette.Text.WithA(0.7f);
@@ -632,8 +633,8 @@ namespace GridGame.App
                 var entry = h.Bar[i];
                 var label = EntryName(entry);
                 var icon = EntryIcon(entry);
-                if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); ic.style.marginRight = Space.S0; }
-                else cell.KindIcon(RowKind.Ability).style.marginRight = Space.S0; // GG-T750 (§26.7): an empty slot shows the Ability emblem
+                if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); Ui.Margin(ic, right: Space.S0); }
+                else Ui.Margin(cell.KindIcon(RowKind.Ability), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
                 var t = Ui.Caption(label ?? "Empty", cell, label == null ? "dim" : null);
                 t.style.unityTextAlign = TextAnchor.MiddleCenter; t.style.whiteSpace = WhiteSpace.Normal;
                 t.style.maxWidth = Length.Percent(100); t.style.minWidth = 0; t.style.flexShrink = 1;
@@ -669,7 +670,8 @@ namespace GridGame.App
                     if (a == null || !Abilities.IsHeroUsable(a)) continue;
                     bool shortOrbs = a.Kind == AbilityKind.Spell && a.Cost > ownedOrbs;
                     string value = shortOrbs ? $"{KindLabel(a)} · needs {a.Cost} orbs, you have {ownedOrbs}" : KindLabel(a);
-                    var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, Art.AbilityIcon(a), slot < unlocked);
+                    var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, null, slot < unlocked);
+                    row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
                     if (shortOrbs) row.Q<Label>("value")?.AddToClassList("bad");
                     if (a.Cost > 0) Ui.CostPips(a.Cost, row, have: ownedOrbs);
                     InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)));
@@ -756,7 +758,8 @@ namespace GridGame.App
             foreach (var l in locked)
             {
                 var ab = l.Ability;
-                var row = Ui.MenuRow(ab.Name, l.Kit ? "Own kit" : Abilities.IsHeroUsable(ab) ? KindLabel(ab) : "Passive", null, list, Art.AbilityIcon(ab));
+                var row = Ui.MenuRow(ab.Name, l.Kit ? "Own kit" : Abilities.IsHeroUsable(ab) ? KindLabel(ab) : "Passive", null, list);
+                row.KindIcon(RowKind.Ability, Art.AbilityIcon(ab));
                 row.name = "locked-" + ab.Id;
                 if (l.Kit) row.Q<Label>("value")?.AddToClassList("gold");
                 InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450: a read-only row reads on a tap
@@ -781,7 +784,8 @@ namespace GridGame.App
             {
                 var ab = a;
                 bool active = on.Contains(a.Id);
-                var row = Ui.MenuRow(a.Name, active ? "On" : "Off", () => Done(PassiveLoadout.Toggle(C, h, ab.Id)), list, Art.AbilityIcon(a));
+                var row = Ui.MenuRow(a.Name, active ? "On" : "Off", () => Done(PassiveLoadout.Toggle(C, h, ab.Id)), list);
+                row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
                 row.name = "passive-" + a.Id;
                 row.Q<Label>("value").AddToClassList(active ? "good" : "dim");
                 InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)));
@@ -794,7 +798,8 @@ namespace GridGame.App
                 foreach (var a in innate)
                 {
                     var ab = a;
-                    var row = Ui.MenuRow(a.Name, "Innate", null, list, Art.AbilityIcon(a));
+                    var row = Ui.MenuRow(a.Name, "Innate", null, list);
+                    row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
                     InspectCard.Attach(row, b => InspectCard.Ability(b, ab, wearer: C.TryClass(h.ClassId)), tap: true); // GG-T450
                     Sentence(a, list);
                 }
@@ -825,8 +830,7 @@ namespace GridGame.App
         /// buys the node and slots the skill in one tap (<see cref="Training.Teach"/>).</summary>
         private void GuidedLesson(Training.Plan plan, VisualElement list)
         {
-            var card = Ui.Window(null, list);
-            card.name = "guided-lesson";
+            var card = Ui.Panel(list, null, false, "guided-lesson");
             var head = Ui.El("row", card);
             head.style.alignItems = Align.Center;
             var icon = Art.AbilityIcon(plan.Skill);
@@ -2096,7 +2100,7 @@ namespace GridGame.App
                 var cell = Ui.El("col", faces);
                 cell.style.alignItems = Align.Center;
                 cell.style.flexGrow = 1; cell.style.flexShrink = 0; cell.style.flexBasis = Kit.Avatar;
-                cell.style.marginLeft = cell.style.marginRight = Space.TargetHalfGap;
+                Ui.Margin(cell, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
                 Ui.Thumb(id, cell, Kit.Avatar).style.marginRight = Space.S0;
                 Ui.Caption($"Lv {Progression.Level(h)}", cell);
             }
