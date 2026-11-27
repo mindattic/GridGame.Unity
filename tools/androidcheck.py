@@ -9,7 +9,7 @@ res = []
 def check(n, ok, d=""): res.append(ok); print(("PASS " if ok else "FAIL ") + n + ("" if ok else " — " + d))
 st = h.call("state"); check("app boots to the title on Android", st["screen"] == "title", str(st))
 check("UI tree is laid out at device resolution", h.call("stagebounds")["w"] > 0)
-h.call("clicktext", text="New Game"); time.sleep(2)
+h.call("clicktext", text="Start Campaign"); time.sleep(2)
 h.call("clicktext", text="Slot 1"); time.sleep(3)
 check("touch input reaches the menu (New Game → Slot 1 → camp)", h.call("state")["screen"] == "hub")
 h.call("clicktext", text="Adventure"); time.sleep(2)

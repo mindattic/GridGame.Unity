@@ -106,12 +106,12 @@ def main():
     art = h.launch("uicheck", fresh=True)
 
     with section('Title / save slots'):
-        check("title shows New Game", until(lambda: has_text("New Game")))
+        check("title shows Start Campaign", until(lambda: has_text("Start Campaign")))
         check("title music", h.call("music")["track"] == "teller-of-the-tales-00")
         time.sleep(0.6)  # the title's fade-in swallows a tap sent the moment it mounts
         # A tap sent while the title is still fading in reports it hit the fade (GG-T121): _tap_until repeats
         # only such a failed tap, never the assertion.
-        h._tap_until(lambda: h.call("clicktext", text="New Game"), lambda: until(lambda: has_text("Slot 1"), 1.5), tries=3, wait=0.2)
+        h._tap_until(lambda: h.call("clicktext", text="Start Campaign"), lambda: until(lambda: has_text("Slot 1"), 1.5), tries=3, wait=0.2)
         check("slot screen lists 3 slots", sum(1 for t in texts() if t.startswith("Slot ")) == 3)
         h._tap_until(lambda: h.call("clicktext", text="Slot 1"), lambda: until(lambda: h.call("state")["screen"] == "charselect", 2.0), tries=3, wait=0.2)
         # New Game opens the party pick first (CharacterSelectScreen, since 43fd442); lock in the
@@ -145,8 +145,8 @@ def main():
               and win["h"] < 700, f"{len(cards)} cards, window {win}")
 
         # Overwrite confirm on an occupied slot
-        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("New Game"))
-        h.call("clicktext", text="New Game"); until(lambda: has_text("Slot 1"))
+        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))
+        h.call("clicktext", text="Start Campaign"); until(lambda: has_text("Slot 1"))
         h.call("clicktext", text="Slot 1")
         check("occupied slot asks to overwrite", until(lambda: has_text("Overwrite slot 1?"), 4.0))
         h.call("clicktext", text="Cancel"); time.sleep(0.4)
@@ -509,7 +509,7 @@ def main():
         check("a new profile has no Continue (its slots are its own)", "Continue" not in texts(), str(texts()))
         h.shot("profile-flow-02-title-alpha")
         # New Game in the new profile: every slot is empty; take slot 2.
-        h._tap_until(lambda: h.call("clicktext", text="New Game"), lambda: until(lambda: has_text("Slot 2"), 1.5), tries=3, wait=0.2)
+        h._tap_until(lambda: h.call("clicktext", text="Start Campaign"), lambda: until(lambda: has_text("Slot 2"), 1.5), tries=3, wait=0.2)
         slots = [t for t in texts() if t.startswith("Slot ")]
         check("the new profile's New Game lists three empty slots", len(slots) == 3 and all("Empty" in t for t in slots), str(slots))
         h._tap_until(lambda: h.call("clicktext", text="Slot 2"), lambda: until(lambda: h.call("state")["screen"] == "charselect", 2.0), tries=3, wait=0.2)
@@ -523,14 +523,14 @@ def main():
         alpha_saves = [os.path.join(d, f) for d, _, fs in os.walk(os.path.join(root, "Alpha")) for f in fs if f == "slot2.json"]
         check("the save is written under the new profile's own folder", bool(alpha_saves), root)
         # Continue: back on the Title the new profile now has a Continue that resumes its most recent slot (2).
-        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("New Game"))
+        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))
         time.sleep(0.6)
         h._tap_until(lambda: h.call("clicktext", text="Continue"), lambda: until(lambda: h.call("state")["screen"] == "hub", 3.0), tries=3, wait=0.2)
         st = h.call("state")
         check("Continue resumes the active profile's most recent slot", st.get("screen") == "hub" and st.get("profile") == "Alpha" and st.get("slot") == 1,
               f"screen={st.get('screen')} profile={st.get('profile')} slot={st.get('slot')}")
         # Switch: back to the starting profile through the picker; its own Continue resumes its own slot.
-        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("New Game"))
+        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))
         time.sleep(0.6)
         h._tap_until(lambda: h.call("click", name="title-profile"), lambda: until(lambda: h.call("state")["screen"] == "profiles", 2.0), tries=3, wait=0.2)
         time.sleep(0.5)
@@ -544,14 +544,14 @@ def main():
         check("after switching, Continue resumes that profile's own save, not the other's",
               st.get("screen") == "hub" and st.get("profile") == start and st.get("slot") == 0, f"profile={st.get('profile')} slot={st.get('slot')}")
         # Load: switch back to Alpha; Load Game lists only Alpha's slot 2 and loads it.
-        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("New Game"))
+        h.call("clicktext", text="Save & Quit"); until(lambda: has_text("Start Campaign"))
         time.sleep(0.6)
         h._tap_until(lambda: h.call("click", name="title-profile"), lambda: until(lambda: h.call("state")["screen"] == "profiles", 2.0), tries=3, wait=0.2)
         time.sleep(0.5)
         h._tap_until(lambda: h.call("click", name="profile-Alpha"), lambda: until(lambda: h.call("state")["screen"] == "title", 2.5), tries=3, wait=0.2)
         check("switching back to the new profile", h.call("state").get("profile") == "Alpha", str(h.call("state").get("profile")))
         time.sleep(0.6)
-        h._tap_until(lambda: h.call("clicktext", text="Load Game"), lambda: until(lambda: h.call("state")["screen"] == "load", 2.0), tries=3, wait=0.2)
+        h._tap_until(lambda: h.call("clicktext", text="Load"), lambda: until(lambda: h.call("state")["screen"] == "load", 2.0), tries=3, wait=0.2)
         on_screen("Load Game opens the slot list", "load")
         time.sleep(0.4)
         slots = [t for t in texts() if t.startswith("Slot ")]

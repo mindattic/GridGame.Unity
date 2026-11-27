@@ -381,7 +381,7 @@ def main():
         open(LOG, "w").close()
         H._wait_screen("title", 20)
         time.sleep(0.8)
-        H._tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+        H._tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
         H._tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
         if not H.pick_party():
             print("party pick failed")

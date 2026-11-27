@@ -593,7 +593,7 @@ def smoke(run="smoke"):
     _wait_screen("title")
     time.sleep(0.6)  # the title's fade-in swallows a tap sent the moment the server answers
     files = [shot("01-title")]
-    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4)
     files.append(shot("02-charselect"))
     pick_party()
@@ -941,7 +941,7 @@ def fullloop(run="fullloop", battles=4, speed=3):
     fails, notes = [], []
     launch(run, extra=("-allfeatures",), fresh=True)
     _wait_screen("title"); time.sleep(0.6)
-    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
     if not pick_party():
         print("FAIL: party select"); return False
@@ -1277,7 +1277,7 @@ def coach(run="coach", camp=False, capture=True):
     launch(run, extra=("-coach",) + (("-capture", "video", "hq") if capture else ()), fresh=True)
     try:
         _wait_screen("title"); time.sleep(0.8)
-        _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+        _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
         _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4)
         if not pick_party():
             fails.append("party pick didn't reach Camp")
@@ -1819,7 +1819,7 @@ def variants(run="t532-variants", capture=True):
     launch(run, fresh=True, extra=("-variants",) + (("-capture", "video", "hq") if capture else ()))
     _wait_screen("title"); time.sleep(0.8)
     shot("01-title")
-    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
     time.sleep(0.6)
     shot("02-charselect")
@@ -2140,7 +2140,7 @@ def story_recruits(run="recruits", speed=3):
     launch(run, fresh=True)
     _wait_screen("title"); time.sleep(0.6)
     ok = {}
-    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: call("state")["screen"] == "charselect", tries=4, wait=1.0)
     shot("01-charselect")
     ok["charselect_hint"] = any("more heroes join" in t for t in call("texts"))
@@ -2286,7 +2286,7 @@ def storyarc(run="storyarc", capture=True):
     launch(run, fresh=True, extra=("-capture", "video", "hq") if capture else ())
     _step("storyarc-part1-new-campaign")
     _wait_screen("title", 15); time.sleep(1.5); shot("01-title"); shot("fc_title")
-    _tap_until(lambda: call("clicktext", text="New Game"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
+    _tap_until(lambda: call("clicktext", text="Start Campaign"), lambda: any("Slot 1" in t for t in call("texts")), tries=4)
     _tap_until(lambda: call("clicktext", text="Slot 1"), lambda: st()["screen"] == "charselect", tries=4, wait=1.0)
     pick_party()
     # Since GG-T546 pick_party skips through the opening story itself and lists what it skipped in PICK_STORY.
