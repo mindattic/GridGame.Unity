@@ -15,7 +15,7 @@
     "Id": "lantern", "Name": "the Lantern Road",
     "Regions": [ "lanternroad", "desert", "desert2" ],
     "Heroes": [ "ronin", "odachi", "swordmaster", "sellsword", "monk", "martialartist", "drifter", "dervish", "blackninja", "blueninja",
-      "greenninja", "redninja", "whiteninja", "pandagirl", "sage" ]
+      "greenninja", "redninja", "whiteninja", "pandagirl", "sage", "warden" ]
   },
   {
     "Id": "fendark", "Name": "the Fen-dark",

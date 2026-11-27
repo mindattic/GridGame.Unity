@@ -589,14 +589,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e83d170fca92f0c95569961d4dc0656f6aa3b28bfedd1248dfa98c4be6eb4964",
+      "hash": "sha256:facee945084fdcd15d4935f1a89627f5bedab54c2e4b0ee5967655717617b23a",
       "about": [
         "class-bluelion"
       ],
       "speakers": [],
       "payload": {
         "short": "A great lion with a ragged midnight-blue mane that flares like feathers, a black body traced with pale lines like frost cracking on stone, a long dark tail and paws as wide as shields.",
-        "long": "The Blue Lion came out of the Bloom, where the Manalith's fallen substance takes root and red flowers break through white stone. The pale lines on the Blue Lion's hide appeared the same season the flowers did. The pride scattered as the sky came closer; the Blue Lion stayed, and now walks with the Warden's crew toward wherever the trouble is coming from."
+        "long": "The Blue Lion came out of the Bloom, where the Manalith's fallen substance takes root and red flowers break through white stone. The pale lines on the Blue Lion's hide appeared the same season the flowers did. The pride scattered as the sky came closer; the Blue Lion stayed, and now walks with the Commander's crew toward wherever the trouble is coming from."
       }
     },
     "class:blueninja": {
@@ -1869,14 +1869,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ae5984deca9362f187e374b0af6af030fb8b66ce0f81e12dac2b07ab55f6785d",
+      "hash": "sha256:78de56cff45d3047ff714b0adfbcaaba504e836ca245cf4e1ff57cf8cbf0f512",
       "about": [
         "class-hexsniper"
       ],
       "speakers": [],
       "payload": {
         "short": "A face never seen whole: some meet a stooped figure in a deep blue shroud flecked with red, red eyes glinting under the hood and long clawed hands; others a tall shape in a white cap, filtered black mask and oversized white jacket, plated legs braced to aim. Either way the shot comes from very far off.",
-        "long": "The Hex Sniper keeps watch from the highest wreck in the Arkgrave, where a Fen-dark curse travels as far as an eye can see. For years the targets were whatever crawled out of the old Arks. Then the Choir's collectors began coming into the fog, and the Hex Sniper found a better use for all that patience: watching over the Warden's crew from a very long way off."
+        "long": "The Hex Sniper keeps watch from the highest wreck in the Arkgrave, where a Fen-dark curse travels as far as an eye can see. For years the targets were whatever crawled out of the old Arks. Then the Choir's collectors began coming into the fog, and the Hex Sniper found a better use for all that patience: watching over the Commander's crew from a very long way off."
       }
     },
     "class:hexstalker": {
@@ -1885,14 +1885,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:b86a8a0015e1384a75e509ff50db205bd56d8cadfd736e588976af26fa4d5d23",
+      "hash": "sha256:567f64d1da7d4af743de71c4e90a65c90e403dd62620e74a8a086f083126ab42",
       "about": [
         "class-hexstalker"
       ],
       "speakers": [],
       "payload": {
         "short": "A stooped figure in a long dark-blue robe flecked with red, red eyes and a bared grin under a ragged hood, and forearms bound tight in black cord down to the claws. Long grey hair and torn hems stream sideways, as if already moving off.",
-        "long": "The Hex Stalker hunts through the Arkgrave's fog and never shoots twice from the same spot. Fen-dark children are told the Hex Stalker can't be caught, which is true, and eats the disobedient, which is not. Whatever is draining the fen villages keeps moving too, and the Hex Stalker joined the Warden because it takes a hunter to follow it."
+        "long": "The Hex Stalker hunts through the Arkgrave's fog and never shoots twice from the same spot. Fen-dark children are told the Hex Stalker can't be caught, which is true, and eats the disobedient, which is not. Whatever is draining the fen villages keeps moving too, and the Hex Stalker joined the Commander because it takes a hunter to follow it."
       }
     },
     "class:hexwarden": {
@@ -1901,14 +1901,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4f0f0924d49d479a437c76745c193b78eeb56a2458a79c3b4cd80d6f0188e826",
+      "hash": "sha256:9eed7895d151e329fb6384c7524763fccfc5ac61c1b529ef9691cfd8010e13b5",
       "about": [
         "class-hexwarden"
       ],
       "speakers": [],
       "payload": {
         "short": "A hunched figure under a heavy shawl of mottled dark blue streaked with red, wide unblinking eyes and a thin, wide grin in the shadow of the hood. Long grey hair trails to the ground, and the robes pool round the feet like spilled ink.",
-        "long": "The Hex Warden marks the Fen-dark's borders with curses nobody sees until they step on one. Curse-work leaves its mark on whoever does it, and the Hex Warden has done a great deal of it. The villages around the Arkgrave sleep easier for it, though nobody invites the Hex Warden to supper. The Warden's crew asked politely, which was new, so the Hex Warden came along to keep their road clear."
+        "long": "The Hex Warden marks the Fen-dark's borders with curses nobody sees until they step on one. Curse-work leaves its mark on whoever does it, and the Hex Warden has done a great deal of it. The villages around the Arkgrave sleep easier for it, though nobody invites the Hex Warden to supper. The Commander's crew asked politely, which was new, so the Hex Warden came along to keep their road clear."
       }
     },
     "class:hierarch": {
@@ -3933,14 +3933,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:46beedb7b5ba24ec17754715da58baa366327926d200603eb26b626f1ed9ab44",
+      "hash": "sha256:8779f980c216e05cfff8bf21b63f7a500c036105d2ef082919a40af97c0a94cd",
       "about": [
         "class-warden"
       ],
       "speakers": [],
       "payload": {
         "short": "Long white hair, a small dark horned crest tied with a red bow, and silver plate with a red gem at the breast over a red tabard. A long red sash trails to the ground, and one hand rests on a towering silver greatsword, chained and red-tipped, planted point-down like a post.",
-        "long": "The Warden is the Last Sleeper, Halcyon's last guard, who woke in the Still 1,200 years too late. The city is gone, the Manalith hangs closer in the sky every year, and the world has forgotten what Halcyon did to it. The Warden's own name was lost with the city; only the duty is left, and the duty now is to fix what was broken."
+        "long": "The Warden keeps a lantern-post on the Lantern Road, walking pilgrims through the gorges after dark and standing between them and whatever comes down out of the passes. The work is plain: take the blow meant for someone else, and keep the lanterns lit. Lately the Choir's hymn carries further down the road, and pilgrims drop asleep where they stand. The Warden has a watch-call for that, a greatsword for the rest, and has come along to keep the road clear all the way to wherever the trouble starts."
       }
     },
     "class:werewolf00": {
@@ -4781,11 +4781,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:cc38b6fe4f79275a7469f9dfaea2512d9377bb6a131dc2991f10714fd664354a",
+      "hash": "sha256:2f337d1845ae9e3a6b5d87e5425e755e0aea796f7165371797756e3c2910257b",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "The Keeper of the Clocks. In the Still, the vault where the Warden slept, the Choir's keeper minds the tanks that hold the tithe on its way up to the Cathedral. Given room, the keeper takes two turns, so the party closes in and keeps someone beside the keeper every turn."
+        "long": "The Keeper of the Clocks. In the Still, the vault where the Commander woke, the Choir's keeper minds the tanks that hold the tithe on its way up to the Cathedral. Given room, the keeper takes two turns, so the party closes in and keeps someone beside the keeper every turn."
       }
     },
     "codex:story/dialogue/boss_intro_swamp": {
@@ -4833,11 +4833,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:abd3208d19d3724f3611187f6e96a79cc8ef63c163902db28db4dabaa1a21fda",
+      "hash": "sha256:0ef32f7303d238d3034c450e0003a7ba936173ba6a46e91928f3e5a953722aaf",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Tithe Day. The Warden, Halcyon's last guard, wakes 1,200 years too late and walks into Saltmoss on the Tithe Moors on the day the Choir comes for the year's mana. A handful of present-day people steal the Choir's white tithe caravan and run, and the Warden goes with them. The Captain, the Free Holds' militia captain who sold the holds' tithe to the Choir, gives chase."
+        "long": "Tithe Day. The Commander, a person of Halcyon brought back from the dead, wakes 1,200 years too late and walks into Saltmoss on the Tithe Moors on the day the Choir comes for the year's mana. A handful of present-day people steal the Choir's white tithe caravan and run, and the Commander goes with them. The Captain, the Free Holds' militia captain who sold the holds' tithe to the Choir, gives chase."
       }
     },
     "faction:ember": {

@@ -3412,7 +3412,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6b3dd52aec6c69944a46ca00978b99181725c482468ed09a237f1bd1ec317df8",
+      "hash": "sha256:9a070789e1feb5ec0b8c48a2d722aaeea990f2dfc67594d1557a91c1e60e1c83",
       "about": [
         "character-enchantress",
         "place-still"
@@ -3428,7 +3428,7 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Still. This is where the Warden slept.",
+            "line": "The Still. This is where I woke.",
             "next": "b"
           },
           {
@@ -7001,7 +7001,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:488ea736e5a145bb67b816991e568fc2b66fd6508098dfda29956b8b81993754",
+      "hash": "sha256:2a9d969262cced9d78b889af431a5cd00cb13d4418ffa71a70080ad68508f32b",
       "about": [
         "class-warden"
       ],
@@ -7015,10 +7015,10 @@
           {
             "id": "ask",
             "speaker": "$with",
-            "line": "In Halcyon we called it Reveille: when I back a strike, the whole line moves sooner. Who gains most from it?",
+            "line": "On the Lantern Road we call it Reveille: when I back a strike, the whole line moves sooner. Who gains most from it?",
             "choices": [
               {
-                "text": "Only me. I'm the one who slept.",
+                "text": "Only me. I'm the one who calls it.",
                 "next": "wrong"
               },
               {
@@ -7037,7 +7037,7 @@
           {
             "id": "right",
             "speaker": "$with",
-            "line": "Yes. One call and the whole line wakes. Some habits survive twelve centuries."
+            "line": "Yes. One call and the whole line wakes. Every lantern-post on the Road learns that one first."
           },
           {
             "id": "wrong",
