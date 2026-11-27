@@ -98,7 +98,7 @@ namespace GridGame.Meta
         public DialogueLine Current => Finished ? null : Transcript[Transcript.Count - 1];
 
         /// <summary>The current node's choices the player may pick now (conditions met), with their indexes in the node.</summary>
-        public List<DialogueChoice> Choices => Finished ? new List<DialogueChoice>() : Node.Choices.Where(ch => All(c, s, ch.Conditions)).ToList();
+        public List<DialogueChoice> Choices => Finished ? new List<DialogueChoice>() : Node.Choices.Where(ch => All(c, s, ch.Conditions, Who)).ToList();
 
         public bool AwaitingChoice => !Finished && Node.Choices.Count > 0;
 
@@ -118,7 +118,8 @@ namespace GridGame.Meta
             var ch = offered[index];
             Current.Answer = ch.Label;
             Wits?.Score(ch.Wit);
-            foreach (var e in ch.Effects) Apply(e);
+            string place = $"{Node.Id}:{Node.Choices.IndexOf(ch)}";
+            foreach (var e in ch.Effects) Apply(e, place);
             Enter(ch.Next);
             return Result.Success();
         }
@@ -137,7 +138,7 @@ namespace GridGame.Meta
             var sp = Def.Speakers.FirstOrDefault(x => string.Equals(x.Id, n.Speaker, StringComparison.OrdinalIgnoreCase));
             var (name, portrait) = Resolve(sp);
             Transcript.Add(new DialogueLine { NodeId = n.Id, SpeakerId = n.Speaker, Name = name, Portrait = portrait, Text = n.Text });
-            foreach (var e in n.Effects) Apply(e);
+            foreach (var e in n.Effects) Apply(e, n.Id);
         }
 
         /// <summary>A speaker's display name and portrait id, with "$lead"/"$with" bound to this save's heroes.</summary>
@@ -149,9 +150,17 @@ namespace GridGame.Meta
             return (sp.Name ?? def?.Name ?? sp.Id, sp.Portrait ?? def?.Id);
         }
 
-        private void Apply(DialogueEffect e)
+        /// <summary>The hero a bond effect or condition names: "$with", "$recruit" and "$hero" bound like speakers, else the
+        /// class id as written.</summary>
+        public string Who(string id) => id == "$with" ? With : id == "$recruit" ? Recruit : id == "$hero" ? Hero : id;
+
+        /// <summary><paramref name="place"/> is where the effect sits ("&lt;node&gt;" or "&lt;node&gt;:&lt;choice&gt;"), which guards a bond change.</summary>
+        private void Apply(DialogueEffect e, string place)
         {
-            var msg = e?.Type == DialogueEffectType.JoinHero && recruits.TryGetValue(e, out var who) ? JoinStoryHero(c, s, who) : ApplyEffect(c, s, e, Def.Id, With);
+            string msg;
+            if (e?.Type == DialogueEffectType.JoinHero && recruits.TryGetValue(e, out var who)) msg = JoinStoryHero(c, s, who);
+            else if (e?.Type == DialogueEffectType.AddTrust || e?.Type == DialogueEffectType.AddCohesion) msg = ApplyBond(c, s, e, Def.Id, place, Who(e.Id), Who(e.Other));
+            else msg = ApplyEffect(c, s, e, Def.Id, With);
             if (msg != null) Log.Add(msg);
         }
 
@@ -169,11 +178,14 @@ namespace GridGame.Meta
 
         // ── the vocabulary ──────────────────────────────────────────────────────────
 
-        public static bool All(ContentDb c, SaveData s, IEnumerable<DialogueCondition> conds) => conds == null || conds.All(x => Check(c, s, x));
+        /// <summary><paramref name="who"/> binds the hero tokens of TrustAtLeast / CohesionAtLeast (<see cref="Who"/>); without
+        /// it a token names nobody and the condition fails.</summary>
+        public static bool All(ContentDb c, SaveData s, IEnumerable<DialogueCondition> conds, Func<string, string> who = null) => conds == null || conds.All(x => Check(c, s, x, who));
 
-        public static bool Check(ContentDb c, SaveData s, DialogueCondition x)
+        public static bool Check(ContentDb c, SaveData s, DialogueCondition x, Func<string, string> who = null)
         {
             if (x == null) return true;
+            string Bound(string id) => who != null ? who(id) : id;
             switch (x.Type)
             {
                 case DialogueConditionType.FlagSet: return s.Flags.Contains(x.Id);
@@ -187,6 +199,16 @@ namespace GridGame.Meta
                 case DialogueConditionType.QuestAvailable: return Quests.Available(c, s, x.Id);
                 case DialogueConditionType.QuestActive: return Quests.Active(s, x.Id);
                 case DialogueConditionType.QuestDone: return Quests.Done(s, x.Id);
+                case DialogueConditionType.TrustAtLeast:
+                {
+                    string a = Bound(x.Id);
+                    return Bonds.HasTrust(s, a) && Bonds.Trust(s, a) >= x.Amount;
+                }
+                case DialogueConditionType.CohesionAtLeast:
+                {
+                    string a = Bound(x.Id), b = Bound(x.Other);
+                    return Bonds.PairKey(a, b) != null && Bonds.HasCohesion(s, a) && Bonds.HasCohesion(s, b) && Bonds.Cohesion(s, a, b) >= x.Amount;
+                }
                 default: return false;
             }
         }
@@ -237,6 +259,9 @@ namespace GridGame.Meta
                     var r = Quests.Start(c, s, e.Id);
                     return r.Ok ? r.Message : null;
                 }
+                case DialogueEffectType.AddTrust:
+                case DialogueEffectType.AddCohesion:
+                    return ApplyBond(c, s, e, dialogueId, null, e.Id == "$with" ? with : e.Id, e.Other == "$with" ? with : e.Other);
                 default: return null;
             }
         }
@@ -260,6 +285,32 @@ namespace GridGame.Meta
             int n = Math.Max(1, e.Amount);
             h.SkillPoints += n;
             return n == 1 ? $"{name} gains a Skill Point!" : $"{name} gains {n} Skill Points!";
+        }
+
+        /// <summary>GG-T1293: an AddTrust / AddCohesion effect for the heroes <paramref name="a"/> (and <paramref name="b"/>),
+        /// already bound from their tokens. It pays once per save at <paramref name="place"/> of <paramref name="dialogueId"/>
+        /// for these heroes (<see cref="Bonds.PayChoiceOnce"/>, a list ClearFlag can't reach and New Game+ keeps), so a replayed
+        /// Talk can't farm it. A hero without Trust, or a pair without cohesion, is skipped without spending the guard.
+        /// Returns the toast ("The Cleric's Trust +5"), or null when nothing moved.</summary>
+        public static string ApplyBond(ContentDb c, SaveData s, DialogueEffect e, string dialogueId, string place, string a, string b = null)
+        {
+            if (e == null || e.Amount == 0) return null;
+            string Name(string id) => c.TryClass(id)?.Name ?? id;
+            if (e.Type == DialogueEffectType.AddTrust)
+            {
+                if (!Bonds.HasTrust(s, a) || !Bonds.PayChoiceOnce(s, dialogueId ?? "-", $"{place ?? "-"}:trust:{Bonds.Key(a)}")) return null;
+                int before = Bonds.Trust(s, a), moved = Bonds.AddTrust(s, a, e.Amount) - before;
+                return moved == 0 ? null : $"The {Name(a)}'s Trust {moved:+0;-0}";
+            }
+            if (e.Type == DialogueEffectType.AddCohesion)
+            {
+                var pair = Bonds.PairKey(a, b);
+                if (pair == null || !Bonds.HasCohesion(s, a) || !Bonds.HasCohesion(s, b)
+                    || !Bonds.PayChoiceOnce(s, dialogueId ?? "-", $"{place ?? "-"}:cohesion:{pair}")) return null;
+                int before = Bonds.Cohesion(s, a, b), moved = Bonds.AddCohesion(s, a, b, e.Amount) - before;
+                return moved == 0 ? null : $"The {Name(a)} and the {Name(b)}: cohesion {moved:+0;-0}";
+            }
+            return null;
         }
 
         /// <summary>A story recruit joins (GG-T118): free, at the roster's average experience, into the party if

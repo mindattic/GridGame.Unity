@@ -136,6 +136,29 @@ namespace GridGame.Tests
             Assert.That(Problems(d), Has.Some.Contains("unknown Talk NPC"));
         }
 
+        [Test]
+        public void Bad_bond_effects_and_conditions_fail()
+        {
+            var d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "knight", Amount = 5 });
+            Assert.That(Problems(d, _ => true), Is.Empty, "a hero class and an amount in range");
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "goblin", Amount = 5 });
+            Assert.That(Problems(d), Has.Some.Contains("AddTrust needs a hero class"));
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "knight", Amount = 21 });
+            Assert.That(Problems(d), Has.Some.Contains("AddTrust needs a non-zero Amount"));
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "knight", Amount = 0 });
+            Assert.That(Problems(d), Has.Some.Contains("AddTrust needs a non-zero Amount"));
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "$with", Amount = 5 });
+            Assert.That(Problems(d), Has.Some.Contains("\"$with\" / \"$recruit\" / \"$hero\""), "a story beat binds no $with");
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddCohesion, Id = "knight", Other = "knight", Amount = 5 });
+            Assert.That(Problems(d), Has.Some.Contains("two different heroes"));
+            d = Valid(); d.Nodes[1].Choices[1].Effects.Add(new DialogueEffect { Type = DialogueEffectType.AddCohesion, Id = "knight", Amount = -20 });
+            Assert.That(Problems(d), Has.Some.Contains("AddCohesion needs a hero class"), "the pair's second hero is missing");
+            d = Valid(); d.Nodes[1].Choices[0].Conditions.Add(new DialogueCondition { Type = DialogueConditionType.TrustAtLeast, Id = "knight", Amount = 0 });
+            Assert.That(Problems(d), Has.Some.Contains("TrustAtLeast needs an Amount of 1..100"));
+            d = Valid(); d.Nodes[1].Choices[0].Conditions.Add(new DialogueCondition { Type = DialogueConditionType.CohesionAtLeast, Id = "knight", Other = "goblin", Amount = 10 });
+            Assert.That(Problems(d), Has.Some.Contains("CohesionAtLeast needs a hero class"));
+        }
+
         // ── runner ─────────────────────────────────────────────────────────────
 
         private static DialogueDef Merchant => Real.Dialogues["greenvalley_road_merchant"];
@@ -345,6 +368,51 @@ namespace GridGame.Tests
             var clear = new DialogueEffect { Type = DialogueEffectType.ClearFlag, Id = DialogueRunner.SkillPointFlag(quiz.Id, hero) };
             DialogueRunner.ApplyEffect(Real, s, clear);
             Assert.That(s.Flags, Does.Contain(DialogueRunner.SkillPointFlag(quiz.Id, hero)), "ClearFlag can't reset the guard");
+        }
+
+        [Test]
+        public void Bond_effects_pay_once_and_bond_conditions_read_them()
+        {
+            var s = NewSave();
+            string with = s.Party[0], other = s.Party[1];
+            var talk = new DialogueDef
+            {
+                Id = "bond_test",
+                Trigger = new DialogueTrigger { Kind = DialogueTriggerKind.Talk, Id = "party" },
+                Speakers = { new DialogueSpeaker { Id = "w", Class = "$with" } },
+                Nodes =
+                {
+                    new DialogueNode { Id = "a", Speaker = "w", Text = "Hi", Next = "b",
+                        Effects = { new DialogueEffect { Type = DialogueEffectType.AddTrust, Id = "$with", Amount = 5 } } },
+                    new DialogueNode
+                    {
+                        Id = "b", Speaker = "w", Text = "Together?",
+                        Choices =
+                        {
+                            new DialogueChoice { Label = "Trusted", Conditions = { new DialogueCondition { Type = DialogueConditionType.TrustAtLeast, Id = "$with", Amount = 1 } },
+                                Effects = { new DialogueEffect { Type = DialogueEffectType.AddCohesion, Id = "$with", Other = other, Amount = 3 } } },
+                            new DialogueChoice { Label = "Close", Conditions = { new DialogueCondition { Type = DialogueConditionType.CohesionAtLeast, Id = "$with", Other = other, Amount = 1 } } },
+                        },
+                    },
+                },
+            };
+            int trust = Bonds.Trust(s, with), cohesion = Bonds.Cohesion(s, with, other);
+
+            var r = new DialogueRunner(Real, s, talk, with);
+            Assert.That(Bonds.Trust(s, with), Is.EqualTo(trust + 5), "the node's Trust is paid on reaching it");
+            Assert.That(r.Log, Has.Some.Contains("Trust +5"));
+            r.Advance();
+            Assert.That(r.Choices.Select(ch => ch.Label), Is.EqualTo(new[] { "Trusted" }), "Trust met, cohesion not yet");
+            r.Choose(0);
+            Assert.That(Bonds.Cohesion(s, with, other), Is.EqualTo(cohesion + 3));
+
+            var again = new DialogueRunner(Real, s, talk, with);
+            again.Advance();
+            Assert.That(again.Choices.Count, Is.EqualTo(2), "both bonds now read as met");
+            again.Choose(0);
+            Assert.That(Bonds.Trust(s, with), Is.EqualTo(trust + 5), "a replayed Talk can't farm Trust");
+            Assert.That(Bonds.Cohesion(s, with, other), Is.EqualTo(cohesion + 3), "nor cohesion");
+            Assert.That(again.Log, Is.Empty);
         }
 
         [Test]

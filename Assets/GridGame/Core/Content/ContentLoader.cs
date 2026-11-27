@@ -922,6 +922,8 @@ namespace GridGame.Core.Content
         }
 
         public const string NpcFlagPrefix = "npc:";
+        /// <summary>GG-T1293: the most one AddTrust / AddCohesion effect may move a bond, either way.</summary>
+        public const int DialogueBondMax = 20;
 
         /// <summary>GG-T570: a speaker Portrait that names a Portraits/ file rather than a class (<c>aetherist-00</c>: an
         /// asset stem plus its two-digit number), accepted as such when validation can't look on disk.</summary>
@@ -986,6 +988,19 @@ namespace GridGame.Core.Content
             bool joinsHero = false;
             foreach (var e in d.AllEffects()) joinsHero |= e?.Type == DialogueEffectType.JoinHero;
 
+            // GG-T1293: a hero a bond effect or condition names: a hero class, or a speaker token this dialogue binds.
+            bool BondHero(string id, string where, string what)
+            {
+                bool ok = id == "$with" ? talkWithHero : id == "$recruit" ? joinsHero : id == "$hero" ? wanderer : IsHero(id);
+                if (!ok) p.Add($"{where}: {what} needs a hero class, or \"$with\" / \"$recruit\" / \"$hero\" where this dialogue binds it, has '{id}'");
+                return ok;
+            }
+            void BondPair(string a, string b, string where, string what)
+            {
+                if (BondHero(a, where, what) & BondHero(b, where, what) && string.Equals(a, b, StringComparison.OrdinalIgnoreCase))
+                    p.Add($"{where}: {what} needs two different heroes, has '{a}' twice");
+            }
+
             void Cond(DialogueCondition c, string where)
             {
                 if (c == null) { p.Add($"{where}: null condition"); return; }
@@ -1008,6 +1023,12 @@ namespace GridGame.Core.Content
                     case DialogueConditionType.QuestActive:
                     case DialogueConditionType.QuestDone:
                         if (db.TryQuest(c.Id) == null) p.Add($"{where}: unknown quest '{c.Id}'"); break;
+                    case DialogueConditionType.TrustAtLeast:
+                    case DialogueConditionType.CohesionAtLeast:
+                        if (c.Type == DialogueConditionType.TrustAtLeast) BondHero(c.Id, where, "TrustAtLeast");
+                        else BondPair(c.Id, c.Other, where, "CohesionAtLeast");
+                        if (c.Amount <= 0 || c.Amount > 100) p.Add($"{where}: {c.Type} needs an Amount of 1..100, has {c.Amount}");
+                        break;
                 }
             }
             void Effect(DialogueEffect e, string where)
@@ -1044,6 +1065,12 @@ namespace GridGame.Core.Content
                         if (db.TryQuest(e.Id) == null) p.Add($"{where}: unknown quest '{e.Id}'"); break;
                     case DialogueEffectType.OpenStation:
                         if (e.Id == null || Array.IndexOf(DialogueDef.Stations, e.Id) < 0) p.Add($"{where}: unknown Camp station '{e.Id}'"); break;
+                    case DialogueEffectType.AddTrust:
+                    case DialogueEffectType.AddCohesion:
+                        if (e.Type == DialogueEffectType.AddTrust) BondHero(e.Id, where, "AddTrust");
+                        else BondPair(e.Id, e.Other, where, "AddCohesion");
+                        if (e.Amount == 0 || Math.Abs(e.Amount) > DialogueBondMax) p.Add($"{where}: {e.Type} needs a non-zero Amount of -{DialogueBondMax}..{DialogueBondMax}, has {e.Amount}");
+                        break;
                 }
                 // GG-T537 (owner): a Camp vendor joins on a story beat of the campaign (clear a stage), never on an
                 // incidental trigger, and always: the beat is a StageCleared one with no conditions.

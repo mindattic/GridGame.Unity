@@ -1455,16 +1455,21 @@ namespace GridGame.Core.Content
     }
 
     /// <summary>QuestAvailable / QuestActive / QuestDone (GG-T237, §22.11): <see cref="DialogueCondition.Id"/> is a quests.json id.
-    /// Available = its unlock stage is cleared and it's neither under way nor handed in.</summary>
-    public enum DialogueConditionType { FlagSet, FlagNotSet, HasItem, GoldAtLeast, PartyHas, RosterHas, RosterLacks, NpcJoined, QuestAvailable, QuestActive, QuestDone }
+    /// Available = its unlock stage is cleared and it's neither under way nor handed in.
+    /// TrustAtLeast / CohesionAtLeast (GG-T1293, §25.20): the hero <see cref="DialogueCondition.Id"/>'s Trust, or the cohesion of
+    /// Id and <see cref="DialogueCondition.Other"/>, is at least <see cref="DialogueCondition.Amount"/>; each hero is a class id
+    /// or a speaker token ("$with", "$recruit", "$hero").</summary>
+    public enum DialogueConditionType { FlagSet, FlagNotSet, HasItem, GoldAtLeast, PartyHas, RosterHas, RosterLacks, NpcJoined, QuestAvailable, QuestActive, QuestDone, TrustAtLeast, CohesionAtLeast }
 
     public sealed class DialogueCondition
     {
         public DialogueConditionType Type;
         /// <summary>Flag / item / class / NPC id, by type.</summary>
         public string Id;
-        /// <summary>HasItem count (default 1) or GoldAtLeast amount.</summary>
+        /// <summary>HasItem count (default 1), GoldAtLeast amount, or the Trust / cohesion to reach.</summary>
         public int Amount;
+        /// <summary>CohesionAtLeast only: the second hero of the pair.</summary>
+        public string Other;
     }
 
     /// <summary>Nothing here can remove a hero for good (owner rule: nobody dies permanently).
@@ -1476,17 +1481,23 @@ namespace GridGame.Core.Content
     /// save flag <c>sp:&lt;dialogue&gt;:&lt;hero&gt;</c> guards it, so a replayed Talk can't farm it.
     /// StartQuest (GG-T237) puts the quests.json quest <see cref="DialogueEffect.Id"/> into the journal (no-op if it's under way or done).
     /// OpenStation (GG-T537) marks the story beat that opens a keeperless Camp station (<see cref="DialogueDef.Stations"/>):
-    /// the station itself opens on the stage clear (Meta's CampUnlocks); the effect only announces it.</summary>
-    public enum DialogueEffectType { SetFlag, ClearFlag, GrantGold, GrantItem, RecruitHero, JoinNpc, JoinHero, GrantSkillPoint, StartQuest, OpenStation }
+    /// the station itself opens on the stage clear (Meta's CampUnlocks); the effect only announces it.
+    /// AddTrust / AddCohesion (GG-T1293, §25.20) move the hero <see cref="DialogueEffect.Id"/>'s Trust, or the cohesion of Id
+    /// and <see cref="DialogueEffect.Other"/>, by <see cref="DialogueEffect.Amount"/>; each hero is a class id or a speaker
+    /// token ("$with", "$recruit", "$hero"). Each pays once per save at its node (and choice): a replayed Talk can't farm it.</summary>
+    public enum DialogueEffectType { SetFlag, ClearFlag, GrantGold, GrantItem, RecruitHero, JoinNpc, JoinHero, GrantSkillPoint, StartQuest, OpenStation, AddTrust, AddCohesion }
 
     public sealed class DialogueEffect
     {
         public DialogueEffectType Type;
         public string Id;
-        /// <summary>GrantGold amount (negative = pay), GrantItem count (default 1) or GrantSkillPoint count (default 1).</summary>
+        /// <summary>GrantGold amount (negative = pay), GrantItem count (default 1), GrantSkillPoint count (default 1), or
+        /// the Trust / cohesion change (either sign).</summary>
         public int Amount;
         /// <summary>JoinHero only: the role to fall back on when <see cref="Id"/> is missing or already owned.</summary>
         public string Role;
+        /// <summary>AddCohesion only: the second hero of the pair.</summary>
+        public string Other;
     }
 
     public sealed class DialogueSpeaker
