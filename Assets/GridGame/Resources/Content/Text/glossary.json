@@ -613,6 +613,20 @@
         "definition": "A hero interrupts a foe's charge in its final half second before it lands: a [Clutch]."
       }
     },
+    "glossary:clutch_resolve": {
+      "key": "glossary:clutch_resolve",
+      "id": "glossary-clutch-resolve",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:eb9004f96f8d5fe88d1999df1ebd75777a5f99303ea536455a9cac533d90de93",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Clutch: Resolve",
+        "definition": "A hero with full Trust in the Commander takes a blow that would fell them and holds on at 1 HP instead, once per battle: a [Clutch]."
+      }
+    },
     "glossary:combo": {
       "key": "glossary:combo",
       "id": "glossary-combo",

@@ -229,6 +229,7 @@ namespace GridGame.App
                 case AnnounceEvent an: ShowBanner(an.Text); return Tween.Wait(Timing.Standard);
                 case TriggeredEvent tr: return TriggeredAnim(tr);
                 case DodgedEvent dg: return DodgeAnim(dg);
+                case ResolveEvent rv: return ResolveAnim(rv);
                 case UnitsLinkedEvent ul: return LinkedAnim(ul); // GG-T873: Curse Link's tether
                 case LinkEchoEvent le: return LinkEchoAnim(le);
                 case MagnetizedEvent mz: return MagnetizedAnim(mz); // GG-T878: Magnetize's arcs and hum
@@ -2381,6 +2382,16 @@ namespace GridGame.App
                 }));
             }
             return FloatText(dg.UnitId, CombatTextKind.Miss, "Dodge!", 0.3f);
+        }
+
+        /// <summary>GG-T1582: a tier-5 Trust hero's Resolve held it at 1 HP against a lethal blow: a clang, the hero
+        /// braces and "Resolve!" floats up, ahead of the Clutch! that pays for it.</summary>
+        private IEnumerator ResolveAnim(ResolveEvent rv)
+        {
+            App.Audio.Sfx("battle.clang", 0.9f, 0.9f);
+            RefreshUnit(rv.UnitId);
+            if (board.Units.TryGetValue(rv.UnitId, out var v) && !ReduceMotion) App.StartCoroutine(Tween.Pop(v.Root, 1.15f, 0.22f));
+            return FloatText(rv.UnitId, CombatTextKind.Callout, "Resolve!", 0.3f);
         }
 
         /// <summary>GG-T826: the battle's floating texts, one per board (bible §9.1).</summary>

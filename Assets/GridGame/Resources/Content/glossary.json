@@ -820,6 +820,10 @@
     "Term": "Clutch: Last-Tick Interrupt"
   },
   {
+    "Id": "clutch_resolve",
+    "Term": "Clutch: Resolve"
+  },
+  {
     "Id": "aetherite_shard",
     "Term": "Mana Shard",
     "Aliases": [
