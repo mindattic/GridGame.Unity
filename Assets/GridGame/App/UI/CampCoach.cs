@@ -48,7 +48,8 @@ namespace GridGame.App
             poller?.Pause();
             poller = null;
             var s = GameApp.I.Save;
-            if (s == null || Coach.Suppressed || Coach.Off(s) || hub.Root == null) return;
+            if (s == null || hub.Root == null) return;
+            if (Coach.Suppressed || Coach.Off(s)) { FinishHubIntro(s); return; }
             // After one layout pass (rows have their size) and once any lesson that brought the player here has ended.
             int tries = 0;
             IVisualElementScheduledItem item = null;
@@ -60,8 +61,17 @@ namespace GridGame.App
                 if (hub.Root.panel == null || ++tries > 30) { item.Pause(); return; }
                 if (Coach.Active) return;
                 item.Pause();
+                FinishHubIntro(s);
                 Next(s);
             }).StartingIn(120).Every(100);
+        }
+
+        /// <summary>GG-T1394: Camp's first visit ends the onboarding once its lesson is shown (or there is none to show).</summary>
+        private static void FinishHubIntro(SaveData s)
+        {
+            if (s.Onboarding?.Step != OnboardingStep.HubIntro) return;
+            Onboarding.Finish(s);
+            GameApp.I.Persist();
         }
 
         private static void Next(SaveData s)
