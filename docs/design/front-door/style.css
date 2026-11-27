@@ -110,3 +110,23 @@ aside b { color: var(--text); }
 .tiles .pane { padding: 10px 10px 10px 16px; }
 .glow { box-shadow: inset 0 2px 0 rgba(117, 144, 200, .55), 0 0 0 2px var(--mana), 0 0 18px var(--mana); }
 .credits { flex: 1; overflow: hidden; text-align: center; font-size: 12px; color: var(--dim); padding: 20px; }
+
+/* Look as built (GG-T1406, GG-T1769). */
+.look { width: 100%; border-collapse: collapse; font-size: 12px; color: var(--dim); margin-top: 4px; }
+.look th, .look td { text-align: left; padding: 3px 6px; border-bottom: 1px solid var(--pewter-dark); vertical-align: top; }
+.look th { color: var(--mana-light); font-weight: 700; }
+.splash { background: #0E0E12; }
+.crawl.indigo { background: linear-gradient(180deg, rgba(75, 68, 125, .55), rgba(75, 68, 125, .85)); }
+.crawl-title { color: var(--gold); text-shadow: 2px 2px 0 #000; margin-bottom: 64px; text-align: center; }
+.rows { display: grid; gap: 4px; }
+.mrow { display: flex; align-items: center; gap: 8px; width: 100%; min-height: var(--target); font: inherit; font-weight: 700; font-size: 13px; color: var(--text); background: transparent; border: 0; border-bottom: 1px solid var(--pewter-dark); text-align: left; cursor: pointer; padding: 4px 6px; }
+.mrow .ico { color: var(--mana-light); }
+.mrow b { margin-left: auto; color: var(--gold); font-weight: 700; }
+.dlg { width: 100%; display: grid; gap: 8px; }
+.row.end { justify-content: flex-end; }
+.veil { position: absolute; inset: 0; display: grid; place-items: center; padding: 14px; background: rgba(14, 14, 18, .6); }
+.dimmed { opacity: .5; }
+.term { color: #9BC7FF; font-weight: 500; }
+.drill-title { font-family: var(--display); font-weight: 700; font-size: 22px; letter-spacing: .08em; color: var(--gold); }
+.drill-title.bad { color: #FFAAA2; font-size: 16px; margin-top: 12px; }
+.lnk { color: var(--mana-light); text-decoration: underline; cursor: pointer; }
