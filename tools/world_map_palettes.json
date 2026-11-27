@@ -2,6 +2,7 @@
   "greenvalley": {
     "image": "starter-moors.png",
     "k": 10,
+    "water_gap": 40,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "grass", "cost": 1},
@@ -51,6 +52,8 @@
     "blur": 1,
     "mode": 3,
     "water_close": 7,
+    "water_grow": 0.15,
+    "water_gap": 60,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "snow", "cost": 8},
