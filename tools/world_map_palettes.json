@@ -1,0 +1,74 @@
+{
+  "greenvalley": {
+    "image": "starter-moors.png",
+    "k": 10,
+    "classes": [
+      {"label": "water", "cost": null},
+      {"label": "grass", "cost": 1},
+      {"label": "forest", "cost": 3},
+      {"label": "rock", "cost": 6}
+    ],
+    "clusters": [
+      {"rgb": "#56754d", "label": "water"},
+      {"rgb": "#cda735", "label": "grass"},
+      {"rgb": "#b6982b", "label": "grass"},
+      {"rgb": "#9d8725", "label": "grass"},
+      {"rgb": "#888322", "label": "grass"},
+      {"rgb": "#7b721f", "label": "grass"},
+      {"rgb": "#6a7120", "label": "grass"},
+      {"rgb": "#545b1f", "label": "forest"},
+      {"rgb": "#9a8548", "label": "rock"},
+      {"rgb": "#b0a07c", "label": "rock"}
+    ]
+  },
+  "swamp": {
+    "image": "starter-swamp.png",
+    "k": 11,
+    "classes": [
+      {"label": "water", "cost": null},
+      {"label": "reeds", "cost": 4},
+      {"label": "marsh", "cost": 5},
+      {"label": "forest", "cost": 2},
+      {"label": "rock", "cost": 3}
+    ],
+    "clusters": [
+      {"rgb": "#2e3b2a", "label": "water"},
+      {"rgb": "#465543", "label": "water"},
+      {"rgb": "#232d17", "label": "forest"},
+      {"rgb": "#333d1c", "label": "forest"},
+      {"rgb": "#3f491b", "label": "forest"},
+      {"rgb": "#79792d", "label": "reeds"},
+      {"rgb": "#646725", "label": "reeds"},
+      {"rgb": "#50561e", "label": "marsh"},
+      {"rgb": "#4e4f29", "label": "marsh"},
+      {"rgb": "#656938", "label": "marsh"},
+      {"rgb": "#7a7a66", "label": "rock"}
+    ]
+  },
+  "lanternroad": {
+    "image": "starter-mountains-relief.png",
+    "k": 11,
+    "blur": 3,
+    "water_close": 5,
+    "classes": [
+      {"label": "water", "cost": null},
+      {"label": "snow", "cost": 8},
+      {"label": "rock", "cost": 6},
+      {"label": "grass", "cost": 1},
+      {"label": "forest", "cost": 3}
+    ],
+    "clusters": [
+      {"rgb": "#3f7f80", "label": "water", "pin": true},
+      {"rgb": "#dcd0b8", "label": "snow"},
+      {"rgb": "#b99663", "label": "rock"},
+      {"rgb": "#997936", "label": "rock"},
+      {"rgb": "#956e44", "label": "rock"},
+      {"rgb": "#7a5b38", "label": "rock"},
+      {"rgb": "#5f462d", "label": "rock"},
+      {"rgb": "#3f3122", "label": "rock"},
+      {"rgb": "#8a8a3a", "label": "grass"},
+      {"rgb": "#42411b", "label": "forest"},
+      {"rgb": "#293014", "label": "forest"}
+    ]
+  }
+}
