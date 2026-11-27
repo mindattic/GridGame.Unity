@@ -14,7 +14,7 @@ namespace GridGame.App
     /// circumstance... the same tempo and pause that makes video games enjoyable"). Reuses
     /// CharacterSelectScreen's SlamIn reveal and CutIns.ChargeAnim's tween-driven bar-fill idiom.
     /// Only ever reached via <see cref="PostBattleScreen.RouteFrom"/>, which skips it entirely when
-    /// nobody leveled up.
+    /// nobody leveled up. Each hero's <see cref="NextAbility"/> shows beneath the stat deltas with a Learn button.
     /// </summary>
     public sealed class LevelUpScreen : GameScreen
     {
@@ -85,6 +85,19 @@ namespace GridGame.App
             statColumn = Ui.El("col", col);
             statColumn.style.marginTop = Space.S24;
 
+            // GG-T1556 (§22.8): the hero's next ability on the skill hexagon, with Learn to its Board route. Learn leaves the
+            // fanfare for the results and opens the Board on top of them, so Back from the Board lands on the results.
+            var heroSave = App.Save.Hero(classId);
+            var next = NextAbility.For(c, heroSave);
+            if (next != null)
+            {
+                var nextRow = Ui.El("row", col);
+                nextRow.name = "levelup-next-ability";
+                nextRow.style.marginTop = Space.S24; nextRow.style.alignItems = Align.Center;
+                Ui.Text(NextAbility.Line(c, heroSave), "small gold", nextRow).style.marginRight = Space.S16;
+                RowIcon.IconButton("Learn", RowKind.Ability, () => Learn(classId, next), "btn--small", nextRow).name = "levelup-learn";
+            }
+
             // Root is reused across Refresh() calls (one per hero that leveled up) — Root.Clear() drops
             // child elements but not callbacks registered on Root itself, so this must only ever bind once
             // or each additional hero stacks another handler and a single tap fires Skip() that many times.
@@ -115,6 +128,16 @@ namespace GridGame.App
         }
 
         private bool leaving;
+
+        private void Learn(string heroId, NextAbility.Pick next)
+        {
+            if (hidden || leaving) return;
+            leaving = true;
+            if (running != null) App.StopCoroutine(running);
+            running = null;
+            App.Router.Replace(new PostBattleScreen(report, stageId));
+            App.Router.Push(HeroScreen.Learn(heroId, next));
+        }
 
         private void Skip()
         {

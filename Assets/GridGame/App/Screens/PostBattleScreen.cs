@@ -95,6 +95,7 @@ namespace GridGame.App
                 if (report.BrokenOrbFound)
                     Tag(Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list), RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
+                NextAbilityRows(c, list);
                 TurnsRow(list);
                 ComboRows(c, list);
                 BondRows(c, list);
@@ -154,6 +155,7 @@ namespace GridGame.App
                 }
                 if (!report.Escaped && report.XpEach > 0)
                     Tag(Ui.MenuRow("Hard-won experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "defeat-xp";
+                NextAbilityRows(c, list);
                 TurnsRow(list);
                 ComboRows(c, list);
             }
@@ -236,6 +238,7 @@ namespace GridGame.App
             // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
             Tag(Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
             Tag(Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "crucible-xp";
+            NextAbilityRows(c, list);
             TurnsRow(list);
             if (report.Items.Count == 0) Ui.Text("No items dropped.", "small dim", list);
             RevealItems(report.Items, c, list);
@@ -292,6 +295,26 @@ namespace GridGame.App
             if (report.TopSupporter == null || report.TopSupporterPoints <= 0) return;
             string who = c.TryClass(report.TopSupporter)?.Name ?? report.TopSupporter;
             Tag(Ui.MenuRow("Top supporter", $"{who} · {report.TopSupporterPoints} pts", null, list), RowKind.Hero, report.TopSupporter).name = "results-top-supporter";
+        }
+
+        /// <summary>GG-T1556 (§22.8): each hero who leveled up this battle, with <see cref="NextAbility.Line"/> and a Learn button
+        /// that opens their Board with the route preselected on top of the results, so Back comes back here.</summary>
+        private void NextAbilityRows(ContentDb c, VisualElement list)
+        {
+            var seen = new HashSet<string>();
+            foreach (var (classId, _, _) in report.LevelUps)
+            {
+                if (!seen.Add(classId)) continue;
+                var h = App.Save.Hero(classId);
+                var next = NextAbility.For(c, h);
+                if (next == null) continue;
+                var row = Ui.El("row", list);
+                row.name = "results-next-ability-" + classId;
+                row.style.alignItems = Align.Center;
+                var info = Tag(Ui.MenuRow(c.TryClass(classId)?.Name ?? classId, NextAbility.Line(c, h), null, row), RowKind.Hero, classId);
+                info.style.flexGrow = 1; info.style.flexShrink = 1;
+                RowIcon.IconButton("Learn", RowKind.Ability, () => App.Router.Push(HeroScreen.Learn(classId, next)), "btn--small", row).name = "results-learn-" + classId;
+            }
         }
 
         /// <summary>At most this many bond rows; the rest fold into one "and N more" line.</summary>

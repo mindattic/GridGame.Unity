@@ -4237,6 +4237,13 @@ non-empty (`PostBattleScreen.RouteFrom` decides; skipped entirely otherwise). On
 - Stat deltas (`Formulas.StatsAtLevel` before vs. after) reveal one at a time, staggered.
 - Auto-advances after a hold, but a tap anywhere or "Skip ›" jumps straight ahead — the same dual-input
   idiom `StoryCrawlScreen` already uses, not a new one.
+- **Next ability (GG-T1404, GG-T1556).** Beneath the stat deltas, "Next ability: X, N SP" (`NextAbility.Line`): the nearest
+  ability node on the hero's skill hexagon whose ability it doesn't know, by fewest SP, then shortest route
+  (`NextAbility.For`). Its **Learn** button leaves the fanfare for the results (`Replace` with `PostBattleScreen`) and
+  pushes `HeroScreen.Learn(heroId, pick)`, Heroes › Abilities › Board with that route preselected, so Back returns to the
+  results. The results list the same line for every hero who leveled (victory, defeat and Crucible alike), each with its
+  own Learn button pushing the Board on top of them. A hero with nothing left to reach (or a domesticated monster) shows
+  no line.
 
 ### 22.9 Difficulty settings (scaffolding, added 2026-10-11, owner direction)
 
