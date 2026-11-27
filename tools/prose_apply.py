@@ -84,16 +84,25 @@ def render(kind: str, texts: dict) -> str:
     return json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
 
 
+class UnreadableTextFile(Exception):
+    """An existing Text/<kind>.json that cannot be parsed (conflict markers, a truncated write). Raised instead of
+    reading it as empty, which would let the next write replace every text it held (GG-T1231)."""
+
+
 def read_file(out: str, kind: str) -> dict:
+    """The texts in Text/<kind>.json by key; {} when the file does not exist. Raises UnreadableTextFile when it exists
+    but is not a gridgame-text JSON object, so no caller rewrites it from nothing."""
     path = os.path.join(out, FILES[kind])
     if not os.path.isfile(path):
         return {}
     try:
         d = load(path)
-    except (OSError, ValueError):
-        return {}
+    except (OSError, ValueError) as e:
+        raise UnreadableTextFile(f"{path} exists but cannot be read ({e}); fix or restore it, nothing was written") from e
     texts = d.get("texts") if isinstance(d, dict) else None
-    return dict(texts) if isinstance(texts, dict) else {}
+    if not isinstance(texts, dict):
+        raise UnreadableTextFile(f"{path} has no 'texts' object; fix or restore it, nothing was written")
+    return dict(texts)
 
 
 def report(doc, result: str, note: str = "") -> dict:
@@ -207,7 +216,7 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     try:
         rows = apply_all(args.pending, args.content, args.out, args.dry_run)
-    except OSError as e:
+    except (OSError, UnreadableTextFile) as e:
         print(f"prose_apply: {e}", file=sys.stderr)
         return 2
     for r in rows:
