@@ -359,6 +359,24 @@
   "hash": "4ffc160507e71d68fb20",
   "owner": "cleric"
  },
+ "commander-00": {
+  "framing": {
+   "X": 0.5063,
+   "Y": 0.2066,
+   "Zoom": 2.4929
+  },
+  "hash": "739bb49f98b8c5b75784",
+  "owner": "default"
+ },
+ "commander-male-00": {
+  "framing": {
+   "X": 0.5063,
+   "Y": 0.2066,
+   "Zoom": 2.4929
+  },
+  "hash": "739bb49f98b8c5b75784",
+  "owner": "default"
+ },
  "corpse-00": {
   "framing": {
    "X": 0.5004,

@@ -10,7 +10,8 @@ namespace GridGame.Meta
         public const string Token = ContentLoader.CommanderToken;
         /// <summary>A placeholder until the Commander canon (GG-T1256) names them.</summary>
         public const string Name = "the Commander";
-        /// <summary>No portrait yet (the screen shows a silhouette) until the GG-T1256 canon fills it.</summary>
-        public const string Portrait = null;
+        /// <summary>The Commander's Portraits/ file (GG-T1425): the female look until the front door's pick (GG-T1258)
+        /// chooses between it and commander_male. A mannequin placeholder until the real art lands (GG-T1427).</summary>
+        public static readonly string Portrait = AssetNames.Of("commander");
     }
 }

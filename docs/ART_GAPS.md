@@ -30,6 +30,7 @@ icon is not in the script: it is set by `GridGameBuild.ApplyAppIcons` (GG-T486).
 |---|---|---|
 | App icon | 0 | Done (GG-T486), made from the Manalith sky art; a painted icon is optional (section 4) |
 | Classes on the mannequin | 21 | The Hierarch (final boss), `mockingecho` (its file is a byte copy) and 19 postgame region foes |
+| Commander portraits on the mannequin | 2 | `commander-00` and `commander-male-00`, byte copies until GG-T1427 (section 1.5) |
 | Other shared portraits | 2 | `templar-04` is a byte copy of `templar-03`; `nagaegg` draws `naga-00` |
 | Rule-break finale bosses on a plain foe's art | 7 | Stages 3-21. The 8th, the Hierarch, is counted under the mannequin |
 | Bounty targets on their base class's art | 11 | Plus the Lamp-Eater (`duskstalker`), which is on the mannequin |
@@ -125,6 +126,19 @@ Lamp-Eater, is in section 2.3 (`duskstalker`).
 | 20 | The Pale Bellringer (`ghost`, cityruins-02) | `the Pale Bellringer, hooded ghost girl swinging a cracked bronze bell, translucent, pink-red city glow, {…}` |
 | 21 | Brother Vesper, Last of the Choir (`templar01`, cathedral-02) | `Brother Vesper, old templar in torn white and red robes holding a guttering cyan lamp, {…}` |
 | 22 | Sergeant Iron Tithe (`heavytrooper03`, bloom-02) | `Sergeant Iron Tithe, white power-armour trooper with tally marks painted in red, siege rifle, aether pack, red blossom on armour, {…}` |
+
+### 1.5 The Commander (GG-T1425)
+
+The player's own portrait, picked female or male (BIBLE §25.11.2.2, §12.1): a person of Halcyon who died the night
+the white city fell and was brought back 1,200 years later. A leader and adviser, never a fighter, so **no weapon and
+no armour**; Halcyon tech wakes only near them, so a few Mana Orbs and old Halcyon circuitry glow awake around them.
+Both files are byte copies of `mannequin-00.png` today; the owner's art (GG-T1427) replaces them in place, with no
+code or content change. They are no class, so the thumbnail is the default head crop (`tools/make_thumbs.py`).
+
+| # | Asset id | Where it shows | Now | Prompt |
+|---|---|---|---|---|
+| 50 | `commander` (the Commander, female) | The player's own portrait: story dialogue, advice, the hub party strip (GG-T1258, GG-T1270, GG-T1434) | `commander-00.png` is a **byte copy of `mannequin-00.png`**; replace the file | `the Commander, a calm young woman of ancient Halcyon brought back from the dead, pale skin with faint grey stone-dust in her dark hair, long high-collared white officer's greatcoat of a fallen city, faded and frayed at the hem, thin silver circuit lines along the seams, no weapon and no armour, one hand raised as if giving an order, three small glass Mana Orbs floating near her hand and waking with soft cyan light, old Halcyon glyphs flickering awake on her cuff, steady eyes of a leader, not a fighter, {…}` |
+| 51 | `commander_male` (the Commander, male) | As above, when the player picks the male look | `commander-male-00.png` is a **byte copy of `mannequin-00.png`**; replace the file | `the Commander, a calm young man of ancient Halcyon brought back from the dead, pale skin with faint grey stone-dust in his dark hair, long high-collared white officer's greatcoat of a fallen city, faded and frayed at the hem, thin silver circuit lines along the seams, no weapon and no armour, one hand raised as if giving an order, three small glass Mana Orbs floating near his hand and waking with soft cyan light, old Halcyon glyphs flickering awake on his cuff, steady eyes of a leader, not a fighter, {…}` |
 
 ## 2. Postgame (stages 25-40)
 

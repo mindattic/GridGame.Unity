@@ -481,6 +481,11 @@ namespace GridGame.App
         public const string MannequinClass = "mannequin";
         public static readonly string MannequinPortrait = AssetNames.Of(MannequinClass);
 
+        /// <summary>The Commander's own Portraits/ files, no class (BIBLE §25.11.2.2, GG-T1425): the player's female or
+        /// male pick, drawn whole like the Aetherist's. Mannequin placeholders until the real art lands (GG-T1427).</summary>
+        public static readonly string CommanderPortrait = AssetNames.Of("commander");
+        public static readonly string CommanderMalePortrait = AssetNames.Of("commander_male");
+
         // ── The figure on a portrait (GG-T352) ─────────────────────────────────────
         // Owner 2026-11-07: "all characters are 1024x1024 with transparent backgrounds; that's the rule, that's what the
         // assets are." Thumbnail framings window that whole canvas (baked into Thumbs/ by tools/make_thumbs.py). Whole-figure views draw only the figure's
