@@ -3973,5 +3973,136 @@
       { "Id": "blank", "Speaker": "hero" },
       { "Id": "watch", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "trust_redmage_1",
+    "Title": "The coal in the tin",
+    "Trigger": { "Kind": "Trust", "Id": "redmage", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "scouts", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 } ] },
+          { "Next": "sleep", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] },
+          { "Next": "tin", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "scouts", "Speaker": "hero", "Next": "coal" },
+      { "Id": "sleep", "Speaker": "hero", "Next": "coal" },
+      { "Id": "tin", "Speaker": "hero", "Next": "coal" },
+      { "Id": "coal", "Speaker": "hero", "Next": "hearth" },
+      { "Id": "hearth", "Speaker": "commander", "Next": "aunt" },
+      { "Id": "aunt", "Speaker": "hero", "Next": "kept" },
+      { "Id": "kept", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "kept_hers", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage:coal_honoured" } ] },
+          { "Next": "for_what", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage:coal_asked" } ] },
+          { "Next": "careful", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "redmage:coal_warned" } ] }
+        ]
+      },
+      { "Id": "kept_hers", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "for_what", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "careful", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_redmage_3",
+    "Title": "Cold hands",
+    "Trigger": { "Kind": "Trust", "Id": "redmage", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "old", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] },
+          { "Next": "cleric", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 2 } ] },
+          { "Next": "strap", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] }
+        ]
+      },
+      { "Id": "old", "Speaker": "hero", "Next": "winter" },
+      { "Id": "cleric", "Speaker": "hero", "Next": "winter" },
+      { "Id": "strap", "Speaker": "hero", "Next": "winter" },
+      { "Id": "winter", "Speaker": "hero", "Next": "stopped" },
+      { "Id": "stopped", "Speaker": "hero", "Next": "orb" },
+      { "Id": "orb", "Speaker": "commander", "Next": "idea" },
+      { "Id": "idea", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "redmage:test_promised" } ] },
+          { "Next": "refused", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -3 }, { "Type": "SetFlag", "Id": "redmage:test_refused" } ] },
+          { "Next": "aunt_asked", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage:test_questioned" } ] }
+        ]
+      },
+      { "Id": "promised", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "refused", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "aunt_asked", "Speaker": "hero", "Next": "close_line" },
+      { "Id": "close_line", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_redmage_5",
+    "Title": "What the fire is for",
+    "Trigger": { "Kind": "Trust", "Id": "redmage", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "honoured_back", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:coal_honoured" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "asked_back", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:coal_asked" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 } ] },
+          { "Next": "warned_back", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:coal_warned" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 } ] },
+          { "Next": "news", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "honoured_back", "Speaker": "hero", "Next": "letter" },
+      { "Id": "asked_back", "Speaker": "hero", "Next": "letter" },
+      { "Id": "warned_back", "Speaker": "hero", "Next": "letter" },
+      { "Id": "news", "Speaker": "hero", "Next": "letter" },
+      { "Id": "letter", "Speaker": "hero", "Next": "hope" },
+      {
+        "Id": "hope", "Speaker": "commander",
+        "Choices": [
+          { "Next": "promised_kept", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_promised" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "redmage:thread_promise" } ] },
+          { "Next": "refused_mended", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_refused" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 10 }, { "Type": "SetFlag", "Id": "redmage:thread_mended" } ] },
+          { "Next": "questioned_kept", "Conditions": [ { "Type": "FlagSet", "Id": "redmage:test_questioned" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage:thread_asking" } ] },
+          { "Next": "write", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "redmage:thread_letter" } ] }
+        ]
+      },
+      { "Id": "promised_kept", "Speaker": "hero", "Next": "coal" },
+      { "Id": "refused_mended", "Speaker": "hero", "Next": "coal" },
+      { "Id": "questioned_kept", "Speaker": "hero", "Next": "coal" },
+      { "Id": "write", "Speaker": "hero", "Next": "coal" },
+      { "Id": "coal", "Speaker": "hero", "Next": "choose" },
+      {
+        "Id": "choose", "Speaker": "commander",
+        "Choices": [
+          { "Next": "campfire", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "redmage:fire_camp" } ] },
+          { "Next": "home", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "redmage:fire_home" } ] },
+          { "Next": "out", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -3 }, { "Type": "SetFlag", "Id": "redmage:fire_out" } ] }
+        ]
+      },
+      { "Id": "campfire", "Speaker": "hero" },
+      { "Id": "home", "Speaker": "hero" },
+      { "Id": "out", "Speaker": "hero" }
+    ]
   }
 ]

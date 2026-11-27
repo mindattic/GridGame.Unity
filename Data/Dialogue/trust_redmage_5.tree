@@ -1,0 +1,99 @@
+dialogue trust_redmage_5
+title: What the fire is for
+trigger: Trust redmage level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Red Mage sits by the cold fire pit with the dented tin open on one knee and a folded scrap of letter-paper on the other, read so often it has gone soft as cloth.
+  * You kept what the tithe couldn't take. I said it then. I'd say it again. -> honoured_back
+    if: FlagSet redmage:coal_honoured
+    do: AddTrust $with 5
+  * You told me you were waiting to find out what that coal was for. Did you? -> asked_back
+    if: FlagSet redmage:coal_asked
+    do: AddTrust $with 6
+  * I told you once to be careful with that tin. I was wrong to make it sound like a threat. -> warned_back
+    if: FlagSet redmage:coal_warned
+    do: AddTrust $with 7
+  * News from the fens? -> news
+    do: AddTrust $with 3
+
+node honoured_back hero
+  I told the coal, you know. That very night. It didn't say anything back, but it burned a bit taller. Sit down. There's news.
+  -> letter
+
+node asked_back hero
+  I think so. I think tonight's the night I find out. Sit down. There's news.
+  -> letter
+
+node warned_back hero
+  You weren't wrong. You were a commander with a camp full of wagons. And I never once set one alight, did I? Sit down. There's news.
+  -> letter
+
+node news hero
+  From a cousin in Saltmoss who can barely spell, so it took a while to read. Sit down.
+  -> letter
+
+node letter hero
+  My aunt sat by the cold hearth the way she always does. And then, out of nothing, she said my name. Asked where I'd gone. Nine years, Commander, and she never asked after anyone.
+  -> hope
+
+node hope commander
+  The Red Mage turns the letter over, though the back is blank, and turns it again.
+  * We said we'd try together, with the orb. When the road goes back past Saltmoss, we will. -> promised_kept
+    if: FlagSet redmage:test_promised
+    do: AddTrust $with 9
+    do: SetFlag redmage:thread_promise
+  * I wouldn't let you try. I think I was afraid of what it would cost you. I'm sorry. -> refused_mended
+    if: FlagSet redmage:test_refused
+    do: AddTrust $with 10
+    do: SetFlag redmage:thread_mended
+  * You asked me to help you stop wanting to fix her. Maybe you don't have to stop. Maybe she's asking for you, not for a cure. -> questioned_kept
+    if: FlagSet redmage:test_questioned
+    do: AddTrust $with 8
+    do: SetFlag redmage:thread_asking
+  * Then write back. Tell her where you've gone. -> write
+    do: AddTrust $with 6
+    do: SetFlag redmage:thread_letter
+
+node promised_kept hero
+  You remembered. I wasn't sure you would. Then I'll stop counting the days and start counting the miles. That's a better kind of sum.
+  -> coal
+
+node refused_mended hero
+  Afraid for me. Huh. Nobody's been afraid for me since I was small. I'm not sorry you said no. I'm glad you said that.
+  -> coal
+
+node questioned_kept hero
+  Asking for me. Not waiting to be mended. Just asking where I'd gone. I hadn't let myself read it that way. I think you're right.
+  -> coal
+
+node write hero
+  I will. I'll tell her I'm with a commander who stole the Choir's white wagon and talks to me like I'm worth answering. She'll think I've joined a circus.
+  -> coal
+
+node coal hero
+  So. The coal. Nine years I've carried it, waiting for it to be for something. I think it's for tonight. I just don't know which way.
+  -> choose
+
+node choose commander
+  The Red Mage holds the open tin out across the cold fire pit.
+  * Light the camp fire with it. Her hearth can warm all of us now. -> campfire
+    do: AddTrust $with 8
+    do: SetFlag redmage:fire_camp
+  * Keep carrying it. Take it home to her hearth when we pass Saltmoss. -> home
+    do: AddTrust $with 7
+    do: SetFlag redmage:fire_home
+  * Let it go out. You've carried her long enough. -> out
+    do: AddTrust $with -3
+    do: SetFlag redmage:fire_out
+
+node campfire hero
+  All of you. Yes. She always did cook for half the lane. Stand back, Commander. It's been waiting nine years, and it's going to be pleased with itself.
+
+node home hero
+  Home. Back where it came out of, with me carrying it, and you beside me, and that orb of yours in your pocket. Whatever happens at that hearth, it won't be cold. I'll feed it twice as much peat till then.
+
+node out hero
+  Let it go out. Maybe. Maybe that's what she'd say too. Not tonight, though. Tonight I'll just close the lid and leave it to decide for itself. Goodnight, Commander.

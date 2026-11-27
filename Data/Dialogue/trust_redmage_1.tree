@@ -1,0 +1,74 @@
+dialogue trust_redmage_1
+title: The coal in the tin
+trigger: Trust redmage level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  Long after the fire is banked, a small red glow still moves at the edge of camp. The Red Mage sits on an upturned crate, turning a dented tin over and over, the lid cracked open on a single live coal.
+  * That glow carries. Choir scouts could see it from the ridge. -> scouts
+    do: AddTrust $with -2
+  * You can't sleep either? -> sleep
+    do: AddTrust $with 4
+  * Every night you sit with that tin. What's in it? -> tin
+    do: AddTrust $with 5
+
+node scouts hero
+  From the ridge? Through two hedges and a wagon? You think a great deal of Choir eyesight. Fine. I'll keep the lid lower. It isn't a lantern, anyway.
+  -> coal
+
+node sleep hero
+  Fen folk sleep like herons, one eye at a time. And I don't like to sleep before this has settled. It sulks if I leave it too early.
+  -> coal
+
+node tin hero
+  You've been counting. Good. I'd rather be watched by someone who notices things.
+  -> coal
+
+node coal hero
+  It's a coal, Commander. The same one, more or less, for nine years. I feed it a pinch of peat and a breath of fire every night, and it keeps.
+  -> hearth
+
+node hearth commander
+  The Red Mage tips the tin so the coal rolls, and blows on it once. It brightens like an eye opening.
+  -> aunt
+
+node aunt hero
+  It came out of my aunt's hearth. The morning of her tithe she banked the fire like always, said she'd see to it when she was back. She came back. She never touched that hearth again. Sat by it, cold, every day, and never once asked for it to be lit.
+  -> kept
+
+node kept hero
+  So I lifted a coal out before it died, and I've carried it since. Stupid, isn't it? A whole house went cold, and I saved one ember of it in a tobacco tin.
+  -> ask
+
+node ask commander
+  The Red Mage snaps the lid half shut and waits.
+  * It isn't stupid. You kept what the tithe couldn't take. -> kept_hers
+    do: AddTrust $with 8
+    do: SetFlag redmage:coal_honoured
+  * What's it for, though? Nine years is a long time to carry a coal. -> for_what
+    do: AddTrust $with 6
+    do: SetFlag redmage:coal_asked
+  * Grief that burns in a tin can burn down a camp. Be careful with it. -> careful
+    do: AddTrust $with -4
+    do: SetFlag redmage:coal_warned
+
+node kept_hers hero
+  That's a kinder way to say it than I've ever managed. I'll borrow it, if you don't mind. I'll tell it to the coal.
+  -> close_line
+
+node for_what hero
+  I don't know yet. That's the honest answer, and you're the first to get it. I think I'm waiting to find out what it's for. That orb of yours made me think the wait might be nearly over.
+  -> close_line
+
+node careful hero
+  I've been careful for nine years, Commander. Careful is what kept it small. But I heard you. I'll keep it clear of the wagons.
+  -> close_line
+
+node close_line hero
+  Go on, get some sleep. I'll bank it and follow. One of us should be rested when the Captain comes over the hill.
+  -> close
+
+node close commander
+  The lid clicks shut. For a while the tin still glows faintly through the dent, then the Red Mage tucks it inside a coat and the dark settles back over the camp.

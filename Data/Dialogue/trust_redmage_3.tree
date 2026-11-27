@@ -1,0 +1,74 @@
+dialogue trust_redmage_3
+title: Cold hands
+trigger: Trust redmage level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Red Mage has pulled a glove off to work a stubborn strap, and in the firelight the back of that hand is a map of old, shiny burn scars, laid one over another.
+  * Those burns are old. Not from any fight of ours. -> old
+    do: AddTrust $with 4
+  * Let the Cleric see to that hand. -> cleric
+    do: AddTrust $with 2
+  * Say nothing, and hold the strap steady for the Red Mage. -> strap
+    do: AddTrust $with 5
+
+node old hero
+  No. Not from any fight with anyone. I did these myself, a little at a time, the winter after the tithe.
+  -> winter
+
+node cleric hero
+  There's nothing to see to. They healed years ago. They're only ugly, and I did them myself, the winter after the tithe.
+  -> winter
+
+node strap hero
+  Thank you. You didn't ask. Most people ask. I'll tell you anyway: I did these myself, the winter after the tithe.
+  -> winter
+
+node winter hero
+  My aunt's hands were cold, Commander. Always. Hollow people's hands are. So every night I'd hold them and push heat into them, the way you'd warm a pot. A little more every night. Her hands never warmed. Mine burned instead.
+  -> stopped
+
+node stopped hero
+  I stopped when she asked me to. Only thing she asked for that whole winter. Not because it hurt me. Because it didn't do anything, and she could see me hoping.
+  -> orb
+
+node orb commander
+  The Red Mage's eyes go to the Commander's satchel, where the orb sits wrapped.
+  -> idea
+
+node idea hero
+  Here's what I keep coming back to. My fire never reached what the tithe took. But that orb wakes near you. Dead for a hundred years, and it wakes. What if fire near you could reach it too? What if it isn't heat a Hollow needs, but whatever you've got?
+  -> ask
+
+node ask commander
+  The Red Mage pulls the glove back on, carefully, and waits.
+  * When we next pass a Hollow who'll let us, we'll try. Together. -> promised
+    do: AddTrust $with 9
+    do: SetFlag redmage:test_promised
+  * I don't know what I've got. I won't let you burn yourself again on a guess. -> refused
+    do: AddTrust $with -3
+    do: SetFlag redmage:test_refused
+  * Maybe. But your aunt asked you to stop for your sake. Would she want you starting again? -> aunt_asked
+    do: AddTrust $with 6
+    do: SetFlag redmage:test_questioned
+
+node promised hero
+  Together. I'm writing that down somewhere in my head where I can find it. If it doesn't work, it doesn't. But I'll have tried with someone, not alone in a cold kitchen.
+  -> close_line
+
+node refused hero
+  A guess is all I've ever had. You're telling me to keep my hands in my pockets and wait for someone else's answer. I've heard that before. From the Choir, mostly.
+  -> close_line
+
+node aunt_asked hero
+  No. She'd want me sleeping and eating and not looking at her like a sum to solve. I don't know how to stop wanting it, though. You might have to help me with that part.
+  -> close_line
+
+node close_line hero
+  The coal's still in the tin, by the way. Nine years and a season. I haven't let it go out.
+  -> close
+
+node close commander
+  The Red Mage pats the coat where the tin rides, and goes back to the strap. The knot comes loose on the first pull.

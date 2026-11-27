@@ -9887,6 +9887,445 @@
         ]
       }
     },
+    "dialogue:trust_redmage_1": {
+      "key": "dialogue:trust_redmage_1",
+      "id": "conversation-trust-redmage-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:1c0650d234fa99d2ce61c92189a4491f202a23c42b338707aaa4540b908b1a96",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The coal in the tin",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Long after the fire is banked, a small red glow still moves at the edge of camp. The Red Mage sits on an upturned crate, turning a dented tin over and over, the lid cracked open on a single live coal.",
+            "choices": [
+              {
+                "text": "That glow carries. Choir scouts could see it from the ridge.",
+                "next": "scouts"
+              },
+              {
+                "text": "You can't sleep either?",
+                "next": "sleep"
+              },
+              {
+                "text": "Every night you sit with that tin. What's in it?",
+                "next": "tin"
+              }
+            ]
+          },
+          {
+            "id": "scouts",
+            "speaker": "$with",
+            "line": "From the ridge? Through two hedges and a wagon? You think a great deal of Choir eyesight. Fine. I'll keep the lid lower. It isn't a lantern, anyway.",
+            "next": "coal"
+          },
+          {
+            "id": "sleep",
+            "speaker": "$with",
+            "line": "Fen folk sleep like herons, one eye at a time. And I don't like to sleep before this has settled. It sulks if I leave it too early.",
+            "next": "coal"
+          },
+          {
+            "id": "tin",
+            "speaker": "$with",
+            "line": "You've been counting. Good. I'd rather be watched by someone who notices things.",
+            "next": "coal"
+          },
+          {
+            "id": "coal",
+            "speaker": "$with",
+            "line": "It's a coal, Commander. The same one, more or less, for nine years. I feed it a pinch of peat and a breath of fire every night, and it keeps.",
+            "next": "hearth"
+          },
+          {
+            "id": "hearth",
+            "speaker": "character-commander",
+            "line": "The Red Mage tips the tin so the coal rolls, and blows on it once. It brightens like an eye opening.",
+            "next": "aunt"
+          },
+          {
+            "id": "aunt",
+            "speaker": "$with",
+            "line": "It came out of my aunt's hearth. The morning of her tithe she banked the fire like always, said she'd see to it when she was back. She came back. She never touched that hearth again. Sat by it, cold, every day, and never once asked for it to be lit.",
+            "next": "kept"
+          },
+          {
+            "id": "kept",
+            "speaker": "$with",
+            "line": "So I lifted a coal out before it died, and I've carried it since. Stupid, isn't it? A whole house went cold, and I saved one ember of it in a tobacco tin.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Red Mage snaps the lid half shut and waits.",
+            "choices": [
+              {
+                "text": "It isn't stupid. You kept what the tithe couldn't take.",
+                "next": "kept_hers"
+              },
+              {
+                "text": "What's it for, though? Nine years is a long time to carry a coal.",
+                "next": "for_what"
+              },
+              {
+                "text": "Grief that burns in a tin can burn down a camp. Be careful with it.",
+                "next": "careful"
+              }
+            ]
+          },
+          {
+            "id": "kept_hers",
+            "speaker": "$with",
+            "line": "That's a kinder way to say it than I've ever managed. I'll borrow it, if you don't mind. I'll tell it to the coal.",
+            "next": "close_line"
+          },
+          {
+            "id": "for_what",
+            "speaker": "$with",
+            "line": "I don't know yet. That's the honest answer, and you're the first to get it. I think I'm waiting to find out what it's for. That orb of yours made me think the wait might be nearly over.",
+            "next": "close_line"
+          },
+          {
+            "id": "careful",
+            "speaker": "$with",
+            "line": "I've been careful for nine years, Commander. Careful is what kept it small. But I heard you. I'll keep it clear of the wagons.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "Go on, get some sleep. I'll bank it and follow. One of us should be rested when the Captain comes over the hill.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The lid clicks shut. For a while the tin still glows faintly through the dent, then the Red Mage tucks it inside a coat and the dark settles back over the camp."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_redmage_3": {
+      "key": "dialogue:trust_redmage_3",
+      "id": "conversation-trust-redmage-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:d496985820c82c1ca95f17afd6c16d05abe8859ef4384dca71a8c3e84eed41b8",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Cold hands",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Red Mage has pulled a glove off to work a stubborn strap, and in the firelight the back of that hand is a map of old, shiny burn scars, laid one over another.",
+            "choices": [
+              {
+                "text": "Those burns are old. Not from any fight of ours.",
+                "next": "old"
+              },
+              {
+                "text": "Let the Cleric see to that hand.",
+                "next": "cleric"
+              },
+              {
+                "text": "Say nothing, and hold the strap steady for the Red Mage.",
+                "next": "strap"
+              }
+            ]
+          },
+          {
+            "id": "old",
+            "speaker": "$with",
+            "line": "No. Not from any fight with anyone. I did these myself, a little at a time, the winter after the tithe.",
+            "next": "winter"
+          },
+          {
+            "id": "cleric",
+            "speaker": "$with",
+            "line": "There's nothing to see to. They healed years ago. They're only ugly, and I did them myself, the winter after the tithe.",
+            "next": "winter"
+          },
+          {
+            "id": "strap",
+            "speaker": "$with",
+            "line": "Thank you. You didn't ask. Most people ask. I'll tell you anyway: I did these myself, the winter after the tithe.",
+            "next": "winter"
+          },
+          {
+            "id": "winter",
+            "speaker": "$with",
+            "line": "My aunt's hands were cold, Commander. Always. Hollow people's hands are. So every night I'd hold them and push heat into them, the way you'd warm a pot. A little more every night. Her hands never warmed. Mine burned instead.",
+            "next": "stopped"
+          },
+          {
+            "id": "stopped",
+            "speaker": "$with",
+            "line": "I stopped when she asked me to. Only thing she asked for that whole winter. Not because it hurt me. Because it didn't do anything, and she could see me hoping.",
+            "next": "orb"
+          },
+          {
+            "id": "orb",
+            "speaker": "character-commander",
+            "line": "The Red Mage's eyes go to the Commander's satchel, where the orb sits wrapped.",
+            "next": "idea"
+          },
+          {
+            "id": "idea",
+            "speaker": "$with",
+            "line": "Here's what I keep coming back to. My fire never reached what the tithe took. But that orb wakes near you. Dead for a hundred years, and it wakes. What if fire near you could reach it too? What if it isn't heat a Hollow needs, but whatever you've got?",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Red Mage pulls the glove back on, carefully, and waits.",
+            "choices": [
+              {
+                "text": "When we next pass a Hollow who'll let us, we'll try. Together.",
+                "next": "promised"
+              },
+              {
+                "text": "I don't know what I've got. I won't let you burn yourself again on a guess.",
+                "next": "refused"
+              },
+              {
+                "text": "Maybe. But your aunt asked you to stop for your sake. Would she want you starting again?",
+                "next": "aunt_asked"
+              }
+            ]
+          },
+          {
+            "id": "promised",
+            "speaker": "$with",
+            "line": "Together. I'm writing that down somewhere in my head where I can find it. If it doesn't work, it doesn't. But I'll have tried with someone, not alone in a cold kitchen.",
+            "next": "close_line"
+          },
+          {
+            "id": "refused",
+            "speaker": "$with",
+            "line": "A guess is all I've ever had. You're telling me to keep my hands in my pockets and wait for someone else's answer. I've heard that before. From the Choir, mostly.",
+            "next": "close_line"
+          },
+          {
+            "id": "aunt_asked",
+            "speaker": "$with",
+            "line": "No. She'd want me sleeping and eating and not looking at her like a sum to solve. I don't know how to stop wanting it, though. You might have to help me with that part.",
+            "next": "close_line"
+          },
+          {
+            "id": "close_line",
+            "speaker": "$with",
+            "line": "The coal's still in the tin, by the way. Nine years and a season. I haven't let it go out.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Red Mage pats the coat where the tin rides, and goes back to the strap. The knot comes loose on the first pull."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_redmage_5": {
+      "key": "dialogue:trust_redmage_5",
+      "id": "conversation-trust-redmage-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:73980bceb2af96dbd78d3e09ddaf32a3e532f592e0be5230d9849636ee28b422",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "What the fire is for",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Red Mage sits by the cold fire pit with the dented tin open on one knee and a folded scrap of letter-paper on the other, read so often it has gone soft as cloth.",
+            "choices": [
+              {
+                "text": "You kept what the tithe couldn't take. I said it then. I'd say it again.",
+                "next": "honoured_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You told me you were waiting to find out what that coal was for. Did you?",
+                "next": "asked_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you once to be careful with that tin. I was wrong to make it sound like a threat.",
+                "next": "warned_back",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "News from the fens?",
+                "next": "news"
+              }
+            ]
+          },
+          {
+            "id": "honoured_back",
+            "speaker": "$with",
+            "line": "I told the coal, you know. That very night. It didn't say anything back, but it burned a bit taller. Sit down. There's news.",
+            "next": "letter"
+          },
+          {
+            "id": "asked_back",
+            "speaker": "$with",
+            "line": "I think so. I think tonight's the night I find out. Sit down. There's news.",
+            "next": "letter"
+          },
+          {
+            "id": "warned_back",
+            "speaker": "$with",
+            "line": "You weren't wrong. You were a commander with a camp full of wagons. And I never once set one alight, did I? Sit down. There's news.",
+            "next": "letter"
+          },
+          {
+            "id": "news",
+            "speaker": "$with",
+            "line": "From a cousin in Saltmoss who can barely spell, so it took a while to read. Sit down.",
+            "next": "letter"
+          },
+          {
+            "id": "letter",
+            "speaker": "$with",
+            "line": "My aunt sat by the cold hearth the way she always does. And then, out of nothing, she said my name. Asked where I'd gone. Nine years, Commander, and she never asked after anyone.",
+            "next": "hope"
+          },
+          {
+            "id": "hope",
+            "speaker": "character-commander",
+            "line": "The Red Mage turns the letter over, though the back is blank, and turns it again.",
+            "choices": [
+              {
+                "text": "We said we'd try together, with the orb. When the road goes back past Saltmoss, we will.",
+                "next": "promised_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I wouldn't let you try. I think I was afraid of what it would cost you. I'm sorry.",
+                "next": "refused_mended",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You asked me to help you stop wanting to fix her. Maybe you don't have to stop. Maybe she's asking for you, not for a cure.",
+                "next": "questioned_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Then write back. Tell her where you've gone.",
+                "next": "write"
+              }
+            ]
+          },
+          {
+            "id": "promised_kept",
+            "speaker": "$with",
+            "line": "You remembered. I wasn't sure you would. Then I'll stop counting the days and start counting the miles. That's a better kind of sum.",
+            "next": "coal"
+          },
+          {
+            "id": "refused_mended",
+            "speaker": "$with",
+            "line": "Afraid for me. Huh. Nobody's been afraid for me since I was small. I'm not sorry you said no. I'm glad you said that.",
+            "next": "coal"
+          },
+          {
+            "id": "questioned_kept",
+            "speaker": "$with",
+            "line": "Asking for me. Not waiting to be mended. Just asking where I'd gone. I hadn't let myself read it that way. I think you're right.",
+            "next": "coal"
+          },
+          {
+            "id": "write",
+            "speaker": "$with",
+            "line": "I will. I'll tell her I'm with a commander who stole the Choir's white wagon and talks to me like I'm worth answering. She'll think I've joined a circus.",
+            "next": "coal"
+          },
+          {
+            "id": "coal",
+            "speaker": "$with",
+            "line": "So. The coal. Nine years I've carried it, waiting for it to be for something. I think it's for tonight. I just don't know which way.",
+            "next": "choose"
+          },
+          {
+            "id": "choose",
+            "speaker": "character-commander",
+            "line": "The Red Mage holds the open tin out across the cold fire pit.",
+            "choices": [
+              {
+                "text": "Light the camp fire with it. Her hearth can warm all of us now.",
+                "next": "campfire"
+              },
+              {
+                "text": "Keep carrying it. Take it home to her hearth when we pass Saltmoss.",
+                "next": "home"
+              },
+              {
+                "text": "Let it go out. You've carried her long enough.",
+                "next": "out"
+              }
+            ]
+          },
+          {
+            "id": "campfire",
+            "speaker": "$with",
+            "line": "All of you. Yes. She always did cook for half the lane. Stand back, Commander. It's been waiting nine years, and it's going to be pleased with itself."
+          },
+          {
+            "id": "home",
+            "speaker": "$with",
+            "line": "Home. Back where it came out of, with me carrying it, and you beside me, and that orb of yours in your pocket. Whatever happens at that hearth, it won't be cold. I'll feed it twice as much peat till then."
+          },
+          {
+            "id": "out",
+            "speaker": "$with",
+            "line": "Let it go out. Maybe. Maybe that's what she'd say too. Not tonight, though. Tonight I'll just close the lid and leave it to decide for itself. Goodnight, Commander."
+          }
+        ]
+      }
+    },
     "dialogue:wanderer_darktemplar": {
       "key": "dialogue:wanderer_darktemplar",
       "id": "conversation-wanderer-darktemplar",
