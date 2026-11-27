@@ -56,13 +56,18 @@ namespace GridGame.Meta
         public static int NewHeroMiss(SaveData s, BannerKind kind) =>
             s.Summon?.NewHeroMiss != null && s.Summon.NewHeroMiss.TryGetValue(kind, out var n) ? n : 0;
 
-        /// <summary>Which hard pity the next pull on <paramref name="banner"/> from <paramref name="pool"/> is under, if any.</summary>
-        public static PityDue Due(SaveData s, BannerDef banner, List<string> pool)
+        /// <summary>Whether the save has <paramref name="classId"/>, or it is already <paramref name="coming"/> in this batch.</summary>
+        private static bool Has(SaveData s, string classId, IEnumerable<string> coming) =>
+            s.Hero(classId) != null || (coming != null && coming.Contains(classId, StringComparer.OrdinalIgnoreCase));
+
+        /// <summary>Which hard pity the next pull on <paramref name="banner"/> from <paramref name="pool"/> is under, if any;
+        /// heroes <paramref name="coming"/> earlier in the same multi-pull count as owned.</summary>
+        public static PityDue Due(SaveData s, BannerDef banner, List<string> pool, IEnumerable<string> coming = null)
         {
             if (banner == null) return PityDue.None;
             if (banner.Kind == BannerKind.Featured && banner.FeaturedPity > 0 && Featured(banner, pool).Count > 0
                 && (s.Summon?.FeaturedMiss ?? 0) >= banner.FeaturedPity - 1) return PityDue.Featured;
-            if (banner.NewHeroPity > 0 && NewHeroMiss(s, banner.Kind) >= banner.NewHeroPity - 1 && pool.Any(id => s.Hero(id) == null))
+            if (banner.NewHeroPity > 0 && NewHeroMiss(s, banner.Kind) >= banner.NewHeroPity - 1 && pool.Any(id => !Has(s, id, coming)))
                 return PityDue.NewHero;
             return PityDue.None;
         }
@@ -79,19 +84,19 @@ namespace GridGame.Meta
         /// narrower list a caller draws from): one entry per hero who can come, in pool order, the chances summing to 1. Pity
         /// due → only the heroes it brings, evenly. Standard (or no banner) → every hero evenly. Featured →
         /// <see cref="BannerDef.FeaturedShare"/> split across the featured heroes, the rest a Standard pull.
-        /// <see cref="Roll"/> draws from exactly this list.</summary>
-        public static List<DrawOdds> Odds(SaveData s, BannerDef banner, List<string> pool)
+        /// <see cref="Roll"/> draws from exactly this list. <paramref name="coming"/>: as <see cref="Due"/>.</summary>
+        public static List<DrawOdds> Odds(SaveData s, BannerDef banner, List<string> pool, IEnumerable<string> coming = null)
         {
             var odds = new List<DrawOdds>(pool.Count);
             if (pool.Count == 0) return odds;
             var featured = Featured(banner, pool);
-            switch (Due(s, banner, pool))
+            switch (Due(s, banner, pool, coming))
             {
                 case PityDue.Featured:
                     foreach (var id in featured) odds.Add(new DrawOdds(id, 1.0 / featured.Count));
                     return odds;
                 case PityDue.NewHero:
-                    var unowned = pool.Where(id => s.Hero(id) == null).ToList();
+                    var unowned = pool.Where(id => !Has(s, id, coming)).ToList();
                     foreach (var id in unowned) odds.Add(new DrawOdds(id, 1.0 / unowned.Count));
                     return odds;
             }
@@ -137,18 +142,19 @@ namespace GridGame.Meta
         /// hero lands: the kind's pull count, its new-hero pity (reset by a new hero, or once the pool has no one left to be
         /// new), the Featured pity (reset by a featured hero; it carries from one Featured banner to the next) and the
         /// history, newest first, capped at <see cref="HistoryKeep"/>. A hero already owned lands here and now as an
-        /// <see cref="Echo"/>.</summary>
-        public static PullRecord Record(SaveData s, BannerDef banner, List<string> pool, string classId, string paid, DateTime now)
+        /// <see cref="Echo"/>. In a multi-pull (<see cref="Pull"/>) <paramref name="coming"/> holds the heroes rolled before
+        /// this one: they count as owned, and an Echo is only foreseen here; it lands with the job (<see cref="Land"/>).</summary>
+        public static PullRecord Record(SaveData s, BannerDef banner, List<string> pool, string classId, string paid, DateTime now, IList<string> coming = null)
         {
             s.Summon ??= new SummonState();
             var st = s.Summon;
             var kind = banner?.Kind ?? BannerKind.Standard;
-            bool isNew = s.Hero(classId) == null;
+            bool isNew = !Has(s, classId, coming);
             var result = PullResult.New;
             int fragments = 0;
-            if (!isNew) result = Echo(s, classId, out fragments);
+            if (!isNew) result = coming == null ? Echo(s, classId, out fragments) : Foresee(s, classId, coming, out fragments);
             st.Pulls[kind] = (st.Pulls.TryGetValue(kind, out var p) ? p : 0) + 1;
-            bool noneLeft = pool.All(id => s.Hero(id) != null || string.Equals(id, classId, StringComparison.OrdinalIgnoreCase));
+            bool noneLeft = pool.All(id => Has(s, id, coming) || string.Equals(id, classId, StringComparison.OrdinalIgnoreCase));
             st.NewHeroMiss[kind] = isNew || noneLeft ? 0 : NewHeroMiss(s, kind) + 1;
             if (kind == BannerKind.Featured)
                 st.FeaturedMiss = banner.Featured.Contains(classId, StringComparer.OrdinalIgnoreCase) ? 0 : st.FeaturedMiss + 1;
@@ -160,6 +166,110 @@ namespace GridGame.Meta
             st.History.Insert(0, rec);
             if (st.History.Count > HistoryKeep) st.History.RemoveRange(HistoryKeep, st.History.Count - HistoryKeep);
             return rec;
+        }
+
+        /// <summary>What <see cref="Echo"/> will give when a duplicate in a multi-pull lands: the hero's Echoes so far plus the
+        /// copies of it <paramref name="coming"/> before (the first of them is the hero itself when it isn't owned yet).</summary>
+        private static PullResult Foresee(SaveData s, string classId, IList<string> coming, out int fragments)
+        {
+            var h = s.Hero(classId);
+            int echoes = (h?.Echoes ?? 0) + coming.Count(id => string.Equals(id, classId, StringComparison.OrdinalIgnoreCase)) - (h == null ? 1 : 0);
+            fragments = echoes < EchoCap ? 0 : FragmentsPerSpareEcho;
+            return echoes < EchoCap ? PullResult.Echo : PullResult.Fragments;
+        }
+
+        /// <summary>A pull's price on <paramref name="banner"/> for this save: whole pulls in Summon Tickets while it holds
+        /// them (when the banner takes them), the rest in Shards (paid through <see cref="DiamondExchange"/>, any shortfall
+        /// in gold).</summary>
+        public static (int tickets, int shards) Price(SaveData s, BannerDef banner, int count)
+        {
+            int ticketPulls = banner.AcceptsTickets && banner.PullTickets > 0 ? Math.Min(count, SummonTickets.Have(s) / banner.PullTickets) : 0;
+            return (ticketPulls * banner.PullTickets, (count - ticketPulls) * banner.PullShards);
+        }
+
+        public static Result CanPull(ContentDb c, SaveData s, BannerDef banner, int count)
+        {
+            if (s == null) return Result.Fail("No save");
+            if (s.TestMode) return Result.Fail("Not in Test Mode");
+            if (banner == null) return Result.Fail("No such banner");
+            if (count != 1 && count != banner.MultiCount) return Result.Fail($"A pull is x1 or x{banner.MultiCount}");
+            var allowed = LootBoxPolicy.Allows(s, banner, count);
+            if (!allowed.Ok) return allowed;
+            if (Pool(c, s, banner).Count == 0) return Result.Fail("No one is left to answer");
+            if (Paywall.Pending(s, PaywallKind.Summon) != null) return Result.Fail("A summoning is already under way");
+            var (_, shards) = Price(s, banner, count);
+            return shards > 0 ? DiamondExchange.CanPay(s, shards) : Result.Success();
+        }
+
+        /// <summary>A x1 or x<see cref="BannerDef.MultiCount"/> pull on <paramref name="banner"/> (GG-T1424): pays Summon
+        /// Tickets first (earned, then bought), then Shards, then the gold shortfall; rolls and records every pull now, in
+        /// order, and starts one Summon job holding them all (<see cref="PaywallJob.Batch"/>). The heroes land in that order
+        /// when <see cref="Paywall.Finish"/> runs (<see cref="Land"/>). Takes nothing when it fails.</summary>
+        public static Result Pull(ContentDb c, SaveData s, BannerDef banner, int count, DateTime now, out PaywallJob job)
+        {
+            job = null;
+            var ok = CanPull(c, s, banner, count);
+            if (!ok.Ok) return ok;
+            var (tickets, shards) = Price(s, banner, count);
+            (int diamonds, int gold) split = (0, 0);
+            if (shards > 0)
+            {
+                var paid = DiamondExchange.Pay(s, shards, out split);
+                if (!paid.Ok) return paid;
+            }
+            for (int i = 0; i < tickets; i++) SummonTickets.Spend(s);
+            int ticketPulls = tickets > 0 ? tickets / banner.PullTickets : 0;
+            var pool = Pool(c, s, banner);
+            var coming = new List<string>(count);
+            for (int i = 0; i < count; i++)
+            {
+                var id = Roll(Odds(s, banner, pool, coming), SeedFor(s, banner));
+                Record(s, banner, pool, id, i < ticketPulls ? TicketText.Of(banner.PullTickets) : DiamondExchange.Label(banner.PullShards), now, coming);
+                coming.Add(id);
+            }
+            job = new PaywallJob
+            {
+                Kind = PaywallKind.Summon, Arg = banner.Id, Batch = coming, TicketPulls = ticketPulls, StartedUtc = now,
+                Seconds = Paywall.Duration(PaywallKind.Summon, s), Diamonds = shards, Tickets = tickets, Paid = split.gold,
+            };
+            s.Jobs.Add(job);
+            return Result.Success();
+        }
+
+        /// <summary>Lands a finished banner pull's heroes in pull order: a hero the save lacks arrives
+        /// (<see cref="Summon.Arrive"/>), one it has becomes an <see cref="Echo"/>. A pull that fizzles gives back what paid
+        /// for it: the ticket pulls come first, so Tickets for those, Shards for the rest.</summary>
+        internal static Result Land(ContentDb c, SaveData s, PaywallJob job)
+        {
+            var lines = new List<string>();
+            int shardPulls = job.Batch.Count - job.TicketPulls;
+            for (int i = 0; i < job.Batch.Count; i++)
+            {
+                var id = job.Batch[i];
+                string name = c.TryClass(id)?.Name ?? id;
+                if (s.Hero(id) != null)
+                {
+                    lines.Add(Echo(s, id, out var fragments) == PullResult.Echo
+                        ? $"{name}: {EchoName} (+{EchoSp} SP)"
+                        : $"{name}: {fragments} {TicketText.Fragments}");
+                    continue;
+                }
+                var arrived = Summon.Arrive(c, s, id);
+                if (arrived.Ok) { lines.Add(arrived.Message); continue; }
+                if (i < job.TicketPulls)
+                {
+                    int t = job.Tickets / Math.Max(1, job.TicketPulls);
+                    SummonTickets.Earn(s, t);
+                    lines.Add($"{arrived.Message}. Refunded {TicketText.Of(t)}.");
+                }
+                else
+                {
+                    int d = job.Diamonds / Math.Max(1, shardPulls);
+                    DiamondExchange.Add(s, d);
+                    lines.Add($"{arrived.Message}. Refunded {ShardText.Of(d)}.");
+                }
+            }
+            return Result.Success(string.Join("\n", lines));
         }
 
         /// <summary>An owned hero pulled again: an Echo (+<see cref="EchoSp"/> SP to that hero) while it holds fewer than
@@ -183,6 +293,13 @@ namespace GridGame.Meta
             s.Summon.Fragments %= FragmentsPerTicket;
             return PullResult.Fragments;
         }
+    }
+
+    /// <summary>Whether a summon pull may be sold here (GG-T1424): the hook every pull asks first. Allows every pull until
+    /// the region rules land (GG-T1433).</summary>
+    public static class LootBoxPolicy
+    {
+        public static Result Allows(SaveData s, BannerDef banner, int count) => Result.Success();
     }
 
     public enum PityDue { None, NewHero, Featured }

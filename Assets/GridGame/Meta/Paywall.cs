@@ -24,6 +24,11 @@ namespace GridGame.Meta
         public int Diamonds;
         /// <summary>Summon Tickets spent on the draw instead (GG-T1422); refunded as earned Tickets if it fizzles.</summary>
         public int Tickets;
+        /// <summary>A banner pull's heroes in pull order (<see cref="Gacha.Pull"/>, GG-T1424; <c>Arg</c> is then the banner);
+        /// null for a single-hero job.</summary>
+        public List<string> Batch;
+        /// <summary>How many of <see cref="Batch"/>'s pulls, the first ones, were paid in <see cref="Tickets"/>.</summary>
+        public int TicketPulls;
     }
 
     /// <summary>The paywall hooks (§25.18, GG-T232): every premium action prices and times itself here.</summary>
@@ -105,6 +110,7 @@ namespace GridGame.Meta
             switch (job.Kind)
             {
                 case PaywallKind.Summon:
+                    if (job.Batch != null) return Gacha.Land(c, s, job);
                     var arrived = Summon.Arrive(c, s, job.Arg);
                     // A fizzled draw gives its whole Diamond price back as Diamonds, however it was paid (GG-T455: any gold
                     // part was exchanged into Diamonds on the way in).
