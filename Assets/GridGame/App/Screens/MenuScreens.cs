@@ -13,7 +13,8 @@ namespace GridGame.App
     /// <summary>Base for hub sub-screens: background art, header with back + gold, body column.</summary>
     public abstract class HubPage : GameScreen
     {
-        protected Label GoldLabel;
+        /// <summary>The header's currency strip (<see cref="Ui.Currencies"/>, GG-T1361).</summary>
+        protected VisualElement CurrencyBar;
         protected VisualElement Body;
         protected abstract string Title { get; }
         protected virtual string Backdrop => "greenvalley";
@@ -34,7 +35,7 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = new Color(0.45f, 0.5f, 0.7f, 1f);
             var col = Ui.El("fill col", root);
             // GG-T1335: a page more than one step from the hub also gets Home, back to the hub in one fade.
-            var header = Ui.Header(Title, () => App.Router.Back(), col, out GoldLabel, Subtitle,
+            var header = Ui.Header(Title, () => App.Router.Back(), col, out CurrencyBar, Subtitle,
                 App.Save != null && App.Router.PagesAboveHub > 1 ? () => App.Router.Home() : (Action)null);
             if (SubtitleName != null && header.Q<Label>("header-sub") is Label subLabel) subLabel.name = SubtitleName;
             // Every Camp NPC can be talked to from their own station as well as from Camp's Talk row (GG-T119).
@@ -43,22 +44,18 @@ namespace GridGame.App
             {
                 var talk = RowIcon.IconButton(S.SeenDialogues.Contains(topic.Id) ? "Talk" : "Talk!", RowKind.Talk, () => App.Router.Push(new DialogueScreen(topic, (string)null, (GameScreen)null)), "btn--small", null);
                 talk.name = "npc-talk";
-                header.Insert(header.IndexOf(GoldLabel), talk);
+                header.Insert(header.IndexOf(CurrencyBar), talk);
             }
             // GG-T454 (the menu kit): the kit's page body, the centred column with the kit's gutters (GG-T398).
             Body = Ui.PageBody(col);
             BuildBody(Body);
             Typography.Watch(Body);
-            UpdateGold();
+            // GG-T1361: Gold, Shards and Summon Tickets on every hub page; tapping Shards opens the Shard Store.
+            Ui.Currencies(CurrencyBar, App.Save, this is DiamondStoreScreen ? null : () => App.Router.Push(new DiamondStoreScreen()));
             CampTipOverlay.ShowIfPending(this, TipStation);
         }
 
         protected abstract void BuildBody(VisualElement body);
-
-        protected void UpdateGold()
-        {
-            if (GoldLabel != null && App.Save != null) GoldLabel.text = Ui.Gold(App.Save.Gold);
-        }
 
         /// <summary>Toasts the result and voices it: <paramref name="cue"/> on success (the coin by default; equip, repair
         /// and caravan pass their own, GG-T465), <c>ui.error</c> on a refusal.</summary>

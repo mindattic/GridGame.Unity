@@ -277,6 +277,9 @@
 .header-titles > .header-title { flex-grow: 0; margin-left: 0; }
 .header-sub { font-size: var(--type-base); color: var(--color-gold); -unity-text-align: middle-left; }
 .header-gold { font-size: var(--type-base); color: var(--color-gold); -unity-text-align: middle-right; margin-right: var(--space-16); }
+/* GG-T1361: the header's currency strip: Gold, the Shards button (opens the Shard Store), Summon Tickets. */
+.header-currencies { flex-direction: row; align-items: center; flex-shrink: 0; }
+.header-currencies > #header-shards { margin-right: var(--space-16); }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */

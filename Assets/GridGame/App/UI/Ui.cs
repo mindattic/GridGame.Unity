@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
+using GridGame.Meta;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -180,9 +181,9 @@ namespace GridGame.App
         }
 
         /// <summary>The page title (kit role, GG-T454): back button, title (with an optional one-line subtitle under it, e.g. a
-        /// station's level), live gold. The bar spans the stage; its contents line up with the windows below (Kit.Gutter).
-        /// <paramref name="onHome"/> adds the Home emblem button after Back (GG-T1335).</summary>
-        public static VisualElement Header(string title, Action onBack, VisualElement parent, out Label gold, string subtitle = null, Action onHome = null)
+        /// station's level), the currency strip (<see cref="Currencies"/> fills it). The bar spans the stage; its contents
+        /// line up with the windows below (Kit.Gutter). <paramref name="onHome"/> adds the Home emblem button after Back (GG-T1335).</summary>
+        public static VisualElement Header(string title, Action onBack, VisualElement parent, out VisualElement currencies, string subtitle = null, Action onHome = null)
         {
             var h = El("header", parent);
             // The bar spans the stage; its back button, title and gold line up with the content column (GG-T398).
@@ -206,8 +207,29 @@ namespace GridGame.App
                 sub.name = "header-sub";
                 Marquee(sub);
             }
-            gold = Text("", "header-gold shadow", h);
+            currencies = El("header-currencies", h);
+            currencies.name = "header-currencies";
             return h;
+        }
+
+        /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds: Gold, Shards (tapping them
+        /// runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, its Summon Tickets.
+        /// Rebuilds the strip each call, so a refresh shows the new balances.</summary>
+        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null)
+        {
+            if (bar == null) return;
+            bar.Clear();
+            if (s == null) return;
+            Text(Gold(s.Gold), "header-gold shadow", bar).name = "header-gold";
+            var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+            shards.name = "header-shards";
+            shards.tooltip = ShardText.Store;
+            if (onShards == null) shards.pickingMode = PickingMode.Ignore;
+            if (DiamondExchange.Wallet is AccountWallet w)
+            {
+                int t = Math.Max(0, w.Tickets);
+                Text($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", "header-gold shadow", bar).name = "header-tickets";
+            }
         }
 
         // ── The menu kit (GG-T454, Tokens.cs Kit): the builders every menu screen lays itself out with ──────────────
