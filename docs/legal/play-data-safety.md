@@ -16,7 +16,7 @@
 | Network | Only Google Play Billing (through Unity IAP) when the Shard Store connects and when you buy. The game has no other network code. |
 | Error log | Unhandled exceptions written to an on-device file (GG-T484 `CrashReporter`: time, version, platform, OS, device model, scrubbed error text). Not uploaded, so not "collected". Android vitals crash/ANR data is collected by Google Play itself, not declared by the developer. |
 | Saves | On device (app-private storage), included in Android Auto Backup |
-| Permissions | `INTERNET` and `com.android.vending.BILLING` (added by Unity IAP). No location, camera, microphone, contacts or storage permissions. [Owner: confirm against the merged AndroidManifest of a release build.] |
+| Permissions | `INTERNET`, `ACCESS_NETWORK_STATE` and `com.android.vending.BILLING` (added by Unity IAP) and the app's own `com.mindattic.gridgamegaiden.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (AndroidX, unexported receivers). No location, camera, microphone, contacts or storage permissions. `tools/check_aab.py` reads the backticked names in this row as its allowlist and fails a build whose merged manifest asks for anything else. |
 
 ## Questionnaire answers
 
