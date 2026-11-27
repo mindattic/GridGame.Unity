@@ -292,7 +292,7 @@ namespace GridGame.App
                 case StageSelectScreen _: case StageConfirmScreen _: return CampMenu.Campaign;
                 case HeroScreen _: return CampMenu.Heroes; // Status, Abilities, Party
                 case SummonScreen _: case MercenaryScreen _: return CampMenu.Summon;
-                case ShopScreen _: case DiamondStoreScreen _: return CampMenu.Shop;
+                case ShopHubScreen _: case ShopScreen _: case DiamondStoreScreen _: return CampMenu.Shop;
                 default: return NavBadges.Home;
             }
         }
@@ -306,8 +306,8 @@ namespace GridGame.App
         }
 
         /// <summary>The page a Camp destination (a <see cref="CampMenu"/> id) opens, shared by the nav tabs and the hub's
-        /// tiles and group menus: Heroes opens Abilities while a skill waits to be trained, else Status; Shop opens the Shard
-        /// Store until the Merchant joins. Null for a destination that is an action rather than a page (Inn, New Game+,
+        /// tiles and group menus: Heroes opens Abilities while a skill waits to be trained, else Status; Shop opens the Shop
+        /// hub (GG-T1637). Null for a destination that is an action rather than a page (Inn, New Game+,
         /// Save &amp; Quit) or an unknown id.</summary>
         internal static GameScreen NavDestination(SaveData s, string id)
         {
@@ -319,7 +319,7 @@ namespace GridGame.App
                     string lead = s.Party.FirstOrDefault();
                     return Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
                 case CampMenu.Summon: return new SummonScreen();
-                case CampMenu.Shop: return CampUnlocks.NpcOpen(s, CampNpcs.Merchant) ? new ShopScreen() : (GameScreen)new DiamondStoreScreen();
+                case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();
                 case CampMenu.Respec: return new RespecScreen();
                 case CampMenu.Mercenaries: return new MercenaryScreen();
@@ -588,7 +588,9 @@ namespace GridGame.App
             return sv;
         }
 
-        public static VisualElement Tabs(string[] names, int active, Action<int> onPick, VisualElement parent)
+        /// <summary>A tab strip. A tab <paramref name="locked"/> says true for is dimmed and runs <paramref name="onLocked"/>
+        /// with the error cue instead of picking it.</summary>
+        public static VisualElement Tabs(string[] names, int active, Action<int> onPick, VisualElement parent, Func<int, bool> locked = null, Action<int> onLocked = null)
         {
             var bar = El("tabs", parent);
             for (int i = 0; i < names.Length; i++)
@@ -597,7 +599,12 @@ namespace GridGame.App
                 var t = Text(names[i], "tab" + (i == active ? " tab--active" : ""), bar);
                 t.name = "tab-" + names[i].ToLowerInvariant().Replace(' ', '-');
                 t.pickingMode = PickingMode.Position;
-                Tappable(t, () => onPick(idx));
+                if (locked != null && locked(idx))
+                {
+                    t.AddToClassList("tab--locked");
+                    Tappable(t, () => onLocked?.Invoke(idx), "ui.error");
+                }
+                else Tappable(t, () => onPick(idx));
             }
             return bar;
         }

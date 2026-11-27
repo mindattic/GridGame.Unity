@@ -337,6 +337,7 @@
     color: rgb(170, 184, 255);
 }
 .tab--active { background-color: rgb(40, 66, 170); color: var(--color-white); }
+.tab--locked { opacity: 0.4; }
 
 /* ── Gauges ──────────────────────────────────────────────────────────────── */
 .gauge { height: 20px; border-radius: 10px; background-color: rgba(0, 0, 0, 0.6); border-width: 2px; border-color: rgba(255, 255, 255, 0.5); overflow: hidden; }

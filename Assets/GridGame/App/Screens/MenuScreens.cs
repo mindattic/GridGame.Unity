@@ -53,11 +53,21 @@ namespace GridGame.App
             // GG-T1590: the hub's bottom nav under the body.
             if (App.Save != null && App.Router.OnHubTrail) Ui.NavBar(col, this);
             // GG-T1361: Gold, Shards and Summon Tickets on every hub page; tapping Shards opens the Shard Store.
-            Ui.Currencies(CurrencyBar, App.Save, this is DiamondStoreScreen ? null : () => App.Router.PushOrReturn(new DiamondStoreScreen()));
+            Ui.Currencies(CurrencyBar, App.Save, ShardsTap);
             CampTipOverlay.ShowIfPending(this, TipStation);
         }
 
+        /// <summary>What tapping Shards on the currency strip does: open the Shard Store, or nothing on it.</summary>
+        protected virtual Action ShardsTap => this is DiamondStoreScreen ? null : () => App.Router.PushOrReturn(new DiamondStoreScreen());
+
         protected abstract void BuildBody(VisualElement body);
+
+        /// <summary>Builds this page's body inside <paramref name="host"/>'s, as one of its tabs (GG-T1637).</summary>
+        internal void BuildAsTab(HubPage host, VisualElement body)
+        {
+            TabHost = host;
+            BuildBody(body);
+        }
 
         /// <summary>Toasts the result and voices it: <paramref name="cue"/> on success (the coin by default; equip, repair
         /// and caravan pass their own, GG-T465), <c>ui.error</c> on a refusal.</summary>
@@ -212,7 +222,7 @@ namespace GridGame.App
                 App.MoveToWallet(slot, chosen); // GG-T702: every load (a cloud copy too) moves into the account wallet
                 App.Save = chosen; App.Slot = slot;
                 App.ApplySettings();
-                App.Router.ResetTo(StoryBeats.WithChapter(new HubScreen())); // GG-T1480: e.g. ch05, held past the ending's credits
+                App.Router.ResetTo(StoryBeats.Resume() ?? StoryBeats.WithChapter(new HubScreen())); // GG-T1480: e.g. ch05, held past the ending's credits
             });
         }
     }
@@ -332,7 +342,7 @@ namespace GridGame.App
                     App.MoveToWallet(slot, chosen); // GG-T702
                     App.Save = chosen; App.Slot = slot;
                     App.ApplySettings();
-                    App.Router.ResetTo(new HubScreen());
+                    App.Router.ResetTo(StoryBeats.Resume() ?? new HubScreen());
                 });
                 return;
             }
@@ -1309,7 +1319,7 @@ namespace GridGame.App
 
         private readonly string title;
         private readonly List<CrawlPage> pages;
-        private readonly GameScreen next;
+        private readonly Func<GameScreen> next;
         private readonly bool firstViewing;
         private VisualElement backdrops, clip, text, leaving;
         private float y, leavingY;
@@ -1317,7 +1327,10 @@ namespace GridGame.App
         private bool done, fast, skipArmed;
         /// <summary>A campaign crawl (GG-T386: the prologue, a chapter, the ending) over its backdrop; one with
         /// <see cref="CrawlDef.Pages"/> plays them in order, each over its own backdrop (GG-T1366).</summary>
-        public StoryCrawlScreen(CrawlDef crawl, GameScreen next, bool firstViewing = true)
+        public StoryCrawlScreen(CrawlDef crawl, GameScreen next, bool firstViewing = true) : this(crawl, () => next, firstViewing) { }
+        /// <summary>GG-T1394: a crawl whose next screen is built only once it ends (the onboarding's next step writes its
+        /// checkpoint as it starts).</summary>
+        public StoryCrawlScreen(CrawlDef crawl, Func<GameScreen> next, bool firstViewing = true)
             : this(crawl.Title, crawl.Pages.Count > 0 ? crawl.Pages : new List<CrawlPage> { new CrawlPage { Text = crawl.Crawl, Backdrop = crawl.Backdrop } },
                 next, firstViewing) { }
         /// <summary>Any crawl (GG-T231): the prologue, a story beat's interlude, the ending.</summary>
@@ -1326,6 +1339,8 @@ namespace GridGame.App
         /// <summary>A paged crawl (GG-T1366): <paramref name="title"/> heads the first page; each page's text scrolls
         /// over its own backdrop, cross-fading as the pages turn. A first viewing's Skip asks twice.</summary>
         public StoryCrawlScreen(string title, IEnumerable<CrawlPage> pages, GameScreen next, bool firstViewing = true)
+            : this(title, pages, () => next, firstViewing) { }
+        private StoryCrawlScreen(string title, IEnumerable<CrawlPage> pages, Func<GameScreen> next, bool firstViewing)
         {
             var app = GameApp.I;
             var fallback = HubScreen.ThemeFor(app.Content, app.Save);
@@ -1433,7 +1448,7 @@ namespace GridGame.App
         {
             if (done) return;
             done = true;
-            App.Router.Replace(next);
+            App.Router.Replace(next());
         }
 
         /// <summary>Back skips the crawl like Skip ›. A crawl always hands on to what follows it (a launch's battle that
@@ -1658,11 +1673,16 @@ namespace GridGame.App
         private static string OpeningBackdrop(CrawlDef p) =>
             p == null ? null : p.Backdrop ?? (p.Pages.Count > 0 ? p.Pages[0].Backdrop : null);
 
+        /// <summary>GG-T1394: records the Crawl checkpoint as the crawl starts; the steps after it are built as it ends, so
+        /// each writes its own.</summary>
         private static GameScreen OpeningCrawl(Func<GameScreen> next)
         {
-            var p = GameApp.I.Content.Campaign.Opening;
-            return p == null ? next() : p.Pages.Count > 0 ? new StoryCrawlScreen(p, next())
-                : new StoryCrawlScreen(p.Title, p.Crawl, OpeningBackdrop(p), next());
+            var app = GameApp.I;
+            var p = app.Content.Campaign.Opening;
+            if (p == null) return next();
+            Onboarding.Begin(app.Save, OnboardingStep.Crawl);
+            app.Persist();
+            return new StoryCrawlScreen(p, next);
         }
 
         private static GameScreen Founding(Func<GameScreen> next)
@@ -1677,7 +1697,36 @@ namespace GridGame.App
         {
             var c = GameApp.I.Content;
             var first = c.Campaign.Tutorial.Count > 0 ? c.TryStage(c.Campaign.Tutorial[0]) : null;
-            return first == null ? next() : new BattleScreen(first.Id);
+            return first == null ? next() : DrillAt(0, first.Id);
+        }
+
+        /// <summary>Tutorial drill <paramref name="n"/>, its checkpoint written as it starts. A drill always starts from
+        /// the top (a battle is never saved mid-fight, BIBLE 26.8).</summary>
+        private static GameScreen DrillAt(int n, string stageId)
+        {
+            var app = GameApp.I;
+            Onboarding.Begin(app.Save, OnboardingStep.Drill, n);
+            app.Persist();
+            return new BattleScreen(stageId);
+        }
+
+        /// <summary>GG-T1394: where Continue or Load resumes a campaign whose onboarding isn't done (<see cref="Onboarding.Next"/>):
+        /// the opening crawl from the top (then the rest of the sequence), the drill it stopped in, or Camp's first
+        /// visit, whose lesson finishes the onboarding (<see cref="CampCoach"/>). Null once onboarding is done.</summary>
+        public static GameScreen Resume()
+        {
+            var app = GameApp.I;
+            var r = Onboarding.Next(app.Save, app.Content);
+            switch (r.Step)
+            {
+                case OnboardingStep.Crawl: return NewCampaign();
+                case OnboardingStep.Drill: return DrillAt(r.Drill, r.StageId);
+                case OnboardingStep.HubIntro:
+                    Onboarding.Begin(app.Save, OnboardingStep.HubIntro);
+                    app.Persist();
+                    return new HubScreen();
+                default: return null;
+            }
         }
     }
 }

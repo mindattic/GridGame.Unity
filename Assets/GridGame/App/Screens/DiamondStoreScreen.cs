@@ -41,7 +41,9 @@ namespace GridGame.App
         private static void OnDelivered(PurchaseResult r)
         {
             if (r == null || GameApp.I == null) return;
-            if (GameApp.I.Router?.Current is DiamondStoreScreen ds) { ds.Show(r); return; }
+            var current = GameApp.I.Router?.Current;
+            var ds = current as DiamondStoreScreen ?? (current as ShopHubScreen)?.Shards;
+            if (ds != null) { ds.Show(r); return; }
             GameApp.I.Toast(r.Message, 3f);
             GameApp.I.Audio?.Sfx(r.Ok ? "ui.diamond" : "ui.error");
         }
@@ -346,7 +348,8 @@ namespace GridGame.App
             App.Toast(r.Message, r.Ok ? 2.2f : 3f);
             App.Audio.Sfx(r.Ok ? "ui.diamond" : r.Kind == PurchaseKind.Pending || r.Kind == PurchaseKind.Cancelled ? "ui.select" : "ui.error");
             if (r.Ok) App.Persist();
-            if (App.Router.Current == this) Refresh();
+            var current = App.Router.Current;
+            if (current == this || (TabHost != null && current == TabHost)) Refresh();
         }
     }
 }

@@ -71,9 +71,13 @@ namespace GridGame.App
         /// <summary>GG-T1335: true for a page that shows the hub's bottom nav bar (every <see cref="HubPage"/>).</summary>
         public virtual bool ShowsNav => false;
 
-        /// <summary>Rebuilds in place (after a purchase etc.).</summary>
+        /// <summary>The page showing this one's body as a tab (the Shop hub's Merchant and Shards, GG-T1637), or null.</summary>
+        internal GameScreen TabHost;
+
+        /// <summary>Rebuilds in place (after a purchase etc.); a page hosted as a tab rebuilds its host.</summary>
         public void Refresh()
         {
+            if (TabHost != null) { TabHost.Refresh(); return; }
             if (Root == null) return;
             Root.Clear();
             Build(Root);
