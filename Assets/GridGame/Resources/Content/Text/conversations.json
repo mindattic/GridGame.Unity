@@ -746,7 +746,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3881065e95a98dcafe1a3ebb3fc8813188cef4b4d59312aec3a4bce107989e18",
+      "hash": "sha256:0d78b060585f45df8862e613dab5ff643a52f5949077394a0184dc0fcf602992",
       "about": [
         "character-enchantress",
         "place-cathedral"
@@ -762,13 +762,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "Listen. That music. It's coming from the walls.",
+            "line": "That music is coming from the walls. I know this sound. We sang the Manalith to sleep with it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "It's the organ. It's full of everything every hold ever paid. The Hierarch drinks from it. Let's make it stop."
+            "line": "Your Lullaby. The Choir built the organ around it. The runaway says every hold's tithe ends in those pipes, and the Hierarch drinks the skim. The Lullaby needs a little. He takes the rest. Let's make it stop."
           }
         ]
       }
@@ -812,7 +812,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:7b22e51fd5d8bfba2dfc2b863866f462e083772c7358cd0f4dfef266ac678eec",
+      "hash": "sha256:bc8bbaacd1e7aa7724959f5280860cd0f151739c67a9eae35d0a9aaf4399e115",
       "about": [
         "character-blacksmith",
         "place-cave"
@@ -828,13 +828,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "These arches go on forever. What are they holding up?",
+            "line": "The wraith knights lowered their blades to me, then fought us anyway. And this arch hummed awake as I passed. What is it holding up?",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-blacksmith",
-            "line": "Nothing. They're not holding anything up. They're drawing something down. Feel the hum? That's where the light goes."
+            "line": "Nothing. The Street's engineer read the arch you woke: it's a tap, not a support. It draws the Manalith's mana down, and the drawing is the pull that brings it closer. The Watch knew you for one of Halcyon's. They saluted their own."
           }
         ]
       }
@@ -1078,7 +1078,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:4c1ecc58cc83adeddf2622dd35fb73454f1804f76d9619b04e28fe6d5c9d5cb4",
+      "hash": "sha256:329674b02d7b99411b336a3117bf9c4f66011ec5aaeef5d28158dec7b1e15688",
       "about": [
         "character-innkeeper",
         "place-cityruins"
@@ -1088,19 +1088,19 @@
         "character-innkeeper"
       ],
       "payload": {
-        "title": "Give it back",
+        "title": "The council in the archive",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "Halcyon. It's so quiet. Where did everyone go?",
+            "line": "The archive woke for me. A council, a vote, a row of commanders. One of those faces was mine.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-innkeeper",
-            "line": "Into the Manalith, the night it woke. And the Choir has been taking from us ever since. I say we give it back."
+            "line": "The witch read it while you stared. Halcyon couldn't stop the Manalith, so it fed it to sleep and drank what spilled. Every scrap of mana in us is the Manalith's. And you were in that room. I'm still deciding what I think of that."
           }
         ]
       }
@@ -1502,7 +1502,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:94776c9fa00f7ace167e34584bba8e31b9fbdf4252b02e928cffabff1dac121d",
+      "hash": "sha256:e3786606da63125daf8d8bb2656cef21c4094303526cc400c3c8a64d8267a6bc",
       "about": [
         "character-alchemist",
         "place-desert"
@@ -1518,13 +1518,13 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The whole desert's covered in spikes. Did they grow here?",
+            "line": "Red earth, and horns taller than towers. Did these fall? My hand aches when I go near them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-alchemist",
-            "line": "Some fell. Some are stone. And some, I think, are the Manalith's own body, shed like old skin. Don't lick any."
+            "line": "Some of them are the Manalith's own shell, shed as it comes. The Choir digs it out and the Ember pray for the rest. And that ache is your mana answering. Everyone's runs thin. Yours is whole. I've never seen that."
           }
         ]
       }
@@ -1827,7 +1827,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:13c1ba1c576995aff70bb1be2b2ff3e7df586909ea9d06a39f21d09cd6f96592",
+      "hash": "sha256:b9028b136b14e63c0ff1f2dd27a36858b58166a1f42ecd2ac229d8dc6335d265",
       "about": [
         "character-merchant",
         "place-greenvalley"
@@ -1837,19 +1837,19 @@
         "character-merchant"
       ],
       "payload": {
-        "title": "Three times the quota",
+        "title": "A lantern that should be dead",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Tithe Moors. Every hold's already paid, and the white wagons are still coming.",
+            "line": "The Tithe Moors. Every hold has paid, and the white wagons still come. I don't know these hills. I don't know why I'm walking them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "Three times the quota this year. Three times. Nobody's saying why, but everyone's looking up."
+            "line": "Three times the quota this year, and nobody says why. And that lantern on the caravan had been dead longer than my grandmother. It lit in your hand. So when you remember who you are, I'd like to hear it."
           }
         ]
       }
@@ -2200,7 +2200,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6319dd45bdbc24833fbabff04c52772be161e3f5d91b2a152eff3fcdd3a204d0",
+      "hash": "sha256:90c5f9e74f6768f13474f51449f2b070537653804dd14f1e7f53ee678f0c7616",
       "about": [
         "character-innkeeper"
       ],
@@ -2215,7 +2215,7 @@
           {
             "id": "a",
             "speaker": "character-innkeeper",
-            "line": "We've come a long way from Saltmoss. Can I ask you something?",
+            "line": "We've come a long way from Saltmoss. Those wrecks out there were people running, too. Can I ask you something?",
             "next": "b"
           },
           {
@@ -2227,7 +2227,7 @@
           {
             "id": "c",
             "speaker": "character-innkeeper",
-            "line": "Why did we run? Not the plan. The reason.",
+            "line": "Why did you run with us? You'd only just woken. You owed us nothing.",
             "choices": [
               {
                 "text": "For the coin on that wagon.",
@@ -2238,11 +2238,11 @@
                 "next": "people"
               },
               {
-                "text": "To find out what the Choir's hiding.",
+                "text": "To find out why Halcyon's tech wakes for me.",
                 "next": "truth"
               },
               {
-                "text": "For each other.",
+                "text": "For all of you.",
                 "next": "crew"
               }
             ]
@@ -2250,31 +2250,31 @@
           {
             "id": "coin",
             "speaker": "character-innkeeper",
-            "line": "Honest, at least. Coin buys food. I won't judge.",
+            "line": "Honest, at least. Coin buys bread, and the Choir had plenty. I won't judge.",
             "next": "close"
           },
           {
             "id": "people",
             "speaker": "character-innkeeper",
-            "line": "That's what I hoped you'd say. That's why I came.",
+            "line": "My village was tithed white. That's what I hoped you'd say. It's why I came.",
             "next": "close"
           },
           {
             "id": "truth",
             "speaker": "character-innkeeper",
-            "line": "Something's wrong up there. I feel it too.",
+            "line": "Then we want the same answer. Whatever you are, the Choir wants to know it too.",
             "next": "close"
           },
           {
             "id": "crew",
             "speaker": "character-innkeeper",
-            "line": "We're a family now. A strange one, but a family.",
+            "line": "A family, then. A strange one, with a stolen wagon. But a family.",
             "next": "close"
           },
           {
             "id": "close",
             "speaker": "$commander",
-            "line": "Whatever the reason, we keep going."
+            "line": "I don't remember much of who I was. I know who I'm running with. We keep going."
           }
         ]
       }
@@ -2324,7 +2324,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9fc452eb164516ba9550c7966677b2d74f97b024bf237a07a0b12723732d3f12",
+      "hash": "sha256:c2d6511f03738d46e7ab1112ca5987b0de8ba68e222023f2978c82de8bbf2880",
       "about": [
         "character-merchant",
         "place-lanternroad"
@@ -2334,19 +2334,19 @@
         "character-merchant"
       ],
       "payload": {
-        "title": "Lanterns on the stairs",
+        "title": "One moon on the wall",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "So many lanterns on the stairs. Who keeps them lit?",
+            "line": "That mural lit when I touched it. One moon, and nothing beside it. I know that sky. I don't know how I know it.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-merchant",
-            "line": "The pilgrims. Every one they light is a prayer the Manalith stays asleep. I sell the oil. Business is very good."
+            "line": "The sage on the stair says it's the oldest painting on the road, older than the Choir. Before the Manalith there was only the Moon. The pilgrims light lanterns to keep it asleep. I sell them the oil, and lately I wonder what I'm selling."
           }
         ]
       }
@@ -3999,7 +3999,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9a070789e1feb5ec0b8c48a2d722aaeea990f2dfc67594d1557a91c1e60e1c83",
+      "hash": "sha256:a38af75d30eb99b3734053c5c4fed0cef30094d7c18e56af70ce131c354be8f3",
       "about": [
         "character-enchantress",
         "place-still"
@@ -4015,19 +4015,19 @@
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "The Still. This is where I woke.",
+            "line": "The Still. I woke in one of these tanks. I think I died in one, too.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "And now the Choir fills its tanks with what they take from the holds.",
+            "line": "You did. They were Halcyon's tanks, and now the Choir runs the tithe through them. That's what brought you back: colour taken from the holds. The Innkeeper found her village's in the next tank.",
             "next": "c"
           },
           {
             "id": "c",
             "speaker": "$commander",
-            "line": "More than the Lullaby needs. I can see it from here.",
+            "line": "Then I'm alive on their colour. And there's more here than any Lullaby needs. I can feel it.",
             "next": "d"
           },
           {
@@ -4175,7 +4175,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:752094c3011738935bfc4f4cd8d6f5b2e9def82fbea61b3c45071cf7eed6cde5",
+      "hash": "sha256:b0c8aa0360b344f39b55f1cdbd277da2625d4f85264dc9121ee39298ffb6a9b1",
       "about": [
         "character-enchantress",
         "place-swamp"
@@ -4185,19 +4185,19 @@
         "character-enchantress"
       ],
       "payload": {
-        "title": "The ships' logs",
+        "title": "The manifest",
         "start": "a",
         "nodes": [
           {
             "id": "a",
             "speaker": "$commander",
-            "line": "Ships, out here? There's no sea for miles.",
+            "line": "That door opened for me when none of you could force it. And I remember names being called for boarding. Mine wasn't one of them.",
             "next": "b"
           },
           {
             "id": "b",
             "speaker": "character-enchantress",
-            "line": "Halcyon's Arks. The tides threw them inland the night it fell. Read the logs if you can. They were trying to run."
+            "line": "Halcyon's Arks. The manifest says they sailed the night the city fell, and the tides threw them here. Halcyon tried to run. And a door that knows your hand is news the Choir will hear. They'll hunt you now, not just the wagon."
           }
         ]
       }
