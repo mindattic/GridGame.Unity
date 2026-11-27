@@ -228,6 +228,7 @@ namespace GridGame.Core.Content
         {
             string key = CodexKinds.Key(kind, id);
             var v = new CodexEntryView { Kind = kind, Id = (id ?? "").Trim().ToLowerInvariant(), Key = key, Exists = CodexRecordExists(kind, id) };
+            id = (id ?? "").Trim(); // the same trimmed id CodexRecordExists checked, so every Try* lookup below finds what Exists promised (GG-T1236)
             string title = null, body = null;
             if (v.Exists)
                 switch (kind)
