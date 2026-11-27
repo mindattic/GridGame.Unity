@@ -15,7 +15,7 @@ namespace GridGame.Meta
     }
 
     /// <summary>
-    /// Summon Tickets earned in play (BIBLE §25.10.3, GG-T1422): never sold on their own. A campaign stage's first clear pays
+    /// Summon Tickets earned in play (BIBLE §25.10.3, GG-T1422): never sold on their own. The first Summon Circle visit gives <see cref="StarterTickets"/>, a campaign stage's first clear pays
     /// <see cref="PerFirstClear"/>, finishing a chapter (its crawl's stage first cleared) <see cref="PerChapter"/>, and every
     /// <see cref="WinsPerTicket"/> battles won in any mode one more. Earned Tickets live in <see cref="SummonState.Tickets"/>
     /// beside the fragments that join into them; bought ones in the account wallet (<see cref="AccountWallet.Tickets"/>).
@@ -26,6 +26,7 @@ namespace GridGame.Meta
         public const int PerFirstClear = 1;
         public const int PerChapter = 5;
         public const int WinsPerTicket = 5;
+        public const int StarterTickets = 10;
 
         /// <summary>Tickets this save can spend: its earned ones plus its wallet's bought ones.</summary>
         public static int Have(SaveData s) =>
@@ -36,6 +37,18 @@ namespace GridGame.Meta
             if (s == null || n <= 0) return;
             s.Summon ??= new SummonState();
             s.Summon.Tickets += n;
+        }
+
+        /// <summary>The first Summon Circle visit: <see cref="StarterTickets"/> once per save (<see cref="SummonState.StarterGiven"/>);
+        /// returns the Tickets it gave, 0 on every later visit.</summary>
+        public static int Starter(SaveData s)
+        {
+            if (s == null) return 0;
+            s.Summon ??= new SummonState();
+            if (s.Summon.StarterGiven) return 0;
+            s.Summon.StarterGiven = true;
+            Earn(s, StarterTickets);
+            return StarterTickets;
         }
 
         /// <summary>A battle won: one Ticket every <see cref="WinsPerTicket"/> wins; returns the Tickets it earned.</summary>

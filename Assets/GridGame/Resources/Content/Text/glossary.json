@@ -2293,6 +2293,25 @@
         "aliases": []
       }
     },
+    "glossary:summon_ticket": {
+      "key": "glossary:summon_ticket",
+      "id": "glossary-summon-ticket",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c99550a7d8d08ab581572f62c0e341b0185df5c18c9ebd6a7828980abfc077b1",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Summon Ticket",
+        "definition": "A pass the Summon Circle honours in place of Mana Shards: one Ticket pays for one random summon, and a draw spends a Ticket before any Shards. Earned in play, never sold on its own: ten on the first visit to the Summon Circle, one for each campaign stage first cleared, five more for each chapter finished, one for every five battles won, and from Ticket fragments.",
+        "aliases": [
+          "Summon Tickets",
+          "Ticket",
+          "Tickets"
+        ]
+      }
+    },
     "glossary:supporter": {
       "key": "glossary:supporter",
       "id": "glossary-supporter",
@@ -2400,6 +2419,23 @@
       "payload": {
         "term": "Temporal Drag",
         "definition": "An enemy charge that Slows every hero and costs the party [tempo]. Interrupt it or cleanse the Slow."
+      }
+    },
+    "glossary:ticket_fragment": {
+      "key": "glossary:ticket_fragment",
+      "id": "glossary-ticket-fragment",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bb5f3814bcd2c6dcd7e49480d7c115a0deef81128dbc860c5bb6b0531c0f11c5",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "term": "Ticket fragment",
+        "definition": "A torn piece of a Summon Ticket. Enough fragments join into a whole Ticket on their own.",
+        "aliases": [
+          "Ticket fragments"
+        ]
       }
     },
     "glossary:tithe_hymn": {

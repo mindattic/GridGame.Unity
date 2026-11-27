@@ -1637,6 +1637,8 @@ namespace GridGame.App
             int price = Summon.Price(C, S);
             var tag = Paywall.Tag(PaywallKind.Summon, S);
             bool busy = Paywall.Pending(S, PaywallKind.Summon) != null;
+            int starter = SummonTickets.Starter(S); // GG-T1604: the first visit's Tickets
+            if (starter > 0) { App.Persist(); App.Toast($"The circle gives you {TicketText.Of(starter)} to begin with."); }
             RandomDraw(body, busy);
             var list = Ui.ListPanel(body, "Heroes who answer", "summon-pool");
             Ui.Para($"Summon a hero to your side ({tag}). The circle takes a moment to answer.", list, "dim");
@@ -1669,28 +1671,36 @@ namespace GridGame.App
             img.style.width = img.style.height = Size.IconS;
             img.style.marginLeft = Space.TargetHalfGap;
             img.style.marginRight = 0;
-            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", row, "grow").style.marginLeft = Space.S8;
+            int tickets = SummonTickets.Have(S);
+            Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)} · {TicketText.Plural}: {Ui.Count(tickets)}", row, "grow").style.marginLeft = Space.S8;
             var b = RowIcon.IconButton($"Draw · {DiamondSummon.Tag(S)}", RowKind.Confirm, () =>
             {
                 var can = DiamondSummon.CanDraw(C, S);
+                if (SummonTickets.Have(S) > 0)
+                {
+                    Confirm.Show($"Spend {TicketText.Of(1)} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () => Draw());
+                    return;
+                }
                 if (!can.Ok && !DiamondExchange.CanPay(S, DiamondSummon.Price).Ok) { DiamondStores.OfferStore(can.Message); return; }
                 var (qd, qg) = DiamondExchange.Quote(S, DiamondSummon.Price);
                 string pay = qg == 0 ? ShardText.Of(qd) : qd == 0 ? Ui.Gold(qg) : $"{ShardText.Of(qd)} and {Ui.Gold(qg)}";
-                Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () =>
-                {
-                    string drawn = null;
-                    TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
-                        "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, () => VariantPicker.ShowPending(Refresh)); else Refresh(); }); // GG-T532: then pick their look
-                });
+                Confirm.Show($"Pay {pay} for a random summon? {DiamondSummon.OddsLine(C, S)}.", "Draw", () => Draw());
             }, "btn--small btn--primary", row);
             b.name = "summon-draw";
             // Short of Diamonds and gold it stays tappable and offers the store (GG-T455); busy or no one left disables it.
             Ui.SetEnabled(b, !busy && left > 0 && !S.TestMode);
-            if (diamonds < DiamondSummon.Price)
+            if (tickets == 0 && diamonds < DiamondSummon.Price)
             {
                 Ui.Para($"Short of {ShardText.ShortPlural}, the rest is paid in gold at the exchange rate. {ShardText.Plural} also pay for a lucky craft or an instant Rested refill.", w, "dim");
                 RowIcon.IconButton(ShardText.Store, RowKind.Diamond, DiamondStores.Open, "btn--small", Ui.Actions(w)).name = "summon-diamond-store"; // GG-T750
             }
+        }
+
+        private void Draw()
+        {
+            string drawn = null;
+            TimedJobView.Begin(now => { var r = DiamondSummon.Begin(C, S, now, out var job); drawn = job?.Arg; return (r, job); },
+                "The circle reaches out along the road…", r => { if (r.Ok && drawn != null) SummonReveal.Show(drawn, () => VariantPicker.ShowPending(Refresh)); else Refresh(); }); // GG-T532: then pick their look
         }
 
         /// <summary>The draw's odds, disclosed before purchase (GG-T503): one line ("Each of these 23 heroes: 1 in 23

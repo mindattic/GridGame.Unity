@@ -23814,6 +23814,21 @@
         "short": "Viscous gel harvested from slimes."
       }
     },
+    "item:mat_summon_ticket": {
+      "key": "item:mat_summon_ticket",
+      "id": "description-item-mat-summon-ticket",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:65b3d5dcdba2fedf2b183609fe1765ff1564c69355888cb87bb678d3f2c42cc5",
+      "about": [
+        "item-mat-summon-ticket"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A pass the Summon Circle honours in place of Mana Shards: one Ticket pays for one random summon. Earned on the road, never sold on its own."
+      }
+    },
     "item:mat_swamp_ichor": {
       "key": "item:mat_swamp_ichor",
       "id": "description-item-mat-swamp-ichor",
@@ -23857,6 +23872,21 @@
       "speakers": [],
       "payload": {
         "short": "A sealed medallion of a fallen order."
+      }
+    },
+    "item:mat_ticket_fragment": {
+      "key": "item:mat_ticket_fragment",
+      "id": "description-item-mat-ticket-fragment",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9a94a99d629860dcb495a1d7a1c28502dc1e92f1b0cff0bf55de7d9e2b6d3279",
+      "about": [
+        "item-mat-ticket-fragment"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "A torn piece of a Summon Ticket. Enough of them join into a whole Ticket on their own."
       }
     },
     "item:mat_troll_hide": {

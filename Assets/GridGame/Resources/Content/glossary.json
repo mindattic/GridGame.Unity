@@ -833,6 +833,22 @@
     ]
   },
   {
+    "Id": "summon_ticket",
+    "Term": "Summon Ticket",
+    "Aliases": [
+      "Summon Tickets",
+      "Ticket",
+      "Tickets"
+    ]
+  },
+  {
+    "Id": "ticket_fragment",
+    "Term": "Ticket fragment",
+    "Aliases": [
+      "Ticket fragments"
+    ]
+  },
+  {
     "Id": "gold",
     "Term": "Gold"
   },

@@ -222,5 +222,7 @@ namespace GridGame.Meta
         public int Tickets;
         /// <summary>Battles won in any mode, counted toward <see cref="SummonTickets.WinsPerTicket"/> (GG-T1422).</summary>
         public int Wins;
+        /// <summary>Set once the first Summon Circle visit has given <see cref="SummonTickets.StarterTickets"/> (GG-T1604).</summary>
+        public bool StarterGiven;
     }
 }

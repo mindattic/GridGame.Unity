@@ -19,7 +19,7 @@ namespace GridGame.Meta
         public const int Price = 100;
 
         /// <summary>"100 Diamonds (or 600 G)" for the button, plus the wait when it's long enough to matter (GG-T519).</summary>
-        public static string Tag(SaveData s) => DiamondExchange.Label(Price) + Paywall.WaitSuffix(Paywall.Duration(PaywallKind.Summon, s));
+        public static string Tag(SaveData s) => (SummonTickets.Have(s) > 0 ? TicketText.Of(1) : DiamondExchange.Label(Price)) + Paywall.WaitSuffix(Paywall.Duration(PaywallKind.Summon, s));
 
         /// <summary>Who could come: the wanderer pool (unowned heroes with no other way in).</summary>
         public static List<string> Pool(ContentDb c, SaveData s) => Wanderers.Pool(c, s);
