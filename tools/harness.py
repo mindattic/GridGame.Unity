@@ -1363,6 +1363,10 @@ def coachcamp(run="coachcamp", capture=True):
                 shot(f"miss-{want}")
             met += [i for i in coach_follow(station, settle=2.0) if i not in met]
         print("[coachcamp] lessons:", met, flush=True)
+        # GG-T1616: a Craft member's Camp-menu lesson rings the Craft tile (mark 0), then the member on the Craft page (mark 1).
+        for hub in ("hub-blacksmith", "hub-alchemist", "hub-enchantress"):
+            if hub in met and f"{hub}-1" not in _COACH_SEEN:
+                fails.append(f"{hub}: no second mark inside the Craft group")
         for want in ("camp-blacksmith", "camp-blacksmith-forge", "camp-blacksmith-armor", "camp-enchantress", "camp-abilities-learn"):
             if want not in met:
                 fails.append(f"{want} never ran")

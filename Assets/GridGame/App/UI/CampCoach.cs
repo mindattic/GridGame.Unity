@@ -74,7 +74,7 @@ namespace GridGame.App
                 Coach.Run(new CoachLesson
                 {
                     Id = "hub-" + st.Id, Kicker = "Camp", Title = st.Title, Text = st.Text, Image = "Tutorial/hub-" + st.Id,
-                    Steps = { new CoachStep { Caption = $"Tap {Label(row)}.", Element = () => CampTipOverlay.Find(row) } },
+                    Steps = TapSteps(s, row),
                 });
                 return;
             }
@@ -98,8 +98,24 @@ namespace GridGame.App
                     Id = CodexLesson, Kicker = "Camp", Title = "The Codex",
                     Text = "Places, people, foes and story beats you meet are written into the Codex. A New badge marks the entries you haven't read yet.",
                     Image = "Tutorial/" + CodexLesson,
-                    Steps = { new CoachStep { Caption = "Tap Codex.", Element = () => CampTipOverlay.Find("camp-codex") } },
+                    Steps = TapSteps(s, "camp-codex"),
                 });
+        }
+
+        /// <summary>GG-T1616: the taps that reach a hub destination. A Craft or Journal member (GG-T1613) sits inside its
+        /// group, so the coach rings the group tile first, then the member's tile on that group's page.</summary>
+        private static List<CoachStep> TapSteps(SaveData s, string row)
+        {
+            var group = CampMenu.Build(GameApp.I.Content, s, GameApp.I.Settings).FirstOrDefault(d => HubScreen.TileName(d) == row)?.Group;
+            if (group != CampGroup.Craft && group != CampGroup.Journal)
+                return new List<CoachStep> { new CoachStep { Caption = $"Tap {Label(row)}.", Element = () => CampTipOverlay.Find(row) } };
+            string name = group == CampGroup.Craft ? "Craft" : "Journal", page = "camp-group-" + name.ToLowerInvariant();
+            bool OnGroup() => GameApp.I.Router.Current is CampGroupScreen g && g.Id == page;
+            return new List<CoachStep>
+            {
+                new CoachStep { Caption = $"Tap {name}.", Element = () => CampTipOverlay.Find("camp-" + name.ToLowerInvariant()), Done = OnGroup },
+                new CoachStep { Caption = $"Tap {Label(row)}.", Element = () => OnGroup() ? CampTipOverlay.Find(row) : null },
+            };
         }
 
         /// <summary>GG-T1045: the Skill Board lesson's id (its save flag is "lesson:hub-board") and its Codex keyword entry.</summary>
