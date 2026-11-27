@@ -137,7 +137,7 @@ if (-not $NoTickets -and $failing.Count -gt 0) {
         $short = ($f.Name -split '\.')[-1]
         if ($open -match [regex]::Escape($short)) { continue }
         $msg = if ($f.Message.Length -gt 300) { $f.Message.Substring(0, 300) + "..." } else { $f.Message }
-        $id = (tickets ticket new --type fix --name "Nightly: $($short.Substring(0, [Math]::Min(40, $short.Length)))" `
+        $id = (tickets ticket new --type fix --source auto --name "Nightly: $($short.Substring(0, [Math]::Min(40, $short.Length)))" `
             --summary "Test $short fails on main $head (nightly $stamp): $msg" --ref $short 2>$null | Select-Object -Last 1)
         if ($id) { $filed += "$id $short"; Write-Log "filed $id for $short" }
     }
