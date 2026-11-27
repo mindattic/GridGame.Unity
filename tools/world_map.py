@@ -455,12 +455,12 @@ def draw_cost_overlay(img, cost, labels, bodies, cell, lo, hi):
     return im
 
 
-def cmd_cost(args):
-    image = Path(args.image)
-    img, index, entry, centres, cluster_class, _, feat = classify(image, args.region, args.k)
+def cost_grid(image, region, k=None, cell=None):
+    """Classify, then build the per-cell travel cost (inf = water). Returns a dict of everything cost and routes use."""
+    img, index, entry, centres, cluster_class, _, feat = classify(image, region, k)
     classes = entry["classes"]
     names = [c["label"] for c in classes]
-    cell = args.cell or entry.get("cell", CELL)
+    cell = cell or entry.get("cell", CELL)
     slope_weight = entry.get("slope_weight", SLOPE_WEIGHT)
     slope_full = entry.get("slope_full", SLOPE_FULL)
 
@@ -484,6 +484,17 @@ def cmd_cost(args):
     cost = np.where(count > 0, block_reduce(finite, cell, np.sum) / np.maximum(count, 1), filler)
     water_grid = block_reduce(labels, cell, np.max)
     cost = np.where(water_grid > 0, np.inf, cost).astype(np.float32)
+    return {"img": img, "index": index, "entry": entry, "classes": classes, "names": names, "cell": cell,
+            "slope_weight": slope_weight, "slope_full": slope_full, "labels": labels, "bodies": bodies,
+            "specks": specks, "joined": joined, "px": px, "cost": cost, "water_grid": water_grid}
+
+
+def cmd_cost(args):
+    image = Path(args.image)
+    g = cost_grid(image, args.region, args.k, args.cell)
+    img, index, classes, cell, px, cost = g["img"], g["index"], g["classes"], g["cell"], g["px"], g["cost"]
+    labels, bodies, specks, joined, water_grid = g["labels"], g["bodies"], g["specks"], g["joined"], g["water_grid"]
+    slope_weight, slope_full = g["slope_weight"], g["slope_full"]
 
     out = Path(args.out) if args.out else image.parent
     out.mkdir(parents=True, exist_ok=True)
