@@ -417,6 +417,22 @@ namespace GridGame.App.Automation
                     app.Persist();
                     return new { ok = true, cleared = app.Save.HighestClearedStage };
                 }
+                case "devbond":
+                {
+                    // Test-only (GG-T1300): moves a hero's Trust (hero=cleric) or a pair's cohesion (hero=cleric&other=monk, or
+                    // pair=cleric,monk) by amount=N, or to the floor of tier=N, through the same clamps play uses.
+                    if (app.Save == null) return new { error = "no save" };
+                    string a = q["hero"], b = q["other"];
+                    if (q["pair"] != null) { var p = q["pair"].Split(','); a = p[0].Trim(); b = p.Length > 1 ? p[1].Trim() : null; }
+                    bool pair = b != null;
+                    if (pair ? Bonds.PairKey(a, b) == null || !Bonds.HasCohesion(app.Save, a) || !Bonds.HasCohesion(app.Save, b) : !Bonds.HasTrust(app.Save, a))
+                        return new { error = "no bond for that hero or pair" };
+                    int now = pair ? Bonds.Cohesion(app.Save, a, b) : Bonds.Trust(app.Save, a);
+                    int delta = q["tier"] != null ? Bonds.Floor((int)F(q["tier"])) - now : (int)F(q["amount"]);
+                    int value = pair ? Bonds.AddCohesion(app.Save, a, b, delta) : Bonds.AddTrust(app.Save, a, delta);
+                    app.Persist();
+                    return new { ok = true, value, tier = Bonds.Tier(value), talk = DialogueRunner.NewTalkCount(app.Content, app.Save) };
+                }
                 case "launch":
                     // GG-T241: the real launch path (crawl, story beats, Rested, expedition gate) for one stage.
                     StageLauncher.Launch(q["stage"], false);
@@ -1117,7 +1133,9 @@ namespace GridGame.App.Automation
                     roster = app.Save.Roster.Select(h => h.ClassId).ToList(), mercs = app.Save.Mercenaries.Contracts.Select(k => k.ClassId).ToList(),
                     // GG-T532: each hero's look ("Female"/"Male", "?" while the pick is pending) and whether the picker is up.
                     variants = app.Save.Roster.ToDictionary(h => h.ClassId, h => h.VariantPending ? "?" : h.Variant.ToString()),
-                    variantPicker = VariantPicker.Open };
+                    variantPicker = VariantPicker.Open,
+                    // GG-T1300: the bonds (Trust by hero, cohesion by "a|b" pair) and the heroes a Joined scene has greeted.
+                    trust = app.Save.Trust, cohesion = app.Save.Cohesion, met = app.Save.MetHeroes };
             if (TestMode.Active) dump["testmode"] = new { cycles = TestMode.Completed, last = TestMode.LastLine };
             if (app.Router.Current is BattleScreen b && b.State != null)
             {
