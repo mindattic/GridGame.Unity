@@ -660,6 +660,7 @@ namespace GridGame.Core.Content
             MercenaryContent.Validate(db, p);
             BannerContent.Validate(db, p); // GG-T1418
             WandererContent.ValidateFactions(db, p);
+            WorldContent.Validate(db, db.World, p); // GG-T1666
             FamilyContent.Validate(db, p); // GG-T971
             ValidateAbilityAliases(db, p); // GG-T973
             ValidateSkillHex(db, p); // GG-T1022

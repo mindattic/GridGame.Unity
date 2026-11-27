@@ -68,6 +68,9 @@ namespace GridGame.Core.Content
         /// when the file is absent (test fixtures, tools), and then its checks are skipped. Nothing in the game reads it
         /// yet (GG-T1023).</summary>
         public SkillHexDef SkillHex;
+        /// <summary>world.json (GG-T1666, BIBLE §28): the overworld's region maps. Optional: null when the file is absent,
+        /// and then its checks are skipped.</summary>
+        public WorldDef World;
         public FamilyDef TryFamily(string id) => id == null ? null : Families.Find(f => f != null && string.Equals(f.Id, id, StringComparison.OrdinalIgnoreCase));
         /// <summary>The family a hero class belongs to (its <see cref="ClassDef.Family"/>), or null.</summary>
         public FamilyDef FamilyOf(string classId) => TryFamily(TryClass(classId)?.Family);
