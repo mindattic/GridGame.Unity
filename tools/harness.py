@@ -11,6 +11,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
     python tools/harness.py fullloop [N]     # GG-T136: new game -> bounty -> N battles -> sell/forge/brew/enchant -> claim
     python tools/harness.py coach [RUN] [--camp] [--nocapture]  # GG-T542: a new profile follows every coach mark of the tutorial battle (then To Camp)
+    python tools/harness.py coach [RUN] --stage tutorial-01 [--nocapture]  # GG-T1386: one drill's intro and lessons, mark by mark
     python tools/harness.py coachcamp [RUN] [--nocapture]  # GG-T542: repair, Forge, armor, enchant and training lessons followed mark by mark
     python tools/harness.py coachskip [RUN] [--nocapture]  # GG-T542: Skip tutorial (and its confirm), then Settings > How to play > Replay tutorials
     python tools/harness.py repairall [RUN] [--nocapture]  # GG-T544: Repair all takes only gear below 60%, "Cheaper to wait", price hints; 9:23 and 3:4, recorded
@@ -1207,7 +1208,7 @@ def _free_action():
     return r
 
 
-def coach_battle(tag="b1", timeout=1200):
+def coach_battle(tag="b1", timeout=1200, lessons=BATTLE_LESSONS):
     """Plays the battle on screen through its lessons: every popup and mark is followed; when nothing is teaching for a
     moment the player takes one free action. Returns the screen it ended on."""
     deadline, idle = time.time() + timeout, 0
@@ -1224,7 +1225,7 @@ def coach_battle(tag="b1", timeout=1200):
         if idle >= 6:
             # Once the last lesson (Ready) is behind it, the bot plays the rest of the battle out like a player would,
             # spells and items included; until then the player takes the bot's best move between lessons.
-            if f"battle-{BATTLE_LESSONS[-1]}-popup" in _COACH_SEEN:
+            if f"battle-{lessons[-1]}-popup" in _COACH_SEEN:
                 call("autoplay", on=1)
             else:
                 _free_action()
@@ -1233,10 +1234,10 @@ def coach_battle(tag="b1", timeout=1200):
     return "timeout"
 
 
-def lesson_report(prefix="battle-"):
+def lesson_report(prefix="battle-", lessons=BATTLE_LESSONS):
     """{lesson: (popup shown, marks shown)} for the guided battle's lessons, from what this run followed."""
     rep = {}
-    for l in BATTLE_LESSONS:
+    for l in lessons:
         rep[l] = (f"{prefix}{l}-popup" in _COACH_SEEN, any(k.startswith(f"{prefix}{l}-") and not k.endswith("-popup") for k in _COACH_SEEN))
     return rep
 
@@ -1263,6 +1264,50 @@ def _to_camp(timeout=90):
                 call("clicktext", text="OK")
         time.sleep(1.2)
     return False
+
+
+def drill_lessons(stage):
+    """The lesson ids a drill stage teaches, in order (Content/stages.json `Lessons`)."""
+    with open(os.path.join(ROOT, "Assets", "GridGame", "Resources", "Content", "stages.json"), encoding="utf-8") as fh:
+        stages = json.load(fh)
+    return tuple(l["Id"] for s in stages if s["Id"] == stage for l in s.get("Lessons") or ())
+
+
+def coach_drill(run, stage, capture=True):
+    """GG-T1386: a fresh profile plays one drill stage (tutorial-01..05) with -coach, following its intro card and every
+    lesson's popup and marks; screenshots and .coach.json as coach(). Fails unless each of the drill's lessons showed marks."""
+    lessons = drill_lessons(stage)
+    if not lessons:
+        print(f"FAILURES:\n  {stage} has no lessons")
+        return False
+    fails = []
+    del _COACH_SEEN[:]
+    del _COACH_SHOTS[:]
+    launch(run, extra=("-coach",) + (("-capture", "video", "hq") if capture else ()), fresh=True)
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        call("battle", stage=stage)
+        if not _wait_screen("battle", 10):
+            fails.append(f"never reached the {stage} battle")
+        time.sleep(1.5)
+        end = coach_battle("b1", lessons=lessons)
+        print("[coach] battle ended on", end, flush=True)
+        shot("b1-end")
+        for i, (l, (pop, marks)) in enumerate(lesson_report(lessons=lessons).items(), 1):
+            print(f"   {i:2d} {l:10s} popup={'yes' if pop else 'NO '} marks={'yes' if marks else 'NO'}", flush=True)
+            if not marks:
+                fails.append(f"lesson {l}: no coach marks")
+        errs = [l[:300] for l in call("logs") if l.startswith(("Error", "Exception")) and "first mouse" not in l]
+        if errs:
+            fails.append(f"log errors {errs[:3]}")
+    finally:
+        print("shots:", len(_COACH_SHOTS))
+        try:
+            call("quit", timeout=3)
+        except Exception:
+            pass
+    print("FAILURES:" if fails else "COACH OK", *fails, sep="\n  ")
+    return not fails
 
 
 def coach(run="coach", camp=False, capture=True):
@@ -3688,9 +3733,12 @@ def _dispatch(cmd):
     elif cmd == "navcheck":
         sys.exit(0 if navcheck(sys.argv[2] if len(sys.argv) > 2 else "navcheck") else 1)
     elif cmd in ("coach", "coachcamp", "coachskip"):
-        names = [a for a in sys.argv[2:] if not a.startswith("--")]
+        stage = sys.argv[sys.argv.index("--stage") + 1] if "--stage" in sys.argv else None
+        names = [a for a in sys.argv[2:] if not a.startswith("--") and a != stage]
         cap = "--nocapture" not in sys.argv
-        if cmd == "coach":
+        if cmd == "coach" and stage:
+            ok = coach_drill(names[0] if names else f"coach-{stage}", stage, capture=cap)
+        elif cmd == "coach":
             ok = coach(names[0] if names else "coach", camp="--camp" in sys.argv, capture=cap)
         elif cmd == "coachcamp":
             ok = coachcamp(names[0] if names else "coachcamp", capture=cap)
