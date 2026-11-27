@@ -44,6 +44,7 @@ namespace GridGame.App.Automation
                 case "enchantress": screen = new EnchantressScreen(); break;
                 case "talk": screen = new TalkScreen(); break;
                 case "summon": screen = new SummonScreen(); break;
+                case "summon-history": screen = new SummonHistoryScreen(); break; // GG-T1430
                 case "diamonds": screen = new DiamondStoreScreen(); break; // GG-T455
                 case "caravan": screen = new CaravanScreen(); break; // GG-T448: missing here, so goto/_goto("caravan") always "unknown screen" -- no Caravan purchase could ever be driven through automation
                 case "mercenaries": screen = new MercenaryScreen(); break;

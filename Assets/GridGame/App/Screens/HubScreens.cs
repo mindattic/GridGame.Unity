@@ -1826,6 +1826,7 @@ namespace GridGame.App
                 toggle.Q<Label>().text = open ? "Hide rates" : "Rates"; // GG-T750: the IconButton's label, not Button.text
             }, "btn--small", row);
             toggle.name = "summon-odds-btn";
+            RowIcon.IconButton("History", RowKind.Menu, () => App.Router.Push(new SummonHistoryScreen()), "btn--small", row).name = "summon-history-btn";
         }
 
         /// <summary>The Recruit tab: the gold chosen summon, any hero from the pool by name.</summary>
@@ -1844,6 +1845,35 @@ namespace GridGame.App
                 var b = RowIcon.IconButton(owned ? "Joined" : "Recruit", RowKind.Confirm, () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
                     TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}…", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
+            }
+        }
+    }
+
+    /// <summary>The Summon history (§25.10.3, GG-T1430): the save's last <see cref="Gacha.HistoryKeep"/> banner pulls,
+    /// newest first, each a card (<c>summon-history-{i}</c>) with the hero, what the pull gave, when, on which banner and
+    /// what paid for it. Reached from a banner tab's <b>History</b> button.</summary>
+    public sealed class SummonHistoryScreen : HubPage
+    {
+        public override string Id => "summon-history";
+        protected override string Title => "Summon history";
+        protected override string Backdrop => "cityruins";
+
+        protected override void BuildBody(VisualElement body)
+        {
+            var pulls = S.Summon?.History ?? new List<PullRecord>();
+            var list = Ui.ListPanel(body, pulls.Count == 0 ? "Pulls" : $"Last {pulls.Count} pulls", "summon-history");
+            if (pulls.Count == 0) { Ui.Empty("No pulls yet.", list); return; }
+            for (int i = 0; i < pulls.Count; i++)
+            {
+                var p = pulls[i];
+                var def = C.TryClass(p.ClassId);
+                var banner = C.TryBanner(p.BannerId);
+                bool featured = SummonReveal.IsFeatured(banner, p);
+                Ui.Card(list, def?.Id, def?.Name ?? p.ClassId, out var col, "summon-history-" + i);
+                Ui.Caption(SummonReveal.Badge(p, featured), col, p.Result == PullResult.New ? "gold" : "good");
+                string when = p.Utc.ToLocalTime().ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+                string paid = string.IsNullOrEmpty(p.Paid) ? "" : " · " + p.Paid;
+                Ui.Caption($"{when} · {banner?.Name ?? p.BannerId ?? "Standard"}{paid}", col, "dim");
             }
         }
     }
@@ -2002,11 +2032,11 @@ namespace GridGame.App
             }
         }
 
-        private static bool IsFeatured(BannerDef banner, PullRecord p) =>
+        internal static bool IsFeatured(BannerDef banner, PullRecord p) =>
             banner?.Kind == BannerKind.Featured && banner.Featured.Contains(p.ClassId, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>"New", "New · Featured", "Echo +1 SP", "+5 Ticket fragments".</summary>
-        private static string Badge(PullRecord p, bool featured) => p.Result switch
+        internal static string Badge(PullRecord p, bool featured) => p.Result switch
         {
             PullResult.New => featured ? "New · Featured" : "New",
             PullResult.Echo => $"{Gacha.EchoName} +{Gacha.EchoSp} SP",
