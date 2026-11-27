@@ -29,10 +29,7 @@ namespace GridGame.Meta
         /// per hero, each equally likely, so what the Summon Circle shows is exactly what the draw does.</summary>
         public static List<DrawOdds> Odds(ContentDb c, SaveData s)
         {
-            var pool = Pool(c, s);
-            var odds = new List<DrawOdds>(pool.Count);
-            foreach (var id in pool) odds.Add(new DrawOdds(id, pool.Count));
-            return odds;
+            return Gacha.Odds(s, Gacha.Standard(c), Pool(c, s));
         }
 
         /// <summary>"Each of these 23 heroes: 1 in 23 (4.3%)" — the one-line disclosure beside the Draw button.</summary>
@@ -55,10 +52,8 @@ namespace GridGame.Meta
         /// <summary>The hero the next draw brings for this save (deterministic: the save's creation time and its recruit count).</summary>
         public static string Pick(ContentDb c, SaveData s)
         {
-            // Draws from the disclosed odds (GG-T503): a uniform index over Odds, each entry's Chance being 1 / Count.
-            var odds = Odds(c, s);
-            if (odds.Count == 0) return null;
-            return odds[new Random(Wanderers.SeedFor(s, "diamond-summon", s.Recruits)).Next(odds.Count)].ClassId;
+            // Draws from the disclosed odds (GG-T503) through the banner roll (GG-T1419).
+            return Gacha.Roll(Odds(c, s), Wanderers.SeedFor(s, "diamond-summon", s.Recruits));
         }
 
         /// <summary>Pays the Diamonds (gold for any shortfall) and starts the summoning; the hero arrives when
@@ -72,19 +67,21 @@ namespace GridGame.Meta
             var pick = Pick(c, s);
             var paid = DiamondExchange.Pay(s, Price, out var split);
             if (!paid.Ok) return paid;
+            Gacha.Record(s, Gacha.Standard(c), Pool(c, s), pick, DiamondExchange.Label(Price), now);
             job = new PaywallJob { Kind = PaywallKind.Summon, Arg = pick, StartedUtc = now, Seconds = Paywall.Duration(PaywallKind.Summon, s), Diamonds = Price, Paid = split.gold };
             s.Jobs.Add(job);
             return Result.Success();
         }
     }
 
-    /// <summary>One hero the Diamond draw can bring and its chance: 1 in <see cref="OneIn"/> (GG-T503).</summary>
+    /// <summary>One hero a draw can bring and its chance, about 1 in <see cref="OneIn"/> (GG-T503, GG-T1419).</summary>
     public readonly struct DrawOdds
     {
         public readonly string ClassId;
-        public readonly int OneIn;
-        public DrawOdds(string classId, int oneIn) { ClassId = classId; OneIn = oneIn; }
-        public double Chance => OneIn > 0 ? 1.0 / OneIn : 0.0;
+        public readonly double Chance;
+        public DrawOdds(string classId, int oneIn) { ClassId = classId; Chance = oneIn > 0 ? 1.0 / oneIn : 0.0; }
+        public DrawOdds(string classId, double chance) { ClassId = classId; Chance = chance; }
+        public int OneIn => Chance > 0 ? (int)Math.Round(1.0 / Chance) : 0;
         /// <summary>"1 in 23 (4.3%)".</summary>
         public string Label => $"1 in {OneIn} ({OddsText.Percent(Chance)})";
     }

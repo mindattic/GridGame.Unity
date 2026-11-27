@@ -24,7 +24,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 22;
+        public const int CurrentVersion = 23;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -137,6 +137,9 @@ namespace GridGame.Meta
         /// <summary>GG-T1592: heroes (class id, lower case) whose meeting the story has told: the starting party and story
         /// recruits (<see cref="Bonds.Joined"/>). Save v22: an older save counts its whole roster as met.</summary>
         public HashSet<string> MetHeroes = new HashSet<string>();
+        /// <summary>GG-T1419: summon pity per banner kind and the pull history (<see cref="Gacha"/>). Save v23: an older save
+        /// starts with no pulls.</summary>
+        public SummonState Summon = new SummonState();
         // Settings no longer live in a save slot (GG-T99): they belong to the player profile's settings.json
         // (PlayerProfiles.cs). An older slot's "Settings" block is ignored on load; LegacySaveMigration reads it once.
 
@@ -946,6 +949,12 @@ namespace GridGame.Meta
                     if (Bonds.Key(h?.ClassId) is string key) s.MetHeroes.Add(key);
                 s.Version = 22;
             }
+            // GG-T1419: the summon record. An older save has made no banner pulls.
+            if (s.Version < 23) s.Version = 23;
+            s.Summon ??= new SummonState();
+            s.Summon.Pulls ??= new Dictionary<BannerKind, int>();
+            s.Summon.NewHeroMiss ??= new Dictionary<BannerKind, int>();
+            s.Summon.History ??= new List<PullRecord>();
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
