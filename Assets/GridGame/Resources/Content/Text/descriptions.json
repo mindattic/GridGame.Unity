@@ -25168,12 +25168,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:6653212d0ff3d102283a6b585232a29a99011e7c131a8b6571a498ead3f53016",
+      "hash": "sha256:0905e2f7bc5231e0286d1467af15ddea56edc2a0bd0283259666d71550e429ae",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "The Anchor's Heave",
-        "short": "An anchor is sunk somewhere on the field each wave. Every few seconds it heaves, and everyone within three tiles is dragged a step toward it. Set up a line the heave will close."
+        "short": "Under the Anchors the arches are taps, and the field itself moves the pieces. An anchor is sunk somewhere on the field each wave. Every few seconds it heaves, and everyone within three tiles is dragged a step toward it. Set up a line the heave will close."
       }
     },
     "rule:crackingfloor": {
@@ -25182,12 +25182,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:05800f793952b8fc035eeb12d9fbc3c6e73db06a3e405296161e05271ff49cad",
+      "hash": "sha256:9513c01a17c609644ccadbb8f03ba27a98e90023c39d8e5c21584316268a72bb",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Cracking Floor",
-        "short": "Cracked tiles give under every step, every turn spent standing and every blow; a crumbling tile caves in when its icon reaches the edge of the timeline, and whoever stands on it falls."
+        "short": "Close to what Halcyon built, overdrew and lost, the ground is a resource that runs out. Cracked tiles give under every step, every turn spent standing and every blow; a crumbling tile caves in when its icon reaches the edge of the timeline, and whoever stands on it falls."
       }
     },
     "rule:firetrail": {
@@ -25196,12 +25196,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ee90ce6ac3d1df4d910567aaff2b1fc125aeca4b56dc7eda8a14ae1a93dc52eb",
+      "hash": "sha256:2ad588fc93f469ef78e34ab990a9d9c73612d82368577169b541811f183a8544",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Fire Trail",
-        "short": "Ember beasts leave burning ground behind them; it scorches whoever steps in or stands on it. Ice douses it, and it burns out on its own."
+        "short": "The Ember came to the Shardfall to feed the fire. Ember beasts leave burning ground behind them; it scorches whoever steps in or stands on it. Ice douses it, and it burns out on its own."
       }
     },
     "rule:holds-barricades": {
@@ -25210,12 +25210,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:62e9974edc7992b42c11b1d9e0b8d6c55e0800e577ab8f106df2e46d97c2afb3",
+      "hash": "sha256:64f0805dd77b163ac7f548c5a368a078cf9ad6683a1ff485a37a647f0f0e27db",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Hold Barricades",
-        "short": "Every wave, the holds throw up barricades. Stand beside one to wear it down; when it falls, step onto the rubble to be Empowered."
+        "short": "The Free Holds are besieged, and their walls break the party's pincer lines. Every wave, the holds throw up barricades. Stand beside one to wear it down; when it falls, step onto the rubble to be Empowered."
       }
     },
     "rule:holy-light": {
@@ -25224,12 +25224,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:384f4d4124d769480f92e9063ef029248169b371a39cded29d929dbc6b6bd1c4",
+      "hash": "sha256:6ff899085a22eb0e7402252fb563a8b9045efe35c68e35c1a08bf4efa8bc85ce",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Holy Light",
-        "short": "Holy power leaves the ground glowing for a few seconds. In Morrow's Dark it shows any foe standing in it, and a foe that starts its turn in it is Blinded."
+        "short": "Where the Manalith fills the sky, light is worth fighting for. Holy power leaves the ground glowing for a few seconds. In Morrow's Dark it shows any foe standing in it, and a foe that starts its turn in it is Blinded."
       }
     },
     "rule:icetrail": {
@@ -25238,12 +25238,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e1f42e85d9b1d83e034ebbe7a51dd8cf54cae07bdc56cb9c5ffa235016ba03dc",
+      "hash": "sha256:4641c87d1ac69ddae4c3834d43d66270ea3e2a28d73f7a00f99b8d90f1514b65",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Ice Trail",
-        "short": "Frost beasts leave ice in their tracks; it slows whoever steps on it, and sometimes freezes them solid. Fire melts it."
+        "short": "On the Anchor Wastes the cold breeds its own. Frost beasts leave ice in their tracks; it slows whoever steps on it, and sometimes freezes them solid. Fire melts it."
       }
     },
     "rule:landmines": {
@@ -25252,12 +25252,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:92d97bf95c71834c6e8f711bff131cb6ac1babaf33c7b175ec80906a83aaeef2",
+      "hash": "sha256:4a6a3a73442be4ce7032ddac2a67d66e6ac01f27a08fb04fbd982cf44c5cb8b5",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Land Mines",
-        "short": "Bulwark gunners plant mines as they march. Step on one, shove a foe onto it, or hit it from range and it arms: the blast lands on the timeline a moment later. A Disarm Kit pulls it safely."
+        "short": "In the Choir's tithe vault the Bulwark fights with ordnance, so a step can be the wrong step. Bulwark gunners plant mines as they march. Step on one, shove a foe onto it, or hit it from range and it arms: the blast lands on the timeline a moment later. A Disarm Kit pulls it safely."
       }
     },
     "rule:morrows-dark": {
@@ -25266,12 +25266,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:3446b7f3820fa674a7be0972f081851adb6d7f300bff2ee986f32c6bf03c7450",
+      "hash": "sha256:99d75f37ab3985b5dc77591288967bea55014ce543a0601d4877e6ce628801a7",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Morrow's Dark",
-        "short": "In Morrow's Shadow the Manalith blots out the sky, and there is no light but the braziers. A foe more than two tiles from every hero, and off the brazier-light, is hidden on the field and its timeline icon is a question mark."
+        "short": "In Morrow's Shadow the Manalith fills the sky, close enough to count its crystals, and there is no light but the braziers. A foe more than two tiles from every hero, and off the brazier-light, is hidden on the field and its timeline icon is a question mark."
       }
     },
     "rule:rising-tide": {
@@ -25280,12 +25280,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:89eaaa072f8943812d11005b0a2b9c97dcf8de6776d55559cca3f3024fb0a76c",
+      "hash": "sha256:5fe152c70f97a4bdb640c0828124fa913a250afeaca8d26b4e640344de04841b",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "The Rising Tide",
-        "short": "Each wave the water rises from the bottom row, one row at a time, and you can see each rise coming on the timeline. Anyone who starts a turn in the flood is Slowed and Wet, and lightning finds the Wet."
+        "short": "In the Drowned Arks the water is coming up, and the danger is the clock. Each wave the water rises from the bottom row, one row at a time, and you can see each rise coming on the timeline. Anyone who starts a turn in the flood is Slowed and Wet, and lightning finds the Wet."
       }
     },
     "rule:shardfall-strikes": {
@@ -25294,12 +25294,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:5641e937b8c52fd6a6383755ec68c6eee01cefb37c6d21325a7aad26b2966450",
+      "hash": "sha256:641fe08a3aa6726ad808fa92d528e3dad48dd1169b54206a2ac0c5e50cc6bd35",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Shardfall",
-        "short": "Shards fall on the party: each strike shows on the timeline and its tiles light up before it lands. Where one lands it leaves a crystal; end a turn on it for a Ward."
+        "short": "In Deep Shardfall the Manalith's shell is breaking. Shards fall on the party: each strike shows on the timeline and its tiles light up before it lands. Where one lands it leaves a crystal; end a turn on it for a Ward."
       }
     },
     "rule:slimetrail": {
@@ -25308,12 +25308,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:063408424474cb825d82e59c05e24e9f5179695822062855e3b2a1debcbff382",
+      "hash": "sha256:44bf3288d9b98868873d5aeaccec10b9944a00aa9b46072c7fe921ac0524005c",
       "about": [],
       "speakers": [],
       "payload": {
         "name": "Slime Trail",
-        "short": "Slimes leave a sticky trail as they go; stepping in it slows you. Fire burns it away, and Purifying Salts wash it off."
+        "short": "On the Tithe Moors the dangers are still ordinary, but a monster can change the floor. Slimes leave a sticky trail as they go; stepping in it slows you. Fire burns it away, and Purifying Salts wash it off."
       }
     }
   }
