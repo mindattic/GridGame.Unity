@@ -6,6 +6,22 @@ namespace GridGame.Meta
     /// <summary>How a hero joined, which sets the Trust they arrive with (§25.20, <see cref="BondsConfig"/>).</summary>
     public enum JoinRoute { Starting, StoryRecruit, Rapport, Hire }
 
+    /// <summary>One bond a battle moved (GG-T1573): a hero's Trust (<see cref="Key"/> is its class id) or a pair's cohesion
+    /// (<see cref="Key"/> is the <see cref="Bonds.PairKey"/>).</summary>
+    public sealed class BondChange
+    {
+        public string Key;
+        public int Before;
+        public int After;
+    }
+
+    /// <summary>What a won battle did to the bonds (GG-T1573), for the results screen (GG-T1302).</summary>
+    public sealed class BattleBonds
+    {
+        public List<BondChange> Trust = new List<BondChange>();
+        public List<BondChange> Cohesion = new List<BondChange>();
+    }
+
     /// <summary>Trust and cohesion (bible §25.20, GG-T1292): Trust is how far one hero trusts the Commander, cohesion how well
     /// two heroes work together. Both are 0-100, read in the tiers of <see cref="BondsConfig.TierFloors"/>, and never drop
     /// below the floor of the highest tier reached. Kept in the save (<see cref="SaveData.Trust"/>,
@@ -113,6 +129,40 @@ namespace GridGame.Meta
             s.Cohesion ??= new Dictionary<string, int>();
             s.CohesionTierReached ??= new Dictionary<string, int>();
             return Apply(s.Cohesion, s.CohesionTierReached, key, delta);
+        }
+
+        // ── Battle credits ─────────────────────────────────────────────────────────
+
+        /// <summary>A won battle's bond credits (§25.20, GG-T1573): each pair in <paramref name="pairCredits"/> (keyed as
+        /// <see cref="PairKey"/>) gains its credits, capped at <see cref="BondsConfig.PairCreditCapPerBattle"/>, as cohesion;
+        /// each hero in <paramref name="fought"/>, standing or downed, gains <see cref="BondsConfig.VictoryTrust"/>. Heroes
+        /// without bonds (<see cref="HasTrust"/>) are skipped. Returns each bond's before and after for the results screen.</summary>
+        public static BattleBonds ApplyBattle(SaveData s, IReadOnlyDictionary<string, int> pairCredits, IEnumerable<string> fought)
+        {
+            var report = new BattleBonds();
+            if (s == null) return report;
+            var seen = new HashSet<string>();
+            foreach (var id in fought ?? Array.Empty<string>())
+            {
+                var key = Key(id);
+                if (key == null || !seen.Add(key) || !HasTrust(s, key)) continue;
+                int before = Trust(s, key);
+                report.Trust.Add(new BondChange { Key = key, Before = before, After = AddTrust(s, key, BondsConfig.VictoryTrust) });
+            }
+            if (pairCredits == null) return report;
+            var pairs = new List<string>(pairCredits.Keys);
+            pairs.Sort(string.CompareOrdinal);
+            foreach (var pair in pairs)
+            {
+                int credits = Math.Min(pairCredits[pair], BondsConfig.PairCreditCapPerBattle);
+                var ids = pair?.Split('|');
+                if (credits <= 0 || ids == null || ids.Length != 2) continue;
+                var key = PairKey(ids[0], ids[1]);
+                if (key == null || !HasCohesion(s, ids[0]) || !HasCohesion(s, ids[1])) continue;
+                int before = Cohesion(s, ids[0], ids[1]);
+                report.Cohesion.Add(new BondChange { Key = key, Before = before, After = AddCohesion(s, ids[0], ids[1], credits) });
+            }
+            return report;
         }
 
         // ── Dialogue choices ───────────────────────────────────────────────────────

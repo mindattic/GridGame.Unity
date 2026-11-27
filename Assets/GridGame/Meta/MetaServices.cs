@@ -329,6 +329,8 @@ namespace GridGame.Meta
         public int OrbsOwned;
         /// <summary>GG-T677: a Broken Mana Orb dropped (the Manasmith restores it into an owned orb).</summary>
         public bool BrokenOrbFound;
+        /// <summary>§25.20 (GG-T1573): Trust and cohesion this victory moved, before and after; empty short of victory.</summary>
+        public BattleBonds BondChanges = new BattleBonds();
         public bool CampaignComplete;
         /// <summary>Campaign milestone (GG-T301): the theme whose first full clear this was, and the reward it paid (also in <see cref="Items"/>).</summary>
         public string Milestone;
@@ -802,6 +804,7 @@ namespace GridGame.Meta
                 // Shattered weapons and broken armor become salvage-only Broken fragments instead of
                 // vanishing outright (GG-T41) — can't be equipped or repaired, only scrapped for materials.
                 KeepBrokenFragments(s, r);
+                rep.BondChanges = Bonds.ApplyBattle(s, r.PairCredits, heroes.Where(u => !u.IsGuest).Select(u => u.Def.Id));
 
                 int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
                 rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
