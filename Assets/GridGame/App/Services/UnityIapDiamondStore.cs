@@ -338,7 +338,10 @@ namespace GridGame.App
                 DiamondExchange.WalletDirty = true;
                 Debug.Log($"[IAP] restored {id} ({tx}): {outcome}");
                 if (outcome == GrantOutcome.Granted)
+                {
+                    Offers.ClaimOnGrant(app.Content, w, id, DateTime.UtcNow);
                     Delivered?.Invoke(PurchaseResult.Of(PurchaseKind.Granted, $"Restored: {DiamondStore.Gains(StoreCatalog.Of(id), w.Granted[tx])}.", id));
+                }
             }
             if (DiamondExchange.WalletDirty && !app.PersistWallet())
                 Debug.LogWarning("[IAP] restored purchases granted but the wallet isn't saved yet; it is written again with the next save");
@@ -454,6 +457,7 @@ namespace GridGame.App
                 return;
             }
             if (outcome != GrantOutcome.Granted) return;
+            Offers.ClaimOnGrant(app.Content, w, id, DateTime.UtcNow);
             DiamondExchange.WalletDirty = true;
             if (!app.PersistWallet())
             {

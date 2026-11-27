@@ -301,6 +301,7 @@ namespace GridGame.Meta
                 return;
             }
             DiamondExchange.WalletDirty = true;
+            Offers.ClaimOnGrant(c, w, product.Id, DateTime.UtcNow);
             done?.Invoke(PurchaseResult.Of(PurchaseKind.Granted, $"[Test store] {DiamondStore.Gains(product, w.Granted[tx])}, no charge.", product.Id, diamonds));
         }
     }
