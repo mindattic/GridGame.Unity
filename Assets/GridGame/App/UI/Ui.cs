@@ -435,6 +435,24 @@ namespace GridGame.App
         /// <summary>A row of buttons inside a window or card; they wrap, 24 px apart and 24 px in from the text column.</summary>
         public static VisualElement Actions(VisualElement parent) => El("kit-actions", parent);
 
+        /// <summary>Set the margins a layout computes at build time (a grid's half gutter, an icon's gap); only the sides given change.</summary>
+        public static void Margin(VisualElement e, float? left = null, float? top = null, float? right = null, float? bottom = null)
+        {
+            if (left.HasValue) e.style.marginLeft = left.Value;
+            if (top.HasValue) e.style.marginTop = top.Value;
+            if (right.HasValue) e.style.marginRight = right.Value;
+            if (bottom.HasValue) e.style.marginBottom = bottom.Value;
+        }
+
+        /// <summary>Set the padding a layout computes at build time; only the sides given change.</summary>
+        public static void Pad(VisualElement e, float? left = null, float? top = null, float? right = null, float? bottom = null)
+        {
+            if (left.HasValue) e.style.paddingLeft = left.Value;
+            if (top.HasValue) e.style.paddingTop = top.Value;
+            if (right.HasValue) e.style.paddingRight = right.Value;
+            if (bottom.HasValue) e.style.paddingBottom = bottom.Value;
+        }
+
         /// <summary>A group header ("Weapon", "Under way"): caption size, gold, flush with the window's left edge.</summary>
         public static Label Section(string text, VisualElement parent)
         {

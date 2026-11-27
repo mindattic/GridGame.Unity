@@ -195,7 +195,7 @@ namespace GridGame.App
             if (it != null && it.Type == ItemType.Tome)
             {
                 var teach = TomeUi.Offer(detail, it, r => { if (r.Ok) { selected = S.Count(it.Id) > 0 ? it : null; Refresh(); } }, false);
-                teach.style.marginLeft = Space.S0;
+                Ui.Margin(teach, left: Space.S0);
                 return;
             }
             if (it != null && it.Type == ItemType.Chest)
@@ -216,7 +216,7 @@ namespace GridGame.App
                 var hero = id;
                 var b = RowIcon.IconButton(C.TryClass(id)?.Name ?? id, RowKind.Hero, () => { selected = it; Done(Camp.Use(C, S, it.Id, hero)); }, "btn--small", row);
                 var face = b.KindIcon(RowKind.Hero, id); // GG-T750 (§26.7): the hero's own thumbnail, else the Hero emblem
-                face.style.width = face.style.height = Size.IconS; face.style.marginRight = Space.S8;
+                face.style.width = face.style.height = Size.IconS; Ui.Margin(face, right: Space.S8);
                 b.style.flexGrow = 1; b.style.flexShrink = 1; b.style.flexBasis = Length.Percent(25); b.style.minWidth = 0;
                 b.name = "use-on-" + id;
             }
@@ -2254,8 +2254,8 @@ namespace GridGame.App
                     {
                         row = new VisualElement { name = "grid-row" };
                         row.style.flexDirection = FlexDirection.Row;
-                        row.style.paddingLeft = row.style.paddingRight = gap / 2f;
-                        row.style.marginTop = i == 0 ? gap / 2f : 0;
+                        Ui.Pad(row, left: gap / 2f, right: gap / 2f);
+                        Ui.Margin(row, top: i == 0 ? gap / 2f : 0);
                         grid.Add(row);
                     }
                     row.Add(cells[i]);
@@ -2266,7 +2266,7 @@ namespace GridGame.App
                     var filler = new VisualElement { name = "grid-filler", pickingMode = PickingMode.Ignore };
                     filler.style.visibility = Visibility.Hidden;
                     filler.style.flexBasis = 0; filler.style.flexGrow = 1; filler.style.flexShrink = 1;
-                    filler.style.marginLeft = filler.style.marginRight = gap / 2f;
+                    Ui.Margin(filler, left: gap / 2f, right: gap / 2f);
                     row.Add(filler);
                 }
             }
@@ -2277,7 +2277,7 @@ namespace GridGame.App
                 t.style.width = StyleKeyword.Auto; t.style.minWidth = 0; t.style.maxWidth = StyleKeyword.None;
                 t.style.flexBasis = 0; t.style.flexGrow = 1; t.style.flexShrink = 1;
                 t.style.height = size;
-                t.style.marginLeft = t.style.marginRight = t.style.marginTop = t.style.marginBottom = gap / 2f;
+                Ui.Margin(t, gap / 2f, gap / 2f, gap / 2f, gap / 2f);
             }
             return cols;
         }
@@ -2324,7 +2324,7 @@ namespace GridGame.App
                     chip.name = "beast-ability-" + ab.Id;
                     chip.style.alignItems = Align.Center;
                     chip.style.minHeight = Kit.Row;
-                    chip.style.marginRight = Space.S24;
+                    Ui.Margin(chip, right: Space.S24);
                     var icon = Art.AbilityIcon(ab);
                     if (icon != null) { var ic = Ui.El("menu-icon", chip); ic.style.backgroundImage = new StyleBackground(icon); }
                     Ui.Name(ab.Name, chip);
@@ -2369,16 +2369,16 @@ namespace GridGame.App
             row.name = "settings-difficulty";
             row.style.alignItems = Align.Center;
             row.style.minHeight = Kit.Row;
-            row.style.paddingLeft = Kit.Indent; // the label lines up with the menu rows' labels
+            Ui.Pad(row, left: Kit.Indent); // the label lines up with the menu rows' labels
             row.KindIcon(RowKind.Settings); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
-            var minus = Ui.Button("−", () => Set(level - 1), "btn--small btn--icon", row);
+            var minus = RowIcon.IconButton("−", RowKind.Settings, () => Set(level - 1), "btn--small", row);
             minus.name = "difficulty-down";
             var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
             // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
             n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var plus = Ui.Button("+", () => Set(level + 1), "btn--small btn--icon", row);
+            var plus = RowIcon.IconButton("+", RowKind.Settings, () => Set(level + 1), "btn--small", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
             Ui.SetEnabled(plus, level < DifficultyTable.Max);
@@ -2454,7 +2454,8 @@ namespace GridGame.App
             // GG-T750 (§26.7): every setting row leads with the Settings gear, the save rows with the Save disk.
             VisualElement Row(string label, string value, Action set, string name = null)
             {
-                var row = Ui.MenuRow(label, value, () => { set(); App.ApplySettings(); App.SaveSettings(); Refresh(); }, w).KindIcon(RowKind.Settings);
+                Action apply = () => { set(); App.ApplySettings(); App.SaveSettings(); Refresh(); };
+                var row = Ui.MenuRow(label, value, apply, w).KindIcon(RowKind.Settings);
                 if (name != null) row.name = name;
                 return row;
             }
