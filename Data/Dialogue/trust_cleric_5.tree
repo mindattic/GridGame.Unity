@@ -1,0 +1,106 @@
+dialogue trust_cleric_5
+title: The first kept name
+trigger: Trust cleric level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Cleric's hands are still after today's battle, for once. By the fire the book of names lies open to a fresh page, a pen balanced across it, nothing written yet.
+  * You walked away from the tables. I said that was what counted. I still say it. -> forgiven_kept
+    if: FlagSet cleric:white_forgiven
+    do: AddTrust $with 5
+  * You told me something drove you out. I think something's been driving you on since, too. -> asked_kept
+    if: FlagSet cleric:white_asked
+    do: AddTrust $with 5
+  * I asked you for everything you knew about the collectors. You gave it. Every time. -> used_kept
+    if: FlagSet cleric:white_used
+    do: AddTrust $with 6
+  * Your hands aren't shaking. -> still
+    do: AddTrust $with 3
+
+node forgiven_kept hero
+  I've had a long while to do the sums since you said it. You were right. One walk, and everything after it. That's the part that counts.
+  -> page
+
+node asked_kept hero
+  Yes. Her, and then all of you. It turns out a healer can run toward something as well as away. I didn't know that.
+  -> page
+
+node used_kept hero
+  I did. And every time it kept one of you standing, it was worth a little less of what it cost me to learn. It's nearly paid off now.
+  -> page
+
+node still hero
+  No. Not after. Not today. I keep looking at them, waiting.
+  -> page
+
+node page hero
+  I was going to write a name tonight, Commander. The first in a long while. Then I sat here, and I couldn't think who it should be.
+  -> thread
+
+node thread commander
+  The fire settles. The old pages, the ones full of names, lie heavy under the Cleric's other hand.
+  * Read me the next one, then, before the new page. Like the night in the rain. -> read
+    if: FlagSet cleric:ledger_read
+    do: AddTrust $with 8
+    do: SetFlag cleric:thread_read
+  * The Choir took them, not you. That's still true. Is it any easier now? -> absolved
+    if: FlagSet cleric:ledger_absolved
+    do: AddTrust $with 6
+    do: SetFlag cleric:thread_absolved
+  * I told you to put it away. I was wrong. You were right to keep it. -> wrong
+    if: FlagSet cleric:ledger_shut
+    do: AddTrust $with 8
+    do: SetFlag cleric:thread_wrong
+  * Tell me about the girl. The last one. -> girl
+    do: AddTrust $with 6
+    do: SetFlag cleric:thread_girl
+
+node read hero
+  Mabel Rook. Kept bees, talked to them. Stung every week and never minded. There. That's the last of the old book I'll read aloud. It feels like the right place to stop.
+  -> kept
+
+node absolved hero
+  Easier, yes. Not lighter. But I can carry it now without it carrying me, which isn't the same, and is better.
+  -> kept
+
+node wrong hero
+  You weren't wrong. You were being a commander. Someone had to tell me it could cost us. I just needed to prove it wouldn't.
+  -> kept
+
+node girl hero
+  Her name was Wren. She asked me if the colour went somewhere nice. I said yes. I've wanted to know if that was a lie ever since. Now I'll find out, with you.
+  -> kept
+
+node kept hero
+  So here's the thing I worked out, just now. The new page isn't for the lost. It's for the kept. Everyone this crew has carried home who should not have made it. And I'd like the first name to be one you choose.
+  -> choose
+
+node choose commander
+  The Cleric holds out the pen.
+  * Write all of them. Every one of us who's still here. -> crew
+    do: AddTrust $with 7
+    do: SetFlag cleric:kept_crew
+  * Write your own name first. You've kept yourself alive too. -> self
+    do: AddTrust $with 9
+    do: SetFlag cleric:kept_self
+  * Leave it blank. Names on a page are how the Choir counts people. -> blank
+    do: AddTrust $with -2
+    do: SetFlag cleric:kept_blank
+  * Write it, then sleep. I'll take the watch tonight, like the first night. -> watch
+    if: FlagSet founding:watch_cleric
+    do: AddTrust $with 9
+    do: SetFlag cleric:kept_crew
+
+node crew hero
+  All of us. It'll take the whole page. Good. Let it take the whole book. I'd like to run out of room for once.
+
+node self hero
+  Me. I hadn't thought of that. I don't think I ever counted myself as someone who was kept. Hold the lamp closer, Commander. My hand's quite steady.
+
+node blank hero
+  Maybe. Or maybe it's only the Choir's way if nobody reads them. I'll leave it blank tonight, for you. But I'll keep the pen out.
+
+node watch hero
+  Like the first night. You noticed then, and you're still noticing. There. All of you, and you first. Wake me if anyone so much as sneezes.

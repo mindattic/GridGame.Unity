@@ -1,0 +1,85 @@
+dialogue trust_cleric_3
+title: The book of names
+trigger: Trust cleric level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  Rain on the wagon cover. The Cleric sits under it with a lamp turned low and a small book open on one knee, its pages soft and swollen from fen damp.
+  -> book
+
+node book hero
+  I said I'd show you the book. Sit, if you like. It isn't long. It only feels long.
+  -> names
+
+node names hero
+  Every name in here is someone I steadied at the tithe tables who came back Hollow anyway. I write them down so somebody does. The Choir doesn't. To the Choir they're a sum that came out right.
+  -> last
+
+node last hero
+  The last one is a hold girl, maybe twelve. Her first tithe. I held her hand and told her it wouldn't hurt, and it didn't, and that was the worst of it. She just went quiet. I wrote her down that night and walked into the fen the next morning.
+  -> answer
+
+node answer commander
+  The Cleric's thumb rests on the last line, over the name.
+  * Read me one. Any one. -> read
+    do: AddTrust $with 9
+    do: SetFlag cleric:ledger_read
+  * You didn't take them. The Choir did. -> absolved
+    do: AddTrust $with 5
+    do: SetFlag cleric:ledger_absolved
+  * You can't mend what's done. Put it away before it costs you in a fight. -> shut
+    do: AddTrust $with -4
+    do: SetFlag cleric:ledger_shut
+  * So that's what drove you out. Her. -> why
+    if: FlagSet cleric:white_asked
+    do: AddTrust $with 7
+    do: SetFlag cleric:ledger_why
+
+node read hero
+  One. All right. Corran Hale, a thatcher, very bad at jokes, laughed at every one of them anyway. There. He was a person, for a breath, out loud.
+  -> mend
+
+node absolved hero
+  The Choir held the cup. I held the hand. I've never been able to decide which is worse, and I've had a long time to try.
+  -> mend
+
+node shut hero
+  You may be right. But a healer who forgets is just a collector with kinder hands. I'll keep it out of the fighting. I won't put it away.
+  -> mend
+
+node why hero
+  You remembered I said both. Yes. Her. A hundred names before her, and it was the quiet one that did it.
+  -> mend
+
+node mend hero
+  You're from before, Commander. When Halcyon was whole. Tell me. Could anyone mend the Hollow, then? Did anyone even try?
+  -> truth
+
+node truth commander
+  The old memory turns the question over and finds only the edge of something, a room of white beds, and nothing more.
+  * I don't remember. I won't promise you something I don't know. -> honest
+    do: AddTrust $with 6
+    do: SetFlag cleric:asked_honest
+  * Then we find out together, on the road. -> together
+    do: AddTrust $with 4
+    do: SetFlag cleric:asked_together
+  * Some things can't be mended. You know that better than I do. -> hard
+    do: AddTrust $with -3
+    do: SetFlag cleric:asked_hard
+
+node honest hero
+  Thank you. The collectors promised everything. "It grows back." I said it too, at the tables. I'd rather have your nothing than their everything.
+  -> lamp
+
+node together hero
+  Together. That's a healer's word, you know. You can't mend anyone from across a room.
+  -> lamp
+
+node hard hero
+  I do. I just hoped someone from before knew better. Never mind. It was a lot to put on you.
+  -> lamp
+
+node lamp commander
+  The Cleric closes the book, wraps it in oilcloth against the rain, and turns the lamp down until only the rain is left.

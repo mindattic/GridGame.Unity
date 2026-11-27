@@ -3839,5 +3839,139 @@
       { "Id": "keep", "Speaker": "hero" },
       { "Id": "watch", "Speaker": "hero" }
     ]
+  },
+  {
+    "Id": "trust_cleric_1",
+    "Title": "Steady hands",
+    "Trigger": { "Kind": "Trust", "Id": "cleric", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "shaking", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 2 } ] },
+          { "Next": "nobody", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "sleep", "Conditions": [ { "Type": "FlagSet", "Id": "founding:watch_cleric" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "shaking", "Speaker": "hero", "Next": "taught" },
+      { "Id": "nobody", "Speaker": "hero", "Next": "taught" },
+      { "Id": "sleep", "Speaker": "hero", "Next": "taught" },
+      { "Id": "taught", "Speaker": "commander", "Next": "white" },
+      { "Id": "white", "Speaker": "hero", "Next": "tables" },
+      { "Id": "tables", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "forgiven", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "cleric:white_forgiven" } ] },
+          { "Next": "asked", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric:white_asked" } ] },
+          { "Next": "used", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric:white_used" } ] }
+        ]
+      },
+      { "Id": "forgiven", "Speaker": "hero", "Next": "book" },
+      { "Id": "asked", "Speaker": "hero", "Next": "book" },
+      { "Id": "used", "Speaker": "hero", "Next": "book" },
+      { "Id": "book", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_cleric_3",
+    "Title": "The book of names",
+    "Trigger": { "Kind": "Trust", "Id": "cleric", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "book" },
+      { "Id": "book", "Speaker": "hero", "Next": "names" },
+      { "Id": "names", "Speaker": "hero", "Next": "last" },
+      { "Id": "last", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "read", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "cleric:ledger_read" } ] },
+          { "Next": "absolved", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 }, { "Type": "SetFlag", "Id": "cleric:ledger_absolved" } ] },
+          { "Next": "shut", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "cleric:ledger_shut" } ] },
+          { "Next": "why", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_asked" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "cleric:ledger_why" } ] }
+        ]
+      },
+      { "Id": "read", "Speaker": "hero", "Next": "mend" },
+      { "Id": "absolved", "Speaker": "hero", "Next": "mend" },
+      { "Id": "shut", "Speaker": "hero", "Next": "mend" },
+      { "Id": "why", "Speaker": "hero", "Next": "mend" },
+      { "Id": "mend", "Speaker": "hero", "Next": "truth" },
+      {
+        "Id": "truth", "Speaker": "commander",
+        "Choices": [
+          { "Next": "honest", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric:asked_honest" } ] },
+          { "Next": "together", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 }, { "Type": "SetFlag", "Id": "cleric:asked_together" } ] },
+          { "Next": "hard", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -3 }, { "Type": "SetFlag", "Id": "cleric:asked_hard" } ] }
+        ]
+      },
+      { "Id": "honest", "Speaker": "hero", "Next": "lamp" },
+      { "Id": "together", "Speaker": "hero", "Next": "lamp" },
+      { "Id": "hard", "Speaker": "hero", "Next": "lamp" },
+      { "Id": "lamp", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_cleric_5",
+    "Title": "The first kept name",
+    "Trigger": { "Kind": "Trust", "Id": "cleric", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "forgiven_kept", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_forgiven" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "asked_kept", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_asked" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "used_kept", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:white_used" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 } ] },
+          { "Next": "still", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "forgiven_kept", "Speaker": "hero", "Next": "page" },
+      { "Id": "asked_kept", "Speaker": "hero", "Next": "page" },
+      { "Id": "used_kept", "Speaker": "hero", "Next": "page" },
+      { "Id": "still", "Speaker": "hero", "Next": "page" },
+      { "Id": "page", "Speaker": "hero", "Next": "thread" },
+      {
+        "Id": "thread", "Speaker": "commander",
+        "Choices": [
+          { "Next": "read", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:ledger_read" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric:thread_read" } ] },
+          { "Next": "absolved", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:ledger_absolved" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric:thread_absolved" } ] },
+          { "Next": "wrong", "Conditions": [ { "Type": "FlagSet", "Id": "cleric:ledger_shut" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "cleric:thread_wrong" } ] },
+          { "Next": "girl", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "cleric:thread_girl" } ] }
+        ]
+      },
+      { "Id": "read", "Speaker": "hero", "Next": "kept" },
+      { "Id": "absolved", "Speaker": "hero", "Next": "kept" },
+      { "Id": "wrong", "Speaker": "hero", "Next": "kept" },
+      { "Id": "girl", "Speaker": "hero", "Next": "kept" },
+      { "Id": "kept", "Speaker": "hero", "Next": "choose" },
+      {
+        "Id": "choose", "Speaker": "commander",
+        "Choices": [
+          { "Next": "crew", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "cleric:kept_crew" } ] },
+          { "Next": "self", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "cleric:kept_self" } ] },
+          { "Next": "blank", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "cleric:kept_blank" } ] },
+          { "Next": "watch", "Conditions": [ { "Type": "FlagSet", "Id": "founding:watch_cleric" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "cleric:kept_crew" } ] }
+        ]
+      },
+      { "Id": "crew", "Speaker": "hero" },
+      { "Id": "self", "Speaker": "hero" },
+      { "Id": "blank", "Speaker": "hero" },
+      { "Id": "watch", "Speaker": "hero" }
+    ]
   }
 ]

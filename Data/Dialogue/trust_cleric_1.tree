@@ -1,0 +1,71 @@
+dialogue trust_cleric_1
+title: Steady hands
+trigger: Trust cleric level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Cleric kneels by the wagon wheel with a bowl of fen-moss and a roll of bandage, mending the day's last cut. It is the Cleric's own, and the hands doing it will not keep still.
+  * Your hands are shaking. -> shaking
+    do: AddTrust $with 2
+  * Nobody fell today. That was you, all of it. -> nobody
+    do: AddTrust $with 5
+  * I told you to sleep, that first night by the fire. You still don't. -> sleep
+    if: FlagSet founding:watch_cleric
+    do: AddTrust $with 4
+
+node shaking hero
+  They always do, after. Never during. During, they're the steadiest thing on the field. That was the first thing they taught me.
+  -> taught
+
+node nobody hero
+  Nobody fell. Kind of you. But I count the ones who nearly did, and today there were three. That was the first thing they taught me, too: count.
+  -> taught
+
+node sleep hero
+  I sleep. Just not much, and not deep. Healers learn to wake at a cough. That was the first thing they taught me.
+  -> taught
+
+node taught commander
+  The bandage stops halfway round.
+  -> white
+
+node white hero
+  They. The Choir, I mean. I wore the white once, Commander. Every collector rides out with a healer, did you know that? To keep the paid on their feet long enough to walk home.
+  -> tables
+
+node tables hero
+  I stood at the tithe tables for six years. I held hands while they drew the colour out, and I sent people home I knew would never be the same. Then one spring I took my kit and walked into the fen, and didn't come back.
+  -> ask
+
+node ask commander
+  The Cleric ties off the bandage and waits, eyes on the moss, not on the Commander.
+  * You walked away. That's the part that counts. -> forgiven
+    do: AddTrust $with 7
+    do: SetFlag cleric:white_forgiven
+  * Did you choose to go, or did something drive you out? -> asked
+    do: AddTrust $with 6
+    do: SetFlag cleric:white_asked
+  * Then you know how the collectors work. I'll need every bit of that. -> used
+    do: AddTrust $with -3
+    do: SetFlag cleric:white_used
+
+node forgiven hero
+  Is it? Six years of tables, and one walk. I'd like to believe the sums come out that way. Some nights I nearly do.
+  -> book
+
+node asked hero
+  Both. I chose, and something drove me. You'll be the first who asked which. Most people only want to know what the white looks like from inside.
+  -> book
+
+node used hero
+  You'll have it. I suppose that's what it's worth now, to someone. I'd hoped it might be worth less.
+  -> book
+
+node book hero
+  I keep a book, Commander. Names. I'll show it to you one day, when my hands are steadier than tonight.
+  -> close
+
+node close commander
+  The Cleric packs the moss away, one jar at a time, and goes to check on the sleepers before lying down.

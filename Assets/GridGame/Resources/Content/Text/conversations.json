@@ -9426,6 +9426,467 @@
         ]
       }
     },
+    "dialogue:trust_cleric_1": {
+      "key": "dialogue:trust_cleric_1",
+      "id": "conversation-trust-cleric-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:998bc5ce56a0a3b0f2bf2e48c2b8a3466278f0179ae8af086e78ac7465e35049",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Steady hands",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Cleric kneels by the wagon wheel with a bowl of fen-moss and a roll of bandage, mending the day's last cut. It is the Cleric's own, and the hands doing it will not keep still.",
+            "choices": [
+              {
+                "text": "Your hands are shaking.",
+                "next": "shaking"
+              },
+              {
+                "text": "Nobody fell today. That was you, all of it.",
+                "next": "nobody"
+              },
+              {
+                "text": "I told you to sleep, that first night by the fire. You still don't.",
+                "next": "sleep",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "shaking",
+            "speaker": "$with",
+            "line": "They always do, after. Never during. During, they're the steadiest thing on the field. That was the first thing they taught me.",
+            "next": "taught"
+          },
+          {
+            "id": "nobody",
+            "speaker": "$with",
+            "line": "Nobody fell. Kind of you. But I count the ones who nearly did, and today there were three. That was the first thing they taught me, too: count.",
+            "next": "taught"
+          },
+          {
+            "id": "sleep",
+            "speaker": "$with",
+            "line": "I sleep. Just not much, and not deep. Healers learn to wake at a cough. That was the first thing they taught me.",
+            "next": "taught"
+          },
+          {
+            "id": "taught",
+            "speaker": "character-commander",
+            "line": "The bandage stops halfway round.",
+            "next": "white"
+          },
+          {
+            "id": "white",
+            "speaker": "$with",
+            "line": "They. The Choir, I mean. I wore the white once, Commander. Every collector rides out with a healer, did you know that? To keep the paid on their feet long enough to walk home.",
+            "next": "tables"
+          },
+          {
+            "id": "tables",
+            "speaker": "$with",
+            "line": "I stood at the tithe tables for six years. I held hands while they drew the colour out, and I sent people home I knew would never be the same. Then one spring I took my kit and walked into the fen, and didn't come back.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Cleric ties off the bandage and waits, eyes on the moss, not on the Commander.",
+            "choices": [
+              {
+                "text": "You walked away. That's the part that counts.",
+                "next": "forgiven"
+              },
+              {
+                "text": "Did you choose to go, or did something drive you out?",
+                "next": "asked"
+              },
+              {
+                "text": "Then you know how the collectors work. I'll need every bit of that.",
+                "next": "used"
+              }
+            ]
+          },
+          {
+            "id": "forgiven",
+            "speaker": "$with",
+            "line": "Is it? Six years of tables, and one walk. I'd like to believe the sums come out that way. Some nights I nearly do.",
+            "next": "book"
+          },
+          {
+            "id": "asked",
+            "speaker": "$with",
+            "line": "Both. I chose, and something drove me. You'll be the first who asked which. Most people only want to know what the white looks like from inside.",
+            "next": "book"
+          },
+          {
+            "id": "used",
+            "speaker": "$with",
+            "line": "You'll have it. I suppose that's what it's worth now, to someone. I'd hoped it might be worth less.",
+            "next": "book"
+          },
+          {
+            "id": "book",
+            "speaker": "$with",
+            "line": "I keep a book, Commander. Names. I'll show it to you one day, when my hands are steadier than tonight.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Cleric packs the moss away, one jar at a time, and goes to check on the sleepers before lying down."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_cleric_3": {
+      "key": "dialogue:trust_cleric_3",
+      "id": "conversation-trust-cleric-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9bf3daaf10fcefaaf66abd21445c9e644488fa4b3b3ab73002fde66f36f0a727",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The book of names",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Rain on the wagon cover. The Cleric sits under it with a lamp turned low and a small book open on one knee, its pages soft and swollen from fen damp.",
+            "next": "book"
+          },
+          {
+            "id": "book",
+            "speaker": "$with",
+            "line": "I said I'd show you the book. Sit, if you like. It isn't long. It only feels long.",
+            "next": "names"
+          },
+          {
+            "id": "names",
+            "speaker": "$with",
+            "line": "Every name in here is someone I steadied at the tithe tables who came back Hollow anyway. I write them down so somebody does. The Choir doesn't. To the Choir they're a sum that came out right.",
+            "next": "last"
+          },
+          {
+            "id": "last",
+            "speaker": "$with",
+            "line": "The last one is a hold girl, maybe twelve. Her first tithe. I held her hand and told her it wouldn't hurt, and it didn't, and that was the worst of it. She just went quiet. I wrote her down that night and walked into the fen the next morning.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "The Cleric's thumb rests on the last line, over the name.",
+            "choices": [
+              {
+                "text": "Read me one. Any one.",
+                "next": "read"
+              },
+              {
+                "text": "You didn't take them. The Choir did.",
+                "next": "absolved"
+              },
+              {
+                "text": "You can't mend what's done. Put it away before it costs you in a fight.",
+                "next": "shut"
+              },
+              {
+                "text": "So that's what drove you out. Her.",
+                "next": "why",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "read",
+            "speaker": "$with",
+            "line": "One. All right. Corran Hale, a thatcher, very bad at jokes, laughed at every one of them anyway. There. He was a person, for a breath, out loud.",
+            "next": "mend"
+          },
+          {
+            "id": "absolved",
+            "speaker": "$with",
+            "line": "The Choir held the cup. I held the hand. I've never been able to decide which is worse, and I've had a long time to try.",
+            "next": "mend"
+          },
+          {
+            "id": "shut",
+            "speaker": "$with",
+            "line": "You may be right. But a healer who forgets is just a collector with kinder hands. I'll keep it out of the fighting. I won't put it away.",
+            "next": "mend"
+          },
+          {
+            "id": "why",
+            "speaker": "$with",
+            "line": "You remembered I said both. Yes. Her. A hundred names before her, and it was the quiet one that did it.",
+            "next": "mend"
+          },
+          {
+            "id": "mend",
+            "speaker": "$with",
+            "line": "You're from before, Commander. When Halcyon was whole. Tell me. Could anyone mend the Hollow, then? Did anyone even try?",
+            "next": "truth"
+          },
+          {
+            "id": "truth",
+            "speaker": "character-commander",
+            "line": "The old memory turns the question over and finds only the edge of something, a room of white beds, and nothing more.",
+            "choices": [
+              {
+                "text": "I don't remember. I won't promise you something I don't know.",
+                "next": "honest"
+              },
+              {
+                "text": "Then we find out together, on the road.",
+                "next": "together"
+              },
+              {
+                "text": "Some things can't be mended. You know that better than I do.",
+                "next": "hard"
+              }
+            ]
+          },
+          {
+            "id": "honest",
+            "speaker": "$with",
+            "line": "Thank you. The collectors promised everything. \"It grows back.\" I said it too, at the tables. I'd rather have your nothing than their everything.",
+            "next": "lamp"
+          },
+          {
+            "id": "together",
+            "speaker": "$with",
+            "line": "Together. That's a healer's word, you know. You can't mend anyone from across a room.",
+            "next": "lamp"
+          },
+          {
+            "id": "hard",
+            "speaker": "$with",
+            "line": "I do. I just hoped someone from before knew better. Never mind. It was a lot to put on you.",
+            "next": "lamp"
+          },
+          {
+            "id": "lamp",
+            "speaker": "character-commander",
+            "line": "The Cleric closes the book, wraps it in oilcloth against the rain, and turns the lamp down until only the rain is left."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_cleric_5": {
+      "key": "dialogue:trust_cleric_5",
+      "id": "conversation-trust-cleric-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8dadd573b7b7cab59fc511f83f829fccd8c25434a1e5e18a1fab10b0a4b439e6",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The first kept name",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Cleric's hands are still after today's battle, for once. By the fire the book of names lies open to a fresh page, a pen balanced across it, nothing written yet.",
+            "choices": [
+              {
+                "text": "You walked away from the tables. I said that was what counted. I still say it.",
+                "next": "forgiven_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You told me something drove you out. I think something's been driving you on since, too.",
+                "next": "asked_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I asked you for everything you knew about the collectors. You gave it. Every time.",
+                "next": "used_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Your hands aren't shaking.",
+                "next": "still"
+              }
+            ]
+          },
+          {
+            "id": "forgiven_kept",
+            "speaker": "$with",
+            "line": "I've had a long while to do the sums since you said it. You were right. One walk, and everything after it. That's the part that counts.",
+            "next": "page"
+          },
+          {
+            "id": "asked_kept",
+            "speaker": "$with",
+            "line": "Yes. Her, and then all of you. It turns out a healer can run toward something as well as away. I didn't know that.",
+            "next": "page"
+          },
+          {
+            "id": "used_kept",
+            "speaker": "$with",
+            "line": "I did. And every time it kept one of you standing, it was worth a little less of what it cost me to learn. It's nearly paid off now.",
+            "next": "page"
+          },
+          {
+            "id": "still",
+            "speaker": "$with",
+            "line": "No. Not after. Not today. I keep looking at them, waiting.",
+            "next": "page"
+          },
+          {
+            "id": "page",
+            "speaker": "$with",
+            "line": "I was going to write a name tonight, Commander. The first in a long while. Then I sat here, and I couldn't think who it should be.",
+            "next": "thread"
+          },
+          {
+            "id": "thread",
+            "speaker": "character-commander",
+            "line": "The fire settles. The old pages, the ones full of names, lie heavy under the Cleric's other hand.",
+            "choices": [
+              {
+                "text": "Read me the next one, then, before the new page. Like the night in the rain.",
+                "next": "read",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "The Choir took them, not you. That's still true. Is it any easier now?",
+                "next": "absolved",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you to put it away. I was wrong. You were right to keep it.",
+                "next": "wrong",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Tell me about the girl. The last one.",
+                "next": "girl"
+              }
+            ]
+          },
+          {
+            "id": "read",
+            "speaker": "$with",
+            "line": "Mabel Rook. Kept bees, talked to them. Stung every week and never minded. There. That's the last of the old book I'll read aloud. It feels like the right place to stop.",
+            "next": "kept"
+          },
+          {
+            "id": "absolved",
+            "speaker": "$with",
+            "line": "Easier, yes. Not lighter. But I can carry it now without it carrying me, which isn't the same, and is better.",
+            "next": "kept"
+          },
+          {
+            "id": "wrong",
+            "speaker": "$with",
+            "line": "You weren't wrong. You were being a commander. Someone had to tell me it could cost us. I just needed to prove it wouldn't.",
+            "next": "kept"
+          },
+          {
+            "id": "girl",
+            "speaker": "$with",
+            "line": "Her name was Wren. She asked me if the colour went somewhere nice. I said yes. I've wanted to know if that was a lie ever since. Now I'll find out, with you.",
+            "next": "kept"
+          },
+          {
+            "id": "kept",
+            "speaker": "$with",
+            "line": "So here's the thing I worked out, just now. The new page isn't for the lost. It's for the kept. Everyone this crew has carried home who should not have made it. And I'd like the first name to be one you choose.",
+            "next": "choose"
+          },
+          {
+            "id": "choose",
+            "speaker": "character-commander",
+            "line": "The Cleric holds out the pen.",
+            "choices": [
+              {
+                "text": "Write all of them. Every one of us who's still here.",
+                "next": "crew"
+              },
+              {
+                "text": "Write your own name first. You've kept yourself alive too.",
+                "next": "self"
+              },
+              {
+                "text": "Leave it blank. Names on a page are how the Choir counts people.",
+                "next": "blank"
+              },
+              {
+                "text": "Write it, then sleep. I'll take the watch tonight, like the first night.",
+                "next": "watch",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "crew",
+            "speaker": "$with",
+            "line": "All of us. It'll take the whole page. Good. Let it take the whole book. I'd like to run out of room for once."
+          },
+          {
+            "id": "self",
+            "speaker": "$with",
+            "line": "Me. I hadn't thought of that. I don't think I ever counted myself as someone who was kept. Hold the lamp closer, Commander. My hand's quite steady."
+          },
+          {
+            "id": "blank",
+            "speaker": "$with",
+            "line": "Maybe. Or maybe it's only the Choir's way if nobody reads them. I'll leave it blank tonight, for you. But I'll keep the pen out."
+          },
+          {
+            "id": "watch",
+            "speaker": "$with",
+            "line": "Like the first night. You noticed then, and you're still noticing. There. All of you, and you first. Wake me if anyone so much as sneezes."
+          }
+        ]
+      }
+    },
     "dialogue:wanderer_darktemplar": {
       "key": "dialogue:wanderer_darktemplar",
       "id": "conversation-wanderer-darktemplar",
