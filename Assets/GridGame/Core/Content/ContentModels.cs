@@ -1173,6 +1173,8 @@ namespace GridGame.Core.Content
         /// <summary>GG-T1374: a drill's coach-mark lessons in order, each with the wave it waits for. Non-empty only on a
         /// drill (campaign.json <see cref="CampaignDef.Tutorial"/>).</summary>
         public List<StageLessonDef> Lessons = new List<StageLessonDef>();
+        /// <summary>GG-T1641: a drill's intro card line, the heroes speaking to the Commander, shown before its first lesson.</summary>
+        public string Intro;
     }
 
     /// <summary>GG-T1374: one lesson of a tutorial drill: its id (<see cref="Ids"/>), the wave (0-based) it waits for, and

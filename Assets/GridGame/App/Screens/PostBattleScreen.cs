@@ -278,9 +278,9 @@ namespace GridGame.App
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
-            var t = Ui.Text(!report.Victory ? "Drills are practice: nothing is lost. Run it again from the start."
-                : nextId != null ? "Lesson learned. On to the next drill."
-                : "Every drill cleared. The caravan is ready for the road.", "kit-text", list);
+            var t = Ui.Text(!report.Victory ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
+                : nextId != null ? "Drill cleared. We're ready for the next, Commander."
+                : "That's all we know, Commander. Lead us out.", "kit-text", list);
             t.name = "drill-line";
             t.style.whiteSpace = WhiteSpace.Normal;
             TurnsRow(list);

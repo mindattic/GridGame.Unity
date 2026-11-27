@@ -4726,6 +4726,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13151,
+    "Intro": "Commander, we're yours to move. Show us where to stand, and we'll trap what comes.",
     "Lessons": [
       { "Id": "move", "Wave": 0 },
       { "Id": "read", "Wave": 0 },
@@ -4756,6 +4757,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13152,
+    "Intro": "Commander, line them up for us: a shove, a pincer, a chain.",
     "Lessons": [
       { "Id": "shove", "Wave": 0 },
       { "Id": "chain", "Wave": 1 },
@@ -4790,6 +4792,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13153,
+    "Intro": "Commander, every pincer feeds the orbs. Spend them well.",
     "Lessons": [
       { "Id": "orbs", "Wave": 0 },
       { "Id": "mana", "Wave": 0 },
@@ -4819,6 +4822,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13154,
+    "Intro": "Commander, the clock only runs when you give an order. Use it.",
     "Lessons": [
       { "Id": "hold", "Wave": 0 },
       { "Id": "timeline", "Wave": 0 },
@@ -4851,6 +4855,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13155,
+    "Intro": "Commander, each of us has a part: the Tank holds them, the Healer mends, the Strikers finish it.",
     "Lessons": [
       { "Id": "taunt", "Wave": 0, "FocusRole": "Tank" },
       { "Id": "pickup", "Wave": 0 },

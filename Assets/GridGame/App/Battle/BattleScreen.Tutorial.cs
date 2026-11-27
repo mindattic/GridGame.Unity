@@ -432,6 +432,7 @@ namespace GridGame.App
         private void StartTutorialCoach()
         {
             int step = TutorialStep;
+            if (step == 0 && !drillIntroShown && coachPopupFor < 0 && !string.IsNullOrEmpty(State.Stage?.Intro)) { DrillIntro(); return; }
             var l = CurrentLesson;
             bool popupDone = coachPopupFor == step;
             // A lesson waiting for its situation looks again only after the board changed.
@@ -465,6 +466,30 @@ namespace GridGame.App
                 SkipPopup = popupDone,
                 Hold = CoachHold,
                 Finished = how => TutorialCoachEnded(step, how, hadMarks),
+            });
+        }
+
+        private bool drillIntroShown;
+
+        /// <summary>GG-T1641: the drill's intro card (its stage's <see cref="StageDef.Intro"/>) before the first lesson: a coach
+        /// popup with no marks, so it fades in with its chime (Reduce Motion drops the fade) and Next opens lesson 1.</summary>
+        private void DrillIntro()
+        {
+            drillIntroShown = true;
+            ClearHint();
+            var stage = State.Stage;
+            Coach.Run(new CoachLesson
+            {
+                Id = "drill-intro-" + stage.Id,
+                Kicker = DrillLabel().TrimEnd(' ', '·'),
+                Title = stage.Name,
+                Text = stage.Intro,
+                Hold = CoachHold,
+                Finished = how =>
+                {
+                    if (how == CoachEnd.TurnedOff) FinishTutorial();
+                    else if (how == CoachEnd.Cancelled) drillIntroShown = false;
+                },
             });
         }
 
