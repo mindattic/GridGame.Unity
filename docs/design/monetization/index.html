@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Monetization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Monetization</h1>
+    <p class="sub">Where real money and Shards are offered, the rules every offer follows, and every store product with its id, type and a placeholder price. Today the game sells only the four Shard packs (<code>DiamondStore.Packs</code>); the starter pack, season pass and cosmetics are new. Design only (GG-T1444); the owner sets the real prices in GG-T1445 and <code>StoreCatalog</code> (GG-T1447) is built from this list.</p>
+  </header>
+
+  <section class="panel">
+    <h2>Principles</h2>
+    <div class="cards" id="principles"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Where offers appear</h2>
+    <p class="m">Four places, and only these. Pick one to see what it shows and when.</p>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Placements"></nav>
+    <div class="place" id="place" role="tabpanel"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Products</h2>
+    <p class="m">Prices are US list prices; the stores show each player their own currency. <span class="pill live">live</span> exists in the stores today (GG-T471), <span class="pill new">new</span> is to be created by the owner.</p>
+    <div class="scroll"><table class="grid" id="products"></table></div>
+  </section>
+
+  <section class="panel two">
+    <div>
+      <h2>Shard prices in game</h2>
+      <p class="m">Not store products: what Shards buy. Each also takes gold at the exchange.</p>
+      <div class="scroll"><table class="grid" id="shardPrices"></table></div>
+    </div>
+    <div>
+      <h2>Rates today</h2>
+      <p class="m">Read from code; the earned path rests on these.</p>
+      <div class="scroll"><table class="grid" id="rates"></table></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Open questions for the owner</h2>
+    <ul class="rules" id="questions"></ul>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
