@@ -380,8 +380,8 @@ namespace GridGame.Tests
         public void Assign_rejects_an_unlearned_ability()
         {
             var c = Real;
-            var s = Progression.NewGame(c, "As4");
-            var hero = s.Hero(s.Party[0]); // warden, an ordinary hero (GG-T1405)
+            var s = Progression.NewGame(c, "As4", new[] { "warden", "barbarian", "cleric" });
+            var hero = s.Hero(s.Party[0]); // warden, picked first
             Assert.That(hero.Known, Does.Not.Contain("heal")); // learnable, but not known out of the gate
             var result = Abilities.Assign(c, s, hero, 0, "heal");
             Assert.That(result.Ok, Is.False);
@@ -392,7 +392,7 @@ namespace GridGame.Tests
         public void Assign_moves_a_duplicate_entry_instead_of_copying_it()
         {
             var c = Real;
-            var s = Progression.NewGame(c, "As5");
+            var s = Progression.NewGame(c, "As5", new[] { "warden", "barbarian", "cleric" });
             var hero = s.Hero(s.Party[0]); // warden, bar[0] == "taunt" by default loadout
             Assert.That(hero.Bar[0], Is.EqualTo("taunt"));
             var result = Abilities.Assign(c, s, hero, 3, "taunt");
@@ -476,8 +476,8 @@ namespace GridGame.Tests
         {
             var c = Real;
             var s = Progression.NewGame(c, "Custom", new[] { "paladin", "not_a_real_class", "cleric" });
-            Assert.That(s.Party, Is.EqualTo(new[] { "warden", "paladin", "cleric" })); // the fixed lead always sets out first (GG-T533)
-            Assert.That(s.Roster.Count, Is.EqualTo(3));
+            Assert.That(s.Party, Is.EqualTo(new[] { "paladin", "cleric" })); // exactly the valid picks, in pick order (GG-T1405)
+            Assert.That(s.Roster.Count, Is.EqualTo(2));
         }
 
         /// <summary>GG-T1405: a new game sets out with exactly the picked heroes, in pick order, no one added; the cap still holds.</summary>
@@ -531,7 +531,7 @@ namespace GridGame.Tests
         public void Hero_variants_new_heroes_wait_old_saves_are_female_and_choosing_sets_it()
         {
             var c = Real;
-            var s = Progression.NewGame(c, "V", new[] { "barbarian", "cleric" });
+            var s = Progression.NewGame(c, "V", new[] { "warden", "barbarian", "cleric" });
             Assert.That(HeroVariants.Pending(s).Select(h => h.ClassId), Is.EqualTo(new[] { "warden", "barbarian", "cleric" }));
             HeroVariants.Choose(s.Hero("warden"), HeroVariant.Male);
             Assert.That(s.Hero("warden").Variant, Is.EqualTo(HeroVariant.Male));
