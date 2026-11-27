@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using GridGame.Core.Battle;
 using GridGame.Core.Content;
 using GridGame.Meta;
 using Newtonsoft.Json;
@@ -185,6 +187,137 @@ namespace GridGame.Tests
             Assert.That(Summon.Recruit(Real, s, pick.Id).Ok, Is.True);
             Assert.That(s.Gold, Is.EqualTo(5));
             Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(DiamondSummon.Price));
+        }
+
+        // GG-T1608: Summon Tickets (§25.10.3, GG-T1422/T1604/T1607).
+
+        [Test]
+        public void The_starter_Tickets_are_given_once_per_save()
+        {
+            var s = WithDiamonds("T1", 0);
+            Assert.That(SummonTickets.Starter(s), Is.EqualTo(SummonTickets.StarterTickets));
+            Assert.That(SummonTickets.Starter(s), Is.EqualTo(0), "the second visit gives nothing");
+            Assert.That(s.Summon.Tickets, Is.EqualTo(SummonTickets.StarterTickets));
+            Assert.That(WithDiamonds("T1b", 0).Summon?.Tickets ?? 0, Is.EqualTo(0), "another save has its own");
+        }
+
+        [Test]
+        public void A_first_clear_pays_one_and_a_chapter_stage_five_more()
+        {
+            var s = WithDiamonds("T2", 0);
+            var chapter = Real.Campaign.Chapters.First(ch => ch?.Stage != null).Stage;
+            var plain = Real.CampaignStages().Select(x => x.Id).First(id => Real.Campaign.Chapters.All(ch => ch?.Stage != id));
+            Assert.That(SummonTickets.AfterFirstClear(Real, s, plain), Is.EqualTo(SummonTickets.PerFirstClear));
+            Assert.That(SummonTickets.AfterFirstClear(Real, s, chapter), Is.EqualTo(SummonTickets.PerFirstClear + SummonTickets.PerChapter));
+            Assert.That(s.Summon.Tickets, Is.EqualTo(2 * SummonTickets.PerFirstClear + SummonTickets.PerChapter));
+        }
+
+        [Test]
+        public void Every_fifth_win_pays_a_Ticket()
+        {
+            var s = WithDiamonds("T3", 0);
+            var paid = Enumerable.Range(0, 10).Select(_ => SummonTickets.AfterWin(s)).ToList();
+            Assert.That(paid, Is.EqualTo(new[] { 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 }));
+            Assert.That(s.Summon.Tickets, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void The_first_win_of_each_UTC_day_pays_one_Ticket()
+        {
+            var s = WithDiamonds("T4", 0);
+            Assert.That(SummonTickets.DailyFirstWin(s, T0), Is.EqualTo(SummonTickets.PerDailyFirstWin));
+            Assert.That(SummonTickets.DailyFirstWin(s, T0.AddHours(8)), Is.EqualTo(0), "same UTC day");
+            Assert.That(SummonTickets.DailyFirstWin(s, T0.Date.AddDays(1)), Is.EqualTo(SummonTickets.PerDailyFirstWin), "next day");
+            Assert.That(s.Summon.FirstWinDay, Is.EqualTo(T0.Date.AddDays(1)));
+            Assert.That(s.Summon.Tickets, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void A_Crucible_best_pays_one_Ticket_per_five_wave_milestone_newly_crossed()
+        {
+            var s = WithDiamonds("T5", 0);
+            Assert.That(SummonTickets.AfterCrucibleBest(s, 0, 4), Is.EqualTo(0));
+            Assert.That(SummonTickets.AfterCrucibleBest(s, 4, 5), Is.EqualTo(1));
+            Assert.That(SummonTickets.AfterCrucibleBest(s, 5, 9), Is.EqualTo(0), "no new milestone");
+            Assert.That(SummonTickets.AfterCrucibleBest(s, 9, 21), Is.EqualTo(3), "10, 15 and 20");
+            Assert.That(SummonTickets.AfterCrucibleBest(s, 21, 15), Is.EqualTo(0), "a lower best pays nothing");
+            Assert.That(s.Summon.Tickets, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void A_quest_hand_in_pays_its_Tickets_and_the_reward_line_names_them()
+        {
+            var s = Progression.NewGame(Real, "T6");
+            var q = Real.TryQuest("q_hold_the_ward");
+            Assert.That(q.RewardTickets, Is.GreaterThan(0));
+            Assert.That(Quests.RewardText(Real, q), Does.Contain(TicketText.Of(q.RewardTickets)));
+            Quests.Start(Real, s, q.Id);
+            var win = BattleEngine.Create(Real, BattleFactory.Build(Real, s, Real.Stage(q.Objective.Id), 7), new List<BattleEvent>());
+            win.Phase = BattlePhase.Victory;
+            BattleFactory.Commit(Real, s, win);
+            int before = s.Summon?.Tickets ?? 0;
+            var r = Quests.TurnIn(Real, s, q.Id);
+            Assert.That(r.Ok, Is.True);
+            Assert.That(s.Summon.Tickets, Is.EqualTo(before + q.RewardTickets));
+            Assert.That(r.Message, Does.Contain(TicketText.Of(q.RewardTickets)));
+        }
+
+        [Test]
+        public void A_campaign_win_reports_the_Tickets_it_earned()
+        {
+            var s = Progression.NewGame(Real, "T7");
+            var stage = Real.CampaignStages()[0];
+            var b = BattleEngine.Create(Real, BattleFactory.Build(Real, s, stage, 5), new List<BattleEvent>());
+            b.Phase = BattlePhase.Victory;
+            var rep = BattleFactory.Commit(Real, s, b);
+            Assert.That(rep.FirstClear, Is.True);
+            Assert.That(rep.TicketsEarned, Is.EqualTo(SummonTickets.PerFirstClear + SummonTickets.PerDailyFirstWin), "first clear, the day's first win, not the fifth win");
+            Assert.That(s.Summon.Tickets, Is.EqualTo(rep.TicketsEarned));
+        }
+
+        [Test]
+        public void A_draw_spends_an_earned_Ticket_then_a_wallet_Ticket_then_Shards()
+        {
+            var s = WithDiamonds("T8", 3);
+            var wallet = new AccountWallet { Tickets = 1 };
+            var oldWallet = DiamondExchange.Wallet;
+            s.Flags.Add(WalletMigration.MovedFlagPrefix + "0:test");
+            DiamondExchange.Wallet = wallet;
+            try
+            {
+                Assert.That(WalletMigration.IsMoved(s), Is.True);
+                SummonTickets.Earn(s, 1);
+                Assert.That(SummonTickets.Have(s), Is.EqualTo(2));
+
+                Assert.That(DiamondSummon.Begin(Real, s, T0, out var first).Ok, Is.True);
+                Assert.That(first.Tickets, Is.EqualTo(1));
+                Assert.That(s.Summon.Tickets, Is.EqualTo(0), "the earned one went first");
+                Assert.That(wallet.Tickets, Is.EqualTo(1));
+                Paywall.Finish(Real, s, first, T0.AddSeconds(1));
+
+                Assert.That(DiamondSummon.Begin(Real, s, T0.AddHours(1), out var second).Ok, Is.True);
+                Assert.That(second.Tickets, Is.EqualTo(1));
+                Assert.That(wallet.Tickets, Is.EqualTo(0), "then the wallet's");
+                Paywall.Finish(Real, s, second, T0.AddHours(1).AddSeconds(1));
+
+                Assert.That(DiamondSummon.Begin(Real, s, T0.AddHours(2), out var third).Ok, Is.True);
+                Assert.That(third.Tickets, Is.EqualTo(0));
+                Assert.That(third.Diamonds, Is.EqualTo(DiamondSummon.Price), "then Shards");
+            }
+            finally { DiamondExchange.Wallet = oldWallet; }
+        }
+
+        [Test]
+        public void A_fizzled_Ticket_draw_gives_the_Ticket_back_as_an_earned_one()
+        {
+            var s = WithDiamonds("T9", 0);
+            SummonTickets.Earn(s, 1);
+            Assert.That(DiamondSummon.Begin(Real, s, T0, out var job).Ok, Is.True);
+            Assert.That(s.Summon.Tickets, Is.EqualTo(0));
+            Summon.Join(Real, s, job.Arg);
+            Assert.That(Paywall.Finish(Real, s, job, T0.AddSeconds(1)).Ok, Is.False);
+            Assert.That(s.Summon.Tickets, Is.EqualTo(1));
+            Assert.That(s.Count(Crafting.DiamondId), Is.EqualTo(0), "no Shards were taken");
         }
     }
 }
