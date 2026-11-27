@@ -8974,6 +8974,458 @@
         ]
       }
     },
+    "dialogue:trust_barbarian_1": {
+      "key": "dialogue:trust_barbarian_1",
+      "id": "conversation-trust-barbarian-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:281fc431b9ad556e27a4d6a76688de16c8932eb694c4729b9c47c57f73a97875",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Red hands",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Barbarian sits apart from the fire, winding a strip of white cloth around split knuckles, pulling each turn tight with their teeth.",
+            "choices": [
+              {
+                "text": "That's a Choir banner you're bleeding on.",
+                "next": "banner"
+              },
+              {
+                "text": "You were first in and last out today. I saw.",
+                "next": "first"
+              },
+              {
+                "text": "You took the first watch at the ford, that first night. Have you slept properly since?",
+                "next": "watch",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "banner",
+            "speaker": "$with",
+            "line": "Off the tithe wagon. The white wraps well, and I like knowing whose cloth I bleed on. Seems fair to make it work for us for once.",
+            "next": "rage"
+          },
+          {
+            "id": "first",
+            "speaker": "$with",
+            "line": "First in, aye. Last out because I didn't know it was over. That's the bit you didn't see.",
+            "next": "rage"
+          },
+          {
+            "id": "watch",
+            "speaker": "$with",
+            "line": "Sleep's for people who don't hear wheels in the dark. I'll catch up on it when the Captain stops chasing us.",
+            "next": "rage"
+          },
+          {
+            "id": "rage",
+            "speaker": "$with",
+            "line": "Near the end today, I lost the count. For a breath I couldn't tell the slime from the Cleric. It comes on me like that when the blood's up. The red, we called it at home.",
+            "next": "home"
+          },
+          {
+            "id": "home",
+            "speaker": "$with",
+            "line": "The old ones back there said the red would get me killed or get someone else killed, and they didn't much mind which. So. Now you know what's walking behind your wagon.",
+            "next": "ask"
+          },
+          {
+            "id": "ask",
+            "speaker": "character-commander",
+            "line": "The Barbarian watches the Commander's face, waiting for the flinch.",
+            "choices": [
+              {
+                "text": "That anger is half the reason we're still alive. I'd rather have it than not.",
+                "next": "trusted"
+              },
+              {
+                "text": "Then we find a word that brings you back. You pick it, and I'll shout it.",
+                "next": "word"
+              },
+              {
+                "text": "If it ever turns on the party, you sit the next fight out.",
+                "next": "leash"
+              }
+            ]
+          },
+          {
+            "id": "trusted",
+            "speaker": "$with",
+            "line": "Nobody's ever said that and meant it. Careful, Commander. I'll hold you to it the day I get it wrong.",
+            "next": "origin"
+          },
+          {
+            "id": "word",
+            "speaker": "$with",
+            "line": "A word. Huh. Then shout \"Saltmoss\". That's where the red started. It'll remind me who it's for.",
+            "next": "origin"
+          },
+          {
+            "id": "leash",
+            "speaker": "$with",
+            "line": "Hard, but fair. I'd say the same if it were anyone else swinging that close to the Cleric. I'll not like it, mind.",
+            "next": "origin"
+          },
+          {
+            "id": "origin",
+            "speaker": "$with",
+            "line": "It started on a tithe day. Not this last one. Another, years back. I'll tell you about it some night, when I know you better than I do.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Barbarian ties off the last turn of white cloth, flexes the hand once, and goes to take a place by the fire."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_barbarian_3": {
+      "key": "dialogue:trust_barbarian_3",
+      "id": "conversation-trust-barbarian-3",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:96ba21b08cc134122ea4e37f4f8fdb6497bc1e6f3886e2192e3505cf47c424d6",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "Tithe day",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "Past the wagons, out where the firelight thins, the Barbarian stands with a wooden tithe token turning over and over in one hand.",
+            "next": "asked"
+          },
+          {
+            "id": "asked",
+            "speaker": "$with",
+            "line": "I said I'd tell you about the red some night. This is the night, if you'll walk a bit.",
+            "next": "brother"
+          },
+          {
+            "id": "brother",
+            "speaker": "$with",
+            "line": "My brother was the gentle one. Fed the goats, sang to them. Then a tithe year came when the Choir's collectors wanted more than their share, and they took it out of him.",
+            "next": "grey"
+          },
+          {
+            "id": "grey",
+            "speaker": "$with",
+            "line": "He came back grey. Sat by the door all winter and didn't know my name. The collector laughed about it at the well. That's when the red came. I broke his arm in two places, and I ran for the moors before they could hang me.",
+            "next": "answer"
+          },
+          {
+            "id": "answer",
+            "speaker": "character-commander",
+            "line": "The token stops turning. The Barbarian doesn't look up.",
+            "choices": [
+              {
+                "text": "The Choir will answer for him. I'll see to it.",
+                "next": "avenge"
+              },
+              {
+                "text": "Is he still alive? Then we can still go back for him.",
+                "next": "home"
+              },
+              {
+                "text": "You can't carry that into every fight. One day it'll carry you instead.",
+                "next": "warned"
+              },
+              {
+                "text": "Is that why the word is Saltmoss?",
+                "next": "word",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "avenge",
+            "speaker": "$with",
+            "line": "Aye. And when they do, I'd like to be standing close enough to watch.",
+            "next": "where"
+          },
+          {
+            "id": "home",
+            "speaker": "$with",
+            "line": "Alive. Sitting by a door in Saltmoss, last I heard. I've never once let myself think \"go back\". You say it like it's a road.",
+            "next": "where"
+          },
+          {
+            "id": "warned",
+            "speaker": "$with",
+            "line": "You think I don't know that? It's carried me since I was fifteen. It's the only thing that ever has.",
+            "next": "where"
+          },
+          {
+            "id": "word",
+            "speaker": "$with",
+            "line": "You remembered. Aye. Every time you shout it I see that door, and him sitting in it. It's why I come back.",
+            "next": "where"
+          },
+          {
+            "id": "where",
+            "speaker": "$with",
+            "line": "You're from before, Commander. Before the Choir, before the tithe. So tell me. Where does it go, what they take?",
+            "next": "truth"
+          },
+          {
+            "id": "truth",
+            "speaker": "character-commander",
+            "line": "The old memory gives nothing back. Only the shape of a question the Commander once asked too.",
+            "choices": [
+              {
+                "text": "I don't remember. I won't pretend I do.",
+                "next": "honest"
+              },
+              {
+                "text": "Wherever it goes, we'll follow it there.",
+                "next": "follow"
+              },
+              {
+                "text": "It doesn't matter where it goes. Only who takes it.",
+                "next": "who"
+              }
+            ]
+          },
+          {
+            "id": "honest",
+            "speaker": "$with",
+            "line": "Good. I've had enough of people who knew everything. The collectors knew everything.",
+            "next": "token"
+          },
+          {
+            "id": "follow",
+            "speaker": "$with",
+            "line": "Then I'll walk point. Someone ought to see it first.",
+            "next": "token"
+          },
+          {
+            "id": "who",
+            "speaker": "$with",
+            "line": "It matters to me, Commander. Some of him's in it.",
+            "next": "token"
+          },
+          {
+            "id": "token",
+            "speaker": "$with",
+            "line": "This was his. The token they gave him for paying. Tells you how much of him they took, if you can read the marks. I never could bring myself to learn.",
+            "next": "close"
+          },
+          {
+            "id": "close",
+            "speaker": "character-commander",
+            "line": "The Barbarian closes a fist around the token and walks back toward the fire, slower than before."
+          }
+        ]
+      }
+    },
+    "dialogue:trust_barbarian_5": {
+      "key": "dialogue:trust_barbarian_5",
+      "id": "conversation-trust-barbarian-5",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:feb601a497b4f5006464cacf7fa362b1f944595bd2902120ed00a864c226d478",
+      "about": [
+        "character-commander"
+      ],
+      "speakers": [
+        "character-commander",
+        "$with"
+      ],
+      "payload": {
+        "title": "The white cloth",
+        "start": "open",
+        "nodes": [
+          {
+            "id": "open",
+            "speaker": "character-commander",
+            "line": "The Barbarian fought the whole battle today without once losing the count. Now they sit by the fire, unwinding the old white strip from their knuckles for the last time.",
+            "choices": [
+              {
+                "text": "I didn't have to shout the word once today.",
+                "next": "word_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You fought hot today, and you never lost the count. I said I'd rather have the anger. I still would.",
+                "next": "trusted_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You haven't sat a fight out since I said that. Not one.",
+                "next": "leash_kept",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "You were quiet out there today.",
+                "next": "quiet"
+              }
+            ]
+          },
+          {
+            "id": "word_kept",
+            "speaker": "$with",
+            "line": "No. I heard it anyway, in my own head. Saltmoss. Turns out once you know who it's for, you don't need it shouted.",
+            "next": "red"
+          },
+          {
+            "id": "trusted_kept",
+            "speaker": "$with",
+            "line": "You said you'd rather have it. I've been holding you to that a long while. You never once took it back.",
+            "next": "red"
+          },
+          {
+            "id": "leash_kept",
+            "speaker": "$with",
+            "line": "I hated you a little for that, back then. Then I watched you mean it about everyone, not just me. So I learned to stay.",
+            "next": "red"
+          },
+          {
+            "id": "quiet",
+            "speaker": "$with",
+            "line": "Quiet. Aye, it was. Strange thing to be, after all these years.",
+            "next": "red"
+          },
+          {
+            "id": "red",
+            "speaker": "$with",
+            "line": "The red's still there, Commander. I'd not lie to you about that. It just knows whose side it's on now.",
+            "next": "brother"
+          },
+          {
+            "id": "brother",
+            "speaker": "character-commander",
+            "line": "The fire pops. In the Barbarian's other hand, the old tithe token turns once, then lies still.",
+            "choices": [
+              {
+                "text": "We said we'd go back for your brother. That still stands, whatever comes.",
+                "next": "home",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "We said the Choir would answer for him. I haven't forgotten.",
+                "next": "avenge",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "I told you once it would carry you off one day. I was wrong about you.",
+                "next": "wrong",
+                "tags": [
+                  "conditional"
+                ]
+              },
+              {
+                "text": "Tell me about your brother. Not the tithe. Him.",
+                "next": "him"
+              }
+            ]
+          },
+          {
+            "id": "home",
+            "speaker": "$with",
+            "line": "I learned to read the marks on his token. Took me most of a month. There's more of him left than I feared. Enough to come home to.",
+            "next": "gift"
+          },
+          {
+            "id": "avenge",
+            "speaker": "$with",
+            "line": "Nor have I. But when it comes, I'll be standing beside you, not out ahead swinging. That's the difference now.",
+            "next": "gift"
+          },
+          {
+            "id": "wrong",
+            "speaker": "$with",
+            "line": "You weren't wrong, not then. You were just early. I needed someone to say it, so I'd have something to prove.",
+            "next": "gift"
+          },
+          {
+            "id": "him",
+            "speaker": "$with",
+            "line": "He hummed to the goats, off-key, every one a different song. Called the old nanny \"Captain\" because she bit. I've not said his name aloud in years. It was Ash. There. Now someone else knows.",
+            "next": "gift"
+          },
+          {
+            "id": "gift",
+            "speaker": "$with",
+            "line": "Here. The white cloth off the tithe wagon. It's carried every cut since the first night. I'd like you to have it, if you'll take it.",
+            "next": "last"
+          },
+          {
+            "id": "last",
+            "speaker": "character-commander",
+            "line": "The strip is grey with old blood and soft from washing, and lighter than it looks.",
+            "choices": [
+              {
+                "text": "I'll carry it. All the way to the end of this.",
+                "next": "carry"
+              },
+              {
+                "text": "Keep it. Your hands need it more than mine do.",
+                "next": "keep"
+              },
+              {
+                "text": "Tie it round my wrist, then take the first watch tonight. Like at the ford.",
+                "next": "watch",
+                "tags": [
+                  "conditional"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "carry",
+            "speaker": "$with",
+            "line": "Then that's settled. Wherever you go, I go, and the red goes with me. On your side, Commander. Always on your side."
+          },
+          {
+            "id": "keep",
+            "speaker": "$with",
+            "line": "Fair. Stubborn, but fair. I'll keep it, then, and you'll know where to find it. On the hand that's swinging for you."
+          },
+          {
+            "id": "watch",
+            "speaker": "$with",
+            "line": "Ha. Hold still, then. There. Get some sleep, Commander. Nothing comes near this fire without going through me first."
+          }
+        ]
+      }
+    },
     "dialogue:wanderer_darktemplar": {
       "key": "dialogue:wanderer_darktemplar",
       "id": "conversation-wanderer-darktemplar",

@@ -1,0 +1,100 @@
+dialogue trust_barbarian_5
+title: The white cloth
+trigger: Trust barbarian level=5
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Barbarian fought the whole battle today without once losing the count. Now they sit by the fire, unwinding the old white strip from their knuckles for the last time.
+  * I didn't have to shout the word once today. -> word_kept
+    if: FlagSet barbarian:rage_word
+    do: AddTrust $with 5
+  * You fought hot today, and you never lost the count. I said I'd rather have the anger. I still would. -> trusted_kept
+    if: FlagSet barbarian:rage_trusted
+    do: AddTrust $with 5
+  * You haven't sat a fight out since I said that. Not one. -> leash_kept
+    if: FlagSet barbarian:rage_leashed
+    do: AddTrust $with 6
+  * You were quiet out there today. -> quiet
+    do: AddTrust $with 3
+
+node word_kept hero
+  No. I heard it anyway, in my own head. Saltmoss. Turns out once you know who it's for, you don't need it shouted.
+  -> red
+
+node trusted_kept hero
+  You said you'd rather have it. I've been holding you to that a long while. You never once took it back.
+  -> red
+
+node leash_kept hero
+  I hated you a little for that, back then. Then I watched you mean it about everyone, not just me. So I learned to stay.
+  -> red
+
+node quiet hero
+  Quiet. Aye, it was. Strange thing to be, after all these years.
+  -> red
+
+node red hero
+  The red's still there, Commander. I'd not lie to you about that. It just knows whose side it's on now.
+  -> brother
+
+node brother commander
+  The fire pops. In the Barbarian's other hand, the old tithe token turns once, then lies still.
+  * We said we'd go back for your brother. That still stands, whatever comes. -> home
+    if: FlagSet barbarian:tithe_home
+    do: AddTrust $with 8
+    do: SetFlag barbarian:thread_home
+  * We said the Choir would answer for him. I haven't forgotten. -> avenge
+    if: FlagSet barbarian:tithe_avenge
+    do: AddTrust $with 6
+    do: SetFlag barbarian:thread_avenged
+  * I told you once it would carry you off one day. I was wrong about you. -> wrong
+    if: FlagSet barbarian:tithe_warned
+    do: AddTrust $with 8
+    do: SetFlag barbarian:thread_wrong
+  * Tell me about your brother. Not the tithe. Him. -> him
+    do: AddTrust $with 6
+    do: SetFlag barbarian:thread_him
+
+node home hero
+  I learned to read the marks on his token. Took me most of a month. There's more of him left than I feared. Enough to come home to.
+  -> gift
+
+node avenge hero
+  Nor have I. But when it comes, I'll be standing beside you, not out ahead swinging. That's the difference now.
+  -> gift
+
+node wrong hero
+  You weren't wrong, not then. You were just early. I needed someone to say it, so I'd have something to prove.
+  -> gift
+
+node him hero
+  He hummed to the goats, off-key, every one a different song. Called the old nanny "Captain" because she bit. I've not said his name aloud in years. It was Ash. There. Now someone else knows.
+  -> gift
+
+node gift hero
+  Here. The white cloth off the tithe wagon. It's carried every cut since the first night. I'd like you to have it, if you'll take it.
+  -> last
+
+node last commander
+  The strip is grey with old blood and soft from washing, and lighter than it looks.
+  * I'll carry it. All the way to the end of this. -> carry
+    do: AddTrust $with 7
+    do: SetFlag barbarian:cloth_carried
+  * Keep it. Your hands need it more than mine do. -> keep
+    do: AddTrust $with -2
+    do: SetFlag barbarian:cloth_kept
+  * Tie it round my wrist, then take the first watch tonight. Like at the ford. -> watch
+    if: FlagSet founding:watch_barbarian
+    do: AddTrust $with 9
+    do: SetFlag barbarian:cloth_carried
+
+node carry hero
+  Then that's settled. Wherever you go, I go, and the red goes with me. On your side, Commander. Always on your side.
+
+node keep hero
+  Fair. Stubborn, but fair. I'll keep it, then, and you'll know where to find it. On the hand that's swinging for you.
+
+node watch hero
+  Ha. Hold still, then. There. Get some sleep, Commander. Nothing comes near this fire without going through me first.

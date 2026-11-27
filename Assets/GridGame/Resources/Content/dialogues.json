@@ -3707,5 +3707,137 @@
       { "Id": "close", "Speaker": "first", "Next": "camp" },
       { "Id": "camp", "Speaker": "commander" }
     ]
+  },
+  {
+    "Id": "trust_barbarian_1",
+    "Title": "Red hands",
+    "Trigger": { "Kind": "Trust", "Id": "barbarian", "Level": 1 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "banner", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 2 } ] },
+          { "Next": "first", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "watch", "Conditions": [ { "Type": "FlagSet", "Id": "founding:watch_barbarian" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 } ] }
+        ]
+      },
+      { "Id": "banner", "Speaker": "hero", "Next": "rage" },
+      { "Id": "first", "Speaker": "hero", "Next": "rage" },
+      { "Id": "watch", "Speaker": "hero", "Next": "rage" },
+      { "Id": "rage", "Speaker": "hero", "Next": "home" },
+      { "Id": "home", "Speaker": "hero", "Next": "ask" },
+      {
+        "Id": "ask", "Speaker": "commander",
+        "Choices": [
+          { "Next": "trusted", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "barbarian:rage_trusted" } ] },
+          { "Next": "word", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "barbarian:rage_word" } ] },
+          { "Next": "leash", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -4 }, { "Type": "SetFlag", "Id": "barbarian:rage_leashed" } ] }
+        ]
+      },
+      { "Id": "trusted", "Speaker": "hero", "Next": "origin" },
+      { "Id": "word", "Speaker": "hero", "Next": "origin" },
+      { "Id": "leash", "Speaker": "hero", "Next": "origin" },
+      { "Id": "origin", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_barbarian_3",
+    "Title": "Tithe day",
+    "Trigger": { "Kind": "Trust", "Id": "barbarian", "Level": 3 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      { "Id": "open", "Speaker": "commander", "Next": "asked" },
+      { "Id": "asked", "Speaker": "hero", "Next": "brother" },
+      { "Id": "brother", "Speaker": "hero", "Next": "grey" },
+      { "Id": "grey", "Speaker": "hero", "Next": "answer" },
+      {
+        "Id": "answer", "Speaker": "commander",
+        "Choices": [
+          { "Next": "avenge", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian:tithe_avenge" } ] },
+          { "Next": "home", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "barbarian:tithe_home" } ] },
+          { "Next": "warned", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -3 }, { "Type": "SetFlag", "Id": "barbarian:tithe_warned" } ] },
+          { "Next": "word", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_word" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "barbarian:tithe_word" } ] }
+        ]
+      },
+      { "Id": "avenge", "Speaker": "hero", "Next": "where" },
+      { "Id": "home", "Speaker": "hero", "Next": "where" },
+      { "Id": "warned", "Speaker": "hero", "Next": "where" },
+      { "Id": "word", "Speaker": "hero", "Next": "where" },
+      { "Id": "where", "Speaker": "hero", "Next": "truth" },
+      {
+        "Id": "truth", "Speaker": "commander",
+        "Choices": [
+          { "Next": "honest", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian:asked_honest" } ] },
+          { "Next": "follow", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 4 }, { "Type": "SetFlag", "Id": "barbarian:asked_follow" } ] },
+          { "Next": "who", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian:asked_who" } ] }
+        ]
+      },
+      { "Id": "honest", "Speaker": "hero", "Next": "token" },
+      { "Id": "follow", "Speaker": "hero", "Next": "token" },
+      { "Id": "who", "Speaker": "hero", "Next": "token" },
+      { "Id": "token", "Speaker": "hero", "Next": "close" },
+      { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "trust_barbarian_5",
+    "Title": "The white cloth",
+    "Trigger": { "Kind": "Trust", "Id": "barbarian", "Level": 5 },
+    "Once": true,
+    "Speakers": [
+      { "Id": "commander", "Class": "$commander" },
+      { "Id": "hero", "Class": "$with" }
+    ],
+    "Nodes": [
+      {
+        "Id": "open", "Speaker": "commander",
+        "Choices": [
+          { "Next": "word_kept", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_word" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "trusted_kept", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_trusted" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 5 } ] },
+          { "Next": "leash_kept", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:rage_leashed" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 } ] },
+          { "Next": "quiet", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 3 } ] }
+        ]
+      },
+      { "Id": "word_kept", "Speaker": "hero", "Next": "red" },
+      { "Id": "trusted_kept", "Speaker": "hero", "Next": "red" },
+      { "Id": "leash_kept", "Speaker": "hero", "Next": "red" },
+      { "Id": "quiet", "Speaker": "hero", "Next": "red" },
+      { "Id": "red", "Speaker": "hero", "Next": "brother" },
+      {
+        "Id": "brother", "Speaker": "commander",
+        "Choices": [
+          { "Next": "home", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:tithe_home" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian:thread_home" } ] },
+          { "Next": "avenge", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:tithe_avenge" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian:thread_avenged" } ] },
+          { "Next": "wrong", "Conditions": [ { "Type": "FlagSet", "Id": "barbarian:tithe_warned" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 8 }, { "Type": "SetFlag", "Id": "barbarian:thread_wrong" } ] },
+          { "Next": "him", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 6 }, { "Type": "SetFlag", "Id": "barbarian:thread_him" } ] }
+        ]
+      },
+      { "Id": "home", "Speaker": "hero", "Next": "gift" },
+      { "Id": "avenge", "Speaker": "hero", "Next": "gift" },
+      { "Id": "wrong", "Speaker": "hero", "Next": "gift" },
+      { "Id": "him", "Speaker": "hero", "Next": "gift" },
+      { "Id": "gift", "Speaker": "hero", "Next": "last" },
+      {
+        "Id": "last", "Speaker": "commander",
+        "Choices": [
+          { "Next": "carry", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 7 }, { "Type": "SetFlag", "Id": "barbarian:cloth_carried" } ] },
+          { "Next": "keep", "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": -2 }, { "Type": "SetFlag", "Id": "barbarian:cloth_kept" } ] },
+          { "Next": "watch", "Conditions": [ { "Type": "FlagSet", "Id": "founding:watch_barbarian" } ], "Effects": [ { "Type": "AddTrust", "Id": "$with", "Amount": 9 }, { "Type": "SetFlag", "Id": "barbarian:cloth_carried" } ] }
+        ]
+      },
+      { "Id": "carry", "Speaker": "hero" },
+      { "Id": "keep", "Speaker": "hero" },
+      { "Id": "watch", "Speaker": "hero" }
+    ]
   }
 ]

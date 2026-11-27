@@ -1,0 +1,67 @@
+dialogue trust_barbarian_1
+title: Red hands
+trigger: Trust barbarian level=1
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  The Barbarian sits apart from the fire, winding a strip of white cloth around split knuckles, pulling each turn tight with their teeth.
+  * That's a Choir banner you're bleeding on. -> banner
+    do: AddTrust $with 2
+  * You were first in and last out today. I saw. -> first
+    do: AddTrust $with 5
+  * You took the first watch at the ford, that first night. Have you slept properly since? -> watch
+    if: FlagSet founding:watch_barbarian
+    do: AddTrust $with 4
+
+node banner hero
+  Off the tithe wagon. The white wraps well, and I like knowing whose cloth I bleed on. Seems fair to make it work for us for once.
+  -> rage
+
+node first hero
+  First in, aye. Last out because I didn't know it was over. That's the bit you didn't see.
+  -> rage
+
+node watch hero
+  Sleep's for people who don't hear wheels in the dark. I'll catch up on it when the Captain stops chasing us.
+  -> rage
+
+node rage hero
+  Near the end today, I lost the count. For a breath I couldn't tell the slime from the Cleric. It comes on me like that when the blood's up. The red, we called it at home.
+  -> home
+
+node home hero
+  The old ones back there said the red would get me killed or get someone else killed, and they didn't much mind which. So. Now you know what's walking behind your wagon.
+  -> ask
+
+node ask commander
+  The Barbarian watches the Commander's face, waiting for the flinch.
+  * That anger is half the reason we're still alive. I'd rather have it than not. -> trusted
+    do: AddTrust $with 7
+    do: SetFlag barbarian:rage_trusted
+  * Then we find a word that brings you back. You pick it, and I'll shout it. -> word
+    do: AddTrust $with 9
+    do: SetFlag barbarian:rage_word
+  * If it ever turns on the party, you sit the next fight out. -> leash
+    do: AddTrust $with -4
+    do: SetFlag barbarian:rage_leashed
+
+node trusted hero
+  Nobody's ever said that and meant it. Careful, Commander. I'll hold you to it the day I get it wrong.
+  -> origin
+
+node word hero
+  A word. Huh. Then shout "Saltmoss". That's where the red started. It'll remind me who it's for.
+  -> origin
+
+node leash hero
+  Hard, but fair. I'd say the same if it were anyone else swinging that close to the Cleric. I'll not like it, mind.
+  -> origin
+
+node origin hero
+  It started on a tithe day. Not this last one. Another, years back. I'll tell you about it some night, when I know you better than I do.
+  -> close
+
+node close commander
+  The Barbarian ties off the last turn of white cloth, flexes the hand once, and goes to take a place by the fire.

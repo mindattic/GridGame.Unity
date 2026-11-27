@@ -1,0 +1,89 @@
+dialogue trust_barbarian_3
+title: Tithe day
+trigger: Trust barbarian level=3
+once
+speaker commander $commander
+speaker hero $with
+
+node open commander
+  Past the wagons, out where the firelight thins, the Barbarian stands with a wooden tithe token turning over and over in one hand.
+  -> asked
+
+node asked hero
+  I said I'd tell you about the red some night. This is the night, if you'll walk a bit.
+  -> brother
+
+node brother hero
+  My brother was the gentle one. Fed the goats, sang to them. Then a tithe year came when the Choir's collectors wanted more than their share, and they took it out of him.
+  -> grey
+
+node grey hero
+  He came back grey. Sat by the door all winter and didn't know my name. The collector laughed about it at the well. That's when the red came. I broke his arm in two places, and I ran for the moors before they could hang me.
+  -> answer
+
+node answer commander
+  The token stops turning. The Barbarian doesn't look up.
+  * The Choir will answer for him. I'll see to it. -> avenge
+    do: AddTrust $with 6
+    do: SetFlag barbarian:tithe_avenge
+  * Is he still alive? Then we can still go back for him. -> home
+    do: AddTrust $with 9
+    do: SetFlag barbarian:tithe_home
+  * You can't carry that into every fight. One day it'll carry you instead. -> warned
+    do: AddTrust $with -3
+    do: SetFlag barbarian:tithe_warned
+  * Is that why the word is Saltmoss? -> word
+    if: FlagSet barbarian:rage_word
+    do: AddTrust $with 7
+    do: SetFlag barbarian:tithe_word
+
+node avenge hero
+  Aye. And when they do, I'd like to be standing close enough to watch.
+  -> where
+
+node home hero
+  Alive. Sitting by a door in Saltmoss, last I heard. I've never once let myself think "go back". You say it like it's a road.
+  -> where
+
+node warned hero
+  You think I don't know that? It's carried me since I was fifteen. It's the only thing that ever has.
+  -> where
+
+node word hero
+  You remembered. Aye. Every time you shout it I see that door, and him sitting in it. It's why I come back.
+  -> where
+
+node where hero
+  You're from before, Commander. Before the Choir, before the tithe. So tell me. Where does it go, what they take?
+  -> truth
+
+node truth commander
+  The old memory gives nothing back. Only the shape of a question the Commander once asked too.
+  * I don't remember. I won't pretend I do. -> honest
+    do: AddTrust $with 6
+    do: SetFlag barbarian:asked_honest
+  * Wherever it goes, we'll follow it there. -> follow
+    do: AddTrust $with 4
+    do: SetFlag barbarian:asked_follow
+  * It doesn't matter where it goes. Only who takes it. -> who
+    do: AddTrust $with -2
+    do: SetFlag barbarian:asked_who
+
+node honest hero
+  Good. I've had enough of people who knew everything. The collectors knew everything.
+  -> token
+
+node follow hero
+  Then I'll walk point. Someone ought to see it first.
+  -> token
+
+node who hero
+  It matters to me, Commander. Some of him's in it.
+  -> token
+
+node token hero
+  This was his. The token they gave him for paying. Tells you how much of him they took, if you can read the marks. I never could bring myself to learn.
+  -> close
+
+node close commander
+  The Barbarian closes a fist around the token and walks back toward the fire, slower than before.
