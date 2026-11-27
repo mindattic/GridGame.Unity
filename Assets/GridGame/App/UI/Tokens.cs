@@ -372,6 +372,9 @@ namespace GridGame.App
         public static float Text => TypeScale.Base;
         /// <summary>The page header bar's height (USS <c>.header</c>); under a notch it grows by the inset (GG-T483).</summary>
         public const float HeaderHeight = 150f;
+        /// <summary>The hub's bottom nav bar height (USS <c>.kit-navbar</c>, GG-T1590): one tap target; under a gesture bar
+        /// it grows by the inset.</summary>
+        public const float NavHeight = Size.Target;
         /// <summary>Stage edge to window edge, left and right (= <see cref="Fit.Edge"/>).</summary>
         public const float Gutter = Fit.Edge;
         /// <summary>Between stacked windows, and between the header and the first window (each window's S8 margin, twice).</summary>

@@ -281,6 +281,34 @@
 .header-currencies { flex-direction: row; align-items: center; flex-shrink: 0; }
 .header-currencies > #header-shards { margin-right: var(--space-16); }
 
+/* ── Bottom nav (GG-T1590, Ui.NavBar): five tabs under a hub page's body; the lit one holds the mana accent ── */
+.kit-navbar {
+    flex-direction: row;
+    flex-shrink: 0;
+    min-height: 132px; /* Kit.NavHeight; grows by the gesture-bar inset */
+    background-color: rgba(4, 8, 30, 0.85);
+    border-top-width: 4px;
+    border-color: var(--color-frame);
+}
+.kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: rgba(0, 0, 0, 0); }
+.kit-navtab > .menu-icon { width: 56px; height: 56px; margin: 0; }
+.kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; }
+.kit-navtab-badge {
+    position: absolute;
+    top: var(--space-8);
+    right: var(--space-16);
+    min-width: 44px;
+    padding: 0 var(--space-8);
+    border-radius: 22px;
+    background-color: rgb(214, 48, 64);
+    color: var(--color-white);
+    font-size: var(--type-base);
+    -unity-text-align: middle-center;
+}
+.kit-navtab--active { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
+.kit-navtab--active > .kit-navtab-label { color: var(--color-mana); }
+.kit-navtab--locked { opacity: 0.4; }
+
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */
 .tab {
@@ -761,6 +789,11 @@
 
 .theme-manapunk .header { background-color: rgba(16, 15, 28, 0.94); border-bottom-width: 2px; border-color: rgb(117, 144, 200); }
 .theme-manapunk .header-title { color: rgb(230, 230, 238); }
+.theme-manapunk .kit-navbar { background-color: rgba(16, 15, 28, 0.94); border-top-width: 2px; border-color: rgb(96, 100, 111); }
+.theme-manapunk .kit-navtab-label { color: rgb(164, 163, 188); }
+.theme-manapunk .kit-navtab--active { border-color: rgb(117, 144, 200); border-top-width: 4px; background-color: rgba(117, 144, 200, 0.16); }
+.theme-manapunk .kit-navtab--active > .kit-navtab-label { color: rgb(230, 230, 238); }
+.theme-manapunk .kit-navtab.is-pressed { background-color: rgba(117, 144, 200, 0.28); }
 
 .theme-manapunk .tab {
     border-width: 2px 2px 0 2px;

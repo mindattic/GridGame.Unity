@@ -232,6 +232,91 @@ namespace GridGame.App
             }
         }
 
+        /// <summary>The hub's bottom nav (kit role, GG-T1590, BIBLE §11.3): Home, Campaign, Heroes, Summon and Shop off
+        /// <see cref="NavBadges.Tabs"/>, sharing the stage's width, each <see cref="Kit.NavHeight"/> tall. Under a gesture
+        /// bar its band reaches the screen's bottom edge, its tabs staying above the inset (like <see cref="Header"/>). The
+        /// lit tab is the page directly above the hub on the stack (<paramref name="current"/> with no hub on it); a
+        /// locked tab is dimmed with a padlock and its tap only toasts why.</summary>
+        public static VisualElement NavBar(VisualElement parent, GameScreen current)
+        {
+            var app = GameApp.I;
+            var bar = El("kit-navbar", parent);
+            bar.name = "navbar";
+            if (GameApp.SafeBottom > 0f)
+            {
+                bar.style.marginBottom = -GameApp.SafeBottom;
+                bar.style.paddingBottom = GameApp.SafeBottom;
+                bar.style.minHeight = Kit.NavHeight + GameApp.SafeBottom;
+            }
+            string lit = NavLit(app.Router, current);
+            foreach (var tab in NavBadges.Tabs(app.Content, app.Save, app.Settings))
+            {
+                var t = El("kit-navtab", bar);
+                t.name = "nav-" + tab.Id;
+                t.EnableInClassList("kit-navtab--active", tab.Id == lit);
+                t.EnableInClassList("kit-navtab--locked", !tab.Open);
+                var icon = t.KindIcon(NavKind(tab.Id));
+                if (!tab.Open) RowIcon.Badge(icon, RowKind.Locked);
+                Marquee(Text(tab.Label, "kit-navtab-label", t));
+                if (!string.IsNullOrEmpty(tab.Badge)) Text(tab.Badge, "kit-navtab-badge", t).name = "nav-badge";
+                string id = tab.Id, hint = tab.Hint;
+                if (tab.Open) Tappable(t, () => NavGo(app, id));
+                else Tappable(t, () => app.Toast(hint), "ui.error");
+            }
+            return bar;
+        }
+
+        private static RowKind NavKind(string id)
+        {
+            switch (id)
+            {
+                case CampMenu.Campaign: return RowKind.Place;
+                case CampMenu.Heroes: return RowKind.Hero;
+                case CampMenu.Summon: return RowKind.New;
+                case CampMenu.Shop: return RowKind.Shop;
+                default: return RowKind.Home;
+            }
+        }
+
+        /// <summary>The tab the page directly above the hub belongs to; Home on the hub itself or a page no tab owns.</summary>
+        private static string NavLit(ScreenRouter router, GameScreen current)
+        {
+            GameScreen above = current, prev = null;
+            foreach (var s in router.Stack)
+            {
+                if (s is HubScreen) { above = prev; break; }
+                prev = s;
+            }
+            switch (above)
+            {
+                case StageSelectScreen _: case StageConfirmScreen _: return CampMenu.Campaign;
+                case HeroScreen _: return CampMenu.Heroes; // Status, Abilities, Party
+                case SummonScreen _: case MercenaryScreen _: return CampMenu.Summon;
+                case ShopScreen _: case DiamondStoreScreen _: return CampMenu.Shop;
+                default: return NavBadges.Home;
+            }
+        }
+
+        /// <summary>Home goes back to the hub; every other tab opens its page one step above a fresh hub, so Back from it
+        /// lands on the hub. Nothing happens while a timed paywall job plays out (<see cref="ScreenRouter.Home"/>).</summary>
+        private static void NavGo(GameApp app, string id)
+        {
+            var s = app.Save;
+            GameScreen dest;
+            switch (id)
+            {
+                case CampMenu.Campaign: dest = new StageSelectScreen(); break;
+                case CampMenu.Heroes:
+                    string lead = s.Party.FirstOrDefault();
+                    dest = Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
+                    break;
+                case CampMenu.Summon: dest = new SummonScreen(); break;
+                case CampMenu.Shop: dest = CampUnlocks.NpcOpen(s, CampNpcs.Merchant) ? new ShopScreen() : (GameScreen)new DiamondStoreScreen(); break;
+                default: dest = null; break;
+            }
+            if (app.Router.Home() && dest != null) app.Router.Push(dest);
+        }
+
         // ── The menu kit (GG-T454, Tokens.cs Kit): the builders every menu screen lays itself out with ──────────────
 
         /// <summary>A page's body under its <see cref="Header"/>: the centred content column, padded so each window (with its

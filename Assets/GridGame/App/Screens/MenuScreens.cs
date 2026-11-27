@@ -50,6 +50,8 @@ namespace GridGame.App
             Body = Ui.PageBody(col);
             BuildBody(Body);
             Typography.Watch(Body);
+            // GG-T1590: the hub's bottom nav under the body.
+            if (App.Save != null) Ui.NavBar(col, this);
             // GG-T1361: Gold, Shards and Summon Tickets on every hub page; tapping Shards opens the Shard Store.
             Ui.Currencies(CurrencyBar, App.Save, this is DiamondStoreScreen ? null : () => App.Router.Push(new DiamondStoreScreen()));
             CampTipOverlay.ShowIfPending(this, TipStation);
