@@ -146,6 +146,7 @@ namespace GridGame.Meta
                 foreach (var hid in s.Party) { var h = s.Hero(hid); if (h != null) h.SkillPoints += q.RewardSkillPoints; }
                 paid.Add($"{q.RewardSkillPoints} SP each");
             }
+            if (q.RewardTickets > 0) { SummonTickets.Earn(s, q.RewardTickets); paid.Add(TicketText.Of(q.RewardTickets)); } // GG-T1607
             if (q.RewardFlag != null) s.Flags.Add(q.RewardFlag);
             if (q.RewardHero != null && s.Hero(q.RewardHero) == null && c.TryClass(q.RewardHero) != null)
             {
@@ -193,6 +194,7 @@ namespace GridGame.Meta
             if (q.RewardGold > 0) parts.Add($"{q.RewardGold}g");
             if (q.RewardItem != null) parts.Add((c.TryItem(q.RewardItem)?.Name ?? q.RewardItem) + (q.RewardItemCount > 1 ? $" ×{q.RewardItemCount}" : ""));
             if (q.RewardSkillPoints > 0) parts.Add($"{q.RewardSkillPoints} SP each");
+            if (q.RewardTickets > 0) parts.Add(TicketText.Of(q.RewardTickets));
             if (q.RewardHero != null) parts.Add($"{c.TryClass(q.RewardHero)?.Name ?? q.RewardHero} joins");
             if (q.RewardFlag != null) parts.Add("a new conversation");
             return string.Join(" + ", parts);

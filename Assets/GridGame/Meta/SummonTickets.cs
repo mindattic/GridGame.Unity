@@ -17,7 +17,8 @@ namespace GridGame.Meta
     /// <summary>
     /// Summon Tickets earned in play (BIBLE §25.10.3, GG-T1422): never sold on their own. The first Summon Circle visit gives <see cref="StarterTickets"/>, a campaign stage's first clear pays
     /// <see cref="PerFirstClear"/>, finishing a chapter (its crawl's stage first cleared) <see cref="PerChapter"/>, and every
-    /// <see cref="WinsPerTicket"/> battles won in any mode one more. Earned Tickets live in <see cref="SummonState.Tickets"/>
+    /// <see cref="WinsPerTicket"/> battles won in any mode one more; each UTC day's first win <see cref="PerDailyFirstWin"/>,
+    /// each <see cref="CrucibleWavesPerTicket"/>-wave Crucible best one, and some quests pay Tickets on turn-in (GG-T1607). Earned Tickets live in <see cref="SummonState.Tickets"/>
     /// beside the fragments that join into them; bought ones in the account wallet (<see cref="AccountWallet.Tickets"/>).
     /// A pull spends an earned Ticket first, then a bought one, then Shards.
     /// </summary>
@@ -27,6 +28,8 @@ namespace GridGame.Meta
         public const int PerChapter = 5;
         public const int WinsPerTicket = 5;
         public const int StarterTickets = 10;
+        public const int PerDailyFirstWin = 1;
+        public const int CrucibleWavesPerTicket = 5;
 
         /// <summary>Tickets this save can spend: its earned ones plus its wallet's bought ones.</summary>
         public static int Have(SaveData s) =>
@@ -58,6 +61,26 @@ namespace GridGame.Meta
             if (++s.Summon.Wins % WinsPerTicket != 0) return 0;
             Earn(s, 1);
             return 1;
+        }
+
+        /// <summary>A battle won: <see cref="PerDailyFirstWin"/> for the first win of <paramref name="utcNow"/>'s UTC day
+        /// (<see cref="SummonState.FirstWinDay"/>, GG-T1607); returns the Tickets it earned.</summary>
+        public static int DailyFirstWin(SaveData s, DateTime utcNow)
+        {
+            s.Summon ??= new SummonState();
+            if (s.Summon.FirstWinDay == utcNow.Date) return 0;
+            s.Summon.FirstWinDay = utcNow.Date;
+            Earn(s, PerDailyFirstWin);
+            return PerDailyFirstWin;
+        }
+
+        /// <summary>A Crucible run's best waves rose from <paramref name="bestBefore"/> to <paramref name="bestAfter"/>: one
+        /// Ticket for each <see cref="CrucibleWavesPerTicket"/>-wave milestone newly reached (GG-T1607).</summary>
+        public static int AfterCrucibleBest(SaveData s, int bestBefore, int bestAfter)
+        {
+            int n = Math.Max(0, bestAfter / CrucibleWavesPerTicket - Math.Max(0, bestBefore) / CrucibleWavesPerTicket);
+            Earn(s, n);
+            return n;
         }
 
         /// <summary>A campaign stage first cleared: <see cref="PerFirstClear"/>, plus <see cref="PerChapter"/> when it ends a chapter.</summary>

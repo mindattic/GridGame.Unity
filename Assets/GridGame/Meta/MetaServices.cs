@@ -318,6 +318,8 @@ namespace GridGame.Meta
         public int AutoSold;
         /// <summary>Aetherite Dust this victory paid (GG-T623), on top of <see cref="Gold"/>; 0 on anything short of victory.</summary>
         public int DustEarned;
+        /// <summary>Summon Tickets this battle earned (a first clear, a chapter's end, every fifth win; GG-T1607); 0 for none.</summary>
+        public int TicketsEarned;
         /// <summary>GG-T673: mana orbs still in the row when the battle ended (GG-T676 converts them at stage end).</summary>
         public int OrbsLeft;
         /// <summary>GG-T676: the Mana Dust <see cref="OrbsLeft"/> settled back into at the end of a won stage (already counted
@@ -811,8 +813,8 @@ namespace GridGame.Meta
 
                 int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
                 rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
-                if (rep.FirstClear && index >= 0) SummonTickets.AfterFirstClear(c, s, battle.Stage.Id); // GG-T1422
-                SummonTickets.AfterWin(s);
+                if (rep.FirstClear && index >= 0) rep.TicketsEarned += SummonTickets.AfterFirstClear(c, s, battle.Stage.Id); // GG-T1422
+                rep.TicketsEarned += SummonTickets.AfterWin(s) + SummonTickets.DailyFirstWin(s, DateTime.UtcNow);
                 // GG-T623: a slow, repeatable trickle of Aetherite Dust on every victory, paid out before the Aetherist
                 // joins the caravan just as gold is — it simply has nowhere to refine until then.
                 rep.DustEarned = DustEconomy.DustPerVictory + (rep.FirstClear ? DustEconomy.FirstClearDustBonus : 0);

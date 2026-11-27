@@ -47,6 +47,8 @@ namespace GridGame.Core.Content
         public int RewardItemCount = 1;
         /// <summary>Skill points each hero in the active party gains on turn-in.</summary>
         public int RewardSkillPoints;
+        /// <summary>Summon Tickets paid on turn-in (GG-T1607), into the save's earned Tickets.</summary>
+        public int RewardTickets;
         /// <summary>A save flag set on turn-in — opens a follow-up Talk dialogue gated on it.</summary>
         public string RewardFlag;
         /// <summary>A hero class who joins the roster on turn-in (GG-T434; like a dialogue RecruitHero, nothing if owned).</summary>
@@ -113,8 +115,8 @@ namespace GridGame.Core.Content
                 if (o.Hero != null && db.TryClass(o.Hero)?.Team != Team.Hero) p.Add($"{w}: unknown hero '{o.Hero}'");
                 if (o.Kind != QuestObjectiveKind.ClearStage && (o.MaxHeroes != 0 || o.NoneFallen)) p.Add($"{w}: MaxHeroes/NoneFallen only fit a ClearStage objective");
                 if (q.RewardItem != null && db.TryItem(q.RewardItem) == null) p.Add($"{w}: unknown reward item '{q.RewardItem}'");
-                if (q.RewardGold < 0 || q.RewardSkillPoints < 0 || q.RewardItemCount <= 0) p.Add($"{w}: rewards can't be negative");
-                if (q.RewardGold == 0 && q.RewardItem == null && q.RewardSkillPoints == 0 && q.RewardFlag == null && q.RewardHero == null) p.Add($"{w}: needs a reward");
+                if (q.RewardGold < 0 || q.RewardSkillPoints < 0 || q.RewardTickets < 0 || q.RewardItemCount <= 0) p.Add($"{w}: rewards can't be negative");
+                if (q.RewardGold == 0 && q.RewardItem == null && q.RewardSkillPoints == 0 && q.RewardTickets == 0 && q.RewardFlag == null && q.RewardHero == null) p.Add($"{w}: needs a reward");
                 if (q.RewardFlag != null && (q.RewardFlag.StartsWith(ContentLoader.NpcFlagPrefix) || q.RewardFlag.StartsWith("sp:"))) p.Add($"{w}: reward flag '{q.RewardFlag}' is reserved");
                 if (!given.Contains(q.Id)) p.Add($"{w}: no dialogue offers it (needs a StartQuest effect)");
             }

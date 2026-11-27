@@ -82,6 +82,7 @@ namespace GridGame.App
                     Tag(Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
                         ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "orb" : "orbs")})"
                         : $"+{report.DustEarned:N0}", null, list), RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
+                TicketsRow(list);
                 // GG-T677: an owned Mana Orb gained here is one more orb to fill in every battle from now on.
                 if (report.OrbsGained > 0)
                 {
@@ -237,6 +238,7 @@ namespace GridGame.App
             Tag(Ui.MenuRow("Gold banked", "+" + Ui.Gold(report.Gold), null, list), RowKind.Shop).Q<Label>("value").AddToClassList("gold");
             // GG-T945: the run's own mode's record (Crucible.Commit filled it), not another mode's.
             Tag(Ui.MenuRow("Best haul", Ui.Gold(report.CrucibleBestGold), null, list), RowKind.Crucible).name = "crucible-best-gold";
+            TicketsRow(list);
             Tag(Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list), RowKind.Hero).name = "crucible-xp";
             NextAbilityRows(c, list);
             TurnsRow(list);
@@ -387,6 +389,13 @@ namespace GridGame.App
                 if (up && !calm) yield return Tween.Pop(row, 1.12f, Timing.Emphasis);
                 yield return Tween.Wait(up ? Timing.Emphasis : Timing.Quick);
             }
+        }
+
+        /// <summary>GG-T1607: the Summon Tickets this battle earned, when it earned any.</summary>
+        private void TicketsRow(VisualElement list)
+        {
+            if (report.TicketsEarned <= 0) return;
+            Tag(Ui.MenuRow(TicketText.Plural, "+" + report.TicketsEarned.ToString("N0"), null, list), RowKind.Item, Art.ItemIcon("mat_summon_ticket")).name = "results-tickets";
         }
 
         private static VisualElement Tag(VisualElement row, RowKind kind, Texture2D tex = null) { row.KindIcon(kind, tex); return row; }

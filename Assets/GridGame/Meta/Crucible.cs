@@ -216,14 +216,16 @@ namespace GridGame.Meta
             BattleFactory.KeepBrokenFragments(s, r);
             foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; } // everyone staggers out and recovers
 
-            if (rep.Victory) SummonTickets.AfterWin(s); // GG-T1422
+            if (rep.Victory) rep.TicketsEarned = SummonTickets.AfterWin(s) + SummonTickets.DailyFirstWin(s, DateTime.UtcNow); // GG-T1422
             rep.CrucibleWaves = WavesSurvived(battle);
             s.Crucible ??= new CrucibleSave();
             // GG-T945 (§2.13.1): records are kept per turn mode, since wave counts across modes aren't comparable.
             var mode = TurnRules.RecordMode(battle);
             rep.CrucibleMode = mode;
+            int bestBefore = s.Crucible.BestFor(mode);
             rep.CrucibleNewBest = s.Crucible.Record(mode, rep.CrucibleWaves, rep.Gold);
             rep.CrucibleBest = s.Crucible.BestFor(mode);
+            rep.TicketsEarned += SummonTickets.AfterCrucibleBest(s, bestBefore, rep.CrucibleBest); // GG-T1607
             rep.CrucibleBestGold = s.Crucible.BestGoldFor(mode);
 
             rep.NewSlots = Progression.UnlockedSlots(s) - slotsBefore;

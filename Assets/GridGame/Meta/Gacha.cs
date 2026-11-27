@@ -224,5 +224,7 @@ namespace GridGame.Meta
         public int Wins;
         /// <summary>Set once the first Summon Circle visit has given <see cref="SummonTickets.StarterTickets"/> (GG-T1604).</summary>
         public bool StarterGiven;
+        /// <summary>The UTC day whose first win paid <see cref="SummonTickets.PerDailyFirstWin"/> (GG-T1607); default before any.</summary>
+        public DateTime FirstWinDay;
     }
 }
