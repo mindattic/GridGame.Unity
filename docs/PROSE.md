@@ -84,7 +84,7 @@ applier tells an orphan from a text to apply.
 | Kind | Key | Text id | Gameplay record (the words were here before Phase 2) |
 |---|---|---|---|
 | conversation | `dialogue:<dialogueId>` | `conversation-<id>` | dialogues.json, every dialogue (title, nodes, choices) |
-| crawl | `crawl:prologue`, `crawl:ending` | `crawl-prologue`, `crawl-ending` | campaign.json Prologue/Ending |
+| crawl | `crawl:opening/<n>`, `crawl:ending` | `crawl-opening-<n>`, `crawl-ending` | campaign.json Opening.Pages (one key per page) / Ending |
 | crawl | `crawl:<themeId>` | `crawl-<themeId>` | campaign.json Themes[].Crawl |
 | crawl | `crawl:dialogue/<dialogueId>` | `crawl-dialogue-<id>` | a dialogue's Crawl (the level-10 interlude) |
 | description | `class:<classId>` | `description-class-<id>` | classes.json Description (short) and Lore (long): hero blurbs, enemy and Bestiary text |

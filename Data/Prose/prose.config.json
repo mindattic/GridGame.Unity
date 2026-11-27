@@ -18,7 +18,7 @@
     "right-answer",
     "conditional"
   ],
-  "keyScheme": "docs/PROSE.md (Keys) and tools/prose_keys.py: dialogue:<id>, crawl:prologue|ending|<theme>|dialogue/<id>, class:<id>, item:<id>, armorset:<id>, skilltree:<id>, skillnode:<id>, npc:<id>, quest:<id>, glossary:<id>, bark:caravan/<id>, bark:merc/<class>/pitch|renewal, bark:bossphase/<class>/<n>, bark:surprise/<stage>/<wave>",
+  "keyScheme": "docs/PROSE.md (Keys) and tools/prose_keys.py: dialogue:<id>, crawl:opening/<n>|ending|<theme>|dialogue/<id>, class:<id>, item:<id>, armorset:<id>, skilltree:<id>, skillnode:<id>, npc:<id>, quest:<id>, glossary:<id>, bark:caravan/<id>, bark:merc/<class>/pitch|renewal, bark:bossphase/<class>/<n>, bark:surprise/<stage>/<wave>",
   "universeFile": "gridgame.universe.json",
   "pending": "pending",
   "applied": "applied.jsonl",
