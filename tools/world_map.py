@@ -56,7 +56,22 @@ Catmull-Rom splined, retried with less simplification if a sample lands in water
                                         Cost, Crossings, NewCrossings, Passes)
     world_map-<region>-routes.png       debug overlay: routes, used crossings bold, unused grey, passes as red triangles
 
-Later steps (spots, tiles) are further subcommands on the same parser.
+    python tools/world_map.py spots <image> --region <id> [--cell 4] [--out DIR]       (GG-T1792)
+
+spots runs crossings, then suggests where things go. Copses and outcrops are forest / rock clumps at cell resolution
+with area in copse_area / outcrop_area px, standing on land (clump_land of the ring around them passable). Locations are
+picked greedily from a score (smoothed cost, plus water_bonus at water_near px from water and clump_bonus within
+clump_near of a copse or outcrop), location_spacing apart, 2 x edge_margin from the border, at most location_max. Road
+ends are the cheapest land half to one edge_margin in from the border, off the corners, one per side first,
+roadsign_spacing apart, at most roadsign_max. Routes come from plan_routes(leaves=road ends): a spanning tree over the
+locations, then each road end joined to its cheapest location; passes as in routes. Waystones every waystone_spacing
+px of road and at each road end; hunt spots on copse / outcrop centroids hunt_off px off a road, hunt_spacing apart.
+Every key can be set in the region's palette entry. Writes
+    world_map-<region>-spots.json       params, Spots (Location, RoadEnd, Pass, Waystone, Hunt), Crossings, Edges,
+                                        Copses, Outcrops
+    world_map-<region>-spots.png        debug overlay: roads, spots, clump rings, the edge band and location margin
+
+Later steps (tiles) are further subcommands on the same parser.
 """
 import argparse
 import json
@@ -934,8 +949,9 @@ def pass_runs(path, pass_grid, cost, w, cell, pass_min):
     return runs
 
 
-def plan_routes(g, crossings, points, pairs_spec=None):
-    """Least-cost routes between snapped points. Returns a dict with nodes, edges and the params used."""
+def plan_routes(g, crossings, points, pairs_spec=None, leaves=None):
+    """Least-cost routes between snapped points. Returns a dict with nodes, edges and the params used. Names in
+    `leaves` (road ends) stay out of the spanning tree; each is joined to its cheapest non-leaf point instead."""
     from scipy.sparse import csgraph
     entry, cost, cell = g["entry"], g["cost"], g["cell"]
     h, w = cost.shape
@@ -964,7 +980,14 @@ def plan_routes(g, crossings, points, pairs_spec=None):
             order.append((float(dist[i, j]), i, j))
         order.sort()
     else:
-        order = mst(len(names), [(float(dist[i, j]), i, j) for i in range(len(names)) for j in range(i + 1, len(names))])
+        leaf = set(leaves or ())
+        core = [i for i, n in enumerate(names) if n not in leaf]
+        order = mst(len(names), [(float(dist[i, j]), i, j) for a, i in enumerate(core) for j in core[a + 1:]])
+        for i, n in enumerate(names):
+            if n in leaf and core:
+                j = min(core, key=lambda c: dist[c, i])
+                if np.isfinite(dist[j, i]):
+                    order.append((float(dist[j, i]), j, i))
 
     crossing_kind = {"bridge": "Bridge", "causeway": "Causeway"}
     nodes = [{"Id": n, "Kind": "Point", "X": round((sx + 0.5) * cell, 1), "Y": round((sy + 0.5) * cell, 1),
@@ -1119,6 +1142,286 @@ def cmd_routes(args):
     return 0
 
 
+# ---------------------------------------------------------------- spots
+
+COPSE_AREA = (600, 12000)      # px area range of a forest clump that reads as a copse
+OUTCROP_AREA = (400, 9000)     # px area range of a rock clump that reads as an outcrop
+CLUMP_LAND = 0.6               # share of a clump's surrounding ring that must be land (not an island)
+LOCATION_SPACING = 280         # px between suggested locations
+LOCATION_MAX = 12
+EDGE_MARGIN = 48               # px: road ends sit in this band at the border; locations keep twice it clear
+WATER_NEAR = (12, 80)          # px from water that earns a location the water bonus
+CLUMP_NEAR = 80                # px from a copse or outcrop that earns the clump bonus
+WATER_BONUS = 0.35
+CLUMP_BONUS = 0.2
+SCORE_SIGMA = 24.0             # px: cost smoothing before scoring
+ROADSIGN_SPACING = 500         # px between road ends
+ROADSIGN_MAX = 4
+WAYSTONE_SPACING = 360         # px of road between waystones
+HUNT_OFF = (40, 200)           # px a hunt spot sits off the nearest road
+HUNT_SPACING = 160             # px between hunt spots
+SPOT_COLOURS = {"Location": (255, 255, 255), "RoadEnd": (90, 200, 255), "Waystone": (180, 140, 255),
+                "Hunt": (255, 150, 40), "Pass": (240, 80, 60), "Copse": (40, 200, 90), "Outcrop": (210, 120, 70)}
+
+
+def spot_params(entry):
+    keys = {"copse_area": COPSE_AREA, "outcrop_area": OUTCROP_AREA, "clump_land": CLUMP_LAND,
+            "location_spacing": LOCATION_SPACING, "location_max": LOCATION_MAX, "edge_margin": EDGE_MARGIN,
+            "water_near": WATER_NEAR, "clump_near": CLUMP_NEAR, "water_bonus": WATER_BONUS,
+            "clump_bonus": CLUMP_BONUS, "score_sigma": SCORE_SIGMA, "roadsign_spacing": ROADSIGN_SPACING,
+            "roadsign_max": ROADSIGN_MAX, "waystone_spacing": WAYSTONE_SPACING, "hunt_off": HUNT_OFF,
+            "hunt_spacing": HUNT_SPACING}
+    return {k: entry.get(k, v) for k, v in keys.items()}
+
+
+def clumps(g, label, area, land_share):
+    """Clumps of one class at cell resolution (cells at least half that class), area within `area` px, standing on
+    land: at least land_share of the one-cell ring around them is passable. Returns [(kind-less dict)], plus a mask."""
+    from scipy import ndimage
+    cost, cell = g["cost"], g["cell"]
+    h, w = cost.shape
+    if label not in g["names"]:
+        return [], np.zeros(cost.shape, bool)
+    share = block_reduce((g["index"] == g["names"].index(label)).astype(np.float64), cell, np.mean)[:h, :w]
+    lab, n = ndimage.label((share >= 0.5) & np.isfinite(cost), structure=np.ones((3, 3)))
+    out, mask = [], np.zeros(cost.shape, bool)
+    for i, sl in enumerate(ndimage.find_objects(lab), 1):
+        ys, xs = sl[0].start, sl[1].start
+        win = (slice(max(0, ys - 1), sl[0].stop + 1), slice(max(0, xs - 1), sl[1].stop + 1))
+        mine = lab[win] == i
+        px_area = int(mine.sum()) * cell * cell
+        if not area[0] <= px_area <= area[1]:
+            continue
+        ring = ndimage.binary_dilation(mine) & ~mine
+        if not ring.any() or np.isfinite(cost[win][ring]).mean() < land_share:
+            continue
+        my, mx = np.nonzero(mine)
+        cy, cx = my.mean(), mx.mean()
+        k = int(np.argmin((my - cy) ** 2 + (mx - cx) ** 2))  # the member cell nearest the centroid
+        out.append({"X": round((mx[k] + win[1].start + 0.5) * cell, 1), "Y": round((my[k] + win[0].start + 0.5) * cell, 1),
+                    "AreaPx": px_area})
+        mask[win] |= mine
+    out.sort(key=lambda c: -c["AreaPx"])
+    return out, mask
+
+
+def greedy_pick(score, cell, spacing, limit, taken=()):
+    """Highest-scoring cells, each at least `spacing` px from every pick and from `taken` (px points)."""
+    s = score.astype(np.float64).copy()
+    h, w = s.shape
+    yy, xx = np.mgrid[0:h, 0:w]
+    r = spacing / cell
+    for x, y in taken:
+        s[(yy - y / cell) ** 2 + (xx - x / cell) ** 2 < r * r] = -np.inf
+    picks = []
+    while len(picks) < limit:
+        k = int(np.argmax(s))
+        if not np.isfinite(s.flat[k]):
+            break
+        cy, cx = divmod(k, w)
+        picks.append(((cx + 0.5) * cell, (cy + 0.5) * cell, float(s.flat[k])))
+        s[(yy - cy) ** 2 + (xx - cx) ** 2 < r * r] = -np.inf
+    return picks
+
+
+def along(poly, spacing, offset):
+    """Points every `spacing` px along a polyline, the first at `offset` px."""
+    seg = np.hypot(*np.diff(poly, axis=0).T)
+    cum = np.concatenate([[0], np.cumsum(seg)])
+    out = []
+    for s in np.arange(offset, cum[-1], spacing):
+        i = min(int(np.searchsorted(cum, s, side="right")) - 1, len(seg) - 1)
+        t = (s - cum[i]) / seg[i] if seg[i] > 0 else 0
+        out.append(poly[i] + t * (poly[i + 1] - poly[i]))
+    return out
+
+
+def suggest_spots(g, crossings):
+    from scipy import ndimage
+    entry, cost, cell = g["entry"], g["cost"], g["cell"]
+    h, w = cost.shape
+    p = spot_params(entry)
+    land = np.isfinite(cost)
+    copses, copse_mask = clumps(g, "forest", p["copse_area"], p["clump_land"])
+    outcrops, outcrop_mask = clumps(g, "rock", p["outcrop_area"], p["clump_land"])
+
+    # score: cheap smoothed ground, a bonus near (not on) water and near a copse or outcrop
+    fill = np.where(land, cost, np.nanmax(np.where(land, cost, np.nan)))
+    smooth = ndimage.gaussian_filter(fill.astype(np.float64), p["score_sigma"] / cell)
+    lo, hi = np.percentile(smooth[land], [5, 95])
+    base = 1 - np.clip((smooth - lo) / max(hi - lo, 1e-6), 0, 1)
+    water_d = ndimage.distance_transform_edt(land) * cell
+    near_water = (water_d >= p["water_near"][0]) & (water_d <= p["water_near"][1])
+    clump_d = ndimage.distance_transform_edt(~(copse_mask | outcrop_mask)) * cell
+    score = base + p["water_bonus"] * near_water + p["clump_bonus"] * (clump_d <= p["clump_near"])
+    yy, xx = np.mgrid[0:h, 0:w]
+    border = np.minimum(np.minimum(yy + 0.5, h - yy - 0.5), np.minimum(xx + 0.5, w - xx - 0.5)) * cell
+    score = np.where(land & (water_d >= p["water_near"][0]) & (border >= 2 * p["edge_margin"]), score, -np.inf)
+    locs = greedy_pick(score, cell, p["location_spacing"], p["location_max"])
+
+    # road ends: the cheapest land in the falloff band (half to one edge_margin in), kept off the corners; the best per
+    # side first so they spread round the map, then the next best anywhere up to roadsign_max
+    m = p["edge_margin"]
+    sides = [(yy + 0.5) * cell, (h - yy - 0.5) * cell, (xx + 0.5) * cell, (w - xx - 0.5) * cell]  # N, S, W, E
+    band = land & (water_d >= 2 * cell) & (border >= m / 2) & (border <= m)
+    band &= np.sort(np.stack(sides), axis=0)[1] >= 3 * m  # second-nearest edge far away: not a corner
+    end_score = np.where(band, -smooth, -np.inf)
+    ends = []
+    for d in sides:
+        ends += greedy_pick(np.where(d <= m, end_score, -np.inf), cell, p["roadsign_spacing"], 1,
+                            [(x, y) for x, y, _ in ends])
+    ends = sorted(ends, key=lambda e: -e[2])[:p["roadsign_max"]]
+    ends += greedy_pick(end_score, cell, p["roadsign_spacing"], p["roadsign_max"] - len(ends),
+                        [(x, y) for x, y, _ in ends])
+
+    points = [("loc-%d" % (i + 1), x, y) for i, (x, y, _) in enumerate(locs)]
+    leaves = ["end-%d" % (i + 1) for i in range(len(ends))]
+    points += [(n, x, y) for n, (x, y, _) in zip(leaves, ends)]
+    r = plan_routes(g, crossings, points, leaves=leaves)
+
+    # waystones along the road network and at each road end; shared stretches don't double up
+    sp = p["waystone_spacing"]
+    stops = [(n["X"], n["Y"]) for n in r["nodes"] if n["Kind"] == "Point" and n["Id"].startswith("loc-")]
+    stones = []
+    for n in r["nodes"]:
+        if n["Kind"] == "Point" and n["Id"] in leaves and any(n["Id"] in (e["A"], e["B"]) for e in r["edges"]):
+            stones.append((n["X"], n["Y"], n["Id"]))
+    for e in r["edges"]:
+        for q in along(np.array(e["Spline"]), sp, sp / 2):
+            if all(np.hypot(q[0] - x, q[1] - y) >= sp / 2 for x, y, _ in stones) and \
+                    all(np.hypot(q[0] - x, q[1] - y) >= sp / 3 for x, y in stops):
+                stones.append((float(q[0]), float(q[1]), None))
+
+    # hunt spots: copse / outcrop centroids a short walk off a road
+    road = np.zeros((h * cell, w * cell), np.uint8)
+    road_im = Image.fromarray(road)
+    rd = ImageDraw.Draw(road_im)
+    for e in r["edges"]:
+        rd.line([tuple(q) for q in e["Spline"]], fill=1, width=3)
+    road_d = ndimage.distance_transform_edt(np.asarray(road_im) == 0) if r["edges"] else None
+    hunts = []
+    for kind, group in (("Copse", copses), ("Outcrop", outcrops)):
+        for c in group:
+            if road_d is None:
+                break
+            off = float(road_d[min(int(c["Y"]), h * cell - 1), min(int(c["X"]), w * cell - 1)])
+            if not p["hunt_off"][0] <= off <= p["hunt_off"][1]:
+                continue
+            if any(np.hypot(c["X"] - q["X"], c["Y"] - q["Y"]) < p["hunt_spacing"] for q in hunts):
+                continue
+            hunts.append({"Id": "hunt-%d" % (len(hunts) + 1), "Kind": "Hunt", "On": kind, "X": c["X"], "Y": c["Y"],
+                          "AreaPx": c["AreaPx"], "OffRoadPx": round(off, 1)})
+
+    spots = []
+    for n in r["nodes"]:
+        if n["Kind"] == "Point":
+            kind = "RoadEnd" if n["Id"] in leaves else "Location"
+            d = {"Id": n["Id"], "Kind": kind, "X": n["X"], "Y": n["Y"]}
+            if kind == "Location":
+                k = int(n["Id"].split("-")[1]) - 1
+                d["Score"] = round(locs[k][2], 3)
+            spots.append(d)
+        elif n["Kind"] == "Pass":
+            spots.append({"Id": n["Id"], "Kind": "Pass", "X": n["X"], "Y": n["Y"], "RunPx": n["RunPx"]})
+    for i, (x, y, at) in enumerate(stones):
+        d = {"Id": "waystone-%d" % (i + 1), "Kind": "Waystone", "X": round(x, 1), "Y": round(y, 1)}
+        if at:
+            d["At"] = at
+        spots.append(d)
+    spots.extend(hunts)
+    return {"params": p, "spots": spots, "routes": r, "copses": copses, "outcrops": outcrops}
+
+
+def draw_spots_overlay(img, cost, cell, s):
+    r = s["routes"]
+    art = np.asarray(img, dtype=np.float64)
+    h, w = art.shape[:2]
+    out = art * 0.75
+    blocked = np.repeat(np.repeat(np.isinf(cost), cell, 0), cell, 1)[:h, :w]
+    out[blocked] = out[blocked] * 0.5 + np.array([20, 60, 160]) * 0.5
+    im = Image.fromarray(out.clip(0, 255).astype(np.uint8))
+    draw = ImageDraw.Draw(im)
+    try:
+        font = ImageFont.truetype("arial.ttf", 14)
+        big = ImageFont.truetype("arial.ttf", 18)
+    except OSError:
+        font = big = ImageFont.load_default()
+    m = s["params"]["edge_margin"]
+    draw.rectangle([m, m, w - m, h - m], outline=(90, 200, 255), width=1)
+    draw.rectangle([2 * m, 2 * m, w - 2 * m, h - 2 * m], outline=(255, 255, 255), width=1)
+    for kind, group in (("Copse", s["copses"]), ("Outcrop", s["outcrops"])):
+        for c in group:
+            rad = max(3, (c["AreaPx"] / np.pi) ** 0.5)
+            draw.ellipse([c["X"] - rad, c["Y"] - rad, c["X"] + rad, c["Y"] + rad], outline=SPOT_COLOURS[kind], width=1)
+    for e in r["edges"]:
+        line = [tuple(q) for q in e["Spline"]]
+        draw.line(line, fill=(0, 0, 0), width=7, joint="curve")
+        draw.line(line, fill=(255, 245, 200), width=3, joint="curve")
+    for n in r["nodes"]:
+        if n["Kind"] in ("Bridge", "Causeway"):
+            colour = CROSSING_COLOURS.get(n["Kind"].lower(), (255, 255, 255))
+            draw.line([tuple(n["A"]), tuple(n["B"])], fill=(0, 0, 0), width=9)
+            draw.line([tuple(n["A"]), tuple(n["B"])], fill=colour, width=5)
+    for q in s["spots"]:
+        x, y, col, kind = q["X"], q["Y"], SPOT_COLOURS[q["Kind"]], q["Kind"]
+        if kind == "Location":
+            draw.ellipse([x - 10, y - 10, x + 10, y + 10], fill=col, outline=(0, 0, 0), width=3)
+            draw.text((x + 13, y - 10), q["Id"], fill=col, font=big, stroke_width=3, stroke_fill=(0, 0, 0))
+        elif kind == "RoadEnd":
+            draw.rectangle([x - 8, y - 8, x + 8, y + 8], fill=col, outline=(0, 0, 0), width=2)
+            draw.text((x + 11, y - 8), q["Id"], fill=col, font=font, stroke_width=2, stroke_fill=(0, 0, 0))
+        elif kind == "Pass":
+            draw.polygon([(x, y - 10), (x - 9, y + 7), (x + 9, y + 7)], fill=col, outline=(0, 0, 0))
+        elif kind == "Waystone":
+            draw.polygon([(x, y - 8), (x + 6, y), (x, y + 8), (x - 6, y)], fill=col, outline=(0, 0, 0))
+        elif kind == "Hunt":
+            draw.ellipse([x - 7, y - 7, x + 7, y + 7], fill=None, outline=(0, 0, 0), width=4)
+            draw.ellipse([x - 7, y - 7, x + 7, y + 7], fill=None, outline=col, width=2)
+            draw.line([(x - 4, y), (x + 4, y)], fill=col, width=2)
+            draw.line([(x, y - 4), (x, y + 4)], fill=col, width=2)
+    counts = {}
+    for q in s["spots"]:
+        counts[q["Kind"]] = counts.get(q["Kind"], 0) + 1
+    lines = ["%d routes, %.0f px of road" % (len(r["edges"]), sum(e["Length"] for e in r["edges"])),
+             ", ".join("%d %s" % (counts.get(k, 0), k.lower()) for k in ("Location", "RoadEnd", "Waystone", "Pass", "Hunt")),
+             "%d copses, %d outcrops (rings); white box = location margin" % (len(s["copses"]), len(s["outcrops"]))]
+    if r["unreachable"]:
+        lines.append("unreachable: " + ", ".join("%s-%s" % tuple(u) for u in r["unreachable"]))
+    x0, y0 = 16, 16
+    draw.rectangle([x0, y0, x0 + 470, y0 + 12 + 24 * len(lines)], fill=(0, 0, 0))
+    for i, t in enumerate(lines):
+        draw.text((x0 + 12, y0 + 6 + 24 * i), t, fill=(255, 255, 255), font=big if i == 0 else font)
+    return im
+
+
+def cmd_spots(args):
+    image = Path(args.image)
+    g = cost_grid(image, args.region, args.k, args.cell)
+    crossings, _, cp = crossing_candidates(g)
+    s = suggest_spots(g, crossings)
+    r = s["routes"]
+    out = Path(args.out) if args.out else image.parent
+    out.mkdir(parents=True, exist_ok=True)
+    stem = "world_map-%s" % args.region
+    draw_spots_overlay(g["img"], g["cost"], g["cell"], s).save(out / ("%s-spots.png" % stem))
+    p = {k: list(v) if isinstance(v, tuple) else v for k, v in s["params"].items()}
+    doc = {"region": args.region, "image": str(image), "cell": g["cell"], "crossing": cp["crossing"], **p,
+           **r["params"], "unreachable": r["unreachable"], "Spots": s["spots"],
+           "Crossings": [n for n in r["nodes"] if n["Kind"] in ("Bridge", "Causeway")], "Edges": r["edges"],
+           "Copses": s["copses"], "Outcrops": s["outcrops"]}
+    (out / ("%s-spots.json" % stem)).write_text(json.dumps(doc, indent=1), encoding="utf-8")
+    counts = {}
+    for q in s["spots"]:
+        counts[q["Kind"]] = counts.get(q["Kind"], 0) + 1
+    print("%d copses, %d outcrops; %d routes, %.0f px of road" % (
+        len(s["copses"]), len(s["outcrops"]), len(r["edges"]), sum(e["Length"] for e in r["edges"])))
+    print(", ".join("%d %s" % (v, k) for k, v in counts.items()))
+    if r["unreachable"]:
+        print("unreachable: %s" % ", ".join("%s-%s" % tuple(u) for u in r["unreachable"]))
+    print("wrote %s" % (out / ("%s-spots.png" % stem)))
+    return 0
+
+
 def rgb_of(lab):
     """Lab -> sRGB 0..255 (inverse of srgb_to_lab), for writing cluster colours as hex."""
     l, a, b = lab
@@ -1166,6 +1469,13 @@ def main(argv=None):
     c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
     c.add_argument("--out", help="output directory (default: the image's directory)")
     c.set_defaults(func=cmd_routes)
+    c = sub.add_parser("spots", help="suggest locations, road ends, waystones, passes and hunt spots, with routes")
+    c.add_argument("image")
+    c.add_argument("--region", required=True, help="region id in world_map_palettes.json")
+    c.add_argument("--k", type=int, help="cluster count (default: the palette entry's k)")
+    c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
+    c.add_argument("--out", help="output directory (default: the image's directory)")
+    c.set_defaults(func=cmd_spots)
     args = p.parse_args(argv)
     return args.func(args)
 
