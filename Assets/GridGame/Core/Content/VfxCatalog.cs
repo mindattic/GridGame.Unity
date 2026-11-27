@@ -60,7 +60,13 @@ namespace GridGame.Core.Content
             if (style == null) return null;
             // A style that lists tiers owns that choice: a tier it leaves out stays code-drawn.
             if (style.TierPrefabs != null)
-                return style.TierPrefabs.TryGetValue(tier.ToString(), out var id) && !string.IsNullOrEmpty(id) ? id : null;
+            {
+                // Validate accepts the tier keys in any case, so match them that way here too.
+                string want = tier.ToString();
+                foreach (var kv in style.TierPrefabs)
+                    if (string.Equals(kv.Key, want, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(kv.Value)) return kv.Value;
+                return null;
+            }
             return sheet?.TierDef(tier)?.Prefab ?? style.Prefab;
         }
 
