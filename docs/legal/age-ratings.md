@@ -2,7 +2,7 @@
 
 > **GG-T694 (2026-11-23):** the working title dropped "Gaiden"; this document now says GridGame throughout.
 
-> **DRAFT for the owner's review (GG-T472, 2026-11-20).** Suggested answers for Google Play's IARC questionnaire
+> **DRAFT for the owner's review (GG-T472, 2026-11-20; refreshed GG-T1540, 2026-11-27).** Suggested answers for Google Play's IARC questionnaire
 > (Play Console > App content > Content ratings) and Apple's age-rating questions (App Store Connect > App
 > Information > Age Rating). They describe the game as built at the commit that adds this file; re-check after any
 > story, art or monetisation change. The rating authorities decide the final rating from your answers.
@@ -18,7 +18,7 @@
 - **Fear/horror:** mild dark-fantasy themes (ruins, undead/monster enemies), no jump scares.
 - **Drugs/alcohol/tobacco:** potions are magical items; [confirm no alcohol or tobacco references in item text].
 - **Gambling:** no real-money gambling and no simulated casino games. **But see randomised paid items below.**
-- **User interaction:** none: no chat, no user-generated content, no sharing, no online play.
+- **User interaction:** none: no chat, no user-generated content shared with others, no online play. The optional cloud save (Google Play Games, iCloud) and the copyable Transfer save code move only the player's own save; no other player sees it.
 - **Location sharing / personal info:** none.
 - **Digital purchases:** yes, Mana Shards (consumable in-app purchases, US$1 to US$25).
 - **Ads:** none.
@@ -37,7 +37,7 @@
 | Gambling: real money | No |
 | Gambling: simulated | No |
 | **Randomised items purchasable with real money or in-game currency bought with real money (loot boxes)** | **Yes**: the Shard summon (100 Mana Shards) brings a random hero; a lucky craft (50 Shards) raises a random Masterwork chance. Shards can be bought with real money (and also earned / exchanged for gold). The odds of both are shown in-game before purchase (see below). |
-| Users interact / exchange content | No |
+| Users interact / exchange content | No (cloud save and the Transfer save code are the player's own data) |
 | Shares location | No |
 | Digital purchases | Yes |
 | Unrestricted internet | No |

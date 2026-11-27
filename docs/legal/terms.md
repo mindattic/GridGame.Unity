@@ -1,16 +1,16 @@
-# GridGame Gaiden: Terms of Service
+# GridGame: Terms of Service
 
-> **DRAFT for the owner's review (GG-T472, 2026-11-20). Not legal advice.** Fill in the bracketed fields and have it
+> **DRAFT for the owner's review (GG-T472, 2026-11-20; refreshed GG-T1540, 2026-11-27). Not legal advice.** Fill in the bracketed fields and have it
 > reviewed before release; host it at a public URL and link it from the store listings (and in-game, from Settings or
 > the Shard Store, if you want it one tap away).
 
 **Effective date:** [date of first release]
 **Developer:** MindAttic, [legal entity name, address, country]
-**Contact:** [support email]
+**Contact:** [support email, owner decision GG-T1558]
 
 ## 1. The game
 
-GridGame Gaiden ("the Game") is a single-player game licensed, not sold, to you for personal, non-commercial use on
+GridGame ("the Game") is a single-player game licensed, not sold, to you for personal, non-commercial use on
 devices you own or control, under these terms and the terms of the store you got it from (Google Play's Terms of
 Service or Apple's Licensed Application End User License Agreement, which also apply). If these terms conflict with
 the store's mandatory terms, the store's terms win.
@@ -27,9 +27,10 @@ the store's mandatory terms, the store's terms win.
 - **Random items.** The Shard summon brings one hero at random from the heroes you don't yet have; every one of them
   is equally likely. A lucky craft raises the chance of a Masterwork result by the amount the Forge shows; it does not
   guarantee one. [Owner: keep this paragraph in step with the in-game odds disclosure.]
-- Your Shards live in your save on your device. **We can't restore Shards lost because a save was deleted, a device
-  was lost or reset without a backup, or the app was uninstalled without a backup**, because we hold no copy of your
-  save. Purchases are tied to the save that was loaded when the purchase completed.
+- Your Shards live in your save on your device. If you use the optional cloud save (Google Play Games or iCloud) or a
+  Transfer save code, copies of your save, Shards included, are held by Google or Apple, or by you. **We can't restore
+  Shards lost because a save was deleted, a device was lost or reset without a backup or cloud copy, or the app was
+  uninstalled without one**, because we hold no copy of your save. Purchases are tied to the save that was loaded when the purchase completed.
 - We may change Shard prices, packs, exchange rates and what Shards buy in future updates. We won't take away
   Shards you already have except as stated in section 3.
 
@@ -47,6 +48,11 @@ the store's mandatory terms, the store's terms win.
 
 ## 4. Fair use
 
+The optional cloud save depends on Google Play Games or iCloud and is provided as is; those services' terms apply
+to it, and a cloud copy may be unavailable or replaced by a newer one from another device (the Game asks first). A
+Transfer save code contains your whole save: keep it to yourself; a code that was edited or came from someone else is
+used at your own risk.
+
 Don't reverse-engineer, cheat-modify or redistribute the Game except as the law allows. Single-player saves are yours to
 play as you like; we don't police them, but we can't help with saves that were edited.
 
@@ -58,7 +64,8 @@ for Mana Shards in the 12 months before the claim.
 
 ## 6. Privacy
 
-See the Privacy Policy ([URL]). In short: no accounts, no ads, no analytics SDK; purchases go through Google/Apple.
+See the Privacy Policy ([URL]). In short: no accounts of our own, no ads, no analytics SDK; optional cloud save through Google Play Games or iCloud;
+purchases go through Google/Apple.
 
 ## 7. Law and contact
 
