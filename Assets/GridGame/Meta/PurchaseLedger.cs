@@ -116,5 +116,11 @@ namespace GridGame.Meta
         /// <summary>Diamonds bought with real money on this save, refunds excluded.</summary>
         public static int TotalBought(SaveData s) =>
             s?.Purchases?.Granted?.Values.Where(r => !r.Refunded).Sum(r => r.Diamonds) ?? 0;
+
+        /// <summary>GG-T1437: real money spent in <paramref name="utc"/>'s calendar month (UTC), in US cents at the list
+        /// price, refunds excluded. Feeds the monthly spending limit (<see cref="SpendLimits"/>).</summary>
+        public static int MonthCents(IEnumerable<PurchaseRecord> records, DateTime utc) =>
+            records?.Where(r => r != null && !r.Refunded && r.Utc.Year == utc.Year && r.Utc.Month == utc.Month)
+                .Sum(r => PackOf(r.ProductId)?.Cents ?? 0) ?? 0;
     }
 }

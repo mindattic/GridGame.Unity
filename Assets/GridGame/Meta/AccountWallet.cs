@@ -37,6 +37,13 @@ namespace GridGame.Meta
 
         public DateTime UpdatedUtc;
 
+        /// <summary>GG-T1437: the age band asked once, at this login's first real-money purchase. Null until answered.</summary>
+        public AgeBand? AgeBand;
+
+        /// <summary>GG-T1437: the monthly spending limit in US cents set in Settings; null follows the age band's default
+        /// (<see cref="SpendLimits.DefaultCents"/>), <see cref="SpendLimits.NoLimit"/> is none.</summary>
+        public int? MonthlyLimitCents;
+
         /// <summary>Fills in anything an older or hand-edited file left out.</summary>
         public AccountWallet Normalize()
         {
@@ -49,6 +56,7 @@ namespace GridGame.Meta
                 Migrated = new Dictionary<string, CarriedSave>(Migrated, StringComparer.Ordinal);
             foreach (var k in Migrated.Where(kv => kv.Value == null).Select(kv => kv.Key).ToList()) Migrated.Remove(k);
             if (Diamonds < 0) Diamonds = 0;
+            if (MonthlyLimitCents < SpendLimits.NoLimit) MonthlyLimitCents = SpendLimits.NoLimit;
             if (Version < CurrentVersion) Version = CurrentVersion;
             return this;
         }
@@ -134,6 +142,98 @@ namespace GridGame.Meta
             w?.Granted?.Values.Where(r => r != null && !r.Refunded).Sum(r => r.Diamonds) ?? 0;
 
         private static int Sum(int a, int b) => (int)Math.Min(int.MaxValue, (long)Math.Max(0, a) + Math.Max(0, b));
+    }
+
+    /// <summary>The age band a store login answered at its first real-money purchase (GG-T1437).</summary>
+    public enum AgeBand
+    {
+        Under13,
+        Teen,
+        Adult,
+    }
+
+    /// <summary>
+    /// Minors and spending (§25.18.1, GG-T1437): the age band is asked once per wallet before its first real-money purchase,
+    /// each wallet has a monthly spending limit (minors get a default cap, editable in Settings behind a parental gate),
+    /// and an under-13 passes the parental gate before every purchase. Pure rules; the App asks the questions.
+    /// </summary>
+    public static class SpendLimits
+    {
+        /// <summary>A <see cref="AccountWallet.MonthlyLimitCents"/> that means no limit.</summary>
+        public const int NoLimit = -1;
+
+        /// <summary>The default monthly cap for an under-13, in US cents.</summary>
+        public static int Under13DefaultCents = 2000;
+
+        /// <summary>The default monthly cap for a 13-to-17, in US cents.</summary>
+        public static int TeenDefaultCents = 5000;
+
+        /// <summary>The limits Settings cycles through: the age band's default (null), off, then caps, then none.</summary>
+        public static readonly int?[] Choices = { null, 0, 1000, 2000, 5000, 10000, NoLimit };
+
+        public static int DefaultCents(AgeBand? band) =>
+            band == AgeBand.Under13 ? Under13DefaultCents : band == AgeBand.Teen ? TeenDefaultCents : NoLimit;
+
+        /// <summary>The limit in force for <paramref name="w"/> in US cents, or <see cref="NoLimit"/>.</summary>
+        public static int LimitCents(AccountWallet w) => w?.MonthlyLimitCents ?? DefaultCents(w?.AgeBand);
+
+        /// <summary>Real money this wallet spent in <paramref name="utc"/>'s month, in US cents.</summary>
+        public static int SpentCents(AccountWallet w, DateTime utc) => PurchaseLedger.MonthCents(w?.Granted?.Values, utc);
+
+        public static bool NeedsAge(AccountWallet w) => w != null && w.AgeBand == null;
+
+        /// <summary>An under-13's every purchase waits on the parental gate.</summary>
+        public static bool NeedsParentalGate(AccountWallet w) => w?.AgeBand == AgeBand.Under13;
+
+        /// <summary>Changing the limit in Settings waits on the parental gate unless the wallet answered adult.</summary>
+        public static bool LimitGated(AccountWallet w) => w?.AgeBand != AgeBand.Adult;
+
+        /// <summary>Why buying <paramref name="pack"/> now would break the monthly limit, or null when it fits.</summary>
+        public static string Refusal(AccountWallet w, DiamondPack pack, DateTime utc)
+        {
+            int limit = LimitCents(w);
+            if (w == null || pack == null || limit < 0) return null;
+            int spent = SpentCents(w, utc);
+            if ((long)spent + pack.Cents <= limit) return null;
+            return limit == 0
+                ? "Purchases are turned off. A parent can change the spending limit in Settings."
+                : $"That would pass this month's spending limit of {Money(limit)} ({Money(Math.Max(0, limit - spent))} left). A parent can change it in Settings.";
+        }
+
+        /// <summary>The Settings choice after <paramref name="current"/> (an unlisted value goes back to the default).</summary>
+        public static int? Next(int? current)
+        {
+            int i = Array.IndexOf(Choices, current);
+            return Choices[(i + 1) % Choices.Length];
+        }
+
+        public static string Money(int cents) => cents < 0 ? "No limit" : $"${cents / 100}.{cents % 100:00}";
+
+        /// <summary>The Settings row's value: "Default ($20.00)", "Off", "$50.00" or "No limit".</summary>
+        public static string Describe(AccountWallet w)
+        {
+            if (w?.MonthlyLimitCents == null) return $"Default ({Money(DefaultCents(w?.AgeBand))})";
+            return w.MonthlyLimitCents == 0 ? "Off" : Money(w.MonthlyLimitCents.Value);
+        }
+
+        public static string BandName(AgeBand band) =>
+            band == AgeBand.Under13 ? "Under 13" : band == AgeBand.Teen ? "13 to 17" : "18 or older";
+
+        /// <summary>A parental-gate sum a young child can't easily answer: <paramref name="a"/> × <paramref name="b"/>,
+        /// with the right product among four shuffled choices.</summary>
+        public static int[] GateQuestion(Random rng, out int a, out int b)
+        {
+            a = rng.Next(6, 10);
+            b = rng.Next(3, 10);
+            int p = a * b;
+            var options = new[] { p, p + a, p - b, p + 10 };
+            for (int i = options.Length - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                (options[i], options[j]) = (options[j], options[i]);
+            }
+            return options;
+        }
     }
 
     /// <summary>
