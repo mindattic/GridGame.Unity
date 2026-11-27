@@ -545,7 +545,7 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:0317490e7322f18d006684cee06e3a1cdf43ae62166033240dd17dc54d69a199",
+      "hash": "sha256:583d8bcf831c09983c6a13934ebc5068f5ac53cc41a543bff5f68d5558c24d58",
       "about": [
         "place-still"
       ],
@@ -553,7 +553,7 @@
       "payload": {
         "title": "The Still",
         "paragraphs": [
-          "Every beam off the ice comes down in one place: a white dome at the foot of Halcyon's spire, and above it an oculus that frames the Manalith like a painting. This is the Still. You slept here through the night the city fell. No one else woke.",
+          "Every beam off the ice comes down in one place: a white dome at the foot of Halcyon's spire, and above it an oculus that frames the Manalith like a painting. This is the Still. You died here the night the city fell, and here the tithe brought you back. No one else came out.",
           "The Choir fills its tanks with the tithe now. The Hollow stand in its queues, the ones who paid too much, and the Bulwark has mined the floors you have to cross. Choose every step. Some of them are wrong."
         ]
       }

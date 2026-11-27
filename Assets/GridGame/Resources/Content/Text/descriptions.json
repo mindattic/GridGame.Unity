@@ -2556,14 +2556,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9b6d23c8fc62178aea2c2cb79e64aa0e319a4f87dee8cbc21fb86f98a82b0d10",
+      "hash": "sha256:ff87d3d46f0b7409d078eef25196d58e0d42b29e45de490a080c3346a93818ad",
       "about": [
         "class-nighthunter"
       ],
       "speakers": [],
       "payload": {
         "short": "A low crouch in an oversized pale hoodie wrapped in loose, flapping strips, baggy grey trousers and a hood that hides everything but a dark mask with a thin orange glow behind it. The forearms end in long hooked claws, wrapped at the wrist.",
-        "long": "The Night Hunter works the Underspire after the neon dims, tracking whatever climbs up out of Halcyon's old service tunnels. Nobody on the Street has seen the face under the hood, and nobody has asked twice. The tunnels have been getting busier, the trail leads out of the city, and the Night Hunter is following it with the Warden."
+        "long": "The Night Hunter works the Underspire after the neon dims, tracking whatever climbs up out of Halcyon's old service tunnels. Nobody on the Street has seen the face under the hood, and nobody has asked twice. The tunnels have been getting busier, the trail leads out of the city, and the Night Hunter is following it with the Commander's crew."
       }
     },
     "class:odachi": {
@@ -2828,14 +2828,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:fcfd0a3851caf6dea5a91c68324e83d64a6f732adeff1c32c64197ae0949a6a0",
+      "hash": "sha256:487e2350bc85d337592a7dca10a554c967fea71923869001bb0a3af391c8b918",
       "about": [
         "class-raider"
       ],
       "speakers": [],
       "payload": {
         "short": "A hood pulled low over a shadowed face, a cream cloak and patterned shawl that billow behind, dark baggy trousers tied at the ankles and bare feet. One hand swings a heavy iron lantern on a short chain, glowing like a small sun.",
-        "long": "The Raider runs the Underspire's back stairs, where the neon never reaches, and lights the way with a lantern heavy enough to settle arguments. Couriers pay for a safe climb, and the Raider has never lost a parcel or a passenger. When the Choir's collectors started using the same stairs, the Raider started using the lantern differently, and the Warden's road became a good place to be."
+        "long": "The Raider runs the Underspire's back stairs, where the neon never reaches, and lights the way with a lantern heavy enough to settle arguments. Couriers pay for a safe climb, and the Raider has never lost a parcel or a passenger. When the Choir's collectors started using the same stairs, the Raider started using the lantern differently, and the Commander's road became a good place to be."
       }
     },
     "class:reaper": {
@@ -4840,19 +4840,6 @@
       "speakers": [],
       "payload": {
         "long": "Still Here. In the Choir's Cathedral the Hierarch falls, and the skim ends. But the Manalith is still in the sky, and it is still coming closer."
-      }
-    },
-    "codex:story/prologue": {
-      "key": "codex:story/prologue",
-      "id": "description-codex-story-prologue",
-      "guid": null,
-      "version": 0,
-      "source": "seed",
-      "hash": "sha256:0ef32f7303d238d3034c450e0003a7ba936173ba6a46e91928f3e5a953722aaf",
-      "about": [],
-      "speakers": [],
-      "payload": {
-        "long": "Tithe Day. The Commander, a person of Halcyon brought back from the dead, wakes 1,200 years too late and walks into Saltmoss on the Tithe Moors on the day the Choir comes for the year's mana. A handful of present-day people steal the Choir's white tithe caravan and run, and the Commander goes with them. The Captain, the Free Holds' militia captain who sold the holds' tithe to the Choir, gives chase."
       }
     },
     "faction:ember": {
