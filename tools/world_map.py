@@ -1161,7 +1161,12 @@ WAYSTONE_SPACING = 360         # px of road between waystones
 HUNT_OFF = (40, 200)           # px a hunt spot sits off the nearest road
 HUNT_SPACING = 160             # px between hunt spots
 SPOT_COLOURS = {"Location": (255, 255, 255), "RoadEnd": (90, 200, 255), "Waystone": (180, 140, 255),
-                "Hunt": (255, 150, 40), "Pass": (240, 80, 60), "Copse": (40, 200, 90), "Outcrop": (210, 120, 70)}
+                "Hunt": (255, 150, 40), "Pass": (240, 80, 60), "Copse": (40, 200, 90), "Outcrop": (210, 120, 70),
+                "Hand": (255, 230, 60)}
+WAYSTONE_RADIUS = 120          # px: a draft waystone's protective circle (palette key waystone_radius)
+DRAFT_TILES = 4                # draft region's default scroll tile count
+DRAFT_NEAR = 32                # px: a machine node this close to a deleted node of the same Kind stays deleted
+CUT_NEAR = 6                   # px: a bridge, pass or waystone this close to a road splits it there
 
 
 def spot_params(entry):
@@ -1236,7 +1241,11 @@ def along(poly, spacing, offset):
     return out
 
 
-def suggest_spots(g, crossings):
+def suggest_spots(g, crossings, keep=None):
+    """`keep` (from load_hand; None keeps the plain output) carries a draft's hand edits: hand nodes other than
+    Bridge/Pass join the routing as points (leaves when a draft roadsign stands at them), machine locations and road
+    ends with a hand id or near a same-Kind deleted node are dropped first, and hand + deleted waystones count as
+    stones already placed."""
     from scipy import ndimage
     entry, cost, cell = g["entry"], g["cost"], g["cell"]
     h, w = cost.shape
@@ -1277,12 +1286,26 @@ def suggest_spots(g, crossings):
     points = [("loc-%d" % (i + 1), x, y) for i, (x, y, _) in enumerate(locs)]
     leaves = ["end-%d" % (i + 1) for i in range(len(ends))]
     points += [(n, x, y) for n, (x, y, _) in zip(leaves, ends)]
+    hand_ids, prefill = set(), []
+    if keep:
+        hand_ids = set(keep["ids"])
+        world_kind = {"loc": "Settlement", "end": "Waystone"}
+        points = [(n, x, y) for n, x, y in points
+                  if n not in hand_ids and not near_deleted(keep["deleted"], world_kind[n.split("-")[0]], x, y)]
+        leaves = [n for n in leaves if any(q[0] == n for q in points)]
+        for n in keep["nodes"]:
+            if n.get("Kind") not in ("Bridge", "Pass"):
+                points.append((n["Id"], float(n["X"]), float(n["Y"])))
+                if n["Id"] in keep["leaves"]:
+                    leaves.append(n["Id"])
+        prefill = [(float(n["X"]), float(n["Y"]), "keep") for n in keep["nodes"] + keep["deleted"]
+                   if n.get("Kind") == "Waystone"]
     r = plan_routes(g, crossings, points, leaves=leaves)
 
     # waystones along the road network and at each road end; shared stretches don't double up
     sp = p["waystone_spacing"]
-    stops = [(n["X"], n["Y"]) for n in r["nodes"] if n["Kind"] == "Point" and n["Id"].startswith("loc-")]
-    stones = []
+    stops = [(n["X"], n["Y"]) for n in r["nodes"] if n["Kind"] == "Point" and n["Id"] not in leaves]
+    stones = list(prefill)
     for n in r["nodes"]:
         if n["Kind"] == "Point" and n["Id"] in leaves and any(n["Id"] in (e["A"], e["B"]) for e in r["edges"]):
             stones.append((n["X"], n["Y"], n["Id"]))
@@ -1315,7 +1338,7 @@ def suggest_spots(g, crossings):
     spots = []
     for n in r["nodes"]:
         if n["Kind"] == "Point":
-            kind = "RoadEnd" if n["Id"] in leaves else "Location"
+            kind = "Hand" if n["Id"] in hand_ids else "RoadEnd" if n["Id"] in leaves else "Location"
             d = {"Id": n["Id"], "Kind": kind, "X": n["X"], "Y": n["Y"]}
             if kind == "Location":
                 k = int(n["Id"].split("-")[1]) - 1
@@ -1323,7 +1346,7 @@ def suggest_spots(g, crossings):
             spots.append(d)
         elif n["Kind"] == "Pass":
             spots.append({"Id": n["Id"], "Kind": "Pass", "X": n["X"], "Y": n["Y"], "RunPx": n["RunPx"]})
-    for i, (x, y, at) in enumerate(stones):
+    for i, (x, y, at) in enumerate(stones[len(prefill):]):
         d = {"Id": "waystone-%d" % (i + 1), "Kind": "Waystone", "X": round(x, 1), "Y": round(y, 1)}
         if at:
             d["At"] = at
@@ -1364,7 +1387,7 @@ def draw_spots_overlay(img, cost, cell, s):
             draw.line([tuple(n["A"]), tuple(n["B"])], fill=colour, width=5)
     for q in s["spots"]:
         x, y, col, kind = q["X"], q["Y"], SPOT_COLOURS[q["Kind"]], q["Kind"]
-        if kind == "Location":
+        if kind in ("Location", "Hand"):
             draw.ellipse([x - 10, y - 10, x + 10, y + 10], fill=col, outline=(0, 0, 0), width=3)
             draw.text((x + 13, y - 10), q["Id"], fill=col, font=big, stroke_width=3, stroke_fill=(0, 0, 0))
         elif kind == "RoadEnd":
@@ -1394,11 +1417,223 @@ def draw_spots_overlay(img, cost, cell, s):
     return im
 
 
+def near_deleted(deleted, kind, x, y, near=DRAFT_NEAR):
+    return any(d.get("Kind") == kind and np.hypot(float(d["X"]) - x, float(d["Y"]) - y) < near for d in deleted)
+
+
+def edge_key(e):
+    return "|".join(sorted((str(e.get("A")), str(e.get("B")))))
+
+
+DRAFT_KEYS = {"Nodes": lambda n: n.get("Id"), "Edges": edge_key, "Roadsigns": lambda s: s.get("Id")}
+
+
+def record_path(draft):
+    return draft.with_name(draft.stem + ".machine.json")
+
+
+def load_hand(draft, region):
+    """A draft's hand edits against its machine record (<stem>.machine.json = {Region, Deleted}): a draft item missing
+    from or unequal to its record item is hand (nodes and roadsigns by Id, edges by unordered A-B, region Art and
+    Tiles) and is kept verbatim; a record item missing from the draft joins the running Deleted list. No record means
+    every draft item is hand."""
+    doc = json.loads(draft.read_text(encoding="utf-8")) if draft.exists() else {"Regions": []}
+    cur = next((r for r in doc.get("Regions", []) if r.get("Id") == region), None)
+    rp = record_path(draft)
+    rec = json.loads(rp.read_text(encoding="utf-8")) if rp.exists() else {}
+    mach = rec.get("Region") if (rec.get("Region") or {}).get("Id") == region else None
+    deleted = list(rec.get("Deleted", [])) if mach is not None else []
+    hand = {"Nodes": [], "Edges": [], "Roadsigns": []}
+    if cur is not None:
+        mach = mach or {}
+        for key, kf in DRAFT_KEYS.items():
+            old = {kf(x): x for x in mach.get(key, [])}
+            new = {kf(x): x for x in cur.get(key, [])}
+            hand[key] = [x for k, x in new.items() if old.get(k) != x]
+            deleted = [d for d in deleted if d.get("Type") != key or kf(d) not in new]  # re-added by hand
+            seen = {kf(d) for d in deleted if d.get("Type") == key}
+            deleted += [dict(x, Type=key) for k, x in old.items() if k not in new and k not in seen]
+        for f in ("Art", "Tiles"):
+            if f in cur and cur[f] != mach.get(f):
+                hand[f] = cur[f]
+    keep = {"ids": {n["Id"] for n in hand["Nodes"]}, "nodes": hand["Nodes"],
+            "leaves": {s.get("Node") for s in (cur or {}).get("Roadsigns", [])},
+            "deleted": [d for d in deleted if d.get("Type") == "Nodes"]}
+    return {"doc": doc, "hand": hand, "deleted": deleted, "keep": keep}
+
+
+def project(poly, x, y):
+    """(distance, arc length, point) of (x, y)'s nearest point on a polyline."""
+    a, d = poly[:-1], np.diff(poly, axis=0)
+    l2 = (d ** 2).sum(1)
+    t = np.clip(((np.array([x, y]) - a) * d).sum(1) / np.maximum(l2, 1e-9), 0, 1)
+    q = a + t[:, None] * d
+    dist = np.hypot(q[:, 0] - x, q[:, 1] - y)
+    i = int(np.argmin(dist))
+    seg = np.sqrt(l2)
+    return float(dist[i]), float(seg[:i].sum() + t[i] * seg[i]), q[i]
+
+
+def split_polyline(poly, cuts):
+    """Cut a polyline at sorted (arc length, (x, y)) cuts, each cut point ending one piece and starting the next."""
+    cum = np.concatenate([[0], np.cumsum(np.hypot(*np.diff(poly, axis=0).T))])
+    pieces, cur, k = [], [tuple(poly[0])], 0
+    for i in range(1, len(poly)):
+        while k < len(cuts) and cuts[k][0] <= cum[i]:
+            cur.append(cuts[k][1])
+            pieces.append(cur)
+            cur = [cuts[k][1]]
+            k += 1
+        cur.append(tuple(poly[i]))
+    while k < len(cuts):
+        cur.append(cuts[k][1])
+        pieces.append(cur)
+        cur = [cuts[k][1]]
+        k += 1
+    pieces.append(cur)
+    return pieces
+
+
+def road_stats(g, pts, median_cost):
+    """(Biome, Danger) of a road: the dominant class under it and its mean finite cell cost over the region's median
+    land cost."""
+    from collections import Counter
+    index, names, cost, cell = g["index"], g["names"], g["cost"], g["cell"]
+    poly = np.array(pts, dtype=np.float64)
+    samples = list(poly) + (along(poly, 4, 2) if len(poly) > 1 and np.hypot(*np.diff(poly, axis=0).T).sum() > 2 else [])
+    hh, ww = index.shape[:2]
+    biome = Counter(names[int(index[min(max(int(y), 0), hh - 1), min(max(int(x), 0), ww - 1)])] for x, y in samples)
+    c = np.array([cost[min(int(y // cell), cost.shape[0] - 1), min(int(x // cell), cost.shape[1] - 1)] for x, y in samples])
+    c = c[np.isfinite(c)]
+    danger = round(float(c.mean() / median_cost), 2) if len(c) and median_cost > 0 else 0.0
+    return biome.most_common(1)[0][0], danger
+
+
+def draft_node(nid, kind, x, y, radius):
+    d = {"Id": nid, "Kind": kind, "X": round(float(x), 1), "Y": round(float(y), 1), "StageId": None, "Name": None,
+         "Lore": None}
+    if kind == "Waystone":
+        d["Radius"] = radius
+    return d
+
+
+def draft_region(g, s, region, art, tiles, state=None):
+    """The world.json region (WorldModels.cs fields only) from suggest_spots' output. Returns (draft, machine): the
+    draft merges the hand edits in `state` (load_hand) over the machine items; machine is what the record keeps."""
+    r, entry = s["routes"], g["entry"]
+    radius = entry.get("waystone_radius", WAYSTONE_RADIUS)
+    hand = state["hand"] if state else {"Nodes": [], "Edges": [], "Roadsigns": []}
+    deleted = state["deleted"] if state else []
+    hand_ids = {n["Id"] for n in hand["Nodes"]}
+    del_nodes = [d for d in deleted if d.get("Type") == "Nodes"]
+    edges_by_pass = {}
+    for e in r["edges"]:
+        for q in e["Passes"]:
+            edges_by_pass.setdefault(q, e)
+
+    nodes = []
+    for n in r["nodes"]:
+        if n["Kind"] == "Point":
+            if n["Id"].startswith("loc-"):
+                nodes.append(draft_node(n["Id"], "Settlement", n["X"], n["Y"], radius))
+            elif n["Id"].startswith("end-"):
+                nodes.append(draft_node(n["Id"], "Waystone", n["X"], n["Y"], radius))
+        elif n["Kind"] in ("Bridge", "Causeway"):
+            nodes.append(draft_node(n["Id"], "Bridge", n["X"], n["Y"], radius))
+        elif n["Kind"] == "Pass":
+            x, y = n["X"], n["Y"]
+            if n["Id"] in edges_by_pass:
+                _, _, q = project(np.array(edges_by_pass[n["Id"]]["Spline"], dtype=np.float64), x, y)
+                x, y = q
+            nodes.append(draft_node(n["Id"], "Pass", x, y, radius))
+    for q in s["spots"]:
+        if q["Kind"] == "Waystone" and "At" not in q:
+            nodes.append(draft_node(q["Id"], "Waystone", q["X"], q["Y"], radius))
+    nodes = [n for n in nodes if n["Id"] not in hand_ids and not near_deleted(del_nodes, n["Kind"], n["X"], n["Y"])]
+    final = {n["Id"]: n for n in nodes}
+    final.update({n["Id"]: n for n in hand["Nodes"]})
+    cutters = [n for n in final.values() if n.get("Kind") in ("Bridge", "Pass", "Waystone")]
+
+    land = g["cost"][np.isfinite(g["cost"])]
+    median_cost = float(np.median(land)) if len(land) else 0.0
+    edges, seen = [], set()
+    for e in r["edges"]:
+        poly = np.array(e["Spline"], dtype=np.float64)
+        if len(poly) < 2:
+            continue
+        cuts = []
+        for n in cutters:
+            if n["Id"] in (e["A"], e["B"]):
+                continue
+            dist, arc, _ = project(poly, float(n["X"]), float(n["Y"]))
+            if dist <= CUT_NEAR:
+                cuts.append((arc, (float(n["X"]), float(n["Y"])), n["Id"]))
+        cuts.sort()
+        ids = [e["A"]] + [c[2] for c in cuts] + [e["B"]]
+        for (a, b), pts in zip(zip(ids, ids[1:]), split_polyline(poly, [c[:2] for c in cuts])):
+            if a == b or a not in final or b not in final:
+                continue
+            pts = [(float(final[a]["X"]), float(final[a]["Y"]))] + [tuple(map(float, q)) for q in pts[1:-1]] + \
+                  [(float(final[b]["X"]), float(final[b]["Y"]))]
+            pts = [q for i, q in enumerate(pts) if i == 0 or np.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]) > 0.05]
+            if len(pts) < 2:
+                pts = pts * 2
+            k = edge_key({"A": a, "B": b})
+            if k in seen:
+                continue
+            seen.add(k)
+            biome, danger = road_stats(g, pts, median_cost)
+            edges.append({"A": a, "B": b, "Points": [{"X": round(x, 1), "Y": round(y, 1)} for x, y in pts],
+                          "Length": 0, "Danger": danger, "Biome": biome, "Encounters": [], "RevealedBy": None})
+    hand_edges = {edge_key(x) for x in hand["Edges"]}
+    del_edges = {edge_key(d) for d in deleted if d.get("Type") == "Edges"}
+    edges = [x for x in edges if edge_key(x) not in hand_edges and edge_key(x) not in del_edges]
+
+    signs = []
+    for nid, n in final.items():
+        if nid.startswith("end-") and n.get("Kind") == "Waystone":
+            signs.append({"Id": "sign-" + nid[4:], "X": n["X"], "Y": n["Y"], "Node": nid, "Leads": None, "Arrives": None})
+    hand_signs = {x.get("Id") for x in hand["Roadsigns"]}
+    del_signs = {d.get("Id") for d in deleted if d.get("Type") == "Roadsigns"}
+    signs = [x for x in signs if x["Id"] not in hand_signs and x["Id"] not in del_signs]
+
+    width, height = g["img"].size
+    machine = {"Id": region, "Art": art, "Width": width, "Height": height, "Tiles": tiles,
+               "Nodes": nodes, "Edges": edges, "Roadsigns": signs}
+    draft = dict(machine, Art=hand.get("Art", art), Tiles=hand.get("Tiles", tiles),
+                 Nodes=nodes + hand["Nodes"], Edges=edges + hand["Edges"], Roadsigns=signs + hand["Roadsigns"])
+    return draft, machine
+
+
+def write_draft(path, region, draft, machine, state):
+    """Put the region into the draft file (other regions kept) and rewrite its machine record."""
+    doc = state["doc"] if state else {"Regions": []}
+    regions = [x for x in doc.get("Regions", []) if x.get("Id") != region]
+    at = next((i for i, x in enumerate(doc.get("Regions", [])) if x.get("Id") == region), len(regions))
+    regions.insert(at, draft)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"Regions": regions}, indent=1), encoding="utf-8")
+    record_path(path).write_text(json.dumps({"Region": machine, "Deleted": state["deleted"] if state else []},
+                                            indent=1), encoding="utf-8")
+
+
 def cmd_spots(args):
     image = Path(args.image)
+    draft = Path(args.draft) if args.draft else None
+    if draft and "Assets" in draft.resolve().parts:
+        print("refusing to write a draft under Assets/ (%s): drafts go to a scratch dir" % draft)
+        return 2
+    state = load_hand(draft, args.region) if draft else None
     g = cost_grid(image, args.region, args.k, args.cell)
     crossings, _, cp = crossing_candidates(g)
-    s = suggest_spots(g, crossings)
+    s = suggest_spots(g, crossings, keep=state["keep"] if state else None)
+    if draft:
+        d, m = draft_region(g, s, args.region, args.art or "Overworld/%s" % args.region,
+                            args.tiles or g["entry"].get("tiles", DRAFT_TILES), state)
+        write_draft(draft, args.region, d, m, state)
+        print("draft: %d nodes, %d edges, %d roadsigns (%d hand items, %d deleted) -> %s" % (
+            len(d["Nodes"]), len(d["Edges"]), len(d["Roadsigns"]),
+            sum(len(state["hand"][k]) for k in DRAFT_KEYS), len(state["deleted"]), draft))
     r = s["routes"]
     out = Path(args.out) if args.out else image.parent
     out.mkdir(parents=True, exist_ok=True)
@@ -1472,6 +1707,10 @@ def main(argv=None):
     c = sub.add_parser("spots", help="suggest locations, road ends, waystones, passes and hunt spots, with routes")
     c.add_argument("image")
     c.add_argument("--region", required=True, help="region id in world_map_palettes.json")
+    c.add_argument("--draft", help="also write the region into this draft world.json (hand edits kept, record in "
+                                   "<stem>.machine.json); a scratch path, never Assets/")
+    c.add_argument("--art", help="draft region's Art Resources path (default Overworld/<region>)")
+    c.add_argument("--tiles", type=int, help="draft region's Tiles (default the palette's tiles, else %d)" % DRAFT_TILES)
     c.add_argument("--k", type=int, help="cluster count (default: the palette entry's k)")
     c.add_argument("--cell", type=int, help="working-grid cell in px (default: the palette entry's cell, else %d)" % CELL)
     c.add_argument("--out", help="output directory (default: the image's directory)")
