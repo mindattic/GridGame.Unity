@@ -585,13 +585,17 @@ namespace GridGame.App
         public override string TipStation => tab == TalentsSub ? (Training.Step(S) ? Training.TipStation : null) : "abilities";
 
         /// <summary>GG-T180 (§25.0.9), GG-T1086: during step 7 the tab opens on the Board, on the hero the guided first skill
-        /// is for — decided before the hero picker draws, so the picker marks that hero.</summary>
+        /// is for — decided before the hero picker draws, so the picker marks that hero. GG-T1407: an open Board marks its
+        /// hero's ready ability seen, so its "New ability ready" badge is already gone when the picker draws.</summary>
         public override void Prepare()
         {
-            if (tab >= 0) return;
-            var plan = Training.First(C, S);
-            tab = plan != null ? TalentsSub : 0;
-            if (plan != null) HeroId = plan.Hero.ClassId;
+            if (tab < 0)
+            {
+                var plan = Training.First(C, S);
+                tab = plan != null ? TalentsSub : 0;
+                if (plan != null) HeroId = plan.Hero.ClassId;
+            }
+            if (tab == TalentsSub && NextAbility.MarkSeen(C, Hero)) App.Persist();
         }
 
         public override void BuildBody(VisualElement body)

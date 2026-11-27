@@ -4245,6 +4245,11 @@ non-empty (`PostBattleScreen.RouteFrom` decides; skipped entirely otherwise). On
   results. The results list the same line for every hero who leveled (victory, defeat and Crucible alike), each with its
   own Learn button pushing the Board on top of them. A hero with nothing left to reach (or a domesticated monster) shows
   no line.
+- **New ability ready (GG-T1407).** When a hero's banked SP covers the route to its next ability
+  (`NextAbility.Affordable`), the Heroes nav tab badges "!" (`NavBadges`), the Heroes hub tile reads "New ability ready"
+  (party heroes only), and that hero's roster card on the Hero screen wears a New badge and the same caption. Opening
+  the hero's Board marks that ability seen (`HeroSave.AbilityReadySeen`, saved), which clears the badge until a different
+  ability becomes the affordable next one.
 
 ### 22.9 Difficulty settings (scaffolding, added 2026-10-11, owner direction)
 

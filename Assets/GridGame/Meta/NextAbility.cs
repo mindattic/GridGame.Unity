@@ -52,5 +52,39 @@ namespace GridGame.Meta
             var p = For(c, h);
             return p == null ? null : $"Next ability: {p.Ability.Name}, {p.Sp} SP";
         }
+
+        /// <summary>The badge's words on the Heroes hub tile and a roster card (GG-T1407).</summary>
+        public const string ReadyLabel = "New ability ready";
+
+        /// <summary>The hero's banked SP covers the route to its next ability (GG-T1407).</summary>
+        public static bool Affordable(ContentDb c, SaveData s, string heroId) => AffordablePick(c, s?.Hero(heroId)) != null;
+
+        /// <summary>"New ability ready" (GG-T1407): <see cref="Affordable"/>, and the player hasn't opened the hero's Board
+        /// since this ability became the one in reach (<see cref="HeroSave.AbilityReadySeen"/>).</summary>
+        public static bool Ready(ContentDb c, SaveData s, string heroId)
+        {
+            var h = s?.Hero(heroId);
+            var p = AffordablePick(c, h);
+            return p != null && p.Ability.Id != h.AbilityReadySeen;
+        }
+
+        /// <summary>Any party hero is <see cref="Ready"/>: the Heroes nav tab and hub tile badge.</summary>
+        public static bool ReadyInParty(ContentDb c, SaveData s) => s?.Party != null && s.Party.Any(id => Ready(c, s, id));
+
+        /// <summary>The hero's Board is open: its ready ability is seen and its badge clears. True when that changed the save.</summary>
+        public static bool MarkSeen(ContentDb c, HeroSave h)
+        {
+            var p = AffordablePick(c, h);
+            if (p == null || p.Ability.Id == h.AbilityReadySeen) return false;
+            h.AbilityReadySeen = p.Ability.Id;
+            return true;
+        }
+
+        private static Pick AffordablePick(ContentDb c, HeroSave h)
+        {
+            if (h == null || h.SkillPoints <= 0 || h.Domesticated) return null;
+            var p = For(c, h);
+            return p != null && p.Sp <= h.SkillPoints ? p : null;
+        }
     }
 }

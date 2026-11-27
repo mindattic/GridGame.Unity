@@ -69,7 +69,8 @@ namespace GridGame.Meta
 
             int partyPoints = s.Party.Select(s.Hero).Where(h => h != null).Sum(h => h.SkillPoints);
             bool training = Training.Step(s);
-            Add(Heroes, "Heroes", CampGroup.Heroes, value: training ? "Train a skill!" : partyPoints > 0 ? $"{partyPoints} pts" : "", badge: training || partyPoints > 0);
+            string heroesValue = training ? "Train a skill!" : NextAbility.ReadyInParty(c, s) ? NextAbility.ReadyLabel : partyPoints > 0 ? $"{partyPoints} pts" : "";
+            Add(Heroes, "Heroes", CampGroup.Heroes, value: heroesValue, badge: training || partyPoints > 0);
             if (CampUnlocks.NpcOpen(s, CampNpcs.Innkeeper))
             {
                 bool rest = Expeditions.InnOpen(s);

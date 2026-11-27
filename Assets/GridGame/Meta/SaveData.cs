@@ -185,6 +185,9 @@ namespace GridGame.Meta
         /// <summary>Unspent skill points (§15.1, GG-T49), earned per level plus milestone bonuses
         /// (<see cref="Formulas.SkillPointsForLevelUp"/>). Spent on skill-tree nodes (GG-T50).</summary>
         public int SkillPoints;
+        /// <summary>The ability id whose "New ability ready" badge the player has seen by opening this hero's Board
+        /// (GG-T1407, <see cref="NextAbility.MarkSeen"/>). An older save simply has none.</summary>
+        public string AbilityReadySeen;
         /// <summary>Duplicate summons of this hero (§25.10.3, GG-T1421, <see cref="Gacha.Echo"/>), each worth
         /// <see cref="Gacha.EchoSp"/> SP, up to <see cref="Gacha.EchoCap"/>. An older save simply has none.</summary>
         public int Echoes;

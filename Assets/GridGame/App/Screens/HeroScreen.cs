@@ -129,7 +129,10 @@ namespace GridGame.App
                 var bw = sel ? 4f : 0f;
                 card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
                 card.style.borderTopColor = card.style.borderBottomColor = card.style.borderLeftColor = card.style.borderRightColor = Palette.Gold;
-                Ui.Thumb(id, card, Kit.Avatar).style.marginRight = Space.S16;
+                var thumb = Ui.Thumb(id, card, Kit.Avatar);
+                thumb.style.marginRight = Space.S16;
+                bool ready = NextAbility.Ready(C, S, id);
+                if (ready) RowIcon.Badge(thumb, RowKind.New);
                 var info = Ui.El("col grow", card);
                 info.style.flexShrink = 1; info.style.minWidth = 0;
                 // A compact card (kit, GG-T454): name and meta both caption size, the name heavy.
@@ -141,6 +144,12 @@ namespace GridGame.App
                 var tag = Ui.Caption(inParty ? "Party" : "Reserve", meta, inParty ? "good" : "dim");
                 tag.style.marginLeft = Space.S8;
                 Ui.Marquee(tag);
+                if (ready)
+                {
+                    var badge = Ui.Caption(NextAbility.ReadyLabel, info, "gold");
+                    badge.name = "hero-ability-ready";
+                    Ui.Marquee(badge);
+                }
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () =>
                 {

@@ -33,7 +33,7 @@ namespace GridGame.Meta
             {
                 new NavTab { Id = Home, Label = "Home", Badge = HomeBadge(menu) },
                 new NavTab { Id = CampMenu.Campaign, Label = "Campaign", Badge = CampaignBadge(c, s) },
-                new NavTab { Id = CampMenu.Heroes, Label = "Heroes", Badge = HeroesBadge(s) },
+                new NavTab { Id = CampMenu.Heroes, Label = "Heroes", Badge = HeroesBadge(c, s) },
                 Group(menu, CampMenu.Summon, "Summon", CampGroup.Summon, SummonBadge(c, s)),
                 Group(menu, CampMenu.Shop, "Shop", CampGroup.Shop, ShopBadge(c, s)),
             };
@@ -50,10 +50,11 @@ namespace GridGame.Meta
         private static string HomeBadge(List<CampDestination> menu) =>
             menu.Any(d => d.Badge && d.Group != CampGroup.Heroes && d.Group != CampGroup.Summon && d.Group != CampGroup.Shop && d.Group != CampGroup.Campaign) ? "!" : "";
 
-        /// <summary>"!" while onboarding's train-a-skill step is ahead, else the party's unspent skill points.</summary>
-        private static string HeroesBadge(SaveData s)
+        /// <summary>"!" while onboarding's train-a-skill step is ahead or a party hero has a new ability ready
+        /// (<see cref="NextAbility.ReadyInParty"/>, GG-T1407), else the party's unspent skill points.</summary>
+        private static string HeroesBadge(ContentDb c, SaveData s)
         {
-            if (Training.Step(s)) return "!";
+            if (Training.Step(s) || NextAbility.ReadyInParty(c, s)) return "!";
             int points = s.Party.Select(s.Hero).Where(h => h != null).Sum(h => h.SkillPoints);
             return points > 0 ? points.ToString() : "";
         }
