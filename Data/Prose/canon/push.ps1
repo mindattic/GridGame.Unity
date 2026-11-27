@@ -9,7 +9,8 @@ $sections = @(
     @{ Key = 'GG-ONE-LIGHT';  Title = 'Mana: the Manalith and the people'; File = '03-one-light.md' },
     @{ Key = 'GG-WHY-NOW';    Title = 'Why it is coming now';              File = '04-whynow.md' },
     @{ Key = 'GG-PEOPLES';    Title = 'Peoples, powers and monsters';      File = '05-factions.md' },
-    @{ Key = 'GG-ARC';        Title = 'Campaign arc and endings';          File = '06-arc.md' }
+    @{ Key = 'GG-ARC';        Title = 'Campaign arc and endings';          File = '06-arc.md' },
+    @{ Key = 'GG-REGIONS';    Title = 'Why danger rises along the road';   File = '07-regions.md' }
 )
 foreach ($s in $sections) {
     prose --set-canon-section --type UniverseCanon --universe gridgame --key $s.Key --title $s.Title --file (Join-Path $here $s.File)
