@@ -1797,12 +1797,7 @@ namespace GridGame.App
 
         /// <summary>The Camp row's value: the save's best run in <paramref name="mode"/> (the mode the next run plays,
         /// GG-T945: records are kept per turn mode), or an invitation before the first one.</summary>
-        public static string RecordText(SaveData s, TurnMode mode)
-        {
-            if (s.Crucible == null || s.Crucible.Runs == 0) return "Endless waves";
-            int best = s.Crucible.BestFor(mode);
-            return $"Best: {best} wave{(best == 1 ? "" : "s")}";
-        }
+        public static string RecordText(SaveData s, TurnMode mode) => CampMenu.CrucibleRecord(s, mode);
 
         protected override void BuildBody(VisualElement body)
         {

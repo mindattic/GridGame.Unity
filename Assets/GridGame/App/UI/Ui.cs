@@ -301,20 +301,42 @@ namespace GridGame.App
         /// lands on the hub. Nothing happens while a timed paywall job plays out (<see cref="ScreenRouter.Home"/>).</summary>
         private static void NavGo(GameApp app, string id)
         {
-            var s = app.Save;
-            GameScreen dest;
+            var dest = NavDestination(app.Save, id);
+            if (app.Router.Home() && dest != null) app.Router.Push(dest);
+        }
+
+        /// <summary>The page a Camp destination (a <see cref="CampMenu"/> id) opens, shared by the nav tabs and the hub's
+        /// tiles and group menus: Heroes opens Abilities while a skill waits to be trained, else Status; Shop opens the Shard
+        /// Store until the Merchant joins. Null for a destination that is an action rather than a page (Inn, New Game+,
+        /// Save &amp; Quit) or an unknown id.</summary>
+        internal static GameScreen NavDestination(SaveData s, string id)
+        {
             switch (id)
             {
-                case CampMenu.Campaign: dest = new StageSelectScreen(); break;
+                case CampMenu.Campaign: return new StageSelectScreen();
+                case CampMenu.Crucible: return new CrucibleScreen();
                 case CampMenu.Heroes:
                     string lead = s.Party.FirstOrDefault();
-                    dest = Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
-                    break;
-                case CampMenu.Summon: dest = new SummonScreen(); break;
-                case CampMenu.Shop: dest = CampUnlocks.NpcOpen(s, CampNpcs.Merchant) ? new ShopScreen() : (GameScreen)new DiamondStoreScreen(); break;
-                default: dest = null; break;
+                    return Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
+                case CampMenu.Summon: return new SummonScreen();
+                case CampMenu.Shop: return CampUnlocks.NpcOpen(s, CampNpcs.Merchant) ? new ShopScreen() : (GameScreen)new DiamondStoreScreen();
+                case CampMenu.Diamonds: return new DiamondStoreScreen();
+                case CampMenu.Respec: return new RespecScreen();
+                case CampMenu.Mercenaries: return new MercenaryScreen();
+                case CampMenu.Items: return new ItemsScreen();
+                case CampMenu.Blacksmith: return new BlacksmithScreen();
+                case CampMenu.Alchemist: return new AlchemistScreen();
+                case CampMenu.Enchantress: return new EnchantressScreen();
+                case CampMenu.Aetherist: return new AetheristScreen();
+                case CampMenu.Caravan: return new CaravanScreen();
+                case CampMenu.Talk: return new TalkScreen();
+                case CampMenu.Quests: return new QuestScreen();
+                case CampMenu.Bounties: return new BountyScreen();
+                case CampMenu.Bestiary: return new BestiaryScreen();
+                case CampMenu.Codex: return new CodexScreen();
+                case CampMenu.Settings: return new SettingsScreen();
+                default: return null;
             }
-            if (app.Router.Home() && dest != null) app.Router.Push(dest);
         }
 
         // ── The menu kit (GG-T454, Tokens.cs Kit): the builders every menu screen lays itself out with ──────────────

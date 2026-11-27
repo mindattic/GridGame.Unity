@@ -127,13 +127,18 @@ namespace GridGame.App
         }
 
         /// <summary>Camp's Rested window: points, a meter, the next-point timer, and the two refill buttons (gold, Diamond).</summary>
-        public static void Panel(VisualElement parent, Action refresh)
+        public static void Panel(VisualElement parent, Action refresh) => Draw(Ui.Window(null, parent), refresh);
+
+        /// <summary>The same Rested block drawn straight into <paramref name="parent"/> (a hub card) instead of its own
+        /// window; still named camp-rested.</summary>
+        public static void PanelIn(VisualElement parent, Action refresh) => Draw(Ui.El("col", parent), refresh);
+
+        private static void Draw(VisualElement w, Action refresh)
         {
             Init();
             var s = GameApp.I.Save;
             var now = DateTime.UtcNow;
             int pts = RestedPool.Points(s, now);
-            var w = Ui.Window(null, parent);
             w.name = "camp-rested";
             Ui.Text("Rested", "small dim", w);
             // "Unlimited" is wider than "10/10": one step smaller, and it scrolls if the window is narrower still (GG-T395).
