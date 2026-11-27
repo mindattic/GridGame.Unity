@@ -25,6 +25,9 @@
   "swamp": {
     "image": "starter-swamp.png",
     "k": 11,
+    "water_grow": 0.03,
+    "water_min_area": 1500,
+    "water_gap": 30,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "reeds", "cost": 4},
@@ -53,7 +56,7 @@
     "mode": 3,
     "water_close": 7,
     "water_grow": 0.15,
-    "water_gap": 60,
+    "water_gap": 150,
     "classes": [
       {"label": "water", "cost": null},
       {"label": "snow", "cost": 8},
