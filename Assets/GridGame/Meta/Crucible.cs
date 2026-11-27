@@ -216,6 +216,7 @@ namespace GridGame.Meta
             BattleFactory.KeepBrokenFragments(s, r);
             foreach (var id in s.Party) { var h = s.Hero(id); if (h != null) h.Hp = 0; } // everyone staggers out and recovers
 
+            if (rep.Victory) SummonTickets.AfterWin(s); // GG-T1422
             rep.CrucibleWaves = WavesSurvived(battle);
             s.Crucible ??= new CrucibleSave();
             // GG-T945 (§2.13.1): records are kept per turn mode, since wave counts across modes aren't comparable.

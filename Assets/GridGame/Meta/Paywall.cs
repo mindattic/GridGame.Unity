@@ -22,6 +22,8 @@ namespace GridGame.Meta
         public int Paid;
         /// <summary>Diamonds spent instead of gold (the Summon Circle's random draw, GG-T343); refunded if it fizzles.</summary>
         public int Diamonds;
+        /// <summary>Summon Tickets spent on the draw instead (GG-T1422); refunded as earned Tickets if it fizzles.</summary>
+        public int Tickets;
     }
 
     /// <summary>The paywall hooks (§25.18, GG-T232): every premium action prices and times itself here.</summary>
@@ -106,7 +108,8 @@ namespace GridGame.Meta
                     var arrived = Summon.Arrive(c, s, job.Arg);
                     // A fizzled draw gives its whole Diamond price back as Diamonds, however it was paid (GG-T455: any gold
                     // part was exchanged into Diamonds on the way in).
-                    if (!arrived.Ok && job.Diamonds > 0) DiamondExchange.Add(s, job.Diamonds); // GG-T702: back where they came from (the wallet once moved)
+                    if (!arrived.Ok && job.Tickets > 0) SummonTickets.Earn(s, job.Tickets);
+                    else if (!arrived.Ok && job.Diamonds > 0) DiamondExchange.Add(s, job.Diamonds); // GG-T702: back where they came from (the wallet once moved)
                     // A chosen-hero summon paid in gold alone (no Diamonds) gives its gold back when the hero can't come.
                     else if (!arrived.Ok && job.Paid > 0)
                     {

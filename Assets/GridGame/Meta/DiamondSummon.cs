@@ -46,6 +46,7 @@ namespace GridGame.Meta
             if (s.TestMode) return Result.Fail("Not in Test Mode");
             if (Pool(c, s).Count == 0) return Result.Fail("No one is left to answer");
             if (Paywall.Pending(s, PaywallKind.Summon) != null) return Result.Fail("A summoning is already under way");
+            if (SummonTickets.Have(s) > 0) return Result.Success();
             return DiamondExchange.CanPay(s, Price);
         }
 
@@ -65,10 +66,16 @@ namespace GridGame.Meta
             var ok = CanDraw(c, s);
             if (!ok.Ok) return ok;
             var pick = Pick(c, s);
-            var paid = DiamondExchange.Pay(s, Price, out var split);
-            if (!paid.Ok) return paid;
-            Gacha.Record(s, Gacha.Standard(c), Pool(c, s), pick, DiamondExchange.Label(Price), now);
-            job = new PaywallJob { Kind = PaywallKind.Summon, Arg = pick, StartedUtc = now, Seconds = Paywall.Duration(PaywallKind.Summon, s), Diamonds = Price, Paid = split.gold };
+            // GG-T1422: a Summon Ticket pays first (earned, then bought), then Shards.
+            bool ticket = SummonTickets.Spend(s);
+            (int diamonds, int gold) split = (0, 0);
+            if (!ticket)
+            {
+                var paid = DiamondExchange.Pay(s, Price, out split);
+                if (!paid.Ok) return paid;
+            }
+            Gacha.Record(s, Gacha.Standard(c), Pool(c, s), pick, ticket ? TicketText.Of(1) : DiamondExchange.Label(Price), now);
+            job = new PaywallJob { Kind = PaywallKind.Summon, Arg = pick, StartedUtc = now, Seconds = Paywall.Duration(PaywallKind.Summon, s), Diamonds = ticket ? 0 : Price, Tickets = ticket ? 1 : 0, Paid = split.gold };
             s.Jobs.Add(job);
             return Result.Success();
         }

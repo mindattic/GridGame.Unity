@@ -218,7 +218,9 @@ namespace GridGame.Meta
         public List<PullRecord> History = new List<PullRecord>();
         /// <summary>Ticket fragments not yet joined into a Ticket (under <see cref="Gacha.FragmentsPerTicket"/>; GG-T1421).</summary>
         public int Fragments;
-        /// <summary>Summon Tickets earned in play, never bought (GG-T1421: joined fragments).</summary>
+        /// <summary>Summon Tickets earned in play, never bought (GG-T1421: joined fragments; GG-T1422: <see cref="SummonTickets"/>).</summary>
         public int Tickets;
+        /// <summary>Battles won in any mode, counted toward <see cref="SummonTickets.WinsPerTicket"/> (GG-T1422).</summary>
+        public int Wins;
     }
 }

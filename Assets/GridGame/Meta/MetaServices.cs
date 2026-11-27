@@ -811,6 +811,8 @@ namespace GridGame.Meta
 
                 int index = c.CampaignStages().FindIndex(x => x.Id == battle.Stage.Id);
                 rep.FirstClear = s.ClearedStages.Add(battle.Stage.Id);
+                if (rep.FirstClear && index >= 0) SummonTickets.AfterFirstClear(c, s, battle.Stage.Id); // GG-T1422
+                SummonTickets.AfterWin(s);
                 // GG-T623: a slow, repeatable trickle of Aetherite Dust on every victory, paid out before the Aetherist
                 // joins the caravan just as gold is — it simply has nowhere to refine until then.
                 rep.DustEarned = DustEconomy.DustPerVictory + (rep.FirstClear ? DustEconomy.FirstClearDustBonus : 0);
