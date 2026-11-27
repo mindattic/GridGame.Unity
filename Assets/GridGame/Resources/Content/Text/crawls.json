@@ -179,15 +179,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:2bb61959c83c72d9b86627ee9b762c392246f6a20b2bf5fccaaa11ef8a61976c",
+      "hash": "sha256:053933354c21c7b60004bc9382ab17ebd63b976fbe118f4a469406f6474079b6",
       "about": [],
       "speakers": [],
       "payload": {
         "title": "Why We Ran",
         "paragraphs": [
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-          "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
+          "The white caravan rolls into the Arkgrave, a gold-hazed fen where Halcyon's ships lie on their sides, far from any sea.",
+          "Twelve hundred years ago these Arks fled the city's fall, and the tides threw them here. The crew camps in the shadow of a hull, and nobody says aloud that they are running too.",
+          "By the fire the Innkeeper sits down beside the Commander. She has carried a question since tithe day."
         ]
       }
     },
@@ -308,6 +308,276 @@
           "Far from Saltmoss, in a cold tank in the Still, the tithe runs through someone who died the night Halcyon fell.",
           "A heart starts. Eyes open on white walls and cyan light, and nothing is familiar but the weight of an orb in an empty hand.",
           "Wake up, {commander}. You are twelve hundred years late, and by dawn you will be standing in Saltmoss, beside a caravan that is about to be stolen."
+        ]
+      }
+    },
+    "crawl:region/bloom": {
+      "key": "crawl:region/bloom",
+      "id": "crawl-region-bloom",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e2c8d4d1a22a4c64275c0ef297c1154407c43eafb4c82ce3589c0ad00739981a",
+      "about": [
+        "place-bloom"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Bloom",
+        "paragraphs": [
+          "[placeholder] Where the Manalith's substance took root, the ground is alive and the Choir's armour is caught in it."
+        ]
+      }
+    },
+    "crawl:region/cathedral": {
+      "key": "crawl:region/cathedral",
+      "id": "crawl-region-cathedral",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:74ccb8004d170e31bc6b1852964780d7d2c64de3de00bd645deed388fc34e00e",
+      "about": [
+        "place-cathedral"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Choir's Cathedral",
+        "paragraphs": [
+          "[placeholder] The organ is the reservoir and the Hierarch drinks from it, on a floor that gives way."
+        ]
+      }
+    },
+    "crawl:region/cave": {
+      "key": "crawl:region/cave",
+      "id": "crawl-region-cave",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:7f2fa5b0608e84dfcca5fcb417b4db5c460c8027adca363bea0e1a8b0179ab1a",
+      "about": [
+        "place-cave"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Anchor Wastes",
+        "paragraphs": [
+          "[placeholder] The arches are taps and the draw is the pull, and the Watch still holds its posts."
+        ]
+      }
+    },
+    "crawl:region/cave2": {
+      "key": "crawl:region/cave2",
+      "id": "crawl-region-cave2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:c9cf499dc0b6e867c76e20f8bf73fb76aecc263e3fe29642280ef81f7002ef20",
+      "about": [
+        "place-cave2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Under the Anchors",
+        "paragraphs": [
+          "[placeholder] The Ember march on the Anchors to open every tap, and the field itself moves the pieces."
+        ]
+      }
+    },
+    "crawl:region/cityruins": {
+      "key": "crawl:region/cityruins",
+      "id": "crawl-region-cityruins",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8fc70bd799cb5e23059f9216dc06475a5a85582df44e507b7d0851d3dac7f543",
+      "about": [
+        "place-cityruins"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Halcyon",
+        "paragraphs": [
+          "[placeholder] The dead city lies under a pink sky, where mana is thinnest and the echoes mock your every move."
+        ]
+      }
+    },
+    "crawl:region/cityruins2": {
+      "key": "crawl:region/cityruins2",
+      "id": "crawl-region-cityruins2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bd30786177c8cd8455c56e4b8c22eb349388c2f28415ac83f3f780d687370498",
+      "about": [
+        "place-cityruins2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Underspire",
+        "paragraphs": [
+          "[placeholder] The neon Underspire still draws on Halcyon's taps, and its foes dig and shove beneath a failing floor."
+        ]
+      }
+    },
+    "crawl:region/desert": {
+      "key": "crawl:region/desert",
+      "id": "crawl-region-desert",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:3722e0d5e82958003e3df54ea1613a9013f1f87625b52919f38362720e92e46c",
+      "about": [
+        "place-desert"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Shardfall",
+        "paragraphs": [
+          "[placeholder] The first great pieces of the shell came down here, and the Ember came to feed the fire."
+        ]
+      }
+    },
+    "crawl:region/desert2": {
+      "key": "crawl:region/desert2",
+      "id": "crawl-region-desert2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:8b94bd3804e45a1f9a53f86613fec66b5147e9924f2526625694271e90937a1a",
+      "about": [
+        "place-desert2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Deep Shardfall",
+        "paragraphs": [
+          "[placeholder] The shell is breaking, and the pieces fall on friend and foe alike."
+        ]
+      }
+    },
+    "crawl:region/greenvalley": {
+      "key": "crawl:region/greenvalley",
+      "id": "crawl-region-greenvalley",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:fb09a092d6501afd32ff832eb5ea4922b9a8fa3d8108df22bb4187365ddcf3d2",
+      "about": [
+        "place-greenvalley"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Tithe Moors",
+        "paragraphs": [
+          "[placeholder] The Manalith is a speck in the sky here, and the dangers are the hungry and the Captain's men."
+        ]
+      }
+    },
+    "crawl:region/greenvalley2": {
+      "key": "crawl:region/greenvalley2",
+      "id": "crawl-region-greenvalley2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:84b0589cf2551c8f3d689fb056847b41ca7479021dcb9a959054309f8e2ed70a",
+      "about": [
+        "place-greenvalley2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Free Holds",
+        "paragraphs": [
+          "[placeholder] The Free Holds are besieged, and every wave throws up walls to split your line."
+        ]
+      }
+    },
+    "crawl:region/lanternroad": {
+      "key": "crawl:region/lanternroad",
+      "id": "crawl-region-lanternroad",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:907a52ef556001e1e55b96c7d8030bfc84bb5b422c15efac82bcd161dadb08e2",
+      "about": [
+        "place-lanternroad"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Lantern Road",
+        "paragraphs": [
+          "[placeholder] The road climbs out of the moors, and the foes come faster and from the side."
+        ]
+      }
+    },
+    "crawl:region/morrowsshadow": {
+      "key": "crawl:region/morrowsshadow",
+      "id": "crawl-region-morrowsshadow",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:f53f5ba98b27638e2820e085c961933dac8089019ace510bdffb695be213da09",
+      "about": [
+        "place-morrowsshadow"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "Morrow's Shadow",
+        "paragraphs": [
+          "[placeholder] The Manalith fills the sky, and every danger is at its peak and nothing can be seen coming."
+        ]
+      }
+    },
+    "crawl:region/still": {
+      "key": "crawl:region/still",
+      "id": "crawl-region-still",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:5ea9c6c6dbdf314109d160ecd26e9d423e2a82a98fbcf1598a36bda3664b5301",
+      "about": [
+        "place-still"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Still",
+        "paragraphs": [
+          "[placeholder] Under the oculus lies the Choir's tithe vault, where the Hollow wait and the Bulwark buries its mines."
+        ]
+      }
+    },
+    "crawl:region/swamp": {
+      "key": "crawl:region/swamp",
+      "id": "crawl-region-swamp",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:bd82028fabd035b57162da82350e49a5ebfeaaeafa6b8c13e7f0a6b8a9797597",
+      "about": [
+        "place-swamp"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Arkgrave",
+        "paragraphs": [
+          "[placeholder] Halcyon's ships lie rotting in the fen, thrown inland and kept by the dead."
+        ]
+      }
+    },
+    "crawl:region/swamp2": {
+      "key": "crawl:region/swamp2",
+      "id": "crawl-region-swamp2",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:662c3f5b900c4efc613fb9a377b8f7ce27baafe868f83a0ffce7bdb05e9abb19",
+      "about": [
+        "place-swamp2"
+      ],
+      "speakers": [],
+      "payload": {
+        "title": "The Drowned Arks",
+        "paragraphs": [
+          "[placeholder] The Arkgrave again, with the water coming up and the board shrinking every wave."
         ]
       }
     }

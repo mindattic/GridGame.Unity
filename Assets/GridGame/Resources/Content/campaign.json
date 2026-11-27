@@ -81,6 +81,7 @@
   "Themes": [
     {
       "Id": "greenvalley",
+      "HasCrawl": true,
       "Music": ["moorland-charge-00", "tithe-day-gallop-00"],
       "MusicBorrow": ["heartbeat-of-the-brave-00", "still-frost-00"],
       "MilestoneReward": "tome_regenerate",
@@ -95,6 +96,7 @@
     },
     {
       "Id": "lanternroad",
+      "HasCrawl": true,
       "Music": ["over-the-pass-00", "lanterns-rising-00", "moonlit-conflict-00"],
       "MusicBorrow": ["anchor-pulse-00", "shardfall-00"],
       "MilestoneReward": "tome_steadfast",
@@ -109,6 +111,7 @@
     },
     {
       "Id": "desert",
+      "HasCrawl": true,
       "Music": ["glass-dunes-00", "shardfall-00"],
       "MusicBorrow": ["lanterns-rising-00", "anchor-pulse-00"],
       "MilestoneReward": "tome_thorns",
@@ -123,6 +126,7 @@
     },
     {
       "Id": "swamp",
+      "HasCrawl": true,
       "Music": ["grounded-arks-00", "arkgrave-march-00"],
       "MusicBorrow": ["the-final-signal-00", "winters-edge-00"],
       "MilestoneReward": "tome_poison_ward",
@@ -137,6 +141,7 @@
     },
     {
       "Id": "cave",
+      "HasCrawl": true,
       "Music": ["anchor-pulse-00"],
       "MusicBorrow": ["over-the-pass-00", "shardfall-00", "lanterns-rising-00"],
       "MilestoneReward": "tome_lifesteal",
@@ -151,6 +156,7 @@
     },
     {
       "Id": "still",
+      "HasCrawl": true,
       "Music": ["winters-edge-00", "still-frost-00"],
       "MusicBorrow": ["heartbeat-of-the-brave-00", "moorland-charge-00"],
       "MilestoneReward": "tome_mana_siphon",
@@ -165,6 +171,7 @@
     },
     {
       "Id": "cityruins",
+      "HasCrawl": true,
       "Music": ["neon-steel-rush-00"],
       "MusicBorrow": ["neon-breakbeat-00", "last-stand-horn-00", "moonlit-conflict-00"],
       "MilestoneReward": "tome_double_attack",
@@ -180,6 +187,7 @@
     },
     {
       "Id": "cathedral",
+      "HasCrawl": true,
       "Music": ["the-final-signal-00"],
       "MusicBorrow": ["last-stand-horn-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "tome_counter_attack",
@@ -194,6 +202,7 @@
     },
     {
       "Id": "bloom",
+      "HasCrawl": true,
       "Music": [],
       "MusicBorrow": ["moonlit-conflict-00", "shardfall-00", "neon-steel-rush-00", "anchor-pulse-00"],
       "MilestoneReward": "chest_gilded",
@@ -208,6 +217,7 @@
     },
     {
       "Id": "greenvalley2",
+      "HasCrawl": true,
       "Music": ["heartbeat-of-the-brave-00"],
       "MusicBorrow": ["moorland-charge-00", "still-frost-00", "tithe-day-gallop-00"],
       "MilestoneReward": "chest_gilded",
@@ -223,6 +233,7 @@
     },
     {
       "Id": "cityruins2",
+      "HasCrawl": true,
       "Music": ["neon-breakbeat-00"],
       "MusicBorrow": ["neon-steel-rush-00", "last-stand-horn-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",
@@ -240,6 +251,7 @@
     },
     {
       "Id": "swamp2",
+      "HasCrawl": true,
       "Music": [],
       "MusicBorrow": ["arkgrave-march-00", "grounded-arks-00", "the-final-signal-00", "winters-edge-00"],
       "MilestoneReward": "chest_gilded",
@@ -254,6 +266,7 @@
     },
     {
       "Id": "desert2",
+      "HasCrawl": true,
       "Music": [],
       "MusicBorrow": ["shardfall-00", "glass-dunes-00", "anchor-pulse-00", "lanterns-rising-00"],
       "MilestoneReward": "chest_gilded",
@@ -268,6 +281,7 @@
     },
     {
       "Id": "cave2",
+      "HasCrawl": true,
       "Music": [],
       "MusicBorrow": ["anchor-pulse-00", "over-the-pass-00", "shardfall-00", "neon-breakbeat-00"],
       "MilestoneReward": "chest_gilded",
@@ -282,6 +296,7 @@
     },
     {
       "Id": "morrowsshadow",
+      "HasCrawl": true,
       "Music": ["last-stand-horn-00"],
       "MusicBorrow": ["the-final-signal-00", "moonlit-conflict-00", "grounded-arks-00"],
       "MilestoneReward": "chest_gilded",

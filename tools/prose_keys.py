@@ -15,6 +15,8 @@
     crawl         crawl:chapter/<chapterId>        crawl-chapter-<chapterId>            campaign.json Chapters[] (GG-T386: one after
                                                                                         every fifth stage; the per-theme crawls
                                                                                         crawl:<themeId> are retired)
+    crawl         crawl:region/<themeId>           crawl-region-<themeId>               campaign.json Themes[] HasCrawl (GG-T1478: played
+                                                                                        once on first arrival in the region)
     crawl         crawl:dialogue/<dialogueId>      crawl-dialogue-<dialogueId>          dialogues.json Crawl (interludes)
     description   class:<classId>                  description-class-<classId>          classes.json Description (short) / Lore (long)
                                                                                         (hero blurbs, enemy and Bestiary entries)
@@ -191,6 +193,9 @@ def game_keys(content: dict) -> dict:
         for ch in camp.get("Chapters") or []:  # GG-T386 (replaces the retired crawl:<themeId>)
             if isinstance(ch, dict) and ch.get("Id"):
                 keys["crawl:chapter/" + ch["Id"]] = "crawl"
+        for t in camp.get("Themes") or []:  # GG-T1478: a region-entry crawl, where HasCrawl
+            if isinstance(t, dict) and t.get("Id") and t.get("HasCrawl"):
+                keys["crawl:region/" + t["Id"]] = "crawl"
     for c in content.get("classes") or []:
         if c.get("Id"):
             keys["class:" + c["Id"]] = "description"

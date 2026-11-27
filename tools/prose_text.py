@@ -183,6 +183,10 @@ def hydrate(content: dict, texts: dict) -> dict:
         p = pay("crawl:chapter/" + ch.get("Id", "")) if isinstance(ch, dict) else None
         if p is not None:
             ch["Crawl"] = _crawl(p)
+    for t in camp.get("Themes") or []:  # GG-T1478: region-entry crawls
+        p = pay("crawl:region/" + t.get("Id", "")) if t.get("HasCrawl") else None
+        if p is not None:
+            t["Crawl"] = _crawl(p)
     for t in camp.get("Themes") or []:  # a region's blurb (place:<theme>) for the mapper's summary
         p = pay("place:" + t.get("Id", ""))
         if p is not None:

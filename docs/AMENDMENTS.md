@@ -1723,3 +1723,17 @@ Owner: *"the real-money currency is 'Aetherite Shard(s)'"* (it was "Diamonds").
   graduation → Camp's first visit. The crawl no longer goes straight to Camp.
 - *Why:* the drills (GG-T1315) teach the board before the hub opens, and "Start Campaign" says what the button
   does now that Continue sits on the Main Menu.
+
+## 2026-11-27 — Region-entry crawls: each region plays its own crawl on first arrival (GG-T1478, GG-T1603)
+
+- **Was ([BIBLE §27](BIBLE.md#270-the-story-start-to-finish-gg-t231-owner-2026-11-05-make-the-story-from-start-to-finish-title-screen-new-campaign-text-scroll--a-story-crawl-at-a-certain-level--a-boss--roll-credits)):**
+  crawls came only from the opening, the ending, a chapter after every fifth stage (`crawl:chapter/<id>`) and
+  interludes; a region had no crawl of its own (the per-theme `crawl:<themeId>` were retired, GG-T386).
+- **Now:** each `campaign.json` theme carries `HasCrawl` (all 15 do), whose words are Prose key
+  `crawl:region/<themeId>`, joined by `ProseText`. It plays once, on the first arrival in the region (seen-mark
+  `region:<themeId>` in `SeenCrawls`): after the first victory over the previous region's last stage, in the
+  chapter scroll when one is also due, else alone; or on the first launch into the region, before its
+  ThemeStart beats. The words are one-sentence `[placeholder]` seeds drawn from `Data/Prose/canon/07-regions.md`
+  until GG-T1499 writes the real ones.
+- *Why:* the chapter crawls come every fifth stage and cannot say where the road has just arrived; a region's
+  rule, foes and sky change at its door, so the door is where the story names it.
