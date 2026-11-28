@@ -161,7 +161,7 @@ def main():
         # GG-T1797: expeditions became travel (GG-T1786), so the region header is just the region name.
         check("adventure groups battles under their region", any(x.strip() == "The Tithe Moors" for x in t), str(t[:8]))
         # GG-T388 ("Adventure is region then stage"): a fresh save has exactly one unlocked region, so Adventure opens
-        # straight into that region's stage list (Stages(), MenuScreens.cs) and never the region picker (Regions())
+        # straight into that region's stage list (Stages(), Hub/StageSelectScreen.cs) and never the region picker (Regions())
         # where locked REGIONS collapse into "N more stages ahead" -- that teaser can't appear here by design until a
         # second region unlocks. What Stages() actually does with a locked future stage is list it on its own row
         # marked Locked (MenuScreens.Stages: "<state> · Locked"), so check that instead of the no-longer-reachable teaser.
