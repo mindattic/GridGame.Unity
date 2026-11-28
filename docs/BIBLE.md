@@ -75,7 +75,7 @@ GridGame is **NOT**:
  │  Rules/PincerDetector, TargetResolver,  │   │  Abilities, Party, Summon, Bounties           │
  │        EnemyPlanner, Formulas           │   └───────────────────────────────────────────────┘
  │  Bot/HeroBot, BotRunner   Util/Rng,Coord│
- │  Content/ContentLoader, ContentDb, ContentModels ◀── Resources/Content/*.json              │
+ │  Content/ContentLoader, ContentDb, Models/     ◀── Resources/Content/*.json              │
  └─────────────────────────────────────────┘
           ▲ compiled and run outside Unity by Tests/Core.Tests (NUnit, dotnet test)
 ```
@@ -1886,7 +1886,7 @@ Targeting is cancelled by tapping the same slot again, the hardware/Escape **Bac
 
 ## 5. Targeting
 
-Three orthogonal enums (`ContentModels.cs`):
+Three orthogonal enums (`Core/Content/Models/AbilityDef.cs`):
 
 ```
 TargetShape  : Self / SingleActor / SingleTile / Square / Diamond / Cross / Plus / Row / Column / AllEnemies / AllAllies
@@ -4035,7 +4035,7 @@ persistentDataPath/Profiles/
 2. **Non-determinism in Core.** No `System.Random`, `DateTime`, `UnityEngine.Random` or dictionary-order dependence in rules; the replay test catches it.
 3. **Mutating state in a preview.** Previews run on `BattleState.Clone()` with `PreviewOnly` (no events, no traps/wake-ups); keep it that way.
 4. **Missing glyphs.** A new symbol in UI text must pass `check_glyphs.py`.
-5. **Unknown JSON fields.** `MissingMemberHandling.Error` fails the load — add the field to `ContentModels.cs` first.
+5. **Unknown JSON fields.** `MissingMemberHandling.Error` fails the load — add the field to its def in `Core/Content/Models/` first.
 6. **PowerShell 5.1 encoding.** Never round-trip `.cs`/`.json` through `Get-Content`/`Set-Content` (BOM-less UTF-8 mojibakes); use an editor or .NET `WriteAllText` with `UTF8Encoding(false)`.
 7. **Playback stalls.** Every animation runs through `Safe()`, the final `SyncAll()` snaps views to truth, and a 20 s watchdog resyncs — don't bypass them.
 8. **Worktree package resolution (GG-T159).** `Packages/manifest.json` pulls `com.mindattic.media.capture`/`com.mindattic.telemetry` via `file:../../MindAttic.Media.Capture/unity/...`/`file:../../MindAttic.Telemetry/unity/...`, two levels above the project root. In the main checkout that lands on the real sibling repo; in a per-ticket worktree (`<WorkspaceRoot>.worktrees\GridGame.Unity\<Ticket>\`) the same climb instead lands on `<WorkspaceRoot>.worktrees\GridGame.Unity\<Repo>`, which has no repo of its own. `tools/unity.ps1` now auto-creates a directory junction there (pointing at the real sibling repo, found by walking up to the nearest `*.worktrees` ancestor) the first time it's missing, so `tools/build.ps1`/`tools/test.ps1 -Compile` work in a fresh worktree with no manual setup; junctions, not symlinks, because creating a symlink needs admin/Developer-Mode privilege on Windows and junctions don't.
@@ -5145,7 +5145,7 @@ meaningful but optional share for facilities and summons. A piece repaired over 
 
 **Superseded 2026-11-25 (GG-T1050): the skill board replaces this.** Talent trees are retired (GG-T1099: `skilltrees.json` is `[]`, `HomeTree` fields are gone from `classes.json`). Kept as history; the live model is [§25.6.7](#2567-the-skill-board-gg-t1023-family).
 
-`Assets/GridGame/Resources/Content/skilltrees.json` → `ContentDb.SkillTrees` (`SkillTreeDef`/`SkillNodeDef`, `Core/Content/ContentModels.cs`): one tree per hero archetype, named by a `ClassDef.HomeTree` id every hero class must set (`ContentLoader.Validate`, same pattern as §25.13's `Role` check). A tree is a small DAG of nodes:
+`Assets/GridGame/Resources/Content/skilltrees.json` → `ContentDb.SkillTrees` (`SkillTreeDef`/`SkillNodeDef`, `Core/Content/Models/SkillDefs.cs`): one tree per hero archetype, named by a `ClassDef.HomeTree` id every hero class must set (`ContentLoader.Validate`, same pattern as §25.13's `Role` check). A tree is a small DAG of nodes:
 - `Grants` — the ability or passive id the node would unlock (must resolve in `ContentDb.Abilities`). **Amended 2026-11-06 (GG-T296):** a granted Passive or Reactive (Last Bastion's Counter Attack, Lifesteal, Double Attack, Tough Hide, Regenerate) fights with the hero. `BattleFactory.SpecFor` copies every known Passive/Reactive into `HeroSpec.Passives`; it had dropped them, so these nodes did nothing in battle.
 - `Cost` — skill points to spend on it.
 - `RequiredPointsInTree` — total points already spent anywhere in the tree before it can unlock.
@@ -5810,7 +5810,7 @@ Owner: *"Like guildwars gold and diamonds need an exchange rate so if something 
 
 An in-game Lore / Encyclopedia the player reads to catch up on the story. It is built on the Bestiary (§25.11) and the glossary, not beside them: an entry unlocks once the player meets the thing, never locks again, and reads as **new** until it is opened.
 
-- **Kinds** (`CodexKinds`, `Core/Content/ContentModels.cs`; one tab each on `CodexScreen`, led by its kind icon, `RowIcon`): **Places** (a campaign region's theme id or a stage id), **Factions** (`factions.json`), **Characters** (hero classes, Camp NPCs, caravan crew), **Foes** (the Bestiary's own grid and detail, not a copy), **Items**, **Abilities**, **Keywords** (glossary entries) and **Story** (`chapter/<id>`, `dialogue/<id>`, `ending`). Places, factions, characters, foes and story are listed in full, with a "???" silhouette for an entry not reached yet; items, abilities and keywords are open-ended and list only what has been found.
+- **Kinds** (`CodexKinds`, `Core/Content/Models/Misc.cs`; one tab each on `CodexScreen`, led by its kind icon, `RowIcon`): **Places** (a campaign region's theme id or a stage id), **Factions** (`factions.json`), **Characters** (hero classes, Camp NPCs, caravan crew), **Foes** (the Bestiary's own grid and detail, not a copy), **Items**, **Abilities**, **Keywords** (glossary entries) and **Story** (`chapter/<id>`, `dialogue/<id>`, `ending`). Places, factions, characters, foes and story are listed in full, with a "???" silhouette for an entry not reached yet; items, abilities and keywords are open-ended and list only what has been found.
 - **Entries and text:** `Resources/Content/codex.json` (GG-T924) names the entries, their titles and their related links; each body is Prose (description key `codex:<kind>/<id>`, payload `long`, via `tools/prose_text.py upsert_seed`), falling back to the record's own words when it has no text yet. `ContentDb.CodexEntry` resolves title, body and links; a link to an entry not reached yet shows as a "???" row.
 - **Unlock rules** (`Meta/Codex.cs`, GG-T923/T929): a battle fought unlocks its stage and region (`Codex.UnlockStage`, after the battle); a hero who joins unlocks their character entry and every ability they arrive knowing (`UnlockHero`); a learned ability, a gained item (`SaveData.AddItem`), a glossary term opened in the game's text (`GlossaryText`), a chapter crawl or the ending played (`Story`) and a dialogue played to the end each unlock theirs. `Codex.Sync` then derives everything else the save already shows (Bestiary Seen, the roster and its gear, each hero's faction, joined NPCs, caravan crew, seen crawls and dialogues, cleared stages); it runs after every battle, every dialogue, every load and on opening the Codex, and is idempotent.
 - **Read state:** `SaveData.Codex` holds the unlocked keys (`<kind>:<id>`), `SaveData.CodexRead` the opened ones; unlocked and not read is new. Opening an entry marks it read and takes off its New badge (row and tab).

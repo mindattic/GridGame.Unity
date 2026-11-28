@@ -342,7 +342,7 @@
       {
         "Enemies": [
           {
-            "Class": "captain",
+            "Class": "moorcaptain",
             "RuleBreak": "TwinTurn",
             "Level": 1,
             "X": -1,
