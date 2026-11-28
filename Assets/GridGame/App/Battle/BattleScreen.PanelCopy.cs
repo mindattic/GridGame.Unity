@@ -14,6 +14,7 @@ namespace GridGame.App
             AimUnit, AimMulti, AimDirection, TapMove,
             Examine, ExamineCard,
             HintUse, HintGuard, HintDrag, HintTrap, InfoTip,
+            RestingChip, Resting, RestingRow,
         }
 
         /// <summary>The panel's instruction for <paramref name="s"/>. <paramref name="hero"/> and <paramref name="a"/> fill
@@ -37,6 +38,9 @@ namespace GridGame.App
                 case PanelState.HintDrag: return $"Drag {hero} to the glowing tile";
                 case PanelState.HintTrap: return "Trap a foe between two heroes";
                 case PanelState.InfoTip: return "Tap Info, then tap anything to read it";
+                case PanelState.RestingChip: return $"+{n} resting";
+                case PanelState.Resting: return "Resting after acting: each rejoins the timeline when its time runs out";
+                case PanelState.RestingRow: return $"{hero} · back in {extra}s";
                 default: return "";
             }
         }

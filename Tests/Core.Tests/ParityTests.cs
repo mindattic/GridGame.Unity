@@ -640,11 +640,11 @@ namespace GridGame.Tests
         }
 
         [Test] // GG-T130
-        public void The_spend_reports_the_meter_right_after_it_not_the_whole_actions_end()
+        public void The_spend_reports_the_pool_right_after_it_not_the_whole_actions_end()
         {
-            // A spell's cost comes out of its meter the instant it's cast, but the same action can still earn more mana
-            // afterward (here: a crit). The later gain is its own event, starting from the emptied meter, so playback never
-            // shows the meter topped up before the gain arrives (GG-T130, found by GG-T112).
+            // A spell's price comes out of the party pool the instant it's cast (§3.1.0), but the same action can still
+            // earn more mana afterward (here: a crit). The later gain is its own event, starting from the pool as the
+            // spend left it, so playback never shows the bar topped up before the gain arrives (GG-T130, found by GG-T112).
             var db = Mini();
             db.Classes["mage"].BaseStats.Luck = 200; // crit some of the time
             bool sawGainAfterSpend = false;
@@ -656,16 +656,48 @@ namespace GridGame.Tests
                 var s = BattleEngine.Create(db, setup, new List<BattleEvent>());
                 var mage = Hero(s, "mage");
                 GrantMana(s, 2);
+                int pool = s.PartyMana;
                 var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(2, 2) });
                 int spentIndex = ev.FindIndex(e => e is SpellManaSpentEvent);
                 if (spentIndex < 0) continue;
-                Assert.That(((SpellManaSpentEvent)ev[spentIndex]).Points, Is.EqualTo(s.ManaFull(mage, 0)));
-                var later = ev.Skip(spentIndex + 1).OfType<ManaGainedEvent>().SelectMany(g => g.Meters).Where(m => m.UnitId == mage.Id && m.Slot == 0).ToList();
+                int spent = ((SpellManaSpentEvent)ev[spentIndex]).Points;
+                Assert.That(spent, Is.EqualTo(s.SpellPrice(mage, 0)));
+                var later = ev.Skip(spentIndex + 1).OfType<ManaGainedEvent>().ToList();
                 if (later.Count == 0) continue;
                 sawGainAfterSpend = true;
-                Assert.That(later[0].After, Is.EqualTo(later[0].Delta), "the gain starts from the meter as the spend left it");
+                Assert.That(later[0].Before, Is.EqualTo(pool - spent), "the gain starts from the pool as the spend left it");
+                Assert.That(later[0].After, Is.EqualTo(later[0].Before + later[0].Amount));
             }
             Assert.That(sawGainAfterSpend, Is.True, "never saw a crit earn mana in the same action as the spend; widen the seed range");
+        }
+
+        [Test] // §3.1.0
+        public void Telemetry_counts_a_casts_spend_and_the_gains_from_the_pool_events()
+        {
+            var db = Mini();
+            bool sawSpend = false;
+            for (int seed = 1; seed <= 20 && !sawSpend; seed++)
+            {
+                var setup = new BattleSetup { Stage = Stage(("tank", 2, 2)), Seed = seed, UnlockedSlots = 2 };
+                setup.Party.Add(new HeroSpec { ClassId = "mage", Start = new Coord(4, 7), Bar = new List<string> { "fireball" } });
+                setup.Party.Add(new HeroSpec { ClassId = "knight", Start = new Coord(5, 7) });
+                var initial = new List<BattleEvent>();
+                var s = BattleEngine.Create(db, setup, initial);
+                var telemetry = new EncounterTelemetry(db, setup, s, initial, null, 0);
+                var mage = Hero(s, "mage");
+                GrantMana(s, 2);
+                var ev = BattleEngine.Apply(s, new UseSlotCommand { HeroId = mage.Id, Slot = 0, Target = new Coord(2, 2) });
+                if (!ev.OfType<SpellManaSpentEvent>().Any()) continue;
+                sawSpend = true;
+                telemetry.Observe(ev, s, 1);
+                var record = telemetry.Build(s, 2);
+                var gains = initial.Concat(ev).OfType<ManaGainedEvent>().ToList();
+                Assert.That(record.ManaSpent, Is.EqualTo(s.SpellPrice(mage, 0)), "the cast's price, paid from the pool");
+                Assert.That(record.ManaGained, Is.EqualTo(gains.Where(g => g.Amount > 0).Sum(g => g.Amount)));
+                Assert.That(record.ManaCharged, Is.EqualTo(gains.Where(g => g.Amount > 0 && g.Kind == ManaGainKind.Earned).Sum(g => g.Amount)));
+                Assert.That(record.ManaWasted, Is.EqualTo(gains.Sum(g => g.Wasted)));
+            }
+            Assert.That(sawSpend, Is.True, "the mage never got to cast; widen the seed range");
         }
 
         [Test] // US-245

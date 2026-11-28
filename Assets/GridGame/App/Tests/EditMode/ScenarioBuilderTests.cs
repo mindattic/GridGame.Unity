@@ -118,5 +118,22 @@ namespace GridGame.App.Tests
         {
             Assert.Throws<System.ArgumentException>(() => ScenarioBuilder.Resolve(C, "stage:prologue-nope"));
         }
+
+        [Test]
+        public void Open_parses_into_an_opener_and_a_path()
+        {
+            var def = ScenarioDef.Parse("{\"target\": \"stage:greenvalley-01\", \"open\": \"Abilities:Spells/Fire\"}");
+            var open = ScenarioOpen.Parse(def.Open);
+            Assert.That(open.What, Is.EqualTo("abilities"));
+            Assert.That(open.Path, Is.EqualTo(new[] { "Spells", "Fire" }));
+            Assert.That(ScenarioLander.Openers.ContainsKey(open.What), Is.True);
+
+            var info = ScenarioOpen.Parse(" info ");
+            Assert.That(info.What, Is.EqualTo("info"));
+            Assert.That(info.Path, Is.Empty);
+            Assert.That(ScenarioLander.Openers.ContainsKey(info.What), Is.True);
+
+            Assert.That(ScenarioOpen.Parse(ScenarioDef.Parse("{}").Open), Is.Null);
+        }
     }
 }

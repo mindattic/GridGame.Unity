@@ -280,11 +280,15 @@ namespace GridGame.Core.Content
         /// the picked tile is dragged up to this many tiles toward it, nearest first, and its plate swings to face it. A Heavy
         /// foe resists (unless Floating) and a Rooted one holds, but each still turns its plate (<c>Battle.Magnetize</c>).</summary>
         public int Magnetizes;
-        /// <summary>Smoke Vanish (GG-T861, the Black Ninja): the ability's <see cref="RuleEffects"/> (a smoke cloud) are laid
-        /// around the caster's own tile first, then the caster vanishes and reappears on a random free, safe tile at least 2
-        /// away (the battle Rng; <c>Battle.SmokeVanish</c>), auto-resolving any pincer it lands in like Teleport, and every
-        /// foe's charge locked on it re-plans. A Rooted caster still drops the smoke but can't blink. A Self / Auto Skill.</summary>
+        /// <summary>Smokebomb (GG-T861, GG-T1916, the Black Ninja): the ability's <see cref="RuleEffects"/> (a smoke cloud) are
+        /// laid around the caster's own tile first, then the caster vanishes: off the board, untargetable, every foe's charge
+        /// locked on it re-planned. On its next turn it reappears on a random free, safe tile at least 2 away (the battle Rng;
+        /// <c>Battle.SmokeVanish</c>), auto-resolving any pincer it lands in like Teleport. A Rooted caster still drops the
+        /// smoke but can't vanish. A Self / Auto Skill.</summary>
         public bool Vanishes;
+        /// <summary>GG-T1916: the Abilities sheet folder this move always sits in (<see cref="GridGame.Core.Rules.ActionTree.Categories"/>,
+        /// e.g. "Ninjutsu" for the ninjas' own moves); null folds it by damage type as before.</summary>
+        public string Category;
         /// <summary>Movement (GG-T183): the caster and its (one-tile) target trade tiles.</summary>
         public bool SwapsPlaces;
         /// <summary>GG-T865: a PickActor ability may only pick a unit within this many tiles (Manhattan, nearest footprint

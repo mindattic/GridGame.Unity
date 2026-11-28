@@ -125,8 +125,16 @@ namespace GridGame.Core.Battle
     /// <see cref="To"/> (its <see cref="TeleportedEvent"/> follows). The view puffs smoke, calls "Vanish" and flashes the landing.</summary>
     public sealed class VanishedEvent : BattleEvent
     {
-        public int UnitId; public Coord From; public Coord To; public string AbilityId;
-        public override string ToString() => $"Vanished {UnitId} {From}->{To}";
+        public int UnitId; public Coord From; public string AbilityId;
+        public override string ToString() => $"Vanished {UnitId} at {From}";
+    }
+
+    /// <summary>GG-T1916: a unit that vanished in a Smokebomb's smoke reappears on <see cref="To"/> as its next turn comes.
+    /// A <see cref="TeleportedEvent"/> follows to move the token.</summary>
+    public sealed class ReappearedEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To;
+        public override string ToString() => $"Reappeared {UnitId} {From}->{To}";
     }
 
     /// <summary>GG-T861: a foe's charge locked on a unit that vanished re-plans: onto <see cref="NewTargetId"/> at
@@ -695,15 +703,6 @@ namespace GridGame.Core.Battle
     /// foe's siphon takes points away.</summary>
     public enum ManaGainKind { Grant, Earned, Siphon }
 
-    /// <summary>How one spell slot's affordability moved in a <see cref="ManaGainedEvent"/>: the pool capped at the slot's
-    /// price, before and after.</summary>
-    [System.Obsolete("Per-spell meters are gone (§3.1.0): read ManaGainedEvent.Before/After/Capacity.")]
-    public sealed class ManaMeterDelta
-    {
-        public int UnitId; public int Slot; public int Delta; public int After; public int Full;
-        public override string ToString() => $"{UnitId}#{Slot} {Delta:+0;-0} -> {After}/{Full}";
-    }
-
     /// <summary>A mana gain (after damping) or siphon reached the party pool (§3.1.0). <see cref="Amount"/> is the points
     /// that landed (negative for a siphon), <see cref="Wasted"/> the points of a gain lost past capacity.</summary>
     public sealed class ManaGainedEvent : BattleEvent
@@ -719,13 +718,6 @@ namespace GridGame.Core.Battle
         public int Orbs;
         /// <summary>An earned pincer gain's hero count and chain link (the Billboard shows the arithmetic).</summary>
         public int Participants; public int Chain;
-#pragma warning disable CS0618
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): read Before/After/Capacity.")]
-        public List<ManaMeterDelta> Meters = new List<ManaMeterDelta>();
-        /// <summary>The spells this gain made affordable (each also gets a <see cref="SpellReadyEvent"/>).</summary>
-        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SpellReadyEvent.")]
-        public List<ManaMeterDelta> Readied = new List<ManaMeterDelta>();
-#pragma warning restore CS0618
         public override string ToString() => $"ManaGained {Amount:+0;-0} ({Reason}) {Before}->{After}/{Capacity}" + (Wasted > 0 ? $" wasted {Wasted}" : "");
     }
 

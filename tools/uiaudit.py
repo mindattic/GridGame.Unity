@@ -3,7 +3,8 @@ GG-T1837: capture every screen for the screen-by-screen UI audit (docs/research/
 
     python tools/uiaudit.py [--device iphone15pro|<device>|<shape>|shapes|all] [--screens hub,battle,...] [--dry-run] [--build]
 
-Walks the StartScreens ids (Assets/GridGame/App/Automation/StartScreens.cs, plus the results screens) with `goto`, then
+Walks the StartScreens ids (Assets/GridGame/App/Automation/StartScreens.cs, plus the results screens and the kit's
+overlays: dialogue box, coach card, Inspect card, confirm and toast, each opened over its host, GG-T2150) with `goto`, then
 the scenario-only spots (battle, boss, overworld, camp on the road, skill hex, summon, caravan) with the in-session
 `scenario` endpoint, one player at a time at the device's size and safe area, with its camera cutout and screen corners
 drawn over the UI (tools/scenario.py, GG-T2119), so the captures show what the hardware hides. Per screen it writes
@@ -47,9 +48,14 @@ SCENARIO_SCREENS = [
 ]
 # The state "screen" each scenario capture must land on: Camp is the Hub screen, and until an overworld map screen exists
 # the overworld preset lands there too.
-LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub", "skill-hex": "talents"}
-# Screens that move or animate on their own get longer to settle.
-SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon", "levelup"}
+LANDS_ON = {"battle": "battle", "battle-boss": "battle", "overworld": "hub", "camp": "hub", "skill-hex": "talents",
+            "overlay-dialogue": "dialogue", "overlay-coach": "blacksmith", "overlay-inspect": "status",
+            "overlay-confirm": "hub", "overlay-toast": "hub"}
+# GG-T2150: the overlay goto targets and the element each must show in the shot.
+OVERLAYS = {"overlay-dialogue": "dlg-box", "overlay-coach": "coach-card", "overlay-inspect": "inspect-card",
+            "overlay-confirm": "confirm-veil", "overlay-toast": "toast"}
+# Screens that move or animate on their own get longer to settle; an overlay opens only after its host's fade.
+SLOW = {"battle", "battle-boss", "overworld", "camp", "splash", "summon", "levelup"} | set(OVERLAYS)
 # Screens known to scroll past the viewport, shown as multi-page in --dry-run. Every screen is paged at capture time if its
 # scroll view overflows; this list only tells the dry run where to expect it.
 TALL = {"components", "settings", "codex"}
@@ -60,7 +66,7 @@ MIN_TARGET, MIN_GAP, CAPTION_FLOOR = 132.0, 24.0, 30.0  # design px, AutomationS
 def goto_screens():
     text = open(START_SCREENS, encoding="utf-8").read()
     block = re.search(r"All\s*=\s*\{(.*?)\};", text, re.S).group(1)
-    ids = re.findall(r'"([^"]+)"', block) + ["results", "results-mid", "results-defeat", "results-drill", "levelup"]
+    ids = re.findall(r'"([^"]+)"', block) + ["results", "results-mid", "results-defeat", "results-drill", "levelup"] + list(OVERLAYS)
     taken = {n for n, _ in SCENARIO_SCREENS}
     return [i for i in ids if i not in taken]
 
@@ -322,10 +328,19 @@ def audit_device(device, items, settle, max_pages):
                     print(f"  {name}: {r['error']}", flush=True)
                     continue
                 time.sleep(settle * (2 if name in SLOW else 1))
-                capture(device, name, method, facts, max_pages)
+                if name in OVERLAYS:
+                    capture_one(device, name, method, facts)  # the overlay's frame; the host's own pages are its screen's
+                else:
+                    capture(device, name, method, facts, max_pages)
                 want = LANDS_ON.get(name)
                 if want and facts[name].get("landedOn") != want:
                     print(f"  {name}: landed on {facts[name].get('landedOn')}, expected {want}", flush=True)
+                if name in OVERLAYS:
+                    el = harness.call("element", name=OVERLAYS[name])
+                    shown = isinstance(el, dict) and not el.get("error") and bool(el.get("visible"))
+                    facts[name]["overlay"] = {"name": OVERLAYS[name], "shown": shown}
+                    if not shown:
+                        print(f"  {name}: overlay {OVERLAYS[name]} not on screen", flush=True)
             except Exception as e:
                 facts[name] = {"screen": name, "method": method, "error": repr(e)}
                 print(f"  {name}: {e!r}", flush=True)

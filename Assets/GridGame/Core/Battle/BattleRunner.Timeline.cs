@@ -101,7 +101,7 @@ namespace GridGame.Core.Battle
             {
                 if (e.Kind == TimelineKind.Hazard) { if (e.RemainingTicks > 0) e.RemainingTicks--; continue; } // GG-T359: no owner, never halted
                 var owner = S.UnitById(e.OwnerId);
-                if (owner == null || !owner.Alive) continue;
+                if (owner == null || !(owner.Alive || (owner.Vanished && e.Kind == TimelineKind.Turn))) continue; // GG-T1916: a vanished turn still comes round
                 if (e.Kind == TimelineKind.Turn)
                 {
                     if (owner.IsTimelineHalted) continue;
@@ -147,6 +147,11 @@ namespace GridGame.Core.Battle
                 if (next == null) break;
                 ReportAdvance();
                 BeginClutchAction(); // GG-T571: each arrival (a cast resolving, a turn, a rule event) is its own action
+                if (next.Kind == TimelineKind.Turn && S.UnitById(next.OwnerId) is Unit gone && gone.Vanished)
+                {
+                    Reappear(gone); // GG-T1916: its next turn: back out of the smoke, then it acts
+                    if (S.IsOver) break;
+                }
                 if (next.Kind == TimelineKind.Cast) { ResolveCast(next); CheckTilesStrict("cast " + next.AbilityId); }
                 else if (next.Kind == TimelineKind.Hazard) { ResolveHazard(next); CheckTilesStrict("rule event " + next.RuleEvent); }
                 else if (S.UnitById(next.OwnerId) is Unit sleeper && sleeper.Alive && TurnRules.IsHeroIcon(S, sleeper) && sleeper.IsImmobile)

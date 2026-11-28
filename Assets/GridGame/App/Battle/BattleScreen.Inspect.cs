@@ -181,6 +181,15 @@ namespace GridGame.App
         private string examineNote;
         private VisualElement infoButton, examineTint;
 
+        /// <summary>GG-T2129: Examine mode on, as the Info button turns it on; false while the battle can't take a command yet.</summary>
+        public bool OpenExamine()
+        {
+            if (examining) return true;
+            if (!CanCommand()) return false;
+            ToggleExamine();
+            return examining;
+        }
+
         /// <summary>The Info button: opens Examine mode, or closes it when it is already on.</summary>
         private void ToggleExamine()
         {
