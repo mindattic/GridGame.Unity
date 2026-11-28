@@ -26,12 +26,15 @@ namespace GridGame.Core.Battle
         /// meter before wave 1), and every state's "bank", "bankCapacity" and "charge" become "meters" (§3.1.0).
         /// v6 (2026-11-27, GG-T1844): OrbMinted, OrbsSpent and ManaCharged events are gone; ManaGained carries "Kind"
         /// (Grant / Earned / Siphon), "Orbs", "Participants" and "Chain", and a grant that found every meter full is a
-        /// ManaGained with Amount 0 and no meters.</summary>
-        public const int SchemaVersion = 6;
+        /// ManaGained with Amount 0 and no meters.
+        /// v7 (2026-11-28, GG-T1926): one party mana pool (§3.1.0). Every state's "meters" becomes "mana"
+        /// ({"points", "capacity"}); "startMana" is the points in the pool before wave 1; ManaGained carries "Before",
+        /// "After", "Capacity" and "Wasted" and no longer "Meters" or "Readied".</summary>
+        public const int SchemaVersion = 7;
 
-        /// <summary>The battle rules a record was made under. 2 (GG-T1812): per-spell mana meters (§3.1.0). A record
-        /// without it was made under the shared orb bank (1).</summary>
-        public const int RulesVersion = 2;
+        /// <summary>The battle rules a record was made under. 3 (GG-T1926): one party mana pool (§3.1.0). 2 (GG-T1812):
+        /// per-spell mana meters. A record without it was made under the shared orb bank (1).</summary>
+        public const int RulesVersion = 3;
         public const string RulesVersionKey = "rulesVersion";
 
         /// <summary>A record made under older rules: shown as it was, never re-simulated (§3.1.0).</summary>
@@ -108,7 +111,7 @@ namespace GridGame.Core.Battle
                 ["after"] = new JObject
                 {
                     ["phase"] = after.Phase.ToString(), ["wave"] = after.Wave, ["clock"] = after.Clock,
-                    ["meters"] = Meters(after),
+                    ["mana"] = Mana(after),
                     ["heroHp"] = new JArray(after.Units.Where(u => u.IsHero).Select(u => u.Alive ? u.Hp : 0)),
                     ["enemiesAlive"] = after.Units.Count(u => u.Alive && u.Team == Team.Enemy && !u.IsRemains),
                 },
@@ -147,7 +150,7 @@ namespace GridGame.Core.Battle
             ["phase"] = s.Phase.ToString(),
             ["wave"] = s.Wave,
             ["clock"] = s.Clock,
-            ["meters"] = Meters(s),
+            ["mana"] = Mana(s),
             ["units"] = new JArray(s.Units.Where(u => u.Alive).Select(u =>
             {
                 var turn = s.TurnEntryOf(u.Id);
@@ -181,21 +184,9 @@ namespace GridGame.Core.Battle
             ["amplifier"] = s.Amplifier.HasValue ? new JArray(s.Amplifier.Value.X, s.Amplifier.Value.Y) : null,
         };
 
-        /// <summary>Every hero's spell meters in party then slot order (§3.1.0): hero id, slot, spell, points and full.</summary>
-        public static JArray Meters(BattleState s)
-        {
-            var a = new JArray();
-            foreach (var u in s.Units)
-            {
-                if (!u.IsHero) continue;
-                for (int i = 0; i < u.Bar.Count; i++)
-                {
-                    int full = s.ManaFull(u, i);
-                    if (full > 0) a.Add(new JObject { ["hero"] = u.Id, ["slot"] = i, ["ability"] = u.Bar[i].AbilityId, ["points"] = s.ManaIn(u.Id, i), ["full"] = full });
-                }
-            }
-            return a;
-        }
+        /// <summary>The party mana pool (§3.1.0): its points and capacity.</summary>
+        public static JObject Mana(BattleState s) =>
+            new JObject { ["points"] = s.PartyMana, ["capacity"] = BattleConfig.PartyManaCapacity };
 
         private static JArray Bar(Unit u) => new JArray(u.Bar.Select(sl =>
             sl == null || sl.IsEmpty ? (JToken)JValue.CreateNull()
@@ -232,6 +223,7 @@ namespace GridGame.Core.Battle
                 JObject o;
                 try { o = JObject.FromObject(e, Json); }
                 catch (Exception ex) { o = new JObject { ["serializeError"] = ex.Message }; }
+                if (e is ManaGainedEvent) { o.Remove("Meters"); o.Remove("Readied"); }
                 var name = e.GetType().Name;
                 o.AddFirst(new JProperty("type", name.EndsWith("Event") ? name.Substring(0, name.Length - 5) : name));
                 a.Add(o);

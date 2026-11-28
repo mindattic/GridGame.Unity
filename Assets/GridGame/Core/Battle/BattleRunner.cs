@@ -601,10 +601,15 @@ namespace GridGame.Core.Battle
             if (e == null) return false;
             tag?.Invoke(e);
             Emit(e);
-#pragma warning disable CS0618
-            foreach (var d in e.Readied)
-                Emit(new SpellReadyEvent { UnitId = d.UnitId, Slot = d.Slot, AbilityId = S.UnitById(d.UnitId)?.Bar[d.Slot].AbilityId });
-#pragma warning restore CS0618
+            foreach (var u in S.Units)
+            {
+                if (!u.IsHero || !u.Alive) continue;
+                for (int i = 0; i < u.Bar.Count; i++)
+                {
+                    int price = S.SpellPrice(u, i);
+                    if (price > e.Before && price <= e.After) Emit(new SpellReadyEvent { UnitId = u.Id, Slot = i, AbilityId = u.Bar[i].AbilityId });
+                }
+            }
             return true;
         }
 

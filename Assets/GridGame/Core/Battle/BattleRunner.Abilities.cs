@@ -404,10 +404,10 @@ namespace GridGame.Core.Battle
             Emit(new AbilityResolvedEvent { CasterId = caster.Id, AbilityId = a.Id, Anchor = source?.Pos ?? caster.Pos, Targets = { source?.Id ?? caster.Id } });
             if (plan == null) { Announce("Nothing to echo", caster.Id); return; }
             var copy = plan.Value.Ability;
-            if (caster.IsHero && copy.Kind == AbilityKind.Spell && copy.Cost > 0)
+            int points = Echo.Price(caster, copy);
+            if (points > 0)
             {
-                int points = copy.Cost * BattleConfig.ManaPointsPerOrb;
-                if (S.PartyMana < points) { Announce("Not enough mana", caster.Id); return; }
+                if (!Echo.CanPay(S, caster, copy)) { Announce("Not enough mana", caster.Id); return; }
                 int slot = Echo.PayingSlot(S, caster, copy);
                 S.SetPartyMana(S.PartyMana - points);
                 Emit(new SpellManaSpentEvent { UnitId = caster.Id, Slot = slot, AbilityId = copy.Id, Points = points });

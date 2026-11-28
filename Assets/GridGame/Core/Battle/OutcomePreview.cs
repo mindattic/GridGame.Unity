@@ -16,9 +16,10 @@ namespace GridGame.Core.Battle
     public sealed class OutcomePreview
     {
         public List<OutcomeTarget> Targets = new List<OutcomeTarget>();
-        /// <summary>Mana points the action would add to every spell meter (§3.1.0; min/max over samples).</summary>
+        /// <summary>Mana points the action would add to the party bar, after damping and the capacity cap (§3.1.0; min/max
+        /// over samples).</summary>
         public int ManaMin, ManaMax;
-        /// <summary>Spell meters the action would fill (min/max over samples).</summary>
+        /// <summary>Spells the action would newly make affordable from the pool (min/max over samples).</summary>
         public int FillsMin, FillsMax;
         public int Samples;
         public bool Refused;
