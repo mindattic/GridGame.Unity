@@ -14,16 +14,14 @@ namespace GridGame.App
     /// <summary>
     /// The Abilities tab's Board sub-tab (in place of the old Talents skill trees): the skill hexagon in a
     /// <see cref="SkillHexView"/>, the hero's owned nodes drawn as its trail (<see cref="HeroBoard.Owned"/>: its saved
-    /// <see cref="HeroSave.HexNodes"/>, or its class Start path before it has joined). Hovering or tapping a node previews
-    /// <see cref="SkillHexBoard.CheapestRoute"/> to it; the panel under the board shows that route's SP, the stats its
-    /// passives add, the abilities it teaches and the hero's SP. Buy route pays with <see cref="HeroSave.SkillPoints"/>
-    /// through <see cref="SkillHexProgress.BuyRoute"/> (joining the board first, free, when the hero has not yet).
+    /// <see cref="HeroSave.HexNodes"/>, or its class Start path before it has joined). Tapping a node previews
+    /// <see cref="SkillHexBoard.CheapestRoute"/> to it (hovering draws the route only); the panel under the board explains
+    /// the node and shows that route's SP, the stats its passives add, the abilities it teaches and the hero's SP. Buy
+    /// route pays with <see cref="HeroSave.SkillPoints"/> through <see cref="SkillHexProgress.BuyRoute"/> (joining the board first, free, when the hero has not yet).
     /// Keeps the id "talents" so `-start talents` and the harness's goto still land here.
     /// </summary>
     internal sealed class SkillHexTab : HeroTab
     {
-        /// <summary>The detail window's height in design px: a full route preview without scrolling (GG-T1068).</summary>
-        private const float DetailHeight = 460f;
         /// <summary>The board's floor in design px: on the shortest stages the detail window gives way first, so the hexagon
         /// stays big enough to tap (GG-T1113).</summary>
         private const float BoardMinHeight = 280f;
@@ -58,16 +56,17 @@ namespace GridGame.App
             var host = SkillHexView.Host(board, zoom, out var view);
             // GG-T1068: the board's own dark fills the whole viewport, not just the fitted square in the middle of it.
             host.style.backgroundColor = SkillHexView.Bg;
+            // GG-T1875: the board takes the column's free height and the whole hexagon fits it at rest.
+            host.FitAll = true;
             frame.Add(host);
             frame.style.minHeight = BoardMinHeight;
             view.SetOwned(start, owned);
             view.SetSelected(selected);
 
             var detail = Ui.DetailPanel(body, "hex-detail");
-            // GG-T1068: one fixed height (a node's name, route, stats, learns and Buy route) so hovering or tapping
-            // never resizes the board above it, which re-centred the hexagon under the pointer on every preview.
+            // GG-T1875: the window is as tall as what it shows, so the board keeps the rest; only a tap changes it (hover
+            // draws the route alone), so the board never resizes under the pointer (GG-T1068).
             var detailWindow = body.Q("hex-detail");
-            detailWindow.style.height = DetailHeight;
             // GG-T1113: on short stages the window shrinks (its USS cap is 45% of the column) down to a floor that still
             // shows the pinned Buy route row; the route, stats and learns lines scroll inside it instead of overflowing.
             detailWindow.style.minHeight = DetailMinHeight;
@@ -87,7 +86,11 @@ namespace GridGame.App
                 Detail(board, h, owned, pt, route, detail, foot);
                 foot.style.display = foot.childCount > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             }
-            view.HoverChanged += pt => Show(pt ?? selected);
+            view.HoverChanged += pt =>
+            {
+                var at = pt ?? selected;
+                view.SetPreview(at.HasValue ? board.CheapestRoute(owned, at.Value) : null);
+            };
             view.Tapped += pt => { selected = pt; view.SetSelected(pt); Show(pt); };
             Show(selected);
         }
@@ -98,7 +101,7 @@ namespace GridGame.App
         {
             if (!pt.HasValue)
             {
-                Ui.Para("Hover or tap a node to see the cheapest route to it.", w, "dim");
+                Ui.Para("Tap a node to see the cheapest route to it.", w, "dim");
                 return;
             }
             var node = board.Node(pt.Value);
