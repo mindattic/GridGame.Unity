@@ -1418,7 +1418,7 @@ namespace GridGame.App
             if (dragging && !simulatingDrag && App.Settings.DragTimer)
             {
                 dragTimeLeft -= dt;
-                timerLabel.text = $"{Mathf.Max(0, dragTimeLeft):0.0}s";
+                timerLabel.text = gapLabel != null && gapLabel.style.display == DisplayStyle.Flex ? "" : $"{Mathf.Max(0, dragTimeLeft):0.0}s"; // GG-T1912: the gap caption already shows the seconds
                 if (dragTimeLeft <= 0f && !CoachRail && !coachCancelStep) CommitDrag(); // a coached drag is never forced (GG-T539)
             }
             else if (timerLabel != null) timerLabel.text = "";
