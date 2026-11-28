@@ -158,7 +158,7 @@ A sheet rises from the bottom (`Timing.Standard`, `Ease.Out`) and drops away fas
 
 ## 5. Layout grid and thumb zone
 
-The stage is in design px and scales uniformly: at least 1170 × 2532 (`GameApp.DesignWidth`, `DesignHeight`), up to 1424 wide (9:16) or 2990 tall (9:23). The safe areas come off the top and bottom.
+The stage is in design px and scales uniformly: at least 1170 × 2532 (`GameApp.DesignWidth`, `DesignHeight`), up to 1424 wide (9:16) or 3000 tall (about 9:23). The safe areas come off the top and bottom.
 
 - **Columns**: one content column, `Fit.Column`, with a 24-px gutter (`Fit.Edge`) on each side. Inside it, a 4-column grid with 24-px gutters is the default for card grids, and the battle action row's three cells share the width evenly. Grids keep even gutters (POL-C8).
 - **Vertical bands, top to bottom**: safe top, header or top bar (150), body (flex), footer (132, optional), nav (132), safe bottom.

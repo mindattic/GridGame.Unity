@@ -646,7 +646,7 @@ namespace GridGame.App
     }
 
     /// <summary>Aspect-agnostic layout units (GG-T272): fractions of the safe-area stage, which grows from 1170×2532 up to
-    /// 3:4 (1899 wide) or 9:23 (2990 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
+    /// 3:4 (1899 wide) or 9:23 (3000 tall) (§26.3, GG-T398). Read them when a screen builds; the router rebuilds the
     /// current screen on <see cref="GameApp.StageResized"/> (the battle re-lays itself out).</summary>
     public static class Fit
     {

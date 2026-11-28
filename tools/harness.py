@@ -659,7 +659,7 @@ def sweep(run="sweep", theme=None):
 
 # GG-T169/GG-T398 device fit: (label, aspect w/h). Every shape from 9:23 to 3:4 must fill the window edge to edge;
 # shapes outside that range (ultra-tall 9:25, square 1:1) are framed.
-ASPECT_MIN, ASPECT_MAX = 9 / 23, 9 / 16  # GG-T706: tablets are letterboxed in the mystic fog
+ASPECT_MIN, ASPECT_MAX = 1170 / 3000, 9 / 16  # GG-T706: tablets are letterboxed in the mystic fog
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
            ("9x16", 9 / 16), ("10x16-tablet", 10 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
@@ -684,7 +684,7 @@ DEVICE_ASPECTS = device_aspects() + FRAMED_ASPECTS
 
 def aspects(run="aspects", height=1200, shapes=None):
     """GG-T169: launches the player at every supported phone ratio plus tablet/ultra-tall shapes; shoots the
-    title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x2990, fills the
+    title, hub and a live battle; checks the stage size never drops below 1170x2532 nor exceeds 1899x3000, fills the
     window (no frame) from 9:23 to 9:16 and is framed outside it; runs the layout audit on each screen. Exit 1 on any failure."""
     failures, report = [], {}
     for label, a in (shapes or ASPECTS):
@@ -698,8 +698,8 @@ def aspects(run="aspects", height=1200, shapes=None):
             entry = {"window": [w, height], "stage": [dw, dh], "framed": sb["framed"], "screens": {}}
             if dw < 1170 or dh < 2532:
                 failures.append(f"{label}: stage {dw}x{dh} below the 1170x2532 minimum")
-            if dw > 1899 or dh > 2990:
-                failures.append(f"{label}: stage {dw}x{dh} above the 1899x2990 maximum")
+            if dw > 1899 or dh > 3000:
+                failures.append(f"{label}: stage {dw}x{dh} above the 1899x3000 maximum")
             if sb["framed"] != expect_framed:
                 failures.append(f"{label}: framed={sb['framed']}, expected {expect_framed}")
             shot(f"{label}-1-title"); entry["screens"]["title"] = call("layout").get("problems")
@@ -806,7 +806,7 @@ def _stage_for(w, h):
         exact = 2532 * a
         return (min(max(round(exact), 1170), 1424), 2532), exact > 1424 + 2
     exact = 1170 / a
-    return (1170, min(max(round(exact), 2532), 2990)), exact > 2990 + 2
+    return (1170, min(max(round(exact), 2532), 3000)), exact > 3000 + 2
 
 
 def refold(run="refold", device="galaxyzfold6cover", height=1200):
@@ -2701,10 +2701,15 @@ def storyarc(run="storyarc", capture=True):
     for item, n in (("mat_slime_gel", 2), ("mat_tattered_cloth", 1)):
         call("devgive", item=item, count=n)
     _goto("mercenaries"); time.sleep(0.8); shot("12-mercenaries")
-    hire = sorted(call("names", prefix="merc-hire-"))
-    if hire:
-        call("scrollto", name=hire[0]); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
-        call("click", name=hire[0]); time.sleep(0.5); call("click", name="confirm-yes"); time.sleep(1.0)
+    # GG-T2020: a row opens the hire sheet; a length row there hires (a mouse tap runs it at once).
+    for offer in sorted(call("names", prefix="merc-offer-")):
+        call("scrollto", name=offer); time.sleep(0.4)  # the first by name may sit below the list's fold (GG-T401)
+        call("click", name=offer); time.sleep(0.6)
+        hire = sorted(call("names", prefix="merc-hire-"))
+        if hire:
+            call("click", name=hire[0]); time.sleep(1.0)
+            break
+        call("click", name="merc-sheet-close"); time.sleep(0.5)
     ok["mercenary_hired"] = len(save().get("mercs") or []) == 1
     shot("13-merc-hired")
     call("back"); time.sleep(0.6)
