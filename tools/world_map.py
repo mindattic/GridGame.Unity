@@ -1554,6 +1554,7 @@ def draft_region(g, s, region, art, tiles, state=None):
     final.update({n["Id"]: n for n in hand["Nodes"]})
     cutters = [n for n in final.values() if n.get("Kind") in ("Bridge", "Pass", "Waystone")]
 
+    width, height = g["img"].size
     land = g["cost"][np.isfinite(g["cost"])]
     median_cost = float(np.median(land)) if len(land) else 0.0
     edges, seen = [], set()
@@ -1573,7 +1574,8 @@ def draft_region(g, s, region, art, tiles, state=None):
         for (a, b), pts in zip(zip(ids, ids[1:]), split_polyline(poly, [c[:2] for c in cuts])):
             if a == b or a not in final or b not in final:
                 continue
-            pts = [(float(final[a]["X"]), float(final[a]["Y"]))] + [tuple(map(float, q)) for q in pts[1:-1]] + \
+            pts = [(float(final[a]["X"]), float(final[a]["Y"]))] + \
+                  [(min(max(float(x), 0.0), width), min(max(float(y), 0.0), height)) for x, y in pts[1:-1]] + \
                   [(float(final[b]["X"]), float(final[b]["Y"]))]
             pts = [q for i, q in enumerate(pts) if i == 0 or np.hypot(q[0] - pts[i - 1][0], q[1] - pts[i - 1][1]) > 0.05]
             if len(pts) < 2:
@@ -1597,7 +1599,6 @@ def draft_region(g, s, region, art, tiles, state=None):
     del_signs = {d.get("Id") for d in deleted if d.get("Type") == "Roadsigns"}
     signs = [x for x in signs if x["Id"] not in hand_signs and x["Id"] not in del_signs]
 
-    width, height = g["img"].size
     machine = {"Id": region, "Art": art, "Width": width, "Height": height, "Tiles": tiles,
                "Nodes": nodes, "Edges": edges, "Roadsigns": signs}
     draft = dict(machine, Art=hand.get("Art", art), Tiles=hand.get("Tiles", tiles),
@@ -1708,7 +1709,8 @@ def main(argv=None):
     c.add_argument("image")
     c.add_argument("--region", required=True, help="region id in world_map_palettes.json")
     c.add_argument("--draft", help="also write the region into this draft world.json (hand edits kept, record in "
-                                   "<stem>.machine.json); a scratch path, never Assets/")
+                                   "<stem>.machine.json); a scratch path, never Assets/; check it with "
+                                   "dotnet run --project tools/world_check -- <draft>")
     c.add_argument("--art", help="draft region's Art Resources path (default Overworld/<region>)")
     c.add_argument("--tiles", type=int, help="draft region's Tiles (default the palette's tiles, else %d)" % DRAFT_TILES)
     c.add_argument("--k", type=int, help="cluster count (default: the palette entry's k)")
