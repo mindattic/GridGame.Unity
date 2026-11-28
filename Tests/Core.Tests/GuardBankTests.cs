@@ -1,14 +1,35 @@
-﻿using System.Linq;
+using System.Collections.Generic;
+using System.Linq;
 using GridGame.Core.Battle;
 using NUnit.Framework;
 using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T189 (Â§2.5, Â§3.1.9): Guard ends the turn early and banks the unused turn time into the mana bubble.</summary>
+    /// <summary>GG-T189 (§2.5), GG-T1807 (§3.1.0): Guard ends the turn early and banks the unused turn time as a damped
+    /// mana gain to every spell meter.</summary>
     public class GuardBankTests
     {
         private static Unit Wolf(BattleState s) => s.Units.First(u => u.Def.Id == "wolf" && u.Alive);
+
+        /// <summary>A knight with Fireball (full at 2 x 100) and a cleric with Heal (full at 1 x 100), the wolf
+        /// <paramref name="wolfIp"/> into its bar.</summary>
+        private static (BattleState s, Unit knight, Unit cleric) Party(int wolfIp)
+        {
+            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
+            var k = Hero(s, "knight");
+            var c = Hero(s, "cleric");
+            k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
+            c.Bar[0] = new AbilitySlot { AbilityId = "heal" };
+            Wolf(s).SetIp(s, wolfIp);
+            return (s, k, c);
+        }
+
+        private static ManaGainedEvent GuardGain(List<BattleEvent> ev) =>
+            ev.OfType<ManaGainedEvent>().SingleOrDefault(g => g.Reason == "guard");
+
+        private static ManaMeterDelta Delta(ManaGainedEvent g, Unit u, int slot) =>
+            g.Meters.SingleOrDefault(d => d.UnitId == u.Id && d.Slot == slot);
 
         [Test]
         public void Guard_conversion_is_proportional_to_time_left_and_capped()
@@ -20,7 +41,6 @@ namespace GridGame.Tests
             Assert.That(BattleEngine.GuardChargeFor(2f), Is.EqualTo(2 * BattleEngine.GuardChargeFor(1f)));
             Assert.That(BattleEngine.GuardChargeFor(1000f), Is.EqualTo(BattleConfig.GuardMaxCharge));
             Assert.That(BattleEngine.GuardChargeFor(float.MaxValue), Is.EqualTo(BattleConfig.GuardMaxCharge));
-            Assert.That(BattleConfig.GuardMaxCharge, Is.LessThan(BattleConfig.ManaChargePerOrb), "one Guard fills part of a bubble, never a whole orb");
         }
 
         [Test]
@@ -37,63 +57,91 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Guard_fills_the_mana_bubble_by_the_time_it_gives_up()
+        public void Guard_adds_the_same_points_to_every_spell_meter()
         {
-            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
-            Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
-            s.ManaCharge = 0;
+            var (s, k, c) = Party(0);
             int expected = BattleEngine.GuardCharge(s);
             Assert.That(expected, Is.GreaterThan(0));
-            var ev = BattleEngine.Apply(s, new ShieldCommand());
-            var charge = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "guard");
-            Assert.That(charge.Amount, Is.EqualTo(expected));
-            Assert.That(charge.Total, Is.EqualTo(expected));
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "guard"), Is.False, "a partial bubble mints no orb");
+            Assert.That(BattleEngine.DampedCharge(s, expected), Is.EqualTo(expected), "no meter is full, so nothing is damped");
 
-            // A Guard with more of the turn ahead (the wolf far from ACT) banks more, up to the cap.
-            var (far, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
-            Wolf(far).SetIp(far, 0);
-            int farCharge = BattleEngine.GuardCharge(far);
-            Assert.That(farCharge, Is.GreaterThanOrEqualTo(expected));
-            Assert.That(farCharge, Is.LessThanOrEqualTo(BattleConfig.GuardMaxCharge));
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+
+            Assert.That(ev.OfType<ManaChargedEvent>().Single(e => e.Reason == "guard").Amount, Is.EqualTo(expected));
+            var g = GuardGain(ev);
+            Assert.That(g, Is.Not.Null);
+            Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That(g.Meters.Count, Is.EqualTo(2), "one meter per Spell slot of every living hero");
+            Assert.That(Delta(g, k, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
+            Assert.That(Delta(g, c, 0).After, Is.EqualTo(System.Math.Min(expected, s.ManaFull(c, 0))));
+            Assert.That(Delta(g, k, 0).Full, Is.EqualTo(2 * BattleConfig.ManaPointsPerOrb), "Fireball costs 2");
+            Assert.That(Delta(g, c, 0).Full, Is.EqualTo(1 * BattleConfig.ManaPointsPerOrb), "Heal costs 1, so the same points fill it twice as fast");
+            Assert.That(ev.Any(e => e is OrbMintedEvent), Is.False, "Guard mints no orb");
         }
 
         [Test]
-        public void Guard_earns_nothing_while_the_bank_holds_12()
+        public void Guard_earns_more_with_more_of_the_turn_ahead_up_to_the_cap()
         {
-            // GG-T673: once the orb row is full, earning stops until a spell spends an orb, so a Guard banks no charge and mints no orb.
-            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
-            Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
-            s.Bank.Add(s.Bank.Capacity);
-            Assert.That(s.Bank.Count, Is.EqualTo(ManaBank.DefaultCapacity));
-            s.ManaCharge = BattleConfig.ManaChargePerOrb - 1;
-            var ev = BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "guard"), Is.False, "a full bank mints no orb");
-            Assert.That(ev.Any(e => e is ManaChargedEvent c && c.Reason == "guard"), Is.False, "a full bank earns no charge");
-            Assert.That(s.Bank.Count, Is.EqualTo(ManaBank.DefaultCapacity));
-            Assert.That(s.ManaCharge, Is.EqualTo(BattleConfig.ManaChargePerOrb - 1));
+            var (near, _, _) = Party(BattleConfig.BarLength - 1);
+            var (far, _, _) = Party(0);
+            Assert.That(BattleEngine.GuardCharge(far), Is.GreaterThanOrEqualTo(BattleEngine.GuardCharge(near)));
+            Assert.That(BattleEngine.GuardCharge(far), Is.LessThanOrEqualTo(BattleConfig.GuardMaxCharge));
         }
 
         [Test]
-        public void Guard_with_room_in_the_bank_lands_the_rolled_over_orb()
+        public void Guard_is_damped_by_the_share_of_full_meters()
         {
-            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
-            Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
-            int before = s.Bank.Count;
-            s.ManaCharge = BattleConfig.ManaChargePerOrb - 1;
+            var (s, k, c) = Party(0);
+            s.SetMana(c.Id, 0, s.ManaFull(c, 0)); // one of the two meters is full
+            int raw = BattleEngine.GuardCharge(s);
+            int expected = System.Math.Max(1, (int)System.Math.Round(raw * (1f - BattleConfig.ChargeFullnessDamping * (1 / 2f))));
+
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "guard" && o.Landed), Is.True);
-            Assert.That(s.Bank.Count, Is.GreaterThanOrEqualTo(before + 1));
+
+            var g = GuardGain(ev);
+            Assert.That(g.Amount, Is.EqualTo(expected));
+            Assert.That(Delta(g, k, 0).Delta, Is.EqualTo(System.Math.Min(expected, s.ManaFull(k, 0))));
+            Assert.That(Delta(g, c, 0), Is.Null, "a full meter takes nothing");
+        }
+
+        [Test]
+        public void Guard_fills_a_meter_only_to_its_full_and_spills_nothing()
+        {
+            var (s, k, c) = Party(0);
+            int gain = BattleEngine.GuardCharge(s);
+            const int room = 1;
+            Assert.That(gain, Is.GreaterThan(room));
+            s.SetMana(c.Id, 0, s.ManaFull(c, 0) - room);
+
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+
+            var g = GuardGain(ev);
+            Assert.That(Delta(g, c, 0).Delta, Is.EqualTo(room));
+            Assert.That(Delta(g, c, 0).After, Is.EqualTo(s.ManaFull(c, 0)));
+            Assert.That(g.Readied.Select(d => (d.UnitId, d.Slot)), Is.EqualTo(new[] { (c.Id, 0) }));
+            Assert.That(ev.OfType<SpellReadyEvent>().Count(r => r.UnitId == c.Id && r.Slot == 0), Is.EqualTo(1));
+            Assert.That(Delta(g, k, 0).Delta, Is.EqualTo(gain), "the Heal's leftover does not spill into the Fireball");
+        }
+
+        [Test]
+        public void Guard_earns_nothing_while_every_spell_meter_is_full()
+        {
+            var (s, k, c) = Party(0);
+            s.SetMana(k.Id, 0, s.ManaFull(k, 0));
+            s.SetMana(c.Id, 0, s.ManaFull(c, 0));
+            var ev = BattleEngine.Apply(s, new ShieldCommand());
+            Assert.That(ev.Any(e => e is ManaChargedEvent m && m.Reason == "guard"), Is.False);
+            Assert.That(GuardGain(ev), Is.Null);
+            Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(s.ManaFull(k, 0)));
+            Assert.That(s.ManaIn(c.Id, 0), Is.EqualTo(s.ManaFull(c, 0)));
         }
 
         [Test]
         public void Guard_ends_the_turn_and_banks_before_the_enemy_acts()
         {
-            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
-            Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
+            var (s, _, _) = Party(BattleConfig.BarLength - 1);
             long clock = s.Clock;
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            int banked = ev.FindIndex(e => e is ManaChargedEvent c && c.Reason == "guard");
+            int banked = ev.FindIndex(e => e is ManaGainedEvent g && g.Reason == "guard");
             int enemy = ev.FindIndex(e => e is TurnStartedEvent);
             Assert.That(banked, Is.GreaterThanOrEqualTo(0));
             Assert.That(enemy, Is.GreaterThan(banked), "the turn time is banked when Guard is pressed, then the enemy acts");
@@ -104,12 +152,11 @@ namespace GridGame.Tests
         [Test]
         public void Guard_drops_a_pending_drag_timer_bank_instead_of_stacking_it()
         {
-            var (s, _) = Battle(Mini(), Stage(("wolf", 0, 0)), ("knight", 5, 7), ("cleric", 4, 7));
+            var (s, _, _) = Party(BattleConfig.BarLength - 1);
             s.PendingTimeBankSeconds = BattleConfig.DragTimerSeconds;
-            Wolf(s).SetIp(s, BattleConfig.BarLength - 1);
             var ev = BattleEngine.Apply(s, new ShieldCommand());
-            Assert.That(ev.Any(e => e is OrbMintedEvent o && o.Reason == "time bank"), Is.False);
-            Assert.That(ev.Any(e => e is ManaChargedEvent c && c.Reason == "guard"), Is.True);
+            Assert.That(ev.Any(e => e is ManaGainedEvent g && g.Reason == "time bank"), Is.False);
+            Assert.That(GuardGain(ev), Is.Not.Null);
         }
     }
 
