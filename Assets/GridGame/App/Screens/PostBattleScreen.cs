@@ -355,24 +355,31 @@ namespace GridGame.App
             string nextId = idx >= 0 && idx + 1 < drills.Count && c.TryStage(drills[idx + 1]) != null ? drills[idx + 1] : null;
 
             bool first = idx == 0 && !report.Practice; // GG-T1958: The Trap plays before the crawl; its win is the first VICTORY
-            var title = Ui.Text(!report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
+            bool fellBack = report.Withdrawn && !report.Practice; // GG-T2138: a prologue battle's scripted withdrawal goes on
+            bool passed = report.Victory || fellBack;
+            var title = Ui.Text(fellBack ? "FALL BACK" : !report.Victory ? "TRY AGAIN" : first ? "VICTORY" : "DRILL CLEARED", "t-display shadow", col);
             title.name = "drill-title";
             Fonts.UseDisplay(title);
-            title.style.color = report.Victory ? Palette.Gold : Palette.Bad;
+            title.style.color = passed ? Palette.Gold : Palette.Bad;
             string where = idx >= 0 ? $"Drill {idx + 1} of {drills.Count} · {NameOf(c, report, stageId)}" : NameOf(c, report, stageId);
             Ui.Text(where, "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
 
             var w = Ui.Panel(col, null, true);
             Ui.Margin(w, top: Space.S48);
             var list = Ui.List(w).contentContainer;
-            var t = Ui.Text(!report.Victory ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
+            var t = Ui.Text(fellBack && !string.IsNullOrEmpty(report.WithdrawLine) ? report.WithdrawLine
+                : !passed ? "Nothing is lost in a drill, Commander. Run us through it again from the start."
                 : first ? "That's the trap, Commander. Catch a foe between two of us and it falls."
                 : nextId != null ? "Drill cleared. We're ready for the next, Commander."
                 : "That's all we know, Commander. Lead us out.", "kit-text", list);
             t.name = "drill-line";
             t.style.whiteSpace = WhiteSpace.Normal;
+            // GG-T2138: a prologue battle is a story battle and pays out like one.
+            if (report.Gold > 0) Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold");
+            if (report.XpEach > 0) Ui.MenuRow("XP each", $"+{report.XpEach}", null, list).WithKindIcon(RowKind.Hero).name = "results-xp";
             TurnsRow(list);
             ComboRows(c, list);
+            if (report.Items.Count > 0) RevealItems(report.Items, c, list);
 
             var row = Ui.El("row", col);
             row.style.justifyContent = Justify.Center;
@@ -381,7 +388,7 @@ namespace GridGame.App
                 onContinue = () => App.Router.Back(); // GG-T1647: practice returns to Settings, never touching the onboarding
                 RowIcon.IconButton("Back to Settings", RowKind.Enter, Go, "btn--primary", row).name = "continue";
             }
-            else if (!report.Victory)
+            else if (!passed)
             {
                 onContinue = () => StageLauncher.Launch(stageId, true);
                 RowIcon.IconButton("Retry", RowKind.NewGamePlus, Go, "btn--primary", row).name = "retry";
@@ -417,7 +424,7 @@ namespace GridGame.App
                 RowIcon.IconButton("To Camp", RowKind.Station, Go, "btn--primary", row).name = "continue";
             }
             Ui.El("", col).style.height = Space.S48;
-            reveals.Add(App.StartCoroutine(TitleCue(title, report.Victory)));
+            reveals.Add(App.StartCoroutine(TitleCue(title, passed)));
 
             void Go()
             {
