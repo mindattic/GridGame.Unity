@@ -3984,6 +3984,8 @@ persistentDataPath/Profiles/
 | Add a battle animation | `BattleScreen.Playback.cs` `Animate` switch | awaited beat, `Fx` for motion |
 | Add a sound | `Resources/Audio/Sfx` + `Audio.Cue` | Credits.txt attribution |
 
+**Owner walkthrough notes (GG-T1939).** With Developer options on (`DevOptions.Enabled`), a corner Note button and the battle pause menu's Note row capture the screen and a typed comment into `persistentDataPath/feedback/<timestamp>/` (`shot.png`, `note.json`: comment, screen id, battle stage/wave/units, build, device, time); `tools/import_feedback.py` files each as a fix ticket. Dev-only; not part of the player-facing design.
+
 ---
 
 ## 18. Glossary

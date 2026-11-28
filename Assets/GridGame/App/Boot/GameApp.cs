@@ -153,6 +153,7 @@ namespace GridGame.App
             TextFit.Install(Document.rootVisualElement); // GG-T305: every wrapped line and every overflowing one-liner
             ApplySettings(); // the profile's settings hold on the title screen too, before any save is loaded
             IdleFrameRate.Install(this); // GG-T1547
+            Dev.FeedbackNotes.Install(this); // GG-T1939
 
             // GG-T775: `-turnMode <name>` plays that mode this run (TurnModeSetting.LaunchOverride; never saved to settings.json). A save's New Game lock still wins.
             var turnModeArg = CommandLine.Value("-turnMode");
