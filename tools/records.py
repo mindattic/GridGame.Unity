@@ -77,12 +77,11 @@ def analyse(recs):
                             roles[role_of.get(src["id"], "?")]["healing"] += e["Amount"]
                     elif ty == "Died":
                         c["heroDeaths" if e["Team"] == "Hero" else "kills"] += 1
-                    elif ty == "ManaCharged":
-                        c["charge"] += e["Amount"]
-                    elif ty == "OrbMinted" and e.get("Landed"):
-                        c["orbs"] += 1
-                    elif ty == "OrbsSpent":
-                        c["orbsSpent"] += e["Count"]
+                    elif ty == "ManaGained" and e["Amount"] > 0:
+                        c["gained"] += e["Amount"]
+                        c["readied"] += len(e.get("Readied", []))
+                    elif ty == "SpellManaSpent":
+                        c["manaSpent"] += e["Points"]
                     elif ty == "PincerFormed" and e["Team"] == "Hero":
                         c["pincers"] += 1
                         c["chains"] += 1 if e["ChainIndex"] > 0 else 0
@@ -91,11 +90,11 @@ def analyse(recs):
                     elif ty == "BuffApplied" and e["BuffId"] == "taunting":
                         c["taunts"] += 1
         n = len(rs)
-        print("wave  turns  dmgTaken  deaths  potions  pincers chains  charge orbs spent  pickups taunts guards")
+        print("wave  turns  dmgTaken  deaths  potions  pincers chains  mana  readied  spent  pickups taunts guards")
         for w in sorted(wave):
             c = wave[w]
             print(f"{w:4} {c['turns'] / n:6.1f} {c['heroDmgTaken'] / n:9.0f} {c['heroDeaths'] / n:7.2f} {c['potions'] / n:8.2f} "
-                  f"{c['pincers'] / n:8.1f} {c['chains'] / n:6.1f} {c['charge'] / n:7.0f} {c['orbs'] / n:4.1f} {c['orbsSpent'] / n:5.1f} "
+                  f"{c['pincers'] / n:8.1f} {c['chains'] / n:6.1f} {c['gained'] / n:5.0f} {c['readied'] / n:8.1f} {c['manaSpent'] / n:6.0f} "
                   f"{c['pickups'] / n:8.2f} {c['taunts'] / n:6.2f} {c['guards'] / n:6.1f}")
         print("role contribution per battle:", {k: {kk: round(vv / n) for kk, vv in v.items()} for k, v in roles.items()})
         print("damage taken by enemy brain per battle:", {k: round(v / n) for k, v in brains.most_common()})
@@ -104,6 +103,11 @@ def analyse(recs):
 
 # Events that end an ability's attribution window: the next action, turn, pincer or enemy swing.
 BOUNDARY = {"AbilityResolved", "ItemUsed", "ActionBegan", "TurnStarted", "PincerFormed", "Attack", "WaveStarted", "BattleEnded"}
+
+
+def is_legacy(record):
+    """Records before the per-spell meters (rulesVersion 2, GG-T1812) carry a bank and charge, not meters."""
+    return record.get("rulesVersion", 1) < 2
 
 
 def ability_usage(recs, known=None):
@@ -135,11 +139,11 @@ def ability_usage(recs, known=None):
                 ty = e["type"]
                 credit_utility(e, ty, team, active, buffs, stats, enemy_turn, hero_action, ticked)
                 ticked = (e["UnitId"], e["BuffId"]) if ty == "BuffTicked" else None
-                if ty == "OrbMinted":
-                    mana["minted"] += 1
-                    mana["landed" if e.get("Landed") else "overflowed"] += 1
-                elif ty == "OrbsSpent":
-                    mana["spent"] += e.get("Count", 0)
+                if ty == "ManaGained" and e["Amount"] > 0:
+                    mana["gained"] += e["Amount"]
+                    mana["readied"] += len(e.get("Readied", []))
+                elif ty == "SpellManaSpent":
+                    mana["spent"] += e.get("Points", 0)
                 if ty in BOUNDARY:
                     if ty == "ItemUsed":
                         cur, caster, item = None, e["UserId"], e["ItemId"]
@@ -176,8 +180,8 @@ def ability_usage(recs, known=None):
                     c["traps"] += 1
                 elif ty == "Revived":
                     c["revives"] += 1
-                elif ty == "OrbMinted" and e.get("Landed"):
-                    c["orbs"] += 1
+                elif ty == "ManaGained" and e["Amount"] > 0 and team.get(e.get("SourceId")) == "Hero":
+                    c["orbs"] += e["Amount"] / 100
     return stats, mana
 
 
@@ -288,9 +292,9 @@ def print_abilities(recs, known):
     n = len(recs)
     wins = sum(1 for r in recs if r["outcome"]["phase"] == "Victory")
     print(f"### {n} battles - {wins} victories - {sum(c['uses'] for c in stats.values())} hero ability resolutions\n")
-    if mana["minted"]:
-        print(f"Mana: {mana['landed'] / n:.1f} orbs banked / battle, {mana['overflowed'] / n:.1f} overflowed (bank full), "
-              f"{mana['spent'] / n:.1f} spent; {100 * mana['overflowed'] / mana['minted']:.0f}% of minted orbs wasted.\n")
+    if mana["gained"]:
+        print(f"Mana: {mana['gained'] / n:.0f} points gained / battle, {mana['spent'] / n:.0f} spent on casts, "
+              f"{mana['readied'] / n:.1f} spells filled.\n")
     print("| ability | kind | cost | uses | /battle | dmg/use | heal/use | kills | status | tempo/move | impact/use |")
     print("|---|---|---|---|---|---|---|---|---|---|---|")
     rows = sorted(stats.items(), key=lambda kv: -impact(kv[1]))
