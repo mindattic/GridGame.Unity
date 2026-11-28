@@ -281,6 +281,11 @@
 .menu-row--compact .menu-icon { width: var(--size-icon-button); height: var(--size-icon-button); margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: var(--size-icon); height: var(--size-icon); margin-right: var(--space-16); background-size: contain; }
+/* A set icon in text (RowIcon.Line / Prefix, docs/ICONS.md): inline size, then its label, which wraps and is never cut. */
+.icon-inline { width: var(--size-icon-inline); height: var(--size-icon-inline); flex-shrink: 0; margin-right: var(--space-8); background-size: contain; }
+.icon-inline--value { margin-left: var(--space-16); }
+.icon-line { flex-direction: row; align-items: center; }
+.icon-line > Label { flex-grow: 1; flex-shrink: 1; white-space: normal; }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 /* Every button stands on a darker lip (the thick bottom border). Pressing sinks it onto the lip. */
