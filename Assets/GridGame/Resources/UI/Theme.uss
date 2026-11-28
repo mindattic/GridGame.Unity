@@ -63,6 +63,17 @@
     --space-64: 64px;
     --space-96: 96px;
     --measure-text: 720px; /* POL-A5, GG-T1899: the readable line (about 48 characters) for a long description */
+    /* Corner radii (Tokens.cs Radius); tools/design_tokens.py lists each one's uses on the design-system page */
+    --radius-3: 3px;
+    --radius-6: 6px;
+    --radius-8: 8px;
+    --radius-10: 10px;
+    --radius-12: 12px;
+    --radius-14: 14px;
+    --radius-16: 16px;
+    --radius-17: 17px;
+    --radius-18: 18px;
+    --radius-22: 22px;
 }
 
 /* GG-T770 (owner: "all these different font sizes make it look messy"): every GUI label draws at ONE size, --type-base.
@@ -112,7 +123,7 @@
     position: absolute;
     border-width: 5px;
     border-color: var(--color-frame);
-    border-radius: 22px;
+    border-radius: var(--radius-22);
     background-color: rgb(0, 0, 0);
 }
 
@@ -127,7 +138,7 @@
 .window {
     border-width: 5px;
     border-color: var(--color-frame);
-    border-radius: 18px;
+    border-radius: var(--radius-18);
     padding: var(--space-16) var(--space-24); /* Kit.PadY / Kit.PadX (GG-T454) */
     margin: var(--space-8);
     background-size: 100% 100%;
@@ -187,7 +198,7 @@
     align-items: center;
     min-height: var(--size-target);
     padding: var(--space-8) var(--space-16) var(--space-8) var(--space-8);
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-width: 3px;
     border-color: rgba(0, 0, 0, 0);
     margin: var(--space-12) 0;
@@ -221,7 +232,7 @@
     margin: var(--space-12);
     border-width: 4px;
     border-bottom-width: 12px;
-    border-radius: 16px;
+    border-radius: var(--radius-16);
     border-color: var(--color-frame);
     border-bottom-color: rgb(120, 132, 196);
     background-color: rgb(34, 58, 150);
@@ -237,7 +248,7 @@
 
 .role-badge {
     border-width: 3px;
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     padding: 0 var(--space-8);
     margin: 0 var(--space-8);
     background-color: rgba(4, 6, 20, 0.75);
@@ -266,7 +277,7 @@
 .btn.tap--selected { border-bottom-width: 4px; border-top-color: rgba(0, 0, 0, 0.7); translate: 0 8px; }
 .btn--small.tap--selected { border-bottom-width: 3px; translate: 0 6px; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
-.title-conduit { height: 6px; margin-top: var(--space-8); border-radius: 3px; background-color: rgb(107, 199, 255); border-top-width: 2px; border-top-color: rgb(220, 240, 255); }
+.title-conduit { height: 6px; margin-top: var(--space-8); border-radius: var(--radius-3); background-color: rgb(107, 199, 255); border-top-width: 2px; border-top-color: rgb(220, 240, 255); }
 .splash-copy { margin-top: var(--space-32); }
 .crawl-title { -unity-text-align: middle-center; margin-bottom: var(--space-64); }
 .title-continue { align-items: flex-start; background-color: rgba(20, 24, 60, 0.75); border-width: 3px; border-color: rgb(107, 199, 255); }
@@ -317,7 +328,7 @@
     right: var(--space-16);
     min-width: 44px;
     padding: 0 var(--space-8);
-    border-radius: 22px;
+    border-radius: var(--radius-22);
     background-color: rgb(214, 48, 64);
     color: var(--color-white);
     font-size: var(--type-base);
@@ -335,6 +346,10 @@
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
 .kit-tile--locked { opacity: 0.4; }
+/* GG-T1972: the Equip tab's slot grid, four thumbnails a row; names wrap, never cut off */
+.equip-tile { flex-basis: 21%; height: auto; min-height: 160px; padding: var(--space-8) var(--space-4); justify-content: flex-start; }
+.equip-tile > .kit-tile-label, .equip-tile > .kit-tile-value { white-space: normal; }
+.equip-tile--selected { border-color: var(--color-mana); background-color: rgba(0, 0, 0, 0.38); translate: 0 3px; scale: 0.985 0.985; }
 
 /* ── Tabs ────────────────────────────────────────────────────────────────── */
 .tabs { flex-direction: row; margin: var(--space-8) var(--space-8) 0 var(--space-8); padding: 0 var(--space-12); flex-shrink: 0; } /* edge = tab margin 12 + 12 = gap 24 (POL-C8) */
@@ -344,8 +359,8 @@
     margin: 0 var(--space-12);
     border-width: 4px 4px 0 4px;
     border-color: var(--color-frame);
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    border-top-left-radius: var(--radius-16);
+    border-top-right-radius: var(--radius-16);
     background-color: rgb(18, 28, 84);
     font-size: var(--type-base);
     -unity-text-align: middle-center;
@@ -355,8 +370,8 @@
 .tab--locked { opacity: 0.4; }
 
 /* ── Gauges ──────────────────────────────────────────────────────────────── */
-.gauge { height: 20px; border-radius: 10px; background-color: rgba(0, 0, 0, 0.6); border-width: 2px; border-color: rgba(255, 255, 255, 0.5); overflow: hidden; }
-.gauge-fill { height: 100%; border-radius: 8px; background-color: var(--color-gauge-full); }
+.gauge { height: 20px; border-radius: var(--radius-10); background-color: rgba(0, 0, 0, 0.6); border-width: 2px; border-color: rgba(255, 255, 255, 0.5); overflow: hidden; }
+.gauge-fill { height: 100%; border-radius: var(--radius-8); background-color: var(--color-gauge-full); }
 .gauge-fill--mid { background-color: var(--color-gauge-mid); }
 .gauge-fill--low { background-color: var(--color-gauge-low); }
 
@@ -365,7 +380,7 @@
     position: absolute;
     left: 120px; right: 120px; bottom: 260px;
     padding: var(--space-24) var(--space-32);
-    border-radius: 18px;
+    border-radius: var(--radius-18);
     border-width: 4px;
     border-color: var(--color-frame);
     background-color: rgba(12, 18, 60, 0.96);
@@ -384,7 +399,7 @@
 /* ── Scroll views ────────────────────────────────────────────────────────── */
 .list { flex-grow: 1; }
 .list .unity-scroller--vertical { width: 18px; }
-.list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(236, 238, 255, 0.6); border-radius: 8px; }
+.list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(236, 238, 255, 0.6); border-radius: var(--radius-8); }
 
 /* ── Menu kit (GG-T454, Tokens.cs Kit) ──────────────────────────────────────
    One look for every menu: four type sizes (title 60 in the header, heading 48, body 40, caption 30), windows 24 px from
@@ -399,9 +414,9 @@
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
 .no-cursor .kit-note { margin-left: var(--space-8); } /* GG-T1923: no cursor gutter on touch */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
-.diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+.diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: var(--radius-12); }
 /* Shared count stepper (GG-T1880): boxed value at least a column wide, growing with Text size (GG-T495). */
-.stepper-value { min-width: 70px; flex-shrink: 0; -unity-text-align: middle-center; padding: var(--space-4) var(--space-8); margin: 0 var(--space-4); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+.stepper-value { min-width: 70px; flex-shrink: 0; -unity-text-align: middle-center; padding: var(--space-4) var(--space-8); margin: 0 var(--space-4); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: var(--radius-12); }
 .stepper-btn { padding: 0 var(--space-8); }
 .diamond-steps { flex-wrap: nowrap; padding: 0; }
 .diamond-step { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 0 var(--space-4); }
@@ -462,7 +477,7 @@
     padding: var(--space-16);
     margin: var(--space-12) 0; /* the same 24-px pitch as menu rows (GG-T454) */
     flex-shrink: 0; /* a tall card (a Mercenary's quote, perk and terms) must never be squeezed into the next one (GG-T656) */
-    border-radius: 14px;
+    border-radius: var(--radius-14);
     background-color: rgba(255, 255, 255, 0.05);
 }
 /* A list of few cards (Respec) shares the panel height between them instead of spreading gaps (GG-T1182). */
@@ -470,7 +485,7 @@
 .card--selected { background-color: rgba(140, 170, 255, 0.22); }
 .thumb {
     width: 150px; height: 150px;
-    border-radius: 16px;
+    border-radius: var(--radius-16);
     border-width: 4px;
     border-color: var(--color-frame);
     background-color: rgb(30, 36, 70);
@@ -480,12 +495,12 @@
 
 /* ── Battle unit frame — the same frame as .thumb, so battle and menus share one look ── */
 .unit-frame {
-    border-radius: 16px;
+    border-radius: var(--radius-16);
     border-width: 4px;
     border-color: var(--color-frame);
     overflow: hidden;
 }
-.unit-keyline { position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-width: 4px; border-radius: 12px; }
+.unit-keyline { position: absolute; left: 0; top: 0; right: 0; bottom: 0; border-width: 4px; border-radius: var(--radius-12); }
 .unit-keyline--hero { border-color: var(--color-hero); }
 .unit-keyline--foe { border-color: var(--color-enemy); }
 .unit-keyline--boss { border-color: var(--color-boss); }
@@ -499,7 +514,7 @@
 .colorblind .unit-keyline--boss { border-color: rgb(191, 77, 5); }
 
 /* ── Orb pips (generic mana) ──────────────────────────────────────────── */
-.pip { width: 34px; height: 34px; border-radius: 17px; margin: 0 var(--space-4); border-width: 2px; border-color: rgba(255,255,255,0.8); font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-ink); }
+.pip { width: 34px; height: 34px; border-radius: var(--radius-17); margin: 0 var(--space-4); border-width: 2px; border-color: rgba(255,255,255,0.8); font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-ink); }
 .pip--mana { background-color: var(--color-mana); }
 
 /* ── Rarity colors ───────────────────────────────────────────────────────── */
@@ -529,7 +544,7 @@
 .theme-chrono .stage-frame { border-color: rgb(200, 200, 204); }
 .theme-chrono .window {
     border-width: 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(242, 242, 244);
     border-left-color: rgb(222, 222, 226);
     border-right-color: rgb(132, 132, 138);
@@ -556,8 +571,8 @@
 }
 
 .theme-chrono .tab {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-8);
+    border-top-right-radius: var(--radius-8);
     border-top-color: rgb(242, 242, 244);
     border-left-color: rgb(222, 222, 226);
     border-right-color: rgb(132, 132, 138);
@@ -567,7 +582,7 @@
 .theme-chrono .tab--active { background-color: rgb(116, 116, 120); color: rgb(255, 255, 255); }
 
 .theme-chrono .btn {
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(242, 242, 244);
     border-left-color: rgb(222, 222, 226);
     border-right-color: rgb(132, 132, 138);
@@ -594,7 +609,7 @@
 .theme-granite .stage-frame { border-color: rgb(195, 214, 227); }
 .theme-granite .window {
     border-width: 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(219, 240, 255);
     border-left-color: rgb(216, 236, 251);
     border-right-color: rgb(133, 146, 155);
@@ -621,8 +636,8 @@
 }
 
 .theme-granite .tab {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-8);
+    border-top-right-radius: var(--radius-8);
     border-top-color: rgb(219, 240, 255);
     border-left-color: rgb(216, 236, 251);
     border-right-color: rgb(133, 146, 155);
@@ -632,7 +647,7 @@
 .theme-granite .tab--active { background-color: rgb(118, 129, 137); color: rgb(219, 240, 255); }
 
 .theme-granite .btn {
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(219, 240, 255);
     border-left-color: rgb(216, 236, 251);
     border-right-color: rgb(133, 146, 155);
@@ -652,7 +667,7 @@
 /* ── Slate: Chrono Trigger's default window — gray-blue gradient, light bevel frame, white text ── */
 .theme-slate .window {
     border-width: 6px;
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(236, 238, 246);
     border-left-color: rgb(214, 218, 232);
     border-right-color: rgb(128, 136, 162);
@@ -679,8 +694,8 @@
 
 .theme-slate .tab {
     border-radius: 0;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-8);
+    border-top-right-radius: var(--radius-8);
     border-top-color: rgb(236, 238, 246);
     border-left-color: rgb(214, 218, 232);
     border-right-color: rgb(128, 136, 162);
@@ -690,7 +705,7 @@
 .theme-slate .tab--active { background-color: rgb(112, 122, 154); color: rgb(255, 255, 255); }
 
 .theme-slate .btn {
-    border-radius: 10px;
+    border-radius: var(--radius-10);
     border-top-color: rgb(236, 238, 246);
     border-left-color: rgb(214, 218, 232);
     border-right-color: rgb(128, 136, 162);
@@ -717,9 +732,9 @@
    good / bad / rarity stay semantic. */
 .theme-dark .stage { background-color: rgb(21, 21, 26); color: rgb(232, 232, 236); }
 .theme-dark .letterbox { background-color: rgb(15, 15, 19); }
-.theme-dark .stage-frame { border-width: 2px; border-color: rgb(44, 44, 52); border-radius: 12px; background-color: rgb(21, 21, 26); }
+.theme-dark .stage-frame { border-width: 2px; border-color: rgb(44, 44, 52); border-radius: var(--radius-12); background-color: rgb(21, 21, 26); }
 
-.theme-dark .window { border-width: 2px; border-radius: 10px; border-color: rgb(44, 44, 52); }
+.theme-dark .window { border-width: 2px; border-radius: var(--radius-10); border-color: rgb(44, 44, 52); }
 .theme-dark .window--plain { background-color: rgba(28, 28, 34, 0.97); }
 .theme-dark .window-title { color: rgb(232, 232, 236); }
 .theme-dark .window-sub { color: rgb(153, 153, 153); }
@@ -733,7 +748,7 @@
 .theme-dark .t-display, .theme-dark .depth-lg, .theme-dark .small, .theme-dark .tiny, .theme-dark .t-caption,
 .theme-dark .role-badge, .theme-dark .depth-sm { -unity-text-outline-width: 1px; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
 
-.theme-dark .menu-row { border-radius: 6px; }
+.theme-dark .menu-row { border-radius: var(--radius-6); }
 .theme-dark .menu-row:hover { background-color: rgba(255, 255, 255, 0.04); }
 .theme-dark .menu-row.is-pressed { background-color: rgba(90, 143, 217, 0.26); }
 
@@ -741,7 +756,7 @@
 .theme-dark .btn {
     border-width: 2px;
     border-bottom-width: 7px;
-    border-radius: 8px;
+    border-radius: var(--radius-8);
     border-color: rgb(44, 44, 52);
     border-bottom-color: rgb(10, 10, 13);
     background-color: rgb(38, 38, 46);
@@ -758,7 +773,7 @@
 .theme-dark .btn--small { border-bottom-width: 5px; }
 .theme-dark .btn--small.is-pressed { border-bottom-width: 2px; translate: 0 3px; }
 
-.theme-dark .role-badge { background-color: rgb(21, 21, 26); border-width: 2px; border-radius: 6px; }
+.theme-dark .role-badge { background-color: rgb(21, 21, 26); border-width: 2px; border-radius: var(--radius-6); }
 
 .theme-dark .header { background-color: rgba(21, 21, 26, 0.94); border-bottom-width: 2px; border-color: rgb(44, 44, 52); }
 .theme-dark .header-title { color: rgb(232, 232, 236); }
@@ -766,8 +781,8 @@
 .theme-dark .tab {
     border-width: 2px 2px 0 2px;
     border-color: rgb(44, 44, 52);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-8);
+    border-top-right-radius: var(--radius-8);
     background-color: rgb(28, 28, 34);
     color: rgb(153, 153, 153);
 }
@@ -775,14 +790,14 @@
 
 .theme-dark .gauge { background-color: rgb(21, 21, 26); border-color: rgb(44, 44, 52); }
 
-.theme-dark .toast { background-color: rgba(28, 28, 34, 0.97); border-width: 2px; border-radius: 10px; border-color: rgb(44, 44, 52); color: rgb(232, 232, 236); }
+.theme-dark .toast { background-color: rgba(28, 28, 34, 0.97); border-width: 2px; border-radius: var(--radius-10); border-color: rgb(44, 44, 52); color: rgb(232, 232, 236); }
 .theme-dark .veil { background-color: rgba(5, 6, 8, 0.72); }
 
-.theme-dark .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(153, 153, 153, 0.45); border-radius: 6px; }
+.theme-dark .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(153, 153, 153, 0.45); border-radius: var(--radius-6); }
 
-.theme-dark .card { background-color: rgba(255, 255, 255, 0.03); border-radius: 8px; }
+.theme-dark .card { background-color: rgba(255, 255, 255, 0.03); border-radius: var(--radius-8); }
 .theme-dark .card--selected { background-color: rgba(90, 143, 217, 0.14); }
-.theme-dark .thumb { border-width: 2px; border-radius: 8px; border-color: rgb(44, 44, 52); background-color: rgb(38, 38, 46); }
+.theme-dark .thumb { border-width: 2px; border-radius: var(--radius-8); border-color: rgb(44, 44, 52); background-color: rgb(38, 38, 46); }
 
 /* ── Menu theme: Manapunk (GG-T678, BIBLE §11.5; owner 2026-11-22: "not steampunk but manapunk... like a high tech
    facility but also old and abandoned"). Between Dark and Classic: Dark's flat, quiet surfaces, tinted toward the
@@ -793,9 +808,9 @@
    dim #A4A3BC (both above 6:1 on every pane). gold / good / bad / rarity stay semantic. */
 .theme-manapunk .stage { background-color: rgb(12, 12, 22); color: rgb(230, 230, 238); }
 .theme-manapunk .letterbox { background-color: rgb(7, 7, 14); }
-.theme-manapunk .stage-frame { border-width: 2px; border-color: rgb(96, 100, 111); border-radius: 12px; background-color: rgb(12, 12, 22); }
+.theme-manapunk .stage-frame { border-width: 2px; border-color: rgb(96, 100, 111); border-radius: var(--radius-12); background-color: rgb(12, 12, 22); }
 
-.theme-manapunk .window { border-width: 2px; border-radius: 10px; border-color: rgb(96, 100, 111); border-bottom-color: rgb(52, 54, 63); border-top-color: rgb(117, 144, 200); }
+.theme-manapunk .window { border-width: 2px; border-radius: var(--radius-10); border-color: rgb(96, 100, 111); border-bottom-color: rgb(52, 54, 63); border-top-color: rgb(117, 144, 200); }
 .theme-manapunk .window--plain { background-color: rgba(26, 25, 48, 0.94); }
 .theme-manapunk .window-title { color: rgb(230, 230, 238); }
 .theme-manapunk .window-sub { color: rgb(164, 163, 188); }
@@ -808,7 +823,7 @@
 .theme-manapunk .t-display, .theme-manapunk .depth-lg, .theme-manapunk .small, .theme-manapunk .tiny, .theme-manapunk .t-caption,
 .theme-manapunk .role-badge, .theme-manapunk .depth-sm { -unity-text-outline-width: 1px; text-shadow: 0 0 0 rgba(0, 0, 0, 0); }
 
-.theme-manapunk .menu-row { border-radius: 6px; }
+.theme-manapunk .menu-row { border-radius: var(--radius-6); }
 .theme-manapunk .menu-row:hover { background-color: rgba(164, 163, 188, 0.06); }
 .theme-manapunk .menu-row.is-pressed { background-color: rgba(117, 144, 200, 0.28); }
 
@@ -816,7 +831,7 @@
 .theme-manapunk .btn {
     border-width: 2px;
     border-bottom-width: 7px;
-    border-radius: 8px;
+    border-radius: var(--radius-8);
     border-color: rgb(96, 100, 111);
     border-bottom-color: rgb(14, 14, 24);
     background-color: rgb(42, 40, 64);
@@ -834,7 +849,7 @@
 .theme-manapunk .btn--small { border-bottom-width: 5px; }
 .theme-manapunk .btn--small.is-pressed { border-bottom-width: 2px; translate: 0 3px; }
 
-.theme-manapunk .role-badge { background-color: rgb(12, 12, 22); border-width: 2px; border-radius: 6px; }
+.theme-manapunk .role-badge { background-color: rgb(12, 12, 22); border-width: 2px; border-radius: var(--radius-6); }
 
 .theme-manapunk .header { background-color: rgba(16, 15, 28, 0.94); border-bottom-width: 2px; border-color: rgb(117, 144, 200); }
 .theme-manapunk .header-title { color: rgb(230, 230, 238); }
@@ -847,8 +862,8 @@
 .theme-manapunk .tab {
     border-width: 2px 2px 0 2px;
     border-color: rgb(96, 100, 111);
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-8);
+    border-top-right-radius: var(--radius-8);
     background-color: rgb(26, 25, 48);
     color: rgb(164, 163, 188);
 }
@@ -857,14 +872,14 @@
 /* GG-T678: every meter is a glass tube in a pewter sleeve: lit pewter on top, worn dark below, near-black glass inside. */
 .theme-manapunk .gauge { background-color: rgb(16, 15, 28); border-color: rgb(96, 100, 111); border-top-color: rgb(140, 144, 156); border-bottom-color: rgb(52, 54, 63); }
 
-.theme-manapunk .toast { background-color: rgba(26, 25, 48, 0.97); border-width: 2px; border-radius: 10px; border-color: rgb(96, 100, 111); border-top-color: rgb(117, 144, 200); color: rgb(230, 230, 238); }
+.theme-manapunk .toast { background-color: rgba(26, 25, 48, 0.97); border-width: 2px; border-radius: var(--radius-10); border-color: rgb(96, 100, 111); border-top-color: rgb(117, 144, 200); color: rgb(230, 230, 238); }
 .theme-manapunk .veil { background-color: rgba(5, 5, 12, 0.72); }
 
-.theme-manapunk .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(117, 144, 200, 0.45); border-radius: 6px; }
+.theme-manapunk .list .unity-scroller__slider .unity-base-slider__dragger { background-color: rgba(117, 144, 200, 0.45); border-radius: var(--radius-6); }
 
-.theme-manapunk .card { background-color: rgba(164, 163, 188, 0.04); border-radius: 8px; }
+.theme-manapunk .card { background-color: rgba(164, 163, 188, 0.04); border-radius: var(--radius-8); }
 .theme-manapunk .card--selected { background-color: rgba(117, 144, 200, 0.16); }
-.theme-manapunk .thumb { border-width: 2px; border-radius: 8px; border-color: rgb(96, 100, 111); background-color: rgb(42, 40, 64); }
+.theme-manapunk .thumb { border-width: 2px; border-radius: var(--radius-8); border-color: rgb(96, 100, 111); background-color: rgb(42, 40, 64); }
 
 /* ── Quest journal hand-in card (GG-T237): slides in rather than popping ── */
 .quest-turnin { transition-property: opacity, translate; transition-duration: 0.35s; transition-timing-function: ease-out-back; }

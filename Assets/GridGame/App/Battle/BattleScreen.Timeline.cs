@@ -524,7 +524,7 @@ namespace GridGame.App
 
         private static Color TurnRing(Unit owner) =>
             owner != null && owner.IsIndependent ? (owner.Wanderer ? Palette.Wanderer : Palette.Tamed) // an independent ally's own icon (GG-T303, GG-T342)
-            : owner != null && (owner.Def.HasTag("Boss") || owner.IsMultiTile) ? Palette.TeamBoss : Palette.TeamFoe;
+            : owner != null && (owner.IsBossLike || owner.IsMultiTile) ? Palette.TeamBoss : Palette.TeamFoe;
 
         /// <summary>An icon's own colour: enemy red, boss purple, hero cast teal, enemy charge amber; under Colorblind palette
         /// (GG-T525) hero casts blue, foes and their casts orange, a boss vermilion.</summary>
@@ -568,9 +568,23 @@ namespace GridGame.App
             back.style.display = DisplayStyle.None;
             frame.Add(back);
             if (e.Kind == TimelineKind.Turn) icon.Add(new RecoverRing(IconSpan));
+            if (e.Kind == TimelineKind.Turn && State.UnitById(e.OwnerId) is Unit boss && boss.Team == Team.Enemy && boss.IsBossLike) BossTag(icon);
             AttachTimelineInspect(icon, e);
             icon.RegisterCallback<ClickEvent>(_ => { if (examining) ExamineTimeline(icon, e); else OnTimelineTap(icon, e.OwnerId); }); // GG-T288: a tap selects, a hold reads
             return icon;
+        }
+
+        /// <summary>GG-T1952: a boss's turn diamond wears "BOSS" across its lower tip, in the boss purple.</summary>
+        private static void BossTag(VisualElement icon)
+        {
+            var tag = new Label("BOSS") { name = "tl-boss", pickingMode = PickingMode.Ignore };
+            tag.AddToClassList("shadow");
+            tag.style.position = Position.Absolute;
+            tag.style.left = tag.style.right = Space.S0; tag.style.bottom = Space.S0;
+            tag.style.unityTextAlign = TextAnchor.MiddleCenter;
+            tag.style.fontSize = BoardView.TileLabelFont; Fonts.UseHeavy(tag);
+            tag.style.color = Palette.TeamBoss;
+            icon.Add(tag);
         }
 
         // ── Sync ────────────────────────────────────────────────────────────────
