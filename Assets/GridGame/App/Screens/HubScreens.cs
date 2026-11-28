@@ -230,7 +230,18 @@ namespace GridGame.App
             // each row's key inputs so a player can tell them apart without opening both.
             var resultCounts = visible.Where(x => RecipeDiscovery.IsDiscovered(s, x)).GroupBy(x => x.Result)
                 .ToDictionary(g => g.Key, g => g.Count());
-            foreach (var r in visible)
+            // GG-T2021: what can be made right now comes first, each with the station's verb as a chip; everything else
+            // (short of inputs or gold, rank- or facility-locked, or a "???" tease) follows under one section.
+            string verb = station == CraftStation.Alchemy ? "Brew" : station == CraftStation.Enchant ? "Enchant" : "Craft";
+            bool Ready(RecipeDef r) => RecipeDiscovery.IsDiscovered(s, r) && Crafting.IsUnlocked(s, r) && Facilities.Allows(c, s, r)
+                && Crafting.HasInputs(s, r) && s.Gold >= r.Gold;
+            var ready = visible.Where(Ready).ToList();
+            var rest = visible.Where(r => !Ready(r)).ToList();
+            foreach (var r in ready) AddRow(r, true);
+            if (rest.Count > 0)
+                Ui.Section(station == CraftStation.Alchemy ? "Need ingredients" : "Need materials", list).name = "recipes-need";
+            foreach (var r in rest) AddRow(r, false);
+            void AddRow(RecipeDef r, bool can)
             {
                 var rec = r;
                 VisualElement row;
@@ -239,12 +250,12 @@ namespace GridGame.App
                     var result = c.Item(r.Result);
                     bool tierLocked = !Crafting.IsUnlocked(s, r), facilityLocked = !Facilities.Allows(c, s, r);
                     bool locked = tierLocked || facilityLocked;
-                    bool can = !locked && Crafting.HasInputs(s, r) && s.Gold >= r.Gold;
                     string nameOverride = resultCounts[r.Result] > 1 ? $"{result.Name} — {InputSummary(c, r)}" : null;
                     string lockLabel = tierLocked ? $"🔒 {StationProgress.TierName(r.Tier)}" : $"🔒 {Facilities.NeededName(c, r)}";
                     row = ItemUi.Row(result, locked ? lockLabel : $"{r.Gold} G", () => { onPick?.Invoke(rec); ShowRecipe(detail, c, s, rec, page); }, list, true, false, nameOverride);
                     row.name = "recipe-" + r.Id;
-                    if (!can) row.style.opacity = Dim.Row;
+                    if (can) ReadyChip(row, verb);
+                    else row.style.opacity = Dim.Row;
                 }
                 else
                 {
@@ -254,6 +265,7 @@ namespace GridGame.App
                     row.KindIcon(RowKind.Item); // GG-T717: an undiscovered result shows the Item emblem
                     row.style.opacity = 0.75f;
                 }
+                row.AddToClassList("menu-row--compact");
                 if (sel == r)
                 {
                     Ui.Select(row);
@@ -269,6 +281,17 @@ namespace GridGame.App
             else if (sel != null && !VendorTiers.RecipeOpen(c, s, sel)) ShowLocked(detail, c, s, sel, LockReason(c, s, sel));
             else if (sel != null) ShowRecipe(detail, c, s, sel, page);
             else Ui.Empty("Pick a recipe to see what it needs.", detail);
+        }
+
+        /// <summary>The "Brew" / "Craft" / "Enchant" pill at the end of a recipe row the player can make right now (GG-T2021):
+        /// the bright Good green on the badge's near-black fill, well over 4.5:1 (GG-T1863).</summary>
+        private static void ReadyChip(VisualElement row, string verb)
+        {
+            var chip = Ui.Text(verb, "role-badge", row);
+            chip.name = "recipe-chip";
+            chip.style.fontSize = TypeScale.Base;
+            chip.style.color = Palette.Good;
+            chip.style.borderTopColor = chip.style.borderBottomColor = chip.style.borderLeftColor = chip.style.borderRightColor = Palette.Good;
         }
 
         /// <summary>GG-T538 (§25.0.10): the next tier, shown locked at the foot of the list. Up to
@@ -295,6 +318,7 @@ namespace GridGame.App
                     var rec = r;
                     var row = ItemUi.Row(c.Item(r.Result), value, () => ShowLocked(detail, c, s, rec, LockReason(c, s, rec)), list, true, false);
                     row.name = "recipe-locked-" + r.Id;
+                    row.AddToClassList("menu-row--compact");
                     row.style.opacity = Dim.Row;
                 }
                 if (set.Count > VendorTiers.PreviewRows) Ui.Note($"+{set.Count - VendorTiers.PreviewRows} more {more}", list);
