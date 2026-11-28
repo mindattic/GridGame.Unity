@@ -320,7 +320,7 @@
 .kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: rgba(0, 0, 0, 0); background-color: rgba(107, 199, 255, 0.08); }
 .kit-tile > .menu-icon { width: 56px; height: 56px; margin: 0; }
 .kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; }
-.kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); opacity: 0.7; max-width: 100%; white-space: normal; }
+.kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: rgb(170, 184, 255); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: rgba(107, 199, 255, 0.14); }
 .kit-tile--locked { opacity: 0.4; }
 
