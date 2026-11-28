@@ -304,7 +304,7 @@ namespace GridGame.Tests
             var prot = ev.OfType<BuffAppliedEvent>().Where(b => b.BuffId == BattleConfig.ShieldBuffId).Select(b => b.UnitId).ToList();
             Assert.That(prot, Does.Contain(fast.Id));
             Assert.That(prot, Does.Not.Contain(slow.Id), "the waiting hero isn't covered");
-            Assert.That(ev.OfType<ManaChargedEvent>().First(m => m.Reason == "guard").Amount, Is.EqualTo(damped));
+            Assert.That(ev.OfType<ManaGainedEvent>().First(m => m.Reason == "guard").Amount, Is.EqualTo(damped));
         }
 
         [Test]

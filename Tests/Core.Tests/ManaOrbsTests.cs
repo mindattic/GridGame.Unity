@@ -12,12 +12,11 @@ namespace GridGame.Tests
     public class ManaOrbsTests
     {
         [Test]
-        public void A_new_game_owns_no_orbs_and_its_battle_has_no_orb_cap()
+        public void A_new_game_owns_no_orbs()
         {
             var c = Real;
             var s = Progression.NewGame(c, "T");
             Assert.That(s.OwnedOrbs, Is.EqualTo(0));
-            Assert.That(BattleFactory.Build(c, s, c.CampaignStages()[0].Id, 1).OrbCapacity, Is.EqualTo(0), "nothing caps a battle's mana");
         }
 
         [Test]

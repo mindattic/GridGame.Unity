@@ -123,7 +123,7 @@ namespace GridGame.Tests
             s.TurnEntryOf(Enemy(s, "wolf").Id).Ip = BattleConfig.BarLength - BattleEngine.TurnRatePerTick(s, Enemy(s, "wolf")) * 10; // GG-T311: a 1 s gap, room for a drag
             var k = Hero(s, "knight");
             var ev = Turn(s, new MoveCommand { HeroId = k.Id, Path = P((5, 6)), TimeLeftSeconds = 3.9f });
-            Assert.That(ev.OfType<OrbMintedEvent>().Count(o => o.Reason == "time bank"), Is.EqualTo(3));
+            Assert.That(ev.OfType<ManaGainedEvent>().Where(g => g.Reason == "time bank").Sum(g => g.Orbs), Is.EqualTo(3));
         }
 
         [Test]
@@ -265,7 +265,7 @@ namespace GridGame.Tests
             c.Bar[0] = new AbilitySlot { ItemId = "potion", Charges = 3, MaxCharges = 9 };
             var second = BattleEngine.Apply(s, new UseSlotCommand { HeroId = c.Id, Slot = 0, Target = c.Pos });
             Assert.That(second.Any(e => e is TurnStartedEvent), Is.True);
-            Assert.That(second.OfType<OrbMintedEvent>().Count(o => o.Reason == "time bank"), Is.EqualTo(2));
+            Assert.That(second.OfType<ManaGainedEvent>().Where(g => g.Reason == "time bank").Sum(g => g.Orbs), Is.EqualTo(2));
         }
 
 
@@ -393,7 +393,7 @@ namespace GridGame.Tests
                 if (amp)
                 {
                     Assert.That(ev.OfType<AmplifierUsedEvent>(), Has.Exactly(1).Items);
-                    Assert.That(ev.Any(e => e is ManaChargedEvent o && o.Reason == "amplifier" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.AmplifierCharge)), Is.True);
+                    Assert.That(ev.Any(e => e is ManaGainedEvent o && o.Reason == "amplifier" && ManaEconomyTests.IsDampedFrom(o.Amount, BattleConfig.AmplifierCharge)), Is.True);
                     Assert.That(s.Amplifier == null || ev.OfType<AmplifierSpawnedEvent>().Any(), Is.True);
                 }
                 return ev.OfType<DamagedEvent>().Where(d => d.SourceId == knight.Id).Sum(d => d.Amount);

@@ -214,7 +214,7 @@ namespace GridGame.Tests
                 var (s, _) = Battle(db, Stage(("tank", 2, 3)), heroes.ToArray());
                 var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
                 var tank = s.Units.Single(u => u.Def.Id == "tank");
-                return (ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer").Amount, (tank.MaxHp - tank.Hp) / (float)tank.MaxHp);
+                return (ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "pincer").Amount, (tank.MaxHp - tank.Hp) / (float)tank.MaxHp);
             }
             var lean = Run(false); var crowd = Run(true);
             Assert.That(crowd.share >= lean.share, Is.True, "the supporter adds damage…");
@@ -229,7 +229,7 @@ namespace GridGame.Tests
             var k = Hero(s, "knight");
             k.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
-            int earned = ev.OfType<ManaChargedEvent>().Where(x => x.Reason == "pincer").Sum(x => x.Amount);
+            int earned = ev.OfType<ManaGainedEvent>().Where(x => x.Reason == "pincer").Sum(x => x.Amount);
             Assert.That(earned, Is.GreaterThan(0));
             Assert.That(ev.OfType<ManaGainedEvent>().Any(g => g.Reason == "pincer"), Is.True);
             Assert.That(s.ManaIn(k.Id, 0), Is.EqualTo(System.Math.Min(s.ManaFull(k, 0), earned)));
@@ -243,7 +243,7 @@ namespace GridGame.Tests
             Hero(s, "knight").Bar[0] = new AbilitySlot { AbilityId = "fireball" };
             var ev = BattleEngine.Apply(s, new MoveCommand { HeroId = Hero(s, "cleric").Id, Path = P((3, 3)) });
             Assert.That(ev.Any(e => e is DiedEvent), Is.True);
-            var charge = ev.OfType<ManaChargedEvent>().Single(c => c.Reason == "pincer");
+            var charge = ev.OfType<ManaGainedEvent>().Single(c => c.Reason == "pincer");
             Assert.That(charge.Amount, Is.EqualTo((int)System.Math.Round(BattleConfig.PincerChargePerHp))); // the whole foe: share 1, two heroes ×1
             Assert.That(ev.OfType<ManaGainedEvent>().Count(g => g.Reason == "pincer"), Is.EqualTo(1)); // one gain, not one per hero
         }
