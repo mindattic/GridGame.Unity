@@ -5,7 +5,6 @@
   "Assets/GridGame/App/Battle/BattleScreen.cs",
   "Assets/GridGame/App/Battle/BoardView.cs",
   "Assets/GridGame/App/Screens/HubScreens.cs",
-  "Assets/GridGame/App/Screens/MenuScreens.cs",
   "Assets/GridGame/App/UI/Ui.cs",
   "Assets/GridGame/Core/Battle/BattleRunner.cs",
   "Assets/GridGame/Core/Bot/HeroBot.cs",
@@ -44,17 +43,6 @@
    "ShopScreen",
    "SummonHistoryScreen",
    "SummonScreen"
-  ],
-  "Assets/GridGame/App/Screens/MenuScreens.cs": [
-   "CampGroupScreen",
-   "CharacterSelectScreen",
-   "CreditsScreen",
-   "HubScreen",
-   "SaveSlotScreen",
-   "StageConfirmScreen",
-   "StageSelectScreen",
-   "StoryCrawlScreen",
-   "TitleScreen"
   ],
   "Assets/GridGame/App/Screens/MercenaryScreens.cs": [
    "MercenaryRenewalScreen",
