@@ -227,6 +227,7 @@ namespace GridGame.App
                 outcomeTags.Clear();
                 darkHidden.Clear();
                 awayOnSettings = false; // playback, held at its next beat while Settings was up, carries on
+                if (pauseVeil != null) pauseVeil.style.display = DisplayStyle.Flex; // back from the pause menu's Settings (GG-T1909)
             }
             if (firstBuild)
             {
@@ -1263,6 +1264,7 @@ namespace GridGame.App
             Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter); // GG-T751 (§26.7)
             Ui.MenuRow(AutoPlay ? "Auto battle: ON" : "Auto battle: OFF", "", () => { AutoPlay = !AutoPlay; Close(); }, w).KindIcon(RowKind.Settings);
             Ui.MenuRow("Battle log", logLines.Count > 0 ? Ui.Count(logLines.Count) : "", () => ShowBattleLog(veil, w), w).KindIcon(RowKind.Menu);
+            Ui.MenuRow("Settings", "", () => { veil.style.display = DisplayStyle.None; awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Settings); // GG-T1909
             Ui.MenuRow("How to play", "", () => { Close(); awayOnSettings = true; App.Router.Push(new SettingsScreen()); }, w).KindIcon(RowKind.Bestiary);
             int retreatPct = (int)(BattleConfig.RetreatKeepFraction * 100);
             if (InCrucible)
@@ -1297,7 +1299,6 @@ namespace GridGame.App
             }, w);
             back.KindIcon(RowKind.Back);
             back.name = "battle-log-back";
-            Ui.Select(back);
             ScrollLogToEnd();
         }
 
