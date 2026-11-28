@@ -417,6 +417,9 @@
 .enter-mark { margin-left: var(--space-16); }
 .target-gap { margin: var(--space-12); }
 .merc-terms { margin-top: var(--space-12); }
+.kit-actions.merc-terms { flex-wrap: nowrap; }
+/* GG-T1881: the hire lengths as one segmented row: each term two lines (length, price), sharing the row's width. */
+.merc-term { flex-grow: 1; flex-shrink: 1; padding: 0 var(--space-16); white-space: normal; }
 .merc-tag { margin-left: var(--space-8); }
 /* A row of buttons inside a window or card (hire terms, use-on-hero): they wrap, 24 px apart. */
 .kit-actions { flex-direction: row; flex-wrap: wrap; align-items: center; margin: var(--space-4) 0 0 0; padding: 0 var(--space-12); } /* row padding + each button's 12-px margin: edge = gap = 24 from the text column (GG-T662) */
