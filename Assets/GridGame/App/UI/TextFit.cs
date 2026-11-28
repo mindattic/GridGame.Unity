@@ -266,7 +266,9 @@ namespace GridGame.App
             if (list == null || list.childCount > 80) return float.NaN;
             string role = null;
             foreach (var c in t.GetClasses()) { role = c; break; }
-            if (role == null) return float.NaN;
+            // GG-T2164: a value column is not a shared-size role: each row's value is its own length ("ON" beside "As launched"),
+            // so one long value shrunk to the floor must not drag every short one down with it.
+            if (role == null || role == "menu-value") return float.NaN;
             float cap = float.NaN;
             foreach (var sib in list.Children())
             {

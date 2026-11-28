@@ -13713,7 +13713,7 @@
       "rect": [
        264.0,
        509.0,
-       138.0,
+       140.0,
        132.0
       ],
       "size": {
@@ -13734,9 +13734,9 @@
      {
       "text": "Jewelry",
       "rect": [
-       426.0,
+       428.0,
        509.0,
-       171.0,
+       169.0,
        132.0
       ],
       "size": {
@@ -13759,7 +13759,7 @@
       "rect": [
        620.0,
        509.0,
-       272.0,
+       274.0,
        132.0
       ],
       "size": {
@@ -13780,9 +13780,9 @@
      {
       "text": "Materials",
       "rect": [
-       915.0,
+       917.0,
        509.0,
-       208.0,
+       206.0,
        132.0
       ],
       "size": {
@@ -14149,9 +14149,9 @@
       "text": "Apprentice's Wand",
       "rect": [
        206.0,
-       1611.0,
+       1582.0,
        369.0,
-       66.0
+       126.0
       ],
       "size": {
        "px": 40,
@@ -14161,9 +14161,9 @@
       "large": false,
       "contrast": {
        "fg": "#ececf0",
-       "bg": "#1b1a29",
-       "ratio": 14.52,
-       "worstStop": 14.52,
+       "bg": "#1b1929",
+       "ratio": 14.62,
+       "worstStop": 14.62,
        "need": 4.5,
        "pass": true
       }
@@ -14644,9 +14644,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#12111d",
-       "ratio": 18.69,
-       "worstStop": 18.69,
+       "bg": "#12121d",
+       "ratio": 18.58,
+       "worstStop": 18.58,
        "need": 4.5,
        "pass": true
       }
@@ -14667,9 +14667,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#1c1f2f",
-       "ratio": 13.14,
-       "worstStop": 13.14,
+       "bg": "#1d1f2f",
+       "ratio": 13.12,
+       "worstStop": 13.12,
        "need": 4.5,
        "pass": true
       }
@@ -16138,9 +16138,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11111d",
-       "ratio": 7.61,
-       "worstStop": 7.61,
+       "bg": "#11111c",
+       "ratio": 7.62,
+       "worstStop": 7.62,
        "need": 4.5,
        "pass": true
       }
@@ -17525,10 +17525,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b1b9",
+       "fg": "#91909a",
        "bg": "#11101c",
-       "ratio": 8.81,
-       "worstStop": 8.81,
+       "ratio": 5.99,
+       "worstStop": 5.99,
        "need": 4.5,
        "pass": true
       }
@@ -17548,10 +17548,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b1b9",
+       "fg": "#91909a",
        "bg": "#11101c",
-       "ratio": 8.81,
-       "worstStop": 8.81,
+       "ratio": 5.99,
+       "worstStop": 5.99,
        "need": 4.5,
        "pass": true
       }
@@ -17571,10 +17571,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b0b9",
+       "fg": "#90909a",
        "bg": "#100f1c",
-       "ratio": 8.84,
-       "worstStop": 8.84,
+       "ratio": 6.01,
+       "worstStop": 6.01,
        "need": 4.5,
        "pass": true
       }
@@ -17594,10 +17594,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b1b9",
+       "fg": "#91909a",
        "bg": "#11101c",
-       "ratio": 8.81,
-       "worstStop": 8.81,
+       "ratio": 5.99,
+       "worstStop": 5.99,
        "need": 4.5,
        "pass": true
       }
@@ -39375,7 +39375,7 @@
       }
      },
      {
-      "text": "\"Bring me the dented ones. The shiny one\u2026",
+      "text": "\"These casks came off a Choir wagon. Sti\u2026",
       "rect": [
        51.0,
        568.0,
@@ -39390,15 +39390,15 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#1d1b2c",
-       "ratio": 12.3,
-       "worstStop": 12.3,
+       "bg": "#201e2e",
+       "ratio": 11.91,
+       "worstStop": 11.91,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "\u2014 Old Hask, wagon farrier",
+      "text": "\u2014 Brannoc, cask-keeper",
       "rect": [
        51.0,
        700.0,
