@@ -136,6 +136,26 @@ namespace GridGame.Tests
         }
 
         [Test]
+        public void An_element_locked_foe_passes_when_the_merchant_sells_its_one_open_element()
+        {
+            // GG-T2071: the prologue's Ward-Engine, immune to all but Lightning, answered by the Storm Flask.
+            var db = Fresh();
+            foreach (DamageType d in Enum.GetValues(typeof(DamageType)))
+                db.Classes["lich"].Resistances[d] = d == DamageType.Lightning ? 1f : 0f;
+            Assert.That(ElementCounters.LockedTo(db, db.Classes["lich"]), Is.EqualTo(DamageType.Lightning));
+            var p = Check(db);
+            Assert.That(p.Where(x => x.Contains("lich")), Is.Empty, string.Join("\n", p));
+            Assert.That(ElementCounters.Purchasable(db).Any(x => x.Item.Id == "flask_storm"), Is.True);
+            Assert.That(ElementCounters.DamageOf(ElementCounters.Purchasable(db).Find(x => x.Item == ElementCounters.BestCounter(db, db.Classes["lich"])).Ability),
+                Is.EqualTo(DamageType.Lightning));
+
+            foreach (var (item, a) in ElementCounters.Purchasable(db))
+                if (ElementCounters.DamageOf(a) == DamageType.Lightning) item.SoldByVendor = false;
+            p = Check(db);
+            Assert.That(p.Any(x => x.Contains("lich is element-locked to Lightning")), Is.True, string.Join("\n", p));
+        }
+
+        [Test]
         public void Validator_reports_a_foe_that_resists_its_own_counter()
         {
             var db = Fresh();
