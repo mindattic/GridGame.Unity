@@ -202,14 +202,14 @@ namespace GridGame.App
                     var pack = p;
                     var local = store.PriceOf(pack);
                     localized |= local != null;
-                    var value = DiamondStores.InFlight == pack.ProductId ? "Processing…" : local ?? pack.Price;
+                    var value = DiamondStores.InFlight == pack.ProductId ? "Processing" : local ?? pack.Price;
                     var row = Ui.MenuRow(ShardText.ShortOf(pack.Diamonds), value, () => Buy(store, pack), packs, null, open);
                     row.KindIcon(RowKind.Diamond, icon); // GG-T745
                     row.name = "diamond-pack-" + pack.Diamonds;
                 }
                 if (store.CanRestore)
                 {
-                    var restore = Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking…" : "", () => Restore(store), packs, null, open);
+                    var restore = Ui.MenuRow("Restore purchases", DiamondStores.InFlight == RestoreId ? "Checking" : "", () => Restore(store), packs, null, open);
                     restore.KindIcon(RowKind.NewGamePlus); // GG-T754 (§26.7)
                     restore.name = "diamond-restore";
                 }
@@ -250,8 +250,8 @@ namespace GridGame.App
 
         private (string state, string text, string tone) StateLine(IDiamondStore store)
         {
-            if (DiamondStores.InFlight == RestoreId) return ("processing", "Checking your purchases…", "warn");
-            if (DiamondStores.InFlight != null) return ("processing", "Processing your purchase… The store will ask you to confirm. Keep the game open.", "warn");
+            if (DiamondStores.InFlight == RestoreId) return ("processing", "Checking your purchases", "warn");
+            if (DiamondStores.InFlight != null) return ("processing", "Processing your purchase. The store will ask you to confirm. Keep the game open.", "warn");
             if (last != null)
                 switch (last.Kind)
                 {

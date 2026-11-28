@@ -128,7 +128,7 @@ namespace GridGame.App
 
         public string Status =>
             Connected ? "Purchases go through " + StoreName + "."
-            : link == Link.Connecting ? "Connecting to " + StoreName + "…"
+            : link == Link.Connecting ? "Connecting to " + StoreName
             : "Store unavailable" + (string.IsNullOrEmpty(problem) ? "" : ": " + problem) + ". " + ShardText.Plural + " can still be exchanged for gold.";
 
         private static string StoreName => Application.platform == RuntimePlatform.IPhonePlayer ? "the App Store" : "Google Play";
