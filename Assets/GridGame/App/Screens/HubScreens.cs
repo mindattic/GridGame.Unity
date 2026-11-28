@@ -2178,7 +2178,7 @@ namespace GridGame.App
             card.Insert(0, face);
             face.style.position = Position.Relative;
             if (target != null) Ui.Thumb(target.Id, face, Kit.Thumb);
-            var skull = BountySkull.Make(Size.IconS, face);
+            var skull = BountySkull.Make(Size.IconM, face);
             skull.style.position = Position.Absolute;
             skull.style.right = Space.S16; skull.style.top = -Space.S4;
             Ui.Caption($"{target?.Name ?? b.TargetClass} · tougher variant", col, "dim");
