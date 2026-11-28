@@ -62,7 +62,7 @@ namespace GridGame.Tests
         {
             var (s, _) = Battle(Real, Stage(("heavytrooper03", 2, 0)), ("paladin", 2, 6), ("redmage", 4, 7));
             foreach (var h in s.Units.Where(u => u.IsHero)) h.UnlockedSlots = 0; // no spell slot, no meter: Guard and regen fill nothing
-            s.SpellMana.Clear();
+            s.PartyMana = 0;
             var seen = new List<BattleEvent>();
             for (int i = 0; i < 16 && !seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon") && !s.IsOver; i++)
                 seen.AddRange(Turn(s, new ShieldCommand()));

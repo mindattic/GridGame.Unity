@@ -567,36 +567,43 @@ namespace GridGame.Core.Battle
         // Mana
         // ─────────────────────────────────────────────────────────────────────────────
 
-        /// <summary>An earned mana gain (§3.1.0): damped by the share of full spell meters, then added to every meter. Every
-        /// caller is an earned source; whole grants (items, pickups, steal, gear) call GrantOrbs. Earning stops while
-        /// every meter is full.</summary>
+        /// <summary>An earned mana gain (§3.1.0): damped by how full the party pool is, then added to it. Every caller is an
+        /// earned source; whole grants (items, pickups, steal, gear) call GrantOrbs. Earning stops while the pool is full.</summary>
         private void EarnMana(int amount, int sourceId, string reason, int participants = 0, int chain = 0)
         {
-            if (S.AllSpellsFull) return;
+            if (S.PartyManaFull) return;
             amount = BattleEngine.DampedCharge(S, amount);
             if (amount <= 0) return;
             GainMana(amount, sourceId, reason, e => { e.Kind = ManaGainKind.Earned; e.Participants = participants; e.Chain = chain; });
         }
 
-        /// <summary>A whole grant (§3.1.0): <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points to
-        /// every meter as one undamped gain. One that finds every meter full is still reported (Amount 0, no meters), so
-        /// the Log can say so.</summary>
+        /// <summary>A whole grant (§3.1.0): <paramref name="orbs"/> x <see cref="BattleConfig.ManaPointsPerOrb"/> points into
+        /// the pool as one undamped gain; points past capacity are lost and reported. One that finds the pool full is still
+        /// reported (Amount 0, all wasted), so the Log can say so.</summary>
         private void GrantOrbs(int orbs, int sourceId, string reason)
         {
             if (orbs <= 0) return;
-            if (!GainMana(orbs * BattleConfig.ManaPointsPerOrb, sourceId, reason, e => e.Orbs = orbs))
-                Emit(new ManaGainedEvent { SourceId = sourceId, Reason = reason, Kind = ManaGainKind.Grant, Orbs = orbs });
+            int points = orbs * BattleConfig.ManaPointsPerOrb;
+            if (!GainMana(points, sourceId, reason, e => e.Orbs = orbs))
+                Emit(new ManaGainedEvent
+                {
+                    SourceId = sourceId, Reason = reason, Kind = ManaGainKind.Grant, Orbs = orbs,
+                    Before = S.PartyMana, After = S.PartyMana, Capacity = BattleConfig.PartyManaCapacity, Wasted = points,
+                });
         }
 
-        /// <summary>Applies a gain (or a negative siphon) to the spell meters and reports it; false when no meter moved.</summary>
+        /// <summary>Applies a gain (or a negative siphon) to the party pool and reports it, then a SpellReadyEvent for each
+        /// spell it made affordable; false when the pool didn't move.</summary>
         private bool GainMana(int points, int sourceId, string reason, Action<ManaGainedEvent> tag = null)
         {
             var e = BattleEngine.GainMana(S, points, reason, sourceId);
             if (e == null) return false;
             tag?.Invoke(e);
             Emit(e);
+#pragma warning disable CS0618
             foreach (var d in e.Readied)
                 Emit(new SpellReadyEvent { UnitId = d.UnitId, Slot = d.Slot, AbilityId = S.UnitById(d.UnitId)?.Bar[d.Slot].AbilityId });
+#pragma warning restore CS0618
             return true;
         }
 
