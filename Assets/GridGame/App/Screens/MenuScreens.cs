@@ -333,7 +333,7 @@ namespace GridGame.App
 
         private void RestoreFromCloud()
         {
-            App.Toast("Checking the cloud…");
+            App.Toast("Checking the cloud");
             App.Cloud.RestoreEmptySlots(App, restored =>
             {
                 App.Toast(restored == 0 ? "No cloud saves for the empty slots" : restored == 1 ? "Restored 1 save from the cloud" : $"Restored {restored} saves from the cloud");
@@ -753,8 +753,19 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.TextDim;
 
             var col = Ui.El("fill col", root);
-            // Camp has no header: its windows keep the kit's gutters (Kit.Gutter at the sides, Kit.Gap at the bottom).
-            col.style.paddingTop = Space.S48; col.style.paddingLeft = col.style.paddingRight = Kit.Gutter - Space.S8; col.style.paddingBottom = Kit.Gap - Space.S8;
+            // Camp's header is a corner bar, not a title bar: the hamburger top-left, gold (and shards) top-right (GG-T1845);
+            // its windows keep the kit's gutters (Kit.Gutter at the sides, Kit.Gap at the bottom).
+            col.style.paddingTop = Space.S8; col.style.paddingLeft = col.style.paddingRight = Kit.Gutter - Space.S8; col.style.paddingBottom = Kit.Gap - Space.S8;
+
+            var corners = Ui.El("row", col);
+            corners.name = "camp-corners";
+            corners.style.alignItems = Align.Center;
+            corners.style.flexShrink = 0;
+            corners.style.justifyContent = Justify.SpaceBetween;
+            RowIcon.IconButton("", RowKind.Menu, () => OpenMenu(), "btn--small btn--icon", corners).name = "menu";
+            var currencies = Ui.El("header-currencies", corners);
+            currencies.name = "header-currencies";
+            Ui.Currencies(currencies, s, () => App.Router.PushOrReturn(new DiamondStoreScreen()));
 
             // Party window (portraits, level, HP): a 2-column grid so a full party of six fits above the menu.
             // GG-T313: built as explicit two-card rows, not a flex-wrap of six cards sized by a reactive
@@ -868,7 +879,7 @@ namespace GridGame.App
             var advRow = Ui.MenuRow(adv?.Label ?? "Adventure", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
             advRow.name = "camp-adventure";
             advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
-            Ui.Caption($"{Ui.Gold(s.Gold)} gold · {TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
+            Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
             if (s.NewGamePlus > 0) Ui.Caption($"New Game+ {s.NewGamePlus}", campaign, "gold");
             var ngp = Dest(CampMenu.NewGamePlus);
             if (ngp != null)
@@ -909,7 +920,7 @@ namespace GridGame.App
             {
                 switch (d.Id)
                 {
-                    case CampMenu.Campaign: case CampMenu.Crucible: case CampMenu.Inn: case CampMenu.Respec: case CampMenu.NewGamePlus: case CampMenu.Quit: continue;
+                    case CampMenu.Campaign: case CampMenu.Crucible: case CampMenu.Inn: case CampMenu.Respec: case CampMenu.NewGamePlus: case CampMenu.Quit: case CampMenu.Settings: continue;
                 }
                 if (d.Group == CampGroup.Craft || d.Group == CampGroup.Journal)
                 {
@@ -924,11 +935,6 @@ namespace GridGame.App
                 }
                 Tile(grid, d);
             }
-            var quit = Ui.El("kit-tile", grid);
-            quit.name = "camp-save-&-quit";
-            quit.KindIcon(RowKind.Quit);
-            Ui.Marquee(Ui.Text("Save & Quit", "kit-tile-label", quit));
-            Ui.Tappable(quit, () => Confirm.Show("Save and return to the title?", "Quit", ToTitle), "ui.select");
             Ui.Select(cont);
 
             // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark under the tiles.
@@ -956,6 +962,27 @@ namespace GridGame.App
             CampCoach.OnHub(this); // GG-T539: a vendor who just joined, or a first piece of gear to put on, gets its lesson
         }
 
+        /// <summary>The hamburger's menu (GG-T1845): Settings and Save &amp; Quit, kept off the tile grid so the hub fits one screen
+        /// and Quit is out of the thumb sweep. A veil on the global Overlay, closed by Resume.</summary>
+        private void OpenMenu()
+        {
+            if (App.Overlay.Q("camp-menu-veil") != null) return;
+            var veil = Ui.El("fill veil col center", App.Overlay);
+            veil.name = "camp-menu-veil";
+            veil.pickingMode = PickingMode.Position;
+            var w = Ui.Window("Menu", veil);
+            w.style.width = Length.Percent(72);
+            void Close() => veil.RemoveFromHierarchy();
+            var settings = Ui.MenuRow("Settings", "", () => { Close(); App.Router.Push(new SettingsScreen()); }, w);
+            settings.name = "camp-settings";
+            settings.KindIcon(RowKind.Settings);
+            var quit = Ui.MenuRow("Save & Quit", "", () => { Close(); Confirm.Show("Save and return to the title?", "Quit", ToTitle); }, w);
+            quit.name = "camp-save-&-quit";
+            quit.KindIcon(RowKind.Quit);
+            Ui.MenuRow("Resume", "", Close, w).KindIcon(RowKind.Enter);
+            Ui.Select(settings);
+        }
+
         /// <summary>The stage Continue launches: the first uncleared campaign stage. Travel (§28, GG-T1786) has no fixed
         /// battle order inside a region, so a stage mid-region is fought directly once it is unlocked.</summary>
         internal static string NextStage(ContentDb c, SaveData s) =>
@@ -978,7 +1005,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = TileName(d);
             tile.EnableInClassList("kit-tile--locked", !d.Open);
-            var icon = d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
+            var icon = d.Id == CampMenu.Shop ? tile.KindIcon(RowKind.Shop) : d.Npc != null ? tile.KindIcon(RowKind.Keeper, d.Npc + "-00") : tile.KindIcon(TileKind(d.Id));
             if (!d.Open) RowIcon.Badge(icon, RowKind.Locked);
             else if (d.Badge) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(d.Label, "kit-tile-label", tile));
@@ -999,7 +1026,7 @@ namespace GridGame.App
             var tile = Ui.El("kit-tile", grid);
             tile.name = (open ? "camp-" : "locked-") + label.ToLowerInvariant();
             tile.EnableInClassList("kit-tile--locked", !open);
-            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Station : RowKind.Codex);
+            var icon = tile.KindIcon(group == CampGroup.Craft ? RowKind.Craft : RowKind.Codex);
             if (!open) RowIcon.Badge(icon, RowKind.Locked);
             else if (CampMenu.GroupBadge(dests, group)) RowIcon.Badge(icon, RowKind.New);
             Ui.Marquee(Ui.Text(label, "kit-tile-label", tile));
@@ -1022,6 +1049,7 @@ namespace GridGame.App
                 case CampMenu.Bestiary: return RowKind.Bestiary;
                 case CampMenu.Codex: return RowKind.Codex;
                 case CampMenu.Settings: return RowKind.Settings;
+                case CampMenu.Summon: return RowKind.Summon;
                 default: return RowKind.Station;
             }
         }
@@ -1151,7 +1179,7 @@ namespace GridGame.App
                 RowIcon.Badge(row.KindIcon(RowKind.Place, theme.Id), cleared == theme.Stages.Count ? RowKind.Cleared : RowKind.New);
                 if (cleared < theme.Stages.Count) row.Q<Label>("value")?.AddToClassList("gold");
             }
-            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead…", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
+            if (locked > 0) Ui.MenuRow($"{locked} more stage{(locked == 1 ? "" : "s")} ahead", "Locked", null, list, null, false).KindIcon(RowKind.Locked);
         }
 
         /// <summary>Step two: one region's stages, each Cleared or New (a cleared one can be fought again as a hunt). Any

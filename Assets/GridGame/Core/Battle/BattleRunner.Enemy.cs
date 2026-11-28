@@ -33,7 +33,7 @@ namespace GridGame.Core.Battle
 
             if (enemy.IsRemains)
             {
-                if (enemy.RisesInTurns > 0) { enemy.RisesInTurns--; Announce($"{enemy.Name} stirs… {enemy.RisesInTurns + 1}", enemy.Id); return; }
+                if (enemy.RisesInTurns > 0) { enemy.RisesInTurns--; Announce($"{enemy.Name} stirs ({enemy.RisesInTurns + 1})", enemy.Id); return; }
                 RiseAgain(enemy);
                 return;
             }

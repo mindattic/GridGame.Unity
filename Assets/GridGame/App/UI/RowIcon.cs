@@ -76,6 +76,10 @@ namespace GridGame.App
         Faction,
         /// <summary>Home, back to the hub root (GG-T1335): the house emblem.</summary>
         Home,
+        /// <summary>The Summon Circle: a ring with a five-point star inside.</summary>
+        Summon,
+        /// <summary>The Craft group: an anvil.</summary>
+        Craft,
     }
 
     /// <summary>
@@ -441,6 +445,20 @@ namespace GridGame.App
                 case RowKind.Faction: // a banner on a pole, its fly cut into a swallowtail
                     Line(p, P(-0.7f, -0.95f), P(-0.7f, 0.95f));
                     Poly(p, P(-0.7f, -0.85f), P(0.85f, -0.85f), P(0.45f, -0.35f), P(0.85f, 0.15f), P(-0.7f, 0.15f));
+                    break;
+                case RowKind.Summon: // a summoning circle: a ring round a five-point star
+                    p.BeginPath();
+                    p.Arc(c, u * 0.95f, Angle.Degrees(0f), Angle.Degrees(360f));
+                    p.ClosePath();
+                    p.Stroke();
+                    for (int k = 0; k < 5; k++)
+                    {
+                        float a0 = (k * 144f - 90f) * Mathf.Deg2Rad, a1 = ((k + 1) * 144f - 90f) * Mathf.Deg2Rad;
+                        Line(p, P(Mathf.Cos(a0) * 0.75f, Mathf.Sin(a0) * 0.75f), P(Mathf.Cos(a1) * 0.75f, Mathf.Sin(a1) * 0.75f));
+                    }
+                    break;
+                case RowKind.Craft: // an anvil: a flat face with a horn, a narrow waist, a wide foot
+                    Poly(p, P(-0.95f, -0.6f), P(0.95f, -0.6f), P(0.95f, -0.3f), P(0.35f, -0.15f), P(0.35f, 0.3f), P(0.7f, 0.3f), P(0.7f, 0.85f), P(-0.7f, 0.85f), P(-0.7f, 0.3f), P(-0.35f, 0.3f), P(-0.35f, -0.15f), P(-0.95f, -0.3f));
                     break;
                 default: // Menu: three bars
                     Line(p, P(-0.7f, -0.55f), P(0.7f, -0.55f));
