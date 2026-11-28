@@ -18,8 +18,8 @@ using UnityEngine.UIElements;
 namespace GridGame.App
 {
     /// <summary>
-    /// The battle. Layout follows the bible HUD rows (§9): top bar · timeline + shield · action banner ·
-    /// 6×8 board · ability bar, each spell with its own mana fill bar (§3.1.0) · Party · Lore · Log tabs. The simulation (BattleState) is the only truth;
+    /// The battle. Layout follows the bible HUD rows (§9.0): top bar (hamburger · stage and wave · gold) · timeline + GUARD ·
+    /// 6×8 board · icon-only ability bar · description panel to the safe bottom. The simulation (BattleState) is the only truth;
     /// this screen turns input into commands and plays the resulting events back.
     /// </summary>
     public sealed partial class BattleScreen : GameScreen
@@ -56,7 +56,9 @@ namespace GridGame.App
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
-        private const float BoardTop = 450f;
+        // §9.0 (GG-T1822): fixed rows, nothing stacked between them: the top bar, the timeline, the board a gutter under
+        // the timeline frame (the old banner row is gone, so the board gains its 117 px), the ability bar, the description panel.
+        private const float BoardTop = TimelineY + TimelineFrameHeight / 2f + Space.S8;
         private static float BoardLeft => (GameApp.StageWidth - BoardView.Tile * BattleConfig.Cols) / 2f;
         // The timeline's geometry lives with it in BattleScreen.Timeline.cs (GG-T287).
 
@@ -81,27 +83,27 @@ namespace GridGame.App
         private readonly BattleSetup setupOverride;
         private BoardView board;
         private readonly List<VisualElement> slotViews = new List<VisualElement>();
-        /// <summary>The Party page of the info tabs (GG-T391): the selected unit, its skills, the ability/confirm card and
-        /// the tutorial lesson all draw here (a ScrollView, so Add/Clear reach its content).</summary>
+        /// <summary>The description panel's page (§9.0): the selected unit, its skills and the ability/confirm card draw here
+        /// (a ScrollView, so Add/Clear reach its content).</summary>
         private VisualElement panel;
         private VisualElement bannerViewport;
         private Coroutine bannerScrollRoutine;
-        /// <summary>The banner band (GG-T391, GG-T405): a gutter under the timeline frame to a gutter above the board, so
-        /// nothing in it (banner, billboard, drag timer) can touch either. Two lines of the stepped-down banner font fit.</summary>
-        private const float BannerTop = TimelineY + TimelineFrameHeight / 2f + Space.S8, TopBarHeight = 110f;
-        private const float BannerViewportHeight = BoardTop - Space.S8 - BannerTop;
-        /// <summary>Room the drag-timer seconds take at the banner row's right end; the banner keeps the same inset on both
-        /// sides so it stays centred and never runs under the timer (GG-T391).</summary>
+        /// <summary>The announcement band (§9.0): no row of its own; it overlays the board's top edge and takes no input
+        /// (banner, billboard, drag timer). Two lines of the stepped-down banner font fit.</summary>
+        private const float BannerTop = BoardTop + Space.S8, TopBarHeight = 110f;
+        private const float BannerViewportHeight = Size.Target - Space.S24;
+        /// <summary>Room the drag-timer seconds take at the band's left end, under the NOW diamond; the banner keeps the same
+        /// inset on both sides so it stays centred and never runs under the timer (GG-T391).</summary>
         private const float TimerReserve = Size.Label + Space.S24;
-        // The HUD rows under the board, top to bottom, a gutter apart (GG-T391, GG-T405): the ability bar (five slots, each
-        // spell with its fill bar), then the info tabs, which stretch to the safe bottom and so alone absorb a taller stage (§26.3).
+        // The HUD rows under the board, top to bottom, a gutter apart (§9.0): the ability bar (five icon-only slots), then
+        // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
         private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
         private static float BarTop => BoardBottom + Space.S24; // 24 px from the board's tiles, also targets (GG-T656, POL-C3)
         // GG-T706 (owner 2026-11-23): the ability bar is always the row under the board. GG-T523's side columns beside the
         // board on a 2:3 / 3:4 stage are gone: those shapes are now letterboxed at 9:16 (bible §26.3), so no stage is wide
         // enough for them.
-        /// <summary>The info tabs start a target gap (POL-C3, 24) under the ability row.</summary>
-        private static float InfoTabsTop => BarTop + Size.Slot + Space.S24;
+        /// <summary>The description panel starts a target gap (POL-C3, 24) under the ability row.</summary>
+        private static float DescriptionTop => BarTop + Size.Slot + Space.S24;
         private Label banner, waveLabel, coinLabel, timerLabel;
         private VisualElement shake;
         private VisualElement boardHost;
@@ -246,16 +248,6 @@ namespace GridGame.App
 
             BuildTopBar(shake);
             BuildTimeline(shake);
-            bannerViewport = Ui.El("", shake);
-            bannerViewport.name = "banner-viewport";
-            bannerViewport.style.position = Position.Absolute;
-            bannerViewport.style.left = TimerReserve; bannerViewport.style.right = TimerReserve; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
-            bannerViewport.style.overflow = Overflow.Hidden;
-            banner = Ui.Text("", "h2 shadow", bannerViewport);
-            banner.style.position = Position.Absolute;
-            banner.style.left = Space.S0; banner.style.right = Space.S0; banner.style.top = Space.S0;
-            banner.style.unityTextAlign = TextAnchor.UpperCenter;
-            banner.style.whiteSpace = WhiteSpace.Normal;
 
             boardHost = Ui.El("", shake);
             boardHost.style.position = Position.Absolute;
@@ -280,8 +272,9 @@ namespace GridGame.App
             board.Root.RegisterCallback<PointerUpEvent>(OnPointerUp);
             board.Root.RegisterCallback<PointerCaptureOutEvent>(_ => { if (dragging) CommitDrag(); pressing = false; });
 
+            BuildAnnouncementBand(shake);
             BuildAbilityBar(shake);
-            BuildInfoTabs(shake);
+            BuildDescriptionPanel(shake);
 
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
@@ -311,22 +304,46 @@ namespace GridGame.App
             bar.style.position = Position.Absolute;
             bar.style.left = Fit.Edge; bar.style.right = Fit.Edge; bar.style.top = Space.S32; bar.style.height = TopBarHeight;
             RowIcon.IconButton("", RowKind.Menu, OpenMenu, "btn--small btn--icon", bar).name = "menu"; // GG-T754: icon-only pause (three-bar emblem)
-            var mid = Ui.El("col grow", bar);
-            mid.style.alignItems = Align.Center;
-            mid.style.minWidth = Space.S0; // GG-T1143: the column may be narrower than the stage name (9:23), which then shrinks and ends in an ellipsis
-            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "h2 shadow", mid), grow: false);
-            stageName.style.maxWidth = Length.Percent(100); stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
+            // §9.0 row 1: the stage name and "Wave n/m" small on one line between the hamburger and the gold; the name
+            // shrinks to an ellipsis first (GG-T1143), the wave never does.
+            var mid = Ui.El("row grow", bar);
+            mid.style.alignItems = Align.Center; mid.style.justifyContent = Justify.Center;
+            mid.style.minWidth = Space.S0;
+            mid.style.marginLeft = mid.style.marginRight = Space.S16;
+            var stageName = Ui.Marquee(Ui.Text(State.Stage.Name, "small shadow", mid), grow: false);
+            stageName.style.flexShrink = 1; stageName.style.minWidth = Space.S0; stageName.style.unityTextAlign = TextAnchor.MiddleCenter;
             stageName.AddToClassList(TextFit.EllipsisClass); stageName.style.overflow = Overflow.Hidden; stageName.style.textOverflow = TextOverflow.Ellipsis;
+            var sep = Ui.Text("·", "small shadow", mid);
+            sep.style.flexShrink = 0; sep.style.marginLeft = sep.style.marginRight = Space.S8;
             // Full-colour, not .dim: the LivingBackdrop's drifting shards pass behind the top bar, and dim grey "1/5"
             // vanished against a pale shard so the label read as just "Wave" (GG-T666).
             waveLabel = Ui.Text("", "small shadow", mid);
+            waveLabel.style.flexShrink = 0;
             coinLabel = Ui.Text("", "h2 gold shadow", bar);
             coinLabel.style.width = Fit.W(17f); coinLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+        }
+
+        /// <summary>The announcement band (§9.0): an overlay on the board's top edge, over the board and taking no input. The
+        /// banner keeps the band's centre; the drag timer's seconds sit at its left end, under the NOW diamond.</summary>
+        private void BuildAnnouncementBand(VisualElement root)
+        {
+            bannerViewport = Ui.El("", root);
+            bannerViewport.name = "banner-viewport";
+            bannerViewport.pickingMode = PickingMode.Ignore;
+            bannerViewport.style.position = Position.Absolute;
+            bannerViewport.style.left = TimerReserve; bannerViewport.style.right = TimerReserve; bannerViewport.style.top = BannerTop; bannerViewport.style.height = BannerViewportHeight;
+            bannerViewport.style.overflow = Overflow.Hidden;
+            banner = Ui.Text("", "h2 shadow", bannerViewport);
+            banner.pickingMode = PickingMode.Ignore;
+            banner.style.position = Position.Absolute;
+            banner.style.left = Space.S0; banner.style.right = Space.S0; banner.style.top = Space.S0;
+            banner.style.unityTextAlign = TextAnchor.UpperCenter;
+            banner.style.whiteSpace = WhiteSpace.Normal;
             timerLabel = Ui.Text("", "h1 shadow warn", root);
+            timerLabel.pickingMode = PickingMode.Ignore;
             timerLabel.style.position = Position.Absolute;
-            // The drag timer keeps to the banner band (GG-T405): its own height, centred in it, never over the timeline or board.
-            timerLabel.style.right = Space.S48; timerLabel.style.top = BannerTop; timerLabel.style.height = BannerViewportHeight;
-            timerLabel.style.unityTextAlign = TextAnchor.MiddleRight;
+            timerLabel.style.left = Fit.Edge; timerLabel.style.top = BannerTop; timerLabel.style.height = BannerViewportHeight;
+            timerLabel.style.unityTextAlign = TextAnchor.MiddleLeft;
         }
 
         /// <summary>Re-applies the positions that depend on the stage width (build time and on resize).</summary>
@@ -335,14 +352,14 @@ namespace GridGame.App
             if (boardHost == null) return;
             boardHost.style.left = BoardLeft;
             cutInLayer.style.left = -BoardLeft;
-            // The rows under the board (ability bar, info tabs) keep to the centred content column, so on a
+            // The rows under the board (ability bar, description panel) keep to the centred content column, so on a
             // tablet they don't stretch past usefulness; the board centres and the timeline spans the stage (GG-T398).
             float inset = Fit.Inset;
             LayoutAbilityBar(inset);
-            if (Root?.Q("info-tabs") is VisualElement tabs)
+            if (Root?.Q("description-panel") is VisualElement desc)
             {
-                tabs.style.left = tabs.style.right = inset + Fit.Edge;
-                tabs.style.top = InfoTabsTop;
+                desc.style.left = desc.style.right = inset + Fit.Edge;
+                desc.style.top = DescriptionTop;
             }
             cutInLayer.style.width = GameApp.StageWidth; cutInLayer.style.height = GameApp.StageHeight;
             LayoutTimelineFrame();
@@ -366,7 +383,7 @@ namespace GridGame.App
             var bar = abilityBar;
             bar.style.top = BarTop; bar.style.height = Size.Slot;
             // Row padding + each cell's 12-px margin: slots sit 24 px apart (POL-C3), the row's edge equals that gap
-            // (POL-C8), and the cells still line up with the info tabs at inset + Fit.Edge (GG-T651, GG-T656).
+            // (POL-C8), and the cells still line up with the description panel at inset + Fit.Edge (GG-T651, GG-T656).
             bar.style.left = bar.style.right = inset + Fit.Edge - 2 * Space.TargetHalfGap;
             bar.style.paddingLeft = bar.style.paddingRight = Space.TargetHalfGap;
             foreach (var cell in bar.Children()) LayCell(cell);
@@ -634,22 +651,19 @@ namespace GridGame.App
         private void SyncPanel()
         {
             panel.Clear();
-            ApplyInfoTab();
+            ApplyDescriptionPage();
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             SyncLore(u);
-            // The lessons live in their own Tutorial tab (GG-T449, owner: "built into the tabs at the bottom, not another
-            // popup over the top of the tabs"): Party keeps showing the unit, and a new lesson brings its tab forward once.
+            // A running lesson takes the description panel (§9.0) until an aim needs it; GG-T1827 folds it into the panel's content.
             tutorialPage?.Clear();
             if (TutorialActive && tutorialPage != null)
             {
-                if (shownLesson != TutorialStep) { shownLesson = TutorialStep; if (TargetingSlot < 0 && infoTab != InfoTabTutorial) ShowInfoTab(InfoTabTutorial); }
                 TutorialCard(tutorialPage);
                 // Its Next/Skip sit side by side at the top, so the lesson's buttons never scroll out of the short page.
                 var tb = tutorialPage.Q("tutorial-skip")?.parent;
                 if (tb != null) { tb.style.flexDirection = FlexDirection.Row; tb.style.alignSelf = Align.FlexStart; }
             }
-            else if (infoTab == InfoTabTutorial) ShowInfoTab(InfoTabParty);
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -787,93 +801,52 @@ namespace GridGame.App
         }
 
         // ─────────────────────────────────────────────────────────────────────────
-        // Info tabs (GG-T391): one tabbed panel under the orbs — Party · Lore · Log
+        // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom
         // ─────────────────────────────────────────────────────────────────────────
 
-        private const int InfoTabParty = 0, InfoTabLore = 1, InfoTabLog = 2, InfoTabTutorial = 3;
-        private static readonly string[] InfoTabNames = { "Party", "Lore", "Log", "Tutorial" };
-        /// <summary>The tab the player picked; it lasts the whole battle (the instance outlives a rebuild).</summary>
-        private int infoTab = InfoTabParty;
-        private VisualElement infoTabStrip;
-        private readonly VisualElement[] infoPages = new VisualElement[4];
         private ScrollView lorePage, logPage, tutorialPage;
-        /// <summary>The tutorial lesson last shown, so a new one brings the Party page forward exactly once.</summary>
-        private int shownLesson = -1;
         /// <summary>Every combat line this battle (newest last, capped), so the Log survives a rebuild.</summary>
         private const int LogCap = 200;
         private readonly List<(string text, Color color)> logLines = new List<(string, Color)>();
 
-        private void BuildInfoTabs(VisualElement root)
+        /// <summary>The panel holds the unit page and, while lessons run, the tutorial page. The Party · Lore · Log tab strip
+        /// and window are gone (owner 2026-11-27): the Lore and Log pages are still built and filled but sit off the layout
+        /// until their new homes take them (GG-T1825 the pause menu's Battle log, GG-T1826 the hub).</summary>
+        private void BuildDescriptionPanel(VisualElement root)
         {
-            var host = Ui.El("col info-tabs", root);
-            host.name = "info-tabs";
+            var host = Ui.El("col description-panel", root);
+            host.name = "description-panel";
             host.style.position = Position.Absolute;
-            host.style.top = InfoTabsTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
-            // A thin drawn strip (GG-T405: 60 px, under half a target) in a full-size hit area (GG-T524): each tab is a
-            // 132-px-tall transparent target with its 60-px face at the bottom, flush on the window.
-            infoTabStrip = Ui.El("tabs tabs--thin", host);
-            for (int i = 0; i < InfoTabNames.Length; i++)
-            {
-                int idx = i;
-                var hit = Ui.El("info-tab", infoTabStrip);
-                hit.name = "tab-" + InfoTabNames[i].ToLowerInvariant();
-                hit.pickingMode = PickingMode.Position;
-                var face = Ui.Text(InfoTabNames[i], "tab" + (i == infoTab ? " tab--active" : ""), hit);
-                face.pickingMode = PickingMode.Ignore;
-                Ui.Tappable(hit, () => ShowInfoTab(idx));
-            }
-            var win = Ui.Window(null, host, "window--compact info-tabs__window");
-            win.name = "info-panel";
-            panel = infoPages[InfoTabParty] = InfoPage(win, "party");
-            lorePage = InfoPage(win, "lore");
-            infoPages[InfoTabLore] = lorePage;
-            // The combat log keeps the old feed's name, so automation that looks for "feed" still finds it.
-            logPage = InfoPage(win, "feed");
-            infoPages[InfoTabLog] = logPage;
+            host.style.top = DescriptionTop; host.style.bottom = Space.S24; // left/right/top: ApplyStageLayout (the HUD column)
+            var win = Ui.Window(null, host, "window--compact description-panel__window");
+            win.name = "description-window";
+            panel = InfoPage(win, "description");
             tutorialPage = InfoPage(win, "tutorial");
-            infoPages[InfoTabTutorial] = tutorialPage;
+            lorePage = InfoPage(null, "lore");
+            // The combat log keeps the old feed's name, so automation that looks for "feed" finds it once it is mounted again.
+            logPage = InfoPage(null, "feed");
             foreach (var (text, color) in logLines) AddLogLine(text, color);
-            ApplyInfoTab();
+            ApplyDescriptionPage();
         }
 
         private static ScrollView InfoPage(VisualElement win, string name)
         {
             var sv = new ScrollView(ScrollViewMode.Vertical) { name = name };
             sv.AddToClassList("list");
-            sv.AddToClassList("info-tabs__page");
+            sv.AddToClassList("description-panel__page");
             sv.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
             sv.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
-            win.Add(sv);
+            win?.Add(sv);
             return sv;
         }
 
-        private void ShowInfoTab(int i)
+        /// <summary>A running lesson shows in the panel; an aimed ability's card (and Cast / Cancel) takes it over while aiming.</summary>
+        private void ApplyDescriptionPage()
         {
-            infoTab = Mathf.Clamp(i, InfoTabParty, TutorialActive ? InfoTabTutorial : InfoTabLog);
-            ApplyInfoTab();
-        }
-
-        /// <summary>Shows the picked page. While an ability is aimed the Party page (its card and Cast / Cancel) shows
-        /// whatever tab was picked, and the pick comes back when the aim ends.</summary>
-        private void ApplyInfoTab()
-        {
-            if (infoTabStrip == null) return;
-            int shown = TargetingSlot >= 0 ? InfoTabParty : infoTab;
-            for (int i = 0; i < infoPages.Length; i++)
-                if (infoPages[i] != null) infoPages[i].style.display = i == shown ? DisplayStyle.Flex : DisplayStyle.None;
-            int k = 0;
-            foreach (var t in infoTabStrip.Children())
-            {
-                bool on = k++ == shown;
-                // The Tutorial tab exists only while lessons are running (GG-T449).
-                if (k - 1 == InfoTabTutorial) t.style.display = TutorialActive ? DisplayStyle.Flex : DisplayStyle.None;
-                // t is the tab's hit area (GG-T524); its drawn face is its one child.
-                if (t.childCount == 0) continue;
-                var face = t[0];
-                face.EnableInClassList("tab--active", on);
-                if (on) Fonts.UseHeavy(face); else Fonts.UseBody(face);
-            }
-            if (shown == InfoTabLog) ScrollLogToEnd();
+            if (panel == null || tutorialPage == null) return;
+            bool lesson = TutorialActive && TargetingSlot < 0;
+            panel.style.display = lesson ? DisplayStyle.None : DisplayStyle.Flex;
+            tutorialPage.style.display = lesson ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         /// <summary>The Lore page: the unit's Prose description and lore (ClassDef.Description / Lore, filled from
