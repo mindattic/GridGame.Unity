@@ -75,7 +75,7 @@ namespace GridGame.Meta
         public bool Finished => Node == null;
         /// <summary>Every line reached so far, in order (the current one last).</summary>
         public List<DialogueLine> Transcript { get; } = new List<DialogueLine>();
-        /// <summary>What each effect did, in order ("Sellsword joins you!", "+50 G") — the screen toasts them.</summary>
+        /// <summary>What each effect did, in order ("Sellsword joins you", "+50 G") — the screen toasts them.</summary>
         public List<string> Log { get; } = new List<string>();
         /// <summary>GG-T1297: the bond changes among <see cref="Log"/>, keyed by their line's index there, so the screen
         /// shows them as bond chips rather than toasts.</summary>
@@ -394,11 +394,11 @@ namespace GridGame.Meta
                     if (c.TryClass(e.Id) == null) return null;
                     bool had = s.Hero(e.Id) != null;
                     Summon.Join(c, s, e.Id);
-                    return had ? null : $"{c.Class(e.Id).Name} joins you!";
+                    return had ? null : $"{c.Class(e.Id).Name} joins you";
                 }
                 case DialogueEffectType.JoinNpc:
-                    // Named bare, like every archetype (canon, 2026-11-21): "Blacksmith joins the caravan!".
-                    return s.Flags.Add(ContentLoader.NpcFlagPrefix + e.Id) ? $"{Npc(e.Id)} joins the caravan!" : null;
+                    // Named bare, like every archetype (canon, 2026-11-21): "Blacksmith joins the caravan".
+                    return s.Flags.Add(ContentLoader.NpcFlagPrefix + e.Id) ? $"{Npc(e.Id)} joins the caravan" : null;
                 case DialogueEffectType.OpenStation:
                     return $"{CampUnlocks.StationName(e.Id)} opens at Camp!";
                 case DialogueEffectType.JoinHero:
@@ -477,7 +477,7 @@ namespace GridGame.Meta
         {
             if (classId == null || c.TryClass(classId) == null || s.Hero(classId) != null) return null;
             Summon.Join(c, s, classId, JoinRoute.StoryRecruit);
-            return s.Party.Contains(classId) ? $"{c.Class(classId).Name} joins the party!" : $"{c.Class(classId).Name} joins you (in reserve)!";
+            return s.Party.Contains(classId) ? $"{c.Class(classId).Name} joins the party" : $"{c.Class(classId).Name} joins you (in reserve)";
         }
 
         /// <summary>A Camp NPC's display name ("blacksmith" → "Blacksmith").</summary>
@@ -494,7 +494,7 @@ namespace GridGame.Meta
 
         /// <summary>For the bots (balance sims and Test Mode, which never show story): plays every story beat that's
         /// pending before <paramref name="stageId"/> headlessly (first choice each time) so story recruits still
-        /// join (GG-T118). Returns what the beats did ("Red Mage joins the party!").</summary>
+        /// join (GG-T118). Returns what the beats did ("Red Mage joins the party").</summary>
         public static List<string> PlayPendingBeatsHeadless(ContentDb c, SaveData s, string stageId)
         {
             var log = new List<string>();
