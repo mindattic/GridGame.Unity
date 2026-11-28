@@ -1,0 +1,15 @@
+{
+  "schema": "prose-text/1",
+  "id": "description-item-chest-tithe",
+  "universe": "gridgame",
+  "kind": "description",
+  "key": "item:chest_tithe",
+  "about": [
+    "item-chest-tithe"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "short": "The Tithe Collector's strongbox, heavy with a month of Tithe's colour. Open it."
+  }
+}

@@ -886,6 +886,22 @@
         "long": "Knows every reagent, every breath, and when to spend both."
       }
     },
+    "class:collector": {
+      "key": "class:collector",
+      "id": "description-class-collector",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:479d81d3ec2fbed68ee82cf7b6af50ff72de2db365cbd072f11185a460f8d226",
+      "about": [
+        "class-collector"
+      ],
+      "speakers": [],
+      "payload": {
+        "short": "The Captain's man in black-and-steel plate under a white surcoat, helm closed, a tithe ledger chained at his belt and a heavy plate he keeps turned toward you.",
+        "long": "The Captain sent him to the hamlet of Tithe to take the tithe every month, and every month he takes more. He holds the toll bridge with the river at his back and a Red Mage in irons, one who refused to pay. Swords clang off his front plate for nothing; spells go around it, and only a blow that shatters it takes it off. Behind him on the bridge stands his white tithe wagon, loaded."
+      }
+    },
     "class:corpse": {
       "key": "class:corpse",
       "id": "description-class-corpse",
@@ -4012,12 +4028,14 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:e34e83a6b5bc19c91e285f4fa4ffd556dc875ea2368e409520622cb4a4309fec",
-      "about": [],
+      "hash": "sha256:ce13a81d1fb53facbc1f67fa6f7011a43ab3de6eac8ab18147cd76341bca2d34",
+      "about": [
+        "class-ward-engine"
+      ],
       "speakers": [],
       "payload": {
-        "short": "A white Halcyon automaton gone pale and cold, folded around a sleeping waystone, its shield etched with a lightning mark.",
-        "long": "Halcyon built the Ward-Engines to keep its waystones until someone came who could wake them. Steel, flame and prayer slide off its wards. Only Lightning still answers the old key."
+        "short": "A pale Halcyon automaton folded around a sleeping waystone, its tall white shield etched with a lightning mark.",
+        "long": "Halcyon built the Ward-Engines to keep its waystones until someone came who could wake them, then left them on the hills for twelve hundred years. Steel, flame and prayer slide off its wards; only Lightning still answers the old key. No one but the Commander sees the stone it guards, so no one else has ever come to try."
       }
     },
     "class:warden": {

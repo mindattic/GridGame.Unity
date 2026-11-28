@@ -43,8 +43,11 @@ CS_RULES = {
     "POL-A1": ("token", [rf"\bfontSize\s*=\s*{NUM}\b"], [r"\bTypeScale\.\w+"]),
     "POL-B1": ("token", [r"\bnew\s+Color32?\s*\(", r"\bColor\.(?:white|black|red|green|blue|yellow|cyan|magenta|gray|grey)\b"],
                [r"\bPalette\.\w+"]),
-    "POL-C1": ("token", [rf"\bstyle\.(?:margin|padding)\w*\s*=\s*{NUM}\b", rf"\bstyle\.(?:width|height|left|right|top|bottom)\s*=\s*{NUM}\b"],
-               [r"\bSpace\.\w+", r"\bSize\.\w+", r"\bFit\.\w+", r"\bLength\.Percent\("]),  # GG-T272 stage-relative units
+    # a corner radius is a literal assigned to a border*Radius, or the radius argument of SetRadius(e, r) / SetBorder(e, r, w, c)
+    "POL-C1": ("token", [rf"\bstyle\.(?:margin|padding)\w*\s*=\s*{NUM}\b", rf"\bstyle\.(?:width|height|left|right|top|bottom)\s*=\s*{NUM}\b",
+                         rf"\bborder\w*Radius\s*=\s*{NUM}\b", rf"\bSetRadius\(\s*\w+\s*,\s*{NUM}\s*[)+-]",
+                         rf"\bSetBorder\(\s*\w+\s*,\s*{NUM}\s*,"],
+               [r"\bSpace\.\w+", r"\bSize\.\w+", r"\bFit\.\w+", r"\bLength\.Percent\(", r"\bRadius\.\w+"]),  # GG-T272 stage-relative units
     "POL-E1": ("token", [rf"\bTween\.(?:Run|Wait|Move|Fade|Shake|Pop)\(\s*{NUM}\s*[,)]"], [r"\bTiming\.\w+"]),
     "POL-E2": ("token", [r"Mathf\.Sin\(\s*\w+\s*\*\s*Mathf\.PI\s*\)", r"\bMathf\.SmoothStep\("], [r"\bEase\.\w+"]),
     "POL-A3": ("never", [r"\bFontStyle\.Bold(?:AndItalic)?\b"], []),

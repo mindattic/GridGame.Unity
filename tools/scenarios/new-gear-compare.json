@@ -1,0 +1,6 @@
+{
+  "target": "screen:equip",
+  "gear": "none",
+  "onTheRoad": false,
+  "bag": { "eq_armor_chain": 1 }
+}

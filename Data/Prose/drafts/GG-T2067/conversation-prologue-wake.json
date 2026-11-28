@@ -1,0 +1,48 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-wake",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_wake",
+  "about": [
+    "character-commander",
+    "class-barbarian",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "Cold Open",
+    "start": "cold",
+    "nodes": [
+      {
+        "id": "cold",
+        "speaker": "character-commander",
+        "line": "A heartbeat, slow and far away. Frost cracks on the glass in front of your face.",
+        "next": "light"
+      },
+      {
+        "id": "light",
+        "speaker": "character-commander",
+        "line": "Cold. Then light. Then voices.",
+        "next": "door"
+      },
+      {
+        "id": "door",
+        "speaker": "class-barbarian",
+        "line": "Put your back into it. The door's half open and the slimes are already in the pipes.",
+        "next": "lights"
+      },
+      {
+        "id": "lights",
+        "speaker": "class-knight",
+        "line": "Wait. The lamps in here just came on. Who's down there?"
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-barbarian",
+    "class-knight"
+  ]
+}

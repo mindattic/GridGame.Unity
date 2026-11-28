@@ -45,6 +45,23 @@ namespace GridGame.Meta
             return picks;
         }
 
+        /// <summary>New gear (GG-T2061): the first party hero with an upgrade in <see cref="Plan"/> the player hasn't been shown
+        /// yet (<see cref="SaveData.SeenGear"/>), and that pick; null when there is none. It raises the Heroes tab's New badge
+        /// and opens Heroes on Equip.</summary>
+        public static (HeroSave Hero, Pick Pick)? FirstNew(ContentDb c, SaveData s)
+        {
+            foreach (var h in s.Party.Select(s.Hero).Where(h => h != null))
+                foreach (var p in Plan(c, s, h))
+                    if (!s.SeenGear.Contains(p.Item.Id)) return (h, p);
+            return null;
+        }
+
+        /// <summary>Marks every upgrade in this hero's <see cref="Plan"/> seen, once the Equip tab has shown them.</summary>
+        public static void MarkSeen(ContentDb c, SaveData s, HeroSave h)
+        {
+            foreach (var p in Plan(c, s, h)) s.SeenGear.Add(p.Item.Id);
+        }
+
         /// <summary>Equips every piece in <see cref="Plan"/>; the swapped-out pieces go back to the bag.</summary>
         public static Result Apply(ContentDb c, SaveData s, HeroSave h)
         {

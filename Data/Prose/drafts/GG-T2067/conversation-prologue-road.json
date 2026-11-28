@@ -1,0 +1,42 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-road",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_road",
+  "about": [
+    "character-commander",
+    "class-barbarian",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Road to Tithe",
+    "start": "sky",
+    "nodes": [
+      {
+        "id": "sky",
+        "speaker": "character-commander",
+        "line": "Wind, heather and a grey sky. Far off, the Manalith hangs over the moor, bigger than the Moorfolk say it used to be.",
+        "next": "road"
+      },
+      {
+        "id": "road",
+        "speaker": "class-knight",
+        "line": "Tithe is down this road. Half a day if the weather holds.",
+        "next": "heather"
+      },
+      {
+        "id": "heather",
+        "speaker": "class-barbarian",
+        "line": "Something's moving in the heather. Wolves. Stay close to the cart."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-knight",
+    "class-barbarian"
+  ]
+}
