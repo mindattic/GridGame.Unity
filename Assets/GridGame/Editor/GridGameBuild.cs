@@ -100,6 +100,31 @@ namespace GridGame.EditorTools
 
         public const string AndroidPackage = "com.mindattic.gridgame";
 
+        /// <summary>The tallest screen Android may open the game on without letterboxing it (height / width). The device
+        /// matrix (tools/devices.json, docs/BIBLE.md 26.5) tops out at the Galaxy Z Fold5 cover, 23.1:9 (2.56), with the
+        /// Z Flip main screen at 22:9 (2.44); a lower cap puts both in Android's own black bars.</summary>
+        public const float AndroidMaxAspectRatio = 2.6f;
+
+        /// <summary>GG-T2027: the screen settings both Android builds share. A custom max aspect of
+        /// <see cref="AndroidMaxAspectRatio"/> (Unity's AspectRatioMode.Custom, only settable through the serialized
+        /// PlayerSettings); rendering into the display cutout (Unity writes layoutInDisplayCutoutMode shortEdges), with
+        /// <c>GameApp.ApplySafeArea</c> keeping content inside <see cref="Screen.safeArea"/>; and a resizeable activity, so
+        /// folding or unfolding a Fold hands the running game the new size instead of restarting or letterboxing it.</summary>
+        private static void ApplyAndroidScreen()
+        {
+            var modes = typeof(PlayerSettings).Assembly.GetType("UnityEditor.AspectRatioMode");
+            var so = new SerializedObject(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
+            var mode = so.FindProperty("androidSupportedAspectRatio");
+            if (modes == null || !Enum.IsDefined(modes, "Custom") || mode == null)
+                throw new UnityEditor.Build.BuildFailedException("[Build] Android: can't set PlayerSettings' aspect ratio mode to Custom (AspectRatioMode.Custom / androidSupportedAspectRatio not found)");
+            mode.intValue = Convert.ToInt32(Enum.Parse(modes, "Custom"));
+            so.ApplyModifiedPropertiesWithoutUndo();
+            PlayerSettings.Android.maxAspectRatio = AndroidMaxAspectRatio;
+            PlayerSettings.Android.renderOutsideSafeArea = true;
+            PlayerSettings.Android.resizeableActivity = true;
+            Debug.Log($"[Build] Android: max aspect {AndroidMaxAspectRatio}, cutout shortEdges, resizeable activity");
+        }
+
         /// <summary>The development APK (ARM64 + x86_64, so the emulator runs it; tools/androidcheck.py). Debug-signed.
         /// <c>tools/build.ps1 -Platform Android -Dev</c>.</summary>
         public static void BuildAndroid()
@@ -108,6 +133,7 @@ namespace GridGame.EditorTools
             PlayerSettings.SetScriptingBackend(UnityEditor.Build.NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.X86_64;
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            ApplyAndroidScreen();
             EditorUserBuildSettings.buildAppBundle = false;
             // GG-T549: the dev APK is GLES3-first. A development build labels every Vulkan object, and the Android
             // Emulator's Vulkan driver (vulkan.ranchu) crashes in vk_common_SetDebugUtilsObjectNameEXT ~3 min in, so
@@ -150,6 +176,7 @@ namespace GridGame.EditorTools
             // GG-T725: Play release floor is Android 12 (BIBLE 26.3); the dev APK (BuildAndroid) stays at 26 for BlueStacks 5.
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel31;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+            ApplyAndroidScreen();
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, true);
             CheckPlayTargets();
             int oldCode = PlayerSettings.Android.bundleVersionCode;
@@ -325,6 +352,10 @@ namespace GridGame.EditorTools
             PlayerSettings.iOS.targetDevice = iOSTargetDevice.iPhoneOnly;
             PlayerSettings.iOS.targetOSVersionString = IosMinimumVersion;
             PlayerSettings.iOS.requiresFullScreen = true;
+            // GG-T2027: a swipe up from the bottom edge is the game's first (a drag on the board's last row), the system's
+            // only on a second swipe; the home indicator fades out once the player stops touching the screen.
+            PlayerSettings.iOS.deferSystemGesturesMode = UnityEngine.iOS.SystemGestureDeferMode.BottomEdge;
+            PlayerSettings.iOS.hideHomeButton = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
 
             string oldBuild = PlayerSettings.iOS.buildNumber;

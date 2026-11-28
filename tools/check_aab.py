@@ -1,6 +1,9 @@
 """Release gate for a built .aab (GG-T1516): every native library is arm64-v8a only with 16 KB aligned ELF LOAD
 segments (Play's page-size rule for apps targeting Android 15+), and the merged manifest asks only for permissions
 listed in docs/legal/play-data-safety.md (the backticked names in its Permissions row are the allowlist).
+GG-T2027: also reports the screen values the device matrix needs (max aspect, resizeable activity, display cutout mode)
+and fails when the max aspect is below --min-aspect (default 2.6, the Galaxy Z Fold cover's 23.1:9) on an activity that
+isn't resizeable.
 Usage: python tools/check_aab.py [Build/AndroidRelease/GridGame.aab] [--bundletool JAR] [--java EXE]
 Without --bundletool/--java, uses the newest Unity Hub editor's AndroidPlayer tools."""
 import argparse, glob, os, re, struct, subprocess, sys, zipfile
@@ -75,12 +78,40 @@ def find_unity_tools():
     return "java", None
 
 
-def manifest_permissions(aab, java, jar):
+def dump_manifest(aab, java, jar):
     out = subprocess.run([java, "-jar", jar, "dump", "manifest", "--bundle=" + aab],
                          capture_output=True, text=True)
     if out.returncode:
         raise SystemExit("bundletool dump manifest failed:\n" + out.stderr)
-    root = ET.fromstring(out.stdout)
+    return ET.fromstring(out.stdout)
+
+
+def manifest_screen(root, min_aspect):
+    """Prints the launcher activity's screen values; returns problems."""
+    app = root.find("application")
+    acts = [] if app is None else app.findall("activity")
+    act = next((a for a in acts if any(c.get(ANDROID_NS + "name") == "android.intent.category.LAUNCHER"
+                                       for c in a.iter("category"))), acts[0] if acts else None)
+    if act is None:
+        return ["no activity in the manifest"]
+    meta = {m.get(ANDROID_NS + "name"): m.get(ANDROID_NS + "value") for m in root.iter("meta-data")}
+    aspect = act.get(ANDROID_NS + "maxAspectRatio") or meta.get("android.max_aspect")
+    resizeable = act.get(ANDROID_NS + "resizeableActivity") or app.get(ANDROID_NS + "resizeableActivity")
+    print("activity", act.get(ANDROID_NS + "name"))
+    print("max aspect", aspect or "(none: Android's default)")
+    print("resizeableActivity", resizeable or "(unset)")
+    print("screenOrientation", act.get(ANDROID_NS + "screenOrientation") or "(unset)")
+    print("display cutout", act.get(ANDROID_NS + "windowLayoutInDisplayCutoutMode")
+          or "(in the theme or set at runtime by Unity's render outside safe area)")
+    for k, v in sorted((k, v) for k, v in meta.items() if k):
+        if re.search(r"aspect|cutout|safe|notch|resiz", k, re.I):
+            print("meta-data", k, "=", v)
+    if resizeable != "true" and aspect is not None and float(aspect) < min_aspect:
+        return [f"max aspect {aspect} is below {min_aspect} and the activity isn't resizeable (tools/devices.json)"]
+    return []
+
+
+def manifest_permissions(root):
     return sorted({e.get(ANDROID_NS + "name") for tag in ("uses-permission", "uses-permission-sdk-23")
                    for e in root.iter(tag)} - {None})
 
@@ -90,6 +121,7 @@ def main():
     ap.add_argument("aab", nargs="?", default=os.path.join(ROOT, "Build", "AndroidRelease", "GridGame.aab"))
     ap.add_argument("--bundletool")
     ap.add_argument("--java")
+    ap.add_argument("--min-aspect", type=float, default=2.6)
     a = ap.parse_args()
     if not os.path.exists(a.aab):
         raise SystemExit(f"no such bundle: {a.aab}")
@@ -99,7 +131,9 @@ def main():
         raise SystemExit("bundletool jar not found; pass --bundletool")
     problems, count = check_libs(a.aab)
     print(f"{count} native files checked (arm64-v8a only, {PAGE // 1024} KB aligned)")
-    perms, allowed = manifest_permissions(a.aab, java, jar), allowed_permissions()
+    root = dump_manifest(a.aab, java, jar)
+    problems += manifest_screen(root, a.min_aspect)
+    perms, allowed = manifest_permissions(root), allowed_permissions()
     for p in perms:
         print("permission", p, "" if p in allowed else "NOT ALLOWED")
     problems += [f"manifest permission {p} is not in {os.path.relpath(DOC, ROOT)}" for p in perms if p not in allowed]
