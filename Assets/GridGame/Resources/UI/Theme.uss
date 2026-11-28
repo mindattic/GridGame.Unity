@@ -201,7 +201,7 @@
 /* A long value (a locked station's "Opens after …" hint) wraps rather than clipping or squeezing the label. */
 .menu-value { font-size: var(--type-base); -unity-text-align: middle-right; margin-left: var(--space-16); flex-shrink: 1; white-space: normal; }
 /* GG-T760: the Equip slot list's shorter rows; the tap target stays above 88px. Text keeps the one GUI size (GG-T770). */
-.menu-row--compact { min-height: var(--size-target); margin: var(--space-4) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
+.menu-row--compact { min-height: var(--size-target); margin: var(--space-12) 0; padding-top: var(--space-4); padding-bottom: var(--space-4); }
 .menu-row--compact .menu-icon { width: 48px; height: 48px; margin-right: var(--space-12); }
 .menu-row--compact .menu-cursor { width: 44px; height: 44px; }
 .menu-icon { width: 64px; height: 64px; margin-right: var(--space-16); background-size: contain; }
@@ -385,6 +385,9 @@
 .kit-section--first { margin-top: 0; }
 .kit-note { margin: 0 0 var(--space-8) 72px; } /* Kit.Indent: under the row label */
 /* A read-only fact (Status gear, a bestiary entry, a Crucible rule): caption label in a fixed column, body value. */
+.diamond-amount-box { align-self: stretch; -unity-text-align: middle-center; margin: var(--space-8) var(--space-12); padding: var(--space-8) var(--space-12); min-height: var(--size-target); background-color: var(--color-ink); border-width: 3px; border-color: var(--color-frame); border-radius: 12px; }
+.diamond-steps { flex-wrap: nowrap; padding: 0; }
+.diamond-step { flex-grow: 1; flex-shrink: 1; min-width: 0; padding: 0 var(--space-4); }
 .kit-field { flex-direction: row; align-items: center; margin: var(--space-4) 0; }
 .kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-base); color: var(--color-dim); }
 .kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-base); white-space: normal; }

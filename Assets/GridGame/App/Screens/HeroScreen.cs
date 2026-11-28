@@ -122,7 +122,7 @@ namespace GridGame.App
                 var card = Ui.El("card" + (sel ? " card--selected" : ""), row);
                 card.name = "hero-pick-" + id;
                 card.style.flexGrow = 1; card.style.flexShrink = 0; card.style.flexBasis = Length.Percent(26); // three to a row, more wrap below (GG-T760)
-                Ui.Margin(card, Space.TargetHalfGap, Space.TargetHalfGap, Space.TargetHalfGap, Space.TargetHalfGap);
+                Ui.Margin(card, Space.TargetHalfGap, Space.S16, Space.TargetHalfGap, Space.TargetHalfGap);
                 Ui.Pad(card, Space.S8, Space.S8, Space.S8, Space.S8);
                 var bw = sel ? 4f : 0f;
                 card.style.borderTopWidth = card.style.borderBottomWidth = card.style.borderLeftWidth = card.style.borderRightWidth = bw;
@@ -136,18 +136,8 @@ namespace GridGame.App
                 // A compact card (kit, GG-T454): name and meta both caption size, the name heavy.
                 var name = Ui.Caption(C.TryClass(id)?.Name ?? id, info, "t-heavy");
                 Ui.Marquee(name);
-                var meta = Ui.El("row", info);
-                meta.style.alignItems = Align.Center;
-                Ui.Caption($"Lv {Progression.Level(h)}", meta, "gold");
-                var tag = Ui.Caption(inParty ? "Party" : "Reserve", meta, inParty ? "good" : "dim");
-                Ui.Margin(tag, left: Space.S8);
-                Ui.Marquee(tag);
-                if (ready)
-                {
-                    var badge = Ui.Caption(NextAbility.ReadyLabel, info, "gold");
-                    badge.name = "hero-ability-ready";
-                    Ui.Marquee(badge);
-                }
+                Ui.Caption($"Lv {Progression.Level(h)}", info, "gold");
+                Ui.Caption(inParty ? "Party" : "Reserve", info, inParty ? "good" : "dim");
                 card.AddToClassList("card-tap");
                 Ui.Tappable(card, () =>
                 {

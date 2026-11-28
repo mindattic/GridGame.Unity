@@ -252,7 +252,11 @@ namespace GridGame.App
             Ui.Tappable(art, () => ArtPreview.Open(h.ClassId), null); // GG-T1804: the full art is one tap away
             // GG-T532: a class with male art can switch looks here any time (the same picker as on joining).
             if (!h.Domesticated && Art.HasMaleArt(h.ClassId))
-                RowIcon.IconButton("Change look", RowKind.Hero, () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
+            {
+                var look = RowIcon.IconButton("Change look", RowKind.Hero, () => VariantPicker.Change(h, Refresh), "btn--small", artCol);
+                look.name = "hero-look";
+                Ui.Margin(look, top: Space.S24);
+            }
             var stats = Ui.El("col grow", top);
             Ui.Margin(stats, left: Space.S24); stats.style.flexShrink = 1; stats.style.minWidth = 0;
             int hp = h.Hp > 0 ? Math.Min(h.Hp, u.MaxHp) : u.MaxHp;
@@ -948,7 +952,8 @@ namespace GridGame.App
                 if (cats.Count > 0)
                 {
                     if (!cats.Contains(buyCategory)) buyCategory = cats[0];
-                    Ui.Tabs(cats.Select(c => Shop.Sections[c]).ToArray(), cats.IndexOf(buyCategory), i => { buyCategory = cats[i]; keepScroll = 0f; Refresh(); }, body);
+                    var catTabs = Ui.Tabs(cats.Select(c => Shop.Sections[c]).ToArray(), cats.IndexOf(buyCategory), i => { buyCategory = cats[i]; keepScroll = 0f; Refresh(); }, body);
+                    Ui.Margin(catTabs, top: Space.S24);
                     items = items.Where(i => Shop.SectionOf(i) == buyCategory).ToList();
                 }
             }
