@@ -65,23 +65,25 @@ namespace GridGame.App
             for (int i = 0; i < Progression.MaxBarSlots; i++)
             {
                 int idx = i;
-                var cell = Ui.El("col center", bar);
+                // R3: a kit card; the picked slot is pressed in rather than ringed in gold.
+                var cell = Ui.El("card card-tap" + (i == slot ? " tap--selected" : ""), bar);
+                cell.style.flexDirection = FlexDirection.Column;
+                cell.style.alignItems = Align.Center;
+                cell.style.justifyContent = Justify.Center;
                 // Every bar slot shares the row with even gutters, however many slots or however wide the stage (POL-C8).
                 cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.minHeight = Size.Cell; // GG-T1145: min, not fixed: a long name wraps to 3 lines and grows the cell instead of spilling onto the Supporter line
                 Ui.Margin(cell, left: Space.TargetHalfGap, right: Space.TargetHalfGap);
-                cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = Radius.R14;
-                cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = i == slot ? 6 : 3;
-                var bc = i == slot ? Palette.Gold : Palette.Text.WithA(0.7f);
-                cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = bc;
-                cell.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                if (i >= unlocked) { Ui.Caption("Locked", cell, "dim"); cell.style.opacity = 0.5f; continue; }
+                if (i >= unlocked)
+                {
+                    Ui.Margin(cell.KindIcon(RowKind.Locked), right: Space.S0);
+                    Ui.Caption("Locked", cell, "dim");
+                    cell.style.opacity = Dim.Row;
+                    continue;
+                }
                 var entry = h.Bar[i];
                 var label = EntryName(entry);
-                var icon = EntryIcon(entry);
-                if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); Ui.Margin(ic, right: Space.S0); }
-                else Ui.Margin(cell.KindIcon(RowKind.Ability), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
+                Ui.Margin(cell.KindIcon(RowKind.Ability, EntryIcon(entry)), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
                 if (label == null) { var t = Ui.Caption("Empty", cell, "dim"); t.style.unityTextAlign = TextAnchor.MiddleCenter; }  // GG-T1874: filled slots are icon-only (as in battle, GG-T1819); the full name is under the bar
-                cell.AddToClassList("card-tap");
                 InspectCard.Attach(cell, b => InspectEntry(b, entry));
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
             }
@@ -275,8 +277,7 @@ namespace GridGame.App
             var card = Ui.Panel(list, null, false, "guided-lesson");
             var head = Ui.El("row", card);
             head.style.alignItems = Align.Center;
-            var icon = Art.AbilityIcon(plan.Skill);
-            if (icon != null) { var ic = Ui.El("menu-icon", head); ic.style.backgroundImage = new StyleBackground(icon); }
+            head.KindIcon(RowKind.Ability, Art.AbilityIcon(plan.Skill));
             Ui.Heading($"{plan.Skill.Name} — {KindLabel(plan.Skill)}", head, "grow");
             GlossaryText.Create(plan.Skill.Description ?? "", "kit-text dim", card);
             string hero = C.TryClass(plan.Hero.ClassId)?.Name ?? plan.Hero.ClassId;

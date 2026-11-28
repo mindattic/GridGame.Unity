@@ -74,7 +74,7 @@ namespace GridGame.App
             var dests = CampMenu.Build(c, s, App.Settings);
             CampDestination Dest(string id) => dests.FirstOrDefault(d => d.Id == id);
             // Mode banner (GG-T1962): names the road-or-camp mode (TravelRules) in one line and carries its one action, the
-            // Inn's rest: "Set up camp" on the road, "Rest" once camped (GG-T1612, GG-T1786).
+            // Inn's rest: "Set up camp" on the road, "Rest" once camped (GG-T1612, GG-T1786). Respec lives on Talents (GG-T2085).
             bool road = TravelRules.OnTheRoad(s);
             int wounded = s.Party.Select(s.Hero).Count(h => h != null && GridGame.Meta.Inn.MissingHp(c, s, h) > 0);
             var inn = Dest(CampMenu.Inn);
@@ -89,15 +89,9 @@ namespace GridGame.App
             mode.style.flexGrow = 1; mode.style.flexShrink = 1; mode.style.minWidth = 0;
             if (inn != null && inn.Open)
             {
-                var rest = Ui.Button(road ? "Set up camp" : "Rest", Rest, "btn--small", modeRow, true);
+                var rest = RowIcon.IconButton(road ? "Set up camp" : "Rest", RowKind.Station, Rest, "btn--small", modeRow, true, Art.UiIcon("hub-inn"));
                 rest.name = "camp-inn";
                 rest.style.marginLeft = Space.S16;
-            }
-            if (respec != null)
-            {
-                var respecBtn = Ui.Button("Respec", () => App.Router.Push(new RespecScreen()), "btn--small", modeRow);
-                respecBtn.name = "camp-respec";
-                respecBtn.style.marginLeft = Space.S24;
             }
             if (inn != null && !inn.Open && !string.IsNullOrEmpty(inn.Hint)) Ui.Note(inn.Hint, banner).name = "locked-inn";
 
@@ -114,6 +108,25 @@ namespace GridGame.App
                 if (!float.IsNaN(vh) && vh > 0f) page.style.minHeight = Mathf.Floor(vh);
             });
 
+            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark at the top of the body.
+            if (Features.Caravan && CampUnlocks.CaravanOpen(s))
+            {
+                var gossip = Ui.Panel(page, null, false, "camp-gossip");
+                Ui.Caption("Around the wagons", gossip, "dim");
+                CaravanScreen.BarkLine(c, s, gossip);
+            }
+
+            // Crucible card (§22.10): endless waves; closed mid-expedition or before its milestone, saying why.
+            var crucible = Dest(CampMenu.Crucible);
+            if (crucible != null)
+            {
+                var card = Ui.Window(null, page);
+                var row = Ui.MenuRow(crucible.Label, crucible.Value, crucible.Open ? (Action)(() => App.Router.Push(new CrucibleScreen())) : null, card, null, crucible.Open);
+                row.name = crucible.Open ? "camp-crucible" : "locked-crucible";
+                row.KindIcon(crucible.Open ? RowKind.Crucible : RowKind.Locked);
+                if (!crucible.Open) Subline(row, crucible.Hint);
+            }
+
             var campaign = Ui.Window(null, page);
             campaign.name = "camp-campaign";
             string next = NextStage(c, s);
@@ -126,20 +139,6 @@ namespace GridGame.App
                 title.name = "camp-next";
                 Ui.Caption($"Recommended Lv {Progression.StageRecommendedLevel(c, s, st)}", campaign, "dim");
             }
-            var cont = Ui.Button(next != null ? "Fight" : adv?.Label ?? "Journey", () =>
-            {
-                if (next != null) StageLauncher.Launch(next, false);
-                else App.Router.Push(new StageSelectScreen());
-            }, "btn--primary", campaign);
-            cont.name = "camp-continue";
-            cont.style.marginTop = Space.S16;
-            if (next != null && !RestedPool.Exempt(s))
-                Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim").name = "camp-fight-cost";
-            // Rested shows here only while it gates: below full, its meter, timer and refills (§25.18).
-            if (!RestedPool.Exempt(s) && RestedPool.Points(s, DateTime.UtcNow) < RestedPool.Max) RestedGate.PanelIn(campaign, Refresh);
-            var advRow = Ui.MenuRow(adv?.Label ?? "Journey", adv?.Value ?? "", () => App.Router.Push(new StageSelectScreen()), campaign);
-            advRow.name = "camp-adventure";
-            advRow.KindIcon(RowKind.Place, ThemeFor(c, s));
             Ui.Caption($"{TimeSpan.FromSeconds(s.PlaySeconds):h\\:mm\\:ss} · Cleared {s.ClearedStages.Count(id => c.Stages.ContainsKey(id) && !c.Stage(id).IsTest)}/{c.CampaignStages().Count}", campaign, "dim");
             if (s.NewGamePlus > 0) Ui.Caption($"New Game+ {s.NewGamePlus}", campaign, "gold");
             var ngp = Dest(CampMenu.NewGamePlus);
@@ -154,24 +153,26 @@ namespace GridGame.App
                 ngpRow.name = "camp-newgameplus";
                 ngpRow.KindIcon(RowKind.NewGamePlus).parent.Q<Label>("label").AddToClassList("gold");
             }
-
-            // Crucible card (§22.10): endless waves; closed mid-expedition or before its milestone, saying why.
-            var crucible = Dest(CampMenu.Crucible);
-            if (crucible != null)
+            // Rested shows here only while it gates: below full, its meter, timer and refills (§25.18).
+            if (!RestedPool.Exempt(s) && RestedPool.Points(s, DateTime.UtcNow) < RestedPool.Max) RestedGate.PanelIn(campaign, Refresh);
+            // The card's one filled button closes it, lowest on the body, so it sits in the thumb zone (GG-T2085).
+            var cont = RowIcon.IconButton(next != null ? "Fight" : adv?.Label ?? "Journey", next != null ? RowKind.Enter : RowKind.Place, () =>
             {
-                var card = Ui.Window(null, page);
-                var row = Ui.MenuRow(crucible.Label, crucible.Value, crucible.Open ? (Action)(() => App.Router.Push(new CrucibleScreen())) : null, card, null, crucible.Open);
-                row.name = crucible.Open ? "camp-crucible" : "locked-crucible";
-                row.KindIcon(crucible.Open ? RowKind.Crucible : RowKind.Locked);
-                if (!crucible.Open) Subline(row, crucible.Hint);
-            }
+                if (next != null) StageLauncher.Launch(next, false);
+                else App.Router.Push(new StageSelectScreen());
+            }, "btn--primary", campaign, false, Art.UiIcon(next != null ? "hub-continue" : "hub-stage-select"));
+            cont.name = "camp-continue";
+            cont.style.marginTop = Space.S16;
+            if (next != null && !RestedPool.Exempt(s))
+                Ui.Caption($"Costs {RestedPool.LaunchCost} Rested", campaign, "dim").name = "camp-fight-cost";
 
             // The tiles are the two groups the nav has no tab for (GG-T1963): Craft and Journal, each opening a CampGroupScreen of
             // its members (GG-T1613). Every destination keeps its old Camp row name as a hidden full-size marker, so camp tips,
             // the coach and the harness still find it on the hub: inside its group tile, or over the nav tab that now opens it.
             //   camp-craft:   camp-items, camp-blacksmith, camp-alchemist, camp-manasmith, camp-enchantress, camp-caravan
             //   camp-journal: camp-quests, camp-bounties, camp-talk, camp-codex, camp-bestiary
-            //   nav-heroes:   camp-heroes;  nav-summon: camp-summon-circle, camp-mercenaries;  nav-shop: camp-merchant, camp-diamonds
+            //   nav-campaign: camp-adventure;  nav-heroes: camp-heroes;  nav-summon: camp-summon-circle, camp-mercenaries;
+            //   nav-shop: camp-merchant, camp-diamonds
             // (each locked-<name> while that member is closed).
             var grid = Ui.El("kit-pillar", page);
             grid.name = "camp-tiles";
@@ -186,26 +187,18 @@ namespace GridGame.App
                 }
                 else
                 {
-                    string tab = d.Id == CampMenu.Heroes ? CampMenu.Heroes : d.Group == CampGroup.Summon ? CampMenu.Summon : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
+                    string tab = d.Id == CampMenu.Campaign ? CampMenu.Campaign : d.Id == CampMenu.Heroes ? CampMenu.Heroes : d.Group == CampGroup.Summon ? CampMenu.Summon : d.Group == CampGroup.Shop ? CampMenu.Shop : null;
                     host = tab != null ? nav.Q("nav-" + tab) : null;
                     if (host == null) continue;
                 }
                 var marker = Ui.El(null, host);
-                marker.name = TileName(d);
+                marker.name = d.Id == CampMenu.Campaign ? "camp-adventure" : TileName(d);
                 marker.style.position = Position.Absolute;
                 marker.style.left = marker.style.top = marker.style.right = marker.style.bottom = Space.S0;
                 marker.style.visibility = Visibility.Hidden;
                 marker.pickingMode = PickingMode.Ignore;
             }
             Ui.Select(cont);
-
-            // GG-T75 (§25.12.1): once the Caravan station is open, a rotating one-line crew bark under the tiles.
-            if (Features.Caravan && CampUnlocks.CaravanOpen(s))
-            {
-                var gossip = Ui.Panel(page, null, false, "camp-gossip");
-                Ui.Caption("Around the wagons", gossip, "dim");
-                CaravanScreen.BarkLine(c, s, gossip);
-            }
 
             // GG-T518: a closed destination's hint sits whole, wrapping if it must, in small type under the row's name.
             void Subline(VisualElement row, string text)
@@ -257,10 +250,11 @@ namespace GridGame.App
             return "On the road · " + (n == 0 ? "no mana carried" : $"{n} mana carried");
         }
 
-        /// <summary>GG-T1962: the mode banner's line. On the road, wounds carry; once camped, the Inn (and its Respec) is open.</summary>
+        /// <summary>GG-T1962: the mode banner's line. On the road, wounds carry; once camped, the Inn is open and Respec waits
+        /// on Talents (GG-T2085).</summary>
         internal static string ModeLine(SaveData s, int wounded, bool innOpen, bool respecOpen)
         {
-            if (!TravelRules.OnTheRoad(s)) return respecOpen ? "Camped · Inn and Respec open" : "Camped";
+            if (!TravelRules.OnTheRoad(s)) return respecOpen ? "Camped · Respec heroes on Talents" : "Camped";
             if (wounded > 0) return $"On the road · {wounded} {(wounded == 1 ? "hero" : "heroes")} wounded" + (innOpen ? " · Set up camp to heal" : "");
             int n = TravelRules.StartMana(s);
             return "On the road · " + (n == 0 ? "wounds carry" : $"{n} mana carried · wounds carry");
