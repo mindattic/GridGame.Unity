@@ -100,6 +100,14 @@ namespace GridGame.App
         public static Color TeamFoe => Colorblind ? CbFoe : Enemy;
         public static Color TeamBoss => Colorblind ? CbBoss : Boss;
         public static Color TeamCast(bool hero) => Colorblind ? (hero ? CbHero : CbFoe) : hero ? CastHero : CastEnemy;
+        /// <summary>A hero's mark (base plate, turn ring): hero blue, or the colourblind sky blue.</summary>
+        public static Color TeamHero => Colorblind ? CbHero : Hero;
+        /// <summary>GG-T1948: the next actor's ring on the board. Never gold (gold marks pincer spots, the timeline's next foe
+        /// and the Abilities preview) and never a team colour: an aqua, or under Colorblind palette Okabe-Ito's reddish
+        /// purple, which stays apart from the sky blue and orange sides (the boss is burnt orange there).</summary>
+        public static readonly Color NextActor = new Color(0.25f, 0.93f, 0.88f);
+        public static readonly Color CbNextActor = new Color(0.8f, 0.47f, 0.65f);
+        public static Color NextActorRing => Colorblind ? CbNextActor : NextActor;
 
         /// <summary>The lightest stop of the Classic blue window (#2C46AA), the background text contrast is checked against
         /// (GG-T495).</summary>

@@ -1011,7 +1011,7 @@ namespace GridGame.App
 
         /// <summary>
         /// 30 Hz: each approaching icon's halo and its owner's tile pulse in the icon's colour, faster and brighter the
-        /// nearer it is to acting; the next actor's tile keeps a gold border like its icon. Reduce Motion holds it steady.
+        /// nearer it is to acting; the next actor's tile keeps a ring in its own colour (GG-T1948). Reduce Motion holds it steady.
         /// </summary>
         private void PulseTimeline()
         {
@@ -1069,14 +1069,16 @@ namespace GridGame.App
                 k = Mathf.Max(0f, k);
                 float pulse = ReduceMotion ? 1f : 0.65f + 0.35f * Mathf.Sin(t * (3f + 7f * k));
                 var fill = c.WithA(0.3f * k * pulse);
-                var border = next ? Palette.Gold : c.WithA(0.35f + 0.65f * k * pulse);
+                // GG-T1948: the next actor's tile ring is its own colour, never gold (gold is the pincer spots, the timeline's
+                // next foe and the Abilities preview) and never red (the enemy intent arrows).
+                var border = next ? Palette.NextActorRing : c.WithA(0.35f + 0.65f * k * pulse);
                 float width = next ? 7f : 3f + 4f * k;
                 if (ownerRamp.TryGetValue(kv.Key, out var ramp))
                 {
                     // GG-T672: the tile beats with its icon's halo (same phase), faint at half way, unmistakable in the last second.
                     float inten = ReadyIntensity(ramp.r);
                     fill = c.WithA(inten * (ImminentFillFloor + ImminentFillSwing * ramp.beat));
-                    border = next ? Palette.Gold : c.WithA(Mathf.Lerp(0.35f, 1f, inten));
+                    border = next ? Palette.NextActorRing : c.WithA(Mathf.Lerp(0.35f, 1f, inten));
                     float w = Mathf.Lerp(3f, ImminentBorder + ImminentBorderSwing * ramp.beat, inten);
                     width = next ? Mathf.Max(7f, w) : w;
                 }
@@ -1096,6 +1098,8 @@ namespace GridGame.App
             if (slotRing != null) PickRing(slotRing, timelineSlot, drawn.TryGetValue(slotEntry, out var sde) && sde.OwnerId == sel);
             if (!dragging && board.Units.TryGetValue(sel, out var sv) && !sv.Dead) board.SetSelection(sv.Tile, sv.W, sv.H, Palette.White);
             else board.SetSelection(null, 1, 1, Palette.White);
+            // GG-T1948: the selected token stands lifted off its base plate inside the white ring.
+            foreach (var kv in board.Units) kv.Value.SetLifted(!dragging && kv.Key == sel && !kv.Value.Dead);
             // GG-T1110: under HeroTimeline the hero whose turn it is wears a hero-blue ring on its tile, the board's half of
             // the NOW slot (which already holds its icon, GG-T1109); it breathes gently unless Reduce Motion holds it steady.
             if (!dragging && TurnRules.HeroesOnTimeline(State) && board.Units.TryGetValue(State.ActiveHeroId, out var hv) && !hv.Dead)

@@ -295,6 +295,33 @@ namespace GridGame.App
             Paint(p, s, Dashes(run, s, 0f, Length(run)));
         }
 
+        /// <summary>
+        /// GG-T1948: a filled, outlined plate whose top-left and bottom-right corners are cut straight across at 45° by
+        /// <paramref name="notch"/> px, the other two rounded by <paramref name="radius"/>: a shape that reads apart from a
+        /// <see cref="RoundedRect"/> without its colour.
+        /// </summary>
+        public static void NotchedRect(Painter2D p, Rect r, float radius, float notch, ShapeStyle s)
+        {
+            float half = Mathf.Min(r.width, r.height) * 0.5f;
+            radius = Mathf.Clamp(radius, 0f, half);
+            notch = Mathf.Clamp(notch, 0f, half);
+            var pts = new List<Vector2> { new Vector2(r.xMin + notch, r.yMin) };
+            void Corner(Vector2 c, float a0)
+            {
+                for (int k = 0; k <= CornerSegments; k++)
+                {
+                    float a = (a0 + 90f * k / CornerSegments) * Mathf.Deg2Rad;
+                    pts.Add(c + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius);
+                }
+            }
+            Corner(new Vector2(r.xMax - radius, r.yMin + radius), -90f);
+            pts.Add(new Vector2(r.xMax, r.yMax - notch));
+            pts.Add(new Vector2(r.xMax - notch, r.yMax));
+            Corner(new Vector2(r.xMin + radius, r.yMax - radius), 90f);
+            pts.Add(new Vector2(r.xMin, r.yMin + notch));
+            Paint(p, s, pts);
+        }
+
         // ── Painting ────────────────────────────────────────────────────────────────
 
         private static void Paint(Painter2D p, ShapeStyle s, List<Vector2> poly) =>
