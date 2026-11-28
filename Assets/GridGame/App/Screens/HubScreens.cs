@@ -653,13 +653,13 @@ namespace GridGame.App
                 var icon = EntryIcon(entry);
                 if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); Ui.Margin(ic, right: Space.S0); }
                 else Ui.Margin(cell.KindIcon(RowKind.Ability), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
-                var t = Ui.Caption(label ?? "Empty", cell, label == null ? "dim" : null);
-                t.style.unityTextAlign = TextAnchor.MiddleCenter; t.style.whiteSpace = WhiteSpace.Normal;
-                t.style.maxWidth = Length.Percent(100); t.style.minWidth = 0; t.style.flexShrink = 1;
+                if (label == null) { var t = Ui.Caption("Empty", cell, "dim"); t.style.unityTextAlign = TextAnchor.MiddleCenter; }  // GG-T1874: filled slots are icon-only (as in battle, GG-T1819); the full name is under the bar
                 cell.AddToClassList("card-tap");
                 InspectCard.Attach(cell, b => InspectEntry(b, entry));
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
             }
+            var slotName = slot < unlocked ? EntryName(h.Bar[slot]) : null;
+            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", barW, "gold").name = "abilities-slot-name";
             // GG-T298: what this hero does when it joins a pincer as a supporter.
             var support = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, C.Class(h.ClassId).Support), "kit-text gold", barW);
             support.name = "abilities-support";
