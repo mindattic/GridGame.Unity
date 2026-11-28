@@ -54,7 +54,8 @@ CS_RULES = {
 USS_RULES = {
     "POL-A1": ("token", [r"font-size:\s*\d"], [r"font-size:\s*var\(--type"]),
     "POL-B1": ("token", [r"\brgba?\(", r"#[0-9a-fA-F]{3,8}\b"], [r"var\(--color"]),
-    "POL-C1": ("token", [r"\b(?:margin|padding)[\w-]*:\s*-?\d+px"], [r"\b(?:margin|padding)[\w-]*:\s*var\(--space"]),
+    "POL-C1": ("token", [r"\b(?:margin|padding)[\w-]*:\s*-?\d+px", r"\bborder[\w-]*-radius:\s*\d+px"],
+               [r"\b(?:margin|padding)[\w-]*:\s*var\(--space", r"\bborder[\w-]*-radius:\s*var\(--radius"]),
     "POL-A3": ("never", [r"-unity-font-style:\s*bold"], []),
 }
 CUE = re.compile(r"\bSfx\(\s*\"([^\"]+)\"")
