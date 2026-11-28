@@ -303,9 +303,9 @@ namespace GridGame.Core.Battle
         /// <summary>Free for a new board item to appear (a pickup drop, the Power Amplifier): walkable, nobody standing
         /// there, no trap, and no other item (§1.1.3, GG-T129). Every item placement goes through this one check.</summary>
         public bool FreeForItem(Coord c) => Walkable(c) && UnitAt(c) == null && TrapAt(c) == null && ItemFree(c);
-        /// <summary>Per-spell mana meters (§3.1.0, GG-LAW-6): hero unit id → points per bar slot, 0..Cost x
-        /// <see cref="BattleConfig.ManaPointsPerOrb"/>. Only Spell slots carry a meter; a missing entry reads 0.</summary>
-        public Dictionary<int, int[]> SpellMana = new Dictionary<int, int[]>();
+        /// <summary>The party mana pool (§3.1.0, GG-LAW-6): one integer of points, 0..<see cref="BattleConfig.PartyManaCapacity"/>,
+        /// belonging to the party rather than a hero or a spell.</summary>
+        public int PartyMana;
         public int Wave;
         /// <summary>Delayed mid-wave spawns (§14.8) queued by <c>SpawnWave</c>, resolved as the clock reaches their trigger tick.</summary>
         public List<PendingSpawn> PendingSpawns = new List<PendingSpawn>();
@@ -416,8 +416,8 @@ namespace GridGame.Core.Battle
             return null;
         }
 
-        /// <summary>The spell in <paramref name="slot"/> of <paramref name="h"/>'s bar when it carries a meter (an unlocked
-        /// Spell slot with a cost), else null (§3.1.0).</summary>
+        /// <summary>The spell in <paramref name="slot"/> of <paramref name="h"/>'s bar when it costs mana (an unlocked Spell
+        /// slot with a cost), else null (§3.1.0).</summary>
         public AbilityDef MeteredSpell(Unit h, int slot)
         {
             if (h == null || slot < 0 || slot >= h.Bar.Count || slot >= h.UnlockedSlots) return null;
@@ -427,31 +427,39 @@ namespace GridGame.Core.Battle
             return a != null && a.Kind == AbilityKind.Spell && a.Cost > 0 ? a : null;
         }
 
-        /// <summary>Points that fill the slot's meter: the spell's cost x <see cref="BattleConfig.ManaPointsPerOrb"/>; 0 with no meter.</summary>
-        public int ManaFull(Unit h, int slot)
+        /// <summary>The slot's price from the party pool: the spell's cost x <see cref="BattleConfig.ManaPointsPerOrb"/>; 0
+        /// for a slot that isn't a costed spell.</summary>
+        public int SpellPrice(Unit h, int slot)
         {
             var a = MeteredSpell(h, slot);
             return a == null ? 0 : a.Cost * BattleConfig.ManaPointsPerOrb;
         }
 
-        public int ManaIn(int heroId, int slot) =>
-            slot >= 0 && SpellMana.TryGetValue(heroId, out var m) && slot < m.Length ? m[slot] : 0;
+        /// <summary>The slot's spell can be paid: the pool holds at least its price (§3.1.0).</summary>
+        public bool SpellReady(Unit h, int slot) => PartyMana >= SpellPrice(h, slot);
 
-        public void SetMana(int heroId, int slot, int points)
+        /// <summary>The pool is at capacity: earning stops (§3.1.0).</summary>
+        public bool PartyManaFull => PartyMana >= BattleConfig.PartyManaCapacity;
+
+        /// <summary>Sets the pool, clamped to 0..capacity.</summary>
+        public void SetPartyMana(int points) =>
+            PartyMana = System.Math.Max(0, System.Math.Min(BattleConfig.PartyManaCapacity, points));
+
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SpellPrice.")]
+        public int ManaFull(Unit h, int slot) => SpellPrice(h, slot);
+
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana. Returns the pool capped at the slot's price.")]
+        public int ManaIn(int heroId, int slot)
         {
-            if (slot < 0 || slot >= BattleRunner.MaxSlots) return;
-            if (!SpellMana.TryGetValue(heroId, out var m)) SpellMana[heroId] = m = new int[BattleRunner.MaxSlots];
-            m[slot] = System.Math.Max(0, points);
+            var h = UnitById(heroId);
+            return h == null ? 0 : System.Math.Min(PartyMana, SpellPrice(h, slot));
         }
 
-        /// <summary>The slot's spell can be paid: its meter is full, or the slot carries no meter (§3.1.0).</summary>
-        public bool SpellReady(Unit h, int slot)
-        {
-            int full = ManaFull(h, slot);
-            return full <= 0 || ManaIn(h.Id, slot) >= full;
-        }
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): use SetPartyMana.")]
+        public void SetMana(int heroId, int slot, int points) => SetPartyMana(points);
 
-        /// <summary>Full meters and all meters of the living heroes, in party then slot order (§3.1.0 fullness damping).</summary>
+        /// <summary>Affordable spell slots and all costed spell slots of the living heroes, in party then slot order.</summary>
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
         public void CountMeters(out int full, out int total)
         {
             full = 0; total = 0;
@@ -460,18 +468,19 @@ namespace GridGame.Core.Battle
                 if (!u.IsHero || !u.Alive) continue;
                 for (int i = 0; i < u.Bar.Count; i++)
                 {
-                    int f = ManaFull(u, i);
-                    if (f <= 0) continue;
+                    int price = SpellPrice(u, i);
+                    if (price <= 0) continue;
                     total++;
-                    if (ManaIn(u.Id, i) >= f) full++;
+                    if (PartyMana >= price) full++;
                 }
             }
         }
 
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): read PartyMana and SpellReady.")]
         public int ReadySpellCount { get { CountMeters(out int full, out _); return full; } }
 
-        /// <summary>Every meter of every living hero is full (or there are none): earning stops (§3.1.0).</summary>
-        public bool AllSpellsFull { get { CountMeters(out int full, out int total); return full >= total; } }
+        [System.Obsolete("Per-spell meters are gone (§3.1.0): use PartyManaFull.")]
+        public bool AllSpellsFull => PartyManaFull;
 
         public BattleState Clone()
         {
@@ -490,8 +499,6 @@ namespace GridGame.Core.Battle
             s.PendingSpawns = new List<PendingSpawn>(PendingSpawns.Count);
             foreach (var p in PendingSpawns) s.PendingSpawns.Add(p.Clone());
             s.Bounties = Bounties.ConvertAll(b => b.Clone());
-            s.SpellMana = new Dictionary<int, int[]>(SpellMana.Count);
-            foreach (var kv in SpellMana) s.SpellMana[kv.Key] = (int[])kv.Value.Clone();
             s.Results = Results.Clone();
             s.Combo = Combo.Clone();
             s.Tempo = new List<TempoEffect>(Tempo.Count);
