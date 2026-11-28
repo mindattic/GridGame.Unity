@@ -11,7 +11,7 @@
   {
     "Id": "pk_mana",
     "Name": "Mana Shard",
-    "Description": "Fills every spell's mana bar by 100.",
+    "Description": "+100 mana to the party bar.",
     "Weight": 4,
     "Orbs": 1,
     "Color": "#5AB4FF",

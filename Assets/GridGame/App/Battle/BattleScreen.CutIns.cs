@@ -318,13 +318,13 @@ namespace GridGame.App
             {
                 string why = mc.Participants > 2 ? $" · {mc.Participants} heroes ÷{1f + BattleConfig.ChargeParticipantPenalty * (mc.Participants - 2):0.#}" : " · clean pincer";
                 if (mc.Chain > 1) why += $" · chain ×{1f + BattleConfig.ChargeChainBonus * (mc.Chain - 1):0.##}";
-                Billboard($"Mana +{mc.Amount} to every spell{why}", null, Palette.Mana); // GG-T408
+                Billboard($"Mana +{mc.Amount}{why}", null, Palette.Mana); // GG-T408
             }
             else if (mc.Reason == "guard") // GG-T189: the unused turn time Guard gave up, banked into every spell
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
                 Billboard($"Guard · Mana +{mc.Amount} · {secs:0.#}s banked", null, Palette.Mana); // §2.5
-                Feed($"Guard: {secs:0.#}s of turn time → +{mc.Amount} mana to every spell", Palette.Mana);
+                Feed($"Guard: {secs:0.#}s of turn time → +{mc.Amount} mana", Palette.Mana);
             }
         }
     }

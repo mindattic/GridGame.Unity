@@ -44,3 +44,12 @@ open and adds a screenshot to a preview set. Say in one line what was set up. On
 - Spec fields (`Assets/GridGame/App/Dev/Scenario.cs`): `target` (first-boss, boss:N, boss:<class>, final-boss,
   stage:<id>, region:<theme>, screen:<id>, overworld), `party`, `level`, `progress`, `gear`, `caravan`, `gold`, `food`,
   `onTheRoad`, `carriedOrbs`, `allFeatures`, `settings`, `fullStage`, `realLaunch`.
+
+## Owner walkthrough notes
+With Developer options on (`GridGame.App.Dev.DevOptions.Enabled`), the game shows a small Note button in the top-left corner and a
+Note row in the battle pause menu. It captures a screenshot, takes a comment and saves
+`persistentDataPath/feedback/<timestamp>/shot.png` + `note.json` (comment, screen, battle stage/wave/units, build, device, time).
+`python tools/import_feedback.py [--dir <path>] [--dry-run]` files each new note as a GridGame.Unity fix ticket (part-of GG-T1937,
+approved, screenshot attached and linked in a ticket note) and writes `imported.txt` in the folder so it is never filed twice.
+Default folder: `%USERPROFILE%\AppData\LocalLow\MindAttic\GridGameeedback`. From Android:
+`adb pull /sdcard/Android/data/com.mindattic.gridgame/files/feedback ./feedback-android`, then `--dir ./feedback-android`.
