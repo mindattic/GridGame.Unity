@@ -50,10 +50,10 @@ namespace GridGame.Tests
             var hit = seen.OfType<AbilityResolvedEvent>().FirstOrDefault(e => e.AbilityId == "charge_aether_siphon");
             Assert.That(hit, Is.Not.Null, "the siphoner charges and lands its siphon");
             Assert.That(Hero(s, "redmage").Id, Is.EqualTo(hit.Targets.Single()), "it hunts the caster");
-            var drained = seen.OfType<OrbsSpentEvent>().Where(e => e.Drained).ToList();
+            var drained = seen.OfType<ManaGainedEvent>().Where(e => e.Kind == ManaGainKind.Siphon).ToList();
             Assert.That(drained.Count, Is.EqualTo(1));
-            Assert.That(drained[0].Count, Is.EqualTo(1));
-            Assert.That(drained[0].DrainedById, Is.EqualTo(siphoner.Id));
+            Assert.That(drained[0].Orbs, Is.EqualTo(1));
+            Assert.That(drained[0].SourceId, Is.EqualTo(siphoner.Id));
             Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text.StartsWith("Siphoned")), Is.True);
         }
 
@@ -67,7 +67,7 @@ namespace GridGame.Tests
             for (int i = 0; i < 16 && !seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon") && !s.IsOver; i++)
                 seen.AddRange(Turn(s, new ShieldCommand()));
             Assert.That(seen.OfType<AbilityResolvedEvent>().Any(e => e.AbilityId == "charge_aether_siphon"), Is.True);
-            Assert.That(seen.OfType<OrbsSpentEvent>().Any(e => e.Drained), Is.False);
+            Assert.That(seen.OfType<ManaGainedEvent>().Any(e => e.Kind == ManaGainKind.Siphon), Is.False);
             Assert.That(seen.OfType<AnnounceEvent>().Any(a => a.Text == "No mana to take"), Is.True);
         }
 
