@@ -4,8 +4,7 @@
   "Assets/GridGame/App/Battle/BoardView.cs",
   "Assets/GridGame/App/UI/Ui.cs",
   "Assets/GridGame/Core/Battle/BattleRunner.cs",
-  "Assets/GridGame/Core/Bot/HeroBot.cs",
-  "Assets/GridGame/Core/Content/ContentLoader.cs"
+  "Assets/GridGame/Core/Bot/HeroBot.cs"
  ],
  "shared": {
   "Assets/GridGame/App/Screens/AboutScreen.cs": [
