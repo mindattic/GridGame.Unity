@@ -433,6 +433,7 @@ namespace GridGame.App
         {
             if (Overlay == null) return false;
             if (Confirm.CancelTop()) return true;
+            if (ArtPreview.Close()) return true;
             foreach (var n in BackBlockingOverlays) if (Overlay.Q(n) != null) return true;
             if (Coach.Active && Overlay.Q("coach") != null && !(Router.Current is BattleScreen)) return true;
             return false;

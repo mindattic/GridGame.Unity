@@ -246,10 +246,11 @@ namespace GridGame.App
             top.style.alignItems = Align.FlexStart;
             var artCol = Ui.El("col", top);
             artCol.style.alignItems = Align.Center;
-            var art = Ui.El("", artCol);
-            art.style.width = Size.PortraitW; art.style.height = Size.ArtH;
-            art.style.backgroundImage = new StyleBackground(Art.PortraitFigure(h.ClassId));
-            art.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            var art = Ui.El("thumb", artCol);
+            art.name = "hero-thumb";
+            art.style.width = art.style.height = Size.PortraitW;
+            Ui.PortraitThumb(art, h.ClassId);
+            Ui.Tappable(art, () => ArtPreview.Open(h.ClassId), null); // GG-T1804: the full art is one tap away
             // GG-T532: a class with male art can switch looks here any time (the same picker as on joining).
             if (!h.Domesticated && Art.HasMaleArt(h.ClassId))
                 RowIcon.IconButton("Change look", RowKind.Hero, () => VariantPicker.Change(h, Refresh), "btn--small", artCol).name = "hero-look";
