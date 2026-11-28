@@ -56,9 +56,9 @@ namespace GridGame.App
 
         // Layout (design pixels). Vertical positions are fixed from the top; horizontal ones follow the live stage
         // width (bible §26.3) so a wider phone centres the board and stretches the timeline instead of leaving a gap.
-        // §9.0 (GG-T1822): fixed rows, nothing stacked between them: the top bar, the timeline, the board a gutter under
-        // the timeline frame (the old banner row is gone, so the board gains its 117 px), the action row, the description panel.
-        private const float BoardTop = TimelineY + TimelineFrameHeight / 2f + Space.S8;
+        // §9.0 (GG-T1822, GG-T2118): fixed rows, nothing stacked between them: the top bar, the board a gutter under it, the
+        // timeline under the board (the thumb zone, GG-T2118), the party mana strip, the action row, the description panel.
+        private const float BoardTop = TopBarTop + TopBarHeight + Space.S8;
         private static float BoardLeft => (GameApp.StageWidth - BoardView.Tile * BattleConfig.Cols) / 2f;
         // The timeline's geometry lives with it in BattleScreen.Timeline.cs (GG-T287).
 
@@ -95,12 +95,12 @@ namespace GridGame.App
         private const float BannerTop = BoardTop + Space.S8;
         /// <summary>One announcement line's height; the billboard stacks up to <see cref="BillboardMaxLines"/> of them.</summary>
         private const float BannerViewportHeight = Size.Target - Space.S24;
-        // The HUD rows under the board, top to bottom, a gutter apart (§9.0): the party mana strip and the action row, then
+        // The HUD rows under the timeline, top to bottom, a gutter apart (§9.0): the party mana strip and the action row, then
         // the description panel, which stretches to the safe bottom and so alone absorbs a taller stage (§26.3).
-        private static float BoardBottom => BoardTop + BoardView.Tile * BattleConfig.Rows;
-        private static float BarTop => BoardBottom + Space.S24; // 24 px from the board's tiles, also targets (GG-T656, POL-C3)
-        /// <summary>The thin party mana strip (GG-T1921) sits in the gap between the board and the action row, full width.</summary>
-        private static float ManaStripTop => BoardBottom + Space.S8;
+        private const float BoardBottom = BoardTop + BoardView.Tile * BattleConfig.Rows;
+        private static float BarTop => TimelineBottom + Space.S24; // 24 px from the timeline's diamonds, also targets (GG-T656, POL-C3)
+        /// <summary>The thin party mana strip (GG-T1921) sits in the gap between the timeline and the action row, full width.</summary>
+        private static float ManaStripTop => TimelineBottom + Space.S8;
         private const float ManaStripHeight = Size.Bar;
         // GG-T706 (owner 2026-11-23): the ability bar is always the row under the board. GG-T523's side columns beside the
         // board on a 2:3 / 3:4 stage are gone: those shapes are now letterboxed at 9:16 (bible §26.3), so no stage is wide
@@ -289,6 +289,7 @@ namespace GridGame.App
             BuildAnnouncementBand(shake);
             BuildAbilityBar(shake);
             BuildDescriptionPanel(shake);
+            BuildTapArrow(shake);
 
             ApplyStageLayout();
             foreach (var u in State.Units) if (u.Alive) board.Add(u);
