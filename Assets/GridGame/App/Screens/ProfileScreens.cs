@@ -25,28 +25,35 @@ namespace GridGame.App
             bg.style.unityBackgroundImageTintColor = Palette.BackdropDim;
             var col = Ui.El("fill col", root);
             Ui.Header("Profiles", () => App.Router.Back(), col, out _);
-            var list = Ui.ListPanel(Ui.PageBody(col), "Choose a profile", "profile-list");
+            var body = Ui.PageBody(col);
+            var list = Ui.ListPanel(body, "Choose a profile", "profile-list");
             Ui.Para("Each profile keeps its own settings and its own three save slots.", list, "dim");
             string current = App.Profile.Name;
             foreach (var name in App.Profile.List())
             {
                 string n = name;
                 bool active = string.Equals(n, current, StringComparison.OrdinalIgnoreCase);
-                var row = Ui.MenuRow(n, active ? "Playing" : "", () => Switch(n), list);
+                var card = Ui.El("card", list); // the row and its own actions stay together
+                card.style.flexDirection = FlexDirection.Column;
+                card.style.alignItems = Align.Stretch;
+                var row = Ui.MenuRow(n, active ? "Playing" : "", () => Switch(n), card);
                 row.name = "profile-" + n;
                 row.KindIcon(RowKind.Hero); // GG-T738 (§26.7)
                 if (active) row.Q<Label>("label").AddToClassList("gold");
-                var actions = Ui.Actions(list);
+                var actions = Ui.Actions(card);
                 actions.AddToClassList("kit-note"); // under the row's label
                 var rename = RowIcon.IconButton("Rename", RowKind.Settings, () => App.Router.Push(new ProfileNameScreen(n)), "btn--small", actions);
                 rename.name = "rename-" + n;
-                var delete = RowIcon.IconButton("Delete", RowKind.Close, () => AskDelete(n), "btn--small", actions);
+                var spacer = Ui.El("grow", actions);
+                spacer.style.minWidth = Space.S24;
+                var delete = RowIcon.IconButton("Delete", RowKind.Close, () => AskDelete(n), "btn--small btn--danger", actions);
                 delete.name = "delete-" + n;
+                if (active) Ui.Select(row);
             }
-            var create = Ui.MenuRow("+ New profile", "", () => App.Router.Push(new CreateProfileScreen()), list);
+            var foot = Ui.Footer(body, "profile-footer");
+            foot.AddToClassList("kit-footer--end");
+            var create = RowIcon.IconButton("New profile", RowKind.New, () => App.Router.Push(new CreateProfileScreen()), "btn--primary", foot);
             create.name = "new-profile";
-            create.KindIcon(RowKind.New);
-            Ui.SelectFirst(list);
         }
 
         private void Switch(string name)
