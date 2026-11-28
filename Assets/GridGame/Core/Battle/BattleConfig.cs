@@ -253,13 +253,15 @@ namespace GridGame.Core.Battle
         //    participants in the attack increases the multiplier needed to earn a mana bubble") ─────────────────────
         /// <summary>Charge that makes one orb ("mana bubble").</summary>
         public const int ManaChargePerOrb = 100;
-        /// <summary>Mana points per orb of spell cost (§3.1.0, GG-T1807): a spell's meter is full at Cost x this, and a
-        /// whole-orb grant adds this much per orb to every meter.</summary>
+        /// <summary>Mana points per orb of spell cost (§3.1.0): a spell's price from the party pool is Cost x this, and a
+        /// whole-orb grant adds this much per orb to the pool.</summary>
         public const int ManaPointsPerOrb = 100;
+        /// <summary>The party mana pool's capacity in points (§3.1.0, GG-T1915), fixed for the battle. Pending owner.</summary>
+        public const int PartyManaCapacity = 1000;
         /// <summary>Charge for a pincer that takes away a whole enemy's worth of HP (scaled by the share removed).
         /// GG-T247: 120 → 105 (the bar sat full on 17% of a skilled player's turns and ~half of all mana faded at the cap).</summary>
         public const float PincerChargePerHp = 105f;
-        /// <summary>GG-T247: earned charge × (1 − this × bank fullness): an empty bank fills at full rate, a full one at 30%.</summary>
+        /// <summary>GG-T247: earned charge × (1 − this × pool / capacity): an empty pool fills at full rate, a nearly full one at 30%.</summary>
         public const float ChargeFullnessDamping = 0.7f;
         /// <summary>GG-T247: scales the Mana pincer-support action (Red Mage, Ritualist, …) — the second-biggest source.</summary>
         public const float SupportManaFactor = 0.5f;

@@ -509,26 +509,8 @@ namespace GridGame.App
                 v.SetBuffs(u, Colorblind, State.TurnEntryOf(u.Id)?.StunTicks > 0);
                 v.SetPlate(u.Facing, u.PlateHp, u.PlateMax);
                 v.SetActed(u.IsHero && (TurnRules.OneHeroPerTurn(State) ? TurnRules.MovedThisRound(State, u) : TurnRules.HasActed(State, u))); // GG-T308, §2.13: acted this party turn, as the mode says; GG-T787: no ✓ when the turn is one hero's action; GG-T800: under rounds the ✓ holds until the round resets
-                if (u.IsHero)
-                {
-                    var weaponDef = u.WeaponId != null ? App.Content.TryItem(u.WeaponId) : null;
-                    bool hasWeapon = weaponDef != null && weaponDef.Durability > 0;
-                    float wMax = hasWeapon ? weaponDef.Durability * (u.WeaponMastery > 1f ? BattleConfig.MasterworkDurabilityMultiplier : 1f) : 1f;
-                    float wFrac = hasWeapon ? u.WeaponDurability / wMax : 1f;
-                    // Five armor pieces condense to one gear icon: any equipped at all, worst-condition fraction (GG-T89).
-                    bool hasArmor = u.Gear.Count > 0;
-                    float aFrac = 1f;
-                    foreach (var piece in u.Gear.Values)
-                    {
-                        var def = App.Content.TryItem(piece.ItemId);
-                        if (def == null || def.Durability <= 0) continue;
-                        float max = def.Durability * (piece.Mastery > 1f ? BattleConfig.MasterworkDurabilityMultiplier : 1f);
-                        float frac = max > 0f ? piece.Durability / max : 1f;
-                        if (frac < aFrac) aFrac = frac;
-                    }
-                    v.SetGear(hasWeapon, wFrac, hasWeapon && u.WeaponDurability == 1, hasArmor, aFrac, !ReduceMotion);
-                }
-                else v.SetGear(false, 0f, false, false, 0f, !ReduceMotion);
+                var weaponDef = u.IsHero && u.WeaponId != null ? App.Content.TryItem(u.WeaponId) : null;
+                v.SetWeaponCracked(weaponDef != null && weaponDef.Durability > 0 && u.WeaponDurability == 1, !ReduceMotion);
                 bool sel = u.Id == SelectedHeroId;
                 var aura = AuraFor(u);
                 if (sel) v.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
@@ -1340,6 +1322,7 @@ namespace GridGame.App
             else
                 Ui.MenuRow("Retreat", $"(keep {retreatPct}%)", () => { Close();
                     Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w).KindIcon(RowKind.Back);
+            if (Dev.DevOptions.Cheats) DevCheatRows(w, Close); // GG-T1938
             Ui.Select(w[1]);
         }
 

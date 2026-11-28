@@ -4792,7 +4792,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13153,
-    "Intro": "Commander, every pincer fills every spell's mana bar. Cast whatever is full.",
+    "Intro": "Commander, every pincer fills our party mana bar. Cast whatever we can afford.",
     "Lessons": [
       { "Id": "orbs", "Wave": 0 },
       { "Id": "mana", "Wave": 0 },

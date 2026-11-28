@@ -108,7 +108,7 @@ namespace GridGame.App
                 if (report.CampaignComplete) Ui.MenuRow("Campaign complete!", "New Game+ unlocked at camp", null, list).WithKindIcon(RowKind.NewGamePlus).Q<Label>("label").AddToClassList("gold");
                 if (TravelRules.OnTheRoad(App.Save)) // GG-T1786: travel (§28) replaces the expedition rows
                 {
-                    var tr = Ui.MenuRow("On the road", report.CarriedOrbs == 0 ? "no mana carries over" : $"{report.CarriedOrbs * 100} mana to every spell carries over", null, list);
+                    var tr = Ui.MenuRow("On the road", report.CarriedOrbs == 0 ? "no mana carries over" : $"{report.CarriedOrbs * 100} mana carries over", null, list);
                     tr.name = "travel-orbs";
                     tr.KindIcon(RowKind.Stage);
                     if (report.MedicHealed > 0)

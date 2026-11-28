@@ -52,12 +52,12 @@ namespace GridGame.App
             if (i.BaseDamage > 0) parts.Add($"ATK +{i.BaseDamage}");
             if (i.BaseHealing > 0) parts.Add($"Heals {i.BaseHealing}");
             if (i.Durability > 0) parts.Add($"Durability {i.Durability}");
-            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs * 100} mana to every spell at battle start");
+            if (i.BattleStartManaOrbs > 0) parts.Add($"+{i.BattleStartManaOrbs * 100} mana at battle start");
             if (i.PincerDamageBonus > 0) parts.Add(FormattableString.Invariant($"Pincer +{i.PincerDamageBonus:0%}"));
             if (i.EvasionBonus > 0) parts.Add($"Evasion +{i.EvasionBonus:0}"); // GG-T297
             if (i.RegenPerTurn > 0) parts.Add($"Regen {i.RegenPerTurn}/turn");
             if (i.StartsProtected) parts.Add("Starts battles Protected");
-            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs * 100} mana to every spell");
+            if (i.GrantsOrbs > 0) parts.Add($"+{i.GrantsOrbs * 100} mana");
             if (i.Revives) parts.Add("Revives a fallen ally");
             if (i.Escape) parts.Add("Escape from battle");
             if (i.CuresAll) parts.Add("Cures all ailments");
@@ -2519,6 +2519,43 @@ namespace GridGame.App
             row.KindIcon(RowKind.Close);
         }
 
+        /// <summary>Party levels the Developer section cycles through.</summary>
+        private static readonly int[] DevLevels = { 1, 5, 10, 20, 30, 40, 50 };
+
+        /// <summary>Settings &gt; Developer (GG-T1938): shown only once the version line was tapped seven times on this device.
+        /// The Cheats switch adds the pause menu's cheat rows and the DEV badge; with it on, the save cheats below run the
+        /// dev automation's own code paths (<see cref="Dev.DevCheats"/>) on the loaded save.</summary>
+        private void DeveloperSection(VisualElement w, Action<string> section)
+        {
+            section("Developer");
+            bool cheats = Dev.DevOptions.Cheats;
+            var toggle = Ui.MenuRow("Cheats", cheats ? "ON" : "OFF", () => { Dev.DevOptions.SetCheats(!cheats); Refresh(); }, w);
+            toggle.name = "settings-dev-cheats";
+            toggle.KindIcon(RowKind.Settings);
+            if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
+            var s = App.Save;
+            if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }
+            var c = App.Content;
+            void Cheat(string label, string value, string name, Action act, string done)
+            {
+                var row = Ui.MenuRow(label, value, () => { act(); App.Persist(); App.Toast(done); Refresh(); }, w);
+                row.name = name;
+                row.KindIcon(RowKind.Settings);
+            }
+            Cheat("Give gold", "+10,000", "settings-dev-gold", () => s.Gold += 10000, "+10,000 gold");
+            Cheat("Give items", "10 of each consumable", "settings-dev-items", () =>
+            {
+                foreach (var item in c.Items.Values.Where(i => i.Type == ItemType.Consumable)) Dev.DevCheats.GiveItem(s, item.Id, 10);
+            }, "Consumables added");
+            Cheat("Unlock all stages", $"{s.HighestClearedStage + 1}/{c.CampaignStages().Count} cleared", "settings-dev-stages",
+                () => Dev.DevCheats.UnlockAllStages(c, s), "Every stage unlocked");
+            Cheat("Unlock all stations", "", "settings-dev-stations", () => Dev.DevCheats.UnlockAllStations(s), "Every station unlocked");
+            int level = s.Roster.Count > 0 ? s.Roster.Max(Progression.Level) : 1;
+            int next = DevLevels.FirstOrDefault(l => l > level);
+            if (next == 0) next = DevLevels[0];
+            Cheat("Party level", $"{level} → {next}", "settings-dev-level", () => Dev.DevCheats.SetLevel(s.Roster, next), $"Party level {next}");
+        }
+
         protected override void BuildBody(VisualElement body)
         {
             // The active profile's settings (GG-T99, §15.4): one set for every save slot, kept in its settings.json.
@@ -2636,10 +2673,14 @@ namespace GridGame.App
             importRow.KindIcon(RowKind.Save);
             if (Features.DiamondStore && DiamondExchange.Wallet != null) SpendingLimitRow(DiamondExchange.Wallet, w);
             DeleteAllDataRow(w);
+            if (Dev.DevOptions.Unlocked) DeveloperSection(w, Section);
             // GG-T1330: version, legal links and third-party notices.
             var about = Ui.MenuRow("About", "", () => App.Router.Push(new AboutScreen()), w);
             about.name = "settings-about";
             about.KindIcon(RowKind.Codex);
+            var version = Ui.Note("Version " + Legal.VersionLine(), w);
+            version.name = "settings-version";
+            Dev.DevOptions.CountTaps(version); // GG-T1938: seven taps unlock the Developer section
             var help = Ui.El("col", w);
             help.name = "settings-help";
             Ui.Section("How to play", help);

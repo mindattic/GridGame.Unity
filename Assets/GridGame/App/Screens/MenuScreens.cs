@@ -994,7 +994,7 @@ namespace GridGame.App
         internal static string TravelLine(SaveData s)
         {
             int n = TravelRules.StartOrbs(s);
-            return "On the road · " + (n == 0 ? "no mana carried" : $"{n * 100} mana to every spell carried");
+            return "On the road · " + (n == 0 ? "no mana carried" : $"{n * 100} mana carried");
         }
 
         /// <summary>A destination's tile name: camp-&lt;old row&gt; when open, locked-&lt;old row&gt; when closed.</summary>
