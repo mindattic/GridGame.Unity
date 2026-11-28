@@ -113,6 +113,16 @@ namespace GridGame.App
             root.Query(className: "window").ForEach(w => { TintWindow(w); WindowThemes.Dress(w); });
         }
 
+        /// <summary>The shared count stepper (GG-T1880): plain − and + buttons around the value in a boxed field, the
+        /// Diamonds treatment (GG-T1869). The caller names the buttons and enables them.</summary>
+        public static Label Stepper(VisualElement parent, string value, Action onMinus, Action onPlus, out Button minus, out Button plus, string tone = null)
+        {
+            minus = Button("−", onMinus, "btn--small stepper-btn", parent);
+            var n = Text(value, "kit-name stepper-value " + (tone ?? ""), parent);
+            plus = Button("+", onPlus, "btn--small stepper-btn", parent);
+            return n;
+        }
+
         public static Button Button(string text, Action onClick, string classes = null, VisualElement parent = null)
         {
             var b = new Button(() =>
@@ -215,26 +225,25 @@ namespace GridGame.App
         /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds. Gold is pinned last, so it sits
         /// at the header's right edge (GG-T1858); to its left come <paramref name="talk"/> (a station's Talk button), the Shards
         /// button (tapping it runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, the
-        /// Summon Tickets. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
+        /// Summon Tickets; a zero Shards or Tickets chip stays hidden unless <paramref name="showZeroShards"/> or
+        /// <paramref name="showZeroTickets"/> says this page spends it (GG-T1879). The Talk button keeps its label and never folds. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
         /// that toasts what it holds; gold never moves. Rebuilds the strip each call, so a refresh shows the new balances.</summary>
-        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null)
+        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null, bool showZeroShards = false, bool showZeroTickets = false)
         {
             if (bar == null) return;
             bar.Clear();
             if (s == null) return;
             var chips = new List<(VisualElement chip, Label label, string full, string compact, string said)>();
-            if (talk != null)
+            if (talk != null) bar.Add(talk);
+            if (DiamondExchange.Have(s) > 0 || showZeroShards)
             {
-                bar.Add(talk);
-                var tl = talk.Q<Label>();
-                chips.Add((talk, tl, tl?.text, "", talk.Q<Label>()?.text));
+                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+                shards.name = "header-shards";
+                shards.tooltip = ShardText.Store;
+                if (onShards == null) shards.pickingMode = PickingMode.Ignore;
+                chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
             }
-            var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
-            shards.name = "header-shards";
-            shards.tooltip = ShardText.Store;
-            if (onShards == null) shards.pickingMode = PickingMode.Ignore;
-            chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
-            if (DiamondExchange.Wallet is AccountWallet w)
+            if (DiamondExchange.Wallet is AccountWallet w && (w.Tickets > 0 || showZeroTickets))
             {
                 int t = Math.Max(0, w.Tickets);
                 var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
@@ -431,6 +440,7 @@ namespace GridGame.App
         /// grid (row-wrap content, e.g. the Bestiary) opts out and drops the fill class, so its cells never stretch.</summary>
         private static void FillViewport(ScrollView s)
         {
+            if (s.ClassListContains("list--empty")) { s.RemoveFromClassList("list--fill"); s.contentContainer.style.minHeight = StyleKeyword.Null; return; }
             float h = s.contentViewport.layout.height;
             if (float.IsNaN(h) || h <= 0f) return;
             bool column = s.contentContainer.resolvedStyle.flexDirection == FlexDirection.Column;
@@ -507,6 +517,27 @@ namespace GridGame.App
 
         /// <summary>What an empty list or pane says ("Nothing to sell."): body size, dim, centred.</summary>
         public static Label Empty(string text, VisualElement parent) => Text(text, "kit-empty", parent);
+
+        /// <summary>GG-T1883 (POL-C9): what a <see cref="ListPanel"/> with nothing in it shows instead of one line in a
+        /// full-height window: the window stops filling the column and is as tall as its content, the kind's emblem then
+        /// <paramref name="text"/>. Returns the state; put its next action in <c>Ui.Actions(state)</c>.</summary>
+        public static VisualElement EmptyState(VisualElement list, RowKind icon, string text, string name = null)
+        {
+            for (var e = list; e != null; e = e.parent)
+            {
+                if (e is ScrollView sv) sv.AddToClassList("list--empty");
+                if (!e.ClassListContains("window--fill")) continue;
+                e.RemoveFromClassList("window--fill");
+                e.AddToClassList("window--empty");
+                break;
+            }
+            var state = El("kit-empty-state", list);
+            if (name != null) state.name = name;
+            var line = El("kit-empty-state__line", state);
+            Para(text, line);
+            line.KindIcon(icon);
+            return state;
+        }
 
         /// <summary>A heading (48): a window-level or detail pane's title. <paramref name="tone"/>: gold, dim, good, bad, a rarity class.</summary>
         public static Label Heading(string text, VisualElement parent, string tone = null) => Text(text, "kit-heading " + (tone ?? ""), parent);

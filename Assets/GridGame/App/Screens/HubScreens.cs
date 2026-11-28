@@ -494,8 +494,9 @@ namespace GridGame.App
             // GG-T452: the eleven slots used to be three stacked windows; with the stat compare under them they pushed the
             // bag below the stage on a phone, so nothing could be equipped. They now share one scrolling window, which
             // splits the leftover height with the bag (both grow), and scrolls the picked slot into view.
-            // GG-T454: both are kit list panels, which split the leftover height evenly.
-            Ui.ListPanel(body, null, out var slotList, "equip-slots");
+            // GG-T1873: slots, the stat compare and the bag are one scroll region filling the leftover height, no nested scroll windows.
+            var slotWin = Ui.Panel(body, null, true, "equip-slots");
+            var slotList = Ui.List(slotWin);
             VisualElement pickedRow = null;
             void SlotGroup(string title, IEnumerable<EquipmentSlot> slots)
             {
@@ -520,7 +521,7 @@ namespace GridGame.App
             SlotGroup("Jewelry", Equipment.JewelrySlots);
             if (pickedRow != null) slotList.schedule.Execute(() => slotList.ScrollTo(pickedRow)).ExecuteLater(30);
 
-            var cmp = Ui.Panel(body, null, false, "equip-compare");
+            var cmp = Ui.Panel(slotList.contentContainer, null, false, "equip-compare");
             var curId = Equipment.Equipped(h, slot);
             var thenId = previewId ?? curId;
             var (now, then) = Equipment.Compare(C, h, slot, thenId);
@@ -556,8 +557,8 @@ namespace GridGame.App
                 }
             }
 
-            // GG-T452: splits the leftover height evenly with the slot list above (both kit list panels).
-            var list = Ui.ListPanel(body, $"{ItemUi.SlotName(slot)} — your bag", "equip-bag");
+            var list = slotList.contentContainer;
+            Ui.Section($"{ItemUi.SlotName(slot)} — your bag", list).name = "equip-bag";
             if (Equipment.Equipped(h, slot) != null)
                 Ui.MenuRow("Remove", "", () => Done(Equipment.Unequip(C, S, h, slot), cue: "ui.equip"), list).KindIcon(RowKind.Close);
             // GG-T52: the bag listing is shape-only (Equipment.Candidates with no hero) so a piece the hero
@@ -653,13 +654,13 @@ namespace GridGame.App
                 var icon = EntryIcon(entry);
                 if (icon != null) { var ic = Ui.El("menu-icon", cell); ic.style.backgroundImage = new StyleBackground(icon); Ui.Margin(ic, right: Space.S0); }
                 else Ui.Margin(cell.KindIcon(RowKind.Ability), right: Space.S0); // GG-T750 (§26.7): an empty slot shows the Ability emblem
-                var t = Ui.Caption(label ?? "Empty", cell, label == null ? "dim" : null);
-                t.style.unityTextAlign = TextAnchor.MiddleCenter; t.style.whiteSpace = WhiteSpace.Normal;
-                t.style.maxWidth = Length.Percent(100); t.style.minWidth = 0; t.style.flexShrink = 1;
+                if (label == null) { var t = Ui.Caption("Empty", cell, "dim"); t.style.unityTextAlign = TextAnchor.MiddleCenter; }  // GG-T1874: filled slots are icon-only (as in battle, GG-T1819); the full name is under the bar
                 cell.AddToClassList("card-tap");
                 InspectCard.Attach(cell, b => InspectEntry(b, entry));
                 Ui.Tappable(cell, () => { slot = idx; Refresh(); });
             }
+            var slotName = slot < unlocked ? EntryName(h.Bar[slot]) : null;
+            Ui.Para(slotName == null ? $"Slot {slot + 1}: empty" : $"Slot {slot + 1}: {slotName}", barW, "gold").name = "abilities-slot-name";
             // GG-T298: what this hero does when it joins a pincer as a supporter.
             var support = GlossaryText.Create(GridGame.Core.Rules.SupportText.Describe(C, C.Class(h.ClassId).Support), "kit-text gold", barW);
             support.name = "abilities-support";
@@ -673,7 +674,7 @@ namespace GridGame.App
             Ui.SetEnabled(right, slot + 1 < unlocked);
 
             Ui.Tabs(SubTabs, tab, i => { tab = i; Refresh(); }, body).name = "abilities-tabs";
-            var list = Ui.ListPanel(body);
+            var list = Ui.List(Ui.Panel(body, fill: true)).contentContainer;
             if (tab == PassivesTab) { Passives(h, list); return; }
             if (tab == LockedTab) { Locked(h, list); return; }
             if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list).KindIcon(RowKind.Close);
@@ -1012,10 +1013,7 @@ namespace GridGame.App
                     ownLabel.name = "shop-own";
                     ownLabel.style.whiteSpace = WhiteSpace.NoWrap;
                 }
-                var minus = RowIcon.IconButton("−", RowKind.Shop, () => { Step(cart, item.Id, -1, max); }, "btn--small btn--icon", row);
-                var n = Ui.Name(q.ToString(), row);
-                n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter; // grows with Text size (GG-T495)
-                var plus = RowIcon.IconButton("+", RowKind.Shop, () => { Step(cart, item.Id, +1, max); }, "btn--small btn--icon", row);
+                Ui.Stepper(row, q.ToString(), () => { Step(cart, item.Id, -1, max); }, () => { Step(cart, item.Id, +1, max); }, out var minus, out var plus);
                 plus.name = "cart-plus-" + item.Id;
                 Ui.SetEnabled(minus, q > 0);
                 Ui.SetEnabled(plus, q < max);
@@ -1425,13 +1423,14 @@ namespace GridGame.App
             all.name = RepairAllButton;
             Ui.SetEnabled(all, due.Any(p => Repair.Cost(C, S, p) <= S.Gold));
             bool any = false;
-            int sound = 0;
+            int sound = 0, worn = 0;
             foreach (var p in Repair.Pieces(C, S))
             {
                 any = true;
                 var piece = p;
                 int cost = Repair.Cost(C, S, p);
                 if (cost <= 0) { sound++; continue; } // GG-T1865: full-durability pieces collapse into one row below
+                worn++;
                 bool bad = cost > 0 && Repair.IsUneconomical(p.Item, p.Durability, p.Repairs, p.Mastery);
                 string name = (p.Mastery > 1f ? "★ " : "") + p.Item.Name;
                 var row = Ui.MenuRow($"{C.Class(p.Hero.ClassId).Name} — {name}  {p.Durability}/{p.Max}", cost > 0 ? Ui.Gold(cost) : "OK",
@@ -1443,8 +1442,19 @@ namespace GridGame.App
                 if (cost > 0) RepairPriceNote(list, p);
                 if (bad && salvage) SalvageInsteadRow(list, p.Hero, p.Slot, p.Item, p.Durability, cost);
             }
-            if (sound > 0) Ui.Note($"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)", list);
-            if (!any) Ui.Empty("Nobody has gear that wears out. Equip forged weapons first.", list);
+            string soundText = $"All gear sound ({sound} piece{(sound == 1 ? "" : "s")} at full durability)";
+            if (worn > 0 && sound > 0) Ui.Note(soundText, list);
+            if (worn > 0) return;
+            // GG-T1883: nothing to mend, so the tab is a compact note that points at the work he can do instead.
+            var state = Ui.EmptyState(list, any ? RowKind.Cleared : RowKind.Craft, any ? soundText : "Nobody has gear that wears out. Equip forged weapons first.", "smith-empty");
+            if (!salvage) return;
+            var next = Ui.Actions(state);
+            if (any)
+            {
+                RowIcon.IconButton("Upgrade", RowKind.Craft, () => { tab = 1; selected = null; Refresh(); }, "btn--small", next);
+                RowIcon.IconButton("Salvage", RowKind.Item, () => { tab = 2; selected = null; Refresh(); }, "btn--small", next);
+            }
+            else RowIcon.IconButton("Forge", RowKind.Craft, () => { tab = 0; selected = null; Refresh(); }, "btn--small", next);
         }
 
         /// <summary>GG-T544: the line under a worn piece's repair row — "Cheaper to wait" while it's above the threshold, then
@@ -1540,9 +1550,9 @@ namespace GridGame.App
             piece = piece != null ? pieces.FirstOrDefault(p => p.Hero == piece.Hero && p.Slot == piece.Slot) : null;
             piece ??= pieces.FirstOrDefault();
 
-            // GG-T454: worn armor and enchants are two kit list panels sharing the height, over the detail pane; with no
-            // armor worn, the first is just its empty line and the enchants take the room.
-            var plist = pieces.Count > 0 ? Ui.ListPanel(body, "Worn armor", "enchant-pieces") : Ui.Panel(body, "Worn armor", false, "enchant-pieces");
+            // GG-T1873: worn armor and enchants share one scroll region filling the height over the detail pane.
+            var plist = Ui.List(Ui.Panel(body, fill: true, name: "enchant-list")).contentContainer;
+            Ui.Section("Worn armor", plist).name = "enchant-pieces";
             if (pieces.Count == 0)
                 Ui.Empty("Nobody wears armor yet. Forge a piece at the Blacksmith, then bring it here.", plist);
             foreach (var t in pieces)
@@ -1555,7 +1565,8 @@ namespace GridGame.App
                 if (piece != null && piece.Hero == t.Hero && piece.Slot == t.Slot) Ui.Select(row);
             }
 
-            var elist = Ui.ListPanel(body, "Enchants", "enchant-list");
+            var elist = plist;
+            Ui.Section("Enchants", elist);
             foreach (var e in ArmorEnchanting.All(C))
             {
                 var ench = e;
@@ -1901,7 +1912,12 @@ namespace GridGame.App
         {
             var pulls = S.Summon?.History ?? new List<PullRecord>();
             var list = Ui.ListPanel(body, pulls.Count == 0 ? "Pulls" : $"Last {pulls.Count} pulls", "summon-history");
-            if (pulls.Count == 0) { Ui.Empty("No pulls yet.", list); return; }
+            if (pulls.Count == 0)
+            {
+                var state = Ui.EmptyState(list, RowKind.Summon, "No pulls yet. Each banner pull is kept here, newest first.");
+                RowIcon.IconButton("Summon", RowKind.Summon, () => App.Router.Pop(), "btn--small", Ui.Actions(state)).name = "summon-history-summon";
+                return;
+            }
             for (int i = 0; i < pulls.Count; i++)
             {
                 var p = pulls[i];
@@ -2196,7 +2212,7 @@ namespace GridGame.App
             var target = C.TryClass(b.TargetClass);
             var reward = C.TryItem(b.RewardItem);
             bool slain = Bounties.IsSlain(S, b.Id), hunting = Bounties.IsTaken(S, b.Id);
-            var card = Ui.Card(list, null, b.Name, out var col, "poster-" + b.Id);
+            var card = Ui.Card(list, null, null, out var col, "poster-" + b.Id);
             var face = Ui.El(null, null);
             card.Insert(0, face);
             face.style.position = Position.Relative;
@@ -2204,12 +2220,16 @@ namespace GridGame.App
             var skull = BountySkull.Make(Size.IconM, face);
             skull.style.position = Position.Absolute;
             skull.style.right = Space.S16; skull.style.top = -Space.S4;
+            // GG-T1881: the poster's one action sits on its right edge beside the name, not on a row of its own.
+            var acts = Ui.El("row", col);
+            var title = Ui.Name(b.Name, acts);
+            title.style.flexShrink = 1; title.style.minWidth = 0; title.style.whiteSpace = WhiteSpace.Normal;
+            Ui.El("grow", acts);
             Ui.Caption($"{target?.Name ?? b.TargetClass} · tougher variant", col, "dim");
             Ui.Para(Bounties.Clue(C, b), col, "gold");
             int sp = Bounties.SkillPointsPaid(b);
             Ui.Para($"Reward {Ui.Gold(Bounties.RewardGold(C, b))}{(reward != null ? " + " + reward.Name : "")}{(sp > 0 ? $" + {sp} SP each" : "")}", col, "dim");
             TomeUi.Preview(col, reward); // GG-T301: what a Tome reward teaches
-            var acts = Ui.Actions(col);
             if (slain)
             {
                 var claim = RowIcon.IconButton("Claim", RowKind.Confirm, () => // GG-T750 (§26.7)
@@ -2431,13 +2451,9 @@ namespace GridGame.App
             Ui.Pad(row, left: Kit.Indent); // the label lines up with the menu rows' labels
             row.KindIcon(RowKind.Bounty); // GG-T750 (§26.7): lines up with the setting rows' icons
             Ui.Text("Difficulty", "menu-label grow", row);
-            var minus = RowIcon.IconButton("−", RowKind.Back, () => Set(level - 1), "btn--small", row);
+            var n = Ui.Stepper(row, level.ToString(), () => Set(level - 1), () => Set(level + 1), out var minus, out var plus, "gold");
             minus.name = "difficulty-down";
-            var n = Ui.Name(level.ToString(), row, "gold");
             n.name = "difficulty-level";
-            // At least a column wide, wider when Text size grows the number (GG-T495: a fixed width ellipsized "10" at 130%).
-            n.style.minWidth = Size.ColumnS; n.style.flexShrink = 0f; n.style.unityTextAlign = TextAnchor.MiddleCenter;
-            var plus = RowIcon.IconButton("+", RowKind.Enter, () => Set(level + 1), "btn--small", row);
             plus.name = "difficulty-up";
             Ui.SetEnabled(minus, level > DifficultyTable.Min);
             Ui.SetEnabled(plus, level < DifficultyTable.Max);

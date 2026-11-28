@@ -21,7 +21,7 @@ namespace GridGame.App
     public sealed partial class BattleScreen
     {
         // ── Geometry (design px). The frame spans the stage; the slot sits on the left gutter, GUARD on the right. ──
-        private const float TimelineY = 250f;
+        private const float TimelineY = 201f; // top bar (8 + 110) + a gutter + half the frame (GG-T1894)
         private const float TimelineFrameHeight = 150f;
         /// <summary>The track line's y inside the timeline frame; every icon centres on it.</summary>
         private const float TrackY = TimelineFrameHeight / 2f;
