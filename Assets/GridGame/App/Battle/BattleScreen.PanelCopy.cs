@@ -50,6 +50,6 @@ namespace GridGame.App
         };
 
         /// <summary>The confirm button's word for <paramref name="a"/>.</summary>
-        private static string CommitVerb(AbilityDef a) => a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
+        private static string CommitVerb(AbilityDef a) => a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
     }
 }

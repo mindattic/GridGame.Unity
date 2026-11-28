@@ -109,7 +109,7 @@ namespace GridGame.App
             {
                 Id = AdventureLesson, Kicker = "Camp", Title = "Journey",
                 Text = (first != null ? $"The campaign starts at {first}. " : "") +
-                       "Journey opens the map of stages; Continue above it marches straight to the next one.",
+                       "Journey, in the bar at the bottom, opens the map of stages; Fight marches straight to the next one.",
                 Image = "Tutorial/" + AdventureLesson,
                 Steps = TapSteps(s, row),
                 Finished = _ => { if (GameApp.I.Save == s) FinishHubIntro(s); },

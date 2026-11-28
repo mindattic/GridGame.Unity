@@ -174,7 +174,7 @@ namespace GridGame.App
         {
             switch (role)
             {
-                case "Tank": return new Color(0.95f, 0.36f, 0.3f);
+                case "Tank": return new Color(1f, 0.45f, 0.38f); // GG-T2154: 4.5:1+ on the badge plate even over bright art
                 case "Healer": return new Color(0.4f, 0.9f, 0.5f);
                 case "Mage": return new Color(0.55f, 0.6f, 1f);
                 case "Striker": return new Color(1f, 0.66f, 0.25f);
