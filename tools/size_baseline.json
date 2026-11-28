@@ -1,6 +1,5 @@
 {
  "long": [
-  "Assets/GridGame/App/Automation/AutomationServer.cs",
   "Assets/GridGame/App/Battle/BattleScreen.Playback.cs",
   "Assets/GridGame/App/Battle/BattleScreen.cs",
   "Assets/GridGame/App/Battle/BoardView.cs",
@@ -9,9 +8,7 @@
   "Assets/GridGame/Core/Battle/BattleRunner.cs",
   "Assets/GridGame/Core/Bot/HeroBot.cs",
   "Assets/GridGame/Core/Content/ContentLoader.cs",
-  "Assets/GridGame/Core/Content/ContentModels.cs",
-  "Assets/GridGame/Meta/MetaServices.cs",
-  "Assets/GridGame/Meta/SaveData.cs"
+  "Assets/GridGame/Core/Content/ContentModels.cs"
  ],
  "shared": {
   "Assets/GridGame/App/Screens/AboutScreen.cs": [

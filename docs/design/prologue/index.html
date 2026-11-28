@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GridGame Prologue Beats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>The Prologue</h1>
+    <p class="sub">The beat sheet for the scripted prologue and the vertical slice's arc (GG-T2065, under GG-T2010 and epic GG-T1941). Owner-approved planner defaults (2026-11-28, "approve all do all"); the prose twin is <code>docs/STORY_SLICE.md</code>, and the BIBLE's §27.0 and §28.10 point here. Each beat names its map node, what it teaches, its battle, its reward and what Skip does. Design only: GG-T2066 (dialogue), GG-T2072 to GG-T2075 (Sunder, the Collector, the Ward-Engine, the battles) and GG-T2077 (onboarding steps) build it.</p>
+  </header>
+
+  <section class="premise" aria-labelledby="h-premise">
+    <h2 id="h-premise">Premise</h2>
+    <div id="premise"></div>
+    <ul class="bar" id="bar"></ul>
+  </section>
+
+  <section aria-labelledby="h-time">
+    <h2 id="h-time">Timeline and the card budget</h2>
+    <p class="m" id="budget"></p>
+    <div class="timeline" id="timeline" role="tablist" aria-label="Beats"></div>
+    <div class="ticks" id="ticks" aria-hidden="true"></div>
+    <div class="legend">
+      <span><i class="k beat"></i>Beat (width is its length)</span>
+      <span><i class="k battle"></i>Has a battle</span>
+      <span><i class="k card"></i>A blocking card</span>
+      <span><i class="k bad"></i>A card under 60 s after the last</span>
+    </div>
+  </section>
+
+  <section class="detail" id="detail" aria-live="polite"></section>
+
+  <section aria-labelledby="h-all">
+    <h2 id="h-all">Every beat</h2>
+    <div class="scroll"><table class="beats" id="beats"></table></div>
+    <p class="m" id="skipall"></p>
+    <p class="m">Onboarding steps (<code>Meta/Onboarding.cs</code>, GG-T2077): <span id="steps"></span></p>
+  </section>
+
+  <section aria-labelledby="h-slice">
+    <h2 id="h-slice">The slice arc</h2>
+    <ol class="slice" id="slice"></ol>
+  </section>
+
+  <section aria-labelledby="h-canon">
+    <h2 id="h-canon">Against the canon</h2>
+    <p class="m">Where the slice bends <code>Data/Prose/canon</code>. Rows marked <b class="flag">Owner</b> are planner defaults the owner approved and may still change; the Prose canon itself is amended in a follow-up, not here.</p>
+    <div class="scroll"><table class="canon" id="canon"></table></div>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
