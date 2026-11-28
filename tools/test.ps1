@@ -14,6 +14,8 @@ python "$PSScriptRoot/check_assets.py"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 python "$PSScriptRoot/check_kit_icons.py"
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+python "$PSScriptRoot/design_tokens.py" --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($Compile) { & "$PSScriptRoot/unity.ps1" -Method GridGame.EditorTools.GridGameBuild.CompileCheck -Log compile; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE } }
 if ($Ui) {
     & "$PSScriptRoot/build.ps1"; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

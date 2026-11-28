@@ -1098,7 +1098,8 @@ namespace GridGame.App
     /// <summary>GG-T1928 (BIBLE §3.1.0, §9.0): the party's one thin mana bar, full width above [Abilities][Info][GUARD]. It
     /// fills left to right over <see cref="Capacity"/> with a tick every <see cref="TickEvery"/> points; a gain eases the
     /// fill up, a spend drains it over <see cref="DrainSeconds"/>, and while any spell is affordable (<see cref="Ready"/>)
-    /// the fill brightens and a glow pulses around it. Under Reduce Motion the fill jumps and the glow holds still.</summary>
+    /// the fill brightens and a glow pulses around it. Aiming a spell sets <see cref="Price"/>: the share it would spend
+    /// lights up, or the share the pool is short shows red. Under Reduce Motion the fill jumps and the glow holds still.</summary>
     public sealed class PartyManaBar : VisualElement
     {
         private static readonly Color Charging = Palette.Mana, Full = Color.Lerp(Palette.Mana, Color.white, 0.45f);
@@ -1106,8 +1107,8 @@ namespace GridGame.App
         public const int TickEvery = 100;
         /// <summary>How long a spend takes to drain the fill.</summary>
         public const float DrainSeconds = Timing.Dramatic;
-        private readonly VisualElement glow, fill, ticks;
-        private int capacity, points;
+        private readonly VisualElement glow, fill, cost, ticks;
+        private int capacity, points, price;
         private float shown, drainRate, clock;
         private bool ready;
 
@@ -1150,6 +1151,21 @@ namespace GridGame.App
                 if (value < points) drainRate = Mathf.Max(0f, shown - to) / DrainSeconds;
                 points = value;
                 if (GameApp.I?.Settings?.ReduceMotion ?? false) { shown = to; Apply(); }
+                ApplyPrice();
+            }
+        }
+
+        /// <summary>The aimed spell's price in points, 0 for none: the part of the fill it would spend is highlighted, or,
+        /// when the pool can't pay it, the missing stretch past the fill shows red.</summary>
+        public int Price
+        {
+            get => price;
+            set
+            {
+                value = Mathf.Max(0, value);
+                if (value == price) return;
+                price = value;
+                ApplyPrice();
             }
         }
 
@@ -1198,6 +1214,11 @@ namespace GridGame.App
             fill.style.left = fill.style.top = fill.style.bottom = 0;
             fill.style.backgroundColor = Charging;
             track.Add(fill);
+            cost = new VisualElement { name = "price", pickingMode = PickingMode.Ignore };
+            cost.style.position = Position.Absolute;
+            cost.style.top = cost.style.bottom = 0;
+            cost.style.display = DisplayStyle.None;
+            track.Add(cost);
             ticks = new VisualElement { name = "ticks", pickingMode = PickingMode.Ignore };
             ticks.style.position = Position.Absolute;
             ticks.style.left = ticks.style.right = ticks.style.top = ticks.style.bottom = 0;
@@ -1228,6 +1249,17 @@ namespace GridGame.App
         }
 
         private void Apply() => fill.style.width = Length.Percent(100f * shown);
+
+        private void ApplyPrice()
+        {
+            if (price <= 0) { cost.style.display = DisplayStyle.None; return; }
+            bool shortOf = price > points;
+            int from = shortOf ? points : points - price, to = Mathf.Min(capacity, shortOf ? price : points);
+            cost.style.display = DisplayStyle.Flex;
+            cost.style.left = Length.Percent(100f * from / capacity);
+            cost.style.width = Length.Percent(100f * (to - from) / capacity);
+            cost.style.backgroundColor = shortOf ? Palette.Bad.WithA(0.75f) : Palette.Gold.WithA(0.55f);
+        }
     }
 
     /// <summary>GG-T1819: a WoW-style cooldown sweep: a dark wedge over its box, starting at 12 o'clock and covering the

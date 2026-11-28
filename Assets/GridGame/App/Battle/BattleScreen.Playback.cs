@@ -1720,12 +1720,12 @@ namespace GridGame.App
             s.RemoveFromHierarchy();
         }
 
-        /// <summary>A whole grant (§3.1.0: 100 points per orb to every spell meter) goes in the Log under the action that
-        /// gave it (a Mana Potion, Meditate, Mana Pour) or its source; the spell bars fill from the same ManaGainedEvent.</summary>
+        /// <summary>A whole grant (§3.1.0: points into the party bar) goes in the Log under the action that gave it (a Mana
+        /// Potion, Meditate, Mana Pour) or its source; the party bar fills from the same ManaGainedEvent.</summary>
         private void GrantLine(ManaGainedEvent g)
         {
             string label = (g.Reason == "item" || g.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(g.Reason);
-            if (g.Meters.Count > 0) Feed($"{label}: +{g.Amount + g.Wasted} mana", Palette.Mana);
+            if (g.Amount > 0) Feed($"{label}: +{g.Amount + g.Wasted} mana", Palette.Mana);
             else Feed($"{label}: the party mana was already full", Palette.Gold);
         }
 

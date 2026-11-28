@@ -465,19 +465,17 @@ namespace GridGame.App
             BuildGuardCell(bar);
         }
 
-        /// <summary>The Info cell: a placeholder for Examine mode (GG-T1918). It keeps its place in the row, dimmed, and a tap
-        /// only says it is coming.</summary>
+        /// <summary>The Info cell (GG-T1918): a tap toggles Examine mode (<see cref="ToggleExamine"/>); gold-edged while on.</summary>
         private void BuildInfoCell(VisualElement bar)
         {
-            var cell = HudCell(bar);
+            var cell = infoButton = HudCell(bar);
             cell.name = "info";
             Ui.Pressable(cell);
             var icon = cell.KindIcon(RowKind.Eye);
             icon.style.width = icon.style.height = Size.IconL;
             icon.style.marginRight = Space.S0;
             Ui.Text("Info", "tiny", cell).pickingMode = PickingMode.Ignore;
-            cell.style.opacity = 0.45f;
-            cell.RegisterCallback<ClickEvent>(_ => { App.Audio.Sfx("ui.error"); ShowBanner("Examine: coming"); });
+            cell.RegisterCallback<ClickEvent>(_ => ToggleExamine());
         }
 
         /// <summary>The GUARD cell for <see cref="SyncGuardCall"/>'s gold call and Guard's mana motes (<see cref="MintFrom"/>).</summary>
@@ -496,7 +494,7 @@ namespace GridGame.App
             cell.style.backgroundImage = new StyleBackground(Art.WindowDark);
             cell.style.borderTopColor = cell.style.borderBottomColor = cell.style.borderLeftColor = cell.style.borderRightColor = GuardEdge;
             Ui.Pressable(cell);
-            cell.RegisterCallback<ClickEvent>(_ => { if (CanCommand()) Commit(new ShieldCommand()); });
+            cell.RegisterCallback<ClickEvent>(_ => { ExitExamine(); if (CanCommand()) Commit(new ShieldCommand()); });
             var icon = Ui.El(null, cell); icon.name = "icon";
             icon.pickingMode = PickingMode.Ignore;
             icon.style.position = Position.Absolute;
@@ -729,6 +727,7 @@ namespace GridGame.App
             var u = State.UnitById(panelUnitId >= 0 ? panelUnitId : SelectedHeroId);
             if (u == null || !u.Alive) u = State.UnitById(SelectedHeroId);
             if (refusal != null) PanelLine(panel, refusal, "small warn", "refusal");
+            if (examining) { ExaminePanel(); return; }
             if (TargetingSlot >= 0 && State.UnitById(SelectedHeroId) is Unit caster)
             {
                 var ab = BattleEngine.SlotAbility(State, caster, TargetingSlot);
@@ -775,7 +774,7 @@ namespace GridGame.App
             // What the Bestiary has learned from defeating its class gates the numbers (§25.11, GG-T290).
             int know = Knowledge(u);
             // FF-style plain numbers, no bar (owner 2026-11-21): "HEALTH"/"AETHER" are the same width, so those labels
-            // line up instead of "HP"/"MP". A hero's MANA is how many of its spell meters are full (§3.1.0).
+            // line up instead of "HP"/"MP". A hero's MANA is the party bar and how many of its spells it can pay (§3.1.0).
             var hpRow = Ui.El("row", col);
             Ui.Text("HEALTH", "tiny dim", hpRow).style.marginRight = Space.S8;
             Ui.Text(know >= BestiaryKnowledge.Stats ? $"{u.Hp}/{u.MaxHp}" : "???", "small", hpRow);
@@ -783,15 +782,14 @@ namespace GridGame.App
             {
                 var aetherRow = Ui.El("row", col);
                 Ui.Text("MANA", "tiny dim", aetherRow).style.marginRight = Space.S8;
-                int spells = 0, full = 0;
+                int spells = 0, payable = 0;
                 for (int i = 0; i < u.Bar.Count; i++)
                 {
-                    int need = State.ManaFull(u, i);
-                    if (need <= 0) continue;
+                    if (State.SpellPrice(u, i) <= 0) continue;
                     spells++;
-                    if (State.ManaIn(u.Id, i) >= need) full++;
+                    if (State.SpellReady(u, i)) payable++;
                 }
-                Ui.Text(spells == 0 ? "no spells" : $"{full}/{spells} spells full", "small", aetherRow);
+                Ui.Text($"{State.PartyMana}/{BattleConfig.PartyManaCapacity}{(spells == 0 ? "" : $" · {payable}/{spells} spells ready")}", "small", aetherRow);
             }
             if (know >= BestiaryKnowledge.Stats) Ui.Text($"{Ui.StatLine(u.Effective)}  ·  EVA {GridGame.Core.Rules.Formulas.Evasion(u):0}%", "tiny dim", col); // GG-T297
             else if (know >= BestiaryKnowledge.Speed) Ui.Text($"SPD {u.Effective.Speed:0}  ·  defeat more to learn the rest", "tiny dim", col);
@@ -1004,8 +1002,9 @@ namespace GridGame.App
 
         /// <summary>Not while a drag is in progress either: a second finger tapping GUARD or a slot mid-drag would
         /// commit that instead and silently drop the drag, leaving the previewed units out of place (GG-T70).
-        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through.</summary>
-        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused;
+        /// CommitDrag clears <c>dragging</c> before it commits, so the drag's own command still goes through. Nor while
+        /// examining (GG-T1918): no battle time passes until Examine mode closes.</summary>
+        public bool CanCommand() => !playing && !ended && !State.IsOver && !dragging && !Paused && !examining;
 
         /// <summary>Dev/automation helper: add orbs to every spell meter (cheat — development builds only call this).</summary>
         public void DevGiveMana(int n)
