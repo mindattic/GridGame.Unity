@@ -1,0 +1,18 @@
+dialogue prologue_road
+title: The Road to Tithe
+trigger: Prologue Travel
+backdrop: greenvalley
+speaker commander $commander
+speaker knight knight
+speaker barbarian barbarian
+
+node sky commander
+  Wind, heather and a grey sky. Far off, the Manalith hangs over the moor, bigger than the Moorfolk say it used to be.
+  -> road
+
+node road knight
+  Tithe is down this road. Half a day if the weather holds.
+  -> heather
+
+node heather barbarian
+  Something's moving in the heather. Wolves. Stay close to the cart.

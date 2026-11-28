@@ -1,0 +1,22 @@
+dialogue prologue_wake
+title: Cold Open
+trigger: Prologue Wake
+backdrop: greenvalley
+speaker commander $commander
+speaker knight knight
+speaker barbarian barbarian
+
+node cold commander
+  A heartbeat, slow and far away. Frost cracks on the glass in front of your face.
+  -> light
+
+node light commander
+  Cold. Then light. Then voices.
+  -> door
+
+node door barbarian
+  Put your back into it. The door's half open and the slimes are already in the pipes.
+  -> lights
+
+node lights knight
+  Wait. The lamps in here just came on. Who's down there?
