@@ -294,10 +294,9 @@ namespace GridGame.App
             var hero = State.Units.FirstOrDefault(u => u.IsHero && u.Alive && u.Def.Role == l.FocusRole);
             if (hero == null) return;
             SelectHero(hero.Id);
-            if (l.FocusSlot >= 0 && l.FocusSlot < slotViews.Count)
+            if (l.FocusSlot >= 0 && l.FocusSlot < BarSlots && abilitiesButton != null)
             {
-                var slot = slotViews[l.FocusSlot];
-                App.StartCoroutine(Tween.Pop(slot, 1.15f, 0.4f));
+                App.StartCoroutine(Tween.Pop(abilitiesButton, 1.15f, 0.4f));
                 App.StartCoroutine(Tween.Pop(board.Units[hero.Id].Root, 1.12f, 0.4f));
             }
         }
@@ -334,7 +333,7 @@ namespace GridGame.App
             btns.style.alignSelf = Align.FlexStart;
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
-            if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
+            if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns, confirmTap: false)).name = "tutorial-done";
             else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
             if (first != null) Ui.Margin(first, right: Space.S24);
             RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";
@@ -724,7 +723,7 @@ namespace GridGame.App
         {
             if (!State.Units.Exists(u => u.IsCommandable && u.Alive && u.HpFraction < 0.8f)) return null;
             foreach (var h in State.Units.Where(u => u.IsCommandable && u.Alive))
-                for (int i = 0; i < slotViews.Count; i++)
+                for (int i = 0; i < BarSlots; i++)
                 {
                     var a = BattleEngine.SlotAbility(State, h, i);
                     if (a != null && a.Kind == AbilityKind.Item && BattleEngine.GetSlotStatus(State, h.Id, i) == SlotStatus.Ready) return (h, i);
@@ -740,7 +739,7 @@ namespace GridGame.App
         {
             var found = new List<(Unit hero, int slot, AbilityDef a)>();
             foreach (var h in State.Units.Where(u => u.IsCommandable && u.Alive))
-                for (int i = 0; i < slotViews.Count; i++)
+                for (int i = 0; i < BarSlots; i++)
                 {
                     var a = BattleEngine.SlotAbility(State, h, i);
                     if (a != null && want(a) && BattleEngine.GetSlotStatus(State, h.Id, i) == SlotStatus.Ready) found.Add((h, i, a));
@@ -890,12 +889,10 @@ namespace GridGame.App
             };
         }
 
-        /// <summary>A coach step on the commandable hero's first spell bar (§3.1.0: mana fills each spell's own bar,
-        /// GG-T1821), or null when it carries no spell.</summary>
         /// <summary>A cast mark: tap the hero, its slot, the target (when it has one), then Cast / Use / Go.</summary>
         private List<CoachStep> CastMarks(Unit hero, int slot)
         {
-            if (hero == null || slot < 0 || slot >= slotViews.Count) return null;
+            if (hero == null || slot < 0 || slot >= BarSlots) return null;
             var a = BattleEngine.SlotAbility(State, hero, slot);
             if (a == null || BattleEngine.GetSlotStatus(State, hero.Id, slot) != SlotStatus.Ready) return null;
             int id = hero.Id;
@@ -917,8 +914,9 @@ namespace GridGame.App
             {
                 new CoachStep { Caption = $"Tap the {hero.Name}.", Area = () => UnitRect(id),
                     Done = () => coachCommitted || (SelectedHeroId == id && !pressing), Valid = () => State.UnitById(id) is Unit u && u.Alive },
-                new CoachStep { Caption = $"Tap {a.Name}.", Element = () => slot < slotViews.Count ? slotViews[slot] : null,
-                    Done = Aiming, Valid = () => coachCommitted || (SelectedHeroId == id && BattleEngine.GetSlotStatus(State, id, slot) == SlotStatus.Ready) },
+                // Until GG-T1922 walks the sheet, the boxed Abilities button aims this slot directly (coachSlot).
+                new CoachStep { Caption = $"Tap Abilities to ready {a.Name}.", Element = () => abilitiesButton,
+                    Enter = () => coachSlot = slot, Exit = () => coachSlot = -1, Done = Aiming, Valid = () => coachCommitted || (SelectedHeroId == id && BattleEngine.GetSlotStatus(State, id, slot) == SlotStatus.Ready) },
             };
             if (target is Coord t)
             {

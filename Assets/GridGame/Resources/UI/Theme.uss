@@ -259,6 +259,12 @@
 .menu-row.is-pressed { background-color: rgba(140, 170, 255, 0.34); translate: 4px 2px; scale: 0.985 0.985; }
 .tab.is-pressed { translate: 0 4px; scale: 0.94 0.94; }
 .card-tap.is-pressed { scale: 0.94 0.94; translate: 0 6px; }
+/* GG-T1942: a list card or action button selected by a first tap (Ui.ConfirmTap) is pressed in like a selected menu row;
+   a second tap runs it. A card gains the inset well and 3-px frame (padding gives the border back); a button stays sunk
+   onto its lip with a dark top edge. */
+.card.tap--selected { background-color: rgba(0, 0, 0, 0.38); border-width: 3px; border-color: var(--color-frame); border-top-color: rgba(0, 0, 0, 0.7); padding: 13px; translate: 0 3px; scale: 0.985 0.985; }
+.btn.tap--selected { border-bottom-width: 4px; border-top-color: rgba(0, 0, 0, 0.7); translate: 0 8px; }
+.btn--small.tap--selected { border-bottom-width: 3px; translate: 0 6px; }
 /* The Main Menu's mana conduit under the wordmark (GG-T1350): a lit line with a pale core. */
 .title-conduit { height: 6px; margin-top: var(--space-8); border-radius: 3px; background-color: rgb(107, 199, 255); border-top-width: 2px; border-top-color: rgb(220, 240, 255); }
 .splash-copy { margin-top: var(--space-32); }

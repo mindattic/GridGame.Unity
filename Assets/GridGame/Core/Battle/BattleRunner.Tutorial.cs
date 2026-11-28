@@ -368,7 +368,7 @@ namespace GridGame.Core.Battle
                 }
             }
             if (cost == int.MaxValue) return;
-            if (S.ReadySpellCount == 0) GrantOrbs(cost, -1, "lesson");
+            if (S.PartyMana < cost * BattleConfig.ManaPointsPerOrb) GrantOrbs(cost, -1, "lesson");
         }
 
         /// <summary>Buffs &amp; debuffs: a pip to read: the Tank (or the first hero) is shielded, unless someone already wears one.</summary>

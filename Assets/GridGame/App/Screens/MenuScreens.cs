@@ -648,7 +648,7 @@ namespace GridGame.App
             veil.userData = cancel; // Android Back answers Cancel (CancelTop)
             // GG-T738 (§26.7): Cancel leads with the Close cross, the answer with the Confirm check.
             RowIcon.IconButton("Cancel", RowKind.Close, cancel, null, row).name = "confirm-no";
-            RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row).name = "confirm-yes";
+            RowIcon.IconButton(yes, RowKind.Confirm, () => { veil.RemoveFromHierarchy(); onYes?.Invoke(); }, "btn--primary", row, confirmTap: false).name = "confirm-yes";
             GameApp.I.Audio.Sfx("ui.select");
             if (!Tween.Calm) { veil.style.opacity = 0f; GameApp.I.StartCoroutine(Tween.Fade(veil, 0f, 1f, Timing.Quick)); }
             return veil;

@@ -19,7 +19,9 @@ namespace GridGame.App
             var list = Ui.Panel(Ui.PageBody(col), null, false, "about-list");
             Ui.Section(GameApp.Title, list).name = "about-title";
             Ui.Para(Legal.Studio, list).name = "about-studio";
-            Ui.Para("Version " + Legal.VersionLine(), list).name = "about-version";
+            var version = Ui.Para("Version " + Legal.VersionLine(), list);
+            version.name = "about-version";
+            Dev.DevOptions.CountTaps(version); // GG-T1938: seven taps unlock Settings > Developer
             Ui.Note(SplashScreen.Copyright, list).name = "about-copyright";
             Ui.Section("Legal", list);
             var privacy = Ui.MenuRow("Privacy policy", "Open", () => Legal.Open(Legal.PrivacyPolicyUrl), list);

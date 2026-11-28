@@ -116,9 +116,9 @@ namespace GridGame.Core.Battle
             }
             else
             {
-                // §3.1.0: casting empties this spell's own meter at cast start; every other meter is untouched.
-                int points = S.ManaIn(hero.Id, cmd.Slot);
-                S.SetMana(hero.Id, cmd.Slot, 0);
+                // §3.1.0: the cast pays its price from the party pool at cast start; an interrupt refunds nothing.
+                int points = Math.Min(S.PartyMana, S.SpellPrice(hero, cmd.Slot));
+                S.SetPartyMana(S.PartyMana - points);
                 if (points > 0)
                     Emit(new SpellManaSpentEvent { UnitId = hero.Id, Slot = cmd.Slot, AbilityId = a.Id, Points = points });
                 if (a.CastTime > 0f)
@@ -396,8 +396,8 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>GG-T388: an Echo resolves. It repeats the last Active ability <paramref name="source"/> used, cast by the
-        /// echoer from where it stands at the target <see cref="Echo.For"/> chose; a hero echoer pays a copied spell from one
-        /// of its own meters (<see cref="Echo.PayingSlot"/>; a foe's charge copies for free). Nothing to repeat is a miss.</summary>
+        /// echoer from where it stands at the target <see cref="Echo.For"/> chose; a hero echoer pays a copied spell's price from
+        /// the party pool (§3.1.0; a foe's charge copies for free). Nothing to repeat is a miss.</summary>
         private void ResolveEcho(Unit caster, AbilityDef a, Unit source)
         {
             var plan = Echo.For(S, caster, source);
@@ -406,11 +406,11 @@ namespace GridGame.Core.Battle
             var copy = plan.Value.Ability;
             if (caster.IsHero && copy.Kind == AbilityKind.Spell && copy.Cost > 0)
             {
-                int slot = Echo.PayingSlot(S, caster, copy);
-                if (slot < 0) { Announce("Not enough mana", caster.Id); return; }
                 int points = copy.Cost * BattleConfig.ManaPointsPerOrb;
-                S.SetMana(caster.Id, slot, S.ManaIn(caster.Id, slot) - points);
-                Emit(new SpellManaSpentEvent { UnitId = caster.Id, Slot = slot, AbilityId = caster.Bar[slot].AbilityId, Points = points });
+                if (S.PartyMana < points) { Announce("Not enough mana", caster.Id); return; }
+                int slot = Echo.PayingSlot(S, caster, copy);
+                S.SetPartyMana(S.PartyMana - points);
+                Emit(new SpellManaSpentEvent { UnitId = caster.Id, Slot = slot, AbilityId = copy.Id, Points = points });
             }
             Announce($"Echo: {copy.Name}!", caster.Id);
             Remember(caster, copy, plan.Value.Anchor);
@@ -448,8 +448,8 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>GG-T332 (§14.15): a foe's siphon that touched a hero draws up to <see cref="AbilityDef.DrainsOrbs"/>
-        /// orbs out of the party's mana — the Bulwark's aether pack is a portable Still. Under per-spell meters (§3.1.0) it
-        /// takes N x <see cref="BattleConfig.ManaPointsPerOrb"/> points from every meter, floored at 0. Spend them first, or interrupt it.</summary>
+        /// orbs out of the party's mana — the Bulwark's aether pack is a portable Still. Under the party pool (§3.1.0) it takes
+        /// N x <see cref="BattleConfig.ManaPointsPerOrb"/> points from the pool, floored at 0. Spend them first, or interrupt it.</summary>
         private void DrainOrbs(Unit caster, AbilityDef a)
         {
             if (S.IsOver || caster.Team != Team.Enemy) return;
