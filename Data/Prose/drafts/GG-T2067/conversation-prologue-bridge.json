@@ -1,0 +1,34 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-bridge",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_bridge",
+  "about": [
+    "class-barbarian",
+    "class-captain"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Toll Bridge",
+    "start": "toll",
+    "nodes": [
+      {
+        "id": "toll",
+        "speaker": "class-captain",
+        "line": "Moorfolk with lit orbs. The Captain will pay well for those. Hand them over, and the strange one with you.",
+        "next": "answer"
+      },
+      {
+        "id": "answer",
+        "speaker": "class-barbarian",
+        "line": "Come and take them."
+      }
+    ]
+  },
+  "speakers": [
+    "class-captain",
+    "class-barbarian"
+  ]
+}

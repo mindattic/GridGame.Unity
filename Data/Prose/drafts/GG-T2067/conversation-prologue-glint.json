@@ -1,0 +1,48 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-glint",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_glint",
+  "about": [
+    "character-commander",
+    "class-knight",
+    "class-redmage"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "The Glint",
+    "start": "tome",
+    "nodes": [
+      {
+        "id": "tome",
+        "speaker": "class-redmage",
+        "line": "Bolt. A lightning spell, and an old one. The Collector had no idea what he was sitting on.",
+        "next": "glint"
+      },
+      {
+        "id": "glint",
+        "speaker": "character-commander",
+        "line": "On a bare hilltop by the road, something catches the light. It glints at you, and only at you.",
+        "next": "nothing"
+      },
+      {
+        "id": "nothing",
+        "speaker": "class-knight",
+        "line": "There's nothing there. Grass and a rock.",
+        "next": "them"
+      },
+      {
+        "id": "them",
+        "speaker": "class-redmage",
+        "line": "There is for them. Look at the orbs. Take us up there."
+      }
+    ]
+  },
+  "speakers": [
+    "class-redmage",
+    "character-commander",
+    "class-knight"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "prose-text/1",
+  "id": "conversation-prologue-vault-door",
+  "universe": "gridgame",
+  "kind": "conversation",
+  "key": "dialogue:prologue_vault_door",
+  "about": [
+    "character-commander",
+    "class-barbarian",
+    "class-cleric",
+    "class-knight"
+  ],
+  "version": 1,
+  "status": "draft",
+  "payload": {
+    "title": "Whatever you are",
+    "start": "look",
+    "nodes": [
+      {
+        "id": "look",
+        "speaker": "character-commander",
+        "line": "Three Moorfolk stand in the broken doorway, slime on their boots and dead Mana Orbs at their belts. All three orbs are glowing.",
+        "next": "knight"
+      },
+      {
+        "id": "knight",
+        "speaker": "class-knight",
+        "line": "I saw the lights come on when you moved. Every lamp in the vault, and then our orbs.",
+        "next": "cleric"
+      },
+      {
+        "id": "cleric",
+        "speaker": "class-cleric",
+        "line": "Nobody has slept in these tanks since Halcyon fell. Nobody was supposed to wake up in one.",
+        "next": "barbarian"
+      },
+      {
+        "id": "barbarian",
+        "speaker": "class-barbarian",
+        "line": "There'll be more slimes on the stair, drawn by the leak. We can talk at the top.",
+        "next": "follow"
+      },
+      {
+        "id": "follow",
+        "speaker": "class-knight",
+        "line": "Whatever you are, our orbs work near you. Come with us."
+      }
+    ]
+  },
+  "speakers": [
+    "character-commander",
+    "class-knight",
+    "class-cleric",
+    "class-barbarian"
+  ]
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GridGame.Core.Content;
 
 namespace GridGame.Meta
@@ -98,6 +99,48 @@ namespace GridGame.Meta
             if (next < 0) return null;
             int n = DefeatsToNext(e);
             return $"Defeat {n} more to learn {Label(next)}.";
+        }
+    }
+
+    /// <summary>GG-T1975: the Bestiary's regions, read from content: each campaign theme, in campaign order, holds the enemy
+    /// classes its stages spawn and its overworld roads ambush with (world.json encounter families), each foe in the first
+    /// region that fields it. Foes no region fields (summons, hatchlings, Crucible-only) close the list under a null theme.</summary>
+    public static class BestiaryRegions
+    {
+        public static List<(ThemeDef Theme, List<ClassDef> Foes)> Group(ContentDb c)
+        {
+            var placed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var list = new List<(ThemeDef, List<ClassDef>)>();
+            void Take(string id, List<ClassDef> into)
+            {
+                if (c.TryClass(id) is ClassDef d && d.Team == Team.Enemy && placed.Add(d.Id)) into.Add(d);
+            }
+            foreach (var t in c.Campaign.Themes)
+            {
+                var foes = new List<ClassDef>();
+                foreach (var st in t.Stages.Select(c.TryStage).Where(x => x != null))
+                    foreach (var sp in st.Waves.SelectMany(w => w.Enemies)) Take(sp.Class, foes);
+                foreach (var fam in c.Region(t.Id)?.Edges.SelectMany(e => e.Encounters ?? new List<string>()) ?? Enumerable.Empty<string>())
+                    foreach (var g in EncounterCatalog.ForFamily(c, fam))
+                        foreach (var sp in g.Enemies) Take(sp.Class, foes);
+                if (foes.Count > 0) list.Add((t, foes.OrderBy(f => f.Name).ToList()));
+            }
+            var rest = c.Classes.Values.Where(d => d.Team == Team.Enemy && !placed.Contains(d.Id)).OrderBy(d => d.Name).ToList();
+            if (rest.Count > 0) list.Add((null, rest));
+            return list;
+        }
+
+        /// <summary>Records a cleared stage's foes as a played clear would: each seen, and defeated once per spawn (a
+        /// generated mid-game save, so its Bestiary is not empty).</summary>
+        public static void RecordStage(SaveData s, StageDef stage)
+        {
+            foreach (var sp in stage.Waves.SelectMany(w => w.Enemies))
+            {
+                if (string.IsNullOrEmpty(sp.Class)) continue;
+                if (!s.Bestiary.TryGetValue(sp.Class, out var e)) { e = new BestiaryEntry(); s.Bestiary[sp.Class] = e; }
+                e.Seen = true;
+                e.Defeated++;
+            }
         }
     }
 }
