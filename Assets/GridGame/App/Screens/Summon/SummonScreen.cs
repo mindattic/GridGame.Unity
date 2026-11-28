@@ -13,7 +13,7 @@ namespace GridGame.App
     public sealed class SummonScreen : HubPage
     {
         public override string Id => "summon";
-        protected override string Title => "Summon";
+        protected override string Title => "Recruit";
         protected override string Backdrop => "cityruins";
 
         /// <summary>The open tab: one per open banner (<see cref="Gacha.Open"/>), then Recruit.</summary>
@@ -22,8 +22,19 @@ namespace GridGame.App
         /// <summary>The open Rates list's height in design px: about ten rows, the rest scrolls.</summary>
         private const float OddsListMaxHeight = 560;
 
+        /// <summary>The Recruit tab's Summon | Mercenaries switch (GG-T1964), atop both pages; a page not open yet is
+        /// locked with its unlock hint.</summary>
+        internal static void RecruitTabs(VisualElement body, int active)
+        {
+            var app = GameApp.I;
+            Func<int, string> hint = i => CampUnlocks.MilestoneHint(app.Content, i == 0 ? CampUnlocks.SummonAfter : CampUnlocks.BountiesAfter);
+            Ui.Tabs(new[] { "Summon", "Mercenaries" }, active, i => { if (i != active) app.Router.Replace(i == 0 ? new SummonScreen() : (GameScreen)new MercenaryScreen()); }, body,
+                i => i == 0 ? !CampUnlocks.SummonOpen(app.Save) : !Mercenaries.Open(app.Save), i => app.Toast(hint(i))).name = "recruit-tabs";
+        }
+
         protected override void BuildBody(VisualElement body)
         {
+            RecruitTabs(body, 0);
             bool busy = Paywall.Pending(S, PaywallKind.Summon) != null;
             int starter = SummonTickets.Starter(S); // GG-T1604: the first visit's Tickets
             if (starter > 0) { App.Persist(); App.Toast($"The circle gives you {TicketText.Of(starter)} to begin with."); }

@@ -14,12 +14,13 @@ namespace GridGame.App
         public override string Id => "mercenaries";
         /// <summary>GG-T1206: the camp's mercenaries (non-party heroes) load into its own Screen art scope, released when it closes.</summary>
         public override bool HoldsScreenArt => true;
-        protected override string Title => "Mercenaries";
+        protected override string Title => "Recruit";
         protected override string Backdrop => "desert";
         private bool haggling;
 
         protected override void BuildBody(VisualElement body)
         {
+            SummonScreen.RecruitTabs(body, 1);
             // GG-T454 (the menu kit): one scrolling list — the terms, who's under contract, then who's for hire.
             var list = Ui.ListPanel(body, null, "merc-board");
             Ui.Para("Swords for hire, paid upfront for a set number of battles. The count runs down every battle, whether they fight or wait in reserve. " +

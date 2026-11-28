@@ -92,7 +92,7 @@ namespace GridGame.App
                 for (int r = -n; r <= n; r++)
                     if (board.Contains((q, r))) points.Add((q, r));
 
-            // Corner labels: the stat ids, just outside each corner. 30 px (the caption floor, POL-A2) in the real Heavy
+            // Corner labels: the stat ids, just outside each corner, at the 30-px floor (POL-A2) in the real Heavy
             // cut, not faux bold (POL-A3) (GG-T1068).
             for (int k = 0; k < 6; k++)
             {
@@ -106,7 +106,7 @@ namespace GridGame.App
                 label.style.width = Size.HexLabelW;
                 label.style.height = Size.HexLabelH;
                 label.style.unityTextAlign = TextAnchor.MiddleCenter;
-                label.style.fontSize = 30;
+                label.style.fontSize = TypeFloor.ShrinkMin;
                 Fonts.UseHeavy(label);
                 label.style.color = statColors[k];
                 Add(label);
@@ -354,6 +354,6 @@ namespace GridGame.App
 
         private static Color WithAlpha(Color c, float a) { c.a *= a; return c; }
 
-        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Color.magenta;
+        private static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Palette.Missing;
     }
 }

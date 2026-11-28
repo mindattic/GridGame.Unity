@@ -26,7 +26,7 @@ The theme is **Manapunk** (§11.5): smoked-glass panes, pewter rails, one mana-b
 
 ## 2. Tokens
 
-Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, spacing or duration in a screen is a bug (POL-A1, POL-B1, POL-C1, POL-E1).
+Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, spacing or duration in a screen is a bug (POL-A1, POL-B1, POL-C1, POL-E1). `tools/polish_lint.py` counts `new Color(…)`, `Color.white` and the like, a hex colour string, a `px` length in a C# string, a literal font size, and a literal duration passed to `Tween` or `WaitForSeconds`. Only dev-only screens may keep literals, each listed with its reason in the lint's `DEV_ALLOW` (WindowEditorScreen, BreedGalleryScreen, DevOptions).
 
 ### 2.1 Colour roles (Manapunk)
 
@@ -49,6 +49,10 @@ Code reads `Tokens.cs`; USS reads `Theme.uss` `:root`. A literal colour, size, s
 
 Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-gauge-*`) are gameplay colours and stay the same in every theme. Each hue family has one meaning (POL-B4). The reference page lists every USS colour token.
 
+**Base-theme surfaces (GG-T2135).** Every colour a Theme.uss rule outside `:root` uses is a `--color-*` token: the stage and letterbox (`--color-stage`, `--color-letterbox`, `--color-black`, `--color-clear`), the selected well (`--color-well`, `--color-well-edge`), hover and press tints (`--color-hover`, `--color-press`, `--color-card`, `--color-card-selected`, `--color-mana-tint`, `--color-mana-faint`), the button family (`--color-btn`, `-lip`, `-hover`, `-pressed`, and the same for `-primary` and `-danger`, plus `--color-btn-primary-rim`), chrome (`--color-chrome`, `--color-toast`, `--color-badge`, `--color-tab`, `--color-tab-active`, `--color-label`, `--color-alert`, `--color-scrollbar`, `--color-thumb`, `--color-gauge-rim`, `--color-pip-rim`, `--color-title`, `--color-mana-core`, `--color-continue`), and the team keylines that had no variable (`--color-tamed`, `--color-wanderer`, `--color-cb-hero`, `-foe`, `-boss`). USS cannot add alpha to a variable, so each translucent tint is its own token. A `.theme-*` block still overrides by selector.
+
+Palette additions for code: `Palette.Black`, `Palette.Gray` (the fallback when a content colour does not parse), `Palette.Missing` (magenta, for a colour that must never be missing), `Palette.Overbright` (3, 3, 3: an image flashes overbright and eases back to White), `Palette.FoeTint` (a foe's cut-in portrait), `Palette.PlateRim` (a dialogue nameplate whose speaker is not talking) and `Palette.ManalithRock`.
+
 ### 2.2 Type
 
 - **One size**: `TypeScale.Base` (`--type-base`). `GuiType` computes it per screen to draw 14 dp, clamped to 40 to 56 design px, then multiplies by Settings → Text size (100, 115 or 130 %). Nominal 40.
@@ -60,9 +64,9 @@ Elements (`Palette.Element`), rarity (`--color-rarity-*`) and gauges (`--color-g
 
 ### 2.3 Space and size
 
-- **Space** (`Space`, `--space-*`): 4, 8, 12, 16, 24, 32, 48, 64, 96. 12 exists only as half of the 24-px gap between targets.
+- **Space** (`Space`, `--space-*`): 4, 8, 12, 16, 24, 32, 48, 64, 96. 12 exists only as half of the 24-px gap between targets. `--space-16-framed` (13) is a selected card's padding: 16 less its 3-px frame, so selecting it does not move its content.
 - **Kit** (`Kit`): page gutter 24 (`Fit.Edge`), gap 16, window padding 16 / 24, row 132, header 150, nav 132, indent 8 (touch) or 72 (PC), card portrait 120, detail pane at most 45 % of the column.
-- **Size** (`Size`): target 132, row icon 64, icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
+- **Size** (`Size`): target 132, icon roles per [ICONS.md](ICONS.md) (inline `IconInline` 32, button `IconButton` 48, row `Icon` 64, nav `IconNav` 72; USS `--size-icon-inline`, `--size-icon-button`, `--size-icon`, `--size-icon-nav`), icon M 56, icon S 40, chip 50, thumb 120, avatar 96, party slot 180, medallion 140, slot 196, cell 170, card 300, portrait 360 × 400, art 420 × 620. Lines: underline 2, hairline 3, track 6, bar 8, gauge 14, HP bar 18.
 
 ### 2.4 Radii
 
@@ -98,7 +102,7 @@ Pressing lowers a control by one level: the lip shrinks to 2 px and the face mov
 - **Durations** (`Timing`): instant 0.08, quick 0.15, standard 0.25, emphasis 0.4, dramatic 0.7, cinematic 1.2 s. No random durations (POL-E3).
 - **Easing** (`Ease`): Out, InOut, Back (overshoot on release), Snap (fast settle), Arc (0 to 1 to 0). No linear UI motion (POL-E2).
 - **Press**: sink in 0.06 s ease-out, release in 0.14 s ease-out-back (`.pressable`). The first visible response lands inside 100 ms (POL-D3).
-- **Screen change**: a 0.2 s fade through black (`ScreenRouter`).
+- **Screen change**: a 0.2 s fade through black (`Timing.ScreenFade`, `ScreenRouter`).
 - **Reduce Motion** removes shakes, the thumbnail wobble (`ThumbWobble`), the conduit flicker and the marquee scroll (an ellipsis instead). Never more than 3 flashes a second (POL-E7).
 
 ## 3. Components and their states
@@ -123,7 +127,7 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 | Section | `Ui.Section` | `.kit-section` | n/a | heavy gold, flush left |
 | Card | `Ui.Card(parent, classId, name, out col)` | `.card`, `.card-tap`, `.tap--selected` | when its tap runs an action (`Ui.Tappable(…, confirmTap: true)`) | thumbnail 120 (R9), heavy name, its buttons under its text (`Ui.Actions`) |
 | Button | `Ui.Button(text, onClick, classes, parent, confirmTap)` | `.btn`, `--primary`, `--danger`, `--small`, `--icon`, `--disabled` | **yes** for an action with no confirm of its own (every `RowKind.Confirm` icon button). **No** for a button that opens its own Confirm, a dialog's answer, the battle commit button, navigation and steppers | the primary holds the mana fill; danger is wine red; one primary per screen (POL-C7) |
-| Icon button | `RowIcon.IconButton(kind, …)` | `.btn--icon` | Confirm kind: yes | 132 square; icon per [ICONS.md](ICONS.md) |
+| Icon button | `RowIcon.IconButton(kind, …, tex)` | `.btn--icon` | Confirm kind: yes | 132 square; a 48 icon (`Size.IconButton`): the kind's set icon (`RowIcon.IconId`, `Art.UiIcon`) unless `tex` names another, per [ICONS.md](ICONS.md) |
 | Tabs | `Ui.Tabs(names, active, onPick, parent, locked)` | `.tab`, `.tab--active` | no | the window below sits flush; the active tab has a 4-px mana top |
 | Stepper | `Ui.Stepper(parent, value, onMinus, onPlus, …)` | `.btn--small` | no | minus, value, plus; each button a full target |
 | Field | `Ui.Field(label, value, parent)` | `.kit-field` | n/a | read-only: dim label, body value |

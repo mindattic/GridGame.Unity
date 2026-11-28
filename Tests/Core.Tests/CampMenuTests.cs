@@ -18,10 +18,11 @@ namespace GridGame.Tests
             Assert.That(Find(menu, CampMenu.Campaign).Group, Is.EqualTo(CampGroup.Campaign));
             Assert.That(Find(menu, CampMenu.Heroes).Group, Is.EqualTo(CampGroup.Heroes));
             Assert.That(Find(menu, CampMenu.Summon).Group, Is.EqualTo(CampGroup.Summon));
+            Assert.That(Find(menu, CampMenu.Mercenaries).Group, Is.EqualTo(CampGroup.Summon)); // GG-T1964: under Recruit
             Assert.That(Find(menu, CampMenu.Shop).Group, Is.EqualTo(CampGroup.Shop));
             foreach (var id in new[] { CampMenu.Blacksmith, CampMenu.Alchemist, CampMenu.Aetherist })
                 Assert.That(Find(menu, id).Group, Is.EqualTo(CampGroup.Craft), id);
-            foreach (var id in new[] { CampMenu.Mercenaries, CampMenu.Talk, CampMenu.Codex, CampMenu.Bestiary })
+            foreach (var id in new[] { CampMenu.Talk, CampMenu.Codex, CampMenu.Bestiary })
                 Assert.That(Find(menu, id).Group, Is.EqualTo(CampGroup.Journal), id);
             Assert.That(CampMenu.In(menu, CampGroup.System).Select(d => d.Id), Does.Contain(CampMenu.Settings).And.Contain(CampMenu.Quit));
             Assert.That(menu.Select(d => d.Id), Is.Unique);
