@@ -4792,7 +4792,7 @@
     "Music": "Battle",
     "IsTest": false,
     "Seed": 13153,
-    "Intro": "Commander, every pincer feeds the orbs. Spend them well.",
+    "Intro": "Commander, every pincer fills every spell's mana bar. Cast whatever is full.",
     "Lessons": [
       { "Id": "orbs", "Wave": 0 },
       { "Id": "mana", "Wave": 0 },

@@ -11,10 +11,14 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>GG-T373: spell prices on the 1–12 orb curve (BIBLE §3.1.1). Owner 2026-11-08: "with 12 mana slots that means
-    /// some of these spells need to get much more expensive, need to consider balance."</summary>
+    /// <summary>GG-T373: spell prices on the 1–12 curve (BIBLE §3.1.1), folded onto the 1..4 costs (GG-T673); a cost of N
+    /// fills its spell's meter at N x <see cref="BattleConfig.ManaPointsPerOrb"/> (§3.1.0). Owner 2026-11-08: "with 12 mana
+    /// slots that means some of these spells need to get much more expensive, need to consider balance."</summary>
     public class ManaCostCurveTests
     {
+        /// <summary>The top of the §3.1.1 guide curve before <see cref="OrbTier"/> folds it.</summary>
+        private const int CurveTop = 12;
+
         private static ContentDb FreshReal() => ContentLoader.Load(name =>
         {
             var p = Path.Combine(ContentDir, name + ".json");
@@ -43,7 +47,7 @@ namespace GridGame.Tests
             return v;
         }
 
-        public static int Guide(AbilityDef a) => OrbTier(Math.Max(1, Math.Min(ManaBank.DefaultCapacity, (int)Math.Round(0.9 * Math.Pow(GuideRaw(a), 1.5)))));
+        public static int Guide(AbilityDef a) => OrbTier(Math.Max(1, Math.Min(CurveTop, (int)Math.Round(0.9 * Math.Pow(GuideRaw(a), 1.5)))));
 
         /// <summary>GG-T673: the 1..12 curve folded onto the 1..4 orb costs (1, 2, 3-4, 5+), the same map the content got.</summary>
         public static int OrbTier(int cost) => cost <= 2 ? cost : cost <= 4 ? 3 : BattleConfig.MaxSpellOrbCost;
@@ -124,7 +128,7 @@ namespace GridGame.Tests
         }
 
         [Test]
-        public void Validate_refuses_a_spell_dearer_than_the_bank_and_a_skill_that_spends_orbs()
+        public void Validate_refuses_a_spell_dearer_than_the_top_cost_and_a_skill_with_a_cost()
         {
             var db = FreshReal();
             db.Abilities["meteor"].Cost = BattleConfig.MaxSpellOrbCost + 1;
