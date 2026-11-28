@@ -33,6 +33,7 @@ namespace GridGame.App
             ClearHint();
             DropAdvice();
             DropRefusal();
+            if (examining) { if (!pressing && !dragging && !OffBoard(evt.localPosition)) ExamineTile(board.TileAt(evt.localPosition)); return; }
             if (!CanCommand() || pressing) return;
             activePointerId = evt.pointerId;
             var tile = board.TileAt(evt.localPosition);

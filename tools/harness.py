@@ -1642,7 +1642,7 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
             fails.append(f"the splash didn't hand off to Create Profile (on {call('state')['screen']})")
             raise RuntimeError("no Create Profile")
 
-        # 2. Create Profile: name, quick settings, summary, Begin.
+        # 2. Create Profile: one step, the name (prefilled with a suggestion), then Create (GG-T1957).
         _step("create-profile")
         time.sleep(0.8)
         shot("02-create-profile-name")
@@ -1650,16 +1650,10 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
         if _tap_failed(r):
             fails.append(f"no name field: {r}")
         time.sleep(0.4)
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        if not any("Step 2 of 3" in t for t in call("texts")):
-            fails.append("Next on the name step didn't reach step 2")
-        shot("03-create-profile-settings")
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        shot("04-create-profile-summary")
-        if not _click_until_screen("create-profile-begin", "create-profile"):
-            fails.append("Begin didn't leave Create Profile")
+        if not _click_until_screen("create-profile-create", "create-profile"):
+            fails.append("Create didn't leave Create Profile")
         if not _wait_screen("title", 8):
-            fails.append(f"Begin didn't reach the Main Menu (on {call('state')['screen']})")
+            fails.append(f"Create didn't reach the Main Menu (on {call('state')['screen']})")
         time.sleep(0.8)
 
         # 3. Main Menu: the new profile is active and named on the Profile row.

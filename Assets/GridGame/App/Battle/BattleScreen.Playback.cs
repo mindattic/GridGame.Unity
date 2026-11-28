@@ -269,7 +269,7 @@ namespace GridGame.App
                 case EggLaidEvent el: return EggLaidAnim(el);
                 case EggHatchedEvent eh: return HatchAnim(eh);
                 case WaveClearedEvent wc: FlushTallies(); return WaveClearedAnim(wc);
-                case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
+                case BattleEndedEvent be: lastEnded = be; ShowBanner(be.Victory ? "VICTORY!" : be.Escaped ? "ESCAPED" : be.Withdrawn == true ? "FALL BACK" : "DEFEAT"); App.Audio.Sfx(be.Victory ? "battle.victory" : be.Escaped || be.Withdrawn == true ? "battle.dash" : "battle.defeat"); return Tween.Wait(Timing.Cinematic);
                 case RevivedEvent rv: return ReviveAnim(rv);
                 case PlayerControlEvent pc: FlushTallies(); ShowBanner(""); SyncAll(); CastCountdownTexts(); BombCountdownTexts(); WindowContinues(pc.NewWindow); return null;
                 case TileConflictEvent tc:
@@ -1720,12 +1720,12 @@ namespace GridGame.App
             s.RemoveFromHierarchy();
         }
 
-        /// <summary>A whole grant (§3.1.0: 100 points per orb to every spell meter) goes in the Log under the action that
-        /// gave it (a Mana Potion, Meditate, Mana Pour) or its source; the spell bars fill from the same ManaGainedEvent.</summary>
+        /// <summary>A whole grant (§3.1.0: points into the party bar) goes in the Log under the action that gave it (a Mana
+        /// Potion, Meditate, Mana Pour) or its source; the party bar fills from the same ManaGainedEvent.</summary>
         private void GrantLine(ManaGainedEvent g)
         {
             string label = (g.Reason == "item" || g.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(g.Reason);
-            if (g.Meters.Count > 0) Feed($"{label}: +{g.Amount + g.Wasted} mana", Palette.Mana);
+            if (g.Amount > 0) Feed($"{label}: +{g.Amount + g.Wasted} mana", Palette.Mana);
             else Feed($"{label}: the party mana was already full", Palette.Gold);
         }
 
@@ -2426,14 +2426,14 @@ namespace GridGame.App
             CaptureUnity.Raise("battle-end", new CaptureData
             {
                 ["stage"] = State.Stage.Id,
-                ["result"] = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : "defeat",
+                ["result"] = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : lastEnded.Withdrawn == true ? "withdrawn" : "defeat",
             });
             SaveRecord();
             RecordEncounterTelemetry(); // GG-T59: one JSONL encounter record, flushed, before the session closes
             TelemetryUnity.Finish(new
             {
                 stage = State.Stage.Id,
-                result = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : "defeat",
+                result = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : lastEnded.Withdrawn == true ? "withdrawn" : "defeat",
                 waveReached = State.Wave + 1,
                 actions = State.Results.ActionsTaken,
                 ticks = State.Results.TicksElapsed,

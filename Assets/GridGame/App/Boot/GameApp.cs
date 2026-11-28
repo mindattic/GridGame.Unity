@@ -880,7 +880,7 @@ namespace GridGame.App
             if (Endless) { EndlessDemo.AfterBattle(report, stageId); return; }
             var app = GameApp.I;
             var c = app.Content;
-            if (!report.Victory)
+            if (!report.Victory && !report.Withdrawn) // GG-T2070: a scripted withdrawal goes on like a win
             {
                 StageLauncher.Launch(stageId, true); // GG-T1786: a loss falls back to camp; the retry sets out again
                 return;
@@ -955,7 +955,7 @@ namespace GridGame.App
         {
             Completed++;
             // GG-T61: an encounter the stall guard ended (EndlessStability) reports "stalled", not a defeat.
-            Debug.Log($"[EndlessDemo] encounter {Completed} ({stageId}): {(EndlessStability.IsStalled(report) ? "stalled" : report.Victory ? "victory" : report.Escaped ? "escaped" : report.Retreated ? "retreated" : "defeat")}");
+            Debug.Log($"[EndlessDemo] encounter {Completed} ({stageId}): {(EndlessStability.IsStalled(report) ? "stalled" : report.Victory ? "victory" : report.Escaped ? "escaped" : report.Retreated ? "retreated" : report.Withdrawn ? "withdrawn" : "defeat")}");
             if (count.HasValue && Completed >= count.Value) { Stop(); return; }
             Next();
         }
@@ -1030,7 +1030,7 @@ namespace GridGame.App
         {
             var app = GameApp.I;
             current?.Battle(app.Content, app.Save, report);
-            losses = report.Victory ? 0 : losses + 1;
+            losses = report.Victory || report.Withdrawn ? 0 : losses + 1;
             GoToCamp(runRoutine: true);
         }
 
