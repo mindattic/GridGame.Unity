@@ -19,7 +19,9 @@ namespace GridGame.App
         public float Scale = 1f;
         /// <summary>False until the view has fitted the content once; a fresh state fits-to-width on first layout.</summary>
         public bool Initialized;
-        public void Reset() { Pan = Vector2.zero; Scale = 1f; Initialized = false; }
+        /// <summary>True while the view still shows its fit (the player hasn't panned or zoomed since).</summary>
+        public bool Fitted;
+        public void Reset() { Pan = Vector2.zero; Scale = 1f; Initialized = false; Fitted = false; }
     }
 
     /// <summary>
@@ -59,6 +61,14 @@ namespace GridGame.App
             return Mathf.Clamp(viewportWidth / contentWidth, minScale, 1f);
         }
 
+        /// <summary>The scale that fits the whole of <paramref name="content"/> inside <paramref name="viewport"/>, never
+        /// zooming in past 1 and never out past <paramref name="minScale"/>.</summary>
+        public static float FitWhole(Vector2 content, Vector2 viewport, float minScale)
+        {
+            if (content.x <= 0f || content.y <= 0f || viewport.x <= 0f || viewport.y <= 0f) return 1f;
+            return Mathf.Clamp(Mathf.Min(viewport.x / content.x, viewport.y / content.y), minScale, 1f);
+        }
+
         /// <summary>Exponential fling decay: the velocity left after <paramref name="dt"/> seconds of friction.</summary>
         public static Vector2 Decay(Vector2 velocity, float dt, float friction = 5f) => velocity * Mathf.Exp(-friction * dt);
     }
@@ -80,6 +90,9 @@ namespace GridGame.App
         public PanZoomState State { get; }
         public float MinScale = 0.35f;
         public float MaxScale = 2.5f;
+        /// <summary>Fit the whole content (both axes) instead of its width, and keep re-fitting when the viewport resizes
+        /// until the player pans or zooms.</summary>
+        public bool FitAll;
         /// <summary>Called whenever pan or scale changes (zoom readouts, minimaps).</summary>
         public System.Action Changed;
 
@@ -154,10 +167,13 @@ namespace GridGame.App
         private void Layout()
         {
             if (float.IsNaN(layout.width) || layout.width <= 0f || ContentSize.x <= 0f) return;
-            if (!State.Initialized)
+            if (!State.Initialized || (FitAll && State.Fitted))
             {
                 State.Initialized = true;
-                State.Scale = PanZoomMath.FitWidth(ContentSize.x, layout.width, MinScale);
+                State.Fitted = true;
+                State.Scale = FitAll
+                    ? PanZoomMath.FitWhole(ContentSize, layout.size, MinScale)
+                    : PanZoomMath.FitWidth(ContentSize.x, layout.width, MinScale);
                 State.Pan = new Vector2(0f, 0f);
             }
             Apply(State.Pan);
@@ -175,6 +191,7 @@ namespace GridGame.App
         private void ZoomAbout(float scale, Vector2 screen)
         {
             float next = Mathf.Clamp(scale, MinScale, MaxScale);
+            State.Fitted = false;
             var pan = PanZoomMath.ZoomAbout(State.Pan, State.Scale, next, screen);
             State.Scale = next;
             Apply(pan);
@@ -279,6 +296,7 @@ namespace GridGame.App
             if (dragging) return;
             dragging = true;
             swallowClick = true;
+            State.Fitted = false;
             // The press started on a node: it sank (Ui.Pressable) — this is a pan, not a tap, so spring it back.
             Content.Query(className: "is-pressed").ForEach(x => x.RemoveFromClassList("is-pressed"));
         }
