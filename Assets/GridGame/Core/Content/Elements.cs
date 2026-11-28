@@ -306,7 +306,13 @@ namespace GridGame.Core.Content
                     foreach (var x in AllTypes)
                         if (mult[x] > 1f && !sold.ContainsKey(x)) p.Add($"{w} is weak to {x} (×{mult[x]:0.##}) but the Merchant sells nothing that deals {x}{Tag}");
                     // 3. The table agrees with the foe: whatever counters an element it resists is not resisted too, and can be bought.
-                    foreach (var x in AllTypes.Where(x => mult[x] < 1f))
+                    // An element-locked foe (GG-T2071: the prologue's Ward-Engine, immune to all but Lightning) is its own answer
+                    // instead: its one open element must be on the Merchant's shelf (rule 1 already holds it hits at full strength).
+                    if (LockedTo(mult) is DamageType open)
+                    {
+                        if (!sold.ContainsKey(open)) p.Add($"{w} is element-locked to {open} and the Merchant sells nothing that deals {open}{Tag}");
+                    }
+                    else foreach (var x in AllTypes.Where(x => mult[x] < 1f))
                     {
                         var counters = t.Elements.Where(e => e.Counters.Contains(x)).Select(e => e.Type).ToList();
                         if (counters.Count == 0) { p.Add($"{w} resists {x}, and elements.json names nothing that counters {x}{Tag}"); continue; }
@@ -349,6 +355,16 @@ namespace GridGame.Core.Content
                 foreach (var id in hazardStates)
                     if (Clearer(db, id, shelf) == null)
                         p.Add($"tile state {id}: a hazard no Merchant consumable clears (an element's Tiles or a tool's reaction set){Tag}");
+        }
+
+        /// <summary>An element-locked foe's one open element (§3.3.1, GG-T2071): the only type that lands at full strength or
+        /// more, every other one resisted. Null for any other foe.</summary>
+        public static DamageType? LockedTo(ContentDb db, ClassDef c) => LockedTo(AllTypes.ToDictionary(x => x, x => Multiplier(db, c, x)));
+
+        private static DamageType? LockedTo(Dictionary<DamageType, float> mult)
+        {
+            var open = AllTypes.Where(x => mult[x] >= 1f).ToList();
+            return open.Count == 1 ? open[0] : (DamageType?)null;
         }
 
         /// <summary>Buffs a foe can put on itself or its kin (its kit's ApplyBuff of kind Buff, boss phases) that block most

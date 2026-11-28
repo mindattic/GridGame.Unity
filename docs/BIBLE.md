@@ -1733,6 +1733,11 @@ Owner: "always a way to defeat them (cast fire against ice, be able to buy a con
 - **The camp bot** (`CampRoutine`, §25.3.3) buys the next stage's counters (`ElementCounters.CountersFor`).
 - *(Tests: `AlwaysAWayTests`, written and not run.)*
 
+*Amended 2026-11-28 (GG-T2071, owner-approved prologue, GG-T1941): element-locked foes.* A story foe may be **element-locked**: it resists every damage type but one (the prologue's Halcyon Ward-Engine is immune to all but Lightning). Rule 3 can't hold for it (Fire's counter Ice is walled too), and it doesn't need to: the lock *is* the lesson, and its one open element is the way.
+- **The validator** spots the lock (`ElementCounters.LockedTo`: exactly one type lands at ×1 or better) and, in place of rule 3, requires the Merchant to sell that open element (the Storm Flask for the Ward-Engine). Rules 1, 2, 4, 5 and 6 still apply.
+- **Its resistances are shown up front.** `ClassDef.RevealResistances` makes the inspect card, the description panel and the Bestiary page show its element line whatever the Bestiary tier (§25.11), and `BestiaryKnowledge.ElementLine` reads the lock as "Immune to all but Lightning".
+- **IMMUNE reads clearly.** A blow an immunity stops cold floats one word, IMMUNE (larger and held longer than before), not a "0" with a small tag beside it.
+
 ---
 
 ## 4. The AbilityBar
