@@ -97,7 +97,7 @@ namespace GridGame.App
         private void DeleteAllDataRow(VisualElement parent)
         {
             var row = Ui.MenuRow("Delete all game data", "Erase", () =>
-                Confirm.Show("Delete all game data? Every profile, save slot and setting on this device is erased, and so are their cloud copies. This can't be undone.", "Continue", () =>
+                Confirm.Show("Delete all game data? Every profile, save slot and setting on this device is erased, and so are their cloud copies. This can't be undone.", "Delete", () =>
                     Confirm.Show($"Purchased {ShardText.Plural}, owned products and cosmetics are lost too, and are not refunded. Delete everything?", "Delete all", () =>
                         App.DeleteAllData(ok => App.Toast(ok ? "All game data deleted" : "Some game data couldn't be deleted")))), parent);
             row.name = "settings-delete-all-data";
@@ -159,7 +159,8 @@ namespace GridGame.App
             VisualElement Row(RowKind kind, string label, string value, Action set, string name = null)
             {
                 Action apply = () => { set(); App.ApplySettings(); App.SaveSettings(); Refresh(); };
-                var row = Ui.MenuRow(label, value, apply, w).KindIcon(kind);
+                var row = Ui.MenuRow(label, value, apply, w);
+                row.KindIcon(kind); // returns the icon, so the automation name goes on the row itself
                 if (name != null) row.name = name;
                 return row;
             }

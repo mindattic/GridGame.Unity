@@ -73,7 +73,7 @@ namespace GridGame.App
             Confirm.Show($"Delete profile \"{name}\"? Its settings and save slots go with it (moved to the trash folder, not erased).{more}", "Delete", () =>
             {
                 try { App.DeleteProfile(name); App.Toast($"Deleted {name}"); }
-                catch (Exception e) when (e is ArgumentException || e is InvalidOperationException || e is System.IO.IOException) { App.Toast("Couldn't delete it"); Debug.LogError("[Profiles] delete: " + e.Message); }
+                catch (Exception e) when (e is ArgumentException || e is InvalidOperationException || e is System.IO.IOException) { App.Toast($"Couldn't delete {name}. Try again."); Debug.LogError("[Profiles] delete: " + e.Message); }
                 Refresh();
             });
         }
@@ -117,24 +117,8 @@ namespace GridGame.App
         }
 
         /// <summary>A one-line profile-name box (this screen and Create Profile, GG-T1344).</summary>
-        internal static TextField NameField(string name, string value, VisualElement parent)
-        {
-            var f = new TextField { name = name, maxLength = ProfileStore.MaxNameLength, value = value ?? "" };
-            f.style.fontSize = TypeScale.Base;
-            f.style.marginTop = Space.S8; f.style.marginBottom = Space.S8;
-            f.style.minHeight = Space.S96;
-            var input = f.Q(className: "unity-text-field__input") ?? f.Q(className: "unity-base-text-field__input");
-            if (input != null)
-            {
-                input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Palette.White;
-                input.style.paddingLeft = input.style.paddingRight = Space.S16;
-                input.style.borderTopWidth = input.style.borderBottomWidth = input.style.borderLeftWidth = input.style.borderRightWidth = Size.Hairline;
-                input.style.borderTopColor = input.style.borderBottomColor = input.style.borderLeftColor = input.style.borderRightColor = Palette.Neutral.WithA(0.8f);
-            }
-            parent.Add(f);
-            return f;
-        }
+        internal static TextField NameField(string name, string value, VisualElement parent) =>
+            Ui.Input(name, value, parent, ProfileStore.MaxNameLength);
 
         /// <summary>The reason <paramref name="name"/> can't be used, or null when it can.</summary>
         public static string Problem(string name, string renaming)
@@ -176,7 +160,8 @@ namespace GridGame.App
             catch (Exception e) when (e is ArgumentException || e is InvalidOperationException || e is System.IO.IOException)
             {
                 App.Audio.Sfx("ui.error");
-                problem.text = "Couldn't do that: " + e.Message;
+                problem.text = renaming == null ? "Couldn't create the profile. Try again." : "Couldn't rename the profile. Try again.";
+                Debug.LogError("[Profiles] " + (renaming == null ? "create" : "rename") + ": " + e.Message);
             }
         }
     }
@@ -190,20 +175,8 @@ namespace GridGame.App
         /// <summary>A tall read/write text box for a transfer code (wraps, scrolls).</summary>
         public static TextField CodeField(string name, string value, bool readOnly, VisualElement parent)
         {
-            var f = new TextField { name = name, multiline = true, isReadOnly = readOnly, value = value ?? "", maxLength = SaveTransfer.MaxCodeChars };
+            var f = Ui.Input(name, value, parent, SaveTransfer.MaxCodeChars, multiline: true, readOnly: readOnly);
             f.style.height = Size.CodeBox;
-            f.style.marginTop = Space.S8; f.style.marginBottom = Space.S8;
-            f.style.whiteSpace = WhiteSpace.Normal;
-            var input = f.Q(className: "unity-text-field__input") ?? f.Q(className: "unity-base-text-field__input");
-            if (input != null)
-            {
-                input.style.backgroundColor = Palette.Ink.WithA(0.9f);
-                input.style.color = Palette.White;
-                input.style.whiteSpace = WhiteSpace.Normal;
-                input.style.unityTextAlign = TextAnchor.UpperLeft;
-                input.style.paddingLeft = input.style.paddingRight = Space.S16;
-            }
-            parent.Add(f);
             return f;
         }
 
@@ -320,7 +293,7 @@ namespace GridGame.App
             else if (!SaveTransfer.TryImport(field?.value, App.Content, out save, out why, App.Profile?.Name)) { }
             else if (SaveTransfer.SharesPurchasesWith(save, SaveTransferUi.AllSlotPaths(App)))
                 why = "That save is already on this device. A save with purchases can be moved to another device, not copied here.";
-            if (why == null && !App.Saves.Write(slot, save)) why = "Couldn't save!";
+            if (why == null && !App.Saves.Write(slot, save)) why = "Couldn't save. Free some space and try again.";
             if (why != null)
             {
                 App.Audio.Sfx("ui.error");

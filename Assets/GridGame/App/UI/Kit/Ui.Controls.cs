@@ -109,5 +109,17 @@ namespace GridGame.App
             l.text = label;
             l.style.display = label.Length == 0 ? DisplayStyle.None : DisplayStyle.Flex;
         }
+
+        /// <summary>A text box (§3): an ink well in a frame rim, body text at <c>--type-base</c>, a full target tall.
+        /// <paramref name="multiline"/> wraps from the top left and scrolls (a transfer code); its caller sets the height.</summary>
+        public static TextField Input(string name, string value, VisualElement parent, int maxLength, bool multiline = false,
+            bool readOnly = false)
+        {
+            var f = new TextField { name = name, maxLength = maxLength, multiline = multiline, isReadOnly = readOnly, value = value ?? "" };
+            f.AddToClassList("kit-input");
+            if (multiline) f.AddToClassList("kit-input--multiline");
+            parent?.Add(f);
+            return f;
+        }
     }
 }

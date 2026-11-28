@@ -494,6 +494,11 @@
 .kit-field__label { width: 220px; flex-shrink: 0; font-size: var(--type-base); color: var(--color-dim); }
 .kit-field__value { flex-grow: 1; flex-shrink: 1; min-width: 0; font-size: var(--type-base); white-space: normal; }
 .kit-empty { font-size: var(--type-base); color: var(--color-dim); white-space: normal; -unity-text-align: middle-center; padding: var(--space-24); }
+/* A text box (Ui.Input, GG-T2089): an ink well in a frame rim, a full target tall; multiline wraps from the top left. */
+.kit-input { font-size: var(--type-base); margin: var(--space-8) 0; min-height: var(--size-target); }
+.kit-input .unity-base-text-field__input, .kit-input .unity-text-field__input { background-color: var(--color-ink); color: var(--color-text); padding: 0 var(--space-16); border-width: 3px; border-color: var(--color-frame); border-radius: var(--radius-8); }
+.kit-input--multiline, .kit-input--multiline .unity-base-text-field__input, .kit-input--multiline .unity-text-field__input { white-space: normal; }
+.kit-input--multiline .unity-base-text-field__input, .kit-input--multiline .unity-text-field__input { -unity-text-align: upper-left; padding: var(--space-8) var(--space-16); }
 /* A list card's portrait and buttons line up with its first line, however tall its text runs. */
 .card.kit-card { align-items: flex-start; }
 .kit-heading, .kit-name { -unity-text-outline-width: 3px; -unity-text-outline-color: var(--color-text-edge); text-shadow: 4px 4px 0 var(--color-text-drop); }

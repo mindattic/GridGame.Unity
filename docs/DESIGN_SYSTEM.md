@@ -137,6 +137,7 @@ Every tappable goes through `Ui.Pressable`, which sinks it and plays the `ui.pre
 | Badge | `Ui.Badge(text, parent, classes)` | `.kit-badge`, `.kit-navtab-badge` | n/a | a count or word on a pill; takes no taps |
 | Progress bar | `Ui.ProgressBar(frac, parent, label)`, `Ui.SetProgress` | `.kit-progress` | n/a | the gauge across the width, an optional count at its right |
 | Field | `Ui.Field(label, value, parent)` | `.kit-field` | n/a | read-only: dim label, body value |
+| Text box | `Ui.Input(name, value, parent, maxLength, multiline, readOnly)` | `.kit-input`, `--multiline` | n/a | an ink well in a frame rim, a full target tall; multiline wraps from the top left (a profile name, a transfer code) |
 | Detail pane | `Ui.DetailPanel` | `.window--detail` | n/a | grows to 45 % of the column, then scrolls |
 | Footer | `Ui.Footer` | `.window`, `.kit-footer` | its button: yes, unless it confirms itself | total on the left, commit on the right, at the bottom, pinned above the nav |
 | Empty state | `Ui.EmptyState(list, icon, text)`, `Ui.Empty` | `.kit-empty` | n/a | icon, one sentence, the next step (copy per COPY_STYLE) |
