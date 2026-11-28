@@ -80,6 +80,46 @@ namespace GridGame.App
         Summon,
         /// <summary>The Craft group: an anvil.</summary>
         Craft,
+        /// <summary>Settings (GG-T1886): fast-forward chevrons.</summary>
+        Speed,
+        /// <summary>Settings (GG-T1886): a clock.</summary>
+        Timer,
+        /// <summary>Settings (GG-T1886): a crosshair.</summary>
+        Focus,
+        /// <summary>Settings (GG-T1886): a dial.</summary>
+        Gauge,
+        /// <summary>Settings (GG-T1886): a zigzag.</summary>
+        Shake,
+        /// <summary>Settings (GG-T1886): two opposed arrows.</summary>
+        Sync,
+        /// <summary>Settings (GG-T1886): a window with a title bar.</summary>
+        Window,
+        /// <summary>Settings (GG-T1886): a screen frame with corner brackets.</summary>
+        Frame,
+        /// <summary>Settings (GG-T1886): a thumb pad in a margin box.</summary>
+        Hand,
+        /// <summary>Settings (GG-T1886): a small square growing into a large one.</summary>
+        Scale,
+        /// <summary>Settings (GG-T1886): a capital A.</summary>
+        Text,
+        /// <summary>Settings (GG-T1886): a capital T.</summary>
+        Type,
+        /// <summary>Settings (GG-T1886): an eye.</summary>
+        Eye,
+        /// <summary>Settings (GG-T1886): two bars.</summary>
+        Pause,
+        /// <summary>Settings (GG-T1886): a speaker cone with a sound arc.</summary>
+        Speaker,
+        /// <summary>Settings (GG-T1886): a music note.</summary>
+        Note,
+        /// <summary>Settings (GG-T1886): sound waves.</summary>
+        Wave,
+        /// <summary>Settings (GG-T1886): a speaker struck through.</summary>
+        SpeakerOff,
+        /// <summary>Settings (GG-T1886): a music note struck through.</summary>
+        NoteOff,
+        /// <summary>Settings (GG-T1886): a window struck through.</summary>
+        WindowOff,
     }
 
     /// <summary>
@@ -248,6 +288,15 @@ namespace GridGame.App
             if (r < 3f || float.IsNaN(r)) return;
             var c = rect.center;
             var p = ctx.painter2D;
+            if (Kind == RowKind.Back || Kind == RowKind.Enter || Kind == RowKind.Stage)
+            {
+                // GG-T1892: a direction is one big filled, outlined arrow across the whole icon, not a glyph in a disc.
+                float h = r * 0.9f, dir = Kind == RowKind.Back ? -1f : 1f;
+                float body = r * 0.55f;
+                Shapes.Arrow(p, c - new Vector2(dir * h, 0f), c + new Vector2(dir * h, 0f),
+                    new ShapeStyle { Width = body, Outline = Mathf.Max(1.5f, r * 0.12f), HeadLength = r * 1.0f, HeadWidth = r * 1.8f, Fill = Mark, Line = Rim });
+                return;
+            }
             float rim = Mathf.Max(1.5f, r * 0.08f);
             FillCircle(p, c, r, Rim);
             FillCircle(p, c, r - rim, Disc);
@@ -460,6 +509,128 @@ namespace GridGame.App
                 case RowKind.Craft: // an anvil: a flat face with a horn, a narrow waist, a wide foot
                     Poly(p, P(-0.95f, -0.6f), P(0.95f, -0.6f), P(0.95f, -0.3f), P(0.35f, -0.15f), P(0.35f, 0.3f), P(0.7f, 0.3f), P(0.7f, 0.85f), P(-0.7f, 0.85f), P(-0.7f, 0.3f), P(-0.35f, 0.3f), P(-0.35f, -0.15f), P(-0.95f, -0.3f));
                     break;
+                case RowKind.Speed: // two chevrons pointing right
+                    Poly(p, P(-0.9f, -0.7f), P(0f, 0f), P(-0.9f, 0.7f));
+                    Poly(p, P(0f, -0.7f), P(0.9f, 0f), P(0f, 0.7f));
+                    break;
+                case RowKind.Timer: // a clock: a ring, two hands
+                    p.BeginPath();
+                    p.Arc(c, u * 0.85f, Angle.Degrees(0f), Angle.Degrees(360f));
+                    p.ClosePath();
+                    p.Stroke();
+                    Line(p, c, P(0f, -0.5f));
+                    Line(p, c, P(0.4f, 0.2f));
+                    break;
+                case RowKind.Focus: // a crosshair: a ring with four ticks
+                    p.BeginPath();
+                    p.Arc(c, u * 0.5f, Angle.Degrees(0f), Angle.Degrees(360f));
+                    p.ClosePath();
+                    p.Stroke();
+                    Line(p, P(0f, -1f), P(0f, -0.3f));
+                    Line(p, P(0f, 0.3f), P(0f, 1f));
+                    Line(p, P(-1f, 0f), P(-0.3f, 0f));
+                    Line(p, P(0.3f, 0f), P(1f, 0f));
+                    break;
+                case RowKind.Gauge: // a dial: a half ring with a needle
+                    p.BeginPath();
+                    p.Arc(P(0f, 0.5f), u * 0.95f, Angle.Degrees(180f), Angle.Degrees(360f));
+                    p.Stroke();
+                    Line(p, P(0f, 0.5f), P(0.5f, -0.1f));
+                    Line(p, P(-0.95f, 0.5f), P(0.95f, 0.5f));
+                    break;
+                case RowKind.Shake: // a zigzag
+                    p.BeginPath();
+                    p.MoveTo(P(-0.95f, 0f));
+                    p.LineTo(P(-0.55f, -0.6f));
+                    p.LineTo(P(-0.15f, 0.6f));
+                    p.LineTo(P(0.25f, -0.6f));
+                    p.LineTo(P(0.6f, 0.6f));
+                    p.LineTo(P(0.95f, 0f));
+                    p.Stroke();
+                    break;
+                case RowKind.Sync: // two arrows, one each way
+                    Shapes.Arrow(p, P(-0.9f, -0.45f), P(0.9f, -0.45f), ArrowStyle(w * 0.7f, u * 0.7f));
+                    Shapes.Arrow(p, P(0.9f, 0.45f), P(-0.9f, 0.45f), ArrowStyle(w * 0.7f, u * 0.7f));
+                    break;
+                case RowKind.Window:
+                case RowKind.WindowOff: // a window: a frame with a filled title bar
+                    DrawWindow(p, P);
+                    if (Kind == RowKind.WindowOff) Strike(p, P);
+                    break;
+                case RowKind.Frame: // a screen: four corner brackets
+                    foreach (var (sx, sy) in new[] { (-1f, -1f), (1f, -1f), (1f, 1f), (-1f, 1f) })
+                    {
+                        Line(p, P(sx * 0.9f, sy * 0.9f), P(sx * 0.9f, sy * 0.3f));
+                        Line(p, P(sx * 0.9f, sy * 0.9f), P(sx * 0.3f, sy * 0.9f));
+                    }
+                    break;
+                case RowKind.Hand: // a thumb pad inside a margin box
+                    p.BeginPath();
+                    p.MoveTo(P(-0.9f, -0.9f));
+                    p.LineTo(P(0.9f, -0.9f));
+                    p.LineTo(P(0.9f, 0.9f));
+                    p.LineTo(P(-0.9f, 0.9f));
+                    p.ClosePath();
+                    p.Stroke();
+                    FillCircle(p, P(0f, 0.3f), u * 0.4f, Mark);
+                    break;
+                case RowKind.Scale: // a small square growing into a large one
+                    Rect(p, P(-0.9f, 0.1f), P(-0.1f, 0.9f));
+                    p.BeginPath();
+                    p.MoveTo(P(-0.5f, -0.1f));
+                    p.LineTo(P(-0.5f, -0.9f));
+                    p.LineTo(P(0.9f, -0.9f));
+                    p.LineTo(P(0.9f, 0.5f));
+                    p.LineTo(P(0.1f, 0.5f));
+                    p.Stroke();
+                    break;
+                case RowKind.Text: // a capital A
+                    p.BeginPath();
+                    p.MoveTo(P(-0.8f, 0.9f));
+                    p.LineTo(P(0f, -0.9f));
+                    p.LineTo(P(0.8f, 0.9f));
+                    p.Stroke();
+                    Line(p, P(-0.4f, 0.25f), P(0.4f, 0.25f));
+                    break;
+                case RowKind.Type: // a capital T
+                    Line(p, P(-0.8f, -0.8f), P(0.8f, -0.8f));
+                    Line(p, P(0f, -0.8f), P(0f, 0.9f));
+                    break;
+                case RowKind.Eye: // an eye: a lens outline round a pupil
+                    p.BeginPath();
+                    p.MoveTo(P(-0.95f, 0f));
+                    p.BezierCurveTo(P(-0.5f, -0.8f), P(0.5f, -0.8f), P(0.95f, 0f));
+                    p.BezierCurveTo(P(0.5f, 0.8f), P(-0.5f, 0.8f), P(-0.95f, 0f));
+                    p.Stroke();
+                    FillCircle(p, c, u * 0.3f, Mark);
+                    break;
+                case RowKind.Pause: // two bars
+                    Rect(p, P(-0.6f, -0.7f), P(-0.15f, 0.7f));
+                    Rect(p, P(0.15f, -0.7f), P(0.6f, 0.7f));
+                    break;
+                case RowKind.Speaker:
+                case RowKind.SpeakerOff: // a speaker cone with a sound arc
+                    DrawSpeaker(p, P);
+                    p.BeginPath();
+                    p.Arc(P(0.1f, 0f), u * 0.75f, Angle.Degrees(-40f), Angle.Degrees(40f));
+                    p.Stroke();
+                    if (Kind == RowKind.SpeakerOff) Strike(p, P);
+                    break;
+                case RowKind.Wave: // sound waves: three arcs
+                    for (int k = 1; k <= 3; k++)
+                    {
+                        p.BeginPath();
+                        p.Arc(P(-0.8f, 0f), u * 0.55f * k, Angle.Degrees(-45f), Angle.Degrees(45f));
+                        p.Stroke();
+                    }
+                    break;
+                case RowKind.Note:
+                case RowKind.NoteOff: // a music note: a head, a stem, a flag
+                    FillCircle(p, P(-0.35f, 0.65f), u * 0.35f, Mark);
+                    Line(p, P(-0.02f, 0.6f), P(-0.02f, -0.8f));
+                    Line(p, P(-0.02f, -0.8f), P(0.7f, -0.45f));
+                    if (Kind == RowKind.NoteOff) Strike(p, P);
+                    break;
                 default: // Menu: three bars
                     Line(p, P(-0.7f, -0.55f), P(0.7f, -0.55f));
                     Line(p, P(-0.7f, 0f), P(0.7f, 0f));
@@ -467,6 +638,25 @@ namespace GridGame.App
                     break;
             }
         }
+
+        private static void DrawWindow(Painter2D p, Func<float, float, Vector2> P)
+        {
+            Rect(p, P(-0.9f, -0.75f), P(0.9f, -0.35f));
+            p.BeginPath();
+            p.MoveTo(P(-0.9f, -0.35f));
+            p.LineTo(P(-0.9f, 0.8f));
+            p.LineTo(P(0.9f, 0.8f));
+            p.LineTo(P(0.9f, -0.35f));
+            p.Stroke();
+        }
+
+        private static void DrawSpeaker(Painter2D p, Func<float, float, Vector2> P)
+        {
+            Rect(p, P(-0.9f, -0.3f), P(-0.5f, 0.3f));
+            Poly(p, P(-0.5f, -0.3f), P(0f, -0.8f), P(0f, 0.8f), P(-0.5f, 0.3f));
+        }
+
+        private static void Strike(Painter2D p, Func<float, float, Vector2> P) => Line(p, P(-0.9f, -0.9f), P(0.9f, 0.9f));
 
         private static void FillCircle(Painter2D p, Vector2 c, float radius, Color col)
         {
