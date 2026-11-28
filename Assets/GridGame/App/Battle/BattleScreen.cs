@@ -665,7 +665,7 @@ namespace GridGame.App
             if (panelUnitId >= 0 || readSlotHero != SelectedHeroId) readSlot = -1;
             if (readSlot >= 0 && State.UnitById(SelectedHeroId) is Unit reader && BattleEngine.SlotAbility(State, reader, readSlot) is AbilityDef read)
             {
-                InspectCard.Ability(panel, read, SlotState(reader, readSlot, read));
+                InspectCard.Ability(panel, read, state: SlotState(reader, readSlot, read));
                 return;
             }
             // A running lesson is the panel's content (§9.0, GG-T1827) until an aim, a held slot or a unit the player reads needs it.
@@ -762,25 +762,23 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: "Name: choose a target"; once a target
-        /// is picked, the confirm card (on whom, the outcome preview, Cast / Cancel) takes the top. Under either, the full
-        /// card: what it is, its cost, how and who it targets, its numbers and description, and the slot's live state.
+        /// The aimed ability in the description panel (§9.0, GG-T1823). While aiming: one prompt line ("Fireball: tap a
+        /// highlighted foe", GG-T1906); once a target is picked, the confirm card takes the top: on whom and the outcome preview
+        /// across the panel's full width, then Cancel and Cast on their own row under it (GG-T1903). Under either, the full card.
         /// </summary>
         private void AbilityInfo(Unit hero, int slot, AbilityDef a)
         {
             bool confirm = PendingTarget.HasValue && TargetingSlot >= 0;
-            var row = Ui.El("row", panel);
-            row.name = "aim-card";
-            row.style.alignItems = Align.FlexStart;
-            row.style.marginBottom = Space.S16;
-            var col = Ui.El("col grow", row);
-            col.style.flexShrink = 1;
+            var col = Ui.El("col", panel);
+            col.name = "aim-card";
+            col.style.marginBottom = Space.S16;
             if (!confirm)
             {
-                var ask = Ui.Text($"{a.Name}: choose a target", "small gold", col);
+                var ask = Ui.Text($"{a.Name}: tap a highlighted {AimNoun(a)}", "small gold", col);
                 ask.name = "aim-prompt";
                 ask.style.whiteSpace = WhiteSpace.Normal;
-                Ui.Text("Tap a highlighted tile · tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
+                // The cancel gesture is a lesson, not a fact about the ability: only while the lessons run.
+                if (TutorialActive) Ui.Text("Tap the slot again to cancel", "tiny dim", col).style.whiteSpace = WhiteSpace.Normal;
             }
             else
             {
@@ -792,18 +790,26 @@ namespace GridGame.App
                 summary.name = "confirm-summary";
                 summary.style.whiteSpace = WhiteSpace.Normal;
                 OutcomeLines(col, a);
-                // Cast / Cancel side by side at the top of the card (GG-T391), so the two never scroll out of view.
-                var btns = Ui.El("row", row);
-                btns.style.flexShrink = 0;
-                btns.style.marginLeft = Space.S16;
+                // Cancel left, Cast right (L7), on their own row under the outcome so it keeps the full width.
+                var btns = Ui.El("row", col);
+                btns.name = "confirm-buttons";
+                btns.style.justifyContent = Justify.SpaceBetween;
+                btns.style.marginTop = Space.S8;
+                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
+                cancel.name = "confirm-cancel";
                 string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
                 var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
                 ok.name = "confirm-action";
-                var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
-                cancel.name = "confirm-cancel";
             }
-            InspectCard.Ability(panel, a, SlotState(hero, slot, a));
+            InspectCard.Ability(panel, a, state: SlotState(hero, slot, a));
         }
+
+        /// <summary>What the aim prompt asks the player to tap: a foe, an ally, a unit or a tile.</summary>
+        private static string AimNoun(AbilityDef a) =>
+            a.Mode != TargetMode.PickActor ? "tile"
+            : a.Filter == TargetFilter.EnemyOnly ? "foe"
+            : a.Filter == TargetFilter.AllyOnly ? "ally"
+            : "unit";
 
         // ─────────────────────────────────────────────────────────────────────────
         // The description panel (§9.0, GG-T1822): from a gutter under the ability bar to the safe bottom
@@ -870,7 +876,13 @@ namespace GridGame.App
                 line.style.alignItems = Align.Center;
                 var nm = Ui.Text(sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name, "small", line);
                 nm.style.flexShrink = 1;
-                if (a.Kind != AbilityKind.Skill && a.Cost > 0) Ui.CostPips(a.Cost, line, Size.Pip).style.marginLeft = Space.S8;
+                if (a.Kind != AbilityKind.Skill && a.Cost > 0)
+                {
+                    var mana = Ui.Text($"{a.Cost * BattleConfig.ManaPointsPerOrb} mana", "small", line);
+                    mana.style.color = Palette.OnWindow(Palette.Mana);
+                    mana.style.marginLeft = Space.S8;
+                    mana.style.flexShrink = 0;
+                }
                 int cd = hero.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
                 string when = sl.IsItem ? $"Item · {sl.Charges}/{sl.MaxCharges} left"
                     : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"Skill · ready in {cd} turns" : a.CooldownTurns > 0 ? $"Skill · recharge {a.CooldownTurns} turns" : "Skill")
@@ -885,7 +897,7 @@ namespace GridGame.App
                 }
                 var ab = a;
                 int idx = i;
-                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, SlotState(hero, idx, ab)));
+                InspectCard.Attach(row, body => InspectCard.Ability(body, ab, state: SlotState(hero, idx, ab)));
             }
         }
 
