@@ -25,7 +25,7 @@ namespace GridGame.Meta
 
     public sealed class SaveData
     {
-        public const int CurrentVersion = 27;
+        public const int CurrentVersion = 28;
 
         public int Version = CurrentVersion;
         public string Name = "Lightbearer";
@@ -81,12 +81,12 @@ namespace GridGame.Meta
         public int ChestsOpened;
         /// <summary>Themes whose campaign milestone reward has been paid (GG-T301, <see cref="ThemeDef.MilestoneReward"/>).</summary>
         public HashSet<string> Milestones = new HashSet<string>();
-        /// <summary>GG-T677: Mana Orbs owned, how many the battle's row can fill (<see cref="ManaOrbs"/>). 0 = a save from
-        /// before orbs were owned; <see cref="SaveMigrations"/> derives it from campaign progress.</summary>
+        /// <summary>GG-T677: Mana Orbs owned while orbs were progression. Retired by GG-T1811: read only by the v28 save
+        /// migration, which pays each owned orb out once (<see cref="ManaOrbs.RetirePayout"/>).</summary>
         public int OwnedOrbs;
-        /// <summary>GG-T677: Halcyon-ruin stages whose Mana Orb has been found (each holds one).</summary>
+        /// <summary>GG-T677: Halcyon-ruin stages whose find has been made (each holds one; <see cref="ManaOrbs.AfterVictory"/>).</summary>
         public HashSet<string> OrbFinds = new HashSet<string>();
-        /// <summary>GG-T677: Broken Mana Orbs that have dropped so far (at most BattleConfig.MaxBrokenOrbs ever).</summary>
+        /// <summary>GG-T677: Broken Mana Orbs that dropped while they could (they stopped dropping with GG-T1811).</summary>
         public int BrokenOrbsDropped;
         /// <summary>GG-T677: orb rolls made so far: seeds each find/drop roll, so a save replays its rolls identically.</summary>
         public int OrbRolls;
@@ -1011,6 +1011,10 @@ namespace GridGame.Meta
                 s.World.Camped = true;
                 s.Version = 27;
             }
+            // GG-T1811: Mana Orbs retired as progression. An older save's owned orbs and carried Broken Mana Orbs are paid
+            // out once (below, after Notes.Clear).
+            bool beforeOrbRetire = s.Version < 28;
+            if (s.Version < 28) s.Version = 28;
             s.Trust ??= new Dictionary<string, int>();
             s.Cohesion ??= new Dictionary<string, int>();
             s.TrustTierReached ??= new Dictionary<string, int>();
@@ -1050,7 +1054,7 @@ namespace GridGame.Meta
             if (c != null && beforeBoard) PlaceOnBoard(s, c);
             if (c != null) EnsureVendors(s, c, beforeStoryVendors);
             JoinNewKeepers(s);
-            if (c != null) GrantOwnedOrbs(s, c);
+            if (c != null && beforeOrbRetire) RetireOwnedOrbs(s, c);
             if (c != null && beforeVendorTiers) VendorTiers.Grandfather(c, s);
             if (c != null && beforeDrills && s.TutorialDone) Drills.MarkAllCleared(c, s);
             if (c != null && beforeWorld) WorldSaveAdapter.PlaceAtFrontier(s, c);
@@ -1503,19 +1507,19 @@ namespace GridGame.Meta
             }
         }
 
-        /// <summary>GG-T677: a save from before Mana Orbs were owned (OwnedOrbs 0) gets the guaranteed orbs its progress has
-        /// already earned (<see cref="ManaOrbs.Derived"/>: the starting orb plus one per orb milestone cleared), so no
-        /// returning player is stripped of casting. Idempotent; never throws.</summary>
-        public static void GrantOwnedOrbs(SaveData s, ContentDb c)
+        /// <summary>GG-T1811: Mana Orbs are no longer progression. A save from before (v27 or older) is paid once for every
+        /// owned orb beyond the starting one and every Broken Mana Orb it carries (<see cref="ManaOrbs.RetirePayout"/>).
+        /// Runs only on that version step; never throws.</summary>
+        public static void RetireOwnedOrbs(SaveData s, ContentDb c)
         {
-            if (s == null || c == null || s.OwnedOrbs > 0) return;
+            if (s == null || c == null) return;
             try
             {
-                s.OrbFinds ??= new HashSet<string>();
-                s.OwnedOrbs = ManaOrbs.Derived(c, s);
-                Notes.Add($"Mana Orbs: this save holds {s.OwnedOrbs} from its campaign progress (GG-T677)");
+                ManaOrbs.RetirePayout(c, s, out int shards, out int dust);
+                if (shards > 0 || dust > 0)
+                    Notes.Add($"Mana Orbs retired: this save was paid {ShardText.Of(shards)} and {dust:N0} {DustEconomy.DustName} for its orbs (GG-T1811)");
             }
-            catch (Exception e) { Notes.Add($"couldn't count Mana Orbs: {e.Message}"); }
+            catch (Exception e) { Notes.Add($"couldn't pay out Mana Orbs: {e.Message}"); }
         }
 
         /// <summary>GG-T570: a save that had already met every Camp keeper before a new one existed (the Aetherist) is a

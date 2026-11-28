@@ -78,24 +78,20 @@ namespace GridGame.App
             {
                 Ui.MenuRow("Gold", "+" + Ui.Gold(report.Gold), null, list).WithKindIcon(RowKind.Shop).Q<Label>("value").AddToClassList("gold"); // GG-T749: the coin emblem
                 // GG-T623: a slow, repeatable trickle, same row style as Gold — the Aetherist refines it once joined.
-                // GG-T676: orbs left in the row settle back into Dust; the row says how much of it came from them.
+                // GG-T676, GG-T1811: full spell meters settle into Dust; the row says how much of it came from them.
                 if (report.DustEarned > 0)
                     Ui.MenuRow(DustEconomy.DustName, report.OrbDust > 0
-                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "orb" : "orbs")})"
+                        ? $"+{report.DustEarned:N0} ({report.OrbDust:N0} from {report.OrbsLeft} unspent {(report.OrbsLeft == 1 ? "spell" : "spells")})"
                         : $"+{report.DustEarned:N0}", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(DustEconomy.DustId)).name = "results-dust";
                 TicketsRow(list);
-                // GG-T677: an owned Mana Orb gained here is one more orb to fill in every battle from now on.
-                if (report.OrbsGained > 0)
+                // GG-T1811: what a milestone or a Halcyon find paid in place of the retired Mana Orb.
+                if (report.OrbRewards.Count > 0)
                 {
-                    var orbRow = Ui.MenuRow(report.OrbsGained == 1 ? "Mana Orb found" : $"{report.OrbsGained} Mana Orbs found",
-                        $"you now hold {report.OrbsOwned}", null, list);
+                    var orbRow = Ui.MenuRow("Bonus", string.Join(" · ", report.OrbRewards), null, list);
                     orbRow.name = "results-orbs";
                     orbRow.KindIcon(RowKind.Item);
                     orbRow.Q<Label>("label")?.AddToClassList("gold");
-                    Ui.Text(string.Join(" · ", report.OrbsGainedFrom), "small dim", list).style.whiteSpace = WhiteSpace.Normal;
                 }
-                if (report.BrokenOrbFound)
-                    Ui.MenuRow("Broken Mana Orb", "the Manasmith can restore it", null, list).WithKindIcon(RowKind.Item, Art.ItemIcon(ManaOrbs.BrokenOrbId)).name = "results-broken-orb";
                 Ui.MenuRow("Experience", $"+{report.XpEach} each", null, list).KindIcon(RowKind.Hero);
                 NextAbilityRows(c, list);
                 TurnsRow(list);

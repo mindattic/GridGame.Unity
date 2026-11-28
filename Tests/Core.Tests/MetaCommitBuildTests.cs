@@ -388,7 +388,6 @@ namespace GridGame.Tests
         public void A_win_on_the_road_reports_the_carried_orbs_and_the_medic_heal()
         {
             var c = Real; var s = Progression.NewGame(c, "MW");
-            s.OwnedOrbs = ManaBank.DefaultCapacity;
             s.Gold = 10000;
             Assert.That(CaravanUpgrades.Buy(c, s, "medic_wagon").Ok, Is.True);
             var st = FightWithCoins(c, s, c.Campaign.Themes[0].Stages[0], 10);

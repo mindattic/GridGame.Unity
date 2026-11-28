@@ -662,19 +662,15 @@ namespace GridGame.App
             if (slot < unlocked && h.Bar[slot] != null) Ui.MenuRow("Clear slot", "", () => Done(Abilities.Assign(C, S, h, slot, null)), list).KindIcon(RowKind.Close);
             if (tab == 0)
             {
-                int ownedOrbs = ManaOrbs.Owned(C, S); // GG-T677: a spell costing more orbs than you hold can't be cast yet
                 // GG-T1043: the bar picks from the abilities the hero owns (known, or on its owned skill hexagon nodes) —
                 // only the ones it can fire (skills and spells); passives work from the Passives tab, not a slot.
                 foreach (var id in HeroBoard.OwnedAbilities(C, h))
                 {
                     var a = C.TryAbility(id);
                     if (a == null || !Abilities.IsHeroUsable(a)) continue;
-                    bool shortOrbs = a.Kind == AbilityKind.Spell && a.Cost > ownedOrbs;
-                    string value = shortOrbs ? $"{KindLabel(a)} · needs {a.Cost} orbs, you have {ownedOrbs}" : KindLabel(a);
-                    var row = Ui.MenuRow(a.Name, value, () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, null, slot < unlocked);
+                    var row = Ui.MenuRow(a.Name, KindLabel(a), () => Done(Abilities.Assign(C, S, h, slot, a.Id)), list, null, slot < unlocked);
                     row.KindIcon(RowKind.Ability, Art.AbilityIcon(a));
-                    if (shortOrbs) row.Q<Label>("value")?.AddToClassList("bad");
-                    if (a.Cost > 0) Ui.CostPips(a.Cost, row, have: ownedOrbs);
+                    if (a.Cost > 0) Ui.CostPips(a.Cost, row);
                     InspectCard.Attach(row, b => InspectCard.Ability(b, a, wearer: C.TryClass(h.ClassId)));
                     Describe(a, list);
                 }
@@ -2688,17 +2684,6 @@ namespace GridGame.App
             refineBtn.name = "aetherist-refine";
             Ui.SetEnabled(refineBtn, refineAmount <= maxRefine);
 
-            // GG-T677: the Manasmith reseals Broken Mana Orbs found as loot into owned orbs (one more orb to fill in battle).
-            int broken = S.Count(ManaOrbs.BrokenOrbId);
-            var orbs = Ui.Panel(body, "Mana Orbs", false, "aetherist-orb-panel");
-            Ui.Field("Held", $"{ManaOrbs.Owned(C, S)} of {GridGame.Core.Battle.BattleConfig.MaxOrbCapacity}", orbs, null, "aetherist-orb-count");
-            Ui.Field("Broken Mana Orbs", broken.ToString("N0"), orbs, null, "aetherist-broken-count");
-            Ui.Field("Restoring one costs", $"{ManaOrbs.RestoreDust:N0} {DustEconomy.DustName} + {Ui.Gold(ManaOrbs.RestoreGold)}", orbs, null, "aetherist-restore-quote");
-            var can = ManaOrbs.CanRestore(C, S);
-            var restoreBtn = RowIcon.IconButton("Restore a Mana Orb", RowKind.Confirm, () => Done(ManaOrbs.Restore(C, S), true, "ui.diamond"), "btn--primary", orbs);
-            restoreBtn.name = "aetherist-restore";
-            Ui.SetEnabled(restoreBtn, can.Ok);
-            if (!can.Ok && broken > 0) Ui.Para(can.Message, orbs, "dim");
 
             Ui.Note($"{DustEconomy.DustPerShard} {DustEconomy.DustName} refines into 1 {ShardText.Short}. {DustEconomy.DustName} costs {DustEconomy.GoldPerDust} G a piece here — " +
                 $"buying {ShardText.Plural} outright at the {ShardText.Store} is the better rate; Dust is the free-play path, earned in battle.", body);

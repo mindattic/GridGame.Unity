@@ -282,12 +282,10 @@ namespace GridGame.Core.Battle
         /// <summary>The most orbs a battle's row can hold (owned Mana Orbs are a progression item, GG-T677; the bank's
         /// capacity comes from BattleSetup.OrbCapacity, defaulting to <see cref="ManaBankCapacity"/>).</summary>
         public const int MaxOrbCapacity = 20;
-        // ── Owned Mana Orbs (GG-T677, owner 2026-11-22: "collecting 'Mana Orbs' becomes important because that is literally
-        //    how many mana orbs you can fill in combat"; ~12-16 found in a straight playthrough, 20 possible) ─────────
-        /// <summary>Mana Orbs a new player starts with: "going from one Mana Orb to two doubles your magic casting".</summary>
+        // ── Owned Mana Orbs: retired as progression (GG-T1811, owner answer on GG-T1805) ─────────
+        /// <summary>The orb every save owned from the start while orbs were progression; the GG-T1811 migration pays only for
+        /// owned orbs beyond it.</summary>
         public const int StartOwnedOrbs = 1;
-        /// <summary>Broken Mana Orbs that can ever drop (each the Manasmith restores into an owned orb).</summary>
-        public const int MaxBrokenOrbs = 3;
         /// <summary>Charge for a hero felling a real foe (not remains, eggs, corpses, snake segments or a revived foe).</summary>
         public const int KillCharge = 15;
         /// <summary>Charge per foe a hero's skill (not a spell, so mana never feeds itself) strikes for damage. Pincers keep
