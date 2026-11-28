@@ -431,6 +431,12 @@
 /* An empty list's message takes the spare height and sits centred in it, so an empty board reads as a deliberate
    message rather than a line over a dead band (GG-T654: Bounties/Quests on a save with none). */
 .list--fill .unity-scroll-view__content-container > .kit-empty { flex-grow: 1; }
+/* GG-T1883: a list with nothing in it (Ui.EmptyState) is a compact window as tall as its message and next action. */
+.window--empty { flex-grow: 0; flex-shrink: 0; }
+.window--empty > .list { flex-grow: 0; }
+.kit-empty-state { padding: var(--space-8) 0; }
+.kit-empty-state__line { flex-direction: row; align-items: center; padding: 0 var(--space-12); }
+.kit-empty-state__line > .kit-text { flex-grow: 1; flex-shrink: 1; }
 
 /* ── Portrait card ───────────────────────────────────────────────────────── */
 .card {

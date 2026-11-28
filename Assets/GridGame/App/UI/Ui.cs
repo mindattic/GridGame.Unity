@@ -441,6 +441,7 @@ namespace GridGame.App
         /// grid (row-wrap content, e.g. the Bestiary) opts out and drops the fill class, so its cells never stretch.</summary>
         private static void FillViewport(ScrollView s)
         {
+            if (s.ClassListContains("list--empty")) { s.RemoveFromClassList("list--fill"); s.contentContainer.style.minHeight = StyleKeyword.Null; return; }
             float h = s.contentViewport.layout.height;
             if (float.IsNaN(h) || h <= 0f) return;
             bool column = s.contentContainer.resolvedStyle.flexDirection == FlexDirection.Column;
@@ -517,6 +518,27 @@ namespace GridGame.App
 
         /// <summary>What an empty list or pane says ("Nothing to sell."): body size, dim, centred.</summary>
         public static Label Empty(string text, VisualElement parent) => Text(text, "kit-empty", parent);
+
+        /// <summary>GG-T1883 (POL-C9): what a <see cref="ListPanel"/> with nothing in it shows instead of one line in a
+        /// full-height window: the window stops filling the column and is as tall as its content, the kind's emblem then
+        /// <paramref name="text"/>. Returns the state; put its next action in <c>Ui.Actions(state)</c>.</summary>
+        public static VisualElement EmptyState(VisualElement list, RowKind icon, string text, string name = null)
+        {
+            for (var e = list; e != null; e = e.parent)
+            {
+                if (e is ScrollView sv) sv.AddToClassList("list--empty");
+                if (!e.ClassListContains("window--fill")) continue;
+                e.RemoveFromClassList("window--fill");
+                e.AddToClassList("window--empty");
+                break;
+            }
+            var state = El("kit-empty-state", list);
+            if (name != null) state.name = name;
+            var line = El("kit-empty-state__line", state);
+            Para(text, line);
+            line.KindIcon(icon);
+            return state;
+        }
 
         /// <summary>A heading (48): a window-level or detail pane's title. <paramref name="tone"/>: gold, dim, good, bad, a rarity class.</summary>
         public static Label Heading(string text, VisualElement parent, string tone = null) => Text(text, "kit-heading " + (tone ?? ""), parent);

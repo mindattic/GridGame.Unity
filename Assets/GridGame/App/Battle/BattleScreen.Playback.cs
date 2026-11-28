@@ -1375,14 +1375,17 @@ namespace GridGame.App
         /// <summary>The billboard no longer sits over the board (GG-T405), so there is nothing on the board to dodge.</summary>
         private void DodgeBillboard(IEnumerable<Coord> tiles) => PlaceBillboard();
 
-        /// <summary>Most lines the announcement overlay holds at once (§9.0); a fourth pushes the oldest off.</summary>
-        private const int BillboardMaxLines = 3;
+        /// <summary>Most lines the announcement overlay holds at once (§9.0, GG-T1893): one, so a newer line replaces the older
+        /// and the overlay never stacks over the top board row's units and HP bars.</summary>
+        private const int BillboardMaxLines = 1;
+        /// <summary>The overlay's window opacity (GG-T1893): the top row's units still show through the line.</summary>
+        private const float BillboardOpacity = 0.8f;
         /// <summary>Marks a billboard row that came from ShowBanner, so an empty banner takes only those down.</summary>
         private const string BannerRowClass = "billboard__banner";
 
         /// <summary>The billboard is the announcement overlay (§9.0, GG-T1824): it hangs from the board's top edge in Overlay
-        /// coordinates, across the content column, never over the timeline, one line tall per line it holds (up to
-        /// <see cref="BillboardMaxLines"/>), each line fading on its own; the battle log keeps them all.</summary>
+        /// coordinates, across the content column, never over the timeline, one line tall (the newest
+        /// replacing, <see cref="BillboardMaxLines"/>), fading on its own; the battle log keeps them all.</summary>
         private void PlaceBillboard()
         {
             if (billboard == null) return;
@@ -1434,6 +1437,7 @@ namespace GridGame.App
                 billboard.style.alignItems = Align.Center;
                 billboard.style.justifyContent = Justify.FlexEnd;
                 billboard.style.overflow = Overflow.Hidden;
+                billboard.style.opacity = BillboardOpacity;
             }
             billboard.style.display = DisplayStyle.Flex;
             PlaceBillboard();
