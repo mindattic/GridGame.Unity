@@ -92,7 +92,7 @@ namespace GridGame.Tests
             var costs = Real.Abilities.Values.Where(HeroSpell).Select(a => a.Cost).ToList();
             Assert.That(costs.Count(c => c <= 2), Is.GreaterThanOrEqualTo(10), "bread-and-butter spells stay cheap");
             Assert.That(costs.Max(), Is.EqualTo(BattleConfig.MaxSpellOrbCost), "an ultimate costs the top tier (GG-T673)");
-            Assert.That(costs.Count(c => c >= HeroBot.SaveForCost), Is.GreaterThanOrEqualTo(5), "several spells are worth saving for");
+            Assert.That(costs.Count(c => c >= BattleConfig.MaxSpellOrbCost), Is.GreaterThanOrEqualTo(5), "several spells take the longest to fill");
         }
 
         [Test]
@@ -139,42 +139,6 @@ namespace GridGame.Tests
         {
             var problems = ContentLoader.Validate(Real, _ => true).Where(p => p.Contains("GG-T373")).ToList();
             Assert.That(problems, Is.Empty);
-        }
-
-        // ── Bots save for a big spell (HeroBot.SavingFor) ─────────────────────────────────────────
-
-        private static ContentDb SaverDb()
-        {
-            var db = Mini();
-            db.Abilities["nova"] = new AbilityDef { Id = "nova", Name = "Nova", Kind = AbilityKind.Spell, Cost = 4, BaseDamage = 20, DamageType = DamageType.Fire, Shape = TargetShape.Square, Radius = 2, Mode = TargetMode.PickTile, Filter = TargetFilter.EnemyOnly };
-            return db;
-        }
-
-        [Test]
-        public void The_party_saves_for_its_nearest_unaffordable_big_spell()
-        {
-            var db = SaverDb();
-            var (s, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 5, 7), ("mage", 4, 7));
-            var m = Hero(s, "mage");
-            m.Bar[0] = new AbilitySlot { AbilityId = "fireball" };
-            m.Bar[1] = new AbilitySlot { AbilityId = "nova" };
-            s.Bank.Add(2);
-            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(4), "a 4-orb spell on the bar and 2 in the bank");
-            s.Bank.Add(2);
-            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(0), "the bank holds it: nothing left to save for");
-        }
-
-        [Test]
-        public void Cheap_spells_and_locked_slots_are_not_saved_for()
-        {
-            var db = SaverDb();
-            var (s, _) = Battle(db, Stage(("tank", 2, 2)), ("knight", 5, 7), ("mage", 4, 7));
-            var m = Hero(s, "mage");
-            m.Bar[0] = new AbilitySlot { AbilityId = "fireball" }; // 2 orbs: under SaveForCost
-            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(0));
-            while (m.Bar.Count <= m.UnlockedSlots) m.Bar.Add(new AbilitySlot());
-            m.Bar[m.UnlockedSlots] = new AbilitySlot { AbilityId = "nova" }; // a locked slot can't cast it
-            Assert.That(HeroBot.SavingFor(s), Is.EqualTo(0));
         }
     }
 }
