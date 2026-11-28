@@ -39,8 +39,11 @@ namespace GridGame.App
         /// <summary>Design px of the stage covered by the device's notch / home bar (§26.5).</summary>
         public static float SafeTop { get; private set; }
         public static float SafeBottom { get; private set; }
-        /// <summary>Raised after the stage changes size (window resize, harness resize).</summary>
+        /// <summary>Raised after the stage is re-fit to a new screen: a new resolution, safe area or density (a Fold folding
+        /// or unfolding, a Flip, a window or harness resize, GG-T2028), a new stage size or new insets.</summary>
         public static event Action StageResized;
+        /// <summary>How many times <see cref="StageResized"/> has fired (automation <c>resize</c> waits on it, GG-T2028).</summary>
+        public static int Relayouts { get; private set; }
 
         public static GameApp I { get; private set; }
 
@@ -300,6 +303,9 @@ namespace GridGame.App
             var safeNow = SafeAreaPx();
             if (screen == lastScreen && safeNow == lastSafe && Screen.dpi == lastDpi && uiScale == lastUiScale
                 && thumbMargin == lastThumbMargin && Stage.Q("screens") != null) return;
+            // GG-T2028: a new screen shape or density on a live app (fold / unfold, Flip, resize) re-lays out the current
+            // screen even when the stage size it maps to is unchanged, since its scale and type floor moved.
+            bool screenChanged = lastScreen != Vector2.zero && (screen != lastScreen || Screen.dpi != lastDpi);
             lastScreen = screen;
             lastSafe = safeNow;
             lastDpi = Screen.dpi;
@@ -341,7 +347,11 @@ namespace GridGame.App
             bool insetsChanged = ApplySafeArea(logicalW, logicalH, safeNow);
             // A new notch / gesture bar (a rotation to upside-down portrait, the automation endpoint) changes the usable
             // height Fit.H reads, so the current screen rebuilds as it does for a new stage size (GG-T483).
-            if (resized || insetsChanged) StageResized?.Invoke();
+            if (resized || insetsChanged || screenChanged)
+            {
+                Relayouts++;
+                StageResized?.Invoke();
+            }
         }
 
         /// <summary>The safe area in screen px (bottom-left origin, like <see cref="Screen.safeArea"/>): the device's own, or
