@@ -449,7 +449,7 @@ namespace GridGame.Core.Battle
             float myFrom = BattleEngine.BarU(S, mine), theirFrom = BattleEngine.BarU(S, theirs);
             Countermarch.SetTicksUntilAct(S, mine, foe, theirAt);
             Countermarch.SetTicksUntilAct(S, theirs, other, myAt);
-            Emit(new PushedBackEvent { UnitId = foe.Id, FromU = myFrom, ToU = BattleEngine.BarU(S, mine), StunTicks = mine.StunTicks });
+            Emit(new PushedBackEvent { UnitId = foe.Id, FromU = myFrom, ToU = BattleEngine.BarU(S, mine), StunTicks = mine.StunTicks, Ticks = Math.Max(0, theirAt - myAt) });
             Emit(new HastenedEvent { EntryId = theirs.Id, UnitId = other.Id, FromU = theirFrom, ToU = BattleEngine.BarU(S, theirs) });
             Announce("Countermarch!", foe.Id);
         }

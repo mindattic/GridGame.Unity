@@ -9,6 +9,8 @@ namespace GridGame.Core.Battle
         public int DamageMin, DamageMax, HealMin, HealMax;
         /// <summary>Share of samples in which the target dies during the action (0..1).</summary>
         public float KillChance;
+        /// <summary>GG-T1946: seconds the action pushes the target's turn back (min/max over samples; 0 when it isn't pushed).</summary>
+        public float PushMin, PushMax;
         /// <summary>Buff/debuff id → share of samples in which the action applies it to this target.</summary>
         public Dictionary<string, float> StatusChance = new Dictionary<string, float>();
     }
@@ -70,6 +72,7 @@ namespace GridGame.Core.Battle
                         case DamagedEvent d: Get(hits, d.TargetId).Damage += d.Amount; break;
                         case HealedEvent h: Get(hits, h.TargetId).Heal += h.Amount; break;
                         case DiedEvent dd: Get(hits, dd.UnitId).Died = true; break;
+                        case PushedBackEvent pb: Get(hits, pb.UnitId).PushTicks += pb.Ticks; break;
                         case BuffAppliedEvent b: Get(hits, b.UnitId).Buffs.Add(b.BuffId); break;
                         case ManaGainedEvent mg when mg.Amount > 0: gained += mg.Amount; break;
                         case SpellReadyEvent _: filled++; break;
@@ -84,7 +87,7 @@ namespace GridGame.Core.Battle
             foreach (var hs in perSample) foreach (var id in hs.Keys) ids.Add(id);
             foreach (var id in ids)
             {
-                var t = new OutcomeTarget { UnitId = id, DamageMin = int.MaxValue, HealMin = int.MaxValue };
+                var t = new OutcomeTarget { UnitId = id, DamageMin = int.MaxValue, HealMin = int.MaxValue, PushMin = float.MaxValue };
                 int kills = 0;
                 var statusCounts = new Dictionary<string, int>();
                 foreach (var hs in perSample)
@@ -95,6 +98,9 @@ namespace GridGame.Core.Battle
                     if (dmg > t.DamageMax) t.DamageMax = dmg;
                     if (heal < t.HealMin) t.HealMin = heal;
                     if (heal > t.HealMax) t.HealMax = heal;
+                    float push = (x?.PushTicks ?? 0) / (float)BattleConfig.TicksPerSecond;
+                    if (push < t.PushMin) t.PushMin = push;
+                    if (push > t.PushMax) t.PushMax = push;
                     if (x != null && x.Died) kills++;
                     if (x != null) foreach (var b in x.Buffs) statusCounts[b] = (statusCounts.TryGetValue(b, out var n) ? n : 0) + 1;
                 }
@@ -116,7 +122,7 @@ namespace GridGame.Core.Battle
 
         private sealed class Sample
         {
-            public int Damage, Heal;
+            public int Damage, Heal, PushTicks;
             public bool Died;
             public HashSet<string> Buffs = new HashSet<string>();
         }
