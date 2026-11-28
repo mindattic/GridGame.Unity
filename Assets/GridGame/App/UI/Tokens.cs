@@ -292,7 +292,8 @@ namespace GridGame.App
         public const float MinPx = 12f;
         /// <summary>Smallest physical size, in dp (1/160 inch), on a screen dense enough that it beats <see cref="MinPx"/>.</summary>
         public const float MinDp = 9f;
-        /// <summary>The smallest shrink-to-fit may go in design px whatever the screen: the 30-px caption floor (GG-T1878, docs/research/MobileGameAccessibility.md), 75% of the nominal size.</summary>
+        /// <summary>The smallest shrink-to-fit may go in design px whatever the screen: the 30 px caption floor
+        /// (MobileGameAccessibility.md, 75% of the nominal size).</summary>
         public const float ShrinkMin = 30f;
 
         /// <summary>The live floor in design px, rounded up (0 = none yet); set by <see cref="Update"/>.</summary>
