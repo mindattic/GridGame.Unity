@@ -1,6 +1,6 @@
 {
  "device": "galaxys25",
- "captured": "2026-11-28T07:38:01",
+ "captured": "2026-11-28T08:30:09",
  "screens": {
   "title": {
    "screen": "title",
@@ -451,29 +451,15 @@
      "dp": 40.6,
      "mm": 7.4
     },
-    "checked": 16,
-    "undersizedCount": 1,
-    "undersized": [
-     {
-      "target": "Fight",
-      "w": {
-       "px": 1034,
-       "dp": 318.2,
-       "mm": 58.3
-      },
-      "h": {
-       "px": 130,
-       "dp": 40.0,
-       "mm": 7.3
-      }
-     }
-    ],
+    "checked": 15,
+    "undersizedCount": 0,
+    "undersized": [],
     "gapFloor": {
      "px": 24,
      "dp": 7.4,
      "mm": 1.4
     },
-    "gapsChecked": 16,
+    "gapsChecked": 15,
     "tightGapCount": 2,
     "tightGaps": [
      {
@@ -493,10 +479,10 @@
       }
      }
     ],
-    "total": 16
+    "total": 15
    },
    "text": {
-    "count": 29,
+    "count": 27,
     "captionFloor": {
      "px": 30,
      "dp": 9.2,
@@ -513,7 +499,7 @@
      "mm": 2.3
     },
     "underCaptionFloor": 0,
-    "contrastSamples": 29,
+    "contrastSamples": 27,
     "contrastFails": 0,
     "minContrast": 4.82,
     "items": [
@@ -533,9 +519,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#383c40",
-       "ratio": 8.11,
-       "worstStop": 8.11,
+       "bg": "#202637",
+       "ratio": 10.94,
+       "worstStop": 10.94,
        "need": 4.5,
        "pass": true
       }
@@ -556,9 +542,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#584f48",
-       "ratio": 5.83,
-       "worstStop": 5.83,
+       "bg": "#33333e",
+       "ratio": 9.1,
+       "worstStop": 9.1,
        "need": 4.5,
        "pass": true
       }
@@ -579,9 +565,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#615348",
-       "ratio": 5.4,
-       "worstStop": 5.4,
+       "bg": "#38363e",
+       "ratio": 8.68,
+       "worstStop": 8.68,
        "need": 4.5,
        "pass": true
       }
@@ -602,9 +588,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#64564b",
-       "ratio": 5.13,
-       "worstStop": 5.13,
+       "bg": "#3a3841",
+       "ratio": 8.41,
+       "worstStop": 8.41,
        "need": 4.5,
        "pass": true
       }
@@ -625,9 +611,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#675647",
-       "ratio": 5.14,
-       "worstStop": 5.14,
+       "bg": "#3c373d",
+       "ratio": 8.48,
+       "worstStop": 8.48,
        "need": 4.5,
        "pass": true
       }
@@ -637,7 +623,7 @@
       "rect": [
        50.0,
        577.0,
-       742.0,
+       676.0,
        66.0
       ],
       "size": {
@@ -658,10 +644,10 @@
      {
       "text": "Set up camp",
       "rect": [
-       812.0,
-       542.0,
-       298.0,
-       134.0
+       829.0,
+       575.0,
+       252.0,
+       66.0
       ],
       "size": {
        "px": 40,
@@ -679,12 +665,35 @@
       }
      },
      {
-      "text": "Next",
+      "text": "Around the wagons",
       "rect": [
-       48.0,
-       874.0,
-       1073.0,
+       50.0,
+       1017.0,
+       1067.0,
        66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#25233a",
+       "ratio": 6.19,
+       "worstStop": 6.19,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "\"Bring armor with a story in it. The wor\u2026",
+      "rect": [
+       50.0,
+       1089.0,
+       1067.0,
+       126.0
       ],
       "size": {
        "px": 40,
@@ -694,41 +703,18 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#26243b",
-       "ratio": 10.96,
-       "worstStop": 10.96,
+       "bg": "#1f1e30",
+       "ratio": 11.91,
+       "worstStop": 11.91,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "The Arkgrave III",
+      "text": "\u2014 Lio, rune apprentice",
       "rect": [
        50.0,
-       947.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffffff",
-       "bg": "#242339",
-       "ratio": 15.28,
-       "worstStop": 15.28,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Recommended Lv 12",
-      "rect": [
-       50.0,
-       1019.0,
+       1220.0,
        1067.0,
        66.0
       ],
@@ -740,124 +726,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#232136",
-       "ratio": 6.36,
-       "worstStop": 6.36,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Fight",
-      "rect": [
-       68.0,
-       1106.0,
-       1034.0,
-       130.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#0c0c16",
-       "bg": "#7590c8",
-       "ratio": 6.09,
-       "worstStop": 6.09,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Costs 1 Rested",
-      "rect": [
-       50.0,
-       1249.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1d1c2d",
-       "ratio": 6.8,
-       "worstStop": 6.8,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Journey",
-      "rect": [
-       205.0,
-       1364.0,
-       693.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1b1928",
-       "ratio": 13.91,
-       "worstStop": 13.91,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Stage 12",
-      "rect": [
-       918.0,
-       1364.0,
-       180.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1b1a29",
-       "ratio": 13.8,
-       "worstStop": 13.8,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "0:00:12 \u00b7 Cleared 11/40",
-      "rect": [
-       50.0,
-       1478.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#181724",
-       "ratio": 7.19,
-       "worstStop": 7.19,
+       "bg": "#1a1927",
+       "ratio": 7.04,
+       "worstStop": 7.04,
        "need": 4.5,
        "pass": true
       }
@@ -866,7 +737,7 @@
       "text": "Crucible",
       "rect": [
        205.0,
-       1623.0,
+       1366.0,
        870.0,
        66.0
       ],
@@ -889,7 +760,7 @@
       "text": "Closed on the road",
       "rect": [
        205.0,
-       1695.0,
+       1437.0,
        870.0,
        66.0
       ],
@@ -909,81 +780,12 @@
       }
      },
      {
-      "text": "Craft",
+      "text": "Next",
       "rect": [
-       250.0,
-       1889.0,
-       112.0,
-       91.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#313235",
-       "ratio": 6.73,
-       "worstStop": 6.73,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Journal",
-      "rect": [
-       786.0,
-       1889.0,
-       155.0,
-       91.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#aab8ff",
-       "bg": "#464648",
-       "ratio": 4.94,
-       "worstStop": 4.94,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Around the wagons",
-      "rect": [
-       50.0,
-       2022.0,
-       1067.0,
+       48.0,
+       1594.0,
+       1073.0,
        66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#25233a",
-       "ratio": 6.19,
-       "worstStop": 6.19,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "\"I ground the dust fine as flour. She sa\u2026",
-      "rect": [
-       50.0,
-       2094.0,
-       1067.0,
-       126.0
       ],
       "size": {
        "px": 40,
@@ -993,18 +795,41 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#1f1d30",
-       "ratio": 12.0,
-       "worstStop": 12.0,
+       "bg": "#26243b",
+       "ratio": 10.96,
+       "worstStop": 10.96,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "\u2014 Lio, rune apprentice",
+      "text": "The Arkgrave III",
       "rect": [
        50.0,
-       2226.0,
+       1668.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffffff",
+       "bg": "#232237",
+       "ratio": 15.49,
+       "worstStop": 15.49,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Recommended Lv 12",
+      "rect": [
+       50.0,
+       1740.0,
        1067.0,
        66.0
       ],
@@ -1016,9 +841,124 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#1a1927",
-       "ratio": 7.04,
-       "worstStop": 7.04,
+       "bg": "#212034",
+       "ratio": 6.46,
+       "worstStop": 6.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "0:00:08 \u00b7 Cleared 11/40",
+      "rect": [
+       50.0,
+       1811.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1f1e31",
+       "ratio": 6.63,
+       "worstStop": 6.63,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Fight",
+      "rect": [
+       554.0,
+       1925.0,
+       114.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#0c0c16",
+       "bg": "#7590c8",
+       "ratio": 6.09,
+       "worstStop": 6.09,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Costs 1 Rested",
+      "rect": [
+       50.0,
+       2044.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#181725",
+       "ratio": 7.19,
+       "worstStop": 7.19,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Craft",
+      "rect": [
+       250.0,
+       2230.0,
+       112.0,
+       68.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#04081b",
+       "ratio": 10.44,
+       "worstStop": 10.44,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Journal",
+      "rect": [
+       786.0,
+       2230.0,
+       155.0,
+       68.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#aab8ff",
+       "bg": "#060a1e",
+       "ratio": 10.3,
+       "worstStop": 10.3,
        "need": 4.5,
        "pass": true
       }
@@ -1039,9 +979,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#212538",
-       "ratio": 12.2,
-       "worstStop": 12.2,
+       "bg": "#202438",
+       "ratio": 12.34,
+       "worstStop": 12.34,
        "need": 4.5,
        "pass": true
       }
@@ -1085,9 +1025,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101c",
-       "ratio": 7.66,
-       "worstStop": 7.66,
+       "bg": "#100f1c",
+       "ratio": 7.71,
+       "worstStop": 7.71,
        "need": 4.5,
        "pass": true
       }
@@ -1108,9 +1048,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#13121d",
-       "ratio": 7.56,
-       "worstStop": 7.56,
+       "bg": "#12101d",
+       "ratio": 7.64,
+       "worstStop": 7.64,
        "need": 4.5,
        "pass": true
       }
@@ -1154,9 +1094,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#13111d",
-       "ratio": 7.59,
-       "worstStop": 7.59,
+       "bg": "#11101d",
+       "ratio": 7.65,
+       "worstStop": 7.65,
        "need": 4.5,
        "pass": true
       }
@@ -1177,9 +1117,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101c",
-       "ratio": 7.66,
-       "worstStop": 7.66,
+       "bg": "#100f1c",
+       "ratio": 7.71,
+       "worstStop": 7.71,
        "need": 4.5,
        "pass": true
       }
@@ -1209,27 +1149,23 @@
    "polish": {
     "counts": {
      "POL-A2": {
-      "checkedCount": 29,
+      "checkedCount": 27,
       "failed": 0
      },
      "POL-A3": {
-      "checkedCount": 29,
+      "checkedCount": 27,
       "failed": 0
      },
      "POL-C5": {
-      "checkedCount": 56,
-      "failed": 0
-     },
-     "POL-A5": {
-      "checkedCount": 1,
+      "checkedCount": 55,
       "failed": 0
      },
      "POL-C2": {
-      "checkedCount": 16,
-      "failed": 1
+      "checkedCount": 15,
+      "failed": 0
      },
      "POL-C3": {
-      "checkedCount": 16,
+      "checkedCount": 15,
       "failed": 2
      },
      "POL-C8": {
@@ -1253,11 +1189,6 @@
       "detail": "19px from the next target"
      },
      {
-      "rule": "POL-C2",
-      "subject": "Fight",
-      "detail": "1034x130 < 132x132"
-     },
-     {
       "rule": "POL-C8",
       "subject": "Lv 20",
       "detail": "gap 107px is off the space scale"
@@ -1266,7 +1197,7 @@
     "fill": {
      "minX": 0.0,
      "maxX": 1170.0,
-     "band": 136.0,
+     "band": 291.0,
      "main": 1139.0
     }
    },
@@ -9582,9 +9513,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#23211f",
-       "ratio": 11.71,
-       "worstStop": 11.71,
+       "bg": "#22201e",
+       "ratio": 11.85,
+       "worstStop": 11.85,
        "need": 4.5,
        "pass": true
       }
@@ -9628,9 +9559,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#2a1c1a",
-       "ratio": 11.98,
-       "worstStop": 11.98,
+       "bg": "#291b1a",
+       "ratio": 12.1,
+       "worstStop": 12.1,
        "need": 4.5,
        "pass": true
       }
@@ -9674,9 +9605,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#3b2b24",
-       "ratio": 9.84,
-       "worstStop": 9.84,
+       "bg": "#3c2d24",
+       "ratio": 9.62,
+       "worstStop": 9.62,
        "need": 4.5,
        "pass": true
       }
@@ -9720,9 +9651,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#181418",
-       "ratio": 13.3,
-       "worstStop": 13.3,
+       "bg": "#171317",
+       "ratio": 13.42,
+       "worstStop": 13.42,
        "need": 4.5,
        "pass": true
       }
@@ -9881,9 +9812,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#222136",
-       "ratio": 15.7,
-       "worstStop": 15.7,
+       "bg": "#222135",
+       "ratio": 15.71,
+       "worstStop": 15.71,
        "need": 4.5,
        "pass": true
       }
@@ -11092,7 +11023,7 @@
       "rect": [
        207.0,
        1801.0,
-       184.0,
+       186.0,
        58.0
       ],
       "size": {
@@ -11113,7 +11044,7 @@
      {
       "text": "guardian",
       "rect": [
-       403.0,
+       405.0,
        1801.0,
        176.0,
        58.0
@@ -11126,9 +11057,9 @@
       "large": false,
       "contrast": {
        "fg": "#9cc7ff",
-       "bg": "#201f2f",
-       "ratio": 9.25,
-       "worstStop": 9.25,
+       "bg": "#201f30",
+       "ratio": 9.24,
+       "worstStop": 9.24,
        "need": 4.5,
        "pass": true
       }
@@ -11136,7 +11067,7 @@
      {
       "text": "bruiser",
       "rect": [
-       591.0,
+       593.0,
        1801.0,
        145.0,
        58.0
@@ -11159,7 +11090,7 @@
      {
       "text": ".",
       "rect": [
-       736.0,
+       738.0,
        1801.0,
        15.0,
        58.0
@@ -11182,7 +11113,7 @@
      {
       "text": "Absorbs",
       "rect": [
-       763.0,
+       765.0,
        1801.0,
        163.0,
        58.0
@@ -11586,9 +11517,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#222538",
-       "ratio": 12.17,
-       "worstStop": 12.17,
+       "bg": "#222638",
+       "ratio": 12.06,
+       "worstStop": 12.06,
        "need": 4.5,
        "pass": true
       }
@@ -40277,29 +40208,15 @@
      "dp": 40.6,
      "mm": 7.4
     },
-    "checked": 14,
-    "undersizedCount": 1,
-    "undersized": [
-     {
-      "target": "Fight",
-      "w": {
-       "px": 1034,
-       "dp": 318.2,
-       "mm": 58.3
-      },
-      "h": {
-       "px": 130,
-       "dp": 40.0,
-       "mm": 7.3
-      }
-     }
-    ],
+    "checked": 13,
+    "undersizedCount": 0,
+    "undersized": [],
     "gapFloor": {
      "px": 24,
      "dp": 7.4,
      "mm": 1.4
     },
-    "gapsChecked": 14,
+    "gapsChecked": 13,
     "tightGapCount": 7,
     "tightGaps": [
      {
@@ -40359,10 +40276,10 @@
       }
      }
     ],
-    "total": 14
+    "total": 13
    },
    "text": {
-    "count": 24,
+    "count": 22,
     "captionFloor": {
      "px": 30,
      "dp": 9.2,
@@ -40379,9 +40296,9 @@
      "mm": 2.3
     },
     "underCaptionFloor": 0,
-    "contrastSamples": 24,
-    "contrastFails": 6,
-    "minContrast": 1.76,
+    "contrastSamples": 22,
+    "contrastFails": 0,
+    "minContrast": 4.82,
     "items": [
      {
       "text": "200 G",
@@ -40399,9 +40316,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#57636a",
-       "ratio": 4.51,
-       "worstStop": 4.51,
+       "bg": "#323f54",
+       "ratio": 7.76,
+       "worstStop": 7.76,
        "need": 4.5,
        "pass": true
       }
@@ -40422,11 +40339,11 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#556676",
-       "ratio": 4.32,
-       "worstStop": 4.32,
+       "bg": "#314166",
+       "ratio": 7.37,
+       "worstStop": 7.37,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      },
      {
@@ -40445,9 +40362,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#495563",
-       "ratio": 5.55,
-       "worstStop": 5.55,
+       "bg": "#2a3756",
+       "ratio": 8.61,
+       "worstStop": 8.61,
        "need": 4.5,
        "pass": true
       }
@@ -40468,11 +40385,11 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#5e6c79",
-       "ratio": 3.93,
-       "worstStop": 3.93,
+       "bg": "#364568",
+       "ratio": 6.94,
+       "worstStop": 6.94,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      },
      {
@@ -40522,194 +40439,10 @@
       }
      },
      {
-      "text": "Next",
-      "rect": [
-       48.0,
-       1201.0,
-       1073.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffd959",
-       "bg": "#26243b",
-       "ratio": 10.96,
-       "worstStop": 10.96,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "The Tithe Moors I",
-      "rect": [
-       50.0,
-       1275.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#ffffff",
-       "bg": "#242339",
-       "ratio": 15.28,
-       "worstStop": 15.28,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Recommended Lv 1",
-      "rect": [
-       50.0,
-       1346.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#232136",
-       "ratio": 6.36,
-       "worstStop": 6.36,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Fight",
-      "rect": [
-       68.0,
-       1434.0,
-       1034.0,
-       130.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#0c0c16",
-       "bg": "#7590c8",
-       "ratio": 6.09,
-       "worstStop": 6.09,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Costs 1 Rested",
-      "rect": [
-       50.0,
-       1577.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#1d1c2d",
-       "ratio": 6.8,
-       "worstStop": 6.8,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Journey",
-      "rect": [
-       205.0,
-       1691.0,
-       719.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1a1929",
-       "ratio": 13.92,
-       "worstStop": 13.92,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "Stage 1",
-      "rect": [
-       943.0,
-       1691.0,
-       155.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#e6e6ee",
-       "bg": "#1b1a29",
-       "ratio": 13.8,
-       "worstStop": 13.8,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
-      "text": "0:00:00 \u00b7 Cleared 0/40",
-      "rect": [
-       50.0,
-       1805.0,
-       1067.0,
-       66.0
-      ],
-      "size": {
-       "px": 40,
-       "dp": 12.3,
-       "mm": 2.3
-      },
-      "large": false,
-      "contrast": {
-       "fg": "#a4a3bc",
-       "bg": "#181724",
-       "ratio": 7.19,
-       "worstStop": 7.19,
-       "need": 4.5,
-       "pass": true
-      }
-     },
-     {
       "text": "Crucible",
       "rect": [
        205.0,
-       1951.0,
+       1368.0,
        870.0,
        66.0
       ],
@@ -40732,7 +40465,7 @@
       "text": "Opens after The Shardfall I",
       "rect": [
        205.0,
-       2022.0,
+       1439.0,
        870.0,
        66.0
       ],
@@ -40752,12 +40485,150 @@
       }
      },
      {
+      "text": "Next",
+      "rect": [
+       48.0,
+       1596.0,
+       1073.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffd959",
+       "bg": "#26243b",
+       "ratio": 10.96,
+       "worstStop": 10.96,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "The Tithe Moors I",
+      "rect": [
+       50.0,
+       1670.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#ffffff",
+       "bg": "#232237",
+       "ratio": 15.49,
+       "worstStop": 15.49,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Recommended Lv 1",
+      "rect": [
+       50.0,
+       1741.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#212034",
+       "ratio": 6.46,
+       "worstStop": 6.46,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "0:00:00 \u00b7 Cleared 0/40",
+      "rect": [
+       50.0,
+       1813.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#1f1e30",
+       "ratio": 6.64,
+       "worstStop": 6.64,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Fight",
+      "rect": [
+       554.0,
+       1927.0,
+       114.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#0c0c16",
+       "bg": "#7590c8",
+       "ratio": 6.09,
+       "worstStop": 6.09,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
+      "text": "Costs 1 Rested",
+      "rect": [
+       50.0,
+       2046.0,
+       1067.0,
+       66.0
+      ],
+      "size": {
+       "px": 40,
+       "dp": 12.3,
+       "mm": 2.3
+      },
+      "large": false,
+      "contrast": {
+       "fg": "#a4a3bc",
+       "bg": "#181725",
+       "ratio": 7.19,
+       "worstStop": 7.19,
+       "need": 4.5,
+       "pass": true
+      }
+     },
+     {
       "text": "Craft",
       "rect": [
        250.0,
-       2216.0,
+       2232.0,
        112.0,
-       91.0
+       68.0
       ],
       "size": {
        "px": 40,
@@ -40767,20 +40638,20 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#879070",
-       "ratio": 1.76,
-       "worstStop": 1.76,
+       "bg": "#101526",
+       "ratio": 9.52,
+       "worstStop": 9.52,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      },
      {
       "text": "Journal",
       "rect": [
        786.0,
-       2216.0,
+       2232.0,
        155.0,
-       91.0
+       68.0
       ],
       "size": {
        "px": 40,
@@ -40790,11 +40661,11 @@
       "large": false,
       "contrast": {
        "fg": "#aab8ff",
-       "bg": "#626b79",
-       "ratio": 2.83,
-       "worstStop": 2.83,
+       "bg": "#0c1027",
+       "ratio": 9.85,
+       "worstStop": 9.85,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      },
      {
@@ -40813,9 +40684,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#262a3b",
-       "ratio": 11.46,
-       "worstStop": 11.46,
+       "bg": "#23273a",
+       "ratio": 11.89,
+       "worstStop": 11.89,
        "need": 4.5,
        "pass": true
       }
@@ -40859,9 +40730,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#16151f",
-       "ratio": 7.35,
-       "worstStop": 7.35,
+       "bg": "#13131e",
+       "ratio": 7.49,
+       "worstStop": 7.49,
        "need": 4.5,
        "pass": true
       }
@@ -40882,9 +40753,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#14131e",
-       "ratio": 7.48,
-       "worstStop": 7.48,
+       "bg": "#12111d",
+       "ratio": 7.6,
+       "worstStop": 7.6,
        "need": 4.5,
        "pass": true
       }
@@ -40904,12 +40775,12 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#4c4b5d",
-       "bg": "#11101d",
-       "ratio": 2.21,
-       "worstStop": 2.21,
+       "fg": "#a4a3bc",
+       "bg": "#100f1c",
+       "ratio": 7.71,
+       "worstStop": 7.71,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      },
      {
@@ -40927,12 +40798,12 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#4c4b5d",
-       "bg": "#12111d",
-       "ratio": 2.21,
-       "worstStop": 2.21,
+       "fg": "#a4a3bc",
+       "bg": "#11101d",
+       "ratio": 7.65,
+       "worstStop": 7.65,
        "need": 4.5,
-       "pass": false
+       "pass": true
       }
      }
     ]
@@ -40960,23 +40831,23 @@
    "polish": {
     "counts": {
      "POL-A2": {
-      "checkedCount": 24,
+      "checkedCount": 22,
       "failed": 0
      },
      "POL-A3": {
-      "checkedCount": 24,
+      "checkedCount": 22,
       "failed": 0
      },
      "POL-C5": {
-      "checkedCount": 48,
+      "checkedCount": 46,
       "failed": 0
      },
      "POL-C2": {
-      "checkedCount": 14,
-      "failed": 1
+      "checkedCount": 13,
+      "failed": 0
      },
      "POL-C3": {
-      "checkedCount": 14,
+      "checkedCount": 13,
       "failed": 7
      },
      "POL-C8": {
@@ -40989,11 +40860,6 @@
      }
     },
     "findings": [
-     {
-      "rule": "POL-C2",
-      "subject": "Fight",
-      "detail": "1034x130 < 132x132"
-     },
      {
       "rule": "POL-C3",
       "subject": "Craft",
@@ -41037,13 +40903,13 @@
      {
       "rule": "POL-C9",
       "subject": "hub",
-      "detail": "empty band 475px > 15% of 2541"
+      "detail": "empty band 630px > 15% of 2541"
      }
     ],
     "fill": {
      "minX": 0.0,
      "maxX": 1170.0,
-     "band": 475.0,
+     "band": 630.0,
      "main": 1139.0
     }
    },
@@ -41277,9 +41143,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#23201f",
-       "ratio": 11.81,
-       "worstStop": 11.81,
+       "bg": "#22201f",
+       "ratio": 11.84,
+       "worstStop": 11.84,
        "need": 4.5,
        "pass": true
       }
@@ -41323,9 +41189,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#2a1b1a",
-       "ratio": 12.04,
-       "worstStop": 12.04,
+       "bg": "#2a1c1a",
+       "ratio": 11.98,
+       "worstStop": 11.98,
        "need": 4.5,
        "pass": true
       }
@@ -41369,9 +41235,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#3c2d25",
-       "ratio": 9.59,
-       "worstStop": 9.59,
+       "bg": "#3b2c25",
+       "ratio": 9.69,
+       "worstStop": 9.69,
        "need": 4.5,
        "pass": true
       }
@@ -41415,9 +41281,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#181317",
-       "ratio": 13.39,
-       "worstStop": 13.39,
+       "bg": "#181418",
+       "ratio": 13.3,
+       "worstStop": 13.3,
        "need": 4.5,
        "pass": true
       }
@@ -41576,9 +41442,9 @@
       "large": false,
       "contrast": {
        "fg": "#ffffff",
-       "bg": "#222136",
-       "ratio": 15.7,
-       "worstStop": 15.7,
+       "bg": "#222135",
+       "ratio": 15.71,
+       "worstStop": 15.71,
        "need": 4.5,
        "pass": true
       }
