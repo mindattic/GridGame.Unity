@@ -1241,6 +1241,15 @@
   "hash": "e530b8cc0bc40830d165",
   "owner": "mechaarmor02"
  },
+ "mecha-armor-03": {
+  "framing": {
+   "X": 0.37,
+   "Y": 0.15,
+   "Zoom": 3.2
+  },
+  "hash": "535d85ce9957addeaf63",
+  "owner": "ward_engine"
+ },
  "mocking-echo-00": {
   "framing": {
    "X": 0.493,

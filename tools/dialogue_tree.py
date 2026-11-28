@@ -64,7 +64,9 @@ DRAFTS = os.path.join("Data", "Prose", "drafts", "dialogue")
 
 # ContentModels.cs: DialogueTriggerKind, DialogueConditionType, DialogueEffectType.
 TRIGGERS = {"ThemeStart", "StageCleared", "Talk", "Recruit", "LevelReached", "StageStart", "Wanderer",
-            "Trust", "Cohesion", "Founding", "Joined"}
+            "Trust", "Cohesion", "Founding", "Joined", "Prologue"}
+# ContentModels.cs: DialogueDef.PrologueSteps, PrologueDrills (GG-T2066).
+PROLOGUE_STEPS = {"Wake", "Drill", "Crawl", "Travel", "Tithe", "Bridge", "Camp", "Rematch", "Glint", "Waystone"}
 CONDITIONS = {"FlagSet", "FlagNotSet", "HasItem", "GoldAtLeast", "PartyHas", "RosterHas", "RosterLacks", "NpcJoined",
               "QuestAvailable", "QuestActive", "QuestDone", "TrustAtLeast", "CohesionAtLeast"}
 EFFECTS = {"SetFlag", "ClearFlag", "GrantGold", "GrantItem", "RecruitHero", "JoinNpc", "JoinHero", "GrantSkillPoint",
@@ -418,6 +420,11 @@ def lint_def(d: dict) -> tuple:
         errs.append("trigger Cohesion: needs the pair's second hero (Other)")
     if t.get("Kind") == "Founding" and t.get("Id"):
         errs.append("trigger Founding: takes no Id")
+    if t.get("Kind") == "Prologue":
+        if t.get("Id") not in PROLOGUE_STEPS:
+            errs.append(f"trigger Prologue: needs a step ({', '.join(sorted(PROLOGUE_STEPS))})")
+        elif not (1 <= (t.get("Level") or 0) <= 3 if t["Id"] == "Drill" else not t.get("Level")):
+            errs.append("trigger Prologue: a Drill needs level=1..3, any other step no level")
     spk = {s["Id"] for s in d["Speakers"]}
     start = d.get("Start") or (d["Nodes"][0]["Id"] if d["Nodes"] else None)
     if not nodes:

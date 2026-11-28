@@ -38096,6 +38096,18 @@
     "TeachesAbility": "regenerate"
   },
   {
+    "Id": "tome_bolt",
+    "Name": "Tome of Bolt",
+    "Type": "Tome",
+    "Rarity": "Uncommon",
+    "Slot": "None",
+    "BaseCost": 400,
+    "MaxStack": 9,
+    "SoldByVendor": false,
+    "Icon": null,
+    "TeachesAbility": "bolt"
+  },
+  {
     "Id": "tome_poison_ward",
     "Name": "Tome of Poison Ward",
     "Type": "Tome",
@@ -38202,6 +38214,18 @@
     "SoldByVendor": false,
     "Icon": null,
     "OpensTable": "chest_gilded"
+  },
+  {
+    "Id": "chest_tithe",
+    "Name": "The Collector's Chest",
+    "Type": "Chest",
+    "Rarity": "Rare",
+    "Slot": "None",
+    "BaseCost": 400,
+    "MaxStack": 1,
+    "SoldByVendor": false,
+    "Icon": null,
+    "OpensTable": "chest_tithe"
   },
   {
     "Id": "dog_whistle",

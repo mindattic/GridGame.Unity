@@ -1,0 +1,26 @@
+dialogue prologue_vault_door
+title: Whatever you are
+trigger: Prologue Crawl
+speaker commander $commander
+speaker knight knight
+speaker barbarian barbarian
+speaker cleric cleric
+
+node look commander
+  Three Moorfolk stand in the broken doorway, slime on their boots and dead Mana Orbs at their belts. All three orbs are glowing.
+  -> knight
+
+node knight knight
+  I saw the lights come on when you moved. Every lamp in the vault, and then our orbs.
+  -> cleric
+
+node cleric cleric
+  Nobody has slept in these tanks since Halcyon fell. Nobody was supposed to wake up in one.
+  -> barbarian
+
+node barbarian barbarian
+  There'll be more slimes on the stair, drawn by the leak. We can talk at the top.
+  -> follow
+
+node follow knight
+  Whatever you are, our orbs work near you. Come with us.
