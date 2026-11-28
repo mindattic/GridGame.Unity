@@ -1726,6 +1726,124 @@
     "ArmorPlate": 24
   },
   {
+    "Id": "collector",
+    "Name": "Tithe Collector",
+    "Team": "Enemy",
+    "Tags": [
+      "Humanoid",
+      "Sentient"
+    ],
+    "Card": "The Captain's tithe-taker. His plate faces you and no blow dents it. Spells go around it; only a shattering blow takes it off.",
+    "Portrait": "captain",
+    "ArtSource": "Captain",
+    "Thumbnail": {
+      "Zoom": 2.3879,
+      "X": 0.4937,
+      "Y": 0.2023
+    },
+    "Figure": {
+      "X": 0.3184,
+      "Y": 0.0117,
+      "W": 0.5088,
+      "H": 0.9883
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "Support": {
+      "Effect": "Buff",
+      "Target": "Chain",
+      "Range": 2,
+      "Buff": "empowered",
+      "Label": "Battle Cry",
+      "Projectile": "GoldBuff",
+      "Motion": "Straight",
+      "Sfx": "battle.warcry"
+    },
+    "BaseStats": {
+      "Strength": 12,
+      "Vitality": 12,
+      "Agility": 12,
+      "Speed": 15,
+      "Intelligence": 12,
+      "Wisdom": 12
+    },
+    "Growth": {
+      "Strength": 0.7,
+      "Vitality": 0.7,
+      "Agility": 0.7,
+      "Speed": 0.7,
+      "Intelligence": 0.7,
+      "Wisdom": 0.7
+    },
+    "Milestones": [
+      {
+        "Level": 5,
+        "Growth": {
+          "Strength": 0.24,
+          "Vitality": 0.24,
+          "Agility": 0.24,
+          "Speed": 0.24,
+          "Intelligence": 0.24,
+          "Wisdom": 0.24
+        }
+      },
+      {
+        "Level": 10,
+        "Growth": {
+          "Strength": 0.32,
+          "Vitality": 0.32,
+          "Agility": 0.32,
+          "Speed": 0.32,
+          "Intelligence": 0.32,
+          "Wisdom": 0.32
+        }
+      },
+      {
+        "Level": 20,
+        "Growth": {
+          "Strength": 0.42,
+          "Vitality": 0.42,
+          "Agility": 0.42,
+          "Speed": 0.42,
+          "Intelligence": 0.42,
+          "Wisdom": 0.42
+        }
+      },
+      {
+        "Level": 40,
+        "Growth": {
+          "Strength": 0.56,
+          "Vitality": 0.56,
+          "Agility": 0.56,
+          "Speed": 0.56,
+          "Intelligence": 0.56,
+          "Wisdom": 0.56
+        }
+      }
+    ],
+    "Resistances": {},
+    "Abilities": [
+      "charge_rally",
+      "vengeance"
+    ],
+    "DefaultLoadout": [],
+    "DropTable": "soldier",
+    "MoveRange": 1,
+    "Targeting": "Threat",
+    "XpReward": 20,
+    "BossPhases": [],
+    "ChargeAbility": "charge_rally",
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Brain": "Sentinel",
+    "Remains": "corpse",
+    "ArmorPlate": 24,
+    "PlateUnyielding": true
+  },
+  {
     "Id": "moorcaptain",
     "Name": "The Captain",
     "Team": "Enemy",

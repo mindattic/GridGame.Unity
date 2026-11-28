@@ -81,7 +81,7 @@ namespace GridGame.App
             var img = wallet.KindIcon(RowKind.Diamond, Art.ItemIcon(Crafting.DiamondId)); // GG-T745 (§26.7)
             img.style.width = img.style.height = Size.IconS;
             img.style.marginLeft = Space.TargetHalfGap;
-            img.style.marginRight = 0;
+            img.style.marginRight = Space.S0;
             Ui.Name($"{ShardText.ShortPlural}: {Ui.Count(diamonds)} · {TicketText.Plural}: {Ui.Count(tickets)}", wallet, "grow").style.marginLeft = Space.S8;
             var row = Ui.Actions(w);
             PullButton(row, b, 1, busy, "btn--small btn--primary").name = "summon-draw";

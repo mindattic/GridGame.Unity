@@ -54,6 +54,10 @@ namespace GridGame.Meta
             new CampTip { Station = "summon", Title = "The Summon Circle",
                 Text = "Draw to call a new hero to the caravan. The odds of every hero are listed before you pay.",
                 Target = "summon-draw" },
+            // GG-T2061: Heroes › Equip, the first time the bag holds an upgrade, points once at Auto-equip best (GG-T1972).
+            new CampTip { Station = AutoEquipTipStation, Title = "Auto-equip",
+                Text = "Auto-equip best puts the strongest piece in your bag into every slot it beats. Tap it, then tap again to confirm.",
+                Target = AutoEquipButton },
             new CampTip { Station = "bounties", Title = "Bounties",
                 Text = "Take a hunt, then play the stage its clue names. Kill the marked target (the skull) and come back here to Claim.",
                 Target = "bounty-" },
@@ -215,6 +219,9 @@ namespace GridGame.Meta
                 Text = $"Heroes grow new skills on the skill board. The {hero} can take the {plan.Skill.Name} node: the first lesson is free, no skill points{where}. Tap Learn.",
             };
         }
+
+        /// <summary>The Equip tab's station and its Auto-equip best button (GG-T2061).</summary>
+        public const string AutoEquipTipStation = "equip", AutoEquipButton = "equip-auto-best";
 
         /// <summary>Recipe stations' Brew/Craft button and recipe-row name prefix.</summary>
         public const string CraftButton = "craft", RecipeRowPrefix = "recipe-";

@@ -116,7 +116,7 @@ namespace GridGame.App
                     p.style.position = Position.Absolute;
                     p.style.backgroundColor = SteamWhite;
                     p.style.opacity = 0f;
-                    p.style.borderTopLeftRadius = p.style.borderTopRightRadius = p.style.borderBottomLeftRadius = p.style.borderBottomRightRadius = 999f;
+                    p.style.borderTopLeftRadius = p.style.borderTopRightRadius = p.style.borderBottomLeftRadius = p.style.borderBottomRightRadius = Radius.Pill;
                     card.Add(p);
                     puffs.Add((p, s == 0 ? -1f : 1f, i));
                 }

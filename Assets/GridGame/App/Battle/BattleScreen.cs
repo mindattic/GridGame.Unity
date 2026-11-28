@@ -450,7 +450,7 @@ namespace GridGame.App
             strip.style.top = ManaStripTop; strip.style.height = ManaStripHeight; // left/right: ApplyStageLayout
             partyManaBar = new PartyManaBar { name = "party-mana-bar" };
             partyManaBar.style.position = Position.Absolute;
-            partyManaBar.style.left = partyManaBar.style.right = partyManaBar.style.top = partyManaBar.style.bottom = 0;
+            partyManaBar.style.left = partyManaBar.style.right = partyManaBar.style.top = partyManaBar.style.bottom = Space.S0;
             strip.Add(partyManaBar);
             var bar = abilityBar = Ui.El("row", root);
             bar.name = "abilitybar";
@@ -523,7 +523,7 @@ namespace GridGame.App
             var cell = Ui.El("col center", bar);
             cell.style.flexGrow = 1; cell.style.flexBasis = 0; cell.style.height = BarHeight;
             cell.style.marginLeft = cell.style.marginRight = Space.S8;
-            cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = 18;
+            cell.style.borderTopLeftRadius = cell.style.borderTopRightRadius = cell.style.borderBottomLeftRadius = cell.style.borderBottomRightRadius = Radius.R18;
             cell.style.borderTopWidth = cell.style.borderBottomWidth = cell.style.borderLeftWidth = cell.style.borderRightWidth = 4;
             cell.style.backgroundImage = new StyleBackground(Art.Window);
             return cell;

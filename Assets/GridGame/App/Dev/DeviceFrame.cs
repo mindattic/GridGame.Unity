@@ -22,7 +22,7 @@ namespace GridGame.App.Dev
             name = "device-frame";
             pickingMode = PickingMode.Ignore;
             style.position = Position.Absolute;
-            style.left = style.top = style.right = style.bottom = 0;
+            style.left = style.top = style.right = style.bottom = Space.S0;
             generateVisualContent += Draw;
         }
 
