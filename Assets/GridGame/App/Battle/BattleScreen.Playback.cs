@@ -33,6 +33,7 @@ namespace GridGame.App
             // A cast queued in this action is already in the final state; it joins the bar only when its beat plays.
             unplayedCasts.Clear();
             foreach (var ev in events) if (ev is CastQueuedEvent q) unplayedCasts.Add(q.EntryId);
+            BeginMeterPlayback(events); // GG-T1820: the spell bars start where this action found them
             BeginEnemyBeats(events); // GG-T839: traps and hazards drawn as of the beat now playing
             int i = 0;
             // The drag already showed the hero's walk live: the hero follows the finger and ApplyPreview slid every
@@ -110,6 +111,7 @@ namespace GridGame.App
             // means a beat was skipped or played out of order (the snap below would hide it as a jump).
             BoardAudit.Settled(AuditTokens(true));
             RefreshRecoverView(); // GG-T319: the tray snaps to the true state with everything else
+            shownMana.Clear(); // the spell bars read the true meters again
             SyncAll();
             BoardAudit.Synced(AuditTokens(true, rendered: true));
             while (Tween.Paused || awayOnSettings) yield return null;
@@ -197,6 +199,9 @@ namespace GridGame.App
                 case ManaChargedEvent mc: return ChargeAnim(mc);
                 case OrbMintedEvent o: if (o.Reason == "pincer") FlushTallies(); return OrbAnim(o);
                 case OrbsSpentEvent os: return SpendAnim(os);
+                case ManaGainedEvent mg: return ManaGainAnim(mg);
+                case SpellReadyEvent sr: return SpellReadyAnim(sr);
+                case SpellManaSpentEvent sms: SpellManaSpent(sms); return null;
 
                 case TimelineAdvancedEvent ta: FlushTallies(); return TimelineAnim(ta);
                 case PushedBackEvent pb: return PushAnim(pb);
@@ -1688,8 +1693,8 @@ namespace GridGame.App
             s.RemoveFromHierarchy();
         }
 
-        /// <summary>An orb mints (§3.1.2): a glowing mote flies from its real source (MintFrom) into the mana globe; on
-        /// landing the liquid rises with a ripple and a pulse, the count ticks up with a pop and a soft tick whose pitch
+        /// <summary>An orb mints (§3.1.2): its mote flies to the spell bars instead (ManaGainAnim, GG-T1820); the orb row
+        /// rises with a ripple and a pulse, the count ticks up with a pop and a soft tick whose pitch
         /// climbs with the count, a source tag ("+1 Guard", "+2 Pincer") pops beside the globe, and the Log records it
         /// (GG-T405). An overflowing orb (§3.1.4) fades in flight and the full pool answers "Full".</summary>
         private IEnumerator OrbAnim(OrbMintedEvent o)
@@ -1701,10 +1706,8 @@ namespace GridGame.App
             if (o.Landed) { OrbSlotsFlown.Add(index); if (OrbSlotsFlown.Count > 24) OrbSlotsFlown.RemoveAt(0); }
             // An item or ability that grants orbs (a Mana Potion, Meditate, Aether Pour) is named by the action that used it.
             string label = (o.Reason == "item" || o.Reason == "aether") && !string.IsNullOrEmpty(lastActionLabel) ? lastActionLabel : MintLabel(o.Reason);
-            // Each orb's trail flies into its own slot, so orbs minted together land in order (GG-T673). Time regen has
-            // no source on the board, and Reduce Motion skips the flight: the orb just fills.
-            if (!ReduceMotion && o.Reason != "regen")
-                yield return MoteFlight(MintFrom(o.Reason, o.SourceUnitId), Timing.Standard + Timing.Quick, !o.Landed, null, 1f, OrbCenter(index));
+            // GG-T1820: the mana motes fly to the spell bars (ManaGainAnim); the orb row just fills.
+            yield return null;
             if (o.Landed)
             {
                 SyncOrbs(o.Slot >= 0 ? o.Slot + 1 : -1); // count up to this orb; later orbs add theirs

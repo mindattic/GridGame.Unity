@@ -326,15 +326,12 @@ namespace GridGame.App
             {
                 float secs = mc.Amount / (float)BattleConfig.GuardChargePerSecond;
                 Billboard($"Guard: {secs:0.#}s → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb", null, Palette.Mana); // GG-T408
-                // GG-T405: Guard trades time for mana. The time slice leaves the GUARD button gold and pours into the
-                // globe blue, the charge ring advancing as it lands, with a tag and a Log line saying so.
-                App.StartCoroutine(MoteFlight(MintFrom("guard", -1), Timing.Emphasis, false, Palette.Gold, 0.8f));
+                // GG-T405: Guard trades time for mana, with a tag and a Log line saying so; its gold time slice pours
+                // into the spell bars (ManaGainAnim, GG-T1820).
                 MintTag($"{secs:0.#}s → mana", 0, Palette.Gold);
                 Feed($"Guard: {secs:0.#}s of turn time → {mc.Amount * 100 / BattleConfig.ManaChargePerOrb}% of an orb ({to * 100 / BattleConfig.ManaChargePerOrb}% toward the next)", Palette.Mana);
             }
-            // GG-T405: every charge shows where it came from: a small mote from its source into the globe's charge ring.
-            // Time regen (GG-T673) has no source on the board: its charge fills the ring without a mote.
-            if (mc.Reason != "guard" && mc.Reason != "regen" && !ReduceMotion) App.StartCoroutine(MoteFlight(MintFrom(mc.Reason, mc.SourceId), Timing.Standard, true, null, 0.55f));
+            // GG-T1820: the charge's motes fly from its source to the spell bars (the ManaGainedEvent that follows).
             App.Audio.Sfx("battle.orb", 0.35f, 0.7f + 0.5f * (to / (float)BattleConfig.ManaChargePerOrb));
             yield return Tween.Run(Timing.Standard, k =>
             {

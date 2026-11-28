@@ -939,7 +939,7 @@ namespace GridGame.App
                 var a = BattleEngine.SlotAbility(State, hero, i);
                 if (a == null || a.Cost <= 0) continue;
                 int k = i;
-                marks.Add(new CoachStep { Caption = $"A spell's pips are its cost in orbs: {a.Name} costs {a.Cost} (tap the pips).", Element = () => k < slotViews.Count ? slotViews[k].Q("cost") : null, Info = true });
+                marks.Add(new CoachStep { Caption = $"Each spell fills its own bar with mana: {a.Name} glows when its bar is full and ready to cast (tap the bar).", Element = () => k < slotViews.Count ? slotViews[k].Q("meter") : null, Info = true });
                 break;
             }
             return marks;
