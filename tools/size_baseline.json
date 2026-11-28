@@ -3,7 +3,6 @@
   "Assets/GridGame/App/Battle/BattleScreen.Playback.cs",
   "Assets/GridGame/App/Battle/BattleScreen.cs",
   "Assets/GridGame/App/Battle/BoardView.cs",
-  "Assets/GridGame/App/Screens/HubScreens.cs",
   "Assets/GridGame/App/UI/Ui.cs",
   "Assets/GridGame/Core/Battle/BattleRunner.cs",
   "Assets/GridGame/Core/Bot/HeroBot.cs",
@@ -28,16 +27,10 @@
    "StatusScreen"
   ],
   "Assets/GridGame/App/Screens/HubScreens.cs": [
-   "AetheristScreen",
-   "AlchemistScreen",
    "BestiaryScreen",
-   "BlacksmithScreen",
    "BountyScreen",
-   "CaravanScreen",
    "CrucibleScreen",
-   "EnchantressScreen",
    "SettingsScreen",
-   "ShopScreen",
    "SummonHistoryScreen",
    "SummonScreen"
   ],
