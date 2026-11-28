@@ -1,6 +1,6 @@
 {
  "device": "galaxys25",
- "captured": "2026-11-28T07:38:01",
+ "captured": "2026-11-28T09:45:17",
  "screens": {
   "title": {
    "screen": "title",
@@ -13716,7 +13716,7 @@
       "rect": [
        46.0,
        432.0,
-       194.0,
+       196.0,
        132.0
       ],
       "size": {
@@ -13737,7 +13737,7 @@
      {
       "text": "Armor",
       "rect": [
-       263.0,
+       265.0,
        432.0,
        139.0,
        132.0
@@ -13760,9 +13760,9 @@
      {
       "text": "Jewelry",
       "rect": [
-       426.0,
+       428.0,
        432.0,
-       170.0,
+       169.0,
        132.0
       ],
       "size": {
@@ -14175,9 +14175,9 @@
       "text": "Apprentice's Wand",
       "rect": [
        205.0,
-       1509.0,
+       1480.0,
        370.0,
-       66.0
+       126.0
       ],
       "size": {
        "px": 40,
@@ -14187,9 +14187,9 @@
       "large": false,
       "contrast": {
        "fg": "#ececf0",
-       "bg": "#1d1b2b",
-       "ratio": 14.31,
-       "worstStop": 14.31,
+       "bg": "#1c1a2a",
+       "ratio": 14.47,
+       "worstStop": 14.47,
        "need": 4.5,
        "pass": true
       }
@@ -14647,7 +14647,7 @@
       "large": false,
       "contrast": {
        "fg": "#91919a",
-       "bg": "#12111d",
+       "bg": "#12111c",
        "ratio": 5.98,
        "worstStop": 5.98,
        "need": 4.5,
@@ -14693,9 +14693,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#232739",
-       "ratio": 11.91,
-       "worstStop": 11.91,
+       "bg": "#232639",
+       "ratio": 11.96,
+       "worstStop": 11.96,
        "need": 4.5,
        "pass": true
       }
@@ -16171,9 +16171,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101c",
-       "ratio": 7.66,
-       "worstStop": 7.66,
+       "bg": "#11111d",
+       "ratio": 7.61,
+       "worstStop": 7.61,
        "need": 4.5,
        "pass": true
       }
@@ -17558,10 +17558,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b2b2bb",
+       "fg": "#93939c",
        "bg": "#161621",
-       "ratio": 8.52,
-       "worstStop": 8.52,
+       "ratio": 5.87,
+       "worstStop": 5.87,
        "need": 4.5,
        "pass": true
       }
@@ -17581,10 +17581,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b3b2bb",
+       "fg": "#94939d",
        "bg": "#181724",
-       "ratio": 8.44,
-       "worstStop": 8.44,
+       "ratio": 5.84,
+       "worstStop": 5.84,
        "need": 4.5,
        "pass": true
       }
@@ -17604,10 +17604,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b0b9",
+       "fg": "#90909a",
        "bg": "#100f1c",
-       "ratio": 8.84,
-       "worstStop": 8.84,
+       "ratio": 6.01,
+       "worstStop": 6.01,
        "need": 4.5,
        "pass": true
       }
@@ -17627,10 +17627,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b0b9",
+       "fg": "#90909a",
        "bg": "#100f1c",
-       "ratio": 8.84,
-       "worstStop": 8.84,
+       "ratio": 6.01,
+       "worstStop": 6.01,
        "need": 4.5,
        "pass": true
       }
@@ -42909,7 +42909,7 @@
       }
      },
      {
-      "text": "\"Casks sloshing fine today. Mind you don\u2026",
+      "text": "\"Every crack's a lesson. Some lessons ar\u2026",
       "rect": [
        50.0,
        490.0,
@@ -42924,15 +42924,15 @@
       "large": false,
       "contrast": {
        "fg": "#ffd959",
-       "bg": "#1d1b2c",
-       "ratio": 12.3,
-       "worstStop": 12.3,
+       "bg": "#1d1c2d",
+       "ratio": 12.24,
+       "worstStop": 12.24,
        "need": 4.5,
        "pass": true
       }
      },
      {
-      "text": "\u2014 Brannoc, cask-keeper",
+      "text": "\u2014 Old Hask, wagon farrier",
       "rect": [
        50.0,
        622.0,

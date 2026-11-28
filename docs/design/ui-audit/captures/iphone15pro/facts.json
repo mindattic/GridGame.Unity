@@ -1,6 +1,6 @@
 {
  "device": "iphone15pro",
- "captured": "2026-11-28T07:38:32",
+ "captured": "2026-11-28T09:43:49",
  "screens": {
   "title": {
    "screen": "title",
@@ -13683,7 +13683,7 @@
       "rect": [
        46.0,
        504.0,
-       194.0,
+       196.0,
        132.0
       ],
       "size": {
@@ -13704,7 +13704,7 @@
      {
       "text": "Armor",
       "rect": [
-       263.0,
+       265.0,
        504.0,
        139.0,
        132.0
@@ -13727,9 +13727,9 @@
      {
       "text": "Jewelry",
       "rect": [
-       426.0,
+       428.0,
        504.0,
-       170.0,
+       169.0,
        132.0
       ],
       "size": {
@@ -14660,9 +14660,9 @@
       "large": false,
       "contrast": {
        "fg": "#e6e6ee",
-       "bg": "#1a1e2e",
-       "ratio": 13.33,
-       "worstStop": 13.33,
+       "bg": "#1a1d2e",
+       "ratio": 13.44,
+       "worstStop": 13.44,
        "need": 4.5,
        "pass": true
       }
@@ -16016,9 +16016,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11101d",
-       "ratio": 7.65,
-       "worstStop": 7.65,
+       "bg": "#11111d",
+       "ratio": 7.61,
+       "worstStop": 7.61,
        "need": 4.5,
        "pass": true
       }
@@ -16131,9 +16131,9 @@
       "large": false,
       "contrast": {
        "fg": "#a4a3bc",
-       "bg": "#11111c",
-       "ratio": 7.62,
-       "worstStop": 7.62,
+       "bg": "#12111c",
+       "ratio": 7.61,
+       "worstStop": 7.61,
        "need": 4.5,
        "pass": true
       }
@@ -17518,10 +17518,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b0b9",
+       "fg": "#90909a",
        "bg": "#100f1c",
-       "ratio": 8.84,
-       "worstStop": 8.84,
+       "ratio": 6.01,
+       "worstStop": 6.01,
        "need": 4.5,
        "pass": true
       }
@@ -17541,10 +17541,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b1ba",
+       "fg": "#91909a",
        "bg": "#12101d",
-       "ratio": 8.79,
-       "worstStop": 8.79,
+       "ratio": 5.99,
+       "worstStop": 5.99,
        "need": 4.5,
        "pass": true
       }
@@ -17564,10 +17564,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b0b9",
+       "fg": "#90909a",
        "bg": "#100f1c",
-       "ratio": 8.84,
-       "worstStop": 8.84,
+       "ratio": 6.01,
+       "worstStop": 6.01,
        "need": 4.5,
        "pass": true
       }
@@ -17587,10 +17587,10 @@
       },
       "large": false,
       "contrast": {
-       "fg": "#b1b1b9",
+       "fg": "#91909a",
        "bg": "#11101c",
-       "ratio": 8.81,
-       "worstStop": 8.81,
+       "ratio": 5.99,
+       "worstStop": 5.99,
        "need": 4.5,
        "pass": true
       }
@@ -42165,7 +42165,7 @@
       }
      },
      {
-      "text": "\"The Choir kept a ledger too. Ours adds \u2026",
+      "text": "\"If it isn't in the ledger, it didn't ha\u2026",
       "rect": [
        50.0,
        562.0,
