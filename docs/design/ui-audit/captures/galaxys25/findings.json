@@ -3,7 +3,7 @@
  "device": "galaxys25",
  "name": "Galaxy S25",
  "shape": "galaxy-fhd",
- "captured": "2026-11-28T06:04:31",
+ "captured": "2026-11-28T06:52:18",
  "frame": {
   "type": "punch",
   "corner": 90,
@@ -23,9 +23,9 @@
   "offStage": 0,
   "underCutout": 0,
   "topInset": 0,
-  "homeIndicator": 61,
+  "homeIndicator": 51,
   "targetsUnder44pt": 8,
-  "contrastFails": 27,
+  "contrastFails": 30,
   "contrastUnderCutout": 0,
   "screensWith": {
    "overflow": [],
@@ -41,9 +41,6 @@
     "battle-boss",
     "caravan",
     "credits",
-    "hub",
-    "mercenaries",
-    "overworld",
     "quests",
     "settings",
     "shop",
@@ -59,6 +56,7 @@
     "title"
    ],
    "contrastFails": [
+    "battle",
     "battle-boss",
     "blacksmith",
     "camp",
@@ -109,22 +107,20 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "\u2014 Lio, rune apprentice"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [
     {
-     "target": "Continue",
+     "target": "Fight",
      "pt": [
-      311.1,
+      318.2,
       40.0
      ]
     }
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 41,
+   "contrastSamples": 29,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -433,7 +429,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 29,
+   "contrastSamples": 45,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -720,21 +716,12 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "\"Fastest legs in the underspire. I run o\u2026",
-    "As",
-    "a",
-    "Supporter",
-    "(reach",
-    "3):",
-    "Hastens",
-    "the"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 64,
+   "contrastSamples": 22,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -864,9 +851,17 @@
    ],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [],
+   "contrastFails": [
+    {
+     "text": "YOU",
+     "ratio": 3.99,
+     "need": 4.5,
+     "fg": "#f4f4f6",
+     "bg": "#518457"
+    }
+   ],
    "contrastUnderCutout": [],
-   "contrastSamples": 40,
+   "contrastSamples": 41,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -912,32 +907,39 @@
      "bg": "#444963"
     },
     {
-     "text": "BOSS",
-     "ratio": 2.37,
-     "need": 4.5,
-     "fg": "#db66ff",
-     "bg": "#685852"
-    },
-    {
-     "text": "3.5s",
-     "ratio": 4.33,
+     "text": "YOU",
+     "ratio": 2.28,
      "need": 4.5,
      "fg": "#f4f4f6",
-     "bg": "#876a82"
+     "bg": "#7ab178"
+    },
+    {
+     "text": "BOSS",
+     "ratio": 2.38,
+     "need": 4.5,
+     "fg": "#db66ff",
+     "bg": "#665856"
+    },
+    {
+     "text": "YOU",
+     "ratio": 3.84,
+     "need": 4.5,
+     "fg": "#73f294",
+     "bg": "#42754a"
     },
     {
      "text": "must",
-     "ratio": 2.08,
+     "ratio": 2.11,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#6f704c"
+     "bg": "#6f6f4c"
     },
     {
      "text": "come",
-     "ratio": 2.61,
+     "ratio": 2.65,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#626041"
+     "bg": "#615f40"
     },
     {
      "text": "for",
@@ -948,56 +950,49 @@
     },
     {
      "text": "you",
-     "ratio": 2.84,
+     "ratio": 2.83,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#585b4a"
-    },
-    {
-     "text": "(",
-     "ratio": 4.47,
-     "need": 4.5,
-     "fg": "#a4a3bc",
-     "bg": "#403b3b"
+     "bg": "#585b4c"
     },
     {
      "text": "you",
-     "ratio": 2.11,
+     "ratio": 2.08,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#6e6f4d"
+     "bg": "#6f704e"
     },
     {
      "text": "take",
-     "ratio": 3.5,
+     "ratio": 3.45,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#4e4d35"
+     "bg": "#4f4e35"
     },
     {
      "text": "25%",
-     "ratio": 3.1,
+     "ratio": 3.15,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#535544"
+     "bg": "#525444"
     },
     {
      "text": "less",
-     "ratio": 3.47,
+     "ratio": 3.43,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#524b49"
+     "bg": "#524c4a"
     },
     {
      "text": "damage.",
-     "ratio": 4.21,
+     "ratio": 4.29,
      "need": 4.5,
      "fg": "#a4a3bc",
-     "bg": "#4a3d40"
+     "bg": "#483c3e"
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 41,
+   "contrastSamples": 44,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -1010,22 +1005,20 @@
    "offStage": [],
    "underCutout": [],
    "topInset": [],
-   "homeIndicator": [
-    "\u2014 Osk, quartermaster"
-   ],
+   "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [
     {
-     "target": "Continue",
+     "target": "Fight",
      "pt": [
-      311.1,
+      318.2,
       40.0
      ]
     }
    ],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 41,
+   "contrastSamples": 29,
    "minTextPt": null,
    "layoutProblems": []
   },
@@ -1042,7 +1035,7 @@
    "engineUnsafeArea": [],
    "targetsUnder44pt": [
     {
-     "target": "Continue",
+     "target": "Fight",
      "pt": [
       318.2,
       40.0
@@ -1051,18 +1044,32 @@
    ],
    "contrastFails": [
     {
+     "text": "Lv 1",
+     "ratio": 4.32,
+     "need": 4.5,
+     "fg": "#ffd959",
+     "bg": "#556676"
+    },
+    {
+     "text": "Lv 1",
+     "ratio": 3.93,
+     "need": 4.5,
+     "fg": "#ffd959",
+     "bg": "#5e6c79"
+    },
+    {
      "text": "Craft",
-     "ratio": 2.4,
+     "ratio": 1.76,
      "need": 4.5,
      "fg": "#aab8ff",
-     "bg": "#6d777d"
+     "bg": "#879070"
     },
     {
      "text": "Journal",
-     "ratio": 2.13,
+     "ratio": 2.83,
      "need": 4.5,
      "fg": "#aab8ff",
-     "bg": "#737f90"
+     "bg": "#626b79"
     },
     {
      "text": "Recruit",
@@ -1080,7 +1087,7 @@
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 33,
+   "contrastSamples": 24,
    "minTextPt": null,
    "layoutProblems": []
   },
