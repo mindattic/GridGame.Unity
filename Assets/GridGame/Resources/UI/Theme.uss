@@ -445,6 +445,23 @@
 }
 .veil { background-color: var(--color-shade); }
 
+/* ── Overlays on the kit (GG-T2092): dialogue, coach, inspect card ──────── */
+.window.dlg-box { min-height: 560px; padding-top: var(--space-64); }
+.dlg-plate { min-width: 260px; padding: 0 var(--space-32); }
+.dlg-choice { margin-top: var(--space-8); }
+.dlg-wits-row { flex-direction: row; align-items: center; padding: var(--space-16) var(--space-24); }
+.dlg-wits-name { margin-right: var(--space-16); }
+.dlg-wits-pip { margin: 0 var(--space-4); }
+.dlg-wits-caption { margin-top: var(--space-8); }
+.kit-chip.dlg-bond { align-self: center; margin: var(--space-8) 0 0 0; padding: var(--space-8) var(--space-24); }
+.kit-chip.dlg-bond--tier { border-width: 4px; border-color: var(--color-gold); }
+.dlg-bond__thumb { margin-right: var(--space-8); }
+.dlg-bond__text { margin-left: var(--space-8); }
+.coach-image { margin: var(--space-16) 0; }
+.coach-actions { justify-content: space-between; margin-top: var(--space-24); }
+.btn.coach-caption-skip { flex-shrink: 0; margin-left: var(--space-16); }
+.window.inspect-card { margin: 0; }
+
 /* ── Fade overlay ────────────────────────────────────────────────────────── */
 .fade { background-color: var(--color-black); opacity: 0; transition-property: opacity; transition-duration: 0.22s; }
 .fade--on { opacity: 1; }
