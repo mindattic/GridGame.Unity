@@ -29,9 +29,6 @@ namespace GridGame.App
         /// <summary>The move row last highlighted in the sheet, or −1.</summary>
         private int highlightedMove = -1;
         private bool abilitiesHeld;
-        /// <summary>The slot a tutorial cast mark has boxed the Abilities button for: a tap aims it directly (GG-T1922 walks
-        /// the sheet instead), or −1.</summary>
-        private int coachSlot = -1;
 
         public bool AbilitiesOpen => sheetVeil != null && sheetVeil.parent != null;
 
@@ -72,7 +69,6 @@ namespace GridGame.App
             cell.RegisterCallback<ClickEvent>(_ =>
             {
                 if (abilitiesHeld) { abilitiesHeld = false; return; }
-                if (coachSlot >= 0) { OnSlot(coachSlot); return; }
                 OpenAbilities(TargetingSlot);
             });
         }
@@ -361,11 +357,16 @@ namespace GridGame.App
             foot.style.marginTop = Space.S8;
             var back = RowIcon.IconButton("Back", RowKind.Back, SheetBack, "btn--small", foot);
             back.name = "abilities-back";
-            var sl = hero.Bar[slot];
-            string verb = sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
-            var go = RowIcon.IconButton(verb, RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
+            var go = RowIcon.IconButton(CommitVerb(hero, slot, a), RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
+        }
+
+        /// <summary>The detail page's commit button: Use for an item, Cast for a spell, else Perform.</summary>
+        private static string CommitVerb(Unit hero, int slot, AbilityDef a)
+        {
+            var sl = hero.Bar[slot];
+            return sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
         }
 
         /// <summary>Perform / Cast / Use: the sheet slides away and the board takes that move's own aiming.</summary>

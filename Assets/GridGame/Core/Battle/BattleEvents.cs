@@ -750,6 +750,14 @@ namespace GridGame.Core.Battle
         public override string ToString() => $"Plate broken on {UnitId}";
     }
 
+    /// <summary>GG-T2069 (§13.5): a <c>ShattersPlate</c> ability broke the plate outright, from any side (its
+    /// <see cref="PlateBrokenEvent"/> follows). <see cref="Left"/> is what the plate had left.</summary>
+    public sealed class PlateShatteredEvent : BattleEvent
+    {
+        public int UnitId; public int AttackerId; public string AbilityId; public int Left;
+        public override string ToString() => $"Plate shattered on {UnitId} by {AbilityId} ({Left})";
+    }
+
     /// <summary>An armored unit turned to face its target (its plate turns with it).</summary>
     public sealed class FacingChangedEvent : BattleEvent
     {

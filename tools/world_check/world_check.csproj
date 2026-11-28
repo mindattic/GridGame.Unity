@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Checks draft world.json files (tools/world_map.py spots with a draft path) against the real loader: ContentLoader.Settings
+       deserialization and WorldContent.Validate over the repo's content. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../Tests/GridGame.Core/GridGame.Core.csproj" />
+  </ItemGroup>
+</Project>
