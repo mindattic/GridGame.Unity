@@ -271,13 +271,27 @@ namespace GridGame.App
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
             }
-            else if (wv.Wave > 0 || wv.TotalWaves > 1)
+            else
             {
-                ShowBanner($"Wave {wv.Wave + 1}/{wv.TotalWaves}");
-                App.Audio.Sfx("battle.wave", 0.8f); // GG-T465: a campaign wave had only the banner
-                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.GoldLight, TypeScale.Base);
-                App.StartCoroutine(FloatAway(f, 1.0f));
-                yield return Tween.Wait(Timing.Dramatic);
+                // GG-T1951 (§9.0): the wave's billboard counts the foes it brought; the first wave's also names the goal.
+                int foes = 0;
+                foreach (var id in wv.Spawned)
+                    if (State.UnitById(id) is Unit u && u.Team == Team.Enemy && !u.IsSnakeSegment) foes++;
+                string count = foes == 0 ? null : foes == 1 ? "1 foe" : $"{foes} foes";
+                string waveOf = wv.TotalWaves > 1 ? $"Wave {wv.Wave + 1} of {wv.TotalWaves}" : null;
+                string line = waveOf != null && count != null ? $"{waveOf}: {count}" : waveOf ?? count;
+                if (wv.Wave == 0) line = line != null ? $"{line} · {GoalText}" : GoalText;
+                if (line != null) ShowBanner(line);
+                if (wv.Wave > 0 || wv.TotalWaves > 1)
+                {
+                    App.Audio.Sfx("battle.wave", 0.8f); // GG-T465: a campaign wave had only the banner
+                    if (!ReduceMotion)
+                    {
+                        var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.GoldLight, TypeScale.Base);
+                        App.StartCoroutine(FloatAway(f, 1.0f));
+                    }
+                    yield return Tween.Wait(Timing.Dramatic);
+                }
             }
         }
 
