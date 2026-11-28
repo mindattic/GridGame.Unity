@@ -180,6 +180,7 @@ def main():
     refuse_or_replace(a.replace)
     run = f"scenario-{name}"
     proc, summary, screen = start(arg, a.device, run)
+    ww, wh = window_size(a.device)
     png = harness.shot(run)
     bring_to_front(proc.pid)
 

@@ -62,6 +62,7 @@
     --space-48: 48px;
     --space-64: 64px;
     --space-96: 96px;
+    --measure-text: 720px; /* POL-A5, GG-T1899: the readable line (about 48 characters) for a long description */
 }
 
 /* GG-T770 (owner: "all these different font sizes make it look messy"): every GUI label draws at ONE size, --type-base.
@@ -869,4 +870,5 @@
 .mana-pool .mana-pool__count { transition-property: opacity; transition-duration: 0.15s; }
 .description-panel .description-panel__window { flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-height: 0; margin: 0; padding: var(--space-8) var(--space-24); }
 .description-panel .description-panel__page { flex-grow: 1; flex-shrink: 1; }
+.description-panel .description-panel__page .unity-scroll-view__content-container { width: 100%; max-width: var(--measure-text); align-self: center; }
 .description-panel .description-panel__page .btn { margin-top: 0; margin-bottom: 0; }
