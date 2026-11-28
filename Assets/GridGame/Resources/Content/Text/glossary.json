@@ -125,12 +125,12 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:9488428b036976635fb29a5523c90075e907f0a3680a608c2ced2ee628734b0a",
+      "hash": "sha256:c129d2e21a13604e2e056b8ac674fadd584354dd4d31efe2f2f386a0bbcf54be",
       "about": [],
       "speakers": [],
       "payload": {
         "term": "Mana Shard",
-        "definition": "Mana made stable. The Manasmith refines Mana Dust into these crystals, which hold their mana instead of dissipating. The premium currency, bought in the Shard Store; it pays for a random summon, an instant Rested refill and a lucky craft.",
+        "definition": "Mana made stable. The Manasmith refines Mana Dust into these crystals, which hold their mana instead of dissipating. The premium currency, bought in the Mana Shard Store; it pays for a random summon, an instant Rested refill and a lucky craft.",
         "aliases": [
           "Mana Shards",
           "Shard",

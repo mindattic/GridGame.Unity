@@ -148,8 +148,15 @@ namespace GridGame.App
         private int amount = 100;
         private static readonly int[] Steps = { -100, -10, 10, 100 };
 
-        protected override void BuildBody(VisualElement body)
+        protected override void BuildBody(VisualElement page)
         {
+            // GG-T1974: the balance, exchange and packs scroll; the footer stays under them, above the bottom nav.
+            var scroll = new ScrollView(ScrollViewMode.Vertical);
+            scroll.AddToClassList("list");
+            scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            scroll.touchScrollBehavior = ScrollView.TouchScrollBehavior.Clamped;
+            page.Add(scroll);
+            var body = scroll.contentContainer;
             int have = DiamondExchange.Have(S);
             int max = DiamondExchange.MaxBuy(C, S);
             amount = Math.Max(1, amount);
@@ -217,7 +224,7 @@ namespace GridGame.App
                     : $"A flat rate: every pack is the same price per {ShardText.Short}.", packs);
             }
 
-            var foot = Ui.Footer(body, "diamond-footer");
+            var foot = Ui.Footer(page, "diamond-footer");
             Ui.Name($"{ShardText.ShortOf(amount)} for {Ui.Gold(DiamondExchange.GoldFor(amount))}", foot, "grow");
             var go = RowIcon.IconButton("Exchange", RowKind.Confirm, Exchange, "btn--primary", foot, confirmTap: false); // GG-T745
             go.name = "diamond-exchange";
