@@ -68,6 +68,8 @@ namespace GridGame.App
             if (Drills.IsDrill(c.TryStage(stageId))) { BuildDrill(col, c); return; }
             var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
             Fonts.UseDisplay(title);
+            title.style.fontSize = TypeScale.Base * 1.6f;
+            title.style.unityTextAlign = TextAnchor.MiddleCenter;
             title.style.color = report.Victory ? Palette.Gold : new Color(1f, 0.45f, 0.45f);
             Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
 
