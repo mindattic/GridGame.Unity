@@ -1605,12 +1605,20 @@ namespace GridGame.App
                 var top = Ui.El("row", col);
                 Ui.Name(d.Name, top, "grow");
                 Ui.Caption($"Lv {lv}/{d.Levels.Count}", top, "gold");
-                if (!string.IsNullOrEmpty(d.Crew)) Ui.Caption("Crew: " + CaravanUpgrades.CrewName(d), col, "gold");
                 var crewBlurb = ContentDb.Blurb(C.CrewBlurbs, d.Id); // GG-T374: Prose "character:<crew>"
-                if (!string.IsNullOrEmpty(crewBlurb)) Ui.Para(crewBlurb, col, "dim");
-                Ui.Para(d.Description, col, "dim");
                 if (lv > 0) Ui.Para("Now: " + d.Levels[lv - 1].Text, col, "good");
                 if (next != null) Ui.Para("Next: " + next.Text, col);
+                // GG-T1868: the keeper's lore and the full description are one tap (or a hold) away, not printed on every row.
+                Func<VisualElement, bool> read = sheet =>
+                {
+                    Ui.Name(d.Name, sheet);
+                    if (!string.IsNullOrEmpty(d.Crew)) Ui.Caption("Crew: " + CaravanUpgrades.CrewName(d), sheet, "gold");
+                    if (!string.IsNullOrEmpty(crewBlurb)) Ui.Para(crewBlurb, sheet, "dim");
+                    Ui.Para(d.Description, sheet, "dim");
+                    return true;
+                };
+                InspectCard.Attach(ic, read, tap: true);
+                InspectCard.Attach(top, read, tap: true);
                 var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
