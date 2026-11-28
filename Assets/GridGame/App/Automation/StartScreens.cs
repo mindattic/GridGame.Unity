@@ -10,7 +10,7 @@ namespace GridGame.App.Automation
         {
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
-            "profiles", "newprofile", "createprofile", "splash", "diamonds", "mercenaries", "summon-history", "quests", "about",
+            "profiles", "newprofile", "createprofile", "splash", "diamonds", "mercenaries", "summon-history", "quests", "about", "components",
         };
 
         public static bool TryGet(string id, out GameScreen screen)
@@ -55,6 +55,8 @@ namespace GridGame.App.Automation
                 case "settings": screen = new SettingsScreen(); break;
                 case "credits": screen = new CreditsScreen(); break;
                 case "about": screen = new AboutScreen(); break; // GG-T1330
+                // GG-T2049: the dev-only kit gallery; a release player reaches it only after unlocking Settings > Developer.
+                case "components": if (CommandLine.DebugOptionsAllowed || Dev.DevOptions.Unlocked) screen = new ComponentGalleryScreen(); break;
                 case "newgame": screen = new SaveSlotScreen(true); break;
                 case "load": screen = new SaveSlotScreen(false); break;
                 case "profiles": screen = new ProfileSelectScreen(); break; // GG-T99
