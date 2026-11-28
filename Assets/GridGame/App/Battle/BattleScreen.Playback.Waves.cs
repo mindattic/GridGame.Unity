@@ -334,6 +334,7 @@ namespace GridGame.App
                 ["stage"] = State.Stage.Id,
                 ["result"] = lastEnded == null ? "unknown" : lastEnded.Victory ? "victory" : lastEnded.Escaped ? "escaped" : lastEnded.Withdrawn == true ? "withdrawn" : "defeat",
             });
+            var lastHits = lastEnded != null && !lastEnded.Victory ? recorder?.LastHeroHits(PostBattleScreen.DefeatHitsShown) : null;
             SaveRecord();
             RecordEncounterTelemetry(); // GG-T59: one JSONL encounter record, flushed, before the session closes
             TelemetryUnity.Finish(new
@@ -359,6 +360,7 @@ namespace GridGame.App
                 yield break;
             }
             var report = BattleFactory.Commit(App.Content, App.Save, State);
+            if (lastHits != null) report.LastHits = lastHits;
             App.Persist();
             PostBattleScreen.RouteFrom(report, State.Stage.Id);
         }
