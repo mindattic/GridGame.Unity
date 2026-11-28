@@ -146,15 +146,16 @@ namespace GridGame.App
         }
 
         /// <summary>
-        /// GG-T450: a quick tap on a unit (no drag, no hold card, released on its own tile) opens its card after whatever
-        /// the tap already did (a hero is selected, a foe fills the actor panel). The card stays until the next press
+        /// GG-T450: a quick tap on a foe (no drag, no hold card, released on its own tile) opens its card after whatever
+        /// the tap already did. A hero's tap only selects it into the description panel (GG-T1905, BIBLE 9.0: no card over
+        /// the board); its sheet is the long-press. The card stays until the next press
         /// anywhere, and that press still acts — picking the hero up to drag it closes the card and drags as before.
         /// A recruitable is left out: its tap talks to it.
         /// </summary>
         private void TapUnitCard(int unitId, Vector2 local)
         {
             var u = State.UnitById(unitId);
-            if (u == null || !u.Alive || u.IsNeutral || !CanCommand() || TargetingSlot >= 0) return;
+            if (u == null || !u.Alive || u.IsNeutral || u.IsHero || !CanCommand() || TargetingSlot >= 0) return;
             if (board.TileAt(local) != u.Pos || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) return;
             InspectCard.Tap(v.Root, body => UnitSheet(body, u));
         }

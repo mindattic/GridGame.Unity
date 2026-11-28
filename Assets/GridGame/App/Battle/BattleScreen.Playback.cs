@@ -445,6 +445,7 @@ namespace GridGame.App
             tallying = true;
             string label = p.Team == Team.Hero ? (chainCount > 1 ? $"CHAIN ×{chainCount}!" : "PINCER!") : "Enemy pincer!";
             Billboard($"{a.Name} & {b.Name} — {(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}", null, p.Team == Team.Hero ? new Color(1f, 0.9f, 0.5f) : new Color(1f, 0.55f, 0.5f));
+            Feed($"{(p.Team == Team.Hero ? "" : "Enemy ")}{(chainCount > 1 ? $"Chain ×{chainCount}" : "Pincer")}: {a.Name} & {b.Name}", p.Team == Team.Hero ? Palette.Gold : new Color(1f, 0.55f, 0.5f));
             var supporters = p.Supporters.Select(State.UnitById).Where(x => x != null).ToList();
             if (supporters.Count > 0) Billboard("Support: " + string.Join(", ", supporters.Select(x => x.Name)), null, new Color(0.6f, 0.85f, 1f));
             ShowBanner(label);
