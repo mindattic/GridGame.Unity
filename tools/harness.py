@@ -7,6 +7,7 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py aspects devices  # GG-T724/T2026: the same per in-target screen shape (tools/devices.json) plus the framed fold inners
     python tools/harness.py aspects DEVICE   # GG-T2026: a device or shape id, shapes or all (tools/devices.py)
     python tools/harness.py safeareas [RUN] [--nocapture] [--device DEVICE] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4 (--device: each device's own shape and safe area); title/camp/merchant/results/battle
+    python tools/harness.py refold [RUN] [--device DEVICE]  # GG-T2028: one player at a Fold cover, hub, resize to the Fold main and back; each shape must re-lay out live
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
@@ -790,6 +791,67 @@ def safeareas(run="safeareas", height=1200, capture=True, settings=(), device=No
         time.sleep(3.0)  # let the capture finalize before the next launch
     print(json.dumps(report, indent=1))
     print("FAILURES:" if failures else "ALL SAFE AREAS OK", *failures, sep="\n  ")
+    return not failures
+
+
+# GG-T2028: the Galaxy Z Fold6 main (inner) screen, portrait px, with no safe insets (under-display camera). Not in
+# tools/devices.json, whose fold entries are the cover screens.
+FOLD_MAIN_PX = (1856, 2160)
+
+
+def _stage_for(w, h):
+    """The stage GameApp.StageSizeFor picks for a w x h screen, and whether it is framed (bible 26.3)."""
+    a = w / h
+    if a >= 1170 / 2532:
+        exact = 2532 * a
+        return (min(max(round(exact), 1170), 1424), 2532), exact > 1424 + 2
+    exact = 1170 / a
+    return (1170, min(max(round(exact), 2532), 2990)), exact > 2990 + 2
+
+
+def refold(run="refold", device="galaxyzfold6cover", height=1200):
+    """GG-T2028: one player launched at a Fold cover screen (with its safe insets) goes to the hub, then the automation
+    `resize` switches it to the Fold main screen and back to the cover without a restart. After each switch the hub must
+    still be the current screen, the stage must have re-laid out to that shape's size and frame state, and the layout
+    audit must be clean. Shots of each shape go to artifacts/RUN/. Exit 1 on any failure or log error."""
+    failures, report = [], {}
+    dev = devices.resolve(device)[0]
+    cw, ch, ct, cb = devices.screen(dev)
+    k = height / ch  # one density for both screens, as on the phone
+    shapes = [("cover", cw, ch, ct, cb), ("main", *FOLD_MAIN_PX, 0, 0), ("cover-again", cw, ch, ct, cb)]
+    launch(run, width=round(cw * k), height=height, fresh=True, extra=("-safeArea", f"{round(ct * k)},{round(cb * k)}"))
+    try:
+        _wait_screen("title"); time.sleep(0.8)
+        call("newgame", slot=0); time.sleep(1.5)
+        start = call("state")["screen"]
+        report["start"] = {"screen": start, "stage": call("stagebounds")}
+        shot(f"{run}-0-{start}")
+        for i, (label, w, h, top, bottom) in enumerate(shapes, 1):
+            if i == 1:
+                continue  # launched at the cover shape
+            r = call("resize", w=round(w * k), h=round(h * k), top=top, bottom=bottom, ref=h)
+            time.sleep(0.8)
+            expect, framed = _stage_for(w, h)
+            entry = {"resize": r, "layout": call("layout").get("problems")}
+            if not r.get("ok"):
+                failures.append(f"{label}: window is {r.get('screen')}, asked {round(w * k)}x{round(h * k)}")
+            if not r.get("relaid"):
+                failures.append(f"{label}: no re-layout after the resize")
+            if r.get("current") != start:
+                failures.append(f"{label}: screen is {r.get('current')}, expected {start} (no restart)")
+            if [round(v) for v in r.get("design", [])] != list(expect) or r.get("framed") != framed:
+                failures.append(f"{label}: stage {r.get('design')} framed={r.get('framed')}, expected {list(expect)} framed={framed}")
+            if entry["layout"]:
+                failures.append(f"{label}: layout {entry['layout']}")
+            shot(f"{run}-{i - 1}-{label}")
+            report[label] = entry
+        errs = [l for l in call("logs") if l.startswith(("Error", "Exception"))]
+        if errs:
+            failures.append(f"log errors {errs[:3]}")
+    finally:
+        _stop_player()
+    print(json.dumps(report, indent=1))
+    print("FAILURES:" if failures else "REFOLD OK", *failures, sep="\n  ")
     return not failures
 
 
@@ -1580,7 +1642,7 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
             fails.append(f"the splash didn't hand off to Create Profile (on {call('state')['screen']})")
             raise RuntimeError("no Create Profile")
 
-        # 2. Create Profile: name, quick settings, summary, Begin.
+        # 2. Create Profile: one step, the name (prefilled with a suggestion), then Create (GG-T1957).
         _step("create-profile")
         time.sleep(0.8)
         shot("02-create-profile-name")
@@ -1588,16 +1650,10 @@ def frontdoor(run="frontdoor", capture=True, name="Rowan", retries=2):
         if _tap_failed(r):
             fails.append(f"no name field: {r}")
         time.sleep(0.4)
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        if not any("Step 2 of 3" in t for t in call("texts")):
-            fails.append("Next on the name step didn't reach step 2")
-        shot("03-create-profile-settings")
-        call("click", name="create-profile-next"); time.sleep(0.9)
-        shot("04-create-profile-summary")
-        if not _click_until_screen("create-profile-begin", "create-profile"):
-            fails.append("Begin didn't leave Create Profile")
+        if not _click_until_screen("create-profile-create", "create-profile"):
+            fails.append("Create didn't leave Create Profile")
         if not _wait_screen("title", 8):
-            fails.append(f"Begin didn't reach the Main Menu (on {call('state')['screen']})")
+            fails.append(f"Create didn't reach the Main Menu (on {call('state')['screen']})")
         time.sleep(0.8)
 
         # 3. Main Menu: the new profile is active and named on the Profile row.
@@ -3959,6 +4015,15 @@ def _dispatch(cmd):
         names = [a for a in rest if "=" not in a]
         sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs,
                                 device=device) else 1)
+    elif cmd == "refold":
+        # refold [RUN] [--device DEVICE]  (DEVICE: a Fold cover device id from tools/devices.json)
+        rest = sys.argv[2:]
+        device = "galaxyzfold6cover"
+        if "--device" in rest:
+            i = rest.index("--device")
+            device = rest[i + 1] if i + 1 < len(rest) else sys.exit("--device needs a device id")
+            del rest[i:i + 2]
+        sys.exit(0 if refold(rest[0] if rest else "refold", device=device) else 1)
     elif cmd == "a11y":
         # a11y [RUN] [--nocapture] [key=value ...]  (GG-T495, e.g. textsize=130 reducemotion=1 colorblind=1)
         rest = [a for a in sys.argv[2:] if a != "--nocapture"]

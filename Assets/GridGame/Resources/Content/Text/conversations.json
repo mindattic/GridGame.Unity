@@ -35,6 +35,64 @@
         ]
       }
     },
+    "dialogue:boss_defeat_greenvalley": {
+      "key": "dialogue:boss_defeat_greenvalley",
+      "id": "conversation-boss-defeat-greenvalley",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:2b5f6b1dfc31da75c5af7c4ab17d5db7e475722415a125970eaecf9681cd3fdf",
+      "about": [
+        "character-commander",
+        "class-moorcaptain",
+        "place-greenvalley-03"
+      ],
+      "speakers": [
+        "class-moorcaptain",
+        "character-commander"
+      ],
+      "payload": {
+        "title": "What the Captain Sold",
+        "start": "a",
+        "nodes": [
+          {
+            "id": "a",
+            "speaker": "class-moorcaptain",
+            "line": "Quota... You think the tithe stops with me? The Choir will send someone who doesn't keep count.",
+            "next": "b"
+          },
+          {
+            "id": "b",
+            "speaker": "character-commander",
+            "line": "Then they'll find the wagon gone and the waystone awake. Where does the colour go, Captain?",
+            "next": "c"
+          },
+          {
+            "id": "c",
+            "speaker": "class-moorcaptain",
+            "line": "Up the old road, to the Still, and past it. I never asked further. Nobody who asks comes back to the moor.",
+            "next": "d"
+          },
+          {
+            "id": "d",
+            "speaker": "character-commander",
+            "line": "Then we'll ask. Tell the holds their tithe is their own again.",
+            "next": "e"
+          },
+          {
+            "id": "e",
+            "speaker": "class-moorcaptain",
+            "line": "They won't believe it from me.",
+            "next": "f"
+          },
+          {
+            "id": "f",
+            "speaker": "character-commander",
+            "line": "They'll believe it from us."
+          }
+        ]
+      }
+    },
     "dialogue:boss_intro_cathedral": {
       "key": "dialogue:boss_intro_cathedral",
       "id": "conversation-boss-intro-cathedral",
@@ -209,14 +267,15 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:d5522ca8c706f00ae3240d6d5ba24cf63c5ceedadfa99a01b56d4cf9db6a2196",
+      "hash": "sha256:ab01d1b63ba4204c7e56f99fc7cbe6be88d8f4829fd0e986088def51ea050bab",
       "about": [
-        "class-captain",
+        "character-commander",
+        "class-moorcaptain",
         "place-greenvalley-03"
       ],
       "speakers": [
-        "class-captain",
-        "$commander"
+        "class-moorcaptain",
+        "character-commander"
       ],
       "payload": {
         "title": "The Captain's Field",
@@ -224,26 +283,26 @@
         "nodes": [
           {
             "id": "a",
-            "speaker": "class-captain",
-            "line": "Saltmoss runaways in a Choir wagon. I wear their white for the holds' sake, and you've made a fool of me.",
+            "speaker": "class-moorcaptain",
+            "line": "So you're the ones who broke my Collector's plate and drove off in my tithe wagon. Tithe paid its colour every month without a word until you came.",
             "next": "b"
           },
           {
             "id": "b",
-            "speaker": "$commander",
-            "line": "You stood there while they took the colour out of your own people. Don't call us thieves.",
+            "speaker": "character-commander",
+            "line": "Tithe paid because your man stood on the bridge with a prisoner. You sold the holds' tithe to the Choir. Your own people's.",
             "next": "c"
           },
           {
             "id": "c",
-            "speaker": "class-captain",
-            "line": "I kept the tithe at quota. Without me it's three times that. Give me room on my field and I strike twice.",
+            "speaker": "class-moorcaptain",
+            "line": "I sold it at quota. Without me the Choir takes three times that and nobody keeps the count. Give me room on my own moor and I strike twice.",
             "next": "d"
           },
           {
             "id": "d",
-            "speaker": "$commander",
-            "line": "Then no room. Stay close to the Captain, everyone. Never let the Captain end a turn alone."
+            "speaker": "character-commander",
+            "line": "Then no room. Stay close to him, everyone. Never let the Captain end a turn alone."
           }
         ]
       }

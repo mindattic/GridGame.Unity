@@ -149,6 +149,48 @@
         ]
       }
     },
+    "bark:bossphase/moorcaptain/0": {
+      "key": "bark:bossphase/moorcaptain/0",
+      "id": "bark-bossphase-moorcaptain-0",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:0e846474a4a62f521eec85fae4ecf336b2bb4f7d500c0eaa39ff1cf0701e4e35",
+      "about": [
+        "class-moorcaptain"
+      ],
+      "speakers": [
+        "class-moorcaptain"
+      ],
+      "payload": {
+        "speaker": "class-moorcaptain",
+        "context": "boss phase announcement",
+        "lines": [
+          "The Captain"
+        ]
+      }
+    },
+    "bark:bossphase/moorcaptain/1": {
+      "key": "bark:bossphase/moorcaptain/1",
+      "id": "bark-bossphase-moorcaptain-1",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:14c85d97ffbafda6bc5084b6d8b1e0a0f8bf7e807a3c50071e95ef7dd77bee72",
+      "about": [
+        "class-moorcaptain"
+      ],
+      "speakers": [
+        "class-moorcaptain"
+      ],
+      "payload": {
+        "speaker": "class-moorcaptain",
+        "context": "boss phase announcement",
+        "lines": [
+          "The Captain rallies his men!"
+        ]
+      }
+    },
     "bark:caravan/armory": {
       "key": "bark:caravan/armory",
       "id": "bark-caravan-armory",

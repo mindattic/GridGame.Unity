@@ -2753,7 +2753,7 @@
     "Title": "The Captain's Field",
     "Trigger": { "Kind": "StageStart", "Id": "greenvalley-03" },
     "Speakers": [
-      { "Id": "boss", "Class": "captain" },
+      { "Id": "boss", "Class": "moorcaptain" },
       { "Id": "commander", "Class": "$commander" }
     ],
     "Nodes": [
@@ -5511,6 +5511,23 @@
       { "Id": "home", "Speaker": "hero", "Next": "close" },
       { "Id": "clean", "Speaker": "with", "Next": "close" },
       { "Id": "close", "Speaker": "commander" }
+    ]
+  },
+  {
+    "Id": "boss_defeat_greenvalley",
+    "Title": "What the Captain Sold",
+    "Trigger": { "Kind": "StageCleared", "Id": "greenvalley-03" },
+    "Speakers": [
+      { "Id": "boss", "Class": "moorcaptain" },
+      { "Id": "commander", "Class": "$commander" }
+    ],
+    "Nodes": [
+      { "Id": "a", "Speaker": "boss", "Next": "b" },
+      { "Id": "b", "Speaker": "commander", "Next": "c" },
+      { "Id": "c", "Speaker": "boss", "Next": "d" },
+      { "Id": "d", "Speaker": "commander", "Next": "e" },
+      { "Id": "e", "Speaker": "boss", "Next": "f" },
+      { "Id": "f", "Speaker": "commander" }
     ]
   },
   {

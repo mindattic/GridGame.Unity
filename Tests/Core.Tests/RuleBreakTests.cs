@@ -185,7 +185,7 @@ namespace GridGame.Tests
         {
             var expected = new Dictionary<string, (string boss, RuleBreak rule)>
             {
-                ["greenvalley-03"] = ("captain", RuleBreak.TwinTurn),
+                ["greenvalley-03"] = ("moorcaptain", RuleBreak.TwinTurn), // GG-T2062: the Captain, the slice villain
                 ["lanternroad-03"] = ("oni02", RuleBreak.Undying), // GG-T345: the mask that gets back up
                 ["desert-03"] = ("mechaarmor01", RuleBreak.AxisWard),
                 ["swamp-03"] = ("swampmistress00", RuleBreak.MireSwap),

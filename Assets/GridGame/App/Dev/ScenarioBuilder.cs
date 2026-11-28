@@ -40,6 +40,7 @@ namespace GridGame.App.Dev
             party = Save.Party.Select(id => new { hero = id, level = Progression.Level(Save.Hero(id)) }).ToList(),
             reserve = Save.Roster.Where(h => !Save.Party.Contains(h.ClassId)).Select(h => h.ClassId).ToList(),
             gear = Gear,
+            consumables = Save.Party.ToDictionary(id => id, id => Save.Hero(id).Bar.Where(e => e != null && e.StartsWith("item:")).Select(e => e.Substring(5)).ToList()),
             cleared = Save.ClearedStages.Count,
             highestCleared = Save.HighestClearedStage,
             story = Story,
@@ -218,6 +219,7 @@ namespace GridGame.App.Dev
 
             s.Gold = ScenarioDef.Int(def.Gold) ?? Progression.StartingGold + GoldPerClear * cleared;
             if (!ScenarioDef.IsWord(def.Gear, "none")) EquipBest(c, s, result);
+            EquipConsumables(c, s, def.Consumables);
             FillCaravan(c, s, def.Caravan, cleared, stages.Count);
 
             if (def.Food is int food) s.World.Food = Math.Max(0, food);
@@ -272,6 +274,28 @@ namespace GridGame.App.Dev
                     else s.AddItem(best.Id, -1);
                 }
                 result.Gear[h.ClassId] = worn;
+            }
+        }
+
+        /// <summary>Each hero's battle items (<see cref="ScenarioDef.Consumables"/>): the stack into the bag, then onto the bar
+        /// through <see cref="Abilities.Assign"/>, in the first empty unlocked slot or else the last unlocked one.</summary>
+        private static void EquipConsumables(ContentDb c, SaveData s, Dictionary<string, Dictionary<string, int>> spec)
+        {
+            if (spec == null) return;
+            int unlocked = Progression.UnlockedSlots(s);
+            foreach (var kv in spec)
+            {
+                var h = s.Hero(kv.Key) ?? throw new ArgumentException($"consumables: '{kv.Key}' is not in the roster");
+                foreach (var stack in kv.Value ?? new Dictionary<string, int>())
+                {
+                    var item = c.TryItem(stack.Key);
+                    if (item == null || item.Type != ItemType.Consumable) throw new ArgumentException($"consumables: '{stack.Key}' is not a battle item");
+                    s.AddItem(item.Id, Math.Max(1, stack.Value));
+                    int free = h.Bar.IndexOf(null);
+                    int slot = free >= 0 && free < unlocked ? free : unlocked - 1;
+                    var r = Abilities.Assign(c, s, h, slot, "item:" + item.Id);
+                    if (!r.Ok) throw new ArgumentException($"consumables: {kv.Key} can't carry {item.Id}: {r.Message}");
+                }
             }
         }
 

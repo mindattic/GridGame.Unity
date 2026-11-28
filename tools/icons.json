@@ -1741,6 +1741,14 @@
    "lorc/quake-stomp",
    "earth"
   ],
+  "sunder": [
+   "lorc/broken-shield",
+   "rust"
+  ],
+  "druidbrawler_rootbreaker": [
+   "lorc/thorny-vine",
+   "green"
+  ],
   "speedster_afterimage": [
    "lorc/ghost-ally",
    "ghost"
@@ -1858,6 +1866,14 @@
   "cons_grenade": [
    "lorc/grenade",
    "iron"
+  ],
+  "mat_summon_ticket": [
+   "lorc/scroll-unfurled",
+   "gold"
+  ],
+  "mat_ticket_fragment": [
+   "lorc/scroll-unfurled",
+   "silver"
   ],
   "mat_broken_blade": [
    "lorc/sword-wound",
