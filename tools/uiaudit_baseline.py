@@ -41,8 +41,11 @@ def screen_findings(device, f):
     cut_rect = ((W - cut["w"]) / 2, cut["top"], (W + cut["w"]) / 2, cut["top"] + cut["h"]) if cut else None
 
     under_cutout, top_inset, home_indicator = [], [], []
-    contrast_fails, contrast_cutout = [], []
+    contrast_fails, contrast_cutout, covered_text = [], [], []
     for t in f["text"]["items"]:
+        if t.get("covered"):
+            covered_text.append({"text": t["text"], "by": t["covered"]})
+            continue
         r = device_rect(f, t["rect"])
         if r[1] >= H or r[3] <= 0:
             continue  # scrolled out of view
@@ -81,12 +84,12 @@ def screen_findings(device, f):
     return {"landedOn": f.get("landedOn"), "png": f["png"], "overflow": overflow, "clipped": clipped, "overlap": overlap,
             "offStage": offstage, "underCutout": under_cutout, "topInset": top_inset, "homeIndicator": home_indicator,
             "engineUnsafeArea": f["safeArea"]["intrusions"], "targetsUnder44pt": small, "contrastFails": contrast_fails,
-            "contrastUnderCutout": contrast_cutout, "contrastSamples": f["text"]["contrastSamples"],
+            "contrastUnderCutout": contrast_cutout, "coveredText": covered_text, "contrastSamples": f["text"]["contrastSamples"],
             "minTextPt": (f["text"]["min"] or {}).get("pt"), "layoutProblems": f["layoutProblems"]}
 
 
 KEYS = ["overflow", "clipped", "overlap", "offStage", "underCutout", "topInset", "homeIndicator", "targetsUnder44pt",
-        "contrastFails", "contrastUnderCutout"]
+        "contrastFails", "contrastUnderCutout", "coveredText"]
 
 
 def build(device):
