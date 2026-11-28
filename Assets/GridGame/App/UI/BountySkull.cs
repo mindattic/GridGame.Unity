@@ -24,7 +24,7 @@ namespace GridGame.App
             disc.style.justifyContent = Justify.Center;
             var glyph = new Label("☠") { pickingMode = PickingMode.Ignore };
             glyph.style.fontSize = size * 0.7f;
-            glyph.style.color = Color.white;
+            glyph.style.color = Palette.White;
             glyph.style.unityTextAlign = TextAnchor.MiddleCenter;
             glyph.style.marginLeft = glyph.style.marginRight = glyph.style.marginTop = glyph.style.marginBottom = Space.S0;
             glyph.style.paddingLeft = glyph.style.paddingRight = glyph.style.paddingTop = glyph.style.paddingBottom = Space.S0;

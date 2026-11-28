@@ -25,7 +25,7 @@ namespace GridGame.App
                 .OrderBy(c => c.Id).ToList();
 
             var title = new Label($"Breeds: {classes.Count} masked classes x {breeds.Count} breeds") { name = "breed-title" };
-            title.style.color = Color.white;
+            title.style.color = Palette.White;
             title.style.fontSize = 28;
             title.style.marginBottom = Space.S8;
             root.Add(title);
