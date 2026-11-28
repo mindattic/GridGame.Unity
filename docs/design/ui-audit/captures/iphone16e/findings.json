@@ -1,0 +1,1087 @@
+{
+ "ticket": "GG-T2029",
+ "device": "iphone16e",
+ "name": "iPhone 16e",
+ "shape": "iphone-notch-390",
+ "captured": "2026-11-28T02:30:26",
+ "frame": {
+  "type": "notch",
+  "corner": 142,
+  "refw": 1170,
+  "refh": 2532,
+  "w": 486,
+  "h": 99,
+  "top": 0,
+  "r": 60
+ },
+ "screens": 41,
+ "errors": {},
+ "totals": {
+  "overflow": 0,
+  "clipped": 0,
+  "overlap": 0,
+  "offStage": 0,
+  "underCutout": 0,
+  "topInset": 0,
+  "homeIndicator": 53,
+  "targetsUnder44pt": 4,
+  "contrastFails": 22,
+  "contrastUnderCutout": 0,
+  "screensWith": {
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "abilities",
+    "alchemist",
+    "battle",
+    "battle-boss",
+    "caravan",
+    "credits",
+    "enchantress",
+    "equip",
+    "hub",
+    "mercenaries",
+    "overworld",
+    "quests",
+    "results",
+    "results-mid",
+    "settings",
+    "shop",
+    "status",
+    "windows"
+   ],
+   "targetsUnder44pt": [
+    "camp",
+    "equip",
+    "items",
+    "profiles"
+   ],
+   "contrastFails": [
+    "battle",
+    "battle-boss",
+    "blacksmith",
+    "camp",
+    "createprofile",
+    "crucible",
+    "enchantress",
+    "newprofile",
+    "shop",
+    "splash",
+    "windows"
+   ],
+   "contrastUnderCutout": []
+  }
+ },
+ "findings": {
+  "title": {
+   "landedOn": "title",
+   "png": "docs/design/ui-audit/captures/iphone16e/title.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 10,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "hub": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/iphone16e/hub.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Around the wagons",
+    "\"I ground the dust fine as flour. She sa\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 39,
+   "minTextPt": 12.3,
+   "layoutProblems": []
+  },
+  "stages": {
+   "landedOn": "stages",
+   "png": "docs/design/ui-audit/captures/iphone16e/stages.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 20,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "items": {
+   "landedOn": "items",
+   "png": "docs/design/ui-audit/captures/iphone16e/items.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "X-Potion",
+     "pt": [
+      352.4,
+      43.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 27,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "status": {
+   "landedOn": "status",
+   "png": "docs/design/ui-audit/captures/iphone16e/status.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "No bonds yet. Heroes grow closer pinceri\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 83,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "equip": {
+   "landedOn": "equip",
+   "png": "docs/design/ui-audit/captures/iphone16e/equip.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Ring I",
+    "Iron Band"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Weapon",
+     "pt": [
+      346.7,
+      43.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 44,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "abilities": {
+   "landedOn": "abilities",
+   "png": "docs/design/ui-audit/captures/iphone16e/abilities.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Smite a foe with a judging blow that wei\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 79,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "talents": {
+   "landedOn": "talents",
+   "png": "docs/design/ui-audit/captures/iphone16e/talents.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": 10.0,
+   "layoutProblems": []
+  },
+  "respec": {
+   "landedOn": "respec",
+   "png": "docs/design/ui-audit/captures/iphone16e/respec.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 59,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "party": {
+   "landedOn": "party",
+   "png": "docs/design/ui-audit/captures/iphone16e/party.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 69,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "shop": {
+   "landedOn": "shop",
+   "png": "docs/design/ui-audit/captures/iphone16e/shop.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "\u2212",
+    "+",
+    "Fits everyone, not an upgrade"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Buy",
+     "ratio": 2.21,
+     "need": 4.5,
+     "fg": "#282e44",
+     "bg": "#52628a"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 60,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "blacksmith": {
+   "landedOn": "blacksmith",
+   "png": "docs/design/ui-audit/captures/iphone16e/blacksmith.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Nothing needs repair yet",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e43",
+     "bg": "#506087"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 20,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "alchemist": {
+   "landedOn": "alchemist",
+   "png": "docs/design/ui-audit/captures/iphone16e/alchemist.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "???",
+    "Missing Oni Horn"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 37,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "enchantress": {
+   "landedOn": "enchantress",
+   "png": "docs/design/ui-audit/captures/iphone16e/enchantress.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Chain Mail",
+    "Cleric"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Enchant",
+     "ratio": 2.15,
+     "need": 4.5,
+     "fg": "#272d43",
+     "bg": "#505f86"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 46,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "talk": {
+   "landedOn": "talk",
+   "png": "docs/design/ui-audit/captures/iphone16e/talk.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "bounties": {
+   "landedOn": "bounties",
+   "png": "docs/design/ui-audit/captures/iphone16e/bounties.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": 13.0,
+   "layoutProblems": []
+  },
+  "crucible": {
+   "landedOn": "crucible",
+   "png": "docs/design/ui-audit/captures/iphone16e/crucible.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Costs 1 Rested: the energy for a run, up\u2026",
+     "ratio": 3.82,
+     "need": 4.5,
+     "fg": "#a4a3bc",
+     "bg": "#44445e"
+    },
+    {
+     "text": "Enter the Crucible",
+     "ratio": 2.2,
+     "need": 4.5,
+     "fg": "#282e44",
+     "bg": "#52618a"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "bestiary": {
+   "landedOn": "bestiary",
+   "png": "docs/design/ui-audit/captures/iphone16e/bestiary.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 11,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "settings": {
+   "landedOn": "settings",
+   "png": "docs/design/ui-audit/captures/iphone16e/settings.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Display"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 40,
+   "minTextPt": 10.0,
+   "layoutProblems": []
+  },
+  "windows": {
+   "landedOn": "windows",
+   "png": "docs/design/ui-audit/captures/iphone16e/windows.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Lacquer",
+    "Moss",
+    "Dusk"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Delete",
+     "ratio": 4.21,
+     "need": 4.5,
+     "fg": "#ad7580",
+     "bg": "#311c2b"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 49,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "credits": {
+   "landedOn": "credits",
+   "png": "docs/design/ui-audit/captures/iphone16e/credits.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "GRIDGAME A MindAttic game \u2014 design, code\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 2,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "newgame": {
+   "landedOn": "newgame",
+   "png": "docs/design/ui-audit/captures/iphone16e/newgame.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 7,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "load": {
+   "landedOn": "load",
+   "png": "docs/design/ui-audit/captures/iphone16e/load.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 5,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "profiles": {
+   "landedOn": "profiles",
+   "png": "docs/design/ui-audit/captures/iphone16e/profiles.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Scenario",
+     "pt": [
+      342.4,
+      43.0
+     ]
+    }
+   ],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 8,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "newprofile": {
+   "landedOn": "profile-name",
+   "png": "docs/design/ui-audit/captures/iphone16e/newprofile.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Create",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e44",
+     "bg": "#506088"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 4,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "createprofile": {
+   "landedOn": "create-profile",
+   "png": "docs/design/ui-audit/captures/iphone16e/createprofile.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Next",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e43",
+     "bg": "#506087"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 5,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "splash": {
+   "landedOn": "create-profile",
+   "png": "docs/design/ui-audit/captures/iphone16e/splash.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Next",
+     "ratio": 2.17,
+     "need": 4.5,
+     "fg": "#272e43",
+     "bg": "#506087"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 5,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "diamonds": {
+   "landedOn": "diamonds",
+   "png": "docs/design/ui-audit/captures/iphone16e/diamonds.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 37,
+   "minTextPt": 12.3,
+   "layoutProblems": []
+  },
+  "mercenaries": {
+   "landedOn": "mercenaries",
+   "png": "docs/design/ui-audit/captures/iphone16e/mercenaries.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "\"I hold a line. You pay me by the fight,\u2026",
+    "As",
+    "a",
+    "Supporter",
+    "(reach",
+    "2):",
+    "gives",
+    "the",
+    "attacker",
+    "Protection",
+    "."
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 63,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "summon-history": {
+   "landedOn": "summon-history",
+   "png": "docs/design/ui-audit/captures/iphone16e/summon-history.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "quests": {
+   "landedOn": "quests",
+   "png": "docs/design/ui-audit/captures/iphone16e/quests.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Grown, Not Forged",
+    "Blacksmith \u00b7 The Shardfall",
+    "The Blacksmith has something on their mi\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 29,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "about": {
+   "landedOn": "about",
+   "png": "docs/design/ui-audit/captures/iphone16e/about.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "results": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone16e/results.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Iron Ore",
+    "\u00d72"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 36,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "results-mid": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone16e/results-mid.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Empty Bottle",
+    "\u00d72"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 37,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "battle": {
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/iphone16e/battle.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Knight",
+    "TANK",
+    "Lv 10",
+    "HEALTH",
+    "272/272",
+    "MANA",
+    "no spells"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "Info",
+     "ratio": 3.81,
+     "need": 4.5,
+     "fg": "#78767f",
+     "bg": "#1e1b25"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 17,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "battle-boss": {
+   "landedOn": "battle",
+   "png": "docs/design/ui-audit/captures/iphone16e/battle-boss.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Knight",
+    "TANK",
+    "Lv 4",
+    "HEALTH",
+    "191/191",
+    "MANA",
+    "no spells"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "500 G",
+     "ratio": 2.27,
+     "need": 4.5,
+     "fg": "#e6e6ee",
+     "bg": "#8f9ab3"
+    },
+    {
+     "text": "Info",
+     "ratio": 3.08,
+     "need": 4.5,
+     "fg": "#8b8a87",
+     "bg": "#403f32"
+    },
+    {
+     "text": "TANK",
+     "ratio": 2.45,
+     "need": 4.5,
+     "fg": "#f25c4c",
+     "bg": "#595031"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 17,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "overworld": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/iphone16e/overworld.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "Around the wagons",
+    "\"Bring armor with a story in it. The wor\u2026"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 39,
+   "minTextPt": 12.3,
+   "layoutProblems": []
+  },
+  "camp": {
+   "landedOn": "hub",
+   "png": "docs/design/ui-audit/captures/iphone16e/camp.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [
+    {
+     "target": "Continue",
+     "pt": [
+      337.4,
+      43.0
+     ]
+    }
+   ],
+   "contrastFails": [
+    {
+     "text": "200 G",
+     "ratio": 4.05,
+     "need": 4.5,
+     "fg": "#ffd959",
+     "bg": "#5e6a72"
+    },
+    {
+     "text": "Heroes",
+     "ratio": 1.92,
+     "need": 4.5,
+     "fg": "#aab8ff",
+     "bg": "#7f887f"
+    },
+    {
+     "text": "Summon Circle",
+     "ratio": 1.43,
+     "need": 4.5,
+     "fg": "#8a93ac",
+     "bg": "#747a75"
+    },
+    {
+     "text": "Opens after The Lantern Road II",
+     "ratio": 1.37,
+     "need": 4.5,
+     "fg": "#8d98ac",
+     "bg": "#7a8274"
+    },
+    {
+     "text": "Merchant",
+     "ratio": 1.34,
+     "need": 4.5,
+     "fg": "#8e98c1",
+     "bg": "#7b8398"
+    },
+    {
+     "text": "Joins after The Tithe Moors I",
+     "ratio": 1.59,
+     "need": 4.5,
+     "fg": "#8089ad",
+     "bg": "#646976"
+    },
+    {
+     "text": "Mana Shard Store",
+     "ratio": 1.29,
+     "need": 4.5,
+     "fg": "#949daa",
+     "bg": "#858b72"
+    },
+    {
+     "text": "0 Mana Shards",
+     "ratio": 1.4,
+     "need": 4.5,
+     "fg": "#8e959e",
+     "bg": "#7b7e5d"
+    },
+    {
+     "text": "Craft",
+     "ratio": 4.03,
+     "need": 4.5,
+     "fg": "#aab8ff",
+     "bg": "#4f554c"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "contrastSamples": 34,
+   "minTextPt": 12.7,
+   "layoutProblems": []
+  },
+  "skill-hex": {
+   "landedOn": "talents",
+   "png": "docs/design/ui-audit/captures/iphone16e/skill-hex.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 35,
+   "minTextPt": 10.0,
+   "layoutProblems": []
+  },
+  "summon": {
+   "landedOn": "summon",
+   "png": "docs/design/ui-audit/captures/iphone16e/summon.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 23,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  },
+  "caravan": {
+   "landedOn": "caravan",
+   "png": "docs/design/ui-audit/captures/iphone16e/caravan.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [
+    "1,200 G"
+   ],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "contrastSamples": 33,
+   "minTextPt": 13.3,
+   "layoutProblems": []
+  }
+ }
+}
