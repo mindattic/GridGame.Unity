@@ -63,7 +63,7 @@ namespace GridGame.Meta
             s.Roster.Add(h);
             bool party = s.Party.Count < Progression.MaxPartySize;
             if (party) s.Party.Add(h.ClassId);
-            return Result.Success(party ? $"{def.Name} joins the party!" : $"{def.Name} joins you (in reserve)");
+            return Result.Success(party ? $"{def.Name} joins the party" : $"{def.Name} joins you (in reserve)");
         }
 
         /// <summary>The XP a battle's <paramref name="xp"/> is worth to this roster member: all of it for a hero; for a
