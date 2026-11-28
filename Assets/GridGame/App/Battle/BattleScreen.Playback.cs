@@ -1378,10 +1378,10 @@ namespace GridGame.App
         /// <summary>The billboard no longer sits over the board (GG-T405), so there is nothing on the board to dodge.</summary>
         private void DodgeBillboard(IEnumerable<Coord> tiles) => PlaceBillboard();
 
-        /// <summary>The billboard takes the banner band (GG-T405: announcements never overlap the timeline or the board):
+        /// <summary>The billboard takes the banner band (§9.0: an overlay on the board's top edge, never over the timeline):
         /// the banner viewport's height in Overlay coordinates, across the content column (no drag timer runs during
         /// playback), with the banner hidden under it while it shows. The band holds one line (two when it wraps), so
-        /// each new line replaces the last; the Log tab keeps them all.</summary>
+        /// each new line replaces the last; the battle log keeps them all.</summary>
         private void PlaceBillboard()
         {
             if (billboard == null) return;

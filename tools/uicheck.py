@@ -209,14 +209,8 @@ def main():
         names = h.call("names", prefix="")
         for el in ["board", "abilitybar", "shield", "menu"]:
             check(f"HUD element {el}", el in names)
-        # GG-T384/GG-T391's tabbed bottom panel (Party | Lore | Log) shows one page at a time; the other two are
-        # display:none, which collapses their worldBound to nothing, so "names" (filtered on worldBound.width > 0,
-        # AutomationServer.cs) only sees "feed" (the Log page, BattleScreen.cs) once that tab is picked -- it was
-        # never meant to be simultaneously visible with the always-on board/abilitybar/shield/menu. Pick the
-        # Log tab to check it, then put Party back (the tutorial expects it).
-        h.call("click", name="tab-log"); time.sleep(0.3)
-        check("HUD element feed (on the Log tab)", "feed" in h.call("names", prefix=""))
-        h.call("click", name="tab-party"); time.sleep(0.3)
+        # GG-T1822 (BIBLE 9.0): the Party | Lore | Log tabs are gone; the description panel sits under the ability bar.
+        check("HUD element description-panel", "description-panel" in names)
         check("timeline icons present", any(n.startswith("tl-") for n in names))
         check("turn icons frame the unit's portrait", "tl-art" in names and "thumb-art" in names, "no 'tl-art'/'thumb-art' under the timeline icons")
         b = battle_state()
