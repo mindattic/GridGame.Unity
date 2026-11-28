@@ -67,3 +67,58 @@ rect meets the Dynamic Island or notch; **topInset** other text above the safe t
 - Battle Abilities sheet (opened from the battle's Abilities button, outside uiaudit.py's walk):
   `captures/iphone15pro/battle-abilities.png`
 - Heroes > Abilities: `captures/iphone15pro/abilities.png`
+
+# Galaxy baseline (GG-T2030)
+
+The same 41-screen walk, one device per in-target Galaxy shape from `tools/devices.json`, one player at a time
+(`python tools/uiaudit.py --device <id>`, then `python tools/uiaudit_baseline.py <ids>`). The Windows dev player was built
+from origin/main at `133a873b`, so the battle screen has the newer turn strip and timeline than the iPhone shots above.
+The `deviceframe` overlay draws each phone's punch-hole and screen corners; Samsung publishes neither, so this ticket
+recorded estimates for every in-target Galaxy in `tools/gen_devices.py` (an 18 dp hole 11 dp below the edge; corners
+26-34 dp; see `docs/devices/DEVICES.md`, "Camera cutouts").
+
+| device | shape | cutout |
+|---|---|---|
+| galaxys25 | galaxy-fhd (S23-S25 base, S23+, the FEs; 1080x2340, 360-384 dp) | punch |
+| galaxys25ultra | galaxy-qhd (S23-S25 Ultra, S24+/S25+, S25 Edge; 1440 wide, 412 dp) | punch |
+| galaxyzflip6 | galaxy-flip-main (Z Flip5/6 main, 22:9) | punch |
+| galaxyzfold6cover | galaxy-fold-cover (Z Fold5/6 cover, about 9:23) | punch |
+
+Skipped: `galaxy-20x9` (S21, S21+, S21 Ultra) is `inTarget: false`, and so are the S22 rows inside the fhd and qhd shapes.
+The Fold5 cover (904x2316, narrower) shares the fold-cover shape but was not captured; its fog bars are GG-T2115.
+
+## Summary
+
+| device | shape | screens | errors | overflow | clipped | overlap | offStage | underCutout | topInset | homeIndicator | targetsUnder44pt | contrastFails | contrastUnderCutout |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| galaxys25 | galaxy-fhd | 41 | 0 | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 61 (13) | 8 (7) | 27 (10) | 0 (0) |
+| galaxys25ultra | galaxy-qhd | 41 | 0 | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 51 (14) | 0 (0) | 25 (9) | 0 (0) |
+| galaxyzflip6 | galaxy-flip-main | 41 | 0 | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 21 (10) | 4 (4) | 18 (10) | 0 (0) |
+| galaxyzfold6cover | galaxy-fold-cover | 41 | 0 | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 0 (0) | 29 (12) | 3 (3) | 16 (10) | 0 (0) |
+
+Columns as above. `targetsUnder44pt` counts targets under 44 of the device's unit, which is dp on Galaxy; Android's own
+minimum is 48 dp, so the Galaxy counts understate the problem.
+
+## What it says
+
+- **The punch-hole and the top inset are clear on every shape.** Nothing sits under the hole or above the 32 dp status
+  bar; the header row clears it everywhere.
+- **No overflow, clipping, overlap or off-stage text** by the measures, on any Galaxy shape.
+- **homeIndicator** is the same scroll-content effect as on iPhone (rows of scroll views running past their
+  viewport), and lower on the taller Flip and Fold cover.
+- **Tap targets are the real Galaxy problem.** The full-width 132-design-px rows (Continue, Start Campaign, X-Potion,
+  Regeneration, Scenario) come out at 40 dp on the 360 dp S25, 43.3 dp on the Flip6 and 35.6 dp on the Fold6 cover;
+  only the 412 dp Ultra clears 44. All are under Android's 48 dp. Filed as GG-T2144.
+- **Contrast** fails are the iPhone set (disabled-looking Buy / Enchant / Create / Enter the Crucible near 2.2, boss
+  panel words, Windows delete) plus the camp station labels (Craft, Journal, Recruit near 2.2) on the narrow Flip and
+  Fold cover.
+- **Seen in the shots, not in the measures:** the battle turn-timer hint ("3.7s - move or skill") is half hidden under
+  the Abilities / Info / Guard row and crossed by the turn-progress bar on all four (GG-T2142), and the YOUR TURN strip
+  overlaps the grid's top edge, worst on the Flip and Fold cover (GG-T2143). Both come from the newer battle layout, so
+  they likely show on iPhone too once those shots are retaken on this build.
+- **Fold6 cover fills the screen**: no fog bars at 968x2376.
+
+## Reference shots
+
+- Battle: `captures/galaxys25/battle.png`, `captures/galaxyzfold6cover/battle.png`
+- Hub: `captures/galaxys25/hub.png`, `captures/galaxyzfold6cover/hub.png`
