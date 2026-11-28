@@ -752,11 +752,9 @@ namespace GridGame.App
             for (int i = 0; i < slotViews.Count; i++)
             {
                 var v = slotViews[i];
-                var cost = v.Q("cost");
-                cost.Clear();
                 var status = hero == null ? SlotStatus.CannotAct : BattleEngine.GetSlotStatus(State, hero.Id, i);
                 var border = Palette.Text.WithA(0.75f);
-                float alpha = 1f;
+                float alpha = 1f, iconAlpha = 1f;
                 if (hero == null || i >= hero.UnlockedSlots)
                 {
                     Ui.SetAbilitySlot(v, null, state: hero == null ? "" : "Locked");
@@ -771,7 +769,7 @@ namespace GridGame.App
                 {
                     var sl = hero.Bar[i];
                     var a = BattleEngine.SlotAbility(State, hero, i);
-                    bool silenced = status == SlotStatus.Silenced;
+                    bool silenced = status == SlotStatus.Silenced, charging = false;
                     if (sl.IsWeapon)
                     {
                         border = new Color(0.8f, 0.8f, 0.9f);
@@ -784,7 +782,7 @@ namespace GridGame.App
                     }
                     else if (a != null)
                     {
-                        float sweep = 0f; int left = 0;
+                        float sweep = 0f, mana = -1f; int left = 0;
                         if (a.Kind == AbilityKind.Skill)
                         {
                             border = new Color(0.4f, 0.9f, 0.5f);
@@ -794,13 +792,18 @@ namespace GridGame.App
                         else
                         {
                             border = Palette.Mana;
-                            Ui.CostPips(a.Cost, cost, 30, shownOrbs); // pips the row can't cover dim (GG-T673)
+                            // GG-T1820 (§3.1.0): the spell's own meter, as far as playback has filled it.
+                            int full = State.ManaFull(hero, i);
+                            if (full > 0) mana = ShownMana(hero.Id, i) / (float)full;
                         }
-                        Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced);
+                        charging = mana >= 0f && mana < 1f;
+                        Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced, mana: mana, ready: mana >= 1f && !silenced);
                     }
                     else Ui.SetAbilitySlot(v, null, silenced: silenced);
                     if (silenced) border = new Color(1f, 0.25f, 0.25f);
-                    if (status != SlotStatus.Ready) alpha = 0.45f;
+                    // Charging replaces "unaffordable": the icon dims and its bar stays bright.
+                    if (charging && (status == SlotStatus.Ready || status == SlotStatus.Unaffordable)) iconAlpha = 0.45f;
+                    else if (status != SlotStatus.Ready) alpha = 0.45f;
                 }
                 bool targeting = i == TargetingSlot;
                 if (targeting) border = Palette.Gold;
@@ -808,6 +811,7 @@ namespace GridGame.App
                 v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
                 v.style.borderTopColor = v.style.borderBottomColor = v.style.borderLeftColor = v.style.borderRightColor = border;
                 v.style.opacity = alpha;
+                v.Q("icon").style.opacity = iconAlpha;
             }
             SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }
@@ -1326,7 +1330,7 @@ namespace GridGame.App
         {
             switch (s)
             {
-                case SlotStatus.Unaffordable: return "Not enough mana";
+                case SlotStatus.Unaffordable: return "Still charging";
                 case SlotStatus.Cooldown: return "Recharging";
                 case SlotStatus.OutOfCharges: return "None left";
                 case SlotStatus.Silenced: return "Silenced!";
