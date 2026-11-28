@@ -204,10 +204,10 @@
   table(st, ["Size", "design px"], G.size.map(function (x) { return [{ code: "Size." + x[0] }, x[1]]; }));
 
   // ── Radii, elevation ──
-  D.radii.forEach(function (r) {
+  G.radii.forEach(function (r) {
     var x = el("div", "radius", null, $("radii-list"));
     el("i", null, null, x).style.borderRadius = (r.px / 3 * 2) + "px";
-    el("span", null, r.px + " · " + r.what, x);
+    el("span", null, r.px + " · " + r.token + " · " + (r.uses.join(", ") || "unused"), x);
   });
   D.elevation.forEach(function (e) {
     var x = el("div", null, null, $("elev")); x.style.setProperty("--l", e.level);

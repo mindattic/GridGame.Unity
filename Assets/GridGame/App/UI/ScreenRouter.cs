@@ -99,6 +99,8 @@ namespace GridGame.App
         // screen changes wait in `queued` and are applied in order right after it (GG-T218).
         private bool applied;
         private readonly Queue<Action> queued = new Queue<Action>();
+        // GG-T2028: the screen re-fit after the new top screen was built but before its fade cleared; refreshed then.
+        private bool resizedInTransition;
         private VisualElement loading, loadingFill;
 
         /// <summary>GG-T1205: true while the top screen's <see cref="GameScreen.Prepare"/> runs behind the fade: it is
@@ -120,6 +122,7 @@ namespace GridGame.App
             {
                 var c = Current;
                 if (c == null) return;
+                if (busy) resizedInTransition = true;
                 if (!busy && c.RebuildOnResize) c.Refresh();
                 else GameScreen.BleedBackdrops(c.Root); // the battle, a crawl: new insets still reach their backdrop (GG-T483)
             };
@@ -289,6 +292,11 @@ namespace GridGame.App
             fade.RemoveFromClassList("fade--on");
             fade.pickingMode = PickingMode.Ignore;
             busy = false;
+            if (resizedInTransition)
+            {
+                resizedInTransition = false;
+                if (Current != null && Current.RebuildOnResize) Current.Refresh();
+            }
         }
 
         /// <summary>The loading bar on the fade (GG-T1205), built on first use.</summary>
@@ -326,6 +334,7 @@ namespace GridGame.App
         private void MountTop()
         {
             host.Clear();
+            resizedInTransition = false; // the screen mounted now is built for the stage as it is
             var top = Current;
             if (top == null) { Art.FocusScreenScope(0); return; }
             // GG-T1206: what the mounted screen loads belongs to its own Screen token, or to no token at all (the battle's

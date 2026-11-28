@@ -68,6 +68,7 @@ namespace GridGame.App
             cell.RegisterCallback<PointerCancelEvent>(_ => hold?.Pause());
             cell.RegisterCallback<ClickEvent>(_ =>
             {
+                ExitExamine();
                 if (abilitiesHeld) { abilitiesHeld = false; return; }
                 OpenAbilities(TargetingSlot);
             });
@@ -308,7 +309,7 @@ namespace GridGame.App
             col.style.flexShrink = 1;
             var name = Ui.Text(move.Name, "small", col);
             name.style.whiteSpace = WhiteSpace.Normal;
-            var state = Ui.Text(MoveReadiness(hero, slot, a, status), ready ? "small gold" : "small dim", col);
+            var state = Ui.Text(MoveReadiness(hero, slot, a, status), ready ? "small gold" : status == SlotStatus.Unaffordable ? "small warn" : "small dim", col);
             state.style.whiteSpace = WhiteSpace.Normal;
             var sum = Ui.Text(TargetText.How(a), "tiny dim", col);
             sum.style.whiteSpace = WhiteSpace.Normal;
@@ -394,22 +395,20 @@ namespace GridGame.App
             }
         }
 
-        // ── Spell readiness: the one switch GG-T1915 turns from each spell's own meter to cost against the party bar ──
+        // ── Spell readiness: the spell's price against the party bar (§3.1.0) ──
 
-        /// <summary>How ready a spell is, 0..1 (1 = castable), or −1 when it has no meter.</summary>
+        /// <summary>How much of a spell's price the shown pool holds, 0..1 (1 = castable), or −1 when it costs nothing.</summary>
         private float SpellFill(Unit hero, int slot)
         {
-            int full = State.ManaFull(hero, slot);
-            return full > 0 ? ShownMana(hero.Id, slot) / (float)full : -1f;
+            int price = State.SpellPrice(hero, slot);
+            return price > 0 ? ShownMana(hero.Id, slot) / (float)price : -1f;
         }
 
-        /// <summary>A spell's readiness in words for the sheet ("120 / 300 mana · charging 40%").</summary>
+        /// <summary>A spell's price against the bar for the sheet ("Costs 300 mana · bar 120").</summary>
         private string SpellReadyText(Unit hero, int slot)
         {
-            int full = State.ManaFull(hero, slot);
-            if (full <= 0) return "No mana needed";
-            int have = Mathf.Min(full, ShownMana(hero.Id, slot));
-            return have >= full ? $"{full} / {full} mana" : $"{have} / {full} mana · charging {Mathf.FloorToInt(100f * have / full)}%";
+            int price = State.SpellPrice(hero, slot);
+            return price <= 0 ? "No mana needed" : $"Costs {price} mana · bar {ShownPool}";
         }
     }
 }

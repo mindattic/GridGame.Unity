@@ -383,7 +383,8 @@
       "berserker_wildswing",
       "berserker_skullrattle",
       "berserker_lastmanswinging",
-      "blood_rage"
+      "blood_rage",
+      "sunder"
     ],
     "DefaultLoadout": [
       "cleave",
