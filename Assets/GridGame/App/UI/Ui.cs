@@ -377,7 +377,10 @@ namespace GridGame.App
                 case CampMenu.Crucible: return new CrucibleScreen();
                 case CampMenu.Heroes:
                     string lead = s.Party.FirstOrDefault();
-                    return Training.Step(s) ? new AbilitiesScreen(lead) : (GameScreen)new StatusScreen(lead);
+                    if (Training.Step(s)) return new AbilitiesScreen(lead);
+                    // GG-T2061: new gear in the bag opens Equip on the hero it upgrades.
+                    var gear = AutoEquip.FirstNew(GameApp.I.Content, s);
+                    return gear != null ? new EquipScreen(gear.Value.Hero.ClassId) : (GameScreen)new StatusScreen(lead);
                 case CampMenu.Summon: return new SummonScreen();
                 case CampMenu.Shop: return new ShopHubScreen();
                 case CampMenu.Diamonds: return new DiamondStoreScreen();

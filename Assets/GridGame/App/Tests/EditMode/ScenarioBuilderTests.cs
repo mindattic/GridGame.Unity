@@ -55,6 +55,20 @@ namespace GridGame.App.Tests
         }
 
         [Test]
+        public void A_bag_upgrade_raises_the_heroes_new_badge_until_it_is_seen()
+        {
+            var def = ScenarioDef.Parse("{\"target\":\"camp\",\"gear\":\"none\",\"bag\":{\"eq_armor_chain\":1}}");
+            var s = ScenarioBuilder.Build(C, def).Save;
+            Assert.That(s.Count("eq_armor_chain"), Is.EqualTo(1));
+            var heroes = NavBadges.Tabs(C, s, new SettingsSave()).First(t => t.Id == CampMenu.Heroes);
+            Assert.That(heroes.Badge, Is.EqualTo(NavBadges.NewGear));
+            var fresh = AutoEquip.FirstNew(C, s);
+            Assert.That(fresh?.Pick.Item.Id, Is.EqualTo("eq_armor_chain"));
+            AutoEquip.MarkSeen(C, s, fresh.Value.Hero);
+            Assert.That(AutoEquip.FirstNew(C, s)?.Pick.Item.Id, Is.Not.EqualTo("eq_armor_chain"));
+        }
+
+        [Test]
         public void An_equipped_potion_sits_on_the_bar_and_in_the_bag()
         {
             var def = ScenarioDef.Parse("{\"target\":\"stage:greenvalley-01\",\"consumables\":{\"knight\":{\"healing_potion_basic\":2}}}");
