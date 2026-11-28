@@ -1185,6 +1185,21 @@ namespace GridGame.Core.Content
         public List<StageLessonDef> Lessons = new List<StageLessonDef>();
         /// <summary>GG-T1641: a drill's intro card line, the heroes speaking to the Commander, shown before its first lesson.</summary>
         public string Intro;
+        /// <summary>GG-T2070: a scripted withdrawal (the prologue's first Tithe Collector fight): once due, the battle ends as
+        /// <c>BattlePhase.Withdrawn</c>, neither won nor lost. Null = an ordinary battle.</summary>
+        public WithdrawDef Withdraw;
+    }
+
+    /// <summary>GG-T2070: when a stage's scripted withdrawal comes, and the line the party says to the Commander as it falls
+    /// back. Either trigger ends the battle; at least one is set (0 = unused).</summary>
+    public sealed class WithdrawDef
+    {
+        /// <summary>Front blows clanged off an unyielding plate (<see cref="ClassDef.PlateUnyielding"/>) before the party falls back.</summary>
+        public int AfterPlateClangs;
+        /// <summary>Party turns ended before the party falls back.</summary>
+        public int AfterTurns;
+        /// <summary>The party to the Commander, shown on the battle's end and the Fall back card.</summary>
+        public string Line;
     }
 
     /// <summary>GG-T1374: one lesson of a tutorial drill: its id (<see cref="Ids"/>), the wave (0-based) it waits for, and

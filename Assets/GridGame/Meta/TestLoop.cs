@@ -119,7 +119,7 @@ namespace GridGame.Meta
             GoldAfterCamp = s.Gold;
         }
 
-        public string Result => Report == null ? "?" : Report.Victory ? "VICTORY" : Report.Retreated ? "RETREAT" : Report.Escaped ? "ESCAPED" : "DEFEAT";
+        public string Result => Report == null ? "?" : Report.Victory ? "VICTORY" : Report.Retreated ? "RETREAT" : Report.Escaped ? "ESCAPED" : Report.Withdrawn ? "WITHDRAWN" : "DEFEAT";
 
         public override string ToString()
         {
