@@ -215,26 +215,25 @@ namespace GridGame.App
         /// <summary>GG-T1361: fills a header's currency strip with what <paramref name="s"/> holds. Gold is pinned last, so it sits
         /// at the header's right edge (GG-T1858); to its left come <paramref name="talk"/> (a station's Talk button), the Shards
         /// button (tapping it runs <paramref name="onShards"/>, the Shard Store) and, while an account wallet is bound, the
-        /// Summon Tickets. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
+        /// Summon Tickets; a zero Shards or Tickets chip stays hidden unless <paramref name="showZeroShards"/> or
+        /// <paramref name="showZeroTickets"/> says this page spends it (GG-T1879). The Talk button keeps its label and never folds. When the header runs short of room the chips drop to icon plus number, then fold into one "+N" chip
         /// that toasts what it holds; gold never moves. Rebuilds the strip each call, so a refresh shows the new balances.</summary>
-        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null)
+        public static void Currencies(VisualElement bar, SaveData s, Action onShards = null, Button talk = null, bool showZeroShards = false, bool showZeroTickets = false)
         {
             if (bar == null) return;
             bar.Clear();
             if (s == null) return;
             var chips = new List<(VisualElement chip, Label label, string full, string compact, string said)>();
-            if (talk != null)
+            if (talk != null) bar.Add(talk);
+            if (DiamondExchange.Have(s) > 0 || showZeroShards)
             {
-                bar.Add(talk);
-                var tl = talk.Q<Label>();
-                chips.Add((talk, tl, tl?.text, "", talk.Q<Label>()?.text));
+                var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
+                shards.name = "header-shards";
+                shards.tooltip = ShardText.Store;
+                if (onShards == null) shards.pickingMode = PickingMode.Ignore;
+                chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
             }
-            var shards = RowIcon.IconButton(Count(DiamondExchange.Have(s)), RowKind.Diamond, onShards, "btn--small", bar);
-            shards.name = "header-shards";
-            shards.tooltip = ShardText.Store;
-            if (onShards == null) shards.pickingMode = PickingMode.Ignore;
-            chips.Add((shards, shards.Q<Label>(), Count(DiamondExchange.Have(s)), Count(DiamondExchange.Have(s)), $"Shards {Count(DiamondExchange.Have(s))}"));
-            if (DiamondExchange.Wallet is AccountWallet w)
+            if (DiamondExchange.Wallet is AccountWallet w && (w.Tickets > 0 || showZeroTickets))
             {
                 int t = Math.Max(0, w.Tickets);
                 var tickets = RowIcon.IconButton($"{Count(t)} Ticket{(t == 1 ? "" : "s")}", RowKind.New, null, "btn--small", bar);
