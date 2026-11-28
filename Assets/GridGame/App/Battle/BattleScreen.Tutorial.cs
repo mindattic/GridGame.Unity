@@ -471,7 +471,7 @@ namespace GridGame.App
                 Id = "drill-intro-" + stage.Id,
                 Kicker = DrillLabel().TrimEnd(' ', '·'),
                 Title = stage.Name,
-                Text = stage.Intro,
+                Text = string.Equals(App.Content.Campaign?.Tutorial?.FirstOrDefault(), stage.Id, StringComparison.OrdinalIgnoreCase) ? Coach.LoopLine + "\n\n" + stage.Intro : stage.Intro,
                 Hold = CoachHold,
                 Practice = practice,
                 Finished = how =>
