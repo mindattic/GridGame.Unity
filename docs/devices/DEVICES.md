@@ -261,3 +261,51 @@ instead of their own dicts, which applies these.
   <https://yesviz.com/viewport/>.
 - Google Store, Pixel 9 tech specs: <https://store.google.com/product/pixel_9_specs>.
 - Android developers, window insets: <https://developer.android.com/develop/ui/views/layout/insets>.
+
+## Text size per device (GG-T2114)
+
+Body and caption text are one size, `TypeScale.Base` (BIBLE R8; `GuiType.Compute`), so one row per device. **Physical dp**
+is the size on the glass in 1/160 inch (base px x stage scale x 160 / ppi), which is what `Screen.dpi` lets the game
+compute. **pt-dp** is the platform's logical unit (base px x stage scale / the device scale in the Every-device table);
+a Galaxy's logical density is lower than its ppi suggests, so its pt-dp reads smaller than its physical dp. Text size 100%.
+The stage is 1170 px wide and scales by panel width / 1170 (the Z Fold5 cover now gets a 1170x2998 stage, GG-T2115).
+
+The fix: `GuiType.TargetDp` goes from 14 to 15, and a screen narrower than the iPhone 15 Pro (2.56 in) multiplies the
+target by 2.56 / its width, at most 1.2 (`GuiType.ReferenceWidthIn`, `NarrowBoostMax`), so narrow phones get larger text
+through the existing `TypeScale`/`TypeFloor` path with no per-screen edits. The base still clamps to 40-56 px and to
+28 characters across the stage. Larger text cannot truncate: `TextFit` shrinks an overflowing label toward
+`TypeFloor.ShrinkFloor`, then wraps it (one-line text marquees), and the battle HUD rows keep their fixed heights
+(BIBLE 9.0). Result: every in-target device draws body text at 14.7 physical dp or more; the narrowest, the Z Fold5
+cover, goes from 11.8 to 14.4 pt-dp (14.1 to 17.2 physical).
+
+| Device | Panel px wide | Width (in) | Before: base px | Before: pt-dp / physical dp | After: base px | After: pt-dp / physical dp |
+|---|---|---|---|---|---|---|
+| iPhone 15 Pro | 1179 | 2.56 | 40 | 13.4 / 14.0 | 42 | 14.1 / 14.7 |
+| iPhone 15 Pro Max | 1290 | 2.80 | 40 | 14.7 / 15.3 | 40 | 14.7 / 15.3 |
+| iPhone 16 | 1179 | 2.56 | 40 | 13.4 / 14.0 | 42 | 14.1 / 14.7 |
+| iPhone 16 Plus | 1290 | 2.80 | 40 | 14.7 / 15.3 | 40 | 14.7 / 15.3 |
+| iPhone 16 Pro | 1206 | 2.62 | 40 | 13.7 / 14.3 | 42 | 14.4 / 15.1 |
+| iPhone 16 Pro Max | 1320 | 2.87 | 40 | 15.0 / 15.7 | 40 | 15.0 / 15.7 |
+| iPhone 16e | 1170 | 2.54 | 40 | 13.3 / 13.9 | 44 | 14.7 / 15.3 |
+| iPhone 17 | 1206 | 2.62 | 40 | 13.7 / 14.3 | 42 | 14.4 / 15.1 |
+| iPhone 17 Pro | 1206 | 2.62 | 40 | 13.7 / 14.3 | 42 | 14.4 / 15.1 |
+| iPhone 17 Pro Max | 1320 | 2.87 | 40 | 15.0 / 15.7 | 40 | 15.0 / 15.7 |
+| iPhone Air | 1260 | 2.74 | 40 | 14.4 / 15.0 | 40 | 14.4 / 15.0 |
+| Galaxy S23 | 1080 | 2.54 | 40 | 12.3 / 13.9 | 44 | 13.5 / 15.3 |
+| Galaxy S23+ | 1080 | 2.75 | 40 | 13.1 / 15.0 | 40 | 13.1 / 15.0 |
+| Galaxy S23 Ultra | 1080 | 2.88 | 40 | 14.1 / 15.8 | 40 | 14.1 / 15.8 |
+| Galaxy S23 FE | 1080 | 2.68 | 40 | 13.1 / 14.7 | 40 | 13.1 / 14.7 |
+| Galaxy S24 | 1080 | 2.60 | 40 | 12.3 / 14.2 | 42 | 12.9 / 14.9 |
+| Galaxy S24+ | 1080 | 2.81 | 40 | 14.1 / 15.4 | 40 | 14.1 / 15.4 |
+| Galaxy S24 Ultra | 1080 | 2.85 | 40 | 14.1 / 15.6 | 40 | 14.1 / 15.6 |
+| Galaxy S24 FE | 1080 | 2.81 | 40 | 13.1 / 15.3 | 40 | 13.1 / 15.3 |
+| Galaxy S25 | 1080 | 2.60 | 40 | 12.3 / 14.2 | 42 | 12.9 / 14.9 |
+| Galaxy S25+ | 1080 | 2.81 | 40 | 14.1 / 15.4 | 40 | 14.1 / 15.4 |
+| Galaxy S25 Ultra | 1080 | 2.89 | 40 | 14.1 / 15.8 | 40 | 14.1 / 15.8 |
+| Galaxy S25 Edge | 1080 | 2.81 | 40 | 14.1 / 15.4 | 40 | 14.1 / 15.4 |
+| Galaxy S25 FE | 1080 | 2.81 | 40 | 13.1 / 15.3 | 40 | 13.1 / 15.3 |
+| Galaxy Z Flip5 (main) | 1080 | 2.54 | 40 | 13.4 / 13.9 | 44 | 14.8 / 15.3 |
+| Galaxy Z Flip6 (main) | 1080 | 2.54 | 40 | 13.4 / 13.9 | 44 | 14.8 / 15.3 |
+| Galaxy Z Fold5 (cover) | 904 | 2.25 | 46 | 11.8 / 14.1 | 56 | 14.4 / 17.2 |
+| Galaxy Z Fold6 (cover) | 968 | 2.36 | 44 | 12.1 / 14.2 | 50 | 13.8 / 16.1 |
+
