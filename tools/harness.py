@@ -4,8 +4,9 @@ Self-play harness: launches the development player with the automation endpoint 
     python tools/harness.py smoke            # title → new game → hub → battle (autoplay) → results
     python tools/harness.py sweep [RUN [THEME]]  # screenshot + layout-audit every menu screen (THEME: a menu theme, e.g. Slate)
     python tools/harness.py aspects          # GG-T169/T706: title/hub/battle; 9:23..9:16 fill, 10:16/2:3/3:4, 9:25 and 1:1 framed
-    python tools/harness.py aspects devices  # GG-T724: the same per flagship screen shape (BIBLE §26.3 device matrix)
-    python tools/harness.py safeareas [RUN] [--nocapture] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4; title/camp/merchant/results/battle
+    python tools/harness.py aspects devices  # GG-T724/T2026: the same per in-target screen shape (tools/devices.json) plus the framed fold inners
+    python tools/harness.py aspects DEVICE   # GG-T2026: a device or shape id, shapes or all (tools/devices.py)
+    python tools/harness.py safeareas [RUN] [--nocapture] [--device DEVICE] [key=value ...]  # GG-T483: fake notch + gesture bar at 9:23 and 3:4 (--device: each device's own shape and safe area); title/camp/merchant/results/battle
     python tools/harness.py a11y [RUN] [--nocapture] [key=value ...]  # GG-T495: settings/camp/merchant/results/battle, e.g. textsize=130
     python tools/harness.py variants [RUN] [--nocapture]  # GG-T532: new game -> the Warden's female/male picker -> male Warden at Camp -> Change look, recorded
     python tools/harness.py vendortiers [RUN] [--nocapture]  # GG-T538: fresh Merchant shelf, next-tier rows at the Forge and Alchemist, recorded
@@ -79,6 +80,9 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import devices
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXE = os.path.join(ROOT, "Build", "Windows", "GridGame.exe")
@@ -658,14 +662,23 @@ ASPECT_MIN, ASPECT_MAX = 9 / 23, 9 / 16  # GG-T706: tablets are letterboxed in t
 ASPECTS = [("9x23-ultratall", 9 / 23), ("9x21", 9 / 21), ("9x20", 9 / 20), ("9x19.5", 9 / 19.5), ("9x18", 9 / 18),
            ("9x16", 9 / 16), ("10x16-tablet", 10 / 16), ("2x3-tablet", 2 / 3), ("3x4-tablet", 3 / 4), ("9x25-framed", 9 / 25), ("1x1-framed", 1.0)]
 
-# GG-T724: the target device matrix (BIBLE §26.3), one shape per flagship screen, by name: (label, aspect w/h from the
-# panel's portrait px). `harness.py aspects devices` runs these instead of the generic ASPECTS (which polish.py uses).
-DEVICE_ASPECTS = [("iphone-13-14-16e-17e", 1170 / 2532), ("iphone-15-16-17-pro", 1179 / 2556), ("iphone-pro-max", 1320 / 2868),
-                  ("iphone-air", 1260 / 2736), ("galaxy-s22-s26", 1080 / 2340), ("galaxy-z-flip7-8", 1080 / 2520),
-                  ("galaxy-z-flip4-6", 1080 / 2640), ("galaxy-z-fold7-8u-cover", 1080 / 2520), ("galaxy-z-fold5-cover", 904 / 2316),
-                  ("pixel-6-11", 1080 / 2400), ("pixel-pro-xl", 1344 / 2992), ("pixel-pro-fold-cover", 1080 / 2342),
-                  ("galaxy-z-fold8-cover-framed", 1248 / 1972), ("iphone-duo-outer-framed", 1398 / 2034),
+# GG-T724/GG-T2026: the target device matrix, by name: (label, aspect w/h from the panel's portrait px), read from
+# tools/devices.json. `harness.py aspects devices` runs one in-target device per shape plus the letterboxed inner screens
+# below (not in devices.json) instead of the generic ASPECTS (which polish.py uses).
+FRAMED_ASPECTS = [("galaxy-z-fold8-cover-framed", 1248 / 1972), ("iphone-duo-outer-framed", 1398 / 2034),
                   ("pixel-fold-inner-framed", 2076 / 2152), ("galaxy-z-fold-inner-framed", 1968 / 2184)]
+
+
+def device_aspects(name="shapes"):
+    """(label, aspect) per device a --device value names (tools/devices.py resolve); labelled by device id."""
+    out = []
+    for d in devices.resolve(name):
+        w, h, _, _ = devices.screen(d)
+        out.append((d, w / h))
+    return out
+
+
+DEVICE_ASPECTS = device_aspects() + FRAMED_ASPECTS
 
 
 def aspects(run="aspects", height=1200, shapes=None):
@@ -718,15 +731,23 @@ SAFE_INSETS_AT_2400 = (90, 48)
 SAFE_ASPECTS = [("9x23", 9 / 23), ("3x4", 3 / 4)]
 
 
-def safeareas(run="safeareas", height=1200, capture=True, settings=()):
+def safeareas(run="safeareas", height=1200, capture=True, settings=(), device=None):
     """GG-T483: at 9:23 and 3:4 with a fake notch and gesture bar (-safeArea, scaled from 90/48 px at 2400 tall), shoots
     the title, Camp, a vendor (the Merchant), the results screen and a live battle, runs the layout audit on each
     (POL-C5 'inside the unsafe area' among its checks) and reports the safe insets the player applied in design px.
     settings: (key, value) pairs for the automation `setting` endpoint, applied once the title shows (GG-T495 shots).
-    Recorded with -capture video hq unless capture=False. Exit 1 on any layout problem or log error."""
+    Recorded with -capture video hq unless capture=False. Exit 1 on any layout problem or log error.
+    device: a --device value (tools/devices.py resolve): each named device's own shape and safe_px instead (GG-T2026)."""
     failures, report = [], {}
-    top, bottom = (round(v * height / 2400) for v in SAFE_INSETS_AT_2400)
-    for label, a in SAFE_ASPECTS:
+    if device:
+        shapes = []
+        for d in devices.resolve(device):
+            dw, dh, dt, db = devices.screen(d)
+            shapes.append((d, dw / dh, round(dt * height / dh), round(db * height / dh)))
+    else:
+        top, bottom = (round(v * height / 2400) for v in SAFE_INSETS_AT_2400)
+        shapes = [(label, a, top, bottom) for label, a in SAFE_ASPECTS]
+    for label, a, top, bottom in shapes:
         w = int(round(height * a))
         extra = ["-safeArea", f"{top},{bottom}"] + (["-capture", "video", "hq"] if capture else [])
         launch(f"{run}/{label}", width=w, height=height, fresh=True, extra=tuple(extra))
@@ -3915,15 +3936,29 @@ def _dispatch(cmd):
     elif cmd == "sweep":
         sweep(sys.argv[2] if len(sys.argv) > 2 else "sweep", sys.argv[3] if len(sys.argv) > 3 else None)
     elif cmd == "aspects":
-        # aspects [devices]  (devices: the GG-T724 flagship matrix, DEVICE_ASPECTS)
-        devices = len(sys.argv) > 2 and sys.argv[2] == "devices"
-        sys.exit(0 if (aspects("aspects-devices", shapes=DEVICE_ASPECTS) if devices else aspects()) else 1)
+        # aspects [devices|DEVICE]  (devices: the in-target shapes plus the framed inners, DEVICE_ASPECTS; DEVICE: a device
+        # or shape id, shapes or all from tools/devices.json)
+        which = sys.argv[2] if len(sys.argv) > 2 else None
+        if which == "devices":
+            ok = aspects("aspects-devices", shapes=DEVICE_ASPECTS)
+        elif which:
+            ok = aspects(f"aspects-{which}", shapes=device_aspects(which))
+        else:
+            ok = aspects()
+        sys.exit(0 if ok else 1)
     elif cmd == "safeareas":
-        # safeareas [RUN] [--nocapture] [key=value ...]  (key=value: automation settings, e.g. textsize=130 reducemotion=1)
+        # safeareas [RUN] [--nocapture] [--device DEVICE] [key=value ...]  (key=value: automation settings, e.g. textsize=130
+        # reducemotion=1; DEVICE: a device or shape id, shapes or all from tools/devices.json)
         rest = [a for a in sys.argv[2:] if a != "--nocapture"]
+        device = None
+        if "--device" in rest:
+            i = rest.index("--device")
+            device = rest[i + 1] if i + 1 < len(rest) else sys.exit("--device needs a device or shape id, shapes or all")
+            del rest[i:i + 2]
         kvs = tuple(tuple(a.split("=", 1)) for a in rest if "=" in a)
         names = [a for a in rest if "=" not in a]
-        sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs) else 1)
+        sys.exit(0 if safeareas(names[0] if names else "safeareas", capture="--nocapture" not in sys.argv, settings=kvs,
+                                device=device) else 1)
     elif cmd == "a11y":
         # a11y [RUN] [--nocapture] [key=value ...]  (GG-T495, e.g. textsize=130 reducemotion=1 colorblind=1)
         rest = [a for a in sys.argv[2:] if a != "--nocapture"]

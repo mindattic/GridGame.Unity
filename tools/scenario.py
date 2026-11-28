@@ -1,25 +1,29 @@
 """
 GG-T1802: show the owner a spot in the game without playing to it.
 
-    python tools/scenario.py <preset|target> [--spec file.json] [--device iphone17pro] [--replace] [--build] [--no-show]
+    python tools/scenario.py <preset|target> [--spec file.json] [--device iphone15pro|<device>|<shape>] [--replace] [--build] [--no-show]
 
 A preset is tools/scenarios/<name>.json; a target is first-boss, boss:N, boss:<class>, final-boss, stage:<id>,
 region:<theme>, screen:<id> or overworld. --spec runs a spec file instead. The player is launched detached on a throwaway
-"Scenario" profile, sized like the device with its safe area applied, and left open.
+"Scenario" profile, sized like the device with its safe area applied, and left open. --device takes any device id in
+tools/devices.json or a shape id (its representative device).
 """
 import argparse, json, os, re, subprocess, sys, time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import devices
 import harness
 
 ROOT = harness.ROOT
-# name: (width, height, safe-area top, safe-area bottom), all in device pixels.
-DEVICES = {
-    "iphone17pro": (1206, 2622, 186, 102),
-    "iphone17promax": (1320, 2868, 186, 102),
-    "pixel9": (1080, 2424, 110, 63),
-    "ipad": (1640, 2360, 72, 60),
-}
+# device id: (width, height, safe-area top, safe-area bottom), all in device pixels, from tools/devices.json.
+DEVICES = {d: devices.screen(d) for d in devices.DEVICES}
+
+
+def device_arg(name):
+    try:
+        return devices.device_id(name)
+    except ValueError as e:
+        raise argparse.ArgumentTypeError(str(e))
 
 
 def work_area_height():
@@ -163,10 +167,12 @@ def start(arg, device, run):
 
 
 def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter,
+                                 epilog="shapes (--device <shape> runs its representative device):\n" + devices.shapes_help()
+                                 + "\n\ndevices: " + ", ".join(sorted(DEVICES)))
     ap.add_argument("scenario", nargs="?", help="a preset name or a target")
     ap.add_argument("--spec", help="a spec JSON file instead of a preset or target")
-    ap.add_argument("--device", default="iphone17pro", choices=sorted(DEVICES))
+    ap.add_argument("--device", default=devices.DEFAULT, type=device_arg, help="a device id or a shape id (listed below)")
     ap.add_argument("--replace", action="store_true", help="close a running GridGame player first")
     ap.add_argument("--build", action="store_true", help="rebuild the Windows dev player if it is stale")
     ap.add_argument("--no-show", action="store_true", help="skip the preview set")
