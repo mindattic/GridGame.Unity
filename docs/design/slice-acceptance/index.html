@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slice Acceptance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Slice Acceptance</h1>
+    <p class="sub">Each owner ask in epic GG-T1941, the beat that delivers it (<code>docs/STORY_SLICE.md</code>, click-through in <a href="../prologue/index.html">docs/design/prologue</a>) and what proves it. Ticket GG-T2106, under GG-T1992. The prose twin is <code>docs/release/SLICE_ACCEPTANCE.md</code>, and <code>data.js</code> feeds both, so change them together. <span id="stamp"></span></p>
+  </header>
+
+  <section aria-labelledby="h-ask">
+    <h2 id="h-ask">The owner's ask</h2>
+    <blockquote class="ask" id="ask"></blockquote>
+  </section>
+
+  <section aria-labelledby="h-sum">
+    <h2 id="h-sum">Where it stands</h2>
+    <div class="tiles" id="tiles"></div>
+    <div class="meter" id="meter" aria-hidden="true"></div>
+    <div class="filters" id="filters" role="group" aria-label="Show rows"></div>
+  </section>
+
+  <section aria-labelledby="h-rows">
+    <h2 id="h-rows">Every ask</h2>
+    <div id="asks"></div>
+  </section>
+
+  <section aria-labelledby="h-how">
+    <h2 id="h-how">How to see the proof</h2>
+    <p class="m" id="how"></p>
+    <p class="m">Captures come from <code>python tools/uiaudit.py</code> (see <code>docs/design/ui-audit/BASELINE.md</code>). A row moves from <b>Built</b> to <b>Done</b> when a capture or a committed harness screenshot shows it on the reference device. A row moves from <b>Missing</b> to <b>Built</b> when the open tickets it names land on main.</p>
+  </section>
+
+  <section aria-labelledby="h-next">
+    <h2 id="h-next">After this checklist</h2>
+    <ol class="next" id="next"></ol>
+  </section>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
