@@ -86,9 +86,12 @@ namespace GridGame.Core.Content
                 if (a.Mode == TargetMode.PickDirection && (a.Shape == TargetShape.Self || a.Shape == TargetShape.SingleActor
                                                            || a.Shape == TargetShape.AllEnemies || a.Shape == TargetShape.AllAllies))
                     p.Add($"ability {a.Id}: a PickDirection anchors a tile shape (Row, Column, Wall, an area or SingleTile) beside the caster");
-                // GG-T861: a Smoke Vanish leaves from the caster's own tile (its smoke goes there) to a random one, never a teleport too.
+                // GG-T861: a Smokebomb leaves from the caster's own tile (its smoke goes there) and reappears on a random one, never a teleport too.
                 if (a.Vanishes && (a.Shape != TargetShape.Self || a.Mode != TargetMode.Auto || a.IsTeleport || a.Kind != AbilityKind.Skill))
-                    p.Add($"ability {a.Id}: a Smoke Vanish (Vanishes) is a Self / Auto Skill and not also a Teleport");
+                    p.Add($"ability {a.Id}: a Smokebomb (Vanishes) is a Self / Auto Skill and not also a Teleport");
+                // GG-T1916: an authored Abilities sheet folder is one the tree knows.
+                if (a.Category != null && System.Array.IndexOf(GridGame.Core.Rules.ActionTree.Categories, a.Category) < 0)
+                    p.Add($"ability {a.Id}: Category '{a.Category}' is not one of {string.Join(", ", GridGame.Core.Rules.ActionTree.Categories)}");
                 // GG-T868: a Pole Vault is a blink whose pick is the free tile beyond a unit beside the caster.
                 if (a.Vaults && (!a.IsTeleport || a.Shape != TargetShape.SingleTile || a.Mode != TargetMode.PickTile || a.Filter != TargetFilter.EmptyOnly
                                  || (a.Kind != AbilityKind.Skill && a.Kind != AbilityKind.Spell)))

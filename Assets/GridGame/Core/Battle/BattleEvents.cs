@@ -125,8 +125,16 @@ namespace GridGame.Core.Battle
     /// <see cref="To"/> (its <see cref="TeleportedEvent"/> follows). The view puffs smoke, calls "Vanish" and flashes the landing.</summary>
     public sealed class VanishedEvent : BattleEvent
     {
-        public int UnitId; public Coord From; public Coord To; public string AbilityId;
-        public override string ToString() => $"Vanished {UnitId} {From}->{To}";
+        public int UnitId; public Coord From; public string AbilityId;
+        public override string ToString() => $"Vanished {UnitId} at {From}";
+    }
+
+    /// <summary>GG-T1916: a unit that vanished in a Smokebomb's smoke reappears on <see cref="To"/> as its next turn comes.
+    /// A <see cref="TeleportedEvent"/> follows to move the token.</summary>
+    public sealed class ReappearedEvent : BattleEvent
+    {
+        public int UnitId; public Coord From; public Coord To;
+        public override string ToString() => $"Reappeared {UnitId} {From}->{To}";
     }
 
     /// <summary>GG-T861: a foe's charge locked on a unit that vanished re-plans: onto <see cref="NewTargetId"/> at

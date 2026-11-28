@@ -3562,6 +3562,7 @@
  {
   "Id": "whiteninja_moonlit",
   "Name": "Moonlit Recovery",
+  "Category": "Ninjutsu",
   "Description": "A ninja's trick: mend your own wounds between heartbeats, unseen.",
   "Kind": "Skill",
   "Requires": { "Agility": 3, "Wisdom": 2 },
@@ -4011,6 +4012,7 @@
  {
   "Id": "ninja_fang",
   "Name": "Ninja Fang",
+  "Category": "Ninjutsu",
   "Description": "A strike in the wielder's own element that leaves that element's sting. With no element of its own, it is pure force.",
   "Kind": "Skill",
   "Requires": { "Agility": 3, "Intelligence": 2 },
@@ -4049,8 +4051,9 @@
  },
  {
   "Id": "blackninja_smoke_vanish",
-  "Name": "Smoke Vanish",
-  "Description": "Drops a smoke bomb at its feet and vanishes, reappearing on a random free tile. Blows aimed into the smoke fly half-blind, and foes charging at the ninja lose it and turn on someone else.",
+  "Name": "Smokebomb",
+  "Category": "Ninjutsu",
+  "Description": "You throw a smoke bomb at your feet and vanish in the burst: off the board and out of reach. On your next turn you reappear on a random free tile. Blows aimed into the smoke fly half-blind, and foes charging at you lose you and turn on someone else.",
   "Kind": "Skill",
   "Requires": { "Agility": 4 },
   "Cost": 0,

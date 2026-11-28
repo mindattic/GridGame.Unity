@@ -19,19 +19,23 @@ namespace GridGame.Core.Rules
     /// The one source of the Abilities sheet's tree (§9.0, GG-T1914): three tabs (Abilities, Spells, Consumables) of the
     /// hero's unlocked, filled bar slots. Skills and weapon attacks are Abilities, spells Spells, items Consumables. By
     /// default a tab folds its moves into category folders (the ability's damage type; content has no category field)
-    /// only when it holds more than <see cref="FolderAbove"/> moves of two or more categories; otherwise it is flat.
+    /// only when it holds more than <see cref="FolderAbove"/> moves of two or more categories; otherwise it is flat. A move
+    /// with a content <see cref="AbilityDef.Category"/> (one of <see cref="Categories"/>, GG-T1916) always sits in that
+    /// folder, so a ninja reads Abilities › Ninjutsu › Smokebomb.
     /// GG-T1917 swaps in the hero's saved tree here, so the sheet never builds its own.
     /// </summary>
     public static class ActionTree
     {
         public static readonly string[] Tabs = { "Abilities", "Spells", "Consumables" };
         public const int FolderAbove = 3;
+        /// <summary>GG-T1916: the authored folders an ability may name in <see cref="AbilityDef.Category"/>.</summary>
+        public static readonly string[] Categories = { "Ninjutsu" };
 
         public static List<ActionNode> For(BattleState s, Unit hero)
         {
             var tabs = Tabs.Select(t => new ActionNode { Name = t }).ToList();
             if (hero == null) return tabs;
-            var moves = new List<(int tab, string category, ActionNode node)>();
+            var moves = new List<(int tab, string category, bool named, ActionNode node)>();
             for (int i = 0; i < hero.Bar.Count && i < hero.UnlockedSlots; i++)
             {
                 var sl = hero.Bar[i];
@@ -39,18 +43,23 @@ namespace GridGame.Core.Rules
                 var a = BattleEngine.SlotAbility(s, hero, i);
                 if (a == null) continue;
                 int tab = sl.IsItem ? 2 : sl.IsWeapon || a.Kind == AbilityKind.Skill ? 0 : 1;
-                moves.Add((tab, a.DamageType.ToString(), new ActionNode { Name = MoveName(s, hero, i, a), Slot = i }));
+                bool named = !string.IsNullOrEmpty(a.Category);
+                moves.Add((tab, named ? a.Category : a.DamageType.ToString(), named, new ActionNode { Name = MoveName(s, hero, i, a), Slot = i }));
             }
             for (int t = 0; t < tabs.Count; t++)
             {
                 var mine = moves.Where(m => m.tab == t).ToList();
                 bool fold = t != 2 && mine.Count > FolderAbove && mine.Select(m => m.category).Distinct().Count() > 1;
-                if (!fold) { tabs[t].Children.AddRange(mine.Select(m => m.node)); continue; }
-                foreach (var g in mine.GroupBy(m => m.category))
+                var folders = new Dictionary<string, ActionNode>();
+                foreach (var m in mine)
                 {
-                    var folder = new ActionNode { Name = g.Key };
-                    folder.Children.AddRange(g.Select(m => m.node));
-                    tabs[t].Children.Add(folder);
+                    if (!fold && !m.named) { tabs[t].Children.Add(m.node); continue; }
+                    if (!folders.TryGetValue(m.category, out var folder))
+                    {
+                        folders[m.category] = folder = new ActionNode { Name = m.category };
+                        tabs[t].Children.Add(folder);
+                    }
+                    folder.Children.Add(m.node);
                 }
             }
             return tabs;

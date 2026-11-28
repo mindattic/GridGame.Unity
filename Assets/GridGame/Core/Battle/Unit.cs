@@ -87,6 +87,10 @@ namespace GridGame.Core.Battle
         public bool Burrowed;
         /// <summary>GG-T901: the ability that sent it under, the blow it strikes as it surfaces.</summary>
         public string BurrowAbility;
+        /// <summary>GG-T1916: gone in a Smokebomb's smoke. <see cref="OnBoard"/> is false meanwhile (not <see cref="Alive"/>:
+        /// untargetable, on no tile), but it lives, keeps its turn on the timeline and holds the party in the fight;
+        /// <see cref="Pos"/> is the tile it left. It reappears on its next turn (<c>BattleRunner.Reappear</c>).</summary>
+        public bool Vanished;
 
         public List<BuffInstance> Buffs = new List<BuffInstance>();
         public Dictionary<string, int> Cooldowns = new Dictionary<string, int>();

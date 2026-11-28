@@ -4,20 +4,44 @@ using UnityEngine;
 
 namespace GridGame.App
 {
-    /// <summary>Smoke Vanish on the board (§7, GG-T861, the Black Ninja): a whoosh and a grey puff of smoke billow out of the
-    /// tile the ninja leaves with a "Vanish" callout, then (as its teleport fades it across) a pale flash where it reappears.
-    /// The smoke cloud itself is the region tile wash its RegionTilesEvent paints. Reduce Motion keeps one fading puff.</summary>
+    /// <summary>Smokebomb on the board (§7, GG-T861, GG-T1916, the Black Ninja): a whoosh and a grey burst of smoke billow out
+    /// of the ninja's tile with a "Vanish" callout and its token goes with it (off the board until its next turn; the turn's
+    /// timeline entry carries the marker). When that turn comes a smaller burst and a pale flash mark where it reappears,
+    /// timed to its teleport fading it back in. The smoke cloud itself is the region tile wash its RegionTilesEvent paints.
+    /// Reduce Motion keeps one fading puff.</summary>
     public sealed partial class BattleScreen
     {
         private static readonly Color SmokeColor = Palette.Vfx.Smoke;
 
         private IEnumerator VanishedAnim(VanishedEvent e)
         {
-            Vector2 at = BoardView.CenterOf(e.From);
             App.Audio.Sfx("battle.whoosh", 0.9f, 0.8f);
             Text?.Show(e.From, CombatTextKind.Callout, "Vanish", 0.2f, Color.Lerp(SmokeColor, Palette.White, 0.35f));
+            if (board.Units.TryGetValue(e.UnitId, out var v) && !v.Dead) App.StartCoroutine(FadeOffBoard(v));
+            yield return SmokeBurst(e.From, 1.1f);
+        }
+
+        /// <summary>GG-T1916: the vanished unit's token leaves the board inside the burst (the TeleportedEvent of its
+        /// reappearance brings it back, as for a burrower).</summary>
+        private IEnumerator FadeOffBoard(UnitView v)
+        {
+            yield return Tween.Fade(v.Root, 1, 0, Timing.Quick);
+            v.Root.RemoveFromHierarchy();
+            v.Dead = true;
+        }
+
+        private IEnumerator ReappearedAnim(ReappearedEvent e)
+        {
             App.StartCoroutine(ReappearFlash(e.To));
-            float reach = BoardView.Tile * 1.1f;
+            yield return SmokeBurst(e.To, 0.7f);
+        }
+
+        /// <summary>Billowing puffs of <see cref="SmokeColor"/> drift out of <paramref name="tile"/>, swell and thin, round a
+        /// dense core; <paramref name="scale"/> of a tile and a bit of reach.</summary>
+        private IEnumerator SmokeBurst(GridGame.Core.Coord tile, float scale)
+        {
+            Vector2 at = BoardView.CenterOf(tile);
+            float reach = BoardView.Tile * scale;
             if (ReduceMotion)
             {
                 yield return Tween.Run(Timing.Quick, k =>
@@ -35,7 +59,7 @@ namespace GridGame.App
             {
                 float th = i * Mathf.PI * 2f / puffs + Random.Range(-0.3f, 0.3f);
                 dirs[i] = new Vector2(Mathf.Cos(th), Mathf.Sin(th)) * Random.Range(0.6f, 1f);
-                sizes[i] = Random.Range(0.28f, 0.42f) * BoardView.Tile;
+                sizes[i] = Random.Range(0.25f, 0.38f) * reach;
             }
             yield return Tween.Run(Timing.Standard, k =>
             {
@@ -45,7 +69,7 @@ namespace GridGame.App
                 for (int i = 0; i < puffs; i++)
                     board.Lines.Dot(at + dirs[i] * reach * out_, sizes[i] * (0.6f + 0.6f * out_),
                         Color.Lerp(SmokeColor, Palette.White, 0.15f * (i % 3)).WithA(0.75f * (1f - k)));
-                board.Lines.Dot(at, BoardView.Tile * (0.35f + 0.25f * out_), SmokeColor.WithA(0.9f * (1f - k * k)));
+                board.Lines.Dot(at, reach * (0.32f + 0.23f * out_), SmokeColor.WithA(0.9f * (1f - k * k)));
             });
             board.Lines.ClearLines();
         }

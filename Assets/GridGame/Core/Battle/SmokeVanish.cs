@@ -6,14 +6,15 @@ using GridGame.Core.Rules;
 namespace GridGame.Core.Battle
 {
     /// <summary>
-    /// Smoke Vanish (§7, GG-T861, the Black Ninja's skill; the owner's "ninja drops a smoke bomb and reappears on a random
-    /// square"): the ability's rule effects lay a smoke cloud (the <c>smoke</c> state, <see cref="TileStateDef.Obscures"/>)
-    /// on the ninja's tile and its 4 neighbours, so blows aimed into it roll as if Blind; then the ninja vanishes and
-    /// reappears on a random <see cref="Landings"/> tile, drawn from the battle Rng (one draw), and a pincer it lands in
-    /// resolves at once, as Teleport's does. Every foe's charge locked on it re-plans onto the nearest other hero
-    /// (<see cref="Replan"/>), or, with none left, falls on the smoke it left. A Rooted ninja drops the smoke and stays.
+    /// Smokebomb (§7, GG-T861, GG-T1916, the Black Ninja's Ninjutsu; the owner's "disappear in a burst of smoke; on next hero
+    /// turn Ninja reappears on a random legal tile"): the ability's rule effects lay a smoke cloud (the <c>smoke</c> state,
+    /// <see cref="TileStateDef.Obscures"/>) on the ninja's tile and its 4 neighbours, so blows aimed into it roll as if Blind;
+    /// then the ninja vanishes (off the board, untargetable, <see cref="Unit.Vanished"/>). On its next turn it reappears on a
+    /// random <see cref="Landings"/> tile, drawn from the battle Rng (one draw), and a pincer it lands in resolves at once,
+    /// as Teleport's does. Every foe's charge locked on it re-plans onto the nearest other hero (<see cref="Replan"/>), or,
+    /// with none left, falls on the smoke it left. A Rooted ninja drops the smoke and stays.
     /// Distinct from the Smoke Bomb item (an escape that ends the battle) and Smoke Veil (a thrown cloud that Blinds the foes
-    /// it catches). The runner moves the unit (<c>BattleRunner.ResolveVanish</c>); this class picks the tiles and prices a
+    /// it catches). The runner moves the unit (<c>BattleRunner.ResolveVanish</c>, <c>Reappear</c>); this class picks the tiles and prices a
     /// cast for the hero bot.
     /// </summary>
     public static class SmokeVanish
@@ -73,10 +74,11 @@ namespace GridGame.Core.Battle
             e.Kind == TimelineKind.Cast && e.IsCharge && e.CasterTeam != u.Team && e.TargetUnitId == u.Id && e.ChargeShape != ChargeShape.Line;
 
         /// <summary>
-        /// What a Smoke Vanish is worth to the hero bot: when the ninja is threatened (a foe beside it, a charge locked on it,
+        /// What a Smokebomb is worth to the hero bot: when the ninja is threatened (a foe beside it, a charge locked on it,
         /// more when it is hurt) it pays to slip away; when a landing has pincer odds (the share of landings that close a
-        /// pincer with the ninja as an end, times 10 per foe trapped on average) it pays to roll the dice. Less 2 for the
-        /// cooldown, so with neither it is never cast. 0 when there is nowhere to land or the ninja is Rooted.
+        /// pincer with the ninja as an end, times 5 per foe trapped on average: half the old 10, since it lands a turn later
+        /// and the foes will have moved, GG-T1916) it pays to roll the dice. Less 2 for the cooldown and the turn off the
+        /// board, so with neither it is never cast. 0 when there is nowhere to land or the ninja is Rooted.
         /// </summary>
         public static float Value(BattleState s, Unit caster)
         {
@@ -103,7 +105,7 @@ namespace GridGame.Core.Battle
                 foreach (var p in PincerDetector.Detect(copy, Team.Hero, cu))
                     if (p.A.Id == cu.Id || p.B.Id == cu.Id) trapped += p.Opponents.Count;
             }
-            v += 10f * trapped / lands.Count;
+            v += 5f * trapped / lands.Count;
             return v - 2f;
         }
     }

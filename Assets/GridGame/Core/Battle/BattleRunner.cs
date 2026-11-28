@@ -478,6 +478,7 @@ namespace GridGame.Core.Battle
         private void ReturnControl(bool newWindow = true, bool roundStarted = false)
         {
             if (!newWindow) { Emit(new PlayerControlEvent { NewWindow = false }); return; }
+            if (!TurnRules.HeroesOnTimeline(S)) ReappearHeroes(); // GG-T1916: the party's next turn brings a vanished hero back
             AgePickups();
             AgeCorpses();
             MaybeSpawnAmplifier();
@@ -531,6 +532,7 @@ namespace GridGame.Core.Battle
             foreach (var u in S.Units)
             {
                 if (u.Burrowed && u.Hp > 0 && u.Team == Team.Enemy) { enemiesAlive = true; continue; } // GG-T901: under the board, still in the fight
+                if (u.Vanished && u.Hp > 0 && u.Team == Team.Hero && !u.IsIndependent) { heroesAlive = true; continue; } // GG-T1916: in the smoke, still in the fight
                 if (!u.Alive) continue;
                 // A tamed or domesticated monster alone doesn't keep the party in the fight (GG-T303).
                 if (u.Team == Team.Hero) { if (!u.IsIndependent) heroesAlive = true; } else if (u.Team == Team.Enemy && !u.IsCorpse) enemiesAlive = true; // bodies (and neutrals, GG-T132) don't hold up a wave
@@ -548,6 +550,7 @@ namespace GridGame.Core.Battle
             if (!enemiesAlive) foreach (var p in S.PendingSpawns) if (!p.Consumed && p.Wave == S.Wave) enemiesAlive = true;
             if (!enemiesAlive)
             {
+                ReappearHeroes(quiet: true); // GG-T1916: nobody left to hide from
                 int clearCoins = Math.Max(0, S.Stage.Waves[S.Wave].ClearCoins);
                 S.Results.Coins += clearCoins;
                 Emit(new WaveClearedEvent { Wave = S.Wave, Coins = clearCoins });
