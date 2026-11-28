@@ -1,0 +1,28 @@
+dialogue boss_defeat_greenvalley
+title: What the Captain Sold
+trigger: StageCleared greenvalley-03
+speaker boss moorcaptain
+speaker commander $commander
+
+node a boss
+  Quota... You think the tithe stops with me? The Choir will send someone who doesn't keep count.
+  -> b
+
+node b commander
+  Then they'll find the wagon gone and the waystone awake. Where does the colour go, Captain?
+  -> c
+
+node c boss
+  Up the old road, to the Still, and past it. I never asked further. Nobody who asks comes back to the moor.
+  -> d
+
+node d commander
+  Then we'll ask. Tell the holds their tithe is their own again.
+  -> e
+
+node e boss
+  They won't believe it from me.
+  -> f
+
+node f commander
+  They'll believe it from us.
