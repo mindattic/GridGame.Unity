@@ -62,23 +62,25 @@ namespace GridGame.App
             var withBoard = u.LevelStats; // the preview's level stats already carry the board bonus (BattleFactory.SpecFor)
             var baseStats = withBoard + board * -1f;
             var eff = u.Effective;
-            float statCol = Size.ColumnL * 1.25f; // wide enough for "Board" and "+24" at the phone caption size (GG-T1861)
+            // GG-T1971: "Talents" is the widest heading, so its column is wider and the number columns give it the room
+            // (the row stays as wide as four ColumnL * 1.25 columns at the phone caption size, GG-T1861).
+            float statCol = Size.ColumnL * 1.15f, talentCol = Size.ColumnL * 1.5f;
             var statHead = Ui.El("row", stats);
             statHead.name = "status-stat-head";
             Ui.Caption("", statHead).style.width = Size.Column;
             Ui.Caption("Base", statHead, "dim").style.width = statCol;
-            Ui.Caption("Board", statHead, "dim").style.width = statCol;
+            Ui.Caption("Talents", statHead, "dim").style.width = talentCol;
             Ui.Caption("Gear", statHead, "dim").style.width = statCol;
             Ui.Caption("Total", statHead, "dim").style.width = statCol;
-            void Delta(VisualElement r, float d) =>
-                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = statCol;
+            void Delta(VisualElement r, float d, float w) =>
+                Ui.Caption(Math.Abs(d) < 0.05f ? "—" : $"{(d > 0 ? "+" : "")}{d:0}", r, d > 0.05f ? "good" : d < -0.05f ? "bad" : "dim").style.width = w;
             void Stat(string n, float b, float bb, float t)
             {
                 var r = Ui.El("row", stats);
                 Ui.Caption(n, r, "dim").style.width = Size.Column;
                 Ui.Caption($"{b:0}", r, "dim").style.width = statCol;
-                Delta(r, bb - b);
-                Delta(r, t - bb);
+                Delta(r, bb - b, talentCol);
+                Delta(r, t - bb, statCol);
                 Ui.Name($"{t:0}", r).style.width = statCol;
             }
             Stat("STR", baseStats.Strength, withBoard.Strength, eff.Strength); Stat("VIT", baseStats.Vitality, withBoard.Vitality, eff.Vitality);

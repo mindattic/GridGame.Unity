@@ -42,7 +42,7 @@ namespace GridGame.App
                 if (icon != null) cell.style.backgroundImage = new StyleBackground(icon);
             }
             string id = h.ClassId;
-            var board = RowIcon.IconButton("Board", RowKind.Ability,
+            var board = RowIcon.IconButton("Talents", RowKind.Ability,
                 () => GameApp.I.Router.Push(new HeroScreen(HeroScreen.AbilitiesTabIndex, id, AbilitiesTab.TalentsSub)), "btn--small", row);
             board.name = "party-board-" + id;
             Ui.Margin(board, bottom: Space.S8);

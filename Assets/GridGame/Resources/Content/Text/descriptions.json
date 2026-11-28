@@ -4484,11 +4484,11 @@
       "guid": null,
       "version": 0,
       "source": "seed",
-      "hash": "sha256:ae829eb898dfb138eb1c240cd3c78db408f5ea4901bdb9075606c159e871350d",
+      "hash": "sha256:c4634988e7c9fe203be95327abcff0a0ad13fe6ee68017f830d9087de6a510c4",
       "about": [],
       "speakers": [],
       "payload": {
-        "long": "Every hero earns 1 skill point (SP) a level, and every node on the Skill Board costs 1 SP. Open it from Heroes, Abilities, Board.\n\nThe board is a hexagon with the six identity stats at its corners: VIT, STR, AGI, SPD, WIS and INT. Each edge between two of them is a family: Martial (VIT and STR), Brawn (STR and AGI), Shadow (AGI and SPD), Wild (SPD and WIS), Brains (WIS and INT) and Grace (INT and VIT).\n\nA hero starts on its class's Start path and buys nodes next to the ones it already owns, so it grows outward from home. Tap any node to see the cheapest route to it and what it costs. Passive nodes add stats; ability nodes teach their ability. Luck is not on the board: it grows a little every level and comes from gear."
+        "long": "Every hero earns 1 skill point (SP) a level, and every node in Talents costs 1 SP. Open it from Heroes, Abilities, Talents.\n\nTalents is a hexagon with the six identity stats at its corners: VIT, STR, AGI, SPD, WIS and INT. Each edge between two of them is a family: Martial (VIT and STR), Brawn (STR and AGI), Shadow (AGI and SPD), Wild (SPD and WIS), Brains (WIS and INT) and Grace (INT and VIT).\n\nA hero starts on its class's Start path and buys nodes next to the ones it already owns, so it grows outward from home. Tap any node to see the cheapest route to it and what it costs. Passive nodes add stats; ability nodes teach their ability. Luck is not in Talents: it grows a little every level and comes from gear."
       }
     },
     "codex:place/bloom": {
