@@ -12,7 +12,7 @@ namespace GridGame.App
     /// Motion keeps one fading ring and the callout.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color FloatColor = new Color(0.62f, 0.83f, 0.94f); // buffs.json floating #9FD3F0
+        private static readonly Color FloatColor = Palette.Vfx.Float; // buffs.json floating #9FD3F0
 
         private IEnumerator FloatVfx(AbilityResolvedEvent ar)
         {

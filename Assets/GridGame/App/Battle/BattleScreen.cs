@@ -374,7 +374,7 @@ namespace GridGame.App
             foreach (var id in targetGlows)
                 if (board.Units.TryGetValue(id, out var v)) v.SetGlow(Palette.White, 0f);
             targetGlows.Clear();
-            if (board.Units.TryGetValue(SelectedHeroId, out var sv)) sv.SetGlow(new Color(1f, 0.9f, 0.5f), 0.65f);
+            if (board.Units.TryGetValue(SelectedHeroId, out var sv)) sv.SetGlow(Palette.Vfx.SelectGlow, 0.65f);
         }
 
         /// <summary>Legal anchors in gold; the pending pick's area (red harmful, green helpful, blue teleport) and its units glowing.</summary>
@@ -390,7 +390,7 @@ namespace GridGame.App
             if (!PendingTarget.HasValue) return;
             var at = PendingTarget.Value;
             bool harmful = a.BaseDamage > 0 || a.Filter == TargetFilter.EnemyOnly;
-            var color = a.IsTeleport ? Palette.Mana : harmful ? new Color(1f, 0.3f, 0.25f) : new Color(0.4f, 0.9f, 0.5f);
+            var color = a.IsTeleport ? Palette.Mana : harmful ? Palette.Vfx.Harmful : Palette.Vfx.Helpful;
             var hits = TargetResolver.Collect(State, a, hero, at);
             if (a.Mode == TargetMode.Auto || a.Shape == TargetShape.Self || a.Shape == TargetShape.AllAllies || a.Shape == TargetShape.AllEnemies)
                 foreach (var u in hits) foreach (var t in u.Tiles()) board.Mark(t, color, 0.42f);
@@ -666,7 +666,7 @@ namespace GridGame.App
             panelUnitId = -1;
             foreach (var u in State.Units)
                 if (board.Units.TryGetValue(u.Id, out var v) && u.Alive)
-                    v.SetGlow(new Color(1f, 0.9f, 0.5f), u.Id == id ? 0.65f : 0f);
+                    v.SetGlow(Palette.Vfx.SelectGlow, u.Id == id ? 0.65f : 0f);
             SyncBar();
             SyncPanel();
         }

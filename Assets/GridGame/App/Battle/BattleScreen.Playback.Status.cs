@@ -223,7 +223,7 @@ namespace GridGame.App
                 coin.style.position = Position.Absolute;
                 coin.style.width = coin.style.height = Size.Pip;
                 coin.style.backgroundImage = new StyleBackground(Art.Orb);
-                coin.style.unityBackgroundImageTintColor = new Color(1f, 0.82f, 0.25f);
+                coin.style.unityBackgroundImageTintColor = Palette.Vfx.Coin;
                 App.Overlay.Add(coin);
                 float ang = Random.Range(-Mathf.PI * 0.95f, -Mathf.PI * 0.05f), speed = Random.Range(260f, 520f);
                 var vel = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * speed;
@@ -287,7 +287,7 @@ namespace GridGame.App
         private static string StatusGlyph(BuffDef def) => string.IsNullOrEmpty(def.Letter) ? def.Name.Substring(0, 1) : def.Letter;
 
         /// <summary>A status's own colour (<c>BuffDef.Color</c>), as InflictAnim draws it.</summary>
-        private static Color StatusColor(BuffDef def) => Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+        private static Color StatusColor(BuffDef def) => Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
 
         /// <summary>GG-T830: a status on its last turn (or last tick) ticks a "1" countdown in its colour beside its glyph.</summary>
         private void StatusCountdownText(BuffTickedEvent bt)

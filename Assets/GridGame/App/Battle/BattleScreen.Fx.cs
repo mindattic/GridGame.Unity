@@ -110,7 +110,7 @@ namespace GridGame.App
                 ring.style.borderTopLeftRadius = ring.style.borderTopRightRadius = ring.style.borderBottomLeftRadius = ring.style.borderBottomRightRadius = r;
                 float w = Mathf.Lerp(14f, 2f, k) * scale;
                 ring.style.borderTopWidth = ring.style.borderBottomWidth = ring.style.borderLeftWidth = ring.style.borderRightWidth = w;
-                var col = new Color(c.r, c.g, c.b, 1f - k);
+                var col = c.WithA(1f - k);
                 ring.style.borderTopColor = ring.style.borderBottomColor = ring.style.borderLeftColor = ring.style.borderRightColor = col;
                 if (k >= 1f) ring.RemoveFromHierarchy();
             }));
@@ -130,7 +130,7 @@ namespace GridGame.App
                 f.style.left = t.X * BoardView.Tile - 30; f.style.top = t.Y * BoardView.Tile - 30;
                 f.style.width = f.style.height = BoardView.Tile + 60;
                 f.style.backgroundImage = new StyleBackground(Art.Glow); // a soft bloom, never an opaque slab over the target
-                f.style.unityBackgroundImageTintColor = new Color(c.r, c.g, c.b, 0.8f);
+                f.style.unityBackgroundImageTintColor = c.WithA(0.8f);
                 f.style.opacity = 0f;
                 board.FxLayer.Add(f);
                 float delay = d * 0.06f;
@@ -155,7 +155,7 @@ namespace GridGame.App
             var def = App.Content.TryBuff(ba.BuffId);
             if (u == null || def == null || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) { RefreshUnit(ba.UnitId); yield break; }
             var at = BoardView.CenterOf(v.Tile, v.W, v.H);
-            var color = Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : new Color(0.8f, 0.4f, 0.9f));
+            var color = Art.HexColor(def.Color, def.Kind == BuffKind.Buff ? Palette.Mana : Palette.Vfx.Debuff);
             if (!ReduceMotion) yield return StatusBurst(def.Id, at, color, v);
             else App.Audio.Sfx(def.Kind == BuffKind.Buff ? "battle.cast" : "status.debuff", 0.6f);
             RefreshUnit(u.Id);
@@ -205,7 +205,7 @@ namespace GridGame.App
             yield return Tween.Run(Timing.Emphasis, k =>
             {
                 board.Lines.ClearLines();
-                board.Lines.Ring(at, 50f + 300f * k, new Color(red.r, red.g, red.b, 1f - k), 22f);
+                board.Lines.Ring(at, 50f + 300f * k, red.WithA(1f - k), 22f);
                 if (k > 0.25f) board.Lines.Ring(at, 50f + 300f * (k - 0.25f) / 0.75f, redGlow.WithA(1f - k), 12f);
                 foreach (var f in foes)
                 {
@@ -256,9 +256,9 @@ namespace GridGame.App
         {
             if (a.BaseDamage > 0) return ColorFor(a.DamageType);
             if (a.GrantsOrbs > 0) return Art.Mana;
-            if (a.RemovesDebuffs || a.RemovesBuff != null) return new Color(0.55f, 1f, 0.55f);
+            if (a.RemovesDebuffs || a.RemovesBuff != null) return Palette.Vfx.Purge;
             if (a.Revives) return Palette.Gold;
-            return new Color(1f, 0.4f, 0.5f);
+            return Palette.Vfx.Strip;
         }
 
         private IEnumerator ItemVfx(Unit user, List<Unit> targets, AbilityDef a, string itemId)
@@ -360,7 +360,7 @@ namespace GridGame.App
             if (buff != null && buff.OutgoingDamageMultiplier > 1f)
             {
                 App.Audio.Sfx("battle.warcry");
-                yield return Tween.Run(Timing.Emphasis, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 60f + 520f * k, new Color(c.r, c.g, c.b, 1f - k), 12f); });
+                yield return Tween.Run(Timing.Emphasis, k => { board.Lines.Rings.Clear(); board.Lines.Ring(at, 60f + 520f * k, c.WithA(1f - k), 12f); });
                 board.Lines.Rings.Clear(); board.Lines.MarkDirtyRepaint();
             }
             yield return Tween.Run(Timing.Quick, k => cv.Root.style.scale = new Scale(Vector2.one * (1.16f - 0.16f * k)));
@@ -381,13 +381,13 @@ namespace GridGame.App
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             var at = PlateEdge(v, u.Facing);
             App.Audio.Sfx("battle.clang", 0.9f, Random.Range(0.92f, 1.08f));
-            if (!ReduceMotion) Sparks(at, 10, new Color(1f, 0.95f, 0.75f));
+            if (!ReduceMotion) Sparks(at, 10, Palette.Vfx.Spark);
             v.SetPlate(u.Facing, e.Left > 0 ? e.Left : 1, e.Max);
             v.Plate.style.backgroundColor = Palette.White;
             App.StartCoroutine(Tween.Shake(v.Plate, 8f * Fx, Timing.Quick));
             Text.Show(at + new Vector2(0, -30), CombatTextKind.Resist, e.Amount > 0 ? $"CLANG! −{e.Amount}" : "CLANG!", 0f, Palette.Info); // GG-T2069: an unyielding plate
             yield return Tween.Wait(Timing.Quick);
-            v.Plate.style.backgroundColor = new Color(0.72f, 0.76f, 0.84f);
+            v.Plate.style.backgroundColor = Palette.Vfx.Steel;
             v.SetPlate(u.Facing, e.Left, e.Max);
         }
 
@@ -398,8 +398,8 @@ namespace GridGame.App
             var u = State.UnitById(e.UnitId);
             if (u == null || !board.Units.TryGetValue(u.Id, out var v)) yield break;
             App.Audio.Sfx("battle.shatter", 1f, 0.65f);
-            if (!ReduceMotion) Sparks(PlateEdge(v, u.Facing), 16, new Color(1f, 0.95f, 0.75f));
-            Text.Show(PlateEdge(v, u.Facing) + new Vector2(0, -30), CombatTextKind.Callout, "SHATTERED", 0.8f, new Color(1f, 0.85f, 0.5f));
+            if (!ReduceMotion) Sparks(PlateEdge(v, u.Facing), 16, Palette.Vfx.Spark);
+            Text.Show(PlateEdge(v, u.Facing) + new Vector2(0, -30), CombatTextKind.Callout, "SHATTERED", 0.8f, Palette.Vfx.Shatter);
             yield return Tween.Wait(Timing.Quick);
         }
 
@@ -416,7 +416,7 @@ namespace GridGame.App
                     var shard = new VisualElement { pickingMode = PickingMode.Ignore };
                     shard.style.position = Position.Absolute;
                     shard.style.width = Random.Range(14f, 30f); shard.style.height = Random.Range(8f, 16f);
-                    shard.style.backgroundColor = new Color(0.78f, 0.82f, 0.9f);
+                    shard.style.backgroundColor = Palette.Vfx.Shard;
                     board.FxLayer.Add(shard);
                     var vel = new Vector2(Random.Range(-260f, 260f), Random.Range(-320f, -120f));
                     float spin = Random.Range(-720f, 720f);
@@ -428,7 +428,7 @@ namespace GridGame.App
                     }));
                 }
             App.StartCoroutine(Tween.Shake(shake, 10f * Fx, Timing.Standard));
-            yield return FloatText(u.Id, CombatTextKind.Debuff, "ARMOR BROKEN!", 0.3f, 0.15f, new Color(1f, 0.85f, 0.5f));
+            yield return FloatText(u.Id, CombatTextKind.Debuff, "ARMOR BROKEN!", 0.3f, 0.15f, Palette.Vfx.Shatter);
         }
 
         // ── Pickups (§13.3.1) ──

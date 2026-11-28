@@ -14,7 +14,7 @@ namespace GridGame.App
     /// </summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color SabotageSpark = new Color(0.55f, 0.95f, 1f);
+        private static readonly Color SabotageSpark = Palette.Vfx.Sabotage;
 
         private static Color TeamEdge(Team t) =>
             t == Team.Hero ? (Palette.Colorblind ? Palette.CbHero : Palette.Hero) : Palette.TeamFoe;

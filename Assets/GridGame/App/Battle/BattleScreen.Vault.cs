@@ -11,8 +11,8 @@ namespace GridGame.App
     /// Motion slides the token straight across instead, with the thud and no dust.</summary>
     public sealed partial class BattleScreen
     {
-        private static readonly Color VaultDust = new Color(0.78f, 0.70f, 0.56f);
-        private static readonly Color VaultPole = new Color(0.92f, 0.86f, 0.70f);
+        private static readonly Color VaultDust = Palette.Vfx.VaultDust;
+        private static readonly Color VaultPole = Palette.Vfx.VaultPole;
 
         private IEnumerator VaultAnim(VaultedEvent e)
         {
@@ -46,7 +46,7 @@ namespace GridGame.App
                     board.Lines.Dot(plant, 6f, VaultPole.WithA(fade));
                 }
                 // The shadow stays on the ground, shrinking as the Lancer rises.
-                board.Lines.Dot(Vector2.Lerp(from, to, Ease.InOut(k)) + half, BoardView.Tile * (0.3f - 0.12f * Ease.Arc(k)), new Color(0f, 0f, 0f, 0.25f));
+                board.Lines.Dot(Vector2.Lerp(from, to, Ease.InOut(k)) + half, BoardView.Tile * (0.3f - 0.12f * Ease.Arc(k)), Palette.Black.WithA(0.25f));
             });
             v.Root.style.scale = new Scale(Vector2.one);
             board.Place(v, e.To);

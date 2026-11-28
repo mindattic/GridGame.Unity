@@ -1050,7 +1050,7 @@ namespace GridGame.App
         private static IEnumerator Camp(HubScreen hub, bool runRoutine)
         {
             var app = GameApp.I;
-            yield return new WaitForSecondsRealtime(1.0f);
+            yield return new WaitForSecondsRealtime(Timing.TestModeSettle);
             if (runRoutine && current != null)
             {
                 current.RunCamp(app.Content, app.Save);
@@ -1061,7 +1061,7 @@ namespace GridGame.App
                 if (!learned && Completed == TestLoop.CyclesThatMustLearnAnAbility)
                     Debug.LogWarning($"[TestMode] check failed: {Completed} cycles and camp never learned an ability (GG-T100)");
                 if (app.Router.Current == hub) hub.Refresh();
-                yield return new WaitForSecondsRealtime(1.5f);
+                yield return new WaitForSecondsRealtime(Timing.TestModeRead);
             }
             if (app.Router.Current != hub) yield break; // something else took over the screen; don't fight it
             Launch();

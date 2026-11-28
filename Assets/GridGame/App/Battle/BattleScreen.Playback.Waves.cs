@@ -40,7 +40,7 @@ namespace GridGame.App
             foreach (var it in l.Items)
             {
                 var name = App.Content.TryItem(it.Item)?.Name ?? it.Item;
-                App.StartCoroutine(FloatAway(board.Float($"{name} ×{it.Count}", at + new Vector2(0, 40), new Color(0.7f, 1f, 0.8f), TypeScale.Base), 1.1f));
+                App.StartCoroutine(FloatAway(board.Float($"{name} ×{it.Count}", at + new Vector2(0, 40), Palette.Vfx.Loot, TypeScale.Base), 1.1f));
             }
             App.Audio.Sfx("ui.buy", 0.6f);
             yield return Tween.Wait(Timing.Instant);
@@ -55,7 +55,7 @@ namespace GridGame.App
             board.Place(v, e.At);
             v.SetHp(u.Hp, u.MaxHp);
             App.Audio.Sfx("battle.pickup", 0.9f);
-            Billboard($"{u.Name} joins the fight! Keep them alive to recruit them.", null, new Color(0.6f, 1f, 0.75f));
+            Billboard($"{u.Name} joins the fight! Keep them alive to recruit them.", null, Palette.Vfx.Ally);
             v.Root.style.scale = new Scale(Vector2.zero);
             yield return Tween.Run(Timing.Standard, k => v.Root.style.scale = new Scale(Vector2.one * (k < 0.7f ? k / 0.7f * 1.15f : 1.15f - 0.15f * (k - 0.7f) / 0.3f)));
             v.Root.style.scale = new Scale(Vector2.one);
@@ -92,7 +92,7 @@ namespace GridGame.App
             v.SetHp(u.Hp, u.MaxHp);
             SyncTimeline(null);
             App.Audio.Sfx("status.debuff", 0.9f, 0.8f);
-            Billboard($"{u.Name} rises again!", null, new Color(0.75f, 1f, 0.75f));
+            Billboard($"{u.Name} rises again!", null, Palette.Vfx.Revive);
             v.Root.style.translate = new Translate(0, 60);
             yield return Tween.Run(Timing.Standard, k => { v.Root.style.translate = new Translate(0, 60f * (1f - k)); v.Root.style.opacity = k; });
         }
@@ -109,7 +109,7 @@ namespace GridGame.App
             App.Audio.Sfx("battle.pickup", 0.6f, 0.8f);
             v.Root.style.translate = new Translate(0, -60);
             yield return Tween.Run(Timing.Quick, k => v.Root.style.translate = new Translate(0, -60f * (1f - k * k)));
-            Billboard($"{State.UnitById(e.FromUnitId)?.Name} lays an egg!", null, new Color(0.85f, 1f, 0.75f));
+            Billboard($"{State.UnitById(e.FromUnitId)?.Name} lays an egg!", null, Palette.Vfx.Egg);
         }
 
         /// <summary>The egg splits open and the real enemy climbs out, at full strength.</summary>
@@ -191,7 +191,7 @@ namespace GridGame.App
             var def = App.Content.TryClass(speakerClassId);
             var veil = Ui.El("fill veil col center", App.Overlay);
             veil.pickingMode = PickingMode.Position;
-            veil.style.backgroundColor = new Color(0.01f, 0.01f, 0.05f, 0.7f);
+            veil.style.backgroundColor = Palette.Vfx.Void.WithA(0.7f);
 
             var row = Ui.El("row", veil);
             row.style.opacity = 0f;
@@ -267,7 +267,7 @@ namespace GridGame.App
                 ShowBanner((wv.Wave == 0 ? "The Crucible: wave 1" : $"Crucible wave {wv.Wave + 1} · Lv {Crucible.WaveLevel(State.Stage.LevelOverride ?? 1, wv.Wave)}")
                            + (elites > 0 ? $" · {elites} elite{(elites == 1 ? "" : "s")}" : ""));
                 App.Audio.Sfx("battle.crucible_wave", 1f, 1f + Mathf.Min(0.5f, wv.Wave * 0.04f));
-                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), new Color(1f, 0.55f, 0.3f), TypeScale.Base);
+                var f = board.Float($"WAVE {wv.Wave + 1}", new Vector2(BoardView.Tile * 3, BoardView.Tile * 4), Palette.Vfx.Wave, TypeScale.Base);
                 App.StartCoroutine(FloatAway(f, 1.0f));
                 yield return Tween.Wait(Timing.Dramatic);
             }

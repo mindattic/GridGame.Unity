@@ -59,9 +59,9 @@ namespace GridGame.App
             const int s = 64;
             var t = new Texture2D(s, s, TextureFormat.RGBA32, false)
             { name = "diamond-back", wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, hideFlags = HideFlags.DontSave };
-            var baseC = new Color(0.10f, 0.09f, 0.20f, 1f);
-            var lineC = new Color(0.22f, 0.20f, 0.38f, 1f);
-            var trimC = new Color(0.78f, 0.66f, 0.36f, 1f);
+            var baseC = Palette.Scene.CardBack;
+            var lineC = Palette.Scene.CardLine;
+            var trimC = Palette.Scene.CardTrim;
             for (int y = 0; y < s; y++)
                 for (int x = 0; x < s; x++)
                 {

@@ -245,7 +245,7 @@ namespace GridGame.App
             var c = d.Text;
             var bg = WindowThemes.Lightest(WindowThemes.Current);
             var (r, g, b) = WindowTone.Readable((c.r, c.g, c.b), (bg.r, bg.g, bg.b), WindowTone.CaptionContrast);
-            var k = new Color(r, g, b, c.a);
+            var k = c; (k.r, k.g, k.b) = (r, g, b);
             return k == c ? (Color?)null : k;
         }
 
