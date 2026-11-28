@@ -26,24 +26,15 @@ namespace GridGame.App
         private int Knowledge(Unit u) =>
             u.IsHero ? BestiaryKnowledge.Abilities : BestiaryKnowledge.Tier(App.Save, u.Def.Id);
 
-        private void AttachSlotInspect(VisualElement slot, int idx) => InspectCard.Attach(slot, body => SlotCard(body, idx));
-
-        private bool SlotCard(VisualElement body, int idx)
-        {
-            var hero = State.UnitById(SelectedHeroId);
-            var ab = hero == null ? null : BattleEngine.SlotAbility(State, hero, idx);
-            if (ab != null) ReadSlot(idx);
-            return InspectCard.Ability(body, ab, ab == null ? null : SlotState(hero, idx, ab));
-        }
-
-        /// <summary>GG-T450: a tapped slot that can't be aimed (recharging, no mana, no target …) still reads — its card
-        /// opens on the tap. A slot that aims needs no card: the description panel shows the ability while it's aimed.</summary>
+        /// <summary>GG-T1895: a tapped slot that can't be aimed (recharging, no mana, no target ...) still reads, in the
+        /// description panel (GG-T1823); no card pops over the board (§9.0).</summary>
         private void TapSlotCard(int idx)
         {
-            if (idx >= 0 && idx < slotViews.Count) InspectCard.Tap(slotViews[idx], body => SlotCard(body, idx));
+            var hero = State.UnitById(SelectedHeroId);
+            if (hero != null && BattleEngine.SlotAbility(State, hero, idx) != null) ReadSlot(idx);
         }
 
-        /// <summary>The slot <see cref="SlotCard"/> last read without aiming, shown in the description panel (GG-T1823)
+        /// <summary>The slot <see cref="TapSlotCard"/> last read without aiming, shown in the description panel (GG-T1823)
         /// until another hero is selected, a unit is read or an aim takes the panel.</summary>
         private int readSlot = -1, readSlotHero = -1;
 
