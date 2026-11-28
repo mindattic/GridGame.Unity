@@ -760,9 +760,9 @@ namespace GridGame.App.Automation
                 case "banner":
                 {
                     // GG-T358: "shown" is every banner/billboard line this battle has put up, so an opening announcement
-                    // the billboard already dropped is still readable.
+                    // the billboard already dropped is still readable. "hint" is the hint or tip in the description panel (GG-T1824).
                     var bnr = app.Router.Current as BattleScreen;
-                    return new { text = bnr?.BannerText, shown = bnr?.ShownLines?.ToList() };
+                    return new { text = bnr?.BannerText, hint = bnr?.AdviceText, shown = bnr?.ShownLines?.ToList() };
                 }
                 case "press":
                     StartCoroutine(Press(F(q["x"]), F(q["y"]), F(q["ms"], 600) / 1000f, reply));

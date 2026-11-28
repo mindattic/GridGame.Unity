@@ -30,6 +30,8 @@ namespace GridGame.App
         {
             if (TapSkipsPincerBeats()) return; // GG-T836: a tap during a pincer skips its beats ahead
             ClearHint();
+            DropAdvice();
+            DropRefusal();
             if (!CanCommand() || pressing) return;
             activePointerId = evt.pointerId;
             var tile = board.TileAt(evt.localPosition);
