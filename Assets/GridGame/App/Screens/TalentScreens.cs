@@ -37,7 +37,7 @@ namespace GridGame.App
                 // GG-T698: a card (portrait, name, level, status and the class blurb) rather than a bare menu row.
                 var card = Ui.Card(list, hero.ClassId, null, out var col, "respec-" + hero.ClassId);
                 var title = Ui.Name($"{name}  Lv {Progression.Level(hero)}", col);
-                var status = Ui.Caption(value, col);
+                var status = Ui.Caption(value, nodes > 0 ? RowIcon.Line("cur-skill-points", col) : col);
                 GlossaryText.Create(C.TryClass(hero.ClassId)?.Card ?? "", "kit-text dim", col);
                 card.AddToClassList("card-tap");
                 card.AddToClassList("card--fill");

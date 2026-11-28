@@ -66,6 +66,24 @@ namespace GridGame.App.Automation
                     sv.ScrollTo(e);
                     return new { ok = true, scrolled = true };
                 }
+                case "scroll":
+                {
+                    // GG-T2147: pages the screen's main vertical ScrollView one viewport at a time so uiaudit can capture
+                    // what sits below the fold. page is 1-based; the last page is clamped to the end of the content.
+                    // pages = ceil(content / viewport), so the count is fixed for a given screen, save and device.
+                    var sv = app.Stage.Query<ScrollView>().ToList()
+                        .Where(s => s.mode != ScrollViewMode.Horizontal && Shown(s) && s.contentViewport.layout.height >= 1
+                                    && s.contentContainer.layout.height > s.contentViewport.layout.height + 1)
+                        .OrderByDescending(s => s.contentViewport.layout.width * s.contentViewport.layout.height)
+                        .FirstOrDefault();
+                    if (sv == null) return new { ok = true, pages = 1, page = 1 };
+                    float view = sv.contentViewport.layout.height, content = sv.contentContainer.layout.height;
+                    int pages = Mathf.CeilToInt((content - 1) / view);
+                    int page = Mathf.Clamp((int)F(q["page"], 1), 1, pages);
+                    float offset = Mathf.Min((page - 1) * view, content - view);
+                    sv.scrollOffset = new Vector2(sv.scrollOffset.x, offset);
+                    return new { ok = true, pages, page, offset, viewport = view, content, name = sv.name };
+                }
                 case "clicktext":
                 {
                     var target = q["text"];

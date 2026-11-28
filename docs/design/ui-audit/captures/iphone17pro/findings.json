@@ -3,7 +3,7 @@
  "device": "iphone17pro",
  "name": "iPhone 17 Pro",
  "shape": "iphone-402",
- "captured": "2026-11-28T06:49:40",
+ "captured": "2026-11-28T08:29:35",
  "frame": {
   "type": "island",
   "corner": 186,
@@ -14,8 +14,17 @@
   "top": 42,
   "r": 56
  },
- "screens": 41,
- "errors": {},
+ "screens": 44,
+ "errors": {
+  "components": "not captured",
+  "drill-picker": "not captured",
+  "codex": "not captured",
+  "overlay-dialogue": "not captured",
+  "overlay-coach": "not captured",
+  "overlay-inspect": "not captured",
+  "overlay-confirm": "not captured",
+  "overlay-toast": "not captured"
+ },
  "totals": {
   "overflow": 0,
   "clipped": 0,
@@ -25,8 +34,9 @@
   "topInset": 0,
   "homeIndicator": 48,
   "targetsUnder44pt": 0,
-  "contrastFails": 29,
+  "contrastFails": 23,
   "contrastUnderCutout": 0,
+  "coveredText": 0,
   "screensWith": {
    "overflow": [],
    "clipped": [],
@@ -52,16 +62,17 @@
    "contrastFails": [
     "battle-boss",
     "blacksmith",
-    "camp",
     "crucible",
     "diamonds",
     "enchantress",
+    "levelup",
     "newprofile",
     "shop",
     "summon",
     "windows"
    ],
-   "contrastUnderCutout": []
+   "contrastUnderCutout": [],
+   "coveredText": []
   }
  },
  "findings": {
@@ -79,6 +90,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 10,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -97,7 +109,8 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 29,
+   "coveredText": [],
+   "contrastSamples": 27,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -115,6 +128,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -133,6 +147,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -153,6 +168,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 83,
    "minTextPt": 13.1,
    "layoutProblems": []
@@ -171,6 +187,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 61,
    "minTextPt": 10.7,
    "layoutProblems": []
@@ -191,6 +208,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 79,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -209,6 +227,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -227,6 +246,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -245,6 +265,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 68,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -277,6 +298,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 59,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -303,6 +325,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 20,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -326,6 +349,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 38,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -355,6 +379,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 62,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -373,6 +398,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -391,6 +417,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.4,
    "layoutProblems": []
@@ -424,6 +451,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -442,6 +470,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 13,
    "minTextPt": 10.7,
    "layoutProblems": []
@@ -464,6 +493,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 40,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -494,6 +524,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 49,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -514,6 +545,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 2,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -532,6 +564,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 7,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -550,6 +583,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 5,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -568,6 +602,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 8,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -594,6 +629,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 4,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -612,6 +648,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -630,6 +667,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 6,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -656,6 +694,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 37,
    "minTextPt": 12.4,
    "layoutProblems": []
@@ -674,6 +713,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 22,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -692,6 +732,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -713,6 +754,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -731,6 +773,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 12,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -749,6 +792,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 39,
    "minTextPt": 12.7,
    "layoutProblems": []
@@ -767,8 +811,74 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 45,
    "minTextPt": 12.4,
+   "layoutProblems": []
+  },
+  "results-defeat": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone17pro/results-defeat.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 14,
+   "minTextPt": 13.1,
+   "layoutProblems": []
+  },
+  "results-drill": {
+   "landedOn": "postbattle",
+   "png": "docs/design/ui-audit/captures/iphone17pro/results-drill.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 12,
+   "minTextPt": 13.7,
+   "layoutProblems": []
+  },
+  "levelup": {
+   "landedOn": "levelup",
+   "png": "docs/design/ui-audit/captures/iphone17pro/levelup.png",
+   "overflow": [],
+   "clipped": [],
+   "overlap": [],
+   "offStage": [],
+   "underCutout": [],
+   "topInset": [],
+   "homeIndicator": [],
+   "engineUnsafeArea": [],
+   "targetsUnder44pt": [],
+   "contrastFails": [
+    {
+     "text": "TANK",
+     "ratio": 2.89,
+     "need": 4.5,
+     "fg": "#f25c4c",
+     "bg": "#3e474e"
+    }
+   ],
+   "contrastUnderCutout": [],
+   "coveredText": [],
+   "contrastSamples": 17,
+   "minTextPt": 13.7,
    "layoutProblems": []
   },
   "battle": {
@@ -798,6 +908,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 27,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -921,6 +1032,7 @@
     }
    ],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 28,
    "minTextPt": 8.9,
    "layoutProblems": []
@@ -939,6 +1051,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 29,
    "minTextPt": 13.7,
    "layoutProblems": []
@@ -955,59 +1068,10 @@
    "homeIndicator": [],
    "engineUnsafeArea": [],
    "targetsUnder44pt": [],
-   "contrastFails": [
-    {
-     "text": "200 G",
-     "ratio": 3.83,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#606e78"
-    },
-    {
-     "text": "Lv 1",
-     "ratio": 4.26,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#566776"
-    },
-    {
-     "text": "Lv 1",
-     "ratio": 4.17,
-     "need": 4.5,
-     "fg": "#ffd959",
-     "bg": "#5a6876"
-    },
-    {
-     "text": "Craft",
-     "ratio": 1.73,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#899176"
-    },
-    {
-     "text": "Journal",
-     "ratio": 2.46,
-     "need": 4.5,
-     "fg": "#aab8ff",
-     "bg": "#6a7583"
-    },
-    {
-     "text": "Recruit",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#11101d"
-    },
-    {
-     "text": "Shop",
-     "ratio": 2.21,
-     "need": 4.5,
-     "fg": "#4c4b5d",
-     "bg": "#11111d"
-    }
-   ],
+   "contrastFails": [],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 22,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -1025,6 +1089,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 35,
    "minTextPt": 10.3,
    "layoutProblems": []
@@ -1051,7 +1116,8 @@
     }
    ],
    "contrastUnderCutout": [],
-   "contrastSamples": 24,
+   "coveredText": [],
+   "contrastSamples": 25,
    "minTextPt": 13.7,
    "layoutProblems": []
   },
@@ -1072,6 +1138,7 @@
    "targetsUnder44pt": [],
    "contrastFails": [],
    "contrastUnderCutout": [],
+   "coveredText": [],
    "contrastSamples": 32,
    "minTextPt": 13.7,
    "layoutProblems": []

@@ -1,5 +1,9 @@
 using System;
+using System.Collections;
 using System.Linq;
+using GridGame.Core.Content;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace GridGame.App.Automation
 {
@@ -11,7 +15,11 @@ namespace GridGame.App.Automation
             "title", "hub", "stages", "items", "status", "equip", "abilities", "talents", "respec", "party", "shop", "blacksmith",
             "alchemist", "enchantress", "talk", "summon", "caravan", "bounties", "crucible", "bestiary", "settings", "windows", "credits", "newgame", "load",
             "profiles", "newprofile", "createprofile", "splash", "diamonds", "mercenaries", "summon-history", "quests", "about", "components", "drill-picker",
+            "codex",
         };
+
+        /// <summary>Dev-only targets: a debug build, or a release player who unlocked Settings > Developer.</summary>
+        private static bool DevGoto => CommandLine.DebugOptionsAllowed || Dev.DevOptions.Unlocked;
 
         public static bool TryGet(string id, out GameScreen screen)
         {
@@ -52,11 +60,12 @@ namespace GridGame.App.Automation
                 case "quests": screen = new QuestScreen(); break;
                 case "crucible": screen = new CrucibleScreen(); break;
                 case "bestiary": screen = new BestiaryScreen(); break;
+                case "codex": screen = new CodexScreen(); break; // GG-T2147: Camp > Codex, a tall scrolling page for uiaudit
                 case "settings": screen = new SettingsScreen(); break;
                 case "credits": screen = new CreditsScreen(); break;
                 case "about": screen = new AboutScreen(); break; // GG-T1330
                 // GG-T2049: the dev-only kit gallery; a release player reaches it only after unlocking Settings > Developer.
-                case "components": if (CommandLine.DebugOptionsAllowed || Dev.DevOptions.Unlocked) screen = new ComponentGalleryScreen(); break;
+                case "components": if (DevGoto) screen = new ComponentGalleryScreen(); break;
                 case "drill-picker": screen = new DrillPickerScreen(); break; // GG-T2152: Settings > Play a drill
                 case "newgame": screen = new SaveSlotScreen(true); break;
                 case "load": screen = new SaveSlotScreen(false); break;
@@ -76,8 +85,80 @@ namespace GridGame.App.Automation
                 case "results-defeat": screen = new PostBattleScreen(PreviewDefeat(app), PreviewStage(app)); break;
                 case "results-drill": screen = PreviewDrill(app); break;
                 case "levelup": screen = new LevelUpScreen(PreviewLevelUps(app), PreviewStage(app)); break;
+                // GG-T2150: the kit's overlays for the audit, each opened over its host once the router's fade is done and
+                // taken away when the host leaves: the dialogue box with its first line typed out, the coach card, the
+                // Inspect card, a confirm and a toast.
+                case "overlay-dialogue": if (DevGoto) screen = PreviewDialogue(app); break;
+                case "overlay-coach": if (DevGoto) screen = OverOn(new BlacksmithScreen(), PreviewCoach); break;
+                case "overlay-inspect": if (DevGoto) screen = OverOn(new StatusScreen(hero), s => PreviewInspect(app, s, hero)); break;
+                case "overlay-confirm": if (DevGoto) screen = OverOn(new HubScreen(), _ => Confirm.Show("Return to the title? Your progress is saved.", "Title", null)); break;
+                case "overlay-toast": if (DevGoto) screen = OverOn(new HubScreen(), _ => Ui.Toast("The Merchant restocks tomorrow", ToastSeconds)); break;
             }
             return screen != null;
+        }
+
+        /// <summary>Long enough for the audit's settle and shot; the host leaving takes it away sooner.</summary>
+        private const float ToastSeconds = 20f;
+
+        private static GameScreen OverOn(GameScreen host, Action<GameScreen> open)
+        {
+            GameApp.I.StartCoroutine(OverlayOn(host, open));
+            return host;
+        }
+
+        private static IEnumerator OverlayOn(GameScreen host, Action<GameScreen> open)
+        {
+            var app = GameApp.I;
+            float end = Time.realtimeSinceStartup + 10f;
+            while (app.Router.Current != host || app.Router.Busy || host.Root?.panel == null)
+            {
+                if (Time.realtimeSinceStartup > end) yield break;
+                yield return null;
+            }
+            yield return null;
+            Coach.Cancel();
+            InspectCard.Hide();
+            open(host);
+            while (app.Router.Current == host) yield return null;
+            Coach.Cancel();
+            InspectCard.Hide();
+            foreach (var t in app.Overlay.Query("toast").ToList()) t.RemoveFromHierarchy();
+        }
+
+        private static GameScreen PreviewDialogue(GameApp app)
+        {
+            var party = app.Save.Party;
+            string a = party.FirstOrDefault(), b = party.Skip(1).FirstOrDefault() ?? a;
+            if (a == null) return null;
+            var def = new DialogueDef { Id = "preview_talk", Title = "On the road" };
+            def.Speakers.Add(new DialogueSpeaker { Id = "a", Class = a });
+            def.Speakers.Add(new DialogueSpeaker { Id = "b", Class = b });
+            def.Nodes.Add(new DialogueNode { Id = "n1", Speaker = "a", Text = "The road bends west past the mill. If the bridge still stands, we reach the next camp before dark.", Next = "n2" });
+            def.Nodes.Add(new DialogueNode { Id = "n2", Speaker = "b", Text = "Then we keep moving." });
+            var screen = new DialogueScreen(def, () => new HubScreen());
+            return OverOn(screen, s => ((DialogueScreen)s).FinishLine());
+        }
+
+        private static void PreviewCoach(GameScreen _)
+        {
+            var tip = Meta.CampTips.For("blacksmith") ?? Meta.CampTips.All.FirstOrDefault();
+            if (tip == null) return;
+            Coach.Run(new CoachLesson
+            {
+                Id = "camp-" + tip.Station, Kicker = "Camp", Title = tip.Title, Text = tip.Text,
+                Image = "Tutorial/camp-" + tip.Station, Practice = true,
+            });
+        }
+
+        private static void PreviewInspect(GameApp app, GameScreen host, string hero)
+        {
+            var h = app.Save.Hero(hero);
+            var ability = h == null ? null : Meta.HeroBoard.OwnedAbilities(app.Content, h).Select(app.Content.TryAbility).FirstOrDefault(x => x != null)
+                ?? app.Content.Abilities.Values.FirstOrDefault();
+            if (ability == null) return;
+            var block = host.Root.Q("status-known-abilities");
+            var anchor = block?.Children().Skip(1).FirstOrDefault() ?? block ?? host.Root;
+            InspectCard.Show(anchor, c => InspectCard.Ability(c, ability, wearer: h == null ? null : app.Content.TryClass(h.ClassId)));
         }
 
         private static string PreviewStage(GameApp app) => app.Content.CampaignStages()[0].Id;

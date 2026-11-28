@@ -9,6 +9,8 @@ namespace GridGame.App
     /// GG-T1938: the pause menu's Developer cheats, shown only while Settings &gt; Developer &gt; Cheats is on. Kill all enemies
     /// and Full heal go through the battle engine (<see cref="DevCheatCommand"/>) and play out like any command, so the
     /// last foe's fall runs the normal victory flow; Win battle is <see cref="DevWin"/>; Fill mana is <see cref="DevGiveMana"/>.
+    /// Instant turns (GG-T1967) sets <see cref="Tween.Instant"/> for each playback beat (see Play): only the visuals skip, the
+    /// engine's events are the same and the end-of-playback SyncAll draws the true state.
     /// </summary>
     public sealed partial class BattleScreen
     {
@@ -40,6 +42,12 @@ namespace GridGame.App
             {
                 DevOptions.CheatSpeed = next;
                 Tween.Speed = DevOptions.BattleSpeed(App.Settings.BattleSpeed);
+                OpenMenu();
+            });
+            bool instant = DevOptions.InstantTurns;
+            Row("Instant turns", instant ? "On" : "Off", "pause-dev-instant", () =>
+            {
+                DevOptions.SetInstantTurns(!instant);
                 OpenMenu();
             });
         }

@@ -9,9 +9,10 @@ using static GridGame.Tests.TestKit;
 
 namespace GridGame.Tests
 {
-    /// <summary>Smoke Vanish (§7, GG-T861, the Black Ninja): smoke on the ninja's tile and its 4 neighbours (blows aimed into it
-    /// roll as if Blind, the party's own smoke never fouls the party), then the ninja reappears on a random free safe tile at
-    /// least 2 away (battle Rng, so a seed replays it), a foe's charge locked on it re-plans, and a Rooted ninja stays put.</summary>
+    /// <summary>Smokebomb (§7, GG-T861, GG-T1916, the Black Ninja's Ninjutsu): smoke on the ninja's tile and its 4 neighbours
+    /// (blows aimed into it roll as if Blind, the party's own smoke never fouls the party), then the ninja vanishes (off the
+    /// board, untargetable) and on its next turn reappears on a random free safe tile at least 2 away (battle Rng, so a seed
+    /// replays it), a foe's charge locked on it re-plans, and a Rooted ninja stays put.</summary>
     public class SmokeVanishTests
     {
         private const string Id = "blackninja_smoke_vanish";
@@ -49,7 +50,8 @@ namespace GridGame.Tests
             Assert.That(a.Mode, Is.EqualTo(TargetMode.Auto));
             Assert.That(a.Vanishes, Is.True);
             Assert.That(a.IsTeleport, Is.False);
-            Assert.That(a.Name, Is.EqualTo("Smoke Vanish"), "not the Smoke Bomb item nor the Smoke Veil skill");
+            Assert.That(a.Name, Is.EqualTo("Smokebomb"), "the owner's name; the Smoke Bomb item and the Smoke Veil skill stay apart");
+            Assert.That(a.Category, Is.EqualTo("Ninjutsu"));
             Assert.That(a.RuleEffects.Single().State, Is.EqualTo("smoke"));
             Assert.That(Real.TryTileState("smoke").Obscures, Is.True);
             Assert.That(Real.TryTileState("smoke").Affects, Is.EqualTo(TileAffects.FoesOfOwner));
@@ -60,8 +62,16 @@ namespace GridGame.Tests
             Assert.That(mine, Is.Empty, string.Join("\n", mine));
         }
 
+        /// <summary>The Smokebomb as the window's last action, so the clock runs on to the party's next turn.</summary>
+        private static List<BattleEvent> VanishAndWait(BattleState s, Unit ninja)
+        {
+            ninja.Bar[0] = new AbilitySlot { AbilityId = Id };
+            ninja.ActedThisWindow = false;
+            return Turn(s, new UseSlotCommand { HeroId = ninja.Id, Slot = 0, Target = ninja.Pos });
+        }
+
         [Test]
-        public void The_ninja_drops_smoke_on_its_tile_and_neighbours_then_reappears_at_least_two_away()
+        public void The_ninja_drops_smoke_on_its_tile_and_neighbours_then_vanishes_off_the_board()
         {
             var s = Setup();
             var ninja = Hero(s, "knight");
@@ -69,16 +79,53 @@ namespace GridGame.Tests
 
             var ev = Vanish(s, ninja);
 
-            Assert.That(ninja.Pos.Manhattan(from), Is.GreaterThanOrEqualTo(SmokeVanish.MinHop));
             foreach (var c in new[] { from, new Coord(1, 4), new Coord(3, 4), new Coord(2, 3), new Coord(2, 5) })
                 Assert.That(Smoky(s, c), Is.True, $"smoke at {c}");
             Assert.That(Smoky(s, new Coord(3, 3)), Is.False, "a diamond, not a square");
+            Assert.That(ninja.Vanished, Is.True);
+            Assert.That(ninja.OnBoard, Is.False, "off the board");
+            Assert.That(ninja.Hp, Is.GreaterThan(0), "gone, not dead");
             var v = ev.OfType<VanishedEvent>().Single();
-            Assert.That((v.From, v.To), Is.EqualTo((from, ninja.Pos)));
-            int vi = ev.IndexOf(v);
-            Assert.That(ev[vi + 1], Is.InstanceOf<TeleportedEvent>(), "the view's teleport follows the vanish");
-            Assert.That(ev.FindIndex(e => e is RegionTilesEvent r && r.State == "smoke"), Is.LessThan(vi), "smoke first, then gone");
+            Assert.That(v.From, Is.EqualTo(from));
+            Assert.That(ev.OfType<TeleportedEvent>(), Is.Empty, "it does not land until its next turn");
+            Assert.That(ev.FindIndex(e => e is RegionTilesEvent r && r.State == "smoke"), Is.LessThan(ev.IndexOf(v)), "smoke first, then gone");
             Assert.That(ninja.Cooldowns[Id], Is.GreaterThan(0));
+        }
+
+        [Test]
+        public void A_vanished_ninja_is_untargetable_and_still_holds_the_party_in_the_fight()
+        {
+            var s = Battle(Db(), Stage(("tank", 3, 4)), ("knight", 2, 4)).state;
+            var ninja = Hero(s, "knight");
+            var from = ninja.Pos;
+
+            Vanish(s, ninja);
+
+            Assert.That(ninja.Alive, Is.False, "nothing can aim at it");
+            Assert.That(s.UnitAt(from), Is.Null, "no unit on the tile it left");
+            Assert.That(s.LivingList(Team.Hero), Does.Not.Contain(ninja));
+            Assert.That(s.Phase, Is.Not.EqualTo(BattlePhase.Defeat), "the party's only hero is hiding, not fallen");
+        }
+
+        [Test]
+        public void On_its_next_turn_the_ninja_reappears_on_a_random_legal_tile_at_least_two_away()
+        {
+            var s = Setup();
+            var ninja = Hero(s, "knight");
+            var from = ninja.Pos;
+
+            var ev = VanishAndWait(s, ninja);
+
+            Assert.That(ninja.Vanished, Is.False);
+            Assert.That(ninja.OnBoard, Is.True);
+            Assert.That(ninja.Pos.Manhattan(from), Is.GreaterThanOrEqualTo(SmokeVanish.MinHop));
+            Assert.That(s.Walkable(ninja.Pos), Is.True);
+            Assert.That(s.Units.Count(u => u != ninja && u.Alive && u.Occupies(ninja.Pos)), Is.Zero, "nobody else on its tile");
+            var r = ev.OfType<ReappearedEvent>().Single();
+            Assert.That((r.From, r.To), Is.EqualTo((from, ninja.Pos)));
+            int ri = ev.IndexOf(r);
+            Assert.That(ev.IndexOf(ev.OfType<VanishedEvent>().Single()), Is.LessThan(ri));
+            Assert.That(ev[ri + 1], Is.InstanceOf<TeleportedEvent>(), "the view's teleport follows the reappearance");
             AssertInvariants(s);
         }
 
@@ -86,9 +133,20 @@ namespace GridGame.Tests
         public void The_landing_comes_from_the_battle_rng_so_a_seed_replays_it()
         {
             var a = Setup(); var b = Setup();
-            Vanish(a, Hero(a, "knight"));
-            Vanish(b, Hero(b, "knight"));
+            VanishAndWait(a, Hero(a, "knight"));
+            VanishAndWait(b, Hero(b, "knight"));
+            Assert.That(Hero(a, "knight").OnBoard, Is.True);
             Assert.That(Hero(a, "knight").Pos, Is.EqualTo(Hero(b, "knight").Pos));
+        }
+
+        [Test]
+        public void The_abilities_sheet_files_it_under_ninjutsu()
+        {
+            var s = Setup();
+            var ninja = Hero(s, "knight");
+            ninja.Bar[0] = new AbilitySlot { AbilityId = Id };
+            var path = GridGame.Core.Rules.ActionTree.PathTo(GridGame.Core.Rules.ActionTree.For(s, ninja), 0);
+            Assert.That(path.Select(n => n.Name), Is.EqualTo(new[] { "Abilities", "Ninjutsu", "Smokebomb" }));
         }
 
         [Test]
@@ -155,6 +213,7 @@ namespace GridGame.Tests
             Assert.That(Smoky(s, from), Is.True);
             Assert.That(ev.OfType<StepBlockedEvent>().Any(b => b.UnitId == ninja.Id && b.Reason == "rooted"), Is.True);
             Assert.That(ev.OfType<VanishedEvent>(), Is.Empty);
+            Assert.That(ninja.OnBoard && !ninja.Vanished, Is.True);
         }
 
         [Test]

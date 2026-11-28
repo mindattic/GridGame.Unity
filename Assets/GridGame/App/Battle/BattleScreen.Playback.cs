@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GridGame.App.Dev;
 using GridGame.Core;
 using GridGame.Core.Battle;
 using GridGame.Core.Content;
@@ -71,6 +72,7 @@ namespace GridGame.App
                 // GG-T126: no beat starts while the pause menu is up (a beat's side effects — banners, tallies,
                 // outlines — run the moment Animate is called, before its first yield).
                 while (Tween.Paused || awayOnSettings) yield return null; // ...nor while "How to play" covers the battle
+                Tween.Instant = DevOptions.InstantTurns; // GG-T1967: re-read per beat, so the pause menu's toggle lands mid-playback
                 PlaybackBeats++;
                 // POL-E5: a pincer's hits land as Major; an ability's at its own tier (AbilityAnim); a new action resets.
                 if (events[i] is ActionBeganEvent || events[i] is TurnStartedEvent) hitTier = VfxTier.Minor;
@@ -101,6 +103,7 @@ namespace GridGame.App
                 bool movePending = swapPending || (i + 1 < events.Count && (events[i + 1] is SteppedEvent || events[i + 1] is TeleportedEvent || events[i + 1] is VaultedEvent));
                 if (!swapPending) BoardAudit.Beat(AuditTokens(false, unitsOnItems: !movePending), events[i]);
             }
+            Tween.Instant = false;
             ResetPincerBeats(); // GG-T836: battle speed is the setting's again
             ResetRampage(); // GG-T898: no raging run outlives its playback
             EndEnemyBeats(); // GG-T839: the board draws the state's own traps and hazards again
@@ -248,7 +251,8 @@ namespace GridGame.App
                 case TileSabotagedEvent tsb: return SabotageAnim(tsb); // GG-T948: the tech gremlin turns a gadget
                 case SquishedEvent sqe: return SquishedAnim(sqe); // GG-T846
                 case RuneCircleEvent rce: return RuneCircleAnim(rce); // GG-T939: the Choir's circle closes
-                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861: Smoke Vanish's puff, callout and reappear flash
+                case VanishedEvent vne: return VanishedAnim(vne); // GG-T861, GG-T1916: the Smokebomb's burst, callout, token gone
+                case ReappearedEvent rpe: return ReappearedAnim(rpe); // GG-T1916: a smaller burst and a flash where it comes back
                 case RegionAnchorEvent rga: return RegionAnchorAnim(rga);
                 case RegionFlagEvent rgf: return RegionFlagAnim(rgf);
                 case HazardQueuedEvent hzq: return HazardQueuedAnim(hzq);

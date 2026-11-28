@@ -112,7 +112,7 @@
     --color-btn-danger-lip: rgb(96, 18, 26);
     --color-btn-danger-hover: rgb(178, 40, 52);
     --color-btn-danger-pressed: rgb(110, 20, 28);
-    --color-badge: rgba(4, 6, 20, 0.75); /* a role badge's dark plate */
+    --color-badge: rgba(4, 6, 20, 0.92); /* a role badge's dark plate */
     --color-chrome: rgba(4, 8, 30, 0.85); /* the header and bottom nav */
     --color-label: rgb(170, 184, 255); /* an inactive tab, nav tab or tile label */
     --color-alert: rgb(214, 48, 64); /* a nav tab's count badge */
@@ -155,6 +155,28 @@
 .type-base-68 { --type-base: 68px; }
 .type-base-70 { --type-base: 70px; }
 .type-base-72 { --type-base: 72px; }
+
+/* GG-T2144: the tap target is at least 48 dp on Android and 44 pt on iOS. A 132-px row is only 40 dp on a 360-dp Galaxy
+   (the stage scales down on narrow logical widths), so Tokens.cs TapTarget puts one tap-target-N class on the UI root and
+   every --size-target row, button, tab and nav tab grows with it. The battle HUD rows keep 132 px (BIBLE 9.0). */
+.tap-target-132 { --size-target: 132px; }
+.tap-target-136 { --size-target: 136px; }
+.tap-target-140 { --size-target: 140px; }
+.tap-target-144 { --size-target: 144px; }
+.tap-target-148 { --size-target: 148px; }
+.tap-target-152 { --size-target: 152px; }
+.tap-target-156 { --size-target: 156px; }
+.tap-target-160 { --size-target: 160px; }
+.tap-target-164 { --size-target: 164px; }
+.tap-target-168 { --size-target: 168px; }
+.tap-target-172 { --size-target: 172px; }
+.tap-target-176 { --size-target: 176px; }
+.tap-target-180 { --size-target: 180px; }
+.tap-target-184 { --size-target: 184px; }
+.tap-target-188 { --size-target: 188px; }
+.tap-target-192 { --size-target: 192px; }
+.tap-target-196 { --size-target: 196px; }
+.tap-target-200 { --size-target: 200px; }
 
 /* Semantic type classes (POL-A1): all one size (GG-T770); a heading stands out by weight (the Heavy font role, applied in
    Ui.AddClasses) and colour, not size. */
@@ -380,27 +402,27 @@
 .kit-navbar {
     flex-direction: row;
     flex-shrink: 0;
-    min-height: 132px; /* Kit.NavHeight; grows by the gesture-bar inset */
+    min-height: var(--size-target); /* Kit.NavHeight; grows by the gesture-bar inset */
     background-color: var(--color-chrome);
     border-top-width: 4px;
     border-color: var(--color-frame);
 }
-.kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: 132px; align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); }
+.kit-navtab { flex-grow: 1; flex-basis: 0; min-width: 0; height: var(--size-target); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); }
 .kit-navtab > .menu-icon { width: var(--size-icon-nav); height: var(--size-icon-nav); margin: 0; }
 .kit-navtab-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-navtab-badge { position: absolute; top: var(--space-8); right: var(--space-16); }
 .kit-navtab--active { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
 .kit-navtab--active > .kit-navtab-label { color: var(--color-mana); }
-.kit-navtab--locked { opacity: 0.4; }
+.kit-navtab--locked > .menu-icon { opacity: 0.6; } /* the padlock marks it; the label keeps its contrast (GG-T2085) */
 
 /* ── Camp hub tiles (GG-T1612): a wrapping grid of destination tiles, styled like the nav tabs ── */
 .kit-pillar { flex-direction: row; flex-wrap: wrap; flex-shrink: 0; padding: 0 var(--space-12); }
-.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; height: 160px; margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-mana-faint); }
-.kit-tile > .menu-icon { width: 56px; height: 56px; margin: 0; }
+.kit-tile { flex-grow: 1; flex-basis: 30%; min-width: 0; min-height: 160px; padding: var(--space-8) var(--space-4); margin: var(--space-12); align-items: center; justify-content: center; border-top-width: 6px; border-color: var(--color-clear); background-color: var(--color-chrome); } /* a chrome pane, so its label reads over any backdrop (GG-T2085) */
+.kit-tile > .menu-icon { width: var(--size-icon); height: var(--size-icon); margin: 0; } /* row role, docs/ICONS.md (GG-T2085) */
 .kit-tile-label { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; }
 .kit-tile-value { font-size: var(--type-base); -unity-text-align: middle-center; color: var(--color-label); max-width: 100%; white-space: normal; }
 .kit-tile.is-pressed { border-color: var(--color-mana); background-color: var(--color-mana-tint); }
-.kit-tile--locked { opacity: 0.4; }
+.kit-tile--locked > .menu-icon { opacity: 0.6; } /* the padlock marks it; the label keeps its contrast (GG-T2085) */
 /* GG-T1972: the Equip tab's slot grid, four thumbnails a row; names wrap, never cut off */
 .equip-tile { flex-basis: 21%; height: auto; min-height: 160px; padding: var(--space-8) var(--space-4); justify-content: flex-start; }
 .equip-tile > .kit-tile-label, .equip-tile > .kit-tile-value { white-space: normal; }
@@ -422,7 +444,7 @@
     color: var(--color-label);
 }
 .tab--active { background-color: var(--color-tab-active); color: var(--color-white); }
-.tab--locked { opacity: 0.4; }
+.tab--locked { opacity: 0.8; } /* a dimmed tab still keeps 4.5:1 in every theme (GG-T2161); 0.4 read 2.2:1 */
 
 /* ── Gauges ──────────────────────────────────────────────────────────────── */
 .gauge { height: 20px; border-radius: var(--radius-10); background-color: var(--color-shade); border-width: 2px; border-color: var(--color-gauge-rim); overflow: hidden; }
@@ -433,7 +455,7 @@
 /* ── Toast / dialog ──────────────────────────────────────────────────────── */
 .toast {
     position: absolute;
-    left: 120px; right: 120px; bottom: 260px;
+    left: 120px; right: 120px; top: 166px;
     padding: var(--space-24) var(--space-32);
     border-radius: var(--radius-18);
     border-width: 4px;
@@ -650,7 +672,7 @@
 .theme-chrono .card { background-color: rgba(255, 255, 255, 0.06); }
 .theme-chrono .card--selected { background-color: rgba(255, 255, 255, 0.16); }
 .theme-chrono .thumb { background-color: rgb(52, 52, 56); }
-.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.8); }
+.theme-chrono .role-badge { background-color: rgba(12, 12, 14, 0.92); }
 
 .theme-chrono .header {
     background-color: rgba(40, 40, 44, 0.94);
@@ -715,7 +737,7 @@
 .theme-granite .card { background-color: rgba(219, 240, 255, 0.06); }
 .theme-granite .card--selected { background-color: rgba(219, 240, 255, 0.16); }
 .theme-granite .thumb { background-color: rgb(58, 64, 68); }
-.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.8); }
+.theme-granite .role-badge { background-color: rgba(21, 23, 24, 0.92); }
 
 .theme-granite .header {
     background-color: rgba(47, 52, 55, 0.94);

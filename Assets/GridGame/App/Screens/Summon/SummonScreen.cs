@@ -19,6 +19,11 @@ namespace GridGame.App
         /// <summary>The open tab: one per open banner (<see cref="Gacha.Open"/>), then Recruit.</summary>
         private int tab;
 
+        /// <summary>The first visit's Tickets (GG-T1604), named under the wallet for as long as the page is open (GG-T2156).</summary>
+        private int starterGrant;
+
+        private string StarterLine => $"The circle gives you {TicketText.Of(starterGrant)} to begin with.";
+
         /// <summary>The open Rates list's height in design px: about ten rows, the rest scrolls.</summary>
         private const float OddsListMaxHeight = 560;
 
@@ -37,8 +42,9 @@ namespace GridGame.App
             RecruitTabs(body, 0);
             bool busy = Paywall.Pending(S, PaywallKind.Summon) != null;
             int starter = SummonTickets.Starter(S); // GG-T1604: the first visit's Tickets
-            if (starter > 0) { App.Persist(); App.Toast($"The circle gives you {TicketText.Of(starter)} to begin with."); }
+            if (starter > 0) { App.Persist(); starterGrant = starter; }
             var banners = Gacha.Open(C, DateTime.UtcNow);
+            if (starter > 0 && banners.Count == 0) App.Toast(StarterLine);
             var names = banners.Select(TabName).Append("Recruit").ToArray();
             if (tab >= names.Length) tab = 0;
             Ui.Tabs(names, tab, i => { tab = i; Refresh(); }, body).name = "summon-tabs";
@@ -90,6 +96,7 @@ namespace GridGame.App
             wallet.name = "summon-wallet";
             Ui.Chip($"{ShardText.ShortPlural}: {Ui.Count(diamonds)}", wallet, RowKind.Diamond, tone: "gold", name: "summon-wallet-shards");
             Ui.Chip($"{TicketText.Plural}: {Ui.Count(tickets)}", wallet, RowKind.Summon, name: "summon-wallet-tickets");
+            if (starterGrant > 0) Ui.Para(StarterLine, w, "gold").name = "summon-starter";
             var row = Ui.Actions(w);
             PullButton(row, b, 1, busy, "btn--small btn--primary").name = "summon-draw";
             PullButton(row, b, b.MultiCount, busy, "btn--small").name = "summon-draw-multi";

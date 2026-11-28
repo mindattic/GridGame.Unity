@@ -451,8 +451,17 @@ namespace GridGame.App
         private void TapLine()
         {
             if (done) return;
-            if (Typing) { typed = typingText.Length; typing.text = typingText; LineDone(); return; }
+            if (Typing) { FinishLine(); return; }
             if (!run.AwaitingChoice) Advance();
+        }
+
+        /// <summary>The line being typed shows in full at once (GG-T2150: the audit's settled dialogue box).</summary>
+        internal void FinishLine()
+        {
+            if (done || !Typing) return;
+            typed = typingText.Length;
+            typing.text = typingText;
+            LineDone();
         }
 
         private void Advance()

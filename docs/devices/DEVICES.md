@@ -309,3 +309,62 @@ cover, goes from 11.8 to 14.4 pt-dp (14.1 to 17.2 physical).
 | Galaxy Z Fold5 (cover) | 904 | 2.25 | 46 | 11.8 / 14.1 | 56 | 14.4 / 17.2 |
 | Galaxy Z Fold6 (cover) | 968 | 2.36 | 44 | 12.1 / 14.2 | 50 | 13.8 / 16.1 |
 
+## Tap target per device (GG-T2144)
+
+A full-width row was a fixed 132 design px (`Size.Target`), which is 44 pt on the iPhone 15 Pro. The stage is 1170 px wide
+on every in-target phone and scales by the width the app sees / 1170, so on a narrower logical width a 132-px row shrinks:
+40.6 dp on a 360-dp Galaxy S23-S25 and 34-36 dp on a Z Fold cover, under Android's 48 dp minimum. `TapTarget` (Tokens.cs)
+now works out the design height that reaches 48 dp on Android (at `DisplayMetrics.density`) or 44 pt on iOS (the point
+scale, ppi / 163 rounded) at the live stage scale, never under 132, rounded up to 4 px. The UI root takes one
+`tap-target-N` class, which sets `--size-target`, so every menu row, button, tab, chip and the hub nav bar grows with it,
+and `Kit.Row` / `Kit.NavHeight` read it in code. Desktop players read the target as `-tapPx` (tools/scenario.py passes
+the device's minimum at the window's size), since their dpi is the monitor's.
+
+Static maths from tools/devices.json: **Unit** is px per pt (iOS) or dp (Android) at the width the app sees (a QHD+
+Galaxy ships at FHD+ 1080 px, so its density there is 3.5 x 1080 / 1440 = 2.625). **Stage scale** is that width / 1170.
+A row's logical size is design px x stage scale / unit.
+
+| Device | App px wide | Unit | Stage scale | Before: 132-px row | After: target px | After: row | Battle HUD (fixed): bottom row 132 / top bar 110 |
+|---|---|---|---|---|---|---|---|
+| iPhone 15 Pro | 1179 | pt 3 | 1.008 | 44.3 pt | 136 | 45.7 pt | 44.3 / 36.9 pt |
+| iPhone 15 Pro Max | 1290 | pt 3 | 1.103 | 48.5 pt | 132 | 48.5 pt | 48.5 / 40.4 pt |
+| iPhone 16 | 1179 | pt 3 | 1.008 | 44.3 pt | 136 | 45.7 pt | 44.3 / 36.9 pt |
+| iPhone 16 Plus | 1290 | pt 3 | 1.103 | 48.5 pt | 132 | 48.5 pt | 48.5 / 40.4 pt |
+| iPhone 16 Pro | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
+| iPhone 16 Pro Max | 1320 | pt 3 | 1.128 | 49.6 pt | 132 | 49.6 pt | 49.6 / 41.4 pt |
+| iPhone 16e | 1170 | pt 3 | 1.000 | 44.0 pt | 136 | 45.3 pt | 44.0 / 36.7 pt |
+| iPhone 17 | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
+| iPhone 17 Pro | 1206 | pt 3 | 1.031 | 45.4 pt | 132 | 45.4 pt | 45.4 / 37.8 pt |
+| iPhone 17 Pro Max | 1320 | pt 3 | 1.128 | 49.6 pt | 132 | 49.6 pt | 49.6 / 41.4 pt |
+| iPhone Air | 1260 | pt 3 | 1.077 | 47.4 pt | 132 | 47.4 pt | 47.4 / 39.5 pt |
+| Galaxy S23 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S23+ | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S23 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S23 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S24 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S24+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S24 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S24 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy S25 | 1080 | dp 3 | 0.923 | 40.6 dp | 164 | 50.5 dp | 40.6 / 33.8 dp |
+| Galaxy S25+ | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 Ultra | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 Edge | 1080 | dp 2.625 | 0.923 | 46.4 dp | 144 | 50.6 dp | 46.4 / 38.7 dp |
+| Galaxy S25 FE | 1080 | dp 2.8125 | 0.923 | 43.3 dp | 152 | 49.9 dp | 43.3 / 36.1 dp |
+| Galaxy Z Flip5 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 148 | 49.7 dp | 44.3 / 36.9 dp |
+| Galaxy Z Flip6 (main) | 1080 | dp 2.75 | 0.923 | 44.3 dp | 148 | 49.7 dp | 44.3 / 36.9 dp |
+| Galaxy Z Fold5 (cover) | 904 | dp 3 | 0.773 | 34.0 dp | 192 | 49.4 dp | 34.0 / 28.3 dp |
+| Galaxy Z Fold6 (cover) | 968 | dp 3 | 0.827 | 36.4 dp | 180 | 49.6 dp | 36.4 / 30.3 dp |
+
+Every interactive kit row is now at least 48 dp on every in-target Galaxy and at least 44 pt on every in-target iPhone;
+the target aims 3 % over the minimum (`TapTarget.Margin`), because the audit measured a 132-px row at 43.7 pt on the iPhone 15 Pro and 43.0 pt on the 16e, just under 44 (GG-T2122), so the iPhones grow from 132 to 136 px. Rows grow by at most 60 px (Z Fold5 cover),
+and the narrow screens that grow most are also the tallest stages (the Fold5 cover's is 1170 x 2998, the Galaxy S25's
+1170 x 2535 against the iPhone 15 Pro's 2556), so fixed-count pages (the title, Continue / Start Campaign) keep their
+room; lists already scroll inside their windows.
+
+**Not raised: the battle HUD rows.** The bottom action row ([Abilities][Info][GUARD], 132 px), its cells and the top bar
+(110 px) are fixed heights (BIBLE 9.0) and the board keeps its tile size between them, so they stay in design px and
+read 40.6 dp (bottom row) and 33.8 dp (top bar) on a 360-dp Galaxy S23-S25, down to 34.0 / 28.3 dp on the Z Fold5
+cover; the 110-px top bar is under 44 pt on the iPhones too (36.7-41.4 pt).
+Growing them would take the height from the board or the timeline, which 9.0 fixes; that needs an owner decision on
+the battle layout, not a token. The ability sheet's move rows are a sheet over the battle, not HUD rows, and do grow.
+

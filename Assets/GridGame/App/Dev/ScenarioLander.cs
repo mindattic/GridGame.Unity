@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,15 +15,31 @@ namespace GridGame.App.Dev
     /// and once it has actually landed (the Router.Changed wait <c>DemoMode.BeginRun</c> uses) the target opens: a battle
     /// on a synthetic stage that starts at the target wave (the automation <c>randombattle</c> technique), the real
     /// stage through <see cref="StageLauncher"/> with RealLaunch, a <see cref="Automation.StartScreens"/> screen, or the
-    /// Hub itself for Camp on the road (until an overworld map screen exists).
+    /// Hub itself for Camp on the road (until an overworld map screen exists). GG-T2129: then <see cref="ScenarioDef.Open"/>
+    /// opens its state on that screen through <see cref="Openers"/>.
     /// </summary>
     public static class ScenarioLander
     {
         public const string SynthPrefix = "scenario-";
+        /// <summary>How long an <see cref="ScenarioDef.Open"/> waits for its screen to take it (a battle's intro, a stage's beats).</summary>
+        public const float OpenTimeoutSeconds = 60f;
+
+        /// <summary>GG-T2129: each <see cref="ScenarioOpen.What"/> and how it opens on the screen on top, through that screen's
+        /// own UI path. An opener returns false while the screen is not there or not ready yet, and is retried until it opens.
+        /// Add a line here to open something new.</summary>
+        public static readonly Dictionary<string, Func<GameScreen, IReadOnlyList<string>, bool>> Openers =
+            new Dictionary<string, Func<GameScreen, IReadOnlyList<string>, bool>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["abilities"] = (screen, path) => screen is BattleScreen b && b.OpenAbilitiesAt(path),
+                ["info"] = (screen, _) => screen is BattleScreen b && b.OpenExamine(),
+            };
 
         public static ScenarioResult Land(ScenarioDef def)
         {
             var app = GameApp.I;
+            var open = ScenarioOpen.Parse(def?.Open);
+            if (open != null && !Openers.ContainsKey(open.What))
+                throw new ArgumentException($"open: unknown '{open.What}' (one of {string.Join(", ", Openers.Keys)})");
             var result = ScenarioBuilder.Build(app.Content, def);
             ApplySettings(app, def.Settings);
             app.Save = result.Save;
@@ -34,12 +51,26 @@ namespace GridGame.App.Dev
                 if (shown is not HubScreen) return;
                 app.Router.Changed -= OnShown;
                 if (t.Kind == ScenarioKind.Screen && Automation.StartScreens.TryGet(t.Screen, out var screen)) app.Router.Push(screen);
+                else if (t.Kind == ScenarioKind.Battle && t.Drill) app.Router.Push(new BattleScreen(t.StageId));
                 else if (t.Kind == ScenarioKind.Battle && def.RealLaunch) StageLauncher.Launch(t.StageId, false);
                 else if (t.Kind == ScenarioKind.Battle) app.Router.Push(new BattleScreen(Synthesize(app.Content, app.Save, t, def.FullStage)));
+                if (open != null) app.StartCoroutine(OpenWhenReady(app, open));
             }
             app.Router.Changed += OnShown;
             app.Router.ResetTo(new HubScreen());
             return result;
+        }
+
+        private static IEnumerator OpenWhenReady(GameApp app, ScenarioOpen open)
+        {
+            var opener = Openers[open.What];
+            float end = Time.unscaledTime + OpenTimeoutSeconds;
+            while (Time.unscaledTime < end)
+            {
+                if (!app.Router.Busy && app.Router.Current is GameScreen screen && opener(screen, open.Path)) yield break;
+                yield return null;
+            }
+            Debug.LogWarning($"[Scenario] open '{open.What}' timed out on {app.Router.Current?.GetType().Name}");
         }
 
         /// <summary>A throwaway copy of the target stage in the in-memory ContentDb that opens on the target wave (and,

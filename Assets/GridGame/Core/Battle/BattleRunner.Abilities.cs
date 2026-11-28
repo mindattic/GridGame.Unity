@@ -200,9 +200,10 @@ namespace GridGame.Core.Battle
         }
 
         /// <summary>
-        /// Smoke Vanish (GG-T861, §7; <see cref="SmokeVanish"/>): the ability's rule effects (the smoke cloud) are laid around
-        /// the caster's tile, then it reappears on a random safe landing (one Rng draw), springs what lies there, and a pincer
-        /// it closes resolves at once, as Teleport's. Every foe's charge locked on it re-plans. Rooted, it stays in its smoke.
+        /// Smokebomb (GG-T861, GG-T1916, §7; <see cref="SmokeVanish"/>): the ability's rule effects (the smoke cloud) are laid
+        /// around the caster's tile, then it vanishes: off the board and untargetable, its turn kept on the timeline, every
+        /// foe's charge locked on it re-planned. It reappears on its next turn (<see cref="Reappear"/>). Rooted, it stays in
+        /// its smoke.
         /// </summary>
         private void ResolveVanish(Unit caster, AbilityDef a)
         {
@@ -212,16 +213,39 @@ namespace GridGame.Core.Battle
             RegionAbility(caster, a, from); // the smoke, on the tile it is about to leave and its neighbours
             if (S.IsOver || !caster.Alive) return;
             if (RootsHold(caster, from)) return; // GG-T912: rooted, it can't blink away
-            var lands = SmokeVanish.Landings(S, caster, from);
-            if (lands.Count == 0) { Announce("Blocked", caster.Id); return; }
-            var to = lands[S.Rng.Range(0, lands.Count)];
-            if (!Relocate(caster, to)) { Announce("Blocked", caster.Id); return; }
-            Emit(new VanishedEvent { UnitId = caster.Id, From = from, To = to, AbilityId = a.Id });
-            Emit(new TeleportedEvent { UnitId = caster.Id, From = from, To = to });
+            if (SmokeVanish.Landings(S, caster, from).Count == 0) { Announce("Blocked", caster.Id); return; }
+            caster.Vanished = true;
+            caster.OnBoard = false;
+            Emit(new VanishedEvent { UnitId = caster.Id, From = from, AbilityId = a.Id });
             ReplanChargesOn(caster, from);
-            ShovePickupsUnder(caster, from);
-            TriggerTrap(caster);
-            if (caster.Alive && caster.IsHero) ResolvePincers(Team.Hero, caster);
+        }
+
+        /// <summary>GG-T1916: a vanished unit's next turn has come (or its wave was cleared): it reappears on a random
+        /// <see cref="SmokeVanish.Landings"/> tile (one battle Rng draw; the nearest free tile when none is left), springs what
+        /// lies there and resolves any pincer it closes, as Teleport does. <paramref name="quiet"/> only places it (the wave
+        /// is over, nothing left to spring or trap).</summary>
+        private void Reappear(Unit u, bool quiet = false)
+        {
+            if (u == null || !u.Vanished) return;
+            var from = u.Pos;
+            var lands = SmokeVanish.Landings(S, u, from);
+            var to = lands.Count > 0 ? lands[S.Rng.Range(0, lands.Count)] : SpawnLanding(from, u.W, u.H) ?? from;
+            u.Vanished = false;
+            u.OnBoard = true;
+            u.Pos = to;
+            Emit(new ReappearedEvent { UnitId = u.Id, From = from, To = to });
+            Emit(new TeleportedEvent { UnitId = u.Id, From = from, To = to });
+            if (quiet) return;
+            ShovePickupsUnder(u, from);
+            TriggerTrap(u);
+            if (u.Alive && u.IsHero) ResolvePincers(Team.Hero, u);
+        }
+
+        /// <summary>GG-T1916: every vanished hero reappears (a party window opened, or the wave was cleared).</summary>
+        private void ReappearHeroes(bool quiet = false)
+        {
+            foreach (var u in S.Units.ToArray())
+                if (u.Vanished && u.Team == Team.Hero && u.Hp > 0 && !S.IsOver) Reappear(u, quiet);
         }
 
         /// <summary>GG-T861: every foe's charge locked on <paramref name="gone"/> loses it in the smoke and re-plans onto the

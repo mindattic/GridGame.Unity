@@ -21,7 +21,7 @@ namespace GridGame.Core.Rules
             if (a.Escape) return "No aim: the party flees the battle at once.";
             if (a.Revives) return "No aim: the fallen ally rises on a free tile beside you.";
             if (a.Shape == TargetShape.Self || a.Vanishes)
-                return a.Vanishes ? "No aim: smoke spreads around your own tile, then you reappear on a random safe tile at least 2 away." : "No aim: it works on you.";
+                return a.Vanishes ? "No aim: smoke spreads around your own tile and you vanish. On your next turn you reappear on a random safe tile at least 2 away." : "No aim: it works on you.";
             if (a.Shape == TargetShape.AllEnemies || a.Shape == TargetShape.AllAllies) return "No aim: it reaches the whole board.";
 
             if (a.Mode == TargetMode.Auto)

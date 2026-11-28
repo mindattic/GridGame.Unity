@@ -87,6 +87,10 @@ namespace GridGame.Core.Battle
         public bool Burrowed;
         /// <summary>GG-T901: the ability that sent it under, the blow it strikes as it surfaces.</summary>
         public string BurrowAbility;
+        /// <summary>GG-T1916: gone in a Smokebomb's smoke. <see cref="OnBoard"/> is false meanwhile (not <see cref="Alive"/>:
+        /// untargetable, on no tile), but it lives, keeps its turn on the timeline and holds the party in the fight;
+        /// <see cref="Pos"/> is the tile it left. It reappears on its next turn (<c>BattleRunner.Reappear</c>).</summary>
+        public bool Vanished;
 
         public List<BuffInstance> Buffs = new List<BuffInstance>();
         public Dictionary<string, int> Cooldowns = new Dictionary<string, int>();
@@ -97,6 +101,9 @@ namespace GridGame.Core.Battle
         public Dictionary<string, int> TriggerCooldowns = new Dictionary<string, int>();
         public List<AbilitySlot> Bar = new List<AbilitySlot>();
         public int UnlockedSlots = 2;
+        /// <summary>GG-T1917: the hero's own arrangement of its Abilities sheet (<see cref="GridGame.Core.Rules.ActionTree.For"/>),
+        /// or null for the default tree. Never mutated in battle, so Clone()'s shallow copy may share it.</summary>
+        public GridGame.Core.Rules.ActionLayout Layout;
 
         // Equipment (heroes)
         public string WeaponId;
