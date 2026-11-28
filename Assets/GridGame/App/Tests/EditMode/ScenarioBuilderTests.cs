@@ -55,6 +55,16 @@ namespace GridGame.App.Tests
         }
 
         [Test]
+        public void An_equipped_potion_sits_on_the_bar_and_in_the_bag()
+        {
+            var def = ScenarioDef.Parse("{\"target\":\"stage:greenvalley-01\",\"consumables\":{\"knight\":{\"healing_potion_basic\":2}}}");
+            var r = ScenarioBuilder.Build(C, def);
+            var knight = r.Save.Hero("knight");
+            Assert.That(knight.Bar.Take(Progression.UnlockedSlots(r.Save)), Does.Contain("item:healing_potion_basic"));
+            Assert.That(r.Save.Count("healing_potion_basic"), Is.GreaterThanOrEqualTo(2));
+        }
+
+        [Test]
         public void No_story_beat_is_left_pending_before_the_target()
         {
             foreach (var target in new[] { "first-boss", "overworld", "final-boss" })
