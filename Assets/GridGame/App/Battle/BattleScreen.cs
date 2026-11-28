@@ -1327,6 +1327,7 @@ namespace GridGame.App
             else
                 Ui.MenuRow("Retreat", $"(keep {retreatPct}%)", () => { Close();
                     Confirm.Show($"Retreat from battle? You'll keep {retreatPct}% of this fight's gold and loot — safer than risking a wipe.", "Retreat", Retreat); }, w).KindIcon(RowKind.Back);
+            if (Dev.DevOptions.Cheats) DevCheatRows(w, Close); // GG-T1938
             Ui.Select(w[1]);
         }
 

@@ -53,4 +53,15 @@ namespace GridGame.Core.Battle
         public string Scene;
         public override string ToString() => $"Scene {Scene}";
     }
+
+    public enum DevCheat { KillAllEnemies, HealParty }
+
+    /// <summary>GG-T1938: a Developer cheat from the pause menu (Settings &gt; Developer &gt; Cheats on). Like a tutorial set-up
+    /// it is no one's action: no time passes and no turn is spent. KillAllEnemies fells every foe, wave after wave, through
+    /// the death choke-point so the normal victory flow runs; HealParty restores every living hero to full HP.</summary>
+    public sealed class DevCheatCommand : BattleCommand
+    {
+        public DevCheat Cheat;
+        public override string ToString() => $"Dev {Cheat}";
+    }
 }

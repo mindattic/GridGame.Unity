@@ -322,7 +322,7 @@ namespace GridGame.App.Automation
                     app.Slot = slot;
                     if (q["gold"] != null) app.Save.Gold = (int)F(q["gold"]);
                     // npcs=1: every Camp NPC already met (GG-T119); npcs=merchant,blacksmith: just those (GG-T175).
-                    if (q["npcs"] == "1") CampNpcs.JoinAll(app.Save);
+                    if (q["npcs"] == "1") Dev.DevCheats.UnlockAllStations(app.Save);
                     else if (q["npcs"] != null)
                         foreach (var n in q["npcs"].Split(',')) app.Save.Flags.Add(ContentLoader.NpcFlagPrefix + n.Trim());
                     // seen=blacksmith,shop: those camp tips already dismissed, to reach a later onboarding step (GG-T177).
@@ -358,19 +358,9 @@ namespace GridGame.App.Automation
                     // at the Blacksmith), so harness checks of weapon-durability UI need something equipped
                     // first. Mirrors Meta.Equipment.Equip (grants + equips) across the whole roster.
                     if (app.Save == null) return new { error = "no save" };
-                    var itemId = q["item"] ?? "eq_sword_iron";
-                    // Equips into the item's own slot, so armor set pieces (GG-T182) work too.
-                    var equipSlot = app.Content.TryItem(itemId)?.Slot ?? EquipmentSlot.Weapon;
-                    int equipped = 0;
-                    foreach (var h in app.Save.Roster)
-                    {
-                        app.Save.AddItem(itemId, 1);
-                        if (!Equipment.Equip(app.Content, app.Save, h, equipSlot, itemId).Ok) continue;
-                        equipped++;
-                        // wear=0.5: battle-worn to that fraction of max (GG-T175's Blacksmith onboarding check).
-                        if (q["wear"] != null && equipSlot == EquipmentSlot.Weapon)
-                            h.WeaponDurability = Math.Max(1, (int)(Repair.EffectiveMax(app.Content.Item(itemId), h.WeaponRepairs, h.WeaponMastery) * F(q["wear"])));
-                    }
+                    // Equips into the item's own slot, so armor set pieces (GG-T182) work too; wear=0.5: battle-worn to that
+                    // fraction of max (GG-T175's Blacksmith onboarding check).
+                    int equipped = Dev.DevCheats.EquipAll(app.Content, app.Save, q["item"] ?? "eq_sword_iron", q["wear"] != null ? F(q["wear"]) : (float?)null);
                     return new { ok = equipped > 0, equipped };
                 }
                 case "devwear":
@@ -393,8 +383,7 @@ namespace GridGame.App.Automation
                     if (app.Save == null) return new { error = "no save" };
                     var itemId = q["item"];
                     if (itemId == null) return new { error = "missing item" };
-                    app.Save.AddItem(itemId, (int)F(q["count"], 1));
-                    return new { ok = true, count = app.Save.Count(itemId) };
+                    return new { ok = true, count = Dev.DevCheats.GiveItem(app.Save, itemId, (int)F(q["count"], 1)) };
                 }
                 case "devrested":
                 {
@@ -413,7 +402,7 @@ namespace GridGame.App.Automation
                     var heroes = q["hero"] == "all" ? app.Save.Roster.ToList()
                         : new[] { q["hero"] != null ? app.Save.Hero(q["hero"]) : app.Save.Roster.FirstOrDefault() }.Where(x => x != null).ToList();
                     if (heroes.Count == 0) return new { error = "no such hero" };
-                    foreach (var h in heroes) { h.TotalXp = GridGame.Core.Rules.Formulas.TotalXpForLevel((int)F(q["level"], 10)); h.Hp = 0; }
+                    Dev.DevCheats.SetLevel(heroes, (int)F(q["level"], 10));
                     app.Persist();
                     return new { ok = true, levels = heroes.ToDictionary(h => h.ClassId, Progression.Level) };
                 }
@@ -422,11 +411,7 @@ namespace GridGame.App.Automation
                     // Test-only (GG-T241): jump the campaign to `stage` — every earlier stage cleared, at camp (GG-T1786:
                     // travel has no per-region run to fast-forward) — so a biome finale or the ending stage can be launched directly.
                     if (app.Save == null) return new { error = "no save" };
-                    var stages = app.Content.CampaignStages();
-                    int idx = stages.FindIndex(x => x.Id == q["stage"]);
-                    if (idx < 0) return new { error = "unknown stage" };
-                    app.Save.HighestClearedStage = Math.Max(app.Save.HighestClearedStage, idx - 1);
-                    TravelRules.MakeCamp(app.Save);
+                    if (Dev.DevCheats.JumpToStage(app.Content, app.Save, q["stage"]) == null) return new { error = "unknown stage" };
                     app.Persist();
                     return new { ok = true, cleared = app.Save.HighestClearedStage };
                 }

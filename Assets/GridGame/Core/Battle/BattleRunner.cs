@@ -50,6 +50,7 @@ namespace GridGame.Core.Battle
             if (!BattleEngine.IsAuthorized(S, cmd)) { Emit(new AbilityRefusedEvent { CasterId = BattleEngine.CommandHeroId(cmd), Reason = "Not your hero" }); return; }
             // GG-T542: a tutorial set-up is no one's action: no time passes, no turn is spent.
             if (cmd is TutorialSceneCommand scene) { DoScene(scene); EnforceTileInvariant(nameof(TutorialSceneCommand)); return; }
+            if (cmd is DevCheatCommand dev) { DoDevCheat(dev); EnforceTileInvariant(nameof(DevCheatCommand)); return; } // GG-T1938
 
             // GG-T1083 (§2.13.3): under HeroTimeline only the hero whose own icon arrived may act.
             if (S.UnitById(BattleEngine.CommandHeroId(cmd)) is Unit waiting && TurnRules.NotThisHerosTurn(S, waiting))
