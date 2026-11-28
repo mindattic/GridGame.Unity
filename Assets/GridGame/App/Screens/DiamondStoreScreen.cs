@@ -219,7 +219,7 @@ namespace GridGame.App
 
             var foot = Ui.Footer(body, "diamond-footer");
             Ui.Name($"{ShardText.ShortOf(amount)} for {Ui.Gold(DiamondExchange.GoldFor(amount))}", foot, "grow");
-            var go = RowIcon.IconButton("Exchange", RowKind.Confirm, Exchange, "btn--primary", foot); // GG-T745
+            var go = RowIcon.IconButton("Exchange", RowKind.Confirm, Exchange, "btn--primary", foot, confirmTap: false); // GG-T745
             go.name = "diamond-exchange";
             Ui.SetEnabled(go, amount <= max);
         }

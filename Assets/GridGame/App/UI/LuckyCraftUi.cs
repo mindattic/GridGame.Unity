@@ -56,7 +56,7 @@ namespace GridGame.App
                     if (res.Ok) GameApp.I.Persist();
                     Reveal(res, refresh);
                 });
-            }, can ? "btn--primary" : null, box); // GG-T745: led by the Confirm emblem
+            }, can ? "btn--primary" : null, box, confirmTap: false); // GG-T745: led by the Confirm emblem
             lucky.name = "lucky-craft-btn";
             lucky.style.marginTop = Space.S8;
             // Short of Diamonds and gold it stays tappable and offers the store; it's disabled only when the craft itself isn't.

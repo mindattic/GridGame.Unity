@@ -852,7 +852,7 @@ namespace GridGame.App
                 var cancel = RowIcon.IconButton("Cancel", RowKind.Close, CancelByPlayer, "btn--small", btns);
                 cancel.name = "confirm-cancel";
                 string verb = a.Kind == AbilityKind.Item ? "Use" : a.Kind == AbilityKind.Spell ? "Cast" : "Go";
-                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns);
+                var ok = RowIcon.IconButton(verb, RowKind.Confirm, ConfirmPending, "btn--primary", btns, confirmTap: false);
                 ok.name = "confirm-action";
             }
             InspectCard.Ability(panel, a, state: SlotState(hero, slot, a));

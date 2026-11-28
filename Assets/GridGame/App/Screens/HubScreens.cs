@@ -926,7 +926,7 @@ namespace GridGame.App
                 GlossaryText.Create(C.Class(h.ClassId).Card ?? "", "kit-text dim", col);
                 PartyBoards.Row(C, S, h, col); // GG-T1891: the bar and a tap-through to the board, in place of the mini boards
                 card.AddToClassList("card-tap");
-                Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.select");
+                Ui.Tappable(card, () => Done(Party.Toggle(S, hero.ClassId)), "ui.confirm", confirmTap: true);
             }
         }
     }
@@ -1313,7 +1313,7 @@ namespace GridGame.App
                 Ui.Para($"🔒 Needs {Facilities.NeededName(c, r)} (you have the {Facilities.Current(c, s, r.Station)})", w, "bad");
                 if (Facilities.Next(c, s, r.Station) is CaravanLevel next)
                 {
-                    var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w));
+                    var b = RowIcon.IconButton($"Build {next.Name} · {Ui.Gold(next.Cost)}", RowKind.Confirm, () => ConfirmFacility(c, s, r.Station, page), "btn--small", Ui.Actions(w), confirmTap: false);
                     b.name = "facility-build-detail";
                     Ui.SetEnabled(b, s.Gold >= next.Cost);
                 }
@@ -1650,7 +1650,7 @@ namespace GridGame.App
                 };
                 InspectCard.Attach(ic, read, tap: true);
                 InspectCard.Attach(top, read, tap: true);
-                var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col));
+                var b = RowIcon.IconButton(next == null ? "Maxed" : Ui.Gold(next.Cost), RowKind.Confirm, () => Confirm.Show($"Buy {d.Name} ({next.Text}) for {Ui.Gold(next.Cost)}?", "Buy", () => Done(CaravanUpgrades.Buy(C, S, d.Id), cue: "camp.caravan")), "btn--small", Ui.Actions(col), confirmTap: false);
                 b.name = "caravan-buy-" + d.Id;
                 Ui.SetEnabled(b, next != null && S.Gold >= next.Cost);
             }
@@ -1808,7 +1808,7 @@ namespace GridGame.App
                     return;
                 }
                 Confirm.Show($"Pay {pay} for {(count == 1 ? "a pull" : $"{count} pulls")} on {b.Name}? {RatesLine(b, Gacha.Odds(C, S, b))}.", "Summon", () => Pull(b, count));
-            }, classes, row);
+            }, classes, row, confirmTap: false);
             Ui.SetEnabled(btn, !busy && !S.TestMode && Gacha.Pool(C, S, b).Count > 0 && LootBoxPolicy.Allows(S, b, count).Ok);
             return btn;
         }
@@ -1893,7 +1893,7 @@ namespace GridGame.App
                 Ui.Card(list, d.Id, d.Name, out var col);
                 GlossaryText.Create(d.Card ?? d.Description ?? "", "kit-text dim", col);
                 var b = RowIcon.IconButton(owned ? "Joined" : "Recruit", RowKind.Confirm, () => Confirm.Show($"Summon {def.Name} for {Ui.Gold(price)}?", "Summon", () =>
-                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col)); // GG-T532: then pick their look
+                    TimedJobView.Begin(now => (Summon.BeginRecruit(C, S, def.Id, now, out var job), job), $"Summoning {def.Name}", _ => VariantPicker.ShowPending(Refresh))), "btn--small", Ui.Actions(col), confirmTap: false); // GG-T532: then pick their look
                 Ui.SetEnabled(b, !owned && !busy && S.Gold >= price);
             }
         }

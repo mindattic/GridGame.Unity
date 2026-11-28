@@ -352,7 +352,7 @@ namespace GridGame.App
             back.name = "abilities-back";
             var sl = hero.Bar[slot];
             string verb = sl.IsItem ? "Use" : !sl.IsWeapon && a.Kind == AbilityKind.Spell ? "Cast" : "Perform";
-            var go = RowIcon.IconButton(verb, RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot);
+            var go = RowIcon.IconButton(verb, RowKind.Confirm, () => CommitMove(hero, slot), "btn--primary", foot, confirmTap: false);
             go.name = "abilities-commit";
             go.SetEnabled(ready && CanCommand());
         }

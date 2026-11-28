@@ -171,10 +171,12 @@ namespace GridGame.App
 
         /// <summary>A button led by its kind icon (BIBLE §26.7): empty button text, the icon, then <paramref name="text"/> as a
         /// label that takes no clicks, so the whole button stays one target. With no text it is an icon-only button (the
-        /// header's back button, GG-T738): the icon centred, no label.</summary>
-        public static Button IconButton(string text, RowKind kind, Action onClick, string classes = null, VisualElement parent = null)
+        /// header's back button, GG-T738): the icon centred, no label. A <see cref="RowKind.Confirm"/> button runs an action,
+        /// so it is select-then-confirm (<see cref="Ui.ConfirmTap"/>, GG-T1942) unless <paramref name="confirmTap"/> says
+        /// otherwise: false for one that opens its own confirm or answers a dialog.</summary>
+        public static Button IconButton(string text, RowKind kind, Action onClick, string classes = null, VisualElement parent = null, bool? confirmTap = null)
         {
-            var b = Ui.Button("", onClick, classes, parent);
+            var b = Ui.Button("", onClick, classes, parent, confirmTap ?? kind == RowKind.Confirm);
             b.style.flexDirection = FlexDirection.Row;
             b.style.alignItems = Align.Center;
             b.style.justifyContent = Justify.Center;

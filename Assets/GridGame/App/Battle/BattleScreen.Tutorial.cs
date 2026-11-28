@@ -359,7 +359,7 @@ namespace GridGame.App
             btns.style.alignSelf = Align.FlexStart;
             bool last = TutorialStep == Lessons.Length - 1;
             Button first = null;
-            if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns)).name = "tutorial-done";
+            if (last) (first = RowIcon.IconButton("Got it", RowKind.Confirm, FinishTutorial, "btn--small btn--primary", btns, confirmTap: false)).name = "tutorial-done";
             else if (!LessonWaiting) (first = RowIcon.IconButton("Next", RowKind.Enter, NextLesson, "btn--small btn--primary", btns)).name = "tutorial-next";
             if (first != null) Ui.Margin(first, right: Space.S24);
             RowIcon.IconButton("Skip", RowKind.Close, FinishTutorial, "btn--small", btns).name = "tutorial-skip";

@@ -123,13 +123,17 @@ namespace GridGame.App
             return n;
         }
 
-        public static Button Button(string text, Action onClick, string classes = null, VisualElement parent = null)
+        /// <summary>A button. <paramref name="confirmTap"/> makes it select-then-confirm like a menu row (GG-T1942,
+        /// <see cref="ConfirmTap"/>): for a button that runs an action with no confirm step of its own.</summary>
+        public static Button Button(string text, Action onClick, string classes = null, VisualElement parent = null, bool confirmTap = false)
         {
-            var b = new Button(() =>
+            var b = new Button { text = text };
+            b.clickable.clickedWithEventInfo += evt =>
             {
-                GameApp.I?.Audio?.Sfx("ui.click");
+                if (confirmTap && !ConfirmTap(b, evt)) return;
+                GameApp.I?.Audio?.Sfx(confirmTap ? "ui.confirm" : "ui.click");
                 onClick?.Invoke();
-            }) { text = text };
+            };
             b.AddToClassList("btn");
             Fonts.UseHeavy(b);
             AddClasses(b, classes);
@@ -168,14 +172,17 @@ namespace GridGame.App
             return e;
         }
 
-        /// <summary>A tappable card/cell (party card, bestiary thumb, bar cell): the shared press feel plus a click handler.</summary>
-        public static T Tappable<T>(T e, Action onClick, string sfx = "ui.click") where T : VisualElement
+        /// <summary>A tappable card/cell (party card, bestiary thumb, bar cell): the shared press feel plus a click handler.
+        /// <paramref name="confirmTap"/> makes it select-then-confirm (GG-T1942, <see cref="ConfirmTap"/>): for a list card
+        /// whose tap runs an action.</summary>
+        public static T Tappable<T>(T e, Action onClick, string sfx = "ui.click", bool confirmTap = false) where T : VisualElement
         {
             Pressable(e);
-            e.RegisterCallback<ClickEvent>(_ =>
+            e.RegisterCallback<ClickEvent>(click =>
             {
                 try
                 {
+                    if (confirmTap && !ConfirmTap(e, click)) return;
                     if (sfx != null) GameApp.I?.Audio?.Sfx(sfx);
                     onClick?.Invoke();
                 }
@@ -666,6 +673,25 @@ namespace GridGame.App
         }
 
         private static bool IsMouse(string pointerType) => pointerType == UnityEngine.UIElements.PointerType.mouse;
+
+        private static VisualElement tapSelected;
+
+        /// <summary>Select-then-confirm for a list card or an action button (GG-T1942), the way <see cref="MenuRow"/> does it:
+        /// a tap on it while it isn't selected selects it (it shows pressed in, <c>.tap--selected</c>, with <c>ui.select</c>)
+        /// and returns false; a tap on the selected one returns true, so the caller runs it. One card or button is selected
+        /// at a time across the screen. A mouse click (and an automation tap, a mouse event) or a keyboard submit returns
+        /// true at once.</summary>
+        public static bool ConfirmTap(VisualElement e, EventBase evt)
+        {
+            bool now = !(evt is IPointerEvent p) || IsMouse(p.pointerType) || tapSelected == e;
+            tapSelected?.RemoveFromClassList("tap--selected");
+            tapSelected = null;
+            if (now) return true;
+            tapSelected = e;
+            e.AddToClassList("tap--selected");
+            GameApp.I?.Audio?.Sfx("ui.select");
+            return false;
+        }
 
         public static void Select(VisualElement row)
         {
