@@ -32,28 +32,50 @@ namespace GridGame.App
         {
             var hero = State.UnitById(SelectedHeroId);
             var ab = hero == null ? null : BattleEngine.SlotAbility(State, hero, idx);
-            return InspectCard.Ability(body, ab, ab == null ? null : SlotNote(hero, ab));
+            if (ab != null) ReadSlot(idx);
+            return InspectCard.Ability(body, ab, ab == null ? null : SlotState(hero, idx, ab));
         }
 
         /// <summary>GG-T450: a tapped slot that can't be aimed (recharging, no mana, no target …) still reads — its card
-        /// opens on the tap. A slot that aims needs no card: the Party page shows the ability while it's aimed.</summary>
+        /// opens on the tap. A slot that aims needs no card: the description panel shows the ability while it's aimed.</summary>
         private void TapSlotCard(int idx)
         {
             if (idx >= 0 && idx < slotViews.Count) InspectCard.Tap(slotViews[idx], body => SlotCard(body, idx));
         }
 
-        private string SlotNote(Unit hero, AbilityDef a)
+        /// <summary>The slot <see cref="SlotCard"/> last read without aiming, shown in the description panel (GG-T1823)
+        /// until another hero is selected, a unit is read or an aim takes the panel.</summary>
+        private int readSlot = -1, readSlotHero = -1;
+
+        private void ReadSlot(int idx)
         {
-            if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) return $"{hero.Name} can use it again in {cd} turns.";
-            for (int i = 0; a.Kind == AbilityKind.Spell && i < hero.Bar.Count; i++)
+            if (readSlot == idx && readSlotHero == SelectedHeroId && panelUnitId < 0) return;
+            readSlot = idx;
+            readSlotHero = SelectedHeroId;
+            panelUnitId = -1;
+            if (TargetingSlot < 0) SyncPanel();
+        }
+
+        /// <summary>A slot's live state (GG-T1823): items left, recharge turns, how full its mana meter is, and why it can't be
+        /// used right now, one line for its card and the description panel.</summary>
+        private string SlotState(Unit hero, int slot, AbilityDef a)
+        {
+            var parts = new List<string>();
+            var sl = slot >= 0 && slot < hero.Bar.Count ? hero.Bar[slot] : null;
+            if (sl != null && sl.IsItem) parts.Add($"{sl.Charges} / {sl.MaxCharges} left");
+            if (hero.Cooldowns.TryGetValue(a.Id, out var cd) && cd > 0) parts.Add($"recharging: ready in {cd} turn{(cd == 1 ? "" : "s")}");
+            int full = State.ManaFull(hero, slot);
+            if (full > 0)
             {
-                int full = State.ManaFull(hero, i);
-                if (full <= 0 || BattleEngine.SlotAbility(State, hero, i) != a) continue;
-                int have = ShownMana(hero.Id, i);
-                if (have < full) return $"{have} / {full} mana · fills with every gain.";
-                break;
+                int have = ShownMana(hero.Id, slot);
+                parts.Add(have >= full ? $"charged: {full} / {full} mana" : $"charging: {have} / {full} mana, fills with every gain");
             }
-            return $"Tap to aim with {hero.Name}.";
+            var status = BattleEngine.GetSlotStatus(State, hero.Id, slot);
+            if (status == SlotStatus.Ready) { if (TargetingSlot != slot) parts.Add($"tap to aim with {hero.Name}"); }
+            else if (status != SlotStatus.Cooldown && status != SlotStatus.Unaffordable && status != SlotStatus.OutOfCharges) parts.Add(StatusText(status));
+            if (parts.Count == 0) return null;
+            string line = string.Join(" · ", parts);
+            return char.ToUpperInvariant(line[0]) + line.Substring(1) + (line.EndsWith(".") || line.EndsWith("!") ? "" : ".");
         }
 
         private void AttachTimelineInspect(VisualElement icon, TimelineEntry e)
@@ -94,7 +116,42 @@ namespace GridGame.App
             if (Time.unscaledTime - inspectSince < InspectCard.HoldSeconds) return;
             var u = State.UnitById(inspectUnitId);
             if (u == null || !u.Alive || !board.Units.TryGetValue(u.Id, out var v)) { inspectUnitId = -1; return; }
-            inspectOpen = InspectCard.Show(v.Root, body => InspectCard.Unit(body, State, u, Knowledge(u)));
+            inspectOpen = InspectCard.Show(v.Root, body => UnitSheet(body, u));
+        }
+
+        /// <summary>A unit's sheet (GG-T1825, the old Party page's readout): its stats and statuses with the turns they have
+        /// left (<see cref="InspectCard.Unit"/>), and for a hero its skills, each with its kind and when it is ready.</summary>
+        private bool UnitSheet(VisualElement body, Unit u)
+        {
+            if (!InspectCard.Unit(body, State, u, Knowledge(u))) return false;
+            if (!u.IsHero) return true;
+            var head = Ui.Text("Skills", "t-caption gold", body);
+            head.style.marginTop = Space.S16;
+            for (int i = 0; i < u.Bar.Count && i < u.UnlockedSlots; i++)
+            {
+                var sl = u.Bar[i];
+                var a = sl.IsEmpty ? null : BattleEngine.SlotAbility(State, u, i);
+                if (a == null) continue;
+                var row = Ui.El("row", body);
+                row.name = "sheet-skill" + i;
+                row.style.alignItems = Align.Center;
+                row.style.marginTop = Space.S8;
+                var icon = Ui.El("menu-icon", row);
+                icon.style.width = icon.style.height = Size.Pip;
+                icon.style.marginRight = Space.S8;
+                var tex = sl.IsItem ? Art.ItemIcon(sl.ItemId) : sl.IsWeapon ? Art.ItemIcon(sl.WeaponId) : null;
+                icon.style.backgroundImage = new StyleBackground(tex ?? Art.AbilityIcon(a) ?? Art.Orb);
+                string name = sl.IsWeapon ? App.Content.TryItem(sl.WeaponId)?.Name ?? a.Name : sl.IsItem ? App.Content.TryItem(sl.ItemId)?.Name ?? a.Name : a.Name;
+                int cd = u.Cooldowns.TryGetValue(a.Id, out var c) ? c : 0;
+                int full = a.Kind == AbilityKind.Spell ? State.ManaFull(u, i) : 0;
+                string when = sl.IsItem ? $"item · {sl.Charges}/{sl.MaxCharges} left"
+                    : a.Kind == AbilityKind.Skill ? (cd > 0 ? $"skill · ready in {cd} turns" : "skill · ready")
+                    : full > 0 ? $"spell · {ShownMana(u.Id, i)}/{full} mana" : "spell";
+                var t = Ui.Text($"{name} — {when}", "t-caption", row);
+                t.style.flexShrink = 1;
+                t.style.whiteSpace = WhiteSpace.Normal;
+            }
+            return true;
         }
 
         /// <summary>
@@ -108,7 +165,7 @@ namespace GridGame.App
             var u = State.UnitById(unitId);
             if (u == null || !u.Alive || u.IsNeutral || !CanCommand() || TargetingSlot >= 0) return;
             if (board.TileAt(local) != u.Pos || !board.Units.TryGetValue(u.Id, out var v) || v.Dead) return;
-            InspectCard.Tap(v.Root, body => InspectCard.Unit(body, State, u, Knowledge(u)));
+            InspectCard.Tap(v.Root, body => UnitSheet(body, u));
         }
 
         /// <summary>Ends a board hold; true when it had opened a card (the release then does nothing else).</summary>
