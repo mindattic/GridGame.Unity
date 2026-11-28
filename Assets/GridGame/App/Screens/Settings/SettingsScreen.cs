@@ -117,6 +117,10 @@ namespace GridGame.App
             var toggle = Ui.MenuRow("Cheats", cheats ? "ON" : "OFF", () => { Dev.DevOptions.SetCheats(!cheats); Refresh(); }, w);
             toggle.name = "settings-dev-cheats";
             toggle.KindIcon(RowKind.Settings);
+            bool perfHud = Dev.PerfStats.HudOn;
+            var hudRow = Ui.MenuRow("Perf HUD", perfHud ? "ON" : "OFF", () => { Dev.PerfStats.SetHud(!perfHud); Refresh(); }, w);
+            hudRow.name = "settings-dev-perfhud";
+            hudRow.KindIcon(RowKind.Settings);
             if (!cheats) { Ui.Note("Turn Cheats on for the pause menu's Kill all enemies, Win battle, Full heal, Fill mana and speeds up to ×8.", w); return; }
             var s = App.Save;
             if (s == null) { Ui.Note("Load a save to give gold, items, stages and levels.", w); return; }

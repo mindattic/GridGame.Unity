@@ -6441,7 +6441,19 @@ Resolve a question → write the answer into the right section → delete it her
 
 ## 30. Performance Budgets
 
-Target: **60 fps** on a 4-year-old mid-tier phone; `GameApp.Awake` pins `targetFrameRate = 60`, `vSyncCount = 0`, and the automation `state` endpoint reports fps.
+Target (GG-T2101, retargeted 2026-11-28): the oldest in-target phones in `tools/devices.json` — the **iPhone 15 Pro** (A17 Pro, 8 GB; the reference device) and the **Galaxy S23** (Snapdragon 8 Gen 2, 8 GB). Everything newer in the matrix has headroom over these two. `GameApp.Awake` pins `targetFrameRate = 60`, `vSyncCount = 0`, and the automation `state` endpoint reports fps.
+
+| Budget (on the two baseline phones) | Ceiling |
+|---|---|
+| Frame rate, battle and map/camp scroll | **60 fps**: average ≥ 59, p95 frame ≤ 16.7 ms |
+| UI Toolkit update (style + layout + render data + animation) | **< 8 ms** a frame, p95 |
+| GC allocation while a battle plays or a list scrolls | ≤ 1 KB a frame on average (target 0) |
+| Texture memory | ≤ 512 MB |
+| Unity allocated memory (native + managed) | ≤ 1 GB |
+| Managed (Mono) heap | ≤ 128 MB |
+| Cold start: launch to the first screen past the splash | ≤ 5 s |
+
+- **Measuring (GG-T2101):** `Dev.PerfStats` samples every frame. The automation `perf` route returns the window since `perf?reset=1` (fps, frame-ms percentiles, % of frames over 16 and 33 ms, GC alloc, texture/allocated/Mono MB, UI ms, cold start). Settings > Developer > **Perf HUD** (off by default, this device only) shows fps, frame ms, UI ms, GC KB a frame and texture MB in the bottom-left corner. GC alloc, texture memory and the UI markers are profiler counters only a development build records; a release build falls back to `Texture.currentTextureMemory` and heap growth. `python tools/harness.py perf [--device iphone15pro]` plays one first-boss battle on autoplay and one camp scroll (there is no map screen yet) at the device shape, checks them against this table (`PERF_BUDGET` in the harness) and writes `docs/perf/records/<date>-<device>.json`. A record from the Windows dev player is a desktop proxy: it catches regressions and allocation, not the phone's real frame time.
 
 - **Simulation** costs nothing per frame — it runs only inside `Apply`, one burst per action. `PreviewMove` clones the whole `BattleState` per drag step and `HeroBot` previews every L-path for every hero: fine on cold paths, the first thing to profile on device.
 - **Presentation** plays one awaited beat at a time (budget ≤ 3 ms); **UI Toolkit** layout/render ≤ 8 ms — rebuild a screen only on change (`Refresh`), never per frame; keep ≥ 2 ms slack.
@@ -6449,7 +6461,7 @@ Target: **60 fps** on a 4-year-old mid-tier phone; `GameApp.Awake` pins `targetF
 - **Assets:** `Resources` loading is sanctioned (backdrops at the art's resolution, 1536×3072 JPEG, ~4.5 MB each as textures (GG-T353); thumbs 256², icons 64²; music mp3, SFX ogg/wav).
 - **Thermal step-down (GG-T1548):** on Android and iOS players `ThermalStepDown` polls every 2 s. Hot is Adaptive Performance's `ThrottlingImminent` or `Throttling` when a provider is active, otherwise iOS `NSProcessInfo.thermalState` serious or critical; while hot the frame cap is min(player's cap, 30) (Uncapped becomes 30) and the Effects amount is half the player's. Cool (AP `NoWarning`, iOS nominal or fair) for 30 s in a row restores the player's Settings choices; the step-down never raises either above them. No toast; one `[Thermal]` log line per change in development builds. Desktop and WebGL compile it out.
 - **Idle frame rate (GG-T1547):** a menu or hub screen where nothing has moved for `IdleFrameRate.IdleSeconds` (2 s) draws only every Nth frame (`OnDemandRendering.renderFrameInterval`), about `IdleFps` (15) a second, picked from whatever cap `ThermalStepDown` has in force; the game still updates every frame, so input is read at full rate and the next touch, wheel, key, navigation, slider/scroll change, USS transition, screen change or held touch draws every frame again. Hand-rolled animators call `IdleFrameRate.Stir()` while they move: `Tween.Run`, a living backdrop, the `PanZoomView` fling, `Marquee` scroll and flash, the coach marks while a step shows, and the paywall gauge until it finishes (GG-T1583). Battles never idle (`BattleScreen`), nor does a player run under `-automation`.
-- ⬜ Not yet built: the on-device profiling pass.
+- ⬜ Not yet built: the on-device profiling pass on an iPhone 15 Pro and a Galaxy S23 (the perf route and HUD are ready for it).
 
 ---
 

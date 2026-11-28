@@ -198,6 +198,12 @@ namespace GridGame.Core.Bot
                         if (sc > 0) candidates.Add((new UseSlotCommand { HeroId = h.Id, Slot = slot, Target = h.Pos }, sc));
                         continue;
                     }
+                    if (a.Mode == TargetMode.PickMulti)
+                    {
+                        var multi = MultiPick(s, h, a, slot, out float msc);
+                        if (multi != null) candidates.Add((multi, msc));
+                        continue;
+                    }
                     foreach (var t in BattleEngine.ValidTargets(s, h.Id, slot))
                     {
                         float sc = ScoreAbility(s, h, a, t);
@@ -512,6 +518,32 @@ namespace GridGame.Core.Bot
                 if (buff != null && buff.Tempo < 0) return true;
             }
             return false;
+        }
+
+        /// <summary>GG-T2141: a multi-pick takes its best-scoring legal units, up to MaxPicks, best first (ties in board order),
+        /// each a different unit; the command scores their sum. Null when no pick scores.</summary>
+        private UseSlotCommand MultiPick(BattleState s, Unit h, AbilityDef a, int slot, out float score)
+        {
+            var scored = new List<(Coord t, float sc, int i)>();
+            foreach (var t in BattleEngine.ValidTargets(s, h.Id, slot))
+            {
+                float sc = ScoreAbility(s, h, a, t);
+                if (sc > 0) scored.Add((t, sc, scored.Count));
+            }
+            scored.Sort((x, y) => x.sc != y.sc ? y.sc.CompareTo(x.sc) : x.i.CompareTo(y.i));
+            var cmd = new UseSlotCommand { HeroId = h.Id, Slot = slot };
+            var seen = new HashSet<Unit>();
+            score = 0f;
+            foreach (var (t, sc, _) in scored)
+            {
+                if (cmd.Targets.Count >= a.MaxPicks) break;
+                if (!seen.Add(s.UnitAt(t))) continue;
+                cmd.Targets.Add(t);
+                score += sc;
+            }
+            if (cmd.Targets.Count == 0) return null;
+            cmd.Target = cmd.Targets[0];
+            return cmd;
         }
 
         private float ScoreAbility(BattleState s, Unit caster, AbilityDef a, Coord anchor)
