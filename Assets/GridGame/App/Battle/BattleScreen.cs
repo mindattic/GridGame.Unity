@@ -424,14 +424,9 @@ namespace GridGame.App
                 Ui.Pressable(slot);
                 AttachSlotInspect(slot, idx);
                 slot.RegisterCallback<ClickEvent>(_ => OnSlot(idx));
-                var icon = Ui.El("menu-icon", slot); icon.name = "icon"; icon.style.marginRight = Space.S0; icon.style.width = icon.style.height = Size.IconL;
-                // One line in the fixed-height slot: a name too wide for a narrow stage (9:23) scrolls as the shared
-                // marquee instead of wrapping into a second line the slot cuts off (GG-T659, POL-C5).
-                var name = Ui.Marquee(Ui.Text("", "tiny", slot), grow: false); name.name = "name"; name.style.unityTextAlign = TextAnchor.MiddleCenter; name.style.maxWidth = Length.Percent(94);
-                // GG-T728: at a narrow stage (9:23.5) the name scrolled and a screenshot caught 'and Guard'; it now shrinks to
-                // the floor and then ends in an ellipsis, so it is never a clipped left edge.
-                name.AddToClassList(TextFit.EllipsisClass); name.style.overflow = Overflow.Hidden; name.style.textOverflow = TextOverflow.Ellipsis;
-                var cost = Ui.El("row", slot); cost.name = "cost"; cost.style.height = Size.Pip;
+                // GG-T1819: icon-only (owner: long names "truncated or ..." can't work as 5 buttons); the full name is
+                // in the description panel.
+                Ui.AbilitySlot(slot);
                 slotViews.Add(slot);
             }
             BuildManaPool(root);
@@ -787,58 +782,54 @@ namespace GridGame.App
             for (int i = 0; i < slotViews.Count; i++)
             {
                 var v = slotViews[i];
-                var icon = v.Q("icon");
-                var name = v.Q<Label>("name");
                 var cost = v.Q("cost");
                 cost.Clear();
-                icon.style.backgroundImage = StyleKeyword.None;
                 var status = hero == null ? SlotStatus.CannotAct : BattleEngine.GetSlotStatus(State, hero.Id, i);
                 var border = Palette.Text.WithA(0.75f);
                 float alpha = 1f;
                 if (hero == null || i >= hero.UnlockedSlots)
                 {
-                    name.text = hero == null ? "" : "Locked";
+                    Ui.SetAbilitySlot(v, null, state: hero == null ? "" : "Locked");
                     alpha = 0.35f;
                 }
                 else if (i >= hero.Bar.Count || hero.Bar[i].IsEmpty)
                 {
-                    name.text = "—";
+                    Ui.SetAbilitySlot(v, null, state: "—");
                     alpha = 0.5f;
                 }
                 else
                 {
                     var sl = hero.Bar[i];
                     var a = BattleEngine.SlotAbility(State, hero, i);
+                    bool silenced = status == SlotStatus.Silenced;
                     if (sl.IsWeapon)
                     {
-                        var w = App.Content.TryItem(sl.WeaponId);
-                        name.text = $"⭾ {w?.Name}";
                         border = new Color(0.8f, 0.8f, 0.9f);
-                        icon.style.backgroundImage = new StyleBackground(Art.ItemIcon(sl.WeaponId) ?? Art.Orb);
+                        Ui.SetAbilitySlot(v, Art.ItemIcon(sl.WeaponId) ?? Art.Orb, silenced: silenced);
                     }
                     else if (sl.IsItem)
                     {
-                        var item = App.Content.TryItem(sl.ItemId);
-                        name.text = $"{item?.Name}\n{sl.Charges}/{sl.MaxCharges}";
                         border = new Color(0.86f, 0.62f, 0.36f);
-                        icon.style.backgroundImage = new StyleBackground(Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb);
+                        Ui.SetAbilitySlot(v, Art.ItemIcon(sl.ItemId) ?? Art.AbilityIcon(a) ?? Art.Orb, count: sl.Charges, silenced: silenced);
                     }
                     else if (a != null)
                     {
-                        name.text = a.Name;
-                        icon.style.backgroundImage = new StyleBackground(Art.AbilityIcon(a) ?? Art.Orb);
+                        float sweep = 0f; int left = 0;
                         if (a.Kind == AbilityKind.Skill)
                         {
                             border = new Color(0.4f, 0.9f, 0.5f);
-                            if (status == SlotStatus.Cooldown) name.text = $"{a.Name}\nCD {hero.Cooldowns[a.Id]}";
+                            if (status == SlotStatus.Cooldown && hero.Cooldowns.TryGetValue(a.Id, out left) && left > 0)
+                                sweep = (float)left / Mathf.Max(left, a.CooldownTurns);
                         }
                         else
                         {
                             border = Palette.Mana;
                             Ui.CostPips(a.Cost, cost, 30, shownOrbs); // pips the row can't cover dim (GG-T673)
                         }
+                        Ui.SetAbilitySlot(v, Art.AbilityIcon(a) ?? Art.Orb, sweep, left, silenced: silenced);
                     }
-                    if (status == SlotStatus.Silenced) { border = new Color(1f, 0.25f, 0.25f); name.text += "\nSilenced"; }
+                    else Ui.SetAbilitySlot(v, null, silenced: silenced);
+                    if (silenced) border = new Color(1f, 0.25f, 0.25f);
                     if (status != SlotStatus.Ready) alpha = 0.45f;
                 }
                 bool targeting = i == TargetingSlot;
@@ -847,9 +838,6 @@ namespace GridGame.App
                 v.style.scale = StyleKeyword.Null; // scale belongs to the stylesheet (press / targeting states)
                 v.style.borderTopColor = v.style.borderBottomColor = v.style.borderLeftColor = v.style.borderRightColor = border;
                 v.style.opacity = alpha;
-                // The name never wraps (GG-T408: no hyphen-break; GG-T659: a wrapped two-word name was cut off by the
-                // fixed-height slot at 9:23): too wide, it scrolls as the marquee. Explicit lines (CD, charges, Silenced) still break.
-                name.style.whiteSpace = WhiteSpace.NoWrap;
             }
             SyncPoolPreview(); // the aimed spell's "-N" ghost follows the bar's targeting state (GG-T405)
         }

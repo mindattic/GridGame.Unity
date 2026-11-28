@@ -246,6 +246,22 @@ namespace GridGame.App
             Paint(p, s, Band(arc, hw));
         }
 
+        /// <summary>GG-T1819: a filled wedge of <paramref name="radius"/> sweeping <paramref name="sweepDeg"/> clockwise (screen
+        /// space) from <paramref name="startDeg"/> (0 = right, −90 = 12 o'clock); a full sweep is a disc. The cooldown sweep.</summary>
+        public static void Pie(Painter2D p, Vector2 center, float radius, ShapeStyle s, float startDeg = -90f, float sweepDeg = 360f)
+        {
+            if (Mathf.Abs(sweepDeg) >= 359.9f) { Paint(p, s, Circle(center, radius)); return; }
+            if (Mathf.Abs(sweepDeg) < 0.5f) return;
+            int segs = Mathf.Max(2, Mathf.CeilToInt(CircleSegments * Mathf.Abs(sweepDeg) / 360f));
+            var poly = new List<Vector2>(segs + 2) { center };
+            for (int i = 0; i <= segs; i++)
+            {
+                float a = (startDeg + sweepDeg * i / segs) * Mathf.Deg2Rad;
+                poly.Add(center + new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * radius);
+            }
+            Paint(p, s, poly);
+        }
+
         /// <summary>
         /// A rounded rectangle. <paramref name="filled"/>: a solid outlined body. Otherwise a frame whose stroke
         /// (<see cref="ShapeStyle.Width"/>) is centred on the rect's edge; <paramref name="dashed"/> breaks it into dashes,

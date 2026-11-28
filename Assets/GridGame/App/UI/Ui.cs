@@ -892,5 +892,131 @@ namespace GridGame.App
             parent?.Add(pip);
             return pip;
         }
+
+        /// <summary>GG-T1819 (BIBLE §9.0, §4.5): an ability-bar slot's face, icon-only. The icon fills the slot and carries
+        /// a clockwise <see cref="CooldownSweep"/> with the turns left in its centre; an item shows its stack count as a
+        /// corner badge; a Silenced slot the silenced pip; Locked/Empty a short state word. No ability name is ever drawn
+        /// here (the description panel has it), so nothing in the bar is cut or ellipsized. Fill it with
+        /// <see cref="SetAbilitySlot"/>; the spell cost row stays as <c>"cost"</c>.</summary>
+        public static void AbilitySlot(VisualElement slot)
+        {
+            var icon = El(null, slot); icon.name = "icon";
+            icon.pickingMode = PickingMode.Ignore;
+            icon.style.position = Position.Absolute;
+            icon.style.left = icon.style.top = icon.style.right = icon.style.bottom = Space.S16;
+            icon.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Contain);
+            icon.style.overflow = Overflow.Hidden;
+            var sweep = new CooldownSweep { name = "sweep" };
+            sweep.style.position = Position.Absolute;
+            sweep.style.left = sweep.style.top = sweep.style.right = sweep.style.bottom = Space.S0;
+            icon.Add(sweep);
+            Overlay(Text("", "tiny", slot), "turns").style.unityTextAlign = TextAnchor.MiddleCenter;
+            var state = Overlay(Text("", "tiny", slot), "state");
+            state.style.unityTextAlign = TextAnchor.MiddleCenter;
+            state.style.whiteSpace = WhiteSpace.NoWrap;
+            var badge = Text("", "tiny", slot); badge.name = "badge";
+            badge.pickingMode = PickingMode.Ignore;
+            badge.style.position = Position.Absolute;
+            badge.style.right = badge.style.bottom = Space.S8;
+            badge.style.minWidth = Size.Chip;
+            badge.style.paddingLeft = badge.style.paddingRight = Space.S8;
+            badge.style.unityTextAlign = TextAnchor.MiddleCenter;
+            badge.style.backgroundColor = Palette.Ink.WithA(0.85f);
+            badge.style.borderTopLeftRadius = badge.style.borderTopRightRadius = badge.style.borderBottomLeftRadius = badge.style.borderBottomRightRadius = Size.Chip / 2f;
+            badge.style.color = Palette.Text;
+            Fonts.UseHeavy(badge);
+            var silenced = StatusPip("silenced", "S", new Color(1f, 0.25f, 0.25f), Size.Chip, slot);
+            silenced.name = "silenced";
+            silenced.style.position = Position.Absolute;
+            silenced.style.left = silenced.style.top = Space.S8;
+            var cost = El("row", slot); cost.name = "cost";
+            cost.pickingMode = PickingMode.Ignore;
+            cost.style.position = Position.Absolute;
+            cost.style.left = cost.style.right = Space.S0;
+            cost.style.bottom = Space.S8;
+            cost.style.height = Size.Pip;
+            cost.style.justifyContent = Justify.Center;
+        }
+
+        /// <summary>A centred label over the whole slot, outlined so it reads over any icon.</summary>
+        private static Label Overlay(Label l, string name)
+        {
+            l.name = name;
+            l.pickingMode = PickingMode.Ignore;
+            l.style.position = Position.Absolute;
+            l.style.left = l.style.top = l.style.right = l.style.bottom = Space.S0;
+            l.style.color = Palette.Text;
+            l.style.unityTextOutlineWidth = Size.Hairline; l.style.unityTextOutlineColor = Palette.Ink;
+            Fonts.UseHeavy(l);
+            return l;
+        }
+
+        /// <summary>Fill an <see cref="AbilitySlot"/> face. <paramref name="cooldown"/>: the share of the recharge still to
+        /// go (0 = ready, no sweep) with <paramref name="turnsLeft"/> in its centre; <paramref name="count"/>: an item's
+        /// stack (−1 = not an item, no badge); <paramref name="state"/>: a short state word ("Locked", "—") or empty.</summary>
+        public static void SetAbilitySlot(VisualElement slot, Texture2D icon, float cooldown = 0f, int turnsLeft = 0, int count = -1,
+            string state = "", bool silenced = false)
+        {
+            slot.Q("icon").style.backgroundImage = icon != null ? new StyleBackground(icon) : new StyleBackground(StyleKeyword.None);
+            slot.Q<CooldownSweep>("sweep").Fraction = cooldown;
+            slot.Q<Label>("turns").text = cooldown > 0f && turnsLeft > 0 ? turnsLeft.ToString() : "";
+            slot.Q<Label>("state").text = state ?? "";
+            var badge = slot.Q<Label>("badge");
+            badge.text = count >= 0 ? count.ToString() : "";
+            badge.style.display = count >= 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            slot.Q("silenced").style.display = silenced ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+    }
+
+    /// <summary>GG-T1819: a WoW-style cooldown sweep: a dark wedge over its box, starting at 12 o'clock and covering the
+    /// <see cref="Fraction"/> of the recharge still to go, so the lit icon grows clockwise as it ticks. The wedge eases to a
+    /// new fraction; under Reduce Motion it jumps (a static sweep). Drawn with <see cref="Shapes.Pie"/> (BIBLE §11.6).</summary>
+    public sealed class CooldownSweep : VisualElement
+    {
+        private static readonly ShapeStyle Shade = ShapeStyle.Small.Tint(ShapeStyle.Ink.WithA(0.62f)).Outlined(ShapeStyle.Ink, 2f);
+        private float target, shown;
+
+        /// <summary>0..1: the share of the recharge still to go; 0 clears the sweep.</summary>
+        public float Fraction
+        {
+            get => target;
+            set
+            {
+                value = Mathf.Clamp01(value);
+                if (Mathf.Approximately(value, target)) return;
+                target = value;
+                if (GameApp.I?.Settings?.ReduceMotion ?? false) shown = target;
+                MarkDirtyRepaint();
+            }
+        }
+
+        public CooldownSweep()
+        {
+            pickingMode = PickingMode.Ignore;
+            generateVisualContent += Draw;
+            schedule.Execute(Tick).Every(16);
+        }
+
+        private void Tick()
+        {
+            if (Mathf.Approximately(shown, target)) return;
+            if (GameApp.I?.Settings?.ReduceMotion ?? false) shown = target;
+            else
+            {
+                shown += (target - shown) * Mathf.Min(1f, Tween.Dt * 8f);
+                if (Mathf.Abs(target - shown) < 0.002f) shown = target;
+            }
+            MarkDirtyRepaint();
+        }
+
+        private void Draw(MeshGenerationContext ctx)
+        {
+            if (shown <= 0.001f) return;
+            var r = contentRect;
+            if (r.width <= 0f || r.height <= 0f) return;
+            float radius = r.size.magnitude * 0.5f + 2f;
+            float sweep = 360f * shown;
+            Shapes.Pie(ctx.painter2D, r.center, radius, Shade, -90f + (360f - sweep), sweep);
+        }
     }
 }
