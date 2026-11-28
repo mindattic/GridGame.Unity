@@ -5264,6 +5264,8 @@ Owner: heroes get passive/reactive abilities from class kits, skill-tree nodes, 
 - **Bots:** `CampRoutine` opens every chest and reads each Tome to the first party hero with a free slot.
 - *(Tests: `PassiveRewardTests`.)*
 
+*Amended 2026-11-28 (GG-T2074, owner-approved prologue, docs/STORY_SLICE.md): a Tome may teach a Spell.* The Collector's chest (`chest_tithe`: the Tome of Bolt, a Storm Flask, 150 G) holds `tome_bolt`, which teaches the Spell Bolt. `RewardCatalog.TomeTeaches` accepts a battle passive or a Spell; a Tome's Spell is for a class whose `Abilities` list it (`AllowedFor`: the Red Mage), it goes into `HeroSave.Known` and takes no passive slot. The Ward-Engine (`ward_engine`, stage `prologue-ward`, the first waystone's guardian) is the §3.3.1 element-locked foe: every resistance 0 but Lightning ×1.5, `RevealResistances`, on a cold-tinted Mecha Armor portrait (`mecha-armor-03`).
+
 ### 25.6.5 Stat requirements on abilities (GG-T590, from GG-T168)
 
 **Added 2026-11-23.** Every ability the Learn screen sells (a hero-usable Skill or Spell, `Abilities.IsHeroUsable`) carries `AbilityDef.Requires`: a `Stats` vector of minimums, written in abilities.json as only the stats that gate it (`"Requires": { "Strength": 5, "Wisdom": 4 }`). Every non-zero stat must be met; a zero stat doesn't gate; null means no requirement. Passives, reactives, items, enemy charges and the boss-only abilities leave it null.

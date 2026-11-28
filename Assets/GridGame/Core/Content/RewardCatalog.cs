@@ -20,6 +20,10 @@ namespace GridGame.Core.Content
         public static bool Teachable(AbilityDef a) =>
             a != null && (a.Kind == AbilityKind.Passive || a.Kind == AbilityKind.Reactive) && a.Trigger != null;
 
+        /// <summary>GG-T2074 (§25.6.4): what a Tome may teach: a <see cref="Teachable"/> passive, or a Spell from the reader's
+        /// own class list (the prologue's Tome of Bolt, read to the Red Mage).</summary>
+        public static bool TomeTeaches(AbilityDef a) => Teachable(a) || (a != null && a.Kind == AbilityKind.Spell);
+
         public static void Validate(ContentDb db, List<string> p)
         {
             foreach (var i in db.Items.Values)
@@ -29,7 +33,7 @@ namespace GridGame.Core.Content
                 {
                     if (string.IsNullOrEmpty(i.TeachesAbility)) p.Add($"{w}: a Tome needs TeachesAbility");
                     else if (!db.Abilities.TryGetValue(i.TeachesAbility, out var a)) p.Add($"{w}: unknown ability '{i.TeachesAbility}'");
-                    else if (!Teachable(a)) p.Add($"{w}: '{a.Id}' isn't a Passive or Reactive with a Trigger (a Tome teaches battle passives only)");
+                    else if (!TomeTeaches(a)) p.Add($"{w}: '{a.Id}' isn't a Spell, or a Passive or Reactive with a Trigger (what a Tome teaches)");
                 }
                 else if (i.TeachesAbility != null) p.Add($"{w}: only a Tome may set TeachesAbility");
                 if (i.Type == ItemType.Chest)
@@ -69,10 +73,11 @@ namespace GridGame.Core.Content
         }
 
         /// <summary>Whether <paramref name="cls"/> may learn <paramref name="a"/> (its <see cref="AbilityDef.LearnableBy"/> names
-        /// the class or its Role, or is empty).</summary>
+        /// the class or its Role, or is empty). A Tome's Spell is for a class that lists it (GG-T2074).</summary>
         public static bool AllowedFor(AbilityDef a, ClassDef cls)
         {
             if (a == null || cls == null) return false;
+            if (a.Kind == AbilityKind.Spell) return cls.Abilities.Exists(id => string.Equals(id, a.Id, StringComparison.OrdinalIgnoreCase));
             if (a.LearnableBy == null || a.LearnableBy.Count == 0) return true;
             foreach (var who in a.LearnableBy)
                 if (string.Equals(who, cls.Id, StringComparison.OrdinalIgnoreCase) || string.Equals(who, cls.Role, StringComparison.OrdinalIgnoreCase)) return true;

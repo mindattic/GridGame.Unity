@@ -4811,5 +4811,20 @@
         ]
       }
     ]
+  },
+  {
+    "Id": "prologue-ward",
+    "Name": "The Sleeping Stone",
+    "Theme": "greenvalley",
+    "Background": null,
+    "Music": "Battle",
+    "IsTest": false,
+    "Waves": [
+      {
+        "Enemies": [
+          { "Class": "ward_engine", "Level": 1, "X": 3, "Y": 2 }
+        ]
+      }
+    ]
   }
 ]

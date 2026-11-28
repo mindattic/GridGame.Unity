@@ -3990,6 +3990,20 @@
         "long": "Built on vows and iron patience, they stand where others fall back."
       }
     },
+    "class:ward_engine": {
+      "key": "class:ward_engine",
+      "id": "description-class-ward-engine",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:e34e83a6b5bc19c91e285f4fa4ffd556dc875ea2368e409520622cb4a4309fec",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "short": "A white Halcyon automaton gone pale and cold, folded around a sleeping waystone, its shield etched with a lightning mark.",
+        "long": "Halcyon built the Ward-Engines to keep its waystones until someone came who could wake them. Steel, flame and prayer slide off its wards. Only Lightning still answers the old key."
+      }
+    },
     "class:warden": {
       "key": "class:warden",
       "id": "description-class-warden",
@@ -5023,6 +5037,19 @@
       "speakers": [],
       "payload": {
         "short": "A banded chest a strong foe was guarding. Open it from the bag."
+      }
+    },
+    "item:chest_tithe": {
+      "key": "item:chest_tithe",
+      "id": "description-item-chest-tithe",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:9d59e0a5d7e8490c0a7bd15067f65d8d240477f43c93cec77e2d6d86d4d6cc2e",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "short": "The Tithe Collector's strongbox, heavy with a month of Tithe's colour. Open it."
       }
     },
     "item:chest_wooden": {
@@ -24175,6 +24202,19 @@
       "speakers": [],
       "payload": {
         "short": "A dog-eared field manual. Read it to teach one hero the [Reactive] Blood Rage."
+      }
+    },
+    "item:tome_bolt": {
+      "key": "item:tome_bolt",
+      "id": "description-item-tome-bolt",
+      "guid": null,
+      "version": 0,
+      "source": "seed",
+      "hash": "sha256:33841eb2489e01fe7f89ac1c8f28d7503ba17a162549b2ca112e31f5c5ea47e7",
+      "about": [],
+      "speakers": [],
+      "payload": {
+        "short": "A scorched spellbook from the Collector's chest. Read it to teach the Red Mage the spell Bolt."
       }
     },
     "item:tome_counter_attack": {

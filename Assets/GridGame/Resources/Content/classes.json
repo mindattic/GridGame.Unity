@@ -10079,6 +10079,87 @@
     "ArmorPlate": 30
   },
   {
+    "Id": "ward_engine",
+    "Heavy": true,
+    "Name": "Ward-Engine",
+    "Team": "Enemy",
+    "Tags": [
+      "Mechanical",
+      "Tech"
+    ],
+    "Card": "A Halcyon automaton guarding a sleeping waystone. Immune to all but Lightning.",
+    "Portrait": "mecha-armor",
+    "PortraitVariant": 3,
+    "Thumbnail": {
+      "Zoom": 3.2,
+      "X": 0.37,
+      "Y": 0.15
+    },
+    "Figure": {
+      "X": 0,
+      "Y": 0.0332,
+      "W": 0.9717,
+      "H": 0.9512
+    },
+    "Footprint": {
+      "W": 1,
+      "H": 1
+    },
+    "Support": {
+      "Effect": "Pushback",
+      "Magnitude": 0.75,
+      "Target": "Attacker",
+      "Range": 1,
+      "Label": "Ward Pulse",
+      "Projectile": "TechSword",
+      "Motion": "Straight",
+      "Sfx": "battle.clang"
+    },
+    "BaseStats": {
+      "Strength": 10,
+      "Vitality": 14,
+      "Agility": 8,
+      "Speed": 8,
+      "Intelligence": 10,
+      "Wisdom": 10
+    },
+    "Growth": {
+      "Strength": 0.55,
+      "Vitality": 0.8,
+      "Agility": 0.4,
+      "Speed": 0.4,
+      "Intelligence": 0.5,
+      "Wisdom": 0.5
+    },
+    "Resistances": {
+      "Physical": 0,
+      "Fire": 0,
+      "Ice": 0,
+      "Lightning": 1.5,
+      "Poison": 0,
+      "Holy": 0,
+      "Dark": 0,
+      "Arcane": 0
+    },
+    "RevealResistances": true,
+    "ImmuneBuffs": [
+      "poisoned",
+      "sleep"
+    ],
+    "Abilities": [],
+    "DefaultLoadout": [],
+    "DropTable": "mechaarmor",
+    "MoveRange": 1,
+    "Targeting": "Threat",
+    "XpReward": 20,
+    "BossPhases": [],
+    "ChargeAbility": null,
+    "ChargeShape": "Single",
+    "Trap": null,
+    "SnakeSegments": 0,
+    "Brain": "Guardian"
+  },
+  {
     "Id": "monk",
     "Name": "Monk",
     "Team": "Hero",
