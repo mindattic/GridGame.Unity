@@ -18,7 +18,7 @@ namespace GridGame.App
         public PostBattleScreen(BattleReport report, string stageId) { this.report = report; this.stageId = stageId; }
         public override string Id => "postbattle";
         /// <summary>GG-T458: campaign.json MomentMusic.victory (a Crucible run's results too) or .defeat.</summary>
-        public override string Music => music ??= report.Victory || report.Crucible
+        public override string Music => music ??= report.Victory || report.Crucible || report.Withdrawn
             ? App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Victory) ?? "heroic-age-00"
             : App.Playlist.Moment(App.Content.Campaign, MusicPlaylist.Defeat) ?? "heartbreaking-00";
         private string music;
@@ -66,6 +66,7 @@ namespace GridGame.App
 
             if (report.Crucible) { BuildCrucible(root, col, c); return; }
             if (Drills.IsDrill(c.TryStage(stageId))) { BuildDrill(col, c); return; }
+            if (report.Withdrawn) { BuildWithdrawn(root, col, c); return; }
             var title = Ui.Text(report.Victory ? "VICTORY" : report.Retreated ? "RETREATED" : report.Escaped ? "ESCAPED" : "DEFEAT", "t-display shadow", col);
             Fonts.UseDisplay(title);
             title.style.fontSize = TypeScale.Base * 1.6f;
@@ -251,6 +252,40 @@ namespace GridGame.App
             Ui.SetEnabled(again, Crucible.CanLaunch(c, App.Save, out _));
             Ui.El("", col).style.height = Space.S48;
             if (DemoMode.Active) root.schedule.Execute(() => App.Router.ResetTo(new HubScreen())).ExecuteLater(1500);
+        }
+
+        /// <summary>GG-T2070: a scripted withdrawal's results are one short Fall back card: the party's line to the Commander,
+        /// nothing lost, and Continue on into the story (no Retry: it is not a defeat).</summary>
+        private void BuildWithdrawn(VisualElement root, VisualElement col, ContentDb c)
+        {
+            var title = Ui.Text("FALL BACK", "t-display shadow", col);
+            title.name = "withdraw-title";
+            Fonts.UseDisplay(title);
+            title.style.fontSize = TypeScale.Base * 1.6f;
+            title.style.unityTextAlign = TextAnchor.MiddleCenter;
+            title.style.color = Palette.Gold;
+            Ui.Text(NameOf(c, report, stageId), "t-h2 shadow dim", col).style.unityTextAlign = TextAnchor.MiddleCenter;
+
+            var w = Ui.Panel(col, null, true);
+            Ui.Margin(w, top: Space.S48);
+            var list = Ui.List(w).contentContainer;
+            if (!string.IsNullOrEmpty(report.WithdrawLine))
+            {
+                var line = Ui.Text(report.WithdrawLine, "kit-text", list);
+                line.name = "withdraw-line";
+                line.style.whiteSpace = WhiteSpace.Normal;
+            }
+            Ui.Text("Nothing is lost. Everyone recovers, and the road goes on.", "small dim", list).style.whiteSpace = WhiteSpace.Normal;
+            TurnsRow(list);
+
+            var row = Ui.El("row", col);
+            row.style.justifyContent = Justify.Center;
+            onContinue = () => StoryBeats.AfterResults(true, stageId);
+            var cont = RowIcon.IconButton("Continue", RowKind.Enter, () => { if (continued) return; continued = true; onContinue(); }, "btn--primary", row);
+            cont.name = "continue";
+            Ui.El("", col).style.height = Space.S48;
+            if (TestMode.Active) root.schedule.Execute(() => TestMode.AfterBattle(report, stageId)).ExecuteLater(1500);
+            else if (DemoMode.Active) root.schedule.Execute(() => DemoMode.AfterBattle(report, stageId)).ExecuteLater(1500);
         }
 
         /// <summary>GG-T1379: a drill's results are one short card, since a drill earns nothing. A win goes on to the next
